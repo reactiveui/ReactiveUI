@@ -25,7 +25,7 @@ HolyCrapDidIActuallyReadThisSection = true
 ProductInformation = {
     :product_name => "Reactive XAML",
     :version => "1.1.1.0",
-    :company_name => "Microsoft",
+    :company_name => "Paul Betts",
     :description => "An MVVM framework that integrates the Reactive Extensions",
 }
 
