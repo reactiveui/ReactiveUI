@@ -1,0 +1,959 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>System.CoreEx</name>
+    </assembly>
+    <members>
+        <member name="T:System.Concurrency.NewThreadScheduler">
+            <summary>
+            Represents an object that schedules units of work on the current thread.
+            </summary>
+        </member>
+        <member name="T:System.Concurrency.IScheduler">
+            <summary>
+            Represents an object that schedules units of work.
+            </summary>
+        </member>
+        <member name="M:System.Concurrency.IScheduler.Schedule(System.Action)">
+            <summary>
+            Schedules action to be executed.
+            </summary>
+        </member>
+        <member name="M:System.Concurrency.IScheduler.Schedule(System.Action,System.TimeSpan)">
+            <summary>
+            Schedules action to be executed after dueTime.
+            </summary>
+        </member>
+        <member name="P:System.Concurrency.IScheduler.Now">
+            <summary>
+            Gets the scheduler's notion of current time.
+            </summary>
+        </member>
+        <member name="M:System.Concurrency.NewThreadScheduler.Schedule(System.Action)">
+            <summary>
+            Schedules action to be executed.
+            </summary>
+        </member>
+        <member name="M:System.Concurrency.NewThreadScheduler.Schedule(System.Action,System.TimeSpan)">
+            <summary>
+            Schedules action to be executed after dueTime.
+            </summary>
+        </member>
+        <member name="P:System.Concurrency.NewThreadScheduler.Now">
+            <summary>
+            Gets the scheduler's notion of current time.
+            </summary>
+        </member>
+        <member name="T:System.Concurrency.SynchronizationContextScheduler">
+            <summary>
+            Represents an object that schedules units of work on a provided SynchronizationContext.
+            </summary>
+        </member>
+        <member name="M:System.Concurrency.SynchronizationContextScheduler.#ctor(System.Threading.SynchronizationContext)">
+            <summary>
+            Creates an object that schedules units of work on the provided SynchronizationContext.
+            </summary>
+        </member>
+        <member name="M:System.Concurrency.SynchronizationContextScheduler.Schedule(System.Action)">
+            <summary>
+            Schedules action to be executed.
+            </summary>
+        </member>
+        <member name="M:System.Concurrency.SynchronizationContextScheduler.Schedule(System.Action,System.TimeSpan)">
+            <summary>
+            Schedules action to be executed after dueTime.
+            </summary>
+        </member>
+        <member name="P:System.Concurrency.SynchronizationContextScheduler.Now">
+            <summary>
+            Gets the scheduler's notion of current time.
+            </summary>
+        </member>
+        <member name="T:System.Concurrency.TaskPoolScheduler">
+            <summary>
+            Represents an object that schedules units of work using a provided TaskFactory.
+            </summary>
+        </member>
+        <member name="M:System.Concurrency.TaskPoolScheduler.#ctor(System.Threading.Tasks.TaskFactory)">
+            <summary>
+            Creates an object that schedules units of work using the provided TaskFactory.
+            </summary>
+        </member>
+        <member name="M:System.Concurrency.TaskPoolScheduler.Schedule(System.Action)">
+            <summary>
+            Schedules action to be executed.
+            </summary>
+        </member>
+        <member name="M:System.Concurrency.TaskPoolScheduler.Schedule(System.Action,System.TimeSpan)">
+            <summary>
+            Schedules action to be executed after dueTime.
+            </summary>
+        </member>
+        <member name="P:System.Concurrency.TaskPoolScheduler.Now">
+            <summary>
+            Gets the scheduler's notion of current time.
+            </summary>
+        </member>
+        <member name="T:System.Disposables.AnonymousDisposable">
+            <summary>
+            Represents an Action-based disposable.
+            </summary>
+        </member>
+        <member name="M:System.Disposables.AnonymousDisposable.#ctor(System.Action)">
+            <summary>
+            Constructs a new disposable with the given action used for disposal.
+            </summary>
+            <param name="dispose">Disposal action.</param>
+        </member>
+        <member name="M:System.Disposables.AnonymousDisposable.Dispose">
+            <summary>
+            Calls the disposal action.
+            </summary>
+        </member>
+        <member name="T:System.Disposables.BooleanDisposable">
+            <summary>
+            Represents an IDisposable that can be checked for status.
+            </summary>
+        </member>
+        <member name="M:System.Disposables.BooleanDisposable.#ctor">
+            <summary>
+            Constructs a new undisposed BooleanDisposable. 
+            </summary>
+        </member>
+        <member name="M:System.Disposables.BooleanDisposable.Dispose">
+            <summary>
+            Sets the status to Disposed.
+            </summary>
+        </member>
+        <member name="P:System.Disposables.BooleanDisposable.IsDisposed">
+            <summary>
+            Gets a value indicating whether the object is disposed.
+            </summary>
+        </member>
+        <member name="T:System.Disposables.CancellationDisposable">
+            <summary>
+            Represents an IDisposable that can be checked for cancellation status.
+            </summary>
+        </member>
+        <member name="M:System.Disposables.CancellationDisposable.#ctor(System.Threading.CancellationTokenSource)">
+            <summary>
+            Constructs a new CancellationDisposable that uses an existing CancellationTokenSource.
+            </summary>
+        </member>
+        <member name="M:System.Disposables.CancellationDisposable.#ctor">
+            <summary>
+            Constructs a new CancellationDisposable that uses a new CancellationTokenSource.
+            </summary>
+        </member>
+        <member name="M:System.Disposables.CancellationDisposable.Dispose">
+            <summary>
+            Cancels the CancellationTokenSource.
+            </summary>
+        </member>
+        <member name="P:System.Disposables.CancellationDisposable.Token">
+            <summary>
+            Gets the CancellationToken used by this CancellationDisposable.
+            </summary>
+        </member>
+        <member name="T:System.Disposables.ContextDisposable">
+            <summary>
+            Represents a thread-affine IDisposable.
+            </summary>
+        </member>
+        <member name="M:System.Disposables.ContextDisposable.#ctor(System.Threading.SynchronizationContext,System.IDisposable)">
+            <summary>
+            Constructs a ContextDisposable that uses a SynchronziationContext on which to dipose the disposable.
+            </summary>
+        </member>
+        <member name="M:System.Disposables.ContextDisposable.Dispose">
+            <summary>
+            Disposes the wrapped disposable on the provided SynchronizationContext.
+            </summary>
+        </member>
+        <member name="P:System.Disposables.ContextDisposable.Context">
+            <summary>
+            Gets the provided SynchronizationContext.
+            </summary>
+        </member>
+        <member name="T:System.Disposables.DefaultDisposable">
+            <summary>
+            Represents a disposable that does nothing on disposal.
+            </summary>
+        </member>
+        <member name="F:System.Disposables.DefaultDisposable.Instance">
+            <summary>
+            Singleton default disposable.
+            </summary>
+        </member>
+        <member name="M:System.Disposables.DefaultDisposable.Dispose">
+            <summary>
+            Does nothing.
+            </summary>
+        </member>
+        <member name="T:System.Disposables.Disposable">
+            <summary>
+            Provides a set of static methods for creating Disposables.
+            </summary>
+        </member>
+        <member name="M:System.Disposables.Disposable.Create(System.Action)">
+            <summary>
+            Creates the disposable that invokes dispose when disposed.
+            </summary>
+        </member>
+        <member name="P:System.Disposables.Disposable.Empty">
+            <summary>
+            Represents the disposable that does nothing when disposed.
+            </summary>
+        </member>
+        <member name="T:System.Disposables.CompositeDisposable">
+            <summary>
+            Represents a group of Disposables that are disposed together.
+            </summary>
+        </member>
+        <member name="M:System.Disposables.CompositeDisposable.#ctor(System.IDisposable[])">
+            <summary>
+            Constructs a GroupDisposable from a group of disposables.
+            </summary>
+        </member>
+        <member name="M:System.Disposables.CompositeDisposable.Add(System.IDisposable)">
+            <summary>
+            Adds a disposable to the GroupDisposable or disposes the disposable if the GroupDisposable is disposed.
+            </summary>
+        </member>
+        <member name="M:System.Disposables.CompositeDisposable.Remove(System.IDisposable)">
+            <summary>
+            Removes and disposes the first occurrence of a disposable from the GroupDisposable.
+            </summary>
+        </member>
+        <member name="M:System.Disposables.CompositeDisposable.Dispose">
+            <summary>
+            Disposes all disposables in the group and removes them from the group.
+            </summary>
+        </member>
+        <member name="M:System.Disposables.CompositeDisposable.Clear">
+            <summary>
+            Removes and disposes all disposables from the GroupDisposable, but does not dispose the GroupDisposable.
+            </summary>
+        </member>
+        <member name="M:System.Disposables.CompositeDisposable.Contains(System.IDisposable)">
+            <summary>
+            Determines whether the GroupDisposable contains a specific disposable.
+            </summary>
+        </member>
+        <member name="M:System.Disposables.CompositeDisposable.CopyTo(System.IDisposable[],System.Int32)">
+            <summary>
+            Copies the disposables contained in the GroupDisposable to an Array, starting at a particular Array index.
+            </summary>
+        </member>
+        <member name="M:System.Disposables.CompositeDisposable.GetEnumerator">
+            <summary>
+            Returns an enumerator that iterates through the GroupDisposable.
+            </summary>
+        </member>
+        <member name="M:System.Disposables.CompositeDisposable.System#Collections#IEnumerable#GetEnumerator">
+            <summary>
+            Returns an enumerator that iterates through the GroupDisposable.
+            </summary>
+        </member>
+        <member name="P:System.Disposables.CompositeDisposable.Count">
+            <summary>
+            Gets the number of disposables contained in the GroupDisposable.
+            </summary>
+        </member>
+        <member name="P:System.Disposables.CompositeDisposable.IsReadOnly">
+            <summary>
+            Always returns false.
+            </summary>
+        </member>
+        <member name="T:System.Disposables.RefCountDisposable">
+            <summary>
+            Represents a disposable that only disposes its underlying disposable when all dependent disposables have been disposed.
+            </summary>
+        </member>
+        <member name="M:System.Disposables.RefCountDisposable.#ctor(System.IDisposable)">
+            <summary>
+            Creates a disposable that only disposes its underlying disposable when all dependent disposables have been disposed.
+            </summary>
+        </member>
+        <member name="M:System.Disposables.RefCountDisposable.Dispose">
+            <summary>
+            Disposes the underlying disposable only when all dependent disposables have been disposed.
+            </summary>
+        </member>
+        <member name="M:System.Disposables.RefCountDisposable.GetDisposable">
+            <summary>
+            Returns a disposable that when disposed decreases the refcount on the underlying disposable.
+            </summary>
+        </member>
+        <member name="T:System.Disposables.MutableDisposable">
+            <summary>
+            Represents a disposable whose underlying disposable can be swapped for another disposable.
+            </summary>
+        </member>
+        <member name="M:System.Disposables.MutableDisposable.#ctor">
+            <summary>
+            Constructs a new MutableDisposable with no current underlying disposable.
+            </summary>
+        </member>
+        <member name="M:System.Disposables.MutableDisposable.Dispose">
+            <summary>
+            Disposes the underlying disposable as well as all future replacements.
+            </summary>
+        </member>
+        <member name="P:System.Disposables.MutableDisposable.Disposable">
+            <summary>
+            Gets a value indicating whether the MutableDisposable has an underlying disposable.
+            </summary>
+        </member>
+        <member name="T:System.Disposables.ScheduledDisposable">
+            <summary>
+            Represents an object that schedules units of work on a provided scheduler.
+            </summary>
+        </member>
+        <member name="M:System.Disposables.ScheduledDisposable.#ctor(System.Concurrency.IScheduler,System.IDisposable)">
+            <summary>
+            Constructs a ScheduledDisposable that uses a scheduler on which to dipose the disposable.
+            </summary>
+        </member>
+        <member name="M:System.Disposables.ScheduledDisposable.Dispose">
+            <summary>
+            Disposes the wrapped disposable on the provided scheduler.
+            </summary>
+        </member>
+        <member name="P:System.Disposables.ScheduledDisposable.Disposable">
+            <summary>
+            Gets a value indicating the underlying disposable.
+            </summary>
+        </member>
+        <member name="P:System.Disposables.ScheduledDisposable.Scheduler">
+            <summary>
+            Gets a value indicating the scheduler.
+            </summary>
+        </member>
+        <member name="T:System.Diagnostics.ExceptionExtensions">
+            <summary>
+            Provides a set of static methods for exceptions.
+            </summary>
+        </member>
+        <member name="M:System.Diagnostics.ExceptionExtensions.PrepareForRethrow(System.Exception)">
+            <summary>
+            Preserve callstack when rethrowing.
+            </summary>
+        </member>
+        <member name="T:System.IObserver`2">
+            <summary>
+            Supports push-style iteration over an observable sequence.
+            </summary>
+        </member>
+        <member name="M:System.IObserver`2.OnNext(`0)">
+            <summary>
+            Notifies the observer of a new value in the sequence.
+            </summary>
+        </member>
+        <member name="M:System.IObserver`2.OnError(System.Exception)">
+            <summary>
+            Notifies the observer that an exception has occurred.
+            </summary>
+        </member>
+        <member name="M:System.IObserver`2.OnCompleted">
+            <summary>
+            Notifies the observer of the end of the sequence.
+            </summary>
+        </member>
+        <member name="T:System.Collections.Generic.NotificationKind">
+            <summary>
+            Indicates the type of a notification.
+            </summary>
+        </member>
+        <member name="T:System.Collections.Generic.Notification`1">
+            <summary>
+            Represents a notification to an observer.
+            </summary>
+        </member>
+        <member name="M:System.Collections.Generic.Notification`1.Equals(System.Collections.Generic.Notification{`0})">
+            <summary>
+            Indicates whether this instance and other are equal.
+            </summary>
+        </member>
+        <member name="M:System.Collections.Generic.Notification`1.Equals(System.Object)">
+            <summary>
+            Indicates whether this instance and a specified object are equal.
+            </summary>
+        </member>
+        <member name="M:System.Collections.Generic.Notification`1.op_Equality(System.Collections.Generic.Notification{`0},System.Collections.Generic.Notification{`0})">
+            <summary>
+            Indicates whether left and right are equal.       
+            </summary>
+        </member>
+        <member name="M:System.Collections.Generic.Notification`1.op_Inequality(System.Collections.Generic.Notification{`0},System.Collections.Generic.Notification{`0})">
+            <summary>
+            Indicates whether left and right are not equal.       
+            </summary>
+        </member>
+        <member name="M:System.Collections.Generic.Notification`1.GetHashCode">
+            <summary>
+            Returns the hash code for this instance.
+            </summary>
+        </member>
+        <member name="M:System.Collections.Generic.Notification`1.Accept(System.IObserver{`0})">
+            <summary>
+            Invokes the observer's method corresponding to the notification.
+            </summary>
+        </member>
+        <member name="M:System.Collections.Generic.Notification`1.Accept``1(System.IObserver{`0,``0})">
+            <summary>
+            Invokes the observer's method corresponding to the notification and returns the produced result.
+            </summary>
+        </member>
+        <member name="M:System.Collections.Generic.Notification`1.Accept(System.Action{`0},System.Action{System.Exception},System.Action)">
+            <summary>
+            Invokes the delegate corresponding to the notification.
+            </summary>
+        </member>
+        <member name="M:System.Collections.Generic.Notification`1.Accept``1(System.Func{`0,``0},System.Func{System.Exception,``0},System.Func{``0})">
+            <summary>
+            Invokes the delegate corresponding to the notification and returns the produced result.
+            </summary>
+        </member>
+        <member name="P:System.Collections.Generic.Notification`1.Value">
+            <summary>
+            Returns the value of an OnNext notification or throws an exception.
+            </summary>
+        </member>
+        <member name="P:System.Collections.Generic.Notification`1.HasValue">
+            <summary>
+            Returns whether the notification has a value.
+            </summary>
+        </member>
+        <member name="P:System.Collections.Generic.Notification`1.Exception">
+            <summary>
+            Returns the exception of an OnError notification or returns null.
+            </summary>
+        </member>
+        <member name="P:System.Collections.Generic.Notification`1.Kind">
+            <summary>
+            Gets the kind of notification that is represented.
+            </summary>
+        </member>
+        <member name="T:System.Collections.Generic.Notification`1.OnNext">
+            <summary>
+            Represents a OnNext notification to an observer.
+            </summary>
+        </member>
+        <member name="M:System.Collections.Generic.Notification`1.OnNext.#ctor(`0)">
+            <summary>
+            Constructs a notification of a new value.
+            </summary>
+        </member>
+        <member name="M:System.Collections.Generic.Notification`1.OnNext.GetHashCode">
+            <summary>
+            Returns the hash code for this instance.
+            </summary>
+        </member>
+        <member name="M:System.Collections.Generic.Notification`1.OnNext.Equals(System.Collections.Generic.Notification{`0})">
+            <summary>
+            Indicates whether this instance and a specified object are equal.
+            </summary>
+        </member>
+        <member name="M:System.Collections.Generic.Notification`1.OnNext.ToString">
+            <summary>
+            Returns a string representation of this instance.
+            </summary>
+        </member>
+        <member name="M:System.Collections.Generic.Notification`1.OnNext.Accept(System.IObserver{`0})">
+            <summary>
+            Invokes the observer's method corresponding to the notification.
+            </summary>
+        </member>
+        <member name="M:System.Collections.Generic.Notification`1.OnNext.Accept``1(System.IObserver{`0,``0})">
+            <summary>
+            Invokes the observer's method corresponding to the notification and returns the produced result.
+            </summary>
+        </member>
+        <member name="M:System.Collections.Generic.Notification`1.OnNext.Accept(System.Action{`0},System.Action{System.Exception},System.Action)">
+            <summary>
+            Invokes the delegate corresponding to the notification.
+            </summary>
+        </member>
+        <member name="M:System.Collections.Generic.Notification`1.OnNext.Accept``1(System.Func{`0,``0},System.Func{System.Exception,``0},System.Func{``0})">
+            <summary>
+            Invokes the delegate corresponding to the notification and returns the produced result.
+            </summary>
+        </member>
+        <member name="P:System.Collections.Generic.Notification`1.OnNext.Value">
+            <summary>
+            Returns the value of an OnNext notification.
+            </summary>
+        </member>
+        <member name="P:System.Collections.Generic.Notification`1.OnNext.Exception">
+            <summary>
+            Returns null.
+            </summary>
+        </member>
+        <member name="P:System.Collections.Generic.Notification`1.OnNext.HasValue">
+            <summary>
+            Returns true.
+            </summary>
+        </member>
+        <member name="P:System.Collections.Generic.Notification`1.OnNext.Kind">
+            <summary>
+            Returns NotificationKind.OnNext.
+            </summary>
+        </member>
+        <member name="T:System.Collections.Generic.Notification`1.OnError">
+            <summary>
+            Represents a OnError notification to an observer.
+            </summary>
+        </member>
+        <member name="M:System.Collections.Generic.Notification`1.OnError.#ctor(System.Exception)">
+            <summary>
+            Constructs a notification of an exception.
+            </summary>
+        </member>
+        <member name="M:System.Collections.Generic.Notification`1.OnError.GetHashCode">
+            <summary>
+            Returns the hash code for this instance.
+            </summary>
+        </member>
+        <member name="M:System.Collections.Generic.Notification`1.OnError.Equals(System.Collections.Generic.Notification{`0})">
+            <summary>
+            Indicates whether this instance and other are equal.
+            </summary>
+        </member>
+        <member name="M:System.Collections.Generic.Notification`1.OnError.ToString">
+            <summary>
+            Returns a string representation of this instance.
+            </summary>
+        </member>
+        <member name="M:System.Collections.Generic.Notification`1.OnError.Accept(System.IObserver{`0})">
+            <summary>
+            Invokes the observer's method corresponding to the notification.
+            </summary>
+        </member>
+        <member name="M:System.Collections.Generic.Notification`1.OnError.Accept``1(System.IObserver{`0,``0})">
+            <summary>
+            Invokes the observer's method corresponding to the notification and returns the produced result.
+            </summary>
+        </member>
+        <member name="M:System.Collections.Generic.Notification`1.OnError.Accept(System.Action{`0},System.Action{System.Exception},System.Action)">
+            <summary>
+            Invokes the delegate corresponding to the notification.
+            </summary>
+        </member>
+        <member name="M:System.Collections.Generic.Notification`1.OnError.Accept``1(System.Func{`0,``0},System.Func{System.Exception,``0},System.Func{``0})">
+            <summary>
+            Invokes the delegate corresponding to the notification and returns the produced result.
+            </summary>
+        </member>
+        <member name="P:System.Collections.Generic.Notification`1.OnError.Value">
+            <summary>
+            Throws the exception.
+            </summary>
+        </member>
+        <member name="P:System.Collections.Generic.Notification`1.OnError.Exception">
+            <summary>
+            Returns the exception.
+            </summary>
+        </member>
+        <member name="P:System.Collections.Generic.Notification`1.OnError.HasValue">
+            <summary>
+            Returns false.
+            </summary>
+        </member>
+        <member name="P:System.Collections.Generic.Notification`1.OnError.Kind">
+            <summary>
+            Returns NotificationKind.OnError.
+            </summary>
+        </member>
+        <member name="T:System.Collections.Generic.Notification`1.OnCompleted">
+            <summary>
+            Represents a OnCompleted notification to an observer.
+            </summary>
+        </member>
+        <member name="M:System.Collections.Generic.Notification`1.OnCompleted.#ctor">
+            <summary>
+            Constructs a notification of the end of a sequence.
+            </summary>
+        </member>
+        <member name="M:System.Collections.Generic.Notification`1.OnCompleted.GetHashCode">
+            <summary>
+            Returns the hash code for this instance.
+            </summary>
+        </member>
+        <member name="M:System.Collections.Generic.Notification`1.OnCompleted.Equals(System.Collections.Generic.Notification{`0})">
+            <summary>
+            Indicates whether this instance and other are equal.
+            </summary>
+        </member>
+        <member name="M:System.Collections.Generic.Notification`1.OnCompleted.ToString">
+            <summary>
+            Returns a string representation of this instance.
+            </summary>
+        </member>
+        <member name="M:System.Collections.Generic.Notification`1.OnCompleted.Accept(System.IObserver{`0})">
+            <summary>
+            Invokes the observer's method corresponding to the notification.
+            </summary>
+        </member>
+        <member name="M:System.Collections.Generic.Notification`1.OnCompleted.Accept``1(System.IObserver{`0,``0})">
+            <summary>
+            Invokes the observer's method corresponding to the notification and returns the produced result.
+            </summary>
+        </member>
+        <member name="M:System.Collections.Generic.Notification`1.OnCompleted.Accept(System.Action{`0},System.Action{System.Exception},System.Action)">
+            <summary>
+            Invokes the delegate corresponding to the notification.
+            </summary>
+        </member>
+        <member name="M:System.Collections.Generic.Notification`1.OnCompleted.Accept``1(System.Func{`0,``0},System.Func{System.Exception,``0},System.Func{``0})">
+            <summary>
+            Invokes the delegate corresponding to the notification and returns the produced result.
+            </summary>
+        </member>
+        <member name="P:System.Collections.Generic.Notification`1.OnCompleted.Value">
+            <summary>
+            Throws an InvalidOperationException.
+            </summary>
+        </member>
+        <member name="P:System.Collections.Generic.Notification`1.OnCompleted.Exception">
+            <summary>
+            Returns null.
+            </summary>
+        </member>
+        <member name="P:System.Collections.Generic.Notification`1.OnCompleted.HasValue">
+            <summary>
+            Returns false.
+            </summary>
+        </member>
+        <member name="P:System.Collections.Generic.Notification`1.OnCompleted.Kind">
+            <summary>
+            Returns NotificationKind.OnCompleted.
+            </summary>
+        </member>
+        <member name="T:System.Concurrency.ControlScheduler">
+            <summary>
+            Represents an object that schedules units of work on the message loop associated with a control.
+            </summary>
+        </member>
+        <member name="M:System.Concurrency.ControlScheduler.#ctor(System.Windows.Forms.Control)">
+            <summary>
+            Constructs a ControlScheduler that schedules units of work on the message loop associated with control.
+            </summary>
+        </member>
+        <member name="M:System.Concurrency.ControlScheduler.Schedule(System.Action)">
+            <summary>
+            Schedules action to be executed on the message loop associated with the control.
+            </summary>
+        </member>
+        <member name="M:System.Concurrency.ControlScheduler.Schedule(System.Action,System.TimeSpan)">
+            <summary>
+            Schedules action to be executed after dueTime on the message loop associated with the control.
+            </summary>
+        </member>
+        <member name="P:System.Concurrency.ControlScheduler.Now">
+            <summary>
+            Gets the scheduler's notion of current time.
+            </summary>
+        </member>
+        <member name="P:System.Concurrency.ControlScheduler.Control">
+            <summary>
+            Gets the control associated with the ControlScheduler.
+            </summary>
+        </member>
+        <member name="T:System.Concurrency.DispatcherScheduler">
+            <summary>
+            Represents an object that schedules units of work on a Dispatcher.
+            </summary>
+        </member>
+        <member name="M:System.Concurrency.DispatcherScheduler.#ctor(System.Windows.Threading.Dispatcher)">
+            <summary>
+            Constructs an DispatcherScheduler that schedules units of work on dispatcher.
+            </summary>
+        </member>
+        <member name="M:System.Concurrency.DispatcherScheduler.Schedule(System.Action)">
+            <summary>
+            Schedules action to be executed on the dispatcher.
+            </summary>
+        </member>
+        <member name="M:System.Concurrency.DispatcherScheduler.Schedule(System.Action,System.TimeSpan)">
+            <summary>
+            Schedules action to be executed after dueTime on the dispatcher.
+            </summary>
+        </member>
+        <member name="P:System.Concurrency.DispatcherScheduler.Now">
+            <summary>
+            Gets the scheduler's notion of current time.
+            </summary>
+        </member>
+        <member name="P:System.Concurrency.DispatcherScheduler.Dispatcher">
+            <summary>
+            Gets the dispatcher associated with the DispatcherScheduler.
+            </summary>
+        </member>
+        <member name="T:System.Concurrency.ImmediateScheduler">
+            <summary>
+            Represents an object that schedules units of work to run immediately on the current thread.
+            </summary>
+        </member>
+        <member name="M:System.Concurrency.ImmediateScheduler.Schedule(System.Action)">
+            <summary>
+            Schedules action to be executed.
+            </summary>
+        </member>
+        <member name="M:System.Concurrency.ImmediateScheduler.Schedule(System.Action,System.TimeSpan)">
+            <summary>
+            Schedules action to be executed after dueTime.
+            </summary>
+        </member>
+        <member name="P:System.Concurrency.ImmediateScheduler.Now">
+            <summary>
+            Gets the scheduler's notion of current time.
+            </summary>
+        </member>
+        <member name="T:System.Concurrency.ThreadPoolScheduler">
+            <summary>
+            Represents an object that schedules units of work on the threadpool.
+            </summary>
+        </member>
+        <member name="M:System.Concurrency.ThreadPoolScheduler.Schedule(System.Action)">
+            <summary>
+            Schedules action to be executed.
+            </summary>
+        </member>
+        <member name="M:System.Concurrency.ThreadPoolScheduler.Schedule(System.Action,System.TimeSpan)">
+            <summary>
+            Schedules action to be executed after dueTime.
+            </summary>
+        </member>
+        <member name="P:System.Concurrency.ThreadPoolScheduler.Now">
+            <summary>
+            Gets the scheduler's notion of current time.
+            </summary>
+        </member>
+        <member name="T:System.Concurrency.CurrentThreadScheduler">
+            <summary>
+            Represents an object that schedules units of work on the current thread.
+            </summary>
+        </member>
+        <member name="M:System.Concurrency.CurrentThreadScheduler.EnsureTrampoline(System.Action)">
+            <summary>
+            Ensures action is surrounded by a trampoline.
+            </summary>
+        </member>
+        <member name="M:System.Concurrency.CurrentThreadScheduler.Schedule(System.Action)">
+            <summary>
+            Schedules action to be executed.
+            </summary>
+        </member>
+        <member name="M:System.Concurrency.CurrentThreadScheduler.Schedule(System.Action,System.TimeSpan)">
+            <summary>
+            Schedules action to be executed after dueTime.
+            </summary>
+        </member>
+        <member name="P:System.Concurrency.CurrentThreadScheduler.Now">
+            <summary>
+            Gets the scheduler's notion of current time.
+            </summary>
+        </member>
+        <member name="T:System.Concurrency.Scheduler">
+            <summary>
+            Provides a set of static methods for creating Schedulers.
+            </summary>
+        </member>
+        <member name="M:System.Concurrency.Scheduler.Schedule(System.Concurrency.IScheduler,System.Action,System.DateTimeOffset)">
+            <summary>
+            Schedules action to be executed at dueTime.
+            </summary>
+        </member>
+        <member name="M:System.Concurrency.Scheduler.Schedule(System.Concurrency.IScheduler,System.Action{System.Action})">
+            <summary>
+            Schedules action to be executed recursively.
+            </summary>
+        </member>
+        <member name="M:System.Concurrency.Scheduler.Schedule(System.Concurrency.IScheduler,System.Action{System.Action{System.TimeSpan}},System.TimeSpan)">
+            <summary>
+            Schedules action to be executed recursively after each dueTime.
+            </summary>
+        </member>
+        <member name="M:System.Concurrency.Scheduler.Schedule(System.Concurrency.IScheduler,System.Action{System.Action{System.DateTimeOffset}},System.DateTimeOffset)">
+            <summary>
+            Schedules action to be executed recursively at each dueTime.
+            </summary>
+        </member>
+        <member name="P:System.Concurrency.Scheduler.Immediate">
+            <summary>
+            Gets the scheduler that schedules work immediately on the current thread.
+            </summary>
+        </member>
+        <member name="P:System.Concurrency.Scheduler.CurrentThread">
+            <summary>
+            Gets the scheduler that schedules work as soon as possible on the current thread.
+            </summary>
+        </member>
+        <member name="P:System.Concurrency.Scheduler.ThreadPool">
+            <summary>
+            Gets the scheduler that schedules work on the ThreadPool.
+            </summary>
+        </member>
+        <member name="P:System.Concurrency.Scheduler.NewThread">
+            <summary>
+            Gets the scheduler that schedules work on a new thread.
+            </summary>
+        </member>
+        <member name="P:System.Concurrency.Scheduler.TaskPool">
+            <summary>
+            Gets the scheduler that schedules work on the default Task Factory.
+            </summary>
+        </member>
+        <member name="P:System.Concurrency.Scheduler.Dispatcher">
+            <summary>
+            Gets the scheduler that schedules work on the current Dispatcher.
+            </summary>
+        </member>
+        <member name="T:System.Linq.TimeInterval`1">
+            <summary>
+            Represents a time interval value.
+            </summary>
+        </member>
+        <member name="M:System.Linq.TimeInterval`1.#ctor(`0,System.TimeSpan)">
+            <summary>
+            Constructs a timestamped value.
+            </summary>
+        </member>
+        <member name="M:System.Linq.TimeInterval`1.Equals(System.Object)">
+            <summary>
+            Indicates whether this instance and a specified object are equal.
+            </summary>
+        </member>
+        <member name="M:System.Linq.TimeInterval`1.GetHashCode">
+            <summary>
+            Returns the hash code for this instance.
+            </summary>
+        </member>
+        <member name="M:System.Linq.TimeInterval`1.ToString">
+            <summary>
+            Returns a string representation of this instance.
+            </summary>
+        </member>
+        <member name="M:System.Linq.TimeInterval`1.op_Equality(System.Linq.TimeInterval{`0},System.Linq.TimeInterval{`0})">
+            <summary>
+            Indicates whether first and second are equal.       
+            </summary>
+        </member>
+        <member name="M:System.Linq.TimeInterval`1.op_Inequality(System.Linq.TimeInterval{`0},System.Linq.TimeInterval{`0})">
+            <summary>
+            Indicates whether first and second are not equal.       
+            </summary>
+        </member>
+        <member name="P:System.Linq.TimeInterval`1.Interval">
+            <summary>
+            Gets the interval.
+            </summary>
+        </member>
+        <member name="P:System.Linq.TimeInterval`1.Value">
+            <summary>
+            Gets the value.
+            </summary>
+        </member>
+        <member name="T:System.Linq.Timestamped`1">
+            <summary>
+            Represents a timestamped value.
+            </summary>
+        </member>
+        <member name="M:System.Linq.Timestamped`1.#ctor(`0,System.DateTimeOffset)">
+            <summary>
+            Constructs a timestamped value.
+            </summary>
+        </member>
+        <member name="M:System.Linq.Timestamped`1.Equals(System.Object)">
+            <summary>
+            Indicates whether this instance and a specified object are equal.
+            </summary>
+        </member>
+        <member name="M:System.Linq.Timestamped`1.GetHashCode">
+            <summary>
+            Returns the hash code for this instance.
+            </summary>
+        </member>
+        <member name="M:System.Linq.Timestamped`1.ToString">
+            <summary>
+            Returns a string representation of this instance.
+            </summary>
+        </member>
+        <member name="M:System.Linq.Timestamped`1.op_Equality(System.Linq.Timestamped{`0},System.Linq.Timestamped{`0})">
+            <summary>
+            Indicates whether first and second are equal.       
+            </summary>
+        </member>
+        <member name="M:System.Linq.Timestamped`1.op_Inequality(System.Linq.Timestamped{`0},System.Linq.Timestamped{`0})">
+            <summary>
+            Indicates whether first and second are not equal.       
+            </summary>
+        </member>
+        <member name="P:System.Linq.Timestamped`1.Timestamp">
+            <summary>
+            Gets the timestamp.
+            </summary>
+        </member>
+        <member name="P:System.Linq.Timestamped`1.Value">
+            <summary>
+            Gets the value.
+            </summary>
+        </member>
+        <member name="T:System.Unit">
+            <summary>
+            Represents void.
+            </summary>
+        </member>
+        <member name="M:System.Unit.Equals(System.Unit)">
+            <summary>
+            Always returns true.
+            </summary>
+        </member>
+        <member name="M:System.Unit.Equals(System.Object)">
+            <summary>
+            Check equality between a unit value and other objects.
+            </summary>
+        </member>
+        <member name="M:System.Unit.GetHashCode">
+            <summary>
+            Gets the unit value's hash code.
+            </summary>
+        </member>
+        <member name="M:System.Unit.op_Equality(System.Unit,System.Unit)">
+            <summary>
+            Always returns true.
+            </summary>
+        </member>
+        <member name="M:System.Unit.op_Inequality(System.Unit,System.Unit)">
+            <summary>
+            Always returns false.
+            </summary>
+        </member>
+        <member name="T:System.Collections.Generic.IEvent`1">
+            <summary>
+            Represents the Sender and EventArg values of a .NET event.
+            </summary>
+        </member>
+        <member name="P:System.Collections.Generic.IEvent`1.Sender">
+            <summary>
+            Gets the sender value of the event.
+            </summary>
+        </member>
+        <member name="P:System.Collections.Generic.IEvent`1.EventArgs">
+            <summary>
+            Gets the event arguments value of the event.
+            </summary>
+        </member>
+        <member name="T:System.Collections.Generic.Event">
+            <summary>
+            Provides a set of static methods for creating events.
+            </summary>
+        </member>
+        <member name="M:System.Collections.Generic.Event.Create``1(System.Object,``0)">
+            <summary>
+            Creates an instance of the IEvent interface.
+            </summary>
+        </member>
+    </members>
+</doc>

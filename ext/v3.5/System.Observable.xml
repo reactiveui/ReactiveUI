@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>System.Observable</name>
+    </assembly>
+    <members>
+        <member name="T:System.IObservable`1">
+            <summary>
+            Represents a push-style collection.
+            </summary>
+        </member>
+        <member name="M:System.IObservable`1.Subscribe(System.IObserver{`0})">
+            <summary>
+            Subscribes an observer to the observable sequence.
+            </summary>
+        </member>
+        <member name="T:System.IObserver`1">
+            <summary>
+            Supports push-style iteration over an observable sequence.
+            </summary>
+        </member>
+        <member name="M:System.IObserver`1.OnNext(`0)">
+            <summary>
+            Notifies the observer of a new value in the sequence.
+            </summary>
+        </member>
+        <member name="M:System.IObserver`1.OnError(System.Exception)">
+            <summary>
+            Notifies the observer that an exception has occurred.
+            </summary>
+        </member>
+        <member name="M:System.IObserver`1.OnCompleted">
+            <summary>
+            Notifies the observer of the end of the sequence.
+            </summary>
+        </member>
+    </members>
+</doc>
