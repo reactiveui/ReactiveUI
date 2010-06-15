@@ -1,0 +1,7 @@
+The files below can be distributed as described in the MICROSOFT REACTIVE EXTENSTIONS FOR JAVASCRIPT AND .NET LIBRARIES License.
+
+System.Observable.dll
+System.CoreEx.dll
+System.Reactive.dll
+System.Interactive.dll
+System.Threading.dll
