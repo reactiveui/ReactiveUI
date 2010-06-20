@@ -81,8 +81,6 @@ namespace ReactiveXaml
 
             this.Log().DebugFormat("Cache miss: {0}", key);
             var result = calculationFunction(key, context);
-            if (result == null)
-                return result;
 
             var node = new LinkedListNode<TParam>(key);
             cacheMRUList.AddFirst(node);
@@ -202,9 +200,11 @@ namespace ReactiveXaml
         {
             TVal ret;
             this.Log().DebugFormat("Async Get: {0}", key);
-            if (innerCache.TryGet(key, out ret)) {
-                this.Log().DebugFormat("Found key in cache: {0}", key);
-                return Observable.Return(ret);
+            lock (innerCache) {
+                if (innerCache.TryGet(key, out ret)) {
+                    this.Log().DebugFormat("Found key in cache: {0}", key);
+                    return Observable.Return(ret);
+                }
             }
 
             var t = new Task<TVal>(() => func(key));
