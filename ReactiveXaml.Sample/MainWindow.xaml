@@ -1,0 +1,130 @@
+﻿<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d"
+        xmlns:app="clr-namespace:ReactiveXamlSample"
+        x:Class="ReactiveXamlSample.MainWindow" x:Name="Window"
+        Title="Sample App" Height="350" Width="525">
+
+	<Window.Resources>
+        <!-- COOLSTUFF: DataTemplates
+
+             DataTemplates are a very important part of Silverlight and WPF -
+             they define how an individual item in a list looks. In this case,
+             this template describes how to display each Tile in the Listbox.
+             The DataContext is automatically set to the item being rendered (a
+             PersonEntry), so all of the Bindings are relative to a PersonEntry
+             by default.
+        -->
+		<DataTemplate x:Key="PersonDataTemplate">
+			<Grid Margin="6">
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="Auto"/>
+					<ColumnDefinition Width="*"/>
+				</Grid.ColumnDefinitions>
+
+                <Image Width="48" Height="48"
+                       HorizontalAlignment="Center" VerticalAlignment="Center"
+                       Source="{Binding Image}" />
+
+				<StackPanel Grid.Column="1" Margin="6,0,0,0">
+					<TextBlock Text="{Binding Name}" FontWeight="Bold" />
+					<TextBlock Text="{Binding PhoneNumber}" />
+				</StackPanel>
+			</Grid>
+		</DataTemplate>
+	</Window.Resources>
+
+    <!-- COOLSTUFF: Design-time Sample Data
+
+         Expression Blend allows us to define fake data, so that designing Data
+         Templates in List / Tree views is much easier (i.e. so you don't just
+         see a bunch of white boxes where your data should be). To facilitate
+         this, d:DataContext is a Data Context that will only be read at
+         design-time, whereas during Runtime the real DataContext will be used.
+
+         What's a DataContext? It means here, that unless we explicitly specify
+         via ElementName what the target is, all of our bindings will be
+         Relative to the ViewModel instance of our Window. So if I specify
+         {Binding People}, it will end up being MainWindow.ViewMdoel.People.
+
+         We always want to set the DataContext to our ViewModel - our Window is
+         a projection of our application data that the user wants to interact
+         with in some way.
+    -->
+
+    <Grid Margin="12,12,12,6"
+		  DataContext="{Binding ViewModel, ElementName=Window}"
+		  d:DataContext="{d:DesignData /SampleData/AppViewModelSampleData.xaml}">
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+		<TextBlock FontFamily="Segoe WP Light" FontSize="26.667" Text="List of Awesome People" />
+
+        <!-- COOLSTUFF: Laying out complex forms
+
+             When you lay out larger forms, it's often best to try to only use
+             the "top" and "left" field of the Margin, or else you'll end up
+             double-margining things (i.e. setting the Left margin of one
+             control and the Right margin of another) and your form will look
+             inconsistent. If you combine this rule with the "Only use multiples
+             of n" rule, you'll usually end up with a pretty good-looking form.
+        -->
+
+		<Grid Grid.Row="1" Margin="0,12,0,0">
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="*" />
+				<ColumnDefinition Width="Auto" />
+			</Grid.ColumnDefinitions>
+
+			<Grid.RowDefinitions>
+				<RowDefinition Height="*" />
+				<RowDefinition Height="Auto" />
+			</Grid.RowDefinitions>
+
+            <!-- COOLSTUFF: Huh, No ViewModel?
+
+                 You don't always need a ViewModel - if you can get away with
+                 binding directly to the Model (usually if the View is
+                 read-only), this is okay to do.
+            -->
+
+	       	<ListBox BorderBrush="#FFD8DEE9"
+                     SelectedItem="{Binding SelectedPerson}"
+					 ItemsSource="{Binding People}" ItemTemplate="{DynamicResource PersonDataTemplate}" />
+
+            <!-- COOLSTUFF: Commanding
+
+                 Instead of using Click handlers for Buttons, it's usually
+                 better to use Commands (specifically, Commands on your
+                 ViewModel). Commands not only let you specify what to do when
+                 the button is clicked, it also lets you specify *when* the button
+                 can be clicked. If you implement CanExecute on the command
+                 properly, the button will automatically disable itself when the
+                 command can't be executed (MenuItem and Hyperlink have the same
+                 magic powers).
+
+                 For example, the Remove button here only makes sense when
+                 something is selected - if I implemented this via a Click
+                 event, I would have to also bind the IsEnabled bool (or
+                 manually update it). If I had several ways to remove an item
+                 (maybe a Menu item), I would end up with code duplication. For
+                 small programs, you probably don't care, but the bigger your
+                 app gets, the more of a toll you'll pay for having to change
+                 the same thing in multiple places.
+            -->
+
+			<StackPanel Grid.Column="1" Orientation="Vertical" Margin="6,0,0,0">
+				<Button Content="+" MinWidth="30" MinHeight="30"
+                        Command="{Binding Path=AddPerson}" />
+
+				<Button Content="-" MinWidth="30" MinHeight="30" Margin="0,6,0,0"
+                        Command="{Binding Path=RemovePerson}" CommandParameter="{Binding Path=SelectedPerson}"/>
+			</StackPanel>
+		</Grid>
+    </Grid>
+</Window>

@@ -1,0 +1,158 @@
+﻿<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+    xmlns:local="clr-namespace:ReactiveXamlSample"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d"
+	x:Class="ReactiveXamlSample.AddPersonDialog"
+	x:Name="Window"
+	Title="Add Person"
+	UseLayoutRounding="True"
+	Width="400" Height="440">
+
+    <!-- COOLSTUFF: See how there's no Widths or Heights?
+
+         One thing that you almost never need in WPF or Silverlight is an
+         explicit Width or Height setting. Layout in WPF works like the CSS box
+         model - you'll nest containers inside each other and specify their
+         alignment, and they'll automatically size to their content properly.
+
+         Instead of using explicit positions and sizes, we'll use Margins and
+         Padding to make sure controls go where we want. If you make all of your
+         margins a multiple of a certain number, it'll tend to look better - in
+         this app, we use 6.
+    -->
+
+	<DockPanel Margin="12,12,12,6" DataContext="{Binding ViewModel, ElementName=Window}" >
+		<Label FontFamily="Segoe WP Light" FontSize="26.667" DockPanel.Dock="Top" Content="Add a Person"/>
+
+        <StackPanel Orientation="Horizontal"
+					DockPanel.Dock="Bottom" Margin="0,6,0,0" HorizontalAlignment="Right">
+
+            <!-- COOLSTUFF: Using local nameless styles to avoid typing
+
+                 This is a handy trick to use when doing forms - this Resources
+                 block will make all buttons contained in the StackPanel have
+                 the same Margin and minimum width. Otherwise to make the form
+                 look consistent, You'd have to keep typing these two properties
+                 into every button (and edit it 2x every time you want to update
+                 those properties)
+            -->
+
+            <StackPanel.Resources>
+				<Style TargetType="{x:Type Button}">
+					<Setter Property="Margin" Value="6,0,0,0" />
+					<Setter Property="MinWidth" Value="50" />
+				</Style>
+			</StackPanel.Resources>
+
+            <Button Content="Ok" Command="{Binding OkCommand}" IsDefault="True" />
+
+            <Button Content="Cancel" IsCancel="True">
+
+                <!-- COOLSTUFF: Using Expression Triggers/Actions
+
+                     Instead of attaching a click handler to the Cancel button,
+                     there's an EventTrigger attached to the Click event, which
+                     will invoke the CloseWindowAction on the Window.
+
+                     The advantage to using this, is that if this were
+                     implemented as an Event handler, I'd have to rewrite this
+                     code for every Window that I'd want to use it in. Now, for
+                     "Close Window" this isn't getting us much, but for more
+                     interesting interactions, Events will force us to have a
+                     lot of duplicate code, which Triggers/Actions avoid.
+                -->
+
+            	<i:Interaction.Triggers>
+            		<i:EventTrigger EventName="Click">
+            			<local:CloseWindowAction TargetObject="{Binding ElementName=Window}" />
+            		</i:EventTrigger>
+            	</i:Interaction.Triggers>
+            </Button>
+		</StackPanel>
+
+		<Grid>
+			<Grid.Resources>
+				<Style TargetType="{x:Type Label}">
+					<Setter Property="VerticalAlignment" Value="Center" />
+				</Style>
+				<Style TargetType="{x:Type TextBox}">
+					<Setter Property="Margin" Value="6" />
+
+                    <!-- This is the magic that will set the Tooltip to our data
+                         validation message we've specified in the attribute -->
+                    <Style.Triggers>
+                        <Trigger Property="Validation.HasError" Value="true">
+                            <Setter Property="ToolTip"
+                                    Value="{Binding (Validation.Errors)[0].ErrorContent, RelativeSource={x:Static RelativeSource.Self}}"/>
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+			</Grid.Resources>
+
+            <!-- COOLSTUFF: Star sizing
+
+                 The Grid control is a very powerful layout control because of
+                 its ability to do Star sizing; in this case, we're creating two
+                 columns: the first column will be the size of its largest child
+                 (in this case, probably the "Awesomeness Factor" label).
+
+                 The "star" column will get the rest of the Width after
+                 subtracting out the first column - this will have the effect of
+                 making the Textboxes resize horizontally when the window
+                 resizes, but not the labels.
+            -->
+
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="Auto" />
+				<ColumnDefinition Width="*" />
+			</Grid.ColumnDefinitions>
+
+			<Grid.RowDefinitions>
+				<RowDefinition Height="Auto" />
+				<RowDefinition Height="Auto" />
+				<RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" MinHeight="34" />
+				<RowDefinition />
+			</Grid.RowDefinitions>
+
+			<Label Content="Photo:"/>
+
+			<Grid Grid.Column="1" Margin="6">
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="Auto" />
+					<ColumnDefinition Width="*" />
+					<ColumnDefinition Width="Auto" />
+				</Grid.ColumnDefinitions>
+
+                <!-- NB: Images are some of the few controls that we *do* have
+                     to set explicit widths and heights for, since it will try
+                     by default to be the same size as its image source -->
+				<Border BorderBrush="Gray" BorderThickness="2">
+					<Image Height="48" Width="48" Source="{Binding Person.Image}"/>
+				</Border>
+
+                <Button Grid.Column="1" VerticalAlignment="Center" Margin="6,0,0,0"
+                        Content="Pick at Random from Flickr" Command="{Binding SetImageViaFlickr}" />
+
+				<TextBlock Grid.Column="2" Visibility="{Binding SpinnerVisibility}"
+                           TextWrapping="Wrap" Text="!" FontWeight="Bold" FontSize="18.667"
+                           HorizontalAlignment="Center" VerticalAlignment="Center" Margin="6,0,0,0" />
+			</Grid>
+
+			<Label Grid.Row="1" Content="Name:"/>
+			<TextBox Grid.Row="1" Grid.Column="1"
+                     Text="{Binding Person.Name, Mode=TwoWay, ValidatesOnDataErrors=true}" />
+
+			<Label Grid.Row="2" Content="Phone Number:"/>
+			<TextBox Grid.Row="2" Grid.Column="1"
+                     Text="{Binding Person.PhoneNumber, Mode=TwoWay, ValidatesOnDataErrors=true}" />
+
+            <Label Grid.Row="3" Content="Awesomeness Factor:" />
+            <TextBox Grid.Row="3" Grid.Column="1"
+                     Text="{Binding Person.AwesomenessFactor, Mode=TwoWay, ValidatesOnDataErrors=true}" />
+
+        </Grid>
+	</DockPanel>
+</Window>
