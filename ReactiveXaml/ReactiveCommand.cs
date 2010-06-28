@@ -138,7 +138,7 @@ namespace ReactiveXaml
 
             this.ObserveOn(scheduler)
                 .Select<object, TResult>(async_func)
-                .Do(_ => AsyncCompletedNotification.OnNext(new Unit()), AsyncCompletedNotification.OnError)
+                .Do(_ => AsyncCompletedNotification.OnNext(new Unit()), _ => AsyncCompletedNotification.OnNext(new Unit()))
                 .Subscribe(rebroadcast.OnNext, rebroadcast.OnError, rebroadcast.OnCompleted);
 
             return rebroadcast;
