@@ -12,7 +12,6 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Input;
 using System.ComponentModel.DataAnnotations;
-using Microsoft.WindowsAPICodePack.ApplicationServices;
 using ReactiveXaml;
 using System.Concurrency;
 
@@ -70,12 +69,6 @@ namespace ReactiveXamlSample
             AppDomain.CurrentDomain.UnhandledException += (o, ex) => {
                 this.Log().Fatal("Unhandled Exception - aieee!", ex.ExceptionObject as Exception);
             };
-
-            // Set up Vista+ App recovery
-            try {
-                ApplicationRestartRecoveryManager.RegisterForApplicationRestart(
-                    new RestartSettings(Environment.CommandLine, RestartRestrictions.None));
-            } catch(Exception) { }
 
             this.ShutdownMode = ShutdownMode.OnMainWindowClose;
             compose();

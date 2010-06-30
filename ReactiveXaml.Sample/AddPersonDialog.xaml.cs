@@ -15,7 +15,6 @@ using System.Linq;
 using System.Globalization;
 using System.Web;
 using System.Threading.Tasks;
-using System.Threading.Tasks.Schedulers;
 using System.ComponentModel.Composition;
 using ReactiveXaml;
 using System.Concurrency;
@@ -150,9 +149,6 @@ namespace ReactiveXamlSample
 
         protected void setupCommands()
         {
-            // NB: The regular RNG isn't thread-safe, and will be very un-random
-            // if we use it from more than one thread
-            var rng = new ThreadSafeRandom();
 
             /* COOLSTUFF: How to do stuff in the background
              *
@@ -173,6 +169,11 @@ namespace ReactiveXamlSample
              */
 
             SetImageViaFlickr = new ReactiveAsyncCommand(null, 1, Scheduler.Dispatcher);
+
+            // NB: The regular RNG isn't thread-safe, and will be very un-random
+            // if we use it from more than one thread - however, RAC guarantees 
+            // that only one will be running at a time.
+            var rng = new Random();
 
             var results = SetImageViaFlickr.RegisterAsyncFunction(_ => {
                 var images = findRandomFlickrImages("Face");
@@ -211,61 +212,6 @@ namespace ReactiveXamlSample
                 SetImageViaFlickr.CanExecuteObservable.CombineLatest(Person.Select(x => Person.IsValid()),
                     (flickr_isnt_running, is_valid) => flickr_isnt_running && is_valid),
                 null, Scheduler.Dispatcher);
-
-
-#if FALSE
-            _SetImageViaFlickr = new ReactiveAsyncCommand(_ => {
-                var images = findRandomFlickrImages("Face");
-                if (images == null || images.Length == 0)
-                    return null;
-                if (images.Length == 1)
-                    return images[0];
-
-                // Return a random URL
-                return images[rng.Next(0, images.Length-1)];
-            });
-
-            // Now, on the UI thread, we'll take that URL and create a
-            // BitmapImage from it
-            flickrWatcher = SetImageViaFlickr.Subscribe(new_image =>
-                Person.Image = new BitmapImage(new Uri((string)new_image)));
-
-            /* COOLSTUFF: The Reactive Extensions
-             *
-             * Reactive Extensions (Rx) allow us to take existing IObservables
-             * and Events, and combine them to into something we're interested
-             * in looking for.
-             *
-             * Here, we'll take an existing observable that provides an item
-             * every time the in-flight tasks change, and change it into an
-             * observable that tells us whether we're running any job.
-             *
-             * Later for the OK button, it really should only be able to be
-             * clicked when the model is valid, *and* we're not trying to fetch
-             * a picture from Flickr. We'll use the flickrIsntRunning observable
-             * and combine it with the Model's observable, who fires every time
-             * that we change a property since it's a ReactiveObservableObject.
-             */
-
-            var flickrIsntRunning = _SetImageViaFlickr.TaskCountObservable
-                .Select(x => x == 0);
-
-            // Here, we're turning the flickrIsntRunning bool into a Visibility,
-            // and passing it to a class which will help us turn it into a regular
-            // .NET property, by letting us always get to the latest value, and
-            // raising the property changed notification whenever it changes.
-
-            _SpinnerVisibility = new ObservableAsPropertyHelper<Visibility>(
-                flickrIsntRunning.Select(x => x ? Visibility.Collapsed : Visibility.Visible),
-                _ => RaisePropertyChanged("SpinnerVisibility"),
-                Visibility.Collapsed
-            );
-
-            _OkCommand = new ReactiveCommand(
-                flickrIsntRunning.StartWith(true)
-                .CombineLatest(Person.Select(x => Person.IsValid()),
-                    (not_running, valid) => not_running && valid));
-#endif
         }
 
         /* COOLSTUFF: Always write the sync version first!
