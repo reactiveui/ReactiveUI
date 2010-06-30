@@ -89,6 +89,65 @@ namespace ReactiveXaml.Tests
                 .Do(Console.WriteLine)
                 .Subscribe(x => Assert.AreEqual(x.expected, x.actual));
         }
+
+        [TestMethod]
+        public void MultipleSubscribesShouldntResultInMultipleNotifications()
+        {
+            var input = new[] { 1, 2, 1, 2 };
+            var fixture = new ReactiveCommand(null, null);
+
+            var odd_list = new List<int>();
+            var even_list = new List<int>();
+            fixture.Where(x => ((int)x) % 2 != 0).Subscribe(x => odd_list.Add((int)x));
+            fixture.Where(x => ((int)x) % 2 == 0).Subscribe(x => even_list.Add((int)x));
+
+            input.Run(x => fixture.Execute(x));
+
+            new[]{1,1}.Zip(odd_list, (expected, actual) => new { expected, actual })
+                .Run(x => Assert.AreEqual(x.expected, x.actual));
+
+            new[]{2,2}.Zip(even_list, (expected, actual) => new { expected, actual })
+                .Run(x => Assert.AreEqual(x.expected, x.actual));
+        }
+
+        [TestMethod]
+        public void ActionExceptionShouldntPermabreakCommands()
+        {
+            var input = new[] {1,2,3,4};
+            var fixture = new ReactiveCommand(x => {
+                if (((int)x) == 2)
+                    throw new Exception("Die!");
+            });
+
+            var exception_list = new List<Exception>();
+            var out_list = new List<int>();
+
+            fixture.Subscribe(x => out_list.Add((int)x), ex => exception_list.Add(ex));
+            bool we_threw = false;
+            foreach (int i in input) {
+                try {
+                    fixture.Execute(i);
+                } catch {
+                    we_threw = true;
+                    if (i != 2)
+                        throw;
+                }
+            }
+
+            Assert.IsTrue(we_threw);
+            input.Zip(out_list, (expected, actual) => new { expected, actual })
+                 .Run(x => Assert.AreEqual(x.expected, x.actual));
+
+            // Now, make sure that the command isn't broken
+            fixture.Execute(5);
+            Console.WriteLine(String.Join(",", out_list));
+            Assert.AreEqual(5, out_list.Count);
+        }
+
+        [TestMethod]
+        public void CanExecuteExceptionShouldntPermabreakCommands()
+        {
+        }
     }
 
     [TestClass()]
