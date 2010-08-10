@@ -73,6 +73,7 @@
     <Compile Include="ReactiveCommand.cs" />
     <Compile Include="ReactiveObject.cs" />
     <Compile Include="Schedulers.cs" />
+    <Compile Include="UserException.cs" />
     <Compile Include="Validation.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
