@@ -76,6 +76,7 @@
     <Compile Include="ReactiveCommandTest.cs" />
     <Compile Include="ReactiveObjectTest.cs" />
     <Compile Include="ReactiveValidatedObjectTest.cs" />
+    <Compile Include="UserExceptionTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ReactiveXaml\ReactiveXaml.csproj">
