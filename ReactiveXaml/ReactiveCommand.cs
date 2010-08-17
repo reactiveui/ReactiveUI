@@ -27,15 +27,17 @@ namespace ReactiveXaml
 
         private void commonCtor(Action<object> executed, IScheduler scheduler)
         {
-            scheduler = scheduler ?? ReactiveXaml.DefaultScheduler;
+            scheduler = scheduler ?? RxApp.DeferredScheduler;
 
             canExecuteSubject = new Subject<bool>();
             canExecuteLatest = new ObservableAsPropertyHelper<bool>(canExecuteSubject,
                 b => { if (CanExecuteChanged != null) CanExecuteChanged(this, EventArgs.Empty); },
                 false, scheduler);
 
-            if (executed != null)
-                this.Subscribe(executed);
+            if (executed != null) {
+                executeExplicitFunc = executed;
+                executeSubject.Subscribe(executed);
+            }
         }
 
         Func<object, bool> canExecuteExplicitFunc;
@@ -55,7 +57,9 @@ namespace ReactiveXaml
 
         public event EventHandler CanExecuteChanged;
 
+        Action<object> executeExplicitFunc; 
         Subject<object> executeSubject = new Subject<object>();
+
         public void Execute(object parameter)
         {
             this.Log().DebugFormat("{0:X}: Executed", this.GetHashCode());
@@ -89,7 +93,7 @@ namespace ReactiveXaml
         void commonCtor(int maximum_concurrent, IScheduler scheduler)
         {
             AsyncCompletedNotification = new Subject<Unit>();
-            normal_sched = scheduler ?? ReactiveXaml.DefaultScheduler;
+            normal_sched = scheduler ?? RxApp.DeferredScheduler;
 
             ItemsInflight = Observable.Merge(
                 this.Select(_ => 1),
@@ -129,11 +133,7 @@ namespace ReactiveXaml
 
         public IObservable<TResult> RegisterAsyncFunction<TResult>(Func<object, TResult> async_func, IScheduler scheduler = null)
         {
-#if SILVERLIGHT
-            scheduler = scheduler ?? Scheduler.ThreadPool;
-#else
-            scheduler = scheduler ?? Scheduler.TaskPool;
-#endif
+            scheduler = scheduler ?? RxApp.TaskpoolScheduler;
             var rebroadcast = new Subject<TResult>(normal_sched);
 
             this.ObserveOn(scheduler)
@@ -152,11 +152,8 @@ namespace ReactiveXaml
 
         public IObservable<TResult> RegisterMemoizedFunction<TResult>(Func<object, TResult> async_func, int cache_size = 50, Action<TResult> on_release = null, IScheduler scheduler = null)
         {
-#if SILVERLIGHT
-            scheduler = scheduler ?? Scheduler.ThreadPool;
-#else
-            scheduler = scheduler ?? Scheduler.TaskPool;
-#endif
+            scheduler = scheduler ?? RxApp.TaskpoolScheduler;
+
             var cache = new MemoizingMRUCache<object, TResult>(
                 (param, _) => { lock (async_func) { return async_func(param); } }, 
                 cache_size, on_release);
@@ -168,3 +165,5 @@ namespace ReactiveXaml
         }
     }
 }
+
+// vim: tw=120 ts=4 sw=4 et enc=utf8 :

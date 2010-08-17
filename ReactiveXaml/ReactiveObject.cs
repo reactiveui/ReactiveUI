@@ -108,7 +108,14 @@ namespace ReactiveXaml
 
         void notifyObservable(PropertyChangedEventArgs item)
         {
-            subject.OnNext(item);
+            try
+            {
+                subject.OnNext(item);
+            }
+            catch (Exception ex)
+            {
+                subject.OnError(ex);
+            }
         }
     } 
 }

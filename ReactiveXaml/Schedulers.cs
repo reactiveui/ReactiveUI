@@ -16,7 +16,7 @@ namespace ReactiveXaml
         public StopwatchTestScheduler(TimeSpan maxAllowedTime, IScheduler innerSched = null)
         {
             this.maxAllowedTime = maxAllowedTime;
-            this.innerSched = innerSched ?? Scheduler.Immediate;
+            this.innerSched = innerSched ?? RxApp.DeferredScheduler;
         }
 
         public DateTimeOffset Now {
@@ -43,3 +43,5 @@ namespace ReactiveXaml
         }
     }
 }
+
+// vim: tw=120 ts=4 sw=4 et enc=utf8 :

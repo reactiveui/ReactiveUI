@@ -13,6 +13,8 @@ namespace ReactiveXaml
     {
         public ReactiveValidatedObject()
         {
+            //_IsValidObservable = new BehaviorSubject<bool>(this.IsValid());
+
             this.PropertyChanged += (o, e) => {
                 if (errorMap.ContainsKey(e.PropertyName))
                     errorMap.Remove(e.PropertyName);
@@ -37,8 +39,17 @@ namespace ReactiveXaml
                 if(!errorMap.TryGetValue(propName, out ret)) {
                     ret = errorMap[propName] = calculatePropertyIsInvalid(propName);
                 }
+
+                // NB: This is null in the constructor :-/
+                if (_IsValidObservable != null || false)
+                    _IsValidObservable.OnNext(errorMap.All(x => x.Value == null));
                 return ret;
             }
+        }
+
+        BehaviorSubject<bool> _IsValidObservable;
+        public IObservable<bool> IsValidObservable {
+            get { return _IsValidObservable; }
         }
 
         public bool IsValid()
@@ -114,6 +125,9 @@ namespace ReactiveXaml
             string func = Name ?? String.Format("Is{0}Valid", validationContext.MemberName);
             var mi = validationContext.ObjectType.GetMethod(func, BindingFlags.Public | BindingFlags.Instance);
             bool result = (bool)mi.Invoke(validationContext.ObjectInstance, new[] { value });
+
+            if (!result)
+                throw new ValidationException(getStandardMessage(validationContext).ErrorMessage);
 
             return result ? null : getStandardMessage(validationContext);
         }

@@ -56,9 +56,9 @@ namespace ReactiveXaml
      * have *every single* class have a default Scheduler property is really 
      * irritating, with either default making life difficult.
      */
-    public static class ReactiveXaml
+    public static class RxApp
     {
-        static ReactiveXaml()
+        static RxApp()
         {
 #if DEBUG
             LoggerFactory = (prefix) => new StdErrLogger(prefix);
@@ -66,15 +66,40 @@ namespace ReactiveXaml
             LoggerFactory = (prefix) => new NullLogger(prefix);
 #endif
 
-            if (InUnitTestRunner()) {
+            if (InUnitTestRunner())
+            {
                 Console.Error.WriteLine("*** Detected Unit Test Runner, setting Scheduler to Immediate ***");
                 Console.Error.WriteLine("If we are not actually in a test runner, please file a bug\n");
-                DefaultScheduler = Scheduler.Immediate;
+                DeferredScheduler = Scheduler.Immediate;
                 LoggerFactory = (prefix) => new StdErrLogger(prefix);
-            } else {
-                DefaultScheduler = Scheduler.Dispatcher;
+
+                DefaultUnitTestRecoveryResult = RecoveryOptionResult.FailOperation;
+
+                CustomErrorPresentationFunc = new Func<UserException, RecoveryOptionResult>(e => {
+                    Console.Error.WriteLine("Presenting Error: '{0}'", e.LocalizedFailureReason);
+                    Console.Error.WriteLine("Returning default result: {0}", DefaultUnitTestRecoveryResult);
+                    return DefaultUnitTestRecoveryResult;
+                });
             }
+            else
+            {
+                DeferredScheduler = Scheduler.Dispatcher;
+            }
+
+#if SILVERLIGHT
+            DeferredScheduler = Scheduler.ThreadPool;
+#else
+            TaskpoolScheduler = Scheduler.TaskPool;
+#endif
         }
+
+        public static IScheduler DeferredScheduler { get; set; }
+        public static IScheduler TaskpoolScheduler { get; set; }
+
+        public static Func<string, ILog> LoggerFactory { get; set; }
+
+        public static Func<UserException, RecoveryOptionResult> CustomErrorPresentationFunc { get; set; }
+        public static RecoveryOptionResult DefaultUnitTestRecoveryResult { get; set; }
 
         public static bool InUnitTestRunner()
         {
@@ -94,12 +119,20 @@ namespace ReactiveXaml
 #if SILVERLIGHT
             return false;
 #else
-            return AppDomain.CurrentDomain.GetAssemblies().Any(x => 
+            return AppDomain.CurrentDomain.GetAssemblies().Any(x =>
                 test_assemblies.Any(name => x.FullName.ToUpperInvariant().Contains(name)));
 #endif
         }
 
-        public static IScheduler DefaultScheduler { get; set; }
-        public static Func<string, ILog> LoggerFactory { get; set; }
+        public static RecoveryOptionResult PresentUserException(UserException ex)
+        {
+            if (CustomErrorPresentationFunc != null)
+                return CustomErrorPresentationFunc(ex);
+
+            // TODO: Pop the WPF dialog here if we're not in Silverlight
+            throw new NotImplementedException();
+        }
     }
 }
+
+// vim: tw=120 ts=4 sw=4 et enc=utf8 :
