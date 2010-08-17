@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,26 +13,36 @@ namespace ReactiveXaml
         Warning,
     };
 
+    public interface IRecoveryCommand : ICommand {
+        RecoveryOptionResult RecoveryResult { get; }
+    }
+
     class RecoveryOptionEntry {
         public string LocalizedText { get; set; }
-        public ICommand RecoveryFunc;
+        public IRecoveryCommand RecoveryFunc;
     }
+
+    public enum RecoveryOptionResult {
+        CancelOperation,         // We should give up, but no longer an error
+        RetryOperation,          // Recovery succeeded, try again
+        FailOperation,           // Recovery failed or not possible, you should rethrow
+    };
 
     public class UserException : IEnableLogger
     {
         public UserException(
-                string Domain,
                 string LocalizedDescription,
                 string[] LocalizedRecoveryOptionNames = null,
-                ICommand[] RecoveryOptionCommands = null,
+                string Domain = null,
+                IRecoveryCommand[] RecoveryOptionCommands = null,
                 Dictionary<string, object> ContextInfo = null)
         {
             RecoveryOptions = (LocalizedRecoveryOptionNames ?? Enumerable.Empty<string>())
-                .Zip(RecoveryOptionCommands ?? Enumerable.Empty<ICommand>(), 
+                .Zip(RecoveryOptionCommands ?? Enumerable.Empty<IRecoveryCommand>(), 
                     (name, cmd) => new RecoveryOptionEntry() { LocalizedText = name, RecoveryFunc = cmd })
                 .ToList();
 
-            this.Domain = Domain;
+            this.Domain = Domain ?? Assembly.GetCallingAssembly().FullName;
             this.ContextInfo = ContextInfo ?? new Dictionary<string, object>();
             this.UserErrorIcon = StockUserErrorIcon.Warning;
         }
@@ -47,7 +58,7 @@ namespace ReactiveXaml
         
         List<RecoveryOptionEntry> RecoveryOptions;
 
-        public void AddRecoveryOption(string LocalizedRecoveryOptionName, ICommand RecoveryOptionCommand)
+        public void AddRecoveryOption(string LocalizedRecoveryOptionName, IRecoveryCommand RecoveryOptionCommand)
         {
             RecoveryOptions.Add(new RecoveryOptionEntry() { LocalizedText = LocalizedRecoveryOptionName, RecoveryFunc = RecoveryOptionCommand });
         }

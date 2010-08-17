@@ -168,7 +168,7 @@ namespace ReactiveXamlSample
              * on the UI thread.
              */
 
-            SetImageViaFlickr = new ReactiveAsyncCommand(null, 1, Scheduler.Dispatcher);
+            SetImageViaFlickr = new ReactiveAsyncCommand(null, 1);
 
             // NB: The regular RNG isn't thread-safe, and will be very un-random
             // if we use it from more than one thread - however, RAC guarantees 

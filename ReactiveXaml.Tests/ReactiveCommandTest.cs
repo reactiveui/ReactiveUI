@@ -14,7 +14,7 @@ namespace ReactiveXaml.Tests
         [TestMethod()]
         public void CompletelyDefaultReactiveCommandShouldFire()
         {
-            var fixture = new ReactiveCommand(null, Scheduler.Immediate);
+            var fixture = new ReactiveCommand(null, RxApp.DeferredScheduler);
             Assert.IsTrue(fixture.CanExecute(null));
 
             string result = null;
@@ -157,10 +157,10 @@ namespace ReactiveXaml.Tests
         public void AsyncCommandSmokeTest()
         {
             var inflight_results = new List<int>();
-            var fixture = new ReactiveAsyncCommand(null, 1, Scheduler.Immediate);
+            var fixture = new ReactiveAsyncCommand(null, 1);
 
             var async_data = fixture
-                .ObserveOn(Scheduler.NewThread)
+                .ObserveOn(RxApp.TaskpoolScheduler)
                 .Delay(new TimeSpan(0, 0, 5))
                 .Select(_ => 5)
                 .Do(_ => fixture.AsyncCompletedNotification.OnNext(new Unit()));

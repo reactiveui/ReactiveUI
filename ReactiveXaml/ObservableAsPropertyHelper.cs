@@ -14,7 +14,7 @@ namespace ReactiveXaml
 
         public ObservableAsPropertyHelper(IObservable<T> observable, Action<T> on_changed, T initial_value = default(T), IScheduler scheduler = null)
         {
-            scheduler = scheduler ?? ReactiveXaml.DefaultScheduler;
+            scheduler = scheduler ?? RxApp.DeferredScheduler;
             lastValue = initial_value;
 
             observable.ObserveOn(scheduler)
