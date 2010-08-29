@@ -154,6 +154,8 @@ namespace ReactiveXaml
 
 #if SILVERLIGHT
     public class NonSerializedAttribute : Attribute {}
+    public class SerializedAttribute : Attribute {}
+    public class SerializableAttribute : Attribute {}
 #endif
 }
 

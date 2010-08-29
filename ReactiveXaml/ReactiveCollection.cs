@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Runtime.Serialization;
+using System.Diagnostics;
 
 namespace ReactiveXaml
 {
@@ -122,10 +123,49 @@ namespace ReactiveXaml
             base.ClearItems();
         }
 
+        public ReactiveCollection<TNew> CreateDerivedCollection<TNew>(Func<T, TNew> Selector)
+        {
+            var ret = new ReactiveCollection<TNew>(this.Select(Selector));
+            var coll_changed = Observable.FromEvent<NotifyCollectionChangedEventArgs>(this, "CollectionChanged");
+
+            coll_changed.Subscribe(x => {
+                if (x.EventArgs.Action == NotifyCollectionChangedAction.Replace) {
+                    int a = 1;
+                }
+                switch(x.EventArgs.Action) {
+                case NotifyCollectionChangedAction.Add:
+                case NotifyCollectionChangedAction.Remove:
+                case NotifyCollectionChangedAction.Replace:
+                    if (x.EventArgs.OldItems != null) {
+                        x.EventArgs.OldItems.Cast<T>()
+                            .Run(_ => ret.RemoveAt(x.EventArgs.OldStartingIndex));
+                    }
+                    if (x.EventArgs.NewItems != null) {
+                        x.EventArgs.NewItems.Cast<T>()
+                            .Run(item => ret.Insert(x.EventArgs.NewStartingIndex, Selector(item)));
+                    }
+                    break;
+                case NotifyCollectionChangedAction.Reset:
+                    ret.Clear();
+                    break;
+                default:
+                    break;
+                }
+            });
+
+            return ret;
+        }
+
         public void Dispose()
         {
             ChangeTrackingEnabled = false;
         }
+
+#if !SILVERLIGHT
+        //
+        // N.B: This is a hack to make sure that the ObservableCollection bits 
+        // don't end up in the serialized output.
+        //
 
         [field: NonSerialized]
         public override event NotifyCollectionChangedEventHandler CollectionChanged;
@@ -159,7 +199,7 @@ namespace ReactiveXaml
                 handler(this, e);
             }
         }
-
+#endif
     }
 }
 
