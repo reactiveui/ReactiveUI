@@ -40,6 +40,16 @@ namespace ReactiveXaml
         IObservable<Unit> AsyncCompletedNotification { get; }
     }
 
+    public interface IPromptUserForNewModel<T>
+    {
+        T Prompt(object Parameter);
+    }
+
+    public interface IViewForModel<T>
+    {
+        IDisposable Present(T Model, bool AsModal, Action OnClosed);
+    }
+
     /*
      * N.B. Why we have this evil global class
      * 
