@@ -47,6 +47,7 @@ namespace ReactiveXaml
             }
         }
 
+        [NonSerialized]
         BehaviorSubject<bool> _IsValidObservable;
         public IObservable<bool> IsValidObservable {
             get { return _IsValidObservable; }

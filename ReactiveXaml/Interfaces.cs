@@ -143,6 +143,10 @@ namespace ReactiveXaml
             throw new NotImplementedException();
         }
     }
+
+#if SILVERLIGHT
+    public class NonSerializedAttribute : Attribute {}
+#endif
 }
 
 // vim: tw=120 ts=4 sw=4 et enc=utf8 :
