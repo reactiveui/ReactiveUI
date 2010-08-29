@@ -114,6 +114,34 @@ namespace Antireptilia.Tests
             new[]{"IsOnlyOneWord", "IsNotNullString"}.Zip(output.Select(x => x.Item2), (expected, actual) => new { expected, actual })
                 .Run(x => Assert.AreEqual(x.expected, x.actual));
         }
+
+        [TestMethod()]
+        public void DerivedCollectionsShouldFollowBaseCollection()
+        {
+            var input = new[] {"Foo", "Bar", "Baz", "Bamf"};
+            var fixture = new ReactiveCollection<TestFixture>(
+                input.Select(x => new TestFixture() { IsOnlyOneWord = x }));
+
+            var output = fixture.CreateDerivedCollection(new Func<TestFixture, string>(x => x.IsOnlyOneWord));
+
+            Assert.AreEqual(4, output.Count);
+            input.Zip(output, (expected, actual) => new { expected, actual })
+                 .Run(x => Assert.AreEqual(x.expected, x.actual));
+
+            fixture.Add(new TestFixture() { IsOnlyOneWord = "Hello" });
+            Assert.AreEqual(5, output.Count);
+            Assert.AreEqual(output[4], "Hello");
+
+            fixture.RemoveAt(4);
+            Assert.AreEqual(4, output.Count);
+
+            fixture[1] = new TestFixture() { IsOnlyOneWord = "Goodbye" };
+            Assert.AreEqual(4, output.Count);
+            Assert.AreEqual(output[1], "Goodbye");
+
+            fixture.Clear();
+            Assert.AreEqual(0, output.Count);
+        }
     }
 
     public class JSONHelper
