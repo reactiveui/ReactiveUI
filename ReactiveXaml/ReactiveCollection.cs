@@ -22,13 +22,6 @@ namespace ReactiveXaml
         {
             var coll_changed = Observable.FromEvent<NotifyCollectionChangedEventArgs>(this, "CollectionChanged");
 
-            coll_changed.Subscribe(x => {
-                int a = 1;
-
-                Console.WriteLine(x.EventArgs.Action);
-                Console.WriteLine(x.EventArgs.OldItems);
-            });
-
             ItemsAdded = coll_changed
                 .Where(x => x.EventArgs.Action == NotifyCollectionChangedAction.Add || x.EventArgs.Action == NotifyCollectionChangedAction.Replace)
                 .SelectMany(x => (x.EventArgs.NewItems != null ? x.EventArgs.NewItems.OfType<T>() : Enumerable.Empty<T>()).ToObservable());
@@ -47,10 +40,11 @@ namespace ReactiveXaml
                 if (propertyChangeWatchers == null)
                     return;
                 var item = x as IReactiveNotifyPropertyChanged;
-                if (item == null)
+                if (item != null) {
+                    propertyChangeWatchers.Add(x, item.Subscribe(change => 
+                        _ItemPropertyChanged.OnNext(new ObservedChange<T,object>() { Sender = x, PropertyName = change.PropertyName })));
                     return;
-                propertyChangeWatchers.Add(x, item.Subscribe(change => 
-                    _ItemPropertyChanged.OnNext(new ObservedChange<T,object>() { Sender = x, PropertyName = change.PropertyName })));
+                }
             });
 
             ItemsRemoved.Subscribe(x => {
