@@ -6,6 +6,7 @@ using System.Windows;
 using System.Diagnostics;
 using System.ComponentModel;
 using System.Reflection;
+using System.Runtime.Serialization;
 
 namespace ReactiveXaml
 {
@@ -13,6 +14,14 @@ namespace ReactiveXaml
     {
         // Constructor
         protected ReactiveObject()
+        {
+            setupRxObj();
+        }
+
+        [OnDeserialized]
+        void setupRxObj(StreamingContext sc) { setupRxObj(); }
+
+        void setupRxObj()
         {
             allPublicProperties = new Lazy<PropertyInfo[]>(() =>
                 GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance));
@@ -97,8 +106,11 @@ namespace ReactiveXaml
         /// </summary>
         public event PropertyChangedEventHandler PropertyChanged;
 
-        protected readonly Lazy<PropertyInfo[]> allPublicProperties;
-        readonly Subject<PropertyChangedEventArgs> subject = new Subject<PropertyChangedEventArgs>(); 
+        [NonSerialized]
+        protected Lazy<PropertyInfo[]> allPublicProperties;
+
+        [NonSerialized]
+        Subject<PropertyChangedEventArgs> subject = new Subject<PropertyChangedEventArgs>();
 
         // IObservable Members
         public IDisposable Subscribe(IObserver<PropertyChangedEventArgs> observer)
