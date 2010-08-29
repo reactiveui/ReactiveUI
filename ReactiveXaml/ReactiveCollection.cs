@@ -129,9 +129,6 @@ namespace ReactiveXaml
             var coll_changed = Observable.FromEvent<NotifyCollectionChangedEventArgs>(this, "CollectionChanged");
 
             coll_changed.Subscribe(x => {
-                if (x.EventArgs.Action == NotifyCollectionChangedAction.Replace) {
-                    int a = 1;
-                }
                 switch(x.EventArgs.Action) {
                 case NotifyCollectionChangedAction.Add:
                 case NotifyCollectionChangedAction.Remove:
