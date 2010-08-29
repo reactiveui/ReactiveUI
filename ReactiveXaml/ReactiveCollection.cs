@@ -111,7 +111,8 @@ namespace ReactiveXaml
             if (propertyChangeWatchers == null) {
                 return;
             }
-            propertyChangeWatchers.Values.Run(x => x.Dispose());
+
+            foreach(IDisposable x in propertyChangeWatchers.Values) { x.Dispose(); }
             propertyChangeWatchers.Clear();
         }
 
@@ -134,12 +135,14 @@ namespace ReactiveXaml
                 case NotifyCollectionChangedAction.Remove:
                 case NotifyCollectionChangedAction.Replace:
                     if (x.EventArgs.OldItems != null) {
-                        x.EventArgs.OldItems.Cast<T>()
-                            .Run(_ => ret.RemoveAt(x.EventArgs.OldStartingIndex));
+                        foreach(object _ in x.EventArgs.OldItems) {
+                            ret.RemoveAt(x.EventArgs.OldStartingIndex);
+                        }
                     }
                     if (x.EventArgs.NewItems != null) {
-                        x.EventArgs.NewItems.Cast<T>()
-                            .Run(item => ret.Insert(x.EventArgs.NewStartingIndex, Selector(item)));
+                        foreach(T item in x.EventArgs.NewItems.Cast<T>()) {
+                            ret.Insert(x.EventArgs.NewStartingIndex, Selector(item));
+                        }
                     }
                     break;
                 case NotifyCollectionChangedAction.Reset:
