@@ -3,6 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Antireptilia.Tests;
 
 namespace ReactiveXaml.Tests
 {
@@ -30,7 +31,7 @@ namespace ReactiveXaml.Tests
     }
 
     [TestClass()]
-    public class ReactiveObjectTest
+    public class ReactiveObjectTest : IEnableLogger
     {
         [TestMethod()]        
         public void ReactiveObjectSmokeTest()
@@ -86,6 +87,20 @@ namespace ReactiveXaml.Tests
             fixture.TestCollection.RemoveAt(1);
 
             Assert.AreEqual(3, output.Count);
+        }
+
+        [TestMethod()]
+        public void ReactiveObjectShouldntSerializeAnythingExtra()
+        {
+            var fixture = new ValidatedTestFixture() { IsNotNullString = "Foo", IsOnlyOneWord = "Baz" };
+            string json = JSONHelper.Serialize(fixture);
+            this.Log().Debug(json);
+
+            // Should look something like:
+            // {"IsNotNullString":"Foo","IsOnlyOneWord":"Baz"}
+            Assert.IsTrue(json.Count(x => x == ',') == 1);
+            Assert.IsTrue(json.Count(x => x == ':') == 2);
+            Assert.IsTrue(json.Count(x => x == '"') == 8);
         }
     }
 }
