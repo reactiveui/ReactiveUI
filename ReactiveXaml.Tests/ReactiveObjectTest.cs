@@ -19,6 +19,14 @@ namespace ReactiveXaml.Tests
             get { return _IsOnlyOneWord; }
             set { RaiseAndSetIfChanged(_IsOnlyOneWord, value, x => _IsOnlyOneWord = x, "IsOnlyOneWord"); }
         }
+
+        public ReactiveCollection<int> TestCollection { get; protected set; }
+
+        public TestFixture()
+        {
+            TestCollection = new ReactiveCollection<int>() { ChangeTrackingEnabled = true };
+            WatchCollection(TestCollection, "TestCollection");
+        }
     }
 
     [TestClass()]
@@ -63,6 +71,21 @@ namespace ReactiveXaml.Tests
 
             Assert.AreEqual("IsOnlyOneWord", output[0]);
             Assert.AreEqual(1, output.Count);
+        }
+
+        [TestMethod()]
+        public void ReactiveObjectShouldWatchCollections()
+        {
+            var output = new List<string>();
+            var fixture = new TestFixture();
+
+            fixture.Subscribe(x => output.Add(x.PropertyName));
+
+            fixture.TestCollection.Add(5);
+            fixture.TestCollection.Add(10);
+            fixture.TestCollection.RemoveAt(1);
+
+            Assert.AreEqual(3, output.Count);
         }
     }
 }
