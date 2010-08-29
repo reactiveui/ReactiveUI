@@ -12,7 +12,7 @@ namespace ReactiveXaml
     public class ObservedChange<TSender, TValue>
     {
         public TSender Sender { get; set; }
-        public TValue Value { get; set; }
+        public string PropertyName { get; set; }
     }
 
     public interface IReactiveNotifyPropertyChanged : INotifyPropertyChanged, IObservable<PropertyChangedEventArgs> { }
@@ -22,11 +22,19 @@ namespace ReactiveXaml
         public static IObservable<ObservedChange<TSender, TValue>> ObservableForProperty<TSender, TValue>(this TSender This, string propertyName)
             where TSender : IReactiveNotifyPropertyChanged
         {
-            var prop = This.GetType().GetProperty(propertyName);
-
             return This.Where(x => x.PropertyName == propertyName)
-                       .Select(x => new ObservedChange<TSender, TValue> { Sender = This, Value = (TValue)prop.GetValue(This, null) });
+                       .Select(x => new ObservedChange<TSender, TValue> { Sender = This, PropertyName = x.PropertyName });
         }
+    }
+
+    public interface IReactiveCollection<T> : IEnumerable<T>, IList<T>, INotifyCollectionChanged
+    {
+        IObservable<T> ItemsAdded { get; }
+        IObservable<T> ItemsRemoved { get; }
+        IObservable<int> CollectionCountChanged { get; }
+
+        bool ChangeTrackingEnabled { get; set; }
+        IObservable<ObservedChange<T, object>> ItemPropertyChanged { get; }
     }
 
     public interface IReactiveCommand : ICommand, IObservable<object> 
