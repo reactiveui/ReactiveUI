@@ -47,6 +47,15 @@ namespace ReactiveXaml
             return newValue;
         }
 
+        protected void WatchCollection<T>(IReactiveCollection<T> collection, string propertyName)
+        {
+            Observable.Merge(
+                collection.ItemsAdded.Select(_ => true),
+                collection.ItemsRemoved.Select(_ => true),
+                collection.ItemPropertyChanged.Select(_ => true))
+              .Subscribe(_ => RaisePropertyChanged(propertyName));
+        }
+
         protected void RaisePropertyChanged(string propertyName)
         {
             this.VerifyPropertyName(propertyName);
