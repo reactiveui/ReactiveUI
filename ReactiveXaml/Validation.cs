@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 using System.Security;
+using System.Runtime.Serialization;
 
 namespace ReactiveXaml
 {
@@ -47,8 +48,9 @@ namespace ReactiveXaml
             }
         }
 
-        [NonSerialized]
+
         BehaviorSubject<bool> _IsValidObservable;
+        [IgnoreDataMember]
         public IObservable<bool> IsValidObservable {
             get { return _IsValidObservable; }
         }
