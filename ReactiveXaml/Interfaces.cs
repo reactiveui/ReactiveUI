@@ -151,12 +151,6 @@ namespace ReactiveXaml
             throw new NotImplementedException();
         }
     }
-
-#if SILVERLIGHT
-    public class NonSerializedAttribute : Attribute {}
-    public class SerializedAttribute : Attribute {}
-    public class SerializableAttribute : Attribute {}
-#endif
 }
 
 // vim: tw=120 ts=4 sw=4 et enc=utf8 :

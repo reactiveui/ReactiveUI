@@ -113,12 +113,13 @@ namespace ReactiveXaml
         /// <summary>
         /// Raised when a property on this object has a new value.
         /// </summary>
+        [field:IgnoreDataMember]
         public event PropertyChangedEventHandler PropertyChanged;
 
-        [NonSerialized]
+        [IgnoreDataMember]
         protected Lazy<PropertyInfo[]> allPublicProperties;
 
-        [NonSerialized]
+        [IgnoreDataMember]
         Subject<PropertyChangedEventArgs> subject = new Subject<PropertyChangedEventArgs>();
 
         // IObservable Members
@@ -129,12 +130,9 @@ namespace ReactiveXaml
 
         void notifyObservable(PropertyChangedEventArgs item)
         {
-            try
-            {
+            try {
                 subject.OnNext(item);
-            }
-            catch (Exception ex)
-            {
+            } catch (Exception ex) {
                 subject.OnError(ex);
             }
         }

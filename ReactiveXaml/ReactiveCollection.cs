@@ -10,7 +10,6 @@ using System.Diagnostics;
 
 namespace ReactiveXaml
 {
-    [Serializable]
     public class ReactiveCollection<T> : ObservableCollection<T>, IReactiveCollection<T>, INotifyPropertyChanged, IDisposable
     {
         public ReactiveCollection() { setupRx(); }
@@ -58,28 +57,28 @@ namespace ReactiveXaml
             });
         }
 
-        [NonSerialized]
+        [IgnoreDataMember]
         IObservable<T> _ItemsAdded;
         public IObservable<T> ItemsAdded {
             get { return _ItemsAdded; }
             protected set { _ItemsAdded = value; }
         }
 
-        [NonSerialized]
+        [IgnoreDataMember]
         IObservable<T> _ItemsRemoved;
         public IObservable<T> ItemsRemoved {
             get { return _ItemsRemoved; }
             set { _ItemsRemoved = value; }
         }
 
-        [NonSerialized]
+        [IgnoreDataMember]
         IObservable<int> _CollectionCountChanged;
         public IObservable<int> CollectionCountChanged { 
             get { return _CollectionCountChanged; }
             set { _CollectionCountChanged = value; }
         }
 
-        [NonSerialized]
+        [IgnoreDataMember]
         Subject<ObservedChange<T, object>> _ItemPropertyChanged;
         public IObservable<ObservedChange<T, object>> ItemPropertyChanged {
             get { return _ItemPropertyChanged; }
@@ -99,7 +98,7 @@ namespace ReactiveXaml
             }
         }
 
-        [NonSerialized]
+        [IgnoreDataMember]
         Dictionary<object, IDisposable> _propertyChangeWatchers;
         Dictionary<object, IDisposable> propertyChangeWatchers {
             get { return _propertyChangeWatchers; }
@@ -167,10 +166,10 @@ namespace ReactiveXaml
         // don't end up in the serialized output.
         //
 
-        [field: NonSerialized]
+        [field:IgnoreDataMember]
         public override event NotifyCollectionChangedEventHandler CollectionChanged;
 
-        [field: NonSerialized]
+        [IgnoreDataMember]
         private PropertyChangedEventHandler _propertyChangedEventHandler;
 
         event PropertyChangedEventHandler INotifyPropertyChanged.PropertyChanged {
