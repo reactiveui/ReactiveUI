@@ -34,6 +34,8 @@ namespace ReactiveXaml
                 b => { if (CanExecuteChanged != null) CanExecuteChanged(this, EventArgs.Empty); },
                 false, scheduler);
 
+            executeSubject = new Subject<object>(scheduler);
+
             if (executed != null) {
                 executeExplicitFunc = executed;
                 executeSubject.Subscribe(executed);
@@ -58,7 +60,7 @@ namespace ReactiveXaml
         public event EventHandler CanExecuteChanged;
 
         Action<object> executeExplicitFunc; 
-        Subject<object> executeSubject = new Subject<object>();
+        Subject<object> executeSubject;
 
         public void Execute(object parameter)
         {
