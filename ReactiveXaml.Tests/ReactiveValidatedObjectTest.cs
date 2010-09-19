@@ -23,6 +23,12 @@ namespace ReactiveXaml.Tests
             get { return _IsOnlyOneWord; }
             set { RaiseAndSetIfChanged(_IsOnlyOneWord, value, x => _IsOnlyOneWord = x, "IsOnlyOneWord"); }
         }
+
+        string _UsesExprRaiseSet;
+        public string UsesExprRaiseSet {
+            get { return _UsesExprRaiseSet; }
+            set { _UsesExprRaiseSet = this.RaiseAndSetIfChanged(x => x.UsesExprRaiseSet, value); }
+        }
     }
 
     [TestClass()]

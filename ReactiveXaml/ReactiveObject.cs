@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.ComponentModel;
 using System.Reflection;
 using System.Runtime.Serialization;
+using System.Linq.Expressions;
 
 namespace ReactiveXaml
 {
@@ -36,6 +37,7 @@ namespace ReactiveXaml
 #endif
         }
 
+        [Obsolete("Use the RaiseAndSetIfChanged<TObj,TRet> extension method instead")]
         protected T RaiseAndSetIfChanged<T>(T oldValue, T newValue, Action<T> setter, string propertyName)
         {
             // if oldValue == newValue...
@@ -56,7 +58,7 @@ namespace ReactiveXaml
               .Subscribe(_ => RaisePropertyChanged(propertyName));
         }
 
-        protected void RaisePropertyChanged(string propertyName)
+        protected internal void RaisePropertyChanged(string propertyName)
         {
             this.VerifyPropertyName(propertyName);
 
@@ -137,4 +139,37 @@ namespace ReactiveXaml
             }
         }
     } 
+
+    public static class ReactiveObjectExpressionMixin
+    {
+        public static TRet RaiseAndSetIfChanged<TObj, TRet>(this TObj This, Expression<Func<TObj, TRet>> Property, TRet Value)
+            where TObj : ReactiveObject
+        {
+            string prop_name = null;
+            FieldInfo field;
+            try { 
+                var prop_expr = ((LambdaExpression)Property).Body as MemberExpression;
+                prop_name = prop_expr.Member.Name;
+            } catch (NullReferenceException) {
+                throw new ArgumentException("Property expression must be of the form 'x => x.SomeProperty'");
+            }
+            
+            field = (typeof(TObj)).GetField("_" + prop_name, BindingFlags.NonPublic | BindingFlags.Instance);
+            if (field == null) {
+                throw new ArgumentException("You must declare a backing field for this property named _" + prop_name);
+            }
+
+            var field_val = field.GetValue(This);
+
+            if (EqualityComparer<TRet>.Default.Equals((TRet)field_val, (TRet)Value))
+                return Value;
+
+            field.SetValue(This, Value);
+            This.RaisePropertyChanged(prop_name);
+
+            return Value;
+        }
+    }
 }
+
+// vim: tw=120 ts=4 sw=4 et enc=utf8 :

@@ -3,7 +3,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Antireptilia.Tests;
 
 namespace ReactiveXaml.Tests
 {
@@ -97,10 +96,25 @@ namespace ReactiveXaml.Tests
             this.Log().Debug(json);
 
             // Should look something like:
-            // {"IsNotNullString":"Foo","IsOnlyOneWord":"Baz"}
-            Assert.IsTrue(json.Count(x => x == ',') == 1);
-            Assert.IsTrue(json.Count(x => x == ':') == 2);
-            Assert.IsTrue(json.Count(x => x == '"') == 8);
+            // {"IsNotNullString":"Foo","IsOnlyOneWord":"Baz", "UserExprRaiseSet":null}
+            Assert.IsTrue(json.Count(x => x == ',') == 2);
+            Assert.IsTrue(json.Count(x => x == ':') == 3);
+            Assert.IsTrue(json.Count(x => x == '"') == 10);
+        }
+
+        [TestMethod()]
+        public void RaiseAndSetUsingExpression()
+        {
+            var fixture = new ValidatedTestFixture() { IsNotNullString = "Foo", IsOnlyOneWord = "Baz" };
+            var output = new List<string>();
+            fixture.Subscribe(x => output.Add(x.PropertyName));
+
+            fixture.UsesExprRaiseSet = "Foo";
+            fixture.UsesExprRaiseSet = "Foo";   // This one shouldn't raise a change notification
+
+            Assert.AreEqual("Foo", fixture.UsesExprRaiseSet);
+            Assert.AreEqual(1, output.Count);
+            Assert.AreEqual("UsesExprRaiseSet", output[0]);
         }
     }
 }
