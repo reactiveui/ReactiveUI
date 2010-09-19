@@ -1,5 +1,4 @@
-﻿using Antireptilia;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Linq;
 using System.Collections.Generic;
@@ -8,7 +7,7 @@ using System.IO;
 using System.Text;
 using ReactiveXaml.Tests;
 
-namespace Antireptilia.Tests
+namespace ReactiveXaml.Tests
 {
     [TestClass()]
     public class ReactiveCollectionTest : IEnableLogger
