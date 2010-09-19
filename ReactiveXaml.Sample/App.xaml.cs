@@ -96,7 +96,7 @@ namespace ReactiveXamlSample
         PersonEntry _SelectedPerson;
         public PersonEntry SelectedPerson {
             get { return _SelectedPerson; }
-            set { RaiseAndSetIfChanged(_SelectedPerson, value, x => _SelectedPerson = x, "SelectedPerson"); }
+            set { _SelectedPerson = this.RaiseAndSetIfChanged(x => _SelectedPerson, value); }
         }
 
 
@@ -190,12 +190,7 @@ namespace ReactiveXamlSample
         ImageSource _Image;
         public ImageSource Image {
             get { return _Image; }
-            set {
-                if (_Image == value)
-                    return;
-                _Image = value;
-                RaisePropertyChanged("Image");
-            }
+            set { _Image = this.RaiseAndSetIfChanged(x => x.Image, value); }
         }
 
         /* COOLSTUFF: Data Validation
@@ -217,12 +212,7 @@ namespace ReactiveXamlSample
         [StringLength(35, MinimumLength = 3, ErrorMessage = "Names have to be between 3 and 35 letters long")]
         public string Name {
             get { return _Name; }
-            set {
-                if (_Name == value)
-                    return;
-                _Name = value;
-                RaisePropertyChanged("Name");
-            }
+            set { _Name = this.RaiseAndSetIfChanged(x => x.Name, value); }
         }
 
         string _PhoneNumber;
@@ -230,24 +220,14 @@ namespace ReactiveXamlSample
         [RegularExpression(@"\d\d\d\.\d\d\d\.\d\d\d\d", ErrorMessage="Enter a Phone Number i.e. 555.555.1234")]
         public string PhoneNumber {
             get { return _PhoneNumber; }
-            set {
-                if (_PhoneNumber == value)
-                    return;
-                _PhoneNumber = value;
-                RaisePropertyChanged("PhoneNumber");
-            }
+            set { _PhoneNumber = this.RaiseAndSetIfChanged(x => x.PhoneNumber, value); }
         }
 
         int _AwesomenessFactor;
         [ValidatesViaMethod(ErrorMessage="Awesomeness must be Even!")]
         public int AwesomenessFactor {
             get { return _AwesomenessFactor; }
-            set {
-                if (_AwesomenessFactor == value)
-                    return;
-                _AwesomenessFactor = value;
-                RaisePropertyChanged("AwesomenessFactor");
-            }
+            set { _AwesomenessFactor = this.RaiseAndSetIfChanged(x => x.AwesomenessFactor, value); }
         }
 
         /* COOLSTUFF: ValidatesViaMethod
