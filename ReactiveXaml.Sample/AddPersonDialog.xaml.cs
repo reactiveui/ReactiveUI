@@ -82,6 +82,7 @@ namespace ReactiveXamlSample
             DependencyProperty.Register("ViewModel", typeof(AddPersonViewModel), typeof(AddPersonDialog));
     }
 
+
     /* COOLSTUFF: A Simpler ViewModel
      *
      * Here's a cleaner example of a prototypical ViewModel - our ViewModel is a
@@ -119,12 +120,7 @@ namespace ReactiveXamlSample
         PersonEntry _Person = new PersonEntry();
         public PersonEntry Person {
             get { return _Person; }
-            set {
-                if (_Person == value)
-                    return;
-                _Person = value;
-                RaisePropertyChanged("Person");
-            }
+            set { _Person = this.RaiseAndSetIfChanged(x => x.Person, value); }
         }
 
 
@@ -142,9 +138,7 @@ namespace ReactiveXamlSample
 
         ObservableAsPropertyHelper<Visibility> _SpinnerVisibility;
         public Visibility SpinnerVisibility {
-            get {
-                return _SpinnerVisibility.Value;
-            }
+            get { return _SpinnerVisibility.Value; }
         }
 
         protected void setupCommands()
