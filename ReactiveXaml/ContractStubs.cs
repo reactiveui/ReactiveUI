@@ -1,6 +1,6 @@
 ﻿using System;
 
-#if SILVERLIGHT || DOTNETISOLDANDSAD
+#if DOTNETISOLDANDSAD
 
 namespace System.Diagnostics.Contracts
 {
