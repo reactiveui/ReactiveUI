@@ -77,7 +77,6 @@
     <Reference Include="System.Windows.Browser" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ContractStubs.cs" />
     <Compile Include="Interfaces.cs" />
     <Compile Include="Logging.cs" />
     <Compile Include="MemoizingMRUCache.cs" />
