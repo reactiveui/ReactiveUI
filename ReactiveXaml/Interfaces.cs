@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.Windows.Input;
 using System.Collections.Specialized;
 using System.Concurrency;
+using System.Diagnostics.Contracts;
 
 namespace ReactiveXaml
 {
@@ -22,6 +23,8 @@ namespace ReactiveXaml
         public static IObservable<ObservedChange<TSender, TValue>> ObservableForProperty<TSender, TValue>(this TSender This, string propertyName)
             where TSender : IReactiveNotifyPropertyChanged
         {
+            Contract.Requires(This != null); 
+
             return This.Where(x => x.PropertyName == propertyName)
                        .Select(x => new ObservedChange<TSender, TValue> { Sender = This, PropertyName = x.PropertyName });
         }

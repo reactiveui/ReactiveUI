@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Concurrency;
 using System.Linq;
 using System.Text;
+using System.Diagnostics.Contracts;
 
 #if !SILVERLIGHT
 using System.Threading.Tasks;
@@ -11,15 +12,6 @@ using System.Collections.Concurrent;
 
 namespace ReactiveXaml
 {
-    public interface IMemoizingMRUCacheBase { }
-    public interface IMemoizingMRUCache<TParam, TVal> : IMemoizingMRUCacheBase
-    {
-        IEnumerable<TVal> CachedValues();
-        TVal Get(TParam key);
-        TVal Get(TParam key, object context);
-        void InvalidateAll();
-    }
-
     /// <summary>
     /// This data structure is a representation of a memoizing cache - i.e. a
     /// class that will evaluate a function, but keep a cache of recently
@@ -32,7 +24,7 @@ namespace ReactiveXaml
     /// <typeparam name="TParam">The type of the parameter to the calculation function.</typeparam>
     /// <typeparam name="TVal">The type of the value returned by the calculation
     /// function.</typeparam>
-    public class MemoizingMRUCache<TParam, TVal> : IMemoizingMRUCache<TParam,TVal>, IEnableLogger
+    public class MemoizingMRUCache<TParam, TVal> : IEnableLogger
     {
         private readonly Func<TParam, object, TVal> calculationFunction;
         private readonly Action<TVal> releaseFunction;
@@ -55,6 +47,9 @@ namespace ReactiveXaml
         /// cache is full)</param>
         public MemoizingMRUCache(Func<TParam, object, TVal> func, int max_size, Action<TVal> on_release)
         {
+            Contract.Requires(func != null);
+            Contract.Requires(max_size > 0);
+
             calculationFunction = func;
             releaseFunction = on_release;
             maxCacheSize = max_size;
@@ -71,6 +66,8 @@ namespace ReactiveXaml
         /// <returns></returns>
         public TVal Get(TParam key, object context)
         {
+            Contract.Requires(key != null);
+
             if (cacheEntries.ContainsKey(key)) {
                 var found = cacheEntries[key];
                 this.Log().DebugFormat("Cache hit: {0}", key);
@@ -86,11 +83,14 @@ namespace ReactiveXaml
             cacheMRUList.AddFirst(node);
             cacheEntries[key] = new Tuple<LinkedListNode<TParam>, TVal>(node, result);
             maintainCache();
+
             return result;
         }
 
         public bool TryGet(TParam key, out TVal val)
         {
+            Contract.Requires(key != null);
+
             Tuple<LinkedListNode<TParam>, TVal> output;
             var ret = cacheEntries.TryGetValue(key, out output);
             if (ret && output != null) {
@@ -107,6 +107,8 @@ namespace ReactiveXaml
         /// </summary>
         public void Invalidate(TParam key)
         {
+            Contract.Requires(key != null);
+
             if (!cacheEntries.ContainsKey(key))
                 return;
 
@@ -147,7 +149,7 @@ namespace ReactiveXaml
             return cacheEntries.Select(x => x.Value.Item2);
         }
 
-        private void maintainCache()
+        void maintainCache()
         {
             while (cacheMRUList.Count > maxCacheSize) {
                 var to_remove = cacheMRUList.Last.Value;
@@ -158,6 +160,13 @@ namespace ReactiveXaml
                 cacheEntries.Remove(cacheMRUList.Last.Value);
                 cacheMRUList.RemoveLast();
             }
+        }
+
+        [ContractInvariantMethod]
+        void Invariants()
+        {
+            Contract.Invariant(cacheEntries.Count == cacheMRUList.Count);
+            Contract.Invariant(cacheEntries.Count <= maxCacheSize);
         }
     }
 
@@ -171,6 +180,10 @@ namespace ReactiveXaml
 
         public QueuedAsyncMRUCache(Func<TParam, TVal> func, int max_size, int max_concurrent = 1, Action<TVal> on_release = null)
         {
+            Contract.Requires(func != null);
+            Contract.Requires(max_size > 0);
+            Contract.Requires(max_concurrent > 0);
+
             this.func = func;
 
             concurrentOps = new BlockingCollection<TParam>(max_concurrent);
@@ -198,6 +211,8 @@ namespace ReactiveXaml
 
         public IObservable<TVal> AsyncGet(TParam key)
         {
+            Contract.Requires(key != null);
+
             TVal ret;
             this.Log().DebugFormat("Async Get: {0}", key);
             lock (innerCache) {
@@ -232,11 +247,6 @@ namespace ReactiveXaml
                 concurrentOps.Take();
             });
             return new_item;
-        }
-
-        public void InvalidateAll()
-        {
-            throw new NotImplementedException();
         }
 
         public void Dispose()

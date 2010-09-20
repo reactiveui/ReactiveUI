@@ -8,6 +8,7 @@ using System.ComponentModel;
 using System.Reflection;
 using System.Runtime.Serialization;
 using System.Linq.Expressions;
+using System.Diagnostics.Contracts;
 
 namespace ReactiveXaml
 {
@@ -60,12 +61,13 @@ namespace ReactiveXaml
 
         protected internal void RaisePropertyChanged(string propertyName)
         {
-            this.VerifyPropertyName(propertyName);
+            Contract.Requires(propertyName != null);
 
-            PropertyChangedEventHandler handler = this.PropertyChanged;
+            verifyPropertyName(propertyName);
+
+            var handler = this.PropertyChanged;
             var e = new PropertyChangedEventArgs(propertyName);
-            if (handler != null)
-            {
+            if (handler != null) {
                 handler(this, e);
             }
 
@@ -81,8 +83,10 @@ namespace ReactiveXaml
         /// </summary>
         [Conditional("DEBUG")]
         [DebuggerStepThrough]
-        public void VerifyPropertyName(string propertyName)
+        void verifyPropertyName(string propertyName)
         {
+            Contract.Requires(propertyName != null);
+
             // If you raise PropertyChanged and do not specify a property name,
             // all properties on the object are considered to be changed by the binding system.
             if (String.IsNullOrEmpty(propertyName))
@@ -145,6 +149,9 @@ namespace ReactiveXaml
         public static TRet RaiseAndSetIfChanged<TObj, TRet>(this TObj This, Expression<Func<TObj, TRet>> Property, TRet Value)
             where TObj : ReactiveObject
         {
+            Contract.Requires(This != null);
+            Contract.Requires(Property != null);
+
             string prop_name = null;
             FieldInfo field;
             try { 

@@ -7,6 +7,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 using System.Security;
 using System.Runtime.Serialization;
+using System.Diagnostics.Contracts;
 
 namespace ReactiveXaml
 {
@@ -36,6 +37,8 @@ namespace ReactiveXaml
 
         public string this[string propName] {
             get {
+                Contract.Requires(propName != null);
+
                 string ret = null;
                 if(!errorMap.TryGetValue(propName, out ret)) {
                     ret = errorMap[propName] = calculatePropertyIsInvalid(propName);
