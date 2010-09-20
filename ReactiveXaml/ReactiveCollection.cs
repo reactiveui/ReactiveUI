@@ -7,6 +7,7 @@ using System.Collections.Specialized;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Diagnostics;
+using System.Diagnostics.Contracts;
 
 namespace ReactiveXaml
 {
@@ -125,6 +126,9 @@ namespace ReactiveXaml
 
         public ReactiveCollection<TNew> CreateDerivedCollection<TNew>(Func<T, TNew> Selector)
         {
+            Contract.Requires(Selector != null);
+            Contract.Ensures(Contract.Result<ReactiveCollection<TNew>>().Count == this.Count);
+
             var ret = new ReactiveCollection<TNew>(this.Select(Selector));
             var coll_changed = Observable.FromEvent<NotifyCollectionChangedEventArgs>(this, "CollectionChanged");
 

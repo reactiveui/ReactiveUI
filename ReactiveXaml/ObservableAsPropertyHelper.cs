@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Concurrency;
 using System.Windows.Threading;
+using System.Diagnostics.Contracts;
 
 namespace ReactiveXaml
 {
@@ -14,6 +15,9 @@ namespace ReactiveXaml
 
         public ObservableAsPropertyHelper(IObservable<T> observable, Action<T> on_changed, T initial_value = default(T), IScheduler scheduler = null)
         {
+            Contract.Requires(observable != null);
+            Contract.Requires(on_changed != null);
+
             scheduler = scheduler ?? RxApp.DeferredScheduler;
             lastValue = initial_value;
 

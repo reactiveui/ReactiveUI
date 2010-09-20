@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Concurrency;
 using System.Windows.Threading;
+using System.Diagnostics.Contracts;
 
 namespace ReactiveXaml
 {
@@ -44,6 +45,7 @@ namespace ReactiveXaml
 
         Func<object, bool> canExecuteExplicitFunc;
         protected Subject<bool> canExecuteSubject;
+
         public IObservable<bool> CanExecuteObservable {
             get { return canExecuteSubject; }
         }
@@ -88,6 +90,8 @@ namespace ReactiveXaml
         public ReactiveAsyncCommand(Func<object, bool> can_execute, Action<object> executed = null, int maximum_concurrent = 0, IScheduler scheduler = null)
             : base(can_execute, executed, scheduler)
         {
+            Contract.Requires(maximum_concurrent > 0);
+
             normal_sched = scheduler;
             commonCtor(maximum_concurrent, scheduler);
         }
@@ -135,6 +139,8 @@ namespace ReactiveXaml
 
         public IObservable<TResult> RegisterAsyncFunction<TResult>(Func<object, TResult> async_func, IScheduler scheduler = null)
         {
+            Contract.Requires(async_func != null);
+
             scheduler = scheduler ?? RxApp.TaskpoolScheduler;
             var rebroadcast = new Subject<TResult>(normal_sched);
 
@@ -148,12 +154,17 @@ namespace ReactiveXaml
 
         public IDisposable RegisterAsyncAction(Action<object> async_action)
         {
+            Contract.Requires(async_action != null);
+
             return RegisterAsyncFunction(x => { async_action(x); return new Unit(); })
                 .Subscribe();
         }
 
         public IObservable<TResult> RegisterMemoizedFunction<TResult>(Func<object, TResult> async_func, int cache_size = 50, Action<TResult> on_release = null, IScheduler scheduler = null)
         {
+            Contract.Requires(async_func != null);
+            Contract.Requires(cache_size > 0);
+
             scheduler = scheduler ?? RxApp.TaskpoolScheduler;
 
             var cache = new MemoizingMRUCache<object, TResult>(

@@ -5,6 +5,7 @@ using System.Text;
 using System.Reflection;
 using System.Globalization;
 using System.Threading;
+using System.Diagnostics.Contracts;
 
 namespace ReactiveXaml
 {
@@ -176,21 +177,26 @@ namespace ReactiveXaml
 
         void write(Action<string> channel, string format, object arg0)
         {
+            Contract.Requires(format != null);
             channel(getPrefix() + String.Format(format, arg0));
         }
 
         void write(Action<string> channel, string format, object arg0, object arg1)
         {
+            Contract.Requires(format != null);
             channel(getPrefix() + String.Format(format, arg0, arg1));
         }
 
         void write(Action<string> channel, string format, object arg0, object arg1, object arg2)
         {
+            Contract.Requires(format != null);
             channel(getPrefix() + String.Format(format, arg0, arg1, arg2));
         }
 
         void write(Action<string> channel, string format, object[] args, IFormatProvider provider = null)
         {
+            Contract.Requires(format != null);
+
             object[] param = new object[args.Length + 2];
             param[0] = provider ?? (IFormatProvider)CultureInfo.InvariantCulture;
             param[1] = format;
