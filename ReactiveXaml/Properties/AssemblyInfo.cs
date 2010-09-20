@@ -2,7 +2,6 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 
 [assembly: AssemblyDescription("An MVVM framework that integrates the Reactive Extensions")]
-[assembly: AssemblyCompany("Microsoft")]
 [assembly: AssemblyProduct("Reactive XAML")]
-[assembly: AssemblyVersion("1.1.1.0")]
+[assembly: AssemblyVersion("1.2.0.0")]
 
