@@ -87,6 +87,10 @@ namespace ReactiveXaml
             LoggerFactory = (prefix) => new NullLogger(prefix);
 #endif
 
+            // Default name for the field backing the "Foo" property => "_Foo"
+            // This is used for ReactiveObject's RaiseAndSetIfChanged mixin
+            GetFieldNameForPropertyNameFunc = new Func<string,string>(x => "_" + x);
+
             if (InUnitTestRunner())
             {
                 Console.Error.WriteLine("*** Detected Unit Test Runner, setting Scheduler to Immediate ***");
@@ -120,6 +124,7 @@ namespace ReactiveXaml
         public static Func<string, ILog> LoggerFactory { get; set; }
 
         public static Func<UserException, RecoveryOptionResult> CustomErrorPresentationFunc { get; set; }
+        public static Func<string, string> GetFieldNameForPropertyNameFunc { get; set; }
         public static RecoveryOptionResult DefaultUnitTestRecoveryResult { get; set; }
 
         public static bool InUnitTestRunner()
@@ -152,6 +157,11 @@ namespace ReactiveXaml
 
             // TODO: Pop the WPF dialog here if we're not in Silverlight
             throw new NotImplementedException();
+        }
+
+        public static string GetFieldNameForProperty(string PropertyName)
+        {
+            return GetFieldNameForPropertyNameFunc(PropertyName);
         }
     }
 }

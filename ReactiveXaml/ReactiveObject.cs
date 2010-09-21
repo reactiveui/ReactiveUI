@@ -161,9 +161,10 @@ namespace ReactiveXaml
                 throw new ArgumentException("Property expression must be of the form 'x => x.SomeProperty'");
             }
             
-            field = (typeof(TObj)).GetField("_" + prop_name, BindingFlags.NonPublic | BindingFlags.Instance);
+            var field_name = RxApp.GetFieldNameForProperty(prop_name);
+            field = (typeof(TObj)).GetField(field_name, BindingFlags.NonPublic | BindingFlags.Instance);
             if (field == null) {
-                throw new ArgumentException("You must declare a backing field for this property named _" + prop_name);
+                throw new ArgumentException("You must declare a backing field for this property named: " + prop_name);
             }
 
             var field_val = field.GetValue(This);

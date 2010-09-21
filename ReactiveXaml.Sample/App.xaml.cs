@@ -96,7 +96,7 @@ namespace ReactiveXamlSample
         PersonEntry _SelectedPerson;
         public PersonEntry SelectedPerson {
             get { return _SelectedPerson; }
-            set { _SelectedPerson = this.RaiseAndSetIfChanged(x => _SelectedPerson, value); }
+            set { _SelectedPerson = this.RaiseAndSetIfChanged(x => x.SelectedPerson, value); }
         }
 
 
