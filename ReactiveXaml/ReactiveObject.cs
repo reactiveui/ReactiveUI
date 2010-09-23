@@ -152,20 +152,10 @@ namespace ReactiveXaml
             Contract.Requires(This != null);
             Contract.Requires(Property != null);
 
-            string prop_name = null;
             FieldInfo field;
-            try { 
-                var prop_expr = ((LambdaExpression)Property).Body as MemberExpression;
-                prop_name = prop_expr.Member.Name;
-            } catch (NullReferenceException) {
-                throw new ArgumentException("Property expression must be of the form 'x => x.SomeProperty'");
-            }
-            
-            var field_name = RxApp.GetFieldNameForProperty(prop_name);
-            field = (typeof(TObj)).GetField(field_name, BindingFlags.NonPublic | BindingFlags.Instance);
-            if (field == null) {
-                throw new ArgumentException("You must declare a backing field for this property named: " + prop_name);
-            }
+            string prop_name = RxApp.expressionToPropertyName<TObj, TRet>(Property);
+
+            field = RxApp.getFieldInfoForProperty<TObj>(prop_name);
 
             var field_val = field.GetValue(This);
 
@@ -177,6 +167,8 @@ namespace ReactiveXaml
 
             return Value;
         }
+
+
     }
 }
 
