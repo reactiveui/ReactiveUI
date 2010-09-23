@@ -7,6 +7,8 @@ using System.Windows.Input;
 using System.Collections.Specialized;
 using System.Concurrency;
 using System.Diagnostics.Contracts;
+using System.Linq.Expressions;
+using System.Reflection;
 
 namespace ReactiveXaml
 {
@@ -14,12 +16,14 @@ namespace ReactiveXaml
     {
         public TSender Sender { get; set; }
         public string PropertyName { get; set; }
+        public TValue Value { get; set; }
     }
 
     public interface IReactiveNotifyPropertyChanged : INotifyPropertyChanged, IObservable<PropertyChangedEventArgs> { }
 
     public static class ReactiveNotifyPropertyChangedMixin
     {
+        [Obsolete("Use the Expression-based version instead!")]
         public static IObservable<ObservedChange<TSender, TValue>> ObservableForProperty<TSender, TValue>(this TSender This, string propertyName)
             where TSender : IReactiveNotifyPropertyChanged
         {
@@ -27,6 +31,27 @@ namespace ReactiveXaml
 
             return This.Where(x => x.PropertyName == propertyName)
                        .Select(x => new ObservedChange<TSender, TValue> { Sender = This, PropertyName = x.PropertyName });
+        }
+
+        public static IObservable<ObservedChange<TSender, TValue>> ObservableForProperty<TSender, TValue>(this TSender This, Expression<Func<TSender, TValue>> Property)
+            where TSender : IReactiveNotifyPropertyChanged
+        {
+            Contract.Requires(This != null);
+            Contract.Requires(Property != null);
+
+            string prop_name = RxApp.expressionToPropertyName(Property);
+            var field_info = RxApp.getFieldInfoForProperty<TSender>(prop_name);
+            return This
+                .Where(x => x.PropertyName == prop_name)
+                .Select(x => new ObservedChange<TSender, TValue>() { 
+                    Sender = This, PropertyName = prop_name, Value = (TValue)field_info.GetValue(This)
+                });
+        }
+
+        public static IObservable<TRet> ObservableForProperty<TSender, TValue, TRet>(this TSender This, Expression<Func<TSender, TValue>> Property, Func<TValue, TRet> Selector)
+            where TSender : IReactiveNotifyPropertyChanged
+        {
+            return This.ObservableForProperty(Property).Select(x => Selector(x.Value));
         }
     }
 
@@ -162,6 +187,60 @@ namespace ReactiveXaml
         public static string GetFieldNameForProperty(string PropertyName)
         {
             return GetFieldNameForPropertyNameFunc(PropertyName);
+        }
+
+
+        //
+        // Internal utility functions
+        //
+
+        internal static string expressionToPropertyName<TObj, TRet>(Expression<Func<TObj, TRet>> Property) 
+            where TObj : IReactiveNotifyPropertyChanged
+        {
+            Contract.Requires(Property != null);
+            Contract.Ensures(Contract.Result<string>() != null);
+
+            string prop_name = null;
+
+            try {
+                var prop_expr = ((LambdaExpression)Property).Body as MemberExpression;
+                prop_name = prop_expr.Member.Name;
+            } catch (NullReferenceException) {
+                throw new ArgumentException("Property expression must be of the form 'x => x.SomeProperty'");
+            }
+            return prop_name;
+        }
+
+#if SILVERLIGHT
+        static MemoizingMRUCache<Tuple<Type, string>, FieldInfo> fieldInfoTypeCache = new MemoizingMRUCache<Tuple<Type,string>,FieldInfo>((x, _) => {
+            var field_name = RxApp.GetFieldNameForProperty(x.Item2);
+            return (x.Item1).GetField(field_name, BindingFlags.NonPublic | BindingFlags.Instance);
+        }, 50);
+#else
+        static QueuedAsyncMRUCache<Tuple<Type, string>, FieldInfo> fieldInfoTypeCache = new QueuedAsyncMRUCache<Tuple<Type,string>,FieldInfo>(x => {
+            var field_name = RxApp.GetFieldNameForProperty(x.Item2);
+            return (x.Item1).GetField(field_name, BindingFlags.NonPublic | BindingFlags.Instance);
+        }, 50);
+#endif
+
+        internal static FieldInfo getFieldInfoForProperty<TObj>(string prop_name) 
+            where TObj : IReactiveNotifyPropertyChanged
+        {
+            Contract.Requires(prop_name != null);
+            FieldInfo field;
+
+#if SILVERLIGHT
+            lock(fieldInfoTypeCache) {
+                field = fieldInfoTypeCache.Get(new Tuple<Type,string>(typeof(TObj), prop_name));
+            }
+#else
+            field = fieldInfoTypeCache.Get(new Tuple<Type,string>(typeof(TObj), prop_name));
+#endif 
+
+            if (field == null) {
+                throw new ArgumentException("You must declare a backing field for this property named: " + prop_name);
+            }
+            return field;
         }
     }
 }

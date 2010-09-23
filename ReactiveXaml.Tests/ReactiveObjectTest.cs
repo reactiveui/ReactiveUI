@@ -116,5 +116,30 @@ namespace ReactiveXaml.Tests
             Assert.AreEqual(1, output.Count);
             Assert.AreEqual("UsesExprRaiseSet", output[0]);
         }
+
+
+        [TestMethod()]
+        public void ObservableForPropertyUsingExpression()
+        {
+            var fixture = new ValidatedTestFixture() { IsNotNullString = "Foo", IsOnlyOneWord = "Baz" };
+            var output = new List<ObservedChange<ValidatedTestFixture, string>>();
+            fixture.ObservableForProperty(x => x.IsNotNullString).Subscribe(output.Add);
+
+            fixture.IsNotNullString = "Bar";
+            fixture.IsNotNullString = "Baz";
+            fixture.IsNotNullString = "Baz";
+
+            fixture.IsOnlyOneWord = "Bamf";
+
+            Assert.AreEqual(2, output.Count);
+
+            Assert.AreEqual(fixture, output[0].Sender);
+            Assert.AreEqual("IsNotNullString", output[0].PropertyName);
+            Assert.AreEqual("Bar", output[0].Value);
+
+            Assert.AreEqual(fixture, output[1].Sender);
+            Assert.AreEqual("IsNotNullString", output[1].PropertyName);
+            Assert.AreEqual("Baz", output[1].Value);
+        }
     }
 }
