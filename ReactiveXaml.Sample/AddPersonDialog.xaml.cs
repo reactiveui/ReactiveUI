@@ -185,6 +185,7 @@ namespace ReactiveXamlSample
             results.Subscribe(s => Person.Image = new BitmapImage(new Uri(s)),
                 ex => this.Log().Error("Oh no!", ex));
 
+
             /* COOLSTUFF: The Reactive Extensions
              *
              * Reactive Extensions (Rx) allow us to take existing IObservables
@@ -198,9 +199,9 @@ namespace ReactiveXamlSample
              * that we change a property since it's a ReactiveObservableObject.
              */
 
-            _SpinnerVisibility = new ObservableAsPropertyHelper<Visibility>(
+            _SpinnerVisibility = this.ObservableToProperty(
                 SetImageViaFlickr.CanExecuteObservable.Select(x => x ? Visibility.Collapsed : Visibility.Visible),
-                _ => RaisePropertyChanged("SpinnerVisibility"), Visibility.Collapsed);
+                x => x.SpinnerVisibility);
 
             OkCommand = new ReactiveCommand(
                 SetImageViaFlickr.CanExecuteObservable.CombineLatest(Person.Select(x => Person.IsValid()),

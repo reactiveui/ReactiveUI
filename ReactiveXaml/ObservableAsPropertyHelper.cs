@@ -5,6 +5,7 @@ using System.Text;
 using System.Concurrency;
 using System.Windows.Threading;
 using System.Diagnostics.Contracts;
+using System.Linq.Expressions;
 
 namespace ReactiveXaml
 {
@@ -21,8 +22,8 @@ namespace ReactiveXaml
             scheduler = scheduler ?? RxApp.DeferredScheduler;
             lastValue = initial_value;
 
-            observable.ObserveOn(scheduler)
-                      .DistinctUntilChanged()
+            observable.DistinctUntilChanged()
+                      .ObserveOn(scheduler)
                       .Subscribe(x => {
                 this.Log().DebugFormat("Property helper {0:X} changed", this.GetHashCode());
                 lastValue = x;
@@ -38,6 +39,25 @@ namespace ReactiveXaml
                 }
                 return lastValue;
             }
+        }
+    }
+
+    public static class OAPHCreationHelperMixin
+    {
+        public static ObservableAsPropertyHelper<TRet> ObservableToProperty<TObj, TRet>(
+            this TObj This,
+            IObservable<TRet> Observable,
+            Expression<Func<TObj, TRet>> Property,
+            TRet InitialValue = default(TRet),
+            IScheduler Scheduler = null)
+            where TObj : ReactiveObject
+        {
+            Contract.Requires(This != null);
+            Contract.Requires(Observable != null);
+            Contract.Requires(Property != null);
+
+            string prop_name = RxApp.expressionToPropertyName(Property);
+            return new ObservableAsPropertyHelper<TRet>(Observable, _ => This.RaisePropertyChanged(prop_name), InitialValue, Scheduler);
         }
     }
 }
