@@ -120,30 +120,6 @@ namespace ReactiveXamlSample
 
             return ret;        
         }
-
-        public static string getCurrentUser()
-        {
-            //try {
-            //    var ret = ClientManager.GetCurrentUsername();
-            //    if (!String.IsNullOrEmpty(ret))
-            //        return ret;
-            //} catch(Exception e) {
-            //    this.Log().Error("Failed to fetch username server-side", e);
-            //}
-
-            // HACK HACK HACK - this is only to make sure the Company Meeting
-            // scenario works; we should always be relying on the server-side
-            // confirmation of the user name
-            if (Environment.GetEnvironmentVariable("MT_FORCED_USER_NAME") != null)
-                return Environment.GetEnvironmentVariable("MT_FORCED_USER_NAME");
-
-            var user = WindowsIdentity.GetCurrent();
-            if (user == null || String.IsNullOrEmpty(user.Name))
-                throw new Exception("Couldn't determine current user");
-
-            // Knock out the domain from REDMOND\blabla
-            return Regex.Replace(user.Name, @"^[^\\]*\\", "");
-        }
     }
 
     /// <summary>
