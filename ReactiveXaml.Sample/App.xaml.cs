@@ -88,11 +88,6 @@ namespace ReactiveXamlSample
             setupCommands();
         }
 
-
-        /*
-         * Dependency Properties
-         */
-
         PersonEntry _SelectedPerson;
         public PersonEntry SelectedPerson {
             get { return _SelectedPerson; }
@@ -120,14 +115,11 @@ namespace ReactiveXamlSample
          * with the host application.
          */
 
-        // FIXME: This syntax sucks, is there any way to hide it?
-        ReactiveCommand _AddPerson;
         [Export("AddPerson", typeof(IReactiveCommand))]
-        public ReactiveCommand AddPerson { get { return _AddPerson; } }
+        public ReactiveCommand AddPerson { get; protected set; }
 
-        ReactiveCommand _RemovePerson;
         [Export("RemovePerson", typeof(IReactiveCommand))]
-        public ReactiveCommand RemovePerson { get { return _RemovePerson; } }
+        public ReactiveCommand RemovePerson { get; protected set; }
 
 
         /* COOLSTUFF: Setting up Commands
@@ -150,7 +142,7 @@ namespace ReactiveXamlSample
 
         protected void setupCommands()
         {
-            _AddPerson = new ReactiveCommand(item => {
+            AddPerson = new ReactiveCommand(item => {
                 var to_add = (item as PersonEntry) ?? addPersonDialog.Prompt(this, null);
 
                 if (to_add == null)
@@ -162,7 +154,7 @@ namespace ReactiveXamlSample
                 People.Add(to_add);
             });
 
-            _RemovePerson = new ReactiveCommand(param => (param ?? SelectedPerson) != null && People.Count > 0, item => {
+            RemovePerson = new ReactiveCommand(param => (param ?? SelectedPerson) != null && People.Count > 0, item => {
                 var to_remove = (PersonEntry)item ?? SelectedPerson;
                 this.Log().DebugFormat("Removing '{0}'", to_remove.Name);
                 People.Remove(to_remove);
