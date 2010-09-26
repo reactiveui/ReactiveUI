@@ -37,10 +37,14 @@ namespace ReactiveXaml
                 IRecoveryCommand[] RecoveryOptionCommands = null,
                 Dictionary<string, object> ContextInfo = null)
         {
-            RecoveryOptions = (LocalizedRecoveryOptionNames ?? Enumerable.Empty<string>())
-                .Zip(RecoveryOptionCommands ?? Enumerable.Empty<IRecoveryCommand>(), 
-                    (name, cmd) => new RecoveryOptionEntry() { LocalizedText = name, RecoveryFunc = cmd })
-                .ToList();
+            var option_names = (LocalizedRecoveryOptionNames ?? Enumerable.Empty<string>()).ToArray();
+            var commands = (RecoveryOptionCommands ?? Enumerable.Empty<IRecoveryCommand>()).ToArray();
+            int count = Math.Min(option_names.Length, commands.Length);
+
+            RecoveryOptions = new List<RecoveryOptionEntry>();
+            for(int i=0; i < count; i++) {
+                RecoveryOptions.Add(new RecoveryOptionEntry() { LocalizedText = option_names[i], RecoveryFunc = commands[i] });
+            }
 
             this.Domain = Domain ?? Assembly.GetCallingAssembly().FullName;
             this.ContextInfo = ContextInfo ?? new Dictionary<string, object>();

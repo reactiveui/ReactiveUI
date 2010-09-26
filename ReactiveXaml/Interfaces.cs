@@ -10,6 +10,10 @@ using System.Diagnostics.Contracts;
 using System.Linq.Expressions;
 using System.Reflection;
 
+#if WINDOWS_PHONE
+using Microsoft.Phone.Reactive;
+#endif
+
 namespace ReactiveXaml
 {
     public class ObservedChange<TSender, TValue>

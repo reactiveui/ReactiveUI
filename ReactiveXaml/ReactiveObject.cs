@@ -10,6 +10,10 @@ using System.Runtime.Serialization;
 using System.Linq.Expressions;
 using System.Diagnostics.Contracts;
 
+#if WINDOWS_PHONE
+using Microsoft.Phone.Reactive;
+#endif
+
 namespace ReactiveXaml
 {
     public class ReactiveObject : IReactiveNotifyPropertyChanged, IEnableLogger

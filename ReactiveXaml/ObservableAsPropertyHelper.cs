@@ -7,6 +7,10 @@ using System.Windows.Threading;
 using System.Diagnostics.Contracts;
 using System.Linq.Expressions;
 
+#if WINDOWS_PHONE
+using Microsoft.Phone.Reactive;
+#endif
+
 namespace ReactiveXaml
 {
     public class ObservableAsPropertyHelper<T> : IEnableLogger

@@ -13,6 +13,10 @@ using System.Windows.Interactivity;
 using System.Linq;
 //using Microsoft.Expression.Interactivity.Core;
 
+#if WINDOWS_PHONE
+using Microsoft.Phone.Reactive;
+#endif
+
 namespace ReactiveXaml.Blend
 {
 #if SILVERLIGHT
@@ -65,7 +69,7 @@ namespace ReactiveXaml.Blend
                 This.watcher = null;
             }
 
-            This.watcher = ((IObservable<string>)e.NewValue).ObserveOnDispatcher().Subscribe(
+            This.watcher = ((IObservable<string>)e.NewValue).ObserveOn(RxApp.DeferredScheduler).Subscribe(
                 x => VisualStateManager.GoToState(This.TargetObject ?? This.AssociatedObject, x, true),
                 ex => {
                     if (!This.AutoResubscribeOnError)

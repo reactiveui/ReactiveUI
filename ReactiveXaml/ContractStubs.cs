@@ -1,6 +1,6 @@
 ﻿using System;
 
-#if DOTNETISOLDANDSAD
+#if DOTNETISOLDANDSAD || WINDOWS_PHONE
 
 namespace System.Diagnostics.Contracts
 {
@@ -15,4 +15,21 @@ namespace System.Diagnostics.Contracts
     }
 }
 
+#endif
+
+#if WINDOWS_PHONE
+namespace System.Concurrency {}
+
+public class Lazy<T>
+{
+    public Lazy(Func<T> ValueFetcher) 
+    {
+        _Value = ValueFetcher();
+    }
+
+    T _Value;
+    T Value {
+        get { return _Value; }
+    }
+}
 #endif

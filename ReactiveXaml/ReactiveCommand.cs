@@ -6,6 +6,10 @@ using System.Concurrency;
 using System.Windows.Threading;
 using System.Diagnostics.Contracts;
 
+#if WINDOWS_PHONE
+using Microsoft.Phone.Reactive;
+#endif
+
 namespace ReactiveXaml
 {
     public class ReactiveCommand : IReactiveCommand, IEnableLogger
@@ -28,14 +32,14 @@ namespace ReactiveXaml
 
         private void commonCtor(Action<object> executed, IScheduler scheduler)
         {
-            scheduler = scheduler ?? RxApp.DeferredScheduler;
+            this.scheduler = scheduler ?? RxApp.DeferredScheduler;
 
             canExecuteSubject = new Subject<bool>();
             canExecuteLatest = new ObservableAsPropertyHelper<bool>(canExecuteSubject,
                 b => { if (CanExecuteChanged != null) CanExecuteChanged(this, EventArgs.Empty); },
                 false, scheduler);
 
-            executeSubject = new Subject<object>(scheduler);
+            executeSubject = new Subject<object>();
 
             if (executed != null) {
                 executeExplicitFunc = executed;
@@ -62,6 +66,7 @@ namespace ReactiveXaml
         public event EventHandler CanExecuteChanged;
 
         Action<object> executeExplicitFunc; 
+        IScheduler scheduler;
         Subject<object> executeSubject;
 
         public void Execute(object parameter)
@@ -72,7 +77,7 @@ namespace ReactiveXaml
 
         public IDisposable Subscribe(IObserver<object> observer)
         {
-            return executeSubject.Subscribe(observer);
+            return executeSubject.ObserveOn(scheduler).Subscribe(observer);
         }
     }
 
@@ -142,27 +147,27 @@ namespace ReactiveXaml
             Contract.Requires(async_func != null);
 
             scheduler = scheduler ?? RxApp.TaskpoolScheduler;
-            var rebroadcast = new Subject<TResult>(normal_sched);
+            var rebroadcast = new Subject<TResult>();
 
             this.ObserveOn(scheduler)
                 .Select(async_func)
                 .Do(_ => AsyncCompletedNotification.OnNext(new Unit()), _ => AsyncCompletedNotification.OnNext(new Unit()))
                 .Subscribe(rebroadcast.OnNext, rebroadcast.OnError, rebroadcast.OnCompleted);
 
-            return rebroadcast;
+            return rebroadcast.ObserveOn(normal_sched);
         }
 
         public IObservable<TResult> RegisterObservableAsyncFunction<TResult>(Func<object, IObservable<TResult>> async_func)
         {
             Contract.Requires(async_func != null);
 
-            var rebroadcast = new Subject<TResult>(normal_sched);
+            var rebroadcast = new Subject<TResult>();
 
             this.SelectMany(async_func)
                 .Do(_ => AsyncCompletedNotification.OnNext(new Unit()), _ => AsyncCompletedNotification.OnNext(new Unit()))
                 .Subscribe(rebroadcast.OnNext, rebroadcast.OnError, rebroadcast.OnCompleted);
 
-            return rebroadcast;
+            return rebroadcast.ObserveOn(normal_sched);
         }
 
         public IDisposable RegisterAsyncAction(Action<object> async_action)
