@@ -9,18 +9,26 @@ using System.Runtime.Serialization;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
 
+#if WINDOWS_PHONE
+using Microsoft.Phone.Reactive;
+#endif
+
 namespace ReactiveXaml
 {
     public class ReactiveCollection<T> : ObservableCollection<T>, IReactiveCollection<T>, INotifyPropertyChanged, IDisposable
     {
         public ReactiveCollection() { setupRx(); }
-        public ReactiveCollection(IEnumerable<T> List) : base(List) { setupRx(); }
+        public ReactiveCollection(IEnumerable<T> List) { setupRx(List); }
 
         [OnDeserialized]
         void setupRx(StreamingContext _) { setupRx(); }
 
-        void setupRx()
+        void setupRx(IEnumerable<T> List = null)
         {
+            if (List != null) {
+                foreach(var v in List) { this.Add(v); }
+            }
+
             var coll_changed = Observable.FromEvent<NotifyCollectionChangedEventArgs>(this, "CollectionChanged");
 
             ItemsAdded = coll_changed

@@ -5,6 +5,10 @@ using System.Linq;
 using System.Text;
 using System.Diagnostics.Contracts;
 
+#if WINDOWS_PHONE
+using Microsoft.Phone.Reactive;
+#endif
+
 #if !SILVERLIGHT
 using System.Threading.Tasks;
 using System.Collections.Concurrent;
@@ -256,7 +260,7 @@ namespace ReactiveXaml
     }
 #endif
 
-#if DOTNETISOLDANDSAD
+#if DOTNETISOLDANDSAD || WINDOWS_PHONE
     public class Tuple<T1, T2>
     {
         public Tuple(T1 item1, T2 item2) { Item1 = item1; Item2 = item2; }
