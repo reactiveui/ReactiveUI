@@ -145,7 +145,20 @@ namespace ReactiveXaml
             var rebroadcast = new Subject<TResult>(normal_sched);
 
             this.ObserveOn(scheduler)
-                .Select<object, TResult>(async_func)
+                .Select(async_func)
+                .Do(_ => AsyncCompletedNotification.OnNext(new Unit()), _ => AsyncCompletedNotification.OnNext(new Unit()))
+                .Subscribe(rebroadcast.OnNext, rebroadcast.OnError, rebroadcast.OnCompleted);
+
+            return rebroadcast;
+        }
+
+        public IObservable<TResult> RegisterObservableAsyncFunction<TResult>(Func<object, IObservable<TResult>> async_func)
+        {
+            Contract.Requires(async_func != null);
+
+            var rebroadcast = new Subject<TResult>(normal_sched);
+
+            this.SelectMany(async_func)
                 .Do(_ => AsyncCompletedNotification.OnNext(new Unit()), _ => AsyncCompletedNotification.OnNext(new Unit()))
                 .Subscribe(rebroadcast.OnNext, rebroadcast.OnError, rebroadcast.OnCompleted);
 
