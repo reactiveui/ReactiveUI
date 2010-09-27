@@ -28,6 +28,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveXaml_WP7", "Reactiv
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveXaml.Blend_WP7", "ReactiveXaml.Blend\ReactiveXaml.Blend_WP7.csproj", "{BA2FAC3E-23EF-4067-8D73-4607E5CD169C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveXaml.Sample.WP7", "ReactiveXaml.Sample.WP7\ReactiveXaml.Sample.WP7.csproj", "{748B648D-DC32-46B0-BE8B-2A8D08B4D6BB}"
+EndProject
 Global
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = ReactiveXaml.vsmdi
@@ -141,6 +143,20 @@ Global
 		{BA2FAC3E-23EF-4067-8D73-4607E5CD169C}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{BA2FAC3E-23EF-4067-8D73-4607E5CD169C}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{BA2FAC3E-23EF-4067-8D73-4607E5CD169C}.Release|x86.ActiveCfg = Release|Any CPU
+		{748B648D-DC32-46B0-BE8B-2A8D08B4D6BB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{748B648D-DC32-46B0-BE8B-2A8D08B4D6BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{748B648D-DC32-46B0-BE8B-2A8D08B4D6BB}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{748B648D-DC32-46B0-BE8B-2A8D08B4D6BB}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{748B648D-DC32-46B0-BE8B-2A8D08B4D6BB}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{748B648D-DC32-46B0-BE8B-2A8D08B4D6BB}.Debug|Mixed Platforms.Deploy.0 = Debug|Any CPU
+		{748B648D-DC32-46B0-BE8B-2A8D08B4D6BB}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{748B648D-DC32-46B0-BE8B-2A8D08B4D6BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{748B648D-DC32-46B0-BE8B-2A8D08B4D6BB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{748B648D-DC32-46B0-BE8B-2A8D08B4D6BB}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{748B648D-DC32-46B0-BE8B-2A8D08B4D6BB}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{748B648D-DC32-46B0-BE8B-2A8D08B4D6BB}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{748B648D-DC32-46B0-BE8B-2A8D08B4D6BB}.Release|Mixed Platforms.Deploy.0 = Release|Any CPU
+		{748B648D-DC32-46B0-BE8B-2A8D08B4D6BB}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
