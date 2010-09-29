@@ -1,0 +1,3 @@
+<Moles xmlns="http://schemas.microsoft.com/moles/2010/">
+  <Assembly Name="ReactiveXaml" />
+</Moles>
