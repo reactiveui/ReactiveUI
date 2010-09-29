@@ -11,10 +11,11 @@
     FontSize="{StaticResource PhoneFontSizeNormal}"
     Foreground="{StaticResource PhoneForegroundBrush}"
     SupportedOrientations="Portrait" Orientation="Portrait"
+    x:Name="MainWindow"
     shell:SystemTray.IsVisible="True">
 
     <!--LayoutRoot is the root grid where all page content is placed-->
-    <Grid x:Name="LayoutRoot" Background="Transparent">
+    <Grid x:Name="LayoutRoot" Background="Transparent" DataContext="{Binding ViewModel, ElementName=MainWindow}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
@@ -27,7 +28,7 @@
         </StackPanel>
 
         <!--ContentPanel - place additional content here-->
-        <Grid x:Name="ContentPanel" Grid.Row="1" Margin="12,0,12,0" Grid.RowSpan="3">
+        <Grid Grid.Row="1" Margin="12,0,12,0" Grid.RowSpan="3">
         	<Grid.RowDefinitions>
         		<RowDefinition Height="Auto"/>
         		<RowDefinition Height="0.5*"/>
@@ -36,9 +37,9 @@
         	</Grid.RowDefinitions>
 			
         	<TextBlock HorizontalAlignment="Left" Margin="12,8,0,0" TextWrapping="Wrap" Text="english text" VerticalAlignment="Top"/>
-        	<TextBox Grid.Row="1" TextWrapping="Wrap" />
+        	<TextBox Grid.Row="1" TextWrapping="Wrap" Text="{Binding EnglishText, Mode=TwoWay}"/>
         	<TextBlock Margin="12,16,0,0" Grid.Row="2" TextWrapping="Wrap" Text="german translation" HorizontalAlignment="Left" Width="203"/>
-        	<TextBox Grid.Row="3" TextWrapping="Wrap" IsReadOnly="True"/>
+        	<TextBox Grid.Row="3" TextWrapping="Wrap" IsReadOnly="True" Text="{Binding TranslatedText, Mode=OneWay}"/>
         </Grid>
     </Grid>
  
