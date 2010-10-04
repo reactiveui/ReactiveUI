@@ -16,7 +16,7 @@ using Microsoft.Phone.Reactive;
 
 namespace ReactiveXaml
 {
-    public class ReactiveObject : IReactiveNotifyPropertyChanged, IEnableLogger
+    public class ReactiveObject : IReactiveNotifyPropertyChanged, INotifyPropertyChanging, IEnableLogger
     {
         // Constructor
         protected ReactiveObject()
@@ -42,6 +42,10 @@ namespace ReactiveXaml
 #endif
         }
 
+        public IObservable<PropertyChangingEventArgs> BeforeChange {
+            get { return changingSubject; }
+        }
+
         [Obsolete("Use the RaiseAndSetIfChanged<TObj,TRet> extension method instead")]
         protected T RaiseAndSetIfChanged<T>(T oldValue, T newValue, Action<T> setter, string propertyName)
         {
@@ -49,6 +53,7 @@ namespace ReactiveXaml
             if (EqualityComparer<T>.Default.Equals(oldValue, newValue))
                 return newValue;
 
+            RaisePropertyChanging(propertyName);
             setter(newValue);
             RaisePropertyChanged(propertyName);
             return newValue;
@@ -63,6 +68,21 @@ namespace ReactiveXaml
               .Subscribe(_ => RaisePropertyChanged(propertyName));
         }
 
+        protected internal void RaisePropertyChanging(string propertyName)
+        {
+            Contract.Requires(propertyName != null);
+
+            verifyPropertyName(propertyName);
+
+            var handler = this.PropertyChanging;
+            var e = new PropertyChangingEventArgs(propertyName);
+            if (handler != null) {
+                handler(this, e);
+            }
+
+            notifyObservable(e, changingSubject);
+        }
+
         protected internal void RaisePropertyChanged(string propertyName)
         {
             Contract.Requires(propertyName != null);
@@ -75,7 +95,7 @@ namespace ReactiveXaml
                 handler(this, e);
             }
 
-            notifyObservable(e);
+            notifyObservable(e, changedSubject);
         }
 
         // Debugging Aides
@@ -121,6 +141,12 @@ namespace ReactiveXaml
         // INotifyPropertyChanged Members
 
         /// <summary>
+        /// Raised when a property on this object will have a new value.
+        /// </summary>
+        [field:IgnoreDataMember]
+        public event PropertyChangingEventHandler PropertyChanging;
+
+        /// <summary>
         /// Raised when a property on this object has a new value.
         /// </summary>
         [field:IgnoreDataMember]
@@ -130,15 +156,18 @@ namespace ReactiveXaml
         protected Lazy<PropertyInfo[]> allPublicProperties;
 
         [IgnoreDataMember]
-        Subject<PropertyChangedEventArgs> subject = new Subject<PropertyChangedEventArgs>();
+        Subject<PropertyChangingEventArgs> changingSubject = new Subject<PropertyChangingEventArgs>();
+
+        [IgnoreDataMember]
+        Subject<PropertyChangedEventArgs> changedSubject = new Subject<PropertyChangedEventArgs>();
 
         // IObservable Members
         public IDisposable Subscribe(IObserver<PropertyChangedEventArgs> observer)
         {
-            return subject.Subscribe(observer);
+            return changedSubject.Subscribe(observer);
         }
 
-        void notifyObservable(PropertyChangedEventArgs item)
+        void notifyObservable<T>(T item, Subject<T> subject)
         {
             try {
                 subject.OnNext(item);

@@ -74,43 +74,8 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
-    <Compile Include="PexQueuedAsyncMRUCacheTest.AsyncGetTest.g.cs">
-      <DependentUpon>QueuedAsyncMRUCacheTest.cs</DependentUpon>
-    </Compile>
-    <Compile Include="PexQueuedAsyncMRUCacheTest.BlockingGetShouldRethrowExceptions.g.cs">
-      <DependentUpon>QueuedAsyncMRUCacheTest.cs</DependentUpon>
-    </Compile>
-    <Compile Include="PexQueuedAsyncMRUCacheTest.CachedValuesTest.g.cs">
-      <DependentUpon>QueuedAsyncMRUCacheTest.cs</DependentUpon>
-    </Compile>
-    <Compile Include="PexQueuedAsyncMRUCacheTest.CacheShouldBlockOnceWeHitOurConcurrentLimit.g.cs">
-      <DependentUpon>QueuedAsyncMRUCacheTest.cs</DependentUpon>
-    </Compile>
-    <Compile Include="PexQueuedAsyncMRUCacheTest.CacheShouldEatExceptionsAndMarshalThemToObservable.g.cs">
-      <DependentUpon>QueuedAsyncMRUCacheTest.cs</DependentUpon>
-    </Compile>
-    <Compile Include="PexQueuedAsyncMRUCacheTest.DisposeTest.g.cs">
-      <DependentUpon>QueuedAsyncMRUCacheTest.cs</DependentUpon>
-    </Compile>
-    <Compile Include="PexQueuedAsyncMRUCacheTest.GetTest.g.cs">
-      <DependentUpon>QueuedAsyncMRUCacheTest.cs</DependentUpon>
-    </Compile>
-    <Compile Include="PexReactiveObjectTest.ObservableForPropertyUsingExpression.g.cs">
-      <DependentUpon>ReactiveObjectTest.cs</DependentUpon>
-    </Compile>
-    <Compile Include="PexReactiveObjectTest.RaiseAndSetUsingExpression.g.cs">
-      <DependentUpon>ReactiveObjectTest.cs</DependentUpon>
-    </Compile>
-    <Compile Include="PexReactiveObjectTest.ReactiveObjectShouldWatchCollections.g.cs">
-      <DependentUpon>ReactiveObjectTest.cs</DependentUpon>
-    </Compile>
-    <Compile Include="PexReactiveObjectTest.ReactiveObjectSmokeTest.g.cs">
-      <DependentUpon>ReactiveObjectTest.cs</DependentUpon>
-    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\PexAssemblyInfo.cs" />
-    <Compile Include="QueuedAsyncMRUCacheTest.cs" />
-    <Compile Include="ReactiveObjectTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <Moles Include="ReactiveXaml.moles" />
