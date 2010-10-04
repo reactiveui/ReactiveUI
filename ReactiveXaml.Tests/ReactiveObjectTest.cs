@@ -172,7 +172,7 @@ namespace ReactiveXaml.Tests
                 after_fired = true;
             });
 
-            fixture.IsOnlyOneWord = after_set + "Foo";
+            fixture.IsOnlyOneWord = after_set;
 
             Assert.IsTrue(before_fired);
             Assert.IsTrue(after_fired);

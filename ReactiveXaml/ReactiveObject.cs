@@ -9,9 +9,12 @@ using System.Reflection;
 using System.Runtime.Serialization;
 using System.Linq.Expressions;
 using System.Diagnostics.Contracts;
+using System.Threading;
 
 #if WINDOWS_PHONE
 using Microsoft.Phone.Reactive;
+#else
+using System.Disposables;
 #endif
 
 namespace ReactiveXaml
@@ -43,7 +46,7 @@ namespace ReactiveXaml
         }
 
         public IObservable<PropertyChangingEventArgs> BeforeChange {
-            get { return changingSubject; }
+            get { return changingSubject.Where(_ => areChangeNotificationsEnabled); }
         }
 
         [Obsolete("Use the RaiseAndSetIfChanged<TObj,TRet> extension method instead")]
@@ -76,7 +79,7 @@ namespace ReactiveXaml
 
             var handler = this.PropertyChanging;
             var e = new PropertyChangingEventArgs(propertyName);
-            if (handler != null) {
+            if (handler != null && areChangeNotificationsEnabled) {
                 handler(this, e);
             }
 
@@ -91,7 +94,7 @@ namespace ReactiveXaml
 
             var handler = this.PropertyChanged;
             var e = new PropertyChangedEventArgs(propertyName);
-            if (handler != null) {
+            if (handler != null && areChangeNotificationsEnabled) {
                 handler(this, e);
             }
 
@@ -161,10 +164,32 @@ namespace ReactiveXaml
         [IgnoreDataMember]
         Subject<PropertyChangedEventArgs> changedSubject = new Subject<PropertyChangedEventArgs>();
 
+        [IgnoreDataMember]
+        long changeNotificationsSuppressed = 0;
+
+        public IDisposable SuppressChangeNotifications()
+        {
+            Interlocked.Increment(ref changeNotificationsSuppressed);
+            return Disposable.Create(() =>
+                Interlocked.Decrement(ref changeNotificationsSuppressed));
+        }
+
+        protected bool areChangeNotificationsEnabled {
+            get { 
+#if SILVERLIGHT
+                // N.B. On most architectures, machine word aligned reads are 
+                // guaranteed to be atomic - sorry WP7, you're out of luck
+                return changeNotificationsSuppressed == 0;
+#else
+                return (Interlocked.Read(ref changeNotificationsSuppressed) == 0); 
+#endif
+            }
+        }
+
         // IObservable Members
         public IDisposable Subscribe(IObserver<PropertyChangedEventArgs> observer)
         {
-            return changedSubject.Subscribe(observer);
+            return changedSubject.Where(_ => areChangeNotificationsEnabled).Subscribe(observer);
         }
 
         void notifyObservable<T>(T item, Subject<T> subject)
@@ -200,8 +225,6 @@ namespace ReactiveXaml
 
             return Value;
         }
-
-
     }
 }
 
