@@ -35,9 +35,11 @@ namespace ReactiveXaml.Tests
         [TestMethod()]        
         public void ReactiveObjectSmokeTest()
         {
+            var output_changing = new List<string>();
             var output = new List<string>();
             var fixture = new TestFixture();
 
+            fixture.BeforeChange.Subscribe(x => output_changing.Add(x.PropertyName));
             fixture.Subscribe(x => output.Add(x.PropertyName));
 
             fixture.IsNotNullString = "Foo Bar Baz";
@@ -48,6 +50,9 @@ namespace ReactiveXaml.Tests
             var results = new[] { "IsNotNullString", "IsOnlyOneWord", "IsOnlyOneWord", "IsNotNullString" };
             results.Zip(output, (expected, actual) => new { expected, actual })
                    .Run(x => Assert.AreEqual(x.expected, x.actual));
+
+            output.Zip(output_changing, (expected, actual) => new { expected, actual })
+                  .Run(x => Assert.AreEqual(x.expected, x.actual));
         }
 
         [TestMethod()]
@@ -140,6 +145,37 @@ namespace ReactiveXaml.Tests
             Assert.AreEqual(fixture, output[1].Sender);
             Assert.AreEqual("IsNotNullString", output[1].PropertyName);
             Assert.AreEqual("Baz", output[1].Value);
+        }
+
+        [TestMethod()]
+        public void ChangingShouldAlwaysArriveBeforeChanged()
+        {
+            string before_set = "Foo";
+            string after_set = "Bar"; 
+            var fixture = new TestFixture() { IsOnlyOneWord = before_set };
+
+            bool before_fired = false;
+            fixture.BeforeChange.Subscribe(x => {
+                // XXX: The content of these asserts don't actually get 
+                // propagated back, it only prevents before_fired from
+                // being set - we have to enable 1st-chance exceptions
+                // to see the real error
+                Assert.AreEqual("IsOnlyOneWord", x.PropertyName);
+                Assert.AreEqual(fixture.IsOnlyOneWord, before_set);
+                before_fired = true;
+            });
+
+            bool after_fired = false;
+            fixture.Subscribe(x => {
+                Assert.AreEqual("IsOnlyOneWord", x.PropertyName);
+                Assert.AreEqual(fixture.IsOnlyOneWord, after_set);
+                after_fired = true;
+            });
+
+            fixture.IsOnlyOneWord = after_set + "Foo";
+
+            Assert.IsTrue(before_fired);
+            Assert.IsTrue(after_fired);
         }
     }
 }

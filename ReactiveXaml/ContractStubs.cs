@@ -33,3 +33,30 @@ public class Lazy<T>
     }
 }
 #endif
+
+#if SILVERLIGHT
+
+namespace System.ComponentModel
+{
+    public class PropertyChangingEventArgs : EventArgs
+    {
+        public PropertyChangingEventArgs(string PropertyName)
+        {
+            this.PropertyName = PropertyName;
+        }
+
+        public string PropertyName { get; protected set; }
+    }
+
+    public delegate void PropertyChangingEventHandler(
+    	Object sender,
+    	PropertyChangingEventArgs e
+    );
+
+    public interface INotifyPropertyChanging 
+    {
+        event PropertyChangingEventHandler PropertyChanging;
+    }
+}
+
+#endif
