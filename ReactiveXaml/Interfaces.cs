@@ -26,6 +26,7 @@ namespace ReactiveXaml
     public interface IReactiveNotifyPropertyChanged : INotifyPropertyChanged, INotifyPropertyChanging, IObservable<PropertyChangedEventArgs> 
     { 
         IObservable<PropertyChangingEventArgs> BeforeChange {get;}
+        IDisposable SuppressChangeNotifications();
     }
 
     public static class ReactiveNotifyPropertyChangedMixin
@@ -78,6 +79,7 @@ namespace ReactiveXaml
         IObservable<int> CollectionCountChanged { get; }
 
         bool ChangeTrackingEnabled { get; set; }
+        IDisposable SuppressChangeNotifications();
         IObservable<ObservedChange<T, object>> ItemPropertyChanged { get; }
     }
 

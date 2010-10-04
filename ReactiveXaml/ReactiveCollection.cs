@@ -8,9 +8,12 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
+using System.Threading;
 
 #if WINDOWS_PHONE
 using Microsoft.Phone.Reactive;
+#else
+using System.Disposables;
 #endif
 
 namespace ReactiveXaml
@@ -45,7 +48,7 @@ namespace ReactiveXaml
 
             _ItemPropertyChanged = new Subject<ObservedChange<T,object>>();
 
-            ItemsAdded.Subscribe(x => {
+            _ItemsAdded.Subscribe(x => {
                 if (propertyChangeWatchers == null)
                     return;
                 var item = x as IReactiveNotifyPropertyChanged;
@@ -56,7 +59,7 @@ namespace ReactiveXaml
                 }
             });
 
-            ItemsRemoved.Subscribe(x => {
+            _ItemsRemoved.Subscribe(x => {
                 if (propertyChangeWatchers == null)
                     return;
                 if (propertyChangeWatchers.ContainsKey(x)) {
@@ -69,28 +72,28 @@ namespace ReactiveXaml
         [IgnoreDataMember]
         IObservable<T> _ItemsAdded;
         public IObservable<T> ItemsAdded {
-            get { return _ItemsAdded; }
+            get { return _ItemsAdded.Where(_ => areChangeNotificationsEnabled); }
             protected set { _ItemsAdded = value; }
         }
 
         [IgnoreDataMember]
         IObservable<T> _ItemsRemoved;
         public IObservable<T> ItemsRemoved {
-            get { return _ItemsRemoved; }
+            get { return _ItemsRemoved.Where(_ => areChangeNotificationsEnabled); }
             set { _ItemsRemoved = value; }
         }
 
         [IgnoreDataMember]
         IObservable<int> _CollectionCountChanged;
-        public IObservable<int> CollectionCountChanged { 
-            get { return _CollectionCountChanged; }
+        public IObservable<int> CollectionCountChanged {
+            get { return _CollectionCountChanged.Where(_ => areChangeNotificationsEnabled); }
             set { _CollectionCountChanged = value; }
         }
 
         [IgnoreDataMember]
         Subject<ObservedChange<T, object>> _ItemPropertyChanged;
         public IObservable<ObservedChange<T, object>> ItemPropertyChanged {
-            get { return _ItemPropertyChanged; }
+            get { return _ItemPropertyChanged.Where(_ => areChangeNotificationsEnabled); }
         }
 
         public bool ChangeTrackingEnabled {
@@ -170,6 +173,28 @@ namespace ReactiveXaml
         public void Dispose()
         {
             ChangeTrackingEnabled = false;
+        }
+
+        [IgnoreDataMember]
+        long changeNotificationsSuppressed = 0;
+
+        public IDisposable SuppressChangeNotifications()
+        {
+            Interlocked.Increment(ref changeNotificationsSuppressed);
+            return Disposable.Create(() =>
+                Interlocked.Decrement(ref changeNotificationsSuppressed));
+        }
+
+        protected bool areChangeNotificationsEnabled {
+            get { 
+#if SILVERLIGHT
+                // N.B. On most architectures, machine word aligned reads are 
+                // guaranteed to be atomic - sorry WP7, you're out of luck
+                return changeNotificationsSuppressed == 0;
+#else
+                return (Interlocked.Read(ref changeNotificationsSuppressed) == 0); 
+#endif
+            }
         }
 
 #if !SILVERLIGHT
