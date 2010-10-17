@@ -5,17 +5,20 @@ using System.Text;
 using System.Concurrency;
 using System.Diagnostics;
 using System.Disposables;
+using System.Diagnostics.Contracts;
 
 namespace ReactiveXaml
 {
-    public class StopwatchTestScheduler : IScheduler, IEnableLogger
+    public class StopwatchScheduler : IScheduler, IEnableLogger
     {
         readonly TimeSpan maxAllowedTime;
         readonly IScheduler innerSched;
+        readonly string errorMessage;
 
-        public StopwatchTestScheduler(TimeSpan maxAllowedTime, IScheduler innerSched = null)
+        public StopwatchScheduler(TimeSpan maxAllowedTime, string ErrorMessage = null, IScheduler innerSched = null)
         {
             this.maxAllowedTime = maxAllowedTime;
+            this.errorMessage = ErrorMessage;
             this.innerSched = innerSched ?? RxApp.DeferredScheduler;
         }
 
@@ -25,16 +28,19 @@ namespace ReactiveXaml
 
         public IDisposable Schedule(Action action, TimeSpan dueTime)
         {
-            var sw = new Stopwatch();
-            sw.Start();
-            var inner_disp = innerSched.Schedule(action, dueTime);
+            Contract.Requires(action != null);
 
-            return Disposable.Create(() => {
-                sw.Stop();
-                inner_disp.Dispose();
-                if (sw.Elapsed > maxAllowedTime)
-                    throw new Exception(String.Format("Time elapsed: {0}, max allowed is {1}", sw.Elapsed, maxAllowedTime));
-            });
+            return innerSched.Schedule(() => {
+                var sw = new Stopwatch();
+                sw.Start(); action(); sw.Stop();
+
+                if (sw.Elapsed > maxAllowedTime) {
+                    string error = String.Format("{0} Time elapsed: {1}, max allowed is {2}", 
+                        (errorMessage != null ? errorMessage + "\n" : ""), sw.Elapsed, maxAllowedTime);
+                    this.Log().Error(error);
+                    throw new Exception(error);
+                }
+            }, dueTime);
         }
 
         public IDisposable Schedule(Action action)
