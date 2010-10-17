@@ -17,7 +17,10 @@ namespace ReactiveXaml.Tests
         public void CollectionCountChangedTest()
         {
             var fixture = new ReactiveCollection<int>();
+            var before_output = new List<int>();
             var output = new List<int>();
+
+            fixture.CollectionCountChanging.Subscribe(before_output.Add);
             fixture.CollectionCountChanged.Subscribe(output.Add);
 
             fixture.Add(10);
@@ -25,6 +28,11 @@ namespace ReactiveXaml.Tests
             fixture.Add(30);
             fixture.RemoveAt(1);
             fixture.Clear();
+
+            var before_results = new[] {0,1,2,3,2};
+            Assert.AreEqual(before_results.Length, before_output.Count);
+            before_results.Zip(before_output, (expected, actual) => new {expected,actual})
+                          .Run(x => Assert.AreEqual(x.expected, x.actual));
 
             var results = new[]{1,2,3,2,0};
             Assert.AreEqual(results.Length, output.Count);
@@ -37,8 +45,13 @@ namespace ReactiveXaml.Tests
         public void ItemsAddedAndRemovedTest()
         {
             var fixture = new ReactiveCollection<int>();
+            var before_added = new List<int>();
+            var before_removed = new List<int>();
             var added = new List<int>();
             var removed = new List<int>();
+
+            fixture.BeforeItemsAdded.Subscribe(before_added.Add);
+            fixture.BeforeItemsRemoved.Subscribe(before_removed.Add);
             fixture.ItemsAdded.Subscribe(added.Add);
             fixture.ItemsRemoved.Subscribe(removed.Add);
 
@@ -57,6 +70,14 @@ namespace ReactiveXaml.Tests
             Assert.AreEqual(removed_results.Length, removed.Count);
             removed_results.Zip(removed, (expected, actual) => new {expected,actual})
                            .Run(x => Assert.AreEqual(x.expected, x.actual));
+
+            Assert.AreEqual(before_added.Count, added.Count);
+            added.Zip(before_added, (expected, actual) => new {expected,actual})
+                 .Run(x => Assert.AreEqual(x.expected, x.actual));
+
+            Assert.AreEqual(before_removed.Count, removed.Count);
+            removed.Zip(before_removed, (expected, actual) => new {expected,actual})
+                 .Run(x => Assert.AreEqual(x.expected, x.actual));
         }
 
         [TestMethod()]
@@ -84,9 +105,14 @@ namespace ReactiveXaml.Tests
         public void ChangeTrackingShouldFireNotifications()
         {
             var fixture = new ReactiveCollection<TestFixture>() { ChangeTrackingEnabled = true };
+            var before_output = new List<Tuple<TestFixture, string>>();
             var output = new List<Tuple<TestFixture, string>>();
             var item1 = new TestFixture() { IsOnlyOneWord = "Foo" };
             var item2 = new TestFixture() { IsOnlyOneWord = "Bar" };
+
+            fixture.ItemPropertyChanging.Subscribe(x => {
+                before_output.Add(new Tuple<TestFixture,string>((TestFixture)x.Sender, x.PropertyName));
+            });
 
             fixture.ItemPropertyChanged.Subscribe(x => {
                 output.Add(new Tuple<TestFixture,string>((TestFixture)x.Sender, x.PropertyName));
@@ -109,6 +135,8 @@ namespace ReactiveXaml.Tests
             Assert.AreEqual(2, output.Count);
 
             new[]{item1, item2}.Zip(output.Select(x => x.Item1), (expected, actual) => new { expected, actual })
+                .Run(x => Assert.AreEqual(x.expected, x.actual));
+            new[]{item1, item2}.Zip(before_output.Select(x => x.Item1), (expected, actual) => new { expected, actual })
                 .Run(x => Assert.AreEqual(x.expected, x.actual));
             new[]{"IsOnlyOneWord", "IsNotNullString"}.Zip(output.Select(x => x.Item2), (expected, actual) => new { expected, actual })
                 .Run(x => Assert.AreEqual(x.expected, x.actual));

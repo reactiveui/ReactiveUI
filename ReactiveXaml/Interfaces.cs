@@ -72,14 +72,18 @@ namespace ReactiveXaml
         }
     }
 
-    public interface IReactiveCollection<T> : IEnumerable<T>, IList<T>, INotifyCollectionChanged
+    public interface IReactiveCollection<T> : IList<T>, INotifyCollectionChanged
     {
         IObservable<T> ItemsAdded { get; }
+        IObservable<T> BeforeItemsAdded { get; }
         IObservable<T> ItemsRemoved { get; }
+        IObservable<T> BeforeItemsRemoved { get; }
         IObservable<int> CollectionCountChanged { get; }
+        IObservable<int> CollectionCountChanging { get; }
 
         bool ChangeTrackingEnabled { get; set; }
         IDisposable SuppressChangeNotifications();
+        IObservable<ObservedChange<T, object>> ItemPropertyChanging { get; }
         IObservable<ObservedChange<T, object>> ItemPropertyChanged { get; }
     }
 

@@ -28,21 +28,33 @@ namespace ReactiveXaml
 
         void setupRx(IEnumerable<T> List = null)
         {
+            // XXX: Should this be RxApp.DeferredScheduler
+            _BeforeItemsAdded = new Subject<T>();
+            _BeforeItemsRemoved = new Subject<T>();
+            _ItemPropertyChanging = new Subject<ObservedChange<T, object>>();
+            aboutToClear = new Subject<int>();
+
             if (List != null) {
                 foreach(var v in List) { this.Add(v); }
             }
 
             var coll_changed = Observable.FromEvent<NotifyCollectionChangedEventArgs>(this, "CollectionChanged");
 
-            ItemsAdded = coll_changed
+            _ItemsAdded = coll_changed
                 .Where(x => x.EventArgs.Action == NotifyCollectionChangedAction.Add || x.EventArgs.Action == NotifyCollectionChangedAction.Replace)
                 .SelectMany(x => (x.EventArgs.NewItems != null ? x.EventArgs.NewItems.OfType<T>() : Enumerable.Empty<T>()).ToObservable());
 
-            ItemsRemoved = coll_changed
+            _ItemsRemoved = coll_changed
                 .Where(x => x.EventArgs.Action == NotifyCollectionChangedAction.Remove || x.EventArgs.Action == NotifyCollectionChangedAction.Replace || x.EventArgs.Action == NotifyCollectionChangedAction.Reset)
                 .SelectMany(x => (x.EventArgs.OldItems != null ? x.EventArgs.OldItems.OfType<T>() : Enumerable.Empty<T>()).ToObservable());
 
-            CollectionCountChanged = coll_changed
+            _CollectionCountChanging = Observable.Merge(
+                _BeforeItemsAdded.Select(_ => this.Count),
+                _BeforeItemsRemoved.Select(_ => this.Count),
+                aboutToClear
+            );
+
+            _CollectionCountChanged = coll_changed
                 .Select(x => this.Count)
                 .DistinctUntilChanged();
 
@@ -53,45 +65,74 @@ namespace ReactiveXaml
                     return;
                 var item = x as IReactiveNotifyPropertyChanged;
                 if (item != null) {
-                    propertyChangeWatchers.Add(x, item.Subscribe(change => 
-                        _ItemPropertyChanged.OnNext(new ObservedChange<T,object>() { Sender = x, PropertyName = change.PropertyName })));
-                    return;
+                    var to_dispose = new[] {
+                        item.BeforeChange.Subscribe(before_change =>
+                            _ItemPropertyChanging.OnNext(new ObservedChange<T, object>() { Sender = x, PropertyName = before_change.PropertyName })),
+                        item.Subscribe(change => 
+                            _ItemPropertyChanged.OnNext(new ObservedChange<T,object>() { Sender = x, PropertyName = change.PropertyName })),
+                    };
+
+                    propertyChangeWatchers.Add(x, Disposable.Create(() => { to_dispose[0].Dispose(); to_dispose[1].Dispose(); }));
+                        
                 }
             });
 
             _ItemsRemoved.Subscribe(x => {
-                if (propertyChangeWatchers == null)
+                if (propertyChangeWatchers == null || !propertyChangeWatchers.ContainsKey(x))
                     return;
-                if (propertyChangeWatchers.ContainsKey(x)) {
-                    propertyChangeWatchers[x].Dispose();
-                    propertyChangeWatchers.Remove(x);
-                }
+
+                propertyChangeWatchers[x].Dispose();
+                propertyChangeWatchers.Remove(x);
             });
         }
 
         [IgnoreDataMember]
-        IObservable<T> _ItemsAdded;
+        protected IObservable<T> _ItemsAdded;
         public IObservable<T> ItemsAdded {
             get { return _ItemsAdded.Where(_ => areChangeNotificationsEnabled); }
-            protected set { _ItemsAdded = value; }
         }
 
         [IgnoreDataMember]
-        IObservable<T> _ItemsRemoved;
+        protected Subject<T> _BeforeItemsAdded;
+        public IObservable<T> BeforeItemsAdded {
+            get { return _BeforeItemsAdded.Where(_ => areChangeNotificationsEnabled); }
+        }
+
+        [IgnoreDataMember]
+        protected IObservable<T> _ItemsRemoved;
         public IObservable<T> ItemsRemoved {
             get { return _ItemsRemoved.Where(_ => areChangeNotificationsEnabled); }
-            set { _ItemsRemoved = value; }
         }
 
         [IgnoreDataMember]
-        IObservable<int> _CollectionCountChanged;
+        protected Subject<T> _BeforeItemsRemoved;
+        public IObservable<T> BeforeItemsRemoved {
+            get { return _BeforeItemsRemoved.Where(_ => areChangeNotificationsEnabled); }
+        }
+
+        [IgnoreDataMember]
+        protected Subject<int> aboutToClear;
+
+        [IgnoreDataMember]
+        protected IObservable<int> _CollectionCountChanging;
+        public IObservable<int> CollectionCountChanging {
+            get { return _CollectionCountChanging.Where(_ => areChangeNotificationsEnabled); }
+        }
+
+        [IgnoreDataMember]
+        protected IObservable<int> _CollectionCountChanged;
         public IObservable<int> CollectionCountChanged {
             get { return _CollectionCountChanged.Where(_ => areChangeNotificationsEnabled); }
-            set { _CollectionCountChanged = value; }
         }
 
         [IgnoreDataMember]
-        Subject<ObservedChange<T, object>> _ItemPropertyChanged;
+        protected Subject<ObservedChange<T, object>> _ItemPropertyChanging;
+        public IObservable<ObservedChange<T, object>> ItemPropertyChanging {
+            get { return _ItemPropertyChanging.Where(_ => areChangeNotificationsEnabled); }
+        }
+
+        [IgnoreDataMember]
+        protected Subject<ObservedChange<T, object>> _ItemPropertyChanged;
         public IObservable<ObservedChange<T, object>> ItemPropertyChanged {
             get { return _ItemPropertyChanged.Where(_ => areChangeNotificationsEnabled); }
         }
@@ -127,8 +168,29 @@ namespace ReactiveXaml
             propertyChangeWatchers.Clear();
         }
 
+        protected override void InsertItem(int index, T item)
+        {
+            _BeforeItemsAdded.OnNext(item);
+            base.InsertItem(index, item);
+        }
+
+        protected override void RemoveItem(int index)
+        {
+            _BeforeItemsRemoved.OnNext(this[index]);
+            base.RemoveItem(index);
+        }
+
+        protected override void SetItem(int index, T item)
+        {
+            _BeforeItemsRemoved.OnNext(this[index]);
+            _BeforeItemsAdded.OnNext(item);
+            base.SetItem(index, item);
+        }
+
         protected override void ClearItems()
         {
+            aboutToClear.OnNext(this.Count);
+
             // N.B: Reset doesn't give us the items that were cleared out,
             // we have to release the watchers or else we leak them.
             releasePropChangeWatchers();
