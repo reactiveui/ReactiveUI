@@ -56,7 +56,6 @@ namespace ReactiveXamlSample
                  * that, you should keep them as a reference and just move the
                  * Export attribute to your own main window */
                 this.Log().Fatal("Failed composition - check your imports and their constructors!", ex);
-                System.Windows.Forms.MessageBox.Show("Dead");
                 throw;
             }
         }
@@ -69,6 +68,21 @@ namespace ReactiveXamlSample
             AppDomain.CurrentDomain.UnhandledException += (o, ex) => {
                 this.Log().Fatal("Unhandled Exception - aieee!", ex.ExceptionObject as Exception);
             };
+
+            /* COOLSTUFF: Enabling Debug Mode
+             * 
+             * Calling this function while in Debug mode enables log statements 
+             * to the VS Debug window, as well as enabling several other debug
+             * features, such as crashing the application when the Dispatcher queue
+             * has been stalled (i.e. your app would've displayed a black screen
+             * or hung. This is usually the result of doing a long-running task
+             * or a blocking disk/network call on the RxApp.DeferredScheduler when
+             * it should've probably be run on the RxApp.TaskpoolScheduler (i.e. not
+             * on the UI thread). */
+
+#if DEBUG
+            RxApp.EnableDebugMode();
+#endif
 
             this.ShutdownMode = ShutdownMode.OnMainWindowClose;
             compose();
