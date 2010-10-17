@@ -196,6 +196,20 @@ namespace ReactiveXaml
                 test_assemblies.Any(name => x.FullName.ToUpperInvariant().Contains(name)));
 #endif
         }
+        public static void EnableDebugMode()
+        {
+            LoggerFactory = (x => new StdErrLogger());
+
+#if !SILVERLIGHT
+            // NOTE: This is a handy feature for writing desktop applications;
+            // it crashes the app whenever a dispatcher item would have hung the
+            // UI.
+            // XXX: This error message wording sucks
+            DeferredScheduler = new StopwatchScheduler(TimeSpan.FromMilliseconds(400), 
+                "The code that has just executed has prevented the UI from redrawing",
+                Scheduler.Dispatcher);
+#endif
+        }
 
         public static RecoveryOptionResult PresentUserException(UserException ex)
         {
