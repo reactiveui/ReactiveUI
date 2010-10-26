@@ -32,8 +32,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveXaml.Sample.WP7", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveXaml.Tests.Pex", "ReactiveXaml.Tests.Pex\ReactiveXaml.Tests.Pex.csproj", "{8328B78E-6C5B-4777-AF11-05213BF329F4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveXaml.Tests_SL4", "ReactiveXaml.Tests\ReactiveXaml.Tests_SL4.csproj", "{AA0B1C80-97AE-49F5-8310-5A7683BE47BF}"
-EndProject
 Global
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = ReactiveXaml.vsmdi
@@ -171,16 +169,6 @@ Global
 		{8328B78E-6C5B-4777-AF11-05213BF329F4}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{8328B78E-6C5B-4777-AF11-05213BF329F4}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{8328B78E-6C5B-4777-AF11-05213BF329F4}.Release|x86.ActiveCfg = Release|Any CPU
-		{AA0B1C80-97AE-49F5-8310-5A7683BE47BF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{AA0B1C80-97AE-49F5-8310-5A7683BE47BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{AA0B1C80-97AE-49F5-8310-5A7683BE47BF}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{AA0B1C80-97AE-49F5-8310-5A7683BE47BF}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{AA0B1C80-97AE-49F5-8310-5A7683BE47BF}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{AA0B1C80-97AE-49F5-8310-5A7683BE47BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{AA0B1C80-97AE-49F5-8310-5A7683BE47BF}.Release|Any CPU.Build.0 = Release|Any CPU
-		{AA0B1C80-97AE-49F5-8310-5A7683BE47BF}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{AA0B1C80-97AE-49F5-8310-5A7683BE47BF}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{AA0B1C80-97AE-49F5-8310-5A7683BE47BF}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
