@@ -1,0 +1,8 @@
+*.suo
+*.user
+*/bin/
+*/Bin/
+*/obj/
+*/Obj/
+*/MolesAssemblies/
+TestResults/
