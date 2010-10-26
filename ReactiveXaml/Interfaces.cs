@@ -159,7 +159,7 @@ namespace ReactiveXaml
             }
 
 #if SILVERLIGHT
-            DeferredScheduler = Scheduler.ThreadPool;
+            TaskpoolScheduler = Scheduler.ThreadPool;
 #else
             TaskpoolScheduler = Scheduler.TaskPool;
 #endif
