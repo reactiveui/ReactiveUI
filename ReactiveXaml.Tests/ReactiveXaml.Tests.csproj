@@ -79,6 +79,7 @@
     <Compile Include="ReactiveObjectTest.cs" />
     <Compile Include="ReactiveValidatedObjectTest.cs" />
     <Compile Include="StopwatchTestSchedulerTest.cs" />
+    <Compile Include="TestUtils.cs" />
     <Compile Include="UserExceptionTest.cs" />
   </ItemGroup>
   <ItemGroup>

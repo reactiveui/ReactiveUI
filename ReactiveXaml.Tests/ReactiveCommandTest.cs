@@ -47,9 +47,7 @@ namespace ReactiveXaml.Tests
             can_execute.OnCompleted();
             Assert.AreEqual(5, change_event_count);
 
-            input.Zip(changes_as_observable.ToList(), (expected, actual) => new { expected, actual })
-                 .Do(Console.WriteLine)
-                 .Run(x => Assert.AreEqual(x.expected, x.actual));
+            input.AssertAreEqual(changes_as_observable.ToList());
         }
 
         [TestMethod()]
@@ -81,8 +79,7 @@ namespace ReactiveXaml.Tests
             var range = Enumerable.Range(0, 5);
             range.Run(x => fixture.Execute(x));
 
-            range.Zip(executed_params, (expected, actual) => new { expected, actual })
-                 .Run(x => Assert.AreEqual(x.expected, x.actual));
+            range.AssertAreEqual(executed_params.OfType<int>());
 
             range.ToObservable()
                 .Zip(observed_params, (expected, actual) => new { expected, actual })
@@ -103,11 +100,8 @@ namespace ReactiveXaml.Tests
 
             input.Run(x => fixture.Execute(x));
 
-            new[]{1,1}.Zip(odd_list, (expected, actual) => new { expected, actual })
-                .Run(x => Assert.AreEqual(x.expected, x.actual));
-
-            new[]{2,2}.Zip(even_list, (expected, actual) => new { expected, actual })
-                .Run(x => Assert.AreEqual(x.expected, x.actual));
+            new[]{1,1}.AssertAreEqual(odd_list);
+            new[]{2,2}.AssertAreEqual(even_list);
         }
 
         [TestMethod]
@@ -135,8 +129,7 @@ namespace ReactiveXaml.Tests
             }
 
             Assert.IsTrue(we_threw);
-            input.Zip(out_list, (expected, actual) => new { expected, actual })
-                 .Run(x => Assert.AreEqual(x.expected, x.actual));
+            input.AssertAreEqual(out_list);
 
             // Now, make sure that the command isn't broken
             fixture.Execute(5);
@@ -177,8 +170,7 @@ namespace ReactiveXaml.Tests
             Thread.Sleep(5500);
             Assert.IsTrue(fixture.CanExecute(null));
 
-            new[] {0,1,0}.Zip(inflight_results, (expected, actual) => new {expected, actual})
-                         .Run(x => Assert.AreEqual(x.expected, x.actual));
+            new[] {0,1,0}.AssertAreEqual(inflight_results);
         }
 
 
@@ -202,8 +194,7 @@ namespace ReactiveXaml.Tests
             Thread.Sleep(6000);
             Assert.IsTrue(fixture.CanExecute(null));
 
-            new[] {0,1,0}.Zip(inflight_results, (expected, actual) => new {expected, actual})
-                         .Run(x => Assert.AreEqual(x.expected, x.actual));
+            new[] {0,1,0}.AssertAreEqual(inflight_results);
 
             Assert.IsTrue(results.Count == 1);
             Assert.IsTrue(results[0] == 5);
@@ -238,8 +229,7 @@ namespace ReactiveXaml.Tests
             results.Select(x => x.Timestamp - start)
                    .Run(x => this.Log().Info(x));
 
-            output.Zip(results.Select(x => x.Value), (expected, actual) => new { expected, actual })
-                  .Run(x => Assert.AreEqual(x.expected, x.actual));
+            output.AssertAreEqual(results.Select(x => x.Value));
 
             Assert.IsFalse(results.Any(x => x.Timestamp - start > new TimeSpan(0, 0, 3)));
         }
@@ -276,8 +266,7 @@ namespace ReactiveXaml.Tests
             this.Log().Info("Release list");
             released.Run(x => this.Log().Info(x));
 
-            output.Zip(results.Select(x => x.Value), (expected, actual) => new { expected, actual })
-                  .Run(x => Assert.AreEqual(x.expected, x.actual));
+            output.AssertAreEqual(results.Select(x => x.Value));
 
             Assert.IsTrue(results.Count == 8);
 

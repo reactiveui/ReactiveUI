@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace ReactiveXaml.Tests
 {
-    public class TestFixture : ReactiveValidatedObject
+    public class TestFixture : ReactiveObject
     {
         string _IsNotNullString;
         public string IsNotNullString {
@@ -18,6 +18,12 @@ namespace ReactiveXaml.Tests
         public string IsOnlyOneWord {
             get { return _IsOnlyOneWord; }
             set { RaiseAndSetIfChanged(_IsOnlyOneWord, value, x => _IsOnlyOneWord = x, "IsOnlyOneWord"); }
+        }
+        
+        string _UsesExprRaiseSet;
+        public string UsesExprRaiseSet {
+            get { return _UsesExprRaiseSet; }
+            set { this.RaiseAndSetIfChanged(x => x.UsesExprRaiseSet, value); }
         }
 
         public ReactiveCollection<int> TestCollection { get; protected set; }
@@ -48,11 +54,9 @@ namespace ReactiveXaml.Tests
             fixture.IsNotNullString = null;     // Sorry.
 
             var results = new[] { "IsNotNullString", "IsOnlyOneWord", "IsOnlyOneWord", "IsNotNullString" };
-            results.Zip(output, (expected, actual) => new { expected, actual })
-                   .Run(x => Assert.AreEqual(x.expected, x.actual));
+            results.AssertAreEqual(output);
 
-            output.Zip(output_changing, (expected, actual) => new { expected, actual })
-                  .Run(x => Assert.AreEqual(x.expected, x.actual));
+            output.AssertAreEqual(output_changing);
         }
 
         [TestMethod()]
@@ -98,7 +102,7 @@ namespace ReactiveXaml.Tests
         [TestMethod()]
         public void ReactiveObjectShouldntSerializeAnythingExtra()
         {
-            var fixture = new ValidatedTestFixture() { IsNotNullString = "Foo", IsOnlyOneWord = "Baz" };
+            var fixture = new TestFixture() { IsNotNullString = "Foo", IsOnlyOneWord = "Baz" };
             string json = JSONHelper.Serialize(fixture);
             this.Log().Debug(json);
 
@@ -112,7 +116,7 @@ namespace ReactiveXaml.Tests
         [TestMethod()]
         public void RaiseAndSetUsingExpression()
         {
-            var fixture = new ValidatedTestFixture() { IsNotNullString = "Foo", IsOnlyOneWord = "Baz" };
+            var fixture = new TestFixture() { IsNotNullString = "Foo", IsOnlyOneWord = "Baz" };
             var output = new List<string>();
             fixture.Subscribe(x => output.Add(x.PropertyName));
 
@@ -128,8 +132,8 @@ namespace ReactiveXaml.Tests
         [TestMethod()]
         public void ObservableForPropertyUsingExpression()
         {
-            var fixture = new ValidatedTestFixture() { IsNotNullString = "Foo", IsOnlyOneWord = "Baz" };
-            var output = new List<ObservedChange<ValidatedTestFixture, string>>();
+            var fixture = new TestFixture() { IsNotNullString = "Foo", IsOnlyOneWord = "Baz" };
+            var output = new List<ObservedChange<TestFixture, string>>();
             fixture.ObservableForProperty(x => x.IsNotNullString).Subscribe(output.Add);
 
             fixture.IsNotNullString = "Bar";
