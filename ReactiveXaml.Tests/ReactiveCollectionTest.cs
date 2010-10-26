@@ -14,7 +14,6 @@ namespace ReactiveXaml.Tests
     public class ReactiveCollectionTest : IEnableLogger
     {
         [TestMethod()]
-        [DeploymentItem("Antireptilia.exe")]
         public void CollectionCountChangedTest()
         {
             var fixture = new ReactiveCollection<int>();
@@ -40,7 +39,6 @@ namespace ReactiveXaml.Tests
         }
 
         [TestMethod()]
-        [DeploymentItem("Antireptilia.exe")]
         public void ItemsAddedAndRemovedTest()
         {
             var fixture = new ReactiveCollection<int>();
@@ -76,7 +74,6 @@ namespace ReactiveXaml.Tests
         }
 
         [TestMethod()]
-        [DeploymentItem("Antireptilia.exe")]
         public void ReactiveCollectionIsRoundTrippable()
         {
             var output = new[] {"Foo", "Bar", "Baz", "Bamf"};
@@ -95,7 +92,6 @@ namespace ReactiveXaml.Tests
         }
 
         [TestMethod()]
-        [DeploymentItem("Antireptilia.exe")]
         public void ChangeTrackingShouldFireNotifications()
         {
             var fixture = new ReactiveCollection<TestFixture>() { ChangeTrackingEnabled = true };
