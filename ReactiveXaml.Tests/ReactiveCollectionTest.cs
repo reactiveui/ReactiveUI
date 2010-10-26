@@ -6,6 +6,7 @@ using ReactiveXaml;
 using System.IO;
 using System.Text;
 using ReactiveXaml.Tests;
+using System.Runtime.Serialization.Json;
 
 namespace ReactiveXaml.Tests
 {
@@ -31,13 +32,11 @@ namespace ReactiveXaml.Tests
 
             var before_results = new[] {0,1,2,3,2};
             Assert.AreEqual(before_results.Length, before_output.Count);
-            before_results.Zip(before_output, (expected, actual) => new {expected,actual})
-                          .Run(x => Assert.AreEqual(x.expected, x.actual));
+            before_results.AssertAreEqual(before_output);
 
             var results = new[]{1,2,3,2,0};
             Assert.AreEqual(results.Length, output.Count);
-            results.Zip(output, (expected, actual) => new {expected,actual})
-                   .Run(x => Assert.AreEqual(x.expected, x.actual));
+            results.AssertAreEqual(output);
         }
 
         [TestMethod()]
@@ -63,21 +62,17 @@ namespace ReactiveXaml.Tests
 
             var added_results = new[]{10,20,30};
             Assert.AreEqual(added_results.Length, added.Count);
-            added_results.Zip(added, (expected, actual) => new {expected,actual})
-                         .Run(x => Assert.AreEqual(x.expected, x.actual));
+            added_results.AssertAreEqual(added);
 
             var removed_results = new[]{20};
             Assert.AreEqual(removed_results.Length, removed.Count);
-            removed_results.Zip(removed, (expected, actual) => new {expected,actual})
-                           .Run(x => Assert.AreEqual(x.expected, x.actual));
+            removed_results.AssertAreEqual(removed);
 
             Assert.AreEqual(before_added.Count, added.Count);
-            added.Zip(before_added, (expected, actual) => new {expected,actual})
-                 .Run(x => Assert.AreEqual(x.expected, x.actual));
+            added.AssertAreEqual(before_added);
 
             Assert.AreEqual(before_removed.Count, removed.Count);
-            removed.Zip(before_removed, (expected, actual) => new {expected,actual})
-                 .Run(x => Assert.AreEqual(x.expected, x.actual));
+            removed.AssertAreEqual(before_removed);
         }
 
         [TestMethod()]
@@ -91,8 +86,7 @@ namespace ReactiveXaml.Tests
             var results = JSONHelper.Deserialize<ReactiveCollection<string>>(json);
             this.Log().Debug(json);
 
-            output.Zip(results, (expected, actual) => new { expected, actual })
-                  .Run(x => Assert.AreEqual(x.expected, x.actual));
+            output.AssertAreEqual(results);
 
             bool should_die = true;
             results.ItemsAdded.Subscribe(_ => should_die = false);
@@ -134,12 +128,9 @@ namespace ReactiveXaml.Tests
             item1.IsNotNullString = "Bamf";
             Assert.AreEqual(2, output.Count);
 
-            new[]{item1, item2}.Zip(output.Select(x => x.Item1), (expected, actual) => new { expected, actual })
-                .Run(x => Assert.AreEqual(x.expected, x.actual));
-            new[]{item1, item2}.Zip(before_output.Select(x => x.Item1), (expected, actual) => new { expected, actual })
-                .Run(x => Assert.AreEqual(x.expected, x.actual));
-            new[]{"IsOnlyOneWord", "IsNotNullString"}.Zip(output.Select(x => x.Item2), (expected, actual) => new { expected, actual })
-                .Run(x => Assert.AreEqual(x.expected, x.actual));
+            new[]{item1, item2}.AssertAreEqual(output.Select(x => x.Item1));
+            new[]{item1, item2}.AssertAreEqual(before_output.Select(x => x.Item1));
+            new[]{"IsOnlyOneWord", "IsNotNullString"}.AssertAreEqual(output.Select(x => x.Item2));
         }
 
         [TestMethod()]
@@ -151,9 +142,7 @@ namespace ReactiveXaml.Tests
 
             var output = fixture.CreateDerivedCollection(new Func<TestFixture, string>(x => x.IsOnlyOneWord));
 
-            Assert.AreEqual(4, output.Count);
-            input.Zip(output, (expected, actual) => new { expected, actual })
-                 .Run(x => Assert.AreEqual(x.expected, x.actual));
+            input.AssertAreEqual(output);
 
             fixture.Add(new TestFixture() { IsOnlyOneWord = "Hello" });
             Assert.AreEqual(5, output.Count);
@@ -171,6 +160,30 @@ namespace ReactiveXaml.Tests
         }
     }
 
+#if SILVERLIGHT
+    public class JSONHelper
+    {
+        public static string Serialize<T>(T obj)
+        {
+            using (var mstream = new MemoryStream()) { 
+                var serializer = new DataContractJsonSerializer(obj.GetType());  
+                serializer.WriteObject(mstream, obj);  
+                mstream.Position = 0;  
+  
+                using (var sr = new StreamReader(mstream)) {  
+                    return sr.ReadToEnd();  
+                }  
+            }
+        }
+
+        public static T Deserialize<T>(string json)
+        {
+            var serializer = new DataContractJsonSerializer(typeof(T));
+            return (T)serializer.ReadObject(
+                new MemoryStream(System.Text.Encoding.Unicode.GetBytes(json)));
+        }
+    }
+#else
     public class JSONHelper
     {
         public static string Serialize<T>(T obj)
@@ -192,4 +205,5 @@ namespace ReactiveXaml.Tests
             return obj;
         }
     }
+#endif
 }
