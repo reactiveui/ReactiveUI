@@ -248,10 +248,9 @@ namespace ReactiveXaml
         }
 
 #if SILVERLIGHT
-        static MemoizingMRUCache<Tuple<Type, string>, FieldInfo> fieldInfoTypeCache = new MemoizingMRUCache<Tuple<Type,string>,FieldInfo>((x, _) => {
-            var field_name = RxApp.GetFieldNameForProperty(x.Item2);
-            return (x.Item1).GetField(field_name, BindingFlags.NonPublic | BindingFlags.Instance);
-        }, 50);
+        static MemoizingMRUCache<Tuple<Type, string>, FieldInfo> fieldInfoTypeCache = new MemoizingMRUCache<Tuple<Type,string>,FieldInfo>((x, _) =>
+            (x.Item1).GetField(RxApp.GetFieldNameForProperty(x.Item2)),
+            15 /*items*/);
 #else
         static QueuedAsyncMRUCache<Tuple<Type, string>, FieldInfo> fieldInfoTypeCache = new QueuedAsyncMRUCache<Tuple<Type,string>,FieldInfo>(x => {
             var field_name = RxApp.GetFieldNameForProperty(x.Item2);
@@ -274,7 +273,7 @@ namespace ReactiveXaml
 #endif 
 
             if (field == null) {
-                throw new ArgumentException("You must declare a backing field for this property named: " + prop_name);
+                throw new ArgumentException("You must declare a backing field for this property named: " + RxApp.GetFieldNameForProperty(prop_name));
             }
             return field;
         }
