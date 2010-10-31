@@ -3,23 +3,27 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 
 namespace ReactiveXaml.Tests
 {
     public class TestFixture : ReactiveObject
     {
+        [IgnoreDataMember]
         public string _IsNotNullString;
         public string IsNotNullString {
             get { return _IsNotNullString; }
             set { RaiseAndSetIfChanged(_IsNotNullString, value, x => _IsNotNullString = x, "IsNotNullString"); }
         }
 
+        [IgnoreDataMember]
         public string _IsOnlyOneWord;
         public string IsOnlyOneWord {
             get { return _IsOnlyOneWord; }
             set { RaiseAndSetIfChanged(_IsOnlyOneWord, value, x => _IsOnlyOneWord = x, "IsOnlyOneWord"); }
         }
 
+        [IgnoreDataMember]
         public string _UsesExprRaiseSet;
         public string UsesExprRaiseSet {
             get { return _UsesExprRaiseSet; }
