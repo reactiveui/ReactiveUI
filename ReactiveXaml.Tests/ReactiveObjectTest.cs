@@ -8,19 +8,19 @@ namespace ReactiveXaml.Tests
 {
     public class TestFixture : ReactiveObject
     {
-        string _IsNotNullString;
+        public string _IsNotNullString;
         public string IsNotNullString {
             get { return _IsNotNullString; }
             set { RaiseAndSetIfChanged(_IsNotNullString, value, x => _IsNotNullString = x, "IsNotNullString"); }
         }
 
-        string _IsOnlyOneWord;
+        public string _IsOnlyOneWord;
         public string IsOnlyOneWord {
             get { return _IsOnlyOneWord; }
             set { RaiseAndSetIfChanged(_IsOnlyOneWord, value, x => _IsOnlyOneWord = x, "IsOnlyOneWord"); }
         }
-        
-        string _UsesExprRaiseSet;
+
+        public string _UsesExprRaiseSet;
         public string UsesExprRaiseSet {
             get { return _UsesExprRaiseSet; }
             set { this.RaiseAndSetIfChanged(x => x.UsesExprRaiseSet, value); }
