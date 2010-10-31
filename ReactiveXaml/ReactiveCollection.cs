@@ -210,9 +210,13 @@ namespace ReactiveXaml
                 case NotifyCollectionChangedAction.Add:
                 case NotifyCollectionChangedAction.Remove:
                 case NotifyCollectionChangedAction.Replace:
+                    // NB: SL4 fills in OldStartingIndex with -1 on Replace :-/
+                    int old_index = (x.EventArgs.Action == NotifyCollectionChangedAction.Replace ?
+                        x.EventArgs.NewStartingIndex : x.EventArgs.OldStartingIndex);
+
                     if (x.EventArgs.OldItems != null) {
                         foreach(object _ in x.EventArgs.OldItems) {
-                            ret.RemoveAt(x.EventArgs.OldStartingIndex);
+                            ret.RemoveAt(old_index);
                         }
                     }
                     if (x.EventArgs.NewItems != null) {
