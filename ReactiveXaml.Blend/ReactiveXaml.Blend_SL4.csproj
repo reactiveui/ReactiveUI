@@ -55,18 +55,18 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="mscorlib" />
-    <Reference Include="System.CoreEx, Version=1.0.2521.204, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+    <Reference Include="System.CoreEx">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\ext\SL4\System.CoreEx.dll</HintPath>
     </Reference>
-    <Reference Include="System.Interactive, Version=1.0.2521.204, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+    <Reference Include="System.Interactive">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\ext\SL4\System.Interactive.dll</HintPath>
     </Reference>
     <Reference Include="System.Observable">
       <HintPath>..\ext\SL4\System.Observable.dll</HintPath>
     </Reference>
-    <Reference Include="System.Reactive, Version=1.0.2521.204, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+    <Reference Include="System.Reactive">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\ext\SL4\System.Reactive.dll</HintPath>
     </Reference>

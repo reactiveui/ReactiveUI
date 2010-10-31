@@ -43,24 +43,24 @@
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
-    <Reference Include="System.CoreEx, Version=1.0.2521.102, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+    <Reference Include="System.CoreEx">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\ext\v3.5\System.CoreEx.dll</HintPath>
     </Reference>
-    <Reference Include="System.Interactive, Version=1.0.2521.102, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+    <Reference Include="System.Interactive">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\ext\v3.5\System.Interactive.dll</HintPath>
     </Reference>
-    <Reference Include="System.Observable, Version=1.0.0.102, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+    <Reference Include="System.Observable">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\ext\v3.5\System.Observable.dll</HintPath>
     </Reference>
-    <Reference Include="System.Reactive, Version=1.0.2521.102, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+    <Reference Include="System.Reactive">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\ext\v3.5\System.Reactive.dll</HintPath>
     </Reference>
     <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="System.Threading, Version=1.0.2521.102, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+    <Reference Include="System.Threading">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\ext\v3.5\System.Threading.dll</HintPath>
     </Reference>
