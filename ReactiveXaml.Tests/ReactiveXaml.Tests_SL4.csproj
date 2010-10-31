@@ -82,18 +82,22 @@
     <Reference Include="System.CoreEx">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\ext\SL4\System.CoreEx.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System.Interactive">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\ext\SL4\System.Interactive.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System.Observable">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\ext\SL4\System.Observable.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System.Reactive">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\ext\SL4\System.Reactive.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Runtime.Serialization.Json, Version=2.0.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
@@ -124,7 +128,9 @@
     </ApplicationDefinition>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Properties\AppManifest.xml" />
+    <None Include="Properties\AppManifest.xml">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ReactiveXaml.Blend\ReactiveXaml.Blend_SL4.csproj">
