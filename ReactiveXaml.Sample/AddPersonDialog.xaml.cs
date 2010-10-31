@@ -201,7 +201,7 @@ namespace ReactiveXamlSample
 
             _SpinnerVisibility = this.ObservableToProperty(
                 SetImageViaFlickr.CanExecuteObservable.Select(x => x ? Visibility.Collapsed : Visibility.Visible),
-                x => x.SpinnerVisibility);
+                x => x.SpinnerVisibility, Visibility.Collapsed);
 
             OkCommand = new ReactiveCommand(
                 SetImageViaFlickr.CanExecuteObservable.CombineLatest(Person.Select(x => Person.IsValid()),
