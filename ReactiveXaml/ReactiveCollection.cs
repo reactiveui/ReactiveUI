@@ -236,7 +236,6 @@ namespace ReactiveXaml
             return ret;
         }
 
-
         public void Dispose()
         {
             ChangeTrackingEnabled = false;

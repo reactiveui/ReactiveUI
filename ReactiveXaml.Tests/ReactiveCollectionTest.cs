@@ -163,7 +163,6 @@ namespace ReactiveXaml.Tests
             var fixture = new ReactiveCollection<TestFixture>(
                 input.Select(x => new TestFixture() { IsOnlyOneWord = x }));
 
-            input.Run(Console.WriteLine);
             var output = fixture.CreateDerivedCollection(new Func<TestFixture, string>(x => x.IsOnlyOneWord));
 
             input.AssertAreEqual(output);

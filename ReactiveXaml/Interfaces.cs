@@ -72,7 +72,7 @@ namespace ReactiveXaml
         }
     }
 
-    public interface IReactiveCollection<T> : IList<T>, INotifyCollectionChanged
+    public interface IReactiveCollection<T> : IList<T>, INotifyCollectionChanged, IEnableLogger
     {
         IObservable<T> ItemsAdded { get; }
         IObservable<T> BeforeItemsAdded { get; }
