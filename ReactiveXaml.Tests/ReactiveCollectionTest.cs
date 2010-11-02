@@ -7,6 +7,7 @@ using System.IO;
 using System.Text;
 using ReactiveXaml.Tests;
 using System.Runtime.Serialization.Json;
+using System.Threading;
 
 namespace ReactiveXaml.Tests
 {
@@ -130,12 +131,39 @@ namespace ReactiveXaml.Tests
         }
 
         [TestMethod()]
+        public void CreateCollectionWithoutTimer()
+        {
+            var input = new[] {"Foo", "Bar", "Baz", "Bamf"};
+            var fixture = input.ToObservable().CreateCollection();
+
+            input.AssertAreEqual(fixture);
+        }
+
+        [TestMethod()]
+        public void CreateCollectionWithTimer()
+        {
+            var input = new[] {"Foo", "Bar", "Baz", "Bamf"};
+            var fixture = input.ToObservable().CreateCollection(TimeSpan.FromSeconds(0.5));
+            var output = fixture.ItemsAdded.Timestamp().Select(x => x.Timestamp).CreateCollection();
+
+            Assert.IsTrue(RxApp.InUnitTestRunner());
+            Thread.Sleep(4 * 1000);
+
+            input.AssertAreEqual(fixture);
+            var timings = Enumerable.Zip(output, output.Skip(1), 
+                (prev, curr) => (curr - prev) - TimeSpan.FromSeconds(0.5));
+            this.Log().Debug(String.Join(",", timings));
+            timings.Run(x => Assert.IsTrue(x < TimeSpan.FromMilliseconds(20)));
+        }
+
+        [TestMethod()]
         public void DerivedCollectionsShouldFollowBaseCollection()
         {
             var input = new[] {"Foo", "Bar", "Baz", "Bamf"};
             var fixture = new ReactiveCollection<TestFixture>(
                 input.Select(x => new TestFixture() { IsOnlyOneWord = x }));
 
+            input.Run(Console.WriteLine);
             var output = fixture.CreateDerivedCollection(new Func<TestFixture, string>(x => x.IsOnlyOneWord));
 
             input.AssertAreEqual(output);
