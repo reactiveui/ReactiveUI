@@ -236,6 +236,7 @@ namespace ReactiveXaml
             return ret;
         }
 
+
         public void Dispose()
         {
             ChangeTrackingEnabled = false;
@@ -302,6 +303,41 @@ namespace ReactiveXaml
             }
         }
 #endif
+    }
+
+    public static class ReactiveCollectionMixins
+    {
+        public static ReactiveCollection<T> CreateCollection<T>(this IObservable<T> FromObservable, TimeSpan? WithDelay = null)
+        {
+            var ret = new ReactiveCollection<T>();
+            if (WithDelay == null) {
+                FromObservable.ObserveOn(RxApp.DeferredScheduler).Subscribe(ret.Add);
+                return ret;
+            }
+
+            // On a timer, dequeue items from queue if they are available
+            var queue = new Queue<T>();
+            var disconnect = Observable.Timer(WithDelay.Value, WithDelay.Value)
+                .ObserveOn(RxApp.DeferredScheduler).Subscribe(_ => {
+                    if (queue.Count > 0) { 
+                        ret.Add(queue.Dequeue());
+                    }
+                });
+
+            // When new items come in from the observable, stuff them in the queue.
+            // Using the DeferredScheduler guarantees we'll always access the queue
+            // from the same thread.
+            FromObservable.ObserveOn(RxApp.DeferredScheduler).Subscribe(queue.Enqueue);
+
+            // This is a bit clever - keep a running count of the items actually 
+            // added and compare them to the final count of items provided by the
+            // Observable. Combine the two values, and when they're equal, 
+            // disconnect the timer
+            ret.ItemsAdded.Scan0(0, ((acc, _) => acc+1)).Zip(FromObservable.Aggregate(0, (acc,_) => acc+1), 
+                (l,r) => (l == r)).Where(x => x).Subscribe(_ => disconnect.Dispose());
+
+            return ret;
+        }
     }
 }
 
