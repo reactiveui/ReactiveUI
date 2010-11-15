@@ -100,7 +100,7 @@ namespace ReactiveXaml
             };
 
 #if SILVERLIGHT
-            return Deployment.Current.Parts.Any(x =>
+            return Deployment.Current.Parts.Any(x => 
                 test_assemblies.Any(name => x.Source.ToUpperInvariant().Contains(name)));
 #else
             return AppDomain.CurrentDomain.GetAssemblies().Any(x =>
@@ -143,7 +143,6 @@ namespace ReactiveXaml
         //
 
         internal static string expressionToPropertyName<TObj, TRet>(Expression<Func<TObj, TRet>> Property) 
-            where TObj : IReactiveNotifyPropertyChanged
         {
             Contract.Requires(Property != null);
             Contract.Ensures(Contract.Result<string>() != null);
