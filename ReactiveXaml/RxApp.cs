@@ -9,6 +9,7 @@ using System.Concurrency;
 using System.Diagnostics.Contracts;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Windows;
 
 #if WINDOWS_PHONE
 using Microsoft.Phone.Reactive;
@@ -94,11 +95,13 @@ namespace ReactiveXaml
                 "MBUNIT",
                 "TESTDRIVEN",
                 "QUALITYTOOLS.TIPS.UNITTEST.ADAPTER",
+                "QUALITYTOOLS.UNITTESTING.SILVERLIGHT",
                 "PEX",
             };
 
 #if SILVERLIGHT
-            return false;
+            return Deployment.Current.Parts.Any(x =>
+                test_assemblies.Any(name => x.Source.ToUpperInvariant().Contains(name)));
 #else
             return AppDomain.CurrentDomain.GetAssemblies().Any(x =>
                 test_assemblies.Any(name => x.FullName.ToUpperInvariant().Contains(name)));
