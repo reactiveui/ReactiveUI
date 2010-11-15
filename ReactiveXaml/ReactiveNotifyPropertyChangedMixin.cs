@@ -52,10 +52,11 @@ namespace ReactiveXaml
             }
         }
 
-        public static IObservable<TRet> ObservableForProperty<TSender, TValue, TRet>(this TSender This, Expression<Func<TSender, TValue>> Property, Func<TValue, TRet> Selector)
+        public static IObservable<TRet> ObservableForProperty<TSender, TValue, TRet>(this TSender This, Expression<Func<TSender, TValue>> Property, Func<TValue, TRet> Selector, bool BeforeChange = false)
             where TSender : IReactiveNotifyPropertyChanged
         {
-            return This.ObservableForProperty(Property).Select(x => Selector(x.Value));
+            Contract.Requires(Selector != null);
+            return This.ObservableForProperty(Property, BeforeChange).Select(x => Selector(x.Value));
         }
     }
 }
