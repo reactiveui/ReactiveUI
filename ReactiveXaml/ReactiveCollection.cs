@@ -337,6 +337,12 @@ namespace ReactiveXaml
 
             return ret;
         }
+
+        public static ReactiveCollection<TRet> CreateCollection<T, TRet>(this IObservable<T> FromObservable, Func<T, TRet> Selector, TimeSpan? WithDelay = null)
+        {
+            Contract.Requires(Selector != null);
+            return FromObservable.Select(Selector).CreateCollection(WithDelay);
+        }
     }
 }
 
