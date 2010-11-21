@@ -10,6 +10,7 @@ using System.Diagnostics.Contracts;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Windows;
+using System.Net;
 
 #if WINDOWS_PHONE
 using Microsoft.Phone.Reactive;
@@ -159,13 +160,19 @@ namespace ReactiveXaml
         }
 
 #if SILVERLIGHT
-        static MemoizingMRUCache<Tuple<Type, string>, FieldInfo> fieldInfoTypeCache = new MemoizingMRUCache<Tuple<Type,string>,FieldInfo>((x, _) =>
+        static MemoizingMRUCache<Tuple<Type, string>, FieldInfo> fieldInfoTypeCache = new MemoizingMRUCache<Tuple<Type,string>, FieldInfo>((x, _) =>
             (x.Item1).GetField(RxApp.GetFieldNameForProperty(x.Item2)), 
             15 /*items*/);
+        static MemoizingMRUCache<Tuple<Type, string>, PropertyInfo> propInfoTypeCache = new MemoizingMRUCache<Tuple<Type,string>, PropertyInfo>((x, _) =>
+            (x.Item1).GetProperty(x.Item2),
+            15 /*items*/);
 #else
-        static QueuedAsyncMRUCache<Tuple<Type, string>, FieldInfo> fieldInfoTypeCache = new QueuedAsyncMRUCache<Tuple<Type,string>,FieldInfo>(x => {
+        static QueuedAsyncMRUCache<Tuple<Type, string>, FieldInfo> fieldInfoTypeCache = new QueuedAsyncMRUCache<Tuple<Type,string>, FieldInfo>(x => {
             var field_name = RxApp.GetFieldNameForProperty(x.Item2);
             return (x.Item1).GetField(field_name, BindingFlags.NonPublic | BindingFlags.Instance);
+        }, 50);
+        static QueuedAsyncMRUCache<Tuple<Type, string>, PropertyInfo> propInfoTypeCache = new QueuedAsyncMRUCache<Tuple<Type,string>, PropertyInfo>(x => {
+            return (x.Item1).GetProperty(x.Item2, BindingFlags.Public | BindingFlags.Instance);
         }, 50);
 #endif
 
@@ -187,6 +194,26 @@ namespace ReactiveXaml
                 throw new ArgumentException("You must declare a backing field for this property named: " + RxApp.GetFieldNameForProperty(prop_name));
             }
             return field;
+        }
+
+        internal static PropertyInfo getPropertyInfoForProperty<TObj>(string prop_name)
+            where TObj : IReactiveNotifyPropertyChanged
+        {
+            Contract.Requires(prop_name != null);
+            PropertyInfo pi;
+
+#if SILVERLIGHT
+            lock(propInfoTypeCache) {
+                pi = propInfoTypeCache.Get(new Tuple<Type,string>(typeof(TObj), prop_name));
+            }
+#else
+            pi = propInfoTypeCache.Get(new Tuple<Type,string>(typeof(TObj), prop_name));
+#endif
+
+            if (pi == null) {
+                throw new ArgumentException("You must declare a property named: " + prop_name);
+            }
+            return pi;
         }
     }
 }

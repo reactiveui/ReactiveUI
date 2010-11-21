@@ -35,19 +35,19 @@ namespace ReactiveXaml
             Contract.Requires(Property != null);
 
             string prop_name = RxApp.expressionToPropertyName(Property);
-            var field_info = RxApp.getFieldInfoForProperty<TSender>(prop_name);
+            var prop_info = RxApp.getPropertyInfoForProperty<TSender>(prop_name);
 
             if (BeforeChange) {
                 return This.BeforeChange
                     .Where(x => x.PropertyName == prop_name)
                     .Select(x => new ObservedChange<TSender, TValue>() { 
-                        Sender = This, PropertyName = prop_name, Value = (TValue)field_info.GetValue(This)
+                        Sender = This, PropertyName = prop_name, Value = (TValue)prop_info.GetValue(This, null)
                     });
             } else {
                 return This
                     .Where(x => x.PropertyName == prop_name)
                     .Select(x => new ObservedChange<TSender, TValue>() { 
-                        Sender = This, PropertyName = prop_name, Value = (TValue)field_info.GetValue(This)
+                        Sender = This, PropertyName = prop_name, Value = (TValue)prop_info.GetValue(This, null)
                     });
             }
         }
