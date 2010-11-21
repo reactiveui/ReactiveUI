@@ -73,12 +73,16 @@ namespace ReactiveXaml
 #else
             TaskpoolScheduler = Scheduler.TaskPool;
 #endif
+
+            MessageBus = new MessageBus();
         }
 
         public static IScheduler DeferredScheduler { get; set; }
         public static IScheduler TaskpoolScheduler { get; set; }
 
         public static Func<string, ILog> LoggerFactory { get; set; }
+
+        public static IMessageBus MessageBus { get; set; }
 
         public static Func<UserException, RecoveryOptionResult> CustomErrorPresentationFunc { get; set; }
         public static Func<string, string> GetFieldNameForPropertyNameFunc { get; set; }
