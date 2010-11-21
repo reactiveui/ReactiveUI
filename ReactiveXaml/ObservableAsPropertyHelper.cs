@@ -13,10 +13,11 @@ using Microsoft.Phone.Reactive;
 
 namespace ReactiveXaml
 {
-    public class ObservableAsPropertyHelper<T> : IEnableLogger
+    public class ObservableAsPropertyHelper<T> : IEnableLogger, IObservable<T>
     {
         T lastValue;
         Exception lastException;
+        IObservable<T> source;
 
         public ObservableAsPropertyHelper(IObservable<T> observable, Action<T> on_changed, T initial_value = default(T), IScheduler scheduler = null)
         {
@@ -26,9 +27,8 @@ namespace ReactiveXaml
             scheduler = scheduler ?? RxApp.DeferredScheduler;
             lastValue = initial_value;
 
-            observable.DistinctUntilChanged()
-                      .ObserveOn(scheduler)
-                      .Subscribe(x => {
+            source = observable.DistinctUntilChanged().ObserveOn(scheduler);
+            source.Subscribe(x => {
                 this.Log().DebugFormat("Property helper {0:X} changed", this.GetHashCode());
                 lastValue = x;
                 on_changed(x);
@@ -43,6 +43,11 @@ namespace ReactiveXaml
                 }
                 return lastValue;
             }
+        }
+
+        public IDisposable Subscribe(IObserver<T> observer)
+        {
+            return source.Subscribe(observer);
         }
     }
 
