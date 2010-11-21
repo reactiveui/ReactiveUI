@@ -68,5 +68,16 @@ namespace ReactiveXaml
             string prop_name = RxApp.expressionToPropertyName(Property);
             return new ObservableAsPropertyHelper<TRet>(Observable, _ => This.RaisePropertyChanged(prop_name), InitialValue, Scheduler);
         }
+
+        public static ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(
+            this IObservable<TRet> Observable,
+            TObj Object,
+            Expression<Func<TObj, TRet>> Property,
+            TRet InitialValue = default(TRet),
+            IScheduler Scheduler = null)
+            where TObj : ReactiveObject
+        {
+            return Object.ObservableToProperty(Observable, Property, InitialValue, Scheduler);
+        }
     }
 }
