@@ -55,6 +55,14 @@ namespace ReactiveXaml
         IObservable<Unit> AsyncCompletedNotification { get; }
     }
 
+    public interface IMessageBus
+    {
+        IObservable<T> Listen<T>(string Contract = null);
+        bool IsRegistered(Type Type, string Contract = null);
+        void RegisterMessageSource<T>(IObservable<T> Source, string Contract = null);
+        void SendMessage<T>(T Message, string Contract = null);
+    }
+
     public interface IPromptUserForNewModel<T>
     {
         T Prompt(object Parameter);

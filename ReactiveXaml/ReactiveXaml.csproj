@@ -123,6 +123,7 @@
     </Compile>
     <Compile Include="Logging.cs" />
     <Compile Include="MemoizingMRUCache.cs" />
+    <Compile Include="MessageBus.cs" />
     <Compile Include="ObservableAsPropertyHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QueuedAsyncMRUCache.cs" />
