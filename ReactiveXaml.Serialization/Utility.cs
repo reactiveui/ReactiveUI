@@ -27,19 +27,15 @@ namespace ReactiveXaml.Serialization
         public static IEnumerable<Type> GetAllTypesImplementingInterface(Type InterfaceToCheck, Assembly TargetAssembly = null)
         {
             var allAssemblies = (TargetAssembly != null ? new[] {TargetAssembly} : AppDomain.CurrentDomain.GetAssemblies());
-            var ret = new List<Type>();
-            foreach (Assembly a in allAssemblies) {
-                foreach (Module m in a.GetModules()) {
-                    Type[] type_list = m.GetTypes();
-                    foreach (Type t in type_list) {
-                        if (!Utility.ImplementsInterface(t, InterfaceToCheck))
-                            continue;
 
-                        ret.Add(t);
-                    }
-                }
-            }
-            return ret;
+            // I shudder to think what this actually gets turned into in MSIL
+            var ret = from a in allAssemblies
+                      from mod in a.GetModules()
+                      from type in mod.GetTypes()
+                      where Utility.ImplementsInterface(type, InterfaceToCheck)
+                      select type;
+
+            return ret.ToArray();
         }
 	}
 
