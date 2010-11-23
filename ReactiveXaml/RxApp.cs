@@ -88,6 +88,7 @@ namespace ReactiveXaml
         public static Func<string, string> GetFieldNameForPropertyNameFunc { get; set; }
         public static RecoveryOptionResult DefaultUnitTestRecoveryResult { get; set; }
 
+
         public static bool InUnitTestRunner()
         {
             // XXX: This is hacky and evil, but I can't think of any better way
@@ -168,7 +169,7 @@ namespace ReactiveXaml
             (x.Item1).GetField(RxApp.GetFieldNameForProperty(x.Item2)), 
             15 /*items*/);
         static MemoizingMRUCache<Tuple<Type, string>, PropertyInfo> propInfoTypeCache = new MemoizingMRUCache<Tuple<Type,string>, PropertyInfo>((x, _) =>
-            (x.Item1).GetProperty(x.Item2),
+            (x.Item1).GetProperty(x.Item2), 
             15 /*items*/);
 #else
         static QueuedAsyncMRUCache<Tuple<Type, string>, FieldInfo> fieldInfoTypeCache = new QueuedAsyncMRUCache<Tuple<Type,string>, FieldInfo>(x => {
@@ -200,7 +201,7 @@ namespace ReactiveXaml
             return field;
         }
 
-        internal static PropertyInfo getPropertyInfoForProperty<TObj>(string prop_name)
+        internal static PropertyInfo getPropertyInfoForProperty<TObj>(string prop_name) 
             where TObj : IReactiveNotifyPropertyChanged
         {
             Contract.Requires(prop_name != null);
@@ -212,7 +213,7 @@ namespace ReactiveXaml
             }
 #else
             pi = propInfoTypeCache.Get(new Tuple<Type,string>(typeof(TObj), prop_name));
-#endif
+#endif 
 
             if (pi == null) {
                 throw new ArgumentException("You must declare a property named: " + prop_name);
