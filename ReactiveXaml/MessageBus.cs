@@ -10,6 +10,7 @@ using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 using System.Linq;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 #if WINDOWS_PHONE
 using Microsoft.Phone.Reactive;
@@ -68,6 +69,10 @@ namespace ReactiveXaml
             });
         }
 
+        public static IMessageBus Current {
+            get { return RxApp.MessageBus; }
+        }
+
         void withMessageBus(Type Type, string Contract, Action<Dictionary<Tuple<Type, string>, WeakReference>, Tuple<Type, string>> block)
         {
             lock(messageBus) {
@@ -77,6 +82,45 @@ namespace ReactiveXaml
                     messageBus.Remove(tuple);
                 }
             }
+        }
+    }
+
+    public static class MessageBusMixins
+    {
+        public static void RegisterViewModel<T>(this IMessageBus This, T Source, string Contract = null)
+            where T : IReactiveNotifyPropertyChanged
+        {
+            string contractName = viewModelContractName(typeof(T), Contract);
+            if (This.IsRegistered(typeof(ObservedChange<T, Unit>), contractName)) {
+                throw new Exception(typeof(T).FullName + " must be a singleton class or have a unique Contract name");
+            }
+
+            This.RegisterMessageSource(
+                Source.Select(x => new ObservedChange<T, Unit>() { Sender = Source, PropertyName = x.PropertyName }), 
+                contractName);
+
+            This.RegisterMessageSource(
+                 Observable.Defer(() => Observable.Return(Source)), viewModelCurrentValueContractName(typeof(T), Contract));
+        }
+
+        public static IObservable<ObservedChange<T, Unit>> ListenToViewModel<T>(this IMessageBus This, string Contract = null)
+        {
+            return This.Listen<ObservedChange<T, Unit>>(viewModelContractName(typeof(T), Contract));
+        }
+
+        public static T ViewModelForType<T>(this IMessageBus This, string Contract = null)
+        {
+            return This.Listen<T>(viewModelCurrentValueContractName(typeof(T), Contract)).First();
+        }
+
+        static string viewModelContractName(Type Type, string Contract)
+        {
+            return Type.FullName + "_" + (Contract ?? "");
+        }
+
+        static string viewModelCurrentValueContractName(Type Type, string Contract)
+        {
+            return viewModelContractName(Type, Contract) + "__current";
         }
     }
 }
