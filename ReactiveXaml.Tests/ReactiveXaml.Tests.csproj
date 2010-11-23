@@ -61,6 +61,15 @@
     <Reference Include="System.Reactive">
       <HintPath>..\ext\System.Reactive.dll</HintPath>
     </Reference>
+    <Reference Include="System.Reactive.ClientProfile">
+      <HintPath>..\ext\System.Reactive.ClientProfile.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reactive.ExtendedProfile">
+      <HintPath>..\ext\System.Reactive.ExtendedProfile.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reactive.Testing">
+      <HintPath>..\ext\System.Reactive.Testing.dll</HintPath>
+    </Reference>
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml" />

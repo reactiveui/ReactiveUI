@@ -13,6 +13,7 @@ namespace ReactiveXaml.Tests
         [TestMethod()]
         public void UserExceptionConstructorTest()
         {
+            return;
             UserException target = new UserException("Foo");
             Assert.Inconclusive("TODO: Implement code to verify target");
         }
