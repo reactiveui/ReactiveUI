@@ -10,13 +10,14 @@ using Microsoft.Phone.Reactive;
 #endif
 
 #if !SILVERLIGHT
+using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Concurrent;
 #endif
 
 namespace ReactiveXaml
 {
-    public sealed class QueuedAsyncMRUCache<TParam, TVal> : IEnableLogger
+    public sealed class QueuedAsyncMRUCache<TParam, TVal> : IEnableLogger, IDisposable
     {
         readonly MemoizingMRUCache<TParam, TVal> innerCache;
         readonly BlockingCollection<TParam> concurrentOps;
@@ -37,7 +38,7 @@ namespace ReactiveXaml
                 IObservable<TVal> ret;
                 while (!concurrentOpsDict.TryGetValue(x, out ret)) { }
                 this.Log().DebugFormat("Stashing {0} in cache", x);
-                return ret.Take(1).First(); 
+                return ret.First();
             }, max_size, on_release);
         }
 
@@ -67,20 +68,20 @@ namespace ReactiveXaml
                 }
             }
 
-            var t = new Task<TVal>(() => func(key));
-            var new_item = t.ToObservable();
-            t.Start();
-
             IObservable<TVal> observable;
             if (concurrentOpsDict.TryGetValue(key, out observable)) {
                 this.Log().DebugFormat("Found pending item in cache: {0}", key);
                 return observable;
             }
 
+            var t = new Task<TVal>(() => func(key));
+            var new_item = t.ToObservable();
+            this.Log().Debug("Cache item not found, launching new task");
+            t.Start();
+
             concurrentOps.Add(key);
             concurrentOpsDict.GetOrAdd(key, new_item);
 
-            this.Log().DebugFormat("Not in cache or pending, adding new item: {0}", key);
             new_item.Subscribe(x => {
                 concurrentOpsDict[key] = Observable.Return(x);
                 lock (innerCache) { innerCache.Get(key); }
