@@ -54,7 +54,7 @@ namespace ReactiveXaml.Tests
         public void ObservableCanExecuteFuncShouldShowUpInCommand()
         {
             int counter = 1;
-            var fixture = new ReactiveCommand(_ => (++counter % 2 == 0), null);
+            var fixture = new ReactiveCommand(_ => (++counter % 2 == 0), null, null);
             var changes_as_observable = new ListObservable<bool>(fixture.CanExecuteObservable);
 
             int change_event_count = 0;
@@ -91,7 +91,7 @@ namespace ReactiveXaml.Tests
         public void MultipleSubscribesShouldntResultInMultipleNotifications()
         {
             var input = new[] { 1, 2, 1, 2 };
-            var fixture = new ReactiveCommand(null, null);
+            var fixture = new ReactiveCommand((IObservable<bool>)null, null, null);
 
             var odd_list = new List<int>();
             var even_list = new List<int>();
@@ -133,7 +133,7 @@ namespace ReactiveXaml.Tests
 
             // Now, make sure that the command isn't broken
             fixture.Execute(5);
-            Console.WriteLine(String.Join(",", out_list));
+            Console.WriteLine(String.Join(",", out_list.Select(x => x.ToString()).ToArray()));
             Assert.AreEqual(5, out_list.Count);
         }
 
@@ -149,55 +149,62 @@ namespace ReactiveXaml.Tests
         [TestMethod()]
         public void AsyncCommandSmokeTest()
         {
-            var inflight_results = new List<int>();
-            var fixture = new ReactiveAsyncCommand(null, 1);
+            var sched = new TestScheduler();
+            IObservable<int> async_data;
+            ReactiveAsyncCommand fixture;
 
-            var async_data = fixture
-                .ObserveOn(RxApp.TaskpoolScheduler)
-                .Delay(new TimeSpan(0, 0, 5))
-                .Select(_ => 5)
-                .Do(_ => fixture.AsyncCompletedNotification.OnNext(new Unit()));
+            using (TestUtils.WithTestScheduler(sched)) {
+                fixture = new ReactiveAsyncCommand(null, 1);
+                async_data = fixture
+                    .ObserveOn(RxApp.TaskpoolScheduler)
+                    .Delay(TimeSpan.FromSeconds(5))
+                    .Select(_ => 5)
+                    .Do(_ => fixture.AsyncCompletedNotification.OnNext(new Unit()));
+            }
 
-            fixture.ItemsInflight.Subscribe(x => inflight_results.Add(x));
-
-            async_data.Subscribe();
+            var inflight_results = fixture.ItemsInflight.CreateCollection();
+            var output = async_data.CreateCollection();
 
             Assert.IsTrue(fixture.CanExecute(null));
 
             fixture.Execute(null);
+            sched.RunToMilliseconds(1005);
             Assert.IsFalse(fixture.CanExecute(null));
 
-            Thread.Sleep(5500);
+            sched.RunToMilliseconds(5005);
             Assert.IsTrue(fixture.CanExecute(null));
 
             new[] {0,1,0}.AssertAreEqual(inflight_results);
+            new[] {5}.AssertAreEqual(output);
         }
 
 
         [TestMethod]
         public void RegisterAsyncFunctionSmokeTest()
         {
-            var inflight_results = new List<int>();
-            var fixture = new ReactiveAsyncCommand(null, 1);
-            var results = new List<int>();
+            var sched = new TestScheduler();
+            var fixture = sched.With(_ => new ReactiveAsyncCommand(null, 1));
+            ReactiveCollection<int> results;
 
-            fixture.RegisterAsyncFunction(_ => { Thread.Sleep(2000); return 5; })
-                   .Subscribe(x => results.Add(x));
+            using (TestUtils.WithTestScheduler(sched)) {
+                results = fixture.RegisterObservableAsyncFunction(_ => 
+                    Observable.Return(5).Delay(TimeSpan.FromSeconds(5), sched)
+                ).CreateCollection();
+            }
 
-            fixture.ItemsInflight.Subscribe(x => inflight_results.Add(x));
+            var inflight_results = fixture.ItemsInflight.CreateCollection();
 
             Assert.IsTrue(fixture.CanExecute(null));
 
             fixture.Execute(null);
+            sched.RunToMilliseconds(1005);
             Assert.IsFalse(fixture.CanExecute(null));
 
-            Thread.Sleep(6000);
+            sched.RunToMilliseconds(5005);
             Assert.IsTrue(fixture.CanExecute(null));
 
             new[] {0,1,0}.AssertAreEqual(inflight_results);
-
-            Assert.IsTrue(results.Count == 1);
-            Assert.IsTrue(results[0] == 5);
+            new[] {5}.AssertAreEqual(results);
         }
 
         [TestMethod]
