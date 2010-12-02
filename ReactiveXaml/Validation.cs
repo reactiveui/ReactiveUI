@@ -37,8 +37,6 @@ namespace ReactiveXaml
 
         public string this[string propName] {
             get {
-                Contract.Requires(propName != null);
-
                 string ret = null;
                 if(!errorMap.TryGetValue(propName, out ret)) {
                     ret = errorMap[propName] = calculatePropertyIsInvalid(propName);
