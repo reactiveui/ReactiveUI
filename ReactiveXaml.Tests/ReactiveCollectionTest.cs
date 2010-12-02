@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System.Concurrency;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Linq;
 using System.Collections.Generic;
@@ -143,17 +144,25 @@ namespace ReactiveXaml.Tests
         public void CreateCollectionWithTimer()
         {
             var input = new[] {"Foo", "Bar", "Baz", "Bamf"};
-            var fixture = input.ToObservable().CreateCollection(TimeSpan.FromSeconds(0.5));
-            var output = fixture.ItemsAdded.Timestamp().Select(x => x.Timestamp).CreateCollection();
+            var sched = new TestScheduler();
+			
+#if IOS
+			Assert.Fail("This hangs the test runner");
+#endif
 
-            Assert.IsTrue(RxApp.InUnitTestRunner());
-            Thread.Sleep(4 * 1000);
+            ReactiveCollection<string> fixture;
+            using (TestUtils.WithTestScheduler(sched)) {
+                fixture = input.ToObservable(sched).CreateCollection(TimeSpan.FromSeconds(0.5));
+            }
 
-            input.AssertAreEqual(fixture);
-            var timings = Enumerable.Zip(output, output.Skip(1), 
-                (prev, curr) => (curr - prev) - TimeSpan.FromSeconds(0.5));
-            this.Log().Debug(String.Join(",", timings));
-            timings.Run(x => Assert.IsTrue(x < TimeSpan.FromMilliseconds(20)));
+            sched.RunToMilliseconds(1005);
+            fixture.AssertAreEqual(input.Take(2));
+            
+            sched.RunToMilliseconds(1505);
+            fixture.AssertAreEqual(input.Take(3));
+
+            sched.Run();
+            fixture.AssertAreEqual(input);
         }
 
         [TestMethod()]

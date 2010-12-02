@@ -65,6 +65,9 @@ namespace ReactiveXaml.Tests
         [TestMethod()]        
         public void ReactiveObjectSmokeTest()
         {
+#if IOS
+			Assert.Fail("This crashes Mono in a quite spectacular way");
+#endif
             var output_changing = new List<string>();
             var output = new List<string>();
             var fixture = new TestFixture();
@@ -112,6 +115,9 @@ namespace ReactiveXaml.Tests
         [TestMethod()]
         public void ReactiveObjectShouldWatchCollections()
         {
+#if IOS
+			Assert.Fail("This crashes Mono in a quite spectacular way");
+#endif			
             var output = new List<string>();
             var fixture = new TestFixture();
 
@@ -141,6 +147,10 @@ namespace ReactiveXaml.Tests
         [TestMethod()]
         public void RaiseAndSetUsingExpression()
         {
+#if IOS
+			Assert.Fail("This crashes Mono in a quite spectacular way");
+#endif
+			
             var fixture = new TestFixture() { IsNotNullString = "Foo", IsOnlyOneWord = "Baz" };
             var output = new List<string>();
             fixture.Subscribe(x => output.Add(x.PropertyName));
@@ -183,6 +193,11 @@ namespace ReactiveXaml.Tests
         {
             string before_set = "Foo";
             string after_set = "Bar"; 
+			
+#if IOS
+			Assert.Fail("This crashes Mono in a quite spectacular way");
+#endif
+			
             var fixture = new TestFixture() { IsOnlyOneWord = before_set };
 
             bool before_fired = false;
