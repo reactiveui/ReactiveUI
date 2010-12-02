@@ -51,12 +51,8 @@ namespace ReactiveXaml.Sample.WP7
             TranslateText = new ReactiveAsyncCommand(null, 1);
 
             this.ObservableForProperty(x => x.EnglishText)
-                //.CombineLatest(TranslateText.CanExecuteObservable, 
-                //    (text, enabled) => new { Text = text.Value, IsNotBusy = enabled})
-                //.Where(x => x.IsNotBusy)
                 .Throttle(TimeSpan.FromMilliseconds(1200))
                 .Subscribe(x => TranslateText.Execute(x.Value));
-                //.Subscribe(x => TranslateText.Execute(x.Text));
 
             var client = new LanguageServiceClient() as LanguageService;
 
