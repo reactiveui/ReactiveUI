@@ -128,7 +128,7 @@ namespace ReactiveXaml
                 if (this.ThrowOnInvalidPropertyName)
                     throw new ArgumentException(msg);
                 else
-                    Debug.Fail(msg);
+                    this.Log().Debug(msg);
             }
 #endif
         }

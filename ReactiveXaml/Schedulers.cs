@@ -28,8 +28,6 @@ namespace ReactiveXaml
 
         public IDisposable Schedule(Action action, TimeSpan dueTime)
         {
-            Contract.Requires(action != null);
-
             return innerSched.Schedule(() => {
                 var sw = new Stopwatch();
                 sw.Start(); action(); sw.Stop();

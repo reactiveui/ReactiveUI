@@ -37,7 +37,7 @@ namespace ReactiveXaml
             canExecuteSubject = new Subject<bool>();
             canExecuteLatest = new ObservableAsPropertyHelper<bool>(canExecuteSubject,
                 b => { if (CanExecuteChanged != null) CanExecuteChanged(this, EventArgs.Empty); },
-                false, scheduler);
+                true, scheduler);
 
             executeSubject = new Subject<object>();
 

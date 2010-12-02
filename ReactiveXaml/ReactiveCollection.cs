@@ -316,7 +316,7 @@ namespace ReactiveXaml
 
             // On a timer, dequeue items from queue if they are available
             var queue = new Queue<T>();
-            var disconnect = Observable.Timer(WithDelay.Value, WithDelay.Value)
+            var disconnect = Observable.Timer(WithDelay.Value, WithDelay.Value, RxApp.TaskpoolScheduler)
                 .ObserveOn(RxApp.DeferredScheduler).Subscribe(_ => {
                     if (queue.Count > 0) { 
                         ret.Add(queue.Dequeue());
