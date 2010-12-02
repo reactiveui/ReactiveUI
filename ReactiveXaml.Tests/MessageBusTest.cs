@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System.Concurrency;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Linq;
 using System.Collections.Generic;
@@ -17,19 +18,25 @@ namespace ReactiveXaml.Tests
         [TestMethod]
         public void MessageBusSmokeTest()
         {
-            var input = new[]{1,2,3,4};
-            var source = new Subject<int>();
-            var fixture = new MessageBus();
+            var input = new[] {1, 2, 3, 4};
 
-            fixture.RegisterMessageSource(source, "Test");
-            Assert.IsFalse(fixture.IsRegistered(typeof(int)));
-            Assert.IsFalse(fixture.IsRegistered(typeof(int), "Foo"));
+            var result = (new TestScheduler()).With(sched => {
+                var source = new Subject<int>();
+                var fixture = new MessageBus();
 
-            var output = fixture.Listen<int>("Test").CreateCollection();
+                fixture.RegisterMessageSource(source, "Test");
+                Assert.IsFalse(fixture.IsRegistered(typeof (int)));
+                Assert.IsFalse(fixture.IsRegistered(typeof (int), "Foo"));
 
-            input.Run(source.OnNext);
+                var output = fixture.Listen<int>("Test").CreateCollection();
 
-            input.AssertAreEqual(output);
+                input.Run(source.OnNext);
+
+                sched.Run();
+                return output;
+            });
+
+            input.AssertAreEqual(result);
         }
     }
 }

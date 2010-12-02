@@ -26,17 +26,24 @@ namespace ReactiveXaml.Tests
         [TestMethod()]
         public void ObservableFromDPSmokeTest()
         {
-            var fixture = new DepObjFixture();
-            var input = new[] {"Foo", "Bar", "Baz"};
-            var output = fixture.ObservableFromDP(x => x.TestString).CreateCollection();
+            (new TestScheduler()).With(sched => {
+                var input = new[] {"Foo", "Bar", "Baz"};
+                var fixture = new DepObjFixture();
+                var output = fixture.ObservableFromDP(x => x.TestString).CreateCollection();
 
-            foreach(var v in input) { fixture.TestString = v; }
+                foreach (var v in input) {
+                    fixture.TestString = v;
+                }
 
-            input.AssertAreEqual(output.Select(x => x.Value));
-            foreach(var v in output) {
-                Assert.AreEqual(fixture, v.Sender);
-                Assert.AreEqual("TestString", v.PropertyName);
-            }
+                sched.Run();
+                input.AssertAreEqual(output.Select(x => x.Value));
+                foreach (var v in output) {
+                    Assert.AreEqual(fixture, v.Sender);
+                    Assert.AreEqual("TestString", v.PropertyName);
+                }
+
+                return new Unit();
+            });
         }
     }
 }

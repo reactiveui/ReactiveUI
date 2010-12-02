@@ -135,8 +135,13 @@ namespace ReactiveXaml.Tests
         public void CreateCollectionWithoutTimer()
         {
             var input = new[] {"Foo", "Bar", "Baz", "Bamf"};
-            var fixture = input.ToObservable().CreateCollection();
+            var fixture = (new TestScheduler()).With(sched => {
+                var f = input.ToObservable(sched).CreateCollection();
 
+                sched.Run();
+                return f;
+            });
+            
             input.AssertAreEqual(fixture);
         }
 
@@ -145,10 +150,6 @@ namespace ReactiveXaml.Tests
         {
             var input = new[] {"Foo", "Bar", "Baz", "Bamf"};
             var sched = new TestScheduler();
-			
-#if IOS
-			Assert.Fail("This hangs the test runner");
-#endif
 
             ReactiveCollection<string> fixture;
             using (TestUtils.WithTestScheduler(sched)) {
@@ -161,7 +162,7 @@ namespace ReactiveXaml.Tests
             sched.RunToMilliseconds(1505);
             fixture.AssertAreEqual(input.Take(3));
 
-            sched.Run();
+            sched.RunToMilliseconds(10000);
             fixture.AssertAreEqual(input);
         }
 

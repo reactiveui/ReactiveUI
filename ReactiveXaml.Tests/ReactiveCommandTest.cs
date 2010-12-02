@@ -14,55 +14,66 @@ namespace ReactiveXaml.Tests
         [TestMethod()]
         public void CompletelyDefaultReactiveCommandShouldFire()
         {
-            var fixture = new ReactiveCommand(null, RxApp.DeferredScheduler);
+            var sched = new TestScheduler();
+            var fixture = new ReactiveCommand(null, sched);
             Assert.IsTrue(fixture.CanExecute(null));
 
             string result = null;
             fixture.Subscribe(x => result = x as string);
 
             fixture.Execute("Test");
+            sched.Run();
             Assert.AreEqual("Test", result);
             fixture.Execute("Test2");
+            sched.Run();
             Assert.AreEqual("Test2", result);
         }
 
         [TestMethod()]
         public void ObservableCanExecuteShouldShowUpInCommand()
         {
-            var can_execute = new Subject<bool>();
-            var fixture = new ReactiveCommand(can_execute, null);
-            var changes_as_observable = new ListObservable<bool>(fixture.CanExecuteObservable);
+            var input = new[] {true, false, false, true, false, true};
+            var result = (new TestScheduler()).With(sched => {
+                var can_execute = new Subject<bool>();
+                var fixture = new ReactiveCommand(can_execute, null);
+                var changes_as_observable = new ListObservable<bool>(fixture.CanExecuteObservable);
 
-            var input = new[] { true, false, false, true, false, true };
+                int change_event_count = 0;
+                fixture.CanExecuteChanged += (o, e) => { change_event_count++; };
+                input.Run(x => {
+                    can_execute.OnNext(x);
+                    sched.Run();
+                    Assert.AreEqual(x, fixture.CanExecute(null));
+                });
 
-            int change_event_count = 0;
-            fixture.CanExecuteChanged += (o, e) => { change_event_count++; };
-            input.Run(x => {
-                can_execute.OnNext(x);
-                Assert.AreEqual(x, fixture.CanExecute(null));
+                // N.B. We check against '5' instead of 6 because we're supposed to 
+                // suppress changes that aren't actually changes i.e. false => false
+                can_execute.OnCompleted();
+                sched.Run();
+                Assert.AreEqual(5, change_event_count);
+
+                return changes_as_observable;
             });
 
-            // N.B. We check against '5' instead of 6 because we're supposed to 
-            // suppress changes that aren't actually changes i.e. false => false
-            can_execute.OnCompleted();
-            Assert.AreEqual(5, change_event_count);
-
-            input.AssertAreEqual(changes_as_observable.ToList());
+            input.AssertAreEqual(result.ToList());
         }
 
         [TestMethod()]
         public void ObservableCanExecuteFuncShouldShowUpInCommand()
         {
             int counter = 1;
-            var fixture = new ReactiveCommand(_ => (++counter % 2 == 0), null, null);
+            var sched = new TestScheduler();
+            var fixture = new ReactiveCommand(_ => (++counter % 2 == 0), null, sched);
             var changes_as_observable = new ListObservable<bool>(fixture.CanExecuteObservable);
 
             int change_event_count = 0;
             fixture.CanExecuteChanged += (o, e) => { change_event_count++; };
             Enumerable.Range(0, 6).Run(x => {
+                sched.Run();
                 Assert.AreEqual(x % 2 == 0, fixture.CanExecute(null));
             });
 
+            sched.Run();
             Assert.AreEqual(6, change_event_count);
         }
 
@@ -91,7 +102,8 @@ namespace ReactiveXaml.Tests
         public void MultipleSubscribesShouldntResultInMultipleNotifications()
         {
             var input = new[] { 1, 2, 1, 2 };
-            var fixture = new ReactiveCommand((IObservable<bool>)null, null, null);
+            var sched = new TestScheduler();
+            var fixture = new ReactiveCommand((IObservable<bool>)null, null, sched);
 
             var odd_list = new List<int>();
             var even_list = new List<int>();
@@ -99,6 +111,7 @@ namespace ReactiveXaml.Tests
             fixture.Where(x => ((int)x) % 2 == 0).Subscribe(x => even_list.Add((int)x));
 
             input.Run(x => fixture.Execute(x));
+            sched.RunToMilliseconds(1000);
 
             new[]{1,1}.AssertAreEqual(odd_list);
             new[]{2,2}.AssertAreEqual(even_list);
@@ -192,8 +205,8 @@ namespace ReactiveXaml.Tests
                 ).CreateCollection();
             }
 
-            var inflight_results = fixture.ItemsInflight.CreateCollection();
-
+            var inflight_results = sched.With(_ => fixture.ItemsInflight.CreateCollection());
+            sched.RunToMilliseconds(10);
             Assert.IsTrue(fixture.CanExecute(null));
 
             fixture.Execute(null);
