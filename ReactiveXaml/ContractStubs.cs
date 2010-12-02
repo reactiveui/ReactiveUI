@@ -34,7 +34,7 @@ public class Lazy<T>
 }
 #endif
 
-#if SILVERLIGHT
+#if SILVERLIGHT || IOS
 
 namespace System.ComponentModel
 {
@@ -57,6 +57,20 @@ namespace System.ComponentModel
     {
         event PropertyChangingEventHandler PropertyChanging;
     }
+}
+
+#endif
+
+#if IOS
+
+namespace System.Windows.Input
+{
+	public interface ICommand 
+	{
+		bool CanExecute(object parameter);
+		void Execute(object parameter);
+		event EventHandler CanExecuteChanged;
+	}
 }
 
 #endif

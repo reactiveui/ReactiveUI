@@ -22,10 +22,11 @@ namespace ReactiveXaml
         public static IObservable<ObservedChange<TSender, TValue>> ObservableForProperty<TSender, TValue>(this TSender This, string propertyName)
             where TSender : IReactiveNotifyPropertyChanged
         {
-            Contract.Requires(This != null); 
+            Contract.Requires(This != null);
+            IObservable<PropertyChangedEventArgs> Obs = This;
 
-            return This.Where(x => x.PropertyName == propertyName)
-                       .Select(x => new ObservedChange<TSender, TValue> { Sender = This, PropertyName = x.PropertyName });
+            return Obs.Where(x => x.PropertyName == propertyName)
+                      .Select(x => new ObservedChange<TSender, TValue> { Sender = This, PropertyName = x.PropertyName });
         }
 
         public static IObservable<ObservedChange<TSender, TValue>> ObservableForProperty<TSender, TValue>(this TSender This, Expression<Func<TSender, TValue>> Property, bool BeforeChange = false)
@@ -44,7 +45,7 @@ namespace ReactiveXaml
                         Sender = This, PropertyName = prop_name, Value = (TValue)prop_info.GetValue(This, null)
                     });
             } else {
-                return This
+                return (This as IObservable<PropertyChangedEventArgs>)
                     .Where(x => x.PropertyName == prop_name)
                     .Select(x => new ObservedChange<TSender, TValue>() { 
                         Sender = This, PropertyName = prop_name, Value = (TValue)prop_info.GetValue(This, null)
@@ -54,7 +55,7 @@ namespace ReactiveXaml
 
         public static IObservable<TRet> ObservableForProperty<TSender, TValue, TRet>(this TSender This, Expression<Func<TSender, TValue>> Property, Func<TValue, TRet> Selector, bool BeforeChange = false)
             where TSender : IReactiveNotifyPropertyChanged
-        {
+        {           
             Contract.Requires(Selector != null);
             return This.ObservableForProperty(Property, BeforeChange).Select(x => Selector(x.Value));
         }
