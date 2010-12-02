@@ -45,6 +45,7 @@ namespace ReactiveXaml.Tests
         public void OAPHShouldRethrowErrors()
         {
             var input = new Subject<int>();
+            var sched = new TestScheduler();
 
             var fixture = new ObservableAsPropertyHelper<int>(input,
                 _ => { }, -5);

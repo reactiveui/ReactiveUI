@@ -1,5 +1,6 @@
 ﻿using System.Collections.Concurrent;
 using System.Threading;
+using System.Threading.Tasks;
 using ReactiveXaml;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
@@ -16,15 +17,38 @@ namespace ReactiveXaml.Tests
         public void GetTest()
         {
             var input = new[] { 1, 1, 1, 1, 1 };
-            var fixture = new QueuedAsyncMRUCache<int, int>(x => { Thread.Sleep(1000); return x * 5; }, 5, 2);
+            var sched = new TestScheduler();
+            QueuedAsyncMRUCache<int, int> fixture;
 
-            assertStopwatch(new TimeSpan(0,0,0,0,1100), () => {
-                input.Select(x => fixture.Get(x)).ToArray();
-            });
+            var delay = TimeSpan.FromSeconds(1.0);
+            using (TestUtils.WithTestScheduler(sched)) {
+                fixture = new QueuedAsyncMRUCache<int, int>(x => Observable.Return(x*5).Delay(delay, sched).First(), 5, 2);
+            }
 
-            assertStopwatch(new TimeSpan(0,0,0,0,100), () => {
-                Assert.AreEqual(5, fixture.Get(1));
+            int result = 0;
+            var t = new Task(() => {
+                foreach (int i in input) {
+                    this.Log().DebugFormat("Counter is {0}", result);
+                    result += fixture.Get(i);
+                }
             });
+            t.Start();
+
+            Thread.Sleep(200);
+
+            this.Log().Debug("Running to t=0");
+            sched.RunTo(sched.FromTimeSpan(TimeSpan.FromMilliseconds(500)));
+            Assert.AreEqual(0, result);
+            this.Log().Debug("Running to t=1200");
+            sched.RunTo(sched.FromTimeSpan(TimeSpan.FromMilliseconds(1200)));
+
+            Thread.Sleep(200);
+
+            Assert.AreEqual(25, result);
+
+            this.Log().Debug("Running to end");
+            sched.Run();
+            Assert.AreEqual(25, result);
         }
 
         [TestMethod()]
