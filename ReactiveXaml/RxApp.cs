@@ -65,7 +65,11 @@ namespace ReactiveXaml
             }
             else
             {
+#if IOS
+                DeferredScheduler = new EventLoopScheduler();
+#else
                 DeferredScheduler = Scheduler.Dispatcher;
+#endif
             }
 
 #if SILVERLIGHT
@@ -118,7 +122,7 @@ namespace ReactiveXaml
         {
             LoggerFactory = (x => new StdErrLogger());
 
-#if !SILVERLIGHT
+#if !SILVERLIGHT && !IOS
             // NOTE: This is a handy feature for writing desktop applications;
             // it crashes the app whenever a dispatcher item would have hung the
             // UI.

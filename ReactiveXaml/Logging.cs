@@ -17,37 +17,37 @@ namespace ReactiveXaml
     {
         void Debug(object message);
         void Debug(object message, Exception exception);
-        void DebugFormat(string format, object arg0);
         void DebugFormat(string format, params object[] args);
         void DebugFormat(IFormatProvider provider, string format, params object[] args);
+        void DebugFormat(string format, object arg0);
         void DebugFormat(string format, object arg0, object arg1);
         void DebugFormat(string format, object arg0, object arg1, object arg2);
         void Error(object message);
         void Error(object message, Exception exception);
-        void ErrorFormat(string format, object arg0);
         void ErrorFormat(string format, params object[] args);
         void ErrorFormat(IFormatProvider provider, string format, params object[] args);
+        void ErrorFormat(string format, object arg0);
         void ErrorFormat(string format, object arg0, object arg1);
         void ErrorFormat(string format, object arg0, object arg1, object arg2);
         void Fatal(object message);
         void Fatal(object message, Exception exception);
-        void FatalFormat(string format, object arg0);
         void FatalFormat(string format, params object[] args);
         void FatalFormat(IFormatProvider provider, string format, params object[] args);
+        void FatalFormat(string format, object arg0);
         void FatalFormat(string format, object arg0, object arg1);
         void FatalFormat(string format, object arg0, object arg1, object arg2);
         void Info(object message);
         void Info(object message, Exception exception);
-        void InfoFormat(string format, object arg0);
         void InfoFormat(string format, params object[] args);
         void InfoFormat(IFormatProvider provider, string format, params object[] args);
+        void InfoFormat(string format, object arg0);
         void InfoFormat(string format, object arg0, object arg1);
         void InfoFormat(string format, object arg0, object arg1, object arg2);
         void Warn(object message);
         void Warn(object message, Exception exception);
-        void WarnFormat(string format, object arg0);
         void WarnFormat(string format, params object[] args);
         void WarnFormat(IFormatProvider provider, string format, params object[] args);
+        void WarnFormat(string format, object arg0);
         void WarnFormat(string format, object arg0, object arg1);
         void WarnFormat(string format, object arg0, object arg1, object arg2);
     }
@@ -96,41 +96,42 @@ namespace ReactiveXaml
     public class NullLogger : ILog
     {
         public NullLogger(string _ = null) { }
+
         public void Debug(object message) { }
         public void Debug(object message, Exception exception) { }
-        public void DebugFormat(string format, object arg0) { }
         public void DebugFormat(string format, params object[] args) { }
         public void DebugFormat(IFormatProvider provider, string format, params object[] args) { }
+        public void DebugFormat(string format, object arg0) { }
         public void DebugFormat(string format, object arg0, object arg1) { }
         public void DebugFormat(string format, object arg0, object arg1, object arg2) { }
         public void Error(object message) { }
         public void Error(object message, Exception exception) { }
-        public void ErrorFormat(string format, object arg0) { }
         public void ErrorFormat(string format, params object[] args) { }
         public void ErrorFormat(IFormatProvider provider, string format, params object[] args) { }
+        public void ErrorFormat(string format, object arg0) { }
         public void ErrorFormat(string format, object arg0, object arg1) { }
         public void ErrorFormat(string format, object arg0, object arg1, object arg2) { }
         public void Fatal(object message) { }
         public void Fatal(object message, Exception exception) { } 
-        public void FatalFormat(string format, object arg0) { }
         public void FatalFormat(string format, params object[] args) { }
         public void FatalFormat(IFormatProvider provider, string format, params object[] args) { }
+        public void FatalFormat(string format, object arg0) { }
         public void FatalFormat(string format, object arg0, object arg1) { }
         public void FatalFormat(string format, object arg0, object arg1, object arg2) { }
         public void Info(object message) { }
         public void Info(object message, Exception exception) { }
-        public void InfoFormat(string format, object arg0) { }
         public void InfoFormat(string format, params object[] args) { }
         public void InfoFormat(IFormatProvider provider, string format, params object[] args) { }
+        public void InfoFormat(string format, object arg0) { }
         public void InfoFormat(string format, object arg0, object arg1) { }
         public void InfoFormat(string format, object arg0, object arg1, object arg2) { }
         public void Warn(object message) { }
         public void Warn(object message, Exception exception) { }
+        public void WarnFormat(string format, params object[] args) { }
+        public void WarnFormat(IFormatProvider provider, string format, params object[] args) { }
         public void WarnFormat(string format, object arg0) { }
         public void WarnFormat(string format, object arg0, object arg1) { }
         public void WarnFormat(string format, object arg0, object arg1, object arg2) { }
-        public void WarnFormat(string format, params object[] args) { }
-        public void WarnFormat(IFormatProvider provider, string format, params object[] args) { }
     }
 
     public abstract class LoggerBase : ILog
@@ -217,39 +218,35 @@ namespace ReactiveXaml
 
         public void Debug(object message) { write(writeDebug, message); }
         public void Debug(object message, Exception exception) { write(writeDebug, message, exception); }
-        public void DebugFormat(string format, params object[] args) { write(writeDebug, format, args); }
+        public void DebugFormat(string format, params object[] args) { write(writeDebug, format, args, null); }
         public void DebugFormat(IFormatProvider provider, string format, params object[] args) { write(writeDebug, format, args, provider); }
-        public void DebugFormat(string format, object arg0) { write(writeDebug, format, arg0); }
+	public void DebugFormat(string format, object arg0) { write(writeDebug, format, arg0); }
         public void DebugFormat(string format, object arg0, object arg1) { write(writeDebug, format, arg0, arg1); }
         public void DebugFormat(string format, object arg0, object arg1, object arg2) { write(writeDebug, format, arg0, arg1, arg2); }
-
         public void Warn(object message) { write(writeWarn, message); }
         public void Warn(object message, Exception exception) { write(writeWarn, message, exception); }
-        public void WarnFormat(string format, params object[] args) { write(writeWarn, format, args); }
+        public void WarnFormat(string format, params object[] args) { write(writeWarn, format, args, null); }
         public void WarnFormat(IFormatProvider provider, string format, params object[] args) { write(writeWarn, format, args, provider); }
         public void WarnFormat(string format, object arg0) { write(writeWarn, format, arg0); }
         public void WarnFormat(string format, object arg0, object arg1) { write(writeWarn, format, arg0, arg1); }
         public void WarnFormat(string format, object arg0, object arg1, object arg2) { write(writeWarn, format, arg0, arg1, arg2); }
-
         public void Info(object message) { write(writeInfo, message); }
         public void Info(object message, Exception exception) { write(writeInfo, message, exception); }
-        public void InfoFormat(string format, params object[] args) { write(writeInfo, format, args); }
+        public void InfoFormat(string format, params object[] args) { write(writeInfo, format, args, null); }
         public void InfoFormat(IFormatProvider provider, string format, params object[] args) { write(writeInfo, format, args, provider); }
         public void InfoFormat(string format, object arg0) { write(writeInfo, format, arg0); }
         public void InfoFormat(string format, object arg0, object arg1) { write(writeInfo, format, arg0, arg1); }
         public void InfoFormat(string format, object arg0, object arg1, object arg2) { write(writeInfo, format, arg0, arg1, arg2); }
-
         public void Error(object message) { write(writeError, message); }
         public void Error(object message, Exception exception) { write(writeError, message, exception); }
-        public void ErrorFormat(string format, params object[] args) { write(writeError, format, args); }
+        public void ErrorFormat(string format, params object[] args) { write(writeError, format, args, null); }
         public void ErrorFormat(IFormatProvider provider, string format, params object[] args) { write(writeError, format, args, provider); }
         public void ErrorFormat(string format, object arg0) { write(writeError, format, arg0); }
         public void ErrorFormat(string format, object arg0, object arg1) { write(writeError, format, arg0, arg1); }
         public void ErrorFormat(string format, object arg0, object arg1, object arg2) { write(writeError, format, arg0, arg1, arg2); }
-
         public void Fatal(object message) { write(writeFatal, message); }
         public void Fatal(object message, Exception exception) { write(writeFatal, message, exception); }
-        public void FatalFormat(string format, params object[] args) { write(writeFatal, format, args); }
+        public void FatalFormat(string format, params object[] args) { write(writeFatal, format, args, null); }
         public void FatalFormat(IFormatProvider provider, string format, params object[] args) { write(writeFatal, format, args, provider); }
         public void FatalFormat(string format, object arg0) { write(writeFatal, format, arg0); }
         public void FatalFormat(string format, object arg0, object arg1) { write(writeFatal, format, arg0, arg1); }
