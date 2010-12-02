@@ -37,7 +37,7 @@
         	</Grid.RowDefinitions>
 			
         	<TextBlock HorizontalAlignment="Left" Margin="12,8,0,0" TextWrapping="Wrap" Text="english text" VerticalAlignment="Top"/>
-        	<TextBox Grid.Row="1" TextWrapping="Wrap" Text="{Binding EnglishText, Mode=TwoWay}"/>
+        	<TextBox Grid.Row="1" TextWrapping="Wrap" Text="{Binding EnglishText, Mode=TwoWay}" x:Name="FromText" />
         	<TextBlock Margin="12,16,0,0" Grid.Row="2" TextWrapping="Wrap" Text="german translation" HorizontalAlignment="Left" Width="203"/>
         	<TextBox Grid.Row="3" TextWrapping="Wrap" IsReadOnly="True" Text="{Binding TranslatedText, Mode=OneWay}"/>
         </Grid>

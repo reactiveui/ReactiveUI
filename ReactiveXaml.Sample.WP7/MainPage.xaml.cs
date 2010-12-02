@@ -24,18 +24,22 @@ namespace ReactiveXaml.Sample.WP7
         {
             ViewModel = new TranslatorViewModel();
             InitializeComponent();
+
+            FromText.KeyUp += (o, e) => {
+                ViewModel.EnglishText = FromText.Text;
+            };
         }
     }
 
     public class TranslatorViewModel : ReactiveObject
     {
-        string _EnglishText;
+        public string _EnglishText;
         public string EnglishText {
             get { return _EnglishText; }
             set { this.RaiseAndSetIfChanged(x => x.EnglishText, value); }
         }
 
-        ObservableAsPropertyHelper<string> _TranslatedText;
+        public ObservableAsPropertyHelper<string> _TranslatedText;
         public string TranslatedText {
             get { return _TranslatedText.Value; }
         }
@@ -47,11 +51,12 @@ namespace ReactiveXaml.Sample.WP7
             TranslateText = new ReactiveAsyncCommand(null, 1);
 
             this.ObservableForProperty(x => x.EnglishText)
-                .CombineLatest(TranslateText.CanExecuteObservable, 
-                    (text, enabled) => new { Text = text.Value, IsNotBusy = enabled})
-                .Where(x => x.IsNotBusy)
+                //.CombineLatest(TranslateText.CanExecuteObservable, 
+                //    (text, enabled) => new { Text = text.Value, IsNotBusy = enabled})
+                //.Where(x => x.IsNotBusy)
                 .Throttle(TimeSpan.FromMilliseconds(1200))
-                .Subscribe(x => TranslateText.Execute(x.Text));
+                .Subscribe(x => TranslateText.Execute(x.Value));
+                //.Subscribe(x => TranslateText.Execute(x.Text));
 
             var client = new LanguageServiceClient() as LanguageService;
 
