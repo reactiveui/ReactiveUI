@@ -4,3 +4,12 @@
 */Bin/
 */obj/
 */Obj/
+*.vspscc
+*.vssscc
+*.pidb
+*.userprefs
+ReactiveXaml/Generated/*.cs
+*.tmp_proj
+**/StyleCop.Cache
+StyleCop.Cache
+TestResults
