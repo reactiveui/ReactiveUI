@@ -29,12 +29,14 @@ namespace ReactiveXaml
         public IDisposable Schedule(Action action, TimeSpan dueTime)
         {
             return innerSched.Schedule(() => {
-                var sw = new Stopwatch();
-                sw.Start(); action(); sw.Stop();
+                var start = Now;
+                action();
+                var end = Now;
 
-                if (sw.Elapsed > maxAllowedTime) {
-                    string error = String.Format("{0} Time elapsed: {1}, max allowed is {2}", 
-                        (errorMessage != null ? errorMessage + "\n" : ""), sw.Elapsed, maxAllowedTime);
+                var elapsed = end - start;
+                if (elapsed > maxAllowedTime) {
+                    string error = String.Format("{0} Time elapsed: {1}, max allowed is {2}",
+                        (errorMessage != null ? errorMessage + "\n" : ""), elapsed, maxAllowedTime);
                     this.Log().Error(error);
                     throw new Exception(error);
                 }

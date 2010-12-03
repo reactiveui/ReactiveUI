@@ -297,21 +297,24 @@ namespace ReactiveXaml.Tests
         [TestMethod]
         public void MultipleSubscribersShouldntDecrementRefcountBelowZero()
         {
-            var fixture = new ReactiveAsyncCommand(null, 1);
+			var sched = new TestScheduler();
+            var fixture = new ReactiveAsyncCommand(null, 1, sched);
             var results = new List<int>();
             bool[] subscribers = new[] { false, false, false, false, false };
-
-            var output = fixture.RegisterAsyncFunction(_ => { Thread.Sleep(2000); return 5; });
+			
+			var output = fixture.RegisterObservableAsyncFunction(_ => 
+				Observable.Return(5).Delay(TimeSpan.FromMilliseconds(5000), sched));
             output.Subscribe(x => results.Add(x));
 
             Enumerable.Range(0, 5).Run(x => output.Subscribe(_ => subscribers[x] = true));
-
+            
             Assert.IsTrue(fixture.CanExecute(null));
 
             fixture.Execute(null);
+            sched.RunToMilliseconds(2000);
             Assert.IsFalse(fixture.CanExecute(null));
 
-            Thread.Sleep(6000);
+            sched.RunToMilliseconds(6000);
             Assert.IsTrue(fixture.CanExecute(null));
 
             Assert.IsTrue(results.Count == 1);
