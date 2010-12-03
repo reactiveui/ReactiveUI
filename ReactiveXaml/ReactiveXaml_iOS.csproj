@@ -24,6 +24,11 @@
     <ConsolePause>false</ConsolePause>
     <MtouchLink>None</MtouchLink>
     <MtouchDebug>True</MtouchDebug>
+    <CustomCommands>
+      <CustomCommands>
+        <Command type="BeforeBuild" command="/usr/bin/env ruby &quot;${ProjectDir}/Generated/generate_monotouch_delegates.rb&quot;" workingdir="${ProjectDir}/Generated" pauseExternalConsole="true" />
+      </CustomCommands>
+    </CustomCommands>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|iPhoneSimulator' ">
     <DebugType>none</DebugType>
@@ -35,6 +40,11 @@
     <ConsolePause>false</ConsolePause>
     <MtouchLink>None</MtouchLink>
     <DefineConstants>IOS, DOTNETISOLDANDSAD</DefineConstants>
+    <CustomCommands>
+      <CustomCommands>
+        <Command type="BeforeBuild" command="/usr/bin/env ruby &quot;${ProjectDir}/Generated/generate_monotouch_delegates.rb&quot;" workingdir="${ProjectDir}/Generated" />
+      </CustomCommands>
+    </CustomCommands>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|iPhone' ">
     <DebugSymbols>true</DebugSymbols>
@@ -47,6 +57,11 @@
     <ConsolePause>false</ConsolePause>
     <CodesignKey>iPhone Developer</CodesignKey>
     <MtouchDebug>True</MtouchDebug>
+    <CustomCommands>
+      <CustomCommands>
+        <Command type="BeforeBuild" command="/usr/bin/env ruby &quot;${ProjectDir}/Generated/generate_monotouch_delegates.rb&quot;" workingdir="${ProjectDir}/Generated" />
+      </CustomCommands>
+    </CustomCommands>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|iPhone' ">
     <DebugType>none</DebugType>
@@ -57,6 +72,11 @@
     <MtouchDebug>False</MtouchDebug>
     <ConsolePause>false</ConsolePause>
     <CodesignKey>iPhone Developer</CodesignKey>
+    <CustomCommands>
+      <CustomCommands>
+        <Command type="BeforeBuild" command="/usr/bin/env ruby &quot;${ProjectDir}/Generated/generate_monotouch_delegates.rb&quot;" workingdir="${ProjectDir}/Generated" />
+      </CustomCommands>
+    </CustomCommands>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -113,5 +133,57 @@
     <Compile Include="UserException.cs" />
     <Compile Include="MessageBus.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Generated\CLLocationManagerDelegate.cs" />
+    <Compile Include="Generated\ABNewPersonViewControllerDelegate.cs" />
+    <Compile Include="Generated\ABPeoplePickerNavigationControllerDelegate.cs" />
+    <Compile Include="Generated\ABPersonViewControllerDelegate.cs" />
+    <Compile Include="Generated\ABUnknownPersonViewControllerDelegate.cs" />
+    <Compile Include="Generated\ADBannerViewDelegate.cs" />
+    <Compile Include="Generated\AVCaptureAudioDataOutputSampleBufferDelegate.cs" />
+    <Compile Include="Generated\AVCaptureVideoDataOutputSampleBufferDelegate.cs" />
+    <Compile Include="Generated\CAAnimationDelegate.cs" />
+    <Compile Include="Generated\CALayerDelegate.cs" />
+    <Compile Include="Generated\CTRunDelegate.cs" />
+    <Compile Include="Generated\EAAccessoryDelegate.cs" />
+    <Compile Include="Generated\GKAchievementViewControllerDelegate.cs" />
+    <Compile Include="Generated\GKLeaderboardViewControllerDelegate.cs" />
+    <Compile Include="Generated\GKMatchDelegate.cs" />
+    <Compile Include="Generated\GKMatchmakerViewControllerDelegate.cs" />
+    <Compile Include="Generated\GKPeerPickerControllerDelegate.cs" />
+    <Compile Include="Generated\GKSessionDelegate.cs" />
+    <Compile Include="Generated\MFMailComposeViewControllerDelegate.cs" />
+    <Compile Include="Generated\MFMessageComposeViewControllerDelegate.cs" />
+    <Compile Include="Generated\MKReverseGeocoderDelegate.cs" />
+    <Compile Include="Generated\MPMediaPickerControllerDelegate.cs" />
+    <Compile Include="Generated\NSCacheDelegate.cs" />
+    <Compile Include="Generated\NSFileManagerDelegate.cs" />
+    <Compile Include="Generated\NSKeyedArchiverDelegate.cs" />
+    <Compile Include="Generated\NSNetServiceBrowserDelegate.cs" />
+    <Compile Include="Generated\NSNetServiceDelegate.cs" />
+    <Compile Include="Generated\NSUrlConnectionDelegate.cs" />
+    <Compile Include="Generated\QLPreviewControllerDelegate.cs" />
+    <Compile Include="Generated\SKProductsRequestDelegate.cs" />
+    <Compile Include="Generated\SKRequestDelegate.cs" />
+    <Compile Include="Generated\UIAccelerometerDelegate.cs" />
+    <Compile Include="Generated\UIActionSheetDelegate.cs" />
+    <Compile Include="Generated\UIAlertViewDelegate.cs" />
+    <Compile Include="Generated\UIApplicationDelegate.cs" />
+    <Compile Include="Generated\UIGestureRecognizerDelegate.cs" />
+    <Compile Include="Generated\UIImagePickerControllerDelegate.cs" />
+    <Compile Include="Generated\UINavigationBarDelegate.cs" />
+    <Compile Include="Generated\UINavigationControllerDelegate.cs" />
+    <Compile Include="Generated\UIPickerViewDelegate.cs" />
+    <Compile Include="Generated\UIPopoverControllerDelegate.cs" />
+    <Compile Include="Generated\UIScrollViewDelegate.cs" />
+    <Compile Include="Generated\UISearchBarDelegate.cs" />
+    <Compile Include="Generated\UISearchDisplayDelegate.cs" />
+    <Compile Include="Generated\UISplitViewControllerDelegate.cs" />
+    <Compile Include="Generated\UITextFieldDelegate.cs" />
+    <Compile Include="Generated\UITextViewDelegate.cs" />
+    <Compile Include="Generated\UIVideoEditorControllerDelegate.cs" />
+    <Compile Include="Generated\UIWebViewDelegate.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Generated\" />
   </ItemGroup>
 </Project>
