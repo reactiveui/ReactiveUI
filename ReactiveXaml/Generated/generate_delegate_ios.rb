@@ -89,7 +89,7 @@ using <%= namespace_name(full_classname) %>;
 
 namespace ReactiveXaml.iOS 
 {
-  public <%= abstract %> class <%= class_name(full_classname) %>Rx : <%= full_classname %>
+  public <%= abstract %> partial class <%= class_name(full_classname) %>Rx : <%= full_classname %>
   {
     <% constructor_signatures.each do |sig| %>
     public <%= class_name(full_classname) %>Rx(<%= (method_params(sig) + ['IScheduler sched = null']).join(',') %>) : base(<%= formal_param_names(sig).join(',') %>)
@@ -111,7 +111,6 @@ namespace ReactiveXaml.iOS
     Subject<<%= typeparam_for_observable(class_name(full_classname), sig) %>> _<%= method_name(sig) %>;
     public override void <%= method_name(sig) %>(<%= method_params(sig).join(',') %>)
     {
-      base.<%= method_name(sig) %>(<%= formal_param_names(sig).join(', ') %>);
       _<%= method_name(sig) %>.OnNext(<%= onnext_observable_value(class_name(full_classname), sig) %>);
     }
 
