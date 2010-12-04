@@ -48,6 +48,7 @@ namespace ReactiveXaml.Tests
 
         public static void RunToMilliseconds(this TestScheduler sched, double milliseconds)
         {
+            Console.WriteLine("Running to time t={0}", milliseconds);
             sched.RunTo(sched.FromTimeSpan(TimeSpan.FromMilliseconds(milliseconds)));
         }
     }

@@ -70,6 +70,7 @@ namespace ReactiveXaml.Tests
             fixture.CanExecuteChanged += (o, e) => { change_event_count++; };
             Enumerable.Range(0, 6).Run(x => {
                 sched.Run();
+                this.Log().DebugFormat("Counter = {0}, x = {1}", counter, x);
                 Assert.AreEqual(x % 2 == 0, fixture.CanExecute(null));
             });
 
@@ -169,18 +170,21 @@ namespace ReactiveXaml.Tests
             using (TestUtils.WithTestScheduler(sched)) {
                 fixture = new ReactiveAsyncCommand(null, 1);
                 async_data = fixture
-                    .ObserveOn(RxApp.TaskpoolScheduler)
-                    .Delay(TimeSpan.FromSeconds(5))
+                    .Delay(TimeSpan.FromSeconds(5), RxApp.TaskpoolScheduler)
                     .Select(_ => 5)
                     .Do(_ => fixture.AsyncCompletedNotification.OnNext(new Unit()));
             }
 
-            var inflight_results = fixture.ItemsInflight.CreateCollection();
-            var output = async_data.CreateCollection();
+            var inflight_results = new List<int>();
+            fixture.ItemsInflight.Subscribe(inflight_results.Add);
+
+            var output = new List<int>();
+            async_data.Subscribe(output.Add);
 
             Assert.IsTrue(fixture.CanExecute(null));
 
             fixture.Execute(null);
+
             sched.RunToMilliseconds(1005);
             Assert.IsFalse(fixture.CanExecute(null));
 

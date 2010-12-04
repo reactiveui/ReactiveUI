@@ -31,13 +31,11 @@ namespace ReactiveXaml.Tests
             });
             t.Start();
 
-            this.Log().Debug("Running to t=0");
             sched.RunTo(sched.FromTimeSpan(TimeSpan.FromMilliseconds(500)));
 
             Thread.Sleep(100);
             Assert.AreEqual(0, result);
 
-            this.Log().Debug("Running to t=1200");
             sched.RunTo(sched.FromTimeSpan(TimeSpan.FromMilliseconds(1200)));
 
             Thread.Sleep(100);
@@ -62,11 +60,9 @@ namespace ReactiveXaml.Tests
             int result = 0;
             input.ToObservable(sched).SelectMany<int, int>(x => (IObservable<int>)fixture.AsyncGet(x)).Subscribe(x => result += x);
 
-            this.Log().Debug("Running to t=0");
             sched.RunTo(sched.FromTimeSpan(TimeSpan.FromMilliseconds(500)));
             Assert.AreEqual(0, result);
 
-            this.Log().Debug("Running to t=1200");
             sched.RunTo(sched.FromTimeSpan(TimeSpan.FromMilliseconds(1200)));
             Assert.AreEqual(25, result);
 
@@ -111,19 +107,15 @@ namespace ReactiveXaml.Tests
             int result = 0;
             input.ToObservable(sched).SelectMany<int, int>(x => (IObservable<int>)fixture.AsyncGet(x)).Subscribe(x => result += x);
 
-            this.Log().Debug("Running to t=500");
             sched.RunTo(sched.FromTimeSpan(TimeSpan.FromMilliseconds(500)));
             Assert.AreEqual(0, result);
 
-            this.Log().Debug("Running to t=1500");
             sched.RunTo(sched.FromTimeSpan(TimeSpan.FromMilliseconds(1500)));
             Assert.AreEqual(1*5 + 2*5 + 1*5, result);
 
-            this.Log().Debug("Running to t=2500");
             sched.RunTo(sched.FromTimeSpan(TimeSpan.FromMilliseconds(2500)));
             Assert.AreEqual(1*5 + 2*5 + 3*5 + 4*5 + 1*5, result);
 
-            this.Log().Debug("Running to t=5000");
             sched.RunTo(sched.FromTimeSpan(TimeSpan.FromMilliseconds(5000)));
             Assert.AreEqual(1*5 + 2*5 + 3*5 + 4*5 + 1*5, result);
         }
@@ -131,7 +123,14 @@ namespace ReactiveXaml.Tests
         [TestMethod()]
         public void CacheShouldEatExceptionsAndMarshalThemToObservable()
         {
-            var input = new[] { 5, 2, 10, 0/*boom!*/, 5 };
+            /* This is a bit tricky:
+             * 
+             * 5,2 complete at t=1000 simultaneously
+             * 10,0 get queued up, 0 fails immediately (delay() doesn't delay the OnError), 
+             *    so 10 completes at t=2000
+             * The 2nd 5 is cached, it returns at t=1000
+             */
+            var input = new[] { 5, 2, 10, 0/*boom!*/, 7 };
             var sched = new TestScheduler();
 
             Observable.Throw<int>(new Exception("Foo")).Subscribe(x => {
@@ -150,19 +149,20 @@ namespace ReactiveXaml.Tests
             int completed = 0;
             input.ToObservable()
                 .SelectMany(x => (IObservable<int>)fixture.AsyncGet(x))
-                .Do(x => {
+                .Subscribe(x => {
                     this.Log().DebugFormat("Result = {0}", x);
                     completed++;
                 }, ex => exception = exception ?? ex);
 
-            this.Log().Debug("Running to t=500");
-            sched.RunTo(sched.FromTimeSpan(TimeSpan.FromMilliseconds(1500)));
-            Assert.IsNotNull(exception);
+            sched.RunTo(sched.FromTimeSpan(TimeSpan.FromMilliseconds(500)));
+            Assert.IsNull(exception);
             Assert.AreEqual(0, completed);
 
-            this.Log().Debug("Running to t=1500");
             sched.RunTo(sched.FromTimeSpan(TimeSpan.FromMilliseconds(1500)));
+            Assert.IsNotNull(exception);
+            Assert.AreEqual(2, completed);
 
+            sched.RunTo(sched.FromTimeSpan(TimeSpan.FromMilliseconds(7500)));
             Assert.IsNotNull(exception);
             Assert.AreEqual(4, completed);
             this.Log().Debug(exception);
@@ -173,8 +173,7 @@ namespace ReactiveXaml.Tests
         {
             var input = new[] { 5, 2, 10, 0/*boom!*/, 5 };
             var fixture = new QueuedAsyncMRUCache<int, int>(x => { Thread.Sleep(1000); return 50 / x; }, 5, 5);
-            int[] output = {0};
-            Assert.Fail();
+            int[] output = {5, 2, 10, 5};
 
             bool did_throw = false;
             try {
