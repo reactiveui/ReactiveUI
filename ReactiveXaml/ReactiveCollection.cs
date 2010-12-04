@@ -200,7 +200,9 @@ namespace ReactiveXaml
         public ReactiveCollection<TNew> CreateDerivedCollection<TNew>(Func<T, TNew> Selector)
         {
             Contract.Requires(Selector != null);
+#if !IOS    // Contract.Result is borked in Mono
             Contract.Ensures(Contract.Result<ReactiveCollection<TNew>>().Count == this.Count);
+#endif 
 
             var ret = new ReactiveCollection<TNew>(this.Select(Selector));
             var coll_changed = Observable.FromEvent<NotifyCollectionChangedEventArgs>(this, "CollectionChanged");

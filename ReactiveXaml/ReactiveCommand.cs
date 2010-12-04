@@ -57,9 +57,12 @@ namespace ReactiveXaml
         ObservableAsPropertyHelper<bool> canExecuteLatest;
         public virtual bool CanExecute(object parameter)
         {
-            if (canExecuteExplicitFunc != null)
-                canExecuteSubject.OnNext(canExecuteExplicitFunc(parameter));
-                
+            if (canExecuteExplicitFunc != null) {
+                bool ret = canExecuteExplicitFunc(parameter);
+                canExecuteSubject.OnNext(ret);
+                return ret;
+            }
+
             return canExecuteLatest.Value;
         }
 
