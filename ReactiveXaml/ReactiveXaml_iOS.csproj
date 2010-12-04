@@ -182,6 +182,18 @@
     <Compile Include="Generated\UITextViewDelegate.cs" />
     <Compile Include="Generated\UIVideoEditorControllerDelegate.cs" />
     <Compile Include="Generated\UIWebViewDelegate.cs" />
+    <Compile Include="Generated\AVCaptureFileOutputRecordingDelegate.cs" />
+    <Compile Include="Generated\EKEventEditViewDelegate.cs" />
+    <Compile Include="Generated\EKEventViewDelegate.cs" />
+    <Compile Include="Generated\GKFriendRequestComposeViewControllerDelegate.cs" />
+    <Compile Include="Generated\MKMapViewDelegate.cs" />
+    <Compile Include="Generated\NSKeyedUnarchiverDelegate.cs" />
+    <Compile Include="Generated\NSStreamDelegate.cs" />
+    <Compile Include="Generated\UIDocumentInteractionControllerDelegate.cs" />
+    <Compile Include="Generated\UIPrintInteractionControllerDelegate.cs" />
+    <Compile Include="Generated\UITabBarControllerDelegate.cs" />
+    <Compile Include="Generated\UITabBarDelegate.cs" />
+    <Compile Include="Generated\UITableViewDelegate.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Generated\" />
