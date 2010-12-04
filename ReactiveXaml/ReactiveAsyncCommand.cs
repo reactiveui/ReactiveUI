@@ -40,7 +40,7 @@ namespace ReactiveXaml
             ItemsInflight = Observable.Merge(
                 this.Select(_ => 1),
                 AsyncCompletedNotification.Select(_ => -1)
-            ).Scan0(0, (x, acc) => {
+            ).Scan0(0, (acc, x) => {
                 var ret = acc + x;
                 if (ret < 0)
                     throw new OverflowException("Reference count dropped below zero");

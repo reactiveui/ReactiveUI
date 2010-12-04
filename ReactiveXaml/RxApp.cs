@@ -52,7 +52,11 @@ namespace ReactiveXaml
             {
                 Console.Error.WriteLine("*** Detected Unit Test Runner, setting Scheduler to Immediate ***");
                 Console.Error.WriteLine("If we are not actually in a test runner, please file a bug\n");
+#if WINDOWS_PHONE
+                DeferredScheduler = Scheduler.Immediate;
+#else
                 DeferredScheduler = new EventLoopScheduler();
+#endif
                 LoggerFactory = (prefix) => new StdErrLogger(prefix);
 
                 DefaultUnitTestRecoveryResult = RecoveryOptionResult.FailOperation;
