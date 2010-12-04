@@ -128,7 +128,7 @@ namespace ReactiveXaml.Tests
              * 5,2 complete at t=1000 simultaneously
              * 10,0 get queued up, 0 fails immediately (delay() doesn't delay the OnError), 
              *    so 10 completes at t=2000
-             * The 2nd 5 is cached, it returns at t=1000
+             * The 7 completes at t=3000
              */
             var input = new[] { 5, 2, 10, 0/*boom!*/, 7 };
             var sched = new TestScheduler();
