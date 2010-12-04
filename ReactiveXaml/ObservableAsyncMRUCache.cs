@@ -42,6 +42,7 @@ namespace ReactiveXaml
 
         public IObservable<TVal> AsyncGet(TParam key)
         {
+
             IObservable<TVal> result;
             if (_innerCache.TryGet(key, out result)) {
                 return result;
@@ -58,6 +59,7 @@ namespace ReactiveXaml
                 } catch (Exception ex) {
                     _callQueue.Release();
                     rs.OnError(ex);
+                    return;
                 }
 
                 fetched.Subscribe(x => {
