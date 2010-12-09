@@ -63,18 +63,7 @@ namespace ReactiveXaml
             _ItemsAdded.Subscribe(x => {
                 if (propertyChangeWatchers == null)
                     return;
-                var item = x as IReactiveNotifyPropertyChanged;
-                if (item != null) {
-                    var to_dispose = new[] {
-                        item.BeforeChange.Subscribe(before_change =>
-                            _ItemPropertyChanging.OnNext(new ObservedChange<T, object>() { Sender = x, PropertyName = before_change.PropertyName })),
-                        item.Subscribe(change => 
-                            _ItemPropertyChanged.OnNext(new ObservedChange<T,object>() { Sender = x, PropertyName = change.PropertyName })),
-                    };
-
-                    propertyChangeWatchers.Add(x, Disposable.Create(() => { to_dispose[0].Dispose(); to_dispose[1].Dispose(); }));
-                        
-                }
+                addItemToPropertyTracking(x);
             });
 
             _ItemsRemoved.Subscribe(x => {
@@ -84,6 +73,24 @@ namespace ReactiveXaml
                 propertyChangeWatchers[x].Dispose();
                 propertyChangeWatchers.Remove(x);
             });
+        }
+
+        void addItemToPropertyTracking(T toTrack)
+        {
+            var item = toTrack as IReactiveNotifyPropertyChanged;
+            if (item == null)
+                return;
+
+            var to_dispose = new[] {
+                item.BeforeChange.Subscribe(before_change =>
+                    _ItemPropertyChanging.OnNext(new ObservedChange<T, object>() { Sender = toTrack, PropertyName = before_change.PropertyName })),
+                item.Subscribe(change => 
+                    _ItemPropertyChanged.OnNext(new ObservedChange<T,object>() { Sender = toTrack, PropertyName = change.PropertyName })),
+            };
+
+            propertyChangeWatchers.Add(item, Disposable.Create(() => {
+                to_dispose[0].Dispose(); to_dispose[1].Dispose();
+            }));
         }
 
         [IgnoreDataMember]
@@ -144,6 +151,7 @@ namespace ReactiveXaml
                     return;
                 if (propertyChangeWatchers == null) {
                     propertyChangeWatchers = new Dictionary<object,IDisposable>();
+                    this.Run(addItemToPropertyTracking);
                 } else {
                     releasePropChangeWatchers();
                     propertyChangeWatchers = null;
