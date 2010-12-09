@@ -180,12 +180,15 @@ namespace ReactiveXaml
             (x.Item1).GetProperty(x.Item2), 
             15 /*items*/);
 #else
+
         static QueuedAsyncMRUCache<Tuple<Type, string>, FieldInfo> fieldInfoTypeCache = new QueuedAsyncMRUCache<Tuple<Type,string>, FieldInfo>(x => {
             var field_name = RxApp.GetFieldNameForProperty(x.Item2);
-            return (x.Item1).GetField(field_name, BindingFlags.NonPublic | BindingFlags.Instance);
+            var ret = (x.Item1).GetField(field_name, BindingFlags.NonPublic | BindingFlags.Instance);
+            return ret;
         }, 50);
         static QueuedAsyncMRUCache<Tuple<Type, string>, PropertyInfo> propInfoTypeCache = new QueuedAsyncMRUCache<Tuple<Type,string>, PropertyInfo>(x => {
-            return (x.Item1).GetProperty(x.Item2, BindingFlags.Public | BindingFlags.Instance);
+            var ret = (x.Item1).GetProperty(x.Item2, BindingFlags.Public | BindingFlags.Instance);
+            return ret;
         }, 50);
 #endif
 
