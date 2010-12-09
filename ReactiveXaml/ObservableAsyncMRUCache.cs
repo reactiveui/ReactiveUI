@@ -42,7 +42,6 @@ namespace ReactiveXaml
 
         public IObservable<TVal> AsyncGet(TParam key)
         {
-
             IObservable<TVal> result;
             if (_innerCache.TryGet(key, out result)) {
                 return result;
@@ -73,110 +72,12 @@ namespace ReactiveXaml
                 });
             });
 
-
-            /*
-            _callQueue.Where(x => x == myCall).SelectMany(_ => _fetcher(key).Do(
-                x => rs.OnNext(x),
-                ex => {
-                    _callQueue.Release();
-                    rs.OnError(ex);
-                }, () => {
-                    _callQueue.Release();
-                    rs.OnCompleted();
-                }).Catch(e)
-             */
-
             lock(_innerCache) {
                 _innerCache.Get(key, rs);
             }
 
             _callQueue.OnNext(myCall);
             return rs;
-        }
-
-        public TVal Get(TParam key)
-        {
-            return AsyncGet(key).First();
-        }
-    }
-
-    public sealed class OldObservableAsyncMRUCache<TParam, TVal> : IEnableLogger
-    {
-        MemoizingMRUCache<TParam, IObservable<TVal>> _innerCache;
-        IDictionary<TParam, IObservable<TVal>> _inflightItems;
-        ReactiveSemaphore _concurrentCount;
-        Func<TParam, IObservable<TVal>> _fetcher;
-        IScheduler _sched;
-
-        public OldObservableAsyncMRUCache(Func<TParam, IObservable<TVal>> func, int maxSize, int maxConcurrent = 1, Action<TVal> onRelease = null)
-        {
-            _concurrentCount = new ReactiveSemaphore(maxConcurrent);
-            _fetcher = func;
-#if SILVERLIGHT
-            _inflightItems = new LockedDictionary<TParam, IObservable<TVal>>();
-#else
-            _inflightItems = new ConcurrentDictionary<TParam, IObservable<TVal>>();
-#endif
-
-            Action<IObservable<TVal>> release = null;
-            if (onRelease != null) {
-                release = new Action<IObservable<TVal>>(x => onRelease(x.First()));
-            }
-
-            _innerCache = new MemoizingMRUCache<TParam, IObservable<TVal>>((x, val) => {
-                var ret = (IObservable<TVal>)val;
-                return ret;
-            }, maxSize, release);
-        }
-
-        public IEnumerable<TVal> CachedValues()
-        {
-            lock (_innerCache) {
-                return _innerCache.CachedValues().Select(x => x.First());
-            }
-        }
-
-        int timesCalled = 0;
-        public IObservable<TVal> AsyncGet(TParam key)
-        {
-            IObservable<TVal> ret = null;
-
-            timesCalled++;
-            lock(_innerCache) {
-                if (_innerCache.TryGet(key, out ret))
-                    return ret;
-            }
-
-            if (_inflightItems.TryGetValue(key, out ret)) {
-                return ret;
-            }
-
-            _concurrentCount.WaitOne();
-            if (_inflightItems.ContainsKey(key)) {
-                _concurrentCount.Release();
-                return AsyncGet(key);
-            }
-
-            IObservable<TVal> dontcare;
-            ret = _fetcher(key);
-            ret.Subscribe(x => {
-                lock(_innerCache) {
-                    _innerCache.Get(key, Observable.Return(x));
-                }
-            }, ex => {
-                lock (_innerCache) {
-                    _innerCache.Invalidate(key);
-                    _innerCache.Get(key, Observable.Throw<TVal>(ex));
-                }
-                _inflightItems.Remove(key);
-                _concurrentCount.Release();
-            }, () => {
-                _inflightItems.Remove(key);
-                _concurrentCount.Release();
-            });
-
-            _inflightItems[key] = ret;
-            return ret;
         }
 
         public TVal Get(TParam key)
@@ -273,35 +174,6 @@ namespace ReactiveXaml
                     break;
                 }
             }
-        }
-    }
-
-    public class ReactiveSemaphore
-    {
-        BehaviorSubject<long> _subject;
-        long _count;
-        int _maxCount;
-
-        public ReactiveSemaphore(int maxCount, IScheduler scheduler = null)
-        {
-            _count = 0;
-            _maxCount = maxCount;
-            if (scheduler == null) {
-                _subject = new BehaviorSubject<long>(0, Scheduler.Immediate);
-            } else {
-                _subject = new BehaviorSubject<long>(0, scheduler);
-            }
-        }
-
-        public void WaitOne()
-        {
-            _subject.Where(x => x < _maxCount).First();
-            _subject.OnNext(Interlocked.Increment(ref _count));
-        }
-
-        public void Release()
-        {
-            _subject.OnNext(Interlocked.Decrement(ref _count));
         }
     }
 
