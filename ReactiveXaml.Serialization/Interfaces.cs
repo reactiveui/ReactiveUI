@@ -10,9 +10,6 @@ namespace ReactiveXaml.Serialization
     public interface ISerializableItemBase : IEnableLogger
     {
         Guid ContentHash { get; }
-        DateTimeOffset CreatedOn { get; }
-        string CreatedBy { get; }
-        DateTimeOffset UpdatedOn { get; }
 
         IObservable<object> ItemChanging { get; }
         IObservable<object> ItemChanged { get; }
@@ -22,9 +19,11 @@ namespace ReactiveXaml.Serialization
 
     public interface ISerializableItem : IReactiveNotifyPropertyChanged, ISerializableItemBase { }
 
-    public interface ISerializableList<out T> : IEnumerable<T>, ISerializableItemBase
-        where T : ISerializableItem
+    public interface ISerializableList<T> : IReactiveCollection<T>, ISerializableItemBase
+        where T : ISerializableItemBase
     {
+        IDictionary<Guid, DateTimeOffset> CreatedOn { get; }
+        IDictionary<Guid, DateTimeOffset> UpdatedOn { get; }
     }
     
     public interface IStorageEngine : IDisposable, IEnableLogger

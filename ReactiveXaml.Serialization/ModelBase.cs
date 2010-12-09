@@ -10,15 +10,9 @@ using System.ComponentModel;
 
 namespace ReactiveXaml.Serialization
 {
-    public abstract class ModelBase : ReactiveValidatedObject
+    public abstract class ModelBase : ReactiveValidatedObject, ISerializableItem
     {
         public Guid ContentHash { get; protected set; }
-
-        public DateTimeOffset CreatedOn { get; set; }
-
-        public string CreatedBy { get; set; }
-
-        public DateTimeOffset UpdatedOn { get; set; }
 
         public ModelBase()
         {
@@ -30,8 +24,8 @@ namespace ReactiveXaml.Serialization
         void setupModelBase()
         {
             this.Subscribe(_ => {
-                UpdatedOn = DateTimeOffset.Now;
                 ContentHash = CalculateHash();
+                RxStorage.Engine.Save(this);
             });
         }
 

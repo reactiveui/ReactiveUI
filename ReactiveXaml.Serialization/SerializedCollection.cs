@@ -11,17 +11,37 @@ using System.ComponentModel;
 namespace ReactiveXaml.Serialization
 {
     public class SerializedCollection<T> : ReactiveCollection<T>, ISerializableList<T>
-        where T : ISerializableItem
+        where T : ISerializableItemBase
     {
         public Guid ContentHash { get; protected set; }
-        public DateTimeOffset CreatedOn { get; set; }
-        public string CreatedBy { get; set; }
-        public DateTimeOffset UpdatedOn { get; set; }
 
-        public SerializedCollection() { setupCollection(); }
+        [DataMember]
+        public Dictionary<Guid, DateTimeOffset> CreatedOn { get; protected set; }
+
+        [DataMember]
+        public Dictionary<Guid, DateTimeOffset> UpdatedOn { get; protected set; }
+
+        [IgnoreDataMember]
+        IDictionary<Guid, DateTimeOffset> ISerializableList<T>.CreatedOn {
+            get { return this.CreatedOn;  }
+        }
+        [IgnoreDataMember]
+        IDictionary<Guid, DateTimeOffset> ISerializableList<T>.UpdatedOn {
+            get { return this.UpdatedOn;  }
+        }
+
+        public SerializedCollection()
+        {
+            CreatedOn = new Dictionary<Guid, DateTimeOffset>();
+            UpdatedOn = new Dictionary<Guid, DateTimeOffset>();
+            setupCollection();
+        }
+
         public SerializedCollection(IEnumerable<T> items)
             : base(items)
         {
+            CreatedOn = items.ToDictionary(k => k.ContentHash, _ => RxApp.DeferredScheduler.Now);
+            UpdatedOn = items.ToDictionary(k => k.ContentHash, _ => RxApp.DeferredScheduler.Now);
             setupCollection();
         }
 
@@ -31,24 +51,35 @@ namespace ReactiveXaml.Serialization
         {
             ChangeTrackingEnabled = true;
 
-            var something_changing = Observable.Merge(
-                BeforeItemsAdded.Select(_ => new Unit()),
-                BeforeItemsRemoved.Select(_ => new Unit()),
-                ItemPropertyChanging.Select(_ => new Unit())
+            ItemsAdded.Subscribe(x => {
+                CreatedOn[x.ContentHash] = RxApp.DeferredScheduler.Now;
+                UpdatedOn[x.ContentHash] = RxApp.DeferredScheduler.Now;
+            });
+
+            ItemsRemoved.Subscribe(x => {
+                CreatedOn.Remove(x.ContentHash);
+                UpdatedOn.Remove(x.ContentHash);
+            });
+
+            ItemPropertyChanged.Subscribe(x => {
+                UpdatedOn[x.Sender.ContentHash] = RxApp.DeferredScheduler.Now;
+            });
+
+            ItemChanging = Observable.Merge(
+                BeforeItemsAdded.Select(_ => this),
+                BeforeItemsRemoved.Select(_ => this),
+                ItemPropertyChanging.Select(_ => this)
             );
 
-            var something_changed = Observable.Merge(
-                ItemsAdded.Select(_ => new Unit()),
-                ItemsRemoved.Select(_ => new Unit()),
-                ItemPropertyChanged.Select(_ => new Unit())
+            ItemChanged = Observable.Merge(
+                ItemsAdded.Select(_ => this),
+                ItemsRemoved.Select(_ => this),
+                ItemPropertyChanged.Select(_ => this)
             );
 
-            ItemChanging = something_changing.Select(_ => this);
-            ItemChanged = something_changed.Select(_ => this);
-
-            something_changed.Subscribe(_ => {
-                UpdatedOn = DateTimeOffset.Now;
+            ItemChanged.Subscribe(_ => {
                 ContentHash = CalculateHash();
+                RxStorage.Engine.Save(this);
             });
         }
 
@@ -60,8 +91,12 @@ namespace ReactiveXaml.Serialization
 
         public Guid CalculateHash()
         {
-            return new Guid(String.Join(",", 
-                this.Select(x => x.ContentHash.ToString())).MD5Hash());
+            // XXX: This is massively inefficient, we can do way better
+            return new Guid(String.Join(",",
+                this.Select(x => {
+                    var si = x as ISerializableItemBase;
+                    return (si != null ? si.ContentHash.ToString() : x.ToString().MD5Hash().ToString());
+                })).MD5Hash());
         }
     }
 }

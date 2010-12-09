@@ -63,10 +63,13 @@ namespace ReactiveXaml.Serialization
             initializeStoreIfNeeded();
             
             OlderThan = OlderThan ?? DateTimeOffset.MaxValue;
+            /*
             return allItems.Values.OfType<T>()
                 .Where(x => x.UpdatedOn <= OlderThan)
                 .OrderByDescending(x => x.UpdatedOn)
                 .FirstOrDefault();
+             */
+            throw new NotImplementedException();
         }
 
         public IEnumerable<T> GetItemsByDate<T>(DateTimeOffset? NewerThan = null, DateTimeOffset? OlderThan = null) where T : ISerializableItemBase
@@ -75,9 +78,12 @@ namespace ReactiveXaml.Serialization
             NewerThan = NewerThan ?? DateTimeOffset.MinValue;
             OlderThan = OlderThan ?? DateTimeOffset.MaxValue;
 
+            /*
             return allItems.Values.OfType<T>()
                 .Where(x => x.UpdatedOn >= NewerThan && x.UpdatedOn <= OlderThan)
                 .ToArray();
+             */
+            throw new NotImplementedException();
         }
 
         void initializeStoreIfNeeded()
