@@ -108,6 +108,7 @@
       <HintPath>..\ext\iOS\WindowsBase.dll</HintPath>
     </Reference>
     <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
@@ -194,6 +195,8 @@
     <Compile Include="Generated\UITabBarControllerDelegate.cs" />
     <Compile Include="Generated\UITabBarDelegate.cs" />
     <Compile Include="Generated\UITableViewDelegate.cs" />
+    <Compile Include="NSRunloopScheduler.cs" />
+    <Compile Include="XibReferencedClass.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Generated\" />
