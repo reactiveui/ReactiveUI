@@ -183,7 +183,7 @@ namespace ReactiveXaml
 
         static QueuedAsyncMRUCache<Tuple<Type, string>, FieldInfo> fieldInfoTypeCache = new QueuedAsyncMRUCache<Tuple<Type,string>, FieldInfo>(x => {
             var field_name = RxApp.GetFieldNameForProperty(x.Item2);
-            var ret = (x.Item1).GetField(field_name, BindingFlags.NonPublic | BindingFlags.Instance);
+            var ret = (x.Item1).GetField(field_name, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
             return ret;
         }, 50);
         static QueuedAsyncMRUCache<Tuple<Type, string>, PropertyInfo> propInfoTypeCache = new QueuedAsyncMRUCache<Tuple<Type,string>, PropertyInfo>(x => {
