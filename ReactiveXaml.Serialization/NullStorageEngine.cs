@@ -29,19 +29,19 @@ namespace ReactiveXaml.Serialization
             this.Log().Debug("Flush");
         }
 
-        public T GetNewestItemByType<T>(DateTimeOffset? OlderThan = null) where T : ISerializableItemBase
+        public ISyncPointInformation CreateSyncPoint<T>(T obj, string qualifier = null, DateTimeOffset? createdOn = null) 
+            where T : ISerializableItemBase
         {
-            return default(T);
+            return new SyncPointInformation(Guid.Empty, Guid.Empty, typeof (T), qualifier ?? String.Empty, createdOn ?? DateTimeOffset.Now);
         }
 
-        public IEnumerable<T> GetItemsByDate<T>(DateTimeOffset? NewerThan = null, DateTimeOffset? OlderThan = null) where T : ISerializableItemBase
+        public Guid[] GetOrderedRevisionList(Type type, string qualifier = null) 
         {
-            return Enumerable.Empty<T>();
+            return null;
         }
 
         public void Dispose()
         {
-            
         }
     }
 }
