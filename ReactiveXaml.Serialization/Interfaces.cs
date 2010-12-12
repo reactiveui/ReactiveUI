@@ -29,6 +29,7 @@ namespace ReactiveXaml.Serialization
     public interface ISyncPointInformation : ISerializableItemBase
     {
         Guid RootObjectHash { get; }
+        Guid ParentSyncPoint { get; }
         string RootObjectTypeName { get; }
 
         string Qualifier { get; }
@@ -42,7 +43,8 @@ namespace ReactiveXaml.Serialization
         void Save<T>(T obj) where T : ISerializableItemBase;
         void FlushChanges();
 
-        ISyncPointInformation CreateSyncPoint<T>(T obj, string qualifier = null, DateTimeOffset? createdOn = null);
+        ISyncPointInformation CreateSyncPoint<T>(T obj, string qualifier = null, DateTimeOffset? createdOn = null)
+            where T : ISerializableItemBase;
         Guid[] GetOrderedRevisionList(Type type, string qualifier = null);
     }
 
