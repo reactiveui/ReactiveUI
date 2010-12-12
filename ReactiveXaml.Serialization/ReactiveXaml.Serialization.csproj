@@ -77,6 +77,7 @@
     <Compile Include="DictionaryStorageEngine.cs" />
     <Compile Include="RxStorage.cs" />
     <Compile Include="SerializedCollection.cs" />
+    <Compile Include="SyncPointInformation.cs" />
     <Compile Include="Utility.cs" />
   </ItemGroup>
   <ItemGroup>
