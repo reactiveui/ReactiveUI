@@ -26,23 +26,48 @@ namespace ReactiveXaml.Serialization
         IDictionary<Guid, DateTimeOffset> UpdatedOn { get; }
     }
 
+    public interface ISyncPointInformation : ISerializableItemBase
+    {
+        Guid RootObjectHash { get; }
+        string RootObjectTypeName { get; }
+
+        string Qualifier { get; }
+        DateTimeOffset CreatedOn { get; }
+    }
+
     public interface IStorageEngine : IDisposable, IEnableLogger
     {
-        T Load<T>(Guid ContentHash) where T : ISerializableItemBase;
-        object Load(Guid ContentHash);
-        void Save<T>(T Obj) where T : ISerializableItemBase;
+        T Load<T>(Guid contentHash) where T : ISerializableItemBase;
+        object Load(Guid contentHash);
+        void Save<T>(T obj) where T : ISerializableItemBase;
         void FlushChanges();
 
-        T GetNewestItemByType<T>(DateTimeOffset? OlderThan = null) 
-            where T : ISerializableItemBase;
-        IEnumerable<T> GetItemsByDate<T>(DateTimeOffset? NewerThan = null, DateTimeOffset? OlderThan = null)
-            where T : ISerializableItemBase;
+        ISyncPointInformation CreateSyncPoint<T>(T obj, string qualifier = null, DateTimeOffset? createdOn = null);
+        Guid[] GetOrderedRevisionList(Type type, string qualifier = null);
+    }
+
+    public interface IExtendedStorageEngine : IStorageEngine
+    {
+        T GetLatestRootObject<T>(string qualifier = null, DateTimeOffset? olderThan = null);
+        T[] GetObjectsInDateRange<T>(string qualifier = null, DateTimeOffset? olderThan = null, DateTimeOffset? newerThan = null);
     }
 
     public interface IExplicitReferenceBase
     {
         Guid ValueHash { get; set; }
         IDisposable Update();
+    }
+
+    public static class SyncPointInformationMixin
+    {
+        static MemoizingMRUCache<string, Type> _ObjectNameCache = new MemoizingMRUCache<string, Type>(
+            (x, _) => Type.GetType(x), 20);
+        public static Type GetRootObjectType(this ISyncPointInformation This)
+        {
+            lock(_ObjectNameCache) {
+                return _ObjectNameCache.Get(This.RootObjectTypeName);
+            }
+        }
     }
 }
 
