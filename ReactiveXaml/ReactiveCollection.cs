@@ -151,7 +151,9 @@ namespace ReactiveXaml
                     return;
                 if (propertyChangeWatchers == null) {
                     propertyChangeWatchers = new Dictionary<object,IDisposable>();
-                    this.Run(addItemToPropertyTracking);
+                    foreach (var v in this) {
+                        addItemToPropertyTracking(v);
+                    }
                 } else {
                     releasePropChangeWatchers();
                     propertyChangeWatchers = null;

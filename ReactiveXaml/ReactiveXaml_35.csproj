@@ -8,7 +8,7 @@
     <ProjectGuid>{9440B549-D223-4EA5-9F86-BBDA8429CF06}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>w</RootNamespace>
+    <RootNamespace>ReactiveXaml</RootNamespace>
     <AssemblyName>ReactiveXaml_35</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
