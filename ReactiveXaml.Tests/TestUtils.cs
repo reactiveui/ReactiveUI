@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Concurrency;
 using System.Disposables;
 using System.Linq;
+using System.Reactive.Testing;
+using System.Reactive.Testing.Mocks;
+using System.Reflection;
 using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 

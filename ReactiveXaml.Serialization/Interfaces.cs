@@ -25,7 +25,7 @@ namespace ReactiveXaml.Serialization
         IDictionary<Guid, DateTimeOffset> CreatedOn { get; }
         IDictionary<Guid, DateTimeOffset> UpdatedOn { get; }
     }
-    
+
     public interface IStorageEngine : IDisposable, IEnableLogger
     {
         T Load<T>(Guid ContentHash) where T : ISerializableItemBase;

@@ -27,7 +27,7 @@ namespace ReactiveXaml.Serialization
         }
         [IgnoreDataMember]
         IDictionary<Guid, DateTimeOffset> ISerializableList<T>.UpdatedOn {
-            get { return this.UpdatedOn;  }
+            get { return this.UpdatedOn;  }   
         }
 
         public SerializedCollection()
