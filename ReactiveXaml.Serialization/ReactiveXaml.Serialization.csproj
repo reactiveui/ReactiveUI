@@ -70,6 +70,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ExplicitReference.cs" />
+    <Compile Include="NaiveExtendedEngine.cs" />
     <Compile Include="Interfaces.cs" />
     <Compile Include="ModelBase.cs" />
     <Compile Include="NullStorageEngine.cs" />

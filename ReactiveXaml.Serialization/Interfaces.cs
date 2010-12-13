@@ -50,8 +50,10 @@ namespace ReactiveXaml.Serialization
 
     public interface IExtendedStorageEngine : IStorageEngine
     {
-        T GetLatestRootObject<T>(string qualifier = null, DateTimeOffset? olderThan = null);
-        T[] GetObjectsInDateRange<T>(string qualifier = null, DateTimeOffset? olderThan = null, DateTimeOffset? newerThan = null);
+        T GetLatestRootObject<T>(string qualifier = null, DateTimeOffset? olderThan = null)
+            where T : ISerializableItemBase;
+        T[] GetRootObjectsInDateRange<T>(string qualifier = null, DateTimeOffset? olderThan = null, DateTimeOffset? newerThan = null)
+            where T : ISerializableItemBase;
     }
 
     public interface IExplicitReferenceBase

@@ -7,15 +7,25 @@ namespace ReactiveXaml.Serialization
 {
     public static class RxStorage
     {
-        public static IStorageEngine Engine { get; set; }
+        public static IExtendedStorageEngine Engine { get; private set; }
 
         static RxStorage()
         {
             if (RxApp.InUnitTestRunner()) {
-                Engine = new DictionaryStorageEngine();
+                InitializeWithEngine(new DictionaryStorageEngine());
             } else {
                 // TODO: Provide a path to the user's AppData folder
-                Engine = new DictionaryStorageEngine();
+                InitializeWithEngine(new DictionaryStorageEngine());
+            }
+        }
+
+        public static void InitializeWithEngine(IStorageEngine engine)
+        {
+            var extEngine = engine as IExtendedStorageEngine;
+            if (extEngine != null) {
+                Engine = extEngine;
+            } else {
+                Engine = new NaiveExtendedEngine(engine);
             }
         }
     }
