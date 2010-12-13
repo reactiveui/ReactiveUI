@@ -7,12 +7,18 @@ using System.Text;
 
 namespace ReactiveXaml.Serialization
 {
+    [DataContract]
     public class SyncPointInformation : ISyncPointInformation
     {
+        [DataMember]
         public Guid RootObjectHash { get; protected set; }
+        [DataMember]
         public Guid ParentSyncPoint { get; protected set; }
+        [DataMember]
         public string RootObjectTypeName { get; protected set; }
+        [DataMember]
         public string Qualifier { get; protected set; }
+        [DataMember]
         public DateTimeOffset CreatedOn { get; protected set; }
 
         [IgnoreDataMember]
