@@ -185,13 +185,12 @@ namespace ReactiveXaml
             (x.Item1).GetProperty(x.Item2), 
             15 /*items*/);
 #else
-
-        static QueuedAsyncMRUCache<Tuple<Type, string>, FieldInfo> fieldInfoTypeCache = new QueuedAsyncMRUCache<Tuple<Type,string>, FieldInfo>(x => {
+        static MemoizingMRUCache<Tuple<Type, string>, FieldInfo> fieldInfoTypeCache = new MemoizingMRUCache<Tuple<Type,string>, FieldInfo>((x, _) => {
             var field_name = RxApp.GetFieldNameForProperty(x.Item2);
             var ret = (x.Item1).GetField(field_name, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
             return ret;
         }, 50);
-        static QueuedAsyncMRUCache<Tuple<Type, string>, PropertyInfo> propInfoTypeCache = new QueuedAsyncMRUCache<Tuple<Type,string>, PropertyInfo>(x => {
+        static MemoizingMRUCache<Tuple<Type, string>, PropertyInfo> propInfoTypeCache = new MemoizingMRUCache<Tuple<Type,string>, PropertyInfo>((x,_) => {
             var ret = (x.Item1).GetProperty(x.Item2, BindingFlags.Public | BindingFlags.Instance);
             return ret;
         }, 50);
@@ -203,13 +202,9 @@ namespace ReactiveXaml
             Contract.Requires(prop_name != null);
             FieldInfo field;
 
-#if SILVERLIGHT
             lock(fieldInfoTypeCache) {
                 field = fieldInfoTypeCache.Get(new Tuple<Type,string>(typeof(TObj), prop_name));
             }
-#else
-            field = fieldInfoTypeCache.Get(new Tuple<Type,string>(typeof(TObj), prop_name));
-#endif 
 
             if (field == null) {
                 throw new ArgumentException("You must declare a backing field for this property named: " + RxApp.GetFieldNameForProperty(prop_name));
