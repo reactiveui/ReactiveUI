@@ -1,12 +1,8 @@
-﻿using System.Collections.Concurrent;
-using System.Threading;
-using System.Threading.Tasks;
-using ReactiveXaml;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
+﻿using System;
 using System.Concurrency;
-using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace ReactiveXaml.Tests
 {
@@ -24,7 +20,7 @@ namespace ReactiveXaml.Tests
             fixture = new ObservableAsyncMRUCache<int, int>(x => Observable.Return(x*5).Delay(delay, sched), 5, 2);
 
             int result = 0;
-            var t = new Task(() => {
+            var t = new Thread(() => {
                 foreach (int x in input.Select(x => fixture.Get(x))) {
                     result += x;
                 }
@@ -43,7 +39,7 @@ namespace ReactiveXaml.Tests
 
             this.Log().Debug("Running to end");
             sched.Run();
-            t.Wait();
+            t.Join();
             Assert.AreEqual(25, result);
         }
 
@@ -52,7 +48,6 @@ namespace ReactiveXaml.Tests
         {
             var input = new[] { 1, 1, 1, 1, 1 };
             var sched = new TestScheduler();
-            var output = new ConcurrentQueue<int>();
 
             var delay = TimeSpan.FromSeconds(1.0);
             var fixture = new ObservableAsyncMRUCache<int, int>(x => Observable.Return(x*5).Delay(delay, sched), 5, 2);
@@ -99,7 +94,6 @@ namespace ReactiveXaml.Tests
         {
             var input = new[] { 1, 2, 3, 4, 1 };
             var sched = new TestScheduler();
-            var output = new ConcurrentQueue<int>();
 
             var delay = TimeSpan.FromSeconds(1.0);
             var fixture = new ObservableAsyncMRUCache<int, int>(x => Observable.Return(x*5).Delay(delay, sched), 5, 2);
@@ -166,33 +160,6 @@ namespace ReactiveXaml.Tests
             Assert.IsNotNull(exception);
             Assert.AreEqual(4, completed);
             this.Log().Debug(exception);
-        }
-
-        [TestMethod()]
-        public void BlockingGetShouldRethrowExceptions()
-        {
-            var input = new[] { 5, 2, 10, 0/*boom!*/, 5 };
-            var fixture = new QueuedAsyncMRUCache<int, int>(x => { Thread.Sleep(1000); return 50 / x; }, 5, 5);
-            int[] output = {5, 2, 10, 5};
-
-            bool did_throw = false;
-            try {
-                output = input.Select(x => fixture.Get(x)).ToArray();
-            } catch(Exception ex) {
-                did_throw = true;
-                this.Log().Debug("Exception thrown", ex);
-            }
-
-            output.Run(x => this.Log().Debug(x));
-            Assert.IsTrue(did_throw);
-        }
-
-        void assertStopwatch(TimeSpan max_time, Action block)
-        {
-            DateTime start = DateTime.Now;
-            block();
-            var delta = DateTime.Now - start;
-            Assert.IsTrue(delta < max_time, delta.ToString());
         }
     }
 }

@@ -4,15 +4,10 @@ using System.Concurrency;
 using System.Linq;
 using System.Text;
 using System.Diagnostics.Contracts;
+using System.Threading;
 
 #if WINDOWS_PHONE
 using Microsoft.Phone.Reactive;
-#endif
-
-#if !SILVERLIGHT
-using System.Threading;
-using System.Threading.Tasks;
-using System.Collections.Concurrent;
 #endif
 
 namespace ReactiveXaml
@@ -97,7 +92,11 @@ namespace ReactiveXaml
         public SemaphoreSubject(int maxCount, IScheduler sched = null)
         {
             this.Log().DebugFormat("maxCount is '{0}'", maxCount);
+#if WINDOWS_PHONE
+            _inner = new Subject<T>();
+#else
             _inner = (sched != null ? new Subject<T>(sched) : new Subject<T>());
+#endif
             _maxCount = maxCount;
         }
 
@@ -159,7 +158,7 @@ namespace ReactiveXaml
                 return;
             }
 
-            while(Interlocked.Read(ref _count) < _maxCount) {
+            while(_count < _maxCount) {
                 T next;
                 lock(queue) {
                     if (queue.Count == 0) {
