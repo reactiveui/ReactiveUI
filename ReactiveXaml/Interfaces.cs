@@ -55,7 +55,7 @@ namespace ReactiveXaml
         IObservable<Unit> AsyncCompletedNotification { get; }
     }
 
-    public interface IMessageBus
+    public interface IMessageBus : IEnableLogger
     {
         IObservable<T> Listen<T>(string Contract = null);
         bool IsRegistered(Type Type, string Contract = null);
