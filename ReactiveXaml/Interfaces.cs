@@ -23,7 +23,7 @@ namespace ReactiveXaml
         public TValue Value { get; set; }
     }
 
-    public interface IReactiveNotifyPropertyChanged : INotifyPropertyChanged, INotifyPropertyChanging, IObservable<PropertyChangedEventArgs> 
+    public interface IReactiveNotifyPropertyChanged : INotifyPropertyChanged, INotifyPropertyChanging, IObservable<PropertyChangedEventArgs>, IEnableLogger
     { 
         IObservable<PropertyChangingEventArgs> BeforeChange {get;}
         IDisposable SuppressChangeNotifications();

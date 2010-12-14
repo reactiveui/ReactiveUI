@@ -39,7 +39,7 @@ namespace ReactiveXaml
             string prop_name = RxApp.expressionToPropertyName(Property);
             var prop_info = RxApp.getPropertyInfoForProperty<TSender>(prop_name);
 
-            this.Log().InfoFormat("Registering change notification for {0:X} on {1}", This.GetHashCode(), prop_name);
+            This.Log().InfoFormat("Registering change notification for {0:X} on {1}", This.GetHashCode(), prop_name);
 
             if (BeforeChange) {
                 return This.BeforeChange
