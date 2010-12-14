@@ -54,13 +54,10 @@ namespace ReactiveXaml
                 this.propName = propName;
                 propGetter = typeof(TObj).GetProperty(propName);
                 dobj.SetBinding(prop, b);
-
-                this.Log().DebugFormat("Attaching to DP: {0}", propName);
             }
 
             void onPropertyChanged(DependencyObject Sender, DependencyPropertyChangedEventArgs args)
             {
-                this.Log().DebugFormat("DP changed: {0}", propName);
                 subject.OnNext(new ObservedChange<TObj, TRet>() { 
                     PropertyName = propName, 
                     Sender = source,

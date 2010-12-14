@@ -39,7 +39,7 @@ namespace ReactiveXaml
         static RxApp()
         {
 #if DEBUG
-            LoggerFactory = (prefix) => new StdErrLogger(prefix);
+            LoggerFactory = (prefix) => new StdErrLogger(prefix) { CurrentLogLevel = LogLevel.Info };
 #else
             LoggerFactory = (prefix) => new NullLogger(prefix);
 #endif
@@ -57,7 +57,12 @@ namespace ReactiveXaml
 #else
                 DeferredScheduler = new EventLoopScheduler();
 #endif
-                LoggerFactory = (prefix) => new StdErrLogger(prefix);
+
+#if DEBUG
+                LoggerFactory = (prefix) => new StdErrLogger(prefix) { CurrentLogLevel = LogLevel.Debug };
+#else
+                LoggerFactory = (prefix) => new StdErrLogger(prefix) { CurrentLogLevel = LogLevel.Info };
+#endif
 
                 DefaultUnitTestRecoveryResult = RecoveryOptionResult.FailOperation;
 

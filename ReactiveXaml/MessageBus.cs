@@ -21,7 +21,7 @@ namespace ReactiveXaml
         public IObservable<T> Listen<T>(string Contract = null)
         {
             IObservable<T> ret = null;
-	    this.Log().InfoFormat("Listening to {0}:{1}", typeof(T), Contract);
+	        this.Log().InfoFormat("Listening to {0}:{1}", typeof(T), Contract);
 
             withMessageBus(typeof(T), Contract, (mb, tuple) => {
                 ret = (IObservable<T>)mb[tuple].Target;
