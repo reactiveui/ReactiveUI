@@ -21,6 +21,8 @@ namespace ReactiveXaml
         public IObservable<T> Listen<T>(string Contract = null)
         {
             IObservable<T> ret = null;
+	    this.Log().InfoFormat("Listening to {0}:{1}", typeof(T), Contract);
+
             withMessageBus(typeof(T), Contract, (mb, tuple) => {
                 ret = (IObservable<T>)mb[tuple].Target;
             });
@@ -60,6 +62,7 @@ namespace ReactiveXaml
                     mb[tuple] = new WeakReference(subj);
                 }
 
+	    	this.Log().DebugFormat("Sending message to {0}:{1} - {2}", typeof(T), Contract, Message);
                 subj.OnNext(Message);
             });
         }
@@ -119,3 +122,5 @@ namespace ReactiveXaml
         }
     }
 }
+
+// vim: tw=120 ts=4 sw=4 et :

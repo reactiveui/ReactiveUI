@@ -29,7 +29,7 @@ namespace ReactiveXaml
 
             source = observable.DistinctUntilChanged().ObserveOn(scheduler);
             source.Subscribe(x => {
-                this.Log().DebugFormat("Property helper {0:X} changed", this.GetHashCode());
+                this.Log().InfoFormat("Property helper {0:X} changed", this.GetHashCode());
                 lastValue = x;
                 on_changed(x);
             }, ex => lastException = ex);
@@ -66,7 +66,9 @@ namespace ReactiveXaml
             Contract.Requires(Property != null);
 
             string prop_name = RxApp.expressionToPropertyName(Property);
-            return new ObservableAsPropertyHelper<TRet>(Observable, _ => This.RaisePropertyChanged(prop_name), InitialValue, Scheduler);
+	    var ret = new ObservableAsPropertyHelper<TRet>(Observable, _ => This.RaisePropertyChanged(prop_name), InitialValue, Scheduler);
+	    this.Log().InfoFormat("OAPH {0:X} is for {1}", ret, prop_name);
+	    return ret;
         }
 
         public static ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(
@@ -81,3 +83,5 @@ namespace ReactiveXaml
         }
     }
 }
+
+// vim: tw=120 ts=4 sw=4 et :

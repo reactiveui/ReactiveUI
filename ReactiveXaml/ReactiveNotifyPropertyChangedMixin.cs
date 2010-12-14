@@ -25,8 +25,9 @@ namespace ReactiveXaml
             Contract.Requires(This != null);
             IObservable<PropertyChangedEventArgs> Obs = This;
 
-            return Obs.Where(x => x.PropertyName == propertyName)
-                      .Select(x => new ObservedChange<TSender, TValue> { Sender = This, PropertyName = x.PropertyName });
+            return Obs
+                .Where(x => x.PropertyName == propertyName)
+                .Select(x => new ObservedChange<TSender, TValue> { Sender = This, PropertyName = x.PropertyName });
         }
 
         public static IObservable<ObservedChange<TSender, TValue>> ObservableForProperty<TSender, TValue>(this TSender This, Expression<Func<TSender, TValue>> Property, bool BeforeChange = false)
@@ -37,6 +38,8 @@ namespace ReactiveXaml
 
             string prop_name = RxApp.expressionToPropertyName(Property);
             var prop_info = RxApp.getPropertyInfoForProperty<TSender>(prop_name);
+
+            this.Log().InfoFormat("Registering change notification for {0:X} on {1}", This.GetHashCode(), prop_name);
 
             if (BeforeChange) {
                 return This.BeforeChange
@@ -62,4 +65,4 @@ namespace ReactiveXaml
     }
 }
 
-// vim: tw=120 ts=4 sw=4 et enc=utf8 :
+// vim: tw=120 ts=4 sw=4 et :

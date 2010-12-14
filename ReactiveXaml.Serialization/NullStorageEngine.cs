@@ -46,3 +46,5 @@ namespace ReactiveXaml.Serialization
         }
     }
 }
+
+// vim: tw=120 ts=4 sw=4 et :

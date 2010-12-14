@@ -49,7 +49,7 @@ namespace ReactiveXaml
 
             ItemsInflight
                 .Subscribe(x => {
-                    this.Log().DebugFormat("0x{0:X} - {1} items in flight", this.GetHashCode(), x);
+                    this.Log().InfoFormat("0x{0:X} - {1} items in flight", this.GetHashCode(), x);
                     tooManyItems = (x >= maximum_concurrent && maximum_concurrent > 0);
                     canExecuteSubject.OnNext(!tooManyItems);
                 });

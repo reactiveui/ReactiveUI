@@ -34,15 +34,6 @@ namespace ReactiveXaml
         {
             allPublicProperties = new Lazy<PropertyInfo[]>(() =>
                 GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance));
-
-#if DEBUG
-            var propCache =
-                new MemoizingMRUCache<string,System.Reflection.PropertyInfo>((s,_) => this.GetType().GetProperty(s), 25);
-
-            this.PropertyChanged += (o, e) => 
-                this.Log().DebugFormat("Property {0} changed to '{1}'",
-                    e.PropertyName, propCache.Get(e.PropertyName).GetValue(this, null));
-#endif
         }
 
         public IObservable<PropertyChangingEventArgs> BeforeChange {
@@ -97,6 +88,8 @@ namespace ReactiveXaml
             if (handler != null && areChangeNotificationsEnabled) {
                 handler(this, e);
             }
+
+            this.Log().DebugFormat("{0:X}.{1} changed", this.GetHashCode(), propertyName);
 
             notifyObservable(e, changedSubject);
         }
@@ -158,7 +151,7 @@ namespace ReactiveXaml
         [IgnoreDataMember]
         protected Lazy<PropertyInfo[]> allPublicProperties;
 
-        [IgnoreDataMember]
+        [IgnoreDataMember] 
         Subject<PropertyChangingEventArgs> changingSubject = new Subject<PropertyChangingEventArgs>();
 
         [IgnoreDataMember]
@@ -228,4 +221,4 @@ namespace ReactiveXaml
     }
 }
 
-// vim: tw=120 ts=4 sw=4 et enc=utf8 :
+// vim: tw=120 ts=4 sw=4 et :

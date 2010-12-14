@@ -44,6 +44,7 @@ namespace ReactiveXaml
         {
             IObservable<TVal> result;
             if (_innerCache.TryGet(key, out result)) {
+                this.Log().DebugFormat("Cache hit: '{0}'", key);
                 return result;
             }
 
@@ -292,3 +293,5 @@ namespace ReactiveXaml
         }
     }
 }
+
+// vim: tw=120 ts=4 sw=4 et :

@@ -23,7 +23,8 @@ namespace ReactiveXaml
             };
         }
 
-        static MemoizingMRUCache<Tuple<Type, string>, IEnumerable<ValidationAttribute>> validationAttributeMap = new MemoizingMRUCache<Tuple<Type, string>, IEnumerable<ValidationAttribute>>((prop, _) => (
+        static MemoizingMRUCache<Tuple<Type, string>, IEnumerable<ValidationAttribute>> validationAttributeMap 
+            = new MemoizingMRUCache<Tuple<Type, string>, IEnumerable<ValidationAttribute>>((prop, _) => (
                 prop.Item1.GetProperty(prop.Item2)
                     .GetCustomAttributes(typeof(ValidationAttribute), true)
                     .Cast<ValidationAttribute>()
@@ -70,6 +71,8 @@ namespace ReactiveXaml
                     var ctx = new ValidationContext(this, null, null) { MemberName = propName };
                     v.Validate(GetType().GetProperty(propName).GetValue(this, null), ctx);
                 } catch(Exception ve) {
+                    this.Log().InfoFormat("{0:X}.{1} failed validation: {2}", 
+                        this.GetHashCode(), propName, ve.Message);
                     return ve.Message;
                 }
             }
@@ -137,3 +140,5 @@ namespace ReactiveXaml
         }
     }
 }
+
+// vim: tw=120 ts=4 sw=4 et :

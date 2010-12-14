@@ -39,19 +39,32 @@ namespace ReactiveXaml.Serialization
             ISerializableItemBase ret = null;
 
             initializeStoreIfNeeded();
-            allItems.TryGetValue(ContentHash, out ret);
+            if (!allItems.TryGetValue(ContentHash, out ret)) {
+                this.Log().ErrorFormat("Attempted to load '{0}', didn't exist!", ContentHash)
+                return default(T);
+            }
+
+            this.Log().DebugFormat("Loaded '{0}'", ContentHash)
             return (T)ret;
         }
 
         public object Load(Guid ContentHash)
         {
             initializeStoreIfNeeded();
+            if (!allItems.ContainsKey(ContentHash)) {
+                this.Log().ErrorFormat("Attempted to load '{0}', didn't exist!", ContentHash);
+                return null;
+            }
+
+            this.Log().DebugFormat("Loaded '{0}'", ContentHash)
             return allItems[ContentHash];
         }
 
         public void Save<T>(T Obj) where T : ISerializableItemBase
         {
             initializeStoreIfNeeded();
+
+            this.Log().DebugFormat("Saving '{0}", Obj.ContentHash);
             allItems[Obj.ContentHash] = Obj;
         }
 
@@ -62,6 +75,7 @@ namespace ReactiveXaml.Serialization
             }
 
             initializeStoreIfNeeded();
+            this.Log().InfoFormat("Flushing changes");
             var dseData = new DSESerializedObjects() {allItems = this.allItems, syncPointIndex = this.syncPointIndex};
             File.WriteAllText(backingStorePath, JSONHelper.Serialize(dseData, allStorageTypes.Value), Encoding.UTF8);
         }
@@ -77,6 +91,8 @@ namespace ReactiveXaml.Serialization
             var ret = new SyncPointInformation(obj.ContentHash, parent, typeof (T), qualifier ?? String.Empty, createdOn ?? DateTimeOffset.Now);
             Save(ret);
             syncPointIndex[key] = ret.ContentHash;
+
+            this.Log().InfoFormat("Created sync point: {0}.{1}", obj.ContentHash, qualifier);
 
             return ret;
         }
@@ -101,34 +117,6 @@ namespace ReactiveXaml.Serialization
             }
 
             return ret.ToArray();
-        }
-
-        public T GetNewestItemByType<T>(DateTimeOffset? OlderThan = null) where T : ISerializableItemBase
-        {
-            initializeStoreIfNeeded();
-            
-            OlderThan = OlderThan ?? DateTimeOffset.MaxValue;
-            /*
-            return allItems.Values.OfType<T>()
-                .Where(x => x.UpdatedOn <= OlderThan)
-                .OrderByDescending(x => x.UpdatedOn)
-                .FirstOrDefault();
-             */
-            throw new NotImplementedException();
-        }
-
-        public IEnumerable<T> GetItemsByDate<T>(DateTimeOffset? NewerThan = null, DateTimeOffset? OlderThan = null) where T : ISerializableItemBase
-        {
-            initializeStoreIfNeeded();
-            NewerThan = NewerThan ?? DateTimeOffset.MinValue;
-            OlderThan = OlderThan ?? DateTimeOffset.MaxValue;
-
-            /*
-            return allItems.Values.OfType<T>()
-                .Where(x => x.UpdatedOn >= NewerThan && x.UpdatedOn <= OlderThan)
-                .ToArray();
-             */
-            throw new NotImplementedException();
         }
 
         void initializeStoreIfNeeded()
@@ -184,4 +172,4 @@ namespace ReactiveXaml.Serialization
     }
 }
 
-// vim: tw=120 ts=4 sw=4 et enc=utf8 :
+// vim: tw=120 ts=4 sw=4 et :
