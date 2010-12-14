@@ -74,7 +74,7 @@ namespace ReactiveXaml
 
         public void Execute(object parameter)
         {
-            this.Log().DebugFormat("{0:X}: Executed", this.GetHashCode());
+            this.Log().InfoFormat("{0:X}: Executed", this.GetHashCode());
             executeSubject.OnNext(parameter);
         }
 
@@ -85,4 +85,4 @@ namespace ReactiveXaml
     }
 }
 
-// vim: tw=120 ts=4 sw=4 et enc=utf8 :
+// vim: tw=120 ts=4 sw=4 et :

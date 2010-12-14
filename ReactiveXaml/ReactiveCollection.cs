@@ -28,7 +28,6 @@ namespace ReactiveXaml
 
         void setupRx(IEnumerable<T> List = null)
         {
-            // XXX: Should this be RxApp.DeferredScheduler
             _BeforeItemsAdded = new Subject<T>();
             _BeforeItemsRemoved = new Subject<T>();
             _ItemPropertyChanging = new Subject<ObservedChange<T, object>>();
@@ -61,18 +60,23 @@ namespace ReactiveXaml
             _ItemPropertyChanged = new Subject<ObservedChange<T,object>>();
 
             _ItemsAdded.Subscribe(x => {
+                this.Log().DebugFormat("Item Added to {0:X} - {1}", this.GetHashCode(), x);
                 if (propertyChangeWatchers == null)
                     return;
                 addItemToPropertyTracking(x);
             });
 
             _ItemsRemoved.Subscribe(x => {
+                this.Log().DebugFormat("Item removed from {0:X} - {1}", this.GetHashCode(), x);
                 if (propertyChangeWatchers == null || !propertyChangeWatchers.ContainsKey(x))
                     return;
 
                 propertyChangeWatchers[x].Dispose();
                 propertyChangeWatchers.Remove(x);
             });
+
+            _ItemPropertyChanged.Subscribe(x => 
+                this.Log().DebugFormat("Object {0} changed in collection {1:X}", x, this.GetHashCode()));
         }
 
         void addItemToPropertyTracking(T toTrack)
@@ -358,4 +362,4 @@ namespace ReactiveXaml
     }
 }
 
-// vim: tw=120 ts=4 sw=4 et enc=utf8 :
+// vim: tw=120 ts=4 sw=4 et :
