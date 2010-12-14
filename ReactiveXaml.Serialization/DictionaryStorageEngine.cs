@@ -40,11 +40,11 @@ namespace ReactiveXaml.Serialization
 
             initializeStoreIfNeeded();
             if (!allItems.TryGetValue(ContentHash, out ret)) {
-                this.Log().ErrorFormat("Attempted to load '{0}', didn't exist!", ContentHash)
+                this.Log().ErrorFormat("Attempted to load '{0}', didn't exist!", ContentHash);
                 return default(T);
             }
 
-            this.Log().DebugFormat("Loaded '{0}'", ContentHash)
+            this.Log().DebugFormat("Loaded '{0}'", ContentHash);
             return (T)ret;
         }
 
@@ -56,7 +56,7 @@ namespace ReactiveXaml.Serialization
                 return null;
             }
 
-            this.Log().DebugFormat("Loaded '{0}'", ContentHash)
+            this.Log().DebugFormat("Loaded '{0}'", ContentHash);
             return allItems[ContentHash];
         }
 
