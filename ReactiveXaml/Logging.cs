@@ -13,6 +13,14 @@ using Microsoft.Phone.Reactive;
 
 namespace ReactiveXaml
 {
+    public enum LogLevel {
+        Debug = 1,
+        Info,
+        Warn,
+        Error,
+        Fatal,
+    }
+
     public interface ILog
     {
         void Debug(object message);
@@ -50,6 +58,8 @@ namespace ReactiveXaml
         void WarnFormat(string format, object arg0);
         void WarnFormat(string format, object arg0, object arg1);
         void WarnFormat(string format, object arg0, object arg1, object arg2);
+
+        LogLevel CurrentLogLevel { get; set; }
     }
 
     public interface IEnableLogger { }
@@ -132,6 +142,8 @@ namespace ReactiveXaml
         public void WarnFormat(string format, object arg0) { }
         public void WarnFormat(string format, object arg0, object arg1) { }
         public void WarnFormat(string format, object arg0, object arg1, object arg2) { }
+
+        public LogLevel CurrentLogLevel { get; set; }
     }
 
     public abstract class LoggerBase : ILog
@@ -159,6 +171,9 @@ namespace ReactiveXaml
         protected abstract void writeInfo(string message);
         protected abstract void writeError(string message);
         protected abstract void writeFatal(string message);
+
+        public LogLevel CurrentLogLevel { get; set; }
+
 
         /*
          * Formatting functions
@@ -220,7 +235,7 @@ namespace ReactiveXaml
         public void Debug(object message, Exception exception) { write(writeDebug, message, exception); }
         public void DebugFormat(string format, params object[] args) { write(writeDebug, format, args, null); }
         public void DebugFormat(IFormatProvider provider, string format, params object[] args) { write(writeDebug, format, args, provider); }
-	public void DebugFormat(string format, object arg0) { write(writeDebug, format, arg0); }
+        public void DebugFormat(string format, object arg0) { write(writeDebug, format, arg0); }
         public void DebugFormat(string format, object arg0, object arg1) { write(writeDebug, format, arg0, arg1); }
         public void DebugFormat(string format, object arg0, object arg1, object arg2) { write(writeDebug, format, arg0, arg1, arg2); }
         public void Warn(object message) { write(writeWarn, message); }
@@ -253,6 +268,11 @@ namespace ReactiveXaml
         public void FatalFormat(string format, object arg0, object arg1, object arg2) { write(writeFatal, format, arg0, arg1, arg2); }
 
         #endregion
+
+        protected bool shouldWrite(LogLevel attemptedLogLevel)
+        {
+            return ((int)attemptedLogLevel >= (int)CurrentLogLevel);
+        }
     }
 
     // N.B. Yes I know StdErrLogger writes to Stdout, but VS's output window 
@@ -264,21 +284,33 @@ namespace ReactiveXaml
 
         protected override void writeDebug(string message)
         {
+            if (!shouldWrite(LogLevel.Debug))
+                return; 
+
             Console.WriteLine(message);
         }
 
         protected override void writeWarn(string message)
         {
+            if (!shouldWrite(LogLevel.Warn))
+                return; 
+
             Console.WriteLine("Warn: " + message);
         }
 
         protected override void writeInfo(string message)
         {
+            if (!shouldWrite(LogLevel.Info))
+                return; 
+
             Console.WriteLine("Info: " + message);
         }
 
         protected override void writeError(string message)
         {
+            if (!shouldWrite(LogLevel.Error))
+                return; 
+
             Console.WriteLine("ERROR: " + message);
         }
 
@@ -288,3 +320,5 @@ namespace ReactiveXaml
         }
     }
 }
+
+// vim: tw=120 ts=4 sw=4 et :
