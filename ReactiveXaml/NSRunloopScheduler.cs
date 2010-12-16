@@ -8,7 +8,7 @@ using MonoTouch.Foundation;
 
 namespace ReactiveXaml
 {
-    public class NSRunloopScheduler : IScheduler
+    public class NSRunloopScheduler : IScheduler, IEnableLogger
     {
         NSObject theApp;
 
