@@ -10,7 +10,7 @@ using ReactiveXaml.Tests;
 namespace ReactiveXaml.Serialization.Tests
 {
     [PexClass, TestClass]
-    public partial class SerializedCollectionTest
+    public partial class SerializedCollectionTest : IEnableLogger
     {
         [PexMethod]
         public void AddingItemsShouldChangeTheContentHash(string[] toAdd) {
@@ -103,6 +103,9 @@ namespace ReactiveXaml.Serialization.Tests
             var fixture = sched.With(_ => 
                 new SerializedCollection<ISerializableList<ISerializableItemBase>>(new[] {(ISerializableList<ISerializableItemBase>)coll}));
 
+            this.Log().DebugFormat("input = {0:X}, coll = {1:X}, fixture = {2:X}",
+                input.GetHashCode(), coll.GetHashCode(), fixture.GetHashCode());
+
             bool inputChanging = false; bool inputChanged = false;
             bool collChanging = false; bool collChanged = false;
             bool fixtureChanging = false; bool fixtureChanged = false;
@@ -115,6 +118,13 @@ namespace ReactiveXaml.Serialization.Tests
 
             input.TestString = "Bar";
             sched.RunToMilliseconds(1000);
+
+            this.Log().DebugFormat("inputChanging = {0}", inputChanging);
+            this.Log().DebugFormat("inputChanged = {0}", inputChanged);
+            this.Log().DebugFormat("collChanging = {0}", collChanging);
+            this.Log().DebugFormat("collChanged = {0}", collChanged);
+            this.Log().DebugFormat("fixtureChanging = {0}", fixtureChanging);
+            this.Log().DebugFormat("fixtureChanged = {0}", fixtureChanged);
 
             Assert.IsTrue(inputChanging);
             Assert.IsTrue(inputChanged);

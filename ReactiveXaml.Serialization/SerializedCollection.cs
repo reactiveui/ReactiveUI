@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Concurrency;
 using System.Linq;
 using System.Text;
 using ReactiveXaml;
@@ -30,30 +31,33 @@ namespace ReactiveXaml.Serialization
             get { return this.UpdatedOn;  }   
         }
 
-        public SerializedCollection()
+        IScheduler _sched;
+
+        public SerializedCollection(IScheduler sched = null)
         {
             CreatedOn = new Dictionary<Guid, DateTimeOffset>();
             UpdatedOn = new Dictionary<Guid, DateTimeOffset>();
-            setupCollection();
+            setupCollection(sched);
         }
 
-        public SerializedCollection(IEnumerable<T> items)
+        public SerializedCollection(IEnumerable<T> items, IScheduler sched = null)
             : base(items)
         {
             CreatedOn = items.ToDictionary(k => k.ContentHash, _ => RxApp.DeferredScheduler.Now);
             UpdatedOn = items.ToDictionary(k => k.ContentHash, _ => RxApp.DeferredScheduler.Now);
-            setupCollection();
+            setupCollection(sched);
         }
 
         [OnDeserialized]
-        void setupCollection(StreamingContext sc) { setupCollection(); }
-        void setupCollection()
+        void setupCollection(StreamingContext sc) { setupCollection(null); }
+        void setupCollection(IScheduler sched)
         {
             ChangeTrackingEnabled = true;
+            _sched = sched ?? RxApp.DeferredScheduler;
 
             ItemsAdded.Subscribe(x => {
-                CreatedOn[x.ContentHash] = RxApp.DeferredScheduler.Now;
-                UpdatedOn[x.ContentHash] = RxApp.DeferredScheduler.Now;
+                CreatedOn[x.ContentHash] = _sched.Now;
+                UpdatedOn[x.ContentHash] = _sched.Now;
             });
 
             ItemsRemoved.Subscribe(x => {
@@ -62,7 +66,7 @@ namespace ReactiveXaml.Serialization
             });
 
             ItemPropertyChanged.Subscribe(x => {
-                UpdatedOn[x.Sender.ContentHash] = RxApp.DeferredScheduler.Now;
+                UpdatedOn[x.Sender.ContentHash] = _sched.Now;
             });
 
             ItemChanging = Observable.Merge(

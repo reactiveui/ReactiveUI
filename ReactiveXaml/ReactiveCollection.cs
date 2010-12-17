@@ -81,6 +81,11 @@ namespace ReactiveXaml
 
         void addItemToPropertyTracking(T toTrack)
         {
+            if (toTrack is IReactiveCollection) {
+                addCollectionToPropertyTracking(toTrack);
+                return;
+            }
+
             var item = toTrack as IReactiveNotifyPropertyChanged;
             if (item == null)
                 return;
@@ -92,8 +97,37 @@ namespace ReactiveXaml
                     _ItemPropertyChanged.OnNext(new ObservedChange<T,object>() { Sender = toTrack, PropertyName = change.PropertyName })),
             };
 
-            propertyChangeWatchers.Add(item, Disposable.Create(() => {
+            propertyChangeWatchers.Add(toTrack, Disposable.Create(() => {
                 to_dispose[0].Dispose(); to_dispose[1].Dispose();
+            }));
+        }
+
+        void addCollectionToPropertyTracking(T toTrack)
+        {
+            var item = toTrack as IReactiveCollection;
+            if (item == null)
+                return;
+
+            var beforeItemsChanged = Observable.Merge(
+                item.BeforeItemsAdded.Select(_ =>
+                    new ObservedChange<T, object> {Sender = toTrack, PropertyName = "Items"}),
+                item.BeforeItemsRemoved.Select(_ =>
+                    new ObservedChange<T, object> {Sender = toTrack, PropertyName = "Items"}),
+                item.ItemPropertyChanging.Select(x => 
+                    new ObservedChange<T, object> {Sender = toTrack, PropertyName = "Item", Value = x.Sender})
+            ).Subscribe(_ItemPropertyChanging.OnNext);
+
+            var itemsChanged = Observable.Merge(
+                item.ItemsAdded.Select(_ =>
+                    new ObservedChange<T, object> {Sender = toTrack, PropertyName = "Items"}),
+                item.ItemsRemoved.Select(_ =>
+                    new ObservedChange<T, object> {Sender = toTrack, PropertyName = "Items"}),
+                item.ItemPropertyChanged.Select(x => 
+                    new ObservedChange<T, object> {Sender = toTrack, PropertyName = "Item", Value = x.Sender})
+            ).Subscribe(_ItemPropertyChanged.OnNext);
+
+            propertyChangeWatchers.Add(toTrack, Disposable.Create(() => {
+                beforeItemsChanged.Dispose(); itemsChanged.Dispose();
             }));
         }
 
@@ -276,6 +310,31 @@ namespace ReactiveXaml
 #else
                 return (Interlocked.Read(ref changeNotificationsSuppressed) == 0); 
 #endif
+            }
+        }
+
+        IObservable<object> IReactiveCollection.ItemsAdded {
+            get { return ItemsAdded.Select(x => (object) x); }
+        }
+        IObservable<object> IReactiveCollection.BeforeItemsAdded {
+            get { return BeforeItemsAdded.Select(x => (object) x); }
+        }
+        IObservable<object> IReactiveCollection.ItemsRemoved {
+            get { return ItemsRemoved.Select(x => (object) x); }
+        }
+        IObservable<object> IReactiveCollection.BeforeItemsRemoved {
+            get { return BeforeItemsRemoved.Select(x => (object)x); }
+        }
+        IObservable<ObservedChange<object, object>> IReactiveCollection.ItemPropertyChanging {
+            get {
+                return ItemPropertyChanging.Select(x =>
+                    new ObservedChange<object, object>() { PropertyName = x.PropertyName, Sender = x.Sender, Value = x.Value });
+            }
+        }
+        IObservable<ObservedChange<object, object>> IReactiveCollection.ItemPropertyChanged {
+            get {
+                return ItemPropertyChanged.Select(x =>
+                    new ObservedChange<object, object>() { PropertyName = x.PropertyName, Sender = x.Sender, Value = x.Value });
             }
         }
 
