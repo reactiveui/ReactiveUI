@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -29,19 +30,30 @@ namespace ReactiveXaml
         IDisposable SuppressChangeNotifications();
     }
 
-    public interface IReactiveCollection<T> : IList<T>, INotifyCollectionChanged, IEnableLogger
+    public interface IReactiveCollection : IEnumerable, INotifyCollectionChanged, IEnableLogger
     {
-        IObservable<T> ItemsAdded { get; }
-        IObservable<T> BeforeItemsAdded { get; }
-        IObservable<T> ItemsRemoved { get; }
-        IObservable<T> BeforeItemsRemoved { get; }
+        IObservable<object> ItemsAdded { get; }
+        IObservable<object> BeforeItemsAdded { get; }
+        IObservable<object> ItemsRemoved { get; }
+        IObservable<object> BeforeItemsRemoved { get; }
         IObservable<int> CollectionCountChanged { get; }
         IObservable<int> CollectionCountChanging { get; }
 
         bool ChangeTrackingEnabled { get; set; }
         IDisposable SuppressChangeNotifications();
-        IObservable<ObservedChange<T, object>> ItemPropertyChanging { get; }
-        IObservable<ObservedChange<T, object>> ItemPropertyChanged { get; }
+        IObservable<ObservedChange<object, object>> ItemPropertyChanging { get; }
+        IObservable<ObservedChange<object, object>> ItemPropertyChanged { get; }
+    }
+
+    public interface IReactiveCollection<T> : IList<T>, IReactiveCollection
+    {
+        new IObservable<T> ItemsAdded { get; }
+        new IObservable<T> BeforeItemsAdded { get; }
+        new IObservable<T> ItemsRemoved { get; }
+        new IObservable<T> BeforeItemsRemoved { get; }
+
+        new IObservable<ObservedChange<T, object>> ItemPropertyChanging { get; }
+        new IObservable<ObservedChange<T, object>> ItemPropertyChanged { get; }
     }
 
     public interface IReactiveCommand : ICommand, IObservable<object> 
