@@ -8,7 +8,7 @@ using System.Text;
 namespace ReactiveXaml.Serialization
 {
     [DataContract]
-    public class SyncPointInformation : ISyncPointInformation
+    public class SyncPointInformation : ReactiveObject, ISyncPointInformation
     {
         [DataMember]
         public Guid RootObjectHash { get; protected set; }
