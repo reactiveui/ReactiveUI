@@ -1,61 +1,44 @@
-﻿using ReactiveXaml;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
+using System.Concurrency;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using ReactiveXaml;
 
 namespace ReactiveXaml.Tests
 {
     public class TestFixture : ReactiveObject
     {
-#if SILVERLIGHT
-        [IgnoreDataMember]
+        [DataMember]
         public string _IsNotNullString;
+        [IgnoreDataMember]
         public string IsNotNullString {
             get { return _IsNotNullString; }
-            set { RaiseAndSetIfChanged(_IsNotNullString, value, x => _IsNotNullString = x, "IsNotNullString"); }
+            set { this.RaiseAndSetIfChanged(x => x.IsNotNullString, value); }
         }
 
-        [IgnoreDataMember]
+        [DataMember]
         public string _IsOnlyOneWord;
-        public string IsOnlyOneWord {
-            get { return _IsOnlyOneWord; }
-            set { RaiseAndSetIfChanged(_IsOnlyOneWord, value, x => _IsOnlyOneWord = x, "IsOnlyOneWord"); }
-        }
-
         [IgnoreDataMember]
-        public string _UsesExprRaiseSet;
-        public string UsesExprRaiseSet {
-            get { return _UsesExprRaiseSet; }
-            set { this.RaiseAndSetIfChanged(x => x.UsesExprRaiseSet, value); }
-        }
-#else
-        string _IsNotNullString;
-        public string IsNotNullString {
-            get { return _IsNotNullString; }
-            set { RaiseAndSetIfChanged(_IsNotNullString, value, x => _IsNotNullString = x, "IsNotNullString"); }
-        }
-
-        string _IsOnlyOneWord;
         public string IsOnlyOneWord {
             get { return _IsOnlyOneWord; }
-            set { RaiseAndSetIfChanged(_IsOnlyOneWord, value, x => _IsOnlyOneWord = x, "IsOnlyOneWord"); }
+            set { this.RaiseAndSetIfChanged(x => x.IsOnlyOneWord, value); }
         }
 
-        string _UsesExprRaiseSet;
+        [DataMember]
+        public string _UsesExprRaiseSet;
+        [IgnoreDataMember]
         public string UsesExprRaiseSet {
             get { return _UsesExprRaiseSet; }
             set { this.RaiseAndSetIfChanged(x => x.UsesExprRaiseSet, value); }
         }
-#endif
 
         public ReactiveCollection<int> TestCollection { get; protected set; }
 
         public TestFixture()
         {
-            TestCollection = new ReactiveCollection<int>() { ChangeTrackingEnabled = true };
-            WatchCollection(TestCollection, "TestCollection");
+            TestCollection = new ReactiveCollection<int>() {ChangeTrackingEnabled = true};
         }
     }
 
@@ -72,18 +55,21 @@ namespace ReactiveXaml.Tests
             var output = new List<string>();
             var fixture = new TestFixture();
 
-            fixture.BeforeChange.Subscribe(x => output_changing.Add(x.PropertyName));
-            fixture.Subscribe(x => output.Add(x.PropertyName));
+            fixture.Changing.Subscribe(x => output_changing.Add(x.PropertyName));
+            fixture.Changed.Subscribe(x => output.Add(x.PropertyName));
 
             fixture.IsNotNullString = "Foo Bar Baz";
             fixture.IsOnlyOneWord = "Foo";
             fixture.IsOnlyOneWord = "Bar";
             fixture.IsNotNullString = null;     // Sorry.
+            fixture.IsNotNullString = null;
 
             var results = new[] { "IsNotNullString", "IsOnlyOneWord", "IsOnlyOneWord", "IsNotNullString" };
-            results.AssertAreEqual(output);
+
+            Assert.AreEqual(results.Length, output.Count);
 
             output.AssertAreEqual(output_changing);
+            results.AssertAreEqual(output);
         }
 
         [TestMethod()]
@@ -94,7 +80,7 @@ namespace ReactiveXaml.Tests
 
             var fixture = new TestFixture();
             int i = 0;
-            fixture.Subscribe(x => {
+            fixture.Changed.Subscribe(x => {
                 if (++i == 2)
                     throw new Exception("Deaded!");
             });
@@ -105,13 +91,14 @@ namespace ReactiveXaml.Tests
             fixture.IsNotNullString = "Bamf";
 
             var output = new List<string>();
-            fixture.Subscribe(x => output.Add(x.PropertyName));
+            fixture.Changed.Subscribe(x => output.Add(x.PropertyName));
             fixture.IsOnlyOneWord = "Bar";
 
             Assert.AreEqual("IsOnlyOneWord", output[0]);
             Assert.AreEqual(1, output.Count);
         }
 
+        /*
         [TestMethod()]
         public void ReactiveObjectShouldWatchCollections()
         {
@@ -121,7 +108,7 @@ namespace ReactiveXaml.Tests
             var output = new List<string>();
             var fixture = new TestFixture();
 
-            fixture.Subscribe(x => output.Add(x.PropertyName));
+            fixture.Changed.Subscribe(x => output.Add(x.PropertyName));
 
             fixture.TestCollection.Add(5);
             fixture.TestCollection.Add(10);
@@ -129,13 +116,14 @@ namespace ReactiveXaml.Tests
 
             Assert.AreEqual(3, output.Count);
         }
+         */
 
         [TestMethod()]
         public void ReactiveObjectShouldntSerializeAnythingExtra()
         {
             var fixture = new TestFixture() { IsNotNullString = "Foo", IsOnlyOneWord = "Baz" };
             string json = JSONHelper.Serialize(fixture);
-            this.Log().Debug(json);
+            this.Log().Info(json);
 
             // Should look something like:
             // {"IsNotNullString":"Foo","IsOnlyOneWord":"Baz", "UserExprRaiseSet":null}
@@ -153,7 +141,7 @@ namespace ReactiveXaml.Tests
 			
             var fixture = new TestFixture() { IsNotNullString = "Foo", IsOnlyOneWord = "Baz" };
             var output = new List<string>();
-            fixture.Subscribe(x => output.Add(x.PropertyName));
+            fixture.Changed.Subscribe(x => output.Add(x.PropertyName));
 
             fixture.UsesExprRaiseSet = "Foo";
             fixture.UsesExprRaiseSet = "Foo";   // This one shouldn't raise a change notification
@@ -168,7 +156,7 @@ namespace ReactiveXaml.Tests
         public void ObservableForPropertyUsingExpression()
         {
             var fixture = new TestFixture() { IsNotNullString = "Foo", IsOnlyOneWord = "Baz" };
-            var output = new List<ObservedChange<TestFixture, string>>();
+            var output = new List<IObservedChange<TestFixture, string>>();
             fixture.ObservableForProperty(x => x.IsNotNullString).Subscribe(output.Add);
 
             fixture.IsNotNullString = "Bar";
@@ -201,7 +189,7 @@ namespace ReactiveXaml.Tests
             var fixture = new TestFixture() { IsOnlyOneWord = before_set };
 
             bool before_fired = false;
-            fixture.BeforeChange.Subscribe(x => {
+            fixture.Changing.Subscribe(x => {
                 // XXX: The content of these asserts don't actually get 
                 // propagated back, it only prevents before_fired from
                 // being set - we have to enable 1st-chance exceptions
@@ -212,7 +200,7 @@ namespace ReactiveXaml.Tests
             });
 
             bool after_fired = false;
-            fixture.Subscribe(x => {
+            fixture.Changed.Subscribe(x => {
                 Assert.AreEqual("IsOnlyOneWord", x.PropertyName);
                 Assert.AreEqual(fixture.IsOnlyOneWord, after_set);
                 after_fired = true;

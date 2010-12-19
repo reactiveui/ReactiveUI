@@ -102,11 +102,11 @@ namespace ReactiveXaml.Tests
             var item1 = new TestFixture() { IsOnlyOneWord = "Foo" };
             var item2 = new TestFixture() { IsOnlyOneWord = "Bar" };
 
-            fixture.ItemPropertyChanging.Subscribe(x => {
+            fixture.ItemChanging.Subscribe(x => {
                 before_output.Add(new Tuple<TestFixture,string>((TestFixture)x.Sender, x.PropertyName));
             });
 
-            fixture.ItemPropertyChanged.Subscribe(x => {
+            fixture.ItemChanged.Subscribe(x => {
                 output.Add(new Tuple<TestFixture,string>((TestFixture)x.Sender, x.PropertyName));
             });
 
