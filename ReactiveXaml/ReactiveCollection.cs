@@ -60,16 +60,16 @@ namespace ReactiveXaml
             _ItemChanged = new Subject<IObservedChange<T,object>>();
 
             // TODO: Fix up this selector nonsense once SL/WP7 gets Covariance
-            _Changing = Observable.Merge<IObservedChange<object, object>>(
-                _BeforeItemsAdded.Select(x => new ObservedChange<object, object>() {PropertyName = "Items", Sender = this, Value = this}),
-                _BeforeItemsRemoved.Select(x => new ObservedChange<object, object>() {PropertyName = "Items", Sender = this, Value = this}),
-                aboutToClear.Select(x => new ObservedChange<object, object>() {PropertyName = "Items", Sender = this, Value = this}),
-                _ItemChanging.Select(x => new ObservedChange<object, object>() {PropertyName = x.PropertyName, Sender = x.Sender, Value = x.Value}));
+            _Changing = Observable.Merge(
+                _BeforeItemsAdded.Select<T, IObservedChange<object, object>>(x => new ObservedChange<object, object>() {PropertyName =  "Items", Sender = this, Value = this}),
+                _BeforeItemsRemoved.Select<T, IObservedChange<object, object>>(x => new ObservedChange<object, object>() {PropertyName =  "Items", Sender = this, Value = this}),
+                aboutToClear.Select<int, IObservedChange<object, object>>(x => new ObservedChange<object, object>() {PropertyName = "Items", Sender = this, Value = this}),
+                _ItemChanging.Select<IObservedChange<T, object>, IObservedChange <object, object>>(x => new ObservedChange<object, object>() {PropertyName = x.PropertyName, Sender = x.Sender, Value = x.Value}));
 
-            _Changed = Observable.Merge<IObservedChange<object, object>>(
-                _ItemsAdded.Select(x => new ObservedChange<object, object>() {PropertyName = "Items", Sender = this, Value = this}),
-                _ItemsRemoved.Select(x => new ObservedChange<object, object>() {PropertyName = "Items", Sender = this, Value = this}),
-                _ItemChanged.Select(x => new ObservedChange<object, object>() {PropertyName = x.PropertyName, Sender = x.Sender, Value = x.Value}));
+            _Changed = Observable.Merge(
+                _ItemsAdded.Select<T, IObservedChange<object, object>>(x => new ObservedChange<object, object>() {PropertyName = "It ems", Sender = this, Value = this}),
+                _ItemsRemoved.Select<T, IObservedChange<object, object>>(x => new ObservedChange<object, object>() {PropertyName =  "Items", Sender = this, Value = this}),
+                _ItemChanged.Select<IObservedChange<T, object>, IObservedChange<object, object>>(x => new ObservedChange<object, object>() {PropertyName = x.PropertyName, Sender = x.Sender, Value = x.Value}));
 
             _ItemsAdded.Subscribe(x => {
                 this.Log().DebugFormat("Item Added to {0:X} - {1}", this.GetHashCode(), x);
