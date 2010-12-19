@@ -37,7 +37,7 @@ namespace ReactiveXaml.Tests
             Thread.Sleep(100);
             Assert.AreEqual(25, result);
 
-            this.Log().Debug("Running to end");
+            this.Log().Info("Running to end");
             sched.Run();
             t.Join();
             Assert.AreEqual(25, result);
@@ -61,7 +61,7 @@ namespace ReactiveXaml.Tests
             sched.RunTo(sched.FromTimeSpan(TimeSpan.FromMilliseconds(1200)));
             Assert.AreEqual(25, result);
 
-            this.Log().Debug("Running to end");
+            this.Log().Info("Running to end");
             sched.Run();
             Assert.AreEqual(25, result);
         }
@@ -144,7 +144,7 @@ namespace ReactiveXaml.Tests
             input.ToObservable()
                 .SelectMany(x => (IObservable<int>)fixture.AsyncGet(x))
                 .Subscribe(x => {
-                    this.Log().DebugFormat("Result = {0}", x);
+                    this.Log().InfoFormat("Result = {0}", x);
                     completed++;
                 }, ex => exception = exception ?? ex);
 
@@ -159,7 +159,7 @@ namespace ReactiveXaml.Tests
             sched.RunTo(sched.FromTimeSpan(TimeSpan.FromMilliseconds(7500)));
             Assert.IsNotNull(exception);
             Assert.AreEqual(4, completed);
-            this.Log().Debug(exception);
+            this.Log().Info(exception);
         }
     }
 }
