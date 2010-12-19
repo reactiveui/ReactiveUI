@@ -17,20 +17,35 @@ using Microsoft.Phone.Reactive;
 
 namespace ReactiveXaml
 {
-    public class ObservedChange<TSender, TValue>
+    public interface IObservedChange<TSender, TValue>
+    {
+        TSender Sender { get; }
+        string PropertyName { get; }
+        TValue Value { get; }   
+    }
+
+    public class ObservedChange<TSender, TValue> : IObservedChange<TSender, TValue>
     {
         public TSender Sender { get; set; }
         public string PropertyName { get; set; }
         public TValue Value { get; set; }
     }
 
-    public interface IReactiveNotifyPropertyChanged : INotifyPropertyChanged, INotifyPropertyChanging, IObservable<PropertyChangedEventArgs>, IEnableLogger
+    public interface IReactiveNotifyPropertyChanged : INotifyPropertyChanged, INotifyPropertyChanging, IEnableLogger
     { 
-        IObservable<PropertyChangingEventArgs> BeforeChange {get;}
+        IObservable<IObservedChange<object, object>> Changing { get; }
+        IObservable<IObservedChange<object, object>> Changed { get; }
+
         IDisposable SuppressChangeNotifications();
     }
 
-    public interface IReactiveCollection : IEnumerable, INotifyCollectionChanged, IEnableLogger
+    public interface IReactiveNotifyPropertyChanged<TSender> : IReactiveNotifyPropertyChanged
+    {    
+        new IObservable<IObservedChange<TSender, object>> Changing { get; }
+        new IObservable<IObservedChange<TSender, object>> Changed { get; }
+    }
+
+    public interface IReactiveCollection : IReactiveNotifyPropertyChanged, IEnumerable, INotifyCollectionChanged
     {
         IObservable<object> ItemsAdded { get; }
         IObservable<object> BeforeItemsAdded { get; }
@@ -39,10 +54,11 @@ namespace ReactiveXaml
         IObservable<int> CollectionCountChanged { get; }
         IObservable<int> CollectionCountChanging { get; }
 
+        IObservable<IObservedChange<object, object>> ItemChanging { get; }
+        IObservable<IObservedChange<object, object>> ItemChanged { get; }
+
         bool ChangeTrackingEnabled { get; set; }
         IDisposable SuppressChangeNotifications();
-        IObservable<ObservedChange<object, object>> ItemPropertyChanging { get; }
-        IObservable<ObservedChange<object, object>> ItemPropertyChanged { get; }
     }
 
     public interface IReactiveCollection<T> : IList<T>, IReactiveCollection
@@ -52,8 +68,8 @@ namespace ReactiveXaml
         new IObservable<T> ItemsRemoved { get; }
         new IObservable<T> BeforeItemsRemoved { get; }
 
-        new IObservable<ObservedChange<T, object>> ItemPropertyChanging { get; }
-        new IObservable<ObservedChange<T, object>> ItemPropertyChanged { get; }
+        IObservable<IObservedChange<T, object>> ItemChanging { get; }
+        IObservable<IObservedChange<T, object>> ItemChanged { get; }
     }
 
     public interface IReactiveCommand : ICommand, IObservable<object> 

@@ -7,26 +7,20 @@ using System.Disposables;
 
 namespace ReactiveXaml.Serialization
 {
-    public interface ISerializableItemBase : IEnableLogger
+    public interface ISerializableItem : IReactiveNotifyPropertyChanged
     {
         Guid ContentHash { get; }
-
-        IObservable<object> ItemChanging { get; }
-        IObservable<object> ItemChanged { get; }
-
         Guid CalculateHash();
     }
 
-    public interface ISerializableItem : IReactiveNotifyPropertyChanged, ISerializableItemBase { }
-
-    public interface ISerializableList<T> : IReactiveCollection<T>, ISerializableItemBase
-        where T : ISerializableItemBase
+    public interface ISerializableList<T> : IReactiveCollection<T>, ISerializableItem
+        where T : ISerializableItem
     {
         IDictionary<Guid, DateTimeOffset> CreatedOn { get; }
         IDictionary<Guid, DateTimeOffset> UpdatedOn { get; }
     }
 
-    public interface ISyncPointInformation : ISerializableItemBase
+    public interface ISyncPointInformation : ISerializableItem
     {
         Guid RootObjectHash { get; }
         Guid ParentSyncPoint { get; }
@@ -38,22 +32,22 @@ namespace ReactiveXaml.Serialization
 
     public interface IStorageEngine : IDisposable, IEnableLogger
     {
-        T Load<T>(Guid contentHash) where T : ISerializableItemBase;
+        T Load<T>(Guid contentHash) where T : ISerializableItem;
         object Load(Guid contentHash);
-        void Save<T>(T obj) where T : ISerializableItemBase;
+        void Save<T>(T obj) where T : ISerializableItem;
         void FlushChanges();
 
         ISyncPointInformation CreateSyncPoint<T>(T obj, string qualifier = null, DateTimeOffset? createdOn = null)
-            where T : ISerializableItemBase;
+            where T : ISerializableItem;
         Guid[] GetOrderedRevisionList(Type type, string qualifier = null);
     }
 
     public interface IExtendedStorageEngine : IStorageEngine
     {
         T GetLatestRootObject<T>(string qualifier = null, DateTimeOffset? olderThan = null)
-            where T : ISerializableItemBase;
+            where T : ISerializableItem;
         T[] GetRootObjectsInDateRange<T>(string qualifier = null, DateTimeOffset? olderThan = null, DateTimeOffset? newerThan = null)
-            where T : ISerializableItemBase;
+            where T : ISerializableItem;
     }
 
     public interface IExplicitReferenceBase
