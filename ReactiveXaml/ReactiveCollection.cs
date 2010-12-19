@@ -18,7 +18,7 @@ using System.Disposables;
 
 namespace ReactiveXaml
 {
-    public class ReactiveCollection<T> : ObservableCollection<T>, IReactiveCollection<T>, INotifyPropertyChanged, IDisposable
+    public class ReactiveCollection<T> : ObservableCollection<T>, IReactiveCollection<T>, IDisposable
     {
         public ReactiveCollection() { setupRx(); }
         public ReactiveCollection(IEnumerable<T> List) { setupRx(List); }
@@ -30,20 +30,19 @@ namespace ReactiveXaml
         {
             _BeforeItemsAdded = new Subject<T>();
             _BeforeItemsRemoved = new Subject<T>();
-            _ItemPropertyChanging = new Subject<ObservedChange<T, object>>();
             aboutToClear = new Subject<int>();
 
             if (List != null) {
                 foreach(var v in List) { this.Add(v); }
             }
 
-            var coll_changed = Observable.FromEvent<NotifyCollectionChangedEventArgs>(this, "CollectionChanged");
+            var ocChangedEvent = Observable.FromEvent<NotifyCollectionChangedEventArgs>(this, "CollectionChanged");
 
-            _ItemsAdded = coll_changed
+            _ItemsAdded = ocChangedEvent
                 .Where(x => x.EventArgs.Action == NotifyCollectionChangedAction.Add || x.EventArgs.Action == NotifyCollectionChangedAction.Replace)
                 .SelectMany(x => (x.EventArgs.NewItems != null ? x.EventArgs.NewItems.OfType<T>() : Enumerable.Empty<T>()).ToObservable());
 
-            _ItemsRemoved = coll_changed
+            _ItemsRemoved = ocChangedEvent
                 .Where(x => x.EventArgs.Action == NotifyCollectionChangedAction.Remove || x.EventArgs.Action == NotifyCollectionChangedAction.Replace || x.EventArgs.Action == NotifyCollectionChangedAction.Reset)
                 .SelectMany(x => (x.EventArgs.OldItems != null ? x.EventArgs.OldItems.OfType<T>() : Enumerable.Empty<T>()).ToObservable());
 
@@ -53,11 +52,24 @@ namespace ReactiveXaml
                 aboutToClear
             );
 
-            _CollectionCountChanged = coll_changed
+            _CollectionCountChanged = ocChangedEvent
                 .Select(x => this.Count)
                 .DistinctUntilChanged();
 
-            _ItemPropertyChanged = new Subject<ObservedChange<T,object>>();
+            _ItemChanging = new Subject<IObservedChange<T, object>>();
+            _ItemChanged = new Subject<IObservedChange<T,object>>();
+
+            // TODO: Fix up this selector nonsense once SL/WP7 gets Covariance
+            _Changing = Observable.Merge<IObservedChange<object, object>>(
+                _BeforeItemsAdded.Select(x => new ObservedChange<object, object>() {PropertyName = "Items", Sender = this, Value = this}),
+                _BeforeItemsRemoved.Select(x => new ObservedChange<object, object>() {PropertyName = "Items", Sender = this, Value = this}),
+                aboutToClear.Select(x => new ObservedChange<object, object>() {PropertyName = "Items", Sender = this, Value = this}),
+                _ItemChanging.Select(x => new ObservedChange<object, object>() {PropertyName = x.PropertyName, Sender = x.Sender, Value = x.Value}));
+
+            _Changed = Observable.Merge<IObservedChange<object, object>>(
+                _ItemsAdded.Select(x => new ObservedChange<object, object>() {PropertyName = "Items", Sender = this, Value = this}),
+                _ItemsRemoved.Select(x => new ObservedChange<object, object>() {PropertyName = "Items", Sender = this, Value = this}),
+                _ItemChanged.Select(x => new ObservedChange<object, object>() {PropertyName = x.PropertyName, Sender = x.Sender, Value = x.Value}));
 
             _ItemsAdded.Subscribe(x => {
                 this.Log().DebugFormat("Item Added to {0:X} - {1}", this.GetHashCode(), x);
@@ -75,59 +87,27 @@ namespace ReactiveXaml
                 propertyChangeWatchers.Remove(x);
             });
 
-            _ItemPropertyChanged.Subscribe(x => 
+#if DEBUG
+            _ItemChanged.Subscribe(x => 
                 this.Log().DebugFormat("Object {0} changed in collection {1:X}", x, this.GetHashCode()));
+#endif
         }
 
         void addItemToPropertyTracking(T toTrack)
         {
-            if (toTrack is IReactiveCollection) {
-                addCollectionToPropertyTracking(toTrack);
-                return;
-            }
-
             var item = toTrack as IReactiveNotifyPropertyChanged;
             if (item == null)
                 return;
 
             var to_dispose = new[] {
-                item.BeforeChange.Subscribe(before_change =>
-                    _ItemPropertyChanging.OnNext(new ObservedChange<T, object>() { Sender = toTrack, PropertyName = before_change.PropertyName })),
-                item.Subscribe(change => 
-                    _ItemPropertyChanged.OnNext(new ObservedChange<T,object>() { Sender = toTrack, PropertyName = change.PropertyName })),
+                item.Changing.Subscribe(before_change =>
+                    _ItemChanging.OnNext(new ObservedChange<T, object>() { Sender = toTrack, PropertyName = before_change.PropertyName })),
+                item.Changed.Subscribe(change => 
+                    _ItemChanged.OnNext(new ObservedChange<T,object>() { Sender = toTrack, PropertyName = change.PropertyName })),
             };
 
             propertyChangeWatchers.Add(toTrack, Disposable.Create(() => {
                 to_dispose[0].Dispose(); to_dispose[1].Dispose();
-            }));
-        }
-
-        void addCollectionToPropertyTracking(T toTrack)
-        {
-            var item = toTrack as IReactiveCollection;
-            if (item == null)
-                return;
-
-            var beforeItemsChanged = Observable.Merge(
-                item.BeforeItemsAdded.Select(_ =>
-                    new ObservedChange<T, object> {Sender = toTrack, PropertyName = "Items"}),
-                item.BeforeItemsRemoved.Select(_ =>
-                    new ObservedChange<T, object> {Sender = toTrack, PropertyName = "Items"}),
-                item.ItemPropertyChanging.Select(x => 
-                    new ObservedChange<T, object> {Sender = toTrack, PropertyName = "Item", Value = x.Sender})
-            ).Subscribe(_ItemPropertyChanging.OnNext);
-
-            var itemsChanged = Observable.Merge(
-                item.ItemsAdded.Select(_ =>
-                    new ObservedChange<T, object> {Sender = toTrack, PropertyName = "Items"}),
-                item.ItemsRemoved.Select(_ =>
-                    new ObservedChange<T, object> {Sender = toTrack, PropertyName = "Items"}),
-                item.ItemPropertyChanged.Select(x => 
-                    new ObservedChange<T, object> {Sender = toTrack, PropertyName = "Item", Value = x.Sender})
-            ).Subscribe(_ItemPropertyChanged.OnNext);
-
-            propertyChangeWatchers.Add(toTrack, Disposable.Create(() => {
-                beforeItemsChanged.Dispose(); itemsChanged.Dispose();
             }));
         }
 
@@ -171,16 +151,35 @@ namespace ReactiveXaml
         }
 
         [IgnoreDataMember]
-        protected Subject<ObservedChange<T, object>> _ItemPropertyChanging;
-        public IObservable<ObservedChange<T, object>> ItemPropertyChanging {
-            get { return _ItemPropertyChanging.Where(_ => areChangeNotificationsEnabled); }
+        protected Subject<IObservedChange<T, object>> _ItemChanging;
+        public IObservable<IObservedChange<T, object>> ItemChanging {
+            get { return _ItemChanging.Where(_ => areChangeNotificationsEnabled); }
+        }
+        IObservable<IObservedChange<object, object>> IReactiveCollection.ItemChanging {
+            get { return (IObservable<IObservedChange<object, object>>)ItemChanging; }
         }
 
         [IgnoreDataMember]
-        protected Subject<ObservedChange<T, object>> _ItemPropertyChanged;
-        public IObservable<ObservedChange<T, object>> ItemPropertyChanged {
-            get { return _ItemPropertyChanged.Where(_ => areChangeNotificationsEnabled); }
+        protected Subject<IObservedChange<T, object>> _ItemChanged;
+        public IObservable<IObservedChange<T, object>> ItemChanged {
+            get { return _ItemChanged.Where(_ => areChangeNotificationsEnabled); }
         }
+        IObservable<IObservedChange<object, object>> IReactiveCollection.ItemChanged {
+            get { return (IObservable<IObservedChange<object, object>>)ItemChanged; }
+        }
+
+        protected IObservable<IObservedChange<object, object>> _Changing;
+        public IObservable<IObservedChange<object, object>> Changing {
+            get { return _Changing.Where(_ => areChangeNotificationsEnabled);  }
+        }
+
+        protected IObservable<IObservedChange<object, object>> _Changed;
+        public IObservable<IObservedChange<object, object>> Changed {
+            get { return _Changed.Where(_ => areChangeNotificationsEnabled);  }
+        }
+
+        [field:IgnoreDataMember]
+        public event PropertyChangingEventHandler PropertyChanging;
 
         public bool ChangeTrackingEnabled {
             get { return (propertyChangeWatchers != null); }
@@ -324,18 +323,6 @@ namespace ReactiveXaml
         }
         IObservable<object> IReactiveCollection.BeforeItemsRemoved {
             get { return BeforeItemsRemoved.Select(x => (object)x); }
-        }
-        IObservable<ObservedChange<object, object>> IReactiveCollection.ItemPropertyChanging {
-            get {
-                return ItemPropertyChanging.Select(x =>
-                    new ObservedChange<object, object>() { PropertyName = x.PropertyName, Sender = x.Sender, Value = x.Value });
-            }
-        }
-        IObservable<ObservedChange<object, object>> IReactiveCollection.ItemPropertyChanged {
-            get {
-                return ItemPropertyChanged.Select(x =>
-                    new ObservedChange<object, object>() { PropertyName = x.PropertyName, Sender = x.Sender, Value = x.Value });
-            }
         }
 
 #if !SILVERLIGHT
