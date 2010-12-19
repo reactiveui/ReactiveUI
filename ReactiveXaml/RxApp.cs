@@ -71,9 +71,8 @@ namespace ReactiveXaml
                     Console.Error.WriteLine("Returning default result: {0}", DefaultUnitTestRecoveryResult);
                     return DefaultUnitTestRecoveryResult;
                 });
-            }
-            else
-            {
+            } else {
+                Console.Error.WriteLine("Initializing to normal mode");
 #if IOS
                 DeferredScheduler = new EventLoopScheduler();
 #else
