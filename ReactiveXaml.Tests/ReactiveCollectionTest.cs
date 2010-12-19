@@ -83,7 +83,7 @@ namespace ReactiveXaml.Tests
 
             string json = JSONHelper.Serialize(fixture);
             var results = JSONHelper.Deserialize<ReactiveCollection<string>>(json);
-            this.Log().Debug(json);
+            this.Log().Info(json);
 
             output.AssertAreEqual(results);
 

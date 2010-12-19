@@ -70,7 +70,7 @@ namespace ReactiveXaml.Tests
             fixture.CanExecuteChanged += (o, e) => { change_event_count++; };
             Enumerable.Range(0, 6).Run(x => {
                 sched.Run();
-                this.Log().DebugFormat("Counter = {0}, x = {1}", counter, x);
+                this.Log().InfoFormat("Counter = {0}, x = {1}", counter, x);
                 Assert.AreEqual(x % 2 == 0, fixture.CanExecute(null));
             });
 

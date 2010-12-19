@@ -28,7 +28,7 @@ namespace ReactiveXaml.Tests
             int result = 0;
             var t = new Task(() => {
                 foreach (int i in input) {
-                    this.Log().DebugFormat("Counter is {0}", result);
+                    this.Log().InfoFormat("Counter is {0}", result);
                     result += fixture.Get(i);
                 }
             });
@@ -36,17 +36,17 @@ namespace ReactiveXaml.Tests
 
             Thread.Sleep(200);
 
-            this.Log().Debug("Running to t=0");
+            this.Log().Info("Running to t=0");
             sched.RunTo(sched.FromTimeSpan(TimeSpan.FromMilliseconds(500)));
             Assert.AreEqual(0, result);
-            this.Log().Debug("Running to t=1200");
+            this.Log().Info("Running to t=1200");
             sched.RunTo(sched.FromTimeSpan(TimeSpan.FromMilliseconds(1200)));
 
             Thread.Sleep(200);
 
             Assert.AreEqual(25, result);
 
-            this.Log().Debug("Running to end");
+            this.Log().Info("Running to end");
             sched.Run();
             Assert.AreEqual(25, result);
         }
@@ -127,7 +127,7 @@ namespace ReactiveXaml.Tests
 
             Thread.Sleep(5000);
 
-            this.Log().Debug(exception);
+            this.Log().Info(exception);
             Assert.AreEqual(4, completed);
             Assert.IsNotNull(exception);
         }
@@ -144,10 +144,10 @@ namespace ReactiveXaml.Tests
                 output = input.Select(x => fixture.Get(x)).ToArray();
             } catch(Exception ex) {
                 did_throw = true;
-                this.Log().Debug("Exception thrown", ex);
+                this.Log().Info("Exception thrown", ex);
             }
 
-            output.Run(x => this.Log().Debug(x));
+            output.Run(x => this.Log().Info(x));
             Assert.IsTrue(did_throw);
         }
 
