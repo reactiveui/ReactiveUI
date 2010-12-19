@@ -18,19 +18,7 @@ namespace ReactiveXaml
 {
     public static class ReactiveNotifyPropertyChangedMixin
     {
-        [Obsolete("Use the Expression-based version instead!")]
-        public static IObservable<ObservedChange<TSender, TValue>> ObservableForProperty<TSender, TValue>(this TSender This, string propertyName)
-            where TSender : IReactiveNotifyPropertyChanged
-        {
-            Contract.Requires(This != null);
-            IObservable<PropertyChangedEventArgs> Obs = This;
-
-            return Obs
-                .Where(x => x.PropertyName == propertyName)
-                .Select(x => new ObservedChange<TSender, TValue> { Sender = This, PropertyName = x.PropertyName });
-        }
-
-        public static IObservable<ObservedChange<TSender, TValue>> ObservableForProperty<TSender, TValue>(this TSender This, Expression<Func<TSender, TValue>> Property, bool BeforeChange = false)
+        public static IObservable<IObservedChange<TSender, TValue>> ObservableForProperty<TSender, TValue>(this TSender This, Expression<Func<TSender, TValue>> Property, bool BeforeChange = false)
             where TSender : IReactiveNotifyPropertyChanged
         {
             Contract.Requires(This != null);
@@ -42,18 +30,18 @@ namespace ReactiveXaml
             This.Log().InfoFormat("Registering change notification for {0:X} on {1}", This.GetHashCode(), prop_name);
 
             if (BeforeChange) {
-                return This.BeforeChange
+                return This.Changing
                     .Where(x => x.PropertyName == prop_name)
-                    .Select(x => new ObservedChange<TSender, TValue>() { 
-                        Sender = This, PropertyName = prop_name, Value = (TValue)prop_info.GetValue(This, null)
-                    });
-            } else {
-                return (This as IObservable<PropertyChangedEventArgs>)
-                    .Where(x => x.PropertyName == prop_name)
-                    .Select(x => new ObservedChange<TSender, TValue>() { 
+                    .Select(x => (IObservedChange<TSender, TValue>) new ObservedChange<TSender, TValue>() { 
                         Sender = This, PropertyName = prop_name, Value = (TValue)prop_info.GetValue(This, null)
                     });
             }
+
+            return This.Changed
+                .Where(x => x.PropertyName == prop_name)
+                .Select(x => (IObservedChange<TSender, TValue>) new ObservedChange<TSender, TValue>() { 
+                    Sender = This, PropertyName = prop_name, Value = (TValue)prop_info.GetValue(This, null)
+                });
         }
 
         public static IObservable<TRet> ObservableForProperty<TSender, TValue, TRet>(this TSender This, Expression<Func<TSender, TValue>> Property, Func<TValue, TRet> Selector, bool BeforeChange = false)
