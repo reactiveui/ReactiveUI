@@ -66,7 +66,7 @@ namespace ReactiveXaml
             Contract.Requires(Property != null);
 
             string prop_name = RxApp.expressionToPropertyName(Property);
-	        var ret = new ObservableAsPropertyHelper<TRet>(Observable, _ => This.RaisePropertyChanged(prop_name), InitialValue, Scheduler);
+	        var ret = new ObservableAsPropertyHelper<TRet>(Observable, _ => This.raisePropertyChanged(prop_name), InitialValue, Scheduler);
 	        This.Log().InfoFormat("OAPH {0:X} is for {1}", ret, prop_name);
 	        return ret;
         }
