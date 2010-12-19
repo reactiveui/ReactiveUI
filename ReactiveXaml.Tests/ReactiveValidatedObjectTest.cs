@@ -13,14 +13,14 @@ namespace ReactiveXaml.Tests
         [Required]
         public string IsNotNullString {
             get { return _IsNotNullString; }
-            set { RaiseAndSetIfChanged(_IsNotNullString, value, x => _IsNotNullString = x, "IsNotNullString"); }
+            set { this.RaiseAndSetIfChanged(x => x.IsNotNullString, value); }
         }
         
         string _IsOnlyOneWord;
         [RegularExpression(@"^[a-zA-Z]+$")]
         public string IsOnlyOneWord {
             get { return _IsOnlyOneWord; }
-            set { RaiseAndSetIfChanged(_IsOnlyOneWord, value, x => _IsOnlyOneWord = x, "IsOnlyOneWord"); }
+            set { this.RaiseAndSetIfChanged(x => x.IsOnlyOneWord, value); }
         }
 
         string _UsesExprRaiseSet;
