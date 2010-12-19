@@ -14,7 +14,7 @@ namespace ReactiveXaml.Serialization
         }
 
         public T GetLatestRootObject<T>(string qualifier = null, DateTimeOffset? olderThan = null)
-            where T : ISerializableItemBase
+            where T : ISerializableItem
         {
             olderThan = olderThan ?? DateTimeOffset.MaxValue;
             Guid[] revisions = GetOrderedRevisionList(typeof (T), qualifier);
@@ -33,7 +33,7 @@ namespace ReactiveXaml.Serialization
         }
 
         public T[] GetRootObjectsInDateRange<T>(string qualifier = null, DateTimeOffset? olderThan = null, DateTimeOffset? newerThan = null) 
-            where T : ISerializableItemBase
+            where T : ISerializableItem
         {
             olderThan = olderThan ?? DateTimeOffset.MaxValue;
             newerThan = newerThan ?? DateTimeOffset.MinValue;
@@ -50,7 +50,7 @@ namespace ReactiveXaml.Serialization
                 .ToArray();
         }
 
-        public T Load<T>(Guid contentHash) where T : ISerializableItemBase
+        public T Load<T>(Guid contentHash) where T : ISerializableItem
         {
             return _engine.Load<T>(contentHash);
         }
@@ -60,7 +60,7 @@ namespace ReactiveXaml.Serialization
             return _engine.Load(contentHash);
         }
 
-        public void Save<T>(T obj) where T : ISerializableItemBase
+        public void Save<T>(T obj) where T : ISerializableItem
         {
             _engine.Save(obj);
         }
@@ -70,7 +70,7 @@ namespace ReactiveXaml.Serialization
             _engine.FlushChanges();
         }
 
-        public ISyncPointInformation CreateSyncPoint<T>(T obj, string qualifier = null, DateTimeOffset? createdOn = null) where T : ISerializableItemBase
+        public ISyncPointInformation CreateSyncPoint<T>(T obj, string qualifier = null, DateTimeOffset? createdOn = null) where T : ISerializableItem
         {
             return _engine.CreateSyncPoint(obj, qualifier, createdOn);
         }

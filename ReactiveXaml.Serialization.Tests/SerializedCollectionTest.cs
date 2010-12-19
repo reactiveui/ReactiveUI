@@ -99,9 +99,9 @@ namespace ReactiveXaml.Serialization.Tests
         {
             var sched = new TestScheduler();
             var input = sched.With(_ => new ModelTestFixture() {TestString = "Foo"});
-            var coll = sched.With(_ => new SerializedCollection<ISerializableItemBase>(new[] {input}));
+            var coll = sched.With(_ => new SerializedCollection<ISerializableItem>(new[] {input}));
             var fixture = sched.With(_ => 
-                new SerializedCollection<ISerializableList<ISerializableItemBase>>(new[] {(ISerializableList<ISerializableItemBase>)coll}));
+                new SerializedCollection<ISerializableList<ISerializableItem>>(new[] {(ISerializableList<ISerializableItem>)coll}));
 
             this.Log().DebugFormat("input = {0:X}, coll = {1:X}, fixture = {2:X}",
                 input.GetHashCode(), coll.GetHashCode(), fixture.GetHashCode());

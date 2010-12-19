@@ -7,7 +7,7 @@ namespace ReactiveXaml.Serialization
 {
     public class NullStorageEngine : IStorageEngine
     {
-        public T Load<T>(Guid ContentHash) where T : ISerializableItemBase
+        public T Load<T>(Guid ContentHash) where T : ISerializableItem
         {
             this.Log().DebugFormat("Loading {0}, returning null", ContentHash);
             return default(T);
@@ -19,7 +19,7 @@ namespace ReactiveXaml.Serialization
             return null;
         }
 
-        public void Save<T>(T Obj) where T : ISerializableItemBase
+        public void Save<T>(T Obj) where T : ISerializableItem
         {
             this.Log().DebugFormat("Saving {0}", Obj.ContentHash);
         }
@@ -30,7 +30,7 @@ namespace ReactiveXaml.Serialization
         }
 
         public ISyncPointInformation CreateSyncPoint<T>(T obj, string qualifier = null, DateTimeOffset? createdOn = null) 
-            where T : ISerializableItemBase
+            where T : ISerializableItem
         {
             this.Log().DebugFormat("Creating sync point for {0} ({1})", obj.ContentHash, qualifier);
             return new SyncPointInformation(Guid.Empty, Guid.Empty, typeof (T), qualifier ?? String.Empty, createdOn ?? DateTimeOffset.Now);
