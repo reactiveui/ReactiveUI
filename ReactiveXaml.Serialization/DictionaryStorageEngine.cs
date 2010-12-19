@@ -16,27 +16,27 @@ namespace ReactiveXaml.Serialization
 {
     class DSESerializedObjects
     {
-        public Dictionary<Guid, ISerializableItemBase> allItems;
+        public Dictionary<Guid, ISerializableItem> allItems;
         public Dictionary<string, Guid> syncPointIndex;
     }
 
     public class DictionaryStorageEngine : IStorageEngine
     {
         string backingStorePath;
-        Dictionary<Guid, ISerializableItemBase> allItems;
+        Dictionary<Guid, ISerializableItem> allItems;
         Dictionary<string, Guid> syncPointIndex;
 
         static readonly Lazy<IEnumerable<Type>> allStorageTypes = new Lazy<IEnumerable<Type>>(
-            () => Utility.GetAllTypesImplementingInterface(typeof(ISerializableItemBase), Assembly.GetExecutingAssembly()).ToArray());
+            () => Utility.GetAllTypesImplementingInterface(typeof(ISerializableItem), Assembly.GetExecutingAssembly()).ToArray());
 
         public DictionaryStorageEngine(string Path = null)
         {
             backingStorePath = Path;
         }
 
-        public T Load<T>(Guid ContentHash) where T : ISerializableItemBase
+        public T Load<T>(Guid ContentHash) where T : ISerializableItem
         {
-            ISerializableItemBase ret = null;
+            ISerializableItem ret = null;
 
             initializeStoreIfNeeded();
             if (!allItems.TryGetValue(ContentHash, out ret)) {
@@ -60,7 +60,7 @@ namespace ReactiveXaml.Serialization
             return allItems[ContentHash];
         }
 
-        public void Save<T>(T Obj) where T : ISerializableItemBase
+        public void Save<T>(T Obj) where T : ISerializableItem
         {
             initializeStoreIfNeeded();
 
@@ -81,7 +81,7 @@ namespace ReactiveXaml.Serialization
         }
 
         public ISyncPointInformation CreateSyncPoint<T>(T obj, string qualifier = null, DateTimeOffset? createdOn = null)
-            where T : ISerializableItemBase
+            where T : ISerializableItem
         {
             initializeStoreIfNeeded();
             Save(obj);
@@ -125,7 +125,7 @@ namespace ReactiveXaml.Serialization
                 return;
 
             if (backingStorePath == null) {
-                allItems = new Dictionary<Guid,ISerializableItemBase>();
+                allItems = new Dictionary<Guid,ISerializableItem>();
                 syncPointIndex = new Dictionary<string, Guid>();
                 return;
             }
@@ -137,7 +137,7 @@ namespace ReactiveXaml.Serialization
                 syncPointIndex = dseData.syncPointIndex;
             } catch(FileNotFoundException) {
                 this.Log().WarnFormat("Backing store {0} not found, falling back to empty", backingStorePath);
-                allItems = new Dictionary<Guid,ISerializableItemBase>();
+                allItems = new Dictionary<Guid,ISerializableItem>();
                 syncPointIndex = new Dictionary<string, Guid>();
             }
         }

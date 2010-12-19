@@ -16,7 +16,7 @@ namespace ReactiveXaml.Serialization
 {
     [TypeConverter(typeof(ExplicitReferenceTypeConverter))]
     public class ExplicitReference<T> : IExplicitReferenceBase
-        where T : class, ISerializableItemBase
+        where T : class, ISerializableItem
     {
         T valueCache;
         IDisposable watcher;
@@ -51,7 +51,7 @@ namespace ReactiveXaml.Serialization
                 this.valueCache = value;
 
                 if (value != null) {
-                    watcher = value.ItemChanging.Subscribe(_ => {
+                    watcher = value.Changing.Subscribe(_ => {
                         if (isInUpdate)
                             return;
                         valueCache = null;
@@ -115,7 +115,7 @@ namespace ReactiveXaml.Serialization
 
         public object GetObjectToSerialize(object obj, Type targetType)
         {
-            var sib = obj as ISerializableItemBase;
+            var sib = obj as ISerializableItem;
             if (sib != null) {
                 return sib.ContentHash;
             }

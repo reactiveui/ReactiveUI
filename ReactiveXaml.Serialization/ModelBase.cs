@@ -23,7 +23,7 @@ namespace ReactiveXaml.Serialization
         void setupModelBase(StreamingContext sc) { setupModelBase(); }
         void setupModelBase()
         {
-            this.Subscribe(_ => {
+            Changed.Subscribe(_ => {
                 ContentHash = CalculateHash();
                 RxStorage.Engine.Save(this);
             });
@@ -38,12 +38,12 @@ namespace ReactiveXaml.Serialization
 
         [IgnoreDataMember]
         public IObservable<object> ItemChanging {
-            get { return BeforeChange.Select(_ => this); }
+            get { return Changing.Select(_ => this); }
         }
 
         [IgnoreDataMember]
         public IObservable<object> ItemChanged {
-            get { return this.Select(_ => this); }
+            get { return Changed.Select(_ => this); }
         }
     }
 }
