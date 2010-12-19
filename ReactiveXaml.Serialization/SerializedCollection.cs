@@ -12,7 +12,7 @@ using System.ComponentModel;
 namespace ReactiveXaml.Serialization
 {
     public class SerializedCollection<T> : ReactiveCollection<T>, ISerializableList<T>
-        where T : ISerializableItemBase
+        where T : ISerializableItem
     {
         public Guid ContentHash { get; protected set; }
 
@@ -65,21 +65,9 @@ namespace ReactiveXaml.Serialization
                 UpdatedOn.Remove(x.ContentHash);
             });
 
-            ItemPropertyChanged.Subscribe(x => {
+            ItemChanged.Subscribe(x => {
                 UpdatedOn[x.Sender.ContentHash] = _sched.Now;
             });
-
-            ItemChanging = Observable.Merge(
-                BeforeItemsAdded.Select(_ => this),
-                BeforeItemsRemoved.Select(_ => this),
-                ItemPropertyChanging.Select(_ => this)
-            );
-
-            ItemChanged = Observable.Merge(
-                ItemsAdded.Select(_ => this),
-                ItemsRemoved.Select(_ => this),
-                ItemPropertyChanged.Select(_ => this)
-            );
 
             ItemChanged.Subscribe(_ => {
                 this.Log().DebugFormat("Saving list {0:X}", this.GetHashCode());
@@ -88,18 +76,12 @@ namespace ReactiveXaml.Serialization
             });
         }
 
-        [IgnoreDataMember]
-        public IObservable<object> ItemChanging { get; protected set; }
-
-        [IgnoreDataMember]
-        public IObservable<object> ItemChanged { get; protected set; }
-
         public Guid CalculateHash()
         {
             // XXX: This is massively inefficient, we can do way better
             return new Guid(String.Join(",",
                 this.Select(x => {
-                    var si = x as ISerializableItemBase;
+                    var si = x as ISerializableItem;
                     return (si != null ? si.ContentHash.ToString() : x.ToString().MD5Hash().ToString());
                 })).MD5Hash());
         }
