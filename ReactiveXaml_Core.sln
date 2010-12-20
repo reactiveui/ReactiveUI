@@ -18,6 +18,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveXaml.Serialization"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveXaml.Serialization.Tests", "ReactiveXaml.Serialization.Tests\ReactiveXaml.Serialization.Tests.csproj", "{ACA93E36-5301-4F2B-95C8-70897574506B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveXaml.Serialization.Esent", "ReactiveXaml.Serialization.Esent\ReactiveXaml.Serialization.Esent.csproj", "{0B0ABDC8-4EF3-4172-ADE4-E4FB55E5F91E}"
+EndProject
 Global
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = ReactiveXaml.vsmdi
@@ -81,6 +83,16 @@ Global
 		{ACA93E36-5301-4F2B-95C8-70897574506B}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{ACA93E36-5301-4F2B-95C8-70897574506B}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{ACA93E36-5301-4F2B-95C8-70897574506B}.Release|x86.ActiveCfg = Release|Any CPU
+		{0B0ABDC8-4EF3-4172-ADE4-E4FB55E5F91E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0B0ABDC8-4EF3-4172-ADE4-E4FB55E5F91E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0B0ABDC8-4EF3-4172-ADE4-E4FB55E5F91E}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{0B0ABDC8-4EF3-4172-ADE4-E4FB55E5F91E}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{0B0ABDC8-4EF3-4172-ADE4-E4FB55E5F91E}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{0B0ABDC8-4EF3-4172-ADE4-E4FB55E5F91E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0B0ABDC8-4EF3-4172-ADE4-E4FB55E5F91E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0B0ABDC8-4EF3-4172-ADE4-E4FB55E5F91E}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{0B0ABDC8-4EF3-4172-ADE4-E4FB55E5F91E}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{0B0ABDC8-4EF3-4172-ADE4-E4FB55E5F91E}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
