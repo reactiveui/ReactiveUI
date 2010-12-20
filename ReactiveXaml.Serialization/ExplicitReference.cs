@@ -35,28 +35,16 @@ namespace ReactiveXaml.Serialization
                     return valueCache;
                 if (objRef == Guid.Empty)
                     return null;
-                return (valueCache = storage.Load<T>(objRef));
+
+                return (valueCache = loadObjectFromStorage());
             }
             set { 
                 if (isInUpdate) {
                     throw new Exception("Object is already being updated");
                 }
 
-                if (watcher != null) {
-                    watcher.Dispose();
-                    watcher = null;
-                }
-
+                invalidateCache();
                 this.objRef = (value != null ? value.ContentHash : Guid.Empty);
-                this.valueCache = value;
-
-                if (value != null) {
-                    watcher = value.Changing.Subscribe(_ => {
-                        if (isInUpdate)
-                            return;
-                        valueCache = null;
-                    });
-                }
             }
         }
 
@@ -77,7 +65,7 @@ namespace ReactiveXaml.Serialization
 
         public void Update(Action<T> block)
         {
-            using(var dontcare = Update()) { block(this.Value); }
+            using(Update()) { block(this.Value); }
         }
 
         public Guid ValueHash {
@@ -86,8 +74,35 @@ namespace ReactiveXaml.Serialization
                 if (isInUpdate) {
                     throw new Exception("Object is already being updated");
                 }
-                throw new Exception("This is broken!");
+
+                invalidateCache();
+                objRef = value;
             }
+        }
+
+        T loadObjectFromStorage()
+        {
+            invalidateCache();
+            T ret = storage.Load<T>(ValueHash);
+
+            if (ret != null) {
+                watcher = ret.Changing.Subscribe(_ => {
+                    if (isInUpdate)
+                        return;
+                    valueCache = null;
+                });
+            }
+
+            return ret;
+        }
+
+        void invalidateCache()
+        {
+            if (watcher != null) {
+                watcher.Dispose();
+                watcher = null;
+            }
+            valueCache = null;
         }
     }
 
@@ -148,8 +163,7 @@ namespace ReactiveXaml.Serialization
             var val = value as IExplicitReferenceBase;
 
             if (val != null) {
-                // XXX: This isn't finished!
-                //return App.CurrentApp.Storage.Load(
+                return RxStorage.Engine.Load(val.ValueHash);
             }
 
             return base.ConvertFrom(context, culture, value);
