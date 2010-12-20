@@ -12,6 +12,7 @@ namespace ReactiveXaml.Serialization
 {
     public abstract class ModelBase : ReactiveValidatedObject, ISerializableItem
     {
+        [IgnoreDataMember]
         public Guid ContentHash { get; protected set; }
 
         public ModelBase()
