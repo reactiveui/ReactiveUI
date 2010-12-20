@@ -108,6 +108,7 @@
     <Compile Include="ModelBaseTest.ItemsChangedShouldFire.g.cs">
       <DependentUpon>ModelBaseTest.cs</DependentUpon>
     </Compile>
+    <Compile Include="SerializationDataSurrogatesTest.cs" />
     <Compile Include="SerializedCollectionTest.AddingItemsShouldChangeTheContentHash.g.cs">
       <DependentUpon>SerializedCollectionTest.cs</DependentUpon>
     </Compile>
