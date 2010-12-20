@@ -41,4 +41,37 @@ namespace ReactiveXaml.Serialization.Tests
             return ret;
         }
     }
+
+    public class RootSerializationTestObject : ModelBase
+    {
+        SubobjectTestObject _SubObject;
+        public SubobjectTestObject SubObject {
+            get { return _SubObject; }
+            set { this.RaiseAndSetIfChanged(x => x.SubObject, value); }
+        }
+    }
+
+    public class SubobjectTestObject : ModelBase
+    {
+        string _SomeProperty;
+        public string SomeProperty {
+            get { return _SomeProperty;  }
+            set { this.RaiseAndSetIfChanged(x => x.SomeProperty, value); }
+        }
+    }
+
+    public class RootObjectWithAListTestObject : ModelBase
+    {
+        SerializedCollection<ISerializableItem> _SomeList;
+        public SerializedCollection<ISerializableItem> SomeList {
+            get { return _SomeList; }
+            set { this.RaiseAndSetIfChanged(x => x.SomeList, value); }
+        }
+
+        RootSerializationTestObject _RootObject;
+        public RootSerializationTestObject RootObject {
+            get { return _RootObject;  }
+            set { this.RaiseAndSetIfChanged(x => x.RootObject, value); }
+        }
+    }
 }
