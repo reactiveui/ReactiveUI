@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,11 +14,16 @@ namespace ReactiveXaml.Serialization
         Guid CalculateHash();
     }
 
-    public interface ISerializableList<T> : IReactiveCollection<T>, ISerializableItem
-        where T : ISerializableItem
+    public interface ISerializableList : IEnumerable, ISerializableItem
     {
         IDictionary<Guid, DateTimeOffset> CreatedOn { get; }
         IDictionary<Guid, DateTimeOffset> UpdatedOn { get; }
+        Type GetBaseListType();
+    }
+
+    public interface ISerializableList<T> : IReactiveCollection<T>, ISerializableList
+        where T : ISerializableItem
+    {
     }
 
     public interface ISyncPointInformation : ISerializableItem
@@ -50,6 +56,12 @@ namespace ReactiveXaml.Serialization
             where T : ISerializableItem;
     }
 
+    public interface IObjectSerializationProvider : IEnableLogger
+    {
+        byte[] Serialize(object obj);
+        object Deserialize(byte[] data, Type type);
+    }
+
     public interface IExplicitReferenceBase
     {
         Guid ValueHash { get; set; }
@@ -65,6 +77,14 @@ namespace ReactiveXaml.Serialization
             lock(_ObjectNameCache) {
                 return _ObjectNameCache.Get(This.RootObjectTypeName);
             }
+        }
+    }
+
+    public static class ObjectSerializationProviderMixin
+    {
+        public static T Clone<T>(this IObjectSerializationProvider This, T obj)
+        {
+            return (T)This.Deserialize(This.Serialize(obj), typeof(T));
         }
     }
 }
