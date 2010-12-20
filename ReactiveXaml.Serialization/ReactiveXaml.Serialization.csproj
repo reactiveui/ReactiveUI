@@ -70,6 +70,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ExplicitReference.cs" />
+    <Compile Include="DataContractSerializationProvider.cs" />
     <Compile Include="NaiveExtendedEngine.cs" />
     <Compile Include="Interfaces.cs" />
     <Compile Include="ModelBase.cs" />
@@ -77,6 +78,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="DictionaryStorageEngine.cs" />
     <Compile Include="RxStorage.cs" />
+    <Compile Include="SerializationDataSurrogates.cs" />
     <Compile Include="SerializedCollection.cs" />
     <Compile Include="SyncPointInformation.cs" />
     <Compile Include="Utility.cs" />

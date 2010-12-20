@@ -31,7 +31,7 @@ namespace ReactiveXaml.Serialization
             // I shudder to think what this actually gets turned into in MSIL
             var ret = from a in allAssemblies
                       from mod in a.GetModules()
-                      from type in mod.GetTypes()
+                      from type in mod.SafeGetTypes()
                       where Utility.ImplementsInterface(type, InterfaceToCheck)
                       select type;
 
@@ -39,20 +39,22 @@ namespace ReactiveXaml.Serialization
         }
 	}
 
-    public static class HelperExtensions
+    public static class ModuleHelper
     {
-        public static byte[] MD5Hash(this string obj)
+        public static Type[] SafeGetTypes(this Module This)
         {
-            var md5 = MD5.Create();
-            return md5.ComputeHash(Encoding.UTF8.GetBytes(obj));
+            try {
+                return This.GetTypes();
+            } catch(ReflectionTypeLoadException _) {
+                return new Type[0];
+            }
         }
     }
 
     public static class JSONHelper
     {
-        public static string Serialize<T>(T obj, IEnumerable<Type> knownTypes = null)
-        {
-            knownTypes = knownTypes ?? Enumerable.Empty<Type>();
+        public static string Serialize<T>(T obj, IEnumerable<Type> knownTypes = null) {
+            knownTypes = (knownTypes ?? Enumerable.Empty<Type>());
             var serializer = new System.Runtime.Serialization.Json.DataContractJsonSerializer(obj.GetType(), knownTypes);
             var ms = new MemoryStream();
 
@@ -61,8 +63,7 @@ namespace ReactiveXaml.Serialization
             return retVal;
         }
 
-        public static T Deserialize<T>(string json, IEnumerable<Type> knownTypes = null)
-        {
+        public static T Deserialize<T>(string json, IEnumerable<Type> knownTypes = null) {
             knownTypes = knownTypes ?? Enumerable.Empty<Type>();
 
             var obj = Activator.CreateInstance<T>();
@@ -72,6 +73,25 @@ namespace ReactiveXaml.Serialization
             obj = (T)serializer.ReadObject(ms);
             ms.Close();
             return obj;
+        }
+
+        public static T Clone<T>(T obj, IEnumerable<Type> knownTypes = null)
+        {
+            return Deserialize<T>(Serialize(obj, knownTypes), knownTypes);
+        }
+    }
+
+    public static class HelperExtensions
+    {
+        public static byte[] MD5Hash(this string obj)
+        {
+            var md5 = MD5.Create();
+            return md5.ComputeHash(Encoding.UTF8.GetBytes(obj));
+        }
+
+        public static Dictionary<TKey, TVal> ToConcreteDictionary<TKey, TVal>(this IDictionary<TKey, TVal> This)
+        {
+            return This.Keys.ToDictionary(k => k, k => This[k]);
         }
     }
 

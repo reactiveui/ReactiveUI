@@ -16,48 +16,52 @@ namespace ReactiveXaml.Serialization
 {
     class DSESerializedObjects
     {
-        public Dictionary<Guid, ISerializableItem> allItems;
+        public Dictionary<Guid, byte[]> allItems;
+        public Dictionary<Guid, string> itemTypeNames;
         public Dictionary<string, Guid> syncPointIndex;
     }
 
     public class DictionaryStorageEngine : IStorageEngine
     {
         string backingStorePath;
-        Dictionary<Guid, ISerializableItem> allItems;
+        Dictionary<Guid, byte[]> allItems;
+        Dictionary<Guid, string> itemTypeNames;
         Dictionary<string, Guid> syncPointIndex;
 
         static readonly Lazy<IEnumerable<Type>> allStorageTypes = new Lazy<IEnumerable<Type>>(
-            () => Utility.GetAllTypesImplementingInterface(typeof(ISerializableItem), Assembly.GetExecutingAssembly()).ToArray());
+            () => Utility.GetAllTypesImplementingInterface(typeof(ISerializableItem)).ToArray());
+
+        Func<object, DataContractSerializationProvider> serializerFactory;
 
         public DictionaryStorageEngine(string Path = null)
         {
             backingStorePath = Path;
+
+            serializerFactory = (root => {
+                return new DataContractSerializationProvider(
+                    allStorageTypes.Value,
+                    new IDataContractSurrogate[] {new SerializedListDataSurrogate(this, false), new SerializationItemDataSurrogate(this, root)}
+                );
+            });
         }
 
         public T Load<T>(Guid ContentHash) where T : ISerializableItem
         {
-            ISerializableItem ret = null;
-
-            initializeStoreIfNeeded();
-            if (!allItems.TryGetValue(ContentHash, out ret)) {
-                this.Log().ErrorFormat("Attempted to load '{0}', didn't exist!", ContentHash);
-                return default(T);
-            }
-
-            this.Log().DebugFormat("Loaded '{0}'", ContentHash);
-            return (T)ret;
+            return (T)Load(ContentHash);
         }
 
         public object Load(Guid ContentHash)
         {
+            byte[] ret;
+
             initializeStoreIfNeeded();
-            if (!allItems.ContainsKey(ContentHash)) {
+            if (!allItems.TryGetValue(ContentHash, out ret)) {
                 this.Log().ErrorFormat("Attempted to load '{0}', didn't exist!", ContentHash);
                 return null;
             }
 
             this.Log().DebugFormat("Loaded '{0}'", ContentHash);
-            return allItems[ContentHash];
+            return serializerFactory(ContentHash).Deserialize(ret, Type.GetType(itemTypeNames[ContentHash]));
         }
 
         public void Save<T>(T Obj) where T : ISerializableItem
@@ -65,7 +69,8 @@ namespace ReactiveXaml.Serialization
             initializeStoreIfNeeded();
 
             this.Log().DebugFormat("Saving '{0}", Obj.ContentHash);
-            allItems[Obj.ContentHash] = Obj;
+            allItems[Obj.ContentHash] = serializerFactory(Obj).Serialize(Obj);
+            itemTypeNames[Obj.ContentHash] = Obj.GetType().FullName;
         }
 
         public void FlushChanges()
@@ -76,7 +81,7 @@ namespace ReactiveXaml.Serialization
 
             initializeStoreIfNeeded();
             this.Log().InfoFormat("Flushing changes");
-            var dseData = new DSESerializedObjects() {allItems = this.allItems, syncPointIndex = this.syncPointIndex};
+            var dseData = new DSESerializedObjects() {allItems = this.allItems, syncPointIndex = this.syncPointIndex, itemTypeNames = this.itemTypeNames};
             File.WriteAllText(backingStorePath, JSONHelper.Serialize(dseData, allStorageTypes.Value), Encoding.UTF8);
         }
 
@@ -125,8 +130,9 @@ namespace ReactiveXaml.Serialization
                 return;
 
             if (backingStorePath == null) {
-                allItems = new Dictionary<Guid,ISerializableItem>();
+                allItems = new Dictionary<Guid, byte[]>();
                 syncPointIndex = new Dictionary<string, Guid>();
+                itemTypeNames = new Dictionary<Guid, string>();
                 return;
             }
 
@@ -137,8 +143,9 @@ namespace ReactiveXaml.Serialization
                 syncPointIndex = dseData.syncPointIndex;
             } catch(FileNotFoundException) {
                 this.Log().WarnFormat("Backing store {0} not found, falling back to empty", backingStorePath);
-                allItems = new Dictionary<Guid,ISerializableItem>();
+                allItems = new Dictionary<Guid, byte[]>();
                 syncPointIndex = new Dictionary<string, Guid>();
+                itemTypeNames = new Dictionary<Guid, string>();
             }
         }
 
