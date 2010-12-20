@@ -14,6 +14,7 @@ namespace ReactiveXaml.Serialization
     public class SerializedCollection<T> : ReactiveCollection<T>, ISerializableList<T>
         where T : ISerializableItem
     {
+        [IgnoreDataMember]
         public Guid ContentHash { get; protected set; }
 
         [DataMember]
@@ -23,15 +24,19 @@ namespace ReactiveXaml.Serialization
         public Dictionary<Guid, DateTimeOffset> UpdatedOn { get; protected set; }
 
         [IgnoreDataMember]
-        IDictionary<Guid, DateTimeOffset> ISerializableList<T>.CreatedOn {
+        IDictionary<Guid, DateTimeOffset> ISerializableList.CreatedOn {
             get { return this.CreatedOn;  }
         }
         [IgnoreDataMember]
-        IDictionary<Guid, DateTimeOffset> ISerializableList<T>.UpdatedOn {
+        IDictionary<Guid, DateTimeOffset> ISerializableList.UpdatedOn {
             get { return this.UpdatedOn;  }   
         }
 
         IScheduler _sched;
+        
+        public SerializedCollection() : this(null)
+        {
+        }
 
         public SerializedCollection(IScheduler sched = null)
         {
@@ -40,11 +45,31 @@ namespace ReactiveXaml.Serialization
             setupCollection(sched);
         }
 
-        public SerializedCollection(IEnumerable<T> items, IScheduler sched = null)
+        public SerializedCollection(IEnumerable<T> items,
+            IScheduler sched = null,
+            IDictionary<Guid, DateTimeOffset> createdOn = null,
+            IDictionary<Guid, DateTimeOffset> updatedOn = null)
             : base(items)
         {
-            CreatedOn = items.ToDictionary(k => k.ContentHash, _ => RxApp.DeferredScheduler.Now);
-            UpdatedOn = items.ToDictionary(k => k.ContentHash, _ => RxApp.DeferredScheduler.Now);
+            if (createdOn != null) {
+                CreatedOn = createdOn.Keys.ToDictionary(k => k, k => createdOn[k]);
+            } else {
+                CreatedOn = new Dictionary<Guid, DateTimeOffset>();
+                foreach (var v in items) {
+                    CreatedOn[v.ContentHash] = RxApp.DeferredScheduler.Now;
+                }
+            }
+
+            if (updatedOn != null) {
+                UpdatedOn = updatedOn.Keys.ToDictionary(k => k, k => updatedOn[k]);
+            } else {
+                UpdatedOn = new Dictionary<Guid, DateTimeOffset>();
+                foreach (var v in items) {
+                    UpdatedOn[v.ContentHash] = RxApp.DeferredScheduler.Now;
+                }
+            }
+
+            ContentHash = CalculateHash();
             setupCollection(sched);
         }
 
@@ -84,6 +109,11 @@ namespace ReactiveXaml.Serialization
                     var si = x as ISerializableItem;
                     return (si != null ? si.ContentHash.ToString() : x.ToString().MD5Hash().ToString());
                 })).MD5Hash());
+        }
+
+        public Type GetBaseListType()
+        {
+            return typeof (T);
         }
     }
 }
