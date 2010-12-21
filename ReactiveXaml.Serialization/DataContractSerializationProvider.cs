@@ -5,10 +5,11 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
 using System.Text;
+using Newtonsoft.Json;
 
 namespace ReactiveXaml.Serialization
 {
-    public class DataContractSerializationProvider : IEnableLogger
+    public class DataContractSerializationProvider : IObjectSerializationProvider
     {
         IDataContractSurrogate _dataSurrogate;
         IEnumerable<Type> _knownTypes;
@@ -42,7 +43,7 @@ namespace ReactiveXaml.Serialization
             }
         }
 
-        public static string SerializedDataToString(byte[] data)
+        public string SerializedDataToString(byte[] data)
         {
             return Encoding.Default.GetString(data);
         }
@@ -53,13 +54,15 @@ namespace ReactiveXaml.Serialization
                 return _serializerFactory();
             }
 
-            DataContractJsonSerializer serializer;
+            XmlObjectSerializer serializer;
             var knownTypes = _knownTypes.Concat(new[] {type});
 
             if (this._dataSurrogate != null) {
                 serializer = new DataContractJsonSerializer(type, knownTypes, Int32.MaxValue, false, this._dataSurrogate, false);
+                //serializer = new DataContractSerializer(type, knownTypes, Int32.MaxValue, false, false, this._dataSurrogate);
             } else {
                 serializer = new DataContractJsonSerializer(type, knownTypes);
+                //serializer = new DataContractSerializer(type, knownTypes);
             }
             return serializer;
         }
