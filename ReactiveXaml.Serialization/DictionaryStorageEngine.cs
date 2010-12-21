@@ -20,7 +20,7 @@ namespace ReactiveXaml.Serialization
         public Dictionary<Guid, string> itemTypeNames;
         public Dictionary<string, Guid> syncPointIndex;
     }
-
+    
     public class DictionaryStorageEngine : IStorageEngine
     {
         string backingStorePath;
@@ -83,6 +83,16 @@ namespace ReactiveXaml.Serialization
             this.Log().InfoFormat("Flushing changes");
             var dseData = new DSESerializedObjects() {allItems = this.allItems, syncPointIndex = this.syncPointIndex, itemTypeNames = this.itemTypeNames};
             File.WriteAllText(backingStorePath, JSONHelper.Serialize(dseData, allStorageTypes.Value), Encoding.UTF8);
+        }
+
+        public Guid[] GetAllObjectHashes()
+        {
+            return allItems.Keys.ToArray();
+        }
+
+        public int GetObjectCount()
+        {
+            return allItems.Count;
         }
 
         public ISyncPointInformation CreateSyncPoint<T>(T obj, string qualifier = null, DateTimeOffset? createdOn = null)

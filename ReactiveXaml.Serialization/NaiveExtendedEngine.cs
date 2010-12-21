@@ -70,6 +70,16 @@ namespace ReactiveXaml.Serialization
             _engine.FlushChanges();
         }
 
+        public Guid[] GetAllObjectHashes()
+        {
+            return _engine.GetAllObjectHashes();
+        }
+
+        public int GetObjectCount()
+        {
+            return _engine.GetObjectCount();
+        }
+
         public ISyncPointInformation CreateSyncPoint<T>(T obj, string qualifier = null, DateTimeOffset? createdOn = null) where T : ISerializableItem
         {
             return _engine.CreateSyncPoint(obj, qualifier, createdOn);

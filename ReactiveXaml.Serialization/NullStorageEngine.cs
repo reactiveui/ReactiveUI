@@ -29,6 +29,16 @@ namespace ReactiveXaml.Serialization
             this.Log().Debug("Flush");
         }
 
+        public Guid[] GetAllObjectHashes()
+        {
+            return new Guid[0];
+        }
+
+        public int GetObjectCount()
+        {
+            return 0;
+        }
+
         public ISyncPointInformation CreateSyncPoint<T>(T obj, string qualifier = null, DateTimeOffset? createdOn = null) 
             where T : ISerializableItem
         {
