@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
+using Newtonsoft.Json;
 using ReactiveXaml;
 using System.Reflection;
 using System.Runtime.Serialization;
@@ -31,18 +32,13 @@ namespace ReactiveXaml.Serialization
         static readonly Lazy<IEnumerable<Type>> allStorageTypes = new Lazy<IEnumerable<Type>>(
             () => Utility.GetAllTypesImplementingInterface(typeof(ISerializableItem)).ToArray());
 
-        Func<object, DataContractSerializationProvider> serializerFactory;
+        Func<object, IObjectSerializationProvider> serializerFactory;
 
         public DictionaryStorageEngine(string Path = null)
         {
             backingStorePath = Path;
 
-            serializerFactory = (root => {
-                return new DataContractSerializationProvider(
-                    allStorageTypes.Value,
-                    new IDataContractSurrogate[] {new SerializedListDataSurrogate(this, false), new SerializationItemDataSurrogate(this, root)}
-                );
-            });
+            serializerFactory = (root => new JsonNetObjectSerializationProvider(this));
         }
 
         public T Load<T>(Guid ContentHash) where T : ISerializableItem
@@ -61,6 +57,9 @@ namespace ReactiveXaml.Serialization
             }
 
             this.Log().DebugFormat("Loaded '{0}'", ContentHash);
+#if DEBUG
+            this.Log().Info(serializerFactory(ContentHash).SerializedDataToString(ret));
+#endif
             return serializerFactory(ContentHash).Deserialize(ret, Utility.GetTypeByName(itemTypeNames[ContentHash]));
         }
 
@@ -147,8 +146,11 @@ namespace ReactiveXaml.Serialization
             }
 
             try {
-                string text = File.ReadAllText(backingStorePath, Encoding.UTF8);
-                var dseData = JSONHelper.Deserialize<DSESerializedObjects>(text, allStorageTypes.Value);
+                var serializer = new JsonSerializer();
+                DSESerializedObjects dseData;
+                using(var reader = new JsonTextReader(new StreamReader(backingStorePath))) {
+                    dseData = serializer.Deserialize<DSESerializedObjects>(reader);
+                }
                 allItems = dseData.allItems;
                 syncPointIndex = dseData.syncPointIndex;
                 itemTypeNames = dseData.itemTypeNames;

@@ -8,6 +8,9 @@ using System.Reflection;
 using System.Runtime.Serialization;
 using System.Collections.ObjectModel;
 using System.CodeDom;
+using System.Threading;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Bson;
 
 namespace ReactiveXaml.Serialization
 {
@@ -63,42 +66,23 @@ namespace ReactiveXaml.Serialization
         }
     }
 
-    public static class JSONHelper
-    {
-        public static string Serialize<T>(T obj, IEnumerable<Type> knownTypes = null) {
-            knownTypes = (knownTypes ?? Enumerable.Empty<Type>());
-            var serializer = new System.Runtime.Serialization.Json.DataContractJsonSerializer(obj.GetType(), knownTypes);
-            var ms = new MemoryStream();
-
-            serializer.WriteObject(ms, obj);
-            string retVal = Encoding.Default.GetString(ms.ToArray());
-            return retVal;
-        }
-
-        public static T Deserialize<T>(string json, IEnumerable<Type> knownTypes = null) {
-            knownTypes = knownTypes ?? Enumerable.Empty<Type>();
-
-            var obj = Activator.CreateInstance<T>();
-            var ms = new MemoryStream(Encoding.Unicode.GetBytes(json));
-            var serializer = new System.Runtime.Serialization.Json.DataContractJsonSerializer(obj.GetType(), knownTypes);
-
-            obj = (T)serializer.ReadObject(ms);
-            ms.Close();
-            return obj;
-        }
-
-        public static T Clone<T>(T obj, IEnumerable<Type> knownTypes = null)
-        {
-            return Deserialize<T>(Serialize(obj, knownTypes), knownTypes);
-        }
-    }
-
     public static class HelperExtensions
     {
         public static byte[] MD5Hash(this string obj)
         {
             var md5 = MD5.Create();
             return md5.ComputeHash(Encoding.UTF8.GetBytes(obj));
+        }
+
+        static ThreadLocal<JsonSerializer> _serializer = new ThreadLocal<JsonSerializer>(() => new JsonSerializer());
+        public static byte[] ObjectContentsHash(this object This)
+        {
+            var ms = new MemoryStream();
+            using (var writer = new BsonWriter(ms)) {
+                _serializer.Value.Serialize(writer, This);
+            }
+            var md5 = MD5.Create();
+            return md5.ComputeHash(ms.ToArray());
         }
 
         public static Dictionary<TKey, TVal> ToConcreteDictionary<TKey, TVal>(this IDictionary<TKey, TVal> This)
