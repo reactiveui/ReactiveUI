@@ -8,11 +8,11 @@ namespace ReactiveXaml.Serialization
 {
     public static class RxStorage
     {
-        public static IExtendedStorageEngine _Engine;
+        static IExtendedStorageEngine _Engine;
+        [ThreadStatic] static IExtendedStorageEngine _UnitTestEngine;
+
         public static IExtendedStorageEngine Engine {
-            get {
-                return _UnitTestEngine ?? _Engine;
-            }
+            get { return _UnitTestEngine ?? _Engine; }
             set {
                 if (RxApp.InUnitTestRunner()) {
                     _UnitTestEngine = value;
@@ -23,8 +23,6 @@ namespace ReactiveXaml.Serialization
             }
         }
 
-        [ThreadStatic] 
-        static IExtendedStorageEngine _UnitTestEngine;
 
         static RxStorage()
         {
