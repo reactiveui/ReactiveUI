@@ -26,6 +26,15 @@ namespace ReactiveXaml.Serialization.Tests
         }
     }
 
+    [TestClass]
+    public class JsonNetSerializationItemDataSurrogateTest : SerializationItemDataSurrogateTest
+    {
+        protected override IObjectSerializationProvider createFixture(IEnumerable<IDataContractSurrogate> surrogates)
+        {
+            return new JsonNetObjectSerializationProvider(new NullStorageEngine());
+        }
+    }
+
     [TestClass()]
     public abstract class SerializedListDataSurrogateTest : IEnableLogger
     {

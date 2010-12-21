@@ -74,6 +74,7 @@
   <ItemGroup>
     <Compile Include="ExplicitReference.cs" />
     <Compile Include="DataContractSerializationProvider.cs" />
+    <Compile Include="JsonNetObjectSerializationProvider.cs" />
     <Compile Include="NaiveExtendedEngine.cs" />
     <Compile Include="Interfaces.cs" />
     <Compile Include="ModelBase.cs" />
