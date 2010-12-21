@@ -86,6 +86,10 @@
     </CodeAnalysisDependentAssemblyPaths>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ReactiveXaml.Serialization.Esent\ReactiveXaml.Serialization.Esent.csproj">
+      <Project>{0B0ABDC8-4EF3-4172-ADE4-E4FB55E5F91E}</Project>
+      <Name>ReactiveXaml.Serialization.Esent</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ReactiveXaml.Serialization\ReactiveXaml.Serialization.csproj">
       <Project>{C6A9A8EC-FDA6-45C1-9694-298D44E3C55F}</Project>
       <Name>ReactiveXaml.Serialization</Name>
@@ -101,6 +105,7 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
+    <Compile Include="IStorageEngineTest.cs" />
     <Compile Include="ModelBaseTest.cs" />
     <Compile Include="ModelBaseTest.GuidsShouldBeUniqueForContent.g.cs">
       <DependentUpon>ModelBaseTest.cs</DependentUpon>
