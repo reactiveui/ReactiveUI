@@ -23,7 +23,7 @@ namespace ReactiveXaml.Serialization.Esent
         static readonly Lazy<IEnumerable<Type>> allStorageTypes = new Lazy<IEnumerable<Type>>(
             () => Utility.GetAllTypesImplementingInterface(typeof(ISerializableItem)).ToArray());
 
-        Func<object, DataContractSerializationProvider> serializerFactory;
+        Func<object, IObjectSerializationProvider> serializerFactory;
 
         public EsentStorageEngine(string databasePath)
         {
@@ -32,12 +32,7 @@ namespace ReactiveXaml.Serialization.Esent
             _backingStore.TraceSwitch.Level = System.Diagnostics.TraceLevel.Verbose;
 #endif
 
-            serializerFactory = (root => {
-                return new DataContractSerializationProvider(
-                    allStorageTypes.Value,
-                    new IDataContractSurrogate[] {new SerializedListDataSurrogate(this, false), new SerializationItemDataSurrogate(this, root)}
-                );
-            });
+            serializerFactory = (root => new JsonNetObjectSerializationProvider(this));
 
             loadOrInitializeMetadata();
         }
@@ -74,12 +69,12 @@ namespace ReactiveXaml.Serialization.Esent
 
         public Guid[] GetAllObjectHashes()
         {
-            return _backingStore.Keys.ToArray();
+            return _backingStore.Keys.Where(x => x != Guid.Empty).ToArray();
         }
 
         public int GetObjectCount()
         {
-            return _backingStore.Count;
+            return _backingStore.Count - 1; // One for the metadata object
         }
 
         public ISyncPointInformation CreateSyncPoint<T>(T obj, string qualifier = null, DateTimeOffset? createdOn = null)
