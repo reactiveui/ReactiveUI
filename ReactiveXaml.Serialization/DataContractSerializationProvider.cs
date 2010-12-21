@@ -8,7 +8,7 @@ using System.Text;
 
 namespace ReactiveXaml.Serialization
 {
-    public class DataContractSerializationProvider
+    public class DataContractSerializationProvider : IEnableLogger
     {
         IDataContractSurrogate _dataSurrogate;
         IEnumerable<Type> _knownTypes;
@@ -33,6 +33,10 @@ namespace ReactiveXaml.Serialization
         public object Deserialize(byte[] data, Type type)
         {
             var serializer = createSerializer(type);
+#if DEBUG
+            string json = Encoding.Default.GetString(data);
+            this.Log().Info(json);
+#endif
             using (var ms = new MemoryStream(data)) {
                 return serializer.ReadObject(ms);
             }

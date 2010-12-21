@@ -9,6 +9,10 @@ using System.Text;
 
 namespace ReactiveXaml.Serialization
 {
+    public class SurrogateHashContainer {
+        public Guid Hash { get; set; }
+    }
+
     public class SerializationItemDataSurrogate : IDataContractSurrogate
     {
         IStorageEngine _engine;
@@ -22,8 +26,13 @@ namespace ReactiveXaml.Serialization
 
         public Type GetDataContractType(Type type)
         {
+            /*
+            if (typeof(SurrogateHashContainer) == type) {
+                return typeof(ISerializableItem);
+            }*/
+
             if (typeof(ISerializableItem).IsAssignableFrom(type) && _toSkip == null) {
-                return typeof(Guid);
+                return typeof(SurrogateHashContainer);
             }
 
             return type;
@@ -36,8 +45,9 @@ namespace ReactiveXaml.Serialization
                 return obj;
             }
 
-            if (obj is Guid && typeof(ISerializableItem).IsAssignableFrom(targetType)) {
-                return _engine.Load((Guid) obj);
+            if (obj is SurrogateHashContainer && typeof (ISerializableItem).IsAssignableFrom(targetType)) {
+                var hash = (SurrogateHashContainer) obj;
+                return _engine.Load(hash.Hash);
             }
 
             return obj;
@@ -53,16 +63,12 @@ namespace ReactiveXaml.Serialization
             var sib = obj as ISerializableItem;
             if (sib != null) {
                 _engine.Save(sib);
-                return sib.ContentHash;
+                return new SurrogateHashContainer() {Hash = sib.ContentHash};
             }
             return obj;
         }
 
-        public Type GetReferencedTypeOnImport(string typeName, string typeNamespace, object customData)
-        {
-            return null;
-        }
-
+        public Type GetReferencedTypeOnImport(string typeName, string typeNamespace, object customData)   { return null; }
         public object GetCustomDataToExport(Type clrType, Type dataContractType) { return null; }
         public object GetCustomDataToExport(MemberInfo memberInfo, Type dataContractType) { return null; }
         public void GetKnownCustomDataTypes(Collection<Type> customDataTypes) { }
