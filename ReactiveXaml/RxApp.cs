@@ -89,8 +89,35 @@ namespace ReactiveXaml
             MessageBus = new MessageBus();
         }
 
-        public static IScheduler DeferredScheduler { get; set; }
-        public static IScheduler TaskpoolScheduler { get; set; }
+        [ThreadStatic] static IScheduler _UnitTestDeferredScheduler;
+        static IScheduler _DeferredScheduler;
+
+        public static IScheduler DeferredScheduler {
+            get { return _UnitTestDeferredScheduler ?? _DeferredScheduler; }
+            set {
+                if (InUnitTestRunner()) {
+                    _UnitTestDeferredScheduler = value;
+                    _DeferredScheduler = _DeferredScheduler ?? value;
+                } else {
+                    _DeferredScheduler = value;
+                }
+            }
+        }
+
+        [ThreadStatic] static IScheduler _UnitTestTaskpoolScheduler;
+        static IScheduler _TaskpoolScheduler;
+
+        public static IScheduler TaskpoolScheduler {
+            get { return _UnitTestTaskpoolScheduler ?? _TaskpoolScheduler; }
+            set {
+                if (InUnitTestRunner()) {
+                    _UnitTestTaskpoolScheduler = value;
+                    _TaskpoolScheduler = _TaskpoolScheduler ?? value;
+                } else {
+                    _TaskpoolScheduler = value;
+                }
+            }
+        }
 
         public static Func<string, ILog> LoggerFactory { get; set; }
 
