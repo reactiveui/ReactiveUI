@@ -14,11 +14,11 @@ using System.Globalization;
 
 namespace ReactiveXaml.Serialization
 {
-    class DSESerializedObjects
+    public class DSESerializedObjects
     {
-        public Dictionary<Guid, byte[]> allItems;
-        public Dictionary<Guid, string> itemTypeNames;
-        public Dictionary<string, Guid> syncPointIndex;
+        public Dictionary<Guid, byte[]> allItems { get; set; }
+        public Dictionary<Guid, string> itemTypeNames { get; set; }
+        public Dictionary<string, Guid> syncPointIndex { get; set; }
     }
     
     public class DictionaryStorageEngine : IStorageEngine
@@ -80,9 +80,9 @@ namespace ReactiveXaml.Serialization
             }
 
             initializeStoreIfNeeded();
-            this.Log().InfoFormat("Flushing changes");
+            this.Log().Info("Flushing changes");
             var dseData = new DSESerializedObjects() {allItems = this.allItems, syncPointIndex = this.syncPointIndex, itemTypeNames = this.itemTypeNames};
-            File.WriteAllText(backingStorePath, JSONHelper.Serialize(dseData, allStorageTypes.Value), Encoding.UTF8);
+            File.WriteAllBytes(backingStorePath, serializerFactory(dseData).Serialize(dseData));
         }
 
         public Guid[] GetAllObjectHashes()
@@ -151,6 +151,7 @@ namespace ReactiveXaml.Serialization
                 var dseData = JSONHelper.Deserialize<DSESerializedObjects>(text, allStorageTypes.Value);
                 allItems = dseData.allItems;
                 syncPointIndex = dseData.syncPointIndex;
+                itemTypeNames = dseData.itemTypeNames;
             } catch(FileNotFoundException) {
                 this.Log().WarnFormat("Backing store {0} not found, falling back to empty", backingStorePath);
                 allItems = new Dictionary<Guid, byte[]>();

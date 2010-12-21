@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using Microsoft.Isam.Esent.Collections.Generic;
 
@@ -27,6 +28,18 @@ namespace ReactiveXaml.Serialization.Esent
         public EsentStorageEngine(string databasePath)
         {
             _backingStore = new PersistentDictionary<Guid, byte[]>(databasePath);
+#if DEBUG
+            _backingStore.TraceSwitch.Level = System.Diagnostics.TraceLevel.Verbose;
+#endif
+
+            serializerFactory = (root => {
+                return new DataContractSerializationProvider(
+                    allStorageTypes.Value,
+                    new IDataContractSurrogate[] {new SerializedListDataSurrogate(this, false), new SerializationItemDataSurrogate(this, root)}
+                );
+            });
+
+            loadOrInitializeMetadata();
         }
 
         public T Load<T>(Guid contentHash) where T : ISerializableItem {
@@ -139,6 +152,10 @@ namespace ReactiveXaml.Serialization.Esent
                 _syncPointIndex = new Dictionary<string, Guid>();
 
                 persistMetadata();
+            } else {
+                var metadata = (EsentPersistedMetadata)serializerFactory(Guid.Empty).Deserialize(data, typeof (EsentPersistedMetadata));
+                _itemTypeNames = metadata.ItemTypeNames;
+                _syncPointIndex = metadata.SyncPointIndex;
             }
         }
 
