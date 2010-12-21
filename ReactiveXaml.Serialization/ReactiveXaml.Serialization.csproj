@@ -72,7 +72,6 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ExplicitReference.cs" />
     <Compile Include="JsonNetObjectSerializationProvider.cs" />
     <Compile Include="NaiveExtendedEngine.cs" />
     <Compile Include="Interfaces.cs" />
