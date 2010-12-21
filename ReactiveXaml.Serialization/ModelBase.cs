@@ -28,6 +28,7 @@ namespace ReactiveXaml.Serialization
                 ContentHash = CalculateHash();
                 RxStorage.Engine.Save(this);
             });
+            ContentHash = CalculateHash();
         }
 
         public virtual Guid CalculateHash()
