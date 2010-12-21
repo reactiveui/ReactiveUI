@@ -10,6 +10,7 @@ using System.ComponentModel;
 
 namespace ReactiveXaml.Serialization
 {
+    [DataContract]
     public abstract class ModelBase : ReactiveValidatedObject, ISerializableItem
     {
         [IgnoreDataMember]

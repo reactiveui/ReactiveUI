@@ -11,6 +11,7 @@ using System.Diagnostics.Contracts;
 
 namespace ReactiveXaml
 {
+    [DataContract]
     public class ReactiveValidatedObject : ReactiveObject, IDataErrorInfo
     {
         public ReactiveValidatedObject()
@@ -32,10 +33,12 @@ namespace ReactiveXaml
 
         readonly Dictionary<string, string> errorMap = new Dictionary<string, string>();
         
+        [IgnoreDataMember]
         public string Error {
             get { return null; }
         }
 
+        [IgnoreDataMember]
         public string this[string propName] {
             get {
                 string ret = null;
