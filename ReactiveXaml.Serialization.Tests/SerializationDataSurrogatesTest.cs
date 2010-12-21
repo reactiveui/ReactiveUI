@@ -9,15 +9,14 @@ namespace ReactiveXaml.Serialization.Tests
     [TestClass()]
     public abstract class SerializationItemDataSurrogateTest : IEnableLogger
     {
-        protected abstract IObjectSerializationProvider createFixture(IEnumerable<IDataContractSurrogate> surrogates);
+        protected abstract IObjectSerializationProvider createFixture();
 
         [TestMethod()]
         public void SerializationItemSmokeTest()
         {
             var engine = new NullStorageEngine();
             var input = new RootSerializationTestObject() {SubObject = new SubobjectTestObject() {SomeProperty = "Foo"}};
-            var fixture = new SerializationItemDataSurrogate(engine, input);
-            var serializer = createFixture(new IDataContractSurrogate[] {fixture});
+            var serializer = createFixture();
 
             string json = serializer.SerializedDataToString(serializer.Serialize(input));
             this.Log().Info(json);
@@ -29,7 +28,7 @@ namespace ReactiveXaml.Serialization.Tests
     [TestClass]
     public class JsonNetSerializationItemDataSurrogateTest : SerializationItemDataSurrogateTest
     {
-        protected override IObjectSerializationProvider createFixture(IEnumerable<IDataContractSurrogate> surrogates)
+        protected override IObjectSerializationProvider createFixture()
         {
             return new JsonNetObjectSerializationProvider(new NullStorageEngine());
         }
@@ -38,7 +37,7 @@ namespace ReactiveXaml.Serialization.Tests
     [TestClass()]
     public abstract class SerializedListDataSurrogateTest : IEnableLogger
     {
-        protected abstract IObjectSerializationProvider createFixture(IEnumerable<IDataContractSurrogate> surrogates);
+        protected abstract IObjectSerializationProvider createFixture();
 
         [TestMethod]
         public void SerializedListSmokeTest()
@@ -47,11 +46,8 @@ namespace ReactiveXaml.Serialization.Tests
             var input = new SerializedCollection<SubobjectTestObject>(new[] {
                 new SubobjectTestObject() {SomeProperty = "Foo"},
             });
-            var surrogates = new IDataContractSurrogate[] {
-                new SerializedListDataSurrogate(engine, input),
-                new SerializationItemDataSurrogate(engine, input),
-            };
-            var serializer = createFixture(surrogates);
+            
+            var serializer = createFixture();
 
             string json = serializer.SerializedDataToString(serializer.Serialize(input));
             this.Log().Info(json);
@@ -67,11 +63,7 @@ namespace ReactiveXaml.Serialization.Tests
                 new RootSerializationTestObject() {SubObject = new SubobjectTestObject() {SomeProperty = "Foo"}},
                 new SubobjectTestObject() {SomeProperty = "Foo"},
             });
-            var surrogates = new IDataContractSurrogate[] {
-                new SerializedListDataSurrogate(engine, input),
-                new SerializationItemDataSurrogate(engine, input),
-            };
-            var serializer = createFixture(surrogates);
+            var serializer = createFixture();
 
             string json = serializer.SerializedDataToString(serializer.Serialize(input));
             this.Log().Info(json);
@@ -91,16 +83,22 @@ namespace ReactiveXaml.Serialization.Tests
                 SomeList = list,
                 RootObject = new RootSerializationTestObject() {SubObject = new SubobjectTestObject {SomeProperty = "Foo"}},
             };
-            var surrogates = new IDataContractSurrogate[] {
-                new SerializedListDataSurrogate(engine, input),
-                new SerializationItemDataSurrogate(engine, input),
-            };
-            var serializer = createFixture(surrogates);
+
+            var serializer = createFixture();
 
             string json = serializer.SerializedDataToString(serializer.Serialize(input));
             this.Log().Info(json);
 
             // TODO: Finish this test
+        }
+    }
+
+    [TestClass]
+    public class JsonNetSerializedListDataSurrogateTest : SerializedListDataSurrogateTest
+    {
+        protected override IObjectSerializationProvider createFixture()
+        {
+            return new JsonNetObjectSerializationProvider(new NullStorageEngine());
         }
     }
 }

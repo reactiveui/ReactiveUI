@@ -29,7 +29,8 @@ namespace ReactiveXaml.Serialization
             var ms = new MemoryStream();
             using (var writer = createWriterFromMemoryStream(ms)) {
                 _guidResolver.Value.InitializeWithRootObject(obj);
-                _serializer.Value.Serialize(writer, obj);
+                JsonSerializer.Create(new JsonSerializerSettings() {ContractResolver = _guidResolver.Value}).Serialize(writer, obj);
+                //_serializer.Value.Serialize(writer, obj);
             }
             var ret = ms.ToArray();
             return ret;
@@ -38,8 +39,10 @@ namespace ReactiveXaml.Serialization
         public object Deserialize(byte[] data, Type type)
         {
             using (var reader = createReaderFromBytes(data)) {
-                _guidResolver.Value.InitializeWithRootObject(null);
-                return _serializer.Value.Deserialize(reader, type);
+                var dummy = Activator.CreateInstance(type);
+                _guidResolver.Value.InitializeWithRootObject(dummy);
+                return JsonSerializer.Create(new JsonSerializerSettings() {ContractResolver = _guidResolver.Value}).Deserialize(reader, type);
+                //return _serializer.Value.Deserialize(reader, type);
             }
         }
 
@@ -71,19 +74,30 @@ namespace ReactiveXaml.Serialization
         }
     }
 
+    class GuidToSerializedItemsResolver : DefaultContractResolver
+    {
+        
+    }
+
     class SerializedItemsToGuidResolver : DefaultContractResolver
     {
         SerializableItemConverter _itemConverter;
+        SerializableListConverter _listConverter;
         object _rootObject;
 
         public SerializedItemsToGuidResolver(IStorageEngine engine = null)
         {
             _itemConverter = new SerializableItemConverter(engine);
+            _listConverter = new SerializableListConverter(engine);
         }
 
         protected override JsonContract CreateContract(Type objectType) 
         {
             var ret = base.CreateContract(objectType);
+            if (typeof(ISerializableList).IsAssignableFrom(objectType)) {
+                return ret;
+            }
+
             if ((typeof(ISerializableItem).IsAssignableFrom(objectType)) &&
                 (_rootObject == null || _rootObject.GetType() != objectType)) {
                 _rootObject = null;
@@ -97,6 +111,12 @@ namespace ReactiveXaml.Serialization
         {
             var ret = base.CreateArrayContract(objectType);
             if (typeof(ISerializableList).IsAssignableFrom(objectType)) {
+                if (_rootObject.GetType() == objectType) {
+                    _rootObject = null;
+                    ret.Converter = _listConverter;
+                } else {
+                    ret.Converter = _itemConverter;
+                }
             }
 
             return ret;
@@ -152,21 +172,44 @@ namespace ReactiveXaml.Serialization
         }
     }
 
+    class RawSerializedListData {
+        public string ItemsRootTypeFullName { get; set; }
+        public Dictionary<Guid, DateTimeOffset> CreatedOn { get; set; }
+        public Dictionary<Guid, DateTimeOffset> UpdatedOn { get; set; }
+        public Guid[] Items { get; set; }
+    }
+
     class SerializableListConverter : JsonConverter
     {
+
+        IStorageEngine _engine;
+        public SerializableListConverter(IStorageEngine engine = null)
+        {
+            _engine = engine ?? RxStorage.Engine;
+        }
+
         public override bool CanConvert(Type objectType) 
         {
             return (typeof (ISerializableList).IsAssignableFrom(objectType));
         }
 
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer) 
+        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            throw new NotImplementedException();
+            var toRead = serializer.Deserialize<RawSerializedListData>(reader);
+            return null;
         }
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer) 
         {
-            ISer
+            var slist = (ISerializableList)value;
+            var toWrite = new RawSerializedListData() {
+                CreatedOn = slist.CreatedOn.ToConcreteDictionary(),
+                UpdatedOn = slist.UpdatedOn.ToConcreteDictionary(),
+                ItemsRootTypeFullName = slist.GetBaseListType().FullName,
+                Items = slist.OfType<ISerializableItem>().Select(x => x.ContentHash).ToArray(),
+            };
+
+            serializer.Serialize(writer, toWrite);
         }
     }
 }

@@ -34,9 +34,7 @@ namespace ReactiveXaml.Serialization
 
         public virtual Guid CalculateHash()
         {
-            var json = JSONHelper.Serialize(this);
-            this.Log().Debug(json);
-            return new Guid(json.MD5Hash());
+            return new Guid(this.ObjectContentsHash());
         }
 
         [IgnoreDataMember]
