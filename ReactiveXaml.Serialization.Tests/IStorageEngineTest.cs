@@ -60,6 +60,25 @@ namespace ReactiveXaml.Serialization.Tests
                 Assert.AreEqual(input.SomeProperty, result.SomeProperty);
             }
         }
+
+        [TestMethod]
+        public void StorageEngineShouldReuseObjectsWithTheSameHash()
+        {
+            var input = new RootSerializationTestObject() {SubObject = new SubobjectTestObject() {SomeProperty = "Foo"}};
+            var input2 = new SubobjectTestObject() {SomeProperty = "Foo"};
+            var fixture = createFixture();
+
+            using(fixture)
+            using(fixture.AsPrimaryEngine()) {
+                fixture.Save(input);
+                fixture.Save(input2);
+
+                var result = fixture.Load<RootSerializationTestObject>(input.ContentHash);
+                Assert.AreEqual(input.ContentHash, result.ContentHash);
+                Assert.AreEqual(input.SubObject.ContentHash, result.SubObject.ContentHash);
+                Assert.AreEqual(2, fixture.GetObjectCount());
+            }
+        }
     }
 
     [TestClass]
