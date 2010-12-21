@@ -37,6 +37,18 @@ namespace ReactiveXaml.Serialization
 
             return ret.ToArray();
         }
+
+        public static Type GetTypeByName(string fullName, IEnumerable<Assembly> targetAssemblies = null)
+        {
+            targetAssemblies = targetAssemblies ?? AppDomain.CurrentDomain.GetAssemblies();
+
+            var allTypes = from a in targetAssemblies
+                           from mod in a.GetModules()
+                           from type in mod.SafeGetTypes()
+                           select type;
+
+            return allTypes.Single(x => x.FullName == fullName);
+        }
 	}
 
     public static class ModuleHelper

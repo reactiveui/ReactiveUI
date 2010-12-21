@@ -61,7 +61,7 @@ namespace ReactiveXaml.Serialization
             }
 
             this.Log().DebugFormat("Loaded '{0}'", ContentHash);
-            return serializerFactory(ContentHash).Deserialize(ret, Type.GetType(itemTypeNames[ContentHash]));
+            return serializerFactory(ContentHash).Deserialize(ret, Utility.GetTypeByName(itemTypeNames[ContentHash]));
         }
 
         public void Save<T>(T Obj) where T : ISerializableItem

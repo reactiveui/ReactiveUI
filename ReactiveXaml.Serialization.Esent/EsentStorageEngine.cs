@@ -43,7 +43,7 @@ namespace ReactiveXaml.Serialization.Esent
             }
 
             this.Log().DebugFormat("Loaded {0}", contentHash);
-            return serializerFactory(contentHash).Deserialize(data, Type.GetType(_itemTypeNames[contentHash]));
+            return serializerFactory(contentHash).Deserialize(data, Utility.GetTypeByName(_itemTypeNames[contentHash]));
         }
 
         public void Save<T>(T obj) where T : ISerializableItem
