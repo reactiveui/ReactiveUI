@@ -43,6 +43,9 @@ namespace ReactiveXaml.Serialization
         void Save<T>(T obj) where T : ISerializableItem;
         void FlushChanges();
 
+        Guid[] GetAllObjectHashes();
+        int GetObjectCount();
+
         ISyncPointInformation CreateSyncPoint<T>(T obj, string qualifier = null, DateTimeOffset? createdOn = null)
             where T : ISerializableItem;
         Guid[] GetOrderedRevisionList(Type type, string qualifier = null);

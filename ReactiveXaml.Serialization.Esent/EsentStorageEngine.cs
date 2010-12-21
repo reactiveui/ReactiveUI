@@ -59,6 +59,16 @@ namespace ReactiveXaml.Serialization.Esent
             _backingStore.Flush();
         }
 
+        public Guid[] GetAllObjectHashes()
+        {
+            return _backingStore.Keys.ToArray();
+        }
+
+        public int GetObjectCount()
+        {
+            return _backingStore.Count;
+        }
+
         public ISyncPointInformation CreateSyncPoint<T>(T obj, string qualifier = null, DateTimeOffset? createdOn = null)
             where T : ISerializableItem
         {
@@ -96,17 +106,17 @@ namespace ReactiveXaml.Serialization.Esent
             return ret.ToArray();
         }
 
-        public void Dispose() {
-            FlushChanges();
-            _backingStore.Dispose();
-        }
-
         public T GetLatestRootObject<T>(string qualifier = null, DateTimeOffset? olderThan = null) where T : ISerializableItem {
             throw new NotImplementedException();
         }
 
         public T[] GetRootObjectsInDateRange<T>(string qualifier = null, DateTimeOffset? olderThan = null, DateTimeOffset? newerThan = null) where T : ISerializableItem {
             throw new NotImplementedException();
+        }
+
+        public void Dispose() {
+            FlushChanges();
+            _backingStore.Dispose();
         }
 
         static string getKeyFromQualifiedType(Type type, string qualifier)
