@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Concurrency;
 using System.Diagnostics.Contracts;
+using System.Disposables;
 using System.Linq;
 using System.Reactive.Testing;
 using System.Reactive.Testing.Mocks;
@@ -39,6 +40,17 @@ namespace ReactiveXaml.Serialization.Tests
             var finish = (failOnError ? (Notification<T>)new Notification<T>.OnError(new Exception("Fail")) : new Notification<T>.OnCompleted());
             ret[items.Length] = new Recorded<Notification<T>>(ret[items.Length - 1].Time + 10, finish);
             return ret;
+        }
+    }
+
+    public static class TestEngineMixins
+    {
+        public static IDisposable AsPrimaryEngine(this IStorageEngine This)
+        {
+            var origEngine = RxStorage.Engine;
+            RxStorage.InitializeWithEngine(This);
+
+            return Disposable.Create(() => RxStorage.Engine = origEngine);
         }
     }
 
