@@ -1,4 +1,5 @@
-﻿using System.Runtime.Serialization;
+﻿using System.Collections.Generic;
+using System.Runtime.Serialization;
 using ReactiveXaml.Serialization;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
@@ -6,17 +7,19 @@ using System;
 namespace ReactiveXaml.Serialization.Tests
 {
     [TestClass()]
-    public class SerializationItemDataSurrogateTest : IEnableLogger
+    public abstract class SerializationItemDataSurrogateTest : IEnableLogger
     {
+        protected abstract IObjectSerializationProvider createFixture(IEnumerable<IDataContractSurrogate> surrogates);
+
         [TestMethod()]
         public void SerializationItemSmokeTest()
         {
             var engine = new NullStorageEngine();
             var input = new RootSerializationTestObject() {SubObject = new SubobjectTestObject() {SomeProperty = "Foo"}};
             var fixture = new SerializationItemDataSurrogate(engine, input);
-            var serializer = new DataContractSerializationProvider(null, new IDataContractSurrogate[] {fixture});
+            var serializer = createFixture(new IDataContractSurrogate[] {fixture});
 
-            string json = DataContractSerializationProvider.SerializedDataToString(serializer.Serialize(input));
+            string json = serializer.SerializedDataToString(serializer.Serialize(input));
             this.Log().Info(json);
 
             // TODO: Finish this test
@@ -24,8 +27,10 @@ namespace ReactiveXaml.Serialization.Tests
     }
 
     [TestClass()]
-    public class SerializedListDataSurrogateTest : IEnableLogger
+    public abstract class SerializedListDataSurrogateTest : IEnableLogger
     {
+        protected abstract IObjectSerializationProvider createFixture(IEnumerable<IDataContractSurrogate> surrogates);
+
         [TestMethod]
         public void SerializedListSmokeTest()
         {
@@ -37,9 +42,9 @@ namespace ReactiveXaml.Serialization.Tests
                 new SerializedListDataSurrogate(engine, input),
                 new SerializationItemDataSurrogate(engine, input),
             };
-            var serializer = new DataContractSerializationProvider(null, surrogates);
+            var serializer = createFixture(surrogates);
 
-            string json = DataContractSerializationProvider.SerializedDataToString(serializer.Serialize(input));
+            string json = serializer.SerializedDataToString(serializer.Serialize(input));
             this.Log().Info(json);
 
             // TODO: Finish this test
@@ -57,9 +62,9 @@ namespace ReactiveXaml.Serialization.Tests
                 new SerializedListDataSurrogate(engine, input),
                 new SerializationItemDataSurrogate(engine, input),
             };
-            var serializer = new DataContractSerializationProvider( new[] { typeof(SerializedCollection<ISerializableItem>)}, surrogates);
+            var serializer = createFixture(surrogates);
 
-            string json = DataContractSerializationProvider.SerializedDataToString(serializer.Serialize(input));
+            string json = serializer.SerializedDataToString(serializer.Serialize(input));
             this.Log().Info(json);
 
             // TODO: Finish this test
@@ -81,9 +86,9 @@ namespace ReactiveXaml.Serialization.Tests
                 new SerializedListDataSurrogate(engine, input),
                 new SerializationItemDataSurrogate(engine, input),
             };
-            var serializer = new DataContractSerializationProvider(null, surrogates);
+            var serializer = createFixture(surrogates);
 
-            string json = DataContractSerializationProvider.SerializedDataToString(serializer.Serialize(input));
+            string json = serializer.SerializedDataToString(serializer.Serialize(input));
             this.Log().Info(json);
 
             // TODO: Finish this test

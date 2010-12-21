@@ -63,6 +63,7 @@ namespace ReactiveXaml.Serialization
     {
         byte[] Serialize(object obj);
         object Deserialize(byte[] data, Type type);
+        string SerializedDataToString(byte[] data);
     }
 
     public interface IExplicitReferenceBase
