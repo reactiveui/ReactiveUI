@@ -41,16 +41,26 @@ namespace ReactiveXaml.Serialization
             return ret.ToArray();
         }
 
+	    static Dictionary<string, Type> typeCache = new Dictionary<string,Type>();
         public static Type GetTypeByName(string fullName, IEnumerable<Assembly> targetAssemblies = null)
         {
-            targetAssemblies = targetAssemblies ?? AppDomain.CurrentDomain.GetAssemblies();
+            lock(typeCache) {
+                if (typeCache.Count == 0) {
+                    var allTypes = from a in targetAssemblies ?? AppDomain.CurrentDomain.GetAssemblies()
+                        from mod in a.GetModules()
+                        from type in mod.SafeGetTypes()
+                        select type;
+                    foreach(var v in allTypes) {
+                        typeCache[v.FullName] = v;
+                    }
+                }
 
-            var allTypes = from a in targetAssemblies
-                           from mod in a.GetModules()
-                           from type in mod.SafeGetTypes()
-                           select type;
-
-            return allTypes.Single(x => x.FullName == fullName);
+                Type ret;
+                typeCache.TryGetValue(fullName, out ret);
+                if (targetAssemblies != null && !targetAssemblies.Contains(ret.Assembly))
+                    return null;
+                return ret;
+            }
         }
 	}
 
