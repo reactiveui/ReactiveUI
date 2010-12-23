@@ -103,7 +103,6 @@
       <Name>ReactiveXaml</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
     <Compile Include="IStorageEngineTest.cs" />
     <Compile Include="ModelBaseTest.cs" />

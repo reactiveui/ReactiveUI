@@ -9,7 +9,7 @@ using System.Linq;
 namespace ReactiveXaml.Serialization.Tests
 {
     [TestClass]
-    public abstract class StorageEngineInterfaceTest
+    public abstract class StorageEngineInterfaceTest : IEnableLogger
     {
         protected abstract IStorageEngine createFixture(int key = -1);
 
@@ -104,6 +104,7 @@ namespace ReactiveXaml.Serialization.Tests
         {
             var di = new DirectoryInfo(".");
             int subdir = (key == -1 ? Interlocked.Increment(ref _nextFreeSubdirectory) : key);
+            this.Log().InfoFormat("Opening db with name '{0}'", subdir.ToString());
             var path = di.CreateSubdirectory(subdir.ToString());
             return new Esent.EsentStorageEngine(path.FullName);
         }

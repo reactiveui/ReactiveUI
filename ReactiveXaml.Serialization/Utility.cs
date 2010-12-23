@@ -99,6 +99,18 @@ namespace ReactiveXaml.Serialization
         {
             return This.Keys.ToDictionary(k => k, k => This[k]);
         }
+
+        public static TVal GetOrAdd<TKey, TVal>(this IDictionary<TKey, TVal> This, TKey key)
+        {
+            TVal ret;
+            if (This.TryGetValue(key, out ret)) {
+                return ret;
+            }
+
+            ret = default(TVal);
+            This.Add(key, ret);
+            return ret;
+        }
     }
 
     public class AggregateDataContractSurrogate : IDataContractSurrogate
