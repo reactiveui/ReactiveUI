@@ -19,6 +19,7 @@ namespace ReactiveXaml.Serialization.Esent
         PersistentDictionary<Guid, byte[]> _backingStore;
         Dictionary<Guid, string> _itemTypeNames;
         Dictionary<string, Guid> _syncPointIndex;
+        Dictionary<string, SortedSet<ISyncPointInformation>> _syncPoints;
 
         static readonly Lazy<IEnumerable<Type>> allStorageTypes = new Lazy<IEnumerable<Type>>(
             () => Utility.GetAllTypesImplementingInterface(typeof(ISerializableItem)).ToArray());
@@ -87,6 +88,7 @@ namespace ReactiveXaml.Serialization.Esent
             var ret = new SyncPointInformation(obj.ContentHash, parent, typeof (T), qualifier ?? String.Empty, createdOn ?? DateTimeOffset.Now);
             Save(ret);
             _syncPointIndex[key] = ret.ContentHash;
+            _syncPoints.GetOrAdd(key).Add(ret);
 
             this.Log().InfoFormat("Created sync point: {0}.{1}", obj.ContentHash, qualifier);
 
@@ -96,30 +98,25 @@ namespace ReactiveXaml.Serialization.Esent
 
         public Guid[] GetOrderedRevisionList(Type type, string qualifier = null)
         {
-            var ret = new List<Guid>();
-            var key = getKeyFromQualifiedType(type, qualifier ?? String.Empty);
-
-            if (!_syncPointIndex.ContainsKey(key)) {
-                return null;
-            }
-
-            var current = _syncPointIndex[key];
-            while(current != Guid.Empty) {
-                ret.Add(current);
-
-                var syncPoint = Load<ISyncPointInformation>(current);
-                current = syncPoint.ParentSyncPoint;
-            }
-
-            return ret.ToArray();
+            var fullName = type.FullName;
+            return _syncPoints.GetOrAdd(getKeyFromQualifiedType(type, qualifier))
+                .Select(x => x.ContentHash)
+                .ToArray();
         }
 
-        public T GetLatestRootObject<T>(string qualifier = null, DateTimeOffset? olderThan = null) where T : ISerializableItem {
-            throw new NotImplementedException();
+        public T GetLatestRootObject<T>(string qualifier = null, DateTimeOffset? olderThan = null) where T : ISerializableItem
+        {
+            var ret = _syncPoints.GetOrAdd(getKeyFromQualifiedType(typeof (T), qualifier)).FirstOrDefault();
+            return (ret != null ? Load<T>(ret.RootObjectHash) : default(T));
         }
 
-        public T[] GetRootObjectsInDateRange<T>(string qualifier = null, DateTimeOffset? olderThan = null, DateTimeOffset? newerThan = null) where T : ISerializableItem {
-            throw new NotImplementedException();
+        public T[] GetRootObjectsInDateRange<T>(string qualifier = null, DateTimeOffset? olderThan = null, DateTimeOffset? newerThan = null) where T : ISerializableItem
+        {
+            var set = _syncPoints.GetOrAdd(getKeyFromQualifiedType(typeof (T), qualifier));
+            var lower = new SyncPointInformation(Guid.Empty, Guid.Empty, typeof (int), null, newerThan ?? DateTimeOffset.MinValue);
+            var upper = new SyncPointInformation(Guid.Empty, Guid.Empty, typeof (int), null, olderThan ?? DateTimeOffset.MaxValue);
+
+            return set.GetViewBetween(lower, upper).Select(x => Load<T>(x.RootObjectHash)).ToArray();
         }
 
         public void Dispose() {
@@ -151,11 +148,23 @@ namespace ReactiveXaml.Serialization.Esent
                 var metadata = (EsentPersistedMetadata)serializerFactory(Guid.Empty).Deserialize(data, typeof (EsentPersistedMetadata));
                 _itemTypeNames = metadata.ItemTypeNames;
                 _syncPointIndex = metadata.SyncPointIndex;
+                if (_itemTypeNames == null || _syncPointIndex == null) {
+                    this.Log().Fatal("Database has been corrupted, metadata structures are null");
+                    throw new Exception("Database is in an inconsistent state");
+                }
+            }
+
+            _syncPoints = new Dictionary<string, SortedSet<ISyncPointInformation>>();
+            foreach(var v in _syncPointIndex.Values) {
+                var item = Load<SyncPointInformation>(v);
+                _syncPoints
+                    .GetOrAdd(getKeyFromQualifiedType(Utility.GetTypeByName(item.RootObjectTypeName), item.Qualifier))
+                    .Add(item);
             }
         }
 
         void persistMetadata() {
-            var metadata = new EsentPersistedMetadata() { ItemTypeNames = _itemTypeNames, SyncPointIndex = null };
+            var metadata = new EsentPersistedMetadata() { ItemTypeNames = _itemTypeNames, SyncPointIndex = _syncPointIndex };
             _backingStore[Guid.Empty] = serializerFactory(metadata).Serialize(metadata);
         }
     }
