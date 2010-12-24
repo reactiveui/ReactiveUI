@@ -153,15 +153,11 @@ namespace ReactiveXaml.Serialization
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            if (reader.TokenType != JsonToken.String) {
-                throw new Exception(String.Format("Expected string, got {0}", reader.Value));
+            if (reader.TokenType != JsonToken.Bytes) {
+                throw new Exception(String.Format("Expected bytes, got {0}", reader.Value));
             }
 
-            Guid contentHash;
-            if (!Guid.TryParse((string)reader.Value, out contentHash)) {
-                throw new Exception(String.Format("Expected Guid, got {0}", reader.Value));
-            }
-
+            var contentHash = new Guid((byte[]) reader.Value);
             return _engine.Load(contentHash);
         }
 
@@ -169,7 +165,7 @@ namespace ReactiveXaml.Serialization
         {
             var si = (ISerializableItem)value;
             _engine.Save(si);
-            writer.WriteValue(si.ContentHash.ToString());
+            writer.WriteValue(si.ContentHash.ToByteArray());
         }
     }
 

@@ -1,17 +1,23 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using ReactiveXaml;
-using System.Security.Cryptography;
 using System.Runtime.Serialization;
-using System.ComponentModel.DataAnnotations;
 using System.ComponentModel;
+
+#if WINDOWS_PHONE
+using Microsoft.Phone.Reactive;
+#else
+using System.Concurrency;
+#endif
 
 namespace ReactiveXaml.Serialization
 {
+#if WINDOWS_PHONE
+    [DataContract]
+    public abstract class ModelBase : ReactiveObject, ISerializableItem
+#else
     [DataContract]
     public abstract class ModelBase : ReactiveValidatedObject, ISerializableItem
+#endif
     {
         [IgnoreDataMember]
         public Guid ContentHash { get; protected set; }
@@ -40,12 +46,13 @@ namespace ReactiveXaml.Serialization
 
         [IgnoreDataMember]
         public IObservable<object> ItemChanging {
-            get { return Changing.Select(_ => this); }
+            // XXX: We need the explicit type on SL4 :-/
+            get { return Changing.Select<IObservedChange<object, object>, object>(_ => this); }
         }
 
         [IgnoreDataMember]
         public IObservable<object> ItemChanged {
-            get { return Changed.Select(_ => this); }
+            get { return Changed.Select<IObservedChange<object, object>, object>(_ => this); }
         }
     }
 }

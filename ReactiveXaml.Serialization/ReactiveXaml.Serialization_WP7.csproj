@@ -82,9 +82,13 @@
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DictionaryStorageEngine.cs" />
+    <Compile Include="DictionaryStorageEngine.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Interfaces.cs" />
     <Compile Include="JsonNetObjectSerializationProvider.cs" />
+    <Compile Include="MD5.cs" />
+    <Compile Include="MD5Managed.cs" />
     <Compile Include="ModelBase.cs" />
     <Compile Include="NaiveExtendedEngine.cs" />
     <Compile Include="NullStorageEngine.cs" />

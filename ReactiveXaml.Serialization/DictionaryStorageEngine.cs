@@ -1,17 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.IO;
 using Newtonsoft.Json;
-using ReactiveXaml;
-using System.Reflection;
-using System.Runtime.Serialization;
-using System.CodeDom;
-using System.Collections.ObjectModel;
-using System.Disposables;
-using System.ComponentModel;
 using System.Globalization;
+
+#if SILVERLIGHT
+using System.IO.IsolatedStorage;
+#endif
 
 namespace ReactiveXaml.Serialization
 {
@@ -28,9 +24,6 @@ namespace ReactiveXaml.Serialization
         Dictionary<Guid, byte[]> allItems;
         Dictionary<Guid, string> itemTypeNames;
         Dictionary<string, Guid> syncPointIndex;
-
-        static readonly Lazy<IEnumerable<Type>> allStorageTypes = new Lazy<IEnumerable<Type>>(
-            () => Utility.GetAllTypesImplementingInterface(typeof(ISerializableItem)).ToArray());
 
         Func<object, IObjectSerializationProvider> serializerFactory;
 
@@ -81,7 +74,11 @@ namespace ReactiveXaml.Serialization
             initializeStoreIfNeeded();
             this.Log().Info("Flushing changes");
             var dseData = new DSESerializedObjects() {allItems = this.allItems, syncPointIndex = this.syncPointIndex, itemTypeNames = this.itemTypeNames};
-            File.WriteAllBytes(backingStorePath, serializerFactory(dseData).Serialize(dseData));
+
+            using (var sw = getWriteStreamFromBackingStore(backingStorePath)) {
+                byte[] buf = serializerFactory(dseData).Serialize(dseData);
+                sw.Write(buf, 0, buf.Length);
+            }
         }
 
         public Guid[] GetAllObjectHashes()
@@ -135,40 +132,6 @@ namespace ReactiveXaml.Serialization
             return ret.ToArray();
         }
 
-        void initializeStoreIfNeeded()
-        {
-            if (allItems != null)
-                return;
-
-            if (backingStorePath == null) {
-                allItems = new Dictionary<Guid, byte[]>();
-                syncPointIndex = new Dictionary<string, Guid>();
-                itemTypeNames = new Dictionary<Guid, string>();
-                return;
-            }
-
-            try {
-                var serializer = new JsonSerializer();
-                DSESerializedObjects dseData;
-                using(var reader = new JsonTextReader(new StreamReader(backingStorePath))) {
-                    dseData = serializer.Deserialize<DSESerializedObjects>(reader);
-                }
-                allItems = dseData.allItems;
-                syncPointIndex = dseData.syncPointIndex;
-                itemTypeNames = dseData.itemTypeNames;
-            } catch(FileNotFoundException) {
-                this.Log().WarnFormat("Backing store {0} not found, falling back to empty", backingStorePath);
-                allItems = new Dictionary<Guid, byte[]>();
-                syncPointIndex = new Dictionary<string, Guid>();
-                itemTypeNames = new Dictionary<Guid, string>();
-            }
-        }
-
-        static string getKeyFromQualifiedType(Type type, string qualifier)
-        {
-            return String.Format(CultureInfo.InvariantCulture, "{0}_{1}", type.FullName, qualifier);
-        }
-
         protected virtual void Dispose(bool disposing)
         {
             if (disposing) {
@@ -191,6 +154,62 @@ namespace ReactiveXaml.Serialization
         {
             Dispose(false);
         }
+
+        void initializeStoreIfNeeded()
+        {
+            if (allItems != null)
+                return;
+
+            if (backingStorePath == null) {
+                allItems = new Dictionary<Guid, byte[]>();
+                syncPointIndex = new Dictionary<string, Guid>();
+                itemTypeNames = new Dictionary<Guid, string>();
+                return;
+            }
+
+            try {
+                var serializer = serializerFactory(null);
+                DSESerializedObjects dseData;
+
+                using (var sr = getReadStreamFromBackingStore(backingStorePath)) {
+                    dseData = (DSESerializedObjects)serializer.Deserialize(sr.GetAllBytes(), typeof (DSESerializedObjects));
+                }
+
+                allItems = dseData.allItems;
+                syncPointIndex = dseData.syncPointIndex;
+                itemTypeNames = dseData.itemTypeNames;
+            } catch(FileNotFoundException) {
+                this.Log().WarnFormat("Backing store {0} not found, falling back to empty", backingStorePath);
+                allItems = new Dictionary<Guid, byte[]>();
+                syncPointIndex = new Dictionary<string, Guid>();
+                itemTypeNames = new Dictionary<Guid, string>();
+            }
+        }
+
+        static string getKeyFromQualifiedType(Type type, string qualifier)
+        {
+            return String.Format(CultureInfo.InvariantCulture, "{0}_{1}", type.FullName, qualifier);
+        }
+
+#if SILVERLIGHT
+        protected Stream getReadStreamFromBackingStore(string path)
+        {
+            using (var fs = IsolatedStorageFile.GetUserStoreForApplication()) {
+                return fs.OpenFile(path, FileMode.Open);
+            }
+        }
+        
+        protected Stream getWriteStreamFromBackingStore(string path)
+        {
+            using (var fs = IsolatedStorageFile.GetUserStoreForApplication()) {
+                return fs.OpenFile(path, FileMode.Create);
+            }
+        }
+#else 
+        protected Stream getReadStreamFromBackingStore(string path) { return File.OpenRead(path); }
+        protected Stream getWriteStreamFromBackingStore(string path) { return File.Open(path, FileMode.Create); }
+#endif
+
     }
 }
 
