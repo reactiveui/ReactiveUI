@@ -9,6 +9,7 @@ using System.Runtime.Serialization;
 using System.Collections.ObjectModel;
 using System.CodeDom;
 using System.Threading;
+using System.Windows;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Bson;
 
@@ -18,32 +19,27 @@ namespace ReactiveXaml.Serialization
 	{
 	    public static bool ImplementsInterface(Type Target, Type InterfaceToCheck)
         {
-            if (Target == (Type)null)
+            if (Target == null)
                 throw new ArgumentNullException("Target");
 
-            var ret = Target.FindInterfaces(new TypeFilter((t, o) => t == InterfaceToCheck), null);
+            if (Target.GetInterfaces().Contains(InterfaceToCheck)) {
+                return true;
+            }
 
-            // FIXME: This check might need to be more thorough
-            return (ret != null && ret.GetLength(0) > 0 && !Target.IsAbstract);
-        }
+            if (Target.BaseType != typeof(object)) {
+                return ImplementsInterface(Target.BaseType, InterfaceToCheck);
+            }
 
-        public static IEnumerable<Type> GetAllTypesImplementingInterface(Type InterfaceToCheck, Assembly TargetAssembly = null)
-        {
-            var allAssemblies = (TargetAssembly != null ? new[] {TargetAssembly} : AppDomain.CurrentDomain.GetAssemblies());
-
-            // I shudder to think what this actually gets turned into in MSIL
-            var ret = from a in allAssemblies
-                      from mod in a.GetModules()
-                      from type in mod.SafeGetTypes()
-                      where Utility.ImplementsInterface(type, InterfaceToCheck)
-                      select type;
-
-            return ret.ToArray();
+            return false;
         }
 
 	    static Dictionary<string, Type> typeCache = new Dictionary<string,Type>();
         public static Type GetTypeByName(string fullName, IEnumerable<Assembly> targetAssemblies = null)
         {
+#if SILVERLIGHT
+            // XXX: This is almost certainly going to go badly for us
+            return Type.GetType(fullName, true, true);
+#else
             lock(typeCache) {
                 if (typeCache.Count == 0) {
                     var allTypes = from a in targetAssemblies ?? AppDomain.CurrentDomain.GetAssemblies()
@@ -61,6 +57,7 @@ namespace ReactiveXaml.Serialization
                     return null;
                 return ret;
             }
+#endif
         }
 	}
 
@@ -110,6 +107,18 @@ namespace ReactiveXaml.Serialization
             ret = Activator.CreateInstance<TVal>();
             This.Add(key, ret);
             return ret;
+        }
+
+        public static byte[] GetAllBytes(this Stream This)
+        {
+            byte[] buffer = new byte[4096];
+            using (MemoryStream ms = new MemoryStream()) {
+                int read;
+                while ((read = This.Read(buffer, 0, buffer.Length)) > 0) {
+                    ms.Write(buffer, 0, read);
+                }
+                return ms.ToArray();
+            }
         }
     }
 }

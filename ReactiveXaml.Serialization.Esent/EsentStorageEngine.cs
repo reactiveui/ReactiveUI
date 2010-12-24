@@ -21,9 +21,6 @@ namespace ReactiveXaml.Serialization.Esent
         Dictionary<string, Guid> _syncPointIndex;
         Dictionary<string, SortedSet<ISyncPointInformation>> _syncPoints;
 
-        static readonly Lazy<IEnumerable<Type>> allStorageTypes = new Lazy<IEnumerable<Type>>(
-            () => Utility.GetAllTypesImplementingInterface(typeof(ISerializableItem)).ToArray());
-
         Func<object, IObjectSerializationProvider> serializerFactory;
 
         public EsentStorageEngine(string databasePath)

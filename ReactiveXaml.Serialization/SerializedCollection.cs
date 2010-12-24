@@ -1,13 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Concurrency;
+using System.IO;
 using System.Linq;
-using System.Text;
-using ReactiveXaml;
-using System.Security.Cryptography;
 using System.Runtime.Serialization;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel;
+using System.Security.Cryptography;
+using System.Text;
+
+#if WINDOWS_PHONE
+using Microsoft.Phone.Reactive;
+#else
+using System.Concurrency;
+#endif
 
 namespace ReactiveXaml.Serialization
 {
@@ -103,12 +106,16 @@ namespace ReactiveXaml.Serialization
 
         public Guid CalculateHash()
         {
-            // XXX: This is massively inefficient, we can do way better
-            return new Guid(String.Join(",",
-                this.Select(x => {
-                    var si = x as ISerializableItem;
-                    return (si != null ? si.ContentHash.ToString() : x.ToString().MD5Hash().ToString());
-                })).MD5Hash());
+            var buf = new MemoryStream();
+            foreach(var v in this) {
+                var si = v as ISerializableItem;
+                if (si != null) {
+                    buf.Write(si.ContentHash.ToByteArray(), 0, 16);
+                }
+            }
+
+            var md5 = MD5.Create();
+            return new Guid(md5.ComputeHash(buf.ToArray()));
         }
 
         public Type GetBaseListType()
