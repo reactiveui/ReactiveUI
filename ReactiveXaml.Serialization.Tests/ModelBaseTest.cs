@@ -20,7 +20,7 @@ namespace ReactiveXaml.Serialization.Tests
     }
 
     [PexClass, TestClass]
-    public partial class ModelBaseTest
+    public partial class ModelBaseTest : IEnableLogger
     {
         [PexMethod]
         public void ItemsChangedShouldFire(string[] setters)
@@ -62,6 +62,28 @@ namespace ReactiveXaml.Serialization.Tests
             sched.Run();
 
             PexAssert.AreDistinctValues(output.Values.ToArray());
+        }
+
+        [TestMethod]
+        public void ModelBaseShouldBeObservableAfterDeserialization()
+        {
+            var dse = new DictionaryStorageEngine();
+            var sched = new TestScheduler();
+            var input = sched.With(_ => new ModelTestFixture() {TestString = "Foo"});
+
+            dse.Save(input);
+            var fixture = dse.Load<ModelTestFixture>(input.ContentHash);
+
+            string latest = null;
+            var changed = fixture.Changed;
+            this.Log().InfoFormat("Subscribing to Changed: 0x{0:X}", changed.GetHashCode());
+            changed.Subscribe(Console.WriteLine);
+            changed.Subscribe(x => latest = x.PropertyName);
+            fixture.TestString = "Bar";
+
+            sched.RunToMilliseconds(1000);
+
+            Assert.AreEqual("TestString", latest);
         }
     }
 }
