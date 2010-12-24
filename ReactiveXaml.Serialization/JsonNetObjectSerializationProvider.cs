@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.Serialization;
 using System.Threading;
 using Newtonsoft.Json;
@@ -51,7 +52,7 @@ namespace ReactiveXaml.Serialization
 #if DEBUG
             return (new StreamReader(new MemoryStream(data))).ReadToEnd();
 #else
-            throw new NotImplementedException();
+            return "Run me in debug mode!";
 #endif
         }
 
