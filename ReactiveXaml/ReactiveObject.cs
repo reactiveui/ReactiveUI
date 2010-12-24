@@ -35,17 +35,22 @@ namespace ReactiveXaml
 
         [IgnoreDataMember]
         public IObservable<IObservedChange<object, object>> Changed {
-            get { return changedSubject; }
+            get {
+#if DEBUG
+                this.Log().DebugFormat("Changed Subject 0x{0:X}", changedSubject.GetHashCode());
+#endif
+                return changedSubject;
+            }
         }
 
         [IgnoreDataMember]
         protected Lazy<PropertyInfo[]> allPublicProperties;
 
         [IgnoreDataMember] 
-        Subject<IObservedChange<object, object>> changingSubject = new Subject<IObservedChange<object, object>>();
+        readonly Subject<IObservedChange<object, object>> changingSubject = new Subject<IObservedChange<object, object>>();
 
         [IgnoreDataMember]
-        Subject<IObservedChange<object, object>> changedSubject = new Subject<IObservedChange<object, object>>();
+        readonly Subject<IObservedChange<object, object>> changedSubject = new Subject<IObservedChange<object, object>>();
 
         [IgnoreDataMember]
         long changeNotificationsSuppressed = 0;
@@ -149,7 +154,9 @@ namespace ReactiveXaml
 
         void notifyObservable<T>(T item, Subject<T> subject)
         {
-            this.Log().Debug("Firing observable");
+#if DEBUG
+            this.Log().DebugFormat("Firing observable to subject 0x{0:X}", subject.GetHashCode());
+#endif
             try {
                 subject.OnNext(item);
             } catch (Exception ex) {
