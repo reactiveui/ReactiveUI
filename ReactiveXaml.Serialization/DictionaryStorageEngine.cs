@@ -86,11 +86,13 @@ namespace ReactiveXaml.Serialization
 
         public Guid[] GetAllObjectHashes()
         {
-            return allItems.Keys.ToArray();
+            initializeStoreIfNeeded();
+            return (allItems.Keys ?? Enumerable.Empty<Guid>()).ToArray();
         }
 
         public int GetObjectCount()
         {
+            initializeStoreIfNeeded();
             return allItems.Count;
         }
 
@@ -102,7 +104,7 @@ namespace ReactiveXaml.Serialization
 
             var key = getKeyFromQualifiedType(typeof (T), qualifier ?? String.Empty);
             var parent = (syncPointIndex.ContainsKey(key) ? syncPointIndex[key] : Guid.Empty);
-            var ret = new SyncPointInformation(obj.ContentHash, parent, typeof (T), qualifier ?? String.Empty, createdOn ?? DateTimeOffset.Now);
+            var ret = new SyncPointInformation(obj.ContentHash, parent, typeof (T), qualifier ?? String.Empty, createdOn ?? RxApp.DeferredScheduler.Now);
             Save(ret);
             syncPointIndex[key] = ret.ContentHash;
 
@@ -119,14 +121,14 @@ namespace ReactiveXaml.Serialization
             var key = getKeyFromQualifiedType(type, qualifier ?? String.Empty);
 
             if (!syncPointIndex.ContainsKey(key)) {
-                return null;
+                return new Guid[0];
             }
 
             var current = syncPointIndex[key];
             while(current != Guid.Empty) {
                 ret.Add(current);
 
-                var syncPoint = Load<ISyncPointInformation>(current);
+                var syncPoint = Load<SyncPointInformation>(current);
                 current = syncPoint.ParentSyncPoint;
             }
 

@@ -25,6 +25,7 @@ namespace ReactiveXaml.Serialization
         void setupModelBase(StreamingContext sc) { setupModelBase(); }
         void setupModelBase()
         {
+            this.Log().InfoFormat("Deserialized ModelBase 0x{0:X}", this.GetHashCode());
             Changed.Subscribe(_ => {
                 ContentHash = CalculateHash();
                 RxStorage.Engine.Save(this);
