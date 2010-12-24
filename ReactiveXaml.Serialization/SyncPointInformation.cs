@@ -8,7 +8,7 @@ using System.Text;
 namespace ReactiveXaml.Serialization
 {
     [DataContract]
-    public class SyncPointInformation : ReactiveObject, ISyncPointInformation
+    public class SyncPointInformation : ReactiveObject, ISyncPointInformation, IComparable<ISyncPointInformation>, IEquatable<ISyncPointInformation>, IComparable
     {
         [DataMember]
         public Guid RootObjectHash { get; protected set; }
@@ -23,6 +23,10 @@ namespace ReactiveXaml.Serialization
 
         [IgnoreDataMember]
         public Guid ContentHash { get; protected set; }
+
+        public SyncPointInformation()
+        {
+        }
 
         public SyncPointInformation(Guid rootObjectHash, Guid parentSyncPoint, Type rootObjectType, string qualifier, DateTimeOffset createdOn)
         {
@@ -46,6 +50,30 @@ namespace ReactiveXaml.Serialization
         public Guid CalculateHash() 
         {
             return ContentHash;
+        }
+
+        public int CompareTo(ISyncPointInformation other)
+        {
+            int ret = 0;
+
+            if ((ret = this.CreatedOn.CompareTo(other.CreatedOn)) != 0) {
+                return ret;
+            }
+
+            return this.ContentHash.CompareTo(other.ContentHash);
+        }
+
+        public bool Equals(ISyncPointInformation other)
+        {
+            return (this.ContentHash == other.ContentHash);
+        }
+
+        public int CompareTo(object obj) 
+        {
+            if (!(obj is ISyncPointInformation)) {
+                throw new ArgumentException();
+            }
+            return CompareTo((ISyncPointInformation) obj);
         }
     }
 }
