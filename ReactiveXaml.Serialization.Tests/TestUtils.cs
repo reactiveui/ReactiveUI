@@ -61,6 +61,12 @@ namespace ReactiveXaml.Serialization.Tests
             get { return _SubObject; }
             set { this.RaiseAndSetIfChanged(x => x.SubObject, value); }
         }
+
+        int _SomeInteger;
+        public int SomeInteger {
+            get { return _SomeInteger;  }
+            set { this.RaiseAndSetIfChanged(x => x.SomeInteger, value);  }
+        }
     }
 
     public class SubobjectTestObject : ModelBase

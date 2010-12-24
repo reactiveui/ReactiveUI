@@ -106,7 +106,8 @@ namespace ReactiveXaml.Serialization.Esent
 
         public T GetLatestRootObject<T>(string qualifier = null, DateTimeOffset? olderThan = null) where T : ISerializableItem
         {
-            var ret = _syncPoints.GetOrAdd(getKeyFromQualifiedType(typeof (T), qualifier)).FirstOrDefault();
+            var ret = _syncPoints.GetOrAdd(getKeyFromQualifiedType(typeof (T), qualifier))
+                .FirstOrDefault(x => x.CreatedOn <= (olderThan ?? DateTimeOffset.MaxValue));
             return (ret != null ? Load<T>(ret.RootObjectHash) : default(T));
         }
 
