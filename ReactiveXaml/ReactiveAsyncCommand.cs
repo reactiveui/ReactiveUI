@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Concurrency;
-using System.Windows.Threading;
 using System.Diagnostics.Contracts;
 
 #if WINDOWS_PHONE
@@ -12,30 +10,48 @@ using Microsoft.Phone.Reactive;
 
 namespace ReactiveXaml
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class ReactiveAsyncCommand : ReactiveCommand
     {
-        public ReactiveAsyncCommand(Action<object> executed = null, int maximum_concurrent = 0, IScheduler scheduler = null)
-            : this((IObservable<bool>)null, executed, maximum_concurrent, scheduler) { }
-
-        public ReactiveAsyncCommand(IObservable<bool> can_execute = null, Action<object> executed = null, int maximum_concurrent = 0, IScheduler scheduler = null)
-            : base(can_execute, executed, scheduler)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="canExecute"></param>
+        /// <param name="maximumConcurrent"></param>
+        /// <param name="scheduler"></param>
+        public ReactiveAsyncCommand(IObservable<bool> canExecute = null, int maximumConcurrent = 1, IScheduler scheduler = null)
+            : base(canExecute, scheduler)
         {
-            commonCtor(maximum_concurrent, scheduler);
+            commonCtor(maximumConcurrent, scheduler);
         }
 
-        public ReactiveAsyncCommand(Func<object, bool> can_execute, Action<object> executed = null, int maximum_concurrent = 0, IScheduler scheduler = null)
-            : base(can_execute, executed, scheduler)
+        protected ReactiveAsyncCommand(Func<object, bool> canExecute, int maximumConcurrent = 1, IScheduler scheduler = null)
+            : base(canExecute, scheduler)
         {
-            Contract.Requires(maximum_concurrent > 0);
+            Contract.Requires(maximumConcurrent > 0);
 
-            normal_sched = scheduler;
-            commonCtor(maximum_concurrent, scheduler);
+            this._normalSched = scheduler;
+            commonCtor(maximumConcurrent, scheduler);
         }
 
-        void commonCtor(int maximum_concurrent, IScheduler scheduler)
+        public static ReactiveAsyncCommand Create<TRet>(
+            Func<object, TRet> calculationFunc,
+            Action<TRet> callbackFunc,
+            Func<object, bool> canExecute = null, 
+            int maximumConcurrent = 0,
+            IScheduler scheduler = null)
+        {
+            var ret = new ReactiveAsyncCommand(canExecute, maximumConcurrent, scheduler);
+            ret.RegisterAsyncFunction(calculationFunc).Subscribe(callbackFunc);
+            return ret;
+        }
+
+        void commonCtor(int maximumConcurrent, IScheduler scheduler)
         {
             AsyncCompletedNotification = new Subject<Unit>();
-            normal_sched = scheduler ?? RxApp.DeferredScheduler;
+            this._normalSched = scheduler ?? RxApp.DeferredScheduler;
 
             ItemsInflight = Observable.Merge(
                 this.Select(_ => 1),
@@ -50,80 +66,124 @@ namespace ReactiveXaml
             ItemsInflight
                 .Subscribe(x => {
                     this.Log().InfoFormat("0x{0:X} - {1} items in flight", this.GetHashCode(), x);
-                    tooManyItems = (x >= maximum_concurrent && maximum_concurrent > 0);
-                    canExecuteSubject.OnNext(!tooManyItems);
+                    this._tooManyItems = (x >= maximumConcurrent && maximumConcurrent > 0);
+                    canExecuteSubject.OnNext(!this._tooManyItems);
                 });
         }
 
-        IScheduler normal_sched;
+        IScheduler _normalSched;
 
         public IObservable<int> ItemsInflight { get; protected set; }
 
         public Subject<Unit> AsyncCompletedNotification { get; protected set; }
 
-        bool tooManyItems = false;
+        bool _tooManyItems = false;
         public override bool CanExecute(object parameter)
         {
             // HACK: Normally we shouldn't need this, but due to the way that
             // ReactiveCommand.CanExecute works when you provide an explicit
             // Func<T>, it can "trump" the ItemsInFlight selector.
-            if (tooManyItems)
+            if (this._tooManyItems)
                 return false;
 
             return base.CanExecute(parameter);
         }
 
-        public IObservable<TResult> RegisterAsyncFunction<TResult>(Func<object, TResult> async_func, IScheduler scheduler = null)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="TResult"></typeparam>
+        /// <param name="calculationFunc"></param>
+        /// <param name="scheduler"></param>
+        /// <returns></returns>
+        public IObservable<TResult> RegisterAsyncFunction<TResult>(Func<object, TResult> calculationFunc, IScheduler scheduler = null)
         {
-            Contract.Requires(async_func != null);
+            Contract.Requires(calculationFunc != null);
 
             scheduler = scheduler ?? RxApp.TaskpoolScheduler;
             var rebroadcast = new Subject<TResult>();
 
             this.ObserveOn(scheduler)
-                .Select(async_func)
+                .Select(calculationFunc)
                 .Do(_ => AsyncCompletedNotification.OnNext(new Unit()), _ => AsyncCompletedNotification.OnNext(new Unit()))
                 .Subscribe(rebroadcast.OnNext, rebroadcast.OnError, rebroadcast.OnCompleted);
 
-            return rebroadcast.ObserveOn(normal_sched);
+            return rebroadcast.ObserveOn(this._normalSched);
         }
 
-        public IObservable<TResult> RegisterObservableAsyncFunction<TResult>(Func<object, IObservable<TResult>> async_func)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="TResult"></typeparam>
+        /// <param name="calculationFunc"></param>
+        /// <returns></returns>
+        public IObservable<TResult> RegisterAsyncObservable<TResult>(Func<object, IObservable<TResult>> calculationFunc)
         {
-            Contract.Requires(async_func != null);
+            Contract.Requires(calculationFunc != null);
 
             var rebroadcast = new Subject<TResult>();
 
-            this.SelectMany(async_func)
+            this.SelectMany(calculationFunc)
                 .Do(_ => AsyncCompletedNotification.OnNext(new Unit()), _ => AsyncCompletedNotification.OnNext(new Unit()))
                 .Subscribe(rebroadcast.OnNext, rebroadcast.OnError, rebroadcast.OnCompleted);
 
-            return rebroadcast.ObserveOn(normal_sched);
+            return rebroadcast.ObserveOn(this._normalSched);
         }
 
-        public IDisposable RegisterAsyncAction(Action<object> async_action)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="asyncAction"></param>
+        /// <returns></returns>
+        public IDisposable RegisterAsyncAction(Action<object> asyncAction)
         {
-            Contract.Requires(async_action != null);
+            Contract.Requires(asyncAction != null);
 
-            return RegisterAsyncFunction(x => { async_action(x); return new Unit(); })
+            return RegisterAsyncFunction(x => { asyncAction(x); return new Unit(); })
                 .Subscribe();
         }
 
-        public IObservable<TResult> RegisterMemoizedFunction<TResult>(Func<object, TResult> async_func, int cache_size = 50, Action<TResult> on_release = null, IScheduler scheduler = null)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="TResult"></typeparam>
+        /// <param name="calculationFunc"></param>
+        /// <param name="maxConcurrent"></param>
+        /// <param name="cacheSize"></param>
+        /// <param name="onRelease"></param>
+        /// <param name="scheduler"></param>
+        /// <returns></returns>
+        public IObservable<TResult> RegisterMemoizedObservable<TResult>(
+            Func<object, IObservable<TResult>> calculationFunc, 
+            int maxConcurrent = 1,
+            int cacheSize = 50,
+            Action<TResult> onRelease = null,  
+            IScheduler scheduler = null)
         {
-            Contract.Requires(async_func != null);
-            Contract.Requires(cache_size > 0);
+            Contract.Requires(calculationFunc != null);
+            Contract.Requires(cacheSize > 0);
 
             scheduler = scheduler ?? RxApp.TaskpoolScheduler;
+            var cache = new ObservableAsyncMRUCache<object, TResult>(calculationFunc, cacheSize, maxConcurrent, scheduler, onRelease);
+            return this.RegisterAsyncObservable(cache.AsyncGet);
+        }
 
-            var cache = new MemoizingMRUCache<object, TResult>(
-                (param, _) => { lock (async_func) { return async_func(param); } }, 
-                cache_size, on_release);
+        /// <summary>
+        ///
+        /// </summary>
+        /// <typeparam name="TResult"></typeparam>
+        /// <param name="calculationFunc"></param>
+        /// <param name="cacheSize"></param>
+        /// <param name="onRelease"></param>
+        /// <param name="scheduler"></param>
+        /// <returns></returns>
+        public IObservable<TResult> RegisterMemoizedFunction<TResult>(Func<object, TResult> calculationFunc, int cacheSize = 50, Action<TResult> onRelease = null, IScheduler scheduler = null)
+        {
+            Contract.Requires(calculationFunc != null);
+            Contract.Requires(cacheSize > 0);
 
-            return this.ObserveOn(scheduler)
-                .Select<object, TResult>(x => cache.Get(x))
-                .Do(_ => AsyncCompletedNotification.OnNext(new Unit()))
-                .ObserveOn(normal_sched);
+            scheduler = scheduler ?? RxApp.TaskpoolScheduler;
+            return RegisterMemoizedObservable(x => Observable.Return(calculationFunc(x), scheduler), 1, cacheSize, onRelease, scheduler);
         }
     }
 }

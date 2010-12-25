@@ -1,12 +1,10 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Runtime.Serialization;
-using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Threading;
 
@@ -18,10 +16,22 @@ using System.Disposables;
 
 namespace ReactiveXaml
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public class ReactiveCollection<T> : ObservableCollection<T>, IReactiveCollection<T>, IDisposable
     {
+        /// <summary>
+        /// 
+        /// </summary>
         public ReactiveCollection() { setupRx(); }
-        public ReactiveCollection(IEnumerable<T> List) { setupRx(List); }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="list"></param>
+        public ReactiveCollection(IEnumerable<T> list) { setupRx(list); }
 
         [OnDeserialized]
         void setupRx(StreamingContext _) { setupRx(); }
@@ -113,24 +123,40 @@ namespace ReactiveXaml
 
         [IgnoreDataMember]
         protected IObservable<T> _ItemsAdded;
+
+        /// <summary>
+        ///
+        /// </summary>
         public IObservable<T> ItemsAdded {
             get { return _ItemsAdded.Where(_ => areChangeNotificationsEnabled); }
         }
 
         [IgnoreDataMember]
         protected Subject<T> _BeforeItemsAdded;
+
+        /// <summary>
+        /// 
+        /// </summary>
         public IObservable<T> BeforeItemsAdded {
             get { return _BeforeItemsAdded.Where(_ => areChangeNotificationsEnabled); }
         }
 
         [IgnoreDataMember]
         protected IObservable<T> _ItemsRemoved;
+
+        /// <summary>
+        /// 
+        /// </summary>
         public IObservable<T> ItemsRemoved {
             get { return _ItemsRemoved.Where(_ => areChangeNotificationsEnabled); }
         }
 
         [IgnoreDataMember]
         protected Subject<T> _BeforeItemsRemoved;
+
+        /// <summary>
+        /// 
+        /// </summary>
         public IObservable<T> BeforeItemsRemoved {
             get { return _BeforeItemsRemoved.Where(_ => areChangeNotificationsEnabled); }
         }
@@ -140,18 +166,30 @@ namespace ReactiveXaml
 
         [IgnoreDataMember]
         protected IObservable<int> _CollectionCountChanging;
+
+        /// <summary>
+        /// 
+        /// </summary>
         public IObservable<int> CollectionCountChanging {
             get { return _CollectionCountChanging.Where(_ => areChangeNotificationsEnabled); }
         }
 
         [IgnoreDataMember]
         protected IObservable<int> _CollectionCountChanged;
+
+        /// <summary>
+        /// 
+        /// </summary>
         public IObservable<int> CollectionCountChanged {
             get { return _CollectionCountChanged.Where(_ => areChangeNotificationsEnabled); }
         }
 
         [IgnoreDataMember]
         protected Subject<IObservedChange<T, object>> _ItemChanging;
+
+        /// <summary>
+        /// 
+        /// </summary>
         public IObservable<IObservedChange<T, object>> ItemChanging {
             get { return _ItemChanging.Where(_ => areChangeNotificationsEnabled); }
         }
@@ -161,6 +199,10 @@ namespace ReactiveXaml
 
         [IgnoreDataMember]
         protected Subject<IObservedChange<T, object>> _ItemChanged;
+
+        /// <summary>
+        /// 
+        /// </summary>
         public IObservable<IObservedChange<T, object>> ItemChanged {
             get { return _ItemChanged.Where(_ => areChangeNotificationsEnabled); }
         }
@@ -168,12 +210,22 @@ namespace ReactiveXaml
             get { return (IObservable<IObservedChange<object, object>>)ItemChanged; }
         }
 
+        [IgnoreDataMember]
         protected IObservable<IObservedChange<object, object>> _Changing;
+
+        /// <summary>
+        /// 
+        /// </summary>
         public IObservable<IObservedChange<object, object>> Changing {
             get { return _Changing.Where(_ => areChangeNotificationsEnabled);  }
         }
 
+        [IgnoreDataMember]
         protected IObservable<IObservedChange<object, object>> _Changed;
+
+        /// <summary>
+        /// 
+        /// </summary>
         public IObservable<IObservedChange<object, object>> Changed {
             get { return _Changed.Where(_ => areChangeNotificationsEnabled);  }
         }
@@ -181,6 +233,9 @@ namespace ReactiveXaml
         [field:IgnoreDataMember]
         public event PropertyChangingEventHandler PropertyChanging;
 
+        /// <summary>
+        ///
+        /// </summary>
         public bool ChangeTrackingEnabled {
             get { return (propertyChangeWatchers != null); }
             set {
@@ -244,46 +299,6 @@ namespace ReactiveXaml
             base.ClearItems();
         }
 
-        public ReactiveCollection<TNew> CreateDerivedCollection<TNew>(Func<T, TNew> Selector)
-        {
-            Contract.Requires(Selector != null);
-#if !IOS    // Contract.Result is borked in Mono
-            Contract.Ensures(Contract.Result<ReactiveCollection<TNew>>().Count == this.Count);
-#endif 
-
-            var ret = new ReactiveCollection<TNew>(this.Select(Selector));
-            var coll_changed = Observable.FromEvent<NotifyCollectionChangedEventArgs>(this, "CollectionChanged");
-
-            coll_changed.Subscribe(x => {
-                switch(x.EventArgs.Action) {
-                case NotifyCollectionChangedAction.Add:
-                case NotifyCollectionChangedAction.Remove:
-                case NotifyCollectionChangedAction.Replace:
-                    // NB: SL4 fills in OldStartingIndex with -1 on Replace :-/
-                    int old_index = (x.EventArgs.Action == NotifyCollectionChangedAction.Replace ?
-                        x.EventArgs.NewStartingIndex : x.EventArgs.OldStartingIndex);
-
-                    if (x.EventArgs.OldItems != null) {
-                        foreach(object _ in x.EventArgs.OldItems) {
-                            ret.RemoveAt(old_index);
-                        }
-                    }
-                    if (x.EventArgs.NewItems != null) {
-                        foreach(T item in x.EventArgs.NewItems.Cast<T>()) {
-                            ret.Insert(x.EventArgs.NewStartingIndex, Selector(item));
-                        }
-                    }
-                    break;
-                case NotifyCollectionChangedAction.Reset:
-                    ret.Clear();
-                    break;
-                default:
-                    break;
-                }
-            });
-
-            return ret;
-        }
 
         public void Dispose()
         {
@@ -293,6 +308,10 @@ namespace ReactiveXaml
         [IgnoreDataMember]
         long changeNotificationsSuppressed = 0;
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <returns></returns>
         public IDisposable SuppressChangeNotifications()
         {
             Interlocked.Increment(ref changeNotificationsSuppressed);
@@ -368,17 +387,24 @@ namespace ReactiveXaml
 
     public static class ReactiveCollectionMixins
     {
-        public static ReactiveCollection<T> CreateCollection<T>(this IObservable<T> FromObservable, TimeSpan? WithDelay = null)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="fromObservable"></param>
+        /// <param name="withDelay"></param>
+        /// <returns></returns>
+        public static ReactiveCollection<T> CreateCollection<T>(this IObservable<T> fromObservable, TimeSpan? withDelay = null)
         {
             var ret = new ReactiveCollection<T>();
-            if (WithDelay == null) {
-                FromObservable.ObserveOn(RxApp.DeferredScheduler).Subscribe(ret.Add);
+            if (withDelay == null) {
+                fromObservable.ObserveOn(RxApp.DeferredScheduler).Subscribe(ret.Add);
                 return ret;
             }
 
             // On a timer, dequeue items from queue if they are available
             var queue = new Queue<T>();
-            var disconnect = Observable.Timer(WithDelay.Value, WithDelay.Value, RxApp.TaskpoolScheduler)
+            var disconnect = Observable.Timer(withDelay.Value, withDelay.Value, RxApp.TaskpoolScheduler)
                 .ObserveOn(RxApp.DeferredScheduler).Subscribe(_ => {
                     if (queue.Count > 0) { 
                         ret.Add(queue.Dequeue());
@@ -388,22 +414,82 @@ namespace ReactiveXaml
             // When new items come in from the observable, stuff them in the queue.
             // Using the DeferredScheduler guarantees we'll always access the queue
             // from the same thread.
-            FromObservable.ObserveOn(RxApp.DeferredScheduler).Subscribe(queue.Enqueue);
+            fromObservable.ObserveOn(RxApp.DeferredScheduler).Subscribe(queue.Enqueue);
 
             // This is a bit clever - keep a running count of the items actually 
             // added and compare them to the final count of items provided by the
             // Observable. Combine the two values, and when they're equal, 
             // disconnect the timer
-            ret.ItemsAdded.Scan0(0, ((acc, _) => acc+1)).Zip(FromObservable.Aggregate(0, (acc,_) => acc+1), 
+            ret.ItemsAdded.Scan0(0, ((acc, _) => acc+1)).Zip(fromObservable.Aggregate(0, (acc,_) => acc+1), 
                 (l,r) => (l == r)).Where(x => x).Subscribe(_ => disconnect.Dispose());
 
             return ret;
         }
 
-        public static ReactiveCollection<TRet> CreateCollection<T, TRet>(this IObservable<T> FromObservable, Func<T, TRet> Selector, TimeSpan? WithDelay = null)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="TRet"></typeparam>
+        /// <param name="fromObservable"></param>
+        /// <param name="selector"></param>
+        /// <param name="withDelay"></param>
+        /// <returns></returns>
+        public static ReactiveCollection<TRet> CreateCollection<T, TRet>(this IObservable<T> fromObservable, Func<T, TRet> selector, TimeSpan? withDelay = null)
         {
-            Contract.Requires(Selector != null);
-            return FromObservable.Select(Selector).CreateCollection(WithDelay);
+            Contract.Requires(selector != null);
+            return fromObservable.Select(selector).CreateCollection(withDelay);
+        }
+    }
+
+    public static class ObservableCollectionMixin
+    {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="TNew"></typeparam>
+        /// <param name="This"></param>
+        /// <param name="selector"></param>
+        /// <returns></returns>
+        public static ReactiveCollection<TNew> CreateDerivedCollection<T, TNew>(this ObservableCollection<T> This, Func<T, TNew> selector)
+        {
+            Contract.Requires(selector != null);
+#if !IOS    // Contract.Result is borked in Mono
+            Contract.Ensures(Contract.Result<ReactiveCollection<TNew>>().Count == This.Count);
+#endif
+            var ret = new ReactiveCollection<TNew>(This.Select(selector));
+            var coll_changed = Observable.FromEvent<NotifyCollectionChangedEventArgs>(This, "CollectionChanged");
+
+            coll_changed.Subscribe(x => {
+                switch(x.EventArgs.Action) {
+                case NotifyCollectionChangedAction.Add:
+                case NotifyCollectionChangedAction.Remove:
+                case NotifyCollectionChangedAction.Replace:
+                    // NB: SL4 fills in OldStartingIndex with -1 on Replace :-/
+                    int old_index = (x.EventArgs.Action == NotifyCollectionChangedAction.Replace ?
+                        x.EventArgs.NewStartingIndex : x.EventArgs.OldStartingIndex);
+
+                    if (x.EventArgs.OldItems != null) {
+                        foreach(object _ in x.EventArgs.OldItems) {
+                            ret.RemoveAt(old_index);
+                        }
+                    }
+                    if (x.EventArgs.NewItems != null) {
+                        foreach(T item in x.EventArgs.NewItems.Cast<T>()) {
+                            ret.Insert(x.EventArgs.NewStartingIndex, selector(item));
+                        }
+                    }
+                    break;
+                case NotifyCollectionChangedAction.Reset:
+                    ret.Clear();
+                    break;
+                default:
+                    break;
+                }
+            });
+
+            return ret;
         }
     }
 }

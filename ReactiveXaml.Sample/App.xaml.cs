@@ -156,7 +156,7 @@ namespace ReactiveXamlSample
 
         protected void setupCommands()
         {
-            AddPerson = new ReactiveCommand(item => {
+            AddPerson = ReactiveCommand.Create(null, item => {
                 var to_add = (item as PersonEntry) ?? addPersonDialog.Prompt(this, null);
 
                 if (to_add == null)
@@ -168,7 +168,7 @@ namespace ReactiveXamlSample
                 People.Add(to_add);
             });
 
-            RemovePerson = new ReactiveCommand(param => (param ?? SelectedPerson) != null && People.Count > 0, item => {
+            RemovePerson = ReactiveCommand.Create(param => (param ?? SelectedPerson) != null && People.Count > 0, item => {
                 var to_remove = (PersonEntry)item ?? SelectedPerson;
                 this.Log().DebugFormat("Removing '{0}'", to_remove.Name);
                 People.Remove(to_remove);

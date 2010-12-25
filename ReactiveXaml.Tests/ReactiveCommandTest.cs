@@ -63,7 +63,7 @@ namespace ReactiveXaml.Tests
         {
             int counter = 1;
             var sched = new TestScheduler();
-            var fixture = new ReactiveCommand(_ => (++counter % 2 == 0), null, sched);
+            var fixture = ReactiveCommand.Create(_ => (++counter % 2 == 0), null, sched);
             var changes_as_observable = new ListObservable<bool>(fixture.CanExecuteObservable);
 
             int change_event_count = 0;
@@ -83,7 +83,7 @@ namespace ReactiveXaml.Tests
         public void ObservableExecuteFuncShouldBeObservableAndAct()
         {
             var executed_params = new List<object>();
-            var fixture = new ReactiveCommand(x => executed_params.Add(x));
+            var fixture = ReactiveCommand.Create(null, x => executed_params.Add(x));
 
             var observed_params = new ReplaySubject<object>();
             fixture.Subscribe(observed_params.OnNext, observed_params.OnError, observed_params.OnCompleted);
@@ -104,7 +104,7 @@ namespace ReactiveXaml.Tests
         {
             var input = new[] { 1, 2, 1, 2 };
             var sched = new TestScheduler();
-            var fixture = new ReactiveCommand((IObservable<bool>)null, null, sched);
+            var fixture = new ReactiveCommand(null, sched);
 
             var odd_list = new List<int>();
             var even_list = new List<int>();
@@ -122,7 +122,7 @@ namespace ReactiveXaml.Tests
         public void ActionExceptionShouldntPermabreakCommands()
         {
             var input = new[] {1,2,3,4};
-            var fixture = new ReactiveCommand(x => {
+            var fixture = ReactiveCommand.Create(null, x => {
                 if (((int)x) == 2)
                     throw new Exception("Die!");
             });
@@ -204,7 +204,7 @@ namespace ReactiveXaml.Tests
             ReactiveCollection<int> results;
 
             using (TestUtils.WithTestScheduler(sched)) {
-                results = fixture.RegisterObservableAsyncFunction(_ => 
+                results = fixture.RegisterAsyncObservable(_ => 
                     Observable.Return(5).Delay(TimeSpan.FromSeconds(5), sched)
                 ).CreateCollection();
             }
@@ -306,7 +306,7 @@ namespace ReactiveXaml.Tests
             var results = new List<int>();
             bool[] subscribers = new[] { false, false, false, false, false };
 			
-			var output = fixture.RegisterObservableAsyncFunction(_ => 
+			var output = fixture.RegisterAsyncObservable(_ => 
 				Observable.Return(5).Delay(TimeSpan.FromMilliseconds(5000), sched));
             output.Subscribe(x => results.Add(x));
 

@@ -48,7 +48,7 @@ namespace ReactiveXaml.Sample.WP7
 
         public TranslatorViewModel()
         {
-            TranslateText = new ReactiveAsyncCommand(null, 1);
+            TranslateText = new ReactiveAsyncCommand();
 
             this.ObservableForProperty(x => x.EnglishText)
                 .Throttle(TimeSpan.FromMilliseconds(1200))
@@ -59,7 +59,7 @@ namespace ReactiveXaml.Sample.WP7
             var translation_func = Observable.FromAsyncPattern<string, string>(
                 client.BeginTranslateToGerman, client.EndTranslateToGerman);
             
-            var results = TranslateText.RegisterObservableAsyncFunction(x => translation_func((string)x));
+            var results = TranslateText.RegisterAsyncObservable(x => translation_func((string)x));
 
             _TranslatedText = this.ObservableToProperty(results, x => x.TranslatedText);
         }

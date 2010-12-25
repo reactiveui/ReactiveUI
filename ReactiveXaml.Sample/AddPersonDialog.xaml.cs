@@ -162,7 +162,7 @@ namespace ReactiveXamlSample
              * on the UI thread.
              */
 
-            SetImageViaFlickr = new ReactiveAsyncCommand(null, 1);
+            SetImageViaFlickr = new ReactiveAsyncCommand();
 
             // NB: The regular RNG isn't thread-safe, and will be very un-random
             // if we use it from more than one thread - however, RAC guarantees 
@@ -205,8 +205,8 @@ namespace ReactiveXamlSample
 
             OkCommand = new ReactiveCommand(
                 SetImageViaFlickr.CanExecuteObservable.CombineLatest(Person.Changed.Select(x => Person.IsValid()),
-                    (flickr_isnt_running, is_valid) => flickr_isnt_running && is_valid),
-                null, Scheduler.Dispatcher);
+                    (flickr_isnt_running, is_valid) => flickr_isnt_running && is_valid));
+
         }
 
         /* COOLSTUFF: Always write the sync version first!

@@ -1,31 +1,43 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Concurrency;
-using System.Diagnostics;
-using System.Disposables;
-using System.Diagnostics.Contracts;
 
 namespace ReactiveXaml
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class StopwatchScheduler : IScheduler, IEnableLogger
     {
         readonly TimeSpan maxAllowedTime;
         readonly IScheduler innerSched;
         readonly string errorMessage;
 
-        public StopwatchScheduler(TimeSpan maxAllowedTime, string ErrorMessage = null, IScheduler innerSched = null)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="maxAllowedTime"></param>
+        /// <param name="errorMessage"></param>
+        /// <param name="innerSched"></param>
+        public StopwatchScheduler(TimeSpan maxAllowedTime, string errorMessage = null, IScheduler innerSched = null)
         {
             this.maxAllowedTime = maxAllowedTime;
-            this.errorMessage = ErrorMessage;
+            this.errorMessage = errorMessage;
             this.innerSched = innerSched ?? RxApp.DeferredScheduler;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public DateTimeOffset Now {
             get { return innerSched.Now; }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="action"></param>
+        /// <param name="dueTime"></param>
+        /// <returns></returns>
         public IDisposable Schedule(Action action, TimeSpan dueTime)
         {
             return innerSched.Schedule(() => {
@@ -43,6 +55,11 @@ namespace ReactiveXaml
             }, dueTime);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="action"></param>
+        /// <returns></returns>
         public IDisposable Schedule(Action action)
         {
             return Schedule(action, TimeSpan.Zero);

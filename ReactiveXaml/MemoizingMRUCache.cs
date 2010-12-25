@@ -1,17 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Concurrency;
 using System.Linq;
-using System.Text;
 using System.Diagnostics.Contracts;
 
 #if WINDOWS_PHONE
 using Microsoft.Phone.Reactive;
-#endif
-
-#if !SILVERLIGHT
-using System.Threading.Tasks;
-using System.Collections.Concurrent;
 #endif
 
 namespace ReactiveXaml
@@ -37,26 +30,25 @@ namespace ReactiveXaml
         private LinkedList<TParam> cacheMRUList;
         private Dictionary<TParam, Tuple<LinkedListNode<TParam>, TVal>> cacheEntries;
 
-        public MemoizingMRUCache(Func<TParam, object, TVal> func, int max_size) : this(func, max_size, null) { }
-
         /// <summary>
         /// Constructor
         /// </summary>
-        /// <param name="func">The function whose results you want to cache,
+        /// <param name="calculationFunc">The function whose results you want to cache,
         /// which is provided the key value, and an Tag object that is
         /// user-defined</param>
-        /// <param name="max_size">The size of the cache to maintain.</param>
-        /// <param name="on_release">A function to call when a result gets
+        /// <param name="maxSize">The size of the cache to maintain, after which old
+        /// items will start to be thrown out.</param>
+        /// <param name="onRelease">A function to call when a result gets
         /// evicted from the cache (i.e. because Invalidate was called or the
         /// cache is full)</param>
-        public MemoizingMRUCache(Func<TParam, object, TVal> func, int max_size, Action<TVal> on_release)
+        public MemoizingMRUCache(Func<TParam, object, TVal> calculationFunc, int maxSize, Action<TVal> onRelease = null)
         {
-            Contract.Requires(func != null);
-            Contract.Requires(max_size > 0);
+            Contract.Requires(calculationFunc != null);
+            Contract.Requires(maxSize > 0);
 
-            calculationFunction = func;
-            releaseFunction = on_release;
-            maxCacheSize = max_size;
+            calculationFunction = calculationFunc;
+            releaseFunction = onRelease;
+            maxCacheSize = maxSize;
             InvalidateAll();
         }
 
@@ -91,16 +83,16 @@ namespace ReactiveXaml
             return result;
         }
 
-        public bool TryGet(TParam key, out TVal val)
+        public bool TryGet(TParam key, out TVal result)
         {
             Contract.Requires(key != null);
 
             Tuple<LinkedListNode<TParam>, TVal> output;
             var ret = cacheEntries.TryGetValue(key, out output);
             if (ret && output != null) {
-                val = output.Item2;
+                result = output.Item2;
             } else {
-                val = default(TVal);
+                result = default(TVal);
             }
             return ret;
         }
@@ -175,7 +167,7 @@ namespace ReactiveXaml
     }
 
 #if DOTNETISOLDANDSAD || WINDOWS_PHONE
-    public class Tuple<T1, T2>
+    internal class Tuple<T1, T2>
     {
         public Tuple(T1 item1, T2 item2) { Item1 = item1; Item2 = item2; }
         public Tuple() {} 

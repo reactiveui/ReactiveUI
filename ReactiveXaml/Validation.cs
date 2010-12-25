@@ -1,19 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Reflection;
-using System.Security;
 using System.Runtime.Serialization;
-using System.Diagnostics.Contracts;
 
 namespace ReactiveXaml
 {
+    /// <summary>
+    /// 
+    /// </summary>
     [DataContract]
     public class ReactiveValidatedObject : ReactiveObject, IDataErrorInfo
     {
+        /// <summary>
+        ///
+        /// </summary>
         public ReactiveValidatedObject()
         {
             //_IsValidObservable = new BehaviorSubject<bool>(this.IsValid());
@@ -33,11 +36,19 @@ namespace ReactiveXaml
 
         readonly Dictionary<string, string> errorMap = new Dictionary<string, string>();
         
+        /// <summary>
+        /// 
+        /// </summary>
         [IgnoreDataMember]
         public string Error {
             get { return null; }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="propName"></param>
+        /// <returns></returns>
         [IgnoreDataMember]
         public string this[string propName] {
             get {
@@ -55,11 +66,19 @@ namespace ReactiveXaml
 
 
         BehaviorSubject<bool> _IsValidObservable;
+
+        /// <summary>
+        /// 
+        /// </summary>
         [IgnoreDataMember]
         public IObservable<bool> IsValidObservable {
             get { return _IsValidObservable; }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public bool IsValid()
         {
             foreach (var prop in allPublicProperties.Value) { var dontcare = this[prop.Name]; }
@@ -84,11 +103,20 @@ namespace ReactiveXaml
         }
     }
 
-    public class ValidationBase : ValidationAttribute
+    /// <summary>
+    /// 
+    /// </summary>
+    public abstract class ValidationBase : ValidationAttribute
     {
         public bool AllowNull = false;
         public bool AllowBlanks = true;
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="validationContext"></param>
+        /// <returns></returns>
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)
         {
             var ret = base.IsValid(value, validationContext);
@@ -97,6 +125,11 @@ namespace ReactiveXaml
             return getStandardMessage(validationContext);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
         protected bool isValidViaNullOrBlank(object value)
         {
             if (value == null && !AllowNull)
@@ -106,6 +139,12 @@ namespace ReactiveXaml
             return !(s != null && !AllowBlanks && String.IsNullOrWhiteSpace(s));
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="ctx"></param>
+        /// <returns></returns>
         protected ValidationResult isValidViaNullOrBlank(object value, ValidationContext ctx)
         {
             if (isValidViaNullOrBlank(value))
@@ -115,6 +154,11 @@ namespace ReactiveXaml
                 ctx.DisplayName ?? "The value"));
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="ctx"></param>
+        /// <returns></returns>
         protected virtual ValidationResult getStandardMessage(ValidationContext ctx)
         {
             return new ValidationResult(ErrorMessage ??
@@ -122,7 +166,10 @@ namespace ReactiveXaml
         }
     }
 
-    public class ValidatesViaMethod : ValidationBase
+    /// <summary>
+    /// 
+    /// </summary>
+    public class ValidatesViaMethodAttribute : ValidationBase
     {
         public string Name;
 
