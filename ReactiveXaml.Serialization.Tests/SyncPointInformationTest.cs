@@ -1,9 +1,6 @@
-﻿using Microsoft.Pex.Framework;
-using ReactiveXaml.Serialization;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
+﻿using System;
 using System.Linq;
-using System.Collections.Generic;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ReactiveXaml.Tests;
 
 namespace ReactiveXaml.Serialization.Tests
@@ -24,7 +21,11 @@ namespace ReactiveXaml.Serialization.Tests
                 new SyncPointInformation(Guid.NewGuid(), template.ParentSyncPoint, typeof (string), template.Qualifier, template.CreatedOn),
             };
 
-            PexAssert.AreDistinctValues(fixtures.Select(x => x.ContentHash).ToArray());
+            //PexAssert.AreDistinctValues(fixtures.Select(x => x.ContentHash).ToArray());
+            foreach(var v in fixtures) {
+                var hash = v.ContentHash;
+                Assert.IsTrue(fixtures.Count(x => x.ContentHash == hash) == 1);
+            }
         }
 
         [TestMethod]

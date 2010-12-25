@@ -13,7 +13,8 @@ namespace ReactiveXaml.Serialization.Tests
     public partial class SerializedCollectionTest : IEnableLogger
     {
         [PexMethod]
-        public void AddingItemsShouldChangeTheContentHash(string[] toAdd) {
+        public void AddingItemsShouldChangeTheContentHash(string[] toAdd) 
+        {
             PexAssume.IsNotNull(toAdd);
             PexAssume.AreElementsNotNull(toAdd);
 

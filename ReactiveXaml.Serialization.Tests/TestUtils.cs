@@ -6,12 +6,11 @@ using System.Disposables;
 using System.Linq;
 using System.Reactive.Testing;
 using System.Reactive.Testing.Mocks;
-using System.Text;
-using Microsoft.Pex.Framework;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Runtime.Serialization;
 
 namespace ReactiveXaml.Serialization.Tests
 {
+#if !SILVERLIGHT
     public static class PexTestUtils
     {
         public static ColdObservable<T> CreateColdPexObservable<T>(this TestScheduler scheduler, T[] items, int[] deltaTimes, bool failOnError = false)
@@ -42,6 +41,7 @@ namespace ReactiveXaml.Serialization.Tests
             return ret;
         }
     }
+#endif
 
     public static class TestEngineMixins
     {
@@ -56,13 +56,15 @@ namespace ReactiveXaml.Serialization.Tests
 
     public class RootSerializationTestObject : ModelBase
     {
-        SubobjectTestObject _SubObject;
+        [IgnoreDataMember]
+        public SubobjectTestObject _SubObject;
         public SubobjectTestObject SubObject {
             get { return _SubObject; }
             set { this.RaiseAndSetIfChanged(x => x.SubObject, value); }
         }
 
-        int _SomeInteger;
+        [IgnoreDataMember]
+        public int _SomeInteger;
         public int SomeInteger {
             get { return _SomeInteger;  }
             set { this.RaiseAndSetIfChanged(x => x.SomeInteger, value);  }
@@ -71,7 +73,8 @@ namespace ReactiveXaml.Serialization.Tests
 
     public class SubobjectTestObject : ModelBase
     {
-        string _SomeProperty;
+        [IgnoreDataMember]
+        public string _SomeProperty;
         public string SomeProperty {
             get { return _SomeProperty;  }
             set { this.RaiseAndSetIfChanged(x => x.SomeProperty, value); }
@@ -80,13 +83,15 @@ namespace ReactiveXaml.Serialization.Tests
 
     public class RootObjectWithAListTestObject : ModelBase
     {
-        SerializedCollection<ISerializableItem> _SomeList;
+        [IgnoreDataMember]
+        public SerializedCollection<ISerializableItem> _SomeList;
         public SerializedCollection<ISerializableItem> SomeList {
             get { return _SomeList; }
             set { this.RaiseAndSetIfChanged(x => x.SomeList, value); }
         }
 
-        RootSerializationTestObject _RootObject;
+        [IgnoreDataMember]
+        public RootSerializationTestObject _RootObject;
         public RootSerializationTestObject RootObject {
             get { return _RootObject;  }
             set { this.RaiseAndSetIfChanged(x => x.RootObject, value); }
