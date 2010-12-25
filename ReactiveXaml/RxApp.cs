@@ -1,16 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.ComponentModel;
-using System.Windows.Input;
-using System.Collections.Specialized;
 using System.Concurrency;
 using System.Diagnostics.Contracts;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Windows;
-using System.Net;
 
 #if WINDOWS_PHONE
 using Microsoft.Phone.Reactive;
@@ -52,11 +46,7 @@ namespace ReactiveXaml
             {
                 Console.Error.WriteLine("*** Detected Unit Test Runner, setting Scheduler to Immediate ***");
                 Console.Error.WriteLine("If we are not actually in a test runner, please file a bug\n");
-#if WINDOWS_PHONE
                 DeferredScheduler = Scheduler.Immediate;
-#else
-                DeferredScheduler = new EventLoopScheduler();
-#endif
 
 #if DEBUG
                 LoggerFactory = (prefix) => new StdErrLogger(prefix) { CurrentLogLevel = LogLevel.Debug };
@@ -64,6 +54,7 @@ namespace ReactiveXaml
                 LoggerFactory = (prefix) => new StdErrLogger(prefix) { CurrentLogLevel = LogLevel.Info };
 #endif
 
+#if DEBUG
                 DefaultUnitTestRecoveryResult = RecoveryOptionResult.FailOperation;
 
                 CustomErrorPresentationFunc = new Func<UserException, RecoveryOptionResult>(e => {
@@ -71,6 +62,7 @@ namespace ReactiveXaml
                     Console.Error.WriteLine("Returning default result: {0}", DefaultUnitTestRecoveryResult);
                     return DefaultUnitTestRecoveryResult;
                 });
+#endif
             } else {
                 Console.Error.WriteLine("Initializing to normal mode");
 #if IOS
@@ -92,6 +84,9 @@ namespace ReactiveXaml
         [ThreadStatic] static IScheduler _UnitTestDeferredScheduler;
         static IScheduler _DeferredScheduler;
 
+        /// <summary>
+        /// 
+        /// </summary>
         public static IScheduler DeferredScheduler {
             get { return _UnitTestDeferredScheduler ?? _DeferredScheduler; }
             set {
@@ -107,6 +102,9 @@ namespace ReactiveXaml
         [ThreadStatic] static IScheduler _UnitTestTaskpoolScheduler;
         static IScheduler _TaskpoolScheduler;
 
+        /// <summary>
+        ///  
+        /// </summary>
         public static IScheduler TaskpoolScheduler {
             get { return _UnitTestTaskpoolScheduler ?? _TaskpoolScheduler; }
             set {
@@ -119,15 +117,30 @@ namespace ReactiveXaml
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public static Func<string, ILog> LoggerFactory { get; set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public static IMessageBus MessageBus { get; set; }
 
+#if DEBUG
         public static Func<UserException, RecoveryOptionResult> CustomErrorPresentationFunc { get; set; }
-        public static Func<string, string> GetFieldNameForPropertyNameFunc { get; set; }
         public static RecoveryOptionResult DefaultUnitTestRecoveryResult { get; set; }
+#endif
 
+        /// <summary>
+        /// 
+        /// </summary>
+        public static Func<string, string> GetFieldNameForPropertyNameFunc { get; set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public static bool InUnitTestRunner()
         {
             // XXX: This is hacky and evil, but I can't think of any better way
@@ -153,6 +166,9 @@ namespace ReactiveXaml
 #endif
         }
 
+        /// <summary>
+        ///
+        /// </summary>
         public static void EnableDebugMode()
         {
             LoggerFactory = (x => new StdErrLogger());
@@ -168,6 +184,7 @@ namespace ReactiveXaml
 #endif
         }
 
+#if DEBUG
         public static RecoveryOptionResult PresentUserException(UserException ex)
         {
             if (CustomErrorPresentationFunc != null)
@@ -176,10 +193,16 @@ namespace ReactiveXaml
             // TODO: Pop the WPF dialog here if we're not in Silverlight
             throw new NotImplementedException();
         }
+#endif
 
-        public static string GetFieldNameForProperty(string PropertyName)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="propertyName"></param>
+        /// <returns></returns>
+        public static string GetFieldNameForProperty(string propertyName)
         {
-            return GetFieldNameForPropertyNameFunc(PropertyName);
+            return GetFieldNameForPropertyNameFunc(propertyName);
         }
 
 

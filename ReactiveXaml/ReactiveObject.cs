@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows;
 using System.Diagnostics;
 using System.ComponentModel;
 using System.Reflection;
@@ -19,20 +16,35 @@ using System.Disposables;
 
 namespace ReactiveXaml
 {
+    /// <summary>
+    /// 
+    /// </summary>
     [DataContract]
     public class ReactiveObject : IReactiveNotifyPropertyChanged
     {
+        /// <summary>
+        /// 
+        /// </summary>
         [field:IgnoreDataMember]
         public event PropertyChangingEventHandler PropertyChanging;
 
+        /// <summary>
+        /// 
+        /// </summary>
         [field:IgnoreDataMember]
         public event PropertyChangedEventHandler PropertyChanged;
 
+        /// <summary>
+        /// 
+        /// </summary>
         [IgnoreDataMember]
         public IObservable<IObservedChange<object, object>> Changing {
             get { return changingSubject; }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         [IgnoreDataMember]
         public IObservable<IObservedChange<object, object>> Changed {
             get {
@@ -70,6 +82,10 @@ namespace ReactiveXaml
                 GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance));
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public IDisposable SuppressChangeNotifications()
         {
             Interlocked.Increment(ref changeNotificationsSuppressed);
@@ -168,27 +184,36 @@ namespace ReactiveXaml
 
     public static class ReactiveObjectExpressionMixin
     {
-        public static TRet RaiseAndSetIfChanged<TObj, TRet>(this TObj This, Expression<Func<TObj, TRet>> Property, TRet Value)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="TObj"></typeparam>
+        /// <typeparam name="TRet"></typeparam>
+        /// <param name="This"></param>
+        /// <param name="property"></param>
+        /// <param name="newValue"></param>
+        /// <returns></returns>
+        public static TRet RaiseAndSetIfChanged<TObj, TRet>(this TObj This, Expression<Func<TObj, TRet>> property, TRet newValue)
             where TObj : ReactiveObject
         {
             Contract.Requires(This != null);
-            Contract.Requires(Property != null);
+            Contract.Requires(property != null);
 
             FieldInfo field;
-            string prop_name = RxApp.expressionToPropertyName<TObj, TRet>(Property);
+            string prop_name = RxApp.expressionToPropertyName<TObj, TRet>(property);
 
             field = RxApp.getFieldInfoForProperty<TObj>(prop_name);
 
             var field_val = field.GetValue(This);
 
-            if (EqualityComparer<TRet>.Default.Equals((TRet)field_val, (TRet)Value))
-                return Value;
+            if (EqualityComparer<TRet>.Default.Equals((TRet)field_val, (TRet)newValue))
+                return newValue;
 
             This.raisePropertyChanging(prop_name);
-            field.SetValue(This, Value);
+            field.SetValue(This, newValue);
             This.raisePropertyChanged(prop_name);
 
-            return Value;
+            return newValue;
         }
     }
 }

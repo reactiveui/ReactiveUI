@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Concurrency;
-using System.Windows.Threading;
-using System.Diagnostics.Contracts;
 
 #if WINDOWS_PHONE
 using Microsoft.Phone.Reactive;
@@ -12,25 +9,47 @@ using Microsoft.Phone.Reactive;
 
 namespace ReactiveXaml
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class ReactiveCommand : IReactiveCommand, IEnableLogger
     {
-        public ReactiveCommand(Action<object> executed = null, IScheduler scheduler = null)
-            : this((IObservable<bool>)null, executed, scheduler) { }
-
-        public ReactiveCommand(IObservable<bool> can_execute = null, Action<object> executed = null, IScheduler scheduler = null)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="canExecute"></param>
+        /// <param name="scheduler"></param>
+        public ReactiveCommand(IObservable<bool> canExecute = null, IScheduler scheduler = null)
         {
-            can_execute = can_execute ?? Observable.Return(true).Concat(Observable.Never<bool>());
-            commonCtor(executed, scheduler);
-            can_execute.Subscribe(canExecuteSubject.OnNext, canExecuteSubject.OnError, canExecuteSubject.OnCompleted);
+            canExecute = canExecute ?? Observable.Return(true).Concat(Observable.Never<bool>());
+            commonCtor(scheduler);
+            canExecute.Subscribe(canExecuteSubject.OnNext, canExecuteSubject.OnError, canExecuteSubject.OnCompleted);
         }
 
-        public ReactiveCommand(Func<object, bool> can_execute, Action<object> executed = null, IScheduler scheduler = null)
+        protected ReactiveCommand(Func<object, bool> canExecute, IScheduler scheduler = null)
         {
-            canExecuteExplicitFunc = can_execute;
-            commonCtor(executed, scheduler);
+            canExecuteExplicitFunc = canExecute;
+            commonCtor(scheduler);
         }
 
-        private void commonCtor(Action<object> executed, IScheduler scheduler)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="canExecute"></param>
+        /// <param name="executed"></param>
+        /// <param name="scheduler"></param>
+        /// <returns></returns>
+        public static ReactiveCommand Create(Func<object, bool> canExecute, Action<object> executed = null, IScheduler scheduler = null)
+        {
+            var ret = new ReactiveCommand(canExecute, scheduler);
+            if (executed != null) {
+                ret.Subscribe(executed);
+            }
+
+            return ret;
+        }
+
+        void commonCtor(IScheduler scheduler)
         {
             this.scheduler = scheduler ?? RxApp.DeferredScheduler;
 
@@ -40,16 +59,14 @@ namespace ReactiveXaml
                 true, scheduler);
 
             executeSubject = new Subject<object>();
-
-            if (executed != null) {
-                executeExplicitFunc = executed;
-                executeSubject.Subscribe(executed);
-            }
         }
 
         Func<object, bool> canExecuteExplicitFunc;
         protected Subject<bool> canExecuteSubject;
 
+        /// <summary>
+        /// 
+        /// </summary>
         public IObservable<bool> CanExecuteObservable {
             get { return canExecuteSubject; }
         }
@@ -66,9 +83,11 @@ namespace ReactiveXaml
             return canExecuteLatest.Value;
         }
 
+        /// <summary>
+        ///
+        /// </summary>
         public event EventHandler CanExecuteChanged;
 
-        Action<object> executeExplicitFunc; 
         IScheduler scheduler;
         Subject<object> executeSubject;
 
@@ -81,6 +100,20 @@ namespace ReactiveXaml
         public IDisposable Subscribe(IObserver<object> observer)
         {
             return executeSubject.ObserveOn(scheduler).Subscribe(observer);
+        }
+    }
+
+    public static class ReactiveCommandMixins
+    {
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="This"></param>
+        /// <param name="scheduler"></param>
+        /// <returns></returns>
+        public static ReactiveCommand ToCommand(this IObservable<bool> This, IScheduler scheduler = null)
+        {
+            return new ReactiveCommand(This, scheduler);
         }
     }
 }

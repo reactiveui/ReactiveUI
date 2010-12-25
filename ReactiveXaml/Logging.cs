@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Reflection;
 using System.Globalization;
 using System.Threading;
@@ -62,6 +60,9 @@ namespace ReactiveXaml
         LogLevel CurrentLogLevel { get; set; }
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
     public interface IEnableLogger { }
 
     public static class EnableLoggerMixin
@@ -71,14 +72,19 @@ namespace ReactiveXaml
 
         readonly static ILog mruLogger = new NullLogger();
 
-        public static ILog Log(this IEnableLogger obj)
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="This"></param>
+        /// <returns></returns>
+        public static ILog Log(this IEnableLogger This)
         {
             // Prevent recursive meta-logging
-            if (obj is MemoizingMRUCache<int, ILog>)
+            if (This is MemoizingMRUCache<int, ILog>)
                 return mruLogger;
 
             lock (loggerCache) {
-                return loggerCache.Get(obj.GetHashCode(), obj);
+                return loggerCache.Get(This.GetHashCode(), This);
             }
         }
     }
@@ -88,10 +94,10 @@ namespace ReactiveXaml
         class ObservableLog : IEnableLogger { }
 
         static readonly ObservableLog logname = new ObservableLog();
-        public static IObservable<T> DebugObservable<T>(this IObservable<T> obj)
+        public static IObservable<T> DebugObservable<T>(this IObservable<T> This)
         {
-            int hash = obj.GetHashCode();
-            return obj.Do(
+            int hash = This.GetHashCode();
+            return This.Do(
                 x => logname.Log().DebugFormat("0x{0:X} OnNext: {1}", hash, x),
                 ex => logname.Log().Debug(String.Format("0x{0:X} OnError", hash), ex),
                 () => logname.Log().DebugFormat("0x{0:X} OnCompleted", hash));

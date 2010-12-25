@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Concurrency;
 using System.Linq;
-using System.Text;
-using System.Diagnostics.Contracts;
 using System.Threading;
 
 #if WINDOWS_PHONE
@@ -12,6 +10,11 @@ using Microsoft.Phone.Reactive;
 
 namespace ReactiveXaml
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <typeparam name="TParam"></typeparam>
+    /// <typeparam name="TVal"></typeparam>
     public class ObservableAsyncMRUCache<TParam, TVal> : IEnableLogger
     {
         readonly MemoizingMRUCache<TParam, IObservable<TVal>> _innerCache;
@@ -19,6 +22,14 @@ namespace ReactiveXaml
         readonly Func<TParam, IObservable<TVal>> _fetcher;
         long currentCall = 0;
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="func"></param>
+        /// <param name="maxSize"></param>
+        /// <param name="maxConcurrent"></param>
+        /// <param name="sched"></param>
+        /// <param name="onRelease"></param>
         public ObservableAsyncMRUCache(Func<TParam, IObservable<TVal>> func, int maxSize, int maxConcurrent = 1, IScheduler sched = null, Action<TVal> onRelease = null)
         {
             _callQueue = new SemaphoreSubject<long>(maxConcurrent, sched);
@@ -35,6 +46,11 @@ namespace ReactiveXaml
             }, maxSize, release);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
         public IObservable<TVal> AsyncGet(TParam key)
         {
             IObservable<TVal> result;
@@ -76,13 +92,18 @@ namespace ReactiveXaml
             return rs;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
         public TVal Get(TParam key)
         {
             return AsyncGet(key).First();
         }
     }
 
-    public class SemaphoreSubject<T> : ISubject<T>, IEnableLogger
+    internal class SemaphoreSubject<T> : ISubject<T>, IEnableLogger
     {
         readonly Subject<T> _inner;
         Queue<T> _nextItems = new Queue<T>();
@@ -177,7 +198,7 @@ namespace ReactiveXaml
         }
     }
 
-    public class LockedDictionary<TKey, TVal> : IDictionary<TKey, TVal>
+    internal class LockedDictionary<TKey, TVal> : IDictionary<TKey, TVal>
     {
         Dictionary<TKey, TVal> _inner = new Dictionary<TKey, TVal>();
 

@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Net;
-using System.Windows;
-using System.Windows.Input;
-using System.Windows.Media;
 using System.Linq;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -13,11 +9,20 @@ using Microsoft.Phone.Reactive;
 
 namespace ReactiveXaml
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class MessageBus : IMessageBus 
     {
         Dictionary<Tuple<Type, string>, WeakReference> messageBus = 
             new Dictionary<Tuple<Type,string>,WeakReference>();
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="Contract"></param>
+        /// <returns></returns>
         public IObservable<T> Listen<T>(string Contract = null)
         {
             IObservable<T> ret = null;
@@ -30,6 +35,12 @@ namespace ReactiveXaml
             return ret;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="Type"></param>
+        /// <param name="Contract"></param>
+        /// <returns></returns>
         public bool IsRegistered(Type Type, string Contract = null)
         {
             bool ret = false;
@@ -40,6 +51,12 @@ namespace ReactiveXaml
             return ret;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="Source"></param>
+        /// <param name="Contract"></param>
         public void RegisterMessageSource<T>(IObservable<T> Source, string Contract = null)
         {
             withMessageBus(typeof(T), Contract, (mb, tuple) => {
@@ -47,6 +64,12 @@ namespace ReactiveXaml
             });
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="Message"></param>
+        /// <param name="Contract"></param>
         public void SendMessage<T>(T Message, string Contract = null)
         {
             withMessageBus(typeof(T), Contract, (mb, tuple) => {
@@ -67,6 +90,9 @@ namespace ReactiveXaml
             });
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public static IMessageBus Current {
             get { return RxApp.MessageBus; }
         }
@@ -85,40 +111,62 @@ namespace ReactiveXaml
 
     public static class MessageBusMixins
     {
-        public static void RegisterViewModel<T>(this IMessageBus This, T Source, string Contract = null)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="This"></param>
+        /// <param name="source"></param>
+        /// <param name="Contract"></param>
+        /// <exception cref="Exception"><c>Exception</c>.</exception>
+        public static void RegisterViewModel<T>(this IMessageBus This, T source, string Contract = null)
             where T : IReactiveNotifyPropertyChanged
         {
             string contractName = viewModelContractName(typeof(T), Contract);
             if (This.IsRegistered(typeof(ObservedChange<T, Unit>), contractName)) {
-                throw new Exception(typeof(T).FullName + " must be a singleton class or have a unique Contract name");
+                throw new Exception(typeof(T).FullName + " must be a singleton class or have a unique contract name");
             }
 
             This.RegisterMessageSource(
-                (Source as IObservable<PropertyChangedEventArgs>).Select(x => new ObservedChange<T, Unit>() { Sender = Source, PropertyName = x.PropertyName }), 
+                (source as IObservable<PropertyChangedEventArgs>).Select(x => new ObservedChange<T, Unit>() { Sender = source, PropertyName = x.PropertyName }), 
                 contractName);
 
             This.RegisterMessageSource(
-                 Observable.Defer(() => Observable.Return(Source)), viewModelCurrentValueContractName(typeof(T), Contract));
+                 Observable.Defer(() => Observable.Return(source)), viewModelCurrentValueContractName(typeof(T), Contract));
         }
 
-        public static IObservable<ObservedChange<T, Unit>> ListenToViewModel<T>(this IMessageBus This, string Contract = null)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="This"></param>
+        /// <param name="contract"></param>
+        /// <returns></returns>
+        public static IObservable<ObservedChange<T, Unit>> ListenToViewModel<T>(this IMessageBus This, string contract = null)
         {
-            return This.Listen<ObservedChange<T, Unit>>(viewModelContractName(typeof(T), Contract));
+            return This.Listen<ObservedChange<T, Unit>>(viewModelContractName(typeof(T), contract));
         }
 
-        public static T ViewModelForType<T>(this IMessageBus This, string Contract = null)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="This"></param>
+        /// <param name="contract"></param>
+        /// <returns></returns>
+        public static T ViewModelForType<T>(this IMessageBus This, string contract = null)
         {
-            return This.Listen<T>(viewModelCurrentValueContractName(typeof(T), Contract)).First();
+            return This.Listen<T>(viewModelCurrentValueContractName(typeof(T), contract)).First();
         }
 
-        static string viewModelContractName(Type Type, string Contract)
+        static string viewModelContractName(Type Type, string contract)
         {
-            return Type.FullName + "_" + (Contract ?? "");
+            return Type.FullName + "_" + (contract ?? String.Empty);
         }
 
-        static string viewModelCurrentValueContractName(Type Type, string Contract)
+        static string viewModelCurrentValueContractName(Type Type, string contract)
         {
-            return viewModelContractName(Type, Contract) + "__current";
+            return viewModelContractName(Type, contract) + "__current";
         }
     }
 }
