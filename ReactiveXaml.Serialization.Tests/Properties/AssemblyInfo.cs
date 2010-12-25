@@ -6,8 +6,10 @@ using System.Runtime.InteropServices;
 using System.Security;
 
 // System.Security
+#if !SILVERLIGHT
 [assembly: AllowPartiallyTrustedCallers]
 [assembly: SecurityRules(SecurityRuleSet.Level1)]
+#endif
 
 // System.Reflection
 [assembly: AssemblyTitle("ReactiveXaml.Serialization Pex Tests")]

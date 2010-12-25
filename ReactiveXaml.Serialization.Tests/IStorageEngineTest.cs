@@ -1,11 +1,9 @@
-﻿using System.IO;
-using System.Threading;
-using Microsoft.Pex.Framework;
-using ReactiveXaml.Serialization;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.Linq;
+﻿using System;
 using System.Concurrency;
+using System.IO;
+using System.Linq;
+using System.Threading;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ReactiveXaml.Tests;
 
 namespace ReactiveXaml.Serialization.Tests
@@ -183,6 +181,7 @@ namespace ReactiveXaml.Serialization.Tests
         }
     }
 
+#if !SILVERLIGHT
     [TestClass]
     public class EsentStorageEngineTest : StorageEngineInterfaceTest
     {
@@ -196,6 +195,7 @@ namespace ReactiveXaml.Serialization.Tests
             return new Esent.EsentStorageEngine(path.FullName);
         }
     }
+#endif
 }
 
 // vim: tw=120 ts=4 sw=4 et :
