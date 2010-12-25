@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.IO;
-using Newtonsoft.Json;
 using System.Globalization;
 
 #if SILVERLIGHT
@@ -11,7 +10,7 @@ using System.IO.IsolatedStorage;
 
 namespace ReactiveXaml.Serialization
 {
-    public class DSESerializedObjects
+    internal class DSESerializedObjects
     {
         public Dictionary<Guid, byte[]> allItems { get; set; }
         public Dictionary<Guid, string> itemTypeNames { get; set; }

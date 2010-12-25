@@ -80,7 +80,7 @@ namespace ReactiveXaml.Serialization
         
     }
 
-    class SerializedItemsToGuidResolver : DefaultContractResolver
+    class SerializedItemsToGuidResolver : DefaultContractResolver, IEnableLogger
     {
         SerializableItemConverter _itemConverter;
         SerializableListConverter _listConverter;
@@ -127,7 +127,14 @@ namespace ReactiveXaml.Serialization
         {
             return base.CreateProperties(contract).Where(x => {
                 // XXX: This is massively slow and dumb
-                var attrs = contract.UnderlyingType.GetProperty(x.PropertyName).GetCustomAttributes(typeof (IgnoreDataMemberAttribute), true);
+                var prop = contract.UnderlyingType.GetProperty(x.PropertyName);
+                object[] attrs;
+                if (prop != null) {
+                    attrs = prop.GetCustomAttributes(typeof (IgnoreDataMemberAttribute), true);
+                } else {
+                    var field = contract.UnderlyingType.GetField(x.PropertyName);
+                    attrs = field.GetCustomAttributes(typeof(IgnoreDataMemberAttribute), true);
+                }
                 return attrs.Length == 0;
             }).ToList();
         }
