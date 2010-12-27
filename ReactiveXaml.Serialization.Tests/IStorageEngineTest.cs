@@ -164,6 +164,56 @@ namespace ReactiveXaml.Serialization.Tests
                 return 0;
             });
         }
+
+        [TestMethod]
+        public void LoadMethodWithInvalidKeyShouldReturnNoResults()
+        {
+            var fixture = createFixture();
+            var output = fixture.Load(Guid.NewGuid());
+            Assert.AreEqual(null, output);
+        }
+
+        [TestMethod]
+        public void GetLatestRootObjectWithEmptyEngineShouldReturnNoResults()
+        {
+            var fixture = createExtendedFixture();
+            var output = fixture.GetLatestRootObject<RootSerializationTestObject>();
+            Assert.AreEqual(null, output);
+        }
+
+        [TestMethod]
+        public void GetOrderedRevisionRangeWithEmptyEngineShouldReturnNoResults()
+        {
+            var fixture = createExtendedFixture();
+            var output = fixture.GetOrderedRevisionList(typeof(Type));
+            Assert.IsNotNull(output);
+            Assert.AreEqual(0, output.Length);
+        }
+
+        [TestMethod]
+        public void TryingToSaveNullGuidShouldBePunished()
+        {
+            var input = new ZeroContentHashModel();
+            var fixture = createExtendedFixture();
+
+            bool shouldFail = true;
+            try {
+                fixture.Save(input);
+            } catch(Exception ex) {
+                this.Log().Debug(ex);
+                shouldFail = false;
+            }
+            Assert.IsFalse(shouldFail);
+
+            shouldFail = true;
+            try {
+                fixture.CreateSyncPoint(input);
+            } catch(Exception ex) {
+                this.Log().Debug(ex);
+                shouldFail = false;
+            }
+            Assert.IsFalse(shouldFail);
+        }
     }
 
     [TestClass]
@@ -196,6 +246,14 @@ namespace ReactiveXaml.Serialization.Tests
         }
     }
 #endif
+
+    public class ZeroContentHashModel : ModelBase
+    {
+        public override Guid CalculateHash()
+        {
+            return Guid.Empty;
+        }
+    }
 }
 
 // vim: tw=120 ts=4 sw=4 et :

@@ -54,6 +54,11 @@ namespace ReactiveXaml.Serialization.Esent
 
         public void Save<T>(T obj) where T : ISerializableItem
         {
+            if (obj.ContentHash == Guid.Empty) {
+                this.Log().ErrorFormat("Object of type '{0}' has a zero ContentHash", obj.GetType());
+                throw new Exception("Cannot serialize object with zero ContentHash");
+            }
+
             this.Log().DebugFormat("Saving {0}: {1}", obj, obj.ContentHash);
             _itemTypeNames[obj.ContentHash] = obj.GetType().FullName;
             _backingStore[obj.ContentHash] = serializerFactory(obj).Serialize(obj);
