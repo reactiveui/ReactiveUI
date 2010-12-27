@@ -66,8 +66,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Phone.Reactive" />
-    <Reference Include="Newtonsoft.Json.Silverlight">
-      <HintPath>..\ext\SL4\Newtonsoft.Json.Silverlight.dll</HintPath>
+    <Reference Include="Newtonsoft.Json.WindowsPhone">
+      <HintPath>..\ext\WP7\Newtonsoft.Json.WindowsPhone.dll</HintPath>
     </Reference>
     <Reference Include="System.Observable" />
     <Reference Include="System.Runtime.Serialization" />
