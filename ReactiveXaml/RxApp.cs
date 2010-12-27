@@ -54,7 +54,7 @@ namespace ReactiveXaml
                 LoggerFactory = (prefix) => new StdErrLogger(prefix) { CurrentLogLevel = LogLevel.Info };
 #endif
 
-#if DEBUG
+#if FALSE
                 DefaultUnitTestRecoveryResult = RecoveryOptionResult.FailOperation;
 
                 CustomErrorPresentationFunc = new Func<UserException, RecoveryOptionResult>(e => {
@@ -127,7 +127,7 @@ namespace ReactiveXaml
         /// </summary>
         public static IMessageBus MessageBus { get; set; }
 
-#if DEBUG
+#if FALSE
         public static Func<UserException, RecoveryOptionResult> CustomErrorPresentationFunc { get; set; }
         public static RecoveryOptionResult DefaultUnitTestRecoveryResult { get; set; }
 #endif
@@ -184,7 +184,7 @@ namespace ReactiveXaml
 #endif
         }
 
-#if DEBUG
+#if FALSE
         public static RecoveryOptionResult PresentUserException(UserException ex)
         {
             if (CustomErrorPresentationFunc != null)
