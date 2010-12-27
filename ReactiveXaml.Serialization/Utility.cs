@@ -52,7 +52,12 @@ namespace ReactiveXaml.Serialization
                 }
 
                 Type ret;
-                typeCache.TryGetValue(fullName, out ret);
+                if (!typeCache.TryGetValue(fullName, out ret)) {
+                    // Try Type.GetType() as a last-ditch
+                    ret = Type.GetType(fullName);
+                    typeCache[fullName] = ret;
+                }
+
                 if (targetAssemblies != null && !targetAssemblies.Contains(ret.Assembly))
                     return null;
                 return ret;
