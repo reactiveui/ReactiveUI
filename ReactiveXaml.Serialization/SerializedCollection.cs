@@ -17,8 +17,19 @@ namespace ReactiveXaml.Serialization
     public class SerializedCollection<T> : ReactiveCollection<T>, ISerializableList<T>
         where T : ISerializableItem
     {
+        [IgnoreDataMember] 
+        Guid _ContentHash;
+
         [IgnoreDataMember]
-        public Guid ContentHash { get; protected set; }
+        public Guid ContentHash {
+           get {
+               if (_ContentHash == Guid.Empty) {
+                   return (_ContentHash = CalculateHash());
+               }
+               return _ContentHash;
+           }
+            set { _ContentHash = value; }
+        }
 
         [DataMember]
         public Dictionary<Guid, DateTimeOffset> CreatedOn { get; protected set; }
@@ -72,7 +83,6 @@ namespace ReactiveXaml.Serialization
                 }
             }
 
-            ContentHash = CalculateHash();
             setupCollection(sched);
         }
 
@@ -82,6 +92,7 @@ namespace ReactiveXaml.Serialization
         {
             ChangeTrackingEnabled = true;
             _sched = sched ?? RxApp.DeferredScheduler;
+            ContentHash = CalculateHash();
 
             ItemsAdded.Subscribe(x => {
                 CreatedOn[x.ContentHash] = _sched.Now;
@@ -107,16 +118,20 @@ namespace ReactiveXaml.Serialization
         public Guid CalculateHash()
         {
             var buf = new MemoryStream();
-            if (this.Count == 0) {
+            if (this.Count == 0 || this.All(x => x == null)) {
                 var bytes = Encoding.Default.GetBytes(this.GetType().FullName);
                 buf.Write(bytes, 0, bytes.Length);
             } else {
                 foreach (var v in this) {
-                    var si = v as ISerializableItem;
+                    var si = (ISerializableItem)v;
                     if (si != null) {
                         buf.Write(si.ContentHash.ToByteArray(), 0, 16);
                     }
                 }
+            }
+
+            if (buf.Length == 0) {
+                throw new Exception("Error calculating hash");
             }
 
             var md5 = MD5.Create();
