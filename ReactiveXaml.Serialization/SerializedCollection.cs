@@ -107,10 +107,15 @@ namespace ReactiveXaml.Serialization
         public Guid CalculateHash()
         {
             var buf = new MemoryStream();
-            foreach(var v in this) {
-                var si = v as ISerializableItem;
-                if (si != null) {
-                    buf.Write(si.ContentHash.ToByteArray(), 0, 16);
+            if (this.Count == 0) {
+                var bytes = Encoding.Default.GetBytes(this.GetType().FullName);
+                buf.Write(bytes, 0, bytes.Length);
+            } else {
+                foreach (var v in this) {
+                    var si = v as ISerializableItem;
+                    if (si != null) {
+                        buf.Write(si.ContentHash.ToByteArray(), 0, 16);
+                    }
                 }
             }
 

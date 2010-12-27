@@ -123,16 +123,16 @@ namespace ReactiveXaml.Serialization
             return ret;
         }
 
-        protected override IList<JsonProperty> CreateProperties(JsonObjectContract contract)
+        protected override IList<JsonProperty> CreateProperties(Type type, MemberSerialization serialization)
         {
-            return base.CreateProperties(contract).Where(x => {
+            return base.CreateProperties(type, serialization).Where(x => {
                 // XXX: This is massively slow and dumb
-                var prop = contract.UnderlyingType.GetProperty(x.PropertyName);
+                var prop = type.GetProperty(x.PropertyName);
                 object[] attrs;
                 if (prop != null) {
                     attrs = prop.GetCustomAttributes(typeof (IgnoreDataMemberAttribute), true);
                 } else {
-                    var field = contract.UnderlyingType.GetField(x.PropertyName);
+                    var field = type.GetField(x.PropertyName);
                     attrs = field.GetCustomAttributes(typeof(IgnoreDataMemberAttribute), true);
                 }
                 return attrs.Length == 0;

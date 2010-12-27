@@ -17,6 +17,9 @@ namespace ReactiveXaml.Serialization
         public Dictionary<string, Guid> syncPointIndex { get; set; }
     }
     
+    /// <summary>
+    /// 
+    /// </summary>
     public class DictionaryStorageEngine : IStorageEngine
     {
         string backingStorePath;
@@ -26,6 +29,10 @@ namespace ReactiveXaml.Serialization
 
         Func<object, IObjectSerializationProvider> serializerFactory;
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="Path"></param>
         public DictionaryStorageEngine(string Path = null)
         {
             backingStorePath = Path;
@@ -52,12 +59,22 @@ namespace ReactiveXaml.Serialization
 #if DEBUG
             this.Log().Info(serializerFactory(ContentHash).SerializedDataToString(ret));
 #endif
-            return serializerFactory(ContentHash).Deserialize(ret, Utility.GetTypeByName(itemTypeNames[ContentHash]));
+            var type = Utility.GetTypeByName(itemTypeNames[ContentHash]);
+            if (type == null) {
+                this.Log().FatalFormat("Type '{0}' cannot be found", itemTypeNames[ContentHash]);
+                throw new Exception("Engine is inconsistent");
+            }
+            return serializerFactory(ContentHash).Deserialize(ret, type);
         }
 
         public void Save<T>(T Obj) where T : ISerializableItem
         {
             initializeStoreIfNeeded();
+
+            if (Obj.ContentHash == Guid.Empty) {
+                this.Log().ErrorFormat("Object of type '{0}' has a zero ContentHash", Obj.GetType());
+                throw new Exception("Cannot serialize object with zero ContentHash");
+            }
 
             this.Log().DebugFormat("Saving '{0}", Obj.ContentHash);
             allItems[Obj.ContentHash] = serializerFactory(Obj).Serialize(Obj);
