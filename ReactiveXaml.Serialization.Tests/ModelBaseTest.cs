@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.Pex.Framework;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using ReactiveXaml.Testing;
 using ReactiveXaml.Tests;
 using Microsoft.Pex.Framework.Generated;
 

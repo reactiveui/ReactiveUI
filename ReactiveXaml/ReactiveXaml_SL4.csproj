@@ -96,6 +96,7 @@
     <Compile Include="ReactiveNotifyPropertyChangedMixin.cs" />
     <Compile Include="ReactiveObject.cs" />
     <Compile Include="RxApp.cs" />
+    <Compile Include="TestUtils.cs" />
     <Compile Include="Validation.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Silverlight\$(SilverlightVersion)\Microsoft.Silverlight.CSharp.targets" />

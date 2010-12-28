@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using ReactiveXaml;
 using System.IO;
 using System.Text;
+using ReactiveXaml.Testing;
 using ReactiveXaml.Tests;
 using System.Runtime.Serialization.Json;
 using System.Threading;

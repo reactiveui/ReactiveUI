@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using ReactiveXaml;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using ReactiveXaml.Testing;
 
 namespace ReactiveXaml.Tests
 {

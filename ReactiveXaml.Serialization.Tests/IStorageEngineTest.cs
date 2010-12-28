@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using ReactiveXaml.Testing;
 using ReactiveXaml.Tests;
 
 namespace ReactiveXaml.Serialization.Tests

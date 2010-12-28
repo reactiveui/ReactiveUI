@@ -135,6 +135,7 @@
     <Compile Include="ReactiveObject.cs" />
     <Compile Include="RxApp.cs" />
     <Compile Include="Schedulers.cs" />
+    <Compile Include="TestUtils.cs" />
     <Compile Include="Validation.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
