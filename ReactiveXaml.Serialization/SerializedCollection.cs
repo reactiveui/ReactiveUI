@@ -106,7 +106,6 @@ namespace ReactiveXaml.Serialization
             ItemChanged.Subscribe(_ => {
                 this.Log().DebugFormat("Saving list {0:X}", this.GetHashCode());
                 ContentHash = CalculateHash();
-                RxStorage.Engine.Save(this);
             });
         }
 
