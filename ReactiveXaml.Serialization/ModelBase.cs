@@ -14,8 +14,22 @@ namespace ReactiveXaml.Serialization
     public abstract class ModelBase : ReactiveValidatedObject, ISerializableItem
 #endif
     {
+        static Guid inProgressGuid = new Guid(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1);
+
+        [IgnoreDataMember] Guid _ContentHash;
         [IgnoreDataMember]
-        public Guid ContentHash { get; protected set; }
+        public Guid ContentHash {
+            get {
+                if (_ContentHash == Guid.Empty) {
+                    // XXX: This is a blatant hack to make sure that the JSON serializer
+                    // doesn't end up recursively calling CalculateHash
+                    _ContentHash = inProgressGuid;
+                    _ContentHash = CalculateHash();
+                }
+                return _ContentHash;
+            }
+            protected set { _ContentHash = value; }
+        }
 
         public ModelBase()
         {
@@ -27,10 +41,8 @@ namespace ReactiveXaml.Serialization
         void setupModelBase()
         {
             this.Log().InfoFormat("Deserialized ModelBase 0x{0:X}", this.GetHashCode());
-            Changed.Subscribe(_ => {
-                ContentHash = CalculateHash();
-            });
-            ContentHash = CalculateHash();
+            Changed.Subscribe(_ => invalidateHash());
+            invalidateHash();
         }
 
         public virtual Guid CalculateHash()
@@ -38,15 +50,9 @@ namespace ReactiveXaml.Serialization
             return new Guid(this.ObjectContentsHash());
         }
 
-        [IgnoreDataMember]
-        public IObservable<object> ItemChanging {
-            // XXX: We need the explicit type on SL4 :-/
-            get { return Changing.Select<IObservedChange<object, object>, object>(_ => this); }
-        }
-
-        [IgnoreDataMember]
-        public IObservable<object> ItemChanged {
-            get { return Changed.Select<IObservedChange<object, object>, object>(_ => this); }
+        protected virtual void invalidateHash()
+        {
+            ContentHash = Guid.Empty;
         }
     }
 }

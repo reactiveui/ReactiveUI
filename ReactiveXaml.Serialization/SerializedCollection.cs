@@ -12,18 +12,21 @@ namespace ReactiveXaml.Serialization
     public class SerializedCollection<T> : ReactiveCollection<T>, ISerializableList<T>
         where T : ISerializableItem
     {
-        [IgnoreDataMember] 
-        Guid _ContentHash;
+        static Guid inProgressGuid = new Guid(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1);
 
+        [IgnoreDataMember] Guid _ContentHash;
         [IgnoreDataMember]
         public Guid ContentHash {
-           get {
-               if (_ContentHash == Guid.Empty) {
-                   return (_ContentHash = CalculateHash());
-               }
-               return _ContentHash;
-           }
-            set { _ContentHash = value; }
+            get {
+                if (_ContentHash == Guid.Empty) {
+                    // XXX: This is a blatant hack to make sure that the JSON serializer
+                    // doesn't end up recursively calling CalculateHash
+                    _ContentHash = inProgressGuid;
+                    _ContentHash = CalculateHash();
+                }
+                return _ContentHash;
+            }
+            protected set { _ContentHash = value; }
         }
 
         [DataMember]
@@ -87,7 +90,7 @@ namespace ReactiveXaml.Serialization
         {
             ChangeTrackingEnabled = true;
             _sched = sched ?? RxApp.DeferredScheduler;
-            ContentHash = CalculateHash();
+            invalidateHash();
 
             ItemsAdded.Subscribe(x => {
                 CreatedOn[x.ContentHash] = _sched.Now;
@@ -101,15 +104,11 @@ namespace ReactiveXaml.Serialization
 
             ItemChanged.Subscribe(x => {
                 UpdatedOn[x.Sender.ContentHash] = _sched.Now;
-            });
-
-            ItemChanged.Subscribe(_ => {
-                this.Log().DebugFormat("Saving list {0:X}", this.GetHashCode());
-                ContentHash = CalculateHash();
+                invalidateHash();
             });
         }
 
-        public Guid CalculateHash()
+        public virtual Guid CalculateHash()
         {
             var buf = new MemoryStream();
             if (this.Count == 0 || this.All(x => x == null)) {
@@ -130,6 +129,11 @@ namespace ReactiveXaml.Serialization
 
             var md5 = MD5.Create();
             return new Guid(md5.ComputeHash(buf.ToArray()));
+        }
+
+        public virtual void invalidateHash()
+        {
+            ContentHash = Guid.Empty;
         }
 
         public Type GetBaseListType()
