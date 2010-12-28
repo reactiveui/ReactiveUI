@@ -65,11 +65,13 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.Phone.Reactive" />
     <Reference Include="Newtonsoft.Json.WindowsPhone">
       <HintPath>..\ext\WP7\Newtonsoft.Json.WindowsPhone.dll</HintPath>
     </Reference>
+    <Reference Include="System.CoreEx, Version=1.0.2838.370, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="System.Interactive, Version=1.0.2838.370, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="System.Observable" />
+    <Reference Include="System.Reactive, Version=1.0.2838.370, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Windows" />
     <Reference Include="system" />

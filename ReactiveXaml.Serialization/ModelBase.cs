@@ -2,12 +2,7 @@
 using System.Linq;
 using System.Runtime.Serialization;
 using System.ComponentModel;
-
-#if WINDOWS_PHONE
-using Microsoft.Phone.Reactive;
-#else
 using System.Concurrency;
-#endif
 
 namespace ReactiveXaml.Serialization
 {

@@ -5,10 +5,6 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Windows.Input;
 
-#if WINDOWS_PHONE
-using Microsoft.Phone.Reactive;
-#endif
-
 namespace ReactiveXaml
 {
     /// <summary>

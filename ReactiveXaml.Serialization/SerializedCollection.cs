@@ -5,12 +5,7 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.Security.Cryptography;
 using System.Text;
-
-#if WINDOWS_PHONE
-using Microsoft.Phone.Reactive;
-#else
 using System.Concurrency;
-#endif
 
 namespace ReactiveXaml.Serialization
 {
@@ -119,7 +114,7 @@ namespace ReactiveXaml.Serialization
         {
             var buf = new MemoryStream();
             if (this.Count == 0 || this.All(x => x == null)) {
-                var bytes = Encoding.Default.GetBytes(this.GetType().FullName);
+                var bytes = Encoding.Unicode.GetBytes(this.GetType().FullName);
                 buf.Write(bytes, 0, bytes.Length);
             } else {
                 foreach (var v in this) {

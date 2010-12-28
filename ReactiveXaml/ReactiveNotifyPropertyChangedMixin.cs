@@ -3,10 +3,6 @@ using System.Linq;
 using System.Diagnostics.Contracts;
 using System.Linq.Expressions;
 
-#if WINDOWS_PHONE
-using Microsoft.Phone.Reactive;
-#endif
-
 namespace ReactiveXaml
 {
     public static class ReactiveNotifyPropertyChangedMixin
