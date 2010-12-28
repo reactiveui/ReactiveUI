@@ -6,6 +6,7 @@ using System.Concurrency;
 using System.Collections.Generic;
 using System.Threading;
 using System.Windows;
+using ReactiveXaml.Testing;
 
 namespace ReactiveXaml.Tests
 {

@@ -91,6 +91,7 @@
     <Compile Include="ReactiveObject.cs" />
     <Compile Include="RxApp.cs" />
     <Compile Include="Schedulers.cs" />
+    <Compile Include="TestUtils.cs" />
     <Compile Include="UserException.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

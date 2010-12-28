@@ -125,7 +125,7 @@
     <Compile Include="ReactiveCollectionTest.cs" />
     <Compile Include="ReactiveCommandTest.cs" />
     <Compile Include="ReactiveObjectTest.cs" />
-    <Compile Include="TestUtils.cs" />
+    <Compile Include="Utility.cs" />
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
