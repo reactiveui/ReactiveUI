@@ -6,10 +6,6 @@ using System.Reflection;
 using System.Windows;
 using System.Windows.Data;
 
-#if WINDOWS_PHONE
-using Microsoft.Phone.Reactive;
-#endif
-
 namespace ReactiveXaml
 {
     public static class DependencyPropertyMixin

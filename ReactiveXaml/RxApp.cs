@@ -6,10 +6,6 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Windows;
 
-#if WINDOWS_PHONE
-using Microsoft.Phone.Reactive;
-#endif
-
 namespace ReactiveXaml
 {
     /*

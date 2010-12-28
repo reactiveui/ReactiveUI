@@ -5,10 +5,6 @@ using System.Text;
 using System.Windows.Interactivity;
 using System.Windows;
 
-#if WINDOWS_PHONE
-using Microsoft.Phone.Reactive;
-#endif
-
 namespace ReactiveXaml.Blend
 {
     public class ObservableTrigger : TriggerBase<FrameworkElement>

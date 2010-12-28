@@ -12,10 +12,6 @@ using System.Windows.Shapes;
 using System.Windows.Interactivity;
 using System.Linq;
 
-#if WINDOWS_PHONE
-using Microsoft.Phone.Reactive;
-#endif
-
 namespace ReactiveXaml.Blend
 {
 #if SILVERLIGHT

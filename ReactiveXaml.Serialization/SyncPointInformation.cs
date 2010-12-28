@@ -5,10 +5,6 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
 
-#if WINDOWS_PHONE
-using Microsoft.Phone.Reactive;
-#endif
-
 namespace ReactiveXaml.Serialization
 {
     [DataContract]

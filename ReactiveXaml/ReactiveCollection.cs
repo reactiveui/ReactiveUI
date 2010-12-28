@@ -7,12 +7,7 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.Diagnostics.Contracts;
 using System.Threading;
-
-#if WINDOWS_PHONE
-using Microsoft.Phone.Reactive;
-#else
 using System.Disposables;
-#endif
 
 namespace ReactiveXaml
 {

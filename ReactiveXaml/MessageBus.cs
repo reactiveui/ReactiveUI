@@ -3,10 +3,6 @@ using System.Linq;
 using System.Collections.Generic;
 using System.ComponentModel;
 
-#if WINDOWS_PHONE
-using Microsoft.Phone.Reactive;
-#endif
-
 namespace ReactiveXaml
 {
     /// <summary>

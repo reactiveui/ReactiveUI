@@ -5,10 +5,6 @@ using System.Globalization;
 using System.Threading;
 using System.Diagnostics.Contracts;
 
-#if WINDOWS_PHONE
-using Microsoft.Phone.Reactive;
-#endif
-
 namespace ReactiveXaml
 {
     public enum LogLevel {

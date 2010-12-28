@@ -4,10 +4,6 @@ using System.Linq;
 using System.Concurrency;
 using System.Diagnostics.Contracts;
 
-#if WINDOWS_PHONE
-using Microsoft.Phone.Reactive;
-#endif
-
 namespace ReactiveXaml
 {
     /// <summary>
