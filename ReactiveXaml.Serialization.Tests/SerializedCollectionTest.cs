@@ -111,8 +111,8 @@ namespace ReactiveXaml.Serialization.Tests
             bool inputChanging = false; bool inputChanged = false;
             bool collChanging = false; bool collChanged = false;
             bool fixtureChanging = false; bool fixtureChanged = false;
-            input.ItemChanging.Subscribe(_ => inputChanging = true);
-            input.ItemChanged.Subscribe(_ => inputChanged = true);
+            input.Changing.Subscribe(_ => inputChanging = true);
+            input.Changed.Subscribe(_ => inputChanged = true);
             coll.ItemChanging.Subscribe(_ => collChanging = true);
             coll.ItemChanging.Subscribe(_ => collChanged = true);
             fixture.ItemChanging.Subscribe(_ => fixtureChanging = true);

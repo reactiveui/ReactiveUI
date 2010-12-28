@@ -34,8 +34,8 @@ namespace ReactiveXaml.Serialization.Tests
             var output_changing = new List<object>();
             var fixture = sched.With(_ => new ModelTestFixture());
 
-            fixture.ItemChanging.Subscribe(output_changing.Add);
-            fixture.ItemChanged.Subscribe(output_changed.Add);
+            fixture.Changing.Subscribe(output_changing.Add);
+            fixture.Changed.Subscribe(output_changed.Add);
 
             setters.Run(x => fixture.TestString = x);
 
