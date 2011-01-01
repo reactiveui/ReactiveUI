@@ -7,9 +7,16 @@ using System.Linq.Expressions;
 namespace ReactiveXaml
 {
     /// <summary>
-    /// 
+    /// ObservableAsPropertyHelper is a class to help ViewModels implement
+    /// "output properties", that is, a property that is backed by an
+    /// Observable. The property will be read-only, but will still fire change
+    /// notifications. This class can be created directly, but is more often created via the
+    /// ToProperty and ObservableToProperty extension methods.
+    ///
+    /// This class is also an Observable itself, so that output properties can
+    /// be chained - for example a "Path" property and a chained
+    /// "PathFileNameOnly" property.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
     public class ObservableAsPropertyHelper<T> : IEnableLogger, IObservable<T>
     {
         T lastValue;
@@ -17,12 +24,16 @@ namespace ReactiveXaml
         IObservable<T> source;
 
         /// <summary>
-        /// 
+        /// Constructs an ObservableAsPropertyHelper object.
         /// </summary>
-        /// <param name="observable"></param>
-        /// <param name="onChanged"></param>
-        /// <param name="initialValue"></param>
-        /// <param name="scheduler"></param>
+        /// <param name="observable">The Observable to base the property on.</param>
+        /// <param name="onChanged">The action to take when the property
+        /// changes, typically this will call the ViewModel's
+        /// RaisePropertyChanged method.</param>
+        /// <param name="initialValue">The initial value of the property.</param>
+        /// <param name="scheduler">The scheduler that the notifications will be
+        /// provided on - this should normally be a Dispatcher-based scheduler
+        /// (and is by default)</param>
         public ObservableAsPropertyHelper(IObservable<T> observable, Action<T> onChanged, T initialValue = default(T), IScheduler scheduler = null)
         {
             Contract.Requires(observable != null);
@@ -40,7 +51,7 @@ namespace ReactiveXaml
         }
 
         /// <summary>
-        /// 
+        /// The last provided value from the Observable. 
         /// </summary>
         public T Value {
             get {
@@ -52,11 +63,6 @@ namespace ReactiveXaml
             }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="observer"></param>
-        /// <returns></returns>
         public IDisposable Subscribe(IObserver<T> observer)
         {
             return source.Subscribe(observer);
@@ -66,16 +72,20 @@ namespace ReactiveXaml
     public static class OAPHCreationHelperMixin
     {
         /// <summary>
-        /// 
+        /// Converts an Observable to an ObservableAsPropertyHelper and
+        /// automatically provides the onChanged method to raise the property
+        /// changed notification. The ToProperty method is semantically
+        /// equivalent to this method and is often more convenient.
         /// </summary>
-        /// <typeparam name="TObj"></typeparam>
-        /// <typeparam name="TRet"></typeparam>
-        /// <param name="This"></param>
-        /// <param name="observable"></param>
-        /// <param name="property"></param>
-        /// <param name="initialValue"></param>
-        /// <param name="scheduler"></param>
-        /// <returns></returns>
+        /// <param name="observable">The Observable to base the property on.</param>
+        /// <param name="property">An Expression representing the property (i.e.
+        /// 'x => x.SomeProperty'</param>
+        /// <param name="initialValue">The initial value of the property.</param>
+        /// <param name="scheduler">The scheduler that the notifications will be
+        /// provided on - this should normally be a Dispatcher-based scheduler
+        /// (and is by default)</param>
+        /// <returns>An initialized ObservableAsPropertyHelper; use this as the
+        /// backing field for your property.</returns>
         public static ObservableAsPropertyHelper<TRet> ObservableToProperty<TObj, TRet>(
             this TObj This,
             IObservable<TRet> observable,
@@ -97,14 +107,17 @@ namespace ReactiveXaml
         /// <summary>
         /// 
         /// </summary>
-        /// <typeparam name="TObj"></typeparam>
-        /// <typeparam name="TRet"></typeparam>
         /// <param name="This"></param>
         /// <param name="source"></param>
         /// <param name="property"></param>
         /// <param name="initialValue"></param>
         /// <param name="scheduler"></param>
-        /// <returns></returns>
+        /// <param name="initialValue">The initial value of the property.</param>
+        /// <param name="scheduler">The scheduler that the notifications will be
+        /// provided on - this should normally be a Dispatcher-based scheduler
+        /// (and is by default)</param>
+        /// <returns>An initialized ObservableAsPropertyHelper; use this as the
+        /// backing field for your property.</returns>
         public static ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(
             this IObservable<TRet> This,
             TObj source,

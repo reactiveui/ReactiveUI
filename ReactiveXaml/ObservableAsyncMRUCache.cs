@@ -7,11 +7,23 @@ using System.Threading;
 namespace ReactiveXaml
 {
     /// <summary>
-    /// 
+    /// ObservableAsyncMRUCache implements memoization for asynchronous or
+    /// expensive to compute methods. This memoization is an MRU-based cache
+    /// with a fixed limit for the number of items in the cache.     
+    ///
+    /// This class guarantees that only one calculation for any given key is
+    /// in-flight at a time, subsequent requests will wait for the first one and
+    /// return its results (for example, an empty web image cache that receives
+    /// two concurrent requests for "Foo.jpg" will only issue one WebRequest -
+    /// this does not mean that a request for "Bar.jpg" will wait on "Foo.jpg").
+    ///
+    /// Concurrency is also limited by the maxConcurrent parameter - when too
+    /// many in-flight operations are in progress, further operations will be
+    /// queued until a slot is available.
     /// </summary>
-    /// <typeparam name="TParam"></typeparam>
-    /// <typeparam name="TVal"></typeparam>
-    public class ObservableAsyncMRUCache<TParam, TVal> : IEnableLogger
+    /// <typeparam name="TParam">The key type.</typeparam>
+    /// <typeparam name="TVal">The type of the value to return from the cache.</typeparam>
+    public sealed class ObservableAsyncMRUCache<TParam, TVal> : IEnableLogger
     {
         readonly MemoizingMRUCache<TParam, IObservable<TVal>> _innerCache;
         readonly SemaphoreSubject<long> _callQueue;
@@ -19,17 +31,35 @@ namespace ReactiveXaml
         long currentCall = 0;
 
         /// <summary>
-        /// 
+        /// Constructs an ObservableAsyncMRUCache object.
         /// </summary>
-        /// <param name="func"></param>
-        /// <param name="maxSize"></param>
-        /// <param name="maxConcurrent"></param>
-        /// <param name="sched"></param>
-        /// <param name="onRelease"></param>
-        public ObservableAsyncMRUCache(Func<TParam, IObservable<TVal>> func, int maxSize, int maxConcurrent = 1, IScheduler sched = null, Action<TVal> onRelease = null)
+        /// <param name="calculationFunc">The function that performs the
+        /// expensive or asyncronous calculation and returns an async result -
+        /// for CPU-based operations, Observable.Return may be used to return
+        /// the result.
+        ///
+        /// Note that this function *must* return an equivalently-same result given a
+        /// specific input - because the function is being memoized, if the
+        /// calculationFunc depends on other varables other than the input
+        /// value, the results will be unpredictable.
+        /// </param>
+        /// <param name="maxSize">The number of items to cache. When this limit
+        /// is reached, not recently used items will be discarded.</param>
+        /// <param name="maxConcurrent">The maximum number of concurrent
+        /// asynchronous operations regardless of key - this is important for
+        /// web-based caches to limit the number of concurrent requests to a
+        /// server. The default is 5.</param>
+        /// <param name="onRelease">This optional method is called when an item
+        /// is evicted from the cache - this can be used to clean up / manage an
+        /// on-disk cache; the calculationFunc can download a file and save it
+        /// to a temporary folder, and the onRelease action will delete the
+        /// file.</param>
+        /// <param name="sched">The scheduler to run asynchronous operations on - defaults to TaskpoolScheduler</param>
+        public ObservableAsyncMRUCache(Func<TParam, IObservable<TVal>> calculationFunc, int maxSize, int maxConcurrent = 5, Action<TVal> onRelease = null, IScheduler sched = null)
         {
+            sched = sched ?? RxApp.TaskpoolScheduler;
             _callQueue = new SemaphoreSubject<long>(maxConcurrent, sched);
-            _fetcher = func;
+            _fetcher = calculationFunc;
 
             Action<IObservable<TVal>> release = null;
             if (onRelease != null) {
@@ -43,10 +73,13 @@ namespace ReactiveXaml
         }
 
         /// <summary>
-        /// 
+        /// Issues an request to fetch the value for the specified key as an
+        /// async operation. The Observable returned will fire one time when the
+        /// async operation finishes. If the operation is cached, an Observable
+        /// that immediately fires upon subscribing will be returned.
         /// </summary>
-        /// <param name="key"></param>
-        /// <returns></returns>
+        /// <param name="key">The key to provide to the calculation function.</param>
+        /// <returns>Returns an Observable representing the future result.</returns>
         public IObservable<TVal> AsyncGet(TParam key)
         {
             IObservable<TVal> result;
@@ -89,10 +122,12 @@ namespace ReactiveXaml
         }
 
         /// <summary>
-        /// 
+        /// The synchronous version of AsyncGet - it will issue a request for
+        /// the value of a specific key and wait until the value can be
+        /// provided.
         /// </summary>
-        /// <param name="key"></param>
-        /// <returns></returns>
+        /// <param name="key">The key to provide to the calculation function.</param>
+        /// <returns>The resulting value.</returns>
         public TVal Get(TParam key)
         {
             return AsyncGet(key).First();
