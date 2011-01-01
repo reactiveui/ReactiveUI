@@ -57,7 +57,8 @@ namespace ReactiveXaml
     }
 
     /// <summary>
-    /// 
+    /// IEnableLogger is a dummy interface - attaching it to any class will give
+    /// you access to the Log() method.
     /// </summary>
     public interface IEnableLogger { }
 
@@ -69,9 +70,9 @@ namespace ReactiveXaml
         readonly static ILog mruLogger = new NullLogger();
 
         /// <summary>
-        ///
+        /// Log returns the current logger object, which allows the object to
+        /// log messages with the type name attached.
         /// </summary>
-        /// <param name="This"></param>
         /// <returns></returns>
         public static ILog Log(this IEnableLogger This)
         {

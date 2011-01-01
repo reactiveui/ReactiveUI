@@ -53,10 +53,10 @@ namespace ReactiveXaml
         /// <summary>
         /// Evaluates the function provided, returning the cached value if possible
         /// </summary>
-        /// <param name="key"></param>
-        /// <param name="context"></param>
+        /// <param name="key">The value to pass to the calculation function.</param>
+        /// <param name="context">An additional optional user-specific parameter.</param>
         /// <returns></returns>
-        public TVal Get(TParam key, object context)
+        public TVal Get(TParam key, object context = null)
         {
             Contract.Requires(key != null);
 
