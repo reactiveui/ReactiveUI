@@ -260,21 +260,54 @@ namespace ReactiveXaml
         internal static PropertyInfo getPropertyInfoForProperty<TObj>(string prop_name) 
             where TObj : IReactiveNotifyPropertyChanged
         {
+            return getPropertyInfoForProperty(typeof(TObj), prop_name);
+        }
+
+        internal static PropertyInfo getPropertyInfoForProperty(Type type, string prop_name)
+        {
             Contract.Requires(prop_name != null);
             PropertyInfo pi;
 
 #if SILVERLIGHT
             lock(propInfoTypeCache) {
-                pi = propInfoTypeCache.Get(new Tuple<Type,string>(typeof(TObj), prop_name));
+                pi = propInfoTypeCache.Get(new Tuple<Type,string>(type, prop_name));
             }
 #else
-            pi = propInfoTypeCache.Get(new Tuple<Type,string>(typeof(TObj), prop_name));
+            pi = propInfoTypeCache.Get(new Tuple<Type,string>(type, prop_name));
 #endif 
 
             if (pi == null) {
                 throw new ArgumentException("You must declare a property named: " + prop_name);
             }
+
             return pi;
+        }
+    }
+
+    public static class ObservedChangedMixin
+    {
+        /// <summary>
+        /// Returns the current value of a property given a notification that it has changed.
+        /// </summary>
+        /// <returns>The current value of the property</returns>
+        public TValue GetValue<TSender, TValue>(this IObservedChange<TSender, TValue> This)
+        {
+            var pi = RxApp.getPropertyInfoForProperty(This.PropertyName);
+            return (TValue)pi.GetValue();
+        }
+
+        /// <summary>
+        /// Given a stream of notification changes, this method will convert the property changes to the current value
+        /// of the property.
+        /// </summary>
+        public IObservable<TValue> Value<TSender, TValue>(this IObservable<IObservedChange<TSender, TValue>> This)
+        {
+            return This.Select(x => {
+                if (x.Value != default(TValue)) {
+                    return x.Value;
+                }
+                return x.GetValue();
+            });
         }
     }
 }
