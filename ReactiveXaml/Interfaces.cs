@@ -30,7 +30,8 @@ namespace ReactiveXaml
         /// The value of the property that has changed. IMPORTANT NOTE: This
         /// property is often not set for performance reasons, unless you have
         /// explicitly requested an Observable for a property via a method such
-        /// as ObservableForProperty.
+        /// as ObservableForProperty. To retrieve the value for the property,
+        /// use the GetValue() extension method.
         /// </summary>
         TValue Value { get; }   
     }
