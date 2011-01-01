@@ -18,20 +18,23 @@ namespace System.Diagnostics.Contracts
 #endif
 
 #if WINDOWS_PHONE
-namespace System.Concurrency {}
-
-public class Lazy<T>
+namespace System.Concurrency 
 {
-    public Lazy(Func<T> ValueFetcher) 
+    internal class Lazy<T>
     {
-        _Value = ValueFetcher();
+        public Lazy(Func<T> ValueFetcher) 
+        {
+            _Value = ValueFetcher();
+        }
+
+        T _Value;
+        T Value {
+            get { return _Value; }
+        }
     }
 
-    T _Value;
-    T Value {
-        get { return _Value; }
-    }
 }
+
 #endif
 
 #if SILVERLIGHT || IOS
@@ -74,3 +77,5 @@ namespace System.Windows.Input
 }
 
 #endif
+
+// vim: tw=120 ts=4 sw=4 et :

@@ -11,13 +11,14 @@ namespace ReactiveXaml
     public static class DependencyPropertyMixin
     {
         /// <summary>
-        ///  
+        /// Creates an IObservable from an existing dependency property. Note
+        /// that this method is somewhat expensive and should not be called
+        /// frequently.
         /// </summary>
-        /// <typeparam name="TObj"></typeparam>
-        /// <typeparam name="TRet"></typeparam>
-        /// <param name="This"></param>
-        /// <param name="property"></param>
-        /// <returns></returns>
+        /// <param name="property">An Expression specifying the property to use
+        /// on the DependencyObject (e.g. x => x.SomeProperty)</param>
+        /// <returns>An Observable that fires whenever the DP changes, and never
+        /// completes.</returns>
         public static IObservable<ObservedChange<TObj, TRet>> ObservableFromDP<TObj, TRet>(this TObj This, Expression<Func<TObj, TRet>> property)
             where TObj : FrameworkElement
         {
