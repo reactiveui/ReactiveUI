@@ -17,6 +17,10 @@ using System.Collections.Concurrent;
 
 namespace ReactiveXaml
 {
+    /// <summary>
+    /// Use ObservableAsyncMRUCache instead, this class will bring you nothing
+    /// but heartbreak.
+    /// </summary>
     public sealed class QueuedAsyncMRUCache<TParam, TVal> : IEnableLogger, IDisposable
     {
         readonly MemoizingMRUCache<TParam, TVal> innerCache;
@@ -101,3 +105,5 @@ namespace ReactiveXaml
         }
     }
 }
+
+// vim: tw=120 ts=4 sw=4 et :

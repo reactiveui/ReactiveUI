@@ -6,17 +6,24 @@ using System.Diagnostics.Contracts;
 
 namespace ReactiveXaml
 {
-    /// <summary>
-    /// 
+    /// ReactiveAsyncCommand represents commands that run an asynchronous
+    /// operation in the background when invoked. The main benefit of this
+    /// command is that it will keep track of in-flight operations and
+    /// disable/enable CanExecute when there are too many of them (i.e. a
+    /// "Search" button shouldn't have many concurrent requests running if the
+    /// user clicks the button many times quickly)
     /// </summary>
     public class ReactiveAsyncCommand : ReactiveCommand
     {
         /// <summary>
-        /// 
+        /// Constructs a new ReactiveAsyncCommand.
         /// </summary>
-        /// <param name="canExecute"></param>
-        /// <param name="maximumConcurrent"></param>
-        /// <param name="scheduler"></param>
+        /// <param name="canExecute">An Observable representing when the command
+        /// can execute. If null, the Command can always execute.</param>
+        /// <param name="maximumConcurrent">The maximum number of in-flight
+        /// operations at a time - defaults to one.</param>
+        /// <param name="scheduler">The scheduler to run the asynchronous
+        /// operations on - defaults to the Taskpool scheduler.</param>
         public ReactiveAsyncCommand(IObservable<bool> canExecute = null, int maximumConcurrent = 1, IScheduler scheduler = null)
             : base(canExecute, scheduler)
         {
@@ -32,11 +39,24 @@ namespace ReactiveXaml
             commonCtor(maximumConcurrent, scheduler);
         }
 
+        /// <summary>
+        /// Create is a helper method to create a basic ReactiveAsyncCommand
+        /// in a non-Rx way, closer to how BackgroundWorker works.
+        /// </summary>
+        /// <param name="calculationFunc">The function that will calculate
+        /// results in the background</param>
+        /// <param name="callbackFunc">The method to be called once the
+        /// calculation function completes. This method is guaranteed to be
+        /// called on the UI thread.</param>
+        /// <param name="maximumConcurrent">The maximum number of in-flight
+        /// operations at a time - defaults to one.</param>
+        /// <param name="scheduler">The scheduler to run the asynchronous
+        /// operations on - defaults to the Taskpool scheduler.</param>
         public static ReactiveAsyncCommand Create<TRet>(
             Func<object, TRet> calculationFunc,
             Action<TRet> callbackFunc,
             Func<object, bool> canExecute = null, 
-            int maximumConcurrent = 0,
+            int maximumConcurrent = 1,
             IScheduler scheduler = null)
         {
             var ret = new ReactiveAsyncCommand(canExecute, maximumConcurrent, scheduler);
@@ -65,7 +85,11 @@ namespace ReactiveXaml
                     this._tooManyItems = (x >= maximumConcurrent && maximumConcurrent > 0);
                     canExecuteSubject.OnNext(!this._tooManyItems);
                 });
+
+            _maximumConcurrent = maximumConcurrent;
         }
+
+        int _maximumConcurrent;
 
         IScheduler _normalSched;
 
@@ -86,12 +110,15 @@ namespace ReactiveXaml
         }
 
         /// <summary>
-        /// 
+        /// RegisterAsyncFunction registers an asynchronous method that returns a result
+        /// to be called whenever the Command's Execute method is called.
         /// </summary>
-        /// <typeparam name="TResult"></typeparam>
-        /// <param name="calculationFunc"></param>
+        /// <param name="calculationFunc">The function to be run in the
+        /// background.</param>
         /// <param name="scheduler"></param>
-        /// <returns></returns>
+        /// <returns>An Observable that will fire on the UI thread once per
+        /// invocation of Execute, once the async method completes. Subscribe to
+        /// this to retrieve the result of the calculationFunc.</returns>
         public IObservable<TResult> RegisterAsyncFunction<TResult>(Func<object, TResult> calculationFunc, IScheduler scheduler = null)
         {
             Contract.Requires(calculationFunc != null);
@@ -108,11 +135,28 @@ namespace ReactiveXaml
         }
 
         /// <summary>
-        /// 
+        /// RegisterAsyncAction registers an asynchronous method that runs
+        /// whenever the Command's Execute method is called and doesn't return a
+        /// result.
         /// </summary>
-        /// <typeparam name="TResult"></typeparam>
-        /// <param name="calculationFunc"></param>
-        /// <returns></returns>
+        /// <param name="calculationFunc">The function to be run in the
+        /// background.</param>
+        public void RegisterAsyncAction(Action<object> calculationFunc)
+        {
+            Contract.Requires(calculationFunc != null);
+            RegisterAsyncFunction(x => { calculationFunc(x); return new Unit(); });
+        }
+
+        /// <summary>
+        /// RegisterAsyncObservable registers an Rx-based async method whose
+        /// results will be returned on the UI thread.
+        /// </summary>
+        /// <param name="calculationFunc">A calculation method that returns a
+        /// future result, such as a method returned via
+        /// Observable.FromAsyncPattern.</param>
+        /// <returns>An Observable representing the items returned by the
+        /// calculation result. Note that with this method it is possible with a
+        /// calculationFunc to return multiple items per invocation of Execute.</returns>
         public IObservable<TResult> RegisterAsyncObservable<TResult>(Func<object, IObservable<TResult>> calculationFunc)
         {
             Contract.Requires(calculationFunc != null);
@@ -127,59 +171,74 @@ namespace ReactiveXaml
         }
 
         /// <summary>
-        /// 
+        /// RegisterMemoizedFunction is similar to RegisterAsyncFunction, but
+        /// caches its results so that subsequent Execute calls with the same
+        /// CommandParameter will not need to be run in the background.         
         /// </summary>
-        /// <param name="asyncAction"></param>
-        /// <returns></returns>
-        public IDisposable RegisterAsyncAction(Action<object> asyncAction)
+        /// <param name="calculationFunc">The function that performs the
+        /// expensive or asyncronous calculation and returns the result.
+        ///
+        /// Note that this function *must* return an equivalently-same result given a
+        /// specific input - because the function is being memoized, if the
+        /// calculationFunc depends on other varables other than the input
+        /// value, the results will be unpredictable.
+        /// <param name="maxSize">The number of items to cache. When this limit
+        /// is reached, not recently used items will be discarded.</param>
+        /// <param name="onRelease">This optional method is called when an item
+        /// is evicted from the cache - this can be used to clean up / manage an
+        /// on-disk cache; the calculationFunc can download a file and save it
+        /// to a temporary folder, and the onRelease action will delete the
+        /// file.</param>
+        /// <param name="sched">The scheduler to run asynchronous operations on
+        /// - defaults to TaskpoolScheduler</param>
+        /// <returns>An Observable that will fire on the UI thread once per
+        /// invocation of Execute, once the async method completes. Subscribe to
+        /// this to retrieve the result of the calculationFunc.</returns>
+        public IObservable<TResult> RegisterMemoizedFunction<TResult>(Func<object, TResult> calculationFunc, int maxSize = 50, Action<TResult> onRelease = null, IScheduler sched = null)
         {
-            Contract.Requires(asyncAction != null);
+            Contract.Requires(calculationFunc != null);
+            Contract.Requires(maxSize > 0);
 
-            return RegisterAsyncFunction(x => { asyncAction(x); return new Unit(); })
-                .Subscribe();
+            sched = sched ?? RxApp.TaskpoolScheduler;
+            return RegisterMemoizedObservable(x => Observable.Return(calculationFunc(x), sched), _maximumConcurrent, maxSize, onRelease, sched);
         }
 
         /// <summary>
-        /// 
+        /// RegisterMemoizedObservable is similar to RegisterAsyncObservable, but
+        /// caches its results so that subsequent Execute calls with the same
+        /// CommandParameter will not need to be run in the background.         
         /// </summary>
-        /// <typeparam name="TResult"></typeparam>
-        /// <param name="calculationFunc"></param>
-        /// <param name="maxConcurrent"></param>
-        /// <param name="cacheSize"></param>
-        /// <param name="onRelease"></param>
-        /// <param name="scheduler"></param>
-        /// <returns></returns>
+        /// <param name="calculationFunc">The function that performs the
+        /// expensive or asyncronous calculation and returns the result.
+        ///
+        /// Note that this function *must* return an equivalently-same result given a
+        /// specific input - because the function is being memoized, if the
+        /// calculationFunc depends on other varables other than the input
+        /// value, the results will be unpredictable.
+        /// <param name="maxSize">The number of items to cache. When this limit
+        /// is reached, not recently used items will be discarded.</param>
+        /// <param name="onRelease">This optional method is called when an item
+        /// is evicted from the cache - this can be used to clean up / manage an
+        /// on-disk cache; the calculationFunc can download a file and save it
+        /// to a temporary folder, and the onRelease action will delete the
+        /// file.</param>
+        /// <param name="sched">The scheduler to run asynchronous operations on
+        /// - defaults to TaskpoolScheduler</param>
+        /// <returns>An Observable representing the items returned by the
+        /// calculation result. Note that with this method it is possible with a
+        /// calculationFunc to return multiple items per invocation of Execute.</returns>
         public IObservable<TResult> RegisterMemoizedObservable<TResult>(
             Func<object, IObservable<TResult>> calculationFunc, 
-            int maxConcurrent = 1,
-            int cacheSize = 50,
+            int maxSize = 50,
             Action<TResult> onRelease = null,  
-            IScheduler scheduler = null)
+            IScheduler sched = null)
         {
             Contract.Requires(calculationFunc != null);
-            Contract.Requires(cacheSize > 0);
+            Contract.Requires(maxSize > 0);
 
-            scheduler = scheduler ?? RxApp.TaskpoolScheduler;
-            var cache = new ObservableAsyncMRUCache<object, TResult>(calculationFunc, cacheSize, maxConcurrent, scheduler, onRelease);
+            sched = sched ?? RxApp.TaskpoolScheduler;
+            var cache = new ObservableAsyncMRUCache<object, TResult>(calculationFunc, maxSize, _maximumConcurrent, sched, onRelease);
             return this.RegisterAsyncObservable(cache.AsyncGet);
-        }
-
-        /// <summary>
-        ///
-        /// </summary>
-        /// <typeparam name="TResult"></typeparam>
-        /// <param name="calculationFunc"></param>
-        /// <param name="cacheSize"></param>
-        /// <param name="onRelease"></param>
-        /// <param name="scheduler"></param>
-        /// <returns></returns>
-        public IObservable<TResult> RegisterMemoizedFunction<TResult>(Func<object, TResult> calculationFunc, int cacheSize = 50, Action<TResult> onRelease = null, IScheduler scheduler = null)
-        {
-            Contract.Requires(calculationFunc != null);
-            Contract.Requires(cacheSize > 0);
-
-            scheduler = scheduler ?? RxApp.TaskpoolScheduler;
-            return RegisterMemoizedObservable(x => Observable.Return(calculationFunc(x), scheduler), 1, cacheSize, onRelease, scheduler);
         }
     }
 }
