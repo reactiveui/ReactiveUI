@@ -22,93 +22,130 @@ namespace ReactiveXaml.Serialization
     /// </summary>
     public class DictionaryStorageEngine : IStorageEngine
     {
-        string backingStorePath;
-        Dictionary<Guid, byte[]> allItems;
-        Dictionary<Guid, string> itemTypeNames;
-        Dictionary<string, Guid> syncPointIndex;
+        readonly string _backingStorePath;
+        Dictionary<Guid, byte[]> _allItems;
+        Dictionary<Guid, string> _itemTypeNames;
+        Dictionary<string, Guid> _syncPointIndex;
 
-        Func<object, IObjectSerializationProvider> serializerFactory;
+        Func<object, IObjectSerializationProvider> _serializerFactory;
 
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="Path"></param>
-        public DictionaryStorageEngine(string Path = null)
+        /// <param name="path"></param>
+        /// <param name="serializerFactory"></param>
+        public DictionaryStorageEngine(string path = null, Func<object, IObjectSerializationProvider> serializerFactory = null)
         {
-            backingStorePath = Path;
-
-            serializerFactory = (root => new JsonNetObjectSerializationProvider(this));
+            this._backingStorePath = path;
+            _serializerFactory = serializerFactory ?? (root => new JsonNetObjectSerializationProvider(this));
         }
 
-        public T Load<T>(Guid ContentHash) where T : ISerializableItem
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="contentHash"></param>
+        /// <returns></returns>
+        public T Load<T>(Guid contentHash) where T : ISerializableItem
         {
-            return (T)Load(ContentHash);
+            return (T)Load(contentHash);
         }
 
-        public object Load(Guid ContentHash)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="contentHash"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception">Engine is inconsistent</exception>
+        public object Load(Guid contentHash)
         {
             byte[] ret;
 
             initializeStoreIfNeeded();
-            if (!allItems.TryGetValue(ContentHash, out ret)) {
-                this.Log().ErrorFormat("Attempted to load '{0}', didn't exist!", ContentHash);
+            if (!this._allItems.TryGetValue(contentHash, out ret)) {
+                this.Log().ErrorFormat("Attempted to load '{0}', didn't exist!", contentHash);
                 return null;
             }
 
-            this.Log().DebugFormat("Loaded '{0}'", ContentHash);
+            this.Log().DebugFormat("Loaded '{0}'", contentHash);
 #if DEBUG
-            this.Log().Info(serializerFactory(ContentHash).SerializedDataToString(ret));
+            this.Log().Info(_serializerFactory(contentHash).SerializedDataToString(ret));
 #endif
-            var type = Utility.GetTypeByName(itemTypeNames[ContentHash]);
+            var type = Utility.GetTypeByName(this._itemTypeNames[contentHash]);
             if (type == null) {
-                this.Log().FatalFormat("Type '{0}' cannot be found", itemTypeNames[ContentHash]);
+                this.Log().FatalFormat("Type '{0}' cannot be found", this._itemTypeNames[contentHash]);
                 throw new Exception("Engine is inconsistent");
             }
-            return serializerFactory(ContentHash).Deserialize(ret, type);
+            return this._serializerFactory(contentHash).Deserialize(ret, type);
         }
 
-        public void Save<T>(T Obj) where T : ISerializableItem
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="obj"></param>
+        /// <exception cref="Exception">Cannot serialize object with zero ContentHash</exception>
+        public void Save<T>(T obj) where T : ISerializableItem
         {
             initializeStoreIfNeeded();
 
-            if (Obj.ContentHash == Guid.Empty) {
-                this.Log().ErrorFormat("Object of type '{0}' has a zero ContentHash", Obj.GetType());
+            if (obj.ContentHash == Guid.Empty) {
+                this.Log().ErrorFormat("Object of type '{0}' has a zero ContentHash", obj.GetType());
                 throw new Exception("Cannot serialize object with zero ContentHash");
             }
 
-            this.Log().DebugFormat("Saving '{0}", Obj.ContentHash);
-            allItems[Obj.ContentHash] = serializerFactory(Obj).Serialize(Obj);
-            itemTypeNames[Obj.ContentHash] = Obj.GetType().FullName;
+            this.Log().DebugFormat("Saving '{0}", obj.ContentHash);
+            this._allItems[obj.ContentHash] = this._serializerFactory(obj).Serialize(obj);
+            this._itemTypeNames[obj.ContentHash] = obj.GetType().FullName;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public void FlushChanges()
         {
-            if (backingStorePath == null) {
+            if (this._backingStorePath == null) {
                 return;
             }
 
             initializeStoreIfNeeded();
             this.Log().Info("Flushing changes");
-            var dseData = new DSESerializedObjects() {allItems = this.allItems, syncPointIndex = this.syncPointIndex, itemTypeNames = this.itemTypeNames};
+            var dseData = new DSESerializedObjects() {allItems = this._allItems, syncPointIndex = this._syncPointIndex, itemTypeNames = this._itemTypeNames};
 
-            using (var sw = getWriteStreamFromBackingStore(backingStorePath)) {
-                byte[] buf = serializerFactory(dseData).Serialize(dseData);
+            using (var sw = getWriteStreamFromBackingStore(this._backingStorePath)) {
+                byte[] buf = this._serializerFactory(dseData).Serialize(dseData);
                 sw.Write(buf, 0, buf.Length);
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public Guid[] GetAllObjectHashes()
         {
             initializeStoreIfNeeded();
-            return (allItems.Keys ?? Enumerable.Empty<Guid>()).ToArray();
+            return (this._allItems.Keys ?? Enumerable.Empty<Guid>()).ToArray();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public int GetObjectCount()
         {
             initializeStoreIfNeeded();
-            return allItems.Count;
+            return this._allItems.Count;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="obj"></param>
+        /// <param name="qualifier"></param>
+        /// <param name="createdOn"></param>
+        /// <returns></returns>
         public ISyncPointInformation CreateSyncPoint<T>(T obj, string qualifier = null, DateTimeOffset? createdOn = null)
             where T : ISerializableItem
         {
@@ -116,16 +153,22 @@ namespace ReactiveXaml.Serialization
             Save(obj);
 
             var key = getKeyFromQualifiedType(typeof (T), qualifier ?? String.Empty);
-            var parent = (syncPointIndex.ContainsKey(key) ? syncPointIndex[key] : Guid.Empty);
+            var parent = (this._syncPointIndex.ContainsKey(key) ? this._syncPointIndex[key] : Guid.Empty);
             var ret = new SyncPointInformation(obj.ContentHash, parent, typeof (T), qualifier ?? String.Empty, createdOn ?? RxApp.DeferredScheduler.Now);
             Save(ret);
-            syncPointIndex[key] = ret.ContentHash;
+            this._syncPointIndex[key] = ret.ContentHash;
 
             this.Log().InfoFormat("Created sync point: {0}.{1}", obj.ContentHash, qualifier);
 
             return ret;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="qualifier"></param>
+        /// <returns></returns>
         public Guid[] GetOrderedRevisionList(Type type, string qualifier = null)
         {
             initializeStoreIfNeeded();
@@ -133,11 +176,11 @@ namespace ReactiveXaml.Serialization
             var ret = new List<Guid>();
             var key = getKeyFromQualifiedType(type, qualifier ?? String.Empty);
 
-            if (!syncPointIndex.ContainsKey(key)) {
+            if (!this._syncPointIndex.ContainsKey(key)) {
                 return new Guid[0];
             }
 
-            var current = syncPointIndex[key];
+            var current = this._syncPointIndex[key];
             while(current != Guid.Empty) {
                 ret.Add(current);
 
@@ -155,8 +198,8 @@ namespace ReactiveXaml.Serialization
                 FlushChanges();
             }
 
-            allItems = null;
-            if (backingStorePath != null && !disposing)
+            this._allItems = null;
+            if (this._backingStorePath != null && !disposing)
                 throw new Exception("Always dispose the Storage Engine");
         }
 
@@ -173,32 +216,32 @@ namespace ReactiveXaml.Serialization
 
         void initializeStoreIfNeeded()
         {
-            if (allItems != null)
+            if (this._allItems != null)
                 return;
 
-            if (backingStorePath == null) {
-                allItems = new Dictionary<Guid, byte[]>();
-                syncPointIndex = new Dictionary<string, Guid>();
-                itemTypeNames = new Dictionary<Guid, string>();
+            if (this._backingStorePath == null) {
+                this._allItems = new Dictionary<Guid, byte[]>();
+                this._syncPointIndex = new Dictionary<string, Guid>();
+                this._itemTypeNames = new Dictionary<Guid, string>();
                 return;
             }
 
             try {
-                var serializer = serializerFactory(null);
+                var serializer = this._serializerFactory(null);
                 DSESerializedObjects dseData;
 
-                using (var sr = getReadStreamFromBackingStore(backingStorePath)) {
+                using (var sr = getReadStreamFromBackingStore(this._backingStorePath)) {
                     dseData = (DSESerializedObjects)serializer.Deserialize(sr.GetAllBytes(), typeof (DSESerializedObjects));
                 }
 
-                allItems = dseData.allItems;
-                syncPointIndex = dseData.syncPointIndex;
-                itemTypeNames = dseData.itemTypeNames;
+                this._allItems = dseData.allItems;
+                this._syncPointIndex = dseData.syncPointIndex;
+                this._itemTypeNames = dseData.itemTypeNames;
             } catch(FileNotFoundException) {
-                this.Log().WarnFormat("Backing store {0} not found, falling back to empty", backingStorePath);
-                allItems = new Dictionary<Guid, byte[]>();
-                syncPointIndex = new Dictionary<string, Guid>();
-                itemTypeNames = new Dictionary<Guid, string>();
+                this.Log().WarnFormat("Backing store {0} not found, falling back to empty", this._backingStorePath);
+                this._allItems = new Dictionary<Guid, byte[]>();
+                this._syncPointIndex = new Dictionary<string, Guid>();
+                this._itemTypeNames = new Dictionary<Guid, string>();
             }
         }
 
@@ -225,7 +268,6 @@ namespace ReactiveXaml.Serialization
         protected Stream getReadStreamFromBackingStore(string path) { return File.OpenRead(path); }
         protected Stream getWriteStreamFromBackingStore(string path) { return File.Open(path, FileMode.Create); }
 #endif
-
     }
 }
 

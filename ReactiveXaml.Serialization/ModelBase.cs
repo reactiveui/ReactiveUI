@@ -1,15 +1,18 @@
 ﻿using System;
-using System.Linq;
 using System.Runtime.Serialization;
-using System.ComponentModel;
-using System.Concurrency;
 
 namespace ReactiveXaml.Serialization
 {
 #if WINDOWS_PHONE
+    /// <summary>
+    /// 
+    /// </summary>
     [DataContract]
     public abstract class ModelBase : ReactiveObject, ISerializableItem
 #else
+    /// <summary>
+    /// 
+    /// </summary>
     [DataContract]
     public abstract class ModelBase : ReactiveValidatedObject, ISerializableItem
 #endif

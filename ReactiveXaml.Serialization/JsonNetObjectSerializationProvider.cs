@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Runtime.Serialization;
 using System.Threading;
 using Newtonsoft.Json;
@@ -16,6 +15,10 @@ namespace ReactiveXaml.Serialization
         ThreadLocal<SerializedItemsToGuidResolver> _guidResolver;
         ThreadLocal<JsonSerializer> _serializer;
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="engine"></param>
         public JsonNetObjectSerializationProvider(IStorageEngine engine = null)
         {
             _guidResolver = new ThreadLocal<SerializedItemsToGuidResolver>(() =>
@@ -25,6 +28,11 @@ namespace ReactiveXaml.Serialization
                 JsonSerializer.Create(new JsonSerializerSettings() {ContractResolver = _guidResolver.Value }));
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
         public byte[] Serialize(object obj)
         {
             var ms = new MemoryStream();
@@ -37,6 +45,12 @@ namespace ReactiveXaml.Serialization
             return ret;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="data"></param>
+        /// <param name="type"></param>
+        /// <returns></returns>
         public object Deserialize(byte[] data, Type type)
         {
             using (var reader = createReaderFromBytes(data)) {
@@ -47,6 +61,11 @@ namespace ReactiveXaml.Serialization
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
         public string SerializedDataToString(byte[] data)
         {
 #if DEBUG
@@ -75,11 +94,9 @@ namespace ReactiveXaml.Serialization
         }
     }
 
-    class GuidToSerializedItemsResolver : DefaultContractResolver
-    {
-        
-    }
-
+    /// <summary>
+    /// 
+    /// </summary>
     class SerializedItemsToGuidResolver : DefaultContractResolver, IEnableLogger
     {
         SerializableItemConverter _itemConverter;
@@ -145,6 +162,9 @@ namespace ReactiveXaml.Serialization
         }
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
     class SerializableItemConverter : JsonConverter
     {
         IStorageEngine _engine;
@@ -160,6 +180,7 @@ namespace ReactiveXaml.Serialization
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
+            // XXX: This is totally borked in Debug mode, fix it!
             if (reader.TokenType != JsonToken.Bytes) {
                 throw new Exception(String.Format("Expected bytes, got {0}", reader.Value));
             }
@@ -183,6 +204,9 @@ namespace ReactiveXaml.Serialization
         public Guid[] Items { get; set; }
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
     class SerializableListConverter : JsonConverter
     {
 
