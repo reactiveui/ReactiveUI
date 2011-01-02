@@ -21,16 +21,16 @@ namespace ReactiveXaml.Serialization.Esent
         Dictionary<string, Guid> _syncPointIndex;
         Dictionary<string, SortedSet<ISyncPointInformation>> _syncPoints;
 
-        Func<object, IObjectSerializationProvider> serializerFactory;
+        Func<object, IObjectSerializationProvider> _serializerFactory;
 
-        public EsentStorageEngine(string databasePath)
+        public EsentStorageEngine(string databasePath, Func<object, IObjectSerializationProvider> serializerFactory = null)
         {
             _backingStore = new PersistentDictionary<Guid, byte[]>(databasePath);
 #if DEBUG
             _backingStore.TraceSwitch.Level = System.Diagnostics.TraceLevel.Verbose;
 #endif
 
-            serializerFactory = (root => new JsonNetObjectSerializationProvider(this));
+            _serializerFactory = serializerFactory ?? (root => new JsonNetObjectSerializationProvider(this));
 
             loadOrInitializeMetadata();
         }
@@ -49,7 +49,7 @@ namespace ReactiveXaml.Serialization.Esent
             }
 
             this.Log().DebugFormat("Loaded {0}", contentHash);
-            return serializerFactory(contentHash).Deserialize(data, Utility.GetTypeByName(_itemTypeNames[contentHash]));
+            return this._serializerFactory(contentHash).Deserialize(data, Utility.GetTypeByName(_itemTypeNames[contentHash]));
         }
 
         public void Save<T>(T obj) where T : ISerializableItem
@@ -61,7 +61,7 @@ namespace ReactiveXaml.Serialization.Esent
 
             this.Log().DebugFormat("Saving {0}: {1}", obj, obj.ContentHash);
             _itemTypeNames[obj.ContentHash] = obj.GetType().FullName;
-            _backingStore[obj.ContentHash] = serializerFactory(obj).Serialize(obj);
+            _backingStore[obj.ContentHash] = this._serializerFactory(obj).Serialize(obj);
         }
 
         public void FlushChanges()
@@ -148,7 +148,7 @@ namespace ReactiveXaml.Serialization.Esent
 
                 persistMetadata();
             } else {
-                var metadata = (EsentPersistedMetadata)serializerFactory(Guid.Empty).Deserialize(data, typeof (EsentPersistedMetadata));
+                var metadata = (EsentPersistedMetadata)this._serializerFactory(Guid.Empty).Deserialize(data, typeof (EsentPersistedMetadata));
                 _itemTypeNames = metadata.ItemTypeNames;
                 _syncPointIndex = metadata.SyncPointIndex;
                 if (_itemTypeNames == null || _syncPointIndex == null) {
@@ -168,7 +168,7 @@ namespace ReactiveXaml.Serialization.Esent
 
         void persistMetadata() {
             var metadata = new EsentPersistedMetadata() { ItemTypeNames = _itemTypeNames, SyncPointIndex = _syncPointIndex };
-            _backingStore[Guid.Empty] = serializerFactory(metadata).Serialize(metadata);
+            _backingStore[Guid.Empty] = this._serializerFactory(metadata).Serialize(metadata);
         }
     }
 }
