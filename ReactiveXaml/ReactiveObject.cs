@@ -13,25 +13,22 @@ using System.Concurrency;
 namespace ReactiveXaml
 {
     /// <summary>
-    /// 
+    /// ReactiveObject is the base object for ViewModel classes, and it
+    /// implements INotifyPropertyChanged. In addition, ReactiveObject provides
+    /// Changing and Changed Observables to monitor object changes.
     /// </summary>
     [DataContract]
     public class ReactiveObject : IReactiveNotifyPropertyChanged
     {
-        /// <summary>
-        /// 
-        /// </summary>
         [field:IgnoreDataMember]
         public event PropertyChangingEventHandler PropertyChanging;
 
-        /// <summary>
-        /// 
-        /// </summary>
         [field:IgnoreDataMember]
         public event PropertyChangedEventHandler PropertyChanged;
 
         /// <summary>
-        /// 
+        /// Represents an Observable that fires *before* a property is about to
+        /// be changed.         
         /// </summary>
         [IgnoreDataMember]
         public IObservable<IObservedChange<object, object>> Changing {
@@ -39,7 +36,7 @@ namespace ReactiveXaml
         }
 
         /// <summary>
-        /// 
+        /// Represents an Observable that fires *after* a property has changed.
         /// </summary>
         [IgnoreDataMember]
         public IObservable<IObservedChange<object, object>> Changed {
@@ -81,9 +78,12 @@ namespace ReactiveXaml
         }
 
         /// <summary>
-        /// 
+        /// When this method is called, an object will not fire change
+        /// notifications (neither traditional nor Observable notifications)
+        /// until the return value is disposed.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>An object that, when disposed, reenables change
+        /// notifications.</returns>
         public IDisposable SuppressChangeNotifications()
         {
             Interlocked.Increment(ref changeNotificationsSuppressed);
@@ -183,12 +183,16 @@ namespace ReactiveXaml
     public static class ReactiveObjectExpressionMixin
     {
         /// <summary>
-        /// 
+        /// RaiseAndSetIfChanged fully implements a Setter for a read-write
+        /// property on a ReactiveObject, making the assumption that the
+        /// property has a backing field named "_NameOfProperty". To change this
+        /// assumption, set RxApp.GetFieldNameForPropertyNameFunc.
         /// </summary>
-        /// <param name="This"></param>
-        /// <param name="property"></param>
-        /// <param name="newValue"></param>
-        /// <returns></returns>
+        /// <param name="property">An Expression representing the property (i.e.
+        /// 'x => x.SomeProperty'</param>
+        /// <param name="newValue">The new value to set the property to, almost
+        /// always the 'value' keyword.</param>
+        /// <returns>The newly set value, normally discarded.</returns>
         public static TRet RaiseAndSetIfChanged<TObj, TRet>(
                 this TObj This, 
                 Expression<Func<TObj, TRet>> property, 
