@@ -39,9 +39,6 @@
     <Reference Include="Microsoft.Moles.Framework, Version=0.94.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.Pex.Framework, Version=0.94.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.Pex.Linq, Version=0.94.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
-    <Reference Include="Microsoft.Practices.ServiceLocation">
-      <HintPath>..\ReactiveXaml.Serialization\bin\Release\Microsoft.Practices.ServiceLocation.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -62,6 +59,7 @@
     <Reference Include="System.Reactive">
       <HintPath>..\ext\System.Reactive.dll</HintPath>
     </Reference>
+    <Reference Include="System.Reactive.ExtendedProfile, Version=1.0.2838.104, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="System.Reactive.Testing">
       <HintPath>..\ext\System.Reactive.Testing.dll</HintPath>
     </Reference>

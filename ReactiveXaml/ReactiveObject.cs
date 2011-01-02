@@ -8,6 +8,7 @@ using System.Linq.Expressions;
 using System.Diagnostics.Contracts;
 using System.Threading;
 using System.Disposables;
+using System.Concurrency;
 
 namespace ReactiveXaml
 {

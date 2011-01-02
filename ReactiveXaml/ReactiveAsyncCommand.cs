@@ -200,7 +200,7 @@ namespace ReactiveXaml
             Contract.Requires(maxSize > 0);
 
             sched = sched ?? RxApp.TaskpoolScheduler;
-            return RegisterMemoizedObservable(x => Observable.Return(calculationFunc(x), sched), _maximumConcurrent, maxSize, onRelease, sched);
+            return RegisterMemoizedObservable(x => Observable.Return(calculationFunc(x), sched), maxSize, onRelease, sched);
         }
 
         /// <summary>
@@ -237,7 +237,7 @@ namespace ReactiveXaml
             Contract.Requires(maxSize > 0);
 
             sched = sched ?? RxApp.TaskpoolScheduler;
-            var cache = new ObservableAsyncMRUCache<object, TResult>(calculationFunc, maxSize, _maximumConcurrent, sched, onRelease);
+            var cache = new ObservableAsyncMRUCache<object, TResult>(calculationFunc, maxSize, _maximumConcurrent, onRelease, sched);
             return this.RegisterAsyncObservable(cache.AsyncGet);
         }
     }
