@@ -22,7 +22,8 @@ namespace ReactiveXaml
         /// Given a stream of notification changes, this method will convert 
         /// the property changes to the current value of the property.
         /// </summary>
-        public static IObservable<TValue> Value<TSender, TValue>(this IObservable<IObservedChange<TSender, TValue>> This)
+        public static IObservable<TValue> Value<TSender, TValue>(
+		    this IObservable<IObservedChange<TSender, TValue>> This)
         {
             return This.Select(GetValue);
         }
@@ -31,10 +32,13 @@ namespace ReactiveXaml
         /// Given a stream of notification changes, this method will convert 
         /// the property changes to the current value of the property.
         /// </summary>
-        public static IObservable<TRet> Value<TSender, TValue, TRet>(this IObservable<IObservedChange<TSender, TValue>> This)
+        public static IObservable<TRet> Value<TSender, TValue, TRet>(
+                this IObservable<IObservedChange<TSender, TValue>> This)
         {
             // XXX: There is almost certainly a non-retarded way to do this
             return This.Select(x => (TRet)((object)GetValue(x)));
         }
     }
 }
+
+// vim: tw=120 ts=4 sw=4 et :

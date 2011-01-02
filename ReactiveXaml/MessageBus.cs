@@ -115,7 +115,11 @@ namespace ReactiveXaml
             get { return RxApp.MessageBus; }
         }
 
-        void withMessageBus(Type Type, string Contract, Action<Dictionary<Tuple<Type, string>, WeakReference>, Tuple<Type, string>> block)
+        void withMessageBus(
+            Type Type, 
+            string Contract, 
+            Action<Dictionary<Tuple<Type, string>, WeakReference>, 
+            Tuple<Type, string>> block)
         {
             lock(messageBus) {
                 var tuple = new Tuple<Type, String>(Type, Contract);
@@ -149,11 +153,13 @@ namespace ReactiveXaml
             }
 
             This.RegisterMessageSource(
-                (source as IObservable<PropertyChangedEventArgs>).Select(x => new ObservedChange<T, object>() { Sender = source, PropertyName = x.PropertyName }), 
+                (source as IObservable<PropertyChangedEventArgs>)
+                    .Select(x => new ObservedChange<T, object>() { Sender = source, PropertyName = x.PropertyName }), 
                 contractName);
 
             This.RegisterMessageSource(
-                 Observable.Defer(() => Observable.Return(source)), viewModelCurrentValueContractName(typeof(T), contract));
+                 Observable.Defer(() => Observable.Return(source)), 
+                 viewModelCurrentValueContractName(typeof(T), contract));
         }
 
         /// <summary>
@@ -164,7 +170,9 @@ namespace ReactiveXaml
         /// only used for one purpose, leave this as null.</param>
         /// <returns>An Observable that fires when an object changes and
         /// provides the property name that has changed.</returns>
-        public static IObservable<ObservedChange<T, object>> ListenToViewModel<T>(this IMessageBus This, string contract = null)
+        public static IObservable<ObservedChange<T, object>> ListenToViewModel<T>(
+            this IMessageBus This, 
+            string contract = null)
         {
             return This.Listen<ObservedChange<T, object>>(viewModelContractName(typeof(T), contract));
         }

@@ -34,7 +34,11 @@ namespace ReactiveXaml
         /// <param name="scheduler">The scheduler that the notifications will be
         /// provided on - this should normally be a Dispatcher-based scheduler
         /// (and is by default)</param>
-        public ObservableAsPropertyHelper(IObservable<T> observable, Action<T> onChanged, T initialValue = default(T), IScheduler scheduler = null)
+        public ObservableAsPropertyHelper(
+            IObservable<T> observable, 
+            Action<T> onChanged, 
+            T initialValue = default(T), 
+            IScheduler scheduler = null)
         {
             Contract.Requires(observable != null);
             Contract.Requires(onChanged != null);
@@ -87,11 +91,11 @@ namespace ReactiveXaml
         /// <returns>An initialized ObservableAsPropertyHelper; use this as the
         /// backing field for your property.</returns>
         public static ObservableAsPropertyHelper<TRet> ObservableToProperty<TObj, TRet>(
-            this TObj This,
-            IObservable<TRet> observable,
-            Expression<Func<TObj, TRet>> property,
-            TRet initialValue = default(TRet),
-            IScheduler scheduler = null)
+                this TObj This,
+                IObservable<TRet> observable,
+                Expression<Func<TObj, TRet>> property,
+                TRet initialValue = default(TRet),
+                IScheduler scheduler = null)
             where TObj : ReactiveObject
         {
             Contract.Requires(This != null);
@@ -99,19 +103,22 @@ namespace ReactiveXaml
             Contract.Requires(property != null);
 
             string prop_name = RxApp.expressionToPropertyName(property);
-	        var ret = new ObservableAsPropertyHelper<TRet>(observable, _ => This.raisePropertyChanged(prop_name), initialValue, scheduler);
+	        var ret = new ObservableAsPropertyHelper<TRet>(observable, 
+                _ => This.raisePropertyChanged(prop_name), 
+                initialValue, scheduler);
+
 	        This.Log().InfoFormat("OAPH {0:X} is for {1}", ret, prop_name);
 	        return ret;
         }
 
         /// <summary>
-        /// 
+        /// Converts an Observable to an ObservableAsPropertyHelper and
+        /// automatically provides the onChanged method to raise the property
+        /// changed notification.         
         /// </summary>
-        /// <param name="This"></param>
-        /// <param name="source"></param>
-        /// <param name="property"></param>
-        /// <param name="initialValue"></param>
-        /// <param name="scheduler"></param>
+        /// <param name="source">The ReactiveObject that has the property</param>
+        /// <param name="property">An Expression representing the property (i.e.
+        /// 'x => x.SomeProperty'</param>
         /// <param name="initialValue">The initial value of the property.</param>
         /// <param name="scheduler">The scheduler that the notifications will be
         /// provided on - this should normally be a Dispatcher-based scheduler
