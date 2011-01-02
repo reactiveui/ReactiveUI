@@ -82,6 +82,7 @@
     <Compile Include="MessageBus.cs" />
     <Compile Include="ObservableAsPropertyHelper.cs" />
     <Compile Include="ObservableAsyncMRUCache.cs" />
+    <Compile Include="ObservedChangedMixin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QueuedAsyncMRUCache.cs" />
     <Compile Include="ReactiveAsyncCommand.cs" />

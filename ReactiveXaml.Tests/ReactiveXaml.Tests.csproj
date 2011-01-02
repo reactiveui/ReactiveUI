@@ -80,6 +80,7 @@
     <Compile Include="MessageBusTest.cs" />
     <Compile Include="DependencyObjectMixinTest.cs" />
     <Compile Include="ObservableAsPropertyHelperTest.cs" />
+    <Compile Include="ObservedChangedMixinTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QueuedAsyncMRUCacheTest.cs" />
     <Compile Include="ReactiveCollectionTest.cs" />

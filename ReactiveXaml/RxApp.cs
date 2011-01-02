@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Concurrency;
 using System.Diagnostics.Contracts;
@@ -257,10 +258,9 @@ namespace ReactiveXaml
             return field;
         }
 
-        internal static PropertyInfo getPropertyInfoForProperty<TObj>(string prop_name) 
-            where TObj : IReactiveNotifyPropertyChanged
+        internal static PropertyInfo getPropertyInfoForProperty<TObj>(string prop_name)
         {
-            return getPropertyInfoForProperty(typeof(TObj), prop_name);
+            return getPropertyInfoForProperty(typeof (TObj), prop_name);
         }
 
         internal static PropertyInfo getPropertyInfoForProperty(Type type, string prop_name)
@@ -281,33 +281,6 @@ namespace ReactiveXaml
             }
 
             return pi;
-        }
-    }
-
-    public static class ObservedChangedMixin
-    {
-        /// <summary>
-        /// Returns the current value of a property given a notification that it has changed.
-        /// </summary>
-        /// <returns>The current value of the property</returns>
-        public TValue GetValue<TSender, TValue>(this IObservedChange<TSender, TValue> This)
-        {
-            var pi = RxApp.getPropertyInfoForProperty(This.PropertyName);
-            return (TValue)pi.GetValue();
-        }
-
-        /// <summary>
-        /// Given a stream of notification changes, this method will convert the property changes to the current value
-        /// of the property.
-        /// </summary>
-        public IObservable<TValue> Value<TSender, TValue>(this IObservable<IObservedChange<TSender, TValue>> This)
-        {
-            return This.Select(x => {
-                if (x.Value != default(TValue)) {
-                    return x.Value;
-                }
-                return x.GetValue();
-            });
         }
     }
 }
