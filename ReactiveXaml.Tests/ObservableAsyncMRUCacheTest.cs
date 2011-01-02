@@ -50,7 +50,7 @@ namespace ReactiveXaml.Tests
             var sched = new TestScheduler();
 
             var delay = TimeSpan.FromSeconds(1.0);
-            var fixture = new ObservableAsyncMRUCache<int, int>(x => Observable.Return(x*5).Delay(delay, sched), 5, 2);
+            var fixture = new ObservableAsyncMRUCache<int, int>(x => Observable.Return(x*5).Delay(delay, sched), 5, 2, null, sched);
 
             int result = 0;
             input.ToObservable(sched).SelectMany<int, int>(x => (IObservable<int>)fixture.AsyncGet(x)).Subscribe(x => result += x);
@@ -96,7 +96,7 @@ namespace ReactiveXaml.Tests
             var sched = new TestScheduler();
 
             var delay = TimeSpan.FromSeconds(1.0);
-            var fixture = new ObservableAsyncMRUCache<int, int>(x => Observable.Return(x*5).Delay(delay, sched), 5, 2);
+            var fixture = new ObservableAsyncMRUCache<int, int>(x => Observable.Return(x*5).Delay(delay, sched), 5, 2, null, sched);
 
             int result = 0;
             input.ToObservable(sched).SelectMany<int, int>(x => (IObservable<int>)fixture.AsyncGet(x)).Subscribe(x => result += x);
@@ -137,7 +137,7 @@ namespace ReactiveXaml.Tests
 
             var delay = TimeSpan.FromSeconds(1.0);
             var fixture = new ObservableAsyncMRUCache<int, int>(x => 
-                (x == 0 ? Observable.Throw<int>(new Exception("Boom!")) : Observable.Return(10 * x)).Delay(delay, sched), 5, 2, sched);
+                (x == 0 ? Observable.Throw<int>(new Exception("Boom!")) : Observable.Return(10 * x)).Delay(delay, sched), 5, 2, null, sched);
 
             Exception exception = null;
             int completed = 0;

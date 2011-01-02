@@ -168,7 +168,7 @@ namespace ReactiveXaml.Tests
             IObservable<int> async_data;
             ReactiveAsyncCommand fixture;
 
-            using (TestUtils.WithTestScheduler(sched)) {
+            using (TestUtils.WithScheduler(sched)) {
                 fixture = new ReactiveAsyncCommand(null, 1);
                 async_data = fixture
                     .Delay(TimeSpan.FromSeconds(5), RxApp.TaskpoolScheduler)
@@ -204,7 +204,7 @@ namespace ReactiveXaml.Tests
             var fixture = sched.With(_ => new ReactiveAsyncCommand(null, 1));
             ReactiveCollection<int> results;
 
-            using (TestUtils.WithTestScheduler(sched)) {
+            using (TestUtils.WithScheduler(sched)) {
                 results = fixture.RegisterAsyncObservable(_ => 
                     Observable.Return(5).Delay(TimeSpan.FromSeconds(5), sched)
                 ).CreateCollection();
@@ -230,25 +230,29 @@ namespace ReactiveXaml.Tests
         {
             var input = new[] { 1, 1, 1, 1, 1, 2, 2, 2, 2, 2 };
             var output = new[] { 5, 5, 5, 5, 5, 10, 10, 10, 10, 10 };
-            var fixture = new ReactiveAsyncCommand(null, 0);
+            var sched = new EventLoopScheduler();
             var results = new List<Timestamped<int>>();
 
-            fixture.RegisterMemoizedFunction<int>(x => { Thread.Sleep(1000); return ((int)x) * 5; })
-                   .Timestamp()
-                   .DebugObservable()
-                   .Subscribe(x => results.Add(x));
+            var start = sched.Now;
+            sched.With(_ => {
+                var fixture = new ReactiveAsyncCommand(null, 5, sched);
 
-            Assert.IsTrue(fixture.CanExecute(1));
+                fixture.RegisterMemoizedFunction(x => { Thread.Sleep(1000); return ((int) x) * 5; }, 50, null, sched)
+                    .Timestamp()
+                    .DebugObservable()
+                    .Subscribe(x => results.Add(x));
 
-            var start = DateTimeOffset.Now;
-            foreach(var i in input) {
-                Assert.IsTrue(fixture.CanExecute(i));
-                fixture.Execute(i);
-            }
+                Assert.IsTrue(fixture.CanExecute(1));
 
-            Thread.Sleep(2500);
+                foreach (var i in input) {
+                    Assert.IsTrue(fixture.CanExecute(i));
+                    fixture.Execute(i);
+                }
 
-            Assert.IsTrue(results.Count == 10);
+                Thread.Sleep(2500);
+            });
+
+            Assert.AreEqual(10, results.Count);
 
             this.Log().Info("Timestamp Deltas");
             results.Select(x => x.Timestamp - start)
@@ -262,6 +266,7 @@ namespace ReactiveXaml.Tests
         [TestMethod]
         public void MakeSureMemoizedReleaseFuncGetsCalled()
         {
+            Assert.Fail("When an item gets evicted from the cache before it has a chance to complete, it deadlocks. Fix it.");
             var input = new[] { 1, 1, 2, 2, 1, 1, 3, 3 };
             var output = new[] { 5, 5, 10, 10, 5, 5, 15, 15 };
 

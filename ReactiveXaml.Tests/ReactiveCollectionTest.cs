@@ -153,7 +153,7 @@ namespace ReactiveXaml.Tests
             var sched = new TestScheduler();
 
             ReactiveCollection<string> fixture;
-            using (TestUtils.WithTestScheduler(sched)) {
+            using (TestUtils.WithScheduler(sched)) {
                 fixture = input.ToObservable(sched).CreateCollection(TimeSpan.FromSeconds(0.5));
             }
 
