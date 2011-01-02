@@ -63,6 +63,7 @@ namespace ReactiveXaml
             } else {
                 Console.Error.WriteLine("Initializing to normal mode");
 #if IOS
+                // XXX: This should be an instance of NSRunloopScheduler
                 DeferredScheduler = new EventLoopScheduler();
 #else
                 DeferredScheduler = Scheduler.Dispatcher;
@@ -82,11 +83,19 @@ namespace ReactiveXaml
         static IScheduler _DeferredScheduler;
 
         /// <summary>
-        /// 
+        /// DeferredScheduler is the scheduler used to schedule work items that
+        /// should be run "on the UI thread". In normal mode, this will be
+        /// DispatcherScheduler, and in Unit Test mode this will be Immediate,
+        /// to simplify writing common unit tests.
         /// </summary>
         public static IScheduler DeferredScheduler {
             get { return _UnitTestDeferredScheduler ?? _DeferredScheduler; }
             set {
+                // N.B. The ThreadStatic dance here is for the unit test case -
+                // often, each test will override DeferredScheduler with their
+                // own TestScheduler, and if this wasn't ThreadStatic, they would
+                // stomp on each other, causing test cases to randomly fail,
+                // then pass when you rerun them.
                 if (InUnitTestRunner()) {
                     _UnitTestDeferredScheduler = value;
                     _DeferredScheduler = _DeferredScheduler ?? value;
@@ -100,7 +109,9 @@ namespace ReactiveXaml
         static IScheduler _TaskpoolScheduler;
 
         /// <summary>
-        ///  
+        /// TaskpoolScheduler is the scheduler used to schedule work items to
+        /// run in a background thread. In both modes, this will run on the TPL
+        /// Task Pool (or the normal Threadpool on Silverlight).
         /// </summary>
         public static IScheduler TaskpoolScheduler {
             get { return _UnitTestTaskpoolScheduler ?? _TaskpoolScheduler; }
@@ -115,12 +126,15 @@ namespace ReactiveXaml
         }
 
         /// <summary>
-        /// 
+        /// Set this property to implement a custom logger provider - the
+        /// string parameter is the 'prefix' (usually the class name of the log
+        /// entry)
         /// </summary>
         public static Func<string, ILog> LoggerFactory { get; set; }
 
         /// <summary>
-        /// 
+        /// Set this property to implement a custom MessageBus for
+        /// MessageBus.Current.
         /// </summary>
         public static IMessageBus MessageBus { get; set; }
 
@@ -130,19 +144,21 @@ namespace ReactiveXaml
 #endif
 
         /// <summary>
-        /// 
+        /// Set this property to override the default field naming convention
+        /// of "_PropertyName" with a custom one.
         /// </summary>
         public static Func<string, string> GetFieldNameForPropertyNameFunc { get; set; }
 
         /// <summary>
-        /// 
+        /// InUnitTestRunner attempts to determine heuristically if the current
+        /// application is running in a unit test framework.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>True if we have determined that a unit test framework is
+        /// currently running.</returns>
         public static bool InUnitTestRunner()
         {
             // XXX: This is hacky and evil, but I can't think of any better way
             // to do this
-
             string[] test_assemblies = new[] {
                 "CSUNIT",
                 "NUNIT",
@@ -193,10 +209,13 @@ namespace ReactiveXaml
 #endif
 
         /// <summary>
-        /// 
+        /// GetFieldNameForProperty returns the corresponding backing field name
+        /// for a given property name, using the convention specified in
+        /// GetFieldNameForPropertyNameFunc.
         /// </summary>
-        /// <param name="propertyName"></param>
-        /// <returns></returns>
+        /// <param name="propertyName">The name of the property whose backing
+        /// field needs to be found.</param>
+        /// <returns>The backing field name.</returns>
         public static string GetFieldNameForProperty(string propertyName)
         {
             return GetFieldNameForPropertyNameFunc(propertyName);
@@ -224,22 +243,26 @@ namespace ReactiveXaml
         }
 
 #if SILVERLIGHT
-        static MemoizingMRUCache<Tuple<Type, string>, FieldInfo> fieldInfoTypeCache = new MemoizingMRUCache<Tuple<Type,string>, FieldInfo>((x, _) =>
-            (x.Item1).GetField(RxApp.GetFieldNameForProperty(x.Item2)), 
-            15 /*items*/);
-        static MemoizingMRUCache<Tuple<Type, string>, PropertyInfo> propInfoTypeCache = new MemoizingMRUCache<Tuple<Type,string>, PropertyInfo>((x, _) =>
-            (x.Item1).GetProperty(x.Item2), 
-            15 /*items*/);
+        static MemoizingMRUCache<Tuple<Type, string>, FieldInfo> fieldInfoTypeCache = 
+            new MemoizingMRUCache<Tuple<Type,string>, FieldInfo>(
+                (x, _) => (x.Item1).GetField(RxApp.GetFieldNameForProperty(x.Item2)), 
+                15 /*items*/);
+        static MemoizingMRUCache<Tuple<Type, string>, PropertyInfo> propInfoTypeCache = 
+            new MemoizingMRUCache<Tuple<Type,string>, PropertyInfo>(
+                (x, _) => (x.Item1).GetProperty(x.Item2), 
+                15 /*items*/);
 #else
-        static MemoizingMRUCache<Tuple<Type, string>, FieldInfo> fieldInfoTypeCache = new MemoizingMRUCache<Tuple<Type,string>, FieldInfo>((x, _) => {
-            var field_name = RxApp.GetFieldNameForProperty(x.Item2);
-            var ret = (x.Item1).GetField(field_name, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-            return ret;
-        }, 50);
-        static MemoizingMRUCache<Tuple<Type, string>, PropertyInfo> propInfoTypeCache = new MemoizingMRUCache<Tuple<Type,string>, PropertyInfo>((x,_) => {
-            var ret = (x.Item1).GetProperty(x.Item2, BindingFlags.Public | BindingFlags.Instance);
-            return ret;
-        }, 50);
+        static MemoizingMRUCache<Tuple<Type, string>, FieldInfo> fieldInfoTypeCache = 
+            new MemoizingMRUCache<Tuple<Type,string>, FieldInfo>((x, _) => {
+                var field_name = RxApp.GetFieldNameForProperty(x.Item2);
+                var ret = (x.Item1).GetField(field_name, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                return ret;
+            }, 50 /*items*/);
+        static MemoizingMRUCache<Tuple<Type, string>, PropertyInfo> propInfoTypeCache = 
+            new MemoizingMRUCache<Tuple<Type,string>, PropertyInfo>((x,_) => {
+                var ret = (x.Item1).GetProperty(x.Item2, BindingFlags.Public | BindingFlags.Instance);
+                return ret;
+            }, 50/*items*/);
 #endif
 
         internal static FieldInfo getFieldInfoForProperty<TObj>(string prop_name) 
@@ -253,7 +276,8 @@ namespace ReactiveXaml
             }
 
             if (field == null) {
-                throw new ArgumentException("You must declare a backing field for this property named: " + RxApp.GetFieldNameForProperty(prop_name));
+                throw new ArgumentException("You must declare a backing field for this property named: " + 
+                    RxApp.GetFieldNameForProperty(prop_name));
             }
             return field;
         }
