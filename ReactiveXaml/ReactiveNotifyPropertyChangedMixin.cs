@@ -8,15 +8,22 @@ namespace ReactiveXaml
     public static class ReactiveNotifyPropertyChangedMixin
     {
         /// <summary>
-        /// 
+        /// ObservableForProperty returns an Observable representing the
+        /// property change notifications for a specific property on a
+        /// ReactiveObject. This method (unlike other Observables that return
+        /// IObservedChange) guarantees that the Value property of
+        /// the IObservedChange is set.
         /// </summary>
-        /// <typeparam name="TSender"></typeparam>
-        /// <typeparam name="TValue"></typeparam>
-        /// <param name="This"></param>
-        /// <param name="property"></param>
-        /// <param name="beforeChange"></param>
-        /// <returns></returns>
-        public static IObservable<IObservedChange<TSender, TValue>> ObservableForProperty<TSender, TValue>(this TSender This, Expression<Func<TSender, TValue>> property, bool beforeChange = false)
+        /// <param name="property">An Expression representing the property (i.e.
+        /// 'x => x.SomeProperty'</param>
+        /// <param name="beforeChange">If True, the Observable will notify
+        /// immediately before a property is going to change.</param>
+        /// <returns>An Observable representing the property change
+        /// notifications for the given property.</returns>
+        public static IObservable<IObservedChange<TSender, TValue>> ObservableForProperty<TSender, TValue>(
+                this TSender This, 
+                Expression<Func<TSender, TValue>> property, 
+                bool beforeChange = false)
             where TSender : IReactiveNotifyPropertyChanged
         {
             Contract.Requires(This != null);
@@ -42,18 +49,26 @@ namespace ReactiveXaml
                 });
         }
 
+        
         /// <summary>
-        /// 
+        /// ObservableForProperty returns an Observable representing the
+        /// property change notifications for a specific property on a
+        /// ReactiveObject, running the IObservedChange through a Selector
+        /// function.
         /// </summary>
-        /// <typeparam name="TSender"></typeparam>
-        /// <typeparam name="TValue"></typeparam>
-        /// <typeparam name="TRet"></typeparam>
-        /// <param name="This"></param>
-        /// <param name="property"></param>
-        /// <param name="selector"></param>
-        /// <param name="beforeChange"></param>
-        /// <returns></returns>
-        public static IObservable<TRet> ObservableForProperty<TSender, TValue, TRet>(this TSender This, Expression<Func<TSender, TValue>> property, Func<TValue, TRet> selector, bool beforeChange = false)
+        /// <param name="property">An Expression representing the property (i.e.
+        /// 'x => x.SomeProperty'</param>
+        /// <param name="selector">A Select function that will be run on each
+        /// item.</param>
+        /// <param name="beforeChange">If True, the Observable will notify
+        /// immediately before a property is going to change.</param>
+        /// <returns>An Observable representing the property change
+        /// notifications for the given property.</returns>
+        public static IObservable<TRet> ObservableForProperty<TSender, TValue, TRet>(
+                this TSender This, 
+                Expression<Func<TSender, TValue>> property, 
+                Func<TValue, TRet> selector, 
+                bool beforeChange = false)
             where TSender : IReactiveNotifyPropertyChanged
         {           
             Contract.Requires(selector != null);

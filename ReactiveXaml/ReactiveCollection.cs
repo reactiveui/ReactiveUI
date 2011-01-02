@@ -14,18 +14,19 @@ namespace ReactiveXaml
     /// <summary>
     /// 
     /// </summary>
-    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="T">The type of the objects in the collection.</typeparam>
     public class ReactiveCollection<T> : ObservableCollection<T>, IReactiveCollection<T>, IDisposable
     {
         /// <summary>
-        /// 
+        /// Constructs a ReactiveCollection.
         /// </summary>
         public ReactiveCollection() { setupRx(); }
 
         /// <summary>
-        /// 
+        /// Constructs a ReactiveCollection given an existing list.
         /// </summary>
-        /// <param name="list"></param>
+        /// <param name="list">The existing list with which to populate the new
+        /// list.</param>
         public ReactiveCollection(IEnumerable<T> list) { setupRx(list); }
 
         [OnDeserialized]
@@ -44,12 +45,21 @@ namespace ReactiveXaml
             var ocChangedEvent = Observable.FromEvent<NotifyCollectionChangedEventArgs>(this, "CollectionChanged");
 
             _ItemsAdded = ocChangedEvent
-                .Where(x => x.EventArgs.Action == NotifyCollectionChangedAction.Add || x.EventArgs.Action == NotifyCollectionChangedAction.Replace)
-                .SelectMany(x => (x.EventArgs.NewItems != null ? x.EventArgs.NewItems.OfType<T>() : Enumerable.Empty<T>()).ToObservable());
+                .Where(x => 
+                    x.EventArgs.Action == NotifyCollectionChangedAction.Add || 
+                    x.EventArgs.Action == NotifyCollectionChangedAction.Replace)
+                .SelectMany(x => 
+                    (x.EventArgs.NewItems != null ? x.EventArgs.NewItems.OfType<T>() : Enumerable.Empty<T>())
+                    .ToObservable());
 
             _ItemsRemoved = ocChangedEvent
-                .Where(x => x.EventArgs.Action == NotifyCollectionChangedAction.Remove || x.EventArgs.Action == NotifyCollectionChangedAction.Replace || x.EventArgs.Action == NotifyCollectionChangedAction.Reset)
-                .SelectMany(x => (x.EventArgs.OldItems != null ? x.EventArgs.OldItems.OfType<T>() : Enumerable.Empty<T>()).ToObservable());
+                .Where(x => 
+                    x.EventArgs.Action == NotifyCollectionChangedAction.Remove || 
+                    x.EventArgs.Action == NotifyCollectionChangedAction.Replace || 
+                    x.EventArgs.Action == NotifyCollectionChangedAction.Reset)
+                .SelectMany(x => 
+                    (x.EventArgs.OldItems != null ? x.EventArgs.OldItems.OfType<T>() : Enumerable.Empty<T>())
+                    .ToObservable());
 
             _CollectionCountChanging = Observable.Merge(
                 _BeforeItemsAdded.Select(_ => this.Count),
@@ -66,15 +76,22 @@ namespace ReactiveXaml
 
             // TODO: Fix up this selector nonsense once SL/WP7 gets Covariance
             _Changing = Observable.Merge(
-                _BeforeItemsAdded.Select<T, IObservedChange<object, object>>(x => new ObservedChange<object, object>() {PropertyName =  "Items", Sender = this, Value = this}),
-                _BeforeItemsRemoved.Select<T, IObservedChange<object, object>>(x => new ObservedChange<object, object>() {PropertyName =  "Items", Sender = this, Value = this}),
-                aboutToClear.Select<int, IObservedChange<object, object>>(x => new ObservedChange<object, object>() {PropertyName = "Items", Sender = this, Value = this}),
-                _ItemChanging.Select<IObservedChange<T, object>, IObservedChange <object, object>>(x => new ObservedChange<object, object>() {PropertyName = x.PropertyName, Sender = x.Sender, Value = x.Value}));
+                _BeforeItemsAdded.Select<T, IObservedChange<object, object>>(x => 
+                    new ObservedChange<object, object>() {PropertyName =  "Items", Sender = this, Value = this}),
+                _BeforeItemsRemoved.Select<T, IObservedChange<object, object>>(x => 
+                    new ObservedChange<object, object>() {PropertyName =  "Items", Sender = this, Value = this}),
+                aboutToClear.Select<int, IObservedChange<object, object>>(x => 
+                    new ObservedChange<object, object>() {PropertyName = "Items", Sender = this, Value = this}),
+                _ItemChanging.Select<IObservedChange<T, object>, IObservedChange <object, object>>(x => 
+                    new ObservedChange<object, object>() {PropertyName = x.PropertyName, Sender = x.Sender, Value = x.Value}));
 
             _Changed = Observable.Merge(
-                _ItemsAdded.Select<T, IObservedChange<object, object>>(x => new ObservedChange<object, object>() {PropertyName = "It ems", Sender = this, Value = this}),
-                _ItemsRemoved.Select<T, IObservedChange<object, object>>(x => new ObservedChange<object, object>() {PropertyName =  "Items", Sender = this, Value = this}),
-                _ItemChanged.Select<IObservedChange<T, object>, IObservedChange<object, object>>(x => new ObservedChange<object, object>() {PropertyName = x.PropertyName, Sender = x.Sender, Value = x.Value}));
+                _ItemsAdded.Select<T, IObservedChange<object, object>>(x => 
+                    new ObservedChange<object, object>() {PropertyName = "Items", Sender = this, Value = this}),
+                _ItemsRemoved.Select<T, IObservedChange<object, object>>(x => 
+                    new ObservedChange<object, object>() {PropertyName =  "Items", Sender = this, Value = this}),
+                _ItemChanged.Select<IObservedChange<T, object>, IObservedChange<object, object>>(x => 
+                    new ObservedChange<object, object>() {PropertyName = x.PropertyName, Sender = x.Sender, Value = x.Value}));
 
             _ItemsAdded.Subscribe(x => {
                 this.Log().DebugFormat("Item Added to {0:X} - {1}", this.GetHashCode(), x);
@@ -106,9 +123,11 @@ namespace ReactiveXaml
 
             var to_dispose = new[] {
                 item.Changing.Subscribe(before_change =>
-                    _ItemChanging.OnNext(new ObservedChange<T, object>() { Sender = toTrack, PropertyName = before_change.PropertyName })),
+                    _ItemChanging.OnNext(new ObservedChange<T, object>() { 
+                        Sender = toTrack, PropertyName = before_change.PropertyName })),
                 item.Changed.Subscribe(change => 
-                    _ItemChanged.OnNext(new ObservedChange<T,object>() { Sender = toTrack, PropertyName = change.PropertyName })),
+                    _ItemChanged.OnNext(new ObservedChange<T,object>() { 
+                        Sender = toTrack, PropertyName = change.PropertyName })),
             };
 
             propertyChangeWatchers.Add(toTrack, Disposable.Create(() => {
@@ -120,7 +139,9 @@ namespace ReactiveXaml
         protected IObservable<T> _ItemsAdded;
 
         /// <summary>
-        ///
+        /// Fires when items are added to the collection, once per item added.
+        /// Functions that add multiple items such AddRange should fire this
+        /// multiple times. The object provided is the item that was added.
         /// </summary>
         public IObservable<T> ItemsAdded {
             get { return _ItemsAdded.Where(_ => areChangeNotificationsEnabled); }
@@ -130,7 +151,7 @@ namespace ReactiveXaml
         protected Subject<T> _BeforeItemsAdded;
 
         /// <summary>
-        /// 
+        /// Fires before an item is going to be added to the collection.
         /// </summary>
         public IObservable<T> BeforeItemsAdded {
             get { return _BeforeItemsAdded.Where(_ => areChangeNotificationsEnabled); }
@@ -140,7 +161,8 @@ namespace ReactiveXaml
         protected IObservable<T> _ItemsRemoved;
 
         /// <summary>
-        /// 
+        /// Fires once an item has been removed from a collection, providing the
+        /// item that was removed.
         /// </summary>
         public IObservable<T> ItemsRemoved {
             get { return _ItemsRemoved.Where(_ => areChangeNotificationsEnabled); }
@@ -150,7 +172,8 @@ namespace ReactiveXaml
         protected Subject<T> _BeforeItemsRemoved;
 
         /// <summary>
-        /// 
+        /// Fires before an item will be removed from a collection, providing
+        /// the item that will be removed. 
         /// </summary>
         public IObservable<T> BeforeItemsRemoved {
             get { return _BeforeItemsRemoved.Where(_ => areChangeNotificationsEnabled); }
@@ -163,7 +186,8 @@ namespace ReactiveXaml
         protected IObservable<int> _CollectionCountChanging;
 
         /// <summary>
-        /// 
+        /// Fires before a collection is about to change, providing the previous
+        /// Count.
         /// </summary>
         public IObservable<int> CollectionCountChanging {
             get { return _CollectionCountChanging.Where(_ => areChangeNotificationsEnabled); }
@@ -173,7 +197,8 @@ namespace ReactiveXaml
         protected IObservable<int> _CollectionCountChanged;
 
         /// <summary>
-        /// 
+        /// Fires whenever the number of items in a collection has changed,
+        /// providing the new Count.
         /// </summary>
         public IObservable<int> CollectionCountChanged {
             get { return _CollectionCountChanged.Where(_ => areChangeNotificationsEnabled); }
@@ -183,7 +208,9 @@ namespace ReactiveXaml
         protected Subject<IObservedChange<T, object>> _ItemChanging;
 
         /// <summary>
-        /// 
+        /// Provides Item Changed notifications for any item in collection that
+        /// implements IReactiveNotifyPropertyChanged. This is only enabled when
+        /// ChangeTrackingEnabled is set to True.
         /// </summary>
         public IObservable<IObservedChange<T, object>> ItemChanging {
             get { return _ItemChanging.Where(_ => areChangeNotificationsEnabled); }
@@ -196,7 +223,8 @@ namespace ReactiveXaml
         protected Subject<IObservedChange<T, object>> _ItemChanged;
 
         /// <summary>
-        /// 
+        /// Provides Item Changing notifications for any item in collection that
+        /// implements IReactiveNotifyPropertyChanged. This is only enabled when
         /// </summary>
         public IObservable<IObservedChange<T, object>> ItemChanged {
             get { return _ItemChanged.Where(_ => areChangeNotificationsEnabled); }
@@ -209,7 +237,8 @@ namespace ReactiveXaml
         protected IObservable<IObservedChange<object, object>> _Changing;
 
         /// <summary>
-        /// 
+        /// Fires when anything in the collection or any of its items (if Change
+        /// Tracking is enabled) are about to change.
         /// </summary>
         public IObservable<IObservedChange<object, object>> Changing {
             get { return _Changing.Where(_ => areChangeNotificationsEnabled);  }
@@ -219,7 +248,8 @@ namespace ReactiveXaml
         protected IObservable<IObservedChange<object, object>> _Changed;
 
         /// <summary>
-        /// 
+        /// Fires when anything in the collection or any of its items (if Change
+        /// Tracking is enabled) have changed.
         /// </summary>
         public IObservable<IObservedChange<object, object>> Changed {
             get { return _Changed.Where(_ => areChangeNotificationsEnabled);  }
@@ -229,7 +259,10 @@ namespace ReactiveXaml
         public event PropertyChangingEventHandler PropertyChanging;
 
         /// <summary>
-        ///
+        /// Enables the ItemChanging and ItemChanged properties; when this is
+        /// enabled, whenever a property on any object implementing
+        /// IReactiveNotifyPropertyChanged changes, the change will be
+        /// rebroadcast through ItemChanging/ItemChanged.
         /// </summary>
         public bool ChangeTrackingEnabled {
             get { return (propertyChangeWatchers != null); }
@@ -294,7 +327,6 @@ namespace ReactiveXaml
             base.ClearItems();
         }
 
-
         public void Dispose()
         {
             ChangeTrackingEnabled = false;
@@ -304,9 +336,12 @@ namespace ReactiveXaml
         long changeNotificationsSuppressed = 0;
 
         /// <summary>
-        ///
+        /// When this method is called, an object will not fire change
+        /// notifications (neither traditional nor Observable notifications)
+        /// until the return value is disposed.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>An object that, when disposed, reenables change
+        /// notifications.</returns>
         public IDisposable SuppressChangeNotifications()
         {
             Interlocked.Increment(ref changeNotificationsSuppressed);
@@ -353,10 +388,12 @@ namespace ReactiveXaml
 
         event PropertyChangedEventHandler INotifyPropertyChanged.PropertyChanged {
             add {
-                _propertyChangedEventHandler = Delegate.Combine(_propertyChangedEventHandler, value) as PropertyChangedEventHandler;
+                _propertyChangedEventHandler = 
+                    Delegate.Combine(_propertyChangedEventHandler, value) as PropertyChangedEventHandler;
             }
             remove {
-                _propertyChangedEventHandler = Delegate.Remove(_propertyChangedEventHandler, value) as PropertyChangedEventHandler;
+                _propertyChangedEventHandler = 
+                    Delegate.Remove(_propertyChangedEventHandler, value) as PropertyChangedEventHandler;
             }
         }
 
@@ -383,13 +420,21 @@ namespace ReactiveXaml
     public static class ReactiveCollectionMixins
     {
         /// <summary>
-        /// 
+        /// Creates a collection based on an an Observable by adding items
+        /// provided until the Observable completes, optionally ensuring a
+        /// delay. Note that if the Observable never completes and withDelay is
+        /// set, this method will leak a Timer. This method also guarantees that
+        /// items are always added via the UI thread.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="fromObservable"></param>
-        /// <param name="withDelay"></param>
-        /// <returns></returns>
-        public static ReactiveCollection<T> CreateCollection<T>(this IObservable<T> fromObservable, TimeSpan? withDelay = null)
+        /// <param name="fromObservable">The Observable whose items will be put
+        /// into the new collection.</param>
+        /// <param name="withDelay">If set, items will be populated in the
+        /// collection no faster than the delay provided.</param>
+        /// <returns>A new collection which will be populated with the
+        /// Observable.</returns>
+        public static ReactiveCollection<T> CreateCollection<T>(
+            this IObservable<T> fromObservable, 
+            TimeSpan? withDelay = null)
         {
             var ret = new ReactiveCollection<T>();
             if (withDelay == null) {
@@ -399,8 +444,8 @@ namespace ReactiveXaml
 
             // On a timer, dequeue items from queue if they are available
             var queue = new Queue<T>();
-            var disconnect = Observable.Timer(withDelay.Value, withDelay.Value, RxApp.TaskpoolScheduler)
-                .ObserveOn(RxApp.DeferredScheduler).Subscribe(_ => {
+            var disconnect = Observable.Timer(withDelay.Value, withDelay.Value, RxApp.DeferredScheduler)
+                .Subscribe(_ => {
                     if (queue.Count > 0) { 
                         ret.Add(queue.Dequeue());
                     }
@@ -415,22 +460,31 @@ namespace ReactiveXaml
             // added and compare them to the final count of items provided by the
             // Observable. Combine the two values, and when they're equal, 
             // disconnect the timer
-            ret.ItemsAdded.Scan0(0, ((acc, _) => acc+1)).Zip(fromObservable.Aggregate(0, (acc,_) => acc+1), 
+            ret.ItemsAdded.Scan(0, ((acc, _) => acc+1)).Zip(fromObservable.Aggregate(0, (acc,_) => acc+1), 
                 (l,r) => (l == r)).Where(x => x).Subscribe(_ => disconnect.Dispose());
 
             return ret;
         }
 
         /// <summary>
-        /// 
+        /// Creates a collection based on an an Observable by adding items
+        /// provided until the Observable completes, optionally ensuring a
+        /// delay. Note that if the Observable never completes and withDelay is
+        /// set, this method will leak a Timer. This method also guarantees that
+        /// items are always added via the UI thread.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <typeparam name="TRet"></typeparam>
-        /// <param name="fromObservable"></param>
-        /// <param name="selector"></param>
-        /// <param name="withDelay"></param>
-        /// <returns></returns>
-        public static ReactiveCollection<TRet> CreateCollection<T, TRet>(this IObservable<T> fromObservable, Func<T, TRet> selector, TimeSpan? withDelay = null)
+        /// <param name="fromObservable">The Observable whose items will be put
+        /// into the new collection.</param>
+        /// <param name="selector">A Select function that will be run on each
+        /// item.</param>
+        /// <param name="withDelay">If set, items will be populated in the
+        /// collection no faster than the delay provided.</param>
+        /// <returns>A new collection which will be populated with the
+        /// Observable.</returns>
+        public static ReactiveCollection<TRet> CreateCollection<T, TRet>(
+            this IObservable<T> fromObservable, 
+            Func<T, TRet> selector, 
+            TimeSpan? withDelay = null)
         {
             Contract.Requires(selector != null);
             return fromObservable.Select(selector).CreateCollection(withDelay);
@@ -440,14 +494,18 @@ namespace ReactiveXaml
     public static class ObservableCollectionMixin
     {
         /// <summary>
-        /// 
+        /// Creates a collection whose contents will "follow" another
+        /// collection; this method is useful for creating ViewModel collections
+        /// that are automatically updated when the respective Model collection
+        /// is updated.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <typeparam name="TNew"></typeparam>
-        /// <param name="This"></param>
-        /// <param name="selector"></param>
-        /// <returns></returns>
-        public static ReactiveCollection<TNew> CreateDerivedCollection<T, TNew>(this ObservableCollection<T> This, Func<T, TNew> selector)
+        /// <param name="selector">A Select function that will be run on each
+        /// item.</param>
+        /// <returns>A new collection whose items are equivalent to
+        /// Collection.Select(selector) and will mirror the initial collection.</returns>
+        public static ReactiveCollection<TNew> CreateDerivedCollection<T, TNew>(
+            this ObservableCollection<T> This, 
+            Func<T, TNew> selector)
         {
             Contract.Requires(selector != null);
 #if !IOS    // Contract.Result is borked in Mono
