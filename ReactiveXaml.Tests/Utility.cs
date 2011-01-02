@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -11,9 +12,17 @@ namespace ReactiveXaml.Tests
             var left = lhs.ToArray();
             var right = rhs.ToArray();
 
-            Assert.AreEqual(left.Length, right.Length);
-            for(int i=0; i < left.Length; i++) {
-                Assert.AreEqual(left[i], right[i]);
+            try {
+                Assert.AreEqual(left.Length, right.Length);
+                for (int i = 0; i < left.Length; i++) {
+                    Assert.AreEqual(left[i], right[i]);
+                }
+            } catch {
+                Console.Error.WriteLine("lhs: [{0}]",
+                    String.Join(",", lhs.ToArray()));
+                Console.Error.WriteLine("rhs: [{0}]",
+                    String.Join(",", rhs.ToArray()));
+                throw;
             }
         }
     }
