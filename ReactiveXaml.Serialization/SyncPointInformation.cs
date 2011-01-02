@@ -1,12 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Runtime.Serialization;
-using System.Text;
 
 namespace ReactiveXaml.Serialization
 {
+    /// <summary>
+    /// 
+    /// </summary>
     [DataContract]
     public class SyncPointInformation : ReactiveObject, ISyncPointInformation, IComparable<ISyncPointInformation>, IEquatable<ISyncPointInformation>, IComparable
     {
@@ -24,10 +25,21 @@ namespace ReactiveXaml.Serialization
         [IgnoreDataMember]
         public Guid ContentHash { get; protected set; }
 
+        /// <summary>
+        /// DONT USE THIS. This only exists to make the serializer not throw a fit
+        /// </summary>
         public SyncPointInformation()
         {
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="rootObjectHash"></param>
+        /// <param name="parentSyncPoint"></param>
+        /// <param name="rootObjectType"></param>
+        /// <param name="qualifier"></param>
+        /// <param name="createdOn"></param>
         public SyncPointInformation(Guid rootObjectHash, Guid parentSyncPoint, Type rootObjectType, string qualifier, DateTimeOffset createdOn)
         {
             RootObjectHash = rootObjectHash;

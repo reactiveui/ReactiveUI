@@ -1,20 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Concurrency;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Security.Cryptography;
 using System.Text;
-using System.Concurrency;
 
 namespace ReactiveXaml.Serialization
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public class SerializedCollection<T> : ReactiveCollection<T>, ISerializableList<T>
         where T : ISerializableItem
     {
         static Guid inProgressGuid = new Guid(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1);
 
         [IgnoreDataMember] Guid _ContentHash;
+
+        /// <summary>
+        /// 
+        /// </summary>
         [IgnoreDataMember]
         public Guid ContentHash {
             get {
@@ -29,9 +37,15 @@ namespace ReactiveXaml.Serialization
             protected set { _ContentHash = value; }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         [DataMember]
         public Dictionary<Guid, DateTimeOffset> CreatedOn { get; protected set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
         [DataMember]
         public Dictionary<Guid, DateTimeOffset> UpdatedOn { get; protected set; }
 
@@ -46,10 +60,17 @@ namespace ReactiveXaml.Serialization
 
         IScheduler _sched;
         
+        /// <summary>
+        /// 
+        /// </summary>
         public SerializedCollection() : this(null)
         {
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sched"></param>
         public SerializedCollection(IScheduler sched = null)
         {
             CreatedOn = new Dictionary<Guid, DateTimeOffset>();
@@ -57,6 +78,13 @@ namespace ReactiveXaml.Serialization
             setupCollection(sched);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="items"></param>
+        /// <param name="sched"></param>
+        /// <param name="createdOn"></param>
+        /// <param name="updatedOn"></param>
         public SerializedCollection(IEnumerable<T> items,
             IScheduler sched = null,
             IDictionary<Guid, DateTimeOffset> createdOn = null,
@@ -131,11 +159,15 @@ namespace ReactiveXaml.Serialization
             return new Guid(md5.ComputeHash(buf.ToArray()));
         }
 
-        public virtual void invalidateHash()
+        protected virtual void invalidateHash()
         {
             ContentHash = Guid.Empty;
         }
 
+        /// <summary>
+        ///  
+        /// </summary>
+        /// <returns></returns>
         public Type GetBaseListType()
         {
             return typeof (T);

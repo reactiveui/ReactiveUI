@@ -15,25 +15,42 @@ using Newtonsoft.Json.Bson;
 
 namespace ReactiveXaml.Serialization
 {
+    /// <summary>
+    /// 
+    /// </summary>
 	public static class Utility
 	{
-	    public static bool ImplementsInterface(Type Target, Type InterfaceToCheck)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="target"></param>
+        /// <param name="interfaceToCheck"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException"><paramref name="target" /> is <c>null</c>.</exception>
+	    public static bool ImplementsInterface(Type target, Type interfaceToCheck)
         {
-            if (Target == null)
-                throw new ArgumentNullException("Target");
+            if (target == null)
+                throw new ArgumentNullException("target");
 
-            if (Target.GetInterfaces().Contains(InterfaceToCheck)) {
+            if (target.GetInterfaces().Contains(interfaceToCheck)) {
                 return true;
             }
 
-            if (Target.BaseType != typeof(object)) {
-                return ImplementsInterface(Target.BaseType, InterfaceToCheck);
+            if (target.BaseType != typeof(object)) {
+                return ImplementsInterface(target.BaseType, interfaceToCheck);
             }
 
             return false;
         }
 
-	    static Dictionary<string, Type> typeCache = new Dictionary<string,Type>();
+	    static readonly Dictionary<string, Type> typeCache = new Dictionary<string,Type>();
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="fullName"></param>
+        /// <param name="targetAssemblies"></param>
+        /// <returns></returns>
         public static Type GetTypeByName(string fullName, IEnumerable<Assembly> targetAssemblies = null)
         {
 #if SILVERLIGHT
@@ -68,6 +85,11 @@ namespace ReactiveXaml.Serialization
 
     public static class ModuleHelper
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="This"></param>
+        /// <returns></returns>
         public static Type[] SafeGetTypes(this Module This)
         {
             try {
@@ -80,6 +102,11 @@ namespace ReactiveXaml.Serialization
 
     public static class HelperExtensions
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
         public static byte[] MD5Hash(this string obj)
         {
             var md5 = MD5.Create();
@@ -87,6 +114,12 @@ namespace ReactiveXaml.Serialization
         }
 
         static ThreadLocal<JsonSerializer> _serializer = new ThreadLocal<JsonSerializer>(() => new JsonSerializer());
+        
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="This"></param>
+        /// <returns></returns>
         public static byte[] ObjectContentsHash(this object This)
         {
             var ms = new MemoryStream();
@@ -97,11 +130,26 @@ namespace ReactiveXaml.Serialization
             return md5.ComputeHash(ms.ToArray());
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="TKey"></typeparam>
+        /// <typeparam name="TVal"></typeparam>
+        /// <param name="This"></param>
+        /// <returns></returns>
         public static Dictionary<TKey, TVal> ToConcreteDictionary<TKey, TVal>(this IDictionary<TKey, TVal> This)
         {
             return This.Keys.ToDictionary(k => k, k => This[k]);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="TKey"></typeparam>
+        /// <typeparam name="TVal"></typeparam>
+        /// <param name="This"></param>
+        /// <param name="key"></param>
+        /// <returns></returns>
         public static TVal GetOrAdd<TKey, TVal>(this IDictionary<TKey, TVal> This, TKey key)
         {
             TVal ret;
@@ -114,6 +162,11 @@ namespace ReactiveXaml.Serialization
             return ret;
         }
 
+        /// <summary>
+        ///  
+        /// </summary>
+        /// <param name="This"></param>
+        /// <returns></returns>
         public static byte[] GetAllBytes(this Stream This)
         {
             byte[] buffer = new byte[4096];

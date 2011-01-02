@@ -1,11 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
 
 namespace ReactiveXaml.Serialization
 {
+    /// <summary>
+    ///
+    /// </summary>
     public static class RxStorage
     {
         static IExtendedStorageEngine _Engine;
@@ -23,7 +22,6 @@ namespace ReactiveXaml.Serialization
             }
         }
 
-
         static RxStorage()
         {
             if (RxApp.InUnitTestRunner()) {
@@ -34,6 +32,10 @@ namespace ReactiveXaml.Serialization
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="engine"></param>
         public static void InitializeWithEngine(IStorageEngine engine)
         {
             var extEngine = engine as IExtendedStorageEngine;
