@@ -20,7 +20,7 @@ namespace System.Diagnostics.Contracts
 #if WINDOWS_PHONE
 namespace System.Concurrency 
 {
-    internal class Lazy<T>
+    public class Lazy<T>
     {
         public Lazy(Func<T> ValueFetcher) 
         {
