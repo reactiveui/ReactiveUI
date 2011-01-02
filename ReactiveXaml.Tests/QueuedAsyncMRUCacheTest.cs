@@ -22,7 +22,7 @@ namespace ReactiveXaml.Tests
             QueuedAsyncMRUCache<int, int> fixture;
 
             var delay = TimeSpan.FromSeconds(1.0);
-            using (TestUtils.WithTestScheduler(sched)) {
+            using (TestUtils.WithScheduler(sched)) {
                 fixture = new QueuedAsyncMRUCache<int, int>(x => Observable.Return(x*5).Delay(delay, sched).First(), 5, 2);
             }
 
