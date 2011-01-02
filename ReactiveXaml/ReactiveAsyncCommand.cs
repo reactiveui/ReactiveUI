@@ -24,13 +24,19 @@ namespace ReactiveXaml
         /// operations at a time - defaults to one.</param>
         /// <param name="scheduler">The scheduler to run the asynchronous
         /// operations on - defaults to the Taskpool scheduler.</param>
-        public ReactiveAsyncCommand(IObservable<bool> canExecute = null, int maximumConcurrent = 1, IScheduler scheduler = null)
+        public ReactiveAsyncCommand(
+                IObservable<bool> canExecute = null, 
+                int maximumConcurrent = 1, 
+                IScheduler scheduler = null)
             : base(canExecute, scheduler)
         {
             commonCtor(maximumConcurrent, scheduler);
         }
 
-        protected ReactiveAsyncCommand(Func<object, bool> canExecute, int maximumConcurrent = 1, IScheduler scheduler = null)
+        protected ReactiveAsyncCommand(
+                Func<object, bool> canExecute, 
+                int maximumConcurrent = 1, 
+                IScheduler scheduler = null)
             : base(canExecute, scheduler)
         {
             Contract.Requires(maximumConcurrent > 0);
@@ -119,7 +125,9 @@ namespace ReactiveXaml
         /// <returns>An Observable that will fire on the UI thread once per
         /// invocation of Execute, once the async method completes. Subscribe to
         /// this to retrieve the result of the calculationFunc.</returns>
-        public IObservable<TResult> RegisterAsyncFunction<TResult>(Func<object, TResult> calculationFunc, IScheduler scheduler = null)
+        public IObservable<TResult> RegisterAsyncFunction<TResult>(
+            Func<object, TResult> calculationFunc, 
+            IScheduler scheduler = null)
         {
             Contract.Requires(calculationFunc != null);
 
@@ -128,7 +136,7 @@ namespace ReactiveXaml
 
             this.ObserveOn(scheduler)
                 .Select(calculationFunc)
-                .Do(_ => AsyncCompletedNotification.OnNext(new Unit()), _ => AsyncCompletedNotification.OnNext(new Unit()))
+                .Do(_ => AsyncCompletedNotification.OnNext(new Unit()))
                 .Subscribe(rebroadcast.OnNext, rebroadcast.OnError, rebroadcast.OnCompleted);
 
             return rebroadcast.ObserveOn(this._normalSched);
@@ -164,7 +172,7 @@ namespace ReactiveXaml
             var rebroadcast = new Subject<TResult>();
 
             this.SelectMany(calculationFunc)
-                .Do(_ => AsyncCompletedNotification.OnNext(new Unit()), _ => AsyncCompletedNotification.OnNext(new Unit()))
+                .Do(_ => AsyncCompletedNotification.OnNext(new Unit()))
                 .Subscribe(rebroadcast.OnNext, rebroadcast.OnError, rebroadcast.OnCompleted);
 
             return rebroadcast.ObserveOn(this._normalSched);
@@ -194,7 +202,11 @@ namespace ReactiveXaml
         /// <returns>An Observable that will fire on the UI thread once per
         /// invocation of Execute, once the async method completes. Subscribe to
         /// this to retrieve the result of the calculationFunc.</returns>
-        public IObservable<TResult> RegisterMemoizedFunction<TResult>(Func<object, TResult> calculationFunc, int maxSize = 50, Action<TResult> onRelease = null, IScheduler sched = null)
+        public IObservable<TResult> RegisterMemoizedFunction<TResult>(
+            Func<object, TResult> calculationFunc, 
+            int maxSize = 50, 
+            Action<TResult> onRelease = null, 
+            IScheduler sched = null)
         {
             Contract.Requires(calculationFunc != null);
             Contract.Requires(maxSize > 0);
@@ -237,7 +249,8 @@ namespace ReactiveXaml
             Contract.Requires(maxSize > 0);
 
             sched = sched ?? RxApp.TaskpoolScheduler;
-            var cache = new ObservableAsyncMRUCache<object, TResult>(calculationFunc, maxSize, _maximumConcurrent, onRelease, sched);
+            var cache = new ObservableAsyncMRUCache<object, TResult>(
+                calculationFunc, maxSize, _maximumConcurrent, onRelease, sched);
             return this.RegisterAsyncObservable(cache.AsyncGet);
         }
     }

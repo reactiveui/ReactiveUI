@@ -19,7 +19,9 @@ namespace ReactiveXaml
         /// on the DependencyObject (e.g. x => x.SomeProperty)</param>
         /// <returns>An Observable that fires whenever the DP changes, and never
         /// completes.</returns>
-        public static IObservable<ObservedChange<TObj, TRet>> ObservableFromDP<TObj, TRet>(this TObj This, Expression<Func<TObj, TRet>> property)
+        public static IObservable<ObservedChange<TObj, TRet>> ObservableFromDP<TObj, TRet>(
+                this TObj This, 
+                Expression<Func<TObj, TRet>> property)
             where TObj : FrameworkElement
         {
             Contract.Requires(This != null);
