@@ -13,7 +13,7 @@ namespace ReactiveXaml
     /// "Search" button shouldn't have many concurrent requests running if the
     /// user clicks the button many times quickly)
     /// </summary>
-    public class ReactiveAsyncCommand : ReactiveCommand
+    public class ReactiveAsyncCommand : ReactiveCommand, IReactiveAsyncCommand
     {
         /// <summary>
         /// Constructs a new ReactiveAsyncCommand.
@@ -72,12 +72,12 @@ namespace ReactiveXaml
             ItemsInflight = Observable.Merge(
                 this.Select(_ => 1),
                 AsyncCompletedNotification.Select(_ => -1)
-            ).Scan0(0, (acc, x) => {
+            ).Scan(0, (acc, x) => {
                 var ret = acc + x;
                 if (ret < 0)
                     throw new OverflowException("Reference count dropped below zero");
                 return ret;
-            });
+            }).Publish(new BehaviorSubject<int>(0));
 
             ItemsInflight
                 .Subscribe(x => {
@@ -95,14 +95,14 @@ namespace ReactiveXaml
 
         public IObservable<int> ItemsInflight { get; protected set; }
 
-        public Subject<Unit> AsyncCompletedNotification { get; protected set; }
+        public ISubject<Unit> AsyncCompletedNotification { get; protected set; }
 
         bool _tooManyItems = false;
         public override bool CanExecute(object parameter)
         {
             // HACK: Normally we shouldn't need this, but due to the way that
             // ReactiveCommand.CanExecute works when you provide an explicit
-            // Func<T>, it can "trump" the ItemsInFlight selector.
+            // Func<T>, it can "trump" the ItemsInflight selector.
             if (this._tooManyItems)
                 return false;
 
@@ -239,6 +239,14 @@ namespace ReactiveXaml
             sched = sched ?? RxApp.TaskpoolScheduler;
             var cache = new ObservableAsyncMRUCache<object, TResult>(calculationFunc, maxSize, _maximumConcurrent, onRelease, sched);
             return this.RegisterAsyncObservable(cache.AsyncGet);
+        }
+    }
+
+    public static class ReactiveAsyncCommandMixins
+    {
+        public static int CurrentItemsInFlight(this IReactiveAsyncCommand This)
+        {
+            return This.ItemsInflight.First();
         }
     }
 }

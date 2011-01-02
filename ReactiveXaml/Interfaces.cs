@@ -215,12 +215,12 @@ namespace ReactiveXaml
         /// Fires whenever the number of asynchronous operations in-flight (i.e.
         /// currently running) changes and provides the new Count.
         /// </summary>
-        IObservable<int> ItemsInFlight { get; }
+        IObservable<int> ItemsInflight { get; }
 
         /// <summary>
-        /// Fires whenever an async operation completes.
+        /// Should be fired whenever an async operation completes.
         /// </summary>
-        IObservable<Unit> AsyncCompletedNotification { get; }
+        ISubject<Unit> AsyncCompletedNotification { get; }
     }
 
     /// <summary>

@@ -176,6 +176,8 @@ namespace ReactiveXaml.Tests
                     .Do(_ => fixture.AsyncCompletedNotification.OnNext(new Unit()));
             }
 
+            Assert.AreEqual(0, fixture.CurrentItemsInFlight());
+
             var inflight_results = new List<int>();
             fixture.ItemsInflight.Subscribe(inflight_results.Add);
 
@@ -191,6 +193,7 @@ namespace ReactiveXaml.Tests
 
             sched.RunToMilliseconds(5005);
             Assert.IsTrue(fixture.CanExecute(null));
+            Assert.AreEqual(0, fixture.CurrentItemsInFlight());
 
             new[] {0,1,0}.AssertAreEqual(inflight_results);
             new[] {5}.AssertAreEqual(output);

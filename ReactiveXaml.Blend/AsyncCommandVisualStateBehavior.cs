@@ -76,7 +76,7 @@ namespace ReactiveXaml.Blend
                 This.watcher = null;
             }
 
-            This.watcher = cmd.ItemsInFlight.Zip(cmd.ItemsInFlight.Skip(1), (now, prev) => new { Now = now, Delta = now - prev })
+            This.watcher = cmd.ItemsInflight.Zip(cmd.ItemsInflight.Skip(1), (now, prev) => new { Now = now, Delta = now - prev })
                 .Subscribe(x => {
                     var state = (x.Delta > 0 ? This.ItemStartedState : This.OneItemCompletedState);
                     state = (x.Now == 0 && x.Delta < 0 ? This.AllItemsCompletedState : state);
