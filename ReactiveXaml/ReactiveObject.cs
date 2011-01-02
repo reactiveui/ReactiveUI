@@ -55,10 +55,12 @@ namespace ReactiveXaml
         protected Lazy<PropertyInfo[]> allPublicProperties;
 
         [IgnoreDataMember] 
-        readonly Subject<IObservedChange<object, object>> changingSubject = new Subject<IObservedChange<object, object>>();
+        readonly Subject<IObservedChange<object, object>> changingSubject = 
+            new Subject<IObservedChange<object, object>>();
 
         [IgnoreDataMember]
-        readonly Subject<IObservedChange<object, object>> changedSubject = new Subject<IObservedChange<object, object>>();
+        readonly Subject<IObservedChange<object, object>> changedSubject = 
+            new Subject<IObservedChange<object, object>>();
 
         [IgnoreDataMember]
         long changeNotificationsSuppressed = 0;
@@ -183,13 +185,14 @@ namespace ReactiveXaml
         /// <summary>
         /// 
         /// </summary>
-        /// <typeparam name="TObj"></typeparam>
-        /// <typeparam name="TRet"></typeparam>
         /// <param name="This"></param>
         /// <param name="property"></param>
         /// <param name="newValue"></param>
         /// <returns></returns>
-        public static TRet RaiseAndSetIfChanged<TObj, TRet>(this TObj This, Expression<Func<TObj, TRet>> property, TRet newValue)
+        public static TRet RaiseAndSetIfChanged<TObj, TRet>(
+                this TObj This, 
+                Expression<Func<TObj, TRet>> property, 
+                TRet newValue)
             where TObj : ReactiveObject
         {
             Contract.Requires(This != null);

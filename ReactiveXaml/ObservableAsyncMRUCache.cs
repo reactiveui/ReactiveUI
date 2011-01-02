@@ -54,8 +54,14 @@ namespace ReactiveXaml
         /// on-disk cache; the calculationFunc can download a file and save it
         /// to a temporary folder, and the onRelease action will delete the
         /// file.</param>
-        /// <param name="sched">The scheduler to run asynchronous operations on - defaults to TaskpoolScheduler</param>
-        public ObservableAsyncMRUCache(Func<TParam, IObservable<TVal>> calculationFunc, int maxSize, int maxConcurrent = 5, Action<TVal> onRelease = null, IScheduler sched = null)
+        /// <param name="sched">The scheduler to run asynchronous operations on
+        /// - defaults to TaskpoolScheduler</param>
+        public ObservableAsyncMRUCache(
+            Func<TParam, IObservable<TVal>> calculationFunc, 
+            int maxSize, 
+            int maxConcurrent = 5, 
+            Action<TVal> onRelease = null, 
+            IScheduler sched = null)
         {
             sched = sched ?? RxApp.TaskpoolScheduler;
             _callQueue = new SemaphoreSubject<long>(maxConcurrent, sched);
