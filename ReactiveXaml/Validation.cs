@@ -29,7 +29,7 @@ namespace ReactiveXaml
 
         static MemoizingMRUCache<Tuple<Type, string>, IEnumerable<ValidationAttribute>> validationAttributeMap 
             = new MemoizingMRUCache<Tuple<Type, string>, IEnumerable<ValidationAttribute>>((prop, _) => (
-                prop.Item1.GetProperty(prop.Item2)
+                RxApp.getPropertyInfoForProperty(prop.Item1, prop.Item2)
                     .GetCustomAttributes(typeof(ValidationAttribute), true)
                     .Cast<ValidationAttribute>()
             ), 25);        

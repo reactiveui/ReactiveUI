@@ -3,7 +3,7 @@ using System.Concurrency;
 
 namespace ReactiveXaml
 {
-    internal class StopwatchScheduler : IScheduler, IEnableLogger
+    public class StopwatchScheduler : IScheduler, IEnableLogger
     {
         readonly TimeSpan maxAllowedTime;
         readonly IScheduler innerSched;
