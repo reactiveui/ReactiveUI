@@ -3,7 +3,8 @@
 namespace ReactiveXaml.Serialization
 {
     /// <summary>
-    /// 
+    /// NullStorageEngine is a test implementation of IStorageEngine that
+    /// always returns zero results
     /// </summary>
     public class NullStorageEngine : IStorageEngine
     {

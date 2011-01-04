@@ -110,7 +110,7 @@ namespace ReactiveXaml.Serialization
         public static byte[] MD5Hash(this string obj)
         {
             var md5 = MD5.Create();
-            return md5.ComputeHash(Encoding.UTF8.GetBytes(obj));
+            return md5.ComputeHash(Encoding.Default.GetBytes(obj));
         }
 
         static ThreadLocal<JsonSerializer> _serializer = new ThreadLocal<JsonSerializer>(() => new JsonSerializer());

@@ -16,9 +16,9 @@ namespace ReactiveXaml.Serialization
         ThreadLocal<JsonSerializer> _serializer;
 
         /// <summary>
-        /// 
+        /// Constructs a new JsonNetObjectSerializationProvider.
         /// </summary>
-        /// <param name="engine"></param>
+        /// <param name="engine">The engine to de/serialize dependent sub-objects.</param>
         public JsonNetObjectSerializationProvider(IStorageEngine engine = null)
         {
             _guidResolver = new ThreadLocal<SerializedItemsToGuidResolver>(() =>
@@ -29,43 +29,50 @@ namespace ReactiveXaml.Serialization
         }
 
         /// <summary>
-        /// 
+        /// Write an object to memory, including serializing all of the child
+        /// objects in the object graph. In Debug mode, this writes out JSON
+        /// using Unicode encoding, and in Release mode this writes out BSON.
         /// </summary>
-        /// <param name="obj"></param>
-        /// <returns></returns>
+        /// <param name="obj">The root object to serialize to disk.</param>
+        /// <returns>A byte representation of the object.</returns>
         public byte[] Serialize(object obj)
         {
             var ms = new MemoryStream();
             using (var writer = createWriterFromMemoryStream(ms)) {
                 _guidResolver.Value.InitializeWithRootObject(obj);
-                JsonSerializer.Create(new JsonSerializerSettings() {ContractResolver = _guidResolver.Value}).Serialize(writer, obj);
-                //_serializer.Value.Serialize(writer, obj);
+                JsonSerializer
+                    .Create(new JsonSerializerSettings() {ContractResolver = _guidResolver.Value})
+                    .Serialize(writer, obj);
             }
             var ret = ms.ToArray();
             return ret;
         }
 
         /// <summary>
-        /// 
+        /// Reads an object from the data returned by Serialize.
         /// </summary>
-        /// <param name="data"></param>
-        /// <param name="type"></param>
-        /// <returns></returns>
+        /// <param name="data">The byte representation of the object.</param>
+        /// <param name="type">The type of the object to reconstruct.</param>
+        /// <returns>The deserialized object.</returns>
         public object Deserialize(byte[] data, Type type)
         {
             using (var reader = createReaderFromBytes(data)) {
                 var dummy = Activator.CreateInstance(type);
                 _guidResolver.Value.InitializeWithRootObject(dummy);
-                return JsonSerializer.Create(new JsonSerializerSettings() {ContractResolver = _guidResolver.Value}).Deserialize(reader, type);
-                //return _serializer.Value.Deserialize(reader, type);
+                return JsonSerializer
+                    .Create(new JsonSerializerSettings() {ContractResolver = _guidResolver.Value})
+                    .Deserialize(reader, type);
             }
         }
 
         /// <summary>
-        /// 
+        /// SerializedDataToString is a method used for debugging purposes to
+        /// dump a serialized object out as a string. Production
+        /// implementations are free to return an empty string.
         /// </summary>
-        /// <param name="data"></param>
-        /// <returns></returns>
+        /// <param name="data">A serialized object to examine.</param>
+        /// <returns>The string representation of the byte data (i.e. the JSON
+        /// string).</returns>
         public string SerializedDataToString(byte[] data)
         {
 #if DEBUG
@@ -95,7 +102,8 @@ namespace ReactiveXaml.Serialization
     }
 
     /// <summary>
-    /// 
+    /// This class decides what properties to serialize, and for each property,
+    /// whether we should hijack the serializer/deserializer.    
     /// </summary>
     class SerializedItemsToGuidResolver : DefaultContractResolver, IEnableLogger
     {
@@ -163,7 +171,8 @@ namespace ReactiveXaml.Serialization
     }
 
     /// <summary>
-    /// 
+    /// This class hijacks ISerializableItems and replaces them with their
+    /// content hash written out as bytes.
     /// </summary>
     class SerializableItemConverter : JsonConverter
     {
@@ -178,7 +187,11 @@ namespace ReactiveXaml.Serialization
             return (typeof (ISerializableItem).IsAssignableFrom(objectType));
         }
 
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        public override object ReadJson(
+            JsonReader reader, 
+            Type objectType, 
+            object existingValue, 
+            JsonSerializer serializer)
         {
             // XXX: This is totally borked in Debug mode, fix it!
             if (reader.TokenType != JsonToken.Bytes) {
@@ -205,11 +218,11 @@ namespace ReactiveXaml.Serialization
     }
 
     /// <summary>
-    /// 
+    /// This class hijacks ISerializableLists and replaces them with a custom
+    /// class representing the actual data.
     /// </summary>
     class SerializableListConverter : JsonConverter
     {
-
         IStorageEngine _engine;
         public SerializableListConverter(IStorageEngine engine = null)
         {
@@ -221,7 +234,11 @@ namespace ReactiveXaml.Serialization
             return (typeof (ISerializableList).IsAssignableFrom(objectType));
         }
 
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        public override object ReadJson(
+            JsonReader reader, 
+            Type objectType, 
+            object existingValue, 
+            JsonSerializer serializer)
         {
             var toRead = serializer.Deserialize<RawSerializedListData>(reader);
             return null;
@@ -241,3 +258,5 @@ namespace ReactiveXaml.Serialization
         }
     }
 }
+
+// vim: tw=120 ts=4 sw=4 et :

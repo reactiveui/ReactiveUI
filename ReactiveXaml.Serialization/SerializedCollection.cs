@@ -164,10 +164,6 @@ namespace ReactiveXaml.Serialization
             ContentHash = Guid.Empty;
         }
 
-        /// <summary>
-        ///  
-        /// </summary>
-        /// <returns></returns>
         public Type GetBaseListType()
         {
             return typeof (T);
