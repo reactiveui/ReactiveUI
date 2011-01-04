@@ -27,11 +27,11 @@ namespace ReactiveXamlSample.Tests
             // 50 is a valid Awesomeness Factor
             var target = createFixture();
             target.AwesomenessFactor = 50;
-            Assert.IsTrue(target.IsValid());
+            Assert.IsTrue(target.IsObjectValid());
 
             // Awesomeness Factors must be *even*, so this should now be invalid
             target.AwesomenessFactor = 49;
-            Assert.IsFalse(target.IsValid());
+            Assert.IsFalse(target.IsObjectValid());
         }
 
         [TestMethod()]
@@ -40,23 +40,23 @@ namespace ReactiveXamlSample.Tests
             // Foo is a valid name
             var target = createFixture();
             target.Name = "Foo";
-            Assert.IsTrue(target.IsValid());
+            Assert.IsTrue(target.IsObjectValid());
 
             // Names shouldn't be able to be null
             target.Name = null;
-            Assert.IsFalse(target.IsValid());
+            Assert.IsFalse(target.IsObjectValid());
 
             // Names shouldn't be too short
             target.Name = "a";
-            Assert.IsFalse(target.IsValid());
+            Assert.IsFalse(target.IsObjectValid());
 
             // Names shouldn't be too long
             target.Name = String.Join("", Enumerable.Range(0, 100).Select(x => "F"));
-            Assert.IsFalse(target.IsValid());
+            Assert.IsFalse(target.IsObjectValid());
 
             // Bamf is a valid name too
             target.Name = "Bamf";
-            Assert.IsTrue(target.IsValid());
+            Assert.IsTrue(target.IsObjectValid());
         }
 
         [TestMethod()]
@@ -68,8 +68,10 @@ namespace ReactiveXamlSample.Tests
 
             foreach(var testcase in tests.Zip(results, (test, result) => new {test, result})) {
                 target.PhoneNumber = testcase.test;
-                Assert.AreEqual(testcase.result, target.IsValid(), "Testcase: " + (testcase.test ?? "(null)"));
+                Assert.AreEqual(testcase.result, target.IsObjectValid(), "Testcase: " + (testcase.test ?? "(null)"));
             }
         }
+
+
     }
 }

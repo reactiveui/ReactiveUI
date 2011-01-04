@@ -19,87 +19,162 @@ namespace ReactiveXaml
         /// </summary>
         public ReactiveValidatedObject()
         {
-            //_IsValidObservable = new BehaviorSubject<bool>(this.IsValid());
+            this.Changed.Subscribe(x => {
+                if (x.Sender != this) {
+                    return;
+                }
 
-            this.PropertyChanged += (o, e) => {
-                if (errorMap.ContainsKey(e.PropertyName))
-                    errorMap.Remove(e.PropertyName);
-            };
+                if (_validationCache.ContainsKey(x.PropertyName)) {
+                    _validationCache.Remove(x.PropertyName);
+                }
+            });
+
+            _validatedPropertyCount = new Lazy<int>(() => {
+                lock(allValidatedProperties) {
+                    return allValidatedProperties.Get(this.GetType()).Count;
+                }
+            });
         }
 
-        static MemoizingMRUCache<Tuple<Type, string>, IEnumerable<ValidationAttribute>> validationAttributeMap 
-            = new MemoizingMRUCache<Tuple<Type, string>, IEnumerable<ValidationAttribute>>((prop, _) => (
-                RxApp.getPropertyInfoForProperty(prop.Item1, prop.Item2)
-                    .GetCustomAttributes(typeof(ValidationAttribute), true)
-                    .Cast<ValidationAttribute>()
-            ), 25);        
-
-        readonly Dictionary<string, string> errorMap = new Dictionary<string, string>();
-        
-        /// <summary>
-        /// 
-        /// </summary>
         [IgnoreDataMember]
         public string Error {
             get { return null; }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="propName"></param>
-        /// <returns></returns>
         [IgnoreDataMember]
-        public string this[string propName] {
+        public string this[string columnName] {
             get {
-                string ret = null;
-                if(!errorMap.TryGetValue(propName, out ret)) {
-                    ret = errorMap[propName] = calculatePropertyIsInvalid(propName);
+                string ret;
+                if (_validationCache.TryGetValue(columnName, out ret)) {
+                    return ret;
                 }
 
-                // NB: This is null in the constructor :-/
-                if (_IsValidObservable != null || false)
-                    _IsValidObservable.OnNext(errorMap.All(x => x.Value == null));
+                this.Log().DebugFormat("Checking {0:X}.{1}...", this.GetHashCode(), columnName);
+                ret = getPropertyValidationError(columnName);
+                this.Log().DebugFormat("Validation result: {0}", ret);
+
+                _validationCache[columnName] = ret;
+
+                _ValidationObservable.OnNext(new ObservedChange<object, bool>() {
+                    Sender = this, PropertyName = columnName, Value = (ret != null)
+                });
                 return ret;
             }
         }
 
+        public bool IsObjectValid()
+        {
+            if (_validationCache.Count == _validatedPropertyCount.Value) {
+                return _validationCache.Values.All(x => x == null);
+            }
 
-        BehaviorSubject<bool> _IsValidObservable;
+            IEnumerable<string> allProps;
+            lock (allValidatedProperties) {
+                allProps = allValidatedProperties.Get(GetType()).Keys;
+            };
 
-        /// <summary>
-        /// 
-        /// </summary>
+            return allProps.All(x => this[x] == null);
+        }
+
         [IgnoreDataMember]
-        public IObservable<bool> IsValidObservable {
-            get { return _IsValidObservable; }
+        readonly Subject<IObservedChange<object, bool>> _ValidationObservable = new Subject<IObservedChange<object, bool>>();
+
+        [IgnoreDataMember]
+        public IObservable<IObservedChange<object, bool>> ValidationObservable {
+            get { return _ValidationObservable;  }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        public bool IsValid()
-        {
-            foreach (var prop in allPublicProperties.Value) { var dontcare = this[prop.Name]; }
-            return errorMap.All(x => x.Value == null);
-        }
+        [IgnoreDataMember]
+        readonly Lazy<int> _validatedPropertyCount;
 
-        string calculatePropertyIsInvalid(string propName)
+        [IgnoreDataMember] 
+        readonly Dictionary<string, string> _validationCache = new Dictionary<string, string>();
+
+        static readonly MemoizingMRUCache<Type, Dictionary<string, PropertyExtraInfo>> allValidatedProperties =
+            new MemoizingMRUCache<Type, Dictionary<string, PropertyExtraInfo>>((x, _) =>
+                PropertyExtraInfo.CreateFromType(x).ToDictionary(k => k.PropertyName, v => v),
+                5);
+
+        string getPropertyValidationError(string propName)
         {
-            foreach(var v in validationAttributeMap.Get(new Tuple<Type,string>(GetType(), propName))) {
-                // FIXME: This is slow and retarded
-                try {
-                    var ctx = new ValidationContext(this, null, null) { MemberName = propName };
-                    v.Validate(GetType().GetProperty(propName).GetValue(this, null), ctx);
-                } catch(Exception ve) {
-                    this.Log().InfoFormat("{0:X}.{1} failed validation: {2}", 
-                        this.GetHashCode(), propName, ve.Message);
-                    return ve.Message;
+            PropertyExtraInfo pei;
+
+            lock (allValidatedProperties) {
+                if (!allValidatedProperties.Get(this.GetType()).TryGetValue(propName, out pei)) {
+                    return null;
                 }
             }
 
+            foreach(var v in pei.ValidationAttributes) {
+                try {
+                    var ctx = new ValidationContext(this, null, null) {MemberName = propName};
+                    var pi = RxApp.getPropertyInfoForProperty(pei.Type, propName);
+                    v.Validate(pi.GetValue(this, null), ctx);
+                } catch(Exception ex) {
+                    this.Log().InfoFormat("{0:X}.{1} failed validation: {2}", 
+                        this.GetHashCode(), propName, ex.Message);
+                    return ex.Message;
+                }
+            }
+            
             return null;
+        }
+    }
+
+    internal class PropertyExtraInfo : IComparable
+    {
+        string _typeFullName;
+        Type _Type;
+        public Type Type {
+            get { return _Type; }
+            set { _Type = value; _typeFullName = value.FullName; }
+        }
+
+        public string PropertyName { get; set; }
+        public ValidationAttribute[] ValidationAttributes { get; set; }
+
+        public static PropertyExtraInfo CreateFromTypeAndName(Type type, string propertyName, bool nullOnEmptyValidationAttrs = false)
+        {
+            object[] attrs;
+            var pi = RxApp.getPropertyInfoForProperty(type, propertyName);
+
+            if (pi == null) {
+                throw new ArgumentException("Property not found on type");
+            }
+
+            attrs = pi.GetCustomAttributes(typeof (ValidationAttribute), true) ?? new ValidationAttribute[0];
+            if (nullOnEmptyValidationAttrs && attrs.Length == 0) {
+                return null;
+            }
+
+            return new PropertyExtraInfo() {
+                Type = type,
+                PropertyName = propertyName,
+                ValidationAttributes = attrs.Cast<ValidationAttribute>().ToArray(),
+            };
+        }
+
+        public static PropertyExtraInfo[] CreateFromType(Type type)
+        {
+            return type.GetProperties()
+                .Select(x => CreateFromTypeAndName(type, x.Name, true))
+                .Where(x => x != null)
+                .ToArray();
+        }
+
+        public int CompareTo(object obj)
+        {
+            var rhs = obj as PropertyExtraInfo;
+            if (rhs == null) {
+                throw new ArgumentException();
+            }
+
+            int ret = 0;
+            if ((ret = this._typeFullName.CompareTo(rhs._typeFullName)) != 0) {
+                return ret;
+            }
+
+            return this.PropertyName.CompareTo(rhs.PropertyName);
         }
     }
 

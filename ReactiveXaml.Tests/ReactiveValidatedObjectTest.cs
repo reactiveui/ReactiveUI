@@ -17,6 +17,7 @@ namespace ReactiveXaml.Tests
         }
         
         string _IsOnlyOneWord;
+        [Required]
         [RegularExpression(@"^[a-zA-Z]+$")]
         public string IsOnlyOneWord {
             get { return _IsOnlyOneWord; }
@@ -34,30 +35,31 @@ namespace ReactiveXaml.Tests
     public class ReactiveValidatedObjectTest
     {
         [TestMethod()]
-        public void IsValidTest()
+        public void IsObjectValidTest()
         {
-            return;
             var output = new List<bool>();
             var fixture = new ValidatedTestFixture();
             //fixture.IsValidObservable.Subscribe(output.Add);
 
-            Assert.IsFalse(fixture.IsValid());
+            Assert.IsFalse(fixture.IsObjectValid());
 
             fixture.IsNotNullString = "foo";
-            Assert.IsFalse(fixture.IsValid());
+            Assert.IsFalse(fixture.IsObjectValid());
 
             fixture.IsOnlyOneWord = "Foo Bar";
-            Assert.IsFalse(fixture.IsValid());
+            Assert.IsFalse(fixture.IsObjectValid());
 
             fixture.IsOnlyOneWord = "Foo";
-            Assert.IsTrue(fixture.IsValid());
+            Assert.IsTrue(fixture.IsObjectValid());
 
             fixture.IsOnlyOneWord = "";
-            Assert.IsFalse(fixture.IsValid());
+            Assert.IsFalse(fixture.IsObjectValid());
 
+            /*
             new[] { false, false, false, true, false }.Zip(output, (expected, actual) => new { expected, actual })
                 .Do(Console.WriteLine)
                 .Run(x => Assert.AreEqual(x.expected, x.actual));
+             */
         }
     }
 }
