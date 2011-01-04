@@ -4,7 +4,11 @@ using System.Linq;
 namespace ReactiveXaml.Serialization
 {
     /// <summary>
-    /// 
+    /// This class is automatically used by RxStorage when the Engine is
+    /// initialized and the Engine class does not support
+    /// IExtendedStorageEngine; in this case, NaiveExtendedEngine wraps the
+    /// Engine and implements the extended methods in a very naive, brute-force
+    /// way.
     /// </summary>
     public sealed class NaiveExtendedEngine : IExtendedStorageEngine
     {

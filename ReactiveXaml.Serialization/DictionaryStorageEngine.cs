@@ -18,7 +18,12 @@ namespace ReactiveXaml.Serialization
     }
     
     /// <summary>
+    /// DictionaryStorageEngine is an implementation of IStorageEngine designed
+    /// for testing and debugging purposes; it stores all elements in memory,
+    /// and optionally persists its store to a JSON file or in Isolated Storage.
     /// 
+    /// This engine is only suited to very small production use-cases, as you
+    /// will almost certainly run out of memory with large collections.
     /// </summary>
     public class DictionaryStorageEngine : IStorageEngine
     {

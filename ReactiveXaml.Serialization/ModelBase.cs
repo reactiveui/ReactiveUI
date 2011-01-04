@@ -5,13 +5,25 @@ namespace ReactiveXaml.Serialization
 {
 #if WINDOWS_PHONE
     /// <summary>
-    /// 
+    /// ModelBase represents the base implementation of ISerializableItem and
+    /// handles a lot of the infrastructure plumbing around maintaining the
+    /// Content Hash.
+    ///
+    /// For objects who are frequently serialized/deserialized, derived classes
+    /// should override CalculateHash and implement it in a more specific
+    /// manner.
     /// </summary>
     [DataContract]
     public abstract class ModelBase : ReactiveObject, ISerializableItem
 #else
     /// <summary>
-    /// 
+    /// ModelBase represents the base implementation of ISerializableItem and
+    /// handles a lot of the infrastructure plumbing around maintaining the
+    /// Content Hash.
+    ///
+    /// For objects who are frequently serialized/deserialized, derived classes
+    /// should override CalculateHash and implement it in a more specific
+    /// manner.
     /// </summary>
     [DataContract]
     public abstract class ModelBase : ReactiveValidatedObject, ISerializableItem
