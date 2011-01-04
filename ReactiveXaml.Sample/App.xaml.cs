@@ -161,7 +161,7 @@ namespace ReactiveXamlSample
 
                 if (to_add == null)
                     return;
-                if (!to_add.IsValid())
+                if (!to_add.IsObjectValid())
                     return;
 
                 this.Log().DebugFormat("Adding '{0}'", to_add.Name);
