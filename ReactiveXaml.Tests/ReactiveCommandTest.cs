@@ -267,7 +267,7 @@ namespace ReactiveXaml.Tests
         [Fact]
         public void MakeSureMemoizedReleaseFuncGetsCalled()
         {
-            Assert.Fail("When an item gets evicted from the cache before it has a chance to complete, it deadlocks. Fix it.");
+            Assert.True(false, "When an item gets evicted from the cache before it has a chance to complete, it deadlocks. Fix it.");
             var input = new[] { 1, 1, 2, 2, 1, 1, 3, 3 };
             var output = new[] { 5, 5, 10, 10, 5, 5, 15, 15 };
 

@@ -1,5 +1,5 @@
 ﻿using System.Concurrency;
-using Xunit
+using Xunit;
 using System;
 using System.Linq;
 using System.Collections.Generic;
@@ -25,8 +25,8 @@ namespace ReactiveXaml.Tests
                 var fixture = new MessageBus();
 
                 fixture.RegisterMessageSource(source, "Test");
-                Assert.IsFalse(fixture.IsRegistered(typeof (int)));
-                Assert.IsFalse(fixture.IsRegistered(typeof (int), "Foo"));
+                Assert.False(fixture.IsRegistered(typeof (int)));
+                Assert.False(fixture.IsRegistered(typeof (int), "Foo"));
 
                 var output = fixture.Listen<int>("Test").CreateCollection();
 

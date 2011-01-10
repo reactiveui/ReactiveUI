@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace ReactiveXaml.Tests
 {
@@ -13,9 +13,9 @@ namespace ReactiveXaml.Tests
             var right = rhs.ToArray();
 
             try {
-                Assert.AreEqual(left.Length, right.Length);
+                Assert.Equal(left.Length, right.Length);
                 for (int i = 0; i < left.Length; i++) {
-                    Assert.AreEqual(left[i], right[i]);
+                    Assert.Equal(left[i], right[i]);
                 }
             } catch {
                 Console.Error.WriteLine("lhs: [{0}]",

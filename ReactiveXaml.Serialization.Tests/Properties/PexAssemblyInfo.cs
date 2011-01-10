@@ -10,14 +10,14 @@ using Microsoft.Pex.Framework.Using;
 using ReactiveXaml;
 
 // Microsoft.Pex.Framework.Settings
-[assembly: PexAssemblySettings(TestFramework = "VisualStudioUnitTest")]
+//[assembly: PexAssemblySettings(TestFramework = "Xunit")]
 
 // Microsoft.Pex.Framework.Instrumentation
 [assembly: PexAssemblyUnderTest("ReactiveXaml.Serialization")]
+[assembly: PexInstrumentAssembly("Newtonsoft.Json")]
 [assembly: PexInstrumentAssembly("System.CoreEx")]
 [assembly: PexInstrumentAssembly("System.Reactive")]
 [assembly: PexInstrumentAssembly("System.Core")]
-[assembly: PexInstrumentAssembly("System.Runtime.Serialization")]
 [assembly: PexInstrumentAssembly("ReactiveXaml")]
 
 // Microsoft.Pex.Framework.Creatable

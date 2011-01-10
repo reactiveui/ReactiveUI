@@ -90,7 +90,7 @@ namespace ReactiveXaml.Tests
             bool should_die = true;
             results.ItemsAdded.Subscribe(_ => should_die = false);
             results.Add("Foobar");
-            Assert.IsFalse(should_die);
+            Assert.False(should_die);
         }
 
         [Fact]

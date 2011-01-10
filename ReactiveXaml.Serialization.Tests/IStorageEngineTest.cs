@@ -3,7 +3,7 @@ using System.Concurrency;
 using System.IO;
 using System.Linq;
 using System.Threading;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using ReactiveXaml.Testing;
 using ReactiveXaml.Tests;
 

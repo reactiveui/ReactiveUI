@@ -148,15 +148,15 @@ namespace ReactiveXaml.Tests
                 }, ex => exception = exception ?? ex);
 
             sched.RunTo(sched.FromTimeSpan(TimeSpan.FromMilliseconds(500)));
-            Assert.IsNull(exception);
+            Assert.Null(exception);
             Assert.Equal(0, completed);
 
             sched.RunTo(sched.FromTimeSpan(TimeSpan.FromMilliseconds(1500)));
-            Assert.IsNotNull(exception);
+            Assert.NotNull(exception);
             Assert.Equal(2, completed);
 
             sched.RunTo(sched.FromTimeSpan(TimeSpan.FromMilliseconds(7500)));
-            Assert.IsNotNull(exception);
+            Assert.NotNull(exception);
             Assert.Equal(4, completed);
             this.Log().Info(exception);
         }

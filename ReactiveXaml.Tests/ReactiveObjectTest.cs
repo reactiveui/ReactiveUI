@@ -74,8 +74,7 @@ namespace ReactiveXaml.Tests
         [Fact]
         public void SubscriptionExceptionsShouldntPermakillReactiveObject()
         {
-            return;
-            Assert.Inconclusive("This test doesn't work yet");
+            Assert.True(false, "This test doesn't work yet");
 
             var fixture = new TestFixture();
             int i = 0;
