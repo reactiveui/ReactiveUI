@@ -65,7 +65,13 @@ namespace ReactiveXaml
         public bool IsObjectValid()
         {
             if (_validationCache.Count == _validatedPropertyCount.Value) {
-                return _validationCache.Values.All(x => x == null);
+                //return _validationCache.Values.All(x => x == null);
+                foreach(var v in _validationCache.Values) {
+                    if (v != null) {
+                        return false;
+                    }
+                }
+                return true;
             }
 
             IEnumerable<string> allProps;
@@ -73,7 +79,13 @@ namespace ReactiveXaml
                 allProps = allValidatedProperties.Get(GetType()).Keys;
             };
 
-            return allProps.All(x => this[x] == null);
+            //return allProps.All(x => this[x] == null);
+            foreach(var v in allProps) {
+                if (this[v] != null) {
+                    return false;
+                }
+            }
+            return true;
         }
 
         [IgnoreDataMember]
