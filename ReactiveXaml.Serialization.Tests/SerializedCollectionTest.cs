@@ -4,7 +4,7 @@ using System.Concurrency;
 using System.Linq;
 using System.Text;
 using Microsoft.Pex.Framework;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using ReactiveXaml.Testing;
 using ReactiveXaml.Tests;
 
@@ -71,14 +71,14 @@ namespace ReactiveXaml.Serialization.Tests
             PexAssume.IsNotNullOrEmpty(items);
             PexAssume.TrueForAll(items, x => x != null);
             PexAssume.AreDistinctReferences(items);
-            PexAssume.True(toChange >= 0 && toChange < items.Length);
+            PexAssume.IsTrue(toChange >= 0 && toChange < items.Length);
 
             var sched = new TestScheduler();
             var fixture = sched.With(_ => new SerializedCollection<ModelTestFixture>(
                 items.Select(x => new ModelTestFixture() {TestString = x})));
             bool shouldDie = true;
             var hashBefore = fixture.ContentHash;
-            PexAssume.NotEqual(newValue, fixture[toChange].TestString);
+            PexAssume.AreNotEqual(newValue, fixture[toChange].TestString);
 
             fixture.ItemChanged.Subscribe(_ => shouldDie = false);
             Observable.Return(newValue, sched).Subscribe(x => fixture[toChange].TestString = x);

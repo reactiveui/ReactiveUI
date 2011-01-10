@@ -40,19 +40,19 @@ namespace ReactiveXaml.Tests
             var fixture = new ValidatedTestFixture();
             //fixture.IsValidObservable.Subscribe(output.Add);
 
-            Assert.IsFalse(fixture.IsObjectValid());
+            Assert.False(fixture.IsObjectValid());
 
             fixture.IsNotNullString = "foo";
-            Assert.IsFalse(fixture.IsObjectValid());
+            Assert.False(fixture.IsObjectValid());
 
             fixture.IsOnlyOneWord = "Foo Bar";
-            Assert.IsFalse(fixture.IsObjectValid());
+            Assert.False(fixture.IsObjectValid());
 
             fixture.IsOnlyOneWord = "Foo";
-            Assert.IsTrue(fixture.IsObjectValid());
+            Assert.True(fixture.IsObjectValid());
 
             fixture.IsOnlyOneWord = "";
-            Assert.IsFalse(fixture.IsObjectValid());
+            Assert.False(fixture.IsObjectValid());
 
             /*
             new[] { false, false, false, true, false }.Zip(output, (expected, actual) => new { expected, actual })

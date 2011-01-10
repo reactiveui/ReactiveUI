@@ -1,5 +1,5 @@
 ﻿using ReactiveXaml;
-using Xunit
+using Xunit;
 using System;
 using System.Linq;
 using System.Concurrency;
