@@ -97,7 +97,6 @@
     <Compile Include="RxStorage.cs" />
     <Compile Include="SerializedCollection.cs" />
     <Compile Include="SyncPointInformation.cs" />
-    <Compile Include="ThreadLocal.cs" />
     <Compile Include="Utility.cs" />
   </ItemGroup>
   <ItemGroup>

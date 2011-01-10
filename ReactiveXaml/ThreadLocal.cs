@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 
-namespace ReactiveXaml.Serialization
+namespace ReactiveXaml
 {
-    internal class ThreadLocal<T>
+    public class ThreadLocal<T>
     {
         Func<T> _factory;
         Dictionary<int, T> _cache = new Dictionary<int,T>();
@@ -29,6 +27,12 @@ namespace ReactiveXaml.Serialization
                     }
 
                     return (_cache[key] = _factory());
+                }
+            }
+            set {
+                lock(_cache) {
+                    int key = Thread.CurrentThread.ManagedThreadId;
+                    _cache[key] = value;
                 }
             }
         }

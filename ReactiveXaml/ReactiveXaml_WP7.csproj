@@ -95,6 +95,7 @@
     <Compile Include="ReactiveObject.cs" />
     <Compile Include="RxApp.cs" />
     <Compile Include="TestUtils.cs" />
+    <Compile Include="ThreadLocal.cs" />
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Service References\" />

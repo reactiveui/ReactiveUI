@@ -184,16 +184,16 @@ namespace ReactiveXaml
          */
 
         ThreadLocal<StringBuilder> _prefixBuffer = new ThreadLocal<StringBuilder>();
-        ThreadLocal<DateTimeOffset> _lastUpdated = new ThreadLocal<DateTimeOffset>();
+        ThreadLocal<DateTime> _lastUpdated = new ThreadLocal<DateTime>();
         readonly TimeSpan _fiftyMilliseconds = TimeSpan.FromMilliseconds(50.0);
 
         string getPrefix()
         {
-            if (DateTimeOffset.Now - _lastUpdated.Value < _fiftyMilliseconds) {
+            if (DateTime.Now - _lastUpdated.Value < _fiftyMilliseconds) {
                 return _prefixBuffer.Value.ToString();
             }
 
-            var now = DateTimeOffset.Now;
+            var now = DateTime.Now;
             StringBuilder buffer;
 
             if (_prefixBuffer.Value == null) {
@@ -202,7 +202,7 @@ namespace ReactiveXaml
                 buffer = _prefixBuffer.Value;
             }
 
-            buffer.Clear();
+            buffer = _prefixBuffer.Value = new StringBuilder(128);
             buffer.Append(now.ToString());
             buffer.AppendFormat(" [{0}] ", Thread.CurrentThread.ManagedThreadId);
             buffer.Append(prefix);
