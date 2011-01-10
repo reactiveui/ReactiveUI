@@ -2,15 +2,14 @@
 using System.Collections.Generic;
 using System.Concurrency;
 using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using ReactiveXaml.Testing;
 
 namespace ReactiveXaml.Tests
 {
-    [TestClass()]
     public class ObservedChangedMixinTest
     {
-        [TestMethod()]
+        [Fact]
         public void GetValueShouldActuallyReturnTheValue()
         {
             var input = new[] {"Foo", "Bar", "Baz"};
@@ -39,7 +38,7 @@ namespace ReactiveXaml.Tests
             input.AssertAreEqual(output2);
         }
 
-        [TestMethod()]
+        [Fact]
         public void ValueTest() 
         {
             var input = new[] {"Foo", "Bar", "Baz"};

@@ -1,5 +1,5 @@
 ﻿using System.Concurrency;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using System;
 using System.Linq;
 using System.Collections.Generic;
@@ -13,10 +13,9 @@ using System.Threading;
 
 namespace ReactiveXaml.Tests
 {
-    [TestClass()]
     public class ReactiveCollectionTest : IEnableLogger
     {
-        [TestMethod()]
+        [Fact]
         public void CollectionCountChangedTest()
         {
             var fixture = new ReactiveCollection<int>();
@@ -33,15 +32,15 @@ namespace ReactiveXaml.Tests
             fixture.Clear();
 
             var before_results = new[] {0,1,2,3,2};
-            Assert.AreEqual(before_results.Length, before_output.Count);
+            Assert.Equal(before_results.Length, before_output.Count);
             before_results.AssertAreEqual(before_output);
 
             var results = new[]{1,2,3,2,0};
-            Assert.AreEqual(results.Length, output.Count);
+            Assert.Equal(results.Length, output.Count);
             results.AssertAreEqual(output);
         }
 
-        [TestMethod()]
+        [Fact]
         public void ItemsAddedAndRemovedTest()
         {
             var fixture = new ReactiveCollection<int>();
@@ -62,21 +61,21 @@ namespace ReactiveXaml.Tests
             fixture.Clear();
 
             var added_results = new[]{10,20,30};
-            Assert.AreEqual(added_results.Length, added.Count);
+            Assert.Equal(added_results.Length, added.Count);
             added_results.AssertAreEqual(added);
 
             var removed_results = new[]{20};
-            Assert.AreEqual(removed_results.Length, removed.Count);
+            Assert.Equal(removed_results.Length, removed.Count);
             removed_results.AssertAreEqual(removed);
 
-            Assert.AreEqual(before_added.Count, added.Count);
+            Assert.Equal(before_added.Count, added.Count);
             added.AssertAreEqual(before_added);
 
-            Assert.AreEqual(before_removed.Count, removed.Count);
+            Assert.Equal(before_removed.Count, removed.Count);
             removed.AssertAreEqual(before_removed);
         }
 
-        [TestMethod()]
+        [Fact]
         public void ReactiveCollectionIsRoundTrippable()
         {
             var output = new[] {"Foo", "Bar", "Baz", "Bamf"};
@@ -94,7 +93,7 @@ namespace ReactiveXaml.Tests
             Assert.IsFalse(should_die);
         }
 
-        [TestMethod()]
+        [Fact]
         public void ChangeTrackingShouldFireNotifications()
         {
             var fixture = new ReactiveCollection<TestFixture>() { ChangeTrackingEnabled = true };
@@ -115,24 +114,24 @@ namespace ReactiveXaml.Tests
             fixture.Add(item2);
 
             item1.IsOnlyOneWord = "Baz";
-            Assert.AreEqual(1, output.Count);
+            Assert.Equal(1, output.Count);
             item2.IsNotNullString = "FooBar";
-            Assert.AreEqual(2, output.Count);
+            Assert.Equal(2, output.Count);
 
             fixture.Remove(item2);
             item2.IsNotNullString = "FooBarBaz";
-            Assert.AreEqual(2, output.Count);
+            Assert.Equal(2, output.Count);
 
             fixture.ChangeTrackingEnabled = false;
             item1.IsNotNullString = "Bamf";
-            Assert.AreEqual(2, output.Count);
+            Assert.Equal(2, output.Count);
 
             new[]{item1, item2}.AssertAreEqual(output.Select(x => x.Item1));
             new[]{item1, item2}.AssertAreEqual(before_output.Select(x => x.Item1));
             new[]{"IsOnlyOneWord", "IsNotNullString"}.AssertAreEqual(output.Select(x => x.Item2));
         }
 
-        [TestMethod()]
+        [Fact]
         public void CreateCollectionWithoutTimer()
         {
             var input = new[] {"Foo", "Bar", "Baz", "Bamf"};
@@ -146,7 +145,7 @@ namespace ReactiveXaml.Tests
             input.AssertAreEqual(fixture);
         }
 
-        [TestMethod()]
+        [Fact]
         public void CreateCollectionWithTimer()
         {
             var input = new[] {"Foo", "Bar", "Baz", "Bamf"};
@@ -167,7 +166,7 @@ namespace ReactiveXaml.Tests
             fixture.AssertAreEqual(input);
         }
 
-        [TestMethod()]
+        [Fact]
         public void DerivedCollectionsShouldFollowBaseCollection()
         {
             var input = new[] {"Foo", "Bar", "Baz", "Bamf"};
@@ -179,18 +178,18 @@ namespace ReactiveXaml.Tests
             input.AssertAreEqual(output);
 
             fixture.Add(new TestFixture() { IsOnlyOneWord = "Hello" });
-            Assert.AreEqual(5, output.Count);
-            Assert.AreEqual(output[4], "Hello");
+            Assert.Equal(5, output.Count);
+            Assert.Equal(output[4], "Hello");
 
             fixture.RemoveAt(4);
-            Assert.AreEqual(4, output.Count);
+            Assert.Equal(4, output.Count);
 
             fixture[1] = new TestFixture() { IsOnlyOneWord = "Goodbye" };
-            Assert.AreEqual(4, output.Count);
-            Assert.AreEqual(output[1], "Goodbye");
+            Assert.Equal(4, output.Count);
+            Assert.Equal(output[1], "Goodbye");
 
             fixture.Clear();
-            Assert.AreEqual(0, output.Count);
+            Assert.Equal(0, output.Count);
         }
     }
 

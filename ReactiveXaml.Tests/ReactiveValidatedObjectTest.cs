@@ -1,5 +1,5 @@
 ﻿using ReactiveXaml;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using System;
 using System.Linq;
 using System.ComponentModel.DataAnnotations;
@@ -31,10 +31,9 @@ namespace ReactiveXaml.Tests
         }
     }
 
-    [TestClass()]
     public class ReactiveValidatedObjectTest
     {
-        [TestMethod()]
+        [Fact]
         public void IsObjectValidTest()
         {
             var output = new List<bool>();
@@ -58,7 +57,7 @@ namespace ReactiveXaml.Tests
             /*
             new[] { false, false, false, true, false }.Zip(output, (expected, actual) => new { expected, actual })
                 .Do(Console.WriteLine)
-                .Run(x => Assert.AreEqual(x.expected, x.actual));
+                .Run(x => Assert.Equal(x.expected, x.actual));
              */
         }
     }

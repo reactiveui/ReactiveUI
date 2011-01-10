@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using ReactiveXaml;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using System;
 using System.Concurrency;
 using System.Collections.Generic;
@@ -11,10 +11,9 @@ using ReactiveXaml.Testing;
 
 namespace ReactiveXaml.Tests
 {
-    [TestClass()]
     public class QueuedAsyncMRUCacheTest : IEnableLogger
     {
-        [TestMethod()]
+        [Fact]
         public void GetTest()
         {
             var input = new[] { 1, 1, 1, 1, 1 };
@@ -39,20 +38,20 @@ namespace ReactiveXaml.Tests
 
             this.Log().Info("Running to t=0");
             sched.RunTo(sched.FromTimeSpan(TimeSpan.FromMilliseconds(500)));
-            Assert.AreEqual(0, result);
+            Assert.Equal(0, result);
             this.Log().Info("Running to t=1200");
             sched.RunTo(sched.FromTimeSpan(TimeSpan.FromMilliseconds(1200)));
 
             Thread.Sleep(200);
 
-            Assert.AreEqual(25, result);
+            Assert.Equal(25, result);
 
             this.Log().Info("Running to end");
             sched.Run();
-            Assert.AreEqual(25, result);
+            Assert.Equal(25, result);
         }
 
-        [TestMethod()]
+        [Fact]
         public void AsyncGetTest()
         {
             var input = new[] { 1, 1, 1, 1, 1 };
@@ -66,10 +65,10 @@ namespace ReactiveXaml.Tests
                     .BufferWithCount(5).First();
             });
 
-            Assert.IsTrue(output.ToArray().Length == 5);
+            Assert.True(output.ToArray().Length == 5);
         }
 
-        [TestMethod()]
+        [Fact]
         public void CachedValuesTest()
         {
             var input = new[] { 1, 2, 1, 3, 1 };
@@ -78,10 +77,10 @@ namespace ReactiveXaml.Tests
             var dontcare = input.Select(x => fixture.Get(x)).ToArray();
 
             var output = fixture.CachedValues().ToArray();
-            Assert.IsTrue(output.Length == 2);
+            Assert.True(output.Length == 2);
         }
 
-        [TestMethod()]
+        [Fact]
         public void DisposeTest()
         {
             var input = new[] { 1, 1, 1, 1, 1 };
@@ -97,10 +96,10 @@ namespace ReactiveXaml.Tests
                 this.Log().Info("Threw exception correctly", ex);
                 threw = true;
             }
-            Assert.IsTrue(threw);
+            Assert.True(threw);
         }
 
-        [TestMethod()]
+        [Fact]
         public void CacheShouldBlockOnceWeHitOurConcurrentLimit()
         {
             var fixture = new QueuedAsyncMRUCache<int, int>(x => { Thread.Sleep(1000); return x * 5; }, 5, 3);
@@ -111,11 +110,11 @@ namespace ReactiveXaml.Tests
             });
 
             assertStopwatch(new TimeSpan(0, 0, 0, 0, 2500), () => {
-                Assert.AreEqual(15, fixture.Get(3));
+                Assert.Equal(15, fixture.Get(3));
             });
         }
 
-        [TestMethod()]
+        [Fact]
         public void CacheShouldEatExceptionsAndMarshalThemToObservable()
         {
             var input = new[] { 5, 2, 10, 0/*boom!*/, 5 };
@@ -129,11 +128,11 @@ namespace ReactiveXaml.Tests
             Thread.Sleep(5000);
 
             this.Log().Info(exception);
-            Assert.AreEqual(4, completed);
-            Assert.IsNotNull(exception);
+            Assert.Equal(4, completed);
+            Assert.NotNull(exception);
         }
 
-        [TestMethod()]
+        [Fact]
         public void BlockingGetShouldRethrowExceptions()
         {
             var input = new[] { 5, 2, 10, 0/*boom!*/, 5 };
@@ -149,7 +148,7 @@ namespace ReactiveXaml.Tests
             }
 
             output.Run(x => this.Log().Info(x));
-            Assert.IsTrue(did_throw);
+            Assert.True(did_throw);
         }
 
         void assertStopwatch(TimeSpan max_time, Action block)
@@ -157,7 +156,7 @@ namespace ReactiveXaml.Tests
             DateTime start = DateTime.Now;
             block();
             var delta = DateTime.Now - start;
-            Assert.IsTrue(delta < max_time, delta.ToString());
+            Assert.True(delta < max_time, delta.ToString());
         }
     }
 }

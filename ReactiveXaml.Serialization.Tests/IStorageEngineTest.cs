@@ -9,7 +9,6 @@ using ReactiveXaml.Tests;
 
 namespace ReactiveXaml.Serialization.Tests
 {
-    [TestClass]
     public abstract class StorageEngineInterfaceTest : IEnableLogger
     {
         protected abstract IStorageEngine createFixture(int key = -1);
@@ -24,7 +23,7 @@ namespace ReactiveXaml.Serialization.Tests
             return new NaiveExtendedEngine(ret);
         }
 
-        [TestMethod]
+        [Fact]
         public void StorageEngineLoadSaveSmokeTest() {
             var input = new SubobjectTestObject() { SomeProperty = "Foo" };
             var fixture = createFixture();
@@ -35,15 +34,15 @@ namespace ReactiveXaml.Serialization.Tests
                 fixture.Save(input);
                 fixture.FlushChanges();
 
-                Assert.IsTrue(fixture.GetAllObjectHashes().Contains(input.ContentHash));
+                Assert.True(fixture.GetAllObjectHashes().Contains(input.ContentHash));
 
                 result = fixture.Load<SubobjectTestObject>(input.ContentHash);
-                Assert.AreEqual(input.ContentHash, result.ContentHash);
-                Assert.AreEqual(input.SomeProperty, result.SomeProperty);
+                Assert.Equal(input.ContentHash, result.ContentHash);
+                Assert.Equal(input.SomeProperty, result.SomeProperty);
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void StorageEngineShouldActuallySerializeStuff() {
             var input = new SubobjectTestObject() { SomeProperty = "Foo" };
             var fixture = createFixture(0xbeef);
@@ -54,23 +53,23 @@ namespace ReactiveXaml.Serialization.Tests
                 fixture.Save(input);
                 fixture.FlushChanges();
 
-                Assert.IsTrue(fixture.GetAllObjectHashes().Contains(input.ContentHash));
+                Assert.True(fixture.GetAllObjectHashes().Contains(input.ContentHash));
 
                 result = fixture.Load<SubobjectTestObject>(input.ContentHash);
-                Assert.AreEqual(input.ContentHash, result.ContentHash);
-                Assert.AreEqual(input.SomeProperty, result.SomeProperty);
+                Assert.Equal(input.ContentHash, result.ContentHash);
+                Assert.Equal(input.SomeProperty, result.SomeProperty);
             }
 
             fixture = createFixture(0xbeef);
             using (fixture)
             using (fixture.AsPrimaryEngine()) {
                 result = fixture.Load<SubobjectTestObject>(input.ContentHash);
-                Assert.AreEqual(input.ContentHash, result.ContentHash);
-                Assert.AreEqual(input.SomeProperty, result.SomeProperty);
+                Assert.Equal(input.ContentHash, result.ContentHash);
+                Assert.Equal(input.SomeProperty, result.SomeProperty);
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void StorageEngineShouldReuseObjectsWithTheSameHash() {
             var input = new RootSerializationTestObject() { SubObject = new SubobjectTestObject() { SomeProperty = "Foo" } };
             var input2 = new SubobjectTestObject() { SomeProperty = "Foo" };
@@ -82,22 +81,22 @@ namespace ReactiveXaml.Serialization.Tests
                 fixture.Save(input2);
 
                 var result = fixture.Load<RootSerializationTestObject>(input.ContentHash);
-                Assert.AreEqual(input.ContentHash, result.ContentHash);
-                Assert.AreEqual(input.SubObject.ContentHash, result.SubObject.ContentHash);
-                Assert.AreEqual(2, fixture.GetObjectCount());
+                Assert.Equal(input.ContentHash, result.ContentHash);
+                Assert.Equal(input.SubObject.ContentHash, result.SubObject.ContentHash);
+                Assert.Equal(2, fixture.GetObjectCount());
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void EmptyStorageEngineShouldReturnZeroResults() {
             using (var fixture = createFixture()) {
-                Assert.AreEqual(0, fixture.GetAllObjectHashes().Length);
-                Assert.AreEqual(0, fixture.GetObjectCount());
-                Assert.AreEqual(0, fixture.GetOrderedRevisionList(typeof(object)).Length);
+                Assert.Equal(0, fixture.GetAllObjectHashes().Length);
+                Assert.Equal(0, fixture.GetObjectCount());
+                Assert.Equal(0, fixture.GetOrderedRevisionList(typeof(object)).Length);
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void CreateSyncPointSmokeTest() 
         {
             var scheduler = new TestScheduler();
@@ -112,32 +111,32 @@ namespace ReactiveXaml.Serialization.Tests
 
                     sched.RunTo(sched.FromTimeSpan(TimeSpan.FromDays(1.0)));
 
-                    Assert.AreEqual(3, fixture.GetObjectCount());
-                    Assert.IsTrue(fixture.GetAllObjectHashes().Contains(input.ContentHash));
-                    Assert.IsTrue(fixture.GetAllObjectHashes().Contains(input.SubObject.ContentHash));
-                    Assert.IsTrue(fixture.GetAllObjectHashes().Contains(syncPoint.ContentHash));
+                    Assert.Equal(3, fixture.GetObjectCount());
+                    Assert.True(fixture.GetAllObjectHashes().Contains(input.ContentHash));
+                    Assert.True(fixture.GetAllObjectHashes().Contains(input.SubObject.ContentHash));
+                    Assert.True(fixture.GetAllObjectHashes().Contains(syncPoint.ContentHash));
 
-                    Assert.AreEqual(1, fixture.GetOrderedRevisionList(typeof (RootSerializationTestObject)).Length);
-                    Assert.AreEqual(0, fixture.GetOrderedRevisionList(typeof (RootSerializationTestObject), "WeirdQualifier").Length);
+                    Assert.Equal(1, fixture.GetOrderedRevisionList(typeof (RootSerializationTestObject)).Length);
+                    Assert.Equal(0, fixture.GetOrderedRevisionList(typeof (RootSerializationTestObject), "WeirdQualifier").Length);
 
                     input.SomeInteger = 10;
 
                     syncPoint = fixture.CreateSyncPoint(input);
 
-                    Assert.AreEqual(5, fixture.GetObjectCount());
-                    Assert.IsTrue(fixture.GetAllObjectHashes().Contains(input.ContentHash));
-                    Assert.IsTrue(fixture.GetAllObjectHashes().Contains(input.SubObject.ContentHash));
-                    Assert.IsTrue(fixture.GetAllObjectHashes().Contains(syncPoint.ContentHash));
+                    Assert.Equal(5, fixture.GetObjectCount());
+                    Assert.True(fixture.GetAllObjectHashes().Contains(input.ContentHash));
+                    Assert.True(fixture.GetAllObjectHashes().Contains(input.SubObject.ContentHash));
+                    Assert.True(fixture.GetAllObjectHashes().Contains(syncPoint.ContentHash));
 
-                    Assert.AreEqual(2, fixture.GetOrderedRevisionList(typeof (RootSerializationTestObject)).Length);
-                    Assert.AreEqual(0, fixture.GetOrderedRevisionList(typeof (RootSerializationTestObject), "WeirdQualifier").Length);
+                    Assert.Equal(2, fixture.GetOrderedRevisionList(typeof (RootSerializationTestObject)).Length);
+                    Assert.Equal(0, fixture.GetOrderedRevisionList(typeof (RootSerializationTestObject), "WeirdQualifier").Length);
                 }
 
                 return 0;
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void ExtendedStorageEngineGetRootObject()
         {
             var scheduler = new TestScheduler();
@@ -153,45 +152,45 @@ namespace ReactiveXaml.Serialization.Tests
                     // N.B. This doesn't appear to actually affect IScheduler.Now :-/
                     sched.RunTo(sched.FromTimeSpan(TimeSpan.FromDays(1.0)));
 
-                    Assert.AreEqual(input.ContentHash, fixture.GetLatestRootObject<RootSerializationTestObject>().ContentHash);
-                    Assert.AreEqual(null, fixture.GetLatestRootObject<RootSerializationTestObject>("SomeWeirdQualifier"));
-                    Assert.AreEqual(null, fixture.GetLatestRootObject<RootSerializationTestObject>(null, DateTimeOffset.Now - TimeSpan.FromHours(1.0)));
+                    Assert.Equal(input.ContentHash, fixture.GetLatestRootObject<RootSerializationTestObject>().ContentHash);
+                    Assert.Equal(null, fixture.GetLatestRootObject<RootSerializationTestObject>("SomeWeirdQualifier"));
+                    Assert.Equal(null, fixture.GetLatestRootObject<RootSerializationTestObject>(null, DateTimeOffset.Now - TimeSpan.FromHours(1.0)));
 
                     input.SomeInteger = 10;
                     syncPoint = fixture.CreateSyncPoint(input, null, DateTimeOffset.Now + TimeSpan.FromDays(1.0));
-                    Assert.AreEqual(origHash, fixture.GetLatestRootObject<RootSerializationTestObject>(null, DateTimeOffset.Now + TimeSpan.FromSeconds(1.0)).ContentHash);
+                    Assert.Equal(origHash, fixture.GetLatestRootObject<RootSerializationTestObject>(null, DateTimeOffset.Now + TimeSpan.FromSeconds(1.0)).ContentHash);
                 }
 
                 return 0;
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void LoadMethodWithInvalidKeyShouldReturnNoResults()
         {
             var fixture = createFixture();
             var output = fixture.Load(Guid.NewGuid());
-            Assert.AreEqual(null, output);
+            Assert.Equal(null, output);
         }
 
-        [TestMethod]
+        [Fact]
         public void GetLatestRootObjectWithEmptyEngineShouldReturnNoResults()
         {
             var fixture = createExtendedFixture();
             var output = fixture.GetLatestRootObject<RootSerializationTestObject>();
-            Assert.AreEqual(null, output);
+            Assert.Equal(null, output);
         }
 
-        [TestMethod]
+        [Fact]
         public void GetOrderedRevisionRangeWithEmptyEngineShouldReturnNoResults()
         {
             var fixture = createExtendedFixture();
             var output = fixture.GetOrderedRevisionList(typeof(Type));
-            Assert.IsNotNull(output);
-            Assert.AreEqual(0, output.Length);
+            Assert.NotNull(output);
+            Assert.Equal(0, output.Length);
         }
 
-        [TestMethod]
+        [Fact]
         public void TryingToSaveNullGuidShouldBePunished()
         {
             var input = new ZeroContentHashModel();
@@ -204,7 +203,7 @@ namespace ReactiveXaml.Serialization.Tests
                 this.Log().Debug(ex);
                 shouldFail = false;
             }
-            Assert.IsFalse(shouldFail);
+            Assert.False(shouldFail);
 
             shouldFail = true;
             try {
@@ -213,11 +212,10 @@ namespace ReactiveXaml.Serialization.Tests
                 this.Log().Debug(ex);
                 shouldFail = false;
             }
-            Assert.IsFalse(shouldFail);
+            Assert.False(shouldFail);
         }
     }
 
-    [TestClass]
     public class DictionaryStorageEngineTest : StorageEngineInterfaceTest
     {
         protected override IStorageEngine createFixture(int key = -1)
@@ -233,7 +231,6 @@ namespace ReactiveXaml.Serialization.Tests
     }
 
 #if !SILVERLIGHT
-    [TestClass]
     public class EsentStorageEngineTest : StorageEngineInterfaceTest
     {
         static int _nextFreeSubdirectory = 1;

@@ -1,17 +1,16 @@
 ﻿using System.Collections.Generic;
 using System.Runtime.Serialization;
 using ReactiveXaml.Serialization;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using System;
 
 namespace ReactiveXaml.Serialization.Tests
 {
-    [TestClass()]
     public abstract class SerializationItemDataSurrogateTest : IEnableLogger
     {
         protected abstract IObjectSerializationProvider createFixture();
 
-        [TestMethod()]
+        [Fact()]
         public void SerializationItemSmokeTest()
         {
             var engine = new NullStorageEngine();
@@ -25,7 +24,6 @@ namespace ReactiveXaml.Serialization.Tests
         }
     }
 
-    [TestClass]
     public class JsonNetSerializationItemDataSurrogateTest : SerializationItemDataSurrogateTest
     {
         protected override IObjectSerializationProvider createFixture()
@@ -34,12 +32,11 @@ namespace ReactiveXaml.Serialization.Tests
         }
     }
 
-    [TestClass()]
     public abstract class SerializedListDataSurrogateTest : IEnableLogger
     {
         protected abstract IObjectSerializationProvider createFixture();
 
-        [TestMethod]
+        [Fact]
         public void SerializedListSmokeTest()
         {
             var engine = new NullStorageEngine();
@@ -55,7 +52,7 @@ namespace ReactiveXaml.Serialization.Tests
             // TODO: Finish this test
         }
 
-        [TestMethod]
+        [Fact]
         public void SerializedListShouldSerializeSubitemsOfEachListItem()
         {
             var engine = new NullStorageEngine();
@@ -71,7 +68,7 @@ namespace ReactiveXaml.Serialization.Tests
             // TODO: Finish this test
         }
 
-        [TestMethod]
+        [Fact]
         public void ItemsWithSerializedListsShouldOnlyHaveTheHashOfTheList()
         {
             var engine = new NullStorageEngine();
@@ -93,7 +90,6 @@ namespace ReactiveXaml.Serialization.Tests
         }
     }
 
-    [TestClass]
     public class JsonNetSerializedListDataSurrogateTest : SerializedListDataSurrogateTest
     {
         protected override IObjectSerializationProvider createFixture()

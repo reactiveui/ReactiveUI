@@ -20,7 +20,7 @@ namespace ReactiveXaml.Serialization.Tests
         }
     }
 
-    [PexClass, TestClass]
+    [PexClass]
     public partial class ModelBaseTest : IEnableLogger
     {
         [PexMethod]
@@ -65,7 +65,7 @@ namespace ReactiveXaml.Serialization.Tests
             PexAssert.AreDistinctValues(output.Values.ToArray());
         }
 
-        [TestMethod]
+        [Fact]
         public void ModelBaseShouldBeObservableAfterDeserialization()
         {
             var dse = new DictionaryStorageEngine();
@@ -84,7 +84,7 @@ namespace ReactiveXaml.Serialization.Tests
 
             sched.RunToMilliseconds(1000);
 
-            Assert.AreEqual("TestString", latest);
+            Assert.Equal("TestString", latest);
         }
     }
 }

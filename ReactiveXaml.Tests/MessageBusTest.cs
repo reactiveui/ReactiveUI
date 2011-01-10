@@ -1,5 +1,5 @@
 ﻿using System.Concurrency;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit
 using System;
 using System.Linq;
 using System.Collections.Generic;
@@ -13,10 +13,9 @@ using System.Threading;
 
 namespace ReactiveXaml.Tests
 {
-    [TestClass]
     public class MessageBusTest
     {
-        [TestMethod]
+        [Fact]
         public void MessageBusSmokeTest()
         {
             var input = new[] {1, 2, 3, 4};

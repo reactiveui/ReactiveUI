@@ -1,5 +1,5 @@
 ﻿using ReactiveXaml;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using System;
 using System.Reflection;
 using System.Diagnostics;
@@ -7,10 +7,9 @@ using System.Linq;
 
 namespace ReactiveXaml.Tests
 {
-    [TestClass()]
     public class UserExceptionTest : IEnableLogger
     {
-        [TestMethod()]
+        [Fact]
         public void UserExceptionConstructorTest()
         {
             return;
@@ -20,4 +19,4 @@ namespace ReactiveXaml.Tests
     }
 }
 
-// vim: tw=120 ts=4 sw=4 et enc=utf8 :
+// vim: tw=120 ts=4 sw=4 et :
