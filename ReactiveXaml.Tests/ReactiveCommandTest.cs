@@ -1,5 +1,5 @@
 ﻿using ReactiveXaml;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using System;
 using System.Linq;
 using System.Concurrency;
@@ -9,28 +9,27 @@ using ReactiveXaml.Testing;
 
 namespace ReactiveXaml.Tests
 {
-    [TestClass()]
     public class ReactiveCommandTest : IEnableLogger
     {
-        [TestMethod()]
+        [Fact]
         public void CompletelyDefaultReactiveCommandShouldFire()
         {
             var sched = new TestScheduler();
             var fixture = new ReactiveCommand(null, sched);
-            Assert.IsTrue(fixture.CanExecute(null));
+            Assert.True(fixture.CanExecute(null));
 
             string result = null;
             fixture.Subscribe(x => result = x as string);
 
             fixture.Execute("Test");
             sched.Run();
-            Assert.AreEqual("Test", result);
+            Assert.Equal("Test", result);
             fixture.Execute("Test2");
             sched.Run();
-            Assert.AreEqual("Test2", result);
+            Assert.Equal("Test2", result);
         }
 
-        [TestMethod()]
+        [Fact]
         public void ObservableCanExecuteShouldShowUpInCommand()
         {
             var input = new[] {true, false, false, true, false, true};
@@ -44,14 +43,14 @@ namespace ReactiveXaml.Tests
                 input.Run(x => {
                     can_execute.OnNext(x);
                     sched.Run();
-                    Assert.AreEqual(x, fixture.CanExecute(null));
+                    Assert.Equal(x, fixture.CanExecute(null));
                 });
 
                 // N.B. We check against '5' instead of 6 because we're supposed to 
                 // suppress changes that aren't actually changes i.e. false => false
                 can_execute.OnCompleted();
                 sched.Run();
-                Assert.AreEqual(5, change_event_count);
+                Assert.Equal(5, change_event_count);
 
                 return changes_as_observable;
             });
@@ -59,7 +58,7 @@ namespace ReactiveXaml.Tests
             input.AssertAreEqual(result.ToList());
         }
 
-        [TestMethod()]
+        [Fact]
         public void ObservableCanExecuteFuncShouldShowUpInCommand()
         {
             int counter = 1;
@@ -72,15 +71,15 @@ namespace ReactiveXaml.Tests
             Enumerable.Range(0, 6).Run(x => {
                 sched.Run();
                 this.Log().InfoFormat("Counter = {0}, x = {1}", counter, x);
-                Assert.AreEqual(x % 2 == 0, fixture.CanExecute(null));
+                Assert.Equal(x % 2 == 0, fixture.CanExecute(null));
             });
 
             sched.Run();
-            Assert.AreEqual(6, change_event_count);
+            Assert.Equal(6, change_event_count);
         }
 
 
-        [TestMethod()]
+        [Fact]
         public void ObservableExecuteFuncShouldBeObservableAndAct()
         {
             var executed_params = new List<object>();
@@ -97,10 +96,10 @@ namespace ReactiveXaml.Tests
             range.ToObservable()
                 .Zip(observed_params, (expected, actual) => new { expected, actual })
                 .Do(Console.WriteLine)
-                .Subscribe(x => Assert.AreEqual(x.expected, x.actual));
+                .Subscribe(x => Assert.Equal(x.expected, x.actual));
         }
 
-        [TestMethod]
+        [Fact]
         public void MultipleSubscribesShouldntResultInMultipleNotifications()
         {
             var input = new[] { 1, 2, 1, 2 };
@@ -119,7 +118,7 @@ namespace ReactiveXaml.Tests
             new[]{2,2}.AssertAreEqual(even_list);
         }
 
-        [TestMethod]
+        [Fact]
         public void ActionExceptionShouldntPermabreakCommands()
         {
             var input = new[] {1,2,3,4};
@@ -143,25 +142,24 @@ namespace ReactiveXaml.Tests
                 }
             }
 
-            Assert.IsTrue(we_threw);
+            Assert.True(we_threw);
             input.AssertAreEqual(out_list);
 
             // Now, make sure that the command isn't broken
             fixture.Execute(5);
             Console.WriteLine(String.Join(",", out_list.Select(x => x.ToString()).ToArray()));
-            Assert.AreEqual(5, out_list.Count);
+            Assert.Equal(5, out_list.Count);
         }
 
-        [TestMethod]
+        [Fact]
         public void CanExecuteExceptionShouldntPermabreakCommands()
         {
         }
     }
 
-    [TestClass()]
     public class ReactiveAsyncCommandTest : IEnableLogger
     {
-        [TestMethod()]
+        [Fact]
         public void AsyncCommandSmokeTest()
         {
             var sched = new TestScheduler();
@@ -176,7 +174,7 @@ namespace ReactiveXaml.Tests
                     .Do(_ => fixture.AsyncCompletedNotification.OnNext(new Unit()));
             }
 
-            Assert.AreEqual(0, fixture.CurrentItemsInFlight());
+            Assert.Equal(0, fixture.CurrentItemsInFlight());
 
             var inflight_results = new List<int>();
             fixture.ItemsInflight.Subscribe(inflight_results.Add);
@@ -184,23 +182,23 @@ namespace ReactiveXaml.Tests
             var output = new List<int>();
             async_data.Subscribe(output.Add);
 
-            Assert.IsTrue(fixture.CanExecute(null));
+            Assert.True(fixture.CanExecute(null));
 
             fixture.Execute(null);
 
             sched.RunToMilliseconds(1005);
-            Assert.IsFalse(fixture.CanExecute(null));
+            Assert.False(fixture.CanExecute(null));
 
             sched.RunToMilliseconds(5005);
-            Assert.IsTrue(fixture.CanExecute(null));
-            Assert.AreEqual(0, fixture.CurrentItemsInFlight());
+            Assert.True(fixture.CanExecute(null));
+            Assert.Equal(0, fixture.CurrentItemsInFlight());
 
             new[] {0,1,0}.AssertAreEqual(inflight_results);
             new[] {5}.AssertAreEqual(output);
         }
 
 
-        [TestMethod]
+        [Fact]
         public void RegisterAsyncFunctionSmokeTest()
         {
             var sched = new TestScheduler();
@@ -215,20 +213,20 @@ namespace ReactiveXaml.Tests
 
             var inflight_results = sched.With(_ => fixture.ItemsInflight.CreateCollection());
             sched.RunToMilliseconds(10);
-            Assert.IsTrue(fixture.CanExecute(null));
+            Assert.True(fixture.CanExecute(null));
 
             fixture.Execute(null);
             sched.RunToMilliseconds(1005);
-            Assert.IsFalse(fixture.CanExecute(null));
+            Assert.False(fixture.CanExecute(null));
 
             sched.RunToMilliseconds(5005);
-            Assert.IsTrue(fixture.CanExecute(null));
+            Assert.True(fixture.CanExecute(null));
 
             new[] {0,1,0}.AssertAreEqual(inflight_results);
             new[] {5}.AssertAreEqual(results);
         }
 
-        [TestMethod]
+        [Fact]
         public void RegisterMemoizedFunctionSmokeTest()
         {
             var input = new[] { 1, 1, 1, 1, 1, 2, 2, 2, 2, 2 };
@@ -245,17 +243,17 @@ namespace ReactiveXaml.Tests
                     .DebugObservable()
                     .Subscribe(x => results.Add(x));
 
-                Assert.IsTrue(fixture.CanExecute(1));
+                Assert.True(fixture.CanExecute(1));
 
                 foreach (var i in input) {
-                    Assert.IsTrue(fixture.CanExecute(i));
+                    Assert.True(fixture.CanExecute(i));
                     fixture.Execute(i);
                 }
 
                 Thread.Sleep(2500);
             });
 
-            Assert.AreEqual(10, results.Count);
+            Assert.Equal(10, results.Count);
 
             this.Log().Info("Timestamp Deltas");
             results.Select(x => x.Timestamp - start)
@@ -263,10 +261,10 @@ namespace ReactiveXaml.Tests
 
             output.AssertAreEqual(results.Select(x => x.Value));
 
-            Assert.IsFalse(results.Any(x => x.Timestamp - start > new TimeSpan(0, 0, 3)));
+            Assert.False(results.Any(x => x.Timestamp - start > new TimeSpan(0, 0, 3)));
         }
 
-        [TestMethod]
+        [Fact]
         public void MakeSureMemoizedReleaseFuncGetsCalled()
         {
             Assert.Fail("When an item gets evicted from the cache before it has a chance to complete, it deadlocks. Fix it.");
@@ -282,11 +280,11 @@ namespace ReactiveXaml.Tests
                    .DebugObservable()
                    .Subscribe(x => results.Add(x));
 
-            Assert.IsTrue(fixture.CanExecute(1));
+            Assert.True(fixture.CanExecute(1));
 
             var start = DateTimeOffset.Now;
             foreach(var i in input) {
-                Assert.IsTrue(fixture.CanExecute(i));
+                Assert.True(fixture.CanExecute(i));
                 fixture.Execute(i);
             }
 
@@ -301,13 +299,13 @@ namespace ReactiveXaml.Tests
 
             output.AssertAreEqual(results.Select(x => x.Value));
 
-            Assert.IsTrue(results.Count == 8);
+            Assert.True(results.Count == 8);
 
-            Assert.IsTrue(released.Count == 1);
-            Assert.IsTrue(released[0] == 2*5);
+            Assert.True(released.Count == 1);
+            Assert.True(released[0] == 2*5);
         }
 
-        [TestMethod]
+        [Fact]
         public void MultipleSubscribersShouldntDecrementRefcountBelowZero()
         {
 			var sched = new TestScheduler();
@@ -321,18 +319,18 @@ namespace ReactiveXaml.Tests
 
             Enumerable.Range(0, 5).Run(x => output.Subscribe(_ => subscribers[x] = true));
             
-            Assert.IsTrue(fixture.CanExecute(null));
+            Assert.True(fixture.CanExecute(null));
 
             fixture.Execute(null);
             sched.RunToMilliseconds(2000);
-            Assert.IsFalse(fixture.CanExecute(null));
+            Assert.False(fixture.CanExecute(null));
 
             sched.RunToMilliseconds(6000);
-            Assert.IsTrue(fixture.CanExecute(null));
+            Assert.True(fixture.CanExecute(null));
 
-            Assert.IsTrue(results.Count == 1);
-            Assert.IsTrue(results[0] == 5);
-            Assert.IsTrue(subscribers.All(x => x == true));
+            Assert.True(results.Count == 1);
+            Assert.True(results[0] == 5);
+            Assert.True(subscribers.All(x => x == true));
         }
     }
 }

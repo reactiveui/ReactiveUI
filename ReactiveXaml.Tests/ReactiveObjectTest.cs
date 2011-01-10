@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Concurrency;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using ReactiveXaml;
 
 namespace ReactiveXaml.Tests
@@ -42,14 +42,13 @@ namespace ReactiveXaml.Tests
         }
     }
 
-    [TestClass()]
     public class ReactiveObjectTest : IEnableLogger
     {
-        [TestMethod()]        
+        [Fact]        
         public void ReactiveObjectSmokeTest()
         {
 #if IOS
-			Assert.Fail("This crashes Mono in a quite spectacular way");
+            Assert.Fail("This crashes Mono in a quite spectacular way");
 #endif
             var output_changing = new List<string>();
             var output = new List<string>();
@@ -66,13 +65,13 @@ namespace ReactiveXaml.Tests
 
             var results = new[] { "IsNotNullString", "IsOnlyOneWord", "IsOnlyOneWord", "IsNotNullString" };
 
-            Assert.AreEqual(results.Length, output.Count);
+            Assert.Equal(results.Length, output.Count);
 
             output.AssertAreEqual(output_changing);
             results.AssertAreEqual(output);
         }
 
-        [TestMethod()]
+        [Fact]
         public void SubscriptionExceptionsShouldntPermakillReactiveObject()
         {
             return;
@@ -94,31 +93,11 @@ namespace ReactiveXaml.Tests
             fixture.Changed.Subscribe(x => output.Add(x.PropertyName));
             fixture.IsOnlyOneWord = "Bar";
 
-            Assert.AreEqual("IsOnlyOneWord", output[0]);
-            Assert.AreEqual(1, output.Count);
+            Assert.Equal("IsOnlyOneWord", output[0]);
+            Assert.Equal(1, output.Count);
         }
 
-        /*
-        [TestMethod()]
-        public void ReactiveObjectShouldWatchCollections()
-        {
-#if IOS
-			Assert.Fail("This crashes Mono in a quite spectacular way");
-#endif			
-            var output = new List<string>();
-            var fixture = new TestFixture();
-
-            fixture.Changed.Subscribe(x => output.Add(x.PropertyName));
-
-            fixture.TestCollection.Add(5);
-            fixture.TestCollection.Add(10);
-            fixture.TestCollection.RemoveAt(1);
-
-            Assert.AreEqual(3, output.Count);
-        }
-         */
-
-        [TestMethod()]
+        [Fact]
         public void ReactiveObjectShouldntSerializeAnythingExtra()
         {
             var fixture = new TestFixture() { IsNotNullString = "Foo", IsOnlyOneWord = "Baz" };
@@ -127,16 +106,16 @@ namespace ReactiveXaml.Tests
 
             // Should look something like:
             // {"IsNotNullString":"Foo","IsOnlyOneWord":"Baz", "UserExprRaiseSet":null}
-            Assert.IsTrue(json.Count(x => x == ',') == 2);
-            Assert.IsTrue(json.Count(x => x == ':') == 3);
-            Assert.IsTrue(json.Count(x => x == '"') == 10);
+            Assert.True(json.Count(x => x == ',') == 2);
+            Assert.True(json.Count(x => x == ':') == 3);
+            Assert.True(json.Count(x => x == '"') == 10);
         }
 
-        [TestMethod()]
+        [Fact]
         public void RaiseAndSetUsingExpression()
         {
 #if IOS
-			Assert.Fail("This crashes Mono in a quite spectacular way");
+            Assert.Fail("This crashes Mono in a quite spectacular way");
 #endif
 			
             var fixture = new TestFixture() { IsNotNullString = "Foo", IsOnlyOneWord = "Baz" };
@@ -146,13 +125,13 @@ namespace ReactiveXaml.Tests
             fixture.UsesExprRaiseSet = "Foo";
             fixture.UsesExprRaiseSet = "Foo";   // This one shouldn't raise a change notification
 
-            Assert.AreEqual("Foo", fixture.UsesExprRaiseSet);
-            Assert.AreEqual(1, output.Count);
-            Assert.AreEqual("UsesExprRaiseSet", output[0]);
+            Assert.Equal("Foo", fixture.UsesExprRaiseSet);
+            Assert.Equal(1, output.Count);
+            Assert.Equal("UsesExprRaiseSet", output[0]);
         }
 
 
-        [TestMethod()]
+        [Fact]
         public void ObservableForPropertyUsingExpression()
         {
             var fixture = new TestFixture() { IsNotNullString = "Foo", IsOnlyOneWord = "Baz" };
@@ -165,25 +144,25 @@ namespace ReactiveXaml.Tests
 
             fixture.IsOnlyOneWord = "Bamf";
 
-            Assert.AreEqual(2, output.Count);
+            Assert.Equal(2, output.Count);
 
-            Assert.AreEqual(fixture, output[0].Sender);
-            Assert.AreEqual("IsNotNullString", output[0].PropertyName);
-            Assert.AreEqual("Bar", output[0].Value);
+            Assert.Equal(fixture, output[0].Sender);
+            Assert.Equal("IsNotNullString", output[0].PropertyName);
+            Assert.Equal("Bar", output[0].Value);
 
-            Assert.AreEqual(fixture, output[1].Sender);
-            Assert.AreEqual("IsNotNullString", output[1].PropertyName);
-            Assert.AreEqual("Baz", output[1].Value);
+            Assert.Equal(fixture, output[1].Sender);
+            Assert.Equal("IsNotNullString", output[1].PropertyName);
+            Assert.Equal("Baz", output[1].Value);
         }
 
-        [TestMethod()]
+        [Fact]
         public void ChangingShouldAlwaysArriveBeforeChanged()
         {
             string before_set = "Foo";
             string after_set = "Bar"; 
 			
 #if IOS
-			Assert.Fail("This crashes Mono in a quite spectacular way");
+	    Assert.Fail("This crashes Mono in a quite spectacular way");
 #endif
 			
             var fixture = new TestFixture() { IsOnlyOneWord = before_set };
@@ -194,22 +173,22 @@ namespace ReactiveXaml.Tests
                 // propagated back, it only prevents before_fired from
                 // being set - we have to enable 1st-chance exceptions
                 // to see the real error
-                Assert.AreEqual("IsOnlyOneWord", x.PropertyName);
-                Assert.AreEqual(fixture.IsOnlyOneWord, before_set);
+                Assert.Equal("IsOnlyOneWord", x.PropertyName);
+                Assert.Equal(fixture.IsOnlyOneWord, before_set);
                 before_fired = true;
             });
 
             bool after_fired = false;
             fixture.Changed.Subscribe(x => {
-                Assert.AreEqual("IsOnlyOneWord", x.PropertyName);
-                Assert.AreEqual(fixture.IsOnlyOneWord, after_set);
+                Assert.Equal("IsOnlyOneWord", x.PropertyName);
+                Assert.Equal(fixture.IsOnlyOneWord, after_set);
                 after_fired = true;
             });
 
             fixture.IsOnlyOneWord = after_set;
 
-            Assert.IsTrue(before_fired);
-            Assert.IsTrue(after_fired);
+            Assert.True(before_fired);
+            Assert.True(after_fired);
         }
     }
 }

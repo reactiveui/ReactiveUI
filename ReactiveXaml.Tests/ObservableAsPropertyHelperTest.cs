@@ -1,5 +1,5 @@
 ﻿using ReactiveXaml;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using System;
 using System.Linq;
 using System.Concurrency;
@@ -7,10 +7,9 @@ using System.Collections.Generic;
 
 namespace ReactiveXaml.Tests
 {
-    [TestClass()]
     public class ObservableAsPropertyHelperTest
     {
-        [TestMethod()]
+        [Fact]
         public void OAPHShouldFireChangeNotifications()
         {
             var sched = new TestScheduler();
@@ -26,7 +25,7 @@ namespace ReactiveXaml.Tests
             (new[] { 1, 2, 3, 4 }).AssertAreEqual(output);
         }
 
-        [TestMethod()]
+        [Fact]
         public void OAPHShouldProvideLatestValue()
         {
             var sched = new TestScheduler();
@@ -35,18 +34,18 @@ namespace ReactiveXaml.Tests
             var fixture = new ObservableAsPropertyHelper<int>(input,
                 _ => { }, -5, sched);
 
-            Assert.AreEqual(-5, fixture.Value);
+            Assert.Equal(-5, fixture.Value);
             (new[] { 1, 2, 3, 4 }).Run(x => input.OnNext(x));
 
             sched.Run();
-            Assert.AreEqual(4, fixture.Value);
+            Assert.Equal(4, fixture.Value);
 
             input.OnCompleted();
             sched.Run();
-            Assert.AreEqual(4, fixture.Value);
+            Assert.Equal(4, fixture.Value);
         }
 
-        [TestMethod()]
+        [Fact]
         public void OAPHShouldRethrowErrors()
         {
             var input = new Subject<int>();
@@ -55,23 +54,23 @@ namespace ReactiveXaml.Tests
             var fixture = new ObservableAsPropertyHelper<int>(input,
                 _ => { }, -5, sched);
 
-            Assert.AreEqual(-5, fixture.Value);
+            Assert.Equal(-5, fixture.Value);
             (new[] { 1, 2, 3, 4 }).Run(x => input.OnNext(x));
 
             sched.Run();
 
-            Assert.AreEqual(4, fixture.Value);
+            Assert.Equal(4, fixture.Value);
 
             input.OnError(new Exception("Die!"));
 
             sched.Run();
 
             try {
-                Assert.AreEqual(4, fixture.Value);
+                Assert.Equal(4, fixture.Value);
             } catch {
                 return;
             }
-            Assert.Fail("We should've threw there");
+            Assert.True(false, "We should've threw there");
         }
     }
 }

@@ -5,10 +5,9 @@ using ReactiveXaml.Tests;
 
 namespace ReactiveXaml.Serialization.Tests
 {
-    [TestClass()]
     public class SyncPointInformationTest : IEnableLogger
     {
-        [TestMethod()]
+        [Fact]
         public void EnsureSyncPointInformationCalculatesHash()
         {
             var template = new SyncPointInformation(Guid.NewGuid(), Guid.NewGuid(), typeof (string), "Foo", DateTimeOffset.MinValue);
@@ -24,11 +23,11 @@ namespace ReactiveXaml.Serialization.Tests
             //PexAssert.AreDistinctValues(fixtures.Select(x => x.ContentHash).ToArray());
             foreach(var v in fixtures) {
                 var hash = v.ContentHash;
-                Assert.IsTrue(fixtures.Count(x => x.ContentHash == hash) == 1);
+                Assert.True(fixtures.Count(x => x.ContentHash == hash) == 1);
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void EnsureSyncPointInformationDoesntSerializeExtraJunk()
         {
             var template = new SyncPointInformation(Guid.NewGuid(), Guid.NewGuid(), typeof (string), "Foo", DateTimeOffset.MinValue);
@@ -44,7 +43,7 @@ namespace ReactiveXaml.Serialization.Tests
             };
 
             // TODO: This test sucks out loud
-            expected.Run(x => Assert.IsTrue(json.Contains(x)));
+            expected.Run(x => Assert.True(json.Contains(x)));
         }
     }
 }

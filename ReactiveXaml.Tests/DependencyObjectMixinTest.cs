@@ -1,5 +1,5 @@
 ﻿using ReactiveXaml;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit
 using System;
 using System.Linq;
 using System.Concurrency;
@@ -21,10 +21,9 @@ namespace ReactiveXaml.Tests
         }
     }
 
-    [TestClass()]
     public class DependencyObjectMixinTest : IEnableLogger
     {
-        [TestMethod()]
+        [Fact]
         public void ObservableFromDPSmokeTest()
         {
             (new TestScheduler()).With(sched => {
@@ -39,8 +38,8 @@ namespace ReactiveXaml.Tests
                 sched.Run();
                 input.AssertAreEqual(output.Select(x => x.Value));
                 foreach (var v in output) {
-                    Assert.AreEqual(fixture, v.Sender);
-                    Assert.AreEqual("TestString", v.PropertyName);
+                    Assert.Equal(fixture, v.Sender);
+                    Assert.Equal("TestString", v.PropertyName);
                 }
 
                 return new Unit();

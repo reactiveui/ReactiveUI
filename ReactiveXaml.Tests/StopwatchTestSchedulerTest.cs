@@ -8,10 +8,9 @@ using ReactiveXaml.Testing;
 
 namespace ReactiveXaml.Tests
 {
-    [TestClass()]
     public class StopwatchSchedulerTest
     {
-        [TestMethod()]
+        [Fact]
         public void StopwatchSchedulerShouldFailLongrunningTasks()
         {
             var sched = new TestScheduler();
@@ -28,7 +27,7 @@ namespace ReactiveXaml.Tests
 
             sched.RunToMilliseconds(2500);
 
-            Assert.IsFalse(should_die);
+            Assert.False(should_die);
         }
     }
 }

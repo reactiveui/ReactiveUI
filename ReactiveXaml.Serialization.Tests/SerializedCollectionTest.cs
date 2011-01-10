@@ -10,7 +10,7 @@ using ReactiveXaml.Tests;
 
 namespace ReactiveXaml.Serialization.Tests
 {
-    [PexClass, TestClass]
+    [PexClass]
     public partial class SerializedCollectionTest : IEnableLogger
     {
         [PexMethod]
@@ -71,32 +71,32 @@ namespace ReactiveXaml.Serialization.Tests
             PexAssume.IsNotNullOrEmpty(items);
             PexAssume.TrueForAll(items, x => x != null);
             PexAssume.AreDistinctReferences(items);
-            PexAssume.IsTrue(toChange >= 0 && toChange < items.Length);
+            PexAssume.True(toChange >= 0 && toChange < items.Length);
 
             var sched = new TestScheduler();
             var fixture = sched.With(_ => new SerializedCollection<ModelTestFixture>(
                 items.Select(x => new ModelTestFixture() {TestString = x})));
             bool shouldDie = true;
             var hashBefore = fixture.ContentHash;
-            PexAssume.AreNotEqual(newValue, fixture[toChange].TestString);
+            PexAssume.NotEqual(newValue, fixture[toChange].TestString);
 
             fixture.ItemChanged.Subscribe(_ => shouldDie = false);
             Observable.Return(newValue, sched).Subscribe(x => fixture[toChange].TestString = x);
 
             sched.Run();
 
-            Assert.AreNotEqual(hashBefore, fixture.ContentHash);
-            Assert.IsFalse(shouldDie);
+            Assert.NotEqual(hashBefore, fixture.ContentHash);
+            Assert.False(shouldDie);
         }
 
-        [TestMethod]
+        [Fact]
         public void ChangingASerializableItemShouldChangeTheContentHashSmokeTest()
         {
             var items = new[] {"foo"};
             ChangingASerializableItemShouldChangeTheContentHash(items, 0, "bar");
         }
 
-        [TestMethod]
+        [Fact]
         public void ChangesShouldPropagateThroughMultilevelCollections()
         {
             var sched = new TestScheduler();
@@ -128,12 +128,12 @@ namespace ReactiveXaml.Serialization.Tests
             this.Log().DebugFormat("fixtureChanging = {0}", fixtureChanging);
             this.Log().DebugFormat("fixtureChanged = {0}", fixtureChanged);
 
-            Assert.IsTrue(inputChanging);
-            Assert.IsTrue(inputChanged);
-            Assert.IsTrue(collChanging);
-            Assert.IsTrue(collChanged);
-            Assert.IsTrue(fixtureChanging);
-            Assert.IsTrue(fixtureChanged);
+            Assert.True(inputChanging);
+            Assert.True(inputChanged);
+            Assert.True(collChanging);
+            Assert.True(collChanged);
+            Assert.True(fixtureChanging);
+            Assert.True(fixtureChanged);
         }
     }
 }

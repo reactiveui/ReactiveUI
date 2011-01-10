@@ -2,14 +2,13 @@
 using System.Concurrency;
 using System.Linq;
 using System.Threading;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace ReactiveXaml.Tests
 {
-    [TestClass()]
     public class ObservableAsyncMRUCacheTest : IEnableLogger
     {
-        [TestMethod()]
+        [Fact]
         public void GetTest()
         {
             var input = new[] {1, 1, 1, 1, 1};
@@ -30,20 +29,20 @@ namespace ReactiveXaml.Tests
             sched.RunTo(sched.FromTimeSpan(TimeSpan.FromMilliseconds(500)));
 
             Thread.Sleep(100);
-            Assert.AreEqual(0, result);
+            Assert.Equal(0, result);
 
             sched.RunTo(sched.FromTimeSpan(TimeSpan.FromMilliseconds(1200)));
 
             Thread.Sleep(100);
-            Assert.AreEqual(25, result);
+            Assert.Equal(25, result);
 
             this.Log().Info("Running to end");
             sched.Run();
             t.Join();
-            Assert.AreEqual(25, result);
+            Assert.Equal(25, result);
         }
 
-        [TestMethod()]
+        [Fact]
         public void AsyncGetTest()
         {
             var input = new[] { 1, 1, 1, 1, 1 };
@@ -56,18 +55,18 @@ namespace ReactiveXaml.Tests
             input.ToObservable(sched).SelectMany<int, int>(x => (IObservable<int>)fixture.AsyncGet(x)).Subscribe(x => result += x);
 
             sched.RunTo(sched.FromTimeSpan(TimeSpan.FromMilliseconds(500)));
-            Assert.AreEqual(0, result);
+            Assert.Equal(0, result);
 
             sched.RunTo(sched.FromTimeSpan(TimeSpan.FromMilliseconds(1200)));
-            Assert.AreEqual(25, result);
+            Assert.Equal(25, result);
 
             this.Log().Info("Running to end");
             sched.Run();
-            Assert.AreEqual(25, result);
+            Assert.Equal(25, result);
         }
 
 #if FALSE
-        [TestMethod()]
+        [Fact]
         public void CachedValuesTest()
         {
             var input = new[] { 1, 2, 1, 3, 1 };
@@ -79,17 +78,17 @@ namespace ReactiveXaml.Tests
             var results = input.ToObservable().SelectMany(fixture.AsyncGet).CreateCollection();
             sched.RunTo(sched.FromTimeSpan(TimeSpan.FromMilliseconds(500)));
 
-            Assert.AreEqual(0, fixture.CachedValues().Count());
+            Assert.Equal(0, fixture.CachedValues().Count());
 
             sched.RunTo(sched.FromTimeSpan(TimeSpan.FromMilliseconds(1500)));
 
             var output = fixture.CachedValues().ToArray();
             Assert.IsTrue(output.Length == 2);
-            Assert.AreEqual(input.Length, results.Count);
+            Assert.Equal(input.Length, results.Count);
         }
 #endif
 
-        [TestMethod()]
+        [Fact]
         public void CacheShouldQueueOnceWeHitOurConcurrentLimit()
         {
             var input = new[] { 1, 2, 3, 4, 1 };
@@ -102,19 +101,19 @@ namespace ReactiveXaml.Tests
             input.ToObservable(sched).SelectMany<int, int>(x => (IObservable<int>)fixture.AsyncGet(x)).Subscribe(x => result += x);
 
             sched.RunTo(sched.FromTimeSpan(TimeSpan.FromMilliseconds(500)));
-            Assert.AreEqual(0, result);
+            Assert.Equal(0, result);
 
             sched.RunTo(sched.FromTimeSpan(TimeSpan.FromMilliseconds(1500)));
-            Assert.AreEqual(1*5 + 2*5 + 1*5, result);
+            Assert.Equal(1*5 + 2*5 + 1*5, result);
 
             sched.RunTo(sched.FromTimeSpan(TimeSpan.FromMilliseconds(2500)));
-            Assert.AreEqual(1*5 + 2*5 + 3*5 + 4*5 + 1*5, result);
+            Assert.Equal(1*5 + 2*5 + 3*5 + 4*5 + 1*5, result);
 
             sched.RunTo(sched.FromTimeSpan(TimeSpan.FromMilliseconds(5000)));
-            Assert.AreEqual(1*5 + 2*5 + 3*5 + 4*5 + 1*5, result);
+            Assert.Equal(1*5 + 2*5 + 3*5 + 4*5 + 1*5, result);
         }
 
-        [TestMethod()]
+        [Fact]
         public void CacheShouldEatExceptionsAndMarshalThemToObservable()
         {
             /* This is a bit tricky:
@@ -150,15 +149,15 @@ namespace ReactiveXaml.Tests
 
             sched.RunTo(sched.FromTimeSpan(TimeSpan.FromMilliseconds(500)));
             Assert.IsNull(exception);
-            Assert.AreEqual(0, completed);
+            Assert.Equal(0, completed);
 
             sched.RunTo(sched.FromTimeSpan(TimeSpan.FromMilliseconds(1500)));
             Assert.IsNotNull(exception);
-            Assert.AreEqual(2, completed);
+            Assert.Equal(2, completed);
 
             sched.RunTo(sched.FromTimeSpan(TimeSpan.FromMilliseconds(7500)));
             Assert.IsNotNull(exception);
-            Assert.AreEqual(4, completed);
+            Assert.Equal(4, completed);
             this.Log().Info(exception);
         }
     }
