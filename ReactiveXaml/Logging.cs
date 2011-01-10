@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Reflection;
 using System.Globalization;
+using System.Text;
 using System.Threading;
 using System.Diagnostics.Contracts;
 
@@ -182,9 +183,36 @@ namespace ReactiveXaml
          * Formatting functions
          */
 
+        ThreadLocal<StringBuilder> _prefixBuffer = new ThreadLocal<StringBuilder>();
+        ThreadLocal<DateTimeOffset> _lastUpdated = new ThreadLocal<DateTimeOffset>();
+        readonly TimeSpan _fiftyMilliseconds = TimeSpan.FromMilliseconds(50.0);
+
         string getPrefix()
         {
-            return String.Format("{0} [{1}] {2}: ", DateTimeOffset.Now.ToString(), Thread.CurrentThread.ManagedThreadId, prefix);
+            if (DateTimeOffset.Now - _lastUpdated.Value < _fiftyMilliseconds) {
+                return _prefixBuffer.Value.ToString();
+            }
+
+            var now = DateTimeOffset.Now;
+            StringBuilder buffer;
+
+            if (_prefixBuffer.Value == null) {
+                buffer = _prefixBuffer.Value = new StringBuilder();
+            } else {
+                buffer = _prefixBuffer.Value;
+            }
+
+            buffer.Clear();
+            buffer.Append(now.ToString());
+            buffer.AppendFormat(" [{0}] ", Thread.CurrentThread.ManagedThreadId);
+            buffer.Append(prefix);
+            buffer.Append(": ");
+
+            _lastUpdated.Value = now;
+            return buffer.ToString();
+
+            // XXX: This function is expensive
+            //return String.Format("{0} [{1}] {2}: ", DateTimeOffset.Now.ToString(), Thread.CurrentThread.ManagedThreadId, prefix);
         }
 
         void write(Action<string> channel, object message)
