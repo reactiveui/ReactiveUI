@@ -44,6 +44,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveXaml.Serialization_
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveXaml.Serialization.Tests_SL4", "ReactiveXaml.Serialization.Tests\ReactiveXaml.Serialization.Tests_SL4.csproj", "{AA0B1C80-92AE-49F5-8310-5A7683BE47BF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PerfConsoleRunner", "PerfConsoleRunner\PerfConsoleRunner.csproj", "{DBC5FEB0-8535-4D77-AA1B-BA8957253996}"
+EndProject
 Global
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = ReactiveXaml.vsmdi
@@ -241,6 +243,16 @@ Global
 		{AA0B1C80-92AE-49F5-8310-5A7683BE47BF}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{AA0B1C80-92AE-49F5-8310-5A7683BE47BF}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{AA0B1C80-92AE-49F5-8310-5A7683BE47BF}.Release|x86.ActiveCfg = Release|Any CPU
+		{DBC5FEB0-8535-4D77-AA1B-BA8957253996}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{DBC5FEB0-8535-4D77-AA1B-BA8957253996}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
+		{DBC5FEB0-8535-4D77-AA1B-BA8957253996}.Debug|Mixed Platforms.Build.0 = Debug|x86
+		{DBC5FEB0-8535-4D77-AA1B-BA8957253996}.Debug|x86.ActiveCfg = Debug|x86
+		{DBC5FEB0-8535-4D77-AA1B-BA8957253996}.Debug|x86.Build.0 = Debug|x86
+		{DBC5FEB0-8535-4D77-AA1B-BA8957253996}.Release|Any CPU.ActiveCfg = Release|x86
+		{DBC5FEB0-8535-4D77-AA1B-BA8957253996}.Release|Mixed Platforms.ActiveCfg = Release|x86
+		{DBC5FEB0-8535-4D77-AA1B-BA8957253996}.Release|Mixed Platforms.Build.0 = Release|x86
+		{DBC5FEB0-8535-4D77-AA1B-BA8957253996}.Release|x86.ActiveCfg = Release|x86
+		{DBC5FEB0-8535-4D77-AA1B-BA8957253996}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
