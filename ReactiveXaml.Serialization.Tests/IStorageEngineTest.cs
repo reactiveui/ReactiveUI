@@ -239,8 +239,15 @@ namespace ReactiveXaml.Serialization.Tests
             var di = new DirectoryInfo(".");
             int subdir = (key == -1 ? Interlocked.Increment(ref _nextFreeSubdirectory) : key);
             this.Log().InfoFormat("Opening db with name '{0}'", subdir.ToString());
-            var path = di.CreateSubdirectory(subdir.ToString());
-            return new Esent.EsentStorageEngine(path.FullName);
+
+            di = new DirectoryInfo(Path.Combine(di.FullName, subdir.ToString()));
+            if (key == -1 && di.Exists) {
+                this.Log().InfoFormat("'{0}' exists and test requires an empty dir, deleting...", di.FullName);
+                di.Delete(true);
+            }
+
+            di.Create();
+            return new Esent.EsentStorageEngine(di.FullName);
         }
     }
 #endif

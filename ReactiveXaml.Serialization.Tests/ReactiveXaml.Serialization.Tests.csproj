@@ -110,6 +110,9 @@
     <Compile Include="SerializedCollectionTest.AddingItemsShouldChangeTheContentHash.g.cs">
       <DependentUpon>SerializedCollectionTest.cs</DependentUpon>
     </Compile>
+    <Compile Include="SerializedCollectionTest.ChangingASerializableItemShouldChangeTheContentHash.g.cs">
+      <DependentUpon>SerializedCollectionTest.cs</DependentUpon>
+    </Compile>
     <Compile Include="SerializedCollectionTest.cs" />
     <Compile Include="SerializedCollectionTest.RemovingItemsShouldChangeTheContentHash.g.cs">
       <DependentUpon>SerializedCollectionTest.cs</DependentUpon>
