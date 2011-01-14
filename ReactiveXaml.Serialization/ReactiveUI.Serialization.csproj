@@ -2,20 +2,18 @@
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{DBC5FEB0-8535-4D77-AA1B-BA8957253996}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <ProjectGuid>{C6A9A8EC-FDA6-45C1-9694-298D44E3C55F}</ProjectGuid>
+    <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>PerfConsoleRunner</RootNamespace>
-    <AssemblyName>PerfConsoleRunner</AssemblyName>
+    <RootNamespace>ReactiveUI.Serialization</RootNamespace>
+    <AssemblyName>ReactiveUI.Serialization</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
-    <PlatformTarget>x86</PlatformTarget>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -24,8 +22,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
-    <PlatformTarget>x86</PlatformTarget>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -34,46 +31,53 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\ext\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
+    <Reference Include="System.CoreEx">
+      <HintPath>..\ext\System.CoreEx.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Interactive">
+      <HintPath>..\ext\System.Interactive.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reactive">
+      <HintPath>..\ext\System.Reactive.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="xunit">
-      <HintPath>..\ext\xunit\xunit.dll</HintPath>
-    </Reference>
-    <Reference Include="xunit.extensions">
-      <HintPath>..\ext\xunit\xunit.extensions.dll</HintPath>
-    </Reference>
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Program.cs" />
+    <Compile Include="JsonNetObjectSerializationProvider.cs" />
+    <Compile Include="NaiveExtendedEngine.cs" />
+    <Compile Include="Interfaces.cs" />
+    <Compile Include="ModelBase.cs" />
+    <Compile Include="NullStorageEngine.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="DictionaryStorageEngine.cs" />
+    <Compile Include="RxStorage.cs" />
+    <Compile Include="SerializedCollection.cs" />
+    <Compile Include="SyncPointInformation.cs" />
     <Compile Include="Utility.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ReactiveUI.Serialization.Esent\ReactiveUI.Serialization.Esent.csproj">
-      <Project>{0B0ABDC8-4EF3-4172-ADE4-E4FB55E5F91E}</Project>
-      <Name>ReactiveUI.Serialization.Esent</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\ReactiveUI.Serialization.Tests\ReactiveUI.Serialization.Tests.csproj">
-      <Project>{ACA93E36-5301-4F2B-95C8-70897574506B}</Project>
-      <Name>ReactiveUI.Serialization.Tests</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\ReactiveUI.Serialization\ReactiveUI.Serialization.csproj">
-      <Project>{C6A9A8EC-FDA6-45C1-9694-298D44E3C55F}</Project>
-      <Name>ReactiveUI.Serialization</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\ReactiveUI.Tests\ReactiveUI.Tests.csproj">
-      <Project>{6FBDE6EA-2202-4A70-8EE4-7BA6D515952E}</Project>
-      <Name>ReactiveUI.Tests</Name>
-    </ProjectReference>
     <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj">
       <Project>{292A477B-BB94-43C1-984E-E177EF9FEDB7}</Project>
       <Name>ReactiveUI</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
