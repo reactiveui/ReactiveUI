@@ -140,6 +140,36 @@ namespace ReactiveXaml
         }
     }
 
+    public static class ObservableCacheMixin
+    {
+        /// <summary>
+        /// Works like SelectMany, but memoizes selector calls. In addition, it 
+        /// guarantees that no more than 'maxConcurrent' selectors are running 
+        /// concurrently and queues the rest. This is very important when using
+        /// web services to avoid potentially spamming the server with hundreds 
+        /// of requests.
+        /// </summary>
+        /// <param name="selector">A selector similar to one you would pass as a 
+        /// parameter passed to SelectMany. Note that similarly to 
+        /// ObservableAsyncMRUCache.AsyncGet, a selector must return semantically
+        /// identical results given the same key - i.e. it must be a 'function' in
+        /// the mathematical sense.</param>
+        /// <param name="maxCached">The number of items to cache. When this limit
+        /// is reached, not recently used items will be discarded.</param>
+        /// <param name="maxConcurrent">The maximum number of concurrent
+        /// asynchronous operations regardless of key - this is important for
+        /// web-based caches to limit the number of concurrent requests to a
+        /// server. The default is 5.</param>
+        /// <param name="scheduler"></param>
+        /// <returns>An Observable representing the flattened results of the 
+        /// selector.</returns>
+        public static IObservable<TRet> CachedSelectMany<T, TRet>(this IObservable<T> This, Func<T, IObservable<TRet>> selector, int maxCached = 50, int maxConcurrent = 5, IScheduler scheduler = null)
+        {
+            var cache = new ObservableAsyncMRUCache<T, TRet>(selector, maxCached, maxConcurrent, null, scheduler);
+            return This.SelectMany(cache.AsyncGet);
+        }
+    }
+
     internal class SemaphoreSubject<T> : ISubject<T>, IEnableLogger
     {
         readonly Subject<T> _inner;
