@@ -31,7 +31,7 @@ namespace ReactiveXaml
         /// property is often not set for performance reasons, unless you have
         /// explicitly requested an Observable for a property via a method such
         /// as ObservableForProperty. To retrieve the value for the property,
-        /// use the GetValue() extension method.
+        /// use the Value() extension method.
         /// </summary>
         TValue Value { get; }   
     }
@@ -289,10 +289,19 @@ namespace ReactiveXaml
         T Prompt(object parameter);
     }
 
-    public interface IViewForModel<T>
+    public interface IViewForModel<TModel, TViewModel>
     {
-        IDisposable Present(T model, bool asModal, Action onClosed);
+        IDisposable Present(TModel model, bool asModal, Action onClosed);
+
+        TModel Model { get; set; }
+        TViewModel ViewModel { get; }
     }
+
+    public interface IViewModel<TModel> : IReactiveNotifyPropertyChanged
+    {
+        TModel Model { get; set; }
+    }
+
 #endif
 }
 
