@@ -46,12 +46,17 @@ namespace ReactiveXaml
             scheduler = scheduler ?? RxApp.DeferredScheduler;
             lastValue = initialValue;
 
-            source = observable.DistinctUntilChanged().ObserveOn(scheduler);
+            var subj = new Subject<T>();
+            source = observable.DistinctUntilChanged().Publish(subj).ObserveOn(scheduler);
             source.Subscribe(x => {
                 this.Log().InfoFormat("Property helper {0:X} changed", this.GetHashCode());
                 lastValue = x;
                 onChanged(x);
             }, ex => lastException = ex);
+
+            // Fire off an initial RaisePropertyChanged to make sure bindings
+            // have a value
+            subj.OnNext(initialValue);
         }
 
         /// <summary>
@@ -70,6 +75,20 @@ namespace ReactiveXaml
         public IDisposable Subscribe(IObserver<T> observer)
         {
             return source.Subscribe(observer);
+        }
+
+        /// <summary>
+        /// Constructs a "default" ObservableAsPropertyHelper object. This is
+        /// useful for when you will initialize the OAPH later, but don't want
+        /// bindings to access a null OAPH at startup.
+        /// </summary>
+        /// <param name="initialValue">The initial (and only) value of the property.</param>
+        /// <param name="scheduler">The scheduler that the notifications will be
+        /// provided on - this should normally be a Dispatcher-based scheduler
+        /// (and is by default)</param>
+        public static ObservableAsPropertyHelper<T> Default(T initialValue = default(T), IScheduler scheduler = null)
+        {
+            return new ObservableAsPropertyHelper(Observable.Never<T>(), () => {}, initialValue, scheduler);
         }
     }
 
