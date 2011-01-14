@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Concurrency;
 
-namespace ReactiveXaml
+namespace ReactiveUI
 {
     public class StopwatchScheduler : IScheduler, IEnableLogger
     {

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Concurrency;
 using System.Diagnostics.Contracts;
 
-namespace ReactiveXaml
+namespace ReactiveUI
 {
     /// ReactiveAsyncCommand represents commands that run an asynchronous
     /// operation in the background when invoked. The main benefit of this

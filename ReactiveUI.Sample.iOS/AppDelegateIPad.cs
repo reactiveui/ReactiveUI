@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using MonoTouch.Foundation;
 using MonoTouch.UIKit;
-using ReactiveXaml;
-using ReactiveXaml.iOS;
+using ReactiveUI;
+using ReactiveUI.iOS;
 
-namespace ReactiveXaml.Sample.iOS
+namespace ReactiveUI.Sample.iOS
 {
 	// The name AppDelegateIPad is referenced in the MainWindowIPad.xib file.
 	public partial class AppDelegateIPad : UIApplicationDelegateRx

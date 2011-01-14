@@ -8,7 +8,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Bson;
 using Newtonsoft.Json.Serialization;
 
-namespace ReactiveXaml.Serialization
+namespace ReactiveUI.Serialization
 {
     public class JsonNetObjectSerializationProvider : IObjectSerializationProvider
     {

@@ -7,18 +7,18 @@ using Microsoft.Pex.Framework.Settings;
 using Microsoft.Pex.Framework.Validation;
 using Microsoft.Pex.Linq;
 using Microsoft.Pex.Framework.Using;
-using ReactiveXaml;
+using ReactiveUI;
 
 // Microsoft.Pex.Framework.Settings
 //[assembly: PexAssemblySettings(TestFramework = "Xunit")]
 
 // Microsoft.Pex.Framework.Instrumentation
-[assembly: PexAssemblyUnderTest("ReactiveXaml.Serialization")]
+[assembly: PexAssemblyUnderTest("ReactiveUI.Serialization")]
 [assembly: PexInstrumentAssembly("Newtonsoft.Json")]
 [assembly: PexInstrumentAssembly("System.CoreEx")]
 [assembly: PexInstrumentAssembly("System.Reactive")]
 [assembly: PexInstrumentAssembly("System.Core")]
-[assembly: PexInstrumentAssembly("ReactiveXaml")]
+[assembly: PexInstrumentAssembly("ReactiveUI")]
 
 // Microsoft.Pex.Framework.Creatable
 [assembly: PexCreatableFactoryForDelegates]
@@ -32,7 +32,7 @@ using ReactiveXaml;
 [assembly: PexCoverageFilterAssembly(PexCoverageDomain.UserOrTestCode, "System.Reactive")]
 [assembly: PexCoverageFilterAssembly(PexCoverageDomain.UserOrTestCode, "System.Core")]
 [assembly: PexCoverageFilterAssembly(PexCoverageDomain.UserOrTestCode, "System.Runtime.Serialization")]
-[assembly: PexCoverageFilterAssembly(PexCoverageDomain.UserOrTestCode, "ReactiveXaml")]
+[assembly: PexCoverageFilterAssembly(PexCoverageDomain.UserOrTestCode, "ReactiveUI")]
 
 // Microsoft.Pex.Framework.Moles
 [assembly: PexAssumeContractEnsuresFailureAtBehavedSurface]
@@ -41,5 +41,5 @@ using ReactiveXaml;
 // Microsoft.Pex.Linq
 [assembly: PexLinqPackage]
 
-[assembly: PexInstrumentAssembly("ReactiveXaml.Tests")]
+[assembly: PexInstrumentAssembly("ReactiveUI.Tests")]
 //[assembly: PexUseType(typeof(StdErrLogger))]

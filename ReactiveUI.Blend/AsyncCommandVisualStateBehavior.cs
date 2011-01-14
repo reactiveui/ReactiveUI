@@ -12,7 +12,7 @@ using System.Windows.Shapes;
 using System.Windows.Interactivity;
 using System.Linq;
 
-namespace ReactiveXaml.Blend
+namespace ReactiveUI.Blend
 {
 #if SILVERLIGHT
     public class AsyncCommandVisualStateBehavior : Behavior<Control>

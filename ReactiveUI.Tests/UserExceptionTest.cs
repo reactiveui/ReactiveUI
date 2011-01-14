@@ -1,11 +1,11 @@
-﻿using ReactiveXaml;
+﻿using ReactiveUI;
 using Xunit;
 using System;
 using System.Reflection;
 using System.Diagnostics;
 using System.Linq;
 
-namespace ReactiveXaml.Tests
+namespace ReactiveUI.Tests
 {
     public class UserExceptionTest : IEnableLogger
     {

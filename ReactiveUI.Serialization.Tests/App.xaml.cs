@@ -2,7 +2,7 @@
 using System.Windows;
 using Microsoft.Silverlight.Testing;
 
-namespace ReactiveXaml.Serialization.Tests
+namespace ReactiveUI.Serialization.Tests
 {
     public partial class App : Application
     {

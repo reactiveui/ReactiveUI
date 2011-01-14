@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 using System.Collections.Concurrent;
 #endif
 
-namespace ReactiveXaml
+namespace ReactiveUI
 {
     /// <summary>
     /// Use ObservableAsyncMRUCache instead, this class will bring you nothing

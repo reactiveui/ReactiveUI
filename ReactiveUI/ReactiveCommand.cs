@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Concurrency;
 
-namespace ReactiveXaml
+namespace ReactiveUI
 {
     /// <summary>
     /// IReactiveCommand is an Rx-enabled version of ICommand that is also an

@@ -5,7 +5,7 @@ using System.Concurrency;
 using System.Diagnostics.Contracts;
 using System.Linq.Expressions;
 
-namespace ReactiveXaml
+namespace ReactiveUI
 {
     /// <summary>
     /// ObservableAsPropertyHelper is a class to help ViewModels implement

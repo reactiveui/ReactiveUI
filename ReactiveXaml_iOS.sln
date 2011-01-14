@@ -4,15 +4,15 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{BD9762CF-E104-481C-96A6-26E624B86283}"
 	ProjectSection(SolutionItems) = preProject
 		Local.testsettings = Local.testsettings
-		ReactiveXaml.vsmdi = ReactiveXaml.vsmdi
+		ReactiveUI.vsmdi = ReactiveUI.vsmdi
 		TraceAndTestImpact.testsettings = TraceAndTestImpact.testsettings
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveXaml_iOS", "ReactiveXaml\ReactiveXaml_iOS.csproj", "{A27167FC-07A6-4EE2-9277-48F419DC9725}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI_iOS", "ReactiveUI\ReactiveUI_iOS.csproj", "{A27167FC-07A6-4EE2-9277-48F419DC9725}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveXaml.Tests_iOS", "ReactiveXaml.Tests\ReactiveXaml.Tests_iOS.csproj", "{32DAA782-0A0B-44EC-AFD5-982D7C9D8F53}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Tests_iOS", "ReactiveUI.Tests\ReactiveUI.Tests_iOS.csproj", "{32DAA782-0A0B-44EC-AFD5-982D7C9D8F53}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveXaml.Sample.iOS", "ReactiveXaml.Sample.iOS\ReactiveXaml.Sample.iOS.csproj", "{B860D5BF-26D2-45E0-BF83-FCA71D17CF81}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Sample.iOS", "ReactiveUI.Sample.iOS\ReactiveUI.Sample.iOS.csproj", "{B860D5BF-26D2-45E0-BF83-FCA71D17CF81}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -97,10 +97,10 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
-		StartupItem = ReactiveXaml.Sample.iOS\ReactiveXaml.Sample.iOS.csproj
+		StartupItem = ReactiveUI.Sample.iOS\ReactiveUI.Sample.iOS.csproj
 	EndGlobalSection
 	GlobalSection(TestCaseManagementSettings) = postSolution
-		CategoryFile = ReactiveXaml.vsmdi
+		CategoryFile = ReactiveUI.vsmdi
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

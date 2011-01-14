@@ -6,7 +6,7 @@ using System.Reflection;
 using System.Windows;
 using System.Windows.Data;
 
-namespace ReactiveXaml
+namespace ReactiveUI
 {
     public static class DependencyPropertyMixin
     {

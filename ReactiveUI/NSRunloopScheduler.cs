@@ -6,7 +6,7 @@ using System.Disposables;
 using MonoTouch.UIKit;
 using MonoTouch.Foundation;
 
-namespace ReactiveXaml
+namespace ReactiveUI
 {
     public class NSRunloopScheduler : IScheduler, IEnableLogger
     {

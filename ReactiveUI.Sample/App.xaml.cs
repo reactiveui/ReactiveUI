@@ -12,10 +12,10 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Input;
 using System.ComponentModel.DataAnnotations;
-using ReactiveXaml;
+using ReactiveUI;
 using System.Concurrency;
 
-namespace ReactiveXamlSample
+namespace ReactiveUISample
 {
     /// <summary>
     /// Interaction logic for App.xaml

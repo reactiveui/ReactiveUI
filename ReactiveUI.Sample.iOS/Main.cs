@@ -5,7 +5,7 @@ using System.Linq;
 using MonoTouch.Foundation;
 using MonoTouch.UIKit;
 
-namespace ReactiveXaml.Sample.iOS
+namespace ReactiveUI.Sample.iOS
 {
 	public class Application
 	{

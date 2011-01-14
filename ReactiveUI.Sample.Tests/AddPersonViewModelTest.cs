@@ -1,9 +1,9 @@
-﻿using ReactiveXamlSample;
+﻿using ReactiveUISample;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Windows;
 
-namespace ReactiveXamlSample.Tests
+namespace ReactiveUISample.Tests
 {
     [TestClass()]
     public class AddPersonViewModelTest

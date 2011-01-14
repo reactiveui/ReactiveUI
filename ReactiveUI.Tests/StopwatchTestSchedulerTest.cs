@@ -2,11 +2,11 @@
 using System.Concurrency;
 using System.Linq;
 using System.Threading;
-using ReactiveXaml;
+using ReactiveUI;
 using Xunit;
-using ReactiveXaml.Testing;
+using ReactiveUI.Testing;
 
-namespace ReactiveXaml.Tests
+namespace ReactiveUI.Tests
 {
     public class StopwatchSchedulerTest
     {

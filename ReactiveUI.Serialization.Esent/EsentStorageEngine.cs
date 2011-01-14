@@ -6,7 +6,7 @@ using System.Runtime.Serialization;
 using System.Text;
 using Microsoft.Isam.Esent.Collections.Generic;
 
-namespace ReactiveXaml.Serialization.Esent
+namespace ReactiveUI.Serialization.Esent
 {
     public class EsentPersistedMetadata
     {

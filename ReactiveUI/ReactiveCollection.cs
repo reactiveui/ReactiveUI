@@ -9,7 +9,7 @@ using System.Diagnostics.Contracts;
 using System.Threading;
 using System.Disposables;
 
-namespace ReactiveXaml
+namespace ReactiveUI
 {
     /// <summary>
     /// 

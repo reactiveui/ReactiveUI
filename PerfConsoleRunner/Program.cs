@@ -11,7 +11,7 @@ namespace PerfConsoleRunner
         static void Main(string[] args)
         {
             // HACK: Make sure the test libraries are loaded
-            var foo = typeof (ReactiveXaml.Tests.EnumerableTestMixin);
+            var foo = typeof (ReactiveUI.Tests.EnumerableTestMixin);
             var foo2 = "";
             var dontoptimizeme = foo.ToString() + foo2.ToString();
 

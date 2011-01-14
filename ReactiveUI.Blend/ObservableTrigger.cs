@@ -5,7 +5,7 @@ using System.Text;
 using System.Windows.Interactivity;
 using System.Windows;
 
-namespace ReactiveXaml.Blend
+namespace ReactiveUI.Blend
 {
     public class ObservableTrigger : TriggerBase<FrameworkElement>
     {

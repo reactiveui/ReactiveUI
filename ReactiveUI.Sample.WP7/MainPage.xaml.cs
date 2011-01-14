@@ -10,9 +10,9 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 using Microsoft.Phone.Controls;
-using ReactiveXaml.Sample.WP7.MicrosoftTranslatorService;
+using ReactiveUI.Sample.WP7.MicrosoftTranslatorService;
 
-namespace ReactiveXaml.Sample.WP7
+namespace ReactiveUI.Sample.WP7
 {
     public partial class MainPage : PhoneApplicationPage
     {

@@ -13,7 +13,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.ComponentModel.Composition;
 
-namespace ReactiveXamlSample
+namespace ReactiveUISample
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml

@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Runtime.Serialization;
-using ReactiveXaml.Serialization;
+using ReactiveUI.Serialization;
 using Xunit;
 using System;
 
-namespace ReactiveXaml.Serialization.Tests
+namespace ReactiveUI.Serialization.Tests
 {
     public abstract class SerializationItemDataSurrogateTest : IEnableLogger
     {

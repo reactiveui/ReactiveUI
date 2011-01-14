@@ -5,10 +5,10 @@ using System.Linq;
 using System.Text;
 using Microsoft.Pex.Framework;
 using Xunit;
-using ReactiveXaml.Testing;
-using ReactiveXaml.Tests;
+using ReactiveUI.Testing;
+using ReactiveUI.Tests;
 
-namespace ReactiveXaml.Serialization.Tests
+namespace ReactiveUI.Serialization.Tests
 {
     [PexClass]
     public partial class SerializedCollectionTest : IEnableLogger

@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-namespace ReactiveXaml.Serialization
+namespace ReactiveUI.Serialization
 {
     /// <summary>
     /// ISerializableItem represents any object that can be serialized via a

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 
-namespace ReactiveXaml.Serialization
+namespace ReactiveUI.Serialization
 {
 #if WINDOWS_PHONE
     /// <summary>

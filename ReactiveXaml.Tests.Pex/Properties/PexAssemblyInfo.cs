@@ -10,7 +10,7 @@ using Microsoft.Pex.Linq;
 [assembly: PexAssemblySettings(TestFramework = "VisualStudioUnitTest")]
 
 // Microsoft.Pex.Framework.Instrumentation
-[assembly: PexAssemblyUnderTest("ReactiveXaml")]
+[assembly: PexAssemblyUnderTest("ReactiveUI")]
 [assembly: PexInstrumentAssembly("System.Reactive")]
 [assembly: PexInstrumentAssembly("System.Core")]
 [assembly: PexInstrumentAssembly("System.Runtime.Serialization")]

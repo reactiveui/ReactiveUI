@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <VSPerformanceSession Version="1.00">
   <Options>
-    <Solution>C:\Users\paul\My Dropbox\ReactiveXaml_External\ReactiveXaml_Core.sln</Solution>
+    <Solution>C:\Users\paul\My Dropbox\ReactiveUI_External\ReactiveUI_Core.sln</Solution>
     <CollectionMethod>Sampling</CollectionMethod>
     <AllocationMethod>Allocation</AllocationMethod>
     <LaunchRuntimeControl>true</LaunchRuntimeControl>
@@ -49,7 +49,7 @@
   </PostinstrumentEvent>
   <Binaries>
     <ProjBinary>
-      <Path>C:\Users\paul\My Dropbox\ReactiveXaml_External\PerfConsoleRunner\obj\x86\Release\PerfConsoleRunner.exe</Path>
+      <Path>C:\Users\paul\My Dropbox\ReactiveUI_External\PerfConsoleRunner\obj\x86\Release\PerfConsoleRunner.exe</Path>
       <ArgumentTimestamp>01/01/0001 00:00:00</ArgumentTimestamp>
       <Instrument>true</Instrument>
       <Sample>true</Sample>
@@ -59,8 +59,8 @@
       <LaunchProject>true</LaunchProject>
       <OverrideProjectSettings>false</OverrideProjectSettings>
       <LaunchMethod>Executable</LaunchMethod>
-      <ExecutablePath>C:\Users\paul\My Dropbox\ReactiveXaml_External\PerfConsoleRunner\bin\Release\PerfConsoleRunner.exe</ExecutablePath>
-      <StartupDirectory>C:\Users\paul\My Dropbox\ReactiveXaml_External\PerfConsoleRunner\bin\Release\</StartupDirectory>
+      <ExecutablePath>C:\Users\paul\My Dropbox\ReactiveUI_External\PerfConsoleRunner\bin\Release\PerfConsoleRunner.exe</ExecutablePath>
+      <StartupDirectory>C:\Users\paul\My Dropbox\ReactiveUI_External\PerfConsoleRunner\bin\Release\</StartupDirectory>
       <Arguments />
       <NetAppHost>IIS</NetAppHost>
       <NetBrowser>InternetExplorer</NetBrowser>
@@ -73,16 +73,16 @@
         <InstrEventExclude>false</InstrEventExclude>
       </PostinstrumentEvent>
       <ProjRef>{DBC5FEB0-8535-4D77-AA1B-BA8957253996}|PerfConsoleRunner\PerfConsoleRunner.csproj</ProjRef>
-      <ProjPath>C:\Users\paul\My Dropbox\ReactiveXaml_External\PerfConsoleRunner\PerfConsoleRunner.csproj</ProjPath>
+      <ProjPath>C:\Users\paul\My Dropbox\ReactiveUI_External\PerfConsoleRunner\PerfConsoleRunner.csproj</ProjPath>
       <ProjName>PerfConsoleRunner</ProjName>
     </ProjBinary>
   </Binaries>
   <Reports>
     <Report>
-      <Path>C:\Users\paul\My Dropbox\ReactiveXaml_External\PerfConsoleRunner110110.vsp</Path>
+      <Path>C:\Users\paul\My Dropbox\ReactiveUI_External\PerfConsoleRunner110110.vsp</Path>
     </Report>
     <Report>
-      <Path>C:\Users\paul\My Dropbox\ReactiveXaml_External\PerfConsoleRunner110110(1).vsp</Path>
+      <Path>C:\Users\paul\My Dropbox\ReactiveUI_External\PerfConsoleRunner110110(1).vsp</Path>
     </Report>
   </Reports>
   <Launches>

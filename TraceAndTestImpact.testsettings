@@ -33,8 +33,8 @@
           <Configuration>
             <CodeCoverage xmlns="">
               <Regular>
-                <CodeCoverageItem binaryFile="ReactiveXaml\bin\Debug\ReactiveXaml.dll" pdbFile="ReactiveXaml\bin\Debug\ReactiveXaml.pdb" instrumentInPlace="true" />
-                <CodeCoverageItem binaryFile="ReactiveXaml.Tests\bin\Debug\ReactiveXaml.Tests.dll" pdbFile="ReactiveXaml.Tests\bin\Debug\ReactiveXaml.Tests.pdb" instrumentInPlace="true" />
+                <CodeCoverageItem binaryFile="ReactiveUI\bin\Debug\ReactiveUI.dll" pdbFile="ReactiveUI\bin\Debug\ReactiveUI.pdb" instrumentInPlace="true" />
+                <CodeCoverageItem binaryFile="ReactiveUI.Tests\bin\Debug\ReactiveUI.Tests.dll" pdbFile="ReactiveUI.Tests\bin\Debug\ReactiveUI.Tests.pdb" instrumentInPlace="true" />
               </Regular>
             </CodeCoverage>
           </Configuration>

@@ -8,7 +8,7 @@ using System.Globalization;
 using System.IO.IsolatedStorage;
 #endif
 
-namespace ReactiveXaml.Serialization
+namespace ReactiveUI.Serialization
 {
     internal class DSESerializedObjects
     {

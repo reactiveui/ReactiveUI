@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 using System.Runtime.Serialization;
 
-namespace ReactiveXaml
+namespace ReactiveUI
 {
     /// <summary>
     /// 

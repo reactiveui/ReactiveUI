@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 
-namespace ReactiveXaml.Serialization
+namespace ReactiveUI.Serialization
 {
     /// <summary>
     /// This class is automatically used by RxStorage when the Engine is

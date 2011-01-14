@@ -4,12 +4,12 @@ using System.Concurrency;
 using System.Linq;
 using System.Text;
 using Microsoft.Pex.Framework;
-using ReactiveXaml.Testing;
-using ReactiveXaml.Tests;
+using ReactiveUI.Testing;
+using ReactiveUI.Tests;
 using Microsoft.Pex.Framework.Generated;
 using Xunit;
 
-namespace ReactiveXaml.Serialization.Tests
+namespace ReactiveUI.Serialization.Tests
 {
     public class ModelTestFixture : ModelBase
     {

@@ -13,7 +13,7 @@ using System.Windows;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Bson;
 
-namespace ReactiveXaml.Serialization
+namespace ReactiveUI.Serialization
 {
     /// <summary>
     /// 

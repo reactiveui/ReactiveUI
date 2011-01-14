@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Input;
 
-namespace ReactiveXaml
+namespace ReactiveUI
 {
     public enum StockUserErrorIcon {
         Critical,

@@ -4,10 +4,10 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using Xunit;
-using ReactiveXaml.Testing;
-using ReactiveXaml.Tests;
+using ReactiveUI.Testing;
+using ReactiveUI.Tests;
 
-namespace ReactiveXaml.Serialization.Tests
+namespace ReactiveUI.Serialization.Tests
 {
     public abstract class StorageEngineInterfaceTest : IEnableLogger
     {
