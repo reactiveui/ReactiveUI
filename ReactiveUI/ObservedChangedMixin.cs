@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 
-namespace ReactiveXaml
+namespace ReactiveUI
 {
     public static class ObservedChangedMixin
     {

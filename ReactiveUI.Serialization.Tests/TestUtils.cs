@@ -8,7 +8,7 @@ using System.Reactive.Testing;
 using System.Reactive.Testing.Mocks;
 using System.Runtime.Serialization;
 
-namespace ReactiveXaml.Serialization.Tests
+namespace ReactiveUI.Serialization.Tests
 {
 #if !SILVERLIGHT
     public static class PexTestUtils

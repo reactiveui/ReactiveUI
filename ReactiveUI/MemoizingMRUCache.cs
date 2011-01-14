@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Diagnostics.Contracts;
 
-namespace ReactiveXaml
+namespace ReactiveUI
 {
     /// <summary>
     /// This data structure is a representation of a memoizing cache - i.e. a

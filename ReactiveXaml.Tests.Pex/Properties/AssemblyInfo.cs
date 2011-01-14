@@ -9,7 +9,7 @@ using System.Security;
 [assembly: SecurityRules(SecurityRuleSet.Level1)]
 
 // System.Reflection
-[assembly: AssemblyTitle("ReactiveXaml Pex Tests")]
+[assembly: AssemblyTitle("ReactiveUI Pex Tests")]
 
 // System.Runtime.InteropServices
 [assembly: ComVisible(false)]

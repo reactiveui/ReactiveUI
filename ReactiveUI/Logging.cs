@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading;
 using System.Diagnostics.Contracts;
 
-namespace ReactiveXaml
+namespace ReactiveUI
 {
     public enum LogLevel {
         Debug = 1,

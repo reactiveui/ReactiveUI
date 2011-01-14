@@ -2,8 +2,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d"
-        xmlns:app="clr-namespace:ReactiveXamlSample"
-        x:Class="ReactiveXamlSample.MainWindow" x:Name="Window"
+        xmlns:app="clr-namespace:ReactiveUISample"
+        x:Class="ReactiveUISample.MainWindow" x:Name="Window"
         Title="Sample App" Height="350" Width="525">
 
 	<Window.Resources>

@@ -38,17 +38,17 @@ CustomPrebuildTasks = {
 ### Custom Tasks
 ###
 
-desc "Generate an AssemblyInfo.cs for ReactiveXaml"
+desc "Generate an AssemblyInfo.cs for ReactiveUI"
 assemblyinfo :assemblyinfo_reactivexaml do |asm|
     ProductInformation.each {|k,v| set_property(asm, k, v)}
-    asm.output_file = "ReactiveXaml/Properties/AssemblyInfo.cs"
+    asm.output_file = "ReactiveUI/Properties/AssemblyInfo.cs"
 end
 
-desc "Generate an AssemblyInfo.cs for ReactiveXaml.Blend"
+desc "Generate an AssemblyInfo.cs for ReactiveUI.Blend"
 assemblyinfo :assemblyinfo_reactivexamlblend do |asm|
     ProductInformation.each {|k,v| set_property(asm, k, v)}
     asm.product_name = "Reactive XAML Expression Blend"
-    asm.output_file = "ReactiveXaml.Blend/Properties/AssemblyInfo.cs"
+    asm.output_file = "ReactiveUI.Blend/Properties/AssemblyInfo.cs"
 end
 
 

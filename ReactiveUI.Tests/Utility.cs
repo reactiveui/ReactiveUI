@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Xunit;
 
-namespace ReactiveXaml.Tests
+namespace ReactiveUI.Tests
 {
     public static class EnumerableTestMixin
     {

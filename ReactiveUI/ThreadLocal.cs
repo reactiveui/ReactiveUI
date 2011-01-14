@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 
-namespace ReactiveXaml
+namespace ReactiveUI
 {
     public class ThreadLocal<T>
     {

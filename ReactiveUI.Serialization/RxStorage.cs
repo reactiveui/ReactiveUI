@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ReactiveXaml.Serialization
+namespace ReactiveUI.Serialization
 {
     public static class RxStorage
     {
@@ -27,7 +27,7 @@ namespace ReactiveXaml.Serialization
         }
 
         /// <summary>
-        /// InitializeWithEngine initializes ReactiveXaml.Serialization with a
+        /// InitializeWithEngine initializes ReactiveUI.Serialization with a
         /// storage engine to load and save objects.
         /// </summary>
         /// <param name="engine">The engine to use.</param>

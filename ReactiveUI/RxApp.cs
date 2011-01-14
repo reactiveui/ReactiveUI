@@ -6,7 +6,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Windows;
 
-namespace ReactiveXaml
+namespace ReactiveUI
 {
     /*
      * N.B. Why we have this evil global class

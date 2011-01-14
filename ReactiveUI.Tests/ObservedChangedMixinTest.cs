@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Concurrency;
 using System.Linq;
 using Xunit;
-using ReactiveXaml.Testing;
+using ReactiveUI.Testing;
 
-namespace ReactiveXaml.Tests
+namespace ReactiveUI.Tests
 {
     public class ObservedChangedMixinTest
     {

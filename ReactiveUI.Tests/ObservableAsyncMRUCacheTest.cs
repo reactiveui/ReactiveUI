@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading;
 using Xunit;
 
-namespace ReactiveXaml.Tests
+namespace ReactiveUI.Tests
 {
     public class ObservableAsyncMRUCacheTest : IEnableLogger
     {

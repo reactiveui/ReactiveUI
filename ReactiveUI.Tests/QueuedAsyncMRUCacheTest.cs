@@ -1,15 +1,15 @@
 ﻿using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Tasks;
-using ReactiveXaml;
+using ReactiveUI;
 using Xunit;
 using System;
 using System.Concurrency;
 using System.Collections.Generic;
 using System.Linq;
-using ReactiveXaml.Testing;
+using ReactiveUI.Testing;
 
-namespace ReactiveXaml.Tests
+namespace ReactiveUI.Tests
 {
     public class QueuedAsyncMRUCacheTest : IEnableLogger
     {

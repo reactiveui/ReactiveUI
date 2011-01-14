@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ReactiveXaml.Serialization
+namespace ReactiveUI.Serialization
 {
     /// <summary>
     /// NullStorageEngine is a test implementation of IStorageEngine that

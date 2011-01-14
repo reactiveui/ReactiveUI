@@ -7,7 +7,7 @@ using System.Xml;
 using System.Xml.Linq;
 using System.Xml.XPath;
 
-namespace ReactiveXaml.CompileTime
+namespace ReactiveUI.CompileTime
 {
     public class XibReferencedClass 
     {

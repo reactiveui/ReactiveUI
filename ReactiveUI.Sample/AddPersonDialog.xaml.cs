@@ -16,10 +16,10 @@ using System.Globalization;
 using System.Web;
 using System.Threading.Tasks;
 using System.ComponentModel.Composition;
-using ReactiveXaml;
+using ReactiveUI;
 using System.Concurrency;
 
-namespace ReactiveXamlSample
+namespace ReactiveUISample
 {
 	public partial class AddPersonDialog : Window
 	{

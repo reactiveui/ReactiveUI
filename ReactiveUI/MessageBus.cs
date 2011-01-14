@@ -3,7 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.ComponentModel;
 
-namespace ReactiveXaml
+namespace ReactiveUI
 {
     /// <summary>
     /// MessageBus represents an object that can act as a "Message Bus", a

@@ -13,7 +13,7 @@ using System.Windows.Interactivity;
 using System.Linq;
 //using Microsoft.Expression.Interactivity.Core;
 
-namespace ReactiveXaml.Blend
+namespace ReactiveUI.Blend
 {
 #if SILVERLIGHT
     public class FollowObservableStateBehavior : Behavior<Control>

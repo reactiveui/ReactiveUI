@@ -1,4 +1,4 @@
-# ReactiveXaml
+# ReactiveUI
 
 This library is an exploration I've been working on for several weeks on
 combining WPF Model-View-ViewModel paradigm with the Reactive Extensions for

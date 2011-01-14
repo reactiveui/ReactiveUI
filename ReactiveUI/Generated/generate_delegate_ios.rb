@@ -83,11 +83,11 @@ using System;
 using System.Linq;
 using System.Concurrency;
 using System.Collections.Generic;
-using ReactiveXaml;
+using ReactiveUI;
 using MonoTouch.Foundation;
 using <%= namespace_name(full_classname) %>;
 
-namespace ReactiveXaml.iOS 
+namespace ReactiveUI.iOS 
 {
   public <%= abstract %> partial class <%= class_name(full_classname) %>Rx : <%= full_classname %>
   {

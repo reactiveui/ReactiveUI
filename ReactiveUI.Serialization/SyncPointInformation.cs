@@ -3,7 +3,7 @@ using System.Globalization;
 using System.Linq;
 using System.Runtime.Serialization;
 
-namespace ReactiveXaml.Serialization
+namespace ReactiveUI.Serialization
 {
     /// <summary>
     /// 

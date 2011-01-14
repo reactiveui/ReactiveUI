@@ -10,7 +10,7 @@ using System.Runtime.Serialization;
 using System.Threading;
 using System.Concurrency;
 
-namespace ReactiveXaml
+namespace ReactiveUI
 {
     /// <summary>
     /// ReactiveObject is the base object for ViewModel classes, and it

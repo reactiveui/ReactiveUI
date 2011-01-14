@@ -7,7 +7,7 @@ using System.Runtime.Serialization;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace ReactiveXaml.Serialization
+namespace ReactiveUI.Serialization
 {
     /// <summary>
     /// 

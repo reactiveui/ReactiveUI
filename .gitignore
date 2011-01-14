@@ -8,7 +8,7 @@
 *.vssscc
 *.pidb
 *.userprefs
-ReactiveXaml/Generated/*.cs
+ReactiveUI/Generated/*.cs
 *.tmp_proj
 **/StyleCop.Cache
 StyleCop.Cache

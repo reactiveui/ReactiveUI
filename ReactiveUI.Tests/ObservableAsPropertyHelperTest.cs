@@ -1,12 +1,12 @@
-﻿using ReactiveXaml;
-using ReactiveXaml.Testing;
+﻿using ReactiveUI;
+using ReactiveUI.Testing;
 using Xunit;
 using System;
 using System.Linq;
 using System.Concurrency;
 using System.Collections.Generic;
 
-namespace ReactiveXaml.Tests
+namespace ReactiveUI.Tests
 {
     public class ObservableAsPropertyHelperTest
     {

@@ -13,7 +13,7 @@ using System.Windows.Shapes;
 using Microsoft.Phone.Controls;
 using Microsoft.Phone.Shell;
 
-namespace ReactiveXaml.Sample.WP7
+namespace ReactiveUI.Sample.WP7
 {
     public partial class App : Application
     {

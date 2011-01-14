@@ -5,7 +5,7 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Windows.Input;
 
-namespace ReactiveXaml
+namespace ReactiveUI
 {
     /// <summary>
     /// IObservedChange is a generic interface that replaces the non-generic

@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Linq;
 using Xunit;
-using ReactiveXaml.Tests;
+using ReactiveUI.Tests;
 
-namespace ReactiveXaml.Serialization.Tests
+namespace ReactiveUI.Serialization.Tests
 {
     public class SyncPointInformationTest : IEnableLogger
     {

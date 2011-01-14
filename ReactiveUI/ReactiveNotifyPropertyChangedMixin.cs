@@ -3,7 +3,7 @@ using System.Linq;
 using System.Diagnostics.Contracts;
 using System.Linq.Expressions;
 
-namespace ReactiveXaml
+namespace ReactiveUI
 {
     public static class ReactiveNotifyPropertyChangedMixin
     {

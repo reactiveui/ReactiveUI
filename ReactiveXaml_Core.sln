@@ -1,30 +1,30 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveXaml", "ReactiveXaml\ReactiveXaml.csproj", "{292A477B-BB94-43C1-984E-E177EF9FEDB7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI", "ReactiveUI\ReactiveUI.csproj", "{292A477B-BB94-43C1-984E-E177EF9FEDB7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveXaml.Tests", "ReactiveXaml.Tests\ReactiveXaml.Tests.csproj", "{6FBDE6EA-2202-4A70-8EE4-7BA6D515952E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Tests", "ReactiveUI.Tests\ReactiveUI.Tests.csproj", "{6FBDE6EA-2202-4A70-8EE4-7BA6D515952E}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{BD9762CF-E104-481C-96A6-26E624B86283}"
 	ProjectSection(SolutionItems) = preProject
 		Local.testsettings = Local.testsettings
-		ReactiveXaml.vsmdi = ReactiveXaml.vsmdi
+		ReactiveUI.vsmdi = ReactiveUI.vsmdi
 		TraceAndTestImpact.testsettings = TraceAndTestImpact.testsettings
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveXaml.Blend", "ReactiveXaml.Blend\ReactiveXaml.Blend.csproj", "{3870EA63-AFDF-4D49-B4D6-8299506E67B4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Blend", "ReactiveUI.Blend\ReactiveUI.Blend.csproj", "{3870EA63-AFDF-4D49-B4D6-8299506E67B4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveXaml.Serialization", "ReactiveXaml.Serialization\ReactiveXaml.Serialization.csproj", "{C6A9A8EC-FDA6-45C1-9694-298D44E3C55F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Serialization", "ReactiveUI.Serialization\ReactiveUI.Serialization.csproj", "{C6A9A8EC-FDA6-45C1-9694-298D44E3C55F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveXaml.Serialization.Tests", "ReactiveXaml.Serialization.Tests\ReactiveXaml.Serialization.Tests.csproj", "{ACA93E36-5301-4F2B-95C8-70897574506B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Serialization.Tests", "ReactiveUI.Serialization.Tests\ReactiveUI.Serialization.Tests.csproj", "{ACA93E36-5301-4F2B-95C8-70897574506B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveXaml.Serialization.Esent", "ReactiveXaml.Serialization.Esent\ReactiveXaml.Serialization.Esent.csproj", "{0B0ABDC8-4EF3-4172-ADE4-E4FB55E5F91E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Serialization.Esent", "ReactiveUI.Serialization.Esent\ReactiveUI.Serialization.Esent.csproj", "{0B0ABDC8-4EF3-4172-ADE4-E4FB55E5F91E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PerfConsoleRunner", "PerfConsoleRunner\PerfConsoleRunner.csproj", "{DBC5FEB0-8535-4D77-AA1B-BA8957253996}"
 EndProject
 Global
 	GlobalSection(TestCaseManagementSettings) = postSolution
-		CategoryFile = ReactiveXaml.vsmdi
+		CategoryFile = ReactiveUI.vsmdi
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

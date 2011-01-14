@@ -1,11 +1,11 @@
-﻿using ReactiveXaml;
+﻿using ReactiveUI;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Reflection;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 
-namespace ReactiveXamlSample.Tests
+namespace ReactiveUISample.Tests
 {
     [Export(typeof(IPromptForModelDialog<PersonEntry>))]
     public class DummyAddPartDialog : IPromptForModelDialog<PersonEntry>

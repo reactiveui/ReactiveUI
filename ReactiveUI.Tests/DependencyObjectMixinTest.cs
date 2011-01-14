@@ -1,4 +1,4 @@
-﻿using ReactiveXaml;
+﻿using ReactiveUI;
 using Xunit;
 using System;
 using System.Linq;
@@ -6,9 +6,9 @@ using System.Concurrency;
 using System.Collections.Generic;
 using System.Threading;
 using System.Windows;
-using ReactiveXaml.Testing;
+using ReactiveUI.Testing;
 
-namespace ReactiveXaml.Tests
+namespace ReactiveUI.Tests
 {
     public class DepObjFixture : FrameworkElement
     {

@@ -1,13 +1,13 @@
-﻿using ReactiveXaml;
+﻿using ReactiveUI;
 using Xunit;
 using System;
 using System.Linq;
 using System.Concurrency;
 using System.Collections.Generic;
 using System.Threading;
-using ReactiveXaml.Testing;
+using ReactiveUI.Testing;
 
-namespace ReactiveXaml.Tests
+namespace ReactiveUI.Tests
 {
     public class ReactiveCommandTest : IEnableLogger
     {

@@ -3,15 +3,15 @@ using Xunit;
 using System;
 using System.Linq;
 using System.Collections.Generic;
-using ReactiveXaml;
+using ReactiveUI;
 using System.IO;
 using System.Text;
-using ReactiveXaml.Testing;
-using ReactiveXaml.Tests;
+using ReactiveUI.Testing;
+using ReactiveUI.Tests;
 using System.Runtime.Serialization.Json;
 using System.Threading;
 
-namespace ReactiveXaml.Tests
+namespace ReactiveUI.Tests
 {
     public class ReactiveCollectionTest : IEnableLogger
     {

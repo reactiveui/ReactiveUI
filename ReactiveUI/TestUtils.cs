@@ -2,7 +2,7 @@
 using System.Concurrency;
 using System.Disposables;
 
-namespace ReactiveXaml.Testing
+namespace ReactiveUI.Testing
 {
     public static class TestUtils
     {

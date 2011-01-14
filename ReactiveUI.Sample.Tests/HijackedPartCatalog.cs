@@ -5,7 +5,7 @@ using System.Text;
 using System.ComponentModel.Composition.Primitives;
 using System.Text.RegularExpressions;
 
-namespace ReactiveXamlSample.Tests
+namespace ReactiveUISample.Tests
 {
     // HACK: gblock would probably mock me openly for this
     public class HijackedPartCatalog : ComposablePartCatalog

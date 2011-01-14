@@ -4,9 +4,9 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.Concurrency;
 using Xunit;
-using ReactiveXaml;
+using ReactiveUI;
 
-namespace ReactiveXaml.Tests
+namespace ReactiveUI.Tests
 {
     public class TestFixture : ReactiveObject
     {

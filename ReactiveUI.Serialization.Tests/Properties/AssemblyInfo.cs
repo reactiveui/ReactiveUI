@@ -12,7 +12,7 @@ using System.Security;
 #endif
 
 // System.Reflection
-[assembly: AssemblyTitle("ReactiveXaml.Serialization Pex Tests")]
+[assembly: AssemblyTitle("ReactiveUI.Serialization Pex Tests")]
 
 // System.Runtime.InteropServices
 [assembly: ComVisible(false)]

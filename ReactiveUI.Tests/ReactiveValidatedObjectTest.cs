@@ -1,11 +1,11 @@
-﻿using ReactiveXaml;
+﻿using ReactiveUI;
 using Xunit;
 using System;
 using System.Linq;
 using System.ComponentModel.DataAnnotations;
 using System.Collections.Generic;
 
-namespace ReactiveXaml.Tests
+namespace ReactiveUI.Tests
 {
     public class ValidatedTestFixture : ReactiveValidatedObject
     {

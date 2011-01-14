@@ -4,7 +4,7 @@ using System.Concurrency;
 using System.Linq;
 using System.Threading;
 
-namespace ReactiveXaml
+namespace ReactiveUI
 {
     /// <summary>
     /// ObservableAsyncMRUCache implements memoization for asynchronous or

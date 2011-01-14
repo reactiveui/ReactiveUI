@@ -16,7 +16,7 @@ using System.Windows.Interactivity;
 using System.Security.Principal;
 using System.Text.RegularExpressions;
 
-namespace ReactiveXamlSample
+namespace ReactiveUISample
 {
     /// <summary>
     /// This class contains miscellaneous methods to do UI-related tasks.
