@@ -88,6 +88,10 @@
       <Project>{C829568B-1D01-452C-AB4F-1C75FAD18E98}</Project>
       <Name>ReactiveUI.Sample</Name>
     </ProjectReference>
+    <ProjectReference Include="..\ReactiveUI.Xaml\ReactiveUI.Xaml.csproj">
+      <Project>{761AC9BA-4A9C-440C-9B6C-2569978F0610}</Project>
+      <Name>ReactiveUI.Xaml</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj">
       <Project>{292A477B-BB94-43C1-984E-E177EF9FEDB7}</Project>
       <Name>ReactiveUI</Name>

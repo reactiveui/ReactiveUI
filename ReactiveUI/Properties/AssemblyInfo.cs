@@ -7,3 +7,7 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyVersion("2.0.0.0")]
 
 [assembly: InternalsVisibleTo("ReactiveUI.Explorables")]
+[assembly: InternalsVisibleTo("ReactiveUI.Xaml")]
+[assembly: InternalsVisibleTo("ReactiveUI.Xaml_35")]
+[assembly: InternalsVisibleTo("ReactiveUI.Xaml_SL4")]
+[assembly: InternalsVisibleTo("ReactiveUI.Xaml_WP7")]

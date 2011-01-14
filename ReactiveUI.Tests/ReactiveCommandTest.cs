@@ -5,6 +5,7 @@ using System.Linq;
 using System.Concurrency;
 using System.Collections.Generic;
 using System.Threading;
+using ReactiveUI.Xaml;
 using ReactiveUI.Testing;
 
 namespace ReactiveUI.Tests

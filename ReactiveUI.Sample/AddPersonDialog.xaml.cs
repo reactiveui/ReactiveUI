@@ -18,6 +18,7 @@ using System.Threading.Tasks;
 using System.ComponentModel.Composition;
 using ReactiveUI;
 using System.Concurrency;
+using ReactiveUI.Xaml;
 
 namespace ReactiveUISample
 {

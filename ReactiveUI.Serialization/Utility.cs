@@ -94,7 +94,7 @@ namespace ReactiveUI.Serialization
         {
             try {
                 return This.GetTypes();
-            } catch(ReflectionTypeLoadException _) {
+            } catch(ReflectionTypeLoadException) {
                 return new Type[0];
             }
         }

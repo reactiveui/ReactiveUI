@@ -1,4 +1,5 @@
 ﻿using ReactiveUI;
+using ReactiveUI.Xaml;
 using Xunit;
 using System;
 using System.Linq;
