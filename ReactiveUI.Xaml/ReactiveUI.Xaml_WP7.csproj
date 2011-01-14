@@ -63,6 +63,7 @@
     <NoConfig>true</NoConfig>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>Bin\Release\WP7\ReactiveUI.Xaml_WP7.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System.CoreEx, Version=1.0.2838.370, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
