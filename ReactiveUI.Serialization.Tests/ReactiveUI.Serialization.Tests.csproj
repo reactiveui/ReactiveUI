@@ -42,6 +42,7 @@
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="ReactiveUI.Serialization.Moles, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL" />
+    <Reference Include="ReactiveXaml.Serialization.Moles, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core">
@@ -100,23 +101,8 @@
   <ItemGroup>
     <Compile Include="IStorageEngineTest.cs" />
     <Compile Include="ModelBaseTest.cs" />
-    <Compile Include="ModelBaseTest.GuidsShouldBeUniqueForContent.g.cs">
-      <DependentUpon>ModelBaseTest.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ModelBaseTest.ItemsChangedShouldFire.g.cs">
-      <DependentUpon>ModelBaseTest.cs</DependentUpon>
-    </Compile>
     <Compile Include="SerializationDataSurrogatesTest.cs" />
-    <Compile Include="SerializedCollectionTest.AddingItemsShouldChangeTheContentHash.g.cs">
-      <DependentUpon>SerializedCollectionTest.cs</DependentUpon>
-    </Compile>
-    <Compile Include="SerializedCollectionTest.ChangingASerializableItemShouldChangeTheContentHash.g.cs">
-      <DependentUpon>SerializedCollectionTest.cs</DependentUpon>
-    </Compile>
     <Compile Include="SerializedCollectionTest.cs" />
-    <Compile Include="SerializedCollectionTest.RemovingItemsShouldChangeTheContentHash.g.cs">
-      <DependentUpon>SerializedCollectionTest.cs</DependentUpon>
-    </Compile>
     <Compile Include="SyncPointInformationTest.cs" />
     <Compile Include="TestUtils.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

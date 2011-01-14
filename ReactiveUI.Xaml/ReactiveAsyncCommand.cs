@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Concurrency;
 using System.Diagnostics.Contracts;
+using ReactiveUI;
 
-namespace ReactiveUI
+namespace ReactiveUI.Xaml
 {
     /// ReactiveAsyncCommand represents commands that run an asynchronous
     /// operation in the background when invoked. The main benefit of this

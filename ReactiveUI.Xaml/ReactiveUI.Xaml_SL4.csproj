@@ -5,12 +5,12 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.50727</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{5314BB4C-20AE-4B6A-8530-862640A5F956}</ProjectGuid>
+    <ProjectGuid>{AE8FF678-935D-42CF-A899-6E73DF9A3B0B}</ProjectGuid>
     <ProjectTypeGuids>{A1591282-1198-4647-A2B1-27E5FF5F6F3B};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ReactiveUI.Blend</RootNamespace>
-    <AssemblyName>ReactiveUI.Blend_SL4</AssemblyName>
+    <RootNamespace>ReactiveUI.Xaml</RootNamespace>
+    <AssemblyName>ReactiveUI.Xaml_SL4</AssemblyName>
     <TargetFrameworkIdentifier>Silverlight</TargetFrameworkIdentifier>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <SilverlightVersion>$(TargetFrameworkVersion)</SilverlightVersion>
@@ -55,40 +55,38 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="mscorlib" />
+    <Reference Include="System.ComponentModel.DataAnnotations, Version=2.0.5.0, Culture=neutral, PublicKeyToken=ddd0da4d3e678217, processorArchitecture=MSIL" />
     <Reference Include="System.CoreEx">
-      <SpecificVersion>False</SpecificVersion>
+      <Private>True</Private>
       <HintPath>..\ext\SL4\System.CoreEx.dll</HintPath>
     </Reference>
     <Reference Include="System.Interactive">
-      <SpecificVersion>False</SpecificVersion>
+      <Private>True</Private>
       <HintPath>..\ext\SL4\System.Interactive.dll</HintPath>
     </Reference>
     <Reference Include="System.Observable">
+      <Private>True</Private>
       <HintPath>..\ext\SL4\System.Observable.dll</HintPath>
     </Reference>
     <Reference Include="System.Reactive">
-      <SpecificVersion>False</SpecificVersion>
+      <Private>True</Private>
       <HintPath>..\ext\SL4\System.Reactive.dll</HintPath>
     </Reference>
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Windows" />
     <Reference Include="system" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Windows.Interactivity, Version=4.0.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Net" />
     <Reference Include="System.Windows.Browser" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AsyncCommandVisualStateBehavior.cs" />
-    <Compile Include="FollowObservableStateBehavior.cs" />
-    <Compile Include="ObservableTrigger.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="DependencyObjectMixin.cs" />
+    <Compile Include="Interfaces.cs" />
+    <Compile Include="ReactiveAsyncCommand.cs" />
+    <Compile Include="ReactiveCommand.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ReactiveUI.Xaml\ReactiveUI.Xaml_SL4.csproj">
-      <Project>{AE8FF678-935D-42CF-A899-6E73DF9A3B0B}</Project>
-      <Name>ReactiveUI.Xaml_SL4</Name>
-    </ProjectReference>
     <ProjectReference Include="..\ReactiveUI\ReactiveUI_SL4.csproj">
       <Project>{3DB8B68E-1229-45A5-90CD-6F72D086FDFF}</Project>
       <Name>ReactiveUI_SL4</Name>

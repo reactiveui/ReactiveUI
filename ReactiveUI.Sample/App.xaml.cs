@@ -14,6 +14,7 @@ using System.Windows.Input;
 using System.ComponentModel.DataAnnotations;
 using ReactiveUI;
 using System.Concurrency;
+using ReactiveUI.Xaml;
 
 namespace ReactiveUISample
 {
