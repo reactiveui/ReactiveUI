@@ -8,8 +8,8 @@
     <ProjectGuid>{A27167FC-07A6-4EE2-9277-48F419DC9725}</ProjectGuid>
     <ProjectTypeGuids>{E613F3A2-FE9C-494F-B74E-F63BCB86FEA6};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
-    <RootNamespace>ReactiveXaml</RootNamespace>
-    <AssemblyName>ReactiveXaml_iOS</AssemblyName>
+    <RootNamespace>ReactiveUI</RootNamespace>
+    <AssemblyName>ReactiveUI_iOS</AssemblyName>
     <MtouchMinimumOS>3.0</MtouchMinimumOS>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
   </PropertyGroup>

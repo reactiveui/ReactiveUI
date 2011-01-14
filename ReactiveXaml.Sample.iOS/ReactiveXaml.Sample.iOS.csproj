@@ -8,11 +8,11 @@
     <ProjectGuid>{B860D5BF-26D2-45E0-BF83-FCA71D17CF81}</ProjectGuid>
     <ProjectTypeGuids>{E613F3A2-FE9C-494F-B74E-F63BCB86FEA6};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Exe</OutputType>
-    <RootNamespace>ReactiveXaml.Sample.iOS</RootNamespace>
+    <RootNamespace>ReactiveUI.Sample.iOS</RootNamespace>
     <SupportedDevices>IPhoneAndIPad</SupportedDevices>
     <MainNibFileIPad>MainWindowIPad.xib</MainNibFileIPad>
     <MainNibFile>MainWindowIPhone.xib</MainNibFile>
-    <AssemblyName>ReactiveXamlSampleiOS</AssemblyName>
+    <AssemblyName>ReactiveUISampleiOS</AssemblyName>
     <MtouchMinimumOS>3.0</MtouchMinimumOS>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
   </PropertyGroup>
@@ -104,10 +104,14 @@
     <Compile Include="Main.cs" />
     <Compile Include="AppDelegateIPhone.cs" />
     <Compile Include="AppDelegateIPad.cs" />
+    <Compile Include="PeopleViewController.xib.designer.cs">
+      <DependentUpon>PeopleViewController.xib</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Page Include="MainWindowIPhone.xib" />
     <Page Include="MainWindowIPad.xib" />
+    <Page Include="PeopleViewController.xib" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
@@ -116,9 +120,15 @@
     </MonoDevelop>
   </ProjectExtensions>
   <ItemGroup>
-    <ProjectReference Include="..\ReactiveXaml\ReactiveXaml_iOS.csproj">
+    <ProjectReference Include="..\ReactiveUI\ReactiveUI_iOS.csproj">
       <Project>{A27167FC-07A6-4EE2-9277-48F419DC9725}</Project>
-      <Name>ReactiveXaml_iOS</Name>
+      <Name>ReactiveUI_iOS</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadataStorage Include="Service References\BingTranslate" />
   </ItemGroup>
 </Project>

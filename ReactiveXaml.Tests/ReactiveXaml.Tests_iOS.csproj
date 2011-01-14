@@ -7,8 +7,8 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{32DAA782-0A0B-44EC-AFD5-982D7C9D8F53}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>ReactiveXaml.Tests</RootNamespace>
-    <AssemblyName>ReactiveXaml.Tests_iOS</AssemblyName>
+    <RootNamespace>ReactiveUI.Tests</RootNamespace>
+    <AssemblyName>ReactiveUI.Tests_iOS</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -87,9 +87,9 @@
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
-    <ProjectReference Include="..\ReactiveXaml\ReactiveXaml_iOS.csproj">
+    <ProjectReference Include="..\ReactiveUI\ReactiveUI_iOS.csproj">
       <Project>{A27167FC-07A6-4EE2-9277-48F419DC9725}</Project>
-      <Name>ReactiveXaml_iOS</Name>
+      <Name>ReactiveUI_iOS</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>
