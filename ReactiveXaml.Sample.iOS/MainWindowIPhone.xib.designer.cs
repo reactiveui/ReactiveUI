@@ -17,7 +17,7 @@ namespace ReactiveXaml.Sample.iOS {
 		
 		private MonoTouch.UIKit.UIWindow __mt_window;
 		
-		private MonoTouch.UIKit.UITextField __mt_searchBox;
+		private MonoTouch.UIKit.UINavigationController __mt_navigationController;
 		
 		#pragma warning disable 0169
 		[MonoTouch.Foundation.Connect("window")]
@@ -32,15 +32,15 @@ namespace ReactiveXaml.Sample.iOS {
 			}
 		}
 		
-		[MonoTouch.Foundation.Connect("searchBox")]
-		private MonoTouch.UIKit.UITextField searchBox {
+		[MonoTouch.Foundation.Connect("navigationController")]
+		private MonoTouch.UIKit.UINavigationController navigationController {
 			get {
-				this.__mt_searchBox = ((MonoTouch.UIKit.UITextField)(this.GetNativeField("searchBox")));
-				return this.__mt_searchBox;
+				this.__mt_navigationController = ((MonoTouch.UIKit.UINavigationController)(this.GetNativeField("navigationController")));
+				return this.__mt_navigationController;
 			}
 			set {
-				this.__mt_searchBox = value;
-				this.SetNativeField("searchBox", value);
+				this.__mt_navigationController = value;
+				this.SetNativeField("navigationController", value);
 			}
 		}
 	}

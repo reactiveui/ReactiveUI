@@ -29,6 +29,8 @@ namespace ReactiveXaml.Serialization.Tests
             PexAssume.IsNotNull(setters);
             PexAssume.AreElementsNotNull(setters);
 
+            this.Log().InfoFormat("Setting TestString to [{0}]", String.Join(",", setters));
+
             var sched = new TestScheduler();
             var output_changed = new List<object>();
             var output_changing = new List<object>();

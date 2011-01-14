@@ -1,6 +1,5 @@
 #!/usr/bin/env ruby
 
-
 def main(args)
   puts Dir.glob("/Developer/MonoTouch/usr/lib/mono/*")
   versions = Dir.glob("/Developer/MonoTouch/usr/lib/mono/*").map{|x| x.gsub(/.*\//, '').to_f}
