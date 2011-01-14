@@ -24,8 +24,11 @@ namespace ReactiveXaml.Serialization.Tests
             var hashes = new List<Guid>();
             int changeCount = 0;
 
-            toAdd.ToObservable(sched).Subscribe(x => fixture.Add(new ModelTestFixture() {TestString = x}));
-            fixture.ItemChanged.Subscribe(_ => {
+            foreach (var v in toAdd) {
+                fixture.Add(new ModelTestFixture() {TestString = v});
+            }
+
+            fixture.Changed.Subscribe(_ => {
                 hashes.Add(fixture.ContentHash);
                 changeCount++;
             });
@@ -51,13 +54,15 @@ namespace ReactiveXaml.Serialization.Tests
             var hashes = new List<Guid>();
             int changeCount = 0;
 
-            fixture.ItemChanged.Subscribe(_ => {
+            fixture.Changed.Subscribe(_ => {
                 changeCount++;
                 hashes.Add(fixture.ContentHash);
             });
 
             var toRemove = itemsToRemove.Select(x => fixture[x]);
-            toRemove.ToObservable(sched).Subscribe(x => fixture.Remove(x));
+            foreach(var v in toRemove) {
+                fixture.Remove(v);
+            }
 
             sched.Run();
 
@@ -80,7 +85,7 @@ namespace ReactiveXaml.Serialization.Tests
             var hashBefore = fixture.ContentHash;
             PexAssume.AreNotEqual(newValue, fixture[toChange].TestString);
 
-            fixture.ItemChanged.Subscribe(_ => shouldDie = false);
+            fixture.Changed.Subscribe(_ => shouldDie = false);
             Observable.Return(newValue, sched).Subscribe(x => fixture[toChange].TestString = x);
 
             sched.Run();
