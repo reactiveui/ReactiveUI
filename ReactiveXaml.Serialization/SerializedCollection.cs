@@ -150,6 +150,7 @@ namespace ReactiveXaml.Serialization
                     }
                 }
             }
+            buf.Write(BitConverter.GetBytes(this.Count), 0, 4);
 
             if (buf.Length == 0) {
                 throw new Exception("Error calculating hash");
