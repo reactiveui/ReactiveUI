@@ -190,7 +190,7 @@ namespace ReactiveUI.Xaml
         /// Note that this function *must* return an equivalently-same result given a
         /// specific input - because the function is being memoized, if the
         /// calculationFunc depends on other varables other than the input
-        /// value, the results will be unpredictable.
+        /// value, the results will be unpredictable.</param>
         /// <param name="maxSize">The number of items to cache. When this limit
         /// is reached, not recently used items will be discarded.</param>
         /// <param name="onRelease">This optional method is called when an item
@@ -227,7 +227,8 @@ namespace ReactiveUI.Xaml
         /// Note that this function *must* return an equivalently-same result given a
         /// specific input - because the function is being memoized, if the
         /// calculationFunc depends on other varables other than the input
-        /// value, the results will be unpredictable.
+        /// value, the results will be unpredictable. 
+        /// </param>
         /// <param name="maxSize">The number of items to cache. When this limit
         /// is reached, not recently used items will be discarded.</param>
         /// <param name="onRelease">This optional method is called when an item
