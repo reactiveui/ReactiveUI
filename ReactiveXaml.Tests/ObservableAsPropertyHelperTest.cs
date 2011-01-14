@@ -1,4 +1,5 @@
 ﻿using ReactiveXaml;
+using ReactiveXaml.Testing;
 using Xunit;
 using System;
 using System.Linq;
@@ -12,17 +13,19 @@ namespace ReactiveXaml.Tests
         [Fact]
         public void OAPHShouldFireChangeNotifications()
         {
-            var sched = new TestScheduler();
+            var input = new[] {1, 2, 3, 3, 4}.ToObservable();
             var output = new List<int>();
 
-            var input = new[] { 1, 2, 3, 3, 4 }.ToObservable();
-            var fixture = new ObservableAsPropertyHelper<int>(input,
-                x => output.Add(x), -5, sched);
+            (new TestScheduler()).With(sched => {
+                var fixture = new ObservableAsPropertyHelper<int>(input,
+                    x => output.Add(x), -5);
+
+                sched.Run();
+            });
 
             // Note: Why doesn't the list match the above one? We're supposed
             // to suppress duplicate notifications, of course :)
-            sched.Run();
-            (new[] { 1, 2, 3, 4 }).AssertAreEqual(output);
+            (new[] { -5, 1, 2, 3, 4 }).AssertAreEqual(output);
         }
 
         [Fact]

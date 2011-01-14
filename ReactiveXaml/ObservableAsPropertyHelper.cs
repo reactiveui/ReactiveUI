@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Concurrency;
 using System.Diagnostics.Contracts;
@@ -19,9 +20,9 @@ namespace ReactiveXaml
     /// </summary>
     public class ObservableAsPropertyHelper<T> : IEnableLogger, IObservable<T>
     {
-        T lastValue;
-        Exception lastException;
-        IObservable<T> source;
+        T _lastValue;
+        Exception _lastException;
+        readonly IObservable<T> _source;
 
         /// <summary>
         /// Constructs an ObservableAsPropertyHelper object.
@@ -44,19 +45,20 @@ namespace ReactiveXaml
             Contract.Requires(onChanged != null);
 
             scheduler = scheduler ?? RxApp.DeferredScheduler;
-            lastValue = initialValue;
+            _lastValue = initialValue;
 
             var subj = new Subject<T>();
-            source = observable.DistinctUntilChanged().Publish(subj).ObserveOn(scheduler);
-            source.Subscribe(x => {
+            subj.Subscribe(x => {
                 this.Log().InfoFormat("Property helper {0:X} changed", this.GetHashCode());
-                lastValue = x;
+                _lastValue = x;
                 onChanged(x);
-            }, ex => lastException = ex);
+            }, ex => _lastException = ex);
 
             // Fire off an initial RaisePropertyChanged to make sure bindings
             // have a value
             subj.OnNext(initialValue);
+
+            _source = observable.DistinctUntilChanged().Publish(subj);
         }
 
         /// <summary>
@@ -64,17 +66,17 @@ namespace ReactiveXaml
         /// </summary>
         public T Value {
             get {
-                if (lastException != null) {
-                    this.Log().Error("Observable ended with OnError", lastException);
-                    throw lastException;
+                if (_lastException != null) {
+                    this.Log().Error("Observable ended with OnError", this._lastException);
+                    throw _lastException;
                 }
-                return lastValue;
+                return _lastValue;
             }
         }
 
         public IDisposable Subscribe(IObserver<T> observer)
         {
-            return source.Subscribe(observer);
+            return _source.Subscribe(observer);
         }
 
         /// <summary>
@@ -88,7 +90,7 @@ namespace ReactiveXaml
         /// (and is by default)</param>
         public static ObservableAsPropertyHelper<T> Default(T initialValue = default(T), IScheduler scheduler = null)
         {
-            return new ObservableAsPropertyHelper(Observable.Never<T>(), () => {}, initialValue, scheduler);
+            return new ObservableAsPropertyHelper<T>(Observable.Never<T>(), _ => {}, initialValue, scheduler);
         }
     }
 
