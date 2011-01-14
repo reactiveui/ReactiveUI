@@ -37,6 +37,7 @@
     <DefineConstants>TRACE;DOTNETISOLDANDSAD</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Release\3Point5\ReactiveUI.Xaml_35.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="PresentationCore" />
