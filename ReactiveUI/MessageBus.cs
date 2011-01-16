@@ -29,12 +29,12 @@ namespace ReactiveUI
         /// identical types (i.e. "MyCoolViewModel") - if the message type is
         /// only used for one purpose, leave this as null.</param>
         /// <returns></returns>
-        public IObservable<T> Listen<T>(string Contract = null)
+        public IObservable<T> Listen<T>(string contract = null)
         {
             IObservable<T> ret = null;
-	        this.Log().InfoFormat("Listening to {0}:{1}", typeof(T), Contract);
+	        this.Log().InfoFormat("Listening to {0}:{1}", typeof(T), contract);
 
-            withMessageBus(typeof(T), Contract, (mb, tuple) => {
+            withMessageBus(typeof(T), contract, (mb, tuple) => {
                 ret = (IObservable<T>)mb[tuple].Target;
             });
 
@@ -44,15 +44,15 @@ namespace ReactiveUI
         /// <summary>
         /// Determins if a particular message Type is registered.
         /// </summary>
-        /// <typeparam name="T">The type of the message.</typeparam>
+        /// <param name="type">The Type of the message to listen to.</param>
         /// <param name="contract">A unique string to distinguish messages with
         /// identical types (i.e. "MyCoolViewModel") - if the message type is
         /// only used for one purpose, leave this as null.</param>
         /// <returns>True if messages have been posted for this message Type.</returns>
-        public bool IsRegistered(Type Type, string Contract = null)
+        public bool IsRegistered(Type type, string contract = null)
         {
             bool ret = false;
-            withMessageBus(Type, Contract, (mb, tuple) => {
+            withMessageBus(type, contract, (mb, tuple) => {
                 ret = mb.ContainsKey(tuple) && mb[tuple].IsAlive;
             });
 
@@ -70,10 +70,10 @@ namespace ReactiveUI
         /// <param name="contract">A unique string to distinguish messages with
         /// identical types (i.e. "MyCoolViewModel") - if the message type is
         /// only used for one purpose, leave this as null.</param>
-        public void RegisterMessageSource<T>(IObservable<T> Source, string Contract = null)
+        public void RegisterMessageSource<T>(IObservable<T> source, string contract = null)
         {
-            withMessageBus(typeof(T), Contract, (mb, tuple) => {
-                mb[tuple] = new WeakReference(Source);
+            withMessageBus(typeof(T), contract, (mb, tuple) => {
+                mb[tuple] = new WeakReference(source);
             });
         }
 
@@ -88,14 +88,14 @@ namespace ReactiveUI
         /// <param name="contract">A unique string to distinguish messages with
         /// identical types (i.e. "MyCoolViewModel") - if the message type is
         /// only used for one purpose, leave this as null.</param>
-        public void SendMessage<T>(T Message, string Contract = null)
+        public void SendMessage<T>(T message, string contract = null)
         {
-            withMessageBus(typeof(T), Contract, (mb, tuple) => {
+            withMessageBus(typeof(T), contract, (mb, tuple) => {
                 var subj = mb[tuple].Target as Subject<T>;
 
                 if (subj == null) {
                     subj = new Subject<T>();
-                    IObservable<T> prev = mb[tuple].Target as IObservable<T>;
+                    var prev = mb[tuple].Target as IObservable<T>;
                     if (prev != null) {
                         prev.Subscribe(subj.OnNext, subj.OnError, subj.OnCompleted);
                     }
@@ -103,8 +103,8 @@ namespace ReactiveUI
                     mb[tuple] = new WeakReference(subj);
                 }
 
-	    	this.Log().DebugFormat("Sending message to {0}:{1} - {2}", typeof(T), Contract, Message);
-                subj.OnNext(Message);
+	    	this.Log().DebugFormat("Sending message to {0}:{1} - {2}", typeof(T), contract, message);
+                subj.OnNext(message);
             });
         }
 
