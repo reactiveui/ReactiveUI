@@ -158,15 +158,6 @@ namespace ReactiveUI
         /// rebroadcast through ItemChanging/ItemChanged.
         /// </summary>
         bool ChangeTrackingEnabled { get; set; }
-
-        /// <summary>
-        /// When this method is called, an object will not fire change
-        /// notifications (neither traditional nor Observable notifications)
-        /// until the return value is disposed.
-        /// </summary>
-        /// <returns>An object that, when disposed, reenables change
-        /// notifications.</returns>
-        IDisposable SuppressChangeNotifications();
     }
 
     /// <summary>

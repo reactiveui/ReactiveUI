@@ -190,14 +190,14 @@ namespace ReactiveUI
             return This.Listen<T>(viewModelCurrentValueContractName(typeof(T), contract)).First();
         }
 
-        static string viewModelContractName(Type Type, string contract)
+        static string viewModelContractName(Type type, string contract)
         {
-            return Type.FullName + "_" + (contract ?? String.Empty);
+            return type.FullName + "_" + (contract ?? String.Empty);
         }
 
-        static string viewModelCurrentValueContractName(Type Type, string contract)
+        static string viewModelCurrentValueContractName(Type type, string contract)
         {
-            return viewModelContractName(Type, contract) + "__current";
+            return viewModelContractName(type, contract) + "__current";
         }
     }
 }
