@@ -26,7 +26,7 @@ namespace ReactiveUI.Xaml
         {
             canExecute = canExecute ?? Observable.Return(true).Concat(Observable.Never<bool>());
             commonCtor(scheduler);
-            canExecute.Subscribe(canExecuteSubject.OnNext, canExecuteSubject.OnError, canExecuteSubject.OnCompleted);
+            canExecute.Subscribe(canExecuteSubject.OnNext);
         }
 
         protected ReactiveCommand(Func<object, bool> canExecute, IScheduler scheduler = null)
