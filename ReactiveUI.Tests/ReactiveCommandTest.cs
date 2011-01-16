@@ -51,7 +51,7 @@ namespace ReactiveUI.Tests
                 // suppress changes that aren't actually changes i.e. false => false
                 can_execute.OnCompleted();
                 sched.Run();
-                Assert.Equal(5, change_event_count);
+                Assert.Equal(1+5, change_event_count);
 
                 return changes_as_observable;
             });
@@ -76,9 +76,8 @@ namespace ReactiveUI.Tests
             });
 
             sched.Run();
-            Assert.Equal(6, change_event_count);
+            Assert.Equal(1 + 6, change_event_count);
         }
-
 
         [Fact]
         public void ObservableExecuteFuncShouldBeObservableAndAct()

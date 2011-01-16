@@ -96,9 +96,9 @@ namespace ReactiveUI
         {
             int hash = This.GetHashCode();
             return This.Do(
-                x => logname.Log().DebugFormat("0x{0:X} OnNext: {1}", hash, x),
-                ex => logname.Log().Debug(String.Format("0x{0:X} OnError", hash), ex),
-                () => logname.Log().DebugFormat("0x{0:X} OnCompleted", hash));
+                x => logname.Log().InfoFormat("0x{0:X} OnNext: {1}", hash, x),
+                ex => logname.Log().Info(String.Format("0x{0:X} OnError", hash), ex),
+                () => logname.Log().InfoFormat("0x{0:X} OnCompleted", hash));
         }
     }
 
