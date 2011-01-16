@@ -1,23 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-using System.Threading;
-using System.Xml.Linq;
-using System.Linq;
-using System.Globalization;
-using System.Web;
-using System.Threading.Tasks;
 using System.ComponentModel.Composition;
+using System.Globalization;
+using System.Linq;
+using System.Web;
+using System.Windows;
+using System.Windows.Media.Imaging;
+using System.Xml.Linq;
 using ReactiveUI;
-using System.Concurrency;
 using ReactiveUI.Xaml;
 
 namespace ReactiveUISample
@@ -109,11 +99,6 @@ namespace ReactiveUISample
 
     public class AddPersonViewModel : ReactiveValidatedObject
     {
-        public AddPersonViewModel()
-        {
-            setupCommands();
-        }
-
         /*
          * Our Model
          */
@@ -142,9 +127,8 @@ namespace ReactiveUISample
             get { return _SpinnerVisibility.Value; }
         }
 
-        protected void setupCommands()
+        public AddPersonViewModel()
         {
-
             /* COOLSTUFF: How to do stuff in the background
              *
              * ReactiveAsyncCommand is similar to ReactiveCommand, except that
@@ -163,14 +147,14 @@ namespace ReactiveUISample
              * on the UI thread.
              */
 
-            SetImageViaFlickr = new ReactiveAsyncCommand();
+            this.SetImageViaFlickr = new ReactiveAsyncCommand();
 
             // NB: The regular RNG isn't thread-safe, and will be very un-random
             // if we use it from more than one thread - however, RAC guarantees 
             // that only one will be running at a time.
             var rng = new Random();
 
-            var results = SetImageViaFlickr.RegisterAsyncFunction(_ => {
+            var results = this.SetImageViaFlickr.RegisterAsyncFunction(_ => {
                 var images = findRandomFlickrImages("Face");
                 if (images == null || images.Length == 0)
                     return null;
@@ -183,8 +167,7 @@ namespace ReactiveUISample
                 
             // This will be on the UI thread, so we're safe to set WPF properties
             // here
-            results.Subscribe(s => Person.Image = new BitmapImage(new Uri(s)),
-                ex => this.Log().Error("Oh no!", ex));
+            results.Subscribe(s => this.Person.Image = new BitmapImage(new Uri(s)));
 
 
             /* COOLSTUFF: The Reactive Extensions
@@ -200,14 +183,24 @@ namespace ReactiveUISample
              * that we change a property since it's a ReactiveObservableObject.
              */
 
-            _SpinnerVisibility = this.ObservableToProperty(
-                SetImageViaFlickr.CanExecuteObservable.Select(x => x ? Visibility.Collapsed : Visibility.Visible),
-                x => x.SpinnerVisibility, Visibility.Collapsed);
+            this._SpinnerVisibility = this.SetImageViaFlickr.CanExecuteObservable
+                .Select(x => x ? Visibility.Collapsed : Visibility.Visible)
+                .ToProperty(this, x => x.SpinnerVisibility, Visibility.Collapsed);
 
-            OkCommand = new ReactiveCommand(
-                SetImageViaFlickr.CanExecuteObservable.CombineLatest(Person.Changed.Select(x => Person.IsObjectValid()),
-                    (flickr_isnt_running, is_valid) => flickr_isnt_running && is_valid));
+            // NB: Why the rigamarole here? Whenever someone sets the Person, 
+            // we need to redo the OkCommand, since OkCommand depends on Person
+            this.ObservableForProperty(x => x.Person).Subscribe(_ => {
+                var canHitOk = Observable.CombineLatest(
+                    this.SetImageViaFlickr.CanExecuteObservable.StartWith(true),
+                    this.Person.Changed.Select(x => this.Person.IsObjectValid()).StartWith(this.Person.IsObjectValid()),
+                    (flickrNotRunning, personIsValid) => flickrNotRunning && personIsValid);
 
+                // We don't actually do anything in the ViewModel when the user hits
+                // Ok, the View is listening to this command and closes the dialog.
+                this.OkCommand = new ReactiveCommand(canHitOk);
+            });
+
+            this.OkCommand = new ReactiveCommand();
         }
 
         /* COOLSTUFF: Always write the sync version first!

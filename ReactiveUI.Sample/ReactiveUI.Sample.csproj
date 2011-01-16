@@ -19,7 +19,7 @@
     <Utf8Output>true</Utf8Output>
     <ExpressionBlendVersion>4.0.20401.20</ExpressionBlendVersion>
     <IsWebBootstrapper>false</IsWebBootstrapper>
-    <PublishUrl>\\ntqfedev\ntqfe\paulbe\KitchenSinkWpf\</PublishUrl>
+    <PublishUrl>\\not\here\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Unc</InstallFrom>
     <UpdateEnabled>false</UpdateEnabled>
@@ -120,7 +120,6 @@
     <Compile Include="AddPersonDialog.xaml.cs">
       <DependentUpon>AddPersonDialog.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Library Code\Utility.cs" />
     <Page Include="AddPersonDialog.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -147,7 +146,6 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <None Include="app.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

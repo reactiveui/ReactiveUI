@@ -80,13 +80,6 @@ namespace ReactiveUISample.Tests
             target.RemovePerson.Execute(null);
             Assert.AreEqual(0, target.People.Count);
             Assert.IsFalse(target.RemovePerson.CanExecute(null));
-
-            // Now try removing explicitly
-            target.AddPerson.Execute(to_add);
-            Assert.AreEqual(1, target.People.Count);
-            Assert.IsTrue(target.RemovePerson.CanExecute(to_add));
-            target.RemovePerson.Execute(to_add);
-            Assert.AreEqual(0, target.People.Count);
         }
     }
 }
