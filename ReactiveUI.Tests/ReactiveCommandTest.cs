@@ -37,7 +37,7 @@ namespace ReactiveUI.Tests
             var result = (new TestScheduler()).With(sched => {
                 var can_execute = new Subject<bool>();
                 var fixture = new ReactiveCommand(can_execute, null);
-                var changes_as_observable = new ListObservable<bool>(fixture.CanExecuteObservable);
+                var changes_as_observable = fixture.CanExecuteObservable.CreateCollection();
 
                 int change_event_count = 0;
                 fixture.CanExecuteChanged += (o, e) => { change_event_count++; };
@@ -49,8 +49,7 @@ namespace ReactiveUI.Tests
 
                 // N.B. We check against '5' instead of 6 because we're supposed to 
                 // suppress changes that aren't actually changes i.e. false => false
-                can_execute.OnCompleted();
-                sched.Run();
+                sched.RunToMilliseconds(10 * 1000);
                 Assert.Equal(1+5, change_event_count);
 
                 return changes_as_observable;
