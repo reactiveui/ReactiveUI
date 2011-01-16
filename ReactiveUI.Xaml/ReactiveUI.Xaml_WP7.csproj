@@ -81,6 +81,7 @@
   <ItemGroup>
     <Compile Include="DependencyObjectMixin.cs" />
     <Compile Include="Interfaces.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReactiveAsyncCommand.cs" />
     <Compile Include="ReactiveCommand.cs" />
   </ItemGroup>

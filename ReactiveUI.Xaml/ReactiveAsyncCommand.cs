@@ -7,6 +7,7 @@ using ReactiveUI;
 
 namespace ReactiveUI.Xaml
 {
+    /// <summary>
     /// ReactiveAsyncCommand represents commands that run an asynchronous
     /// operation in the background when invoked. The main benefit of this
     /// command is that it will keep track of in-flight operations and
