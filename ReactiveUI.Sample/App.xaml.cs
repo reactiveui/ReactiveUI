@@ -1,19 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
-using System.Linq;
-using System.Windows;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
-using System.ComponentModel;
-using System.Collections.ObjectModel;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Input;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Windows;
+using System.Windows.Media;
 using ReactiveUI;
-using System.Concurrency;
 using ReactiveUI.Xaml;
 
 namespace ReactiveUISample
@@ -80,7 +72,6 @@ namespace ReactiveUISample
              * or a blocking disk/network call on the RxApp.DeferredScheduler when
              * it should've probably be run on the RxApp.TaskpoolScheduler (i.e. not
              * on the UI thread). */
-
 #if DEBUG
             RxApp.EnableDebugMode();
 #endif
@@ -95,13 +86,8 @@ namespace ReactiveUISample
     [Export(typeof(AppViewModel))]
     public class AppViewModel : ReactiveValidatedObject
     {
-        ObservableCollection<PersonEntry> _People = new ObservableCollection<PersonEntry>();
-        public ObservableCollection<PersonEntry> People { get { return _People; } }
+        public ReactiveCollection<PersonEntry> People { get; protected set; }
 
-        public AppViewModel() 
-        {
-            setupCommands();
-        }
 
         PersonEntry _SelectedPerson;
         public PersonEntry SelectedPerson {
@@ -136,11 +122,13 @@ namespace ReactiveUISample
         [Export("RemovePerson", typeof(IReactiveCommand))]
         public ReactiveCommand RemovePerson { get; protected set; }
 
+        [Import(typeof(IPromptForModelDialog<PersonEntry>))]
+        IPromptForModelDialog<PersonEntry> addPersonDialog { get; set; }
 
-        /* COOLSTUFF: Setting up Commands
+
+        /* COOLSTUFF: Setting up Commands and Bindings
          *
-         * This function must be implemented in every ReactiveObservableObject -
-         * this is the place where you can actually implement the commands you
+         * This is the place where you can actually implement the commands you
          * declare (or more likely, call functions that implement these
          * commands if they are complex).
          *
@@ -151,28 +139,31 @@ namespace ReactiveUISample
          * reflect that change in the View. When you are disciplined in this
          * fashion, it makes testing your code much easier, since your code
          * won't depend on being inside a WPF Window / Button / whatever. */
-
-        [Import(typeof(IPromptForModelDialog<PersonEntry>))]
-        IPromptForModelDialog<PersonEntry> addPersonDialog { get; set; }
-
-        protected void setupCommands()
+        public AppViewModel()
         {
-            AddPerson = ReactiveCommand.Create(null, item => {
-                var to_add = (item as PersonEntry) ?? addPersonDialog.Prompt(this, null);
+            People = new ReactiveCollection<PersonEntry>();
 
-                if (to_add == null)
-                    return;
-                if (!to_add.IsObjectValid())
+            AddPerson = new ReactiveCommand();
+            AddPerson.Subscribe(item => {
+                var to_add = (item as PersonEntry) ?? this.addPersonDialog.Prompt(this, null);
+
+                if (to_add == null || !to_add.IsObjectValid())
                     return;
 
                 this.Log().DebugFormat("Adding '{0}'", to_add.Name);
-                People.Add(to_add);
+                this.People.Add(to_add);
             });
 
-            RemovePerson = ReactiveCommand.Create(param => (param ?? SelectedPerson) != null && People.Count > 0, item => {
-                var to_remove = (PersonEntry)item ?? SelectedPerson;
-                this.Log().DebugFormat("Removing '{0}'", to_remove.Name);
-                People.Remove(to_remove);
+            var canRemovePerson = Observable.CombineLatest(
+                this.ObservableForProperty(x => x.SelectedPerson).Select(x => x.Value != null).StartWith(false),
+                People.CollectionCountChanged.Select(x => x > 0).StartWith(false),
+                (selectedPersonNotNull, collectionNotEmpty) => selectedPersonNotNull && collectionNotEmpty);
+
+            RemovePerson = new ReactiveCommand(canRemovePerson);
+            RemovePerson.Subscribe(_ => {
+                this.Log().DebugFormat("Removing '{0}'", SelectedPerson.Name);
+                People.Remove(SelectedPerson);
+                SelectedPerson = null;
             });
         }
     }
@@ -199,6 +190,7 @@ namespace ReactiveUISample
             get { return _Image; }
             set { _Image = this.RaiseAndSetIfChanged(x => x.Image, value); }
         }
+
 
         /* COOLSTUFF: Data Validation
          *
