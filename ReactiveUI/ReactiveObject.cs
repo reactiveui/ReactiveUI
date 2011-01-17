@@ -203,7 +203,7 @@ namespace ReactiveUI
             Contract.Requires(property != null);
 
             FieldInfo field;
-            string prop_name = RxApp.expressionToPropertyName<TObj, TRet>(property);
+            string prop_name = RxApp.simpleExpressionToPropertyName<TObj, TRet>(property);
 
             field = RxApp.getFieldInfoForProperty<TObj>(prop_name);
 

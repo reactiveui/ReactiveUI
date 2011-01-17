@@ -123,7 +123,7 @@ namespace ReactiveUI
             Contract.Requires(observable != null);
             Contract.Requires(property != null);
 
-            string prop_name = RxApp.expressionToPropertyName(property);
+            string prop_name = RxApp.simpleExpressionToPropertyName(property);
 	        var ret = new ObservableAsPropertyHelper<TRet>(observable, 
                 _ => This.raisePropertyChanged(prop_name), 
                 initialValue, scheduler);

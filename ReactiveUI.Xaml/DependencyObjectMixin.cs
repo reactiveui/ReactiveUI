@@ -27,7 +27,7 @@ namespace ReactiveUI.Xaml
             Contract.Requires(This != null);
 
             // Track down the DP for this property
-            var prop_name = RxApp.expressionToPropertyName(property);
+            var prop_name = RxApp.simpleExpressionToPropertyName(property);
             var fi = typeof(TObj).GetField(prop_name + "Property", BindingFlags.Public | BindingFlags.Static);
             var dp = fi.GetValue(This) as DependencyProperty;
 

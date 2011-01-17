@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Concurrency;
 using System.Diagnostics.Contracts;
 using System.Linq;
@@ -225,7 +226,7 @@ namespace ReactiveUI
         // Internal utility functions
         //
 
-        internal static string expressionToPropertyName<TObj, TRet>(Expression<Func<TObj, TRet>> Property) 
+        internal static string simpleExpressionToPropertyName<TObj, TRet>(Expression<Func<TObj, TRet>> Property) 
         {
             Contract.Requires(Property != null);
             Contract.Ensures(Contract.Result<string>() != null);
@@ -233,12 +234,42 @@ namespace ReactiveUI
             string prop_name = null;
 
             try {
-                var prop_expr = ((LambdaExpression)Property).Body as MemberExpression;
+                var prop_expr = Property.Body as MemberExpression;
+                if (prop_expr.Expression.NodeType != ExpressionType.Parameter) {
+                    throw new ArgumentException("Property expression must be of the form 'x => x.SomeProperty'");
+                }
+
                 prop_name = prop_expr.Member.Name;
             } catch (NullReferenceException) {
                 throw new ArgumentException("Property expression must be of the form 'x => x.SomeProperty'");
             }
             return prop_name;
+        }
+
+        internal static string[] expressionToPropertyNames<TObj, TRet>(Expression<Func<TObj, TRet>> Property)
+        {
+            var ret = new List<string>();
+
+            var current = Property.Body;
+            while(current.NodeType != ExpressionType.Parameter) {
+
+                // This happens when a value type gets boxed
+                if (current.NodeType == ExpressionType.Convert || current.NodeType == ExpressionType.ConvertChecked) {
+                    var ue = (UnaryExpression) current;
+                    current = ue.Operand;
+                    continue;
+                }
+
+                if (current.NodeType != ExpressionType.MemberAccess) {
+                    throw new ArgumentException("Property expression must be of the form 'x => x.SomeProperty.SomeOtherProperty'");
+                }
+
+                var me = (MemberExpression)current;
+                ret.Insert(0, me.Member.Name);
+                current = me.Expression;
+            }
+
+            return ret.ToArray();
         }
 
 #if SILVERLIGHT
