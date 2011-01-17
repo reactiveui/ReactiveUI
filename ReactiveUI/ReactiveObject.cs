@@ -209,8 +209,9 @@ namespace ReactiveUI
 
             var field_val = field.GetValue(This);
 
-            if (EqualityComparer<TRet>.Default.Equals((TRet)field_val, (TRet)newValue))
+            if (EqualityComparer<TRet>.Default.Equals((TRet)field_val, (TRet)newValue)) {
                 return newValue;
+            }
 
             This.raisePropertyChanging(prop_name);
             field.SetValue(This, newValue);

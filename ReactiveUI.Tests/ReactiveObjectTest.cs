@@ -135,7 +135,9 @@ namespace ReactiveUI.Tests
         {
             var fixture = new TestFixture() { IsNotNullString = "Foo", IsOnlyOneWord = "Baz" };
             var output = new List<IObservedChange<TestFixture, string>>();
-            fixture.ObservableForProperty(x => x.IsNotNullString).Subscribe(output.Add);
+            fixture.ObservableForProperty(x => x.IsNotNullString).Subscribe(x => {
+                output.Add(x);
+            });
 
             fixture.IsNotNullString = "Bar";
             fixture.IsNotNullString = "Baz";
