@@ -39,6 +39,22 @@ namespace ReactiveUI.Tests
         }
 
         [Fact]
+        public void GetValueShouldReturnTheValueFromAPath()
+        {
+            var input = new HostTestFixture() {
+                Child = new TestFixture() {IsNotNullString = "Foo"},
+            };
+
+            var fixture = new ObservedChange<HostTestFixture, string>() {
+                Sender = input,
+                PropertyName = "Child.IsNotNullString",
+                Value = null,
+            };
+
+            Assert.Equal("Foo", fixture.GetValue());
+        }
+
+        [Fact]
         public void ValueTest() 
         {
             var input = new[] {"Foo", "Bar", "Baz"};
