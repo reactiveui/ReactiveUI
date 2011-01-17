@@ -90,6 +90,7 @@
     <Compile Include="QueuedAsyncMRUCacheTest.cs" />
     <Compile Include="ReactiveCollectionTest.cs" />
     <Compile Include="ReactiveCommandTest.cs" />
+    <Compile Include="ReactiveNotifyPropertyChangedMixinTest.cs" />
     <Compile Include="ReactiveObjectTest.cs" />
     <Compile Include="ReactiveValidatedObjectTest.cs" />
     <Compile Include="StopwatchTestSchedulerTest.cs" />
