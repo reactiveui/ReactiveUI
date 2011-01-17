@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Disposables;
 using System.Linq;
 using System.Diagnostics.Contracts;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Text;
 
 namespace ReactiveUI
 {
@@ -61,12 +63,27 @@ namespace ReactiveUI
             var subscriptions = new LinkedList<IDisposable>(propertyNames.Select(x => (IDisposable) null));
             var ret = new Subject<IObservedChange<TSender, TValue>>();
 
-            subscribeToExpressionChain(This, This, propertyNames.First, subscriptions.First, beforeChange, ret);
-            return ret;
+            subscribeToExpressionChain(
+                This, 
+                buildPropPathFromNodePtr(propertyNames.First),
+                This, 
+                propertyNames.First, 
+                subscriptions.First, 
+                beforeChange, 
+                ret);
+
+            return Observable.Create<IObservedChange<TSender, TValue>>(x => {
+                var disp = ret.Subscribe(x.OnNext, x.OnError, x.OnCompleted);
+                return () => {
+                    subscriptions.Run(y => y.Dispose());
+                    disp.Dispose();
+                };
+            });
         }
 
         static void subscribeToExpressionChain<TSender, TValue>(
                 TSender origSource,
+                string origPath,
                 object source,
                 LinkedListNode<string> propertyNames, 
                 LinkedListNode<IDisposable> subscriptions, 
@@ -78,6 +95,7 @@ namespace ReactiveUI
             var currentSub = subscriptions;
             object currentObj = source;
             PropertyInfo pi = null;
+            ObservedChange<TSender, TValue> obsCh;
 
             while(current.Next != null) {
                 pi = RxApp.getPropertyInfoForProperty(currentObj.GetType(), current.Value);
@@ -88,11 +106,38 @@ namespace ReactiveUI
 
                 var notifyObj = currentObj as IReactiveNotifyPropertyChanged;
                 if (notifyObj != null) {
-                    var capture = new {whereProp = current.Value, currentObj, pi, nextProp = current.Next, nextSub = currentSub.Next};
+                    TValue prevVal = default(TValue);
+                    var capture = new {current, currentObj, pi, currentSub};
+                    var toDispose = new IDisposable[2];
 
-                    currentSub.Value = notifyObj.Changed.Where(x => x.PropertyName == capture.whereProp).Subscribe(x => {
-                        subscribeToExpressionChain(origSource, capture.pi.GetValue(capture.currentObj, null), capture.nextProp, capture.nextSub, beforeChange, subject);
+                    var valGetter = new ObservedChange<object, TValue>() {
+                        Sender = capture.currentObj,
+                        PropertyName = buildPropPathFromNodePtr(capture.current),
+                        Value = default(TValue),
+                    };
+
+                    toDispose[0] = notifyObj.Changing.Where(x => x.PropertyName == capture.current.Value).Subscribe(x => {
+                        prevVal = valGetter.GetValue();
                     });
+
+                    toDispose[1] = notifyObj.Changed.Where(x => x.PropertyName == capture.current.Value).Subscribe(x => {
+                        subscribeToExpressionChain(origSource, origPath, capture.pi.GetValue(capture.currentObj, null), capture.current.Next, capture.currentSub.Next, beforeChange, subject);
+
+                        var newVal = valGetter.GetValue();
+                        if (EqualityComparer<TValue>.Default.Equals(prevVal, newVal)) {
+                            return;
+                        }
+
+                        obsCh = new ObservedChange<TSender, TValue>() {
+                            Sender = origSource,
+                            PropertyName = origPath,
+                            Value = default(TValue),
+                        };
+                        obsCh.Value = obsCh.GetValue();
+                        subject.OnNext(obsCh);
+                    });
+
+                    currentSub.Value = Disposable.Create(() => { toDispose[0].Dispose(); toDispose[1].Dispose(); });
                 }
 
                 current = current.Next;
@@ -113,14 +158,29 @@ namespace ReactiveUI
             pi = RxApp.getPropertyInfoForProperty(currentObj.GetType(), current.Value);
 
             currentSub.Value = (beforeChange ? finalNotify.Changing : finalNotify.Changed).Subscribe(x => {
-                var objCh = new ObservedChange<TSender, TValue>() {
+                obsCh = new ObservedChange<TSender, TValue>() {
                     Sender = origSource,
-                    PropertyName = x.PropertyName,
+                    PropertyName = origPath,
                     Value = (TValue)pi.GetValue(currentObj, null),
                 };
 
-                subject.OnNext(objCh);
+                subject.OnNext(obsCh);
             });
+        }
+
+        static string buildPropPathFromNodePtr(LinkedListNode<string> node)
+        {
+            var ret = new StringBuilder();
+            var current = node;
+
+            while(current.Next != null) {
+                ret.Append(current.Value);
+                ret.Append('.');
+                current = current.Next;
+            }
+
+            ret.Append(current.Value);
+            return ret.ToString();
         }
 
 
