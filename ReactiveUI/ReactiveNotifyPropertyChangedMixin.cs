@@ -19,40 +19,11 @@ namespace ReactiveUI
         /// the IObservedChange is set.
         /// </summary>
         /// <param name="property">An Expression representing the property (i.e.
-        /// 'x => x.SomeProperty'</param>
+        /// 'x => x.SomeProperty.SomeOtherProperty'</param>
         /// <param name="beforeChange">If True, the Observable will notify
         /// immediately before a property is going to change.</param>
         /// <returns>An Observable representing the property change
         /// notifications for the given property.</returns>
-        public static IObservable<IObservedChange<TSender, TValue>> OldObservableForProperty<TSender, TValue>(
-                this TSender This, 
-                Expression<Func<TSender, TValue>> property, 
-                bool beforeChange = false)
-            where TSender : IReactiveNotifyPropertyChanged
-        {
-            Contract.Requires(This != null);
-            Contract.Requires(property != null);
-
-            string prop_name = RxApp.simpleExpressionToPropertyName(property);
-            var prop_info = RxApp.getPropertyInfoForProperty<TSender>(prop_name);
-
-            This.Log().InfoFormat("Registering change notification for {0:X} on {1}", This.GetHashCode(), prop_name);
-
-            if (beforeChange) {
-                return This.Changing
-                    .Where(x => x.PropertyName == prop_name)
-                    .Select(x => (IObservedChange<TSender, TValue>) new ObservedChange<TSender, TValue>() { 
-                        Sender = This, PropertyName = prop_name, Value = (TValue)prop_info.GetValue(This, null)
-                    });
-            }
-
-            return This.Changed
-                .Where(x => x.PropertyName == prop_name)
-                .Select(x => (IObservedChange<TSender, TValue>) new ObservedChange<TSender, TValue>() { 
-                    Sender = This, PropertyName = prop_name, Value = (TValue)prop_info.GetValue(This, null)
-                });
-        }
-
         public static IObservable<IObservedChange<TSender, TValue>> ObservableForProperty<TSender, TValue>(
                 this TSender This,
                 Expression<Func<TSender, TValue>> property,
