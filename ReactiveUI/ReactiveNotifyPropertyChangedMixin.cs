@@ -106,7 +106,6 @@ namespace ReactiveUI
 
                 var notifyObj = currentObj as IReactiveNotifyPropertyChanged;
                 if (notifyObj != null) {
-                    TValue prevVal = default(TValue);
                     var capture = new {current, currentObj, pi, currentSub};
                     var toDispose = new IDisposable[2];
 
@@ -115,6 +114,8 @@ namespace ReactiveUI
                         PropertyName = buildPropPathFromNodePtr(capture.current),
                         Value = default(TValue),
                     };
+
+                    TValue prevVal = valGetter.GetValue();
 
                     toDispose[0] = notifyObj.Changing.Where(x => x.PropertyName == capture.current.Value).Subscribe(x => {
                         prevVal = valGetter.GetValue();
@@ -157,7 +158,7 @@ namespace ReactiveUI
             var propName = current.Value;
             pi = RxApp.getPropertyInfoForProperty(currentObj.GetType(), current.Value);
 
-            currentSub.Value = (beforeChange ? finalNotify.Changing : finalNotify.Changed).Subscribe(x => {
+            currentSub.Value = (beforeChange ? finalNotify.Changing : finalNotify.Changed).Where(x => x.PropertyName == propName).Subscribe(x => {
                 obsCh = new ObservedChange<TSender, TValue>() {
                     Sender = origSource,
                     PropertyName = origPath,
