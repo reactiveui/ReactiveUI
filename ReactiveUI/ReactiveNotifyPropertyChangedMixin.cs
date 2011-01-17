@@ -29,7 +29,7 @@ namespace ReactiveUI
             Contract.Requires(This != null);
             Contract.Requires(property != null);
 
-            string prop_name = RxApp.expressionToPropertyName(property);
+            string prop_name = RxApp.simpleExpressionToPropertyName(property);
             var prop_info = RxApp.getPropertyInfoForProperty<TSender>(prop_name);
 
             This.Log().InfoFormat("Registering change notification for {0:X} on {1}", This.GetHashCode(), prop_name);
