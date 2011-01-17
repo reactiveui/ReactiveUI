@@ -22,6 +22,17 @@ namespace ReactiveUI.Tests
             get { return _SomeOtherParam; }
             set { this.RaiseAndSetIfChanged(x => x.SomeOtherParam, value); }
         }
+
+        public NonObservableTestFixture _PocoChild;
+        public NonObservableTestFixture PocoChild {
+            get { return _PocoChild; }
+            set { this.RaiseAndSetIfChanged(x => x.PocoChild, value); }
+        }
+    }
+
+    public class NonObservableTestFixture
+    {
+        public TestFixture Child {get; set;}
     }
 
     public class ReactiveNotifyPropertyChangedMixinTest : IEnableLogger
@@ -59,7 +70,7 @@ namespace ReactiveUI.Tests
         public void OFPSimpleChildPropertyTest()
         {
             (new TestScheduler()).With(sched => {
-                var fixture = new HostTestFixture();
+                var fixture = new HostTestFixture() {Child = new TestFixture()};
                 var changes = fixture.ObservableForProperty(x => x.Child.IsOnlyOneWord).CreateCollection();
 
                 fixture.Child.IsOnlyOneWord = "Foo";
@@ -87,8 +98,8 @@ namespace ReactiveUI.Tests
         [Fact]
         public void OFPReplacingTheHostShouldResubscribeTheObservable()
         {
-             (new TestScheduler()).With(sched => {
-                var fixture = new HostTestFixture();
+            (new TestScheduler()).With(sched => {
+                var fixture = new HostTestFixture() {Child = new TestFixture()};
                 var changes = fixture.ObservableForProperty(x => x.Child.IsOnlyOneWord).CreateCollection();
 
                 fixture.Child.IsOnlyOneWord = "Foo";
@@ -132,6 +143,12 @@ namespace ReactiveUI.Tests
                 this.Log().InfoFormat("Attempted {0}, expected [{1}]", x.input, String.Join(",", data[x.input]));
                 data[x.input].AssertAreEqual(x.output);
             });
+        }
+
+        [Fact]
+        public void ChildPropertiesThatAreNullShouldStillWorkWhenTheChildPropertiesAreSet()
+        {
+            
         }
     }
 }
