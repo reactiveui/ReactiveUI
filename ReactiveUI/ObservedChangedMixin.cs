@@ -5,6 +5,8 @@ namespace ReactiveUI
 {
     public static class ObservedChangedMixin
     {
+        static MemoizingMRUCache<string, string[]> propStringToNameCache = new MemoizingMRUCache<string, string[]>((x,_) => x.Split('.'), 25);
+
         /// <summary>
         /// Returns the current value of a property given a notification that it has changed.
         /// </summary>
@@ -14,8 +16,17 @@ namespace ReactiveUI
             if (!Equals(This.Value, default(TValue))) {
                 return This.Value;
             }
-            var pi = RxApp.getPropertyInfoForProperty(This.Sender.GetType(), This.PropertyName);
-            return (TValue)pi.GetValue(This.Sender, null);
+
+            object current = This.Sender;
+            string[] propNames = null;;
+            lock(propStringToNameCache) { propNames = propStringToNameCache.Get(This.PropertyName); }
+
+            foreach(var propName in propNames) {
+                var pi = RxApp.getPropertyInfoForProperty(current.GetType(), propName);
+                current = pi.GetValue(current, null);
+            }
+
+            return (TValue)current;
         }
 
         /// <summary>
