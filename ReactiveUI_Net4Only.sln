@@ -22,6 +22,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Serialization.Es
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PerfConsoleRunner", "PerfConsoleRunner\PerfConsoleRunner.csproj", "{DBC5FEB0-8535-4D77-AA1B-BA8957253996}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Xaml", "ReactiveUI.Xaml\ReactiveUI.Xaml.csproj", "{761AC9BA-4A9C-440C-9B6C-2569978F0610}"
+EndProject
 Global
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = ReactiveUI.vsmdi
@@ -105,6 +107,16 @@ Global
 		{DBC5FEB0-8535-4D77-AA1B-BA8957253996}.Release|Mixed Platforms.Build.0 = Release|x86
 		{DBC5FEB0-8535-4D77-AA1B-BA8957253996}.Release|x86.ActiveCfg = Release|x86
 		{DBC5FEB0-8535-4D77-AA1B-BA8957253996}.Release|x86.Build.0 = Release|x86
+		{761AC9BA-4A9C-440C-9B6C-2569978F0610}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{761AC9BA-4A9C-440C-9B6C-2569978F0610}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{761AC9BA-4A9C-440C-9B6C-2569978F0610}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{761AC9BA-4A9C-440C-9B6C-2569978F0610}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{761AC9BA-4A9C-440C-9B6C-2569978F0610}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{761AC9BA-4A9C-440C-9B6C-2569978F0610}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{761AC9BA-4A9C-440C-9B6C-2569978F0610}.Release|Any CPU.Build.0 = Release|Any CPU
+		{761AC9BA-4A9C-440C-9B6C-2569978F0610}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{761AC9BA-4A9C-440C-9B6C-2569978F0610}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{761AC9BA-4A9C-440C-9B6C-2569978F0610}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
