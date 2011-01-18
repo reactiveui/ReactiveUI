@@ -55,6 +55,23 @@ namespace ReactiveUI.Tests
         }
 
         [Fact]
+        public void SetValuePathSmokeTest()
+        {
+            var output = new HostTestFixture() {
+                Child = new TestFixture() {IsNotNullString = "Foo"},
+            };
+
+            var fixture = new ObservedChange<TestFixture, string>() {
+                Sender = new TestFixture() { IsOnlyOneWord = "Bar" },
+                PropertyName = "IsOnlyOneWord",
+                Value = null,
+            };
+
+            fixture.SetValueToProperty(output, x => x.Child.IsNotNullString);
+            Assert.Equal("Bar", output.Child.IsNotNullString);
+        }
+
+        [Fact]
         public void ValueTest() 
         {
             var input = new[] {"Foo", "Bar", "Baz"};
@@ -76,6 +93,75 @@ namespace ReactiveUI.Tests
 
             input.AssertAreEqual(output);
             input.AssertAreEqual(output2);
+        }
+
+        [Fact]
+        public void BindToSmokeTest()
+        {
+            (new TestScheduler()).With(sched => {
+                var input = new Subject<string>(sched);
+                var fixture = new HostTestFixture() {Child = new TestFixture()};
+
+                input.BindTo(fixture, x => x.Child.IsNotNullString);
+
+                Assert.Null(fixture.Child.IsNotNullString);
+
+                input.OnNext("Foo");
+                sched.Run();
+                Assert.Equal("Foo", fixture.Child.IsNotNullString);
+
+                input.OnNext("Bar");
+                sched.Run();
+                Assert.Equal("Bar", fixture.Child.IsNotNullString);
+            });
+        }
+
+        [Fact]
+        public void DisposingDisconnectsTheBindTo()
+        {
+            (new TestScheduler()).With(sched => {
+                var input = new Subject<string>(sched);
+                var fixture = new HostTestFixture() {Child = new TestFixture()};
+
+                var subscription = input.BindTo(fixture, x => x.Child.IsNotNullString);
+
+                Assert.Null(fixture.Child.IsNotNullString);
+
+                input.OnNext("Foo");
+                sched.Run();
+                Assert.Equal("Foo", fixture.Child.IsNotNullString);
+
+                subscription.Dispose();
+
+                input.OnNext("Bar");
+                sched.Run();
+                Assert.Equal("Foo", fixture.Child.IsNotNullString);
+            });
+        }
+
+        [Fact]
+        public void BindToIsNotFooledByIntermediateObjectSwitching()
+        {
+            (new TestScheduler()).With(sched => {
+                var input = new Subject<string>(sched);
+                var fixture = new HostTestFixture() {Child = new TestFixture()};
+
+                var subscription = input.BindTo(fixture, x => x.Child.IsNotNullString);
+
+                Assert.Null(fixture.Child.IsNotNullString);
+
+                input.OnNext("Foo");
+                sched.Run();
+                Assert.Equal("Foo", fixture.Child.IsNotNullString);
+
+                fixture.Child = new TestFixture();
+                sched.Run();
+                Assert.Null(fixture.Child.IsNotNullString);
+
+                input.OnNext("Bar");
+                sched.Run();
+                Assert.Equal("Bar", fixture.Child.IsNotNullString);
+            });
         }
     }
 }

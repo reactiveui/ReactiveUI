@@ -336,6 +336,15 @@ namespace ReactiveUI
 
             return pi;
         }
+
+        internal static PropertyInfo getPropertyInfoOrThrow(Type type, string propName)
+        {
+            var ret = getPropertyInfoForProperty(type, propName);
+            if (ret == null) {
+                throw new ArgumentException(String.Format("Type '{0}' must have a property '{1}'", type, propName));
+            }
+            return ret;
+        }
     }
 }
 
