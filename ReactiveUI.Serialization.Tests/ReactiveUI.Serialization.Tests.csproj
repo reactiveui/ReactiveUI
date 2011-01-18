@@ -98,7 +98,16 @@
   <ItemGroup>
     <Compile Include="IStorageEngineTest.cs" />
     <Compile Include="ModelBaseTest.cs" />
+    <Compile Include="ModelBaseTest.GuidsShouldBeUniqueForContent.g.cs">
+      <DependentUpon>ModelBaseTest.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ModelBaseTest.ItemsChangedShouldFire.g.cs">
+      <DependentUpon>ModelBaseTest.cs</DependentUpon>
+    </Compile>
     <Compile Include="SerializationDataSurrogatesTest.cs" />
+    <Compile Include="SerializedCollectionTest.AddingItemsShouldChangeTheContentHash.g.cs">
+      <DependentUpon>SerializedCollectionTest.cs</DependentUpon>
+    </Compile>
     <Compile Include="SerializedCollectionTest.cs" />
     <Compile Include="SyncPointInformationTest.cs" />
     <Compile Include="TestUtils.cs" />

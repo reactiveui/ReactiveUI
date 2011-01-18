@@ -43,6 +43,24 @@ namespace ReactiveUI.Serialization.Tests
     }
 #endif
 
+    public static class UniqEnumerableMixin
+    {
+        public static IEnumerable<T> Uniq<T>(this IEnumerable<T> This)
+        {
+            bool prevIsSet = false;
+            T prev = default(T);
+
+            foreach(var v in This) {
+                if (!prevIsSet || !EqualityComparer<T>.Default.Equals(prev, v)) {
+                    yield return v;
+                }
+
+                prev = v;
+                prevIsSet = true;
+            }
+        }
+    }
+
     public static class TestEngineMixins
     {
         public static IDisposable AsPrimaryEngine(this IStorageEngine This)
