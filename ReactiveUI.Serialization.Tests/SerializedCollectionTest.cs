@@ -10,7 +10,7 @@ using ReactiveUI.Tests;
 
 namespace ReactiveUI.Serialization.Tests
 {
-    [PexClass]
+    [PexClass(MaxBranches=40000)]
     public partial class SerializedCollectionTest : IEnableLogger
     {
         [PexMethod]
@@ -18,25 +18,29 @@ namespace ReactiveUI.Serialization.Tests
         {
             PexAssume.IsNotNull(toAdd);
             PexAssume.AreElementsNotNull(toAdd);
+            PexAssume.AreDistinct(toAdd, (lhs, rhs) => lhs == rhs);
 
-            var sched = new TestScheduler();
-            var fixture = sched.With(_ => new SerializedCollection<ModelTestFixture>());
-            var hashes = new List<Guid>();
-            int changeCount = 0;
+            (new TestScheduler()).With(sched => {
+                var fixture = new SerializedCollection<ModelTestFixture>();
+                var hashes = new List<Guid>();
+                int changeCount = 0;
 
-            foreach (var v in toAdd) {
-                fixture.Add(new ModelTestFixture() {TestString = v});
-            }
+                foreach (var v in toAdd) {
+                    fixture.Add(new ModelTestFixture() {TestString = v});
+                }
 
-            fixture.Changed.Subscribe(_ => {
-                hashes.Add(fixture.ContentHash);
-                changeCount++;
+                fixture.Changed.Subscribe(_ => {
+                    hashes.Add(fixture.ContentHash);
+                    changeCount++;
+                });
+
+                sched.Run();
+
+                PexAssert.AreDistinctValues(hashes.ToArray());
+                PexAssert.AreEqual(toAdd.Uniq().Count(), changeCount);
             });
 
-            sched.Run();
-
-            PexAssert.AreDistinctValues(hashes.ToArray());
-            PexAssert.AreEqual(toAdd.Length, changeCount);
+            
         }
 
         [PexMethod]
@@ -70,7 +74,7 @@ namespace ReactiveUI.Serialization.Tests
             PexAssert.AreEqual(itemsToRemove.Length, changeCount);
         }
 
-        [PexMethod(MaxBranches = 40000, MaxConstraintSolverTime = 5)]
+        [PexMethod]
         public void ChangingASerializableItemShouldChangeTheContentHash(string[] items, int toChange, string newValue)
         {
             PexAssume.IsNotNullOrEmpty(items);

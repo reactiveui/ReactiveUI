@@ -43,8 +43,8 @@ namespace ReactiveUI.Serialization.Tests
 
             sched.Run();
 
-            PexAssert.AreEqual(setters.Distinct().Count(), output_changed.Count);
-            PexAssert.AreEqual(setters.Distinct().Count(), output_changing.Count);
+            PexAssert.AreEqual(setters.Uniq().Count(), output_changed.Count);
+            PexAssert.AreEqual(setters.Uniq().Count(), output_changing.Count);
         }
 
         [PexMethod]
