@@ -200,29 +200,27 @@ namespace ReactiveUI.Tests
         [Fact]
         public void RegisterAsyncFunctionSmokeTest()
         {
-            var sched = new TestScheduler();
-            var fixture = sched.With(_ => new ReactiveAsyncCommand(null, 1));
-            ReactiveCollection<int> results;
+            (new TestScheduler()).With(sched => {
+                var fixture = new ReactiveAsyncCommand(null, 1);
+                ReactiveCollection<int> results;
 
-            using (TestUtils.WithScheduler(sched)) {
                 results = fixture.RegisterAsyncObservable(_ => 
-                    Observable.Return(5).Delay(TimeSpan.FromSeconds(5), sched)
-                ).CreateCollection();
-            }
+                    Observable.Return(5).Delay(TimeSpan.FromSeconds(5), sched)).CreateCollection();
 
-            var inflight_results = sched.With(_ => fixture.ItemsInflight.CreateCollection());
-            sched.RunToMilliseconds(10);
-            Assert.True(fixture.CanExecute(null));
+                var inflightResults = fixture.ItemsInflight.CreateCollection();
+                sched.RunToMilliseconds(10);
+                Assert.True(fixture.CanExecute(null));
 
-            fixture.Execute(null);
-            sched.RunToMilliseconds(1005);
-            Assert.False(fixture.CanExecute(null));
+                fixture.Execute(null);
+                sched.RunToMilliseconds(1005);
+                Assert.False(fixture.CanExecute(null));
 
-            sched.RunToMilliseconds(5005);
-            Assert.True(fixture.CanExecute(null));
+                sched.RunToMilliseconds(5100);
+                Assert.True(fixture.CanExecute(null));
 
-            new[] {0,1,0}.AssertAreEqual(inflight_results);
-            new[] {5}.AssertAreEqual(results);
+                new[] {0,1,0}.AssertAreEqual(inflightResults);
+                new[] {5}.AssertAreEqual(results);
+            });
         }
 
         [Fact]
@@ -330,6 +328,27 @@ namespace ReactiveUI.Tests
             Assert.True(results.Count == 1);
             Assert.True(results[0] == 5);
             Assert.True(subscribers.All(x => x == true));
+        }
+
+        [Fact]
+        public void MultipleResultsFromObservableShouldntDecrementRefcountBelowZero()
+        {
+            (new TestScheduler()).With(sched => {
+                int latestInFlight = 0;
+                var fixture = new ReactiveAsyncCommand(null, 1, sched);
+
+                var results = fixture
+                    .RegisterAsyncObservable(_ => new[] {1, 2, 3}.ToObservable())
+                    .CreateCollection();
+                fixture.ItemsInflight.Subscribe(x => latestInFlight = x);
+
+
+                fixture.Execute(1);
+                sched.Run();
+
+                Assert.Equal(3, results.Count);
+                Assert.Equal(0, latestInFlight);
+            });
         }
     }
 }

@@ -82,8 +82,9 @@ namespace ReactiveUI.Xaml
                 AsyncCompletedNotification.Select(_ => -1)
             ).Scan(0, (acc, x) => {
                 var ret = acc + x;
-                if (ret < 0)
-                    throw new OverflowException("Reference count dropped below zero");
+                if (ret < 0) {
+                    this.Log().Fatal("Reference count dropped below zero");
+                }
                 return ret;
             }).Publish(new BehaviorSubject<int>(0));
 
@@ -134,14 +135,11 @@ namespace ReactiveUI.Xaml
             Contract.Requires(calculationFunc != null);
 
             scheduler = scheduler ?? RxApp.TaskpoolScheduler;
-            var rebroadcast = new Subject<TResult>();
 
-            this.ObserveOn(scheduler)
+            return this.ObserveOn(scheduler)
                 .Select(calculationFunc)
                 .Do(_ => AsyncCompletedNotification.OnNext(new Unit()))
-                .Subscribe(rebroadcast.OnNext, rebroadcast.OnError, rebroadcast.OnCompleted);
-
-            return rebroadcast.ObserveOn(this._normalSched);
+                .Publish(new Subject<TResult>(_normalSched));
         }
 
         /// <summary>
@@ -171,13 +169,12 @@ namespace ReactiveUI.Xaml
         {
             Contract.Requires(calculationFunc != null);
 
-            var rebroadcast = new Subject<TResult>();
-
-            this.SelectMany(calculationFunc)
-                .Do(_ => AsyncCompletedNotification.OnNext(new Unit()))
-                .Subscribe(rebroadcast.OnNext, rebroadcast.OnError, rebroadcast.OnCompleted);
-
-            return rebroadcast.ObserveOn(this._normalSched);
+            // The Do() here essentially ends up being, "When all results are 
+            // returned from the Observable, signal completion"
+            return this.Select(calculationFunc)
+                .Do(x => x.Subscribe(_ => { }, () => AsyncCompletedNotification.OnNext(new Unit())))
+                .SelectMany(x => x)
+                .Publish(new Subject<TResult>(_normalSched));
         }
 
         /// <summary>
