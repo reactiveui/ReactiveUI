@@ -92,13 +92,13 @@ namespace ReactiveUI
         class ObservableLog : IEnableLogger { }
 
         static readonly ObservableLog logname = new ObservableLog();
-        public static IObservable<T> DebugObservable<T>(this IObservable<T> This)
+        public static IObservable<T> DebugObservable<T>(this IObservable<T> This, string message = "")
         {
             int hash = This.GetHashCode();
             return This.Do(
-                x => logname.Log().InfoFormat("0x{0:X} OnNext: {1}", hash, x),
-                ex => logname.Log().Info(String.Format("0x{0:X} OnError", hash), ex),
-                () => logname.Log().InfoFormat("0x{0:X} OnCompleted", hash));
+                x => logname.Log().InfoFormat("0x{0:X} '{1}' OnNext: {2}", hash, message, x),
+                ex => logname.Log().Info(String.Format("0x{0:X} '{1}' OnError", hash, message), ex),
+                () => logname.Log().InfoFormat("0x{0:X} '{1}' OnCompleted", hash, message));
         }
     }
 
