@@ -62,6 +62,12 @@ namespace ReactiveUI
             return This.Select(GetValue);
         }
 
+        public static IObservable<TValue> ValueIfNotDefault<TSender, TValue>(
+		    this IObservable<IObservedChange<TSender, TValue>> This)
+        {
+            return This.Value().Where(x => EqualityComparer<TValue>.Default.Equals(x, default(TValue)) == false);
+        }
+
         /// <summary>
         /// Given a stream of notification changes, this method will convert 
         /// the property changes to the current value of the property.
