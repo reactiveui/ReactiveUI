@@ -19,6 +19,7 @@ namespace ReactiveUI.Serialization.Tests
             PexAssume.IsNotNull(toAdd);
             PexAssume.AreElementsNotNull(toAdd);
             PexAssume.AreDistinct(toAdd, (lhs, rhs) => lhs == rhs);
+            PexAssume.IsTrue(toAdd.Length > 0);
 
             (new TestScheduler()).With(sched => {
                 var fixture = new SerializedCollection<ModelTestFixture>();
@@ -37,6 +38,7 @@ namespace ReactiveUI.Serialization.Tests
                 sched.Run();
 
                 PexAssert.AreDistinctValues(hashes.ToArray());
+                PexAssert.AreEqual(toAdd.Length, fixture.Count);
                 PexAssert.AreEqual(toAdd.Uniq().Count(), changeCount);
             });
 
