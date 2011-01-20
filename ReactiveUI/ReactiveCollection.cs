@@ -34,8 +34,8 @@ namespace ReactiveUI
 
         void setupRx(IEnumerable<T> List = null)
         {
-            _BeforeItemsAdded = new Subject<T>();
-            _BeforeItemsRemoved = new Subject<T>();
+            _BeforeItemsAdded = new Subject<T>(RxApp.DeferredScheduler);
+            _BeforeItemsRemoved = new Subject<T>(RxApp.DeferredScheduler);
             aboutToClear = new Subject<int>();
 
             if (List != null) {
@@ -45,12 +45,13 @@ namespace ReactiveUI
             var ocChangedEvent = Observable.FromEvent<NotifyCollectionChangedEventArgs>(this, "CollectionChanged");
 
             _ItemsAdded = ocChangedEvent
-                .Where(x => 
-                    x.EventArgs.Action == NotifyCollectionChangedAction.Add || 
+                .Where(x =>
+                    x.EventArgs.Action == NotifyCollectionChangedAction.Add ||
                     x.EventArgs.Action == NotifyCollectionChangedAction.Replace)
-                .SelectMany(x => 
+                .SelectMany(x =>
                     (x.EventArgs.NewItems != null ? x.EventArgs.NewItems.OfType<T>() : Enumerable.Empty<T>())
-                    .ToObservable());
+                    .ToObservable())
+                .Publish(new Subject<T>(RxApp.DeferredScheduler));
 
             _ItemsRemoved = ocChangedEvent
                 .Where(x => 
@@ -59,7 +60,8 @@ namespace ReactiveUI
                     x.EventArgs.Action == NotifyCollectionChangedAction.Reset)
                 .SelectMany(x => 
                     (x.EventArgs.OldItems != null ? x.EventArgs.OldItems.OfType<T>() : Enumerable.Empty<T>())
-                    .ToObservable());
+                    .ToObservable())
+                .Publish(new Subject<T>(RxApp.DeferredScheduler));
 
             _CollectionCountChanging = Observable.Merge(
                 _BeforeItemsAdded.Select(_ => this.Count),
@@ -71,8 +73,8 @@ namespace ReactiveUI
                 .Select(x => this.Count)
                 .DistinctUntilChanged();
 
-            _ItemChanging = new Subject<IObservedChange<T, object>>();
-            _ItemChanged = new Subject<IObservedChange<T,object>>();
+            _ItemChanging = new Subject<IObservedChange<T, object>>(RxApp.DeferredScheduler);
+            _ItemChanged = new Subject<IObservedChange<T,object>>(RxApp.DeferredScheduler);
 
             // TODO: Fix up this selector nonsense once SL/WP7 gets Covariance
             _Changing = Observable.Merge(
