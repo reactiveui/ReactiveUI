@@ -168,10 +168,10 @@ namespace ReactiveUI.Tests
 
             var results = data.Keys.Select(x => new {input = x, output = RxApp.expressionToPropertyNames(x)});
 
-            results.Run(x => {
+            foreach(var x in results) {
                 this.Log().InfoFormat("Attempted {0}, expected [{1}]", x.input, String.Join(",", data[x.input]));
                 data[x.input].AssertAreEqual(x.output);
-            });
+            }
         }
     }
 }
