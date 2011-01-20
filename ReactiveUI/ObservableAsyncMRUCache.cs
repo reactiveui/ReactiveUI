@@ -168,6 +168,11 @@ namespace ReactiveUI
             var cache = new ObservableAsyncMRUCache<T, TRet>(selector, maxCached, maxConcurrent, null, scheduler);
             return This.SelectMany(cache.AsyncGet);
         }
+
+        public static IObservable<TRet> CachedSelectMany<T, TRet>(this IObservable<T> This, ObservableAsyncMRUCache<T, TRet> existingCache)
+        {
+            return This.SelectMany(existingCache.AsyncGet);
+        }
     }
 
     internal class SemaphoreSubject<T> : ISubject<T>, IEnableLogger
