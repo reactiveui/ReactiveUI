@@ -9,14 +9,14 @@ namespace ReactiveUI.Tests
 {
     public class ValidatedTestFixture : ReactiveValidatedObject
     {
-        string _IsNotNullString;
+        public string _IsNotNullString;
         [Required]
         public string IsNotNullString {
             get { return _IsNotNullString; }
             set { this.RaiseAndSetIfChanged(x => x.IsNotNullString, value); }
         }
         
-        string _IsOnlyOneWord;
+        public string _IsOnlyOneWord;
         [Required]
         [RegularExpression(@"^[a-zA-Z]+$")]
         public string IsOnlyOneWord {
@@ -24,7 +24,7 @@ namespace ReactiveUI.Tests
             set { this.RaiseAndSetIfChanged(x => x.IsOnlyOneWord, value); }
         }
 
-        string _UsesExprRaiseSet;
+        public string _UsesExprRaiseSet;
         public string UsesExprRaiseSet {
             get { return _UsesExprRaiseSet; }
             set { _UsesExprRaiseSet = this.RaiseAndSetIfChanged(x => x.UsesExprRaiseSet, value); }

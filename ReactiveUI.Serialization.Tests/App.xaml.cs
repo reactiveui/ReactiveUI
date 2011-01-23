@@ -12,6 +12,7 @@ namespace ReactiveUI.Serialization.Tests
             this.Exit += this.Application_Exit;
             this.UnhandledException += this.Application_UnhandledException;
 
+            UnitTestSystem.RegisterUnitTestProvider(new XunitContrib.Runner.Silverlight.Toolkit.UnitTestProvider());
             InitializeComponent();
         }
 
