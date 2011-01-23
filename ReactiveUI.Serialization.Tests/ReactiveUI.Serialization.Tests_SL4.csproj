@@ -123,6 +123,10 @@
     <Reference Include="xunit-silverlight4">
       <HintPath>..\ext\xunit\xunit-silverlight4.dll</HintPath>
     </Reference>
+    <Reference Include="xunit.extensions-silverlight4">
+      <HintPath>..\ext\xunit\xunit.extensions-silverlight4.dll</HintPath>
+    </Reference>
+    <Reference Include="xunitcontrib.runner.silverlight.toolkit-silverlight4, Version=0.1.0.40356, Culture=neutral, processorArchitecture=MSIL" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App.xaml.cs">
