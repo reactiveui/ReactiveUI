@@ -34,6 +34,21 @@ namespace ReactiveUI
             var subscriptions = new LinkedList<IDisposable>(propertyNames.Select(x => (IDisposable) null));
             var ret = new Subject<IObservedChange<TSender, TValue>>();
 
+            /* x => x.Foo.Bar.Baz;
+             * 
+             * Subscribe to This, look for Foo
+             * Subscribe to Foo, look for Bar
+             * Subscribe to Bar, look for Baz
+             * Subscribe to Baz, publish to Subject
+             * Return Subject
+             * 
+             * If Bar changes (notification fires on Foo), resubscribe to new Bar
+             * 	Resubscribe to new Baz, publish to Subject
+             * 
+             * If Baz changes (notification fires on Bar),
+             * 	Resubscribe to new Baz, publish to Subject
+             */
+
             subscribeToExpressionChain(
                 This, 
                 buildPropPathFromNodePtr(propertyNames.First),
