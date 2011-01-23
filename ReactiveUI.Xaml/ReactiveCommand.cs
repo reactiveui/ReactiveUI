@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Concurrency;
+using System.Windows.Input;
 using ReactiveUI;
 
 namespace ReactiveUI.Xaml
@@ -124,6 +125,11 @@ namespace ReactiveUI.Xaml
         public static ReactiveCommand ToCommand(this IObservable<bool> This, IScheduler scheduler = null)
         {
             return new ReactiveCommand(This, scheduler);
+        }
+
+        public static IDisposable InvokeCommand<T>(this IObservable<T> This, ICommand command)
+        {
+            return This.ObserveOn(RxApp.DeferredScheduler).Subscribe(x => command.Execute(x));
         }
     }
 }
