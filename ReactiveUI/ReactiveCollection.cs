@@ -142,7 +142,7 @@ namespace ReactiveUI
 
         /// <summary>
         /// Fires when items are added to the collection, once per item added.
-        /// Functions that add multiple items such AddRange should fire this
+        /// Functions that add multiple items such as AddRange should fire this
         /// multiple times. The object provided is the item that was added.
         /// </summary>
         public IObservable<T> ItemsAdded {
