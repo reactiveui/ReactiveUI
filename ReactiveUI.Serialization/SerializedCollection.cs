@@ -132,8 +132,9 @@ namespace ReactiveUI.Serialization
 
             ItemChanged.Subscribe(x => {
                 UpdatedOn[x.Sender.ContentHash] = _sched.Now;
-                invalidateHash();
             });
+
+            Changed.Subscribe(_ => invalidateHash());
         }
 
         public virtual Guid CalculateHash()
@@ -157,7 +158,8 @@ namespace ReactiveUI.Serialization
             }
 
             var md5 = MD5.Create();
-            return new Guid(md5.ComputeHash(buf.ToArray()));
+            var ret = new Guid(md5.ComputeHash(buf.ToArray()));
+            return ret;
         }
 
         protected virtual void invalidateHash()

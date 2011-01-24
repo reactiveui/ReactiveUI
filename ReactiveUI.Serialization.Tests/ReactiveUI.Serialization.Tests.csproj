@@ -109,6 +109,9 @@
       <DependentUpon>SerializedCollectionTest.cs</DependentUpon>
     </Compile>
     <Compile Include="SerializedCollectionTest.cs" />
+    <Compile Include="SerializedCollectionTest.RemovingItemsShouldChangeTheContentHash.g.cs">
+      <DependentUpon>SerializedCollectionTest.cs</DependentUpon>
+    </Compile>
     <Compile Include="SyncPointInformationTest.cs" />
     <Compile Include="TestUtils.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

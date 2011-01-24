@@ -26,16 +26,15 @@ namespace ReactiveUI.Serialization.Tests
                 var hashes = new List<Guid>();
                 int changeCount = 0;
 
-                foreach (var v in toAdd) {
-                    fixture.Add(new ModelTestFixture() {TestString = v});
-                }
-
                 fixture.Changed.Subscribe(_ => {
                     hashes.Add(fixture.ContentHash);
                     changeCount++;
                 });
 
-                sched.Run();
+                foreach (var v in toAdd) {
+                    fixture.Add(new ModelTestFixture() {TestString = v});
+                    sched.Run();
+                }
 
                 PexAssert.AreDistinctValues(hashes.ToArray());
                 PexAssert.AreEqual(toAdd.Length, fixture.Count);

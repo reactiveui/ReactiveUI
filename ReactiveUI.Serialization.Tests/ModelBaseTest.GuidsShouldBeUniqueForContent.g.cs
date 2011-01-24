@@ -18,58 +18,6 @@ namespace ReactiveUI.Serialization.Tests
     {
 [Fact]
 [PexGeneratedBy(typeof(ModelBaseTest))]
-[PexRaisedException(typeof(NullReferenceException))]
-public void GuidsShouldBeUniqueForContentThrowsNullReferenceException901()
-{
-    string[] ss = new string[1];
-    ss[0] = "";
-    this.GuidsShouldBeUniqueForContent(ss);
-}
-[Fact]
-[PexGeneratedBy(typeof(ModelBaseTest))]
-public void GuidsShouldBeUniqueForContent78701()
-{
-    string[] ss = new string[1];
-    ss[0] = "";
-    this.GuidsShouldBeUniqueForContent(ss);
-}
-[Fact]
-[PexGeneratedBy(typeof(ModelBaseTest))]
-[PexRaisedException(typeof(NullReferenceException))]
-public void GuidsShouldBeUniqueForContentThrowsNullReferenceException638()
-{
-    string[] ss = new string[5];
-    ss[0] = "\udc00";
-    ss[1] = "\udc00";
-    ss[2] = "\udc00";
-    ss[3] = "\udc00";
-    ss[4] = "\udc00";
-    this.GuidsShouldBeUniqueForContent(ss);
-}
-[Fact]
-[PexGeneratedBy(typeof(ModelBaseTest))]
-public void GuidsShouldBeUniqueForContent23702()
-{
-    string[] ss = new string[2];
-    ss[0] = "";
-    ss[1] = "";
-    this.GuidsShouldBeUniqueForContent(ss);
-}
-[Fact]
-[PexGeneratedBy(typeof(ModelBaseTest))]
-[PexRaisedException(typeof(NullReferenceException))]
-public void GuidsShouldBeUniqueForContentThrowsNullReferenceException975()
-{
-    string[] ss = new string[5];
-    ss[0] = "\ud801\udc00";
-    ss[1] = "\ud801\udc00";
-    ss[2] = "\ud801\udc00";
-    ss[3] = "\ud801\udc00";
-    ss[4] = "\ud801\udc00";
-    this.GuidsShouldBeUniqueForContent(ss);
-}
-[Fact]
-[PexGeneratedBy(typeof(ModelBaseTest))]
 public void GuidsShouldBeUniqueForContent78702()
 {
     string[] ss = new string[1];
@@ -78,45 +26,8 @@ public void GuidsShouldBeUniqueForContent78702()
 }
 [Fact]
 [PexGeneratedBy(typeof(ModelBaseTest))]
-public void GuidsShouldBeUniqueForContent237()
-{
-    string[] ss = new string[2];
-    ss[0] = "";
-    ss[1] = "";
-    this.GuidsShouldBeUniqueForContent(ss);
-}
-[Fact]
-[PexGeneratedBy(typeof(ModelBaseTest))]
-public void GuidsShouldBeUniqueForContent368()
-{
-    string[] ss = new string[3];
-    ss[0] = "";
-    ss[1] = "";
-    ss[2] = "";
-    this.GuidsShouldBeUniqueForContent(ss);
-}
-[Fact]
-[PexGeneratedBy(typeof(ModelBaseTest))]
-public void GuidsShouldBeUniqueForContent535()
-{
-    string[] ss = new string[0];
-    this.GuidsShouldBeUniqueForContent(ss);
-}
-[Fact]
-[PexGeneratedBy(typeof(ModelBaseTest))]
-public void GuidsShouldBeUniqueForContent634()
-{
-    string[] ss = new string[5];
-    ss[0] = "\ud800\0\0\0\0";
-    ss[1] = "\ud800\0\0\0\0";
-    ss[2] = "\ud800\0\0\0\0";
-    ss[3] = "\ud800\0\0\0\0";
-    ss[4] = "\ud800\0\0\0\0";
-    this.GuidsShouldBeUniqueForContent(ss);
-}
-[Fact]
-[PexGeneratedBy(typeof(ModelBaseTest))]
-public void GuidsShouldBeUniqueForContent728()
+[PexRaisedException(typeof(NullReferenceException))]
+public void GuidsShouldBeUniqueForContentThrowsNullReferenceException361()
 {
     string[] ss = new string[13];
     ss[0] = "";
@@ -136,26 +47,19 @@ public void GuidsShouldBeUniqueForContent728()
 }
 [Fact]
 [PexGeneratedBy(typeof(ModelBaseTest))]
-public void GuidsShouldBeUniqueForContent12801()
+public void GuidsShouldBeUniqueForContent29901()
 {
-    string[] ss = new string[5];
-    ss[0] = "\ud801\udc00";
-    ss[1] = "\ud801\udc00";
-    ss[2] = "\ud801\udc00";
-    ss[3] = "\ud801\udc00";
-    ss[4] = "\ud801\udc00";
+    string[] ss = new string[0];
     this.GuidsShouldBeUniqueForContent(ss);
 }
 [Fact]
 [PexGeneratedBy(typeof(ModelBaseTest))]
-public void GuidsShouldBeUniqueForContent665()
+public void GuidsShouldBeUniqueForContent46801()
 {
-    string[] ss = new string[5];
-    ss[0] = "\u0080";
-    ss[1] = "\u0080";
-    ss[2] = "\u0080";
-    ss[3] = "\u0080";
-    ss[4] = "\u0080";
+    string[] ss = new string[3];
+    ss[0] = "";
+    ss[1] = "";
+    ss[2] = "";
     this.GuidsShouldBeUniqueForContent(ss);
 }
     }
