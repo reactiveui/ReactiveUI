@@ -56,26 +56,7 @@ public void AddingItemsShouldChangeTheContentHashThrowsPexAssertFailedException7
 [Fact]
 [PexGeneratedBy(typeof(SerializedCollectionTest))]
 [PexRaisedException(typeof(PexAssertFailedException))]
-public void AddingItemsShouldChangeTheContentHashThrowsPexAssertFailedException426()
-{
-    string[] ss = new string[1];
-    ss[0] = "";
-    this.AddingItemsShouldChangeTheContentHash(ss);
-}
-[Fact]
-[PexGeneratedBy(typeof(SerializedCollectionTest))]
-[PexRaisedException(typeof(PexAssertFailedException))]
-public void AddingItemsShouldChangeTheContentHashThrowsPexAssertFailedException365()
-{
-    string[] ss = new string[2];
-    ss[0] = "\0\ud800\udc00\0\0\0\0\0\0\0\0\0\0\0\0";
-    ss[1] = "";
-    this.AddingItemsShouldChangeTheContentHash(ss);
-}
-[Fact]
-[PexGeneratedBy(typeof(SerializedCollectionTest))]
-[PexRaisedException(typeof(PexAssertFailedException))]
-public void AddingItemsShouldChangeTheContentHashThrowsPexAssertFailedException190()
+public void AddingItemsShouldChangeTheContentHashThrowsPexAssertFailedException382()
 {
     string[] ss = new string[2];
     ss[0] = "\0\u0880\0\0\0\0\0\0\0\0\0\0\0\0\0";
@@ -85,7 +66,26 @@ public void AddingItemsShouldChangeTheContentHashThrowsPexAssertFailedException1
 [Fact]
 [PexGeneratedBy(typeof(SerializedCollectionTest))]
 [PexRaisedException(typeof(PexAssertFailedException))]
-public void AddingItemsShouldChangeTheContentHashThrowsPexAssertFailedException450()
+public void AddingItemsShouldChangeTheContentHashThrowsPexAssertFailedException260()
+{
+    string[] ss = new string[2];
+    ss[0] = "\0\ud800\udc00\0\0\0\0\0\0\0\0\0\0\0\0";
+    ss[1] = "";
+    this.AddingItemsShouldChangeTheContentHash(ss);
+}
+[Fact]
+[PexGeneratedBy(typeof(SerializedCollectionTest))]
+[PexRaisedException(typeof(PexAssertFailedException))]
+public void AddingItemsShouldChangeTheContentHashThrowsPexAssertFailedException826()
+{
+    string[] ss = new string[1];
+    ss[0] = "";
+    this.AddingItemsShouldChangeTheContentHash(ss);
+}
+[Fact]
+[PexGeneratedBy(typeof(SerializedCollectionTest))]
+[PexRaisedException(typeof(PexAssertFailedException))]
+public void AddingItemsShouldChangeTheContentHashThrowsPexAssertFailedException390()
 {
     string[] ss = new string[2];
     ss[0] = "\0\u0080\0\0\0\0\0\0\0\0\0\0\0\0\0";
@@ -95,17 +95,7 @@ public void AddingItemsShouldChangeTheContentHashThrowsPexAssertFailedException4
 [Fact]
 [PexGeneratedBy(typeof(SerializedCollectionTest))]
 [PexRaisedException(typeof(PexAssertFailedException))]
-public void AddingItemsShouldChangeTheContentHashThrowsPexAssertFailedException934()
-{
-    string[] ss = new string[2];
-    ss[0] = "\0\udc00\0\0\0\0\0\0\0\0\0\0\0\0\0";
-    ss[1] = "";
-    this.AddingItemsShouldChangeTheContentHash(ss);
-}
-[Fact]
-[PexGeneratedBy(typeof(SerializedCollectionTest))]
-[PexRaisedException(typeof(PexAssertFailedException))]
-public void AddingItemsShouldChangeTheContentHashThrowsPexAssertFailedException800()
+public void AddingItemsShouldChangeTheContentHashThrowsPexAssertFailedException854()
 {
     string[] ss = new string[2];
     ss[0] = "\ud800";
@@ -115,10 +105,88 @@ public void AddingItemsShouldChangeTheContentHashThrowsPexAssertFailedException8
 [Fact]
 [PexGeneratedBy(typeof(SerializedCollectionTest))]
 [PexRaisedException(typeof(PexAssertFailedException))]
-public void AddingItemsShouldChangeTheContentHashThrowsPexAssertFailedException984()
+public void AddingItemsShouldChangeTheContentHashThrowsPexAssertFailedException769()
+{
+    string[] ss = new string[2];
+    ss[0] = "\0\udc00\0\0\0\0\0\0\0\0\0\0\0\0\0";
+    ss[1] = "";
+    this.AddingItemsShouldChangeTheContentHash(ss);
+}
+[Fact]
+[PexGeneratedBy(typeof(SerializedCollectionTest))]
+[PexRaisedException(typeof(PexAssertFailedException))]
+public void AddingItemsShouldChangeTheContentHashThrowsPexAssertFailedException827()
 {
     string[] ss = new string[2];
     ss[0] = "\u0080";
+    ss[1] = "";
+    this.AddingItemsShouldChangeTheContentHash(ss);
+}
+[Fact]
+[PexGeneratedBy(typeof(SerializedCollectionTest))]
+[PexRaisedException(typeof(PexAssertFailedException))]
+public void AddingItemsShouldChangeTheContentHashThrowsPexAssertFailedException651()
+{
+    string[] ss = new string[2];
+    ss[0] = "\0\u0080\u0800\0\0\0\0\0\0\0\0\0\0\0\0";
+    ss[1] = "";
+    this.AddingItemsShouldChangeTheContentHash(ss);
+}
+[Fact]
+[PexGeneratedBy(typeof(SerializedCollectionTest))]
+[PexRaisedException(typeof(PexAssertFailedException))]
+public void AddingItemsShouldChangeTheContentHashThrowsPexAssertFailedException644()
+{
+    string[] ss = new string[2];
+    ss[0] = "\0\u0080\0\u0080\0\0\0\0\0\0\0\0\0\0\0";
+    ss[1] = "";
+    this.AddingItemsShouldChangeTheContentHash(ss);
+}
+[Fact]
+[PexGeneratedBy(typeof(SerializedCollectionTest))]
+[PexRaisedException(typeof(PexAssertFailedException))]
+public void AddingItemsShouldChangeTheContentHashThrowsPexAssertFailedException524()
+{
+    string[] ss = new string[2];
+    ss[0] = "\0\u0080\0\0\u0800\0\0\0\0\0\0\0\0\0\0";
+    ss[1] = "";
+    this.AddingItemsShouldChangeTheContentHash(ss);
+}
+[Fact]
+[PexGeneratedBy(typeof(SerializedCollectionTest))]
+[PexRaisedException(typeof(PexAssertFailedException))]
+public void AddingItemsShouldChangeTheContentHashThrowsPexAssertFailedException792()
+{
+    string[] ss = new string[2];
+    ss[0] = "\0\u0080\u0080\0\u0800\0\0\0\0\0\0\0\0\0\0";
+    ss[1] = "";
+    this.AddingItemsShouldChangeTheContentHash(ss);
+}
+[Fact]
+[PexGeneratedBy(typeof(SerializedCollectionTest))]
+[PexRaisedException(typeof(PexAssertFailedException))]
+public void AddingItemsShouldChangeTheContentHashThrowsPexAssertFailedException197()
+{
+    string[] ss = new string[2];
+    ss[0] = "\0\u0080\0\0\u0080\0\0\0\0\0\0\0\0\0\0";
+    ss[1] = "";
+    this.AddingItemsShouldChangeTheContentHash(ss);
+}
+[Fact]
+[PexGeneratedBy(typeof(SerializedCollectionTest))]
+public void AddingItemsShouldChangeTheContentHash947()
+{
+    string[] ss = new string[2];
+    ss[0] = "\0\u0080\u0080\0\0\0\0\0\0\0\0\0\0\0\0";
+    ss[1] = "";
+    this.AddingItemsShouldChangeTheContentHash(ss);
+}
+[Fact]
+[PexGeneratedBy(typeof(SerializedCollectionTest))]
+public void AddingItemsShouldChangeTheContentHash10()
+{
+    string[] ss = new string[2];
+    ss[0] = "\ud800\0";
     ss[1] = "";
     this.AddingItemsShouldChangeTheContentHash(ss);
 }

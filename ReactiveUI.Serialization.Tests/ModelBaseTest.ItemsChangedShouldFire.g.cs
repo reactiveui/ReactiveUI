@@ -18,16 +18,17 @@ namespace ReactiveUI.Serialization.Tests
     {
 [Fact]
 [PexGeneratedBy(typeof(ModelBaseTest))]
-public void ItemsChangedShouldFire237()
+public void ItemsChangedShouldFire46801()
 {
-    string[] ss = new string[2];
+    string[] ss = new string[3];
     ss[0] = "";
     ss[1] = "";
+    ss[2] = "";
     this.ItemsChangedShouldFire(ss);
 }
 [Fact]
 [PexGeneratedBy(typeof(ModelBaseTest))]
-public void ItemsChangedShouldFire923()
+public void ItemsChangedShouldFire47901()
 {
     string[] ss = new string[2];
     ss[0] = "\0\0\0";
@@ -36,12 +37,20 @@ public void ItemsChangedShouldFire923()
 }
 [Fact]
 [PexGeneratedBy(typeof(ModelBaseTest))]
-public void ItemsChangedShouldFire368()
+public void ItemsChangedShouldFire55501()
 {
-    string[] ss = new string[3];
+    string[] ss = new string[2];
     ss[0] = "";
     ss[1] = "";
-    ss[2] = "";
+    this.ItemsChangedShouldFire(ss);
+}
+[Fact]
+[PexGeneratedBy(typeof(ModelBaseTest))]
+public void ItemsChangedShouldFire55502()
+{
+    string[] ss = new string[2];
+    ss[0] = "";
+    ss[1] = "";
     this.ItemsChangedShouldFire(ss);
 }
     }
