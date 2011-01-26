@@ -18,7 +18,6 @@ namespace ReactiveUI.Serialization.Tests
         {
             PexAssume.IsNotNull(toAdd);
             PexAssume.AreElementsNotNull(toAdd);
-            PexAssume.AreDistinct(toAdd, (lhs, rhs) => lhs == rhs);
             PexAssume.IsTrue(toAdd.Length > 0);
 
             (new TestScheduler()).With(sched => {
@@ -75,7 +74,7 @@ namespace ReactiveUI.Serialization.Tests
             PexAssert.AreEqual(itemsToRemove.Length, changeCount);
         }
 
-        [PexMethod]
+        [PexMethod(MaxConditions = 1000)]
         public void ChangingASerializableItemShouldChangeTheContentHash(string[] items, int toChange, string newValue)
         {
             PexAssume.IsNotNullOrEmpty(items);
