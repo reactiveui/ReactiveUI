@@ -129,8 +129,15 @@ namespace ReactiveUI
                 object current = tgt;
                 PropertyInfo pi = null;
                 foreach(var propName in propNames.SkipLast(1)) {
+                    if (current == null) {
+                        return;
+                    }
+
                     pi = RxApp.getPropertyInfoOrThrow(current.GetType(), propName);
                     current = pi.GetValue(current, null);
+                }
+                if (current == null) {
+                    return;
                 }
 
                 pi = RxApp.getPropertyInfoOrThrow(current.GetType(), propNames.Last());
