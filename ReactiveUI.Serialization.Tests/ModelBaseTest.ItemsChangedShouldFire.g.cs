@@ -18,25 +18,6 @@ namespace ReactiveUI.Serialization.Tests
     {
 [Fact]
 [PexGeneratedBy(typeof(ModelBaseTest))]
-public void ItemsChangedShouldFire46801()
-{
-    string[] ss = new string[3];
-    ss[0] = "";
-    ss[1] = "";
-    ss[2] = "";
-    this.ItemsChangedShouldFire(ss);
-}
-[Fact]
-[PexGeneratedBy(typeof(ModelBaseTest))]
-public void ItemsChangedShouldFire47901()
-{
-    string[] ss = new string[2];
-    ss[0] = "\0\0\0";
-    ss[1] = "\0\0\0\0\0\0\0";
-    this.ItemsChangedShouldFire(ss);
-}
-[Fact]
-[PexGeneratedBy(typeof(ModelBaseTest))]
 public void ItemsChangedShouldFire55501()
 {
     string[] ss = new string[2];
@@ -51,6 +32,25 @@ public void ItemsChangedShouldFire55502()
     string[] ss = new string[2];
     ss[0] = "";
     ss[1] = "";
+    this.ItemsChangedShouldFire(ss);
+}
+[Fact]
+[PexGeneratedBy(typeof(ModelBaseTest))]
+public void ItemsChangedShouldFire468()
+{
+    string[] ss = new string[3];
+    ss[0] = "";
+    ss[1] = "";
+    ss[2] = "";
+    this.ItemsChangedShouldFire(ss);
+}
+[Fact]
+[PexGeneratedBy(typeof(ModelBaseTest))]
+public void ItemsChangedShouldFire479()
+{
+    string[] ss = new string[2];
+    ss[0] = "\0\0\0";
+    ss[1] = "\0\0\0\0\0\0\0";
     this.ItemsChangedShouldFire(ss);
 }
     }
