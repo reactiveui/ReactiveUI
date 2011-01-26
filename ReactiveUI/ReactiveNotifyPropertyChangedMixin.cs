@@ -101,17 +101,22 @@ namespace ReactiveUI
                         Value = default(TValue),
                     };
 
-                    TValue prevVal = valGetter.GetValue();
+                    TValue prevVal = default(TValue);
+                    bool prevValSet = valGetter.TryGetValue(out prevVal);
 
                     toDispose[0] = notifyObj.Changing.Where(x => x.PropertyName == capture.current.Value).Subscribe(x => {
-                        prevVal = valGetter.GetValue();
+                        prevValSet = valGetter.TryGetValue(out prevVal);
                     });
 
                     toDispose[1] = notifyObj.Changed.Where(x => x.PropertyName == capture.current.Value).Subscribe(x => {
                         subscribeToExpressionChain(origSource, origPath, capture.pi.GetValue(capture.currentObj, null), capture.current.Next, capture.currentSub.Next, beforeChange, subject);
 
-                        var newVal = valGetter.GetValue();
-                        if (EqualityComparer<TValue>.Default.Equals(prevVal, newVal)) {
+                        TValue newVal;
+                        if (!valGetter.TryGetValue(out newVal)) {
+                            return;
+                        }
+                        
+                        if (prevValSet && EqualityComparer<TValue>.Default.Equals(prevVal, newVal)) {
                             return;
                         }
 
@@ -120,8 +125,12 @@ namespace ReactiveUI
                             PropertyName = origPath,
                             Value = default(TValue),
                         };
-                        obsCh.Value = obsCh.GetValue();
-                        subject.OnNext(obsCh);
+
+                        TValue obsChVal;
+                        if (obsCh.TryGetValue(out obsChVal)) {
+                            obsCh.Value = obsChVal;
+                            subject.OnNext(obsCh);
+                        }
                     });
 
                     currentSub.Value = Disposable.Create(() => { toDispose[0].Dispose(); toDispose[1].Dispose(); });
