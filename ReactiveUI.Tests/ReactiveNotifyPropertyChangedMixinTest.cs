@@ -135,8 +135,41 @@ namespace ReactiveUI.Tests
             });           
         }
 
+
         [Fact]
-        public void ChangingTheHostPropertyShouldFireAChildChangeNotificationOnlyIfThePreviousChildIsDifferent()
+        public void OFPReplacingTheHostWithNullThenSettingItBackShouldResubscribeTheObservable()
+        {
+            (new TestScheduler()).With(sched => {
+                var fixture = new HostTestFixture() {Child = new TestFixture()};
+                var changes = fixture.ObservableForProperty(x => x.Child.IsOnlyOneWord).CreateCollection();
+
+                fixture.Child.IsOnlyOneWord = "Foo";
+                sched.Run();
+                Assert.Equal(1, changes.Count);
+
+                fixture.Child.IsOnlyOneWord = "Bar";
+                sched.Run();
+                Assert.Equal(2, changes.Count);
+
+                // Oops, now the child is Null, we may now blow up
+                fixture.Child = null;
+                sched.Run();
+                Assert.Equal(2, changes.Count);
+
+                // Tricky! This is a change too, because from the perspective 
+                // of the binding, we've went from "Bar" to null
+                fixture.Child = new TestFixture();
+                sched.Run();
+                Assert.Equal(3, changes.Count);
+
+                Assert.True(changes.All(x => x.Sender == fixture));
+                Assert.True(changes.All(x => x.PropertyName == "Child.IsOnlyOneWord"));
+                changes.Select(x => x.Value).AssertAreEqual(new[] {"Foo", "Bar", null});
+            });
+        }
+
+        [Fact]
+        public void OFPChangingTheHostPropertyShouldFireAChildChangeNotificationOnlyIfThePreviousChildIsDifferent()
         {
             (new TestScheduler()).With(sched => {
                 var fixture = new HostTestFixture() {Child = new TestFixture()};
