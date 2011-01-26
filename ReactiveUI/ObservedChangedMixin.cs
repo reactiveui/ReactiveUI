@@ -18,20 +18,50 @@ namespace ReactiveUI
         /// <returns>The current value of the property</returns>
         public static TValue GetValue<TSender, TValue>(this IObservedChange<TSender, TValue> This)
         {
+            TValue ret;
+            if (!This.TryGetValue(out ret)) {
+                throw new Exception(String.Format("One of the properties in the expression '{0}' was null", This.PropertyName));
+            }
+            return ret;
+        }
+
+        /// <summary>
+        /// Attempts to return the current value of a property given a 
+        /// notification that it has changed. If any property in the
+        /// property expression is null, false is returned.
+        /// </summary>
+        /// <param name="changeValue">The value of the property expression.</param>
+        /// <returns>True if the entire expression was able to be followed, false otherwise</returns>
+        public static bool TryGetValue<TSender, TValue>(this IObservedChange<TSender, TValue> This, out TValue changeValue)
+        {
             if (!Equals(This.Value, default(TValue))) {
-                return This.Value;
+                changeValue = This.Value;
+                return true;
             }
 
             object current = This.Sender;
             string[] propNames = null;;
             lock(propStringToNameCache) { propNames = propStringToNameCache.Get(This.PropertyName); }
 
-            foreach(var propName in propNames) {
-                var pi = RxApp.getPropertyInfoOrThrow(current.GetType(), propName);
+            PropertyInfo pi;
+            foreach(var propName in propNames.SkipLast(1)) {
+                if (current == null) {
+                    changeValue = default(TValue);
+                    return false;
+                }
+
+                pi = RxApp.getPropertyInfoOrThrow(current.GetType(), propName);
                 current = pi.GetValue(current, null);
             }
 
-            return (TValue)current;
+            if (current == null) {
+                changeValue = default(TValue);
+                return false;
+            }
+
+            pi = RxApp.getPropertyInfoOrThrow(current.GetType(), propNames.Last());
+            changeValue = (TValue)pi.GetValue(current, null);
+            return true;
         }
 
         public static void SetValueToProperty<TSender, TValue, TTarget>(
