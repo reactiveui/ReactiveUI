@@ -64,6 +64,17 @@ namespace ReactiveUI
             return true;
         }
 
+        internal static IObservedChange<TSender, TValue> fillInValue<TSender, TValue>(this IObservedChange<TSender, TValue> This)
+        {
+            // XXX: This is an internal method because I'm unsafely upcasting,
+            // but in certain cases it's needed.
+            var ret = (ObservedChange<TSender, TValue>)This;
+            var val = default(TValue);
+            This.TryGetValue(out val);
+            ret.Value = val;
+            return ret;
+        }
+
         public static void SetValueToProperty<TSender, TValue, TTarget>(
             this IObservedChange<TSender, TValue> This, 
             TTarget target,
