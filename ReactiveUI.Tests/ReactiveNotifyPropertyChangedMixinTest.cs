@@ -206,5 +206,47 @@ namespace ReactiveUI.Tests
                 data[x.input].AssertAreEqual(x.output);
             }
         }
+
+        [Fact]
+        public void WhenAnySmokeTest()
+        {
+            (new TestScheduler()).With(sched => {
+                var fixture = new HostTestFixture() {Child = new TestFixture()};
+                fixture.SomeOtherParam = 5;
+                fixture.Child.IsNotNullString = "Foo";
+
+                var output1 = new List<IObservedChange<HostTestFixture, int>>();
+                var output2 = new List<IObservedChange<HostTestFixture, string>>();
+                fixture.WhenAny(x => x.SomeOtherParam, x => x.Child.IsNotNullString, (sop, nns) => new {sop, nns}).Subscribe(x => {
+                    output1.Add(x.sop); output2.Add(x.nns);
+                });
+
+                sched.Run();
+                Assert.Equal(1, output1.Count);
+                Assert.Equal(1, output2.Count);
+                Assert.Equal(fixture, output1[0].Sender);
+                Assert.Equal(fixture, output2[0].Sender);
+                Assert.Equal(5, output1[0].Value);
+                Assert.Equal("Foo", output2[0].Value);
+
+                fixture.SomeOtherParam = 10;
+                sched.Run();
+                Assert.Equal(2, output1.Count);
+                Assert.Equal(2, output2.Count);
+                Assert.Equal(fixture, output1[1].Sender);
+                Assert.Equal(fixture, output2[1].Sender);
+                Assert.Equal(10, output1[1].Value);
+                Assert.Equal("Foo", output2[1].Value);
+
+                fixture.Child.IsNotNullString = "Bar";
+                sched.Run();
+                Assert.Equal(3, output1.Count);
+                Assert.Equal(3, output2.Count);
+                Assert.Equal(fixture, output1[2].Sender);
+                Assert.Equal(fixture, output2[2].Sender);
+                Assert.Equal(10, output1[2].Value);
+                Assert.Equal("Bar", output2[2].Value);
+            });
+        }
     }
 }
