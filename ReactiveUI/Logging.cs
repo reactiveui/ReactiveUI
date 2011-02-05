@@ -66,7 +66,7 @@ namespace ReactiveUI
     public static class EnableLoggerMixin
     {
         static MemoizingMRUCache<int, ILog> loggerCache = new MemoizingMRUCache<int, ILog>(
-            (_, obj) => RxApp.LoggerFactory(obj.GetType().Name), 50);
+            (_, obj) => RxApp.LoggerFactory(obj.GetType().FullName), 50);
 
         readonly static ILog mruLogger = new NullLogger();
 
@@ -306,8 +306,6 @@ namespace ReactiveUI
         }
     }
 
-    // N.B. Yes I know StdErrLogger writes to Stdout, but VS's output window 
-    // ignores stderr.
     public class StdErrLogger : LoggerBase
     {
         public StdErrLogger(string prefix = null)
@@ -319,6 +317,7 @@ namespace ReactiveUI
                 return; 
 
             Console.WriteLine(message);
+            Console.Error.WriteLine(message);
         }
 
         protected override void writeWarn(string message)
@@ -327,6 +326,7 @@ namespace ReactiveUI
                 return; 
 
             Console.WriteLine("Warn: " + message);
+            Console.Error.WriteLine("Warn: " + message);
         }
 
         protected override void writeInfo(string message)
@@ -335,6 +335,7 @@ namespace ReactiveUI
                 return; 
 
             Console.WriteLine("Info: " + message);
+            Console.Error.WriteLine("Info: " + message);
         }
 
         protected override void writeError(string message)
@@ -343,11 +344,13 @@ namespace ReactiveUI
                 return; 
 
             Console.WriteLine("ERROR: " + message);
+            Console.Error.WriteLine("ERROR: " + message);
         }
 
         protected override void writeFatal(string message)
         {
             Console.WriteLine("FATAL ERROR: ******" + message + " ******");
+            Console.Error.WriteLine("FATAL ERROR: ******" + message + " ******");
         }
     }
 }
