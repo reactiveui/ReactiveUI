@@ -38,5 +38,34 @@ namespace ReactiveUI.Tests
 
             input.AssertAreEqual(result);
         }
+
+
+        [Fact]
+        public void ExplicitSendMessageShouldWorkEvenAfterRegisteringSource() 
+        {
+            var fixture = new MessageBus();
+            fixture.RegisterMessageSource(Observable.Never<int>());
+         
+            bool messageReceived = false;
+            fixture.Listen<int>().Subscribe(_ => messageReceived = true);
+         
+            fixture.SendMessage(42);
+            Assert.True(messageReceived);
+        }
+     
+        [Fact]
+        public void ListeningBeforeRegisteringASourceShouldWork()
+        {
+            var fixture = new MessageBus();
+            int result = -1;
+
+            fixture.Listen<int>().Subscribe(x => result = x);
+
+            Assert.Equal(-1, result);
+
+            fixture.SendMessage(42);
+
+            Assert.Equal(42, result);
+        }
     }
 }
