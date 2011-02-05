@@ -62,20 +62,6 @@ namespace ReactiveUISample
                 this.Log().Fatal("Unhandled Exception - aieee!", ex.ExceptionObject as Exception);
             };
 
-            /* COOLSTUFF: Enabling Debug Mode
-             * 
-             * Calling this function while in Debug mode enables log statements 
-             * to the VS Debug window, as well as enabling several other debug
-             * features, such as crashing the application when the Dispatcher queue
-             * has been stalled (i.e. your app would've displayed a black screen
-             * or hung. This is usually the result of doing a long-running task
-             * or a blocking disk/network call on the RxApp.DeferredScheduler when
-             * it should've probably be run on the RxApp.TaskpoolScheduler (i.e. not
-             * on the UI thread). */
-#if DEBUG
-            RxApp.EnableDebugMode();
-#endif
-
             this.ShutdownMode = ShutdownMode.OnMainWindowClose;
             compose();
             this.MainWindow = theWindow;
