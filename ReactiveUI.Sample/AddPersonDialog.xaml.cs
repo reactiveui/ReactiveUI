@@ -103,11 +103,7 @@ namespace ReactiveUISample
          * Our Model
          */
 
-        PersonEntry _Person = new PersonEntry();
-        public PersonEntry Person {
-            get { return _Person; }
-            set { _Person = this.RaiseAndSetIfChanged(x => x.Person, value); }
-        }
+        public PersonEntry Person { get; protected set; }
 
 
         /*
@@ -129,6 +125,12 @@ namespace ReactiveUISample
 
         public AddPersonViewModel()
         {
+            // Since this is a "Create" dialog (i.e. we're creating a new entity),
+            // and the Model will never be Set by other components, we can use 
+            // a normal .NET property.
+            Person = new PersonEntry();
+
+
             /* COOLSTUFF: How to do stuff in the background
              *
              * ReactiveAsyncCommand is similar to ReactiveCommand, except that
@@ -183,24 +185,18 @@ namespace ReactiveUISample
              * that we change a property since it's a ReactiveObservableObject.
              */
 
-            this._SpinnerVisibility = this.SetImageViaFlickr.CanExecuteObservable
+            _SpinnerVisibility = this.SetImageViaFlickr.CanExecuteObservable
                 .Select(x => x ? Visibility.Collapsed : Visibility.Visible)
                 .ToProperty(this, x => x.SpinnerVisibility, Visibility.Collapsed);
 
-            // NB: Why the rigamarole here? Whenever someone sets the Person, 
-            // we need to redo the OkCommand, since OkCommand depends on Person
-            this.ObservableForProperty(x => x.Person).Subscribe(_ => {
-                var canHitOk = Observable.CombineLatest(
-                    this.SetImageViaFlickr.CanExecuteObservable.StartWith(true),
-                    this.Person.Changed.Select(x => this.Person.IsObjectValid()).StartWith(this.Person.IsObjectValid()),
-                    (flickrNotRunning, personIsValid) => flickrNotRunning && personIsValid);
+            var canHitOk = Observable.CombineLatest(
+                SetImageViaFlickr.CanExecuteObservable.StartWith(true),
+                Person.Changed.Select(x => Person.IsObjectValid()).StartWith(Person.IsObjectValid()),
+                (flickrNotRunning, personIsValid) => flickrNotRunning && personIsValid);
 
-                // We don't actually do anything in the ViewModel when the user hits
-                // Ok, the View is listening to this command and closes the dialog.
-                this.OkCommand = new ReactiveCommand(canHitOk);
-            });
-
-            this.OkCommand = new ReactiveCommand();
+            // We don't actually do anything in the ViewModel when the user hits
+            // Ok, the View is listening to this command and closes the dialog.
+            OkCommand = new ReactiveCommand(canHitOk);
         }
 
         /* COOLSTUFF: Always write the sync version first!
