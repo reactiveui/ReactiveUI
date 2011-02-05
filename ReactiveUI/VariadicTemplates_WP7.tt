@@ -2,7 +2,6 @@
 <#@ assembly name="System.Core.dll" #>
 <#@ import namespace="System.Linq" #>
 <#@ output extension=".cs" #>
-
 using System;
 using System.Collections.Generic;
 using System.Disposables;
@@ -17,7 +16,7 @@ using System.Text;
 // VariadicTemplates_WP7.tt should always be a copy of VariadicTemplates.tt
 // except for this section
 
-int maxFuncLength = 12;
+int maxFuncLength = 4;
 #>
 
 namespace ReactiveUI
