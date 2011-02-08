@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Concurrency;
 using System.Linq;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -34,7 +35,7 @@ namespace ReactiveUI
             IObservable<T> ret = null;
 	        this.Log().InfoFormat("Listening to {0}:{1}", typeof(T), contract);
 
-            ret = setupSubjectIfNecessary<T>(contract);
+            ret = setupSubjectIfNecessary<T>(contract, null);
             return ret;
         }
 
@@ -67,9 +68,9 @@ namespace ReactiveUI
         /// <param name="contract">A unique string to distinguish messages with
         /// identical types (i.e. "MyCoolViewModel") - if the message type is
         /// only used for one purpose, leave this as null.</param>
-        public IDisposable RegisterMessageSource<T>(IObservable<T> source, string contract = null)
+        public IDisposable RegisterMessageSource<T>(IObservable<T> source, string contract = null, IScheduler scheduler = null)
         {
-            return source.Subscribe(setupSubjectIfNecessary<T>(contract));
+            return source.Subscribe(setupSubjectIfNecessary<T>(contract, scheduler));
         }
 
         /// <summary>
@@ -83,9 +84,9 @@ namespace ReactiveUI
         /// <param name="contract">A unique string to distinguish messages with
         /// identical types (i.e. "MyCoolViewModel") - if the message type is
         /// only used for one purpose, leave this as null.</param>
-        public void SendMessage<T>(T message, string contract = null)
+        public void SendMessage<T>(T message, string contract = null, IScheduler scheduler = null)
         {
-            setupSubjectIfNecessary<T>(contract).OnNext(message);
+            setupSubjectIfNecessary<T>(contract, scheduler).OnNext(message);
         }
 
         /// <summary>
@@ -95,8 +96,9 @@ namespace ReactiveUI
             get { return RxApp.MessageBus; }
         }
 
-        Subject<T> setupSubjectIfNecessary<T>(string contract)
+        Subject<T> setupSubjectIfNecessary<T>(string contract, IScheduler scheduler)
         {
+            scheduler = scheduler ?? RxApp.DeferredScheduler;
             Subject<T> ret = null;
             WeakReference subjRef = null;
 
@@ -106,7 +108,7 @@ namespace ReactiveUI
                     return;
                 }
 
-                ret = new Subject<T>();
+                ret = new Subject<T>(scheduler);
                 mb[tuple] = new WeakReference(ret);
             });
 
