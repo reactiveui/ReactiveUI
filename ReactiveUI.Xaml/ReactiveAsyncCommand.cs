@@ -149,10 +149,11 @@ namespace ReactiveUI.Xaml
         /// </summary>
         /// <param name="calculationFunc">The function to be run in the
         /// background.</param>
-        public void RegisterAsyncAction(Action<object> calculationFunc)
+        public void RegisterAsyncAction(Action<object> calculationFunc, 
+            IScheduler scheduler = null)
         {
             Contract.Requires(calculationFunc != null);
-            RegisterAsyncFunction(x => { calculationFunc(x); return new Unit(); });
+            RegisterAsyncFunction(x => { calculationFunc(x); return new Unit(); }, scheduler);
         }
 
         /// <summary>
