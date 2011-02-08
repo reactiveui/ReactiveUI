@@ -23,7 +23,7 @@ namespace ReactiveUI
 {
 	public static class WhenAnyMixin 
 	{
-		<# for(int length=2; length <= maxFuncLength; length++) { #>
+		<# for(int length=1; length <= maxFuncLength; length++) { #>
 		<# var templParams = Enumerable.Range(1, length).Select(x => "T" + x.ToString()); #>
 		<# string selectorTypeParams = String.Join(", ", templParams.Select(x => String.Format("IObservedChange<TSender, {0}>", x))); #>
 		<# string selectorCall = "selector(" + String.Join(", ", Enumerable.Range(1, length).Select(x => "islot" + x.ToString())) + ")"; #>
