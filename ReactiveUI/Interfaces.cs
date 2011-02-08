@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Concurrency;
 
 namespace ReactiveUI
 {
@@ -223,7 +224,7 @@ namespace ReactiveUI
         /// <param name="contract">A unique string to distinguish messages with
         /// identical types (i.e. "MyCoolViewModel") - if the message type is
         /// only used for one purpose, leave this as null.</param>
-        IDisposable RegisterMessageSource<T>(IObservable<T> source, string contract = null);
+        IDisposable RegisterMessageSource<T>(IObservable<T> source, string contract = null, IScheduler scheduler = null);
 
         /// <summary>
         /// Sends a single message using the specified Type and contract.
@@ -236,7 +237,7 @@ namespace ReactiveUI
         /// <param name="contract">A unique string to distinguish messages with
         /// identical types (i.e. "MyCoolViewModel") - if the message type is
         /// only used for one purpose, leave this as null.</param>
-        void SendMessage<T>(T message, string contract = null);
+        void SendMessage<T>(T message, string contract = null, IScheduler scheduler = null);
     }
 
 #if DEBUG
