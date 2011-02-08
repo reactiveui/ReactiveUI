@@ -34,10 +34,7 @@ namespace ReactiveUI
             IObservable<T> ret = null;
 	        this.Log().InfoFormat("Listening to {0}:{1}", typeof(T), contract);
 
-            withMessageBus(typeof(T), contract, (mb, tuple) => {
-                ret = (IObservable<T>)mb[tuple].Target;
-            });
-
+            ret = setupSubjectIfNecessary<T>(contract);
             return ret;
         }
 
@@ -70,11 +67,9 @@ namespace ReactiveUI
         /// <param name="contract">A unique string to distinguish messages with
         /// identical types (i.e. "MyCoolViewModel") - if the message type is
         /// only used for one purpose, leave this as null.</param>
-        public void RegisterMessageSource<T>(IObservable<T> source, string contract = null)
+        public IDisposable RegisterMessageSource<T>(IObservable<T> source, string contract = null)
         {
-            withMessageBus(typeof(T), contract, (mb, tuple) => {
-                mb[tuple] = new WeakReference(source);
-            });
+            return source.Subscribe(setupSubjectIfNecessary<T>(contract));
         }
 
         /// <summary>
@@ -90,22 +85,7 @@ namespace ReactiveUI
         /// only used for one purpose, leave this as null.</param>
         public void SendMessage<T>(T message, string contract = null)
         {
-            withMessageBus(typeof(T), contract, (mb, tuple) => {
-                var subj = mb[tuple].Target as Subject<T>;
-
-                if (subj == null) {
-                    subj = new Subject<T>();
-                    var prev = mb[tuple].Target as IObservable<T>;
-                    if (prev != null) {
-                        prev.Subscribe(subj.OnNext, subj.OnError, subj.OnCompleted);
-                    }
-                    
-                    mb[tuple] = new WeakReference(subj);
-                }
-
-	    	this.Log().DebugFormat("Sending message to {0}:{1} - {2}", typeof(T), contract, message);
-                subj.OnNext(message);
-            });
+            setupSubjectIfNecessary<T>(contract).OnNext(message);
         }
 
         /// <summary>
@@ -113,6 +93,24 @@ namespace ReactiveUI
         /// </summary>
         public static IMessageBus Current {
             get { return RxApp.MessageBus; }
+        }
+
+        Subject<T> setupSubjectIfNecessary<T>(string contract)
+        {
+            Subject<T> ret = null;
+            WeakReference subjRef = null;
+
+            withMessageBus(typeof(T), contract, (mb, tuple) => {
+                if (mb.TryGetValue(tuple, out subjRef) && subjRef.IsAlive) {
+                    ret = (Subject<T>) subjRef.Target;
+                    return;
+                }
+
+                ret = new Subject<T>();
+                mb[tuple] = new WeakReference(ret);
+            });
+
+            return ret;
         }
 
         void withMessageBus(

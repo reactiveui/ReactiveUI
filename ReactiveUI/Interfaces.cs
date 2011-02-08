@@ -223,7 +223,7 @@ namespace ReactiveUI
         /// <param name="contract">A unique string to distinguish messages with
         /// identical types (i.e. "MyCoolViewModel") - if the message type is
         /// only used for one purpose, leave this as null.</param>
-        void RegisterMessageSource<T>(IObservable<T> source, string contract = null);
+        IDisposable RegisterMessageSource<T>(IObservable<T> source, string contract = null);
 
         /// <summary>
         /// Sends a single message using the specified Type and contract.
