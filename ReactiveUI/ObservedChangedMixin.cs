@@ -75,6 +75,16 @@ namespace ReactiveUI
             return ret;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="TSender"></typeparam>
+        /// <typeparam name="TValue"></typeparam>
+        /// <typeparam name="TTarget"></typeparam>
+        /// <param name="This"></param>
+        /// <param name="target"></param>
+        /// <param name="property"></param>
+ 
         public static void SetValueToProperty<TSender, TValue, TTarget>(
             this IObservedChange<TSender, TValue> This, 
             TTarget target,
@@ -103,6 +113,13 @@ namespace ReactiveUI
             return This.Select(GetValue);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="TSender"></typeparam>
+        /// <typeparam name="TValue"></typeparam>
+        /// <param name="This"></param>
+        /// <returns></returns>
         public static IObservable<TValue> ValueIfNotDefault<TSender, TValue>(
 		    this IObservable<IObservedChange<TSender, TValue>> This)
         {
@@ -123,6 +140,15 @@ namespace ReactiveUI
 
     public static class BindingMixins
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="TTarget"></typeparam>
+        /// <typeparam name="TValue"></typeparam>
+        /// <param name="This"></param>
+        /// <param name="target"></param>
+        /// <param name="property"></param>
+        /// <returns></returns>
         public static IDisposable BindTo<TTarget, TValue>(
                 this IObservable<TValue> This, 
                 TTarget target,

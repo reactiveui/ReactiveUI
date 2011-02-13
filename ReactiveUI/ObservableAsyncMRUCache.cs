@@ -169,6 +169,14 @@ namespace ReactiveUI
             return This.SelectMany(cache.AsyncGet);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="TRet"></typeparam>
+        /// <param name="This"></param>
+        /// <param name="existingCache"></param>
+        /// <returns></returns>
         public static IObservable<TRet> CachedSelectMany<T, TRet>(this IObservable<T> This, ObservableAsyncMRUCache<T, TRet> existingCache)
         {
             return This.SelectMany(existingCache.AsyncGet);

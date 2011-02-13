@@ -29,6 +29,8 @@ namespace ReactiveUI
 		<# string selectorTypeParams = String.Join(", ", templParams.Select(x => String.Format("IObservedChange<TSender, {0}>", x))); #>
 		<# string selectorCall = "selector(" + String.Join(", ", Enumerable.Range(1, length).Select(x => "islot" + x.ToString())) + ")"; #>
 
+		/// <summary>
+		/// </summary>
         public static IObservable<TRet> WhenAny<TSender, TRet, <#= String.Join(",", templParams) #>>(this TSender This, 
 			<# for(int i=1; i <= length; i++) { #>
                 Expression<Func<TSender, T<#=i#>>> property<#=i#>, 

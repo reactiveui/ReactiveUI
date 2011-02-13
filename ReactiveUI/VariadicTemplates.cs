@@ -14,6 +14,8 @@ namespace ReactiveUI
 	public static class WhenAnyMixin 
 	{
 								
+		/// <summary>
+		/// </summary>
         public static IObservable<TRet> WhenAny<TSender, TRet, T1>(this TSender This, 
 			                Expression<Func<TSender, T1>> property1, 
 			                Func<IObservedChange<TSender, T1>, TRet> selector)
@@ -38,6 +40,8 @@ namespace ReactiveUI
         }
 
 							
+		/// <summary>
+		/// </summary>
         public static IObservable<TRet> WhenAny<TSender, TRet, T1,T2>(this TSender This, 
 			                Expression<Func<TSender, T1>> property1, 
 			                Expression<Func<TSender, T2>> property2, 
@@ -72,6 +76,8 @@ namespace ReactiveUI
         }
 
 							
+		/// <summary>
+		/// </summary>
         public static IObservable<TRet> WhenAny<TSender, TRet, T1,T2,T3>(this TSender This, 
 			                Expression<Func<TSender, T1>> property1, 
 			                Expression<Func<TSender, T2>> property2, 
@@ -116,6 +122,8 @@ namespace ReactiveUI
         }
 
 							
+		/// <summary>
+		/// </summary>
         public static IObservable<TRet> WhenAny<TSender, TRet, T1,T2,T3,T4>(this TSender This, 
 			                Expression<Func<TSender, T1>> property1, 
 			                Expression<Func<TSender, T2>> property2, 
@@ -170,6 +178,8 @@ namespace ReactiveUI
         }
 
 							
+		/// <summary>
+		/// </summary>
         public static IObservable<TRet> WhenAny<TSender, TRet, T1,T2,T3,T4,T5>(this TSender This, 
 			                Expression<Func<TSender, T1>> property1, 
 			                Expression<Func<TSender, T2>> property2, 
@@ -234,6 +244,8 @@ namespace ReactiveUI
         }
 
 							
+		/// <summary>
+		/// </summary>
         public static IObservable<TRet> WhenAny<TSender, TRet, T1,T2,T3,T4,T5,T6>(this TSender This, 
 			                Expression<Func<TSender, T1>> property1, 
 			                Expression<Func<TSender, T2>> property2, 
@@ -308,6 +320,8 @@ namespace ReactiveUI
         }
 
 							
+		/// <summary>
+		/// </summary>
         public static IObservable<TRet> WhenAny<TSender, TRet, T1,T2,T3,T4,T5,T6,T7>(this TSender This, 
 			                Expression<Func<TSender, T1>> property1, 
 			                Expression<Func<TSender, T2>> property2, 
@@ -392,6 +406,8 @@ namespace ReactiveUI
         }
 
 							
+		/// <summary>
+		/// </summary>
         public static IObservable<TRet> WhenAny<TSender, TRet, T1,T2,T3,T4,T5,T6,T7,T8>(this TSender This, 
 			                Expression<Func<TSender, T1>> property1, 
 			                Expression<Func<TSender, T2>> property2, 
@@ -486,6 +502,8 @@ namespace ReactiveUI
         }
 
 							
+		/// <summary>
+		/// </summary>
         public static IObservable<TRet> WhenAny<TSender, TRet, T1,T2,T3,T4,T5,T6,T7,T8,T9>(this TSender This, 
 			                Expression<Func<TSender, T1>> property1, 
 			                Expression<Func<TSender, T2>> property2, 
@@ -590,6 +608,8 @@ namespace ReactiveUI
         }
 
 							
+		/// <summary>
+		/// </summary>
         public static IObservable<TRet> WhenAny<TSender, TRet, T1,T2,T3,T4,T5,T6,T7,T8,T9,T10>(this TSender This, 
 			                Expression<Func<TSender, T1>> property1, 
 			                Expression<Func<TSender, T2>> property2, 
@@ -704,6 +724,8 @@ namespace ReactiveUI
         }
 
 							
+		/// <summary>
+		/// </summary>
         public static IObservable<TRet> WhenAny<TSender, TRet, T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11>(this TSender This, 
 			                Expression<Func<TSender, T1>> property1, 
 			                Expression<Func<TSender, T2>> property2, 
@@ -828,6 +850,8 @@ namespace ReactiveUI
         }
 
 							
+		/// <summary>
+		/// </summary>
         public static IObservable<TRet> WhenAny<TSender, TRet, T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11,T12>(this TSender This, 
 			                Expression<Func<TSender, T1>> property1, 
 			                Expression<Func<TSender, T2>> property2, 
