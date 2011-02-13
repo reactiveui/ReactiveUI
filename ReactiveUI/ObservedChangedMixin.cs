@@ -157,7 +157,6 @@ namespace ReactiveUI
         {
             var sourceSub = new MutableDisposable();
             var source = This;
-            B,
 
             var subscribify = new Action<TTarget, string[]>((tgt, propNames) => {
                 if (sourceSub.Disposable != null) {

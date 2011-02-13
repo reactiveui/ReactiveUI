@@ -141,8 +141,8 @@ namespace ReactiveUI.Xaml
                 if (!command.CanExecute(x)) {
                     return;
                 }
-                command.Execute(x));
-            }
+                command.Execute(x);
+            });
         }
     }
 }
