@@ -127,6 +127,13 @@ namespace ReactiveUI.Xaml
             return new ReactiveCommand(This, scheduler);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="This"></param>
+        /// <param name="command"></param>
+        /// <returns></returns>
         public static IDisposable InvokeCommand<T>(this IObservable<T> This, ICommand command)
         {
             return This.ObserveOn(RxApp.DeferredScheduler).Subscribe(x => command.Execute(x));

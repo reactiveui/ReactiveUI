@@ -45,23 +45,24 @@ namespace ReactiveUI
             var ocChangedEvent = Observable.FromEvent<NotifyCollectionChangedEventArgs>(this, "CollectionChanged");
 
             _ItemsAdded = ocChangedEvent
+                .Do(Console.WriteLine)
                 .Where(x =>
                     x.EventArgs.Action == NotifyCollectionChangedAction.Add ||
                     x.EventArgs.Action == NotifyCollectionChangedAction.Replace)
                 .SelectMany(x =>
                     (x.EventArgs.NewItems != null ? x.EventArgs.NewItems.OfType<T>() : Enumerable.Empty<T>())
                     .ToObservable())
-                .Publish(RxApp.DeferredScheduler);
+                .PublishToSubject(new Subject<T>(RxApp.DeferredScheduler));
 
             _ItemsRemoved = ocChangedEvent
-                .Where(x => 
-                    x.EventArgs.Action == NotifyCollectionChangedAction.Remove || 
-                    x.EventArgs.Action == NotifyCollectionChangedAction.Replace || 
+                .Where(x =>
+                    x.EventArgs.Action == NotifyCollectionChangedAction.Remove ||
+                    x.EventArgs.Action == NotifyCollectionChangedAction.Replace ||
                     x.EventArgs.Action == NotifyCollectionChangedAction.Reset)
-                .SelectMany(x => 
+                .SelectMany(x =>
                     (x.EventArgs.OldItems != null ? x.EventArgs.OldItems.OfType<T>() : Enumerable.Empty<T>())
                     .ToObservable())
-                .Publish(RxApp.DeferredScheduler);
+                .PublishToSubject(new Subject<T>(RxApp.DeferredScheduler));
 
             _CollectionCountChanging = Observable.Merge(
                 _BeforeItemsAdded.Select(_ => this.Count),

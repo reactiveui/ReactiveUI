@@ -156,7 +156,7 @@ namespace ReactiveUI
             where TTarget : IReactiveNotifyPropertyChanged
         {
             var sourceSub = new MutableDisposable();
-            var source = This.Publish();
+            var source = This;
 
             var subscribify = new Action<TTarget, string[]>((tgt, propNames) => {
                 if (sourceSub.Disposable != null) {
