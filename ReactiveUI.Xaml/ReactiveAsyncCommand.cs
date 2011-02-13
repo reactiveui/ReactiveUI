@@ -86,7 +86,7 @@ namespace ReactiveUI.Xaml
                     this.Log().Fatal("Reference count dropped below zero");
                 }
                 return ret;
-            }).Publish(new BehaviorSubject<int>(0));
+            }).Publish(0);
 
             ItemsInflight
                 .Subscribe(x => {
@@ -139,7 +139,7 @@ namespace ReactiveUI.Xaml
             return this.ObserveOn(scheduler)
                 .Select(calculationFunc)
                 .Do(_ => AsyncCompletedNotification.OnNext(new Unit()))
-                .Publish(new Subject<TResult>(_normalSched));
+                .Publish(_normalSched);
         }
 
         /// <summary>
@@ -175,7 +175,7 @@ namespace ReactiveUI.Xaml
             return this.Select(calculationFunc)
                 .Do(x => x.Subscribe(_ => { }, () => AsyncCompletedNotification.OnNext(new Unit())))
                 .SelectMany(x => x)
-                .Publish(new Subject<TResult>(_normalSched));
+                .Publish(_normalSched);
         }
 
         /// <summary>
