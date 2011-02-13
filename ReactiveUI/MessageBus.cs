@@ -18,8 +18,8 @@ namespace ReactiveUI
     /// </summary>
     public class MessageBus : IMessageBus 
     {
-        Dictionary<Tuple<Type, string>, WeakReference> messageBus = 
-            new Dictionary<Tuple<Type,string>,WeakReference>();
+        Dictionary<Tuple<Type, string>, NotAWeakReference> messageBus = 
+            new Dictionary<Tuple<Type,string>,NotAWeakReference>();
 
         /// <summary>
         /// Listen provides an Observable that will fire whenever a Message is
@@ -108,7 +108,7 @@ namespace ReactiveUI
         {
             scheduler = scheduler ?? RxApp.DeferredScheduler;
             Subject<T> ret = null;
-            WeakReference subjRef = null;
+            NotAWeakReference subjRef = null;
 
             withMessageBus(typeof(T), contract, (mb, tuple) => {
                 if (mb.TryGetValue(tuple, out subjRef) && subjRef.IsAlive) {
@@ -117,7 +117,7 @@ namespace ReactiveUI
                 }
 
                 ret = new Subject<T>(scheduler);
-                mb[tuple] = new WeakReference(ret);
+                mb[tuple] = new NotAWeakReference(ret);
             });
 
             return ret;
@@ -126,7 +126,7 @@ namespace ReactiveUI
         void withMessageBus(
             Type Type, 
             string Contract, 
-            Action<Dictionary<Tuple<Type, string>, WeakReference>, 
+            Action<Dictionary<Tuple<Type, string>, NotAWeakReference>, 
             Tuple<Type, string>> block)
         {
             lock(messageBus) {
@@ -207,6 +207,17 @@ namespace ReactiveUI
         {
             return viewModelContractName(type, contract) + "__current";
         }
+    }
+
+    internal class NotAWeakReference
+    {
+        public NotAWeakReference(object target)
+        {
+            Target = target;
+        }
+
+        public object Target { get; private set; }
+        public bool IsAlive { get { return true; } }
     }
 }
 
