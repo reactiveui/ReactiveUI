@@ -346,6 +346,15 @@ namespace ReactiveUI
             return ret;
         }
     }
+
+    internal static class PublishToSubjectMixin
+    {
+        public static IObservable<T> PublishToSubject<T>(this IObservable<T> This, ISubject<T, T> target)
+        {
+            This.Subscribe(target);
+            return target;
+        }
+    }
 }
 
 // vim: tw=120 ts=4 sw=4 et :
