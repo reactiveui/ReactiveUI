@@ -170,13 +170,19 @@ namespace ReactiveUI
         }
 
         /// <summary>
-        /// 
+        /// Works like SelectMany, but memoizes selector calls. In addition, it 
+        /// guarantees that no more than 'maxConcurrent' selectors are running 
+        /// concurrently and queues the rest. This is very important when using
+        /// web services to avoid potentially spamming the server with hundreds 
+        /// of requests.
+        ///
+        /// This overload is useful when making the same web service call in
+        /// several places in the code, to ensure that all of the code paths are
+        /// using the same cache.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <typeparam name="TRet"></typeparam>
-        /// <param name="This"></param>
-        /// <param name="existingCache"></param>
-        /// <returns></returns>
+        /// <param name="existingCache">An already-configured ObservableAsyncMRUCache.</param>
+        /// <returns>An Observable representing the flattened results of the 
+        /// cache selector.</returns>
         public static IObservable<TRet> CachedSelectMany<T, TRet>(this IObservable<T> This, ObservableAsyncMRUCache<T, TRet> existingCache)
         {
             return This.SelectMany(existingCache.AsyncGet);

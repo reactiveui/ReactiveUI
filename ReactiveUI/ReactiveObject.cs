@@ -225,22 +225,24 @@ namespace ReactiveUI
     public static class ReactiveObjectHelper
     {
         /// <summary>
-        /// 
+        /// RaisePropertyChanging is a helper method intended for test / mock
+        /// scenarios to manually fake a property change. 
         /// </summary>
-        /// <param name="target"></param>
-        /// <param name="property"></param>
+        /// <param name="target">The ReactiveObject to invoke
+        /// raisePropertyChanging on.</param>
+        /// <param name="property">The property that will be faking a change.</param>
         public static void RaisePropertyChanging(ReactiveObject target, string property)
         {
             target.raisePropertyChanging(property);
         }
 
         /// <summary>
-        /// 
+        /// RaisePropertyChanging is a helper method intended for test / mock
+        /// scenarios to manually fake a property change. 
         /// </summary>
-        /// <typeparam name="TSender"></typeparam>
-        /// <typeparam name="TValue"></typeparam>
-        /// <param name="target"></param>
-        /// <param name="property"></param>
+        /// <param name="target">The ReactiveObject to invoke
+        /// raisePropertyChanging on.</param>
+        /// <param name="property">The property that will be faking a change.</param>
         public static void RaisePropertyChanging<TSender, TValue>(TSender target, Expression<Func<TSender, TValue>> property)
             where TSender : ReactiveObject
         {
@@ -248,22 +250,24 @@ namespace ReactiveUI
         }
 
         /// <summary>
-        /// 
+        /// RaisePropertyChanged is a helper method intended for test / mock
+        /// scenarios to manually fake a property change. 
         /// </summary>
-        /// <param name="target"></param>
-        /// <param name="property"></param>
+        /// <param name="target">The ReactiveObject to invoke
+        /// raisePropertyChanging on.</param>
+        /// <param name="property">The property that will be faking a change.</param>
         public static void RaisePropertyChanged(ReactiveObject target, string property)
         {
             target.raisePropertyChanged(property);
         }
 
         /// <summary>
-        /// 
+        /// RaisePropertyChanged is a helper method intended for test / mock
+        /// scenarios to manually fake a property change. 
         /// </summary>
-        /// <typeparam name="TSender"></typeparam>
-        /// <typeparam name="TValue"></typeparam>
-        /// <param name="target"></param>
-        /// <param name="property"></param>
+        /// <param name="target">The ReactiveObject to invoke
+        /// raisePropertyChanging on.</param>
+        /// <param name="property">The property that will be faking a change.</param>
         public static void RaisePropertyChanged<TSender, TValue>(TSender target, Expression<Func<TSender, TValue>> property)
             where TSender : ReactiveObject
         {

@@ -128,15 +128,21 @@ namespace ReactiveUI.Xaml
         }
 
         /// <summary>
-        /// 
+        /// A utility method that will pipe an Observable to an ICommand (i.e.
+        /// it will first call its CanExecute with the provided value, then if
+        /// the command can be executed, Execute() will be called)
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="This"></param>
-        /// <param name="command"></param>
-        /// <returns></returns>
+        /// <param name="command">The command to be executed.</param>
+        /// <returns>An object that when disposes, disconnects the Observable
+        /// from the command.</returns>
         public static IDisposable InvokeCommand<T>(this IObservable<T> This, ICommand command)
         {
-            return This.ObserveOn(RxApp.DeferredScheduler).Subscribe(x => command.Execute(x));
+            return This.ObserveOn(RxApp.DeferredScheduler).Subscribe(x => {
+                if (!command.CanExecute(x)) {
+                    return;
+                }
+                command.Execute(x));
+            }
         }
     }
 }

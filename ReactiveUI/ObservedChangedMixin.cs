@@ -76,15 +76,13 @@ namespace ReactiveUI
         }
 
         /// <summary>
-        /// 
+        /// Given a fully filled-out IObservedChange object, SetValueToProperty
+        /// will apply it to the specified object (i.e. it will ensure that
+        /// target.property == This.GetValue() and "replay" the observed change
+        /// onto another object)
         /// </summary>
-        /// <typeparam name="TSender"></typeparam>
-        /// <typeparam name="TValue"></typeparam>
-        /// <typeparam name="TTarget"></typeparam>
-        /// <param name="This"></param>
-        /// <param name="target"></param>
-        /// <param name="property"></param>
- 
+        /// <param name="target">The target object to apply the change to.</param>
+        /// <param name="property">The target property to apply the change to.</param>
         public static void SetValueToProperty<TSender, TValue, TTarget>(
             this IObservedChange<TSender, TValue> This, 
             TTarget target,
@@ -107,6 +105,8 @@ namespace ReactiveUI
         /// Given a stream of notification changes, this method will convert 
         /// the property changes to the current value of the property.
         /// </summary>
+        /// <returns>An Observable representing the stream of current values of
+        /// the given change notification stream.</returns>
         public static IObservable<TValue> Value<TSender, TValue>(
 		    this IObservable<IObservedChange<TSender, TValue>> This)
         {
@@ -114,12 +114,11 @@ namespace ReactiveUI
         }
 
         /// <summary>
-        /// 
+        /// ValueIfNotDefault is similar to Value(), but filters out null values
+        /// from the stream.
         /// </summary>
-        /// <typeparam name="TSender"></typeparam>
-        /// <typeparam name="TValue"></typeparam>
-        /// <param name="This"></param>
-        /// <returns></returns>
+        /// <returns>An Observable representing the stream of current values of
+        /// the given change notification stream.</returns>
         public static IObservable<TValue> ValueIfNotDefault<TSender, TValue>(
 		    this IObservable<IObservedChange<TSender, TValue>> This)
         {
@@ -141,14 +140,15 @@ namespace ReactiveUI
     public static class BindingMixins
     {
         /// <summary>
-        /// 
+        /// BindTo takes an Observable stream and applies it to a target
+        /// property. Conceptually it is similar to "Subscribe(x =&gt;
+        /// target.property = x)", but allows you to use child properties
+        /// without the null checks.
         /// </summary>
-        /// <typeparam name="TTarget"></typeparam>
-        /// <typeparam name="TValue"></typeparam>
-        /// <param name="This"></param>
-        /// <param name="target"></param>
-        /// <param name="property"></param>
-        /// <returns></returns>
+        /// <param name="target">The target object whose property will be set.</param>
+        /// <param name="property">An expression representing the target
+        /// property to set. This can be a child property (i.e. x.Foo.Bar.Baz).</param>
+        /// <returns>An object that when disposed, disconnects the binding.</returns>
         public static IDisposable BindTo<TTarget, TValue>(
                 this IObservable<TValue> This, 
                 TTarget target,
@@ -157,6 +157,7 @@ namespace ReactiveUI
         {
             var sourceSub = new MutableDisposable();
             var source = This;
+            B,
 
             var subscribify = new Action<TTarget, string[]>((tgt, propNames) => {
                 if (sourceSub.Disposable != null) {
