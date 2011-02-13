@@ -221,6 +221,55 @@ namespace ReactiveUI
             return newValue;
         }
     }
+
+    public static class ReactiveObjectHelper
+    {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="target"></param>
+        /// <param name="property"></param>
+        public static void RaisePropertyChanging(ReactiveObject target, string property)
+        {
+            target.raisePropertyChanging(property);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="TSender"></typeparam>
+        /// <typeparam name="TValue"></typeparam>
+        /// <param name="target"></param>
+        /// <param name="property"></param>
+        public static void RaisePropertyChanging<TSender, TValue>(TSender target, Expression<Func<TSender, TValue>> property)
+            where TSender : ReactiveObject
+        {
+            RaisePropertyChanging(target, RxApp.simpleExpressionToPropertyName(property));
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="target"></param>
+        /// <param name="property"></param>
+        public static void RaisePropertyChanged(ReactiveObject target, string property)
+        {
+            target.raisePropertyChanged(property);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="TSender"></typeparam>
+        /// <typeparam name="TValue"></typeparam>
+        /// <param name="target"></param>
+        /// <param name="property"></param>
+        public static void RaisePropertyChanged<TSender, TValue>(TSender target, Expression<Func<TSender, TValue>> property)
+            where TSender : ReactiveObject
+        {
+            RaisePropertyChanged(target, RxApp.simpleExpressionToPropertyName(property));
+        }
+    }
 }
 
 // vim: tw=120 ts=4 sw=4 et :
