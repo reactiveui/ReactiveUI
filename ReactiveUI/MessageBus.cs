@@ -29,7 +29,8 @@ namespace ReactiveUI
         /// <param name="contract">A unique string to distinguish messages with
         /// identical types (i.e. "MyCoolViewModel") - if the message type is
         /// only used for one purpose, leave this as null.</param>
-        /// <returns></returns>
+        /// <returns>An Observable representing the notifications posted to the
+        /// message bus.</returns>
         public IObservable<T> Listen<T>(string contract = null)
         {
             IObservable<T> ret = null;
@@ -68,7 +69,12 @@ namespace ReactiveUI
         /// <param name="contract">A unique string to distinguish messages with
         /// identical types (i.e. "MyCoolViewModel") - if the message type is
         /// only used for one purpose, leave this as null.</param>
-        public IDisposable RegisterMessageSource<T>(IObservable<T> source, string contract = null, IScheduler scheduler = null)
+        /// <param name="scheduler">The scheduler on which to post the
+        /// notifications, RxApp.DeferredScheduler by default.</param>
+        public IDisposable RegisterMessageSource<T>(
+            IObservable<T> source, 
+            string contract = null, 
+            IScheduler scheduler = null)
         {
             return source.Subscribe(setupSubjectIfNecessary<T>(contract, scheduler));
         }
@@ -84,6 +90,8 @@ namespace ReactiveUI
         /// <param name="contract">A unique string to distinguish messages with
         /// identical types (i.e. "MyCoolViewModel") - if the message type is
         /// only used for one purpose, leave this as null.</param>
+        /// <param name="scheduler">The scheduler on which to post the
+        /// notifications, RxApp.DeferredScheduler by default.</param>
         public void SendMessage<T>(T message, string contract = null, IScheduler scheduler = null)
         {
             setupSubjectIfNecessary<T>(contract, scheduler).OnNext(message);
