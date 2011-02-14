@@ -9,6 +9,6 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyDescription("A key-value based serialization library for ReactiveUI")]
 [assembly: AssemblyProduct("ReactiveUI.Serialization")]
 
-[assembly: AssemblyVersion("2.0.0.2")]
+[assembly: AssemblyVersion("2.1.0.1")]
 [assembly: InternalsVisibleTo("ReactiveUI.Serialization.Tests")]
 [assembly: InternalsVisibleTo("ReactiveUI.Serialization.Explorables")]
