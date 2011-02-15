@@ -58,7 +58,7 @@ namespace ReactiveUI
             // have a value
             subj.OnNext(initialValue);
 
-            observable.DistinctUntilChanged().PublishToSubject(subj);
+            _source = observable.DistinctUntilChanged().PublishToSubject(subj);
         }
 
         /// <summary>
