@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Concurrency;
 using System.Disposables;
+using System.Reactive.Testing;
+using ReactiveUI;
 
 namespace ReactiveUI.Testing
 {
@@ -97,6 +100,27 @@ namespace ReactiveUI.Testing
         {
             Console.WriteLine("Running to time t={0}", milliseconds);
             sched.RunTo(sched.FromTimeSpan(TimeSpan.FromMilliseconds(milliseconds)));
+        }
+
+        public static Recorded<Notification<T>> OnNextAt<T>(this TestScheduler sched, double milliseconds, T value)
+        {
+            return new Recorded<Notification<T>>(
+                sched.FromTimeSpan(TimeSpan.FromMilliseconds(milliseconds)),
+                new Notification<T>.OnNext(value));
+        }
+
+        public static Recorded<Notification<T>> OnErrorAt<T>(this TestScheduler sched, double milliseconds, Exception ex)
+        {
+            return new Recorded<Notification<T>>(
+                sched.FromTimeSpan(TimeSpan.FromMilliseconds(milliseconds)),
+                new Notification<T>.OnError(ex));
+        }
+
+        public static Recorded<Notification<T>> OnCompletedAt<T>(this TestScheduler sched, double milliseconds)
+        {
+            return new Recorded<Notification<T>>(
+                sched.FromTimeSpan(TimeSpan.FromMilliseconds(milliseconds)),
+                new Notification<T>.OnCompleted());
         }
     }
 }
