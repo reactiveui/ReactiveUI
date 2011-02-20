@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Disposables;
 using System.Linq;
 using System.Diagnostics.Contracts;
@@ -28,7 +29,7 @@ namespace ReactiveUI
                 this TSender This,
                 Expression<Func<TSender, TValue>> property,
                 bool beforeChange = false)
-            where TSender : IReactiveNotifyPropertyChanged
+            where TSender : INotifyPropertyChanged
         {
             var propertyNames = new LinkedList<string>(RxApp.expressionToPropertyNames(property));
             var subscriptions = new LinkedList<IDisposable>(propertyNames.Select(x => (IDisposable) null));
@@ -90,7 +91,7 @@ namespace ReactiveUI
                     throw new ArgumentException(String.Format("Property '{0}' does not exist in expression", current.Value));
                 }
 
-                var notifyObj = currentObj as IReactiveNotifyPropertyChanged;
+                var notifyObj = wrapInpcObjectIfNeeded(currentObj);
                 if (notifyObj != null) {
                     var capture = new {current, currentObj, pi, currentSub};
                     var toDispose = new IDisposable[2];
@@ -162,6 +163,30 @@ namespace ReactiveUI
 
                 subject.OnNext(obsCh);
             });
+        }
+
+        static MemoizingMRUCache<INotifyPropertyChanged, IReactiveNotifyPropertyChanged> wrapperCache =
+            new MemoizingMRUCache<INotifyPropertyChanged, IReactiveNotifyPropertyChanged>(
+                (x, _) => new MakeObjectReactiveHelper(x),
+                25);
+
+        static IReactiveNotifyPropertyChanged wrapInpcObjectIfNeeded(object obj)
+        {
+            if (obj == null) {
+                return null;
+            }
+
+            var ret = obj as IReactiveNotifyPropertyChanged;
+            if (ret != null) {
+                return ret;
+            }
+
+            var inpc = obj as INotifyPropertyChanged;
+            if (inpc != null) {
+                return wrapperCache.Get(inpc);
+            }
+
+            return null;
         }
 
         static string buildPropPathFromNodePtr(LinkedListNode<string> node)
