@@ -220,9 +220,38 @@ namespace ReactiveUI
 
             return newValue;
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="property"></param>
+        /// <param name="backingField"></param>
+        /// <param name="newValue"></param>
+        /// <returns></returns>
+        public static TRet RaiseAndSetIfChanged<TObj, TRet>(
+                this TObj This,
+                Expression<Func<TObj, TRet>> property,
+                ref TRet backingField,
+                TRet newValue)
+            where TObj : ReactiveObject
+        {
+            Contract.Requires(This != null);
+            Contract.Requires(property != null);
+
+            if (EqualityComparer<TRet>.Default.Equals(backingField, newValue)) {
+                return newValue;
+            }
+
+            string prop_name = RxApp.simpleExpressionToPropertyName(property);
+
+            This.raisePropertyChanging(prop_name);
+            backingField = newValue;
+            This.raisePropertyChanged(prop_name);
+            return newValue;
+        }
     }
 
-    public static class ReactiveObjectHelper
+    public static class ReactiveObjectTestMixin
     {
         /// <summary>
         /// RaisePropertyChanging is a helper method intended for test / mock
