@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Concurrency;
 using System.Linq;
 using Xunit;
 
@@ -24,6 +25,34 @@ namespace ReactiveUI.Tests
                     String.Join(",", rhs.ToArray()));
                 throw;
             }
+        }
+    }
+
+    public class CountingTestScheduler : IScheduler
+    {
+        public CountingTestScheduler(IScheduler innerScheduler)
+        {
+            InnerScheduler = innerScheduler;
+            ScheduledItems = new List<Tuple<Action, TimeSpan?>>();
+        }
+
+        public IScheduler InnerScheduler { get; private set; }
+        public List<Tuple<Action, TimeSpan?>> ScheduledItems { get; private set; }
+
+        public IDisposable Schedule(Action action)
+        {
+            ScheduledItems.Add(new Tuple<Action, TimeSpan?>(action, null));
+            return InnerScheduler.Schedule(action);
+        }
+
+        public IDisposable Schedule(Action action, TimeSpan dueTime)
+        {
+            ScheduledItems.Add(new Tuple<Action, TimeSpan?>(action, dueTime));
+            return InnerScheduler.Schedule(action, dueTime);
+        }
+
+        public DateTimeOffset Now {
+            get { return InnerScheduler.Now; }
         }
     }
 }

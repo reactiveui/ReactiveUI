@@ -5,6 +5,7 @@ using System.Linq;
 using System.Concurrency;
 using System.Collections.Generic;
 using System.Threading;
+using System.Reactive.Testing;
 using ReactiveUI.Xaml;
 using ReactiveUI.Testing;
 
@@ -348,6 +349,117 @@ namespace ReactiveUI.Tests
 
                 Assert.Equal(3, results.Count);
                 Assert.Equal(0, latestInFlight);
+            });
+        }
+
+        [Fact]
+        public void RAFShouldActuallyRunOnTheTaskpool()
+        {
+            var deferred = RxApp.DeferredScheduler;
+            var taskpool = RxApp.TaskpoolScheduler;
+
+            try {
+                var testDeferred = new CountingTestScheduler(Scheduler.Immediate);
+                var testTaskpool = new CountingTestScheduler(Scheduler.NewThread);
+                RxApp.DeferredScheduler = testDeferred; RxApp.DeferredScheduler = testTaskpool;
+
+                var fixture = new ReactiveAsyncCommand();
+                var result = fixture.RegisterAsyncFunction(x => { Thread.Sleep(1000); return (int)x * 5; });
+
+                fixture.Execute(1);
+                result.First();
+
+                Assert.Equal(1, testDeferred.ScheduledItems.Count);
+                Assert.Equal(1, testTaskpool.ScheduledItems.Count);
+            } finally {
+                RxApp.DeferredScheduler = deferred;
+                RxApp.TaskpoolScheduler = taskpool;
+            }
+        }
+
+        [Fact]
+        public void RAOShouldActuallyRunOnTheTaskpool()
+        {
+            var deferred = RxApp.DeferredScheduler;
+            var taskpool = RxApp.TaskpoolScheduler;
+
+            try {
+                var testDeferred = new CountingTestScheduler(Scheduler.Immediate);
+                var testTaskpool = new CountingTestScheduler(Scheduler.NewThread);
+                RxApp.DeferredScheduler = testDeferred; RxApp.DeferredScheduler = testTaskpool;
+
+                var fixture = new ReactiveAsyncCommand();
+                var result = fixture.RegisterAsyncObservable(x => 
+                    Observable.Return((int)x * 5).Delay(TimeSpan.FromSeconds(1), RxApp.TaskpoolScheduler));
+
+                fixture.Execute(1);
+                result.First();
+
+                Assert.Equal(1, testDeferred.ScheduledItems.Count);
+                Assert.Equal(1, testTaskpool.ScheduledItems.Count);
+            } finally {
+                RxApp.DeferredScheduler = deferred;
+                RxApp.TaskpoolScheduler = taskpool;
+            }
+        }
+
+        [Fact]
+        public void CanExecuteShouldChangeOnInflightOp()
+        {
+            (new TestScheduler()).With(sched => {
+                var canExecute = sched.CreateHotObservable(
+                    sched.OnNextAt(0, true),
+                    sched.OnNextAt(250, false),
+                    sched.OnNextAt(500, true),
+                    sched.OnNextAt(750, false),
+                    sched.OnNextAt(1000, true),
+                    sched.OnNextAt(1100, false)
+                );
+
+                var fixture = new ReactiveAsyncCommand(canExecute);
+                int calculatedResult = -1;
+                bool latestCanExecute = false;
+
+                fixture.RegisterAsyncObservable(x =>
+                    Observable.Return((int)x * 5).Delay(TimeSpan.FromMilliseconds(900), RxApp.DeferredScheduler))
+                    .Subscribe(x => calculatedResult = x);
+
+                fixture.CanExecuteObservable.Subscribe(x => latestCanExecute = x);
+
+                // CanExecute should be true, both input observable is true
+                // and we don't have anything inflight
+                sched.RunToMilliseconds(10);
+                Assert.True(fixture.CanExecute(1));
+                Assert.True(latestCanExecute);
+
+                // Invoke a command 10ms in
+                fixture.Execute(1);
+
+                // At 300ms, input is false
+                sched.RunToMilliseconds(300);
+                Assert.False(fixture.CanExecute(1));
+                Assert.False(latestCanExecute);
+
+                // At 600ms, input is true, but the command is still running
+                sched.RunToMilliseconds(600);
+                Assert.False(fixture.CanExecute(1));
+                Assert.False(latestCanExecute);
+
+                // After we've completed, we should still be false, since from
+                // 750ms-1000ms the input observable is false
+                sched.RunToMilliseconds(900);
+                Assert.False(fixture.CanExecute(1));
+                Assert.False(latestCanExecute);
+                Assert.Equal(-1, calculatedResult);
+
+                sched.RunToMilliseconds(1010);
+                Assert.True(fixture.CanExecute(1));
+                Assert.True(latestCanExecute);
+                Assert.Equal(calculatedResult, 5);
+
+                sched.RunToMilliseconds(1200);
+                Assert.False(fixture.CanExecute(1));
+                Assert.False(latestCanExecute);
             });
         }
     }

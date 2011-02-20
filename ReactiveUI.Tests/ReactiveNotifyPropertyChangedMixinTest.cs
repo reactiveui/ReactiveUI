@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Concurrency;
 using System.Linq;
 using System.Linq.Expressions;
@@ -33,6 +34,25 @@ namespace ReactiveUI.Tests
     public class NonObservableTestFixture
     {
         public TestFixture Child {get; set;}
+    }
+
+    public class NonReactiveINPCObject : INotifyPropertyChanged
+    {
+        public event PropertyChangingEventHandler PropertyChanging;
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        TestFixture _InpcProperty;
+        public TestFixture InpcProperty {
+            get { return _InpcProperty; }
+            set {
+                if (_InpcProperty == value) {
+                    return;
+                }
+                _InpcProperty = value;
+
+                PropertyChanged(this, new PropertyChangedEventArgs("InpcProperty"));
+            }
+        }
     }
 
     public class ReactiveNotifyPropertyChangedMixinTest : IEnableLogger
@@ -190,6 +210,32 @@ namespace ReactiveUI.Tests
         }
 
         [Fact]
+        public void OFPShouldWorkWithINPCObjectsToo()
+        {
+            (new TestScheduler()).With(sched => {
+                var fixture = new NonReactiveINPCObject() { InpcProperty = null };
+
+                var changes = fixture.ObservableForProperty(x => x.InpcProperty.IsOnlyOneWord).CreateCollection();
+
+                fixture.InpcProperty = new TestFixture();
+                sched.Run();
+                Assert.Equal(1, changes.Count);
+
+                fixture.InpcProperty.IsOnlyOneWord = "Foo";
+                sched.Run();
+                Assert.Equal(2, changes.Count);
+
+                fixture.InpcProperty.IsOnlyOneWord = "Bar";
+                sched.Run();
+                Assert.Equal(3, changes.Count);
+
+                fixture.InpcProperty = new TestFixture() {IsOnlyOneWord = "Bar"};
+                sched.Run();
+                Assert.Equal(3, changes.Count);
+            });
+        }
+
+        [Fact]
         public void MultiPropertyExpressionsShouldBeProperlyResolved()
         {
             var data = new Dictionary<Expression<Func<HostTestFixture, object>>, string[]>() {
@@ -247,6 +293,20 @@ namespace ReactiveUI.Tests
                 Assert.Equal(10, output1[2].Value);
                 Assert.Equal("Bar", output2[2].Value);
             });
+        }
+
+        [Fact]
+        public void WhenAnyShouldWorkEvenWithNormalProperties()
+        {
+            var fixture = new TestFixture() { IsNotNullString = "Foo", IsOnlyOneWord = "Baz", PocoProperty = "Bamf" };
+
+            var output = new List<IObservedChange<TestFixture, string>>();
+            fixture.WhenAny(x => x.PocoProperty, x => x).Subscribe(output.Add);
+
+            Assert.Equal(1, output.Count);
+            Assert.Equal(fixture, output[0].Sender);
+            Assert.Equal("PocoProperty", output[0].PropertyName);
+            Assert.Equal("Bamf", output[0].Value);
         }
     }
 }
