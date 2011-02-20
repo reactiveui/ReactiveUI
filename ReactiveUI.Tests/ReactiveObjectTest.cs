@@ -1,39 +1,47 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Runtime.Serialization;
-using System.Concurrency;
 using Xunit;
-using ReactiveUI;
 
 namespace ReactiveUI.Tests
 {
     public class TestFixture : ReactiveObject
     {
         [DataMember]
-        public string _IsNotNullString;
+        string _IsNotNullString;
         [IgnoreDataMember]
         public string IsNotNullString {
             get { return _IsNotNullString; }
-            set { this.RaiseAndSetIfChanged(x => x.IsNotNullString, value); }
+            set { this.RaiseAndSetIfChanged(x => x.IsNotNullString, ref _IsNotNullString, value); }
         }
 
         [DataMember]
-        public string _IsOnlyOneWord;
+        string _IsOnlyOneWord;
         [IgnoreDataMember]
         public string IsOnlyOneWord {
             get { return _IsOnlyOneWord; }
-            set { this.RaiseAndSetIfChanged(x => x.IsOnlyOneWord, value); }
+            set { this.RaiseAndSetIfChanged(x => x.IsOnlyOneWord, ref _IsOnlyOneWord, value); }
         }
 
         [DataMember]
-        public string _UsesExprRaiseSet;
+        string _UsesExprRaiseSet;
         [IgnoreDataMember]
         public string UsesExprRaiseSet {
             get { return _UsesExprRaiseSet; }
-            set { this.RaiseAndSetIfChanged(x => x.UsesExprRaiseSet, value); }
+            set { this.RaiseAndSetIfChanged(x => x.UsesExprRaiseSet, ref _UsesExprRaiseSet, value); }
         }
 
+        [DataMember]
+        string _PocoProperty;
+        [IgnoreDataMember]
+        public string PocoProperty {
+            get { return _PocoProperty; }
+            set { _PocoProperty = value; }
+        }
+
+        [DataMember]
         public ReactiveCollection<int> TestCollection { get; protected set; }
 
         public TestFixture()
@@ -105,9 +113,9 @@ namespace ReactiveUI.Tests
 
             // Should look something like:
             // {"IsNotNullString":"Foo","IsOnlyOneWord":"Baz", "UserExprRaiseSet":null}
-            Assert.True(json.Count(x => x == ',') == 2);
-            Assert.True(json.Count(x => x == ':') == 3);
-            Assert.True(json.Count(x => x == '"') == 10);
+            Assert.True(json.Count(x => x == ',') == 3);
+            Assert.True(json.Count(x => x == ':') == 4);
+            Assert.True(json.Count(x => x == '"') == 12);
         }
 
         [Fact]

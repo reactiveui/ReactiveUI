@@ -5,6 +5,7 @@ using System;
 using System.Linq;
 using System.Concurrency;
 using System.Collections.Generic;
+using System.Reactive.Testing;
 
 namespace ReactiveUI.Tests
 {
@@ -74,6 +75,29 @@ namespace ReactiveUI.Tests
                 return;
             }
             Assert.True(false, "We should've threw there");
+        }
+
+        [Fact]
+        public void OAPHShouldBeObservable()
+        {
+            (new TestScheduler()).With(sched => {
+                var input = sched.CreateHotObservable(
+                    sched.OnNextAt(100, 5),
+                    sched.OnNextAt(200, 10),
+                    sched.OnNextAt(300, 15),
+                    sched.OnNextAt(400, 20)
+                );
+
+                var result = new List<string>();
+
+                var inputOaph = new ObservableAsPropertyHelper<int>(input, x => { }, 0);
+                var fixture = new ObservableAsPropertyHelper<string>(inputOaph.Select(x => x.ToString()),
+                    result.Add, "0");
+
+                sched.RunToMilliseconds(500);
+
+                new[] {"0", "5", "10", "15", "20"}.AssertAreEqual(result);
+            });
         }
     }
 }
