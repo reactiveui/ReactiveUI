@@ -195,8 +195,7 @@ namespace ReactiveUI.Xaml
             _executeSubject.PublishToSubject(taskSubj);
 
             var ret = taskSubj.Select(calculationFunc);
-            ret.Subscribe(x => x.Subscribe(_ => { }, () => AsyncCompletedNotification.OnNext(new Unit())));
-            return ret.SelectMany(x => x);
+            return ret.SelectMany(x => x.Finally(() => AsyncCompletedNotification.OnNext(new Unit())));
         }
 
         /// <summary>
