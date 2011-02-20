@@ -15,7 +15,7 @@ namespace ReactiveUI.Xaml
     /// "Search" button shouldn't have many concurrent requests running if the
     /// user clicks the button many times quickly)
     /// </summary>
-    public class ReactiveAsyncCommand : ReactiveCommand, IReactiveAsyncCommand
+    public class ReactiveAsyncCommand : IReactiveAsyncCommand, IEnableLogger
     {
         /// <summary>
         /// Constructs a new ReactiveAsyncCommand.
@@ -27,23 +27,19 @@ namespace ReactiveUI.Xaml
         /// <param name="scheduler">The scheduler to run the asynchronous
         /// operations on - defaults to the Taskpool scheduler.</param>
         public ReactiveAsyncCommand(
-                IObservable<bool> canExecute = null, 
-                int maximumConcurrent = 1, 
-                IScheduler scheduler = null)
-            : base(canExecute, scheduler)
+            IObservable<bool> canExecute = null, 
+            int maximumConcurrent = 1, 
+            IScheduler scheduler = null)
         {
             commonCtor(maximumConcurrent, scheduler);
         }
 
         protected ReactiveAsyncCommand(
-                Func<object, bool> canExecute, 
-                int maximumConcurrent = 1, 
-                IScheduler scheduler = null)
-            : base(canExecute, scheduler)
+            Func<object, bool> canExecute, 
+            int maximumConcurrent = 1, 
+            IScheduler scheduler = null)
         {
             Contract.Requires(maximumConcurrent > 0);
-
-            this._normalSched = scheduler;
             commonCtor(maximumConcurrent, scheduler);
         }
 
@@ -74,8 +70,11 @@ namespace ReactiveUI.Xaml
 
         void commonCtor(int maximumConcurrent, IScheduler scheduler)
         {
+            _canExecuteSubject = new Subject<bool>(scheduler ?? RxApp.DeferredScheduler);
+            _executeSubject = new Subject<object>(Scheduler.Immediate);
+            _normalSched = scheduler ?? RxApp.DeferredScheduler;
+
             AsyncCompletedNotification = new Subject<Unit>();
-            this._normalSched = scheduler ?? RxApp.DeferredScheduler;
 
             ItemsInflight = Observable.Merge(
                 this.Select(_ => 1),
@@ -88,34 +87,56 @@ namespace ReactiveUI.Xaml
                 return ret;
             }).PublishToSubject(new BehaviorSubject<int>(0));
 
-            ItemsInflight
-                .Subscribe(x => {
-                    this.Log().InfoFormat("0x{0:X} - {1} items in flight", this.GetHashCode(), x);
-                    this._tooManyItems = (x >= maximumConcurrent && maximumConcurrent > 0);
-                    canExecuteSubject.OnNext(!this._tooManyItems);
-                });
+            CanExecuteObservable = Observable.CombineLatest(
+                    _canExecuteSubject.StartWith(true), ItemsInflight.Select(x => x < maximumConcurrent),
+                    (canExecute, slotsAvail) => canExecute && slotsAvail)
+                .DistinctUntilChanged();
+
+            CanExecuteObservable.Subscribe(x => {
+                _canExecuteLatest = x;
+                if (CanExecuteChanged != null) {
+                    CanExecuteChanged(this, new EventArgs());
+                }
+            });
 
             _maximumConcurrent = maximumConcurrent;
         }
 
-        int _maximumConcurrent;
-
         IScheduler _normalSched;
+        Func<object, bool> _canExecuteExplicitFunc = null;
+        Subject<bool> _canExecuteSubject;
+        bool _canExecuteLatest;
+        Subject<object> _executeSubject;
+        int _maximumConcurrent;
 
         public IObservable<int> ItemsInflight { get; protected set; }
 
         public ISubject<Unit> AsyncCompletedNotification { get; protected set; }
 
-        bool _tooManyItems = false;
-        public override bool CanExecute(object parameter)
-        {
-            // HACK: Normally we shouldn't need this, but due to the way that
-            // ReactiveCommand.CanExecute works when you provide an explicit
-            // Func<T>, it can "trump" the ItemsInflight selector.
-            if (this._tooManyItems)
-                return false;
+        public IObservable<bool> CanExecuteObservable { get; protected set; }
 
-            return base.CanExecute(parameter);
+        public event EventHandler CanExecuteChanged;
+
+        public bool CanExecute(object parameter)
+        {
+            if (_canExecuteExplicitFunc != null) {
+                _canExecuteSubject.OnNext(_canExecuteExplicitFunc(parameter));
+            }
+            return _canExecuteLatest;
+        }
+
+        public void Execute(object parameter)
+        {
+            if (!CanExecute(parameter)) {
+                this.Log().Error("Attempted to call Execute when CanExecute is False!");
+                return;
+            }
+            _executeSubject.OnNext(parameter);
+        }
+
+        public IDisposable Subscribe(IObserver<object> observer)
+        {
+            return _executeSubject.Subscribe(observer);
         }
 
         /// <summary>
@@ -126,7 +147,7 @@ namespace ReactiveUI.Xaml
         /// background.</param>
         /// <param name="scheduler"></param>
         /// <returns>An Observable that will fire on the UI thread once per
-        /// invocation of Execute, once the async method completes. Subscribe to
+        /// invoecation of Execute, once the async method completes. Subscribe to
         /// this to retrieve the result of the calculationFunc.</returns>
         public IObservable<TResult> RegisterAsyncFunction<TResult>(
             Func<object, TResult> calculationFunc, 
@@ -134,11 +155,11 @@ namespace ReactiveUI.Xaml
         {
             Contract.Requires(calculationFunc != null);
 
-            scheduler = scheduler ?? RxApp.TaskpoolScheduler;
+            var taskSubj = new Subject<object>(scheduler ?? RxApp.TaskpoolScheduler);
+            _executeSubject.PublishToSubject(taskSubj);
 
-            return this
-                .Select(calculationFunc)
-                .PublishToSubject(new Subject<TResult>(_normalSched))
+            return taskSubj.Select(calculationFunc)
+                .ObserveOn(_normalSched)
                 .Do(_ => AsyncCompletedNotification.OnNext(new Unit()));
         }
 
@@ -170,12 +191,12 @@ namespace ReactiveUI.Xaml
         {
             Contract.Requires(calculationFunc != null);
 
-            // The Do() here essentially ends up being, "When all results are 
-            // returned from the Observable, signal completion"
-            return this.Select(calculationFunc)
-                .Do(x => x.Subscribe(_ => { }, () => AsyncCompletedNotification.OnNext(new Unit())))
-                .SelectMany(x => x)
-                .PublishToSubject(new Subject<TResult>(_normalSched));
+            var taskSubj = new Subject<object>(RxApp.TaskpoolScheduler);
+            _executeSubject.PublishToSubject(taskSubj);
+
+            var ret = taskSubj.Select(calculationFunc);
+            ret.Subscribe(x => x.Subscribe(_ => { }, () => AsyncCompletedNotification.OnNext(new Unit())));
+            return ret.SelectMany(x => x);
         }
 
         /// <summary>
