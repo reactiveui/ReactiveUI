@@ -13,19 +13,17 @@ namespace ReactiveUI.Tests
         [Fact]
         public void StopwatchSchedulerShouldFailLongrunningTasks()
         {
-            var sched = new TestScheduler();
+            var sched = Scheduler.Immediate;
             var fixture = new StopwatchScheduler(TimeSpan.FromMilliseconds(500), null, sched);
 
             fixture.Schedule(() => Console.WriteLine("Shouldn't fail"));
 
             bool should_die = true;
             try {
-                fixture.Schedule(() => Observable.Return(4).Delay(TimeSpan.FromMilliseconds(2000)));
+                fixture.Schedule(() => Thread.Sleep(1000));
             } catch {
                 should_die = false;
             }
-
-            sched.RunToMilliseconds(2500);
 
             Assert.False(should_die);
         }
