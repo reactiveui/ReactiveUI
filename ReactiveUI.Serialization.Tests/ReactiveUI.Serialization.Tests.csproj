@@ -39,7 +39,6 @@
     <Reference Include="Microsoft.Moles.Framework, Version=0.94.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.Pex.Framework, Version=0.94.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.Pex.Linq, Version=0.94.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
-    <Reference Include="ReactiveUI.Serialization.Moles, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL" />
     <Reference Include="ReactiveXaml.Serialization.Moles, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
@@ -57,7 +56,6 @@
     <Reference Include="System.Reactive">
       <HintPath>..\ext\System.Reactive.dll</HintPath>
     </Reference>
-    <Reference Include="System.Reactive.ExtendedProfile, Version=1.0.2838.104, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="System.Reactive.Testing">
       <HintPath>..\ext\System.Reactive.Testing.dll</HintPath>
     </Reference>
