@@ -116,6 +116,12 @@ namespace ReactiveUI.Tests
             Assert.Equal(1*5 + 2*5 + 3*5 + 4*5 + 1*5, result);
         }
 
+        /* NB: The ideas in this test are fundamentally flawed - while none
+         * of the Subjects in ObservableAsyncMRUCache are getting incorrectly
+         * completed, the input Observable cannot continue after an error
+         * is thrown. We need to make a design change to ObservableAsyncMRUCache
+         * so that users can decide what to return on error */
+#if FALSE
         [Fact]
         public void CacheShouldEatExceptionsAndMarshalThemToObservable()
         {
@@ -163,5 +169,6 @@ namespace ReactiveUI.Tests
             Assert.Equal(4, completed);
             this.Log().Info(exception);
         }
+#endif
     }
 }
