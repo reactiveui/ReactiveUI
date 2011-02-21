@@ -80,7 +80,7 @@ namespace ReactiveUI.Xaml
         /// Fires whenever the CanExecute of the ICommand changes. 
         /// </summary>
         public IObservable<bool> CanExecuteObservable {
-            get { return canExecuteSubject; }
+            get { return canExecuteSubject.DistinctUntilChanged(); }
         }
 
         ObservableAsPropertyHelper<bool> canExecuteLatest;

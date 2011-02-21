@@ -32,6 +32,9 @@ namespace ReactiveUI.Xaml
             IScheduler scheduler = null)
         {
             commonCtor(maximumConcurrent, scheduler);
+            if (canExecute != null) {
+                canExecute.PublishToSubject(_canExecuteSubject);
+            }
         }
 
         protected ReactiveAsyncCommand(
@@ -40,6 +43,8 @@ namespace ReactiveUI.Xaml
             IScheduler scheduler = null)
         {
             Contract.Requires(maximumConcurrent > 0);
+
+            _canExecuteExplicitFunc = canExecute;
             commonCtor(maximumConcurrent, scheduler);
         }
 
@@ -70,14 +75,15 @@ namespace ReactiveUI.Xaml
 
         void commonCtor(int maximumConcurrent, IScheduler scheduler)
         {
-            _canExecuteSubject = new Subject<bool>(scheduler ?? RxApp.DeferredScheduler);
+            _canExecuteSubject = new Subject<bool>(Scheduler.Immediate);
             _executeSubject = new Subject<object>(Scheduler.Immediate);
             _normalSched = scheduler ?? RxApp.DeferredScheduler;
 
-            AsyncCompletedNotification = new Subject<Unit>();
+            AsyncStartedNotification = new Subject<Unit>(RxApp.DeferredScheduler);
+            AsyncCompletedNotification = new Subject<Unit>(RxApp.DeferredScheduler);
 
             ItemsInflight = Observable.Merge(
-                this.Select(_ => 1),
+                AsyncStartedNotification.Select(_ => 1),
                 AsyncCompletedNotification.Select(_ => -1)
             ).Scan(0, (acc, x) => {
                 var ret = acc + x;
@@ -85,14 +91,17 @@ namespace ReactiveUI.Xaml
                     this.Log().Fatal("Reference count dropped below zero");
                 }
                 return ret;
-            }).PublishToSubject(new BehaviorSubject<int>(0));
+            }).PublishToSubject(new BehaviorSubject<int>(0)).DebugObservable("InflightCount");
 
+            bool startCE = (_canExecuteExplicitFunc != null ? _canExecuteExplicitFunc(null) : true);
             CanExecuteObservable = Observable.CombineLatest(
-                    _canExecuteSubject.StartWith(true), ItemsInflight.Select(x => x < maximumConcurrent),
+                    _canExecuteSubject.StartWith(startCE), ItemsInflight.Select(x => x < maximumConcurrent).StartWith(true),
                     (canExecute, slotsAvail) => canExecute && slotsAvail)
+                .DebugObservable("CanExecuteObservable")
                 .DistinctUntilChanged();
 
             CanExecuteObservable.Subscribe(x => {
+                this.Log().InfoFormat("Setting canExecuteLatest to {0}", x);
                 _canExecuteLatest = x;
                 if (CanExecuteChanged != null) {
                     CanExecuteChanged(this, new EventArgs());
@@ -111,6 +120,8 @@ namespace ReactiveUI.Xaml
 
         public IObservable<int> ItemsInflight { get; protected set; }
 
+        public ISubject<Unit> AsyncStartedNotification { get; protected set; }
+
         public ISubject<Unit> AsyncCompletedNotification { get; protected set; }
 
         public IObservable<bool> CanExecuteObservable { get; protected set; }
@@ -122,6 +133,7 @@ namespace ReactiveUI.Xaml
             if (_canExecuteExplicitFunc != null) {
                 _canExecuteSubject.OnNext(_canExecuteExplicitFunc(parameter));
             }
+            this.Log().InfoFormat("CanExecute: returning {0}", _canExecuteLatest);
             return _canExecuteLatest;
         }
 
@@ -158,9 +170,12 @@ namespace ReactiveUI.Xaml
             var taskSubj = new Subject<object>(scheduler ?? RxApp.TaskpoolScheduler);
             _executeSubject.PublishToSubject(taskSubj);
 
-            return taskSubj.Select(calculationFunc)
-                .ObserveOn(_normalSched)
-                .Do(_ => AsyncCompletedNotification.OnNext(new Unit()));
+            var unit = new Unit();
+            return taskSubj
+                .Do(_ => AsyncStartedNotification.OnNext(unit))
+                .Select(calculationFunc)
+                .Do(_ => AsyncCompletedNotification.OnNext(unit))
+                .PublishToSubject(new Subject<TResult>(RxApp.DeferredScheduler));
         }
 
         /// <summary>
@@ -194,8 +209,14 @@ namespace ReactiveUI.Xaml
             var taskSubj = new Subject<object>(RxApp.TaskpoolScheduler);
             _executeSubject.PublishToSubject(taskSubj);
 
-            var ret = taskSubj.Select(calculationFunc);
-            return ret.SelectMany(x => x.Finally(() => AsyncCompletedNotification.OnNext(new Unit())));
+            var unit = new Unit();
+            var ret = taskSubj
+                .Do(_ => AsyncStartedNotification.OnNext(unit))
+                .Select(calculationFunc);
+
+            return ret
+                .SelectMany(x => x.Finally(() => AsyncCompletedNotification.OnNext(unit)))
+                .PublishToSubject(new Subject<TResult>(RxApp.DeferredScheduler));
         }
 
         /// <summary>
