@@ -19,6 +19,9 @@ namespace ReactiveUI
             if (hostChanging != null) {
                 hostChanging.PropertyChanging += (o, e) => _Changing.OnNext(
                     new ObservedChange<object, object>() { Sender = o, PropertyName = e.PropertyName });
+            } else {
+                this.Log().ErrorFormat("'{0}' does not implement INotifyPropertyChanging - RxUI may return duplicate change notifications",
+                    hostObject.GetType().FullName);
             }
 
             hostObject.PropertyChanged += (o, e) => _Changed.OnNext(
