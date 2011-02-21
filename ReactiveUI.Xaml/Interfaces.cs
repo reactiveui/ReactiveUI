@@ -37,6 +37,11 @@ namespace ReactiveUI.Xaml
         IObservable<int> ItemsInflight { get; }
 
         /// <summary>
+        /// Should be fired whenever an async operation starts.
+        /// </summary>
+        ISubject<Unit> AsyncStartedNotification { get; }
+
+        /// <summary>
         /// Should be fired whenever an async operation completes.
         /// </summary>
         ISubject<Unit> AsyncCompletedNotification { get; }
