@@ -66,7 +66,7 @@ namespace ReactiveUI
     public static class EnableLoggerMixin
     {
         static MemoizingMRUCache<int, ILog> loggerCache = new MemoizingMRUCache<int, ILog>(
-            (_, obj) => RxApp.LoggerFactory(obj.GetType().FullName), 50);
+            (_, obj) => RxApp.LoggerFactory(obj.GetType().Name), 50);
 
         readonly static ILog mruLogger = new NullLogger();
 

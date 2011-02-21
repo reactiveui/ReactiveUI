@@ -73,6 +73,7 @@
       <Private>True</Private>
       <HintPath>..\ext\SL4\System.Reactive.dll</HintPath>
     </Reference>
+    <Reference Include="System.Reactive.Testing, Version=1.0.2856.204, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Windows" />
     <Reference Include="system" />
@@ -85,6 +86,7 @@
     <Compile Include="ContractStubs.cs" />
     <Compile Include="Interfaces.cs" />
     <Compile Include="Logging.cs" />
+    <Compile Include="MakeObjectReactiveHelper.cs" />
     <Compile Include="MemoizingMRUCache.cs" />
     <Compile Include="MessageBus.cs" />
     <Compile Include="ObservableAsPropertyHelper.cs" />

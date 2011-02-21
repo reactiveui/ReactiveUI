@@ -83,6 +83,7 @@
     <Compile Include="ContractStubs.cs" />
     <Compile Include="Interfaces.cs" />
     <Compile Include="Logging.cs" />
+    <Compile Include="MakeObjectReactiveHelper.cs" />
     <Compile Include="MemoizingMRUCache.cs" />
     <Compile Include="MessageBus.cs" />
     <Compile Include="ObservableAsPropertyHelper.cs" />
