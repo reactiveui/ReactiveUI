@@ -61,10 +61,11 @@ namespace ReactiveUI
             Contract.Requires(key != null);
 
             if (cacheEntries.ContainsKey(key)) {
-                var found = cacheEntries[key];
                 this.Log().DebugFormat("Cache hit: {0}", key);
+                var found = cacheEntries[key];
                 cacheMRUList.Remove(found.Item1);
                 cacheMRUList.AddFirst(found.Item1);
+                //this.Log().DebugFormat("[{0}]", String.Join(",", cacheMRUList));
                 return found.Item2;
             }
 
@@ -73,6 +74,7 @@ namespace ReactiveUI
 
             var node = new LinkedListNode<TParam>(key);
             cacheMRUList.AddFirst(node);
+            //this.Log().DebugFormat("[{0}]", String.Join(",", cacheMRUList));
             cacheEntries[key] = new Tuple<LinkedListNode<TParam>, TVal>(node, result);
             maintainCache();
 
@@ -86,8 +88,12 @@ namespace ReactiveUI
             Tuple<LinkedListNode<TParam>, TVal> output;
             var ret = cacheEntries.TryGetValue(key, out output);
             if (ret && output != null) {
+                this.Log().DebugFormat("Cache hit: {0}", key);
+                cacheMRUList.Remove(output.Item1);
+                cacheMRUList.AddFirst(output.Item1);
                 result = output.Item2;
             } else {
+                this.Log().DebugFormat("Cache miss: {0}", key);
                 result = default(TVal);
             }
             return ret;
@@ -143,6 +149,7 @@ namespace ReactiveUI
 
         void maintainCache()
         {
+            //this.Log().DebugFormat("Maintain: [{0}]", String.Join(",", cacheMRUList));
             while (cacheMRUList.Count > maxCacheSize) {
                 var to_remove = cacheMRUList.Last.Value;
                 if (releaseFunction != null)
