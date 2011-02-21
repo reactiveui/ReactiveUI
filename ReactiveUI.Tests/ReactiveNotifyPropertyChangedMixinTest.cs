@@ -231,7 +231,7 @@ namespace ReactiveUI.Tests
 
                 fixture.InpcProperty = new TestFixture() {IsOnlyOneWord = "Bar"};
                 sched.Run();
-                Assert.Equal(3, changes.Count);
+                Assert.Equal(4, changes.Count);
             });
         }
 
