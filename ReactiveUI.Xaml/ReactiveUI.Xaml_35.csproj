@@ -33,11 +33,11 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\3Point5\</OutputPath>
+    <OutputPath>bin\Release\Net35\</OutputPath>
     <DefineConstants>TRACE;DOTNETISOLDANDSAD</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Release\3Point5\ReactiveUI.Xaml_35.XML</DocumentationFile>
+    <DocumentationFile>bin\Release\Net35\ReactiveUI.Xaml_35.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="PresentationCore" />
@@ -47,24 +47,24 @@
     <Reference Include="System.Core" />
     <Reference Include="System.CoreEx">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\ext\v3.5\System.CoreEx.dll</HintPath>
+      <HintPath>..\ext\Net35\System.CoreEx.dll</HintPath>
     </Reference>
     <Reference Include="System.Interactive">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\ext\v3.5\System.Interactive.dll</HintPath>
+      <HintPath>..\ext\Net35\System.Interactive.dll</HintPath>
     </Reference>
     <Reference Include="System.Observable">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\ext\v3.5\System.Observable.dll</HintPath>
+      <HintPath>..\ext\Net35\System.Observable.dll</HintPath>
     </Reference>
     <Reference Include="System.Reactive">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\ext\v3.5\System.Reactive.dll</HintPath>
+      <HintPath>..\ext\Net35\System.Reactive.dll</HintPath>
     </Reference>
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Threading">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\ext\v3.5\System.Threading.dll</HintPath>
+      <HintPath>..\ext\Net35\System.Threading.dll</HintPath>
     </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
