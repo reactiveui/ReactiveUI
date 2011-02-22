@@ -70,7 +70,9 @@ namespace ReactiveUI
 #endif
             }
 
-#if SILVERLIGHT
+#if WINDOWS_PHONE
+            TaskpoolScheduler = new EventLoopScheduler();
+#elif SILVERLIGHT
             TaskpoolScheduler = Scheduler.ThreadPool;
 #else
             TaskpoolScheduler = Scheduler.TaskPool;
