@@ -66,7 +66,7 @@ namespace ReactiveUI
     public static class EnableLoggerMixin
     {
         static MemoizingMRUCache<int, ILog> loggerCache = new MemoizingMRUCache<int, ILog>(
-            (_, obj) => RxApp.LoggerFactory(obj.GetType().Name), 50);
+            (_, obj) => { Type t; t = obj.GetType(); return RxApp.LoggerFactory(t.Namespace + "." + t.Name); }, 50);
 
         readonly static ILog mruLogger = new NullLogger();
 
@@ -311,13 +311,14 @@ namespace ReactiveUI
         public StdErrLogger(string prefix = null)
             : base(prefix) { }
 
+        static object gate = 1; 
+
         protected override void writeDebug(string message)
         {
             if (!shouldWrite(LogLevel.Debug))
-                return; 
+                return;
 
-            Console.WriteLine(message);
-            Console.Error.WriteLine(message);
+            lock (gate) { Console.WriteLine("Debug: " + message); } 
         }
 
         protected override void writeWarn(string message)
@@ -325,34 +326,55 @@ namespace ReactiveUI
             if (!shouldWrite(LogLevel.Warn))
                 return; 
 
-            Console.WriteLine("Warn: " + message);
-            Console.Error.WriteLine("Warn: " + message);
+            lock (gate) { Console.WriteLine("Warn: " + message); }
         }
 
         protected override void writeInfo(string message)
         {
             if (!shouldWrite(LogLevel.Info))
-                return; 
+                return;
 
-            Console.WriteLine("Info: " + message);
-            Console.Error.WriteLine("Info: " + message);
+            lock (gate) { Console.WriteLine("Info: " + message); }
         }
 
         protected override void writeError(string message)
         {
             if (!shouldWrite(LogLevel.Error))
-                return; 
+                return;
 
-            Console.WriteLine("ERROR: " + message);
-            Console.Error.WriteLine("ERROR: " + message);
+            lock (gate) { Console.WriteLine("ERROR: " + message); }
         }
 
         protected override void writeFatal(string message)
         {
-            Console.WriteLine("FATAL ERROR: ******" + message + " ******");
-            Console.Error.WriteLine("FATAL ERROR: ******" + message + " ******");
+            lock (gate) { Console.WriteLine("FATAL ERROR: ******" + message + " ******"); }
         }
     }
+
+#if SILVERLIGHT
+
+    internal struct SilverlightSpinlock
+    {
+        long atomic;
+
+        public void Enter(ref bool isAcquired)
+        {
+            long id = Thread.CurrentThread.ManagedThreadId;
+            while (Interlocked.CompareExchange(ref atomic, id, 0) != 0) { }
+            isAcquired = true;
+        }
+
+        public void Exit()
+        {
+            long id = Thread.CurrentThread.ManagedThreadId;
+            long thisAtomic = Interlocked.Exchange(ref atomic, 0);
+            if (thisAtomic != id) {
+                throw new Exception("Thread " + id + " exited a spinlock it didn't own! Owning thread was " + thisAtomic);
+            }
+        }
+    }
+
+#endif
 }
 
 // vim: tw=120 ts=4 sw=4 et :
