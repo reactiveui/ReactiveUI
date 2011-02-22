@@ -15,8 +15,8 @@ namespace ReactiveUI.Sample.ViewModels
 
     public class BlockTimerViewModel : ReactiveValidatedObject
     {
-        static readonly TimeSpan workDuration = TimeSpan.FromMinutes(5);
-        static readonly TimeSpan breakDuration = TimeSpan.FromMinutes(2);
+        static readonly TimeSpan workDuration = TimeSpan.FromMinutes(25);
+        static readonly TimeSpan breakDuration = TimeSpan.FromMinutes(5);
 
         public BlockTimerViewModel(BlockItem Model)
         { 
