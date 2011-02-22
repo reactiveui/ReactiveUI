@@ -87,7 +87,6 @@
     <Compile Include="ObservableAsyncMRUCache.cs" />
     <Compile Include="ObservedChangedMixin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="QueuedAsyncMRUCache.cs" />
     <Compile Include="ReactiveCollection.cs" />
     <Compile Include="ReactiveNotifyPropertyChangedMixin.cs" />
     <Compile Include="ReactiveObject.cs" />
