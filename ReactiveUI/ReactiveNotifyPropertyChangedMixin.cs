@@ -142,7 +142,7 @@ namespace ReactiveUI
                 currentObj = pi.GetValue(currentObj, null);
             }
 
-            var finalNotify = (IReactiveNotifyPropertyChanged)currentObj;
+            var finalNotify = wrapInpcObjectIfNeeded(currentObj);
             if (currentSub.Value != null) {
                 currentSub.Value.Dispose();
             }
@@ -224,7 +224,7 @@ namespace ReactiveUI
                 Expression<Func<TSender, TValue>> property, 
                 Func<TValue, TRet> selector, 
                 bool beforeChange = false)
-            where TSender : IReactiveNotifyPropertyChanged
+            where TSender : INotifyPropertyChanged
         {           
             Contract.Requires(selector != null);
             return This.ObservableForProperty(property, beforeChange).Select(x => selector(x.Value));
