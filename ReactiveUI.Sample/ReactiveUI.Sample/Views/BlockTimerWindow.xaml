@@ -3,7 +3,7 @@
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	x:Class="ReactiveUI.Sample.Views.BlockTimerWindow"
 	x:Name="Window"
-	Title="BlockTimerWindow"
+	Title="Get Some Work Done!"
 	UseLayoutRounding="True"
 	Width="640" Height="128">
 
