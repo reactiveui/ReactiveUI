@@ -192,38 +192,6 @@ namespace ReactiveUI.Sample.ViewModels
             return true;
         }
     }
-
-    public static class ObservableTimeMixin
-    {
-        public static IObservable<Tuple<DateTimeOffset, DateTimeOffset>> StartAndEnd<T>(this IObservable<T> This, IScheduler scheduler = null)
-        {
-            scheduler = scheduler ?? Scheduler.Immediate;
-            var start = scheduler.Now;
-
-            return This
-                .Aggregate(DateTimeOffset.MinValue, (acc, x) => scheduler.Now)
-                .Select(x => new Tuple<DateTimeOffset, DateTimeOffset>(start, x));
-        }
-
-        public static IObservable<Unit> FindPattern<T>(IObservable<T> This, params Func<T, bool>[] predicates)
-        {
-            int currentIndex = 0;
-
-            return Observable.CreateWithDisposable<Unit>(subject => {
-                return This.Subscribe(x => {
-                    if (predicates[currentIndex](x) == true) {
-                        int newIndex = Interlocked.Increment(ref currentIndex);
-                        if (newIndex >= predicates.Length) {
-                            subject.OnNext(new Unit());
-                            subject.OnCompleted();
-                        }
-                    } else {
-                        Interlocked.Exchange(ref currentIndex, 0);
-                    }
-                }, subject.OnError, subject.OnCompleted);
-            });
-        }
-    }
 }
 
 // vim: tw=120 ts=4 sw=4 et enc=utf8 :
