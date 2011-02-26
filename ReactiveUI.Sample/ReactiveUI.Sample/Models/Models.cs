@@ -20,6 +20,21 @@ namespace ReactiveUI.Sample.Models
         }
     }
 
+
+    /* COOLSTUFF: Data Validation
+     *
+     * In addition to providing change notification support,
+     * ReactiveObservableObject also provides validation support via Data
+     * Annotations. For every property you want to limit, you can add
+     * special attributes from the System.ComponentModel.DataAnnotations
+     * namespace (or derive from ValidationAttribute and create your own)
+     *
+     * To let WPF know about the validation, we implement IDataErrorInfo,
+     * which WPF will use to figure out whether a property is valid. The
+     * IsValid function will tell us whether all of the properties are
+     * valid.
+     */
+
     public class BlockItem : ReactiveValidatedObject
     {
         [Required]
@@ -36,7 +51,10 @@ namespace ReactiveUI.Sample.Models
             PauseList = new ReactiveCollection<PauseRecord>();
         }
 
-        public IEnumerable<PauseRecord> GetPausesDuringBlock(DateTimeOffset? NewerThan = null, DateTimeOffset? OlderThan = null, int? Limit = null)
+        public IEnumerable<PauseRecord> GetPausesDuringBlock(
+            DateTimeOffset? NewerThan = null, 
+            DateTimeOffset? OlderThan = null, 
+            int? Limit = null)
         {
             OlderThan = OlderThan ?? DateTimeOffset.MaxValue;
             NewerThan = NewerThan ?? DateTimeOffset.MinValue;
@@ -52,6 +70,20 @@ namespace ReactiveUI.Sample.Models
             PauseList.Add(PauseDuration);
         }
     }
+
+
+    /* COOLSTUFF: Read-write properties
+     *
+     * This class shows how to declare read-write properties in ReactiveUI -
+     * when another part of code changes these properties, the View will be
+     * notified (INotifyPropertyChanged), as well as anyone subscribing to these
+     * properties 
+     *
+     * One thing that's important to know, is that the backing field here *must*
+     * be named _StartedAt for the property StartedAt. If you don't use this
+     * convention for your application, you can override it via 
+     * RxApp.GetFieldNameForPropertyNameFunc.
+     */
 
     public class PauseRecord : ReactiveValidatedObject
     {
@@ -71,4 +103,4 @@ namespace ReactiveUI.Sample.Models
     }
 }
 
-// vim: tw=120 ts=4 sw=4 et enc=utf8 :
+// vim: tw=120 ts=4 sw=4 et :
