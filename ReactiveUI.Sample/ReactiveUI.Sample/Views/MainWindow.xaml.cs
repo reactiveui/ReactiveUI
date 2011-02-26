@@ -10,6 +10,8 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using ReactiveUI.Sample.Models;
+using ReactiveUI.Sample.ViewModels;
 
 namespace ReactiveUI.Sample.Views
 {
@@ -18,8 +20,11 @@ namespace ReactiveUI.Sample.Views
     /// </summary>
     public partial class MainWindow : Window
     {
+        public MainWindowViewModel ViewModel { get; protected set; }
+
         public MainWindow()
         {
+            ViewModel = new MainWindowViewModel(new AppModel());
             InitializeComponent();
         }
     }

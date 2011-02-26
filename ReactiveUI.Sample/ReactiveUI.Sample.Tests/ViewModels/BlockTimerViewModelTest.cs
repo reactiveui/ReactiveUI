@@ -44,7 +44,6 @@ namespace ReactiveUI.Sample.Tests
             });
         }
 
-
         [TestMethod]
         public void MakeSureWeAreInBreakMode()
         {
@@ -143,6 +142,69 @@ namespace ReactiveUI.Sample.Tests
                 // Finally run to the end of the break
                 sched.RunToMilliseconds(30 * 60 * 1000 - 10);
                 lastPercentage.IsWithinEpsilonOf(1.0);
+            });
+        }
+
+        [TestMethod]
+        public void ProgressBarShouldntMoveDuringAPause()
+        {
+            (new TestScheduler()).With(sched => {
+                double lastPercentage = -1.0;
+                var fixture = new BlockTimerViewModel(new BlockItem() { Description = "Test Item" });
+
+                fixture.WhenAny(x => x.ProgressPercentage, x => x.Value).Subscribe(x => lastPercentage = x);
+
+                fixture.Start.Execute(null);
+
+                // At the beginning we should be zero
+                sched.RunToMilliseconds(10);
+                lastPercentage.IsWithinEpsilonOf(0.0);
+
+                // Run to exactly half of the work time 25 mins / 2
+                sched.RunToMilliseconds((12 * 60 + 30) * 1000);
+                lastPercentage.IsWithinEpsilonOf(0.5);
+
+                // Simulate hitting the Pause button
+                fixture.Pause.Execute(null);
+
+                // Run to 20 minutes; the progress bar shouldn't have moved
+                // since we were paused
+                sched.RunToMilliseconds(20 * 60 * 1000);
+                lastPercentage.IsWithinEpsilonOf(0.5);
+
+                fixture.Start.Execute(null);
+
+                // Move to 25 minutes; the progress bar should've moved 5
+                // minutes worth (remember, since we were paused from 12min
+                // to 20min
+                sched.RunToMilliseconds(25 * 60 * 1000);
+                lastPercentage.IsWithinEpsilonOf(0.5 + 0.2);
+            });
+        }
+
+        [TestMethod]
+        public void CancelButtonShouldntEndUpSettingModel()
+        {
+            (new TestScheduler()).With(sched => {
+                var fixture = new BlockTimerViewModel(new BlockItem() { Description = "Test Item" });
+
+                BlockTimerViewState lastState = BlockTimerViewState.Initialized;
+                fixture.TimerState.Subscribe(x => lastState = x);
+
+                fixture.Start.Execute(null);
+
+                sched.RunToMilliseconds(10);
+                Assert.AreEqual(BlockTimerViewState.Started, lastState);
+                Assert.IsFalse(fixture.UserPressedCancel);
+
+                // Run to 10 minutes in and hit Cancel
+                sched.RunToMilliseconds(10 * 60 * 1000);
+                fixture.Cancel.Execute(null);
+
+                // Run way past the end
+                sched.RunToMilliseconds(60 * 60 * 1000);
+                Assert.AreEqual(BlockTimerViewState.ShouldCancel, lastState);
+                Assert.IsTrue(fixture.UserPressedCancel);
             });
         }
     }

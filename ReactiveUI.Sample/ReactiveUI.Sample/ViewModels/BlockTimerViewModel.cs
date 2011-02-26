@@ -15,8 +15,13 @@ namespace ReactiveUI.Sample.ViewModels
 
     public class BlockTimerViewModel : ReactiveValidatedObject
     {
+#if DEBUG
+        static readonly TimeSpan workDuration = TimeSpan.FromMinutes(2);
+        static readonly TimeSpan breakDuration = TimeSpan.FromMinutes(1);
+#else
         static readonly TimeSpan workDuration = TimeSpan.FromMinutes(25);
         static readonly TimeSpan breakDuration = TimeSpan.FromMinutes(5);
+#endif
 
         public BlockTimerViewModel(BlockItem Model)
         { 
@@ -27,7 +32,9 @@ namespace ReactiveUI.Sample.ViewModels
             var timer = Observable.Timer(TimeSpan.Zero, TimeSpan.FromSeconds(1.0), RxApp.DeferredScheduler)
                 .TakeWhile(_ => !isFinishedWithBreak())
                 .Finally(() => {
-                    Model.EndedAt = RxApp.DeferredScheduler.Now;
+                    if (this.Model != null) {
+                        this.Model.EndedAt = RxApp.DeferredScheduler.Now;
+                    }
                     _TimerState.OnCompleted();
                 });
 
@@ -47,7 +54,7 @@ namespace ReactiveUI.Sample.ViewModels
             ).Subscribe(_TimerState.OnNext);
 
             // Set the Start time when we click the Start button
-            Start.Subscribe(_ => Model.StartedAt = Model.StartedAt ?? RxApp.DeferredScheduler.Now);
+            Start.Subscribe(_ => this.Model.StartedAt = this.Model.StartedAt ?? RxApp.DeferredScheduler.Now);
 
             var timerAsState = timer.CombineLatest(_TimerState, (_, ts) => ts);
             var distinctTimerAsState = timerAsState.DistinctUntilChanged();
@@ -58,12 +65,15 @@ namespace ReactiveUI.Sample.ViewModels
                 .Timestamp(RxApp.DeferredScheduler)
                 .BufferWithCount(3, 1)
                 .Where(isStateSequenceAPause)
-                .Subscribe(x => Model.AddRecordOfPause(new PauseRecord() {StartedAt = x[1].Timestamp, EndedAt = x[2].Timestamp}));
+                .Subscribe(x => this.Model.AddRecordOfPause(new PauseRecord() {StartedAt = x[1].Timestamp, EndedAt = x[2].Timestamp}));
 
             // Move to the Break when the normal timer expires
             timerAsState
                 .Where(ts => isInBreak() && ts == BlockTimerViewState.Started)
                 .Subscribe(_ => _TimerState.OnNext(BlockTimerViewState.StartedInBreak));
+
+            // Trigger UserPressedCancel when the user hits the button
+            Cancel.Subscribe(_ => UserPressedCancel = true);
 
 
             //
@@ -83,6 +93,7 @@ namespace ReactiveUI.Sample.ViewModels
                 .ToProperty(this, x => x.TimeRemainingCaption);
 
             _ProgressPercentage = timerAsState
+                .Where(x => x == BlockTimerViewState.Started || x == BlockTimerViewState.StartedInBreak)
                 .Select(_ => progressBarPercentage())
                 .ToProperty(this, x => x.ProgressPercentage);
 
@@ -106,6 +117,12 @@ namespace ReactiveUI.Sample.ViewModels
         Subject<BlockTimerViewState> _TimerState = new Subject<BlockTimerViewState>();
         public IObservable<BlockTimerViewState> TimerState {
             get { return _TimerState; }
+        }
+
+        bool _UserPressedCancel;
+        public bool UserPressedCancel {
+            get { return _UserPressedCancel; }
+            set { this.RaiseAndSetIfChanged(x => x.UserPressedCancel, value); }
         }
 
         public IReactiveCommand Start { get; protected set; }
