@@ -1,8 +1,6 @@
 ﻿<ResourceDictionary
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:sys="clr-namespace:System;assembly=mscorlib"
-    xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls" 
-    xmlns:System_Windows_Controls_Primitives="clr-namespace:System.Windows.Controls.Primitives;assembly=System.Windows.Controls"
     xmlns:System="clr-namespace:System;assembly=mscorlib"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
@@ -11,8 +9,8 @@
 
     <!-- Global Settings-->
     <ResourceDictionary.MergedDictionaries>
-        <ResourceDictionary Source="Brushes.xaml"/>
-        <ResourceDictionary Source="Fonts.xaml"/>
+        <ResourceDictionary Source="/MetroTheme/Brushes.xaml"/>
+        <ResourceDictionary Source="/MetroTheme/Fonts.xaml"/>
     </ResourceDictionary.MergedDictionaries>
 
     <!-- *******CONTROLS STYLES****** -->
@@ -1703,62 +1701,6 @@
         <Setter Property="VerticalContentAlignment" Value="Center"/>
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="BorderThickness" Value="1"/>
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="ListBoxItem">
-                    <Grid Background="{TemplateBinding Background}">
-                        <VisualStateManager.VisualStateGroups>
-                            <VisualStateGroup x:Name="CommonStates">
-                                <VisualState x:Name="Normal"/>
-                                <VisualState x:Name="MouseOver">
-                                    <Storyboard>
-                                        <DoubleAnimation Duration="0" To=".55" Storyboard.TargetProperty="Opacity" Storyboard.TargetName="fillColor"/>
-                                        <ColorAnimation Duration="0" To="{StaticResource HoverForegroundColor}" Storyboard.TargetProperty="(Control.Foreground).(SolidColorBrush.Color)" Storyboard.TargetName="contentControl"/>
-                                    </Storyboard>
-                                </VisualState>
-                                <VisualState x:Name="Disabled">
-                                    <Storyboard>
-                                        <DoubleAnimation Duration="0" To=".55" Storyboard.TargetProperty="Opacity" Storyboard.TargetName="contentPresenter"/>
-                                    </Storyboard>
-                                </VisualState>
-                            </VisualStateGroup>
-                            <VisualStateGroup x:Name="SelectionStates">
-                                <VisualState x:Name="Unselected"/>
-                                <VisualState x:Name="Selected">
-                                    <Storyboard>
-                                        <ColorAnimation Duration="0" To="{StaticResource HoverForegroundColor}" Storyboard.TargetProperty="(Control.Foreground).(SolidColorBrush.Color)" Storyboard.TargetName="contentControl"/>
-                                        <DoubleAnimation Duration="0" To="1" Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="fillColor"/>
-                                    </Storyboard>
-                                </VisualState>
-                                <VisualState x:Name="SelectedUnfocused"/>
-                            </VisualStateGroup>
-                            <VisualStateGroup x:Name="FocusStates">
-                                <VisualState x:Name="Focused">
-                                    <Storyboard>
-                                        <ObjectAnimationUsingKeyFrames Duration="0" Storyboard.TargetProperty="Visibility" Storyboard.TargetName="FocusVisualElement">
-                                            <DiscreteObjectKeyFrame KeyTime="0">
-                                                <DiscreteObjectKeyFrame.Value>
-                                                    <Visibility>Visible</Visibility>
-                                                </DiscreteObjectKeyFrame.Value>
-                                            </DiscreteObjectKeyFrame>
-                                        </ObjectAnimationUsingKeyFrames>
-                                        <DoubleAnimation Duration="0" To="1" Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="fillColor2" />
-                                        <ColorAnimation Duration="0" To="{StaticResource HoverForegroundColor}" Storyboard.TargetProperty="(Control.Foreground).(SolidColorBrush.Color)" Storyboard.TargetName="contentControl" />
-                                    </Storyboard>
-                                </VisualState>
-                                <VisualState x:Name="Unfocused"/>
-                            </VisualStateGroup>
-                        </VisualStateManager.VisualStateGroups>
-                        <Rectangle x:Name="fillColor" Fill="{StaticResource HighlightBrush}" IsHitTestVisible="False" Opacity="0" RadiusY="1" RadiusX="1"/>
-                        <Rectangle x:Name="fillColor2" Fill="{StaticResource HighlightBrush}" IsHitTestVisible="False" Opacity="0" RadiusY="1" RadiusX="1"/>
-                        <ContentControl x:Name="contentControl">
-                            <ContentPresenter x:Name="contentPresenter" ContentTemplate="{TemplateBinding ContentTemplate}" Content="{TemplateBinding Content}" VerticalAlignment="Center" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="7"/>
-                        </ContentControl>
-                        <Rectangle x:Name="FocusVisualElement" RadiusY="1" RadiusX="1" Stroke="{StaticResource HighlightBrush}" StrokeThickness="1" Visibility="Collapsed"/>
-                    </Grid>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
     </Style>
 
     <!--ListBox Style -->
