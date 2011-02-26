@@ -55,6 +55,33 @@ namespace ReactiveUI.Tests
         }
     }
 
+    public class ObjChain1 : ReactiveObject
+    {
+        ObjChain2 _Model = new ObjChain2();
+        public ObjChain2 Model {
+            get { return _Model; }
+            set { this.RaiseAndSetIfChanged(x => x.Model, value); }
+        }
+    }
+
+    public class ObjChain2 : ReactiveObject
+    {
+        ObjChain3 _Model = new ObjChain3();
+        public ObjChain3 Model {
+            get { return _Model; }
+            set { this.RaiseAndSetIfChanged(x => x.Model, value); }
+        }
+    }
+
+    public class ObjChain3 : ReactiveObject
+    {
+        HostTestFixture _Model = new HostTestFixture();
+        public HostTestFixture Model {
+            get { return _Model; }
+            set { this.RaiseAndSetIfChanged(x => x.Model, value); }
+        }
+    }
+
     public class ReactiveNotifyPropertyChangedMixinTest : IEnableLogger
     {
         [Fact]
@@ -233,6 +260,43 @@ namespace ReactiveUI.Tests
                 sched.Run();
                 Assert.Equal(4, changes.Count);
             });
+        }
+
+        [Fact]
+        public void AnyChangeInExpressionListTriggersUpdate() 
+        {
+            var obj = new ObjChain1();
+            bool obsUpdated;
+            obj.ObservableForProperty(x => x.Model.Model.Model.SomeOtherParam).Subscribe(_ => obsUpdated = true);
+           
+            obsUpdated = false;
+            obj.Model.Model.Model.SomeOtherParam = 42;
+            Assert.True(obsUpdated);
+ 
+            obsUpdated = false;
+            obj.Model.Model.Model = new HostTestFixture();
+            Assert.True(obsUpdated);
+ 
+            obsUpdated = false;
+            obj.Model.Model = new ObjChain3() {Model = new HostTestFixture() {SomeOtherParam = 10 } } ;
+            Assert.True(obsUpdated);
+ 
+            obsUpdated = false;
+            obj.Model = new ObjChain2();
+            Assert.True(obsUpdated);
+        }
+
+        [Fact]
+        public void SubscriptionToWhenAnyShouldReturnCurrentValue()
+        {
+            var obj = new HostTestFixture();
+            int observedValue = 1;
+            obj.WhenAny(x => x.SomeOtherParam, x => x.Value)
+               .Subscribe(x => observedValue = x);
+
+            obj.SomeOtherParam = 42;
+            
+            Assert.True(observedValue == obj.SomeOtherParam);
         }
 
         [Fact]
