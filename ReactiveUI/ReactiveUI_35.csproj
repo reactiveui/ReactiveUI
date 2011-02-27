@@ -37,7 +37,7 @@
     <DefineConstants>TRACE;DOTNETISOLDANDSAD</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Release\Net35\ReactiveUI_35.XML</DocumentationFile>
+    <DocumentationFile>bin\Release\Net35\ReactiveUI_35.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />

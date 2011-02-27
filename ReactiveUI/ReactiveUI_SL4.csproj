@@ -52,7 +52,7 @@
     <NoConfig>true</NoConfig>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>Bin\Release\SL4\ReactiveUI_SL4.XML</DocumentationFile>
+    <DocumentationFile>Bin\Release\SL4\ReactiveUI_SL4.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="mscorlib" />

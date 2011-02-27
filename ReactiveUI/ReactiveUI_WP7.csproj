@@ -63,7 +63,7 @@
     <NoConfig>true</NoConfig>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>Bin\Release\WP7\ReactiveUI_WP7.XML</DocumentationFile>
+    <DocumentationFile>Bin\Release\WP7\ReactiveUI_WP7.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System.CoreEx">
