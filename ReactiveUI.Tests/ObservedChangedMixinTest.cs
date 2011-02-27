@@ -15,8 +15,8 @@ namespace ReactiveUI.Tests
             var input = new[] {"Foo", "Bar", "Baz"};
             var output = new List<string>();
             var output2 = new List<string>();
-            var sched = new TestScheduler();
-            sched.With(_ => {
+
+            (new TestScheduler()).With(sched => {
                 var fixture = new TestFixture();
 
                 // Two cases: Changed is guaranteed to *not* set ObservedChange.Value
@@ -30,12 +30,12 @@ namespace ReactiveUI.Tests
                 });
 
                 foreach (var v in input) { fixture.IsOnlyOneWord = v; }
+
+                sched.RunToMilliseconds(1000);
+
+                input.AssertAreEqual(output);
+                input.AssertAreEqual(output2);
             });
-
-            sched.RunToMilliseconds(1000);
-
-            input.AssertAreEqual(output);
-            input.AssertAreEqual(output2);
         }
 
         [Fact]
@@ -75,11 +75,10 @@ namespace ReactiveUI.Tests
         public void ValueTest() 
         {
             var input = new[] {"Foo", "Bar", "Baz"};
-            var sched = new TestScheduler();
             IEnumerable<string> output = null;
             IEnumerable<string> output2 = null;
 
-            sched.With(_ => {
+            (new TestScheduler()).With(sched => {
                 var fixture = new TestFixture();
 
                 // Same deal as above
@@ -87,12 +86,12 @@ namespace ReactiveUI.Tests
                 output2 = fixture.ObservableForProperty(x => x.IsOnlyOneWord).Value().CreateCollection();
 
                 foreach (var v in input) { fixture.IsOnlyOneWord = v; }
+
+                sched.RunToMilliseconds(1000);
+
+                input.AssertAreEqual(output);
+                input.AssertAreEqual(output2);
             });
-
-            sched.RunToMilliseconds(1000);
-
-            input.AssertAreEqual(output);
-            input.AssertAreEqual(output2);
         }
 
         [Fact]

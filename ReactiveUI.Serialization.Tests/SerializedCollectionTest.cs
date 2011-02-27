@@ -52,26 +52,27 @@ namespace ReactiveUI.Serialization.Tests
             PexAssume.AreDistinctValues(itemsToRemove);
             PexAssume.TrueForAll(itemsToRemove, x => x < initialContents.Length && x > 0);
 
-            var sched = new TestScheduler();
-            var fixture = sched.With(_ =>
-                new SerializedCollection<ModelTestFixture>(initialContents.Select(x => new ModelTestFixture() { TestString = x })));
-            var hashes = new List<Guid>();
-            int changeCount = 0;
+            (new TestScheduler()).With(sched => {
+                var fixture = new SerializedCollection<ModelTestFixture>(initialContents.Select(x => new ModelTestFixture() { TestString = x }));
+                var hashes = new List<Guid>();
+                int changeCount = 0;
 
-            fixture.Changed.Subscribe(_ => {
-                changeCount++;
-                hashes.Add(fixture.ContentHash);
+                fixture.Changed.Subscribe(_ => {
+                    changeCount++;
+                    hashes.Add(fixture.ContentHash);
+                });
+
+                var toRemove = itemsToRemove.Select(x => fixture[x]);
+                foreach(var v in toRemove) {
+                    fixture.Remove(v);
+                }
+
+                sched.Run();
+
+                PexAssert.AreDistinctValues(hashes.ToArray());
+                PexAssert.AreEqual(itemsToRemove.Length, changeCount);
             });
 
-            var toRemove = itemsToRemove.Select(x => fixture[x]);
-            foreach(var v in toRemove) {
-                fixture.Remove(v);
-            }
-
-            sched.Run();
-
-            PexAssert.AreDistinctValues(hashes.ToArray());
-            PexAssert.AreEqual(itemsToRemove.Length, changeCount);
         }
 
         [PexMethod(MaxConditions = 1000)]
@@ -82,20 +83,23 @@ namespace ReactiveUI.Serialization.Tests
             PexAssume.AreDistinctReferences(items);
             PexAssume.IsTrue(toChange >= 0 && toChange < items.Length);
 
-            var sched = new TestScheduler();
-            var fixture = sched.With(_ => new SerializedCollection<ModelTestFixture>(
-                items.Select(x => new ModelTestFixture() {TestString = x})));
-            bool shouldDie = true;
-            var hashBefore = fixture.ContentHash;
-            PexAssume.AreNotEqual(newValue, fixture[toChange].TestString);
+            (new TestScheduler()).With(sched => {
 
-            fixture.Changed.Subscribe(_ => shouldDie = false);
-            Observable.Return(newValue, sched).Subscribe(x => fixture[toChange].TestString = x);
+                var fixture = new SerializedCollection<ModelTestFixture>(
+                    items.Select(x => new ModelTestFixture() {TestString = x}));
+                bool shouldDie = true;
+                var hashBefore = fixture.ContentHash;
+                PexAssume.AreNotEqual(newValue, fixture[toChange].TestString);
 
-            sched.Run();
+                fixture.Changed.Subscribe(_ => shouldDie = false);
+                Observable.Return(newValue, sched).Subscribe(x => fixture[toChange].TestString = x);
 
-            Assert.NotEqual(hashBefore, fixture.ContentHash);
-            Assert.False(shouldDie);
+                sched.Run();
+
+                PexAssert.AreNotEqual(hashBefore, fixture.ContentHash);
+                PexAssert.IsFalse(shouldDie);
+            });
+
         }
 
         [Fact]
@@ -108,41 +112,41 @@ namespace ReactiveUI.Serialization.Tests
         [Fact]
         public void ChangesShouldPropagateThroughMultilevelCollections()
         {
-            var sched = new TestScheduler();
-            var input = sched.With(_ => new ModelTestFixture() {TestString = "Foo"});
-            var coll = sched.With(_ => new SerializedCollection<ISerializableItem>(new[] {input}));
-            var fixture = sched.With(_ => 
-                new SerializedCollection<ISerializableList<ISerializableItem>>(new[] {(ISerializableList<ISerializableItem>)coll}));
+            (new TestScheduler()).With(sched => {
+                var input = new ModelTestFixture() {TestString = "Foo"};
+                var coll = new SerializedCollection<ISerializableItem>(new[] {input});
+                var fixture =  new SerializedCollection<ISerializableList<ISerializableItem>>(new[] {(ISerializableList<ISerializableItem>)coll});
 
-            this.Log().DebugFormat("input = {0:X}, coll = {1:X}, fixture = {2:X}",
-                input.GetHashCode(), coll.GetHashCode(), fixture.GetHashCode());
+                this.Log().DebugFormat("input = {0:X}, coll = {1:X}, fixture = {2:X}",
+                    input.GetHashCode(), coll.GetHashCode(), fixture.GetHashCode());
 
-            bool inputChanging = false; bool inputChanged = false;
-            bool collChanging = false; bool collChanged = false;
-            bool fixtureChanging = false; bool fixtureChanged = false;
-            input.Changing.Subscribe(_ => inputChanging = true);
-            input.Changed.Subscribe(_ => inputChanged = true);
-            coll.ItemChanging.Subscribe(_ => collChanging = true);
-            coll.ItemChanging.Subscribe(_ => collChanged = true);
-            fixture.ItemChanging.Subscribe(_ => fixtureChanging = true);
-            fixture.ItemChanged.Subscribe(_ => fixtureChanged = true);
+                bool inputChanging = false; bool inputChanged = false;
+                bool collChanging = false; bool collChanged = false;
+                bool fixtureChanging = false; bool fixtureChanged = false;
+                input.Changing.Subscribe(_ => inputChanging = true);
+                input.Changed.Subscribe(_ => inputChanged = true);
+                coll.ItemChanging.Subscribe(_ => collChanging = true);
+                coll.ItemChanging.Subscribe(_ => collChanged = true);
+                fixture.ItemChanging.Subscribe(_ => fixtureChanging = true);
+                fixture.ItemChanged.Subscribe(_ => fixtureChanged = true);
 
-            input.TestString = "Bar";
-            sched.RunToMilliseconds(1000);
+                input.TestString = "Bar";
+                sched.RunToMilliseconds(1000);
 
-            this.Log().DebugFormat("inputChanging = {0}", inputChanging);
-            this.Log().DebugFormat("inputChanged = {0}", inputChanged);
-            this.Log().DebugFormat("collChanging = {0}", collChanging);
-            this.Log().DebugFormat("collChanged = {0}", collChanged);
-            this.Log().DebugFormat("fixtureChanging = {0}", fixtureChanging);
-            this.Log().DebugFormat("fixtureChanged = {0}", fixtureChanged);
+                this.Log().DebugFormat("inputChanging = {0}", inputChanging);
+                this.Log().DebugFormat("inputChanged = {0}", inputChanged);
+                this.Log().DebugFormat("collChanging = {0}", collChanging);
+                this.Log().DebugFormat("collChanged = {0}", collChanged);
+                this.Log().DebugFormat("fixtureChanging = {0}", fixtureChanging);
+                this.Log().DebugFormat("fixtureChanged = {0}", fixtureChanged);
 
-            Assert.True(inputChanging);
-            Assert.True(inputChanged);
-            Assert.True(collChanging);
-            Assert.True(collChanged);
-            Assert.True(fixtureChanging);
-            Assert.True(fixtureChanged);
+                Assert.True(inputChanging);
+                Assert.True(inputChanged);
+                Assert.True(collChanging);
+                Assert.True(collChanged);
+                Assert.True(fixtureChanging);
+                Assert.True(fixtureChanged);
+            });
         }
     }
 }
