@@ -11,16 +11,59 @@ using ReactiveUI.Sample.ViewModels;
 
 namespace ReactiveUI.Sample.Tests
 {
+    /* COOLSTUFF: Time-travel Testing
+     *
+     * If we write all of our interactions and ViewModel behaviors in terms of
+     * Observables, we unlock one of Rx's superpowers: TestScheduler.
+     * TestScheduler lets us simulate the passing of time without actually
+     * waiting around for it. 
+     *
+     * The Pomodoro app was chosen as a sample because one of the aspects of it
+     * is that a traditional MVVM implementation is a nightmare to test - it's
+     * all Timers and state changes; testing timers is normally slow and
+     * unreliable - we don't want to have every test run take the full 30
+     * minutes!
+     *
+     * We take advantage of the fact that we control the way that deferred
+     * operations are run via RxApp.DeferredScheduler, to be able to create a
+     * test "schedule" - we do some things, fast forward some time in the
+     * future, then see if what we expected to happen, happened.
+     */
+
     [TestClass()]
     public class BlockTimerViewModelTest : IEnableLogger
     {
         [TestMethod]
         public void TimerShouldFinishAfterThirtyMinutes()
         {
+            // NB: This is a pattern that we'll use often - we're creating a new
+            // TestScheduler object, then calling the "With" extension method,
+            // which overrides RxApp.DeferredScheduler / RxApp.TaskpoolScheduler
+            // with the instance of TestScheduler here, then we run the Action
+            // provided (sched => {}). 
+            //
+            // When the Action exits, we reset RxApp to the way it was before,
+            // so we don't have to worry about tests stepping on each other's
+            // feet
+            
             (new TestScheduler()).With(sched => {
+
+                //
+                // First, we Arrange our Objects.
+                //
+                
                 var lastState = BlockTimerViewState.Initialized;
                 bool isTimerStateDone = false;
                 var fixture = new BlockTimerViewModel(new BlockItem() { Description = "Test Item" });
+
+                /* COOLSTUFF: Setting up Subscriptions
+                 *
+                 * One additional step of RxUI-based tests, is setting up our
+                 * Subscriptions - i.e. what we want to watch change over time,
+                 * just like we do in the Constructors of our ViewModels.
+                 *
+                 * We'll then advance the scheduler and see what happens.
+                 */
 
                 // Watch the timer state
                 fixture.TimerState.Subscribe(
@@ -39,8 +82,8 @@ namespace ReactiveUI.Sample.Tests
 
                 // Make sure our model duration took 30 minutes(ish)
                 var pomodoroLength = (fixture.Model.EndedAt.Value - fixture.Model.StartedAt.Value);
+                pomodoroLength.TotalMinutes.AssertWithinEpsilonOf(30.0);
                 Assert.IsTrue(isTimerStateDone);
-                Assert.AreEqual(30, (int)pomodoroLength.TotalMinutes);
             });
         }
 
@@ -59,10 +102,11 @@ namespace ReactiveUI.Sample.Tests
 
                 fixture.Start.Execute(null);
 
+                // After 26 minutes, we should be in our 5-minute break
                 sched.RunToMilliseconds(26 * 60 * 1000);
+                fixture.TimeRemaining.TotalMinutes.AssertWithinEpsilonOf(4.0);
                 Assert.AreEqual(BlockTimerViewState.StartedInBreak, lastState);
                 Assert.IsFalse(isTimerStateDone);
-                Assert.AreEqual(4, (int)fixture.TimeRemaining.TotalMinutes);
             });
         }
 
@@ -87,7 +131,7 @@ namespace ReactiveUI.Sample.Tests
 
                 fixture.Pause.Execute(null);
 
-                // Fast forward five more minutes - since we're paused, we 
+                // Fast forward ten more minutes - since we're paused, we 
                 // TimeRemaining shouldn'tve moved
                 sched.RunToMilliseconds(10 * 60 * 1000);
                 Assert.AreEqual((int)timeRemaining.TotalMinutes, (int)fixture.TimeRemaining.TotalMinutes);
@@ -100,14 +144,16 @@ namespace ReactiveUI.Sample.Tests
 
                 // We should have one pause, and it should be 5 minutes long
                 Assert.AreEqual(1, fixture.Model.PauseList.Count);
+
                 var deltaTime = (fixture.Model.PauseList[0].EndedAt - fixture.Model.PauseList[0].StartedAt).TotalMinutes;
                 this.Log().InfoFormat("Pause Time: {0} mins", deltaTime);
-                Assert.AreEqual(5, (int)deltaTime);
+
+                deltaTime.AssertWithinEpsilonOf(5.0);
 
                 // The timer display should have advanced only one more minute 
                 // (i.e. not six minutes, since we were paused for 5 of them)
                 deltaTime = (timeRemaining - fixture.TimeRemaining).TotalMinutes;
-                deltaTime.IsWithinEpsilonOf(1.0);
+                deltaTime.AssertWithinEpsilonOf(1.0);
             });
         }
 
@@ -124,24 +170,24 @@ namespace ReactiveUI.Sample.Tests
 
                 // At the beginning we should be zero
                 sched.RunToMilliseconds(10);
-                lastPercentage.IsWithinEpsilonOf(0.0);
+                lastPercentage.AssertWithinEpsilonOf(0.0);
 
                 // Run to exactly half of the work time 25 mins / 2
                 sched.RunToMilliseconds((12 * 60 + 30) * 1000);
-                lastPercentage.IsWithinEpsilonOf(0.5);
+                lastPercentage.AssertWithinEpsilonOf(0.5);
 
                 // Run to a little before the end, should be near 1.0
                 sched.RunToMilliseconds(25 * 60 * 1000 - 10);
-                lastPercentage.IsWithinEpsilonOf(1.0);
+                lastPercentage.AssertWithinEpsilonOf(1.0);
 
                 // Step to the beginning of the break, we should've moved back 
                 // to zero
                 sched.RunToMilliseconds(25 * 60 * 1000 + 1010);
-                lastPercentage.IsWithinEpsilonOf(0.0);
+                lastPercentage.AssertWithinEpsilonOf(0.0);
 
                 // Finally run to the end of the break
                 sched.RunToMilliseconds(30 * 60 * 1000 - 10);
-                lastPercentage.IsWithinEpsilonOf(1.0);
+                lastPercentage.AssertWithinEpsilonOf(1.0);
             });
         }
 
@@ -158,11 +204,11 @@ namespace ReactiveUI.Sample.Tests
 
                 // At the beginning we should be zero
                 sched.RunToMilliseconds(10);
-                lastPercentage.IsWithinEpsilonOf(0.0);
+                lastPercentage.AssertWithinEpsilonOf(0.0);
 
                 // Run to exactly half of the work time 25 mins / 2
                 sched.RunToMilliseconds((12 * 60 + 30) * 1000);
-                lastPercentage.IsWithinEpsilonOf(0.5);
+                lastPercentage.AssertWithinEpsilonOf(0.5);
 
                 // Simulate hitting the Pause button
                 fixture.Pause.Execute(null);
@@ -170,7 +216,7 @@ namespace ReactiveUI.Sample.Tests
                 // Run to 20 minutes; the progress bar shouldn't have moved
                 // since we were paused
                 sched.RunToMilliseconds(20 * 60 * 1000);
-                lastPercentage.IsWithinEpsilonOf(0.5);
+                lastPercentage.AssertWithinEpsilonOf(0.5);
 
                 fixture.Start.Execute(null);
 
@@ -178,7 +224,7 @@ namespace ReactiveUI.Sample.Tests
                 // minutes worth (remember, since we were paused from 12min
                 // to 20min
                 sched.RunToMilliseconds(25 * 60 * 1000);
-                lastPercentage.IsWithinEpsilonOf(0.5 + 0.2);
+                lastPercentage.AssertWithinEpsilonOf(0.5 + 0.2);
             });
         }
 
@@ -211,9 +257,11 @@ namespace ReactiveUI.Sample.Tests
 
     static class DoubleTestMixin
     {
-        public static void IsWithinEpsilonOf(this double lhs, double rhs, double epsilon = 0.01)
+        public static void AssertWithinEpsilonOf(this double lhs, double rhs, double epsilon = 0.01)
         {
             Assert.IsTrue(Math.Abs(lhs - rhs) <= epsilon, String.Format("Left: {0}, Right: {1}", lhs, rhs));
         }
     }
 }
+
+// vim: tw=120 ts=4 sw=4 et :
