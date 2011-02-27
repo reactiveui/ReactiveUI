@@ -334,4 +334,4 @@ namespace ReactiveUI.Sample.ViewModels
     }
 }
 
-// vim: tw=120 ts=4 sw=4 et enc=utf8 :
+// vim: tw=120 ts=4 sw=4 et :
