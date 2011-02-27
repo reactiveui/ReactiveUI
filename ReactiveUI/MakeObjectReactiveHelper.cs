@@ -9,7 +9,11 @@ using System.Threading;
 namespace ReactiveUI
 {
     /// <summary>
-    /// 
+    /// This class helps you take existing objects and make them compatible with
+    /// ReactiveUI and Rx.Net. To use this, declare an instance field of this
+    /// class in your class, initialize it in your Constructor, make your class
+    /// derive from IReactiveNotifyPropertyChanged, then implement all of the
+    /// properties/methods using MakeObjectReactiveHelper.
     /// </summary>
     public class MakeObjectReactiveHelper  : IReactiveNotifyPropertyChanged
     {

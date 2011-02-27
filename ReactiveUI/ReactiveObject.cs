@@ -220,14 +220,23 @@ namespace ReactiveUI
 
             return newValue;
         }
+        
 
         /// <summary>
-        /// 
+        /// RaiseAndSetIfChanged fully implements a Setter for a read-write
+        /// property on a ReactiveObject, making the assumption that the
+        /// property has a backing field named "_NameOfProperty". To change this
+        /// assumption, set RxApp.GetFieldNameForPropertyNameFunc.  This
+        /// overload is intended for Silverlight and WP7 where reflection
+        /// cannot access the private backing field.
         /// </summary>
-        /// <param name="property"></param>
-        /// <param name="backingField"></param>
-        /// <param name="newValue"></param>
-        /// <returns></returns>
+        /// <param name="property">An Expression representing the property (i.e.
+        /// 'x => x.SomeProperty'</param>
+        /// <param name="backingField">A Reference to the backing field for this
+        /// property.</param>
+        /// <param name="newValue">The new value to set the property to, almost
+        /// always the 'value' keyword.</param>
+        /// <returns>The newly set value, normally discarded.</returns>
         public static TRet RaiseAndSetIfChanged<TObj, TRet>(
                 this TObj This,
                 Expression<Func<TObj, TRet>> property,
