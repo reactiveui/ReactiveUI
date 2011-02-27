@@ -102,6 +102,15 @@ namespace ReactiveUI.Testing
             sched.RunTo(sched.FromTimeSpan(TimeSpan.FromMilliseconds(milliseconds)));
         }
 
+        /// <summary>
+        /// OnNextAt is a method to help create simulated input Observables in
+        /// conjunction with CreateHotObservable or CreateColdObservable.
+        /// </summary>
+        /// <param name="milliseconds">The time offset to fire the notification
+        /// on the recorded notification.</param>
+        /// <param name="value">The value to produce.</param>
+        /// <returns>A recorded notification that can be provided to
+        /// TestScheduler.CreateHotObservable.</returns>
         public static Recorded<Notification<T>> OnNextAt<T>(this TestScheduler sched, double milliseconds, T value)
         {
             return new Recorded<Notification<T>>(
@@ -109,13 +118,31 @@ namespace ReactiveUI.Testing
                 new Notification<T>.OnNext(value));
         }
 
+        /// <summary>
+        /// OnErrorAt is a method to help create simulated input Observables in
+        /// conjunction with CreateHotObservable or CreateColdObservable.
+        /// </summary>
+        /// <param name="milliseconds">The time offset to fire the notification
+        /// on the recorded notification.</param>
+        /// <param name="exception">The exception to terminate the Observable
+        /// with.</param>
+        /// <returns>A recorded notification that can be provided to
+        /// TestScheduler.CreateHotObservable.</returns>
         public static Recorded<Notification<T>> OnErrorAt<T>(this TestScheduler sched, double milliseconds, Exception ex)
         {
             return new Recorded<Notification<T>>(
                 sched.FromTimeSpan(TimeSpan.FromMilliseconds(milliseconds)),
                 new Notification<T>.OnError(ex));
         }
-
+        
+        /// <summary>
+        /// OnCompletedAt is a method to help create simulated input Observables in
+        /// conjunction with CreateHotObservable or CreateColdObservable.
+        /// </summary>
+        /// <param name="milliseconds">The time offset to fire the notification
+        /// on the recorded notification.</param>
+        /// <returns>A recorded notification that can be provided to
+        /// TestScheduler.CreateHotObservable.</returns>
         public static Recorded<Notification<T>> OnCompletedAt<T>(this TestScheduler sched, double milliseconds)
         {
             return new Recorded<Notification<T>>(
