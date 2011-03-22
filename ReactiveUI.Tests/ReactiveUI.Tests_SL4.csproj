@@ -160,7 +160,7 @@
       <Project>{AE8FF678-935D-42CF-A899-6E73DF9A3B0B}</Project>
       <Name>ReactiveUI.Xaml_SL4</Name>
     </ProjectReference>
-    <ProjectReference Include="..\ReactiveUI\ReactiveUI.Testing_SL4.csproj">
+    <ProjectReference Include="..\ReactiveUI.Testing\ReactiveUI.Testing_SL4.csproj">
       <Project>{44EDFE94-F913-473B-8B47-505F2A2EFFD8}</Project>
       <Name>ReactiveUI.Testing_SL4</Name>
     </ProjectReference>

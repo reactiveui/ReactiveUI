@@ -96,6 +96,7 @@
     <Compile Include="ModelBase.cs" />
     <Compile Include="NaiveExtendedEngine.cs" />
     <Compile Include="NullStorageEngine.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RxStorage.cs" />
     <Compile Include="SerializedCollection.cs" />
     <Compile Include="SyncPointInformation.cs" />

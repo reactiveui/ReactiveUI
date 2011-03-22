@@ -105,7 +105,7 @@
       <Project>{292A477B-BB94-43C1-984E-E177EF9FEDB7}</Project>
       <Name>ReactiveUI</Name>
     </ProjectReference>
-    <ProjectReference Include="..\ReactiveUI\ReactiveUI.Testing.csproj">
+    <ProjectReference Include="..\ReactiveUI.Testing\ReactiveUI.Testing.csproj">
       <Project>{E1F2AD19-276E-4D05-A41A-89AA133CECFC}</Project>
       <Name>ReactiveUI.Testing</Name>
     </ProjectReference>

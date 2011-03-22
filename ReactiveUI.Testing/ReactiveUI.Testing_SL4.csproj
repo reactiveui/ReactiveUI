@@ -86,13 +86,14 @@
     <Reference Include="System.Windows.Browser" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestUtils.cs" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="ReactiveUI_SL4.csproj">
+    <ProjectReference Include="..\ReactiveUI\ReactiveUI_SL4.csproj">
       <Project>{3DB8B68E-1229-45A5-90CD-6F72D086FDFF}</Project>
       <Name>ReactiveUI_SL4</Name>
     </ProjectReference>

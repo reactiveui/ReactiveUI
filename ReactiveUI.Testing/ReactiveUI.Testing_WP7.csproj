@@ -92,6 +92,7 @@
     <Reference Include="System.Net" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestUtils.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -101,7 +102,7 @@
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="ReactiveUI_WP7.csproj">
+    <ProjectReference Include="..\ReactiveUI\ReactiveUI_WP7.csproj">
       <Project>{FAEA4F2E-017C-47AF-B467-4D2C7210CDEF}</Project>
       <Name>ReactiveUI_WP7</Name>
     </ProjectReference>
