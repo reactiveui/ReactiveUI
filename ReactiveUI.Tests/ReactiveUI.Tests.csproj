@@ -52,8 +52,6 @@
     <Reference Include="System.CoreEx">
       <HintPath>..\ext\System.CoreEx.dll</HintPath>
     </Reference>
-    <Reference Include="System.Data" />
-    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Interactive">
       <HintPath>..\ext\System.Interactive.dll</HintPath>
     </Reference>
