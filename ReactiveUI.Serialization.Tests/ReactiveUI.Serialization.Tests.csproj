@@ -63,7 +63,6 @@
     <Reference Include="Microsoft.Moles.Framework, Version=0.94.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.Pex.Framework, Version=0.94.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.Pex.Linq, Version=0.94.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
-    <Reference Include="ReactiveUI.Serialization.Moles, Version=2.1.0.1, Culture=neutral, processorArchitecture=MSIL" />
     <Reference Include="ReactiveXaml.Serialization.Moles, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
@@ -73,8 +72,6 @@
     <Reference Include="System.CoreEx">
       <HintPath>..\ext\System.CoreEx.dll</HintPath>
     </Reference>
-    <Reference Include="System.Data" />
-    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Interactive">
       <HintPath>..\ext\System.Interactive.dll</HintPath>
     </Reference>
