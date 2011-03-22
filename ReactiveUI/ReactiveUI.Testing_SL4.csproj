@@ -5,12 +5,12 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.50727</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{3DB8B68E-1229-45A5-90CD-6F72D086FDFF}</ProjectGuid>
+    <ProjectGuid>{44EDFE94-F913-473B-8B47-505F2A2EFFD8}</ProjectGuid>
     <ProjectTypeGuids>{A1591282-1198-4647-A2B1-27E5FF5F6F3B};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ReactiveUI</RootNamespace>
-    <AssemblyName>ReactiveUI_SL4</AssemblyName>
+    <RootNamespace>ReactiveUI.Testing</RootNamespace>
+    <AssemblyName>ReactiveUI.Testing_SL4</AssemblyName>
     <TargetFrameworkIdentifier>Silverlight</TargetFrameworkIdentifier>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <SilverlightVersion>$(TargetFrameworkVersion)</SilverlightVersion>
@@ -52,7 +52,7 @@
     <NoConfig>true</NoConfig>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>Bin\Release\SL4\ReactiveUI_SL4.xml</DocumentationFile>
+    <DocumentationFile>Bin\Release\SL4\ReactiveUI.Testing_SL4.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="mscorlib" />
@@ -86,36 +86,16 @@
     <Reference Include="System.Windows.Browser" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ContractStubs.cs" />
-    <Compile Include="Interfaces.cs" />
-    <Compile Include="Logging.cs" />
-    <Compile Include="MakeObjectReactiveHelper.cs" />
-    <Compile Include="MemoizingMRUCache.cs" />
-    <Compile Include="MessageBus.cs" />
-    <Compile Include="ObservableAsPropertyHelper.cs" />
-    <Compile Include="ObservableAsyncMRUCache.cs" />
-    <Compile Include="ObservedChangedMixin.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ReactiveCollection.cs" />
-    <Compile Include="ReactiveNotifyPropertyChangedMixin.cs" />
-    <Compile Include="ReactiveObject.cs" />
-    <Compile Include="RxApp.cs" />
-    <Compile Include="ThreadLocal.cs" />
-    <Compile Include="Validation.cs" />
-    <Compile Include="VariadicTemplates.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>VariadicTemplates.tt</DependentUpon>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="VariadicTemplates.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>VariadicTemplates.cs</LastGenOutput>
-    </None>
+    <Compile Include="TestUtils.cs" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="ReactiveUI_SL4.csproj">
+      <Project>{3DB8B68E-1229-45A5-90CD-6F72D086FDFF}</Project>
+      <Name>ReactiveUI_SL4</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Silverlight\$(SilverlightVersion)\Microsoft.Silverlight.CSharp.targets" />
   <ProjectExtensions>
