@@ -14,8 +14,13 @@ namespace ReactiveUI
 	public static class WhenAnyMixin 
 	{
 								
-		/// <summary>
-		/// </summary>
+        /// <summary>
+        /// WhenAny allows you to observe whenever one or more properties on an
+        /// object have changed, providing an initial value when the Observable
+        /// is set up, unlike ObservableForProperty(). Use this method in
+        /// constructors to set up bindings between properties that also need an
+        /// initial setup.
+        /// </summary>
         public static IObservable<TRet> WhenAny<TSender, TRet, T1>(this TSender This, 
 			                Expression<Func<TSender, T1>> property1, 
 			                Func<IObservedChange<TSender, T1>, TRet> selector)
@@ -40,8 +45,13 @@ namespace ReactiveUI
         }
 
 							
-		/// <summary>
-		/// </summary>
+        /// <summary>
+        /// WhenAny allows you to observe whenever one or more properties on an
+        /// object have changed, providing an initial value when the Observable
+        /// is set up, unlike ObservableForProperty(). Use this method in
+        /// constructors to set up bindings between properties that also need an
+        /// initial setup.
+        /// </summary>
         public static IObservable<TRet> WhenAny<TSender, TRet, T1,T2>(this TSender This, 
 			                Expression<Func<TSender, T1>> property1, 
 			                Expression<Func<TSender, T2>> property2, 
@@ -76,8 +86,13 @@ namespace ReactiveUI
         }
 
 							
-		/// <summary>
-		/// </summary>
+        /// <summary>
+        /// WhenAny allows you to observe whenever one or more properties on an
+        /// object have changed, providing an initial value when the Observable
+        /// is set up, unlike ObservableForProperty(). Use this method in
+        /// constructors to set up bindings between properties that also need an
+        /// initial setup.
+        /// </summary>
         public static IObservable<TRet> WhenAny<TSender, TRet, T1,T2,T3>(this TSender This, 
 			                Expression<Func<TSender, T1>> property1, 
 			                Expression<Func<TSender, T2>> property2, 
@@ -122,8 +137,13 @@ namespace ReactiveUI
         }
 
 							
-		/// <summary>
-		/// </summary>
+        /// <summary>
+        /// WhenAny allows you to observe whenever one or more properties on an
+        /// object have changed, providing an initial value when the Observable
+        /// is set up, unlike ObservableForProperty(). Use this method in
+        /// constructors to set up bindings between properties that also need an
+        /// initial setup.
+        /// </summary>
         public static IObservable<TRet> WhenAny<TSender, TRet, T1,T2,T3,T4>(this TSender This, 
 			                Expression<Func<TSender, T1>> property1, 
 			                Expression<Func<TSender, T2>> property2, 
@@ -178,8 +198,13 @@ namespace ReactiveUI
         }
 
 							
-		/// <summary>
-		/// </summary>
+        /// <summary>
+        /// WhenAny allows you to observe whenever one or more properties on an
+        /// object have changed, providing an initial value when the Observable
+        /// is set up, unlike ObservableForProperty(). Use this method in
+        /// constructors to set up bindings between properties that also need an
+        /// initial setup.
+        /// </summary>
         public static IObservable<TRet> WhenAny<TSender, TRet, T1,T2,T3,T4,T5>(this TSender This, 
 			                Expression<Func<TSender, T1>> property1, 
 			                Expression<Func<TSender, T2>> property2, 
@@ -244,8 +269,13 @@ namespace ReactiveUI
         }
 
 							
-		/// <summary>
-		/// </summary>
+        /// <summary>
+        /// WhenAny allows you to observe whenever one or more properties on an
+        /// object have changed, providing an initial value when the Observable
+        /// is set up, unlike ObservableForProperty(). Use this method in
+        /// constructors to set up bindings between properties that also need an
+        /// initial setup.
+        /// </summary>
         public static IObservable<TRet> WhenAny<TSender, TRet, T1,T2,T3,T4,T5,T6>(this TSender This, 
 			                Expression<Func<TSender, T1>> property1, 
 			                Expression<Func<TSender, T2>> property2, 
@@ -320,8 +350,13 @@ namespace ReactiveUI
         }
 
 							
-		/// <summary>
-		/// </summary>
+        /// <summary>
+        /// WhenAny allows you to observe whenever one or more properties on an
+        /// object have changed, providing an initial value when the Observable
+        /// is set up, unlike ObservableForProperty(). Use this method in
+        /// constructors to set up bindings between properties that also need an
+        /// initial setup.
+        /// </summary>
         public static IObservable<TRet> WhenAny<TSender, TRet, T1,T2,T3,T4,T5,T6,T7>(this TSender This, 
 			                Expression<Func<TSender, T1>> property1, 
 			                Expression<Func<TSender, T2>> property2, 
@@ -406,8 +441,13 @@ namespace ReactiveUI
         }
 
 							
-		/// <summary>
-		/// </summary>
+        /// <summary>
+        /// WhenAny allows you to observe whenever one or more properties on an
+        /// object have changed, providing an initial value when the Observable
+        /// is set up, unlike ObservableForProperty(). Use this method in
+        /// constructors to set up bindings between properties that also need an
+        /// initial setup.
+        /// </summary>
         public static IObservable<TRet> WhenAny<TSender, TRet, T1,T2,T3,T4,T5,T6,T7,T8>(this TSender This, 
 			                Expression<Func<TSender, T1>> property1, 
 			                Expression<Func<TSender, T2>> property2, 
@@ -502,8 +542,13 @@ namespace ReactiveUI
         }
 
 							
-		/// <summary>
-		/// </summary>
+        /// <summary>
+        /// WhenAny allows you to observe whenever one or more properties on an
+        /// object have changed, providing an initial value when the Observable
+        /// is set up, unlike ObservableForProperty(). Use this method in
+        /// constructors to set up bindings between properties that also need an
+        /// initial setup.
+        /// </summary>
         public static IObservable<TRet> WhenAny<TSender, TRet, T1,T2,T3,T4,T5,T6,T7,T8,T9>(this TSender This, 
 			                Expression<Func<TSender, T1>> property1, 
 			                Expression<Func<TSender, T2>> property2, 
@@ -608,8 +653,13 @@ namespace ReactiveUI
         }
 
 							
-		/// <summary>
-		/// </summary>
+        /// <summary>
+        /// WhenAny allows you to observe whenever one or more properties on an
+        /// object have changed, providing an initial value when the Observable
+        /// is set up, unlike ObservableForProperty(). Use this method in
+        /// constructors to set up bindings between properties that also need an
+        /// initial setup.
+        /// </summary>
         public static IObservable<TRet> WhenAny<TSender, TRet, T1,T2,T3,T4,T5,T6,T7,T8,T9,T10>(this TSender This, 
 			                Expression<Func<TSender, T1>> property1, 
 			                Expression<Func<TSender, T2>> property2, 
@@ -724,8 +774,13 @@ namespace ReactiveUI
         }
 
 							
-		/// <summary>
-		/// </summary>
+        /// <summary>
+        /// WhenAny allows you to observe whenever one or more properties on an
+        /// object have changed, providing an initial value when the Observable
+        /// is set up, unlike ObservableForProperty(). Use this method in
+        /// constructors to set up bindings between properties that also need an
+        /// initial setup.
+        /// </summary>
         public static IObservable<TRet> WhenAny<TSender, TRet, T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11>(this TSender This, 
 			                Expression<Func<TSender, T1>> property1, 
 			                Expression<Func<TSender, T2>> property2, 
@@ -850,8 +905,13 @@ namespace ReactiveUI
         }
 
 							
-		/// <summary>
-		/// </summary>
+        /// <summary>
+        /// WhenAny allows you to observe whenever one or more properties on an
+        /// object have changed, providing an initial value when the Observable
+        /// is set up, unlike ObservableForProperty(). Use this method in
+        /// constructors to set up bindings between properties that also need an
+        /// initial setup.
+        /// </summary>
         public static IObservable<TRet> WhenAny<TSender, TRet, T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11,T12>(this TSender This, 
 			                Expression<Func<TSender, T1>> property1, 
 			                Expression<Func<TSender, T2>> property2, 

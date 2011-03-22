@@ -113,7 +113,8 @@ namespace ReactiveUI.Serialization
             return md5.ComputeHash(Encoding.Unicode.GetBytes(obj));
         }
 
-        static ThreadLocal<JsonSerializer> _serializer = new ThreadLocal<JsonSerializer>(() => new JsonSerializer());
+        [ThreadStatic] 
+        static JsonSerializer _serializer;
         
         /// <summary>
         /// 
@@ -124,7 +125,8 @@ namespace ReactiveUI.Serialization
         {
             var ms = new MemoryStream();
             using (var writer = new BsonWriter(ms)) {
-                _serializer.Value.Serialize(writer, This);
+                _serializer = _serializer ?? new JsonSerializer();
+                _serializer.Serialize(writer, This);
             }
             var md5 = MD5.Create();
             return md5.ComputeHash(ms.ToArray());

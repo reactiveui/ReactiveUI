@@ -241,7 +241,6 @@ namespace ReactiveUI.Sample.Tests
 
                 sched.RunToMilliseconds(10);
                 Assert.AreEqual(BlockTimerViewState.Started, lastState);
-                Assert.IsFalse(fixture.UserPressedCancel);
 
                 // Run to 10 minutes in and hit Cancel
                 sched.RunToMilliseconds(10 * 60 * 1000);
@@ -250,14 +249,14 @@ namespace ReactiveUI.Sample.Tests
                 // Run way past the end
                 sched.RunToMilliseconds(60 * 60 * 1000);
                 Assert.AreEqual(BlockTimerViewState.ShouldCancel, lastState);
-                Assert.IsTrue(fixture.UserPressedCancel);
+                Assert.IsFalse(fixture.Model.IsObjectValid());
             });
         }
     }
 
     static class DoubleTestMixin
     {
-        public static void AssertWithinEpsilonOf(this double lhs, double rhs, double epsilon = 0.01)
+        public static void AssertWithinEpsilonOf(this double lhs, double rhs, double epsilon = 0.1)
         {
             Assert.IsTrue(Math.Abs(lhs - rhs) <= epsilon, String.Format("Left: {0}, Right: {1}", lhs, rhs));
         }

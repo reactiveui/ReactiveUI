@@ -6,6 +6,7 @@
 */Obj/
 *.vspscc
 *.vssscc
+*.vs10x
 *.pidb
 *.userprefs
 ReactiveUI/Generated/*.cs

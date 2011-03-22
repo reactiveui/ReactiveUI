@@ -28,6 +28,7 @@ namespace ReactiveUI.Sample.ViewModels
 
         public ReactiveCommand StartNewBlock { get; protected set; }
 
+
         /* COOLSTUFF: The Constructor is where we describe our Interactions
          *
          * In ReactiveUI, the Constructor is the place where we will set up the
@@ -50,11 +51,12 @@ namespace ReactiveUI.Sample.ViewModels
                 .CreateDerivedCollection(x => new BlockItemTileViewModel(x));
 
             StartNewBlock = new ReactiveCommand();
+
             StartNewBlock.Subscribe(dontcare => {
                 var window = new BlockTimerWindow();
                 window.ShowDialog();
 
-                if (!window.ViewModel.UserPressedCancel) {
+                if (window.ViewModel.Model.IsObjectValid()) {
                     Model.CompletedBlocks.Add(window.ViewModel.Model);
                 }
             });

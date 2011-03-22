@@ -27,7 +27,9 @@ namespace ReactiveUI.Sample.ViewModels
      * when coworkers come in our office, we don't want to lose "credit" for our
      * Pomodoro, so we want to be able to "pause" the timer and resume it.
      *
-     * To this effect, we've 
+     * To this end, we've created an explicit state machine, represented by the
+     * TimerState Subject - we can push it around via OnNext, then bind the rest 
+     * of interactions to this explicit state.
      */
 
     public class BlockTimerViewModel : ReactiveValidatedObject
@@ -96,11 +98,6 @@ namespace ReactiveUI.Sample.ViewModels
             get { return _ProgressBackgroundBrush.Value; }
         }
 
-        ObservableAsPropertyHelper<bool> _UserPressedCancel;
-        public bool UserPressedCancel {
-            get { return _UserPressedCancel.Value; }
-        }
-
         public BlockTimerViewModel(BlockItem Model)
         { 
             this.Model = Model;
@@ -116,9 +113,7 @@ namespace ReactiveUI.Sample.ViewModels
             var timer = Observable.Timer(TimeSpan.Zero, TimeSpan.FromSeconds(1.0), RxApp.DeferredScheduler)
                 .TakeWhile(_ => !isFinishedWithBreak())
                 .Finally(() => {
-                    if (this.Model != null) {
-                        this.Model.EndedAt = RxApp.DeferredScheduler.Now;
-                    }
+                    this.Model.EndedAt = RxApp.DeferredScheduler.Now;
                     _TimerState.OnCompleted();
                 });
 
@@ -165,6 +160,11 @@ namespace ReactiveUI.Sample.ViewModels
             // Take the timer and derive a version that only notifies us when
             // the TimerState has changed
             var distinctTimerAsState = timerAsState.DistinctUntilChanged();
+
+            // Invalidate the object when they hit Cancel
+            Cancel.Subscribe(x => {
+                Model.StartedAt = null; Model.EndedAt = null;
+            });
 
             // When someone hits the Start button, then Pause, then the Start 
             // button, we create a record of how long they pause.
@@ -241,10 +241,6 @@ namespace ReactiveUI.Sample.ViewModels
             // background color.
             _ProgressBackgroundBrush = distinctTimerAsState.Select(x => colorLookupTable[x])
                 .ToProperty(this, x => x.ProgressBackgroundBrush);
-
-            // When the user presses Cancel, mark it
-            _UserPressedCancel = Cancel.Select(_ => true)
-                .ToProperty(this, x => x.UserPressedCancel);
 
 
             //
