@@ -160,6 +160,10 @@
       <Project>{AA0B1C80-97AE-49F5-8310-5A7683BE47BF}</Project>
       <Name>ReactiveUI.Tests_SL4</Name>
     </ProjectReference>
+    <ProjectReference Include="..\ReactiveUI\ReactiveUI.Testing_SL4.csproj">
+      <Project>{44EDFE94-F913-473B-8B47-505F2A2EFFD8}</Project>
+      <Name>ReactiveUI.Testing_SL4</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ReactiveUI\ReactiveUI_SL4.csproj">
       <Project>{3DB8B68E-1229-45A5-90CD-6F72D086FDFF}</Project>
       <Name>ReactiveUI_SL4</Name>
