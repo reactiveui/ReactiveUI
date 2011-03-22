@@ -54,13 +54,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Sample_MainBuild
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Sample.Tests_MainBuild", "ReactiveUI.Sample\ReactiveUI.Sample.Tests\ReactiveUI.Sample.Tests_MainBuild.csproj", "{59C58E7E-779A-46EF-A710-413723566CC0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Testing", "ReactiveUI\ReactiveUI.Testing.csproj", "{E1F2AD19-276E-4D05-A41A-89AA133CECFC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Testing", "ReactiveUI.Testing\ReactiveUI.Testing.csproj", "{E1F2AD19-276E-4D05-A41A-89AA133CECFC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Testing_SL4", "ReactiveUI\ReactiveUI.Testing_SL4.csproj", "{44EDFE94-F913-473B-8B47-505F2A2EFFD8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Testing_SL4", "ReactiveUI.Testing\ReactiveUI.Testing_SL4.csproj", "{44EDFE94-F913-473B-8B47-505F2A2EFFD8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Testing_35", "ReactiveUI\ReactiveUI.Testing_35.csproj", "{FAEC9A24-FFA1-4379-9AFA-B774A2734BB1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Testing_35", "ReactiveUI.Testing\ReactiveUI.Testing_35.csproj", "{FAEC9A24-FFA1-4379-9AFA-B774A2734BB1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Testing_WP7", "ReactiveUI\ReactiveUI.Testing_WP7.csproj", "{EDA0969D-5613-4F84-B97D-3658ACEE3D29}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Testing_WP7", "ReactiveUI.Testing\ReactiveUI.Testing_WP7.csproj", "{EDA0969D-5613-4F84-B97D-3658ACEE3D29}"
 EndProject
 Global
 	GlobalSection(TestCaseManagementSettings) = postSolution
