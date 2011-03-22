@@ -29,6 +29,8 @@ namespace ReactiveUI.Sample.Views
 
             ViewModel = new BlockTimerViewModel(Model);
 
+		    ViewModel.Cancel.Subscribe(_ => this.Close());
+
             // N.B: This is a bit of a hack - the completion of this observable
             // happens regardless of the value; I tried to use OnError for this
             // instead but it actually ended up throwing the exception. 
@@ -43,6 +45,7 @@ namespace ReactiveUI.Sample.Views
     		        ViewModel.WhenAny(x => x.ProgressPercentage, _ => new Unit()))
 		        .Select(_ => progressParentBorder.ActualWidth * ViewModel.ProgressPercentage)
 		        .Subscribe(x => progressBorder.Width = x);
+
 		}
 
         public BlockTimerWindow() : this(new BlockItem() { Description = "Test Item" })

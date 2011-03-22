@@ -40,8 +40,10 @@ namespace ReactiveUI.Sample.Models
         [Required]
         public string Description { get; set;  }
 
+        [Required]
         public DateTimeOffset? StartedAt { get; set; }
 
+        [Required]
         public DateTimeOffset? EndedAt { get; set; }
 
         public ReactiveCollection<PauseRecord> PauseList { get; protected set; }
@@ -52,22 +54,22 @@ namespace ReactiveUI.Sample.Models
         }
 
         public IEnumerable<PauseRecord> GetPausesDuringBlock(
-            DateTimeOffset? NewerThan = null, 
-            DateTimeOffset? OlderThan = null, 
-            int? Limit = null)
+            DateTimeOffset? newerThan = null, 
+            DateTimeOffset? olderThan = null, 
+            int? limit = null)
         {
-            OlderThan = OlderThan ?? DateTimeOffset.MaxValue;
-            NewerThan = NewerThan ?? DateTimeOffset.MinValue;
-            Limit = Limit ?? Int32.MaxValue;
+            olderThan = olderThan ?? DateTimeOffset.MaxValue;
+            newerThan = newerThan ?? DateTimeOffset.MinValue;
+            limit = limit ?? Int32.MaxValue;
 
             return PauseList
-                .Where(x => x.StartedAt < OlderThan.Value && x.StartedAt > NewerThan.Value)
-                .Take(Limit.Value).ToArray();
+                .Where(x => x.StartedAt < olderThan.Value && x.StartedAt > newerThan.Value)
+                .Take(limit.Value).ToArray();
         }
 
-        public void AddRecordOfPause(PauseRecord PauseDuration)
+        public void AddRecordOfPause(PauseRecord pauseDuration)
         {
-            PauseList.Add(PauseDuration);
+            PauseList.Add(pauseDuration);
         }
     }
 

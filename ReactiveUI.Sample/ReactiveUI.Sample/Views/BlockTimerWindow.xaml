@@ -5,7 +5,7 @@
 	x:Name="Window"
 	Title="Get Some Work Done!"
 	UseLayoutRounding="True"
-	Width="640" Height="128">
+	Width="640" Height="150">
 
 	<Grid DataContext="{Binding ViewModel, ElementName=Window}">
 		<Grid.ColumnDefinitions>
