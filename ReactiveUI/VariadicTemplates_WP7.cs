@@ -13,6 +13,30 @@ namespace ReactiveUI
 	public static class WhenAnyMixin 
 	{
 								
+        public static IObservable<TRet> WhenAny<TSender, TRet, T1>(this TSender This, 
+			                Expression<Func<TSender, T1>> property1, 
+			                Func<IObservedChange<TSender, T1>, TRet> selector)
+            where TSender : IReactiveNotifyPropertyChanged
+        {
+			
+			var slot1 = new ObservedChange<TSender, T1>() {
+                Sender = This,
+                PropertyName = String.Join(".", RxApp.expressionToPropertyNames(property1)),
+            };
+            T1 slot1Value = default(T1); slot1.TryGetValue(out slot1Value); slot1.Value = slot1Value;
+            IObservedChange<TSender, T1> islot1 = slot1;
+
+			
+            return Observable.CreateWithDisposable<TRet>(subject => {
+                subject.OnNext(selector(islot1));
+
+                return Observable.Merge(
+                    This.ObservableForProperty(property1).Do(x => { lock (slot1) { islot1 = x.fillInValue(); } }).Select(x => selector(islot1)) 
+                ).Subscribe(subject);
+            });
+        }
+
+							
         public static IObservable<TRet> WhenAny<TSender, TRet, T1,T2>(this TSender This, 
 			                Expression<Func<TSender, T1>> property1, 
 			                Expression<Func<TSender, T2>> property2, 

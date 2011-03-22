@@ -14,7 +14,7 @@ namespace ReactiveUI
     /// will be Covariant which will allow simpler casting between specific and
     /// generic changes.
     /// </summary>
-    public interface IObservedChange<out TSender, out TValue>
+    public interface IObservedChange<TSender, TValue>
     {
         /// <summary>
         /// The object that has raised the change.
