@@ -2,14 +2,6 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
 
-[assembly: AssemblyDescription("An MVVM framework that integrates the Reactive Extensions")]
-[assembly: AssemblyProduct("ReactiveUI")]
+[assembly: AssemblyDescription("Classes that aid in testing ReactiveUI projects")]
+[assembly: AssemblyProduct("ReactiveUI.Testing")]
 [assembly: AssemblyVersion("2.2.0.0")]
-
-[assembly: InternalsVisibleTo("ReactiveUI.Explorables")]
-[assembly: InternalsVisibleTo("ReactiveUI.Xaml")]
-[assembly: InternalsVisibleTo("ReactiveUI.Xaml_35")]
-[assembly: InternalsVisibleTo("ReactiveUI.Xaml_SL4")]
-[assembly: InternalsVisibleTo("ReactiveUI.Xaml_WP7")]
-[assembly: InternalsVisibleTo("ReactiveUI.Tests")]
-[assembly: InternalsVisibleTo("ReactiveUI.Tests_SL4")]
