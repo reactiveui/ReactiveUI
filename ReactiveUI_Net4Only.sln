@@ -24,7 +24,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PerfConsoleRunner", "PerfCo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Xaml", "ReactiveUI.Xaml\ReactiveUI.Xaml.csproj", "{761AC9BA-4A9C-440C-9B6C-2569978F0610}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Testing", "ReactiveUI\ReactiveUI.Testing.csproj", "{E1F2AD19-276E-4D05-A41A-89AA133CECFC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Testing", "ReactiveUI.Testing\ReactiveUI.Testing.csproj", "{E1F2AD19-276E-4D05-A41A-89AA133CECFC}"
 EndProject
 Global
 	GlobalSection(TestCaseManagementSettings) = postSolution
