@@ -42,19 +42,13 @@
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
-    <Reference Include="System.CoreEx">
-      <HintPath>..\..\ext\System.CoreEx.dll</HintPath>
-    </Reference>
     <Reference Include="System.Data" />
     <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="System.Interactive">
-      <HintPath>..\..\ext\System.Interactive.dll</HintPath>
-    </Reference>
     <Reference Include="System.Reactive">
       <HintPath>..\..\ext\System.Reactive.dll</HintPath>
     </Reference>
-    <Reference Include="System.Reactive.Testing">
-      <HintPath>..\..\ext\System.Reactive.Testing.dll</HintPath>
+    <Reference Include="Microsoft.Reactive.Testing">
+      <HintPath>..\..\ext\Microsoft.Reactive.Testing.dll</HintPath>
     </Reference>
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml" />

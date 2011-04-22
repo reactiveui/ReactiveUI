@@ -61,18 +61,6 @@
       <HintPath>..\ext\SL4\Newtonsoft.Json.Silverlight.dll</HintPath>
     </Reference>
     <Reference Include="System.ComponentModel.DataAnnotations, Version=2.0.5.0, Culture=neutral, PublicKeyToken=ddd0da4d3e678217, processorArchitecture=MSIL" />
-    <Reference Include="System.CoreEx">
-      <Private>True</Private>
-      <HintPath>..\ext\SL4\System.CoreEx.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Interactive">
-      <Private>True</Private>
-      <HintPath>..\ext\SL4\System.Interactive.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Observable">
-      <Private>True</Private>
-      <HintPath>..\ext\SL4\System.Observable.dll</HintPath>
-    </Reference>
     <Reference Include="System.Reactive">
       <Private>True</Private>
       <HintPath>..\ext\SL4\System.Reactive.dll</HintPath>

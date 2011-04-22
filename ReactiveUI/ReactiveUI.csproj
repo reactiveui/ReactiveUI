@@ -94,14 +94,6 @@
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
-    <Reference Include="System.CoreEx">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\ext\System.CoreEx.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Interactive">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\ext\System.Interactive.dll</HintPath>
-    </Reference>
     <Reference Include="System.Reactive">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\ext\System.Reactive.dll</HintPath>
