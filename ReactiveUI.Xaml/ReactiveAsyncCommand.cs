@@ -1,8 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Concurrency;
+using System.Reactive.Concurrency;
 using System.Diagnostics.Contracts;
+using System.Reactive;
+using System.Reactive.Concurrency;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using ReactiveUI;
 
 namespace ReactiveUI.Xaml
@@ -33,7 +37,7 @@ namespace ReactiveUI.Xaml
         {
             commonCtor(maximumConcurrent, scheduler);
             if (canExecute != null) {
-                canExecute.PublishToSubject(_canExecuteSubject);
+                canExecute.Multicast(_canExecuteSubject);
             }
         }
 
@@ -91,7 +95,7 @@ namespace ReactiveUI.Xaml
                     this.Log().Fatal("Reference count dropped below zero");
                 }
                 return ret;
-            }).PublishToSubject(new BehaviorSubject<int>(0)).DebugObservable("InflightCount");
+            }).Multicast(new BehaviorSubject<int>(0)).DebugObservable("InflightCount");
 
             bool startCE = (_canExecuteExplicitFunc != null ? _canExecuteExplicitFunc(null) : true);
             CanExecuteObservable = Observable.CombineLatest(
@@ -168,14 +172,14 @@ namespace ReactiveUI.Xaml
             Contract.Requires(calculationFunc != null);
 
             var taskSubj = new Subject<object>(scheduler ?? RxApp.TaskpoolScheduler);
-            _executeSubject.PublishToSubject(taskSubj);
+            _executeSubject.Multicast(taskSubj);
 
             var unit = new Unit();
             return taskSubj
                 .Do(_ => AsyncStartedNotification.OnNext(unit))
                 .Select(calculationFunc)
                 .Do(_ => AsyncCompletedNotification.OnNext(unit))
-                .PublishToSubject(new Subject<TResult>(RxApp.DeferredScheduler));
+                .Multicast(new Subject<TResult>(RxApp.DeferredScheduler));
         }
 
         /// <summary>
@@ -207,7 +211,7 @@ namespace ReactiveUI.Xaml
             Contract.Requires(calculationFunc != null);
 
             var taskSubj = new Subject<object>(RxApp.TaskpoolScheduler);
-            _executeSubject.PublishToSubject(taskSubj);
+            _executeSubject.Multicast(taskSubj);
 
             var unit = new Unit();
             var ret = taskSubj
@@ -216,7 +220,7 @@ namespace ReactiveUI.Xaml
 
             return ret
                 .SelectMany(x => x.Finally(() => AsyncCompletedNotification.OnNext(unit)))
-                .PublishToSubject(new Subject<TResult>(RxApp.DeferredScheduler));
+                .Multicast(new Subject<TResult>(RxApp.DeferredScheduler));
         }
 
         /// <summary>

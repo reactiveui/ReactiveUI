@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.Concurrency;
+using System.Reactive.Concurrency;
 using System.Linq;
+using System.Reactive.Linq;
 using System.Text;
 using Microsoft.Pex.Framework;
+using Microsoft.Reactive.Testing;
 using Xunit;
 using ReactiveUI.Testing;
 using ReactiveUI.Tests;
@@ -32,7 +34,7 @@ namespace ReactiveUI.Serialization.Tests
 
                 foreach (var v in toAdd) {
                     fixture.Add(new ModelTestFixture() {TestString = v});
-                    sched.Run();
+                    sched.Start();
                 }
 
                 PexAssert.AreDistinctValues(hashes.ToArray());
@@ -67,7 +69,7 @@ namespace ReactiveUI.Serialization.Tests
                     fixture.Remove(v);
                 }
 
-                sched.Run();
+                sched.Start();
 
                 PexAssert.AreDistinctValues(hashes.ToArray());
                 PexAssert.AreEqual(itemsToRemove.Length, changeCount);
@@ -94,7 +96,7 @@ namespace ReactiveUI.Serialization.Tests
                 fixture.Changed.Subscribe(_ => shouldDie = false);
                 Observable.Return(newValue, sched).Subscribe(x => fixture[toChange].TestString = x);
 
-                sched.Run();
+                sched.Start();
 
                 PexAssert.AreNotEqual(hashBefore, fixture.ContentHash);
                 PexAssert.IsFalse(shouldDie);

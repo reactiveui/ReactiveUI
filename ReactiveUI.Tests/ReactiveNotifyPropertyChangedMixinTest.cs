@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Concurrency;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
+using Microsoft.Reactive.Testing;
 using ReactiveUI.Testing;
 using Xunit;
 
@@ -92,19 +92,19 @@ namespace ReactiveUI.Tests
                 var changes = fixture.ObservableForProperty(x => x.IsOnlyOneWord).CreateCollection();
 
                 fixture.IsOnlyOneWord = "Foo";
-                sched.Run();
+                sched.Start();
                 Assert.Equal(1, changes.Count);
 
                 fixture.IsOnlyOneWord = "Bar";
-                sched.Run();
+                sched.Start();
                 Assert.Equal(2, changes.Count);
 
                 fixture.IsOnlyOneWord = "Baz";
-                sched.Run();
+                sched.Start();
                 Assert.Equal(3, changes.Count);
 
                 fixture.IsOnlyOneWord = "Baz";
-                sched.Run();
+                sched.Start();
                 Assert.Equal(3, changes.Count);
 
                 Assert.True(changes.All(x => x.Sender == fixture));
@@ -121,19 +121,19 @@ namespace ReactiveUI.Tests
                 var changes = fixture.ObservableForProperty(x => x.Child.IsOnlyOneWord).CreateCollection();
 
                 fixture.Child.IsOnlyOneWord = "Foo";
-                sched.Run();
+                sched.Start();
                 Assert.Equal(1, changes.Count);
 
                 fixture.Child.IsOnlyOneWord = "Bar";
-                sched.Run();
+                sched.Start();
                 Assert.Equal(2, changes.Count);
 
                 fixture.Child.IsOnlyOneWord = "Baz";
-                sched.Run();
+                sched.Start();
                 Assert.Equal(3, changes.Count);
 
                 fixture.Child.IsOnlyOneWord = "Baz";
-                sched.Run();
+                sched.Start();
                 Assert.Equal(3, changes.Count);
 
                 Assert.True(changes.All(x => x.Sender == fixture));
@@ -150,30 +150,30 @@ namespace ReactiveUI.Tests
                 var changes = fixture.ObservableForProperty(x => x.Child.IsOnlyOneWord).CreateCollection();
 
                 fixture.Child.IsOnlyOneWord = "Foo";
-                sched.Run();
+                sched.Start();
                 Assert.Equal(1, changes.Count);
 
                 fixture.Child.IsOnlyOneWord = "Bar";
-                sched.Run();
+                sched.Start();
                 Assert.Equal(2, changes.Count);
 
                 // Tricky! This is a change too, because from the perspective 
                 // of the binding, we've went from "Bar" to null
                 fixture.Child = new TestFixture();
-                sched.Run();
+                sched.Start();
                 Assert.Equal(3, changes.Count);
 
                 // Here we've set the value but it shouldn't change
                 fixture.Child.IsOnlyOneWord = null;
-                sched.Run();
+                sched.Start();
                 Assert.Equal(3, changes.Count);
 
                 fixture.Child.IsOnlyOneWord = "Baz";
-                sched.Run();
+                sched.Start();
                 Assert.Equal(4, changes.Count);
 
                 fixture.Child.IsOnlyOneWord = "Baz";
-                sched.Run();
+                sched.Start();
                 Assert.Equal(4, changes.Count);
 
                 Assert.True(changes.All(x => x.Sender == fixture));
@@ -191,22 +191,22 @@ namespace ReactiveUI.Tests
                 var changes = fixture.ObservableForProperty(x => x.Child.IsOnlyOneWord).CreateCollection();
 
                 fixture.Child.IsOnlyOneWord = "Foo";
-                sched.Run();
+                sched.Start();
                 Assert.Equal(1, changes.Count);
 
                 fixture.Child.IsOnlyOneWord = "Bar";
-                sched.Run();
+                sched.Start();
                 Assert.Equal(2, changes.Count);
 
                 // Oops, now the child is Null, we may now blow up
                 fixture.Child = null;
-                sched.Run();
+                sched.Start();
                 Assert.Equal(2, changes.Count);
 
                 // Tricky! This is a change too, because from the perspective 
                 // of the binding, we've went from "Bar" to null
                 fixture.Child = new TestFixture();
-                sched.Run();
+                sched.Start();
                 Assert.Equal(3, changes.Count);
 
                 Assert.True(changes.All(x => x.Sender == fixture));
@@ -223,15 +223,15 @@ namespace ReactiveUI.Tests
                 var changes = fixture.ObservableForProperty(x => x.Child.IsOnlyOneWord).CreateCollection();
 
                 fixture.Child.IsOnlyOneWord = "Foo";
-                sched.Run();
+                sched.Start();
                 Assert.Equal(1, changes.Count);
 
                 fixture.Child.IsOnlyOneWord = "Bar";
-                sched.Run();
+                sched.Start();
                 Assert.Equal(2, changes.Count);
 
                 fixture.Child = new TestFixture() {IsOnlyOneWord = "Bar"};
-                sched.Run();
+                sched.Start();
                 Assert.Equal(2, changes.Count);
             });
         }
@@ -245,19 +245,19 @@ namespace ReactiveUI.Tests
                 var changes = fixture.ObservableForProperty(x => x.InpcProperty.IsOnlyOneWord).CreateCollection();
 
                 fixture.InpcProperty = new TestFixture();
-                sched.Run();
+                sched.Start();
                 Assert.Equal(1, changes.Count);
 
                 fixture.InpcProperty.IsOnlyOneWord = "Foo";
-                sched.Run();
+                sched.Start();
                 Assert.Equal(2, changes.Count);
 
                 fixture.InpcProperty.IsOnlyOneWord = "Bar";
-                sched.Run();
+                sched.Start();
                 Assert.Equal(3, changes.Count);
 
                 fixture.InpcProperty = new TestFixture() {IsOnlyOneWord = "Bar"};
-                sched.Run();
+                sched.Start();
                 Assert.Equal(4, changes.Count);
             });
         }
@@ -331,7 +331,7 @@ namespace ReactiveUI.Tests
                     output1.Add(x.sop); output2.Add(x.nns);
                 });
 
-                sched.Run();
+                sched.Start();
                 Assert.Equal(1, output1.Count);
                 Assert.Equal(1, output2.Count);
                 Assert.Equal(fixture, output1[0].Sender);
@@ -340,7 +340,7 @@ namespace ReactiveUI.Tests
                 Assert.Equal("Foo", output2[0].Value);
 
                 fixture.SomeOtherParam = 10;
-                sched.Run();
+                sched.Start();
                 Assert.Equal(2, output1.Count);
                 Assert.Equal(2, output2.Count);
                 Assert.Equal(fixture, output1[1].Sender);
@@ -349,7 +349,7 @@ namespace ReactiveUI.Tests
                 Assert.Equal("Foo", output2[1].Value);
 
                 fixture.Child.IsNotNullString = "Bar";
-                sched.Run();
+                sched.Start();
                 Assert.Equal(3, output1.Count);
                 Assert.Equal(3, output2.Count);
                 Assert.Equal(fixture, output1[2].Sender);

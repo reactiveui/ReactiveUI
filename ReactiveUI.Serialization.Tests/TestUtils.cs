@@ -1,25 +1,26 @@
 using System;
 using System.Collections.Generic;
-using System.Concurrency;
+using System.Reactive.Concurrency;
 using System.Diagnostics.Contracts;
-using System.Disposables;
+using System.Reactive.Disposables;
 using System.Linq;
-using System.Reactive.Testing;
-using System.Reactive.Testing.Mocks;
+using System.Reactive;
+using Microsoft.Reactive.Testing;
 using System.Runtime.Serialization;
+using Microsoft.Reactive.Testing;
 
 namespace ReactiveUI.Serialization.Tests
 {
-#if !SILVERLIGHT
+#if !SILVERLIGHT && FALSE
     public static class PexTestUtils
     {
-        public static ColdObservable<T> CreateColdPexObservable<T>(this TestScheduler scheduler, T[] items, int[] deltaTimes, bool failOnError = false)
+        public static IObservable<T> CreateColdPexObservable<T>(this TestScheduler scheduler, T[] items, int[] deltaTimes, bool failOnError = false)
         {
             var ret = createPexObservable(items, deltaTimes, failOnError);
             return scheduler.CreateColdObservable(ret);
         }
 
-        public static HotObservable<T> CreateHotPexObservable<T>(this TestScheduler scheduler, T[] items, int[] deltaTimes, bool failOnError = false)
+        public static IObservable<T> CreateHotPexObservable<T>(this TestScheduler scheduler, T[] items, int[] deltaTimes, bool failOnError = false)
         {
             var ret = createPexObservable(items, deltaTimes, failOnError);
             return scheduler.CreateHotObservable(ret);

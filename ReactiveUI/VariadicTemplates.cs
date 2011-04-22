@@ -1,8 +1,8 @@
 ﻿
 using System;
 using System.Collections.Generic;
-using System.Disposables;
-using System.Linq;
+using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using System.Diagnostics.Contracts;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -35,7 +35,7 @@ namespace ReactiveUI
             IObservedChange<TSender, T1> islot1 = slot1;
 
 			
-            return Observable.CreateWithDisposable<TRet>(subject => {
+            return Observable.Create<TRet>(subject => {
                 subject.OnNext(selector(islot1));
 
                 return Observable.Merge(
@@ -75,7 +75,7 @@ namespace ReactiveUI
             IObservedChange<TSender, T2> islot2 = slot2;
 
 			
-            return Observable.CreateWithDisposable<TRet>(subject => {
+            return Observable.Create<TRet>(subject => {
                 subject.OnNext(selector(islot1, islot2));
 
                 return Observable.Merge(
@@ -125,7 +125,7 @@ namespace ReactiveUI
             IObservedChange<TSender, T3> islot3 = slot3;
 
 			
-            return Observable.CreateWithDisposable<TRet>(subject => {
+            return Observable.Create<TRet>(subject => {
                 subject.OnNext(selector(islot1, islot2, islot3));
 
                 return Observable.Merge(
@@ -185,7 +185,7 @@ namespace ReactiveUI
             IObservedChange<TSender, T4> islot4 = slot4;
 
 			
-            return Observable.CreateWithDisposable<TRet>(subject => {
+            return Observable.Create<TRet>(subject => {
                 subject.OnNext(selector(islot1, islot2, islot3, islot4));
 
                 return Observable.Merge(
@@ -255,7 +255,7 @@ namespace ReactiveUI
             IObservedChange<TSender, T5> islot5 = slot5;
 
 			
-            return Observable.CreateWithDisposable<TRet>(subject => {
+            return Observable.Create<TRet>(subject => {
                 subject.OnNext(selector(islot1, islot2, islot3, islot4, islot5));
 
                 return Observable.Merge(
@@ -335,7 +335,7 @@ namespace ReactiveUI
             IObservedChange<TSender, T6> islot6 = slot6;
 
 			
-            return Observable.CreateWithDisposable<TRet>(subject => {
+            return Observable.Create<TRet>(subject => {
                 subject.OnNext(selector(islot1, islot2, islot3, islot4, islot5, islot6));
 
                 return Observable.Merge(
@@ -425,7 +425,7 @@ namespace ReactiveUI
             IObservedChange<TSender, T7> islot7 = slot7;
 
 			
-            return Observable.CreateWithDisposable<TRet>(subject => {
+            return Observable.Create<TRet>(subject => {
                 subject.OnNext(selector(islot1, islot2, islot3, islot4, islot5, islot6, islot7));
 
                 return Observable.Merge(
@@ -525,7 +525,7 @@ namespace ReactiveUI
             IObservedChange<TSender, T8> islot8 = slot8;
 
 			
-            return Observable.CreateWithDisposable<TRet>(subject => {
+            return Observable.Create<TRet>(subject => {
                 subject.OnNext(selector(islot1, islot2, islot3, islot4, islot5, islot6, islot7, islot8));
 
                 return Observable.Merge(
@@ -635,7 +635,7 @@ namespace ReactiveUI
             IObservedChange<TSender, T9> islot9 = slot9;
 
 			
-            return Observable.CreateWithDisposable<TRet>(subject => {
+            return Observable.Create<TRet>(subject => {
                 subject.OnNext(selector(islot1, islot2, islot3, islot4, islot5, islot6, islot7, islot8, islot9));
 
                 return Observable.Merge(
@@ -755,7 +755,7 @@ namespace ReactiveUI
             IObservedChange<TSender, T10> islot10 = slot10;
 
 			
-            return Observable.CreateWithDisposable<TRet>(subject => {
+            return Observable.Create<TRet>(subject => {
                 subject.OnNext(selector(islot1, islot2, islot3, islot4, islot5, islot6, islot7, islot8, islot9, islot10));
 
                 return Observable.Merge(
@@ -885,7 +885,7 @@ namespace ReactiveUI
             IObservedChange<TSender, T11> islot11 = slot11;
 
 			
-            return Observable.CreateWithDisposable<TRet>(subject => {
+            return Observable.Create<TRet>(subject => {
                 subject.OnNext(selector(islot1, islot2, islot3, islot4, islot5, islot6, islot7, islot8, islot9, islot10, islot11));
 
                 return Observable.Merge(
@@ -1025,7 +1025,7 @@ namespace ReactiveUI
             IObservedChange<TSender, T12> islot12 = slot12;
 
 			
-            return Observable.CreateWithDisposable<TRet>(subject => {
+            return Observable.Create<TRet>(subject => {
                 subject.OnNext(selector(islot1, islot2, islot3, islot4, islot5, islot6, islot7, islot8, islot9, islot10, islot11, islot12));
 
                 return Observable.Merge(

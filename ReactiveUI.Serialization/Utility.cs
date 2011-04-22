@@ -9,7 +9,6 @@ using System.Runtime.Serialization;
 using System.Collections.ObjectModel;
 using System.CodeDom;
 using System.Threading;
-using System.Windows;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Bson;
 

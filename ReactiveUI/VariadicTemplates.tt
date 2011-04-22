@@ -5,8 +5,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.Disposables;
-using System.Linq;
+using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using System.Diagnostics.Contracts;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -54,7 +54,7 @@ namespace ReactiveUI
 
 			<# } #>
 
-            return Observable.CreateWithDisposable<TRet>(subject => {
+            return Observable.Create<TRet>(subject => {
                 subject.OnNext(<#= selectorCall #>);
 
                 return Observable.Merge(<# for(int i=1; i <= length; i++) { #>

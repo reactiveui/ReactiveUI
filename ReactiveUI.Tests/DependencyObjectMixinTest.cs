@@ -1,9 +1,11 @@
-﻿using ReactiveUI;
+﻿using System.Reactive;
+using Microsoft.Reactive.Testing;
+using ReactiveUI;
 using ReactiveUI.Xaml;
 using Xunit;
 using System;
 using System.Linq;
-using System.Concurrency;
+using System.Reactive.Concurrency;
 using System.Collections.Generic;
 using System.Threading;
 using System.Windows;
@@ -36,14 +38,14 @@ namespace ReactiveUI.Tests
                     fixture.TestString = v;
                 }
 
-                sched.Run();
+                sched.Start();
                 input.AssertAreEqual(output.Select(x => x.Value));
                 foreach (var v in output) {
                     Assert.Equal(fixture, v.Sender);
                     Assert.Equal("TestString", v.PropertyName);
                 }
 
-                return new Unit();
+                return Unit.Value;
             });
         }
     }

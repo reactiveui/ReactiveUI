@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Reactive;
+using System.Reactive.Subjects;
 using System.Windows.Input;
 using ReactiveUI;
 

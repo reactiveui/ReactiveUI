@@ -1,8 +1,9 @@
 ﻿using System;
-using System.Concurrency;
-using System.Linq;
+using System.Reactive.Concurrency;
+using System.Reactive.Linq;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Reactive.Subjects;
 
 namespace ReactiveUI
 {

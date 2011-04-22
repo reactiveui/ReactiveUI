@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
-using System.Concurrency;
+using System.Reactive.Concurrency;
 
 namespace ReactiveUI
 {

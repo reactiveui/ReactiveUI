@@ -1,4 +1,6 @@
-﻿using System.Concurrency;
+﻿using System.Reactive.Linq;
+using System.Reactive.Subjects;
+using Microsoft.Reactive.Testing;
 using Xunit;
 using System;
 using System.Linq;
@@ -32,7 +34,7 @@ namespace ReactiveUI.Tests
 
                 input.Run(source.OnNext);
 
-                sched.Run();
+                sched.Start();
                 return output;
             });
 

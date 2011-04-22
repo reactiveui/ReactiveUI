@@ -1,4 +1,5 @@
-﻿using System.Concurrency;
+﻿using System.Reactive.Linq;
+using Microsoft.Reactive.Testing;
 using Xunit;
 using System;
 using System.Linq;
@@ -138,7 +139,7 @@ namespace ReactiveUI.Tests
             var fixture = (new TestScheduler()).With(sched => {
                 var f = input.ToObservable(sched).CreateCollection();
 
-                sched.Run();
+                sched.Start();
                 return f;
             });
             

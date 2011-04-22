@@ -1,9 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Concurrency;
-using System.Disposables;
-using System.Reactive.Testing;
+using System.Reactive;
+using System.Reactive.Disposables;
+using Microsoft.Reactive.Testing;
 using ReactiveUI;
+using System.Reactive.Concurrency;
 
 namespace ReactiveUI.Testing
 {
@@ -18,7 +18,8 @@ namespace ReactiveUI.Testing
         /// <param name="sched">The scheduler to use.</param>
         /// <returns>An object that when disposed, restores the previous default
         /// schedulers.</returns>
-        public static IDisposable WithScheduler(IScheduler sched) {
+        public static IDisposable WithScheduler(IScheduler sched)
+        {
             var prevDef = RxApp.DeferredScheduler;
             var prevTask = RxApp.TaskpoolScheduler;
 
@@ -43,7 +44,7 @@ namespace ReactiveUI.Testing
         public static TRet With<TRet>(this IScheduler sched, Func<IScheduler, TRet> block)
         {
             TRet ret;
-            using(WithScheduler(sched)) {
+            using (WithScheduler(sched)) {
                 ret = block(sched);
             }
             return ret;
@@ -72,7 +73,7 @@ namespace ReactiveUI.Testing
         public static TRet With<TRet>(this TestScheduler sched, Func<TestScheduler, TRet> block)
         {
             TRet ret;
-            using(WithScheduler(sched)) {
+            using (WithScheduler(sched)) {
                 ret = block(sched);
             }
             return ret;
@@ -89,6 +90,8 @@ namespace ReactiveUI.Testing
             sched.With(x => { block(x); return 0; });
         }
 
+
+
         /// <summary>
         /// RunToMilliseconds moves the TestScheduler to the specified time in
         /// milliseconds.
@@ -99,7 +102,7 @@ namespace ReactiveUI.Testing
         public static void RunToMilliseconds(this TestScheduler sched, double milliseconds)
         {
             Console.WriteLine("Running to time t={0}", milliseconds);
-            sched.RunTo(sched.FromTimeSpan(TimeSpan.FromMilliseconds(milliseconds)));
+            sched.AdvanceTo(sched.FromTimeSpan(TimeSpan.FromMilliseconds(milliseconds)));
         }
 
         /// <summary>
@@ -115,7 +118,7 @@ namespace ReactiveUI.Testing
         {
             return new Recorded<Notification<T>>(
                 sched.FromTimeSpan(TimeSpan.FromMilliseconds(milliseconds)),
-                new Notification<T>.OnNext(value));
+                Notification.CreateOnNext<T>(value));
         }
 
         /// <summary>
@@ -132,7 +135,7 @@ namespace ReactiveUI.Testing
         {
             return new Recorded<Notification<T>>(
                 sched.FromTimeSpan(TimeSpan.FromMilliseconds(milliseconds)),
-                new Notification<T>.OnError(ex));
+                Notification.CreateOnError<T>(ex));
         }
         
         /// <summary>
@@ -147,7 +150,12 @@ namespace ReactiveUI.Testing
         {
             return new Recorded<Notification<T>>(
                 sched.FromTimeSpan(TimeSpan.FromMilliseconds(milliseconds)),
-                new Notification<T>.OnCompleted());
+                Notification.CreateOnCompleted<T>());
+        }
+
+        public static long FromTimeSpan(this TestScheduler sched, TimeSpan span)
+        {
+            return span.Ticks;
         }
     }
 }

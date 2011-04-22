@@ -43,7 +43,9 @@ namespace ReactiveUI.Serialization.Tests
             };
 
             // TODO: This test sucks out loud
-            expected.Run(x => Assert.True(json.Contains(x)));
+            foreach(var v in expected) {
+                Assert.True(json.Contains(v));
+            }
         }
     }
 }
