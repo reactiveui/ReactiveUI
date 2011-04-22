@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Concurrency;
+using System.Reactive.Concurrency;
 using System.Linq;
+using System.Reactive.Subjects;
+using Microsoft.Reactive.Testing;
 using Xunit;
 using ReactiveUI.Testing;
 
@@ -106,11 +108,11 @@ namespace ReactiveUI.Tests
                 Assert.Null(fixture.Child.IsNotNullString);
 
                 input.OnNext("Foo");
-                sched.Run();
+                sched.Start();
                 Assert.Equal("Foo", fixture.Child.IsNotNullString);
 
                 input.OnNext("Bar");
-                sched.Run();
+                sched.Start();
                 Assert.Equal("Bar", fixture.Child.IsNotNullString);
             });
         }
@@ -127,13 +129,13 @@ namespace ReactiveUI.Tests
                 Assert.Null(fixture.Child.IsNotNullString);
 
                 input.OnNext("Foo");
-                sched.Run();
+                sched.Start();
                 Assert.Equal("Foo", fixture.Child.IsNotNullString);
 
                 subscription.Dispose();
 
                 input.OnNext("Bar");
-                sched.Run();
+                sched.Start();
                 Assert.Equal("Foo", fixture.Child.IsNotNullString);
             });
         }
@@ -150,15 +152,15 @@ namespace ReactiveUI.Tests
                 Assert.Null(fixture.Child.IsNotNullString);
 
                 input.OnNext("Foo");
-                sched.Run();
+                sched.Start();
                 Assert.Equal("Foo", fixture.Child.IsNotNullString);
 
                 fixture.Child = new TestFixture();
-                sched.Run();
+                sched.Start();
                 Assert.Null(fixture.Child.IsNotNullString);
 
                 input.OnNext("Bar");
-                sched.Run();
+                sched.Start();
                 Assert.Equal("Bar", fixture.Child.IsNotNullString);
             });
         }

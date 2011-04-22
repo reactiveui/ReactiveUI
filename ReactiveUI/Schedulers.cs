@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Concurrency;
+using System.Reactive.Concurrency;
 
 namespace ReactiveUI
 {

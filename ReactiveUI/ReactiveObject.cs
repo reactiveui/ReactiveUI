@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
-using System.Disposables;
+using System.Reactive.Disposables;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reactive.Subjects;
 using System.Reflection;
 using System.Runtime.Serialization;
 using System.Threading;
-using System.Concurrency;
+using System.Reactive.Concurrency;
 
 namespace ReactiveUI
 {

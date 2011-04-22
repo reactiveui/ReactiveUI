@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Disposables;
+using System.Reactive.Disposables;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reactive.Linq;
 using System.Reflection;
 
 namespace ReactiveUI
@@ -40,7 +41,7 @@ namespace ReactiveUI
             }
 
             object current = This.Sender;
-            string[] propNames = null;;
+            string[] propNames = null;
             lock(propStringToNameCache) { propNames = propStringToNameCache.Get(This.PropertyName); }
 
             PropertyInfo pi;

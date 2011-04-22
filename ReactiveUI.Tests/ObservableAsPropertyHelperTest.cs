@@ -1,11 +1,13 @@
-﻿using ReactiveUI;
+﻿using System.Reactive.Linq;
+using System.Reactive.Subjects;
+using Microsoft.Reactive.Testing;
+using ReactiveUI;
 using ReactiveUI.Testing;
 using Xunit;
 using System;
 using System.Linq;
-using System.Concurrency;
 using System.Collections.Generic;
-using System.Reactive.Testing;
+using Microsoft.Reactive.Testing;
 
 namespace ReactiveUI.Tests
 {
@@ -21,7 +23,7 @@ namespace ReactiveUI.Tests
                 var fixture = new ObservableAsPropertyHelper<int>(input,
                     x => output.Add(x), -5);
 
-                sched.Run();
+                sched.Start();
             });
 
             // Note: Why doesn't the list match the above one? We're supposed
@@ -41,11 +43,11 @@ namespace ReactiveUI.Tests
             Assert.Equal(-5, fixture.Value);
             (new[] { 1, 2, 3, 4 }).Run(x => input.OnNext(x));
 
-            sched.Run();
+            sched.Start();
             Assert.Equal(4, fixture.Value);
 
             input.OnCompleted();
-            sched.Run();
+            sched.Start();
             Assert.Equal(4, fixture.Value);
         }
 
@@ -61,13 +63,13 @@ namespace ReactiveUI.Tests
             Assert.Equal(-5, fixture.Value);
             (new[] { 1, 2, 3, 4 }).Run(x => input.OnNext(x));
 
-            sched.Run();
+            sched.Start();
 
             Assert.Equal(4, fixture.Value);
 
             input.OnError(new Exception("Die!"));
 
-            sched.Run();
+            sched.Start();
 
             try {
                 Assert.Equal(4, fixture.Value);

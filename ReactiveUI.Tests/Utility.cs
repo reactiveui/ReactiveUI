@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Concurrency;
+using System.Reactive.Concurrency;
 using System.Linq;
 using Xunit;
 
@@ -53,6 +53,36 @@ namespace ReactiveUI.Tests
 
         public DateTimeOffset Now {
             get { return InnerScheduler.Now; }
+        }
+
+        public IDisposable Schedule<TState>(TState state, Func<IScheduler, TState, IDisposable> action, DateTimeOffset dueTime)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IDisposable Schedule<TState>(TState state, Func<IScheduler, TState, IDisposable> action, TimeSpan dueTime)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IDisposable Schedule<TState>(TState state, Func<IScheduler, TState, IDisposable> action)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    internal static class CompatMixins
+    {
+        public static void Run<T>(this IEnumerable<T> This, Action<T> block)
+        {
+            foreach (var v in This) {
+                block(v); 
+            }
+        }
+
+        public static IEnumerable<T> SkipLast<T>(this IEnumerable<T> This, int count)
+        {
+            return This.Take(This.Count() - count);
         }
     }
 }

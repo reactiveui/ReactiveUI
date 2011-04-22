@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq.Expressions;
+using System.Reactive.Subjects;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Data;

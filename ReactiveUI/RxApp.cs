@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Concurrency;
+using System.Reactive.Concurrency;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Windows;
 
 namespace ReactiveUI
 {
@@ -187,16 +186,6 @@ namespace ReactiveUI
         public static void EnableDebugMode()
         {
             LoggerFactory = (x => new StdErrLogger());
-
-#if !SILVERLIGHT && !IOS
-            // NOTE: This is a handy feature for writing desktop applications;
-            // it crashes the app whenever a dispatcher item would have hung the
-            // UI.
-            // XXX: This error message wording sucks
-            DeferredScheduler = new StopwatchScheduler(TimeSpan.FromMilliseconds(400), 
-                "The code that has just executed has prevented the UI from redrawing",
-                Scheduler.Dispatcher);
-#endif
         }
 
 #if FALSE
@@ -349,12 +338,18 @@ namespace ReactiveUI
         }
     }
 
-    internal static class PublishToSubjectMixin
+    internal static class CompatMixins
     {
-        public static IObservable<T> PublishToSubject<T>(this IObservable<T> This, ISubject<T, T> target)
+        public static void Run<T>(this IEnumerable<T> This, Action<T> block)
         {
-            This.Subscribe(target);
-            return target;
+            foreach (var v in This) {
+                block(v); 
+            }
+        }
+
+        public static IEnumerable<T> SkipLast<T>(this IEnumerable<T> This, int count)
+        {
+            return This.Take(This.Count() - count);
         }
     }
 }

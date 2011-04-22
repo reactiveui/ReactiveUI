@@ -1,7 +1,8 @@
 ﻿using System;
-using System.Concurrency;
 using System.Linq;
+using System.Reactive.Linq;
 using System.Threading;
+using Microsoft.Reactive.Testing;
 using ReactiveUI.Testing;
 using Xunit;
 
@@ -27,19 +28,19 @@ namespace ReactiveUI.Tests
                 });
                 t.Start();
 
-                sched.RunTo(sched.FromTimeSpan(TimeSpan.FromMilliseconds(500)));
+                sched.AdvanceTo(sched.FromTimeSpan(TimeSpan.FromMilliseconds(500)));
 
                 // NB: The Thread.Sleep is to let our other thread catch up
                 Thread.Sleep(100);
                 Assert.Equal(0, result);
 
-                sched.RunTo(sched.FromTimeSpan(TimeSpan.FromMilliseconds(1200)));
+                sched.AdvanceTo(sched.FromTimeSpan(TimeSpan.FromMilliseconds(1200)));
 
                 Thread.Sleep(100);
                 Assert.Equal(25, result);
 
                 this.Log().Info("Running to end");
-                sched.Run();
+                sched.Start();
                 t.Join();
                 Assert.Equal(25, result);
             });
@@ -57,14 +58,14 @@ namespace ReactiveUI.Tests
             int result = 0;
             input.ToObservable(sched).SelectMany<int, int>(x => (IObservable<int>)fixture.AsyncGet(x)).Subscribe(x => result += x);
 
-            sched.RunTo(sched.FromTimeSpan(TimeSpan.FromMilliseconds(500)));
+            sched.AdvanceTo(sched.FromTimeSpan(TimeSpan.FromMilliseconds(500)));
             Assert.Equal(0, result);
 
-            sched.RunTo(sched.FromTimeSpan(TimeSpan.FromMilliseconds(1200)));
+            sched.AdvanceTo(sched.FromTimeSpan(TimeSpan.FromMilliseconds(1200)));
             Assert.Equal(25, result);
 
             this.Log().Info("Running to end");
-            sched.Run();
+            sched.Start();
             Assert.Equal(25, result);
         }
 
@@ -79,11 +80,11 @@ namespace ReactiveUI.Tests
             var fixture = new ObservableAsyncMRUCache<int, int>(x => Observable.Return(x*5).Delay(delay, sched), 2, 2);
 
             var results = input.ToObservable().SelectMany(fixture.AsyncGet).CreateCollection();
-            sched.RunTo(sched.FromTimeSpan(TimeSpan.FromMilliseconds(500)));
+            sched.AdvanceTo(sched.FromTimeSpan(TimeSpan.FromMilliseconds(500)));
 
             Assert.Equal(0, fixture.CachedValues().Count());
 
-            sched.RunTo(sched.FromTimeSpan(TimeSpan.FromMilliseconds(1500)));
+            sched.AdvanceTo(sched.FromTimeSpan(TimeSpan.FromMilliseconds(1500)));
 
             var output = fixture.CachedValues().ToArray();
             Assert.IsTrue(output.Length == 2);
@@ -103,16 +104,16 @@ namespace ReactiveUI.Tests
             int result = 0;
             input.ToObservable(sched).SelectMany<int, int>(x => (IObservable<int>)fixture.AsyncGet(x)).Subscribe(x => result += x);
 
-            sched.RunTo(sched.FromTimeSpan(TimeSpan.FromMilliseconds(500)));
+            sched.AdvanceTo(sched.FromTimeSpan(TimeSpan.FromMilliseconds(500)));
             Assert.Equal(0, result);
 
-            sched.RunTo(sched.FromTimeSpan(TimeSpan.FromMilliseconds(1500)));
+            sched.AdvanceTo(sched.FromTimeSpan(TimeSpan.FromMilliseconds(1500)));
             Assert.Equal(1*5 + 2*5 + 1*5, result);
 
-            sched.RunTo(sched.FromTimeSpan(TimeSpan.FromMilliseconds(2500)));
+            sched.AdvanceTo(sched.FromTimeSpan(TimeSpan.FromMilliseconds(2500)));
             Assert.Equal(1*5 + 2*5 + 3*5 + 4*5 + 1*5, result);
 
-            sched.RunTo(sched.FromTimeSpan(TimeSpan.FromMilliseconds(5000)));
+            sched.AdvanceTo(sched.FromTimeSpan(TimeSpan.FromMilliseconds(5000)));
             Assert.Equal(1*5 + 2*5 + 3*5 + 4*5 + 1*5, result);
         }
 
@@ -156,15 +157,15 @@ namespace ReactiveUI.Tests
                     completed++;
                 }, ex => exception = exception ?? ex);
 
-            sched.RunTo(sched.FromTimeSpan(TimeSpan.FromMilliseconds(500)));
+            sched.AdvanceTo(sched.FromTimeSpan(TimeSpan.FromMilliseconds(500)));
             Assert.Null(exception);
             Assert.Equal(0, completed);
 
-            sched.RunTo(sched.FromTimeSpan(TimeSpan.FromMilliseconds(1500)));
+            sched.AdvanceTo(sched.FromTimeSpan(TimeSpan.FromMilliseconds(1500)));
             Assert.NotNull(exception);
             Assert.Equal(2, completed);
 
-            sched.RunTo(sched.FromTimeSpan(TimeSpan.FromMilliseconds(7500)));
+            sched.AdvanceTo(sched.FromTimeSpan(TimeSpan.FromMilliseconds(7500)));
             Assert.NotNull(exception);
             Assert.Equal(4, completed);
             this.Log().Info(exception);

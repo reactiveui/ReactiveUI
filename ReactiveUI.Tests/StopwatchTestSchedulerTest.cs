@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Concurrency;
 using System.Linq;
+using System.Reactive.Concurrency;
 using System.Threading;
 using ReactiveUI;
 using Xunit;

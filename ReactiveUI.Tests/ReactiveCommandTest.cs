@@ -1,11 +1,15 @@
-﻿using ReactiveUI;
+﻿using System.Reactive;
+using System.Reactive.Concurrency;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
+using Microsoft.Reactive.Testing;
+using ReactiveUI;
 using Xunit;
 using System;
 using System.Linq;
-using System.Concurrency;
 using System.Collections.Generic;
 using System.Threading;
-using System.Reactive.Testing;
+using Microsoft.Reactive.Testing;
 using ReactiveUI.Xaml;
 using ReactiveUI.Testing;
 
@@ -27,10 +31,10 @@ namespace ReactiveUI.Tests
             fixture.Subscribe(x => result = x as string);
 
             fixture.Execute("Test");
-            sched.Run();
+            sched.Start();
             Assert.Equal("Test", result);
             fixture.Execute("Test2");
-            sched.Run();
+            sched.Start();
             Assert.Equal("Test2", result);
         }
 
@@ -48,7 +52,7 @@ namespace ReactiveUI.Tests
                 input.Run(x => {
                     this.Log().InfoFormat("input = {0}", x);
                     can_execute.OnNext(x);
-                    sched.Run();
+                    sched.Start();
                     Assert.Equal(x, fixture.CanExecute(null));
                 });
 
@@ -58,7 +62,7 @@ namespace ReactiveUI.Tests
                 return changes_as_observable;
             });
 
-            input.DistinctUntilChanged().AssertAreEqual(result.ToList());
+            input.Distinct().AssertAreEqual(result.ToList());
         }
 
         [Fact]
@@ -329,7 +333,7 @@ namespace ReactiveUI.Tests
 
 
                 fixture.Execute(1);
-                sched.Run();
+                sched.Start();
 
                 Assert.Equal(3, results.Count);
                 Assert.Equal(0, latestInFlight);

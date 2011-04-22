@@ -1,8 +1,9 @@
 ﻿using System;
-using System.Concurrency;
+using System.Reactive.Concurrency;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using Microsoft.Reactive.Testing;
 using Xunit;
 using ReactiveUI.Testing;
 using ReactiveUI.Tests;
@@ -109,7 +110,7 @@ namespace ReactiveUI.Serialization.Tests
 
                     var syncPoint = fixture.CreateSyncPoint(input);
 
-                    sched.RunTo(sched.FromTimeSpan(TimeSpan.FromDays(1.0)));
+                    sched.AdvanceTo(sched.FromTimeSpan(TimeSpan.FromDays(1.0)));
 
                     Assert.Equal(3, fixture.GetObjectCount());
                     Assert.True(fixture.GetAllObjectHashes().Contains(input.ContentHash));
@@ -150,7 +151,7 @@ namespace ReactiveUI.Serialization.Tests
                     var syncPoint = fixture.CreateSyncPoint(input, null, DateTimeOffset.Now);
 
                     // N.B. This doesn't appear to actually affect IScheduler.Now :-/
-                    sched.RunTo(sched.FromTimeSpan(TimeSpan.FromDays(1.0)));
+                    sched.AdvanceTo(sched.FromTimeSpan(TimeSpan.FromDays(1.0)));
 
                     Assert.Equal(input.ContentHash, fixture.GetLatestRootObject<RootSerializationTestObject>().ContentHash);
                     Assert.Equal(null, fixture.GetLatestRootObject<RootSerializationTestObject>("SomeWeirdQualifier"));

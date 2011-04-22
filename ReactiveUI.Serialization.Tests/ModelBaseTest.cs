@@ -1,9 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.Concurrency;
 using System.Linq;
+using System.Reactive.Linq;
 using System.Text;
 using Microsoft.Pex.Framework;
+using Microsoft.Reactive.Testing;
 using ReactiveUI.Testing;
 using ReactiveUI.Tests;
 using Microsoft.Pex.Framework.Generated;
@@ -39,9 +40,11 @@ namespace ReactiveUI.Serialization.Tests
                 fixture.Changing.Subscribe(output_changing.Add);
                 fixture.Changed.Subscribe(output_changed.Add);
 
-                setters.Run(x => fixture.TestString = x);
+                foreach (var v in setters) {
+                    fixture.TestString = v; 
+                }
 
-                sched.Run();
+                sched.Start();
 
                 PexAssert.AreEqual(setters.Uniq().Count(), output_changed.Count);
                 PexAssert.AreEqual(setters.Uniq().Count(), output_changing.Count);
@@ -63,7 +66,7 @@ namespace ReactiveUI.Serialization.Tests
                     output[x] = fixture.ContentHash;
                 });
 
-                sched.Run();
+                sched.Start();
 
                 PexAssert.AreDistinctValues(output.Values.ToArray());
             });

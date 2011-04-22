@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Disposables;
+using System.Reactive.Disposables;
 using System.Linq;
 using System.Diagnostics.Contracts;
 using System.Linq.Expressions;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using System.Reflection;
 using System.Text;
 

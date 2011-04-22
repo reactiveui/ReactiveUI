@@ -4,10 +4,12 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Collections.Specialized;
 using System.Linq;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using System.Runtime.Serialization;
 using System.Diagnostics.Contracts;
 using System.Threading;
-using System.Disposables;
+using System.Reactive.Disposables;
 
 namespace ReactiveUI
 {
@@ -42,27 +44,27 @@ namespace ReactiveUI
                 foreach(var v in List) { this.Add(v); }
             }
 
-            var ocChangedEvent = Observable.FromEvent<NotifyCollectionChangedEventArgs>(this, "CollectionChanged");
+            var ocChangedEvent = Observable.FromEvent<NotifyCollectionChangedEventHandler, NotifyCollectionChangedEventArgs>(
+                x => CollectionChanged += x, x => CollectionChanged -= x);
 
             _ItemsAdded = ocChangedEvent
-                .Do(Console.WriteLine)
                 .Where(x =>
-                    x.EventArgs.Action == NotifyCollectionChangedAction.Add ||
-                    x.EventArgs.Action == NotifyCollectionChangedAction.Replace)
+                    x.Action == NotifyCollectionChangedAction.Add ||
+                    x.Action == NotifyCollectionChangedAction.Replace)
                 .SelectMany(x =>
-                    (x.EventArgs.NewItems != null ? x.EventArgs.NewItems.OfType<T>() : Enumerable.Empty<T>())
+                    (x.NewItems != null ? x.NewItems.OfType<T>() : Enumerable.Empty<T>())
                     .ToObservable())
-                .PublishToSubject(new Subject<T>(RxApp.DeferredScheduler));
+                .Multicast(new Subject<T>(RxApp.DeferredScheduler));
 
             _ItemsRemoved = ocChangedEvent
                 .Where(x =>
-                    x.EventArgs.Action == NotifyCollectionChangedAction.Remove ||
-                    x.EventArgs.Action == NotifyCollectionChangedAction.Replace ||
-                    x.EventArgs.Action == NotifyCollectionChangedAction.Reset)
+                    x.Action == NotifyCollectionChangedAction.Remove ||
+                    x.Action == NotifyCollectionChangedAction.Replace ||
+                    x.Action == NotifyCollectionChangedAction.Reset)
                 .SelectMany(x =>
-                    (x.EventArgs.OldItems != null ? x.EventArgs.OldItems.OfType<T>() : Enumerable.Empty<T>())
+                    (x.OldItems != null ? x.OldItems.OfType<T>() : Enumerable.Empty<T>())
                     .ToObservable())
-                .PublishToSubject(new Subject<T>(RxApp.DeferredScheduler));
+                .Multicast(new Subject<T>(RxApp.DeferredScheduler));
 
             _CollectionCountChanging = Observable.Merge(
                 _BeforeItemsAdded.Select(_ => this.Count),
@@ -447,7 +449,7 @@ namespace ReactiveUI
 
             // On a timer, dequeue items from queue if they are available
             var queue = new Queue<T>();
-            var disconnect = Observable.Timer(withDelay.Value, withDelay.Value, RxApp.DeferredScheduler)
+            var disconnect = Observable.Timer(withDelay.Value, RxApp.DeferredScheduler)
                 .Subscribe(_ => {
                     if (queue.Count > 0) { 
                         ret.Add(queue.Dequeue());
@@ -515,25 +517,26 @@ namespace ReactiveUI
             Contract.Ensures(Contract.Result<ReactiveCollection<TNew>>().Count == This.Count);
 #endif
             var ret = new ReactiveCollection<TNew>(This.Select(selector));
-            var coll_changed = Observable.FromEvent<NotifyCollectionChangedEventArgs>(This, "CollectionChanged");
+            var coll_changed = Observable.FromEvent<NotifyCollectionChangedEventHandler, NotifyCollectionChangedEventArgs>(
+                x => This.CollectionChanged += x, x => This.CollectionChanged -= x);
 
             coll_changed.Subscribe(x => {
-                switch(x.EventArgs.Action) {
+                switch(x.Action) {
                 case NotifyCollectionChangedAction.Add:
                 case NotifyCollectionChangedAction.Remove:
                 case NotifyCollectionChangedAction.Replace:
                     // NB: SL4 fills in OldStartingIndex with -1 on Replace :-/
-                    int old_index = (x.EventArgs.Action == NotifyCollectionChangedAction.Replace ?
-                        x.EventArgs.NewStartingIndex : x.EventArgs.OldStartingIndex);
+                    int old_index = (x.Action == NotifyCollectionChangedAction.Replace ?
+                        x.NewStartingIndex : x.OldStartingIndex);
 
-                    if (x.EventArgs.OldItems != null) {
-                        foreach(object _ in x.EventArgs.OldItems) {
+                    if (x.OldItems != null) {
+                        foreach(object _ in x.OldItems) {
                             ret.RemoveAt(old_index);
                         }
                     }
-                    if (x.EventArgs.NewItems != null) {
-                        foreach(T item in x.EventArgs.NewItems.Cast<T>()) {
-                            ret.Insert(x.EventArgs.NewStartingIndex, selector(item));
+                    if (x.NewItems != null) {
+                        foreach(T item in x.NewItems.Cast<T>()) {
+                            ret.Insert(x.NewStartingIndex, selector(item));
                         }
                     }
                     break;

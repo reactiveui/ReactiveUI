@@ -118,7 +118,6 @@
     <Compile Include="ReactiveObject.cs" />
     <Compile Include="MakeObjectReactiveHelper.cs" />
     <Compile Include="RxApp.cs" />
-    <Compile Include="Schedulers.cs" />
     <Compile Include="Validation.cs" />
     <Compile Include="VariadicTemplates.cs">
       <AutoGen>True</AutoGen>
