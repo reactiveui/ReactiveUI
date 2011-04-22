@@ -47,18 +47,6 @@
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
-    <Reference Include="System.CoreEx">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\ext\Net35\System.CoreEx.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Interactive">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\ext\Net35\System.Interactive.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Observable">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\ext\Net35\System.Observable.dll</HintPath>
-    </Reference>
     <Reference Include="System.Reactive">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\ext\Net35\System.Reactive.dll</HintPath>
