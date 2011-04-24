@@ -60,7 +60,7 @@ namespace ReactiveUI
             // have a value
             subj.OnNext(initialValue);
 
-            _source = observable.DistinctUntilChanged().Multicast(subj);
+            _source = observable.DistinctUntilChanged().Multicast(subj).RefCount();
         }
 
         /// <summary>
