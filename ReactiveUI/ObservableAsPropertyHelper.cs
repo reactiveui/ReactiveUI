@@ -24,7 +24,7 @@ namespace ReactiveUI
     {
         T _lastValue;
         Exception _lastException;
-        readonly IObservable<T> _source;
+        readonly IConnectableObservable<T> _source;
 
         /// <summary>
         /// Constructs an ObservableAsPropertyHelper object.
@@ -60,7 +60,8 @@ namespace ReactiveUI
             // have a value
             subj.OnNext(initialValue);
 
-            _source = observable.DistinctUntilChanged().Multicast(subj).RefCount();
+            _source = observable.DistinctUntilChanged().Multicast(subj);
+            _source.Connect();
         }
 
         /// <summary>
