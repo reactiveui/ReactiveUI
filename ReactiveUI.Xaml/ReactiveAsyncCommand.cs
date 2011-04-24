@@ -37,7 +37,7 @@ namespace ReactiveUI.Xaml
         {
             commonCtor(maximumConcurrent, scheduler);
             if (canExecute != null) {
-                canExecute.Multicast(_canExecuteSubject);
+                canExecute.Multicast(_canExecuteSubject).RefCount();
             }
         }
 
@@ -95,7 +95,7 @@ namespace ReactiveUI.Xaml
                     this.Log().Fatal("Reference count dropped below zero");
                 }
                 return ret;
-            }).Multicast(new BehaviorSubject<int>(0)).DebugObservable("InflightCount");
+            }).Multicast(new BehaviorSubject<int>(0)).RefCount();
 
             bool startCE = (_canExecuteExplicitFunc != null ? _canExecuteExplicitFunc(null) : true);
             CanExecuteObservable = Observable.CombineLatest(
@@ -172,7 +172,7 @@ namespace ReactiveUI.Xaml
             Contract.Requires(calculationFunc != null);
 
             var taskSubj = new Subject<object>(scheduler ?? RxApp.TaskpoolScheduler);
-            _executeSubject.Multicast(taskSubj);
+            _executeSubject.Multicast(taskSubj).RefCount();
 
             var unit = new Unit();
             return taskSubj
@@ -211,7 +211,7 @@ namespace ReactiveUI.Xaml
             Contract.Requires(calculationFunc != null);
 
             var taskSubj = new Subject<object>(RxApp.TaskpoolScheduler);
-            _executeSubject.Multicast(taskSubj);
+            _executeSubject.Multicast(taskSubj).RefCount();
 
             var unit = new Unit();
             var ret = taskSubj

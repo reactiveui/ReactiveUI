@@ -44,8 +44,13 @@ namespace ReactiveUI
                 foreach(var v in List) { this.Add(v); }
             }
 
+            var ocChangedEvent = new Subject<NotifyCollectionChangedEventArgs>();
+            CollectionChanged += (o, e) => ocChangedEvent.OnNext(e);
+
+            /* XXX: This fails for no apparent reason
             var ocChangedEvent = Observable.FromEvent<NotifyCollectionChangedEventHandler, NotifyCollectionChangedEventArgs>(
                 x => CollectionChanged += x, x => CollectionChanged -= x);
+             */
 
             _ItemsAdded = ocChangedEvent
                 .Where(x =>
@@ -54,7 +59,7 @@ namespace ReactiveUI
                 .SelectMany(x =>
                     (x.NewItems != null ? x.NewItems.OfType<T>() : Enumerable.Empty<T>())
                     .ToObservable())
-                .Multicast(new Subject<T>(RxApp.DeferredScheduler));
+                .Multicast(new Subject<T>(RxApp.DeferredScheduler)).RefCount();
 
             _ItemsRemoved = ocChangedEvent
                 .Where(x =>
@@ -64,7 +69,7 @@ namespace ReactiveUI
                 .SelectMany(x =>
                     (x.OldItems != null ? x.OldItems.OfType<T>() : Enumerable.Empty<T>())
                     .ToObservable())
-                .Multicast(new Subject<T>(RxApp.DeferredScheduler));
+                .Multicast(new Subject<T>(RxApp.DeferredScheduler)).RefCount();
 
             _CollectionCountChanging = Observable.Merge(
                 _BeforeItemsAdded.Select(_ => this.Count),
@@ -517,8 +522,14 @@ namespace ReactiveUI
             Contract.Ensures(Contract.Result<ReactiveCollection<TNew>>().Count == This.Count);
 #endif
             var ret = new ReactiveCollection<TNew>(This.Select(selector));
+
+            var coll_changed = new Subject<NotifyCollectionChangedEventArgs>();
+            This.CollectionChanged += (o, e) => coll_changed.OnNext(e);
+
+            /* XXX: Ditto as from above
             var coll_changed = Observable.FromEvent<NotifyCollectionChangedEventHandler, NotifyCollectionChangedEventArgs>(
                 x => This.CollectionChanged += x, x => This.CollectionChanged -= x);
+             */
 
             coll_changed.Subscribe(x => {
                 switch(x.Action) {
