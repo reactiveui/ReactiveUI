@@ -36,8 +36,8 @@ namespace ReactiveUI
 
         void setupRx(IEnumerable<T> List = null)
         {
-            _BeforeItemsAdded = new Subject<T>(RxApp.DeferredScheduler);
-            _BeforeItemsRemoved = new Subject<T>(RxApp.DeferredScheduler);
+            _BeforeItemsAdded = new ScheduledSubject<T>(RxApp.DeferredScheduler);
+            _BeforeItemsRemoved = new ScheduledSubject<T>(RxApp.DeferredScheduler);
             aboutToClear = new Subject<int>();
 
             if (List != null) {
@@ -59,7 +59,7 @@ namespace ReactiveUI
                 .SelectMany(x =>
                     (x.NewItems != null ? x.NewItems.OfType<T>() : Enumerable.Empty<T>())
                     .ToObservable())
-                .Multicast(new Subject<T>(RxApp.DeferredScheduler)).RefCount();
+                .Multicast(new ScheduledSubject<T>(RxApp.DeferredScheduler)).RefCount();
 
             _ItemsRemoved = ocChangedEvent
                 .Where(x =>
@@ -69,7 +69,7 @@ namespace ReactiveUI
                 .SelectMany(x =>
                     (x.OldItems != null ? x.OldItems.OfType<T>() : Enumerable.Empty<T>())
                     .ToObservable())
-                .Multicast(new Subject<T>(RxApp.DeferredScheduler)).RefCount();
+                .Multicast(new ScheduledSubject<T>(RxApp.DeferredScheduler)).RefCount();
 
             _CollectionCountChanging = Observable.Merge(
                 _BeforeItemsAdded.Select(_ => this.Count),
@@ -81,8 +81,8 @@ namespace ReactiveUI
                 .Select(x => this.Count)
                 .DistinctUntilChanged();
 
-            _ItemChanging = new Subject<IObservedChange<T, object>>(RxApp.DeferredScheduler);
-            _ItemChanged = new Subject<IObservedChange<T,object>>(RxApp.DeferredScheduler);
+            _ItemChanging = new ScheduledSubject<IObservedChange<T, object>>(RxApp.DeferredScheduler);
+            _ItemChanged = new ScheduledSubject<IObservedChange<T,object>>(RxApp.DeferredScheduler);
 
             // TODO: Fix up this selector nonsense once SL/WP7 gets Covariance
             _Changing = Observable.Merge(
@@ -158,7 +158,7 @@ namespace ReactiveUI
         }
 
         [IgnoreDataMember]
-        protected Subject<T> _BeforeItemsAdded;
+        protected ISubject<T> _BeforeItemsAdded;
 
         /// <summary>
         /// Fires before an item is going to be added to the collection.
@@ -179,7 +179,7 @@ namespace ReactiveUI
         }
 
         [IgnoreDataMember]
-        protected Subject<T> _BeforeItemsRemoved;
+        protected ISubject<T> _BeforeItemsRemoved;
 
         /// <summary>
         /// Fires before an item will be removed from a collection, providing
@@ -215,7 +215,7 @@ namespace ReactiveUI
         }
 
         [IgnoreDataMember]
-        protected Subject<IObservedChange<T, object>> _ItemChanging;
+        protected ISubject<IObservedChange<T, object>> _ItemChanging;
 
         /// <summary>
         /// Provides Item Changed notifications for any item in collection that
@@ -230,7 +230,7 @@ namespace ReactiveUI
         }
 
         [IgnoreDataMember]
-        protected Subject<IObservedChange<T, object>> _ItemChanged;
+        protected ISubject<IObservedChange<T, object>> _ItemChanged;
 
         /// <summary>
         /// Provides Item Changing notifications for any item in collection that

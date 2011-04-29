@@ -41,8 +41,8 @@ namespace ReactiveUI
         public event PropertyChangedEventHandler PropertyChanged;
         public event PropertyChangingEventHandler PropertyChanging;
 
-        readonly Subject<IObservedChange<object, object>> _Changing = 
-            new Subject<IObservedChange<object, object>>(RxApp.DeferredScheduler);
+        readonly ISubject<IObservedChange<object, object>> _Changing = 
+            new ScheduledSubject<IObservedChange<object, object>>(RxApp.DeferredScheduler);
 
         public IObservable<IObservedChange<object, object>> Changing {
 #if SILVERLIGHT
@@ -52,8 +52,8 @@ namespace ReactiveUI
 #endif
         }
 
-        Subject<IObservedChange<object, object>> _Changed = 
-            new Subject<IObservedChange<object, object>>(RxApp.DeferredScheduler);
+        ISubject<IObservedChange<object, object>> _Changed = 
+            new ScheduledSubject<IObservedChange<object, object>>(RxApp.DeferredScheduler);
 
         public IObservable<IObservedChange<object, object>> Changed {
 #if SILVERLIGHT

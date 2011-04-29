@@ -100,7 +100,7 @@ namespace ReactiveUI.Tests
         public void BindToSmokeTest()
         {
             (new TestScheduler()).With(sched => {
-                var input = new Subject<string>(sched);
+                var input = new ScheduledSubject<string>(sched);
                 var fixture = new HostTestFixture() {Child = new TestFixture()};
 
                 input.BindTo(fixture, x => x.Child.IsNotNullString);
@@ -121,7 +121,7 @@ namespace ReactiveUI.Tests
         public void DisposingDisconnectsTheBindTo()
         {
             (new TestScheduler()).With(sched => {
-                var input = new Subject<string>(sched);
+                var input = new ScheduledSubject<string>(sched);
                 var fixture = new HostTestFixture() {Child = new TestFixture()};
 
                 var subscription = input.BindTo(fixture, x => x.Child.IsNotNullString);
@@ -144,7 +144,7 @@ namespace ReactiveUI.Tests
         public void BindToIsNotFooledByIntermediateObjectSwitching()
         {
             (new TestScheduler()).With(sched => {
-                var input = new Subject<string>(sched);
+                var input = new ScheduledSubject<string>(sched);
                 var fixture = new HostTestFixture() {Child = new TestFixture()};
 
                 var subscription = input.BindTo(fixture, x => x.Child.IsNotNullString);

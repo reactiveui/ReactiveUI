@@ -4,7 +4,6 @@ using System.Linq;
 using System.Reactive.Concurrency;
 using System.Diagnostics.Contracts;
 using System.Reactive;
-using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using ReactiveUI;
@@ -79,12 +78,12 @@ namespace ReactiveUI.Xaml
 
         void commonCtor(int maximumConcurrent, IScheduler scheduler)
         {
-            _canExecuteSubject = new Subject<bool>(Scheduler.Immediate);
-            _executeSubject = new Subject<object>(Scheduler.Immediate);
+            _canExecuteSubject = new ScheduledSubject<bool>(Scheduler.Immediate);
+            _executeSubject = new ScheduledSubject<object>(Scheduler.Immediate);
             _normalSched = scheduler ?? RxApp.DeferredScheduler;
 
-            AsyncStartedNotification = new Subject<Unit>(RxApp.DeferredScheduler);
-            AsyncCompletedNotification = new Subject<Unit>(RxApp.DeferredScheduler);
+            AsyncStartedNotification = new ScheduledSubject<Unit>(RxApp.DeferredScheduler);
+            AsyncCompletedNotification = new ScheduledSubject<Unit>(RxApp.DeferredScheduler);
 
             ItemsInflight = Observable.Merge(
                 AsyncStartedNotification.Select(_ => 1),
@@ -117,9 +116,9 @@ namespace ReactiveUI.Xaml
 
         IScheduler _normalSched;
         Func<object, bool> _canExecuteExplicitFunc = null;
-        Subject<bool> _canExecuteSubject;
+        ISubject<bool> _canExecuteSubject;
         bool _canExecuteLatest;
-        Subject<object> _executeSubject;
+        ISubject<object> _executeSubject;
         int _maximumConcurrent;
 
         public IObservable<int> ItemsInflight { get; protected set; }
@@ -171,7 +170,7 @@ namespace ReactiveUI.Xaml
         {
             Contract.Requires(calculationFunc != null);
 
-            var taskSubj = new Subject<object>(scheduler ?? RxApp.TaskpoolScheduler);
+            var taskSubj = new ScheduledSubject<object>(scheduler ?? RxApp.TaskpoolScheduler);
             _executeSubject.Multicast(taskSubj).RefCount();
 
             var unit = new Unit();
@@ -179,7 +178,7 @@ namespace ReactiveUI.Xaml
                 .Do(_ => AsyncStartedNotification.OnNext(unit))
                 .Select(calculationFunc)
                 .Do(_ => AsyncCompletedNotification.OnNext(unit))
-                .Multicast(new Subject<TResult>(RxApp.DeferredScheduler));
+                .Multicast(new ScheduledSubject<TResult>(RxApp.DeferredScheduler));
         }
 
         /// <summary>
@@ -210,7 +209,7 @@ namespace ReactiveUI.Xaml
         {
             Contract.Requires(calculationFunc != null);
 
-            var taskSubj = new Subject<object>(RxApp.TaskpoolScheduler);
+            var taskSubj = new ScheduledSubject<object>(RxApp.TaskpoolScheduler);
             _executeSubject.Multicast(taskSubj).RefCount();
 
             var unit = new Unit();
@@ -220,7 +219,8 @@ namespace ReactiveUI.Xaml
 
             return ret
                 .SelectMany(x => x.Finally(() => AsyncCompletedNotification.OnNext(unit)))
-                .Multicast(new Subject<TResult>(RxApp.DeferredScheduler));
+                .Multicast(new ScheduledSubject<TResult>(RxApp.DeferredScheduler))
+                .RefCount();
         }
 
         /// <summary>

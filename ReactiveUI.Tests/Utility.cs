@@ -45,29 +45,25 @@ namespace ReactiveUI.Tests
             return InnerScheduler.Schedule(action);
         }
 
-        public IDisposable Schedule(Action action, TimeSpan dueTime)
-        {
-            ScheduledItems.Add(new Tuple<Action, TimeSpan?>(action, dueTime));
-            return InnerScheduler.Schedule(action, dueTime);
-        }
-
         public DateTimeOffset Now {
             get { return InnerScheduler.Now; }
         }
 
-        public IDisposable Schedule<TState>(TState state, Func<IScheduler, TState, IDisposable> action, DateTimeOffset dueTime)
+        public IDisposable Schedule<TState>(TState state, DateTimeOffset dueTime, Func<IScheduler, TState, IDisposable> action)
         {
-            throw new NotImplementedException();
+            return InnerScheduler.Schedule(state, dueTime, action);
         }
 
-        public IDisposable Schedule<TState>(TState state, Func<IScheduler, TState, IDisposable> action, TimeSpan dueTime)
+        public IDisposable Schedule<TState>(TState state, TimeSpan dueTime, Func<IScheduler, TState, IDisposable> action)
         {
-            throw new NotImplementedException();
+            ScheduledItems.Add(new Tuple<Action, TimeSpan?>(null, dueTime));
+            return InnerScheduler.Schedule(state, dueTime, action);
         }
 
         public IDisposable Schedule<TState>(TState state, Func<IScheduler, TState, IDisposable> action)
         {
-            throw new NotImplementedException();
+            ScheduledItems.Add(new Tuple<Action, TimeSpan?>(null, null));
+            return InnerScheduler.Schedule(state, action);
         }
     }
 

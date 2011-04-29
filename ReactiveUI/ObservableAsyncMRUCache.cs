@@ -193,7 +193,7 @@ namespace ReactiveUI
 
     internal class SemaphoreSubject<T> : ISubject<T>, IEnableLogger
     {
-        readonly Subject<T> _inner;
+        readonly ISubject<T> _inner;
         Queue<T> _nextItems = new Queue<T>();
         long _count;
         readonly long _maxCount;
@@ -204,7 +204,7 @@ namespace ReactiveUI
 #if WINDOWS_PHONE
             _inner = new Subject<T>();
 #else
-            _inner = (sched != null ? new Subject<T>(sched) : new Subject<T>());
+            _inner = (sched != null ? (ISubject<T>)new ScheduledSubject<T>(sched) : new Subject<T>());
 #endif
             _maxCount = maxCount;
         }
