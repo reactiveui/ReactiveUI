@@ -105,10 +105,10 @@ namespace ReactiveUI
             get { return RxApp.MessageBus; }
         }
 
-        Subject<T> setupSubjectIfNecessary<T>(string contract, IScheduler scheduler)
+        ISubject<T> setupSubjectIfNecessary<T>(string contract, IScheduler scheduler)
         {
             scheduler = scheduler ?? RxApp.DeferredScheduler;
-            Subject<T> ret = null;
+            ISubject<T> ret = null;
             NotAWeakReference subjRef = null;
 
             withMessageBus(typeof(T), contract, (mb, tuple) => {
@@ -117,7 +117,7 @@ namespace ReactiveUI
                     return;
                 }
 
-                ret = new Subject<T>(scheduler);
+                ret = new ScheduledSubject<T>(scheduler);
                 mb[tuple] = new NotAWeakReference(ret);
             });
 

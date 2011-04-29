@@ -49,7 +49,7 @@ namespace ReactiveUI
             scheduler = scheduler ?? RxApp.DeferredScheduler;
             _lastValue = initialValue;
 
-            var subj = new Subject<T>(scheduler);
+            var subj = new ScheduledSubject<T>(scheduler);
             subj.Subscribe(x => {
                 this.Log().InfoFormat("Property helper {0:X} changed", this.GetHashCode());
                 _lastValue = x;

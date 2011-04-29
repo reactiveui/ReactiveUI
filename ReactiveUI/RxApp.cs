@@ -4,6 +4,8 @@ using System.Reactive.Concurrency;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using System.Reflection;
 
 namespace ReactiveUI
@@ -65,7 +67,7 @@ namespace ReactiveUI
                 // XXX: This should be an instance of NSRunloopScheduler
                 DeferredScheduler = new EventLoopScheduler();
 #else
-                DeferredScheduler = Scheduler.Dispatcher;
+                DeferredScheduler = findDispatcherScheduler();
 #endif
             }
 
@@ -237,6 +239,22 @@ namespace ReactiveUI
             return prop_name;
         }
 
+        internal static IScheduler findDispatcherScheduler()
+        {
+            Type result = null;
+            try {
+                result = Type.GetType("System.Reactive.Concurrency.DispatcherScheduler");
+            } catch {
+            }
+
+            if (result == null) {
+                LoggerFactory("RxApp").Error("WPF Rx.NET DLL reference not added - using Event Loop");
+                return new EventLoopScheduler();
+            }
+
+            return (IScheduler) result.GetProperty("Instance", BindingFlags.Public | BindingFlags.Static).GetValue(null, null);
+        }
+
         internal static string[] expressionToPropertyNames<TObj, TRet>(Expression<Func<TObj, TRet>> Property)
         {
             var ret = new List<string>();
@@ -350,6 +368,42 @@ namespace ReactiveUI
         public static IEnumerable<T> SkipLast<T>(this IEnumerable<T> This, int count)
         {
             return This.Take(This.Count() - count);
+        }
+    }
+
+    public class ScheduledSubject<T> : IDisposable, ISubject<T>
+    {
+        public ScheduledSubject(IScheduler scheduler)
+        {
+            _scheduler = scheduler;
+        }
+
+        readonly IScheduler _scheduler;
+        readonly Subject<T> _subject = new Subject<T>();
+
+        public void Dispose()
+        {
+            _subject.Dispose();
+        }
+
+        public void OnCompleted()
+        {
+            _subject.OnCompleted();
+        }
+
+        public void OnError(Exception error)
+        {
+            _subject.OnError(error);
+        }
+
+        public void OnNext(T value)
+        {
+            _subject.OnNext(value);
+        }
+
+        public IDisposable Subscribe(IObserver<T> observer)
+        {
+            return _subject.ObserveOn(_scheduler).Subscribe(observer);
         }
     }
 }

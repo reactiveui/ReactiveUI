@@ -45,7 +45,7 @@ namespace ReactiveUI.Tests
                     Assert.Equal("TestString", v.PropertyName);
                 }
 
-                return Unit.Value;
+                return Unit.Default;
             });
         }
     }
