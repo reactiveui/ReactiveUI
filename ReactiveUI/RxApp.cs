@@ -369,6 +369,13 @@ namespace ReactiveUI
         {
             return This.Take(This.Count() - count);
         }
+        
+        public static IObservable<T> Permacast<T>(this IObservable<T> This, ISubject<T> subject)
+        {
+            var ret = This.Multicast(subject);
+            ret.Connect();
+            return ret;
+        }
     }
 
     public class ScheduledSubject<T> : IDisposable, ISubject<T>

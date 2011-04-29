@@ -36,7 +36,7 @@ namespace ReactiveUI.Xaml
         {
             commonCtor(maximumConcurrent, scheduler);
             if (canExecute != null) {
-                canExecute.Multicast(_canExecuteSubject).RefCount();
+                canExecute.Permacast(_canExecuteSubject);
             }
         }
 
@@ -94,7 +94,7 @@ namespace ReactiveUI.Xaml
                     this.Log().Fatal("Reference count dropped below zero");
                 }
                 return ret;
-            }).Multicast(new BehaviorSubject<int>(0)).RefCount();
+            }).Permacast(new BehaviorSubject<int>(0));
 
             bool startCE = (_canExecuteExplicitFunc != null ? _canExecuteExplicitFunc(null) : true);
             CanExecuteObservable = Observable.CombineLatest(
@@ -171,14 +171,14 @@ namespace ReactiveUI.Xaml
             Contract.Requires(calculationFunc != null);
 
             var taskSubj = new ScheduledSubject<object>(scheduler ?? RxApp.TaskpoolScheduler);
-            _executeSubject.Multicast(taskSubj).RefCount();
+            _executeSubject.Permacast(taskSubj);
 
             var unit = new Unit();
             return taskSubj
                 .Do(_ => AsyncStartedNotification.OnNext(unit))
                 .Select(calculationFunc)
                 .Do(_ => AsyncCompletedNotification.OnNext(unit))
-                .Multicast(new ScheduledSubject<TResult>(RxApp.DeferredScheduler));
+                .Permacast(new ScheduledSubject<TResult>(RxApp.DeferredScheduler));
         }
 
         /// <summary>
@@ -210,17 +210,16 @@ namespace ReactiveUI.Xaml
             Contract.Requires(calculationFunc != null);
 
             var taskSubj = new ScheduledSubject<object>(RxApp.TaskpoolScheduler);
-            _executeSubject.Multicast(taskSubj).RefCount();
+            _executeSubject.Permacast(taskSubj);
 
-            var unit = new Unit();
+            var unit = Unit.Default;
             var ret = taskSubj
                 .Do(_ => AsyncStartedNotification.OnNext(unit))
                 .Select(calculationFunc);
 
             return ret
                 .SelectMany(x => x.Finally(() => AsyncCompletedNotification.OnNext(unit)))
-                .Multicast(new ScheduledSubject<TResult>(RxApp.DeferredScheduler))
-                .RefCount();
+                .Permacast(new ScheduledSubject<TResult>(RxApp.DeferredScheduler));
         }
 
         /// <summary>
