@@ -62,7 +62,7 @@ namespace ReactiveUI.Tests
                 return changes_as_observable;
             });
 
-            input.Distinct().AssertAreEqual(result.ToList());
+            input.DistinctUntilChanged().AssertAreEqual(result.ToList());
         }
 
         [Fact]
