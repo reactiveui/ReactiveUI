@@ -113,7 +113,7 @@ namespace ReactiveUI
 
             withMessageBus(typeof(T), contract, (mb, tuple) => {
                 if (mb.TryGetValue(tuple, out subjRef) && subjRef.IsAlive) {
-                    ret = (Subject<T>) subjRef.Target;
+                    ret = (ISubject<T>) subjRef.Target;
                     return;
                 }
 
