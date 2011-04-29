@@ -26,6 +26,26 @@ namespace ReactiveUI.Tests
                 throw;
             }
         }
+
+        public static IEnumerable<T> DistinctUntilChanged<T>(this IEnumerable<T> This)
+        {
+            bool isFirst = true;
+            T lastValue = default(T);
+
+            foreach(var v in This) {
+                if (isFirst) {
+                    lastValue = v;
+                    isFirst = false;
+                    yield return v;
+                    continue;
+                }
+
+                if (!EqualityComparer<T>.Default.Equals(v, lastValue)) {
+                    yield return v;
+                }
+                lastValue = v;
+            }
+        }
     }
 
     public class CountingTestScheduler : IScheduler

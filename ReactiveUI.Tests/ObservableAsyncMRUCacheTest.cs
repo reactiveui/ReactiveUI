@@ -24,10 +24,14 @@ namespace ReactiveUI.Tests
                     // the cache to Run the Test Scheduler. So the side thread
                     // will do the waiting while the main thread advances the
                     // Scheduler
-                    foreach (int x in input.Select(x => fixture.Get(x))) { result += x; }
+                    foreach (int x in input.Select(x => fixture.Get(x))) {
+                        this.Log().DebugFormat("Adding {0} to result", x);
+                        result += x;
+                    }
                 });
                 t.Start();
 
+                sched.Start();
                 sched.AdvanceTo(sched.FromTimeSpan(TimeSpan.FromMilliseconds(500)));
 
                 // NB: The Thread.Sleep is to let our other thread catch up
