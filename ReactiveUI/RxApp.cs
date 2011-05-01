@@ -8,6 +8,10 @@ using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Reflection;
 
+#if SILVERLIGHT
+using System.Windows;
+#endif
+
 namespace ReactiveUI
 {
     /*
@@ -73,7 +77,7 @@ namespace ReactiveUI
 
 #if WINDOWS_PHONE
             TaskpoolScheduler = new EventLoopScheduler();
-#elif SILVERLIGHT
+#elif SILVERLIGHT || DOTNETISOLDANDSAD
             TaskpoolScheduler = Scheduler.ThreadPool;
 #else
             TaskpoolScheduler = Scheduler.TaskPool;

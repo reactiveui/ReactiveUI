@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading;
 
-namespace ReactiveUI
+namespace System.Threading
 {
     public class ThreadLocal<T>
     {
@@ -38,5 +37,24 @@ namespace ReactiveUI
         }
     }
 }
+
+#if WINDOWS_PHONE || DOTNETISOLDANDSAD
+namespace System.Concurrency 
+{
+    public class Lazy<T>
+    {
+        public Lazy(Func<T> ValueFetcher) 
+        {
+            _Value = ValueFetcher();
+        }
+
+        T _Value;
+        T Value {
+            get { return _Value; }
+        }
+    }
+
+}
+#endif
 
 // vim: tw=120 ts=4 sw=4 et :

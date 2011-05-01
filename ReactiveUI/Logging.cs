@@ -6,6 +6,10 @@ using System.Text;
 using System.Threading;
 using System.Diagnostics.Contracts;
 
+#if DOTNETISOLDANDSAD
+using System.Concurrency;
+#endif
+
 namespace ReactiveUI
 {
     public enum LogLevel {

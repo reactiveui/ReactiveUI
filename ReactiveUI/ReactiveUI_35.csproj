@@ -50,10 +50,6 @@
       <HintPath>..\ext\Net35\System.Reactive.dll</HintPath>
     </Reference>
     <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="System.Threading">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\ext\Net35\System.Threading.dll</HintPath>
-    </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Data" />
@@ -77,21 +73,21 @@
     <Compile Include="ReactiveNotifyPropertyChangedMixin.cs" />
     <Compile Include="ReactiveObject.cs" />
     <Compile Include="RxApp.cs" />
-    <Compile Include="Schedulers.cs" />
-    <Compile Include="VariadicTemplates.cs">
+    <Compile Include="ThreadLocal.cs" />
+    <Compile Include="VariadicTemplates_WP7.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-      <DependentUpon>VariadicTemplates.tt</DependentUpon>
+      <DependentUpon>VariadicTemplates_WP7.tt</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="VariadicTemplates.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>VariadicTemplates.cs</LastGenOutput>
-    </None>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup>
-    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+    <None Include="VariadicTemplates_WP7.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>VariadicTemplates_WP7.cs</LastGenOutput>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
