@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reactive;
+using System.Reactive.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -11,7 +13,6 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using ReactiveUI.Sample.ViewModels;
 using ReactiveUI.Sample.Models;
-using System.Disposables;
 using System.Linq;
 using ReactiveUI;
 using ReactiveUI.Xaml;
@@ -41,7 +42,7 @@ namespace ReactiveUI.Sample.Views
                     () => Dispatcher.BeginInvoke(new Action(() => Close())));
 
 		    Observable.Merge(
-    		        Observable.FromEvent<SizeChangedEventArgs>(this, "SizeChanged").Select(_ => new Unit()),
+                    Observable.FromEvent<SizeChangedEventHandler, SizeChangedEventArgs>(x => SizeChanged += x, x => SizeChanged -= x).Select(_ => new Unit()),
     		        ViewModel.WhenAny(x => x.ProgressPercentage, _ => new Unit()))
 		        .Select(_ => progressParentBorder.ActualWidth * ViewModel.ProgressPercentage)
 		        .Subscribe(x => progressBorder.Width = x);
