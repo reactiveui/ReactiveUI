@@ -12,6 +12,10 @@ using System.Runtime.Serialization;
 using System.Threading;
 using System.Reactive.Concurrency;
 
+#if DOTNETISOLDANDSAD || WINDOWS_PHONE
+using System.Concurrency;
+#endif
+
 namespace ReactiveUI
 {
     /// <summary>

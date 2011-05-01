@@ -56,9 +56,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="mscorlib" />
-    <Reference Include="System.Observable">
-      <HintPath>..\ext\SL4\System.Observable.dll</HintPath>
-    </Reference>
     <Reference Include="System.Reactive">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\ext\SL4\System.Reactive.dll</HintPath>

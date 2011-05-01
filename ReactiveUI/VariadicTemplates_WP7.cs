@@ -1,7 +1,8 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
-using System.Disposables;
-using System.Linq;
+using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using System.Diagnostics.Contracts;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -13,6 +14,13 @@ namespace ReactiveUI
 	public static class WhenAnyMixin 
 	{
 								
+        /// <summary>
+        /// WhenAny allows you to observe whenever one or more properties on an
+        /// object have changed, providing an initial value when the Observable
+        /// is set up, unlike ObservableForProperty(). Use this method in
+        /// constructors to set up bindings between properties that also need an
+        /// initial setup.
+        /// </summary>
         public static IObservable<TRet> WhenAny<TSender, TRet, T1>(this TSender This, 
 			                Expression<Func<TSender, T1>> property1, 
 			                Func<IObservedChange<TSender, T1>, TRet> selector)
@@ -27,7 +35,7 @@ namespace ReactiveUI
             IObservedChange<TSender, T1> islot1 = slot1;
 
 			
-            return Observable.CreateWithDisposable<TRet>(subject => {
+            return Observable.Create<TRet>(subject => {
                 subject.OnNext(selector(islot1));
 
                 return Observable.Merge(
@@ -37,6 +45,13 @@ namespace ReactiveUI
         }
 
 							
+        /// <summary>
+        /// WhenAny allows you to observe whenever one or more properties on an
+        /// object have changed, providing an initial value when the Observable
+        /// is set up, unlike ObservableForProperty(). Use this method in
+        /// constructors to set up bindings between properties that also need an
+        /// initial setup.
+        /// </summary>
         public static IObservable<TRet> WhenAny<TSender, TRet, T1,T2>(this TSender This, 
 			                Expression<Func<TSender, T1>> property1, 
 			                Expression<Func<TSender, T2>> property2, 
@@ -60,7 +75,7 @@ namespace ReactiveUI
             IObservedChange<TSender, T2> islot2 = slot2;
 
 			
-            return Observable.CreateWithDisposable<TRet>(subject => {
+            return Observable.Create<TRet>(subject => {
                 subject.OnNext(selector(islot1, islot2));
 
                 return Observable.Merge(
@@ -71,6 +86,13 @@ namespace ReactiveUI
         }
 
 							
+        /// <summary>
+        /// WhenAny allows you to observe whenever one or more properties on an
+        /// object have changed, providing an initial value when the Observable
+        /// is set up, unlike ObservableForProperty(). Use this method in
+        /// constructors to set up bindings between properties that also need an
+        /// initial setup.
+        /// </summary>
         public static IObservable<TRet> WhenAny<TSender, TRet, T1,T2,T3>(this TSender This, 
 			                Expression<Func<TSender, T1>> property1, 
 			                Expression<Func<TSender, T2>> property2, 
@@ -103,7 +125,7 @@ namespace ReactiveUI
             IObservedChange<TSender, T3> islot3 = slot3;
 
 			
-            return Observable.CreateWithDisposable<TRet>(subject => {
+            return Observable.Create<TRet>(subject => {
                 subject.OnNext(selector(islot1, islot2, islot3));
 
                 return Observable.Merge(
@@ -115,6 +137,13 @@ namespace ReactiveUI
         }
 
 							
+        /// <summary>
+        /// WhenAny allows you to observe whenever one or more properties on an
+        /// object have changed, providing an initial value when the Observable
+        /// is set up, unlike ObservableForProperty(). Use this method in
+        /// constructors to set up bindings between properties that also need an
+        /// initial setup.
+        /// </summary>
         public static IObservable<TRet> WhenAny<TSender, TRet, T1,T2,T3,T4>(this TSender This, 
 			                Expression<Func<TSender, T1>> property1, 
 			                Expression<Func<TSender, T2>> property2, 
@@ -156,7 +185,7 @@ namespace ReactiveUI
             IObservedChange<TSender, T4> islot4 = slot4;
 
 			
-            return Observable.CreateWithDisposable<TRet>(subject => {
+            return Observable.Create<TRet>(subject => {
                 subject.OnNext(selector(islot1, islot2, islot3, islot4));
 
                 return Observable.Merge(

@@ -2,10 +2,11 @@
 <#@ assembly name="System.Core.dll" #>
 <#@ import namespace="System.Linq" #>
 <#@ output extension=".cs" #>
+
 using System;
 using System.Collections.Generic;
-using System.Disposables;
-using System.Linq;
+using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using System.Diagnostics.Contracts;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -28,6 +29,13 @@ namespace ReactiveUI
 		<# string selectorTypeParams = String.Join(", ", templParams.Select(x => String.Format("IObservedChange<TSender, {0}>", x))); #>
 		<# string selectorCall = "selector(" + String.Join(", ", Enumerable.Range(1, length).Select(x => "islot" + x.ToString())) + ")"; #>
 
+        /// <summary>
+        /// WhenAny allows you to observe whenever one or more properties on an
+        /// object have changed, providing an initial value when the Observable
+        /// is set up, unlike ObservableForProperty(). Use this method in
+        /// constructors to set up bindings between properties that also need an
+        /// initial setup.
+        /// </summary>
         public static IObservable<TRet> WhenAny<TSender, TRet, <#= String.Join(",", templParams) #>>(this TSender This, 
 			<# for(int i=1; i <= length; i++) { #>
                 Expression<Func<TSender, T<#=i#>>> property<#=i#>, 
@@ -46,7 +54,7 @@ namespace ReactiveUI
 
 			<# } #>
 
-            return Observable.CreateWithDisposable<TRet>(subject => {
+            return Observable.Create<TRet>(subject => {
                 subject.OnNext(<#= selectorCall #>);
 
                 return Observable.Merge(<# for(int i=1; i <= length; i++) { #>
