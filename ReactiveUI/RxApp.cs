@@ -248,7 +248,7 @@ namespace ReactiveUI
         {
             Type result = null;
             try {
-                result = Type.GetType("System.Reactive.Concurrency.DispatcherScheduler");
+                result = Type.GetType("System.Reactive.Concurrency.DispatcherScheduler, System.Reactive.Windows.Threading", true);
             } catch {
             }
 
