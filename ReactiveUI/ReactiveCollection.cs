@@ -315,7 +315,7 @@ namespace ReactiveUI
                 return;
             }
 
-            foreach(var x in propertyChangeWatchers.Values) { x.Release(); }
+            foreach(var x in propertyChangeWatchers.Values.ToArray()) { x.Release(); }
             propertyChangeWatchers.Clear();
         }
 
