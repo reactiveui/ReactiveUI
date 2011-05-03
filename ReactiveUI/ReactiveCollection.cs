@@ -115,8 +115,7 @@ namespace ReactiveUI
                 if (propertyChangeWatchers == null || !propertyChangeWatchers.ContainsKey(x))
                     return;
 
-                propertyChangeWatchers[x].Dispose();
-                propertyChangeWatchers.Remove(x);
+                removeItemFromPropertyTracking(x);
             });
 
 #if DEBUG
@@ -131,6 +130,11 @@ namespace ReactiveUI
             if (item == null)
                 return;
 
+            if (propertyChangeWatchers.ContainsKey(toTrack)) {
+                propertyChangeWatchers[toTrack].AddRef();
+                return;
+            }
+
             var to_dispose = new[] {
                 item.Changing.Subscribe(before_change =>
                     _ItemChanging.OnNext(new ObservedChange<T, object>() { 
@@ -140,9 +144,16 @@ namespace ReactiveUI
                         Sender = toTrack, PropertyName = change.PropertyName })),
             };
 
-            propertyChangeWatchers.Add(toTrack, Disposable.Create(() => {
-                to_dispose[0].Dispose(); to_dispose[1].Dispose();
-            }));
+            propertyChangeWatchers.Add(toTrack, 
+                new RefcountDisposeWrapper(Disposable.Create(() => {
+                    to_dispose[0].Dispose(); to_dispose[1].Dispose();
+                    propertyChangeWatchers.Remove(toTrack);
+            })));
+        }
+
+        void removeItemFromPropertyTracking(T toUntrack)
+        {
+            propertyChangeWatchers[toUntrack].Release();
         }
 
         [IgnoreDataMember]
@@ -280,7 +291,7 @@ namespace ReactiveUI
                 if ((propertyChangeWatchers != null) == value)
                     return;
                 if (propertyChangeWatchers == null) {
-                    propertyChangeWatchers = new Dictionary<object,IDisposable>();
+                    propertyChangeWatchers = new Dictionary<object, RefcountDisposeWrapper>();
                     foreach (var v in this) {
                         addItemToPropertyTracking(v);
                     }
@@ -292,8 +303,8 @@ namespace ReactiveUI
         }
 
         [IgnoreDataMember]
-        Dictionary<object, IDisposable> _propertyChangeWatchers;
-        Dictionary<object, IDisposable> propertyChangeWatchers {
+        Dictionary<object, RefcountDisposeWrapper> _propertyChangeWatchers;
+        Dictionary<object, RefcountDisposeWrapper> propertyChangeWatchers {
             get { return _propertyChangeWatchers; }
             set { _propertyChangeWatchers = value; }
         }
@@ -304,7 +315,7 @@ namespace ReactiveUI
                 return;
             }
 
-            foreach(IDisposable x in propertyChangeWatchers.Values) { x.Dispose(); }
+            foreach(var x in propertyChangeWatchers.Values) { x.Release(); }
             propertyChangeWatchers.Clear();
         }
 

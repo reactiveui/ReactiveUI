@@ -7,6 +7,7 @@ using System.Linq.Expressions;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Reflection;
+using System.Threading;
 
 #if SILVERLIGHT
 using System.Windows;
@@ -359,6 +360,8 @@ namespace ReactiveUI
             return ret;
         }
     }
+   
+    /* TODO: Move this stuff somewhere that actually makes sense */
 
     internal static class CompatMixins
     {
@@ -415,6 +418,27 @@ namespace ReactiveUI
         public IDisposable Subscribe(IObserver<T> observer)
         {
             return _subject.ObserveOn(_scheduler).Subscribe(observer);
+        }
+    }
+
+    public sealed class RefcountDisposeWrapper
+    {
+        IDisposable _inner;
+        long refCount = 1;
+
+        public RefcountDisposeWrapper(IDisposable inner) { _inner = inner; }
+
+        public void AddRef()
+        {
+            Interlocked.Increment(ref refCount);
+        }
+
+        public void Release()
+        {
+            if (Interlocked.Decrement(ref refCount) == 0) {
+                var inner = Interlocked.Exchange(ref _inner, null);
+                inner.Dispose();
+            }
         }
     }
 }

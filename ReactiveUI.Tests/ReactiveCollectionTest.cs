@@ -133,6 +133,48 @@ namespace ReactiveUI.Tests
         }
 
         [Fact]
+        public void ChangeTrackingShouldWorkWhenAddingTheSameThingMoreThanOnce()
+        {
+            var fixture = new ReactiveCollection<TestFixture>() { ChangeTrackingEnabled = true };
+            var output = new List<Tuple<TestFixture, string>>();
+            var item1 = new TestFixture() { IsOnlyOneWord = "Foo" };
+
+            fixture.ItemChanged.Subscribe(x => {
+                output.Add(new Tuple<TestFixture,string>((TestFixture)x.Sender, x.PropertyName));
+            });
+
+            fixture.Add(item1);
+            fixture.Add(item1);
+            fixture.Add(item1);
+
+            item1.IsOnlyOneWord = "Bar";
+            Assert.Equal(1, output.Count);
+
+            fixture.RemoveAt(0);
+
+            item1.IsOnlyOneWord = "Baz";
+            Assert.Equal(2, output.Count);
+
+            fixture.RemoveAt(0);
+            fixture.RemoveAt(0);
+
+            // We've completely removed item1, we shouldn't be seeing any 
+            // notifications from it
+            item1.IsOnlyOneWord = "Bamf";
+            Assert.Equal(2, output.Count);
+
+            fixture.ChangeTrackingEnabled = false;
+            fixture.Add(item1);
+            fixture.Add(item1);
+            fixture.Add(item1);
+            fixture.ChangeTrackingEnabled = true;
+
+            item1.IsOnlyOneWord = "Bonk";
+            Assert.Equal(3, output.Count);
+        }
+
+
+        [Fact]
         public void CreateCollectionWithoutTimer()
         {
             var input = new[] {"Foo", "Bar", "Baz", "Bamf"};
