@@ -173,6 +173,38 @@ namespace ReactiveUI.Tests
             Assert.Equal(3, output.Count);
         }
 
+        [Fact]
+        public void CollectionsShouldntShareSubscriptions()
+        {
+            var fixture1 = new ReactiveCollection<TestFixture>() { ChangeTrackingEnabled = true };
+            var fixture2 = new ReactiveCollection<TestFixture>() { ChangeTrackingEnabled = true };
+            var item1 = new TestFixture() { IsOnlyOneWord = "Foo" };
+            var output1 = new List<Tuple<TestFixture, string>>();
+            var output2 = new List<Tuple<TestFixture, string>>();
+
+            fixture1.ItemChanged.Subscribe(x => {
+                output1.Add(new Tuple<TestFixture,string>((TestFixture)x.Sender, x.PropertyName));
+            });
+
+            fixture2.ItemChanged.Subscribe(x => {
+                output2.Add(new Tuple<TestFixture,string>((TestFixture)x.Sender, x.PropertyName));
+            });
+
+            fixture1.Add(item1);
+            fixture1.Add(item1);
+            fixture2.Add(item1);
+            fixture2.Add(item1);
+
+            item1.IsOnlyOneWord = "Bar";
+            Assert.Equal(1, output1.Count);
+            Assert.Equal(1, output2.Count);
+
+            fixture2.RemoveAt(0);
+
+            item1.IsOnlyOneWord = "Baz";
+            Assert.Equal(2, output1.Count);
+            Assert.Equal(2, output2.Count);
+        }
 
         [Fact]
         public void CreateCollectionWithoutTimer()
