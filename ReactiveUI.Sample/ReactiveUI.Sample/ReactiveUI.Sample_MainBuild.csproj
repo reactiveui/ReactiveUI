@@ -44,13 +44,17 @@
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Data" />
-    <Reference Include="System.Reactive">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\ext\System.Reactive.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.Reactive.Testing">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\ext\Microsoft.Reactive.Testing.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reactive, Version=1.0.10425.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\ext\System.Reactive.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reactive.Windows.Threading, Version=1.0.10425.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\ext\System.Reactive.Windows.Threading.dll</HintPath>
     </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
