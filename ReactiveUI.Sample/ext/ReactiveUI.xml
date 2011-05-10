@@ -180,7 +180,7 @@
             only used for one purpose, leave this as null.</param>
             <returns>True if messages have been posted for this message Type.</returns>
         </member>
-        <member name="M:ReactiveUI.IMessageBus.RegisterMessageSource``1(System.IObservable{``0},System.String,System.Concurrency.IScheduler)">
+        <member name="M:ReactiveUI.IMessageBus.RegisterMessageSource``1(System.IObservable{``0},System.String,System.Reactive.Concurrency.IScheduler)">
             <summary>
             Registers an Observable representing the stream of messages to send.
             Another part of the code can then call Listen to retrieve this
@@ -193,7 +193,7 @@
             identical types (i.e. "MyCoolViewModel") - if the message type is
             only used for one purpose, leave this as null.</param>
         </member>
-        <member name="M:ReactiveUI.IMessageBus.SendMessage``1(``0,System.String,System.Concurrency.IScheduler)">
+        <member name="M:ReactiveUI.IMessageBus.SendMessage``1(``0,System.String,System.Reactive.Concurrency.IScheduler)">
             <summary>
             Sends a single message using the specified Type and contract.
             Consider using RegisterMessageSource instead if you will be sending
@@ -299,7 +299,7 @@
             only used for one purpose, leave this as null.</param>
             <returns>True if messages have been posted for this message Type.</returns>
         </member>
-        <member name="M:ReactiveUI.MessageBus.RegisterMessageSource``1(System.IObservable{``0},System.String,System.Concurrency.IScheduler)">
+        <member name="M:ReactiveUI.MessageBus.RegisterMessageSource``1(System.IObservable{``0},System.String,System.Reactive.Concurrency.IScheduler)">
             <summary>
             Registers an Observable representing the stream of messages to send.
             Another part of the code can then call Listen to retrieve this
@@ -314,7 +314,7 @@
             <param name="scheduler">The scheduler on which to post the
             notifications, RxApp.DeferredScheduler by default.</param>
         </member>
-        <member name="M:ReactiveUI.MessageBus.SendMessage``1(``0,System.String,System.Concurrency.IScheduler)">
+        <member name="M:ReactiveUI.MessageBus.SendMessage``1(``0,System.String,System.Reactive.Concurrency.IScheduler)">
             <summary>
             Sends a single message using the specified Type and contract.
             Consider using RegisterMessageSource instead if you will be sending
@@ -380,7 +380,7 @@
              "PathFileNameOnly" property.
              </summary>
         </member>
-        <member name="M:ReactiveUI.ObservableAsPropertyHelper`1.#ctor(System.IObservable{`0},System.Action{`0},`0,System.Concurrency.IScheduler)">
+        <member name="M:ReactiveUI.ObservableAsPropertyHelper`1.#ctor(System.IObservable{`0},System.Action{`0},`0,System.Reactive.Concurrency.IScheduler)">
             <summary>
             Constructs an ObservableAsPropertyHelper object.
             </summary>
@@ -393,7 +393,7 @@
             provided on - this should normally be a Dispatcher-based scheduler
             (and is by default)</param>
         </member>
-        <member name="M:ReactiveUI.ObservableAsPropertyHelper`1.Default(`0,System.Concurrency.IScheduler)">
+        <member name="M:ReactiveUI.ObservableAsPropertyHelper`1.Default(`0,System.Reactive.Concurrency.IScheduler)">
             <summary>
             Constructs a "default" ObservableAsPropertyHelper object. This is
             useful for when you will initialize the OAPH later, but don't want
@@ -409,7 +409,7 @@
             The last provided value from the Observable. 
             </summary>
         </member>
-        <member name="M:ReactiveUI.OAPHCreationHelperMixin.ObservableToProperty``2(``0,System.IObservable{``1},System.Linq.Expressions.Expression{System.Func{``0,``1}},``1,System.Concurrency.IScheduler)">
+        <member name="M:ReactiveUI.OAPHCreationHelperMixin.ObservableToProperty``2(``0,System.IObservable{``1},System.Linq.Expressions.Expression{System.Func{``0,``1}},``1,System.Reactive.Concurrency.IScheduler)">
             <summary>
             Converts an Observable to an ObservableAsPropertyHelper and
             automatically provides the onChanged method to raise the property
@@ -426,7 +426,7 @@
             <returns>An initialized ObservableAsPropertyHelper; use this as the
             backing field for your property.</returns>
         </member>
-        <member name="M:ReactiveUI.OAPHCreationHelperMixin.ToProperty``2(System.IObservable{``1},``0,System.Linq.Expressions.Expression{System.Func{``0,``1}},``1,System.Concurrency.IScheduler)">
+        <member name="M:ReactiveUI.OAPHCreationHelperMixin.ToProperty``2(System.IObservable{``1},``0,System.Linq.Expressions.Expression{System.Func{``0,``1}},``1,System.Reactive.Concurrency.IScheduler)">
             <summary>
             Converts an Observable to an ObservableAsPropertyHelper and
             automatically provides the onChanged method to raise the property
@@ -461,7 +461,7 @@
              <typeparam name="TParam">The key type.</typeparam>
              <typeparam name="TVal">The type of the value to return from the cache.</typeparam>
         </member>
-        <member name="M:ReactiveUI.ObservableAsyncMRUCache`2.#ctor(System.Func{`0,System.IObservable{`1}},System.Int32,System.Int32,System.Action{`1},System.Concurrency.IScheduler)">
+        <member name="M:ReactiveUI.ObservableAsyncMRUCache`2.#ctor(System.Func{`0,System.IObservable{`1}},System.Int32,System.Int32,System.Action{`1},System.Reactive.Concurrency.IScheduler)">
              <summary>
              Constructs an ObservableAsyncMRUCache object.
              </summary>
@@ -508,7 +508,7 @@
             <param name="key">The key to provide to the calculation function.</param>
             <returns>The resulting value.</returns>
         </member>
-        <member name="M:ReactiveUI.ObservableCacheMixin.CachedSelectMany``2(System.IObservable{``0},System.Func{``0,System.IObservable{``1}},System.Int32,System.Int32,System.Concurrency.IScheduler)">
+        <member name="M:ReactiveUI.ObservableCacheMixin.CachedSelectMany``2(System.IObservable{``0},System.Func{``0,System.IObservable{``1}},System.Int32,System.Int32,System.Reactive.Concurrency.IScheduler)">
             <summary>
             Works like SelectMany, but memoizes selector calls. In addition, it 
             guarantees that no more than 'maxConcurrent' selectors are running 
@@ -819,12 +819,20 @@
         </member>
         <member name="M:ReactiveUI.ReactiveObjectExpressionMixin.RaiseAndSetIfChanged``2(``0,System.Linq.Expressions.Expression{System.Func{``0,``1}},``1@,``1)">
             <summary>
-            
+            RaiseAndSetIfChanged fully implements a Setter for a read-write
+            property on a ReactiveObject, making the assumption that the
+            property has a backing field named "_NameOfProperty". To change this
+            assumption, set RxApp.GetFieldNameForPropertyNameFunc.  This
+            overload is intended for Silverlight and WP7 where reflection
+            cannot access the private backing field.
             </summary>
-            <param name="property"></param>
-            <param name="backingField"></param>
-            <param name="newValue"></param>
-            <returns></returns>
+            <param name="property">An Expression representing the property (i.e.
+            'x => x.SomeProperty'</param>
+            <param name="backingField">A Reference to the backing field for this
+            property.</param>
+            <param name="newValue">The new value to set the property to, almost
+            always the 'value' keyword.</param>
+            <returns>The newly set value, normally discarded.</returns>
         </member>
         <member name="M:ReactiveUI.ReactiveObjectTestMixin.RaisePropertyChanging(ReactiveUI.ReactiveObject,System.String)">
             <summary>
@@ -864,7 +872,11 @@
         </member>
         <member name="T:ReactiveUI.MakeObjectReactiveHelper">
             <summary>
-            
+            This class helps you take existing objects and make them compatible with
+            ReactiveUI and Rx.Net. To use this, declare an instance field of this
+            class in your class, initialize it in your Constructor, make your class
+            derive from IReactiveNotifyPropertyChanged, then implement all of the
+            properties/methods using MakeObjectReactiveHelper.
             </summary>
         </member>
         <member name="M:ReactiveUI.RxApp.InUnitTestRunner">
@@ -924,64 +936,6 @@
             of "_PropertyName" with a custom one.
             </summary>
         </member>
-        <member name="M:ReactiveUI.Testing.TestUtils.WithScheduler(System.Concurrency.IScheduler)">
-            <summary>
-            WithScheduler overrides the default Deferred and Taskpool schedulers
-            with the given scheduler until the return value is disposed. This
-            is useful in a unit test runner to force RxXaml objects to schedule
-            via a TestScheduler object.
-            </summary>
-            <param name="sched">The scheduler to use.</param>
-            <returns>An object that when disposed, restores the previous default
-            schedulers.</returns>
-        </member>
-        <member name="M:ReactiveUI.Testing.TestUtils.With``1(System.Concurrency.IScheduler,System.Func{System.Concurrency.IScheduler,``0})">
-            <summary>
-            With is an extension method that uses the given scheduler as the
-            default Deferred and Taskpool schedulers for the given Func. Use
-            this to initialize objects that store the default scheduler (most
-            RxXaml objects).
-            </summary>
-            <param name="sched">The scheduler to use.</param>
-            <param name="block">The function to execute.</param>
-            <returns>The return value of the function.</returns>
-        </member>
-        <member name="M:ReactiveUI.Testing.TestUtils.With(System.Concurrency.IScheduler,System.Action{System.Concurrency.IScheduler})">
-            <summary>
-            With is an extension method that uses the given scheduler as the
-            default Deferred and Taskpool schedulers for the given Action. 
-            </summary>
-            <param name="sched">The scheduler to use.</param>
-            <param name="block">The action to execute.</param>
-        </member>
-        <member name="M:ReactiveUI.Testing.TestUtils.With``1(System.Concurrency.TestScheduler,System.Func{System.Concurrency.TestScheduler,``0})">
-            <summary>
-            With is an extension method that uses the given scheduler as the
-            default Deferred and Taskpool schedulers for the given Func. Use
-            this to initialize objects that store the default scheduler (most
-            RxXaml objects).
-            </summary>
-            <param name="sched">The scheduler to use.</param>
-            <param name="block">The function to execute.</param>
-            <returns>The return value of the function.</returns>
-        </member>
-        <member name="M:ReactiveUI.Testing.TestUtils.With(System.Concurrency.TestScheduler,System.Action{System.Concurrency.TestScheduler})">
-            <summary>
-            With is an extension method that uses the given scheduler as the
-            default Deferred and Taskpool schedulers for the given Action. 
-            </summary>
-            <param name="sched">The scheduler to use.</param>
-            <param name="block">The action to execute.</param>
-        </member>
-        <member name="M:ReactiveUI.Testing.TestUtils.RunToMilliseconds(System.Concurrency.TestScheduler,System.Double)">
-            <summary>
-            RunToMilliseconds moves the TestScheduler to the specified time in
-            milliseconds.
-            </summary>
-            <param name="milliseconds">The time offset to set the TestScheduler
-            to, in milliseconds. Note that this is *not* additive or
-            incremental, it sets the time.</param>
-        </member>
         <member name="T:ReactiveUI.ReactiveValidatedObject">
             <summary>
             
@@ -1034,50 +988,110 @@
         </member>
         <member name="M:ReactiveUI.WhenAnyMixin.WhenAny``3(``0,System.Linq.Expressions.Expression{System.Func{``0,``2}},System.Func{ReactiveUI.IObservedChange{``0,``2},``1})">
             <summary>
+            WhenAny allows you to observe whenever one or more properties on an
+            object have changed, providing an initial value when the Observable
+            is set up, unlike ObservableForProperty(). Use this method in
+            constructors to set up bindings between properties that also need an
+            initial setup.
             </summary>
         </member>
         <member name="M:ReactiveUI.WhenAnyMixin.WhenAny``4(``0,System.Linq.Expressions.Expression{System.Func{``0,``2}},System.Linq.Expressions.Expression{System.Func{``0,``3}},System.Func{ReactiveUI.IObservedChange{``0,``2},ReactiveUI.IObservedChange{``0,``3},``1})">
             <summary>
+            WhenAny allows you to observe whenever one or more properties on an
+            object have changed, providing an initial value when the Observable
+            is set up, unlike ObservableForProperty(). Use this method in
+            constructors to set up bindings between properties that also need an
+            initial setup.
             </summary>
         </member>
         <member name="M:ReactiveUI.WhenAnyMixin.WhenAny``5(``0,System.Linq.Expressions.Expression{System.Func{``0,``2}},System.Linq.Expressions.Expression{System.Func{``0,``3}},System.Linq.Expressions.Expression{System.Func{``0,``4}},System.Func{ReactiveUI.IObservedChange{``0,``2},ReactiveUI.IObservedChange{``0,``3},ReactiveUI.IObservedChange{``0,``4},``1})">
             <summary>
+            WhenAny allows you to observe whenever one or more properties on an
+            object have changed, providing an initial value when the Observable
+            is set up, unlike ObservableForProperty(). Use this method in
+            constructors to set up bindings between properties that also need an
+            initial setup.
             </summary>
         </member>
         <member name="M:ReactiveUI.WhenAnyMixin.WhenAny``6(``0,System.Linq.Expressions.Expression{System.Func{``0,``2}},System.Linq.Expressions.Expression{System.Func{``0,``3}},System.Linq.Expressions.Expression{System.Func{``0,``4}},System.Linq.Expressions.Expression{System.Func{``0,``5}},System.Func{ReactiveUI.IObservedChange{``0,``2},ReactiveUI.IObservedChange{``0,``3},ReactiveUI.IObservedChange{``0,``4},ReactiveUI.IObservedChange{``0,``5},``1})">
             <summary>
+            WhenAny allows you to observe whenever one or more properties on an
+            object have changed, providing an initial value when the Observable
+            is set up, unlike ObservableForProperty(). Use this method in
+            constructors to set up bindings between properties that also need an
+            initial setup.
             </summary>
         </member>
         <member name="M:ReactiveUI.WhenAnyMixin.WhenAny``7(``0,System.Linq.Expressions.Expression{System.Func{``0,``2}},System.Linq.Expressions.Expression{System.Func{``0,``3}},System.Linq.Expressions.Expression{System.Func{``0,``4}},System.Linq.Expressions.Expression{System.Func{``0,``5}},System.Linq.Expressions.Expression{System.Func{``0,``6}},System.Func{ReactiveUI.IObservedChange{``0,``2},ReactiveUI.IObservedChange{``0,``3},ReactiveUI.IObservedChange{``0,``4},ReactiveUI.IObservedChange{``0,``5},ReactiveUI.IObservedChange{``0,``6},``1})">
             <summary>
+            WhenAny allows you to observe whenever one or more properties on an
+            object have changed, providing an initial value when the Observable
+            is set up, unlike ObservableForProperty(). Use this method in
+            constructors to set up bindings between properties that also need an
+            initial setup.
             </summary>
         </member>
         <member name="M:ReactiveUI.WhenAnyMixin.WhenAny``8(``0,System.Linq.Expressions.Expression{System.Func{``0,``2}},System.Linq.Expressions.Expression{System.Func{``0,``3}},System.Linq.Expressions.Expression{System.Func{``0,``4}},System.Linq.Expressions.Expression{System.Func{``0,``5}},System.Linq.Expressions.Expression{System.Func{``0,``6}},System.Linq.Expressions.Expression{System.Func{``0,``7}},System.Func{ReactiveUI.IObservedChange{``0,``2},ReactiveUI.IObservedChange{``0,``3},ReactiveUI.IObservedChange{``0,``4},ReactiveUI.IObservedChange{``0,``5},ReactiveUI.IObservedChange{``0,``6},ReactiveUI.IObservedChange{``0,``7},``1})">
             <summary>
+            WhenAny allows you to observe whenever one or more properties on an
+            object have changed, providing an initial value when the Observable
+            is set up, unlike ObservableForProperty(). Use this method in
+            constructors to set up bindings between properties that also need an
+            initial setup.
             </summary>
         </member>
         <member name="M:ReactiveUI.WhenAnyMixin.WhenAny``9(``0,System.Linq.Expressions.Expression{System.Func{``0,``2}},System.Linq.Expressions.Expression{System.Func{``0,``3}},System.Linq.Expressions.Expression{System.Func{``0,``4}},System.Linq.Expressions.Expression{System.Func{``0,``5}},System.Linq.Expressions.Expression{System.Func{``0,``6}},System.Linq.Expressions.Expression{System.Func{``0,``7}},System.Linq.Expressions.Expression{System.Func{``0,``8}},System.Func{ReactiveUI.IObservedChange{``0,``2},ReactiveUI.IObservedChange{``0,``3},ReactiveUI.IObservedChange{``0,``4},ReactiveUI.IObservedChange{``0,``5},ReactiveUI.IObservedChange{``0,``6},ReactiveUI.IObservedChange{``0,``7},ReactiveUI.IObservedChange{``0,``8},``1})">
             <summary>
+            WhenAny allows you to observe whenever one or more properties on an
+            object have changed, providing an initial value when the Observable
+            is set up, unlike ObservableForProperty(). Use this method in
+            constructors to set up bindings between properties that also need an
+            initial setup.
             </summary>
         </member>
         <member name="M:ReactiveUI.WhenAnyMixin.WhenAny``10(``0,System.Linq.Expressions.Expression{System.Func{``0,``2}},System.Linq.Expressions.Expression{System.Func{``0,``3}},System.Linq.Expressions.Expression{System.Func{``0,``4}},System.Linq.Expressions.Expression{System.Func{``0,``5}},System.Linq.Expressions.Expression{System.Func{``0,``6}},System.Linq.Expressions.Expression{System.Func{``0,``7}},System.Linq.Expressions.Expression{System.Func{``0,``8}},System.Linq.Expressions.Expression{System.Func{``0,``9}},System.Func{ReactiveUI.IObservedChange{``0,``2},ReactiveUI.IObservedChange{``0,``3},ReactiveUI.IObservedChange{``0,``4},ReactiveUI.IObservedChange{``0,``5},ReactiveUI.IObservedChange{``0,``6},ReactiveUI.IObservedChange{``0,``7},ReactiveUI.IObservedChange{``0,``8},ReactiveUI.IObservedChange{``0,``9},``1})">
             <summary>
+            WhenAny allows you to observe whenever one or more properties on an
+            object have changed, providing an initial value when the Observable
+            is set up, unlike ObservableForProperty(). Use this method in
+            constructors to set up bindings between properties that also need an
+            initial setup.
             </summary>
         </member>
         <member name="M:ReactiveUI.WhenAnyMixin.WhenAny``11(``0,System.Linq.Expressions.Expression{System.Func{``0,``2}},System.Linq.Expressions.Expression{System.Func{``0,``3}},System.Linq.Expressions.Expression{System.Func{``0,``4}},System.Linq.Expressions.Expression{System.Func{``0,``5}},System.Linq.Expressions.Expression{System.Func{``0,``6}},System.Linq.Expressions.Expression{System.Func{``0,``7}},System.Linq.Expressions.Expression{System.Func{``0,``8}},System.Linq.Expressions.Expression{System.Func{``0,``9}},System.Linq.Expressions.Expression{System.Func{``0,``10}},System.Func{ReactiveUI.IObservedChange{``0,``2},ReactiveUI.IObservedChange{``0,``3},ReactiveUI.IObservedChange{``0,``4},ReactiveUI.IObservedChange{``0,``5},ReactiveUI.IObservedChange{``0,``6},ReactiveUI.IObservedChange{``0,``7},ReactiveUI.IObservedChange{``0,``8},ReactiveUI.IObservedChange{``0,``9},ReactiveUI.IObservedChange{``0,``10},``1})">
             <summary>
+            WhenAny allows you to observe whenever one or more properties on an
+            object have changed, providing an initial value when the Observable
+            is set up, unlike ObservableForProperty(). Use this method in
+            constructors to set up bindings between properties that also need an
+            initial setup.
             </summary>
         </member>
         <member name="M:ReactiveUI.WhenAnyMixin.WhenAny``12(``0,System.Linq.Expressions.Expression{System.Func{``0,``2}},System.Linq.Expressions.Expression{System.Func{``0,``3}},System.Linq.Expressions.Expression{System.Func{``0,``4}},System.Linq.Expressions.Expression{System.Func{``0,``5}},System.Linq.Expressions.Expression{System.Func{``0,``6}},System.Linq.Expressions.Expression{System.Func{``0,``7}},System.Linq.Expressions.Expression{System.Func{``0,``8}},System.Linq.Expressions.Expression{System.Func{``0,``9}},System.Linq.Expressions.Expression{System.Func{``0,``10}},System.Linq.Expressions.Expression{System.Func{``0,``11}},System.Func{ReactiveUI.IObservedChange{``0,``2},ReactiveUI.IObservedChange{``0,``3},ReactiveUI.IObservedChange{``0,``4},ReactiveUI.IObservedChange{``0,``5},ReactiveUI.IObservedChange{``0,``6},ReactiveUI.IObservedChange{``0,``7},ReactiveUI.IObservedChange{``0,``8},ReactiveUI.IObservedChange{``0,``9},ReactiveUI.IObservedChange{``0,``10},ReactiveUI.IObservedChange{``0,``11},``1})">
             <summary>
+            WhenAny allows you to observe whenever one or more properties on an
+            object have changed, providing an initial value when the Observable
+            is set up, unlike ObservableForProperty(). Use this method in
+            constructors to set up bindings between properties that also need an
+            initial setup.
             </summary>
         </member>
         <member name="M:ReactiveUI.WhenAnyMixin.WhenAny``13(``0,System.Linq.Expressions.Expression{System.Func{``0,``2}},System.Linq.Expressions.Expression{System.Func{``0,``3}},System.Linq.Expressions.Expression{System.Func{``0,``4}},System.Linq.Expressions.Expression{System.Func{``0,``5}},System.Linq.Expressions.Expression{System.Func{``0,``6}},System.Linq.Expressions.Expression{System.Func{``0,``7}},System.Linq.Expressions.Expression{System.Func{``0,``8}},System.Linq.Expressions.Expression{System.Func{``0,``9}},System.Linq.Expressions.Expression{System.Func{``0,``10}},System.Linq.Expressions.Expression{System.Func{``0,``11}},System.Linq.Expressions.Expression{System.Func{``0,``12}},System.Func{ReactiveUI.IObservedChange{``0,``2},ReactiveUI.IObservedChange{``0,``3},ReactiveUI.IObservedChange{``0,``4},ReactiveUI.IObservedChange{``0,``5},ReactiveUI.IObservedChange{``0,``6},ReactiveUI.IObservedChange{``0,``7},ReactiveUI.IObservedChange{``0,``8},ReactiveUI.IObservedChange{``0,``9},ReactiveUI.IObservedChange{``0,``10},ReactiveUI.IObservedChange{``0,``11},ReactiveUI.IObservedChange{``0,``12},``1})">
             <summary>
+            WhenAny allows you to observe whenever one or more properties on an
+            object have changed, providing an initial value when the Observable
+            is set up, unlike ObservableForProperty(). Use this method in
+            constructors to set up bindings between properties that also need an
+            initial setup.
             </summary>
         </member>
         <member name="M:ReactiveUI.WhenAnyMixin.WhenAny``14(``0,System.Linq.Expressions.Expression{System.Func{``0,``2}},System.Linq.Expressions.Expression{System.Func{``0,``3}},System.Linq.Expressions.Expression{System.Func{``0,``4}},System.Linq.Expressions.Expression{System.Func{``0,``5}},System.Linq.Expressions.Expression{System.Func{``0,``6}},System.Linq.Expressions.Expression{System.Func{``0,``7}},System.Linq.Expressions.Expression{System.Func{``0,``8}},System.Linq.Expressions.Expression{System.Func{``0,``9}},System.Linq.Expressions.Expression{System.Func{``0,``10}},System.Linq.Expressions.Expression{System.Func{``0,``11}},System.Linq.Expressions.Expression{System.Func{``0,``12}},System.Linq.Expressions.Expression{System.Func{``0,``13}},System.Func{ReactiveUI.IObservedChange{``0,``2},ReactiveUI.IObservedChange{``0,``3},ReactiveUI.IObservedChange{``0,``4},ReactiveUI.IObservedChange{``0,``5},ReactiveUI.IObservedChange{``0,``6},ReactiveUI.IObservedChange{``0,``7},ReactiveUI.IObservedChange{``0,``8},ReactiveUI.IObservedChange{``0,``9},ReactiveUI.IObservedChange{``0,``10},ReactiveUI.IObservedChange{``0,``11},ReactiveUI.IObservedChange{``0,``12},ReactiveUI.IObservedChange{``0,``13},``1})">
             <summary>
+            WhenAny allows you to observe whenever one or more properties on an
+            object have changed, providing an initial value when the Observable
+            is set up, unlike ObservableForProperty(). Use this method in
+            constructors to set up bindings between properties that also need an
+            initial setup.
             </summary>
         </member>
     </members>
