@@ -44,8 +44,14 @@
   <ItemGroup>
     <Reference Include="Microsoft.Expression.Interactions, Version=3.7.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="System.Observable" />
-    <Reference Include="System.Reactive" />
-    <Reference Include="System.Reactive.Windows.Threading" />
+    <Reference Include="System.Reactive">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\ext\WP7\System.Reactive.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reactive.Windows.Threading">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\ext\WP7\System.Reactive.Windows.Threading.dll</HintPath>
+    </Reference>
     <Reference Include="System.Windows" />
     <Reference Include="system" />
     <Reference Include="System.Core" />
