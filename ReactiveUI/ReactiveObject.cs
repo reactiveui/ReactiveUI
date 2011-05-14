@@ -263,6 +263,36 @@ namespace ReactiveUI
             This.raisePropertyChanged(prop_name);
             return newValue;
         }
+
+        /// <summary>
+        /// Use this method in your ReactiveObject classes when creating custom
+        /// properties where raiseAndSetIfChanged doesn't suffice.
+        /// </summary>
+        /// <param name="property">An Expression representing the property (i.e.
+        /// 'x => x.SomeProperty'</param>
+        public static void raisePropertyChanging<TObj, TRet>(
+                this TObj This,
+                Expression<Func<TObj, TRet>> property)
+            where TObj : ReactiveObject
+        {
+            var propName = RxApp.simpleExpressionToPropertyName(property);
+            This.raisePropertyChanging(propName);
+        }
+
+        /// <summary>
+        /// Use this method in your ReactiveObject classes when creating custom
+        /// properties where raiseAndSetIfChanged doesn't suffice.
+        /// </summary>
+        /// <param name="property">An Expression representing the property (i.e.
+        /// 'x => x.SomeProperty'</param>
+        public static void raisePropertyChanged<TObj, TRet>(
+                this TObj This,
+                Expression<Func<TObj, TRet>> property)
+            where TObj : ReactiveObject
+        {
+            var propName = RxApp.simpleExpressionToPropertyName(property);
+            This.raisePropertyChanged(propName);
+        }
     }
 
     public static class ReactiveObjectTestMixin
