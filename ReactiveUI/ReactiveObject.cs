@@ -270,7 +270,7 @@ namespace ReactiveUI
         /// </summary>
         /// <param name="property">An Expression representing the property (i.e.
         /// 'x => x.SomeProperty'</param>
-        public static void raisePropertyChanging<TObj, TRet>(
+        public static void RaisePropertyChanging<TObj, TRet>(
                 this TObj This,
                 Expression<Func<TObj, TRet>> property)
             where TObj : ReactiveObject
@@ -285,7 +285,7 @@ namespace ReactiveUI
         /// </summary>
         /// <param name="property">An Expression representing the property (i.e.
         /// 'x => x.SomeProperty'</param>
-        public static void raisePropertyChanged<TObj, TRet>(
+        public static void RaisePropertyChanged<TObj, TRet>(
                 this TObj This,
                 Expression<Func<TObj, TRet>> property)
             where TObj : ReactiveObject
