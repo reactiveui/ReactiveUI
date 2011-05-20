@@ -50,8 +50,8 @@
   <ItemGroup>
     <Reference Include="Microsoft.Phone" />
     <Reference Include="System.Observable" />
-    <Reference Include="System.Reactive, Version=1.0.10425.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
-    <Reference Include="System.Reactive.Windows.Threading, Version=1.0.10425.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="System.Reactive, Version=1.1.10425.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="System.Reactive.Windows.Threading, Version=1.1.10425.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.Windows" />

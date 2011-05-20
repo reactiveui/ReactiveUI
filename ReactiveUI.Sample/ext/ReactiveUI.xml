@@ -4,32 +4,16 @@
         <name>ReactiveUI</name>
     </assembly>
     <members>
-        <member name="T:ReactiveUI.IObservedChange`2">
+        <member name="T:ReactiveUI.ReactiveValidatedObject">
             <summary>
-            IObservedChange is a generic interface that replaces the non-generic
-            PropertyChangedEventArgs. Note that it is used for both Changing (i.e.
-            'before change') and Changed Observables. In the future, this interface
-            will be Covariant which will allow simpler casting between specific and
-            generic changes.
+            
             </summary>
         </member>
-        <member name="P:ReactiveUI.IObservedChange`2.Sender">
+        <member name="T:ReactiveUI.ReactiveObject">
             <summary>
-            The object that has raised the change.
-            </summary>
-        </member>
-        <member name="P:ReactiveUI.IObservedChange`2.PropertyName">
-            <summary>
-            The name of the property that has changed on Sender.
-            </summary>
-        </member>
-        <member name="P:ReactiveUI.IObservedChange`2.Value">
-            <summary>
-            The value of the property that has changed. IMPORTANT NOTE: This
-            property is often not set for performance reasons, unless you have
-            explicitly requested an Observable for a property via a method such
-            as ObservableForProperty. To retrieve the value for the property,
-            use the Value() extension method.
+            ReactiveObject is the base object for ViewModel classes, and it
+            implements INotifyPropertyChanged. In addition, ReactiveObject provides
+            Changing and Changed Observables to monitor object changes.
             </summary>
         </member>
         <member name="T:ReactiveUI.IReactiveNotifyPropertyChanged">
@@ -67,380 +51,101 @@
             property is set to the same value multiple times.
             </summary>
         </member>
-        <member name="T:ReactiveUI.IReactiveNotifyPropertyChanged`1">
+        <member name="M:ReactiveUI.ReactiveObject.SuppressChangeNotifications">
             <summary>
-            IReactiveNotifyPropertyChanged of TSender is a helper interface that adds
-            typed versions of Changing and Changed.
+            When this method is called, an object will not fire change
+            notifications (neither traditional nor Observable notifications)
+            until the return value is disposed.
+            </summary>
+            <returns>An object that, when disposed, reenables change
+            notifications.</returns>
+        </member>
+        <member name="P:ReactiveUI.ReactiveObject.Changing">
+            <summary>
+            Represents an Observable that fires *before* a property is about to
+            be changed.         
             </summary>
         </member>
-        <member name="T:ReactiveUI.IReactiveCollection">
+        <member name="P:ReactiveUI.ReactiveObject.Changed">
+            <summary>
+            Represents an Observable that fires *after* a property has changed.
+            </summary>
+        </member>
+        <member name="M:ReactiveUI.ReactiveValidatedObject.#ctor">
              <summary>
-             IReactiveCollection represents a collection that can notify when its
-             contents are changed (either items are added/removed, or the object
-             itself changes).
             
-             It is important to implement the Changing/Changed from
-             IReactiveNotifyPropertyChanged semantically as "Fire when *anything* in
-             the collection or any of its items have changed, in any way".
              </summary>
         </member>
-        <member name="P:ReactiveUI.IReactiveCollection.ItemsAdded">
+        <member name="T:ReactiveUI.ValidationBase">
             <summary>
-            Fires when items are added to the collection, once per item added.
-            Functions that add multiple items such AddRange should fire this
-            multiple times. The object provided is the item that was added.
-            </summary>
-        </member>
-        <member name="P:ReactiveUI.IReactiveCollection.BeforeItemsAdded">
-            <summary>
-            Fires before an item is going to be added to the collection.
-            </summary>
-        </member>
-        <member name="P:ReactiveUI.IReactiveCollection.ItemsRemoved">
-            <summary>
-            Fires once an item has been removed from a collection, providing the
-            item that was removed.
-            </summary>
-        </member>
-        <member name="P:ReactiveUI.IReactiveCollection.BeforeItemsRemoved">
-            <summary>
-            Fires before an item will be removed from a collection, providing
-            the item that will be removed. 
-            </summary>
-        </member>
-        <member name="P:ReactiveUI.IReactiveCollection.CollectionCountChanged">
-            <summary>
-            Fires whenever the number of items in a collection has changed,
-            providing the new Count.
-            </summary>
-        </member>
-        <member name="P:ReactiveUI.IReactiveCollection.CollectionCountChanging">
-            <summary>
-            Fires before a collection is about to change, providing the previous
-            Count.
-            </summary>
-        </member>
-        <member name="P:ReactiveUI.IReactiveCollection.ItemChanging">
-            <summary>
-            Provides Item Changed notifications for any item in collection that
-            implements IReactiveNotifyPropertyChanged. This is only enabled when
-            ChangeTrackingEnabled is set to True.
-            </summary>
-        </member>
-        <member name="P:ReactiveUI.IReactiveCollection.ItemChanged">
-            <summary>
-            Provides Item Changing notifications for any item in collection that
-            implements IReactiveNotifyPropertyChanged. This is only enabled when
-            </summary>
-        </member>
-        <member name="P:ReactiveUI.IReactiveCollection.ChangeTrackingEnabled">
-            <summary>
-            Enables the ItemChanging and ItemChanged properties; when this is
-            enabled, whenever a property on any object implementing
-            IReactiveNotifyPropertyChanged changes, the change will be
-            rebroadcast through ItemChanging/ItemChanged.
-            </summary>
-        </member>
-        <member name="T:ReactiveUI.IReactiveCollection`1">
-            <summary>
-            IReactiveCollection of T is the typed version of IReactiveCollection and
-            adds type-specified versions of Observables
-            </summary>
-        </member>
-        <member name="T:ReactiveUI.IMessageBus">
-             <summary>
-             IMessageBus represents an object that can act as a "Message Bus", a
-             simple way for ViewModels and other objects to communicate with each
-             other in a loosely coupled way.
             
-             Specifying which messages go where is done via a combination of the Type
-             of the message as well as an additional "Contract" parameter; this is a
-             unique string used to distinguish between messages of the same Type, and
-             is arbitrarily set by the client. 
-             </summary>
-        </member>
-        <member name="M:ReactiveUI.IMessageBus.Listen``1(System.String)">
-            <summary>
-            Listen provides an Observable that will fire whenever a Message is
-            provided for this object via RegisterMessageSource or SendMessage.
             </summary>
-            <typeparam name="T">The type of the message to listen to.</typeparam>
-            <param name="contract">A unique string to distinguish messages with
-            identical types (i.e. "MyCoolViewModel") - if the message type is
-            only used for one purpose, leave this as null.</param>
+        </member>
+        <member name="M:ReactiveUI.ValidationBase.IsValid(System.Object,System.ComponentModel.DataAnnotations.ValidationContext)">
+            <summary>
+            
+            </summary>
+            <param name="value"></param>
+            <param name="validationContext"></param>
             <returns></returns>
         </member>
-        <member name="M:ReactiveUI.IMessageBus.IsRegistered(System.Type,System.String)">
+        <member name="M:ReactiveUI.ValidationBase.isValidViaNullOrBlank(System.Object)">
             <summary>
-            Determins if a particular message Type is registered.
+            
             </summary>
-            <typeparam name="T">The type of the message.</typeparam>
-            <param name="contract">A unique string to distinguish messages with
-            identical types (i.e. "MyCoolViewModel") - if the message type is
-            only used for one purpose, leave this as null.</param>
-            <returns>True if messages have been posted for this message Type.</returns>
-        </member>
-        <member name="M:ReactiveUI.IMessageBus.RegisterMessageSource``1(System.IObservable{``0},System.String,System.Reactive.Concurrency.IScheduler)">
-            <summary>
-            Registers an Observable representing the stream of messages to send.
-            Another part of the code can then call Listen to retrieve this
-            Observable.
-            </summary>
-            <typeparam name="T">The type of the message to listen to.</typeparam>
-            <param name="source">An Observable that will be subscribed to, and a
-            message sent out for each value provided.</param>
-            <param name="contract">A unique string to distinguish messages with
-            identical types (i.e. "MyCoolViewModel") - if the message type is
-            only used for one purpose, leave this as null.</param>
-        </member>
-        <member name="M:ReactiveUI.IMessageBus.SendMessage``1(``0,System.String,System.Reactive.Concurrency.IScheduler)">
-            <summary>
-            Sends a single message using the specified Type and contract.
-            Consider using RegisterMessageSource instead if you will be sending
-            messages in response to other changes such as property changes
-            or events.
-            </summary>
-            <typeparam name="T">The type of the message to send.</typeparam>
-            <param name="message">The actual message to send</param>
-            <param name="contract">A unique string to distinguish messages with
-            identical types (i.e. "MyCoolViewModel") - if the message type is
-            only used for one purpose, leave this as null.</param>
-        </member>
-        <member name="M:ReactiveUI.EnableLoggerMixin.Log(ReactiveUI.IEnableLogger)">
-            <summary>
-            Log returns the current logger object, which allows the object to
-            log messages with the type name attached.
-            </summary>
+            <param name="value"></param>
             <returns></returns>
         </member>
-        <member name="T:ReactiveUI.MemoizingMRUCache`2">
-             <summary>
-             This data structure is a representation of a memoizing cache - i.e. a
-             class that will evaluate a function, but keep a cache of recently
-             evaluated parameters.
+        <member name="M:ReactiveUI.ValidationBase.isValidViaNullOrBlank(System.Object,System.ComponentModel.DataAnnotations.ValidationContext)">
+            <summary>
             
-             Since this is a memoizing cache, it is important that this function be a
-             "pure" function in the mathematical sense - that a key *always* maps to
-             a corresponding return value.
-             </summary>
-             <typeparam name="TParam">The type of the parameter to the calculation function.</typeparam>
-             <typeparam name="TVal">The type of the value returned by the calculation
-             function.</typeparam>
-        </member>
-        <member name="M:ReactiveUI.MemoizingMRUCache`2.#ctor(System.Func{`0,System.Object,`1},System.Int32,System.Action{`1})">
-            <summary>
-            Constructor
             </summary>
-            <param name="calculationFunc">The function whose results you want to cache,
-            which is provided the key value, and an Tag object that is
-            user-defined</param>
-            <param name="maxSize">The size of the cache to maintain, after which old
-            items will start to be thrown out.</param>
-            <param name="onRelease">A function to call when a result gets
-            evicted from the cache (i.e. because Invalidate was called or the
-            cache is full)</param>
-        </member>
-        <member name="M:ReactiveUI.MemoizingMRUCache`2.Get(`0,System.Object)">
-            <summary>
-            Evaluates the function provided, returning the cached value if possible
-            </summary>
-            <param name="key">The value to pass to the calculation function.</param>
-            <param name="context">An additional optional user-specific parameter.</param>
+            <param name="value"></param>
+            <param name="ctx"></param>
             <returns></returns>
         </member>
-        <member name="M:ReactiveUI.MemoizingMRUCache`2.Invalidate(`0)">
+        <member name="M:ReactiveUI.ValidationBase.getStandardMessage(System.ComponentModel.DataAnnotations.ValidationContext)">
             <summary>
-            Ensure that the next time this key is queried, the calculation
-            function will be called.
+            
             </summary>
-        </member>
-        <member name="M:ReactiveUI.MemoizingMRUCache`2.InvalidateAll">
-            <summary>
-            Invalidate all items in the cache
-            </summary>
-        </member>
-        <member name="M:ReactiveUI.MemoizingMRUCache`2.CachedValues">
-            <summary>
-            Returns all values currently in the cache
-            </summary>
+            <param name="ctx"></param>
             <returns></returns>
         </member>
-        <member name="T:ReactiveUI.MessageBus">
-             <summary>
-             MessageBus represents an object that can act as a "Message Bus", a
-             simple way for ViewModels and other objects to communicate with each
-             other in a loosely coupled way.
+        <member name="T:ReactiveUI.ValidatesViaMethodAttribute">
+            <summary>
             
-             Specifying which messages go where is done via a combination of the Type
-             of the message as well as an additional "Contract" parameter; this is a
-             unique string used to distinguish between messages of the same Type, and
-             is arbitrarily set by the client. 
-             </summary>
-        </member>
-        <member name="M:ReactiveUI.MessageBus.Listen``1(System.String)">
-            <summary>
-            Listen provides an Observable that will fire whenever a Message is
-            provided for this object via RegisterMessageSource or SendMessage.
-            </summary>
-            <typeparam name="T">The type of the message to listen to.</typeparam>
-            <param name="contract">A unique string to distinguish messages with
-            identical types (i.e. "MyCoolViewModel") - if the message type is
-            only used for one purpose, leave this as null.</param>
-            <returns>An Observable representing the notifications posted to the
-            message bus.</returns>
-        </member>
-        <member name="M:ReactiveUI.MessageBus.IsRegistered(System.Type,System.String)">
-            <summary>
-            Determins if a particular message Type is registered.
-            </summary>
-            <param name="type">The Type of the message to listen to.</param>
-            <param name="contract">A unique string to distinguish messages with
-            identical types (i.e. "MyCoolViewModel") - if the message type is
-            only used for one purpose, leave this as null.</param>
-            <returns>True if messages have been posted for this message Type.</returns>
-        </member>
-        <member name="M:ReactiveUI.MessageBus.RegisterMessageSource``1(System.IObservable{``0},System.String,System.Reactive.Concurrency.IScheduler)">
-            <summary>
-            Registers an Observable representing the stream of messages to send.
-            Another part of the code can then call Listen to retrieve this
-            Observable.
-            </summary>
-            <typeparam name="T">The type of the message to listen to.</typeparam>
-            <param name="source">An Observable that will be subscribed to, and a
-            message sent out for each value provided.</param>
-            <param name="contract">A unique string to distinguish messages with
-            identical types (i.e. "MyCoolViewModel") - if the message type is
-            only used for one purpose, leave this as null.</param>
-            <param name="scheduler">The scheduler on which to post the
-            notifications, RxApp.DeferredScheduler by default.</param>
-        </member>
-        <member name="M:ReactiveUI.MessageBus.SendMessage``1(``0,System.String,System.Reactive.Concurrency.IScheduler)">
-            <summary>
-            Sends a single message using the specified Type and contract.
-            Consider using RegisterMessageSource instead if you will be sending
-            messages in response to other changes such as property changes
-            or events.
-            </summary>
-            <typeparam name="T">The type of the message to send.</typeparam>
-            <param name="message">The actual message to send</param>
-            <param name="contract">A unique string to distinguish messages with
-            identical types (i.e. "MyCoolViewModel") - if the message type is
-            only used for one purpose, leave this as null.</param>
-            <param name="scheduler">The scheduler on which to post the
-            notifications, RxApp.DeferredScheduler by default.</param>
-        </member>
-        <member name="P:ReactiveUI.MessageBus.Current">
-            <summary>
-            Returns the Current MessageBus from the RxApp global object.
             </summary>
         </member>
-        <member name="M:ReactiveUI.MessageBusMixins.RegisterViewModel``1(ReactiveUI.IMessageBus,``0,System.String)">
+        <member name="M:ReactiveUI.ReactiveNotifyPropertyChangedMixin.ObservableForProperty``2(``0,System.Linq.Expressions.Expression{System.Func{``0,``1}},System.Boolean)">
             <summary>
-            Registers a ViewModel object to send property change
-            messages; this allows a ViewModel to listen to another ViewModel's
-            changes in a loosely-typed manner.
+            ObservableForProperty returns an Observable representing the
+            property change notifications for a specific property on a
+            ReactiveObject. This method (unlike other Observables that return
+            IObservedChange) guarantees that the Value property of
+            the IObservedChange is set.
             </summary>
-            <param name="source">The ViewModel to register</param>
-            <param name="contract">A unique string to distinguish messages with
-            identical types (i.e. "MyCoolViewModel") - if the message type is
-            only used for one purpose, leave this as null.</param>
-            <exception cref="T:System.Exception"><c>Exception</c>The registered ViewModel
-            must be the only instance (i.e. not in an ItemsControl)</exception>
+            <param name="property">An Expression representing the property (i.e.
+            'x => x.SomeProperty.SomeOtherProperty'</param>
+            <param name="beforeChange">If True, the Observable will notify
+            immediately before a property is going to change.</param>
+            <returns>An Observable representing the property change
+            notifications for the given property.</returns>
         </member>
-        <member name="M:ReactiveUI.MessageBusMixins.ListenToViewModel``1(ReactiveUI.IMessageBus,System.String)">
+        <member name="M:ReactiveUI.ReactiveNotifyPropertyChangedMixin.ObservableForProperty``3(``0,System.Linq.Expressions.Expression{System.Func{``0,``1}},System.Func{``1,``2},System.Boolean)">
             <summary>
-            Listens to a registered ViewModel's property change notifications.
+            ObservableForProperty returns an Observable representing the
+            property change notifications for a specific property on a
+            ReactiveObject, running the IObservedChange through a Selector
+            function.
             </summary>
-            <param name="contract">A unique string to distinguish messages with
-            identical types (i.e. "MyCoolViewModel") - if the message type is
-            only used for one purpose, leave this as null.</param>
-            <returns>An Observable that fires when an object changes and
-            provides the property name that has changed.</returns>
-        </member>
-        <member name="M:ReactiveUI.MessageBusMixins.ViewModelForType``1(ReactiveUI.IMessageBus,System.String)">
-            <summary>
-            Return the current instance of the ViewModel with the specified
-            type.
-            </summary>
-            <param name="contract">A unique string to distinguish messages with
-            identical types (i.e. "MyCoolViewModel") - if the message type is
-            only used for one purpose, leave this as null.</param>
-            <returns>The ViewModel object registered for this type.</returns>
-        </member>
-        <member name="T:ReactiveUI.ObservableAsPropertyHelper`1">
-             <summary>
-             ObservableAsPropertyHelper is a class to help ViewModels implement
-             "output properties", that is, a property that is backed by an
-             Observable. The property will be read-only, but will still fire change
-             notifications. This class can be created directly, but is more often created via the
-             ToProperty and ObservableToProperty extension methods.
-            
-             This class is also an Observable itself, so that output properties can
-             be chained - for example a "Path" property and a chained
-             "PathFileNameOnly" property.
-             </summary>
-        </member>
-        <member name="M:ReactiveUI.ObservableAsPropertyHelper`1.#ctor(System.IObservable{`0},System.Action{`0},`0,System.Reactive.Concurrency.IScheduler)">
-            <summary>
-            Constructs an ObservableAsPropertyHelper object.
-            </summary>
-            <param name="observable">The Observable to base the property on.</param>
-            <param name="onChanged">The action to take when the property
-            changes, typically this will call the ViewModel's
-            RaisePropertyChanged method.</param>
-            <param name="initialValue">The initial value of the property.</param>
-            <param name="scheduler">The scheduler that the notifications will be
-            provided on - this should normally be a Dispatcher-based scheduler
-            (and is by default)</param>
-        </member>
-        <member name="M:ReactiveUI.ObservableAsPropertyHelper`1.Default(`0,System.Reactive.Concurrency.IScheduler)">
-            <summary>
-            Constructs a "default" ObservableAsPropertyHelper object. This is
-            useful for when you will initialize the OAPH later, but don't want
-            bindings to access a null OAPH at startup.
-            </summary>
-            <param name="initialValue">The initial (and only) value of the property.</param>
-            <param name="scheduler">The scheduler that the notifications will be
-            provided on - this should normally be a Dispatcher-based scheduler
-            (and is by default)</param>
-        </member>
-        <member name="P:ReactiveUI.ObservableAsPropertyHelper`1.Value">
-            <summary>
-            The last provided value from the Observable. 
-            </summary>
-        </member>
-        <member name="M:ReactiveUI.OAPHCreationHelperMixin.ObservableToProperty``2(``0,System.IObservable{``1},System.Linq.Expressions.Expression{System.Func{``0,``1}},``1,System.Reactive.Concurrency.IScheduler)">
-            <summary>
-            Converts an Observable to an ObservableAsPropertyHelper and
-            automatically provides the onChanged method to raise the property
-            changed notification. The ToProperty method is semantically
-            equivalent to this method and is often more convenient.
-            </summary>
-            <param name="observable">The Observable to base the property on.</param>
             <param name="property">An Expression representing the property (i.e.
             'x => x.SomeProperty'</param>
-            <param name="initialValue">The initial value of the property.</param>
-            <param name="scheduler">The scheduler that the notifications will be
-            provided on - this should normally be a Dispatcher-based scheduler
-            (and is by default)</param>
-            <returns>An initialized ObservableAsPropertyHelper; use this as the
-            backing field for your property.</returns>
-        </member>
-        <member name="M:ReactiveUI.OAPHCreationHelperMixin.ToProperty``2(System.IObservable{``1},``0,System.Linq.Expressions.Expression{System.Func{``0,``1}},``1,System.Reactive.Concurrency.IScheduler)">
-            <summary>
-            Converts an Observable to an ObservableAsPropertyHelper and
-            automatically provides the onChanged method to raise the property
-            changed notification.         
-            </summary>
-            <param name="source">The ReactiveObject that has the property</param>
-            <param name="property">An Expression representing the property (i.e.
-            'x => x.SomeProperty'</param>
-            <param name="initialValue">The initial value of the property.</param>
-            <param name="scheduler">The scheduler that the notifications will be
-            provided on - this should normally be a Dispatcher-based scheduler
-            (and is by default)</param>
-            <returns>An initialized ObservableAsPropertyHelper; use this as the
-            backing field for your property.</returns>
+            <param name="selector">A Select function that will be run on each
+            item.</param>
+            <param name="beforeChange">If True, the Observable will notify
+            immediately before a property is going to change.</param>
+            <returns>An Observable representing the property change
+            notifications for the given property.</returns>
         </member>
         <member name="T:ReactiveUI.ObservableAsyncMRUCache`2">
              <summary>
@@ -606,6 +311,445 @@
             property to set. This can be a child property (i.e. x.Foo.Bar.Baz).</param>
             <returns>An object that when disposed, disconnects the binding.</returns>
         </member>
+        <member name="T:ReactiveUI.ObservableAsPropertyHelper`1">
+             <summary>
+             ObservableAsPropertyHelper is a class to help ViewModels implement
+             "output properties", that is, a property that is backed by an
+             Observable. The property will be read-only, but will still fire change
+             notifications. This class can be created directly, but is more often created via the
+             ToProperty and ObservableToProperty extension methods.
+            
+             This class is also an Observable itself, so that output properties can
+             be chained - for example a "Path" property and a chained
+             "PathFileNameOnly" property.
+             </summary>
+        </member>
+        <member name="M:ReactiveUI.ObservableAsPropertyHelper`1.#ctor(System.IObservable{`0},System.Action{`0},`0,System.Reactive.Concurrency.IScheduler)">
+            <summary>
+            Constructs an ObservableAsPropertyHelper object.
+            </summary>
+            <param name="observable">The Observable to base the property on.</param>
+            <param name="onChanged">The action to take when the property
+            changes, typically this will call the ViewModel's
+            RaisePropertyChanged method.</param>
+            <param name="initialValue">The initial value of the property.</param>
+            <param name="scheduler">The scheduler that the notifications will be
+            provided on - this should normally be a Dispatcher-based scheduler
+            (and is by default)</param>
+        </member>
+        <member name="M:ReactiveUI.ObservableAsPropertyHelper`1.Default(`0,System.Reactive.Concurrency.IScheduler)">
+            <summary>
+            Constructs a "default" ObservableAsPropertyHelper object. This is
+            useful for when you will initialize the OAPH later, but don't want
+            bindings to access a null OAPH at startup.
+            </summary>
+            <param name="initialValue">The initial (and only) value of the property.</param>
+            <param name="scheduler">The scheduler that the notifications will be
+            provided on - this should normally be a Dispatcher-based scheduler
+            (and is by default)</param>
+        </member>
+        <member name="P:ReactiveUI.ObservableAsPropertyHelper`1.Value">
+            <summary>
+            The last provided value from the Observable. 
+            </summary>
+        </member>
+        <member name="M:ReactiveUI.OAPHCreationHelperMixin.ObservableToProperty``2(``0,System.IObservable{``1},System.Linq.Expressions.Expression{System.Func{``0,``1}},``1,System.Reactive.Concurrency.IScheduler)">
+            <summary>
+            Converts an Observable to an ObservableAsPropertyHelper and
+            automatically provides the onChanged method to raise the property
+            changed notification. The ToProperty method is semantically
+            equivalent to this method and is often more convenient.
+            </summary>
+            <param name="observable">The Observable to base the property on.</param>
+            <param name="property">An Expression representing the property (i.e.
+            'x => x.SomeProperty'</param>
+            <param name="initialValue">The initial value of the property.</param>
+            <param name="scheduler">The scheduler that the notifications will be
+            provided on - this should normally be a Dispatcher-based scheduler
+            (and is by default)</param>
+            <returns>An initialized ObservableAsPropertyHelper; use this as the
+            backing field for your property.</returns>
+        </member>
+        <member name="M:ReactiveUI.OAPHCreationHelperMixin.ToProperty``2(System.IObservable{``1},``0,System.Linq.Expressions.Expression{System.Func{``0,``1}},``1,System.Reactive.Concurrency.IScheduler)">
+            <summary>
+            Converts an Observable to an ObservableAsPropertyHelper and
+            automatically provides the onChanged method to raise the property
+            changed notification.         
+            </summary>
+            <param name="source">The ReactiveObject that has the property</param>
+            <param name="property">An Expression representing the property (i.e.
+            'x => x.SomeProperty'</param>
+            <param name="initialValue">The initial value of the property.</param>
+            <param name="scheduler">The scheduler that the notifications will be
+            provided on - this should normally be a Dispatcher-based scheduler
+            (and is by default)</param>
+            <returns>An initialized ObservableAsPropertyHelper; use this as the
+            backing field for your property.</returns>
+        </member>
+        <member name="M:ReactiveUI.EnableLoggerMixin.Log(ReactiveUI.IEnableLogger)">
+            <summary>
+            Log returns the current logger object, which allows the object to
+            log messages with the type name attached.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:ReactiveUI.IObservedChange`2">
+            <summary>
+            IObservedChange is a generic interface that replaces the non-generic
+            PropertyChangedEventArgs. Note that it is used for both Changing (i.e.
+            'before change') and Changed Observables. In the future, this interface
+            will be Covariant which will allow simpler casting between specific and
+            generic changes.
+            </summary>
+        </member>
+        <member name="P:ReactiveUI.IObservedChange`2.Sender">
+            <summary>
+            The object that has raised the change.
+            </summary>
+        </member>
+        <member name="P:ReactiveUI.IObservedChange`2.PropertyName">
+            <summary>
+            The name of the property that has changed on Sender.
+            </summary>
+        </member>
+        <member name="P:ReactiveUI.IObservedChange`2.Value">
+            <summary>
+            The value of the property that has changed. IMPORTANT NOTE: This
+            property is often not set for performance reasons, unless you have
+            explicitly requested an Observable for a property via a method such
+            as ObservableForProperty. To retrieve the value for the property,
+            use the Value() extension method.
+            </summary>
+        </member>
+        <member name="T:ReactiveUI.IReactiveNotifyPropertyChanged`1">
+            <summary>
+            IReactiveNotifyPropertyChanged of TSender is a helper interface that adds
+            typed versions of Changing and Changed.
+            </summary>
+        </member>
+        <member name="T:ReactiveUI.IReactiveCollection">
+             <summary>
+             IReactiveCollection represents a collection that can notify when its
+             contents are changed (either items are added/removed, or the object
+             itself changes).
+            
+             It is important to implement the Changing/Changed from
+             IReactiveNotifyPropertyChanged semantically as "Fire when *anything* in
+             the collection or any of its items have changed, in any way".
+             </summary>
+        </member>
+        <member name="P:ReactiveUI.IReactiveCollection.ItemsAdded">
+            <summary>
+            Fires when items are added to the collection, once per item added.
+            Functions that add multiple items such AddRange should fire this
+            multiple times. The object provided is the item that was added.
+            </summary>
+        </member>
+        <member name="P:ReactiveUI.IReactiveCollection.BeforeItemsAdded">
+            <summary>
+            Fires before an item is going to be added to the collection.
+            </summary>
+        </member>
+        <member name="P:ReactiveUI.IReactiveCollection.ItemsRemoved">
+            <summary>
+            Fires once an item has been removed from a collection, providing the
+            item that was removed.
+            </summary>
+        </member>
+        <member name="P:ReactiveUI.IReactiveCollection.BeforeItemsRemoved">
+            <summary>
+            Fires before an item will be removed from a collection, providing
+            the item that will be removed. 
+            </summary>
+        </member>
+        <member name="P:ReactiveUI.IReactiveCollection.CollectionCountChanged">
+            <summary>
+            Fires whenever the number of items in a collection has changed,
+            providing the new Count.
+            </summary>
+        </member>
+        <member name="P:ReactiveUI.IReactiveCollection.CollectionCountChanging">
+            <summary>
+            Fires before a collection is about to change, providing the previous
+            Count.
+            </summary>
+        </member>
+        <member name="P:ReactiveUI.IReactiveCollection.ItemChanging">
+            <summary>
+            Provides Item Changed notifications for any item in collection that
+            implements IReactiveNotifyPropertyChanged. This is only enabled when
+            ChangeTrackingEnabled is set to True.
+            </summary>
+        </member>
+        <member name="P:ReactiveUI.IReactiveCollection.ItemChanged">
+            <summary>
+            Provides Item Changing notifications for any item in collection that
+            implements IReactiveNotifyPropertyChanged. This is only enabled when
+            </summary>
+        </member>
+        <member name="P:ReactiveUI.IReactiveCollection.ChangeTrackingEnabled">
+            <summary>
+            Enables the ItemChanging and ItemChanged properties; when this is
+            enabled, whenever a property on any object implementing
+            IReactiveNotifyPropertyChanged changes, the change will be
+            rebroadcast through ItemChanging/ItemChanged.
+            </summary>
+        </member>
+        <member name="T:ReactiveUI.IReactiveCollection`1">
+            <summary>
+            IReactiveCollection of T is the typed version of IReactiveCollection and
+            adds type-specified versions of Observables
+            </summary>
+        </member>
+        <member name="T:ReactiveUI.IMessageBus">
+             <summary>
+             IMessageBus represents an object that can act as a "Message Bus", a
+             simple way for ViewModels and other objects to communicate with each
+             other in a loosely coupled way.
+            
+             Specifying which messages go where is done via a combination of the Type
+             of the message as well as an additional "Contract" parameter; this is a
+             unique string used to distinguish between messages of the same Type, and
+             is arbitrarily set by the client. 
+             </summary>
+        </member>
+        <member name="M:ReactiveUI.IMessageBus.Listen``1(System.String)">
+            <summary>
+            Listen provides an Observable that will fire whenever a Message is
+            provided for this object via RegisterMessageSource or SendMessage.
+            </summary>
+            <typeparam name="T">The type of the message to listen to.</typeparam>
+            <param name="contract">A unique string to distinguish messages with
+            identical types (i.e. "MyCoolViewModel") - if the message type is
+            only used for one purpose, leave this as null.</param>
+            <returns></returns>
+        </member>
+        <member name="M:ReactiveUI.IMessageBus.IsRegistered(System.Type,System.String)">
+            <summary>
+            Determins if a particular message Type is registered.
+            </summary>
+            <typeparam name="T">The type of the message.</typeparam>
+            <param name="contract">A unique string to distinguish messages with
+            identical types (i.e. "MyCoolViewModel") - if the message type is
+            only used for one purpose, leave this as null.</param>
+            <returns>True if messages have been posted for this message Type.</returns>
+        </member>
+        <member name="M:ReactiveUI.IMessageBus.RegisterMessageSource``1(System.IObservable{``0},System.String,System.Reactive.Concurrency.IScheduler)">
+            <summary>
+            Registers an Observable representing the stream of messages to send.
+            Another part of the code can then call Listen to retrieve this
+            Observable.
+            </summary>
+            <typeparam name="T">The type of the message to listen to.</typeparam>
+            <param name="source">An Observable that will be subscribed to, and a
+            message sent out for each value provided.</param>
+            <param name="contract">A unique string to distinguish messages with
+            identical types (i.e. "MyCoolViewModel") - if the message type is
+            only used for one purpose, leave this as null.</param>
+        </member>
+        <member name="M:ReactiveUI.IMessageBus.SendMessage``1(``0,System.String,System.Reactive.Concurrency.IScheduler)">
+            <summary>
+            Sends a single message using the specified Type and contract.
+            Consider using RegisterMessageSource instead if you will be sending
+            messages in response to other changes such as property changes
+            or events.
+            </summary>
+            <typeparam name="T">The type of the message to send.</typeparam>
+            <param name="message">The actual message to send</param>
+            <param name="contract">A unique string to distinguish messages with
+            identical types (i.e. "MyCoolViewModel") - if the message type is
+            only used for one purpose, leave this as null.</param>
+        </member>
+        <member name="M:ReactiveUI.WhenAnyMixin.WhenAny``3(``0,System.Linq.Expressions.Expression{System.Func{``0,``2}},System.Func{ReactiveUI.IObservedChange{``0,``2},``1})">
+            <summary>
+            WhenAny allows you to observe whenever one or more properties on an
+            object have changed, providing an initial value when the Observable
+            is set up, unlike ObservableForProperty(). Use this method in
+            constructors to set up bindings between properties that also need an
+            initial setup.
+            </summary>
+        </member>
+        <member name="M:ReactiveUI.WhenAnyMixin.WhenAny``4(``0,System.Linq.Expressions.Expression{System.Func{``0,``2}},System.Linq.Expressions.Expression{System.Func{``0,``3}},System.Func{ReactiveUI.IObservedChange{``0,``2},ReactiveUI.IObservedChange{``0,``3},``1})">
+            <summary>
+            WhenAny allows you to observe whenever one or more properties on an
+            object have changed, providing an initial value when the Observable
+            is set up, unlike ObservableForProperty(). Use this method in
+            constructors to set up bindings between properties that also need an
+            initial setup.
+            </summary>
+        </member>
+        <member name="M:ReactiveUI.WhenAnyMixin.WhenAny``5(``0,System.Linq.Expressions.Expression{System.Func{``0,``2}},System.Linq.Expressions.Expression{System.Func{``0,``3}},System.Linq.Expressions.Expression{System.Func{``0,``4}},System.Func{ReactiveUI.IObservedChange{``0,``2},ReactiveUI.IObservedChange{``0,``3},ReactiveUI.IObservedChange{``0,``4},``1})">
+            <summary>
+            WhenAny allows you to observe whenever one or more properties on an
+            object have changed, providing an initial value when the Observable
+            is set up, unlike ObservableForProperty(). Use this method in
+            constructors to set up bindings between properties that also need an
+            initial setup.
+            </summary>
+        </member>
+        <member name="M:ReactiveUI.WhenAnyMixin.WhenAny``6(``0,System.Linq.Expressions.Expression{System.Func{``0,``2}},System.Linq.Expressions.Expression{System.Func{``0,``3}},System.Linq.Expressions.Expression{System.Func{``0,``4}},System.Linq.Expressions.Expression{System.Func{``0,``5}},System.Func{ReactiveUI.IObservedChange{``0,``2},ReactiveUI.IObservedChange{``0,``3},ReactiveUI.IObservedChange{``0,``4},ReactiveUI.IObservedChange{``0,``5},``1})">
+            <summary>
+            WhenAny allows you to observe whenever one or more properties on an
+            object have changed, providing an initial value when the Observable
+            is set up, unlike ObservableForProperty(). Use this method in
+            constructors to set up bindings between properties that also need an
+            initial setup.
+            </summary>
+        </member>
+        <member name="M:ReactiveUI.WhenAnyMixin.WhenAny``7(``0,System.Linq.Expressions.Expression{System.Func{``0,``2}},System.Linq.Expressions.Expression{System.Func{``0,``3}},System.Linq.Expressions.Expression{System.Func{``0,``4}},System.Linq.Expressions.Expression{System.Func{``0,``5}},System.Linq.Expressions.Expression{System.Func{``0,``6}},System.Func{ReactiveUI.IObservedChange{``0,``2},ReactiveUI.IObservedChange{``0,``3},ReactiveUI.IObservedChange{``0,``4},ReactiveUI.IObservedChange{``0,``5},ReactiveUI.IObservedChange{``0,``6},``1})">
+            <summary>
+            WhenAny allows you to observe whenever one or more properties on an
+            object have changed, providing an initial value when the Observable
+            is set up, unlike ObservableForProperty(). Use this method in
+            constructors to set up bindings between properties that also need an
+            initial setup.
+            </summary>
+        </member>
+        <member name="M:ReactiveUI.WhenAnyMixin.WhenAny``8(``0,System.Linq.Expressions.Expression{System.Func{``0,``2}},System.Linq.Expressions.Expression{System.Func{``0,``3}},System.Linq.Expressions.Expression{System.Func{``0,``4}},System.Linq.Expressions.Expression{System.Func{``0,``5}},System.Linq.Expressions.Expression{System.Func{``0,``6}},System.Linq.Expressions.Expression{System.Func{``0,``7}},System.Func{ReactiveUI.IObservedChange{``0,``2},ReactiveUI.IObservedChange{``0,``3},ReactiveUI.IObservedChange{``0,``4},ReactiveUI.IObservedChange{``0,``5},ReactiveUI.IObservedChange{``0,``6},ReactiveUI.IObservedChange{``0,``7},``1})">
+            <summary>
+            WhenAny allows you to observe whenever one or more properties on an
+            object have changed, providing an initial value when the Observable
+            is set up, unlike ObservableForProperty(). Use this method in
+            constructors to set up bindings between properties that also need an
+            initial setup.
+            </summary>
+        </member>
+        <member name="M:ReactiveUI.WhenAnyMixin.WhenAny``9(``0,System.Linq.Expressions.Expression{System.Func{``0,``2}},System.Linq.Expressions.Expression{System.Func{``0,``3}},System.Linq.Expressions.Expression{System.Func{``0,``4}},System.Linq.Expressions.Expression{System.Func{``0,``5}},System.Linq.Expressions.Expression{System.Func{``0,``6}},System.Linq.Expressions.Expression{System.Func{``0,``7}},System.Linq.Expressions.Expression{System.Func{``0,``8}},System.Func{ReactiveUI.IObservedChange{``0,``2},ReactiveUI.IObservedChange{``0,``3},ReactiveUI.IObservedChange{``0,``4},ReactiveUI.IObservedChange{``0,``5},ReactiveUI.IObservedChange{``0,``6},ReactiveUI.IObservedChange{``0,``7},ReactiveUI.IObservedChange{``0,``8},``1})">
+            <summary>
+            WhenAny allows you to observe whenever one or more properties on an
+            object have changed, providing an initial value when the Observable
+            is set up, unlike ObservableForProperty(). Use this method in
+            constructors to set up bindings between properties that also need an
+            initial setup.
+            </summary>
+        </member>
+        <member name="M:ReactiveUI.WhenAnyMixin.WhenAny``10(``0,System.Linq.Expressions.Expression{System.Func{``0,``2}},System.Linq.Expressions.Expression{System.Func{``0,``3}},System.Linq.Expressions.Expression{System.Func{``0,``4}},System.Linq.Expressions.Expression{System.Func{``0,``5}},System.Linq.Expressions.Expression{System.Func{``0,``6}},System.Linq.Expressions.Expression{System.Func{``0,``7}},System.Linq.Expressions.Expression{System.Func{``0,``8}},System.Linq.Expressions.Expression{System.Func{``0,``9}},System.Func{ReactiveUI.IObservedChange{``0,``2},ReactiveUI.IObservedChange{``0,``3},ReactiveUI.IObservedChange{``0,``4},ReactiveUI.IObservedChange{``0,``5},ReactiveUI.IObservedChange{``0,``6},ReactiveUI.IObservedChange{``0,``7},ReactiveUI.IObservedChange{``0,``8},ReactiveUI.IObservedChange{``0,``9},``1})">
+            <summary>
+            WhenAny allows you to observe whenever one or more properties on an
+            object have changed, providing an initial value when the Observable
+            is set up, unlike ObservableForProperty(). Use this method in
+            constructors to set up bindings between properties that also need an
+            initial setup.
+            </summary>
+        </member>
+        <member name="M:ReactiveUI.WhenAnyMixin.WhenAny``11(``0,System.Linq.Expressions.Expression{System.Func{``0,``2}},System.Linq.Expressions.Expression{System.Func{``0,``3}},System.Linq.Expressions.Expression{System.Func{``0,``4}},System.Linq.Expressions.Expression{System.Func{``0,``5}},System.Linq.Expressions.Expression{System.Func{``0,``6}},System.Linq.Expressions.Expression{System.Func{``0,``7}},System.Linq.Expressions.Expression{System.Func{``0,``8}},System.Linq.Expressions.Expression{System.Func{``0,``9}},System.Linq.Expressions.Expression{System.Func{``0,``10}},System.Func{ReactiveUI.IObservedChange{``0,``2},ReactiveUI.IObservedChange{``0,``3},ReactiveUI.IObservedChange{``0,``4},ReactiveUI.IObservedChange{``0,``5},ReactiveUI.IObservedChange{``0,``6},ReactiveUI.IObservedChange{``0,``7},ReactiveUI.IObservedChange{``0,``8},ReactiveUI.IObservedChange{``0,``9},ReactiveUI.IObservedChange{``0,``10},``1})">
+            <summary>
+            WhenAny allows you to observe whenever one or more properties on an
+            object have changed, providing an initial value when the Observable
+            is set up, unlike ObservableForProperty(). Use this method in
+            constructors to set up bindings between properties that also need an
+            initial setup.
+            </summary>
+        </member>
+        <member name="M:ReactiveUI.WhenAnyMixin.WhenAny``12(``0,System.Linq.Expressions.Expression{System.Func{``0,``2}},System.Linq.Expressions.Expression{System.Func{``0,``3}},System.Linq.Expressions.Expression{System.Func{``0,``4}},System.Linq.Expressions.Expression{System.Func{``0,``5}},System.Linq.Expressions.Expression{System.Func{``0,``6}},System.Linq.Expressions.Expression{System.Func{``0,``7}},System.Linq.Expressions.Expression{System.Func{``0,``8}},System.Linq.Expressions.Expression{System.Func{``0,``9}},System.Linq.Expressions.Expression{System.Func{``0,``10}},System.Linq.Expressions.Expression{System.Func{``0,``11}},System.Func{ReactiveUI.IObservedChange{``0,``2},ReactiveUI.IObservedChange{``0,``3},ReactiveUI.IObservedChange{``0,``4},ReactiveUI.IObservedChange{``0,``5},ReactiveUI.IObservedChange{``0,``6},ReactiveUI.IObservedChange{``0,``7},ReactiveUI.IObservedChange{``0,``8},ReactiveUI.IObservedChange{``0,``9},ReactiveUI.IObservedChange{``0,``10},ReactiveUI.IObservedChange{``0,``11},``1})">
+            <summary>
+            WhenAny allows you to observe whenever one or more properties on an
+            object have changed, providing an initial value when the Observable
+            is set up, unlike ObservableForProperty(). Use this method in
+            constructors to set up bindings between properties that also need an
+            initial setup.
+            </summary>
+        </member>
+        <member name="M:ReactiveUI.WhenAnyMixin.WhenAny``13(``0,System.Linq.Expressions.Expression{System.Func{``0,``2}},System.Linq.Expressions.Expression{System.Func{``0,``3}},System.Linq.Expressions.Expression{System.Func{``0,``4}},System.Linq.Expressions.Expression{System.Func{``0,``5}},System.Linq.Expressions.Expression{System.Func{``0,``6}},System.Linq.Expressions.Expression{System.Func{``0,``7}},System.Linq.Expressions.Expression{System.Func{``0,``8}},System.Linq.Expressions.Expression{System.Func{``0,``9}},System.Linq.Expressions.Expression{System.Func{``0,``10}},System.Linq.Expressions.Expression{System.Func{``0,``11}},System.Linq.Expressions.Expression{System.Func{``0,``12}},System.Func{ReactiveUI.IObservedChange{``0,``2},ReactiveUI.IObservedChange{``0,``3},ReactiveUI.IObservedChange{``0,``4},ReactiveUI.IObservedChange{``0,``5},ReactiveUI.IObservedChange{``0,``6},ReactiveUI.IObservedChange{``0,``7},ReactiveUI.IObservedChange{``0,``8},ReactiveUI.IObservedChange{``0,``9},ReactiveUI.IObservedChange{``0,``10},ReactiveUI.IObservedChange{``0,``11},ReactiveUI.IObservedChange{``0,``12},``1})">
+            <summary>
+            WhenAny allows you to observe whenever one or more properties on an
+            object have changed, providing an initial value when the Observable
+            is set up, unlike ObservableForProperty(). Use this method in
+            constructors to set up bindings between properties that also need an
+            initial setup.
+            </summary>
+        </member>
+        <member name="M:ReactiveUI.WhenAnyMixin.WhenAny``14(``0,System.Linq.Expressions.Expression{System.Func{``0,``2}},System.Linq.Expressions.Expression{System.Func{``0,``3}},System.Linq.Expressions.Expression{System.Func{``0,``4}},System.Linq.Expressions.Expression{System.Func{``0,``5}},System.Linq.Expressions.Expression{System.Func{``0,``6}},System.Linq.Expressions.Expression{System.Func{``0,``7}},System.Linq.Expressions.Expression{System.Func{``0,``8}},System.Linq.Expressions.Expression{System.Func{``0,``9}},System.Linq.Expressions.Expression{System.Func{``0,``10}},System.Linq.Expressions.Expression{System.Func{``0,``11}},System.Linq.Expressions.Expression{System.Func{``0,``12}},System.Linq.Expressions.Expression{System.Func{``0,``13}},System.Func{ReactiveUI.IObservedChange{``0,``2},ReactiveUI.IObservedChange{``0,``3},ReactiveUI.IObservedChange{``0,``4},ReactiveUI.IObservedChange{``0,``5},ReactiveUI.IObservedChange{``0,``6},ReactiveUI.IObservedChange{``0,``7},ReactiveUI.IObservedChange{``0,``8},ReactiveUI.IObservedChange{``0,``9},ReactiveUI.IObservedChange{``0,``10},ReactiveUI.IObservedChange{``0,``11},ReactiveUI.IObservedChange{``0,``12},ReactiveUI.IObservedChange{``0,``13},``1})">
+            <summary>
+            WhenAny allows you to observe whenever one or more properties on an
+            object have changed, providing an initial value when the Observable
+            is set up, unlike ObservableForProperty(). Use this method in
+            constructors to set up bindings between properties that also need an
+            initial setup.
+            </summary>
+        </member>
+        <member name="M:ReactiveUI.ReactiveObjectExpressionMixin.RaiseAndSetIfChanged``2(``0,System.Linq.Expressions.Expression{System.Func{``0,``1}},``1)">
+            <summary>
+            RaiseAndSetIfChanged fully implements a Setter for a read-write
+            property on a ReactiveObject, making the assumption that the
+            property has a backing field named "_NameOfProperty". To change this
+            assumption, set RxApp.GetFieldNameForPropertyNameFunc.
+            </summary>
+            <param name="property">An Expression representing the property (i.e.
+            'x => x.SomeProperty'</param>
+            <param name="newValue">The new value to set the property to, almost
+            always the 'value' keyword.</param>
+            <returns>The newly set value, normally discarded.</returns>
+        </member>
+        <member name="M:ReactiveUI.ReactiveObjectExpressionMixin.RaiseAndSetIfChanged``2(``0,System.Linq.Expressions.Expression{System.Func{``0,``1}},``1@,``1)">
+            <summary>
+            RaiseAndSetIfChanged fully implements a Setter for a read-write
+            property on a ReactiveObject, making the assumption that the
+            property has a backing field named "_NameOfProperty". To change this
+            assumption, set RxApp.GetFieldNameForPropertyNameFunc.  This
+            overload is intended for Silverlight and WP7 where reflection
+            cannot access the private backing field.
+            </summary>
+            <param name="property">An Expression representing the property (i.e.
+            'x => x.SomeProperty'</param>
+            <param name="backingField">A Reference to the backing field for this
+            property.</param>
+            <param name="newValue">The new value to set the property to, almost
+            always the 'value' keyword.</param>
+            <returns>The newly set value, normally discarded.</returns>
+        </member>
+        <member name="M:ReactiveUI.ReactiveObjectExpressionMixin.RaisePropertyChanging``2(``0,System.Linq.Expressions.Expression{System.Func{``0,``1}})">
+            <summary>
+            Use this method in your ReactiveObject classes when creating custom
+            properties where raiseAndSetIfChanged doesn't suffice.
+            </summary>
+            <param name="property">An Expression representing the property (i.e.
+            'x => x.SomeProperty'</param>
+        </member>
+        <member name="M:ReactiveUI.ReactiveObjectExpressionMixin.RaisePropertyChanged``2(``0,System.Linq.Expressions.Expression{System.Func{``0,``1}})">
+            <summary>
+            Use this method in your ReactiveObject classes when creating custom
+            properties where raiseAndSetIfChanged doesn't suffice.
+            </summary>
+            <param name="property">An Expression representing the property (i.e.
+            'x => x.SomeProperty'</param>
+        </member>
+        <member name="M:ReactiveUI.ReactiveObjectTestMixin.RaisePropertyChanging(ReactiveUI.ReactiveObject,System.String)">
+            <summary>
+            RaisePropertyChanging is a helper method intended for test / mock
+            scenarios to manually fake a property change. 
+            </summary>
+            <param name="target">The ReactiveObject to invoke
+            raisePropertyChanging on.</param>
+            <param name="property">The property that will be faking a change.</param>
+        </member>
+        <member name="M:ReactiveUI.ReactiveObjectTestMixin.RaisePropertyChanging``2(``0,System.Linq.Expressions.Expression{System.Func{``0,``1}})">
+            <summary>
+            RaisePropertyChanging is a helper method intended for test / mock
+            scenarios to manually fake a property change. 
+            </summary>
+            <param name="target">The ReactiveObject to invoke
+            raisePropertyChanging on.</param>
+            <param name="property">The property that will be faking a change.</param>
+        </member>
+        <member name="M:ReactiveUI.ReactiveObjectTestMixin.RaisePropertyChanged(ReactiveUI.ReactiveObject,System.String)">
+            <summary>
+            RaisePropertyChanged is a helper method intended for test / mock
+            scenarios to manually fake a property change. 
+            </summary>
+            <param name="target">The ReactiveObject to invoke
+            raisePropertyChanging on.</param>
+            <param name="property">The property that will be faking a change.</param>
+        </member>
+        <member name="M:ReactiveUI.ReactiveObjectTestMixin.RaisePropertyChanged``2(``0,System.Linq.Expressions.Expression{System.Func{``0,``1}})">
+            <summary>
+            RaisePropertyChanged is a helper method intended for test / mock
+            scenarios to manually fake a property change. 
+            </summary>
+            <param name="target">The ReactiveObject to invoke
+            raisePropertyChanging on.</param>
+            <param name="property">The property that will be faking a change.</param>
+        </member>
         <member name="T:ReactiveUI.ReactiveCollection`1">
             <summary>
             
@@ -746,139 +890,6 @@
             <returns>A new collection whose items are equivalent to
             Collection.Select(selector) and will mirror the initial collection.</returns>
         </member>
-        <member name="M:ReactiveUI.ReactiveNotifyPropertyChangedMixin.ObservableForProperty``2(``0,System.Linq.Expressions.Expression{System.Func{``0,``1}},System.Boolean)">
-            <summary>
-            ObservableForProperty returns an Observable representing the
-            property change notifications for a specific property on a
-            ReactiveObject. This method (unlike other Observables that return
-            IObservedChange) guarantees that the Value property of
-            the IObservedChange is set.
-            </summary>
-            <param name="property">An Expression representing the property (i.e.
-            'x => x.SomeProperty.SomeOtherProperty'</param>
-            <param name="beforeChange">If True, the Observable will notify
-            immediately before a property is going to change.</param>
-            <returns>An Observable representing the property change
-            notifications for the given property.</returns>
-        </member>
-        <member name="M:ReactiveUI.ReactiveNotifyPropertyChangedMixin.ObservableForProperty``3(``0,System.Linq.Expressions.Expression{System.Func{``0,``1}},System.Func{``1,``2},System.Boolean)">
-            <summary>
-            ObservableForProperty returns an Observable representing the
-            property change notifications for a specific property on a
-            ReactiveObject, running the IObservedChange through a Selector
-            function.
-            </summary>
-            <param name="property">An Expression representing the property (i.e.
-            'x => x.SomeProperty'</param>
-            <param name="selector">A Select function that will be run on each
-            item.</param>
-            <param name="beforeChange">If True, the Observable will notify
-            immediately before a property is going to change.</param>
-            <returns>An Observable representing the property change
-            notifications for the given property.</returns>
-        </member>
-        <member name="T:ReactiveUI.ReactiveObject">
-            <summary>
-            ReactiveObject is the base object for ViewModel classes, and it
-            implements INotifyPropertyChanged. In addition, ReactiveObject provides
-            Changing and Changed Observables to monitor object changes.
-            </summary>
-        </member>
-        <member name="M:ReactiveUI.ReactiveObject.SuppressChangeNotifications">
-            <summary>
-            When this method is called, an object will not fire change
-            notifications (neither traditional nor Observable notifications)
-            until the return value is disposed.
-            </summary>
-            <returns>An object that, when disposed, reenables change
-            notifications.</returns>
-        </member>
-        <member name="P:ReactiveUI.ReactiveObject.Changing">
-            <summary>
-            Represents an Observable that fires *before* a property is about to
-            be changed.         
-            </summary>
-        </member>
-        <member name="P:ReactiveUI.ReactiveObject.Changed">
-            <summary>
-            Represents an Observable that fires *after* a property has changed.
-            </summary>
-        </member>
-        <member name="M:ReactiveUI.ReactiveObjectExpressionMixin.RaiseAndSetIfChanged``2(``0,System.Linq.Expressions.Expression{System.Func{``0,``1}},``1)">
-            <summary>
-            RaiseAndSetIfChanged fully implements a Setter for a read-write
-            property on a ReactiveObject, making the assumption that the
-            property has a backing field named "_NameOfProperty". To change this
-            assumption, set RxApp.GetFieldNameForPropertyNameFunc.
-            </summary>
-            <param name="property">An Expression representing the property (i.e.
-            'x => x.SomeProperty'</param>
-            <param name="newValue">The new value to set the property to, almost
-            always the 'value' keyword.</param>
-            <returns>The newly set value, normally discarded.</returns>
-        </member>
-        <member name="M:ReactiveUI.ReactiveObjectExpressionMixin.RaiseAndSetIfChanged``2(``0,System.Linq.Expressions.Expression{System.Func{``0,``1}},``1@,``1)">
-            <summary>
-            RaiseAndSetIfChanged fully implements a Setter for a read-write
-            property on a ReactiveObject, making the assumption that the
-            property has a backing field named "_NameOfProperty". To change this
-            assumption, set RxApp.GetFieldNameForPropertyNameFunc.  This
-            overload is intended for Silverlight and WP7 where reflection
-            cannot access the private backing field.
-            </summary>
-            <param name="property">An Expression representing the property (i.e.
-            'x => x.SomeProperty'</param>
-            <param name="backingField">A Reference to the backing field for this
-            property.</param>
-            <param name="newValue">The new value to set the property to, almost
-            always the 'value' keyword.</param>
-            <returns>The newly set value, normally discarded.</returns>
-        </member>
-        <member name="M:ReactiveUI.ReactiveObjectTestMixin.RaisePropertyChanging(ReactiveUI.ReactiveObject,System.String)">
-            <summary>
-            RaisePropertyChanging is a helper method intended for test / mock
-            scenarios to manually fake a property change. 
-            </summary>
-            <param name="target">The ReactiveObject to invoke
-            raisePropertyChanging on.</param>
-            <param name="property">The property that will be faking a change.</param>
-        </member>
-        <member name="M:ReactiveUI.ReactiveObjectTestMixin.RaisePropertyChanging``2(``0,System.Linq.Expressions.Expression{System.Func{``0,``1}})">
-            <summary>
-            RaisePropertyChanging is a helper method intended for test / mock
-            scenarios to manually fake a property change. 
-            </summary>
-            <param name="target">The ReactiveObject to invoke
-            raisePropertyChanging on.</param>
-            <param name="property">The property that will be faking a change.</param>
-        </member>
-        <member name="M:ReactiveUI.ReactiveObjectTestMixin.RaisePropertyChanged(ReactiveUI.ReactiveObject,System.String)">
-            <summary>
-            RaisePropertyChanged is a helper method intended for test / mock
-            scenarios to manually fake a property change. 
-            </summary>
-            <param name="target">The ReactiveObject to invoke
-            raisePropertyChanging on.</param>
-            <param name="property">The property that will be faking a change.</param>
-        </member>
-        <member name="M:ReactiveUI.ReactiveObjectTestMixin.RaisePropertyChanged``2(``0,System.Linq.Expressions.Expression{System.Func{``0,``1}})">
-            <summary>
-            RaisePropertyChanged is a helper method intended for test / mock
-            scenarios to manually fake a property change. 
-            </summary>
-            <param name="target">The ReactiveObject to invoke
-            raisePropertyChanging on.</param>
-            <param name="property">The property that will be faking a change.</param>
-        </member>
-        <member name="T:ReactiveUI.MakeObjectReactiveHelper">
-            <summary>
-            This class helps you take existing objects and make them compatible with
-            ReactiveUI and Rx.Net. To use this, declare an instance field of this
-            class in your class, initialize it in your Constructor, make your class
-            derive from IReactiveNotifyPropertyChanged, then implement all of the
-            properties/methods using MakeObjectReactiveHelper.
-            </summary>
-        </member>
         <member name="M:ReactiveUI.RxApp.InUnitTestRunner">
             <summary>
             InUnitTestRunner attempts to determine heuristically if the current
@@ -936,162 +947,167 @@
             of "_PropertyName" with a custom one.
             </summary>
         </member>
-        <member name="T:ReactiveUI.ReactiveValidatedObject">
-            <summary>
-            
-            </summary>
-        </member>
-        <member name="M:ReactiveUI.ReactiveValidatedObject.#ctor">
+        <member name="T:ReactiveUI.MessageBus">
              <summary>
+             MessageBus represents an object that can act as a "Message Bus", a
+             simple way for ViewModels and other objects to communicate with each
+             other in a loosely coupled way.
             
+             Specifying which messages go where is done via a combination of the Type
+             of the message as well as an additional "Contract" parameter; this is a
+             unique string used to distinguish between messages of the same Type, and
+             is arbitrarily set by the client. 
              </summary>
         </member>
-        <member name="T:ReactiveUI.ValidationBase">
+        <member name="M:ReactiveUI.MessageBus.Listen``1(System.String)">
             <summary>
-            
+            Listen provides an Observable that will fire whenever a Message is
+            provided for this object via RegisterMessageSource or SendMessage.
+            </summary>
+            <typeparam name="T">The type of the message to listen to.</typeparam>
+            <param name="contract">A unique string to distinguish messages with
+            identical types (i.e. "MyCoolViewModel") - if the message type is
+            only used for one purpose, leave this as null.</param>
+            <returns>An Observable representing the notifications posted to the
+            message bus.</returns>
+        </member>
+        <member name="M:ReactiveUI.MessageBus.IsRegistered(System.Type,System.String)">
+            <summary>
+            Determins if a particular message Type is registered.
+            </summary>
+            <param name="type">The Type of the message to listen to.</param>
+            <param name="contract">A unique string to distinguish messages with
+            identical types (i.e. "MyCoolViewModel") - if the message type is
+            only used for one purpose, leave this as null.</param>
+            <returns>True if messages have been posted for this message Type.</returns>
+        </member>
+        <member name="M:ReactiveUI.MessageBus.RegisterMessageSource``1(System.IObservable{``0},System.String,System.Reactive.Concurrency.IScheduler)">
+            <summary>
+            Registers an Observable representing the stream of messages to send.
+            Another part of the code can then call Listen to retrieve this
+            Observable.
+            </summary>
+            <typeparam name="T">The type of the message to listen to.</typeparam>
+            <param name="source">An Observable that will be subscribed to, and a
+            message sent out for each value provided.</param>
+            <param name="contract">A unique string to distinguish messages with
+            identical types (i.e. "MyCoolViewModel") - if the message type is
+            only used for one purpose, leave this as null.</param>
+            <param name="scheduler">The scheduler on which to post the
+            notifications, RxApp.DeferredScheduler by default.</param>
+        </member>
+        <member name="M:ReactiveUI.MessageBus.SendMessage``1(``0,System.String,System.Reactive.Concurrency.IScheduler)">
+            <summary>
+            Sends a single message using the specified Type and contract.
+            Consider using RegisterMessageSource instead if you will be sending
+            messages in response to other changes such as property changes
+            or events.
+            </summary>
+            <typeparam name="T">The type of the message to send.</typeparam>
+            <param name="message">The actual message to send</param>
+            <param name="contract">A unique string to distinguish messages with
+            identical types (i.e. "MyCoolViewModel") - if the message type is
+            only used for one purpose, leave this as null.</param>
+            <param name="scheduler">The scheduler on which to post the
+            notifications, RxApp.DeferredScheduler by default.</param>
+        </member>
+        <member name="P:ReactiveUI.MessageBus.Current">
+            <summary>
+            Returns the Current MessageBus from the RxApp global object.
             </summary>
         </member>
-        <member name="M:ReactiveUI.ValidationBase.IsValid(System.Object,System.ComponentModel.DataAnnotations.ValidationContext)">
+        <member name="M:ReactiveUI.MessageBusMixins.RegisterViewModel``1(ReactiveUI.IMessageBus,``0,System.String)">
             <summary>
-            
+            Registers a ViewModel object to send property change
+            messages; this allows a ViewModel to listen to another ViewModel's
+            changes in a loosely-typed manner.
             </summary>
-            <param name="value"></param>
-            <param name="validationContext"></param>
+            <param name="source">The ViewModel to register</param>
+            <param name="contract">A unique string to distinguish messages with
+            identical types (i.e. "MyCoolViewModel") - if the message type is
+            only used for one purpose, leave this as null.</param>
+            <exception cref="T:System.Exception"><c>Exception</c>The registered ViewModel
+            must be the only instance (i.e. not in an ItemsControl)</exception>
+        </member>
+        <member name="M:ReactiveUI.MessageBusMixins.ListenToViewModel``1(ReactiveUI.IMessageBus,System.String)">
+            <summary>
+            Listens to a registered ViewModel's property change notifications.
+            </summary>
+            <param name="contract">A unique string to distinguish messages with
+            identical types (i.e. "MyCoolViewModel") - if the message type is
+            only used for one purpose, leave this as null.</param>
+            <returns>An Observable that fires when an object changes and
+            provides the property name that has changed.</returns>
+        </member>
+        <member name="M:ReactiveUI.MessageBusMixins.ViewModelForType``1(ReactiveUI.IMessageBus,System.String)">
+            <summary>
+            Return the current instance of the ViewModel with the specified
+            type.
+            </summary>
+            <param name="contract">A unique string to distinguish messages with
+            identical types (i.e. "MyCoolViewModel") - if the message type is
+            only used for one purpose, leave this as null.</param>
+            <returns>The ViewModel object registered for this type.</returns>
+        </member>
+        <member name="T:ReactiveUI.MemoizingMRUCache`2">
+             <summary>
+             This data structure is a representation of a memoizing cache - i.e. a
+             class that will evaluate a function, but keep a cache of recently
+             evaluated parameters.
+            
+             Since this is a memoizing cache, it is important that this function be a
+             "pure" function in the mathematical sense - that a key *always* maps to
+             a corresponding return value.
+             </summary>
+             <typeparam name="TParam">The type of the parameter to the calculation function.</typeparam>
+             <typeparam name="TVal">The type of the value returned by the calculation
+             function.</typeparam>
+        </member>
+        <member name="M:ReactiveUI.MemoizingMRUCache`2.#ctor(System.Func{`0,System.Object,`1},System.Int32,System.Action{`1})">
+            <summary>
+            Constructor
+            </summary>
+            <param name="calculationFunc">The function whose results you want to cache,
+            which is provided the key value, and an Tag object that is
+            user-defined</param>
+            <param name="maxSize">The size of the cache to maintain, after which old
+            items will start to be thrown out.</param>
+            <param name="onRelease">A function to call when a result gets
+            evicted from the cache (i.e. because Invalidate was called or the
+            cache is full)</param>
+        </member>
+        <member name="M:ReactiveUI.MemoizingMRUCache`2.Get(`0,System.Object)">
+            <summary>
+            Evaluates the function provided, returning the cached value if possible
+            </summary>
+            <param name="key">The value to pass to the calculation function.</param>
+            <param name="context">An additional optional user-specific parameter.</param>
             <returns></returns>
         </member>
-        <member name="M:ReactiveUI.ValidationBase.isValidViaNullOrBlank(System.Object)">
+        <member name="M:ReactiveUI.MemoizingMRUCache`2.Invalidate(`0)">
             <summary>
-            
+            Ensure that the next time this key is queried, the calculation
+            function will be called.
             </summary>
-            <param name="value"></param>
+        </member>
+        <member name="M:ReactiveUI.MemoizingMRUCache`2.InvalidateAll">
+            <summary>
+            Invalidate all items in the cache
+            </summary>
+        </member>
+        <member name="M:ReactiveUI.MemoizingMRUCache`2.CachedValues">
+            <summary>
+            Returns all values currently in the cache
+            </summary>
             <returns></returns>
         </member>
-        <member name="M:ReactiveUI.ValidationBase.isValidViaNullOrBlank(System.Object,System.ComponentModel.DataAnnotations.ValidationContext)">
+        <member name="T:ReactiveUI.MakeObjectReactiveHelper">
             <summary>
-            
-            </summary>
-            <param name="value"></param>
-            <param name="ctx"></param>
-            <returns></returns>
-        </member>
-        <member name="M:ReactiveUI.ValidationBase.getStandardMessage(System.ComponentModel.DataAnnotations.ValidationContext)">
-            <summary>
-            
-            </summary>
-            <param name="ctx"></param>
-            <returns></returns>
-        </member>
-        <member name="T:ReactiveUI.ValidatesViaMethodAttribute">
-            <summary>
-            
-            </summary>
-        </member>
-        <member name="M:ReactiveUI.WhenAnyMixin.WhenAny``3(``0,System.Linq.Expressions.Expression{System.Func{``0,``2}},System.Func{ReactiveUI.IObservedChange{``0,``2},``1})">
-            <summary>
-            WhenAny allows you to observe whenever one or more properties on an
-            object have changed, providing an initial value when the Observable
-            is set up, unlike ObservableForProperty(). Use this method in
-            constructors to set up bindings between properties that also need an
-            initial setup.
-            </summary>
-        </member>
-        <member name="M:ReactiveUI.WhenAnyMixin.WhenAny``4(``0,System.Linq.Expressions.Expression{System.Func{``0,``2}},System.Linq.Expressions.Expression{System.Func{``0,``3}},System.Func{ReactiveUI.IObservedChange{``0,``2},ReactiveUI.IObservedChange{``0,``3},``1})">
-            <summary>
-            WhenAny allows you to observe whenever one or more properties on an
-            object have changed, providing an initial value when the Observable
-            is set up, unlike ObservableForProperty(). Use this method in
-            constructors to set up bindings between properties that also need an
-            initial setup.
-            </summary>
-        </member>
-        <member name="M:ReactiveUI.WhenAnyMixin.WhenAny``5(``0,System.Linq.Expressions.Expression{System.Func{``0,``2}},System.Linq.Expressions.Expression{System.Func{``0,``3}},System.Linq.Expressions.Expression{System.Func{``0,``4}},System.Func{ReactiveUI.IObservedChange{``0,``2},ReactiveUI.IObservedChange{``0,``3},ReactiveUI.IObservedChange{``0,``4},``1})">
-            <summary>
-            WhenAny allows you to observe whenever one or more properties on an
-            object have changed, providing an initial value when the Observable
-            is set up, unlike ObservableForProperty(). Use this method in
-            constructors to set up bindings between properties that also need an
-            initial setup.
-            </summary>
-        </member>
-        <member name="M:ReactiveUI.WhenAnyMixin.WhenAny``6(``0,System.Linq.Expressions.Expression{System.Func{``0,``2}},System.Linq.Expressions.Expression{System.Func{``0,``3}},System.Linq.Expressions.Expression{System.Func{``0,``4}},System.Linq.Expressions.Expression{System.Func{``0,``5}},System.Func{ReactiveUI.IObservedChange{``0,``2},ReactiveUI.IObservedChange{``0,``3},ReactiveUI.IObservedChange{``0,``4},ReactiveUI.IObservedChange{``0,``5},``1})">
-            <summary>
-            WhenAny allows you to observe whenever one or more properties on an
-            object have changed, providing an initial value when the Observable
-            is set up, unlike ObservableForProperty(). Use this method in
-            constructors to set up bindings between properties that also need an
-            initial setup.
-            </summary>
-        </member>
-        <member name="M:ReactiveUI.WhenAnyMixin.WhenAny``7(``0,System.Linq.Expressions.Expression{System.Func{``0,``2}},System.Linq.Expressions.Expression{System.Func{``0,``3}},System.Linq.Expressions.Expression{System.Func{``0,``4}},System.Linq.Expressions.Expression{System.Func{``0,``5}},System.Linq.Expressions.Expression{System.Func{``0,``6}},System.Func{ReactiveUI.IObservedChange{``0,``2},ReactiveUI.IObservedChange{``0,``3},ReactiveUI.IObservedChange{``0,``4},ReactiveUI.IObservedChange{``0,``5},ReactiveUI.IObservedChange{``0,``6},``1})">
-            <summary>
-            WhenAny allows you to observe whenever one or more properties on an
-            object have changed, providing an initial value when the Observable
-            is set up, unlike ObservableForProperty(). Use this method in
-            constructors to set up bindings between properties that also need an
-            initial setup.
-            </summary>
-        </member>
-        <member name="M:ReactiveUI.WhenAnyMixin.WhenAny``8(``0,System.Linq.Expressions.Expression{System.Func{``0,``2}},System.Linq.Expressions.Expression{System.Func{``0,``3}},System.Linq.Expressions.Expression{System.Func{``0,``4}},System.Linq.Expressions.Expression{System.Func{``0,``5}},System.Linq.Expressions.Expression{System.Func{``0,``6}},System.Linq.Expressions.Expression{System.Func{``0,``7}},System.Func{ReactiveUI.IObservedChange{``0,``2},ReactiveUI.IObservedChange{``0,``3},ReactiveUI.IObservedChange{``0,``4},ReactiveUI.IObservedChange{``0,``5},ReactiveUI.IObservedChange{``0,``6},ReactiveUI.IObservedChange{``0,``7},``1})">
-            <summary>
-            WhenAny allows you to observe whenever one or more properties on an
-            object have changed, providing an initial value when the Observable
-            is set up, unlike ObservableForProperty(). Use this method in
-            constructors to set up bindings between properties that also need an
-            initial setup.
-            </summary>
-        </member>
-        <member name="M:ReactiveUI.WhenAnyMixin.WhenAny``9(``0,System.Linq.Expressions.Expression{System.Func{``0,``2}},System.Linq.Expressions.Expression{System.Func{``0,``3}},System.Linq.Expressions.Expression{System.Func{``0,``4}},System.Linq.Expressions.Expression{System.Func{``0,``5}},System.Linq.Expressions.Expression{System.Func{``0,``6}},System.Linq.Expressions.Expression{System.Func{``0,``7}},System.Linq.Expressions.Expression{System.Func{``0,``8}},System.Func{ReactiveUI.IObservedChange{``0,``2},ReactiveUI.IObservedChange{``0,``3},ReactiveUI.IObservedChange{``0,``4},ReactiveUI.IObservedChange{``0,``5},ReactiveUI.IObservedChange{``0,``6},ReactiveUI.IObservedChange{``0,``7},ReactiveUI.IObservedChange{``0,``8},``1})">
-            <summary>
-            WhenAny allows you to observe whenever one or more properties on an
-            object have changed, providing an initial value when the Observable
-            is set up, unlike ObservableForProperty(). Use this method in
-            constructors to set up bindings between properties that also need an
-            initial setup.
-            </summary>
-        </member>
-        <member name="M:ReactiveUI.WhenAnyMixin.WhenAny``10(``0,System.Linq.Expressions.Expression{System.Func{``0,``2}},System.Linq.Expressions.Expression{System.Func{``0,``3}},System.Linq.Expressions.Expression{System.Func{``0,``4}},System.Linq.Expressions.Expression{System.Func{``0,``5}},System.Linq.Expressions.Expression{System.Func{``0,``6}},System.Linq.Expressions.Expression{System.Func{``0,``7}},System.Linq.Expressions.Expression{System.Func{``0,``8}},System.Linq.Expressions.Expression{System.Func{``0,``9}},System.Func{ReactiveUI.IObservedChange{``0,``2},ReactiveUI.IObservedChange{``0,``3},ReactiveUI.IObservedChange{``0,``4},ReactiveUI.IObservedChange{``0,``5},ReactiveUI.IObservedChange{``0,``6},ReactiveUI.IObservedChange{``0,``7},ReactiveUI.IObservedChange{``0,``8},ReactiveUI.IObservedChange{``0,``9},``1})">
-            <summary>
-            WhenAny allows you to observe whenever one or more properties on an
-            object have changed, providing an initial value when the Observable
-            is set up, unlike ObservableForProperty(). Use this method in
-            constructors to set up bindings between properties that also need an
-            initial setup.
-            </summary>
-        </member>
-        <member name="M:ReactiveUI.WhenAnyMixin.WhenAny``11(``0,System.Linq.Expressions.Expression{System.Func{``0,``2}},System.Linq.Expressions.Expression{System.Func{``0,``3}},System.Linq.Expressions.Expression{System.Func{``0,``4}},System.Linq.Expressions.Expression{System.Func{``0,``5}},System.Linq.Expressions.Expression{System.Func{``0,``6}},System.Linq.Expressions.Expression{System.Func{``0,``7}},System.Linq.Expressions.Expression{System.Func{``0,``8}},System.Linq.Expressions.Expression{System.Func{``0,``9}},System.Linq.Expressions.Expression{System.Func{``0,``10}},System.Func{ReactiveUI.IObservedChange{``0,``2},ReactiveUI.IObservedChange{``0,``3},ReactiveUI.IObservedChange{``0,``4},ReactiveUI.IObservedChange{``0,``5},ReactiveUI.IObservedChange{``0,``6},ReactiveUI.IObservedChange{``0,``7},ReactiveUI.IObservedChange{``0,``8},ReactiveUI.IObservedChange{``0,``9},ReactiveUI.IObservedChange{``0,``10},``1})">
-            <summary>
-            WhenAny allows you to observe whenever one or more properties on an
-            object have changed, providing an initial value when the Observable
-            is set up, unlike ObservableForProperty(). Use this method in
-            constructors to set up bindings between properties that also need an
-            initial setup.
-            </summary>
-        </member>
-        <member name="M:ReactiveUI.WhenAnyMixin.WhenAny``12(``0,System.Linq.Expressions.Expression{System.Func{``0,``2}},System.Linq.Expressions.Expression{System.Func{``0,``3}},System.Linq.Expressions.Expression{System.Func{``0,``4}},System.Linq.Expressions.Expression{System.Func{``0,``5}},System.Linq.Expressions.Expression{System.Func{``0,``6}},System.Linq.Expressions.Expression{System.Func{``0,``7}},System.Linq.Expressions.Expression{System.Func{``0,``8}},System.Linq.Expressions.Expression{System.Func{``0,``9}},System.Linq.Expressions.Expression{System.Func{``0,``10}},System.Linq.Expressions.Expression{System.Func{``0,``11}},System.Func{ReactiveUI.IObservedChange{``0,``2},ReactiveUI.IObservedChange{``0,``3},ReactiveUI.IObservedChange{``0,``4},ReactiveUI.IObservedChange{``0,``5},ReactiveUI.IObservedChange{``0,``6},ReactiveUI.IObservedChange{``0,``7},ReactiveUI.IObservedChange{``0,``8},ReactiveUI.IObservedChange{``0,``9},ReactiveUI.IObservedChange{``0,``10},ReactiveUI.IObservedChange{``0,``11},``1})">
-            <summary>
-            WhenAny allows you to observe whenever one or more properties on an
-            object have changed, providing an initial value when the Observable
-            is set up, unlike ObservableForProperty(). Use this method in
-            constructors to set up bindings between properties that also need an
-            initial setup.
-            </summary>
-        </member>
-        <member name="M:ReactiveUI.WhenAnyMixin.WhenAny``13(``0,System.Linq.Expressions.Expression{System.Func{``0,``2}},System.Linq.Expressions.Expression{System.Func{``0,``3}},System.Linq.Expressions.Expression{System.Func{``0,``4}},System.Linq.Expressions.Expression{System.Func{``0,``5}},System.Linq.Expressions.Expression{System.Func{``0,``6}},System.Linq.Expressions.Expression{System.Func{``0,``7}},System.Linq.Expressions.Expression{System.Func{``0,``8}},System.Linq.Expressions.Expression{System.Func{``0,``9}},System.Linq.Expressions.Expression{System.Func{``0,``10}},System.Linq.Expressions.Expression{System.Func{``0,``11}},System.Linq.Expressions.Expression{System.Func{``0,``12}},System.Func{ReactiveUI.IObservedChange{``0,``2},ReactiveUI.IObservedChange{``0,``3},ReactiveUI.IObservedChange{``0,``4},ReactiveUI.IObservedChange{``0,``5},ReactiveUI.IObservedChange{``0,``6},ReactiveUI.IObservedChange{``0,``7},ReactiveUI.IObservedChange{``0,``8},ReactiveUI.IObservedChange{``0,``9},ReactiveUI.IObservedChange{``0,``10},ReactiveUI.IObservedChange{``0,``11},ReactiveUI.IObservedChange{``0,``12},``1})">
-            <summary>
-            WhenAny allows you to observe whenever one or more properties on an
-            object have changed, providing an initial value when the Observable
-            is set up, unlike ObservableForProperty(). Use this method in
-            constructors to set up bindings between properties that also need an
-            initial setup.
-            </summary>
-        </member>
-        <member name="M:ReactiveUI.WhenAnyMixin.WhenAny``14(``0,System.Linq.Expressions.Expression{System.Func{``0,``2}},System.Linq.Expressions.Expression{System.Func{``0,``3}},System.Linq.Expressions.Expression{System.Func{``0,``4}},System.Linq.Expressions.Expression{System.Func{``0,``5}},System.Linq.Expressions.Expression{System.Func{``0,``6}},System.Linq.Expressions.Expression{System.Func{``0,``7}},System.Linq.Expressions.Expression{System.Func{``0,``8}},System.Linq.Expressions.Expression{System.Func{``0,``9}},System.Linq.Expressions.Expression{System.Func{``0,``10}},System.Linq.Expressions.Expression{System.Func{``0,``11}},System.Linq.Expressions.Expression{System.Func{``0,``12}},System.Linq.Expressions.Expression{System.Func{``0,``13}},System.Func{ReactiveUI.IObservedChange{``0,``2},ReactiveUI.IObservedChange{``0,``3},ReactiveUI.IObservedChange{``0,``4},ReactiveUI.IObservedChange{``0,``5},ReactiveUI.IObservedChange{``0,``6},ReactiveUI.IObservedChange{``0,``7},ReactiveUI.IObservedChange{``0,``8},ReactiveUI.IObservedChange{``0,``9},ReactiveUI.IObservedChange{``0,``10},ReactiveUI.IObservedChange{``0,``11},ReactiveUI.IObservedChange{``0,``12},ReactiveUI.IObservedChange{``0,``13},``1})">
-            <summary>
-            WhenAny allows you to observe whenever one or more properties on an
-            object have changed, providing an initial value when the Observable
-            is set up, unlike ObservableForProperty(). Use this method in
-            constructors to set up bindings between properties that also need an
-            initial setup.
+            This class helps you take existing objects and make them compatible with
+            ReactiveUI and Rx.Net. To use this, declare an instance field of this
+            class in your class, initialize it in your Constructor, make your class
+            derive from IReactiveNotifyPropertyChanged, then implement all of the
+            properties/methods using MakeObjectReactiveHelper.
             </summary>
         </member>
     </members>
