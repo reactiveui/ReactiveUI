@@ -90,7 +90,37 @@ namespace ReactiveUI.Testing
             sched.With(x => { block(x); return 0; });
         }
 
+        /// <summary>
+        /// WithMessageBus allows you to override the default Message Bus 
+        /// implementation until the object returned is disposed. If a 
+        /// message bus is not specified, a default empty one is created.
+        /// </summary>
+        /// <param name="messageBus">The message bus to use, or null to create
+        /// a new one using the default implementation.</param>
+        /// <returns>An object that when disposed, restores the original 
+        /// message bus.</returns>
+        public static IDisposable WithMessageBus(this TestScheduler sched, IMessageBus messageBus = null)
+        {
+            var origMessageBus = RxApp.MessageBus;
 
+            RxApp.MessageBus = messageBus ?? new MessageBus();
+            return Disposable.Create(() => RxApp.MessageBus = origMessageBus);
+        }
+
+        /// <summary>
+        /// WithMessageBus allows you to override the default Message Bus 
+        /// implementation for a specified action. If a message bus is not
+        /// specified, a default empty one is created.
+        /// <param name="block">The action to execute.</param>
+        /// <param name="messageBus">The message bus to use, or null to create
+        /// a new one using the default implementation.</param>
+        public static void WithMessageBus(this TestScheduler sched, Action<IMessageBus> block, IMessageBus messageBus = null)
+        {
+            messageBus = messageBus ?? new MessageBus();
+            using(var _ = sched.WithMessageBus(messageBus)) {
+                block(messageBus);
+            }
+        }
 
         /// <summary>
         /// RunToMilliseconds moves the TestScheduler to the specified time in

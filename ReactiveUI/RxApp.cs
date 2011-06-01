@@ -140,11 +140,25 @@ namespace ReactiveUI
         /// </summary>
         public static Func<string, ILog> LoggerFactory { get; set; }
 
+
+        [ThreadStatic] static IMessageBus _UnitTestMessageBus;
+        static IMessageBus _MessageBus;
+
         /// <summary>
         /// Set this property to implement a custom MessageBus for
         /// MessageBus.Current.
         /// </summary>
-        public static IMessageBus MessageBus { get; set; }
+        public static IMessageBus MessageBus {
+            get { return _UnitTestMessageBus ?? _MessageBus; }
+            set {
+                if (InUnitTestRunner()) {
+                    _UnitTestMessageBus = value;
+                    _MessageBus = _MessageBus ?? value;
+                } else {
+                    _MessageBus = value;
+                }
+            }
+        }
 
 #if FALSE
         public static Func<UserException, RecoveryOptionResult> CustomErrorPresentationFunc { get; set; }
