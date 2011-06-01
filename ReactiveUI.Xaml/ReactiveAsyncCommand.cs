@@ -34,10 +34,7 @@ namespace ReactiveUI.Xaml
             int maximumConcurrent = 1, 
             IScheduler scheduler = null)
         {
-            commonCtor(maximumConcurrent, scheduler);
-            if (canExecute != null) {
-                canExecute.Permacast(_canExecuteSubject);
-            }
+            commonCtor(maximumConcurrent, scheduler, canExecute);
         }
 
         protected ReactiveAsyncCommand(
@@ -76,7 +73,7 @@ namespace ReactiveUI.Xaml
             return ret;
         }
 
-        void commonCtor(int maximumConcurrent, IScheduler scheduler)
+        void commonCtor(int maximumConcurrent, IScheduler scheduler, IObservable<bool> canExecute = null)
         {
             _canExecuteSubject = new ScheduledSubject<bool>(Scheduler.Immediate);
             _executeSubject = new ScheduledSubject<object>(Scheduler.Immediate);
@@ -99,7 +96,7 @@ namespace ReactiveUI.Xaml
             bool startCE = (_canExecuteExplicitFunc != null ? _canExecuteExplicitFunc(null) : true);
             CanExecuteObservable = Observable.CombineLatest(
                     _canExecuteSubject.StartWith(startCE), ItemsInflight.Select(x => x < maximumConcurrent).StartWith(true),
-                    (canExecute, slotsAvail) => canExecute && slotsAvail)
+                    (canEx, slotsAvail) => canEx && slotsAvail)
                 .DebugObservable("CanExecuteObservable")
                 .DistinctUntilChanged();
 
@@ -110,6 +107,10 @@ namespace ReactiveUI.Xaml
                     CanExecuteChanged(this, new EventArgs());
                 }
             });
+
+            if (canExecute != null) {
+                canExecute.Permacast(_canExecuteSubject);
+            }
 
             _maximumConcurrent = maximumConcurrent;
         }
