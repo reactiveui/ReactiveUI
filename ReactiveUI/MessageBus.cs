@@ -162,7 +162,7 @@ namespace ReactiveUI
             }
 
             This.RegisterMessageSource(
-                (source as IObservable<PropertyChangedEventArgs>)
+                (source.Changed)
                     .Select(x => new ObservedChange<T, object>() { Sender = source, PropertyName = x.PropertyName }), 
                 contractName);
 
