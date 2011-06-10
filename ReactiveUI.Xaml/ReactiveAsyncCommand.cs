@@ -18,7 +18,7 @@ namespace ReactiveUI.Xaml
     /// "Search" button shouldn't have many concurrent requests running if the
     /// user clicks the button many times quickly)
     /// </summary>
-    public class ReactiveAsyncCommand : IReactiveAsyncCommand, IEnableLogger
+    public class ReactiveAsyncCommand : IReactiveAsyncCommand, IEnableLogger, IDisposable
     {
         /// <summary>
         /// Constructs a new ReactiveAsyncCommand.
@@ -91,9 +91,10 @@ namespace ReactiveUI.Xaml
                     this.Log().Fatal("Reference count dropped below zero");
                 }
                 return ret;
-            }).Permacast(new BehaviorSubject<int>(0));
+            }).Multicast(new BehaviorSubject<int>(0)).PermaRef();
 
             bool startCE = (_canExecuteExplicitFunc != null ? _canExecuteExplicitFunc(null) : true);
+
             CanExecuteObservable = Observable.CombineLatest(
                     _canExecuteSubject.StartWith(startCE), ItemsInflight.Select(x => x < maximumConcurrent).StartWith(true),
                     (canEx, slotsAvail) => canEx && slotsAvail)
@@ -108,7 +109,8 @@ namespace ReactiveUI.Xaml
             });
 
             if (canExecute != null) {
-                canExecute.Permacast(_canExecuteSubject);
+                var ce = canExecute.Multicast(_canExecuteSubject);
+                _inner = ce.Connect();
             }
 
             _maximumConcurrent = maximumConcurrent;
@@ -120,6 +122,7 @@ namespace ReactiveUI.Xaml
         bool _canExecuteLatest;
         ISubject<object> _executeSubject;
         int _maximumConcurrent;
+        IDisposable _inner = null;
 
         public IObservable<int> ItemsInflight { get; protected set; }
 
@@ -154,6 +157,13 @@ namespace ReactiveUI.Xaml
             return _executeSubject.Subscribe(observer);
         }
 
+        public void Dispose()
+        {
+            if (_inner != null) {
+                _inner.Dispose();
+            }
+        }
+
         /// <summary>
         /// RegisterAsyncFunction registers an asynchronous method that returns a result
         /// to be called whenever the Command's Execute method is called.
@@ -170,15 +180,17 @@ namespace ReactiveUI.Xaml
         {
             Contract.Requires(calculationFunc != null);
 
+            // XXX: There is no way to disconnect this, but we can't fix it
+            // without breaking API compatibility
             var taskSubj = new ScheduledSubject<object>(scheduler ?? RxApp.TaskpoolScheduler);
-            _executeSubject.Permacast(taskSubj);
+            _executeSubject.Multicast(taskSubj).PermaRef();
 
             var unit = new Unit();
             return taskSubj
                 .Do(_ => AsyncStartedNotification.OnNext(unit))
                 .Select(calculationFunc)
                 .Do(_ => AsyncCompletedNotification.OnNext(unit))
-                .Permacast(new ScheduledSubject<TResult>(RxApp.DeferredScheduler));
+                .Multicast(new ScheduledSubject<TResult>(RxApp.DeferredScheduler)).PermaRef();
         }
 
         /// <summary>
@@ -210,7 +222,7 @@ namespace ReactiveUI.Xaml
             Contract.Requires(calculationFunc != null);
 
             var taskSubj = new ScheduledSubject<object>(RxApp.TaskpoolScheduler);
-            _executeSubject.Permacast(taskSubj);
+            _executeSubject.Multicast(taskSubj).PermaRef();
 
             var unit = Unit.Default;
             var ret = taskSubj
@@ -219,7 +231,7 @@ namespace ReactiveUI.Xaml
 
             return ret
                 .SelectMany(x => x.Finally(() => AsyncCompletedNotification.OnNext(unit)))
-                .Permacast(new ScheduledSubject<TResult>(RxApp.DeferredScheduler));
+                .Multicast(new ScheduledSubject<TResult>(RxApp.DeferredScheduler)).PermaRef();
         }
 
         /// <summary>

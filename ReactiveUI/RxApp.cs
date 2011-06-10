@@ -379,7 +379,7 @@ namespace ReactiveUI
 
     internal static class CompatMixins
     {
-        public static void Run<T>(this IEnumerable<T> This, Action<T> block)
+        public static void ForEach<T>(this IEnumerable<T> This, Action<T> block)
         {
             foreach (var v in This) {
                 block(v); 
@@ -390,12 +390,11 @@ namespace ReactiveUI
         {
             return This.Take(This.Count() - count);
         }
-        
-        public static IObservable<T> Permacast<T>(this IObservable<T> This, ISubject<T> subject)
+
+        public static IObservable<T> PermaRef<T>(this IConnectableObservable<T> This)
         {
-            var ret = This.Multicast(subject);
-            ret.Connect();
-            return ret;
+            This.Connect();
+            return This;
         }
     }
 

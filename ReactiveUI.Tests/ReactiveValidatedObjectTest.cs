@@ -57,7 +57,7 @@ namespace ReactiveUI.Tests
             /*
             new[] { false, false, false, true, false }.Zip(output, (expected, actual) => new { expected, actual })
                 .Do(Console.WriteLine)
-                .Run(x => Assert.Equal(x.expected, x.actual));
+                .ForEach(x => Assert.Equal(x.expected, x.actual));
              */
         }
     }
