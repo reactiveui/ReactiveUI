@@ -81,6 +81,7 @@ namespace ReactiveUI.Xaml
 
             AsyncStartedNotification = new ScheduledSubject<Unit>(RxApp.DeferredScheduler);
             AsyncCompletedNotification = new ScheduledSubject<Unit>(RxApp.DeferredScheduler);
+            AsyncErrorNotification = new ScheduledSubject<Exception>(RxApp.DeferredScheduler);
 
             ItemsInflight = Observable.Merge(
                 AsyncStartedNotification.Select(_ => 1),
@@ -129,6 +130,8 @@ namespace ReactiveUI.Xaml
         public ISubject<Unit> AsyncStartedNotification { get; protected set; }
 
         public ISubject<Unit> AsyncCompletedNotification { get; protected set; }
+
+        public ISubject<Exception> AsyncErrorNotification { get; protected set; }
 
         public IObservable<bool> CanExecuteObservable { get; protected set; }
 
@@ -180,17 +183,8 @@ namespace ReactiveUI.Xaml
         {
             Contract.Requires(calculationFunc != null);
 
-            // XXX: There is no way to disconnect this, but we can't fix it
-            // without breaking API compatibility
-            var taskSubj = new ScheduledSubject<object>(scheduler ?? RxApp.TaskpoolScheduler);
-            _executeSubject.Multicast(taskSubj).PermaRef();
-
-            var unit = new Unit();
-            return taskSubj
-                .Do(_ => AsyncStartedNotification.OnNext(unit))
-                .Select(calculationFunc)
-                .Do(_ => AsyncCompletedNotification.OnNext(unit))
-                .Multicast(new ScheduledSubject<TResult>(RxApp.DeferredScheduler)).PermaRef();
+            var asyncFunc = calculationFunc.ToAsync(RxApp.TaskpoolScheduler);
+            return RegisterAsyncObservable(asyncFunc);
         }
 
         /// <summary>
@@ -221,17 +215,19 @@ namespace ReactiveUI.Xaml
         {
             Contract.Requires(calculationFunc != null);
 
-            var taskSubj = new ScheduledSubject<object>(RxApp.TaskpoolScheduler);
-            _executeSubject.Multicast(taskSubj).PermaRef();
+            var ret = _executeSubject
+                .Select(x => {
+                    AsyncStartedNotification.OnNext(Unit.Default);
 
-            var unit = Unit.Default;
-            var ret = taskSubj
-                .Do(_ => AsyncStartedNotification.OnNext(unit))
-                .Select(calculationFunc);
+                    return calculationFunc(x)
+                        .Catch<TResult, Exception>(ex => {
+                            AsyncErrorNotification.OnNext(ex);
+                            return Observable.Empty<TResult>();
+                        })
+                        .Finally(() => AsyncCompletedNotification.OnNext(Unit.Default));
+                });
 
-            return ret
-                .SelectMany(x => x.Finally(() => AsyncCompletedNotification.OnNext(unit)))
-                .Multicast(new ScheduledSubject<TResult>(RxApp.DeferredScheduler)).PermaRef();
+            return ret.Merge().Multicast(new ScheduledSubject<TResult>(RxApp.DeferredScheduler)).PermaRef();
         }
 
         /// <summary>

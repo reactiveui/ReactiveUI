@@ -47,6 +47,11 @@ namespace ReactiveUI.Xaml
         /// Should be fired whenever an async operation completes.
         /// </summary>
         ISubject<Unit> AsyncCompletedNotification { get; }
+
+        /// <summary>
+        /// Should be fired whenever an async operation fails.
+        /// </summary>
+        ISubject<Exception> AsyncErrorNotification { get; }
     }
 }
 
