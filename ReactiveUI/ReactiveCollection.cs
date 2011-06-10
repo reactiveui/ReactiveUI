@@ -47,11 +47,6 @@ namespace ReactiveUI
             var ocChangedEvent = new Subject<NotifyCollectionChangedEventArgs>();
             CollectionChanged += (o, e) => ocChangedEvent.OnNext(e);
 
-            /* XXX: This fails for no apparent reason
-            var ocChangedEvent = Observable.FromEvent<NotifyCollectionChangedEventHandler, NotifyCollectionChangedEventArgs>(
-                x => CollectionChanged += x, x => CollectionChanged -= x);
-             */
-
             _ItemsAdded = ocChangedEvent
                 .Where(x =>
                     x.Action == NotifyCollectionChangedAction.Add ||
@@ -59,7 +54,8 @@ namespace ReactiveUI
                 .SelectMany(x =>
                     (x.NewItems != null ? x.NewItems.OfType<T>() : Enumerable.Empty<T>())
                     .ToObservable())
-                .Permacast(new ScheduledSubject<T>(RxApp.DeferredScheduler));
+                .Multicast(new ScheduledSubject<T>(RxApp.DeferredScheduler))
+                .PermaRef();
 
             _ItemsRemoved = ocChangedEvent
                 .Where(x =>
@@ -69,7 +65,8 @@ namespace ReactiveUI
                 .SelectMany(x =>
                     (x.OldItems != null ? x.OldItems.OfType<T>() : Enumerable.Empty<T>())
                     .ToObservable())
-                .Permacast(new ScheduledSubject<T>(RxApp.DeferredScheduler));
+                .Multicast(new ScheduledSubject<T>(RxApp.DeferredScheduler))
+                .PermaRef();
 
             _CollectionCountChanging = Observable.Merge(
                 _BeforeItemsAdded.Select(_ => this.Count),

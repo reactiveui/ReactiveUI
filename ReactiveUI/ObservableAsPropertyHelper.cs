@@ -20,11 +20,12 @@ namespace ReactiveUI
     /// be chained - for example a "Path" property and a chained
     /// "PathFileNameOnly" property.
     /// </summary>
-    public class ObservableAsPropertyHelper<T> : IEnableLogger, IObservable<T>
+    public sealed class ObservableAsPropertyHelper<T> : IEnableLogger, IObservable<T>, IDisposable
     {
         T _lastValue;
         Exception _lastException;
         readonly IObservable<T> _source;
+        IDisposable _inner;
 
         /// <summary>
         /// Constructs an ObservableAsPropertyHelper object.
@@ -51,7 +52,7 @@ namespace ReactiveUI
 
             var subj = new ScheduledSubject<T>(scheduler);
             subj.Subscribe(x => {
-                this.Log().InfoFormat("Property helper {0:X} changed", this.GetHashCode());
+                this.Log().DebugFormat("Property helper {0:X} changed", this.GetHashCode());
                 _lastValue = x;
                 onChanged(x);
             }, ex => _lastException = ex);
@@ -60,7 +61,9 @@ namespace ReactiveUI
             // have a value
             subj.OnNext(initialValue);
 
-            _source = observable.DistinctUntilChanged().Permacast(subj);
+            var src = observable.DistinctUntilChanged().Multicast(subj);
+            _inner = src.Connect();
+            _source = src;
         }
 
         /// <summary>
@@ -69,16 +72,31 @@ namespace ReactiveUI
         public T Value {
             get {
                 if (_lastException != null) {
-                    this.Log().Error("Observable ended with OnError", this._lastException);
+                    this.Log().Error("Observable ended with OnError", _lastException);
                     throw _lastException;
                 }
                 return _lastValue;
             }
         }
 
+        /// <summary>
+        /// Returns the Exception which has been provided by the Observable; normally
+        /// steps should be taken to ensure that Observables provided to OAPH should
+        /// never complete or fail.
+        /// </summary>
+        public Exception BindingException {
+            get { return _lastException; }
+        }
+
         public IDisposable Subscribe(IObserver<T> observer)
         {
             return _source.Subscribe(observer);
+        }
+
+        public void Dispose()
+        {
+            _inner.Dispose();
+            _inner = null;
         }
 
         /// <summary>

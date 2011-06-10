@@ -64,7 +64,7 @@ namespace ReactiveUI
             return Observable.Create<IObservedChange<TSender, TValue>>(x => {
                 var disp = ret.Subscribe(x.OnNext, x.OnError, x.OnCompleted);
                 return () => {
-                    subscriptions.Run(y => y.Dispose());
+                    subscriptions.ForEach(y => y.Dispose());
                     disp.Dispose();
                 };
             });
@@ -89,7 +89,7 @@ namespace ReactiveUI
             while(current.Next != null) {
                 pi = RxApp.getPropertyInfoForProperty(currentObj.GetType(), current.Value);
                 if (pi == null) {
-                    subscriptions.List.Where(x => x != null).Run(x => x.Dispose());
+                    subscriptions.List.Where(x => x != null).ForEach(x => x.Dispose());
                     throw new ArgumentException(String.Format("Property '{0}' does not exist in expression", current.Value));
                 }
 

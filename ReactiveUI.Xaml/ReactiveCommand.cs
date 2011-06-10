@@ -15,7 +15,7 @@ namespace ReactiveUI.Xaml
     /// ICommand.Execute and its value is the CommandParameter that was
     /// provided.
     /// </summary>
-    public class ReactiveCommand : IReactiveCommand, IEnableLogger
+    public class ReactiveCommand : IReactiveCommand, IEnableLogger, IDisposable
     {
         /// <summary>
         /// Creates a new ReactiveCommand object.
@@ -29,7 +29,7 @@ namespace ReactiveUI.Xaml
         {
             canExecute = canExecute ?? Observable.Return(true).Concat(Observable.Never<bool>());
             commonCtor(scheduler);
-            canExecute.Subscribe(canExecuteSubject.OnNext);
+            _inner = canExecute.Subscribe(canExecuteSubject.OnNext);
         }
 
         protected ReactiveCommand(Func<object, bool> canExecute, IScheduler scheduler = null)
@@ -66,7 +66,7 @@ namespace ReactiveUI.Xaml
         {
             this.scheduler = scheduler ?? RxApp.DeferredScheduler;
 
-            canExecuteSubject = new Subject<bool>();
+            canExecuteSubject = new ScheduledSubject<bool>(RxApp.DeferredScheduler);
             canExecuteLatest = new ObservableAsPropertyHelper<bool>(canExecuteSubject,
                 b => { if (CanExecuteChanged != null) CanExecuteChanged(this, EventArgs.Empty); },
                 true, scheduler);
@@ -75,7 +75,8 @@ namespace ReactiveUI.Xaml
         }
 
         Func<object, bool> canExecuteExplicitFunc;
-        protected Subject<bool> canExecuteSubject;
+        protected ISubject<bool> canExecuteSubject;
+        IDisposable _inner = null;
 
     
         /// <summary>
@@ -111,6 +112,13 @@ namespace ReactiveUI.Xaml
         public IDisposable Subscribe(IObserver<object> observer)
         {
             return executeSubject.ObserveOn(scheduler).Subscribe(observer);
+        }
+
+        public void Dispose()
+        {
+            if (_inner != null) {
+                _inner.Dispose();
+            }
         }
     }
 
