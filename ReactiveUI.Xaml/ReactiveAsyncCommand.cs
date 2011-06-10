@@ -97,7 +97,6 @@ namespace ReactiveUI.Xaml
             CanExecuteObservable = Observable.CombineLatest(
                     _canExecuteSubject.StartWith(startCE), ItemsInflight.Select(x => x < maximumConcurrent).StartWith(true),
                     (canEx, slotsAvail) => canEx && slotsAvail)
-                .DebugObservable("CanExecuteObservable")
                 .DistinctUntilChanged();
 
             CanExecuteObservable.Subscribe(x => {
