@@ -52,6 +52,11 @@
             Should be fired whenever an async operation completes.
             </summary>
         </member>
+        <member name="P:ReactiveUI.Xaml.IReactiveAsyncCommand.AsyncErrorNotification">
+            <summary>
+            Should be fired whenever an async operation fails.
+            </summary>
+        </member>
         <member name="T:ReactiveUI.Xaml.ReactiveAsyncCommand">
             <summary>
             ReactiveAsyncCommand represents commands that run an asynchronous
@@ -62,7 +67,7 @@
             user clicks the button many times quickly)
             </summary>
         </member>
-        <member name="M:ReactiveUI.Xaml.ReactiveAsyncCommand.#ctor(System.IObservable{System.Boolean},System.Int32,System.Concurrency.IScheduler)">
+        <member name="M:ReactiveUI.Xaml.ReactiveAsyncCommand.#ctor(System.IObservable{System.Boolean},System.Int32,System.Reactive.Concurrency.IScheduler)">
             <summary>
             Constructs a new ReactiveAsyncCommand.
             </summary>
@@ -73,7 +78,7 @@
             <param name="scheduler">The scheduler to run the asynchronous
             operations on - defaults to the Taskpool scheduler.</param>
         </member>
-        <member name="M:ReactiveUI.Xaml.ReactiveAsyncCommand.Create``1(System.Func{System.Object,``0},System.Action{``0},System.Func{System.Object,System.Boolean},System.Int32,System.Concurrency.IScheduler)">
+        <member name="M:ReactiveUI.Xaml.ReactiveAsyncCommand.Create``1(System.Func{System.Object,``0},System.Action{``0},System.Func{System.Object,System.Boolean},System.Int32,System.Reactive.Concurrency.IScheduler)">
             <summary>
             Create is a helper method to create a basic ReactiveAsyncCommand
             in a non-Rx way, closer to how BackgroundWorker works.
@@ -88,7 +93,7 @@
             <param name="scheduler">The scheduler to run the asynchronous
             operations on - defaults to the Taskpool scheduler.</param>
         </member>
-        <member name="M:ReactiveUI.Xaml.ReactiveAsyncCommand.RegisterAsyncFunction``1(System.Func{System.Object,``0},System.Concurrency.IScheduler)">
+        <member name="M:ReactiveUI.Xaml.ReactiveAsyncCommand.RegisterAsyncFunction``1(System.Func{System.Object,``0},System.Reactive.Concurrency.IScheduler)">
             <summary>
             RegisterAsyncFunction registers an asynchronous method that returns a result
             to be called whenever the Command's Execute method is called.
@@ -100,7 +105,7 @@
             invoecation of Execute, once the async method completes. Subscribe to
             this to retrieve the result of the calculationFunc.</returns>
         </member>
-        <member name="M:ReactiveUI.Xaml.ReactiveAsyncCommand.RegisterAsyncAction(System.Action{System.Object},System.Concurrency.IScheduler)">
+        <member name="M:ReactiveUI.Xaml.ReactiveAsyncCommand.RegisterAsyncAction(System.Action{System.Object},System.Reactive.Concurrency.IScheduler)">
             <summary>
             RegisterAsyncAction registers an asynchronous method that runs
             whenever the Command's Execute method is called and doesn't return a
@@ -121,7 +126,7 @@
             calculation result. Note that with this method it is possible with a
             calculationFunc to return multiple items per invocation of Execute.</returns>
         </member>
-        <member name="M:ReactiveUI.Xaml.ReactiveAsyncCommand.RegisterMemoizedFunction``1(System.Func{System.Object,``0},System.Int32,System.Action{``0},System.Concurrency.IScheduler)">
+        <member name="M:ReactiveUI.Xaml.ReactiveAsyncCommand.RegisterMemoizedFunction``1(System.Func{System.Object,``0},System.Int32,System.Action{``0},System.Reactive.Concurrency.IScheduler)">
              <summary>
              RegisterMemoizedFunction is similar to RegisterAsyncFunction, but
              caches its results so that subsequent Execute calls with the same
@@ -147,7 +152,7 @@
              invocation of Execute, once the async method completes. Subscribe to
              this to retrieve the result of the calculationFunc.</returns>
         </member>
-        <member name="M:ReactiveUI.Xaml.ReactiveAsyncCommand.RegisterMemoizedObservable``1(System.Func{System.Object,System.IObservable{``0}},System.Int32,System.Action{``0},System.Concurrency.IScheduler)">
+        <member name="M:ReactiveUI.Xaml.ReactiveAsyncCommand.RegisterMemoizedObservable``1(System.Func{System.Object,System.IObservable{``0}},System.Int32,System.Action{``0},System.Reactive.Concurrency.IScheduler)">
              <summary>
              RegisterMemoizedObservable is similar to RegisterAsyncObservable, but
              caches its results so that subsequent Execute calls with the same
@@ -182,7 +187,7 @@
             provided.
             </summary>
         </member>
-        <member name="M:ReactiveUI.Xaml.ReactiveCommand.#ctor(System.IObservable{System.Boolean},System.Concurrency.IScheduler)">
+        <member name="M:ReactiveUI.Xaml.ReactiveCommand.#ctor(System.IObservable{System.Boolean},System.Reactive.Concurrency.IScheduler)">
             <summary>
             Creates a new ReactiveCommand object.
             </summary>
@@ -192,7 +197,7 @@
             <param name="scheduler">The scheduler to publish events on - default
             is RxApp.DeferredScheduler.</param>
         </member>
-        <member name="M:ReactiveUI.Xaml.ReactiveCommand.Create(System.Func{System.Object,System.Boolean},System.Action{System.Object},System.Concurrency.IScheduler)">
+        <member name="M:ReactiveUI.Xaml.ReactiveCommand.Create(System.Func{System.Object,System.Boolean},System.Action{System.Object},System.Reactive.Concurrency.IScheduler)">
             <summary>
             Creates a new ReactiveCommand object in an imperative, non-Rx way,
             similar to RelayCommand.
@@ -210,7 +215,7 @@
             Fires whenever the CanExecute of the ICommand changes. 
             </summary>
         </member>
-        <member name="M:ReactiveUI.Xaml.ReactiveCommandMixins.ToCommand(System.IObservable{System.Boolean},System.Concurrency.IScheduler)">
+        <member name="M:ReactiveUI.Xaml.ReactiveCommandMixins.ToCommand(System.IObservable{System.Boolean},System.Reactive.Concurrency.IScheduler)">
             <summary>
             ToCommand is a convenience method for returning a new
             ReactiveCommand based on an existing Observable chain.
