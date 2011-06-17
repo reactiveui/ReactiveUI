@@ -34,6 +34,58 @@
             Notifies the observer of the end of the sequence.
             </summary>
         </member>
+        <member name="T:System.Reactive.Disposables.SingleAssignmentDisposable">
+            <summary>
+            Represents a disposable whose underlying disposable will be set in the future.
+            </summary>
+        </member>
+        <member name="M:System.Reactive.Disposables.SingleAssignmentDisposable.#ctor">
+            <summary>
+            Constructs a new FutureDisposable.
+            </summary>
+        </member>
+        <member name="M:System.Reactive.Disposables.SingleAssignmentDisposable.Dispose">
+            <summary>
+            Disposes the underlying disposable as well any future replacement.
+            </summary>
+        </member>
+        <member name="P:System.Reactive.Disposables.SingleAssignmentDisposable.IsDisposed">
+            <summary>
+            Gets a value indicating whether the object is disposed.
+            </summary>
+        </member>
+        <member name="P:System.Reactive.Disposables.SingleAssignmentDisposable.Disposable">
+            <summary>
+            Gets or sets the underlying disposable.
+            </summary>
+            <remarks>If the FutureDisposable has already been assigned then it will throw an InvalidOperationException.</remarks>
+        </member>
+        <member name="T:System.Reactive.Disposables.SerialDisposable">
+            <summary>
+            Represents a disposable whose underlying disposable can be swapped for another disposable which causes the previous underlying disposable to be disposed.
+            </summary>
+        </member>
+        <member name="M:System.Reactive.Disposables.SerialDisposable.#ctor">
+            <summary>
+            Constructs a new ReplaceDisposable with no current underlying disposable.
+            </summary>
+        </member>
+        <member name="M:System.Reactive.Disposables.SerialDisposable.Dispose">
+            <summary>
+            Disposes the underlying disposable as well as all future replacements.
+            </summary>
+        </member>
+        <member name="P:System.Reactive.Disposables.SerialDisposable.IsDisposed">
+            <summary>
+            Gets a value indicating whether the object is disposed.
+            </summary>
+        </member>
+        <member name="P:System.Reactive.Disposables.SerialDisposable.Disposable">
+            <summary>
+            Gets or sets the underlying disposable.
+            </summary>
+            <remarks>If the ReplaceDisposable has already been disposed, assignment to this property causes immediate disposal of the given disposable object.  Assigning this property disposes the previous disposable object.</remarks>
+        </member>
         <member name="T:System.Reactive.EventPattern`1">
             <summary>
             Represents the Sender and EventArg values of a .NET event.
@@ -112,16 +164,6 @@
         <member name="E:System.Reactive.IEventSource`1.OnNext">
             <summary>
             Event signaling the next element in the data stream.
-            </summary>
-        </member>
-        <member name="T:System.Reactive.ExceptionExtensions">
-            <summary>
-            Provides a set of static methods for exceptions.
-            </summary>
-        </member>
-        <member name="M:System.Reactive.ExceptionExtensions.PrepareForRethrow(System.Exception)">
-            <summary>
-            Preserve callstack when rethrowing.
             </summary>
         </member>
         <member name="T:System.Reactive.ExperimentalAttribute">
@@ -1269,55 +1311,12 @@
             <param name="predicate">A predicate function to evaluate for elements in the sequence.</param>
             <returns>Single element in the observable sequence, or a default value if no value is found.</returns>
         </member>
-        <member name="M:System.Reactive.Linq.Observable.ForEach``1(System.IObservable{``0})">
-            <summary>
-            Invokes the observable sequence for its side-effects, and blocks until the sequence is terminated.
-            </summary>
-            <param name="source">Source sequence.</param>
-            <remarks>Because of its blocking nature, this operator is mainly used for testing.</remarks>
-        </member>
-        <member name="M:System.Reactive.Linq.Observable.ForEach``1(System.IObservable{``0},System.IObserver{``0})">
-            <summary>
-            Invokes the observer methods for their side-effects, and blocks until until sequence is terminated.
-            </summary>
-            <param name="source">Source sequence.</param>
-            <param name="observer">Observer whose methods to invoke as part of the source sequence's observation.</param>
-            <remarks>Because of its blocking nature, this operator is mainly used for testing.</remarks>
-        </member>
         <member name="M:System.Reactive.Linq.Observable.ForEach``1(System.IObservable{``0},System.Action{``0})">
             <summary>
             Invokes an action for each element in the observable sequence, and blocks until the sequence is terminated.
             </summary>
             <param name="source">Source sequence.</param>
             <param name="onNext">Action to invoke for each element in the observable sequence.</param>
-            <remarks>Because of its blocking nature, this operator is mainly used for testing.</remarks>
-        </member>
-        <member name="M:System.Reactive.Linq.Observable.ForEach``1(System.IObservable{``0},System.Action{``0},System.Action)">
-            <summary>
-            Invokes an action for each element in the observable sequence, invokes an action upon graceful termination of the observable sequence, and blocks until the sequence is terminated.
-            </summary>
-            <param name="source">Source sequence.</param>
-            <param name="onNext">Action to invoke for each element in the observable sequence.</param>
-            <param name="onCompleted">Action to invoke upon graceful termination of the observable sequence.</param>
-            <remarks>Because of its blocking nature, this operator is mainly used for testing.</remarks>
-        </member>
-        <member name="M:System.Reactive.Linq.Observable.ForEach``1(System.IObservable{``0},System.Action{``0},System.Action{System.Exception})">
-            <summary>
-            Invokes an action for each element in the observable sequence, invokes an action upon exceptional termination of the observable sequence, and blocks until the sequence is terminated.
-            </summary>
-            <param name="source">Source sequence.</param>
-            <param name="onNext">Action to invoke for each element in the observable sequence.</param>
-            <param name="onError">Action to invoke upon exceptional termination of the observable sequence.</param>
-            <remarks>Because of its blocking nature, this operator is mainly used for testing.</remarks>
-        </member>
-        <member name="M:System.Reactive.Linq.Observable.ForEach``1(System.IObservable{``0},System.Action{``0},System.Action{System.Exception},System.Action)">
-            <summary>
-            Invokes an action for each element in the observable sequence, invokes an action upon graceful or exceptional termination of the observable sequence, and blocks until the sequence is terminated.
-            </summary>
-            <param name="source">Source sequence.</param>
-            <param name="onNext">Action to invoke for each element in the observable sequence.</param>
-            <param name="onError">Action to invoke upon exceptional termination of the observable sequence.</param>
-            <param name="onCompleted">Action to invoke upon graceful termination of the observable sequence.</param>
             <remarks>Because of its blocking nature, this operator is mainly used for testing.</remarks>
         </member>
         <member name="M:System.Reactive.Linq.Observable.ObserveOn``1(System.IObservable{``0},System.Reactive.Concurrency.IScheduler)">
@@ -4243,54 +4242,27 @@
             Represents the disposable that does nothing when disposed.
             </summary>
         </member>
-        <member name="T:System.Reactive.Disposables.AssignmentBehavior">
-            <summary>
-            Specifies the assignment behavior of a disposable object.
-            </summary>
-        </member>
-        <member name="F:System.Reactive.Disposables.AssignmentBehavior.SingleAssignment">
-            <summary>
-            Allow at most one assignment to a disposable object.
-            </summary>
-        </member>
-        <member name="F:System.Reactive.Disposables.AssignmentBehavior.ReplacePrevious">
-            <summary>
-            Allow many assignments to a disposable object.
-            </summary>
-        </member>
-        <member name="F:System.Reactive.Disposables.AssignmentBehavior.ReplaceAndDisposePrevious">
-            <summary>
-            Allow many assignments to a disposable object and disposes the previous value.
-            </summary>
-        </member>
-        <member name="T:System.Reactive.Disposables.MutableDisposable">
+        <member name="T:System.Reactive.Disposables.MultipleAssignmentDisposable">
             <summary>
             Represents a disposable whose underlying disposable can be swapped for another disposable.
             </summary>
         </member>
-        <member name="M:System.Reactive.Disposables.MutableDisposable.#ctor(System.Reactive.Disposables.AssignmentBehavior)">
+        <member name="M:System.Reactive.Disposables.MultipleAssignmentDisposable.#ctor">
             <summary>
             Constructs a new MutableDisposable with no current underlying disposable.
             </summary>
-            <param name="options">Specifies the assignment behavior.</param>
         </member>
-        <member name="M:System.Reactive.Disposables.MutableDisposable.#ctor">
-            <summary>
-            Constructs a new MutableDisposable with no current underlying disposable.
-            </summary>
-            <remarks>By default, the MutableDisposable will dispose the current value of the Disposable property before assigning a new value.</remarks>
-        </member>
-        <member name="M:System.Reactive.Disposables.MutableDisposable.Dispose">
+        <member name="M:System.Reactive.Disposables.MultipleAssignmentDisposable.Dispose">
             <summary>
             Disposes the underlying disposable as well as all future replacements.
             </summary>
         </member>
-        <member name="P:System.Reactive.Disposables.MutableDisposable.IsDisposed">
+        <member name="P:System.Reactive.Disposables.MultipleAssignmentDisposable.IsDisposed">
             <summary>
             Gets a value indicating whether the object is disposed.
             </summary>
         </member>
-        <member name="P:System.Reactive.Disposables.MutableDisposable.Disposable">
+        <member name="P:System.Reactive.Disposables.MultipleAssignmentDisposable.Disposable">
             <summary>
             Gets or sets the underlying disposable.
             </summary>
