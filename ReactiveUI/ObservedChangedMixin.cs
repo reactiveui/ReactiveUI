@@ -156,7 +156,7 @@ namespace ReactiveUI
                 Expression<Func<TTarget, TValue>> property)
             where TTarget : IReactiveNotifyPropertyChanged
         {
-            var sourceSub = new MutableDisposable();
+            var sourceSub = new MultipleAssignmentDisposable();
             var source = This;
 
             var subscribify = new Action<TTarget, string[]>((tgt, propNames) => {
