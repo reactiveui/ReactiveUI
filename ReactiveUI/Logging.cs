@@ -4,6 +4,7 @@ using System.Reflection;
 using System.Globalization;
 using System.Text;
 using System.Threading;
+using System.Diagnostics;
 using System.Diagnostics.Contracts;
 
 #if DOTNETISOLDANDSAD
@@ -252,10 +253,11 @@ namespace ReactiveUI
         {
             Contract.Requires(format != null);
 
-            object[] param = new object[args.Length + 2];
+            object[] param = new object[3];
             param[0] = provider ?? (IFormatProvider)CultureInfo.InvariantCulture;
             param[1] = format;
-            args.CopyTo(param, 2);
+            param[2] = args;
+
             channel(getPrefix() + (string)stringFormat.Invoke(null, param));
         }
 

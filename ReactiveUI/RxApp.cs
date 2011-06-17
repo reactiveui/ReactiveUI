@@ -140,7 +140,6 @@ namespace ReactiveUI
         /// </summary>
         public static Func<string, ILog> LoggerFactory { get; set; }
 
-
         [ThreadStatic] static IMessageBus _UnitTestMessageBus;
         static IMessageBus _MessageBus;
 
