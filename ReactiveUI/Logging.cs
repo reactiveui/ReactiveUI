@@ -188,36 +188,28 @@ namespace ReactiveUI
          * Formatting functions
          */
 
-        ThreadLocal<StringBuilder> _prefixBuffer = new ThreadLocal<StringBuilder>();
-        ThreadLocal<DateTime> _lastUpdated = new ThreadLocal<DateTime>();
+        string _prefixBuffer = "";
+        DateTime _lastUpdated = DateTime.MinValue;
         readonly TimeSpan _fiftyMilliseconds = TimeSpan.FromMilliseconds(50.0);
 
         string getPrefix()
         {
-            if (DateTime.Now - _lastUpdated.Value < _fiftyMilliseconds) {
-                return _prefixBuffer.Value.ToString();
+            if (DateTime.Now - _lastUpdated < _fiftyMilliseconds) {
+                return _prefixBuffer;
             }
 
             var now = DateTime.Now;
             StringBuilder buffer;
 
-            if (_prefixBuffer.Value == null) {
-                buffer = _prefixBuffer.Value = new StringBuilder();
-            } else {
-                buffer = _prefixBuffer.Value;
-            }
-
-            buffer = _prefixBuffer.Value = new StringBuilder(128);
+            buffer = new StringBuilder(128);
             buffer.Append(now.ToString());
             buffer.AppendFormat(" [{0}] ", Thread.CurrentThread.ManagedThreadId);
             buffer.Append(prefix);
             buffer.Append(": ");
+            _prefixBuffer = buffer.ToString();
 
-            _lastUpdated.Value = now;
+            _lastUpdated = now;
             return buffer.ToString();
-
-            // XXX: This function is expensive
-            //return String.Format("{0} [{1}] {2}: ", DateTimeOffset.Now.ToString(), Thread.CurrentThread.ManagedThreadId, prefix);
         }
 
         void write(Action<string> channel, object message)
