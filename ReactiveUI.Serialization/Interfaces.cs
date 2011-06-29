@@ -36,7 +36,7 @@ namespace ReactiveUI.Serialization
     /// This interface exists mainly for the framework, and ISerializableList of
     /// T should be used instead.
     /// </summary>
-    public interface ISerializableList : IEnumerable, ISerializableItem
+    public interface ISerializableList : IList, ISerializableItem, IReactiveCollection
     {
         /// <summary>
         /// CreatedOn returns the date each item was added to the list.

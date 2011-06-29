@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.Serialization;
 using System.Threading;
 using Newtonsoft.Json;
@@ -78,7 +80,7 @@ namespace ReactiveUI.Serialization
 #if DEBUG
             return (new StreamReader(new MemoryStream(data))).ReadToEnd();
 #else
-            return "Run me in debug mode!";
+            return "Run me under Debug mode";
 #endif
         }
 
@@ -152,12 +154,13 @@ namespace ReactiveUI.Serialization
         {
             return base.CreateProperties(type, serialization).Where(x => {
                 // XXX: This is massively slow and dumb
-                var prop = type.GetProperty(x.PropertyName);
+                var prop = type.GetProperty(x.PropertyName, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
                 object[] attrs;
+
                 if (prop != null) {
                     attrs = prop.GetCustomAttributes(typeof (IgnoreDataMemberAttribute), true);
                 } else {
-                    var field = type.GetField(x.PropertyName);
+                    var field = type.GetField(x.PropertyName, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
                     attrs = field.GetCustomAttributes(typeof(IgnoreDataMemberAttribute), true);
                 }
                 return attrs.Length == 0;
@@ -211,7 +214,7 @@ namespace ReactiveUI.Serialization
     }
 
     class RawSerializedListData {
-        public string ItemsRootTypeFullName { get; set; }
+        public string CollectionTypeFullName { get; set; }
         public Dictionary<Guid, DateTimeOffset> CreatedOn { get; set; }
         public Dictionary<Guid, DateTimeOffset> UpdatedOn { get; set; }
         public Guid[] Items { get; set; }
@@ -241,7 +244,22 @@ namespace ReactiveUI.Serialization
             JsonSerializer serializer)
         {
             var toRead = serializer.Deserialize<RawSerializedListData>(reader);
-            return null;
+            var type = Type.GetType(toRead.CollectionTypeFullName);
+            var list = (ISerializableList) Activator.CreateInstance(type);
+
+            list.ChangeTrackingEnabled = false;
+            foreach(var hash in toRead.Items) {
+                list.Add(_engine.Load(hash));
+            }
+            foreach(var kvp in toRead.CreatedOn) {
+                list.CreatedOn.Add(kvp.Key, kvp.Value);
+            }
+            foreach(var kvp in toRead.UpdatedOn) {
+                list.UpdatedOn.Add(kvp.Key, kvp.Value);
+            }
+            list.ChangeTrackingEnabled = true;
+
+            return list;
         }
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer) 
@@ -250,9 +268,13 @@ namespace ReactiveUI.Serialization
             var toWrite = new RawSerializedListData() {
                 CreatedOn = slist.CreatedOn.ToConcreteDictionary(),
                 UpdatedOn = slist.UpdatedOn.ToConcreteDictionary(),
-                ItemsRootTypeFullName = slist.GetBaseListType().FullName,
+                CollectionTypeFullName = slist.GetType().FullName,
                 Items = slist.OfType<ISerializableItem>().Select(x => x.ContentHash).ToArray(),
             };
+
+            foreach(ISerializableItem v in slist) {
+                _engine.Save(v);
+            }
 
             serializer.Serialize(writer, toWrite);
         }

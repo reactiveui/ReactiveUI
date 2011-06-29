@@ -121,16 +121,25 @@ namespace ReactiveUI.Serialization
             invalidateHash();
 
             ItemsAdded.Subscribe(x => {
+                if (ChangeTrackingEnabled == false) {
+                    return;
+                }
                 CreatedOn[x.ContentHash] = _sched.Now;
                 UpdatedOn[x.ContentHash] = _sched.Now;
             });
 
             ItemsRemoved.Subscribe(x => {
+                if (ChangeTrackingEnabled == false) {
+                    return;
+                }
                 CreatedOn.Remove(x.ContentHash);
                 UpdatedOn.Remove(x.ContentHash);
             });
 
             ItemChanged.Subscribe(x => {
+                if (ChangeTrackingEnabled == false) {
+                    return;
+                }
                 UpdatedOn[x.Sender.ContentHash] = _sched.Now;
             });
 
