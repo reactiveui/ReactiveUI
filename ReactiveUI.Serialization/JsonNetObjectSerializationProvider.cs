@@ -196,20 +196,26 @@ namespace ReactiveUI.Serialization
             object existingValue, 
             JsonSerializer serializer)
         {
-            // XXX: This is totally borked in Debug mode, fix it!
-            if (reader.TokenType != JsonToken.Bytes) {
-                throw new Exception(String.Format("Expected bytes, got {0}", reader.Value));
+            Guid contentHash; 
+            var bytes = serializer.Deserialize<byte[]>(reader);
+
+            if (bytes == null || bytes.Length == 0 || (contentHash = new Guid(bytes)) == Guid.Empty) {
+                return null;
             }
 
-            var contentHash = new Guid((byte[]) reader.Value);
             return _engine.Load(contentHash);
         }
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
             var si = (ISerializableItem)value;
+            if (si == null) {
+                serializer.Serialize(writer, Guid.Empty.ToByteArray());
+                return;
+            }
+
             _engine.Save(si);
-            writer.WriteValue(si.ContentHash.ToByteArray());
+            serializer.Serialize(writer, si.ContentHash.ToByteArray());
         }
     }
 
