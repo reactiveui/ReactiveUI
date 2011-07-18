@@ -19,7 +19,7 @@ namespace ReactiveUI.Routing
             set { SetValue(RouterProperty, value); }
         }
         public static readonly DependencyProperty RouterProperty =
-            DependencyProperty.Register("Router", typeof(RoutingState), typeof(RoutedViewHost), new UIPropertyMetadata(null));
+            DependencyProperty.Register("Router", typeof(RoutingState), typeof(RoutedViewHost), new PropertyMetadata(null));
 
         public RoutedViewHost()
         {
