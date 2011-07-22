@@ -30,7 +30,7 @@ namespace ReactiveUI
         readonly MemoizingMRUCache<TParam, IObservable<TVal>> _innerCache;
         readonly SemaphoreSubject<long> _callQueue;
         readonly Func<TParam, IObservable<TVal>> _fetcher;
-        long currentCall = 0;
+        int currentCall = 0;
 
         /// <summary>
         /// Constructs an ObservableAsyncMRUCache object.
@@ -96,7 +96,7 @@ namespace ReactiveUI
                 return result;
             }
 
-            var myCall = Interlocked.Increment(ref currentCall);
+            int myCall = Interlocked.Increment(ref currentCall);
 
             var rs = new ReplaySubject<TVal>();
             _callQueue.Where(x => x == myCall).Subscribe(_ => {
@@ -196,7 +196,7 @@ namespace ReactiveUI
         readonly ISubject<T> _inner;
         Queue<T> _nextItems = new Queue<T>();
         long _count;
-        readonly long _maxCount;
+        readonly int _maxCount;
 
         public SemaphoreSubject(int maxCount, IScheduler sched = null)
         {
