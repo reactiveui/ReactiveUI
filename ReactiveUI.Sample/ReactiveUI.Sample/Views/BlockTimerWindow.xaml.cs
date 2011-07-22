@@ -42,7 +42,7 @@ namespace ReactiveUI.Sample.Views
                     () => Dispatcher.BeginInvoke(new Action(() => Close())));
 
 		    Observable.Merge(
-                    Observable.FromEvent<SizeChangedEventHandler, SizeChangedEventArgs>(x => SizeChanged += x, x => SizeChanged -= x).Select(_ => new Unit()),
+                    Observable.FromEventPattern<SizeChangedEventHandler, SizeChangedEventArgs>(x => SizeChanged += x, x => SizeChanged -= x).Select(_ => new Unit()),
     		        ViewModel.WhenAny(x => x.ProgressPercentage, _ => new Unit()))
 		        .Select(_ => progressParentBorder.ActualWidth * ViewModel.ProgressPercentage)
 		        .Subscribe(x => progressBorder.Width = x);
