@@ -21,6 +21,13 @@ namespace ReactiveUI.Routing
         public static readonly DependencyProperty RouterProperty =
             DependencyProperty.Register("Router", typeof(RoutingState), typeof(RoutedViewHost), new PropertyMetadata(null));
 
+        public object DefaultContent {
+            get { return (object)GetValue(DefaultContentProperty); }
+            set { SetValue(DefaultContentProperty, value); }
+        }
+        public static readonly DependencyProperty DefaultContentProperty =
+            DependencyProperty.Register("DefaultContent", typeof(object), typeof(RoutedViewHost), new PropertyMetadata(null));
+
         public RoutedViewHost()
         {
             this.ObservableFromDP(x => x.Router)
@@ -32,8 +39,7 @@ namespace ReactiveUI.Routing
 
                     _inner = x.Value.CurrentViewModel.Subscribe(vm => {
                         if (vm == null) {
-                            // XXX: Replace with default view
-                            Content = null;
+                            Content = DefaultContent;
                             return;
                         }
 
