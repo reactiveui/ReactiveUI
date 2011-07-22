@@ -226,19 +226,19 @@ namespace ReactiveUI.Tests
             var input = new[] {"Foo", "Bar", "Baz", "Bamf"};
             var sched = new TestScheduler();
 
-            ReactiveCollection<string> fixture;
             using (TestUtils.WithScheduler(sched)) {
+                ReactiveCollection<string> fixture;
+
                 fixture = input.ToObservable(sched).CreateCollection(TimeSpan.FromSeconds(0.5));
+                sched.RunToMilliseconds(1005);
+                fixture.AssertAreEqual(input.Take(2));
+                
+                sched.RunToMilliseconds(1505);
+                fixture.AssertAreEqual(input.Take(3));
+    
+                sched.RunToMilliseconds(10000);
+                fixture.AssertAreEqual(input);
             }
-
-            sched.RunToMilliseconds(1005);
-            fixture.AssertAreEqual(input.Take(2));
-            
-            sched.RunToMilliseconds(1505);
-            fixture.AssertAreEqual(input.Take(3));
-
-            sched.RunToMilliseconds(10000);
-            fixture.AssertAreEqual(input);
         }
 
         [Fact]
