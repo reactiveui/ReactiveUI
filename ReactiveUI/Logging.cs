@@ -8,7 +8,7 @@ using System.Diagnostics;
 using System.Diagnostics.Contracts;
 
 #if DOTNETISOLDANDSAD
-using System.Concurrency;
+using System.Reactive.Concurrency;
 #endif
 
 namespace ReactiveUI
@@ -353,11 +353,11 @@ namespace ReactiveUI
 
     internal struct SilverlightSpinlock
     {
-        long atomic;
+        int atomic;
 
         public void Enter(ref bool isAcquired)
         {
-            long id = Thread.CurrentThread.ManagedThreadId;
+            int id = (int)Thread.CurrentThread.ManagedThreadId;
             while (Interlocked.CompareExchange(ref atomic, id, 0) != 0) { }
             isAcquired = true;
         }
@@ -365,7 +365,7 @@ namespace ReactiveUI
         public void Exit()
         {
             long id = Thread.CurrentThread.ManagedThreadId;
-            long thisAtomic = Interlocked.Exchange(ref atomic, 0);
+            int thisAtomic = Interlocked.Exchange(ref atomic, 0);
             if (thisAtomic != id) {
                 throw new Exception("Thread " + id + " exited a spinlock it didn't own! Owning thread was " + thisAtomic);
             }
