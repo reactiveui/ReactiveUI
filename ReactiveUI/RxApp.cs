@@ -180,7 +180,7 @@ namespace ReactiveUI
         {
             // XXX: This is hacky and evil, but I can't think of any better way
             // to do this
-            string[] test_assemblies = new[] {
+            string[] testAssemblies = new[] {
                 "CSUNIT",
                 "NUNIT",
                 "XUNIT",
@@ -191,12 +191,31 @@ namespace ReactiveUI
                 "PEX",
             };
 
+            string[] designEnvironments = new[] {
+                "BLEND.EXE",
+                "DEVENV.EXE",
+                "MONODEVELOP",
+                "SHARPDEVELOP.EXE",
+            };
+
 #if SILVERLIGHT
+            if (System.ComponentModel.DesignerProperties.GetIsInDesignMode(Application.Current.RootVisual)) {
+                return false;
+            }
+
             return Deployment.Current.Parts.Any(x => 
-                test_assemblies.Any(name => x.Source.ToUpperInvariant().Contains(name)));
+                testAssemblies.Any(name => x.Source.ToUpperInvariant().Contains(name)));
 #else
+            // Try to detect whether we're in design mode - bonus points, 
+            // without access to any WPF references :-/
+            var entry = Assembly.GetEntryAssembly();
+            var exeName = (entry != null ? entry.Location.ToUpperInvariant() : "");
+            if (designEnvironments.Any(x => x.Contains(exeName))) {
+                return true;
+            }
+
             return AppDomain.CurrentDomain.GetAssemblies().Any(x =>
-                test_assemblies.Any(name => x.FullName.ToUpperInvariant().Contains(name)));
+                testAssemblies.Any(name => x.FullName.ToUpperInvariant().Contains(name)));
 #endif
         }
 
