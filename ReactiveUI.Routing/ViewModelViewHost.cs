@@ -7,8 +7,6 @@ namespace ReactiveUI.Routing
 {
     public class ViewModelViewHost : ContentControl
     {
-        IDisposable _inner = null;
-        
         public IReactiveNotifyPropertyChanged ViewModel {
             get { return (IReactiveNotifyPropertyChanged)GetValue(ViewModelProperty); }
             set { SetValue(ViewModelProperty, value); }
@@ -16,13 +14,19 @@ namespace ReactiveUI.Routing
         public static readonly DependencyProperty ViewModelProperty = 
             DependencyProperty.Register("ViewModel", typeof(IReactiveNotifyPropertyChanged), typeof(ViewModelViewHost), new PropertyMetadata(null));
 
+        public object DefaultContent {
+            get { return (object)GetValue(DefaultContentProperty); }
+            set { SetValue(DefaultContentProperty, value); }
+        }
+        public static readonly DependencyProperty DefaultContentProperty =
+            DependencyProperty.Register("DefaultContent", typeof(object), typeof(ViewModelViewHost), new PropertyMetadata(null));
+
         public ViewModelViewHost()
         {
             this.ObservableFromDP(x => x.ViewModel)
                 .Subscribe(vm => {
                     if (vm.Value == null) {
-                        // XXX: Replace with default view
-                        Content = null;
+                        Content = DefaultContent;
                         return;
                     }
 
