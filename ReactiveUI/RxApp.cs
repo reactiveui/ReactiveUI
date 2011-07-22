@@ -45,8 +45,7 @@ namespace ReactiveUI
             // This is used for ReactiveObject's RaiseAndSetIfChanged mixin
             GetFieldNameForPropertyNameFunc = new Func<string,string>(x => "_" + x);
 
-            if (InUnitTestRunner())
-            {
+            if (InUnitTestRunner()) {
                 Console.Error.WriteLine("*** Detected Unit Test Runner, setting Scheduler to Immediate ***");
                 Console.Error.WriteLine("If we are not actually in a test runner, please file a bug\n");
                 DeferredScheduler = Scheduler.Immediate;
@@ -276,16 +275,23 @@ namespace ReactiveUI
             return prop_name;
         }
 
+        // NB: Silverlight barfs unless we give this full name here
+        internal const string dispatcherSchedulerQualifiedName = 
+            @"System.Reactive.Concurrency.DispatcherScheduler, System.Reactive.Windows.Threading, Version=1.1.10621.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35";
+
         internal static IScheduler findDispatcherScheduler()
         {
             Type result = null;
             try {
-                result = Type.GetType("System.Reactive.Concurrency.DispatcherScheduler, System.Reactive.Windows.Threading", true);
-            } catch {
+                result = Type.GetType(dispatcherSchedulerQualifiedName, true);
+            } catch(Exception ex) {
+                LoggerFactory("RxApp").Error(ex);
             }
 
             if (result == null) {
-                LoggerFactory("RxApp").Error("WPF Rx.NET DLL reference not added - using Event Loop");
+                LoggerFactory("RxApp").Error("*** WPF Rx.NET DLL reference not added - using Event Loop *** ");
+                LoggerFactory("RxApp").Error("Add a reference to System.Reactive.Windows.Threading.dll if you're using WPF / SL4 / WP7");
+                LoggerFactory("RxApp").Error("or consider explicitly setting RxApp.DeferredScheduler if not");
                 return new EventLoopScheduler();
             }
 
