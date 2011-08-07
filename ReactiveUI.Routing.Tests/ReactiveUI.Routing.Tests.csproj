@@ -32,8 +32,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Reactive.Testing">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\ext\Microsoft.Reactive.Testing.dll</HintPath>
+      <HintPath>..\ext\Microsoft.Reactive.Testing.dll</HintPath>
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -41,8 +40,7 @@
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
     <Reference Include="System.Reactive">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\ext\System.Reactive.dll</HintPath>
+      <HintPath>..\ext\System.Reactive.dll</HintPath>
     </Reference>
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
