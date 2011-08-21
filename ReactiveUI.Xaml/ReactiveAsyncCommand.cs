@@ -183,7 +183,7 @@ namespace ReactiveUI.Xaml
         {
             Contract.Requires(calculationFunc != null);
 
-            var asyncFunc = calculationFunc.ToAsync(RxApp.TaskpoolScheduler);
+            var asyncFunc = calculationFunc.ToAsync(scheduler ?? RxApp.TaskpoolScheduler);
             return RegisterAsyncObservable(asyncFunc);
         }
 
