@@ -203,7 +203,7 @@ namespace ReactiveUI
             };
 
 #if SILVERLIGHT
-            if (System.ComponentModel.DesignerProperties.GetIsInDesignMode(Application.Current.RootVisual)) {
+            if (Application.Current.RootVisual != null && System.ComponentModel.DesignerProperties.GetIsInDesignMode(Application.Current.RootVisual)) {
                 return false;
             }
 
