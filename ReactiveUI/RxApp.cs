@@ -197,18 +197,28 @@ namespace ReactiveUI
 
             string[] designEnvironments = new[] {
                 "BLEND.EXE",
-                "DEVENV.EXE",
                 "MONODEVELOP",
                 "SHARPDEVELOP.EXE",
             };
 
 #if SILVERLIGHT
-            if (Application.Current.RootVisual != null && System.ComponentModel.DesignerProperties.GetIsInDesignMode(Application.Current.RootVisual)) {
+            var ret = Deployment.Current.Parts.Any(x => 
+                testAssemblies.Any(name => x.Source.ToUpperInvariant().Contains(name)));
+
+            if (ret) {
+                return ret;
+            };
+
+            try {
+                if (Application.Current.RootVisual != null && System.ComponentModel.DesignerProperties.GetIsInDesignMode(Application.Current.RootVisual)) {
+                    return false;
+                }
+            } catch {
+                // If we're in some weird state, assume we're not
                 return false;
             }
 
-            return Deployment.Current.Parts.Any(x => 
-                testAssemblies.Any(name => x.Source.ToUpperInvariant().Contains(name)));
+            return ret;
 #else
             // Try to detect whether we're in design mode - bonus points, 
             // without access to any WPF references :-/
