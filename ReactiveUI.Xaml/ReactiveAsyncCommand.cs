@@ -92,7 +92,7 @@ namespace ReactiveUI.Xaml
                     this.Log().Fatal("Reference count dropped below zero");
                 }
                 return ret;
-            }).Multicast(new BehaviorSubject<int>(0)).PermaRef();
+            }).Multicast(new BehaviorSubject<int>(0)).PermaRef().ObserveOn(RxApp.DeferredScheduler);
 
             bool startCE = (_canExecuteExplicitFunc != null ? _canExecuteExplicitFunc(null) : true);
 
