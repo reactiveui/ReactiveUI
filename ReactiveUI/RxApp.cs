@@ -193,6 +193,7 @@ namespace ReactiveUI
                 "QUALITYTOOLS.TIPS.UNITTEST.ADAPTER",
                 "QUALITYTOOLS.UNITTESTING.SILVERLIGHT",
                 "PEX",
+                "NBEHAVE",
             };
 
             string[] designEnvironments = new[] {
