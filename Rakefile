@@ -67,7 +67,6 @@ end
 ###
 
 RootProjectDir = File.dirname(__FILE__)
-DotNet4PointZeroDir = File.join(ENV['SystemRoot'], 'Microsoft.NET', 'Framework', 'v4.0.30319')
 
 def sln_file_to_name(path, prefix)
     an_underscore = prefix ? '_' : ''
@@ -90,8 +89,6 @@ end
 ###
 
 @all_solution_files.each do |sln_file|
-    msbuild_path = File.join(DotNet4PointZeroDir, 'msbuild.exe')
-
     clean_task_names = ["clean_dbg", "clean_rel"].map{|x| sln_file_to_name(sln_file,x)}
 
     desc "Cleans '#{sln_file}'"
@@ -101,7 +98,6 @@ end
         msbuild x[0] do |msb|
             msb.solution = sln_file
             msb.properties = {:configuration => x[1]}
-            msb.path_to_command = msbuild_path
             msb.targets [:clean]
         end
     end
@@ -115,7 +111,6 @@ end
             :applicationversion => ProductInformation[:version],
         }
 
-        msb.path_to_command = msbuild_path
         msb.targets [:build]
     end
 
@@ -135,7 +130,6 @@ end
             :applicationversion => ProductInformation[:version]
         }
 
-        msb.path_to_command = msbuild_path
         msb.targets [:publish]
     end
 end
