@@ -1,9 +1,7 @@
 *.suo
 *.user
-*/bin/
-*/Bin/
-*/obj/
-*/Obj/
+[Bb]in/
+[Oo]bj/
 *.vspscc
 *.vssscc
 *.vs10x
