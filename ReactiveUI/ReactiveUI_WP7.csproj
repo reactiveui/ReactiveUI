@@ -70,7 +70,6 @@
       <Private>True</Private>
       <HintPath>..\ext\WP7\System.Reactive.dll</HintPath>
     </Reference>
-
     <Reference Include="System.Observable" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Windows" />
@@ -81,6 +80,7 @@
     <Reference Include="System.Net" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CollectionExtensions.cs" />
     <Compile Include="ContractStubs.cs" />
     <Compile Include="Interfaces.cs" />
     <Compile Include="Logging.cs" />
@@ -89,6 +89,7 @@
     <Compile Include="MessageBus.cs" />
     <Compile Include="ObservableAsPropertyHelper.cs" />
     <Compile Include="ObservableAsyncMRUCache.cs" />
+    <Compile Include="ObservableCollectionView.cs" />
     <Compile Include="ObservedChangedMixin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReactiveCollection.cs" />
