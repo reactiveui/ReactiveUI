@@ -1,12 +1,12 @@
+using System;
+using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Linq;
+using System.Collections.ObjectModel;
+using System.Reactive.Linq;
+
 namespace ReactiveUI
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Collections.Specialized;
-    using System.Linq;
-    using System.Collections.ObjectModel;
-    using System.Reactive.Linq;
-
     /// <summary>
     /// An observable (INCC) read-only collection wrapper supporting filtering and sorting.
     /// </summary>
@@ -16,7 +16,7 @@ namespace ReactiveUI
         readonly IEnumerable<T> source;
         readonly Func<T, bool> filter;
         readonly IComparer<T> order;
-
+        
         public ObservableCollectionView(
             IEnumerable<T> source = null,
             Func<T, bool> filter = null,
@@ -26,12 +26,12 @@ namespace ReactiveUI
             this.filter = filter ?? (_ => true);
             this.order = order;
 
-            FetchItems();
+            fetchItems();
 
-            WireNotificationHandlers();
+            wireNotificationHandlers();
         }
 
-        void FetchItems()
+        void fetchItems()
         {
             var items = source.Where(filter);
 
@@ -41,32 +41,32 @@ namespace ReactiveUI
             }
 
             ClearItems();
-            items.ForEach(AddItem);
+            items.ForEach(addItem);
         }
 
-        void WireNotificationHandlers()
+        void wireNotificationHandlers()
         {
             var changes = source.ObserveCollectionChanged();
 
             changes.Where(x => x.Action == NotifyCollectionChangedAction.Reset)
-                .Subscribe(_ => FetchItems());
+                .Subscribe(_ => fetchItems());
 
-            changes.Where(HasItemsToAdd)
+            changes.Where(hasItemsToAdd)
                 .SelectMany(x => x.NewItems.Cast<T>())
                 .Where(filter)
-                .Subscribe(AddItem);
+                .Subscribe(addItem);
 
-            changes.Where(HasItemsToRemove)
+            changes.Where(hasItemsToRemove)
                 .SelectMany(x => x.OldItems.Cast<T>())
-                .Subscribe(RemoveItem);
+                .Subscribe(removeItem);
         }
 
-        void AddItem(T item)
+        void addItem(T item)
         {
-            InsertItem(GetNewIndexFor(item), item);
+            InsertItem(getNewIndexFor(item), item);
         }
 
-        void RemoveItem(T item)
+        void removeItem(T item)
         {
             var index = IndexOf(item);
             if (index >= 0)
@@ -75,7 +75,7 @@ namespace ReactiveUI
             }
         }
 
-        int GetNewIndexFor(T item)
+        int getNewIndexFor(T item)
         {
             if (order == null)
             {
@@ -86,20 +86,19 @@ namespace ReactiveUI
             return match < 0 ? Math.Abs(match + 1) : match;
         }
 
-        static bool HasItemsToRemove(NotifyCollectionChangedEventArgs notification)
+        static bool hasItemsToRemove(NotifyCollectionChangedEventArgs notification)
         {
             return notification.Action == NotifyCollectionChangedAction.Remove
                 || notification.Action == NotifyCollectionChangedAction.Replace;
         }
 
-        static bool HasItemsToAdd(NotifyCollectionChangedEventArgs notification)
+        static bool hasItemsToAdd(NotifyCollectionChangedEventArgs notification)
         {
             return notification.Action == NotifyCollectionChangedAction.Add
                 || notification.Action == NotifyCollectionChangedAction.Replace;
         }
 
-        bool ICollection<T>.IsReadOnly
-        {
+        bool ICollection<T>.IsReadOnly {
             get { return true; }
         }
 
