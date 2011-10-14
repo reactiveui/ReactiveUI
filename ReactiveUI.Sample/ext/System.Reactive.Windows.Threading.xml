@@ -6,7 +6,7 @@
     <members>
         <member name="T:System.Reactive.Linq.DispatcherObservable">
             <summary>
-            Provides a set of static methods for subscribing to IObservables using Dispatchers.
+            Provides a set of extension methods for scheduling actions performed through observable sequences on UI dispatchers.
             </summary>
         </member>
         <member name="M:System.Reactive.Linq.DispatcherObservable.ObserveOn``1(System.IObservable{``0},System.Windows.Threading.Dispatcher)">
@@ -59,12 +59,12 @@
             <summary>
             Represents an object that schedules units of work on a Dispatcher.
             </summary>
-            <seealso cref="M:Observable.ObserveOnDispatcher">This scheduler type is typically used indirectly through the ObserveOnDispatcher method that uses the current Dispatcher.</seealso>
-            <seealso cref="M:Observable.SubscribeOnDispatcher">This scheduler type is typically used indirectly through the SubscribeOnDispatcher method that uses the current Dispatcher.</seealso>
+            <seealso cref="M:DispatcherObservable.ObserveOnDispatcher">This scheduler type is typically used indirectly through the ObserveOnDispatcher method that uses the current Dispatcher.</seealso>
+            <seealso cref="M:DispatcherObservable.SubscribeOnDispatcher">This scheduler type is typically used indirectly through the SubscribeOnDispatcher method that uses the current Dispatcher.</seealso>
         </member>
         <member name="M:System.Reactive.Concurrency.DispatcherScheduler.#ctor(System.Windows.Threading.Dispatcher)">
             <summary>
-            Constructs an DispatcherScheduler that schedules units of work on dispatcher.
+            Constructs a DispatcherScheduler that schedules units of work on the given dispatcher.
             </summary>
             <param name="dispatcher">Dispatcher to schedule work on.</param>
         </member>
