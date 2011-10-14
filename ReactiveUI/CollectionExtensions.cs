@@ -18,8 +18,7 @@
             this IEnumerable source)
         {
             var notifying = source as INotifyCollectionChanged;
-            if (notifying != null)
-            {
+            if (notifying != null) {
                 return Observable.FromEventPattern<
                     NotifyCollectionChangedEventHandler,
                     NotifyCollectionChangedEventArgs>(
@@ -44,8 +43,7 @@
             var array = new T[list.Count];
             list.CopyTo(array, 0);
             Array.Sort(array, comparer);
-            for (var i = 0; i < array.Length; i++)
-            {
+            for (var i = 0; i < array.Length; i++) {
                 list[i] = array[i];
             }
         }
