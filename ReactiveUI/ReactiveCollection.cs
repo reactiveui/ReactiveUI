@@ -522,9 +522,7 @@ namespace ReactiveUI
             Func<T, TNew> selector)
         {
             Contract.Requires(selector != null);
-#if !IOS    // Contract.Result is borked in Mono
-            Contract.Ensures(Contract.Result<ReactiveCollection<TNew>>().Count == This.Count);
-#endif
+
             var ret = new ReactiveCollection<TNew>(This.Select(selector));
 
             var coll_changed = new Subject<NotifyCollectionChangedEventArgs>();

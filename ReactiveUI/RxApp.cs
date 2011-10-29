@@ -274,7 +274,6 @@ namespace ReactiveUI
         internal static string simpleExpressionToPropertyName<TObj, TRet>(Expression<Func<TObj, TRet>> Property) 
         {
             Contract.Requires(Property != null);
-            Contract.Ensures(Contract.Result<string>() != null);
 
             string prop_name = null;
 
