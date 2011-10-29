@@ -293,7 +293,7 @@ namespace ReactiveUI
 
         // NB: Silverlight barfs unless we give this full name here
         internal const string dispatcherSchedulerQualifiedName = 
-            @"System.Reactive.Concurrency.DispatcherScheduler, System.Reactive.Windows.Threading, Version=1.1.10621.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35";
+            @"System.Reactive.Concurrency.DispatcherScheduler, System.Reactive.Windows.Threading, Version=1.1.11011.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35";
 
         internal static IScheduler findDispatcherScheduler()
         {
