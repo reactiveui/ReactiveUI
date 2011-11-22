@@ -2446,6 +2446,259 @@
             <param name="resultSelector">Function to invoke for each consecutive pair of elements from the first and second source.</param>
             <returns>An observable sequence containing the result of pairwise combining the elements of the first and second source using the specified result selector function.</returns>
         </member>
+        <member name="M:System.Reactive.Linq.Observable.Zip``2(System.Collections.Generic.IEnumerable{System.IObservable{``0}},System.Func{System.Collections.Generic.IList{``0},``1})">
+            <summary>
+            Merges the specified observable sequences into one observable sequence by using the selector function whenever all of the observable sequences have produced an element at a corresponding index.
+            </summary>
+            <param name="sources">Observable sources.</param>
+            <param name="resultSelector">Function to invoke for each series of elements at corresponding indexes in the sources.</param>
+            <returns>An observable sequence containing the result of combining elements of the sources using the specified result selector function.</returns>
+        </member>
+        <member name="M:System.Reactive.Linq.Observable.Zip``1(System.Collections.Generic.IEnumerable{System.IObservable{``0}})">
+            <summary>
+            Merges the specified observable sequences into one observable sequence by emitting a list with the elements of the observable sequences at corresponding indexes.
+            </summary>
+            <param name="sources">Observable sources.</param>
+            <returns>An observable sequence containing lists of elements at corresponding indexes.</returns>
+        </member>
+        <member name="M:System.Reactive.Linq.Observable.Zip``1(System.IObservable{``0}[])">
+            <summary>
+            Merges the specified observable sequences into one observable sequence by emitting a list with the elements of the observable sequences at corresponding indexes.
+            </summary>
+            <param name="sources">Observable sources.</param>
+            <returns>An observable sequence containing lists of elements at corresponding indexes.</returns>
+        </member>
+        <member name="M:System.Reactive.Linq.Observable.Zip``4(System.IObservable{``0},System.IObservable{``1},System.IObservable{``2},System.Func{``0,``1,``2,``3})">
+            <summary>
+            Merges the specified observable sequences into one observable sequence by using the selector function whenever all of the observable sequences have produced an element at a corresponding index.
+            </summary>
+            <param name="source1">First observable source.</param>
+            <param name="source2">Second observable source.</param>
+            <param name="source3">Third observable source.</param>
+            <param name="resultSelector">Function to invoke for each series of elements at corresponding indexes in the sources.</param>
+            <returns>An observable sequence containing the result of combining elements of the sources using the specified result selector function.</returns>
+        </member>
+        <member name="M:System.Reactive.Linq.Observable.Zip``5(System.IObservable{``0},System.IObservable{``1},System.IObservable{``2},System.IObservable{``3},System.Func{``0,``1,``2,``3,``4})">
+            <summary>
+            Merges the specified observable sequences into one observable sequence by using the selector function whenever all of the observable sequences have produced an element at a corresponding index.
+            </summary>
+            <param name="source1">First observable source.</param>
+            <param name="source2">Second observable source.</param>
+            <param name="source3">Third observable source.</param>
+            <param name="source4">Fourth observable source.</param>
+            <param name="resultSelector">Function to invoke for each series of elements at corresponding indexes in the sources.</param>
+            <returns>An observable sequence containing the result of combining elements of the sources using the specified result selector function.</returns>
+        </member>
+        <member name="M:System.Reactive.Linq.Observable.Zip``6(System.IObservable{``0},System.IObservable{``1},System.IObservable{``2},System.IObservable{``3},System.IObservable{``4},System.Func{``0,``1,``2,``3,``4,``5})">
+            <summary>
+            Merges the specified observable sequences into one observable sequence by using the selector function whenever all of the observable sequences have produced an element at a corresponding index.
+            </summary>
+            <param name="source1">First observable source.</param>
+            <param name="source2">Second observable source.</param>
+            <param name="source3">Third observable source.</param>
+            <param name="source4">Fourth observable source.</param>
+            <param name="source5">Fifth observable source.</param>
+            <param name="resultSelector">Function to invoke for each series of elements at corresponding indexes in the sources.</param>
+            <returns>An observable sequence containing the result of combining elements of the sources using the specified result selector function.</returns>
+        </member>
+        <member name="M:System.Reactive.Linq.Observable.Zip``7(System.IObservable{``0},System.IObservable{``1},System.IObservable{``2},System.IObservable{``3},System.IObservable{``4},System.IObservable{``5},System.Func{``0,``1,``2,``3,``4,``5,``6})">
+            <summary>
+            Merges the specified observable sequences into one observable sequence by using the selector function whenever all of the observable sequences have produced an element at a corresponding index.
+            </summary>
+            <param name="source1">First observable source.</param>
+            <param name="source2">Second observable source.</param>
+            <param name="source3">Third observable source.</param>
+            <param name="source4">Fourth observable source.</param>
+            <param name="source5">Fifth observable source.</param>
+            <param name="source6">Sixth observable source.</param>
+            <param name="resultSelector">Function to invoke for each series of elements at corresponding indexes in the sources.</param>
+            <returns>An observable sequence containing the result of combining elements of the sources using the specified result selector function.</returns>
+        </member>
+        <member name="M:System.Reactive.Linq.Observable.Zip``8(System.IObservable{``0},System.IObservable{``1},System.IObservable{``2},System.IObservable{``3},System.IObservable{``4},System.IObservable{``5},System.IObservable{``6},System.Func{``0,``1,``2,``3,``4,``5,``6,``7})">
+            <summary>
+            Merges the specified observable sequences into one observable sequence by using the selector function whenever all of the observable sequences have produced an element at a corresponding index.
+            </summary>
+            <param name="source1">First observable source.</param>
+            <param name="source2">Second observable source.</param>
+            <param name="source3">Third observable source.</param>
+            <param name="source4">Fourth observable source.</param>
+            <param name="source5">Fifth observable source.</param>
+            <param name="source6">Sixth observable source.</param>
+            <param name="source7">Seventh observable source.</param>
+            <param name="resultSelector">Function to invoke for each series of elements at corresponding indexes in the sources.</param>
+            <returns>An observable sequence containing the result of combining elements of the sources using the specified result selector function.</returns>
+        </member>
+        <member name="M:System.Reactive.Linq.Observable.Zip``9(System.IObservable{``0},System.IObservable{``1},System.IObservable{``2},System.IObservable{``3},System.IObservable{``4},System.IObservable{``5},System.IObservable{``6},System.IObservable{``7},System.Func{``0,``1,``2,``3,``4,``5,``6,``7,``8})">
+            <summary>
+            Merges the specified observable sequences into one observable sequence by using the selector function whenever all of the observable sequences have produced an element at a corresponding index.
+            </summary>
+            <param name="source1">First observable source.</param>
+            <param name="source2">Second observable source.</param>
+            <param name="source3">Third observable source.</param>
+            <param name="source4">Fourth observable source.</param>
+            <param name="source5">Fifth observable source.</param>
+            <param name="source6">Sixth observable source.</param>
+            <param name="source7">Seventh observable source.</param>
+            <param name="source8">Eighth observable source.</param>
+            <param name="resultSelector">Function to invoke for each series of elements at corresponding indexes in the sources.</param>
+            <returns>An observable sequence containing the result of combining elements of the sources using the specified result selector function.</returns>
+        </member>
+        <member name="M:System.Reactive.Linq.Observable.Zip``10(System.IObservable{``0},System.IObservable{``1},System.IObservable{``2},System.IObservable{``3},System.IObservable{``4},System.IObservable{``5},System.IObservable{``6},System.IObservable{``7},System.IObservable{``8},System.Func{``0,``1,``2,``3,``4,``5,``6,``7,``8,``9})">
+            <summary>
+            Merges the specified observable sequences into one observable sequence by using the selector function whenever all of the observable sequences have produced an element at a corresponding index.
+            </summary>
+            <param name="source1">First observable source.</param>
+            <param name="source2">Second observable source.</param>
+            <param name="source3">Third observable source.</param>
+            <param name="source4">Fourth observable source.</param>
+            <param name="source5">Fifth observable source.</param>
+            <param name="source6">Sixth observable source.</param>
+            <param name="source7">Seventh observable source.</param>
+            <param name="source8">Eighth observable source.</param>
+            <param name="source9">Ninth observable source.</param>
+            <param name="resultSelector">Function to invoke for each series of elements at corresponding indexes in the sources.</param>
+            <returns>An observable sequence containing the result of combining elements of the sources using the specified result selector function.</returns>
+        </member>
+        <member name="M:System.Reactive.Linq.Observable.Zip``11(System.IObservable{``0},System.IObservable{``1},System.IObservable{``2},System.IObservable{``3},System.IObservable{``4},System.IObservable{``5},System.IObservable{``6},System.IObservable{``7},System.IObservable{``8},System.IObservable{``9},System.Func{``0,``1,``2,``3,``4,``5,``6,``7,``8,``9,``10})">
+            <summary>
+            Merges the specified observable sequences into one observable sequence by using the selector function whenever all of the observable sequences have produced an element at a corresponding index.
+            </summary>
+            <param name="source1">First observable source.</param>
+            <param name="source2">Second observable source.</param>
+            <param name="source3">Third observable source.</param>
+            <param name="source4">Fourth observable source.</param>
+            <param name="source5">Fifth observable source.</param>
+            <param name="source6">Sixth observable source.</param>
+            <param name="source7">Seventh observable source.</param>
+            <param name="source8">Eighth observable source.</param>
+            <param name="source9">Ninth observable source.</param>
+            <param name="source10">Tenth observable source.</param>
+            <param name="resultSelector">Function to invoke for each series of elements at corresponding indexes in the sources.</param>
+            <returns>An observable sequence containing the result of combining elements of the sources using the specified result selector function.</returns>
+        </member>
+        <member name="M:System.Reactive.Linq.Observable.Zip``12(System.IObservable{``0},System.IObservable{``1},System.IObservable{``2},System.IObservable{``3},System.IObservable{``4},System.IObservable{``5},System.IObservable{``6},System.IObservable{``7},System.IObservable{``8},System.IObservable{``9},System.IObservable{``10},System.Func{``0,``1,``2,``3,``4,``5,``6,``7,``8,``9,``10,``11})">
+            <summary>
+            Merges the specified observable sequences into one observable sequence by using the selector function whenever all of the observable sequences have produced an element at a corresponding index.
+            </summary>
+            <param name="source1">First observable source.</param>
+            <param name="source2">Second observable source.</param>
+            <param name="source3">Third observable source.</param>
+            <param name="source4">Fourth observable source.</param>
+            <param name="source5">Fifth observable source.</param>
+            <param name="source6">Sixth observable source.</param>
+            <param name="source7">Seventh observable source.</param>
+            <param name="source8">Eighth observable source.</param>
+            <param name="source9">Ninth observable source.</param>
+            <param name="source10">Tenth observable source.</param>
+            <param name="source11">Eleventh observable source.</param>
+            <param name="resultSelector">Function to invoke for each series of elements at corresponding indexes in the sources.</param>
+            <returns>An observable sequence containing the result of combining elements of the sources using the specified result selector function.</returns>
+        </member>
+        <member name="M:System.Reactive.Linq.Observable.Zip``13(System.IObservable{``0},System.IObservable{``1},System.IObservable{``2},System.IObservable{``3},System.IObservable{``4},System.IObservable{``5},System.IObservable{``6},System.IObservable{``7},System.IObservable{``8},System.IObservable{``9},System.IObservable{``10},System.IObservable{``11},System.Func{``0,``1,``2,``3,``4,``5,``6,``7,``8,``9,``10,``11,``12})">
+            <summary>
+            Merges the specified observable sequences into one observable sequence by using the selector function whenever all of the observable sequences have produced an element at a corresponding index.
+            </summary>
+            <param name="source1">First observable source.</param>
+            <param name="source2">Second observable source.</param>
+            <param name="source3">Third observable source.</param>
+            <param name="source4">Fourth observable source.</param>
+            <param name="source5">Fifth observable source.</param>
+            <param name="source6">Sixth observable source.</param>
+            <param name="source7">Seventh observable source.</param>
+            <param name="source8">Eighth observable source.</param>
+            <param name="source9">Ninth observable source.</param>
+            <param name="source10">Tenth observable source.</param>
+            <param name="source11">Eleventh observable source.</param>
+            <param name="source12">Twelfth observable source.</param>
+            <param name="resultSelector">Function to invoke for each series of elements at corresponding indexes in the sources.</param>
+            <returns>An observable sequence containing the result of combining elements of the sources using the specified result selector function.</returns>
+        </member>
+        <member name="M:System.Reactive.Linq.Observable.Zip``14(System.IObservable{``0},System.IObservable{``1},System.IObservable{``2},System.IObservable{``3},System.IObservable{``4},System.IObservable{``5},System.IObservable{``6},System.IObservable{``7},System.IObservable{``8},System.IObservable{``9},System.IObservable{``10},System.IObservable{``11},System.IObservable{``12},System.Func{``0,``1,``2,``3,``4,``5,``6,``7,``8,``9,``10,``11,``12,``13})">
+            <summary>
+            Merges the specified observable sequences into one observable sequence by using the selector function whenever all of the observable sequences have produced an element at a corresponding index.
+            </summary>
+            <param name="source1">First observable source.</param>
+            <param name="source2">Second observable source.</param>
+            <param name="source3">Third observable source.</param>
+            <param name="source4">Fourth observable source.</param>
+            <param name="source5">Fifth observable source.</param>
+            <param name="source6">Sixth observable source.</param>
+            <param name="source7">Seventh observable source.</param>
+            <param name="source8">Eighth observable source.</param>
+            <param name="source9">Ninth observable source.</param>
+            <param name="source10">Tenth observable source.</param>
+            <param name="source11">Eleventh observable source.</param>
+            <param name="source12">Twelfth observable source.</param>
+            <param name="source13">Thirteenth observable source.</param>
+            <param name="resultSelector">Function to invoke for each series of elements at corresponding indexes in the sources.</param>
+            <returns>An observable sequence containing the result of combining elements of the sources using the specified result selector function.</returns>
+        </member>
+        <member name="M:System.Reactive.Linq.Observable.Zip``15(System.IObservable{``0},System.IObservable{``1},System.IObservable{``2},System.IObservable{``3},System.IObservable{``4},System.IObservable{``5},System.IObservable{``6},System.IObservable{``7},System.IObservable{``8},System.IObservable{``9},System.IObservable{``10},System.IObservable{``11},System.IObservable{``12},System.IObservable{``13},System.Func{``0,``1,``2,``3,``4,``5,``6,``7,``8,``9,``10,``11,``12,``13,``14})">
+            <summary>
+            Merges the specified observable sequences into one observable sequence by using the selector function whenever all of the observable sequences have produced an element at a corresponding index.
+            </summary>
+            <param name="source1">First observable source.</param>
+            <param name="source2">Second observable source.</param>
+            <param name="source3">Third observable source.</param>
+            <param name="source4">Fourth observable source.</param>
+            <param name="source5">Fifth observable source.</param>
+            <param name="source6">Sixth observable source.</param>
+            <param name="source7">Seventh observable source.</param>
+            <param name="source8">Eighth observable source.</param>
+            <param name="source9">Ninth observable source.</param>
+            <param name="source10">Tenth observable source.</param>
+            <param name="source11">Eleventh observable source.</param>
+            <param name="source12">Twelfth observable source.</param>
+            <param name="source13">Thirteenth observable source.</param>
+            <param name="source14">Fourteenth observable source.</param>
+            <param name="resultSelector">Function to invoke for each series of elements at corresponding indexes in the sources.</param>
+            <returns>An observable sequence containing the result of combining elements of the sources using the specified result selector function.</returns>
+        </member>
+        <member name="M:System.Reactive.Linq.Observable.Zip``16(System.IObservable{``0},System.IObservable{``1},System.IObservable{``2},System.IObservable{``3},System.IObservable{``4},System.IObservable{``5},System.IObservable{``6},System.IObservable{``7},System.IObservable{``8},System.IObservable{``9},System.IObservable{``10},System.IObservable{``11},System.IObservable{``12},System.IObservable{``13},System.IObservable{``14},System.Func{``0,``1,``2,``3,``4,``5,``6,``7,``8,``9,``10,``11,``12,``13,``14,``15})">
+            <summary>
+            Merges the specified observable sequences into one observable sequence by using the selector function whenever all of the observable sequences have produced an element at a corresponding index.
+            </summary>
+            <param name="source1">First observable source.</param>
+            <param name="source2">Second observable source.</param>
+            <param name="source3">Third observable source.</param>
+            <param name="source4">Fourth observable source.</param>
+            <param name="source5">Fifth observable source.</param>
+            <param name="source6">Sixth observable source.</param>
+            <param name="source7">Seventh observable source.</param>
+            <param name="source8">Eighth observable source.</param>
+            <param name="source9">Ninth observable source.</param>
+            <param name="source10">Tenth observable source.</param>
+            <param name="source11">Eleventh observable source.</param>
+            <param name="source12">Twelfth observable source.</param>
+            <param name="source13">Thirteenth observable source.</param>
+            <param name="source14">Fourteenth observable source.</param>
+            <param name="source15">Fifteenth observable source.</param>
+            <param name="resultSelector">Function to invoke for each series of elements at corresponding indexes in the sources.</param>
+            <returns>An observable sequence containing the result of combining elements of the sources using the specified result selector function.</returns>
+        </member>
+        <member name="M:System.Reactive.Linq.Observable.Zip``17(System.IObservable{``0},System.IObservable{``1},System.IObservable{``2},System.IObservable{``3},System.IObservable{``4},System.IObservable{``5},System.IObservable{``6},System.IObservable{``7},System.IObservable{``8},System.IObservable{``9},System.IObservable{``10},System.IObservable{``11},System.IObservable{``12},System.IObservable{``13},System.IObservable{``14},System.IObservable{``15},System.Func{``0,``1,``2,``3,``4,``5,``6,``7,``8,``9,``10,``11,``12,``13,``14,``15,``16})">
+            <summary>
+            Merges the specified observable sequences into one observable sequence by using the selector function whenever all of the observable sequences have produced an element at a corresponding index.
+            </summary>
+            <param name="source1">First observable source.</param>
+            <param name="source2">Second observable source.</param>
+            <param name="source3">Third observable source.</param>
+            <param name="source4">Fourth observable source.</param>
+            <param name="source5">Fifth observable source.</param>
+            <param name="source6">Sixth observable source.</param>
+            <param name="source7">Seventh observable source.</param>
+            <param name="source8">Eighth observable source.</param>
+            <param name="source9">Ninth observable source.</param>
+            <param name="source10">Tenth observable source.</param>
+            <param name="source11">Eleventh observable source.</param>
+            <param name="source12">Twelfth observable source.</param>
+            <param name="source13">Thirteenth observable source.</param>
+            <param name="source14">Fourteenth observable source.</param>
+            <param name="source15">Fifteenth observable source.</param>
+            <param name="source16">Sixteenth observable source.</param>
+            <param name="resultSelector">Function to invoke for each series of elements at corresponding indexes in the sources.</param>
+            <returns>An observable sequence containing the result of combining elements of the sources using the specified result selector function.</returns>
+        </member>
         <member name="M:System.Reactive.Linq.Observable.Zip``3(System.IObservable{``0},System.Collections.Generic.IEnumerable{``1},System.Func{``0,``1,``2})">
             <summary>
             Merges an observable sequence and an enumerable sequence into one observable sequence by using the selector function.
@@ -2463,6 +2716,259 @@
             <param name="second">Second observable source.</param>
             <param name="resultSelector">Function to invoke whenever either of the sources produces an element.</param>
             <returns>An observable sequence containing the result of combining elements of both sources using the specified result selector function.</returns>
+        </member>
+        <member name="M:System.Reactive.Linq.Observable.CombineLatest``4(System.IObservable{``0},System.IObservable{``1},System.IObservable{``2},System.Func{``0,``1,``2,``3})">
+            <summary>
+            Merges the specified observable sequences into one observable sequence by using the selector function whenever any of the observable sequences produces an element.
+            </summary>
+            <param name="source1">First observable source.</param>
+            <param name="source2">Second observable source.</param>
+            <param name="source3">Third observable source.</param>
+            <param name="resultSelector">Function to invoke whenever any of the sources produces an element.</param>
+            <returns>An observable sequence containing the result of combining elements of the sources using the specified result selector function.</returns>
+        </member>
+        <member name="M:System.Reactive.Linq.Observable.CombineLatest``5(System.IObservable{``0},System.IObservable{``1},System.IObservable{``2},System.IObservable{``3},System.Func{``0,``1,``2,``3,``4})">
+            <summary>
+            Merges the specified observable sequences into one observable sequence by using the selector function whenever any of the observable sequences produces an element.
+            </summary>
+            <param name="source1">First observable source.</param>
+            <param name="source2">Second observable source.</param>
+            <param name="source3">Third observable source.</param>
+            <param name="source4">Fourth observable source.</param>
+            <param name="resultSelector">Function to invoke whenever any of the sources produces an element.</param>
+            <returns>An observable sequence containing the result of combining elements of the sources using the specified result selector function.</returns>
+        </member>
+        <member name="M:System.Reactive.Linq.Observable.CombineLatest``6(System.IObservable{``0},System.IObservable{``1},System.IObservable{``2},System.IObservable{``3},System.IObservable{``4},System.Func{``0,``1,``2,``3,``4,``5})">
+            <summary>
+            Merges the specified observable sequences into one observable sequence by using the selector function whenever any of the observable sequences produces an element.
+            </summary>
+            <param name="source1">First observable source.</param>
+            <param name="source2">Second observable source.</param>
+            <param name="source3">Third observable source.</param>
+            <param name="source4">Fourth observable source.</param>
+            <param name="source5">Fifth observable source.</param>
+            <param name="resultSelector">Function to invoke whenever any of the sources produces an element.</param>
+            <returns>An observable sequence containing the result of combining elements of the sources using the specified result selector function.</returns>
+        </member>
+        <member name="M:System.Reactive.Linq.Observable.CombineLatest``7(System.IObservable{``0},System.IObservable{``1},System.IObservable{``2},System.IObservable{``3},System.IObservable{``4},System.IObservable{``5},System.Func{``0,``1,``2,``3,``4,``5,``6})">
+            <summary>
+            Merges the specified observable sequences into one observable sequence by using the selector function whenever any of the observable sequences produces an element.
+            </summary>
+            <param name="source1">First observable source.</param>
+            <param name="source2">Second observable source.</param>
+            <param name="source3">Third observable source.</param>
+            <param name="source4">Fourth observable source.</param>
+            <param name="source5">Fifth observable source.</param>
+            <param name="source6">Sixth observable source.</param>
+            <param name="resultSelector">Function to invoke whenever any of the sources produces an element.</param>
+            <returns>An observable sequence containing the result of combining elements of the sources using the specified result selector function.</returns>
+        </member>
+        <member name="M:System.Reactive.Linq.Observable.CombineLatest``8(System.IObservable{``0},System.IObservable{``1},System.IObservable{``2},System.IObservable{``3},System.IObservable{``4},System.IObservable{``5},System.IObservable{``6},System.Func{``0,``1,``2,``3,``4,``5,``6,``7})">
+            <summary>
+            Merges the specified observable sequences into one observable sequence by using the selector function whenever any of the observable sequences produces an element.
+            </summary>
+            <param name="source1">First observable source.</param>
+            <param name="source2">Second observable source.</param>
+            <param name="source3">Third observable source.</param>
+            <param name="source4">Fourth observable source.</param>
+            <param name="source5">Fifth observable source.</param>
+            <param name="source6">Sixth observable source.</param>
+            <param name="source7">Seventh observable source.</param>
+            <param name="resultSelector">Function to invoke whenever any of the sources produces an element.</param>
+            <returns>An observable sequence containing the result of combining elements of the sources using the specified result selector function.</returns>
+        </member>
+        <member name="M:System.Reactive.Linq.Observable.CombineLatest``9(System.IObservable{``0},System.IObservable{``1},System.IObservable{``2},System.IObservable{``3},System.IObservable{``4},System.IObservable{``5},System.IObservable{``6},System.IObservable{``7},System.Func{``0,``1,``2,``3,``4,``5,``6,``7,``8})">
+            <summary>
+            Merges the specified observable sequences into one observable sequence by using the selector function whenever any of the observable sequences produces an element.
+            </summary>
+            <param name="source1">First observable source.</param>
+            <param name="source2">Second observable source.</param>
+            <param name="source3">Third observable source.</param>
+            <param name="source4">Fourth observable source.</param>
+            <param name="source5">Fifth observable source.</param>
+            <param name="source6">Sixth observable source.</param>
+            <param name="source7">Seventh observable source.</param>
+            <param name="source8">Eighth observable source.</param>
+            <param name="resultSelector">Function to invoke whenever any of the sources produces an element.</param>
+            <returns>An observable sequence containing the result of combining elements of the sources using the specified result selector function.</returns>
+        </member>
+        <member name="M:System.Reactive.Linq.Observable.CombineLatest``10(System.IObservable{``0},System.IObservable{``1},System.IObservable{``2},System.IObservable{``3},System.IObservable{``4},System.IObservable{``5},System.IObservable{``6},System.IObservable{``7},System.IObservable{``8},System.Func{``0,``1,``2,``3,``4,``5,``6,``7,``8,``9})">
+            <summary>
+            Merges the specified observable sequences into one observable sequence by using the selector function whenever any of the observable sequences produces an element.
+            </summary>
+            <param name="source1">First observable source.</param>
+            <param name="source2">Second observable source.</param>
+            <param name="source3">Third observable source.</param>
+            <param name="source4">Fourth observable source.</param>
+            <param name="source5">Fifth observable source.</param>
+            <param name="source6">Sixth observable source.</param>
+            <param name="source7">Seventh observable source.</param>
+            <param name="source8">Eighth observable source.</param>
+            <param name="source9">Ninth observable source.</param>
+            <param name="resultSelector">Function to invoke whenever any of the sources produces an element.</param>
+            <returns>An observable sequence containing the result of combining elements of the sources using the specified result selector function.</returns>
+        </member>
+        <member name="M:System.Reactive.Linq.Observable.CombineLatest``11(System.IObservable{``0},System.IObservable{``1},System.IObservable{``2},System.IObservable{``3},System.IObservable{``4},System.IObservable{``5},System.IObservable{``6},System.IObservable{``7},System.IObservable{``8},System.IObservable{``9},System.Func{``0,``1,``2,``3,``4,``5,``6,``7,``8,``9,``10})">
+            <summary>
+            Merges the specified observable sequences into one observable sequence by using the selector function whenever any of the observable sequences produces an element.
+            </summary>
+            <param name="source1">First observable source.</param>
+            <param name="source2">Second observable source.</param>
+            <param name="source3">Third observable source.</param>
+            <param name="source4">Fourth observable source.</param>
+            <param name="source5">Fifth observable source.</param>
+            <param name="source6">Sixth observable source.</param>
+            <param name="source7">Seventh observable source.</param>
+            <param name="source8">Eighth observable source.</param>
+            <param name="source9">Ninth observable source.</param>
+            <param name="source10">Tenth observable source.</param>
+            <param name="resultSelector">Function to invoke whenever any of the sources produces an element.</param>
+            <returns>An observable sequence containing the result of combining elements of the sources using the specified result selector function.</returns>
+        </member>
+        <member name="M:System.Reactive.Linq.Observable.CombineLatest``12(System.IObservable{``0},System.IObservable{``1},System.IObservable{``2},System.IObservable{``3},System.IObservable{``4},System.IObservable{``5},System.IObservable{``6},System.IObservable{``7},System.IObservable{``8},System.IObservable{``9},System.IObservable{``10},System.Func{``0,``1,``2,``3,``4,``5,``6,``7,``8,``9,``10,``11})">
+            <summary>
+            Merges the specified observable sequences into one observable sequence by using the selector function whenever any of the observable sequences produces an element.
+            </summary>
+            <param name="source1">First observable source.</param>
+            <param name="source2">Second observable source.</param>
+            <param name="source3">Third observable source.</param>
+            <param name="source4">Fourth observable source.</param>
+            <param name="source5">Fifth observable source.</param>
+            <param name="source6">Sixth observable source.</param>
+            <param name="source7">Seventh observable source.</param>
+            <param name="source8">Eighth observable source.</param>
+            <param name="source9">Ninth observable source.</param>
+            <param name="source10">Tenth observable source.</param>
+            <param name="source11">Eleventh observable source.</param>
+            <param name="resultSelector">Function to invoke whenever any of the sources produces an element.</param>
+            <returns>An observable sequence containing the result of combining elements of the sources using the specified result selector function.</returns>
+        </member>
+        <member name="M:System.Reactive.Linq.Observable.CombineLatest``13(System.IObservable{``0},System.IObservable{``1},System.IObservable{``2},System.IObservable{``3},System.IObservable{``4},System.IObservable{``5},System.IObservable{``6},System.IObservable{``7},System.IObservable{``8},System.IObservable{``9},System.IObservable{``10},System.IObservable{``11},System.Func{``0,``1,``2,``3,``4,``5,``6,``7,``8,``9,``10,``11,``12})">
+            <summary>
+            Merges the specified observable sequences into one observable sequence by using the selector function whenever any of the observable sequences produces an element.
+            </summary>
+            <param name="source1">First observable source.</param>
+            <param name="source2">Second observable source.</param>
+            <param name="source3">Third observable source.</param>
+            <param name="source4">Fourth observable source.</param>
+            <param name="source5">Fifth observable source.</param>
+            <param name="source6">Sixth observable source.</param>
+            <param name="source7">Seventh observable source.</param>
+            <param name="source8">Eighth observable source.</param>
+            <param name="source9">Ninth observable source.</param>
+            <param name="source10">Tenth observable source.</param>
+            <param name="source11">Eleventh observable source.</param>
+            <param name="source12">Twelfth observable source.</param>
+            <param name="resultSelector">Function to invoke whenever any of the sources produces an element.</param>
+            <returns>An observable sequence containing the result of combining elements of the sources using the specified result selector function.</returns>
+        </member>
+        <member name="M:System.Reactive.Linq.Observable.CombineLatest``14(System.IObservable{``0},System.IObservable{``1},System.IObservable{``2},System.IObservable{``3},System.IObservable{``4},System.IObservable{``5},System.IObservable{``6},System.IObservable{``7},System.IObservable{``8},System.IObservable{``9},System.IObservable{``10},System.IObservable{``11},System.IObservable{``12},System.Func{``0,``1,``2,``3,``4,``5,``6,``7,``8,``9,``10,``11,``12,``13})">
+            <summary>
+            Merges the specified observable sequences into one observable sequence by using the selector function whenever any of the observable sequences produces an element.
+            </summary>
+            <param name="source1">First observable source.</param>
+            <param name="source2">Second observable source.</param>
+            <param name="source3">Third observable source.</param>
+            <param name="source4">Fourth observable source.</param>
+            <param name="source5">Fifth observable source.</param>
+            <param name="source6">Sixth observable source.</param>
+            <param name="source7">Seventh observable source.</param>
+            <param name="source8">Eighth observable source.</param>
+            <param name="source9">Ninth observable source.</param>
+            <param name="source10">Tenth observable source.</param>
+            <param name="source11">Eleventh observable source.</param>
+            <param name="source12">Twelfth observable source.</param>
+            <param name="source13">Thirteenth observable source.</param>
+            <param name="resultSelector">Function to invoke whenever any of the sources produces an element.</param>
+            <returns>An observable sequence containing the result of combining elements of the sources using the specified result selector function.</returns>
+        </member>
+        <member name="M:System.Reactive.Linq.Observable.CombineLatest``15(System.IObservable{``0},System.IObservable{``1},System.IObservable{``2},System.IObservable{``3},System.IObservable{``4},System.IObservable{``5},System.IObservable{``6},System.IObservable{``7},System.IObservable{``8},System.IObservable{``9},System.IObservable{``10},System.IObservable{``11},System.IObservable{``12},System.IObservable{``13},System.Func{``0,``1,``2,``3,``4,``5,``6,``7,``8,``9,``10,``11,``12,``13,``14})">
+            <summary>
+            Merges the specified observable sequences into one observable sequence by using the selector function whenever any of the observable sequences produces an element.
+            </summary>
+            <param name="source1">First observable source.</param>
+            <param name="source2">Second observable source.</param>
+            <param name="source3">Third observable source.</param>
+            <param name="source4">Fourth observable source.</param>
+            <param name="source5">Fifth observable source.</param>
+            <param name="source6">Sixth observable source.</param>
+            <param name="source7">Seventh observable source.</param>
+            <param name="source8">Eighth observable source.</param>
+            <param name="source9">Ninth observable source.</param>
+            <param name="source10">Tenth observable source.</param>
+            <param name="source11">Eleventh observable source.</param>
+            <param name="source12">Twelfth observable source.</param>
+            <param name="source13">Thirteenth observable source.</param>
+            <param name="source14">Fourteenth observable source.</param>
+            <param name="resultSelector">Function to invoke whenever any of the sources produces an element.</param>
+            <returns>An observable sequence containing the result of combining elements of the sources using the specified result selector function.</returns>
+        </member>
+        <member name="M:System.Reactive.Linq.Observable.CombineLatest``16(System.IObservable{``0},System.IObservable{``1},System.IObservable{``2},System.IObservable{``3},System.IObservable{``4},System.IObservable{``5},System.IObservable{``6},System.IObservable{``7},System.IObservable{``8},System.IObservable{``9},System.IObservable{``10},System.IObservable{``11},System.IObservable{``12},System.IObservable{``13},System.IObservable{``14},System.Func{``0,``1,``2,``3,``4,``5,``6,``7,``8,``9,``10,``11,``12,``13,``14,``15})">
+            <summary>
+            Merges the specified observable sequences into one observable sequence by using the selector function whenever any of the observable sequences produces an element.
+            </summary>
+            <param name="source1">First observable source.</param>
+            <param name="source2">Second observable source.</param>
+            <param name="source3">Third observable source.</param>
+            <param name="source4">Fourth observable source.</param>
+            <param name="source5">Fifth observable source.</param>
+            <param name="source6">Sixth observable source.</param>
+            <param name="source7">Seventh observable source.</param>
+            <param name="source8">Eighth observable source.</param>
+            <param name="source9">Ninth observable source.</param>
+            <param name="source10">Tenth observable source.</param>
+            <param name="source11">Eleventh observable source.</param>
+            <param name="source12">Twelfth observable source.</param>
+            <param name="source13">Thirteenth observable source.</param>
+            <param name="source14">Fourteenth observable source.</param>
+            <param name="source15">Fifteenth observable source.</param>
+            <param name="resultSelector">Function to invoke whenever any of the sources produces an element.</param>
+            <returns>An observable sequence containing the result of combining elements of the sources using the specified result selector function.</returns>
+        </member>
+        <member name="M:System.Reactive.Linq.Observable.CombineLatest``17(System.IObservable{``0},System.IObservable{``1},System.IObservable{``2},System.IObservable{``3},System.IObservable{``4},System.IObservable{``5},System.IObservable{``6},System.IObservable{``7},System.IObservable{``8},System.IObservable{``9},System.IObservable{``10},System.IObservable{``11},System.IObservable{``12},System.IObservable{``13},System.IObservable{``14},System.IObservable{``15},System.Func{``0,``1,``2,``3,``4,``5,``6,``7,``8,``9,``10,``11,``12,``13,``14,``15,``16})">
+            <summary>
+            Merges the specified observable sequences into one observable sequence by using the selector function whenever any of the observable sequences produces an element.
+            </summary>
+            <param name="source1">First observable source.</param>
+            <param name="source2">Second observable source.</param>
+            <param name="source3">Third observable source.</param>
+            <param name="source4">Fourth observable source.</param>
+            <param name="source5">Fifth observable source.</param>
+            <param name="source6">Sixth observable source.</param>
+            <param name="source7">Seventh observable source.</param>
+            <param name="source8">Eighth observable source.</param>
+            <param name="source9">Ninth observable source.</param>
+            <param name="source10">Tenth observable source.</param>
+            <param name="source11">Eleventh observable source.</param>
+            <param name="source12">Twelfth observable source.</param>
+            <param name="source13">Thirteenth observable source.</param>
+            <param name="source14">Fourteenth observable source.</param>
+            <param name="source15">Fifteenth observable source.</param>
+            <param name="source16">Sixteenth observable source.</param>
+            <param name="resultSelector">Function to invoke whenever any of the sources produces an element.</param>
+            <returns>An observable sequence containing the result of combining elements of the sources using the specified result selector function.</returns>
+        </member>
+        <member name="M:System.Reactive.Linq.Observable.CombineLatest``2(System.Collections.Generic.IEnumerable{System.IObservable{``0}},System.Func{System.Collections.Generic.IList{``0},``1})">
+            <summary>
+            Merges the specified observable sequences into one observable sequence by using the selector function whenever any of the observable sequences produces an element.
+            </summary>
+            <param name="sources">Observable sources.</param>
+            <param name="resultSelector">Function to invoke whenever any of the sources produces an element. For efficiency, the input list is reused after the selector returns. Either aggregate or copy the values during the function call.</param>
+            <returns>An observable sequence containing the result of combining elements of the sources using the specified result selector function.</returns>
+        </member>
+        <member name="M:System.Reactive.Linq.Observable.CombineLatest``1(System.Collections.Generic.IEnumerable{System.IObservable{``0}})">
+            <summary>
+            Merges the specified observable sequences into one observable sequence by emitting a list with the latest source elements whenever any of the observable sequences produces an element.
+            </summary>
+            <param name="sources">Observable sources.</param>
+            <returns>An observable sequence containing lists of the latest elements of the sources.</returns>
+        </member>
+        <member name="M:System.Reactive.Linq.Observable.CombineLatest``1(System.IObservable{``0}[])">
+            <summary>
+            Merges the specified observable sequences into one observable sequence by emitting a list with the latest source elements whenever any of the observable sequences produces an element.
+            </summary>
+            <param name="sources">Observable sources.</param>
+            <returns>An observable sequence containing lists of the latest elements of the sources.</returns>
         </member>
         <member name="M:System.Reactive.Linq.Observable.Amb``1(System.IObservable{``0},System.IObservable{``0})">
             <summary>
@@ -3017,7 +3523,7 @@
             <param name="comparer">An equality comparer to compare keys with.</param>
             <returns>
             A sequence of observable groups, each of which corresponds to a unique key value, containing all elements that share that same key value.
-            If a group's lifetime expires, a new group with the same key value can be created once an element with such a key value is encoutered.
+            If a group's lifetime expires, a new group with the same key value can be created once an element with such a key value is encountered.
             </returns>
         </member>
         <member name="M:System.Reactive.Linq.Observable.GroupByUntil``4(System.IObservable{``0},System.Func{``0,``1},System.Func{``0,``2},System.Func{System.Reactive.Linq.IGroupedObservable{``1,``2},System.IObservable{``3}})">
@@ -3282,6 +3788,7 @@
             <param name="source">Source sequence to delay values for.</param>
             <param name="dueTime">Relative time by which to shift the observable sequence.</param>
             <returns>Time-shifted sequence.</returns>
+            <remarks>This operator is less efficient than <see cref="M:System.Reactive.Linq.Observable.DelaySubscription``1(System.IObservable{``0},System.TimeSpan)">DelaySubscription</see> because it records all notifications and time-delays those. This allows for immediate propagation of errors.</remarks>
         </member>
         <member name="M:System.Reactive.Linq.Observable.Delay``1(System.IObservable{``0},System.DateTimeOffset)">
             <summary>
@@ -3291,6 +3798,7 @@
             <param name="source">Source sequence to delay values for.</param>
             <param name="dueTime">Absolute time used to shift the observable sequence; the relative time shift gets computed upon subscription.</param>
             <returns>Time-shifted sequence.</returns>
+            <remarks>This operator is less efficient than <see cref="M:System.Reactive.Linq.Observable.DelaySubscription``1(System.IObservable{``0},System.TimeSpan)">DelaySubscription</see> because it records all notifications and time-delays those. This allows for immediate propagation of errors.</remarks>
         </member>
         <member name="M:System.Reactive.Linq.Observable.Delay``1(System.IObservable{``0},System.TimeSpan,System.Reactive.Concurrency.IScheduler)">
             <summary>
@@ -3301,6 +3809,7 @@
             <param name="dueTime">Relative time by which to shift the observable sequence.</param>
             <param name="scheduler">Scheduler to run the delay timers on.</param>
             <returns>Time-shifted sequence.</returns>
+            <remarks>This operator is less efficient than <see cref="M:System.Reactive.Linq.Observable.DelaySubscription``1(System.IObservable{``0},System.TimeSpan)">DelaySubscription</see> because it records all notifications and time-delays those. This allows for immediate propagation of errors.</remarks>
         </member>
         <member name="M:System.Reactive.Linq.Observable.Delay``1(System.IObservable{``0},System.DateTimeOffset,System.Reactive.Concurrency.IScheduler)">
             <summary>
@@ -3311,6 +3820,45 @@
             <param name="dueTime">Absolute time used to shift the observable sequence; the relative time shift gets computed upon subscription.</param>
             <param name="scheduler">Scheduler to run the delay timers on.</param>
             <returns>Time-shifted sequence.</returns>
+            <remarks>This operator is less efficient than <see cref="M:System.Reactive.Linq.Observable.DelaySubscription``1(System.IObservable{``0},System.TimeSpan)">DelaySubscription</see> because it records all notifications and time-delays those. This allows for immediate propagation of errors.</remarks>
+        </member>
+        <member name="M:System.Reactive.Linq.Observable.DelaySubscription``1(System.IObservable{``0},System.TimeSpan)">
+            <summary>
+            Time shifts the observable sequence by delaying the subscription.
+            </summary>
+            <param name="source">Source sequence to delay subscription for.</param>
+            <param name="dueTime">Relative time shift of the subscription.</param>
+            <returns>Time-shifted sequence.</returns>
+            <remarks>This operator is more efficient than <see cref="M:System.Reactive.Linq.Observable.Delay``1(System.IObservable{``0},System.TimeSpan)">Delay</see> but postpones all side-effects of subscription and affects error propagation timing.</remarks>
+        </member>
+        <member name="M:System.Reactive.Linq.Observable.DelaySubscription``1(System.IObservable{``0},System.TimeSpan,System.Reactive.Concurrency.IScheduler)">
+            <summary>
+            Time shifts the observable sequence by delaying the subscription.
+            </summary>
+            <param name="source">Source sequence to delay subscription for.</param>
+            <param name="dueTime">Relative time shift of the subscription.</param>
+            <param name="scheduler">Scheduler to run the subscription delay timer on.</param>
+            <returns>Time-shifted sequence.</returns>
+            <remarks>This operator is more efficient than <see cref="M:System.Reactive.Linq.Observable.Delay``1(System.IObservable{``0},System.TimeSpan)">Delay</see> but postpones all side-effects of subscription and affects error propagation timing.</remarks>
+        </member>
+        <member name="M:System.Reactive.Linq.Observable.DelaySubscription``1(System.IObservable{``0},System.DateTimeOffset)">
+            <summary>
+            Time shifts the observable sequence by delaying the subscription.
+            </summary>
+            <param name="source">Source sequence to delay subscription for.</param>
+            <param name="dueTime">Absolute time to perform the subscription at.</param>
+            <returns>Time-shifted sequence.</returns>
+            <remarks>This operator is more efficient than <see cref="M:System.Reactive.Linq.Observable.Delay``1(System.IObservable{``0},System.TimeSpan)">Delay</see> but postpones all side-effects of subscription and affects error propagation timing.</remarks>
+        </member>
+        <member name="M:System.Reactive.Linq.Observable.DelaySubscription``1(System.IObservable{``0},System.DateTimeOffset,System.Reactive.Concurrency.IScheduler)">
+            <summary>
+            Time shifts the observable sequence by delaying the subscription.
+            </summary>
+            <param name="source">Source sequence to delay subscription for.</param>
+            <param name="dueTime">Absolute time to perform the subscription at.</param>
+            <param name="scheduler">Scheduler to run the subscription delay timer on.</param>
+            <returns>Time-shifted sequence.</returns>
+            <remarks>This operator is more efficient than <see cref="M:System.Reactive.Linq.Observable.Delay``1(System.IObservable{``0},System.TimeSpan)">Delay</see> but postpones all side-effects of subscription and affects error propagation timing.</remarks>
         </member>
         <member name="M:System.Reactive.Linq.Observable.Throttle``1(System.IObservable{``0},System.TimeSpan)">
             <summary>
@@ -3626,6 +4174,31 @@
             <summary>
             Represents an object that is both an observable sequence as well as an observer.
             </summary>
+        </member>
+        <member name="T:System.Reactive.ObservableBase`1">
+            <summary>
+            Abstract base class for implementors of the IObservable&lt;T&gt; interface.
+            </summary>
+            <remarks>
+            If you don't need a named type to create an observable sequence (i.e. you rather need
+            an instance rather than a reusable type), use the Observable.Create method to create
+            an observable sequence with specified subscription behavior.
+            </remarks>
+            <typeparam name="T">Sequence element type.</typeparam>
+        </member>
+        <member name="M:System.Reactive.ObservableBase`1.Subscribe(System.IObserver{`0})">
+            <summary>
+            Subscribes the given observer to the observable sequence.
+            </summary>
+            <param name="observer">Observer that will receive notifications from the observable sequence.</param>
+            <returns>Disposable object representing an observer's subscription to the observable sequence.</returns>
+        </member>
+        <member name="M:System.Reactive.ObservableBase`1.SubscribeCore(System.IObserver{`0})">
+            <summary>
+            Implement this method with the core subscription logic for the observable sequence.
+            </summary>
+            <param name="observer">Observer to send notifications to.</param>
+            <returns>Disposable object representing an observer's subscription to the observable sequence.</returns>
         </member>
         <member name="T:System.Reactive.NotificationKind">
             <summary>
@@ -3984,31 +4557,6 @@
             Creates an object that represents an OnCompleted notification to an observer.
             </summary>
             <returns>The OnCompleted notification.</returns>
-        </member>
-        <member name="T:System.Reactive.ObservableBase`1">
-            <summary>
-            Abstract base class for implementors of the IObservable&lt;T&gt; interface.
-            </summary>
-            <remarks>
-            If you don't need a named type to create an observable sequence (i.e. you rather need
-            an instance rather than a reusable type), use the Observable.Create method to create
-            an observable sequence with specified subscription behavior.
-            </remarks>
-            <typeparam name="T">Sequence element type.</typeparam>
-        </member>
-        <member name="M:System.Reactive.ObservableBase`1.Subscribe(System.IObserver{`0})">
-            <summary>
-            Subscribes the given observer to the observable sequence.
-            </summary>
-            <param name="observer">Observer that will receive notifications from the observable sequence.</param>
-            <returns>Disposable object representing an observer's subscription to the observable sequence.</returns>
-        </member>
-        <member name="M:System.Reactive.ObservableBase`1.SubscribeCore(System.IObserver{`0})">
-            <summary>
-            Implement this method with the core subscription logic for the observable sequence.
-            </summary>
-            <param name="observer">Observer to send notifications to.</param>
-            <returns>Disposable object representing an observer's subscription to the observable sequence.</returns>
         </member>
         <member name="T:System.Reactive.Concurrency.CurrentThreadScheduler">
             <summary>
@@ -5091,8 +5639,6 @@
             <summary>
             Represents an object that is both an observable sequence as well as an observer.
             </summary>
-            <remarks>Fast subjects do not synchronize outgoing calls to subcribed observers using a scheduler. If you need such guarantees, use regular subjects instead.</remarks>
-            <seealso cref="T:Subject"/>
         </member>
         <member name="M:System.Reactive.Subjects.Subject`1.#ctor">
             <summary>
