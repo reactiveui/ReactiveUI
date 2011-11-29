@@ -320,7 +320,7 @@ namespace ReactiveUI
         {
 #if !SILVERLIGHT
             if (changeNotificationsSuppressed == 0 && CollectionChanged != null) {
-                CollectionChanged.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset, null, null, 0));
+                CollectionChanged.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
             }
 #else
             // XXX: SL4 and WP7 hate on this
