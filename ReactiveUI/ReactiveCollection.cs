@@ -1,4 +1,5 @@
 using System;
+using System.Reactive.Concurrency;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -60,8 +61,7 @@ namespace ReactiveUI
             _ItemsRemoved = ocChangedEvent
                 .Where(x =>
                     x.Action == NotifyCollectionChangedAction.Remove ||
-                    x.Action == NotifyCollectionChangedAction.Replace ||
-                    x.Action == NotifyCollectionChangedAction.Reset)
+                    x.Action == NotifyCollectionChangedAction.Replace)
                 .SelectMany(x =>
                     (x.OldItems != null ? x.OldItems.OfType<T>() : Enumerable.Empty<T>())
                     .ToObservable())
@@ -316,6 +316,17 @@ namespace ReactiveUI
             propertyChangeWatchers.Clear();
         }
 
+        public void Reset()
+        {
+#if !SILVERLIGHT
+            if (changeNotificationsSuppressed == 0 && CollectionChanged != null) {
+                CollectionChanged.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset, null, null, 0));
+            }
+#else
+            // XXX: SL4 and WP7 hate on this
+#endif
+        }
+
         protected override void InsertItem(int index, T item)
         {
             _BeforeItemsAdded.OnNext(item);
@@ -342,7 +353,16 @@ namespace ReactiveUI
             // N.B: Reset doesn't give us the items that were cleared out,
             // we have to release the watchers or else we leak them.
             releasePropChangeWatchers();
-            base.ClearItems();
+
+            // N.B: This is less efficient, but Clear will always trigger the 
+            // reset, even if SuppressChangeNotifications is enabled.
+            using(SuppressChangeNotifications()) {
+                while(Count > 0) {
+                    RemoveAt(0);
+                }
+            }
+
+            Reset();
         }
 
         public void Dispose()
@@ -363,8 +383,10 @@ namespace ReactiveUI
         public IDisposable SuppressChangeNotifications()
         {
             Interlocked.Increment(ref changeNotificationsSuppressed);
-            return Disposable.Create(() =>
-                Interlocked.Decrement(ref changeNotificationsSuppressed));
+            return Disposable.Create(() => {
+                Interlocked.Decrement(ref changeNotificationsSuppressed);
+                RxApp.DeferredScheduler.Schedule(() => Reset());
+            });
         }
 
         protected bool areChangeNotificationsEnabled {
