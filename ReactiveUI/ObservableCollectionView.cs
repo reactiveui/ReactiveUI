@@ -10,8 +10,7 @@ namespace ReactiveUI
     /// <summary>
     /// An observable (INCC) read-only collection wrapper supporting filtering and sorting.
     /// </summary>
-    public class ObservableCollectionView<T>
-        : ObservableCollection<T>, IList<T>
+    public class ObservableCollectionView<T> : ObservableCollection<T>, IList<T>
     {
         readonly IEnumerable<T> source;
         readonly Func<T, bool> filter;
@@ -41,7 +40,7 @@ namespace ReactiveUI
             }
 
             ClearItems();
-            items.ForEach(addItem);
+            items.ToObservable(RxApp.DeferredScheduler).Subscribe(addItem);
         }
 
         void wireNotificationHandlers()
@@ -49,15 +48,18 @@ namespace ReactiveUI
             var changes = source.ObserveCollectionChanged();
 
             changes.Where(x => x.Action == NotifyCollectionChangedAction.Reset)
+                .ObserveOn(RxApp.DeferredScheduler)
                 .Subscribe(_ => fetchItems());
 
             changes.Where(hasItemsToAdd)
                 .SelectMany(x => x.NewItems.Cast<T>())
                 .Where(filter)
+                .ObserveOn(RxApp.DeferredScheduler)
                 .Subscribe(addItem);
 
             changes.Where(hasItemsToRemove)
                 .SelectMany(x => x.OldItems.Cast<T>())
+                .ObserveOn(RxApp.DeferredScheduler)
                 .Subscribe(removeItem);
         }
 
