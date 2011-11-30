@@ -148,7 +148,7 @@ namespace ReactiveUI
                 _ => This.raisePropertyChanged(prop_name), 
                 initialValue, scheduler);
 
-	        This.Log().InfoFormat("OAPH {0:X} is for {1}", ret, prop_name);
+	        This.Log().DebugFormat("OAPH {0:X} is for {1}", ret, prop_name);
 	        return ret;
         }
 
