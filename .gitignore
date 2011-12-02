@@ -12,3 +12,4 @@ ReactiveUI/Generated/*.cs
 **/StyleCop.Cache
 StyleCop.Cache
 TestResults
+_ReSharper*
