@@ -61,6 +61,18 @@ namespace ReactiveUI
                 .SelectMany(x => x.OldItems.Cast<T>())
                 .ObserveOn(RxApp.DeferredScheduler)
                 .Subscribe(removeItem);
+
+            source.ObserveCollectionItemChanged<T>()
+                .Select(x => x.Sender)
+                .Where(filter)
+                .ObserveOn(RxApp.DeferredScheduler)
+                .Subscribe(updateItem);
+        }
+
+        void updateItem(T item)
+        {
+            removeItem(item);
+            addItem(item);
         }
 
         void addItem(T item)
