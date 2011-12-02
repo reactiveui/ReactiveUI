@@ -61,7 +61,7 @@ namespace ReactiveUI
             Contract.Requires(key != null);
 
             if (cacheEntries.ContainsKey(key)) {
-                this.Log().DebugFormat("Cache hit: {0}", key);
+                //this.Log().DebugFormat("Cache hit: {0}", key);
                 var found = cacheEntries[key];
                 cacheMRUList.Remove(found.Item1);
                 cacheMRUList.AddFirst(found.Item1);
@@ -69,7 +69,7 @@ namespace ReactiveUI
                 return found.Item2;
             }
 
-            this.Log().DebugFormat("Cache miss: {0}", key);
+            //this.Log().DebugFormat("Cache miss: {0}", key);
             var result = calculationFunction(key, context);
 
             var node = new LinkedListNode<TParam>(key);
@@ -88,12 +88,12 @@ namespace ReactiveUI
             Tuple<LinkedListNode<TParam>, TVal> output;
             var ret = cacheEntries.TryGetValue(key, out output);
             if (ret && output != null) {
-                this.Log().DebugFormat("Cache hit: {0}", key);
+                //this.Log().DebugFormat("Cache hit: {0}", key);
                 cacheMRUList.Remove(output.Item1);
                 cacheMRUList.AddFirst(output.Item1);
                 result = output.Item2;
             } else {
-                this.Log().DebugFormat("Cache miss: {0}", key);
+                //this.Log().DebugFormat("Cache miss: {0}", key);
                 result = default(TVal);
             }
             return ret;
@@ -155,7 +155,7 @@ namespace ReactiveUI
                 if (releaseFunction != null)
                     releaseFunction(cacheEntries[to_remove].Item2);
 
-                this.Log().DebugFormat("Evicting {0}", to_remove);
+                //this.Log().DebugFormat("Evicting {0}", to_remove);
                 cacheEntries.Remove(cacheMRUList.Last.Value);
                 cacheMRUList.RemoveLast();
             }
