@@ -31,6 +31,24 @@
         }
 
         /// <summary>
+        /// Returns an observable sequence of the source collection item property change notifications.
+        /// Returns Observable.Never for collections not implementing INCC.
+        /// </summary>
+        /// <param name="source">Collection to observe.</param>
+        /// <returns>Observable sequence.</returns>
+        public static IObservable<IObservedChange<T, object>> ObserveCollectionItemChanged<T>(
+            this IEnumerable source)
+        {
+            var notifying = source as IReactiveCollection<T>;
+            if (notifying != null)
+            {
+                return notifying.ItemChanged;
+            }
+
+            return Observable.Never<IObservedChange<T, object>>();
+        }
+
+        /// <summary>
         /// Sorts the specified list in place using the comparer.
         /// </summary>
         /// <param name="list">List to sort.</param>
