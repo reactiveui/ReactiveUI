@@ -4,18 +4,17 @@ using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Runtime.Serialization;
-using ReactiveUI.Serialization;
 using ReactiveUI.Xaml;
 
 namespace ReactiveUI.Routing
 {
     [DataContract]
-    public class RoutingState : ModelBase
+    public class RoutingState : ReactiveObject
     {
-        [IgnoreDataMember] SerializedCollection<IRoutableViewModel> _NavigationStack;
+        [IgnoreDataMember] ReactiveCollection<IRoutableViewModel> _NavigationStack;
 
         [DataMember]
-        public SerializedCollection<IRoutableViewModel> NavigationStack {
+        public ReactiveCollection<IRoutableViewModel> NavigationStack {
             get { return _NavigationStack; }
             protected set { _NavigationStack = value; }
         }
@@ -41,7 +40,7 @@ namespace ReactiveUI.Routing
 
         public RoutingState(string autoSaveContract)
         {
-            _NavigationStack = new SerializedCollection<IRoutableViewModel>();
+            _NavigationStack = new ReactiveCollection<IRoutableViewModel>();
             _AutoSaveContract = autoSaveContract;
             setupRx();
         }
@@ -65,10 +64,12 @@ namespace ReactiveUI.Routing
                 NavigationStack.Add((IRoutableViewModel) x);
             });
 
+            /*
             if (_AutoSaveContract != null) {
                 Observable.Merge(Navigate, NavigateForward, NavigateBack)
                     .Subscribe(_ => RxStorage.Engine.CreateSyncPoint(this, _AutoSaveContract));
             }
+            */
 
             CurrentViewModel = NavigationStack.CollectionCountChanged
                 .Select(_ => NavigationStack.LastOrDefault())
