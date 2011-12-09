@@ -32,8 +32,9 @@
     <DocumentationFile>bin\Release\Net40\ReactiveUI.Routing.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.Practices.ServiceLocation">
-      <HintPath>..\ext\Microsoft.Practices.ServiceLocation.dll</HintPath>
+    <Reference Include="Microsoft.Practices.ServiceLocation, Version=1.0.0.0, Culture=neutral, PublicKeyToken=176052f22c4ce19f, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\lib\Microsoft.Practices.ServiceLocation.dll</HintPath>
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -66,10 +67,6 @@
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ReactiveUI.Serialization\ReactiveUI.Serialization.csproj">
-      <Project>{C6A9A8EC-FDA6-45C1-9694-298D44E3C55F}</Project>
-      <Name>ReactiveUI.Serialization</Name>
-    </ProjectReference>
     <ProjectReference Include="..\ReactiveUI.Xaml\ReactiveUI.Xaml.csproj">
       <Project>{761AC9BA-4A9C-440C-9B6C-2569978F0610}</Project>
       <Name>ReactiveUI.Xaml</Name>
