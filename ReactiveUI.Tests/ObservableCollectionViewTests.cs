@@ -1,4 +1,6 @@
-﻿namespace ReactiveUI.Tests
+﻿using System.Reactive.Linq;
+
+namespace ReactiveUI.Tests
 {
     using System;
     using System.Linq;
@@ -99,6 +101,28 @@
 
             subject.AssertAreEqual(new[] { -2, 0, 1, 3, 3, 5, 10 });
         }
+
+        [Fact]
+        public void CanTrackCollectionCount()
+        {
+            var source = new ObservableCollection<int> { 1, 5, 0 };
+            var subject = new ObservableCollectionView<int>(source, x => x > 1);
+            var list = new List<int>();
+
+            subject.ViewCountChanged
+                .Aggregate(list, (acc, x) => { acc.Add(x); return acc; })
+                .Subscribe();
+
+            source.Add(6);
+            list.AssertAreEqual(new[] { 1, 2 });
+
+            source.Add(7);
+            list.AssertAreEqual(new[] { 1, 2, 3 });
+
+            source.Add(0);
+            list.AssertAreEqual(new[] { 1, 2, 3 });
+        }
+
 
         [Fact]
         public void Sort_when_item_property_changes_in_reactive_collection()
