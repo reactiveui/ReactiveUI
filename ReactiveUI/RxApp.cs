@@ -389,13 +389,9 @@ namespace ReactiveUI
             Contract.Requires(prop_name != null);
             PropertyInfo pi;
 
-#if SILVERLIGHT
             lock(propInfoTypeCache) {
                 pi = propInfoTypeCache.Get(new Tuple<Type,string>(type, prop_name));
             }
-#else
-            pi = propInfoTypeCache.Get(new Tuple<Type,string>(type, prop_name));
-#endif 
 
             if (pi == null) {
                 throw new ArgumentException("You must declare a property named: " + prop_name);
