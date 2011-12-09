@@ -4,6 +4,7 @@ using System.Collections.Specialized;
 using System.Linq;
 using System.Collections.ObjectModel;
 using System.Reactive.Linq;
+using System.Reactive.Subjects;
 
 namespace ReactiveUI
 {
@@ -16,6 +17,7 @@ namespace ReactiveUI
         readonly Func<T, bool> filter;
         readonly IComparer<T> order;
         readonly Func<IObservedChange<T, object>, bool> updateFilter;
+        readonly ReplaySubject<int> viewCountChanged;
 
         /// <summary>
         /// Creates a read only view that tracks a collection providing filtering and sorting
@@ -34,6 +36,8 @@ namespace ReactiveUI
             this.filter = filter ?? (_ => true);
             this.order = order;
             this.updateFilter = updateFilter ?? (_ => true);
+
+            viewCountChanged = new ReplaySubject<int>();
 
             fetchItems();
 
@@ -80,6 +84,10 @@ namespace ReactiveUI
                 .Subscribe(updateItem);
         }
 
+        public IObservable<int> ViewCountChanged
+        {
+            get { return viewCountChanged; }
+        }
 
         void updateItem(T item)
         {
@@ -90,6 +98,7 @@ namespace ReactiveUI
         void addItem(T item)
         {
             InsertItem(getNewIndexFor(item), item);
+            viewCountChanged.OnNext(Count);
         }
 
         void removeItem(T item)
@@ -98,6 +107,7 @@ namespace ReactiveUI
             if (index >= 0)
             {
                 RemoveItem(index);
+                viewCountChanged.OnNext(Count);
             }
         }
 
