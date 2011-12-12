@@ -174,6 +174,8 @@ namespace ReactiveUI
         /// </summary>
         public static Func<string, string> GetFieldNameForPropertyNameFunc { get; set; }
 
+        public static bool? InUnitTestRunnerOverride { get; set; }
+
         /// <summary>
         /// InUnitTestRunner attempts to determine heuristically if the current
         /// application is running in a unit test framework.
@@ -182,6 +184,10 @@ namespace ReactiveUI
         /// currently running.</returns>
         public static bool InUnitTestRunner()
         {
+            if (InUnitTestRunnerOverride.HasValue) {
+                return InUnitTestRunnerOverride.Value;
+            }
+
             // XXX: This is hacky and evil, but I can't think of any better way
             // to do this
             string[] testAssemblies = new[] {
@@ -389,13 +395,9 @@ namespace ReactiveUI
             Contract.Requires(prop_name != null);
             PropertyInfo pi;
 
-#if SILVERLIGHT
             lock(propInfoTypeCache) {
                 pi = propInfoTypeCache.Get(new Tuple<Type,string>(type, prop_name));
             }
-#else
-            pi = propInfoTypeCache.Get(new Tuple<Type,string>(type, prop_name));
-#endif 
 
             if (pi == null) {
                 throw new ArgumentException("You must declare a property named: " + prop_name);
