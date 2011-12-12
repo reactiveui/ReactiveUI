@@ -11,6 +11,7 @@ namespace ReactiveUI.Routing
     public interface IRoutableViewModel : ISerializableItem
     {
         string FriendlyUrlName { get; }
+        IScreen HostScreen { get; }
     }
 
     public interface IViewForViewModel
@@ -22,6 +23,11 @@ namespace ReactiveUI.Routing
         where T : IReactiveNotifyPropertyChanged
     {
         T ViewModel { get; set; }
+    }
+
+    public interface IScreen
+    {
+        RoutingState Router;
     }
 
     public class ViewContractAttribute : Attribute
