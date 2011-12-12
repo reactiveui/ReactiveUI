@@ -26,7 +26,7 @@ namespace ReactiveUI.Routing
 
     public interface IScreen
     {
-        RoutingState Router;
+        RoutingState Router { get; }
     }
 
     public class ViewContractAttribute : Attribute
