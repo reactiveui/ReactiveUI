@@ -5,14 +5,14 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.50727</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{1BBF9541-7F3C-4A98-B5F8-D231AE664574}</ProjectGuid>
+    <ProjectGuid>{2048F4B6-2063-4446-9605-A5B2BE4E9554}</ProjectGuid>
     <ProjectTypeGuids>{A1591282-1198-4647-A2B1-27E5FF5F6F3B};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ReactiveUI.Routing</RootNamespace>
-    <AssemblyName>ReactiveUI.Routing_SL4</AssemblyName>
+    <AssemblyName>ReactiveUI.Routing_SL5</AssemblyName>
     <TargetFrameworkIdentifier>Silverlight</TargetFrameworkIdentifier>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v5.0</TargetFrameworkVersion>
     <SilverlightVersion>$(TargetFrameworkVersion)</SilverlightVersion>
     <SilverlightApplication>false</SilverlightApplication>
     <ValidateXaml>true</ValidateXaml>
@@ -36,7 +36,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>Bin\Debug\SL4\</OutputPath>
+    <OutputPath>Bin\Debug\SL5\</OutputPath>
     <DefineConstants>DEBUG;TRACE;SILVERLIGHT</DefineConstants>
     <NoStdLib>true</NoStdLib>
     <NoConfig>true</NoConfig>
@@ -46,23 +46,23 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>Bin\Release\SL4\</OutputPath>
+    <OutputPath>Bin\Release\SL5\</OutputPath>
     <DefineConstants>TRACE;SILVERLIGHT</DefineConstants>
     <NoStdLib>true</NoStdLib>
     <NoConfig>true</NoConfig>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>Bin\Release\SL4\ReactiveUI.Routing_SL4.xml</DocumentationFile>
+    <DocumentationFile>Bin\Release\SL5\ReactiveUI.Routing_SL5.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Practices.ServiceLocation">
-      <HintPath>..\ext\SL4\Microsoft.Practices.ServiceLocation.dll</HintPath>
+      <HintPath>..\ext\SL5\Microsoft.Practices.ServiceLocation.dll</HintPath>
     </Reference>
     <Reference Include="mscorlib" />
-    <Reference Include="System.ComponentModel.DataAnnotations, Version=2.0.5.0, Culture=neutral, PublicKeyToken=ddd0da4d3e678217, processorArchitecture=MSIL" />
+    <Reference Include="System.ComponentModel.DataAnnotations, Version=5.0.5.0, Culture=neutral, PublicKeyToken=ddd0da4d3e678217, processorArchitecture=MSIL" />
     <Reference Include="System.Reactive">
       <Private>True</Private>
-      <HintPath>..\ext\SL4\System.Reactive.dll</HintPath>
+      <HintPath>..\ext\SL5\System.Reactive.dll</HintPath>
     </Reference>
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Windows" />
@@ -81,13 +81,13 @@
     <Compile Include="ViewModelViewHost.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ReactiveUI.Xaml\ReactiveUI.Xaml_SL4.csproj">
+    <ProjectReference Include="..\ReactiveUI.Xaml\ReactiveUI.Xaml_SL5.csproj">
       <Project>{AE8FF678-935D-42CF-A899-6E73DF9A3B0B}</Project>
-      <Name>ReactiveUI.Xaml_SL4</Name>
+      <Name>ReactiveUI.Xaml_SL5</Name>
     </ProjectReference>
-    <ProjectReference Include="..\ReactiveUI\ReactiveUI_SL4.csproj">
+    <ProjectReference Include="..\ReactiveUI\ReactiveUI_SL5.csproj">
       <Project>{3DB8B68E-1229-45A5-90CD-6F72D086FDFF}</Project>
-      <Name>ReactiveUI_SL4</Name>
+      <Name>ReactiveUI_SL5</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Silverlight\$(SilverlightVersion)\Microsoft.Silverlight.CSharp.targets" />

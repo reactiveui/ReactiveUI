@@ -18,6 +18,11 @@ namespace ReactiveUI.Routing.Tests
         public string FriendlyUrlName {
             get { return "Test"; }
         }
+
+        public IScreen HostScreen
+        {
+            get { return null; }
+        }
     }
 
     public class RoutingStateTests

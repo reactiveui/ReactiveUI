@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Subjects;
 using System.Text;
-using ReactiveUI.Serialization;
 using ReactiveUI.Xaml;
 
 namespace ReactiveUI.Routing
 {
-    public interface IRoutableViewModel : ISerializableItem
+    public interface IRoutableViewModel : IReactiveNotifyPropertyChanged
     {
         string FriendlyUrlName { get; }
+        IScreen HostScreen { get; }
     }
 
     public interface IViewForViewModel
@@ -22,6 +22,11 @@ namespace ReactiveUI.Routing
         where T : IReactiveNotifyPropertyChanged
     {
         T ViewModel { get; set; }
+    }
+
+    public interface IScreen
+    {
+        RoutingState Router { get; }
     }
 
     public class ViewContractAttribute : Attribute

@@ -10,6 +10,8 @@ using System.Runtime.CompilerServices;
 [assembly: InternalsVisibleTo("ReactiveUI.Xaml")]
 [assembly: InternalsVisibleTo("ReactiveUI.Xaml_35")]
 [assembly: InternalsVisibleTo("ReactiveUI.Xaml_SL4")]
+[assembly: InternalsVisibleTo("ReactiveUI.Xaml_SL5")]
 [assembly: InternalsVisibleTo("ReactiveUI.Xaml_WP7")]
 [assembly: InternalsVisibleTo("ReactiveUI.Tests")]
 [assembly: InternalsVisibleTo("ReactiveUI.Tests_SL4")]
+[assembly: InternalsVisibleTo("ReactiveUI.Tests_SL5")]
