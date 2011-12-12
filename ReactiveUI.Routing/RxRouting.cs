@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive;
+using System.Reactive.Linq;
 using System.Text;
 using Microsoft.Practices.ServiceLocation;
 
@@ -29,6 +31,19 @@ namespace ReactiveUI.Routing
             }
 
             return (IViewForViewModel)ServiceLocator.Current.GetInstance(type, key);
+        }
+    }
+
+    public static class RoutableViewModelMixin
+    {
+        public static IObservable<Unit> NavigatedToMe(this IRoutableViewModel This)
+        {
+            return Observable.Create<Unit>(subj => {
+                return This.HostScreen.Router.CurrentViewModel
+                    .Where(x => x == This)
+                    .Select(_ => Unit.Default)
+                    .Subscribe(subj);
+            });
         }
     }
 }

@@ -96,10 +96,6 @@
     <Compile Include="ViewModelViewHost.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ReactiveUI.Serialization\ReactiveUI.Serialization_WP7.csproj">
-      <Project>{FAEA4F2E-017C-47AF-B467-4D2C7290CDEF}</Project>
-      <Name>ReactiveUI.Serialization_WP7</Name>
-    </ProjectReference>
     <ProjectReference Include="..\ReactiveUI.Xaml\ReactiveUI.Xaml_WP7.csproj">
       <Project>{06C34984-B706-49BF-85BB-9282DD6238D1}</Project>
       <Name>ReactiveUI.Xaml_WP7</Name>
