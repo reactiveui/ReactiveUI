@@ -31,4 +31,16 @@ namespace ReactiveUI.Routing
             return (IViewForViewModel)ServiceLocator.Current.GetInstance(type, key);
         }
     }
+
+    public static class RoutableViewModelMixin
+    {
+        public static IObservable<Unit> NavigatedToMe(this IRoutableViewModel This)
+        {
+            return Observable.Create<Unit>(subj => {
+                return This.HostScreen.CurrentViewModel
+                    .Where(x => x == This)
+                    .Subscribe(subj);
+            });
+        }
+    }
 }
