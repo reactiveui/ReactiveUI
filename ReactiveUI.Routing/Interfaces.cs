@@ -3,12 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Subjects;
 using System.Text;
-using ReactiveUI.Serialization;
 using ReactiveUI.Xaml;
 
 namespace ReactiveUI.Routing
 {
-    public interface IRoutableViewModel : ISerializableItem
+    public interface IRoutableViewModel : IReactiveNotifyPropertyChanged
     {
         string FriendlyUrlName { get; }
         IScreen HostScreen { get; }

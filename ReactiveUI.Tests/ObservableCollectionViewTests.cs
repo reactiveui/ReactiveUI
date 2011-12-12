@@ -1,4 +1,6 @@
-﻿namespace ReactiveUI.Tests
+﻿using System.Reactive.Linq;
+
+namespace ReactiveUI.Tests
 {
     using System;
     using System.Linq;
@@ -98,6 +100,91 @@
             source.Add(10);
 
             subject.AssertAreEqual(new[] { -2, 0, 1, 3, 3, 5, 10 });
+        }
+
+        [Fact]
+        public void CanTrackCollectionCount()
+        {
+            var source = new ObservableCollection<int> { 1, 5, 0 };
+            var subject = new ObservableCollectionView<int>(source, x => x > 1);
+            var list = new List<int>();
+
+            subject.ViewCountChanged
+                .Aggregate(list, (acc, x) => { acc.Add(x); return acc; })
+                .Subscribe();
+
+            source.Add(6);
+            list.AssertAreEqual(new[] { 1, 2 });
+
+            source.Add(7);
+            list.AssertAreEqual(new[] { 1, 2, 3 });
+
+            source.Add(0);
+            list.AssertAreEqual(new[] { 1, 2, 3 });
+        }
+
+
+        [Fact]
+        public void Sort_when_item_property_changes_in_reactive_collection()
+        {
+            var source = new ReactiveCollection<Mock>(
+                new List<Mock>
+                {
+                    new Mock{Name = "b"},
+                    new Mock{Name = "a"},
+                    new Mock{Name = "c", Enabled = true}
+                })
+            {
+                ChangeTrackingEnabled = true
+            };
+            var subject = new ObservableCollectionView<Mock>(
+                source,
+                null,
+                new SortByEnabledAndName());
+
+            subject.Select(x => x.Name).AssertAreEqual(new[] { "c", "a", "b" });
+
+            source.Add(new Mock { Name = "d", Enabled = true });
+            subject.Select(x => x.Name).AssertAreEqual(new[] { "c", "d", "a", "b" });
+
+            source.Single(x => x.Name == "c").Enabled = false;
+            subject.Select(x => x.Name).AssertAreEqual(new[] { "d", "a", "b", "c" });
+
+            source.Single(x => x.Name == "a").Name = "z";
+            subject.Select(x => x.Name).AssertAreEqual(new[] { "d", "b", "c", "z" });
+        }
+
+        public class Mock : ReactiveObject
+        {
+            string name;
+            public string Name
+            {
+                get { return name; }
+                set { this.RaiseAndSetIfChanged(x => x.Name, value); }
+            }
+
+            bool enabled;
+            public bool Enabled
+            {
+                get { return enabled; }
+                set { this.RaiseAndSetIfChanged(x => x.Enabled, value); }
+            }
+        }
+
+        public class SortByEnabledAndName : Comparer<Mock>
+        {
+            #region Public Methods
+
+            public override int Compare(Mock x, Mock y)
+            {
+                if (x == null || y == null) return 0;
+                if (y.Enabled.CompareTo(x.Enabled) != 0)
+                    return y.Enabled.CompareTo(x.Enabled);
+
+                return x.Name.CompareTo(y.Name);
+            }
+
+            #endregion
         }
     }
 }
