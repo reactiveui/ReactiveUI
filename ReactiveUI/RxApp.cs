@@ -43,7 +43,7 @@ namespace ReactiveUI
 
             // Default name for the field backing the "Foo" property => "_Foo"
             // This is used for ReactiveObject's RaiseAndSetIfChanged mixin
-            GetFieldNameForPropertyNameFunc = new Func<string,string>(x => "_" + x);
+            GetFieldNameForPropertyNameFunc = (x => Char.ToLower(x[0]) + x.Substring(1));
 
             if (InUnitTestRunner()) {
                 Console.Error.WriteLine("*** Detected Unit Test Runner, setting Scheduler to Immediate ***");
