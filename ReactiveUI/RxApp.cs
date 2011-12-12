@@ -175,6 +175,8 @@ namespace ReactiveUI
         /// </summary>
         public static Func<string, string> GetFieldNameForPropertyNameFunc { get; set; }
 
+        public static bool? InUnitTestRunnerOverride { get; set; }
+
         /// <summary>
         /// InUnitTestRunner attempts to determine heuristically if the current
         /// application is running in a unit test framework.
@@ -183,6 +185,10 @@ namespace ReactiveUI
         /// currently running.</returns>
         public static bool InUnitTestRunner()
         {
+            if (InUnitTestRunnerOverride.HasValue) {
+                return InUnitTestRunnerOverride.Value;
+            }
+
             // XXX: This is hacky and evil, but I can't think of any better way
             // to do this
             string[] testAssemblies = new[] {
