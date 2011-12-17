@@ -4,6 +4,7 @@ using System.Reactive.Linq;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Reactive.Subjects;
+using NLog;
 
 namespace ReactiveUI
 {
@@ -19,6 +20,8 @@ namespace ReactiveUI
     /// </summary>
     public class MessageBus : IMessageBus 
     {
+        static readonly Logger log = LogManager.GetCurrentClassLogger();
+
         Dictionary<Tuple<Type, string>, NotAWeakReference> messageBus = 
             new Dictionary<Tuple<Type,string>,NotAWeakReference>();
 
@@ -35,7 +38,7 @@ namespace ReactiveUI
         public IObservable<T> Listen<T>(string contract = null)
         {
             IObservable<T> ret = null;
-	        this.Log().InfoFormat("Listening to {0}:{1}", typeof(T), contract);
+            log.Info("Listening to {0}:{1}", typeof(T), contract);
 
             ret = setupSubjectIfNecessary<T>(contract, null);
             return ret;

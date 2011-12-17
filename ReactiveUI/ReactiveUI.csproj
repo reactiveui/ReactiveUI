@@ -91,6 +91,9 @@
     <DocumentationFile>bin\Release\Net40\ReactiveUI.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="NLog">
+      <HintPath>..\packages\NLog.2.0.0.2000\lib\net40\NLog.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
@@ -107,7 +110,9 @@
     <Compile Include="Interfaces.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Logging.cs" />
+    <Compile Include="Logging.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="MemoizingMRUCache.cs" />
     <Compile Include="MessageBus.cs" />
     <Compile Include="ObservableAsPropertyHelper.cs" />
@@ -128,6 +133,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <None Include="packages.config" />
     <None Include="VariadicTemplates.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>VariadicTemplates.cs</LastGenOutput>

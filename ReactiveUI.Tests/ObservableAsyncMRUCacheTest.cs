@@ -8,7 +8,7 @@ using Xunit;
 
 namespace ReactiveUI.Tests
 {
-    public class ObservableAsyncMRUCacheTest : IEnableLogger
+    public class ObservableAsyncMRUCacheTest
     {
         [Fact(Skip="This test is badly written")]
         public void GetTest()
@@ -25,7 +25,6 @@ namespace ReactiveUI.Tests
                     // will do the waiting while the main thread advances the
                     // Scheduler
                     foreach (int x in input.Select(x => fixture.Get(x))) {
-                        this.Log().DebugFormat("Adding {0} to result", x);
                         result += x;
                     }
                 });
@@ -43,7 +42,6 @@ namespace ReactiveUI.Tests
                 Thread.Sleep(100);
                 Assert.Equal(25, result);
 
-                this.Log().Info("Running to end");
                 sched.Start();
                 t.Join();
                 Assert.Equal(25, result);
@@ -68,7 +66,6 @@ namespace ReactiveUI.Tests
             sched.AdvanceTo(sched.FromTimeSpan(TimeSpan.FromMilliseconds(1200)));
             Assert.Equal(25, result);
 
-            this.Log().Info("Running to end");
             sched.Start();
             Assert.Equal(25, result);
         }

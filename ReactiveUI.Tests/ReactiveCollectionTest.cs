@@ -14,7 +14,7 @@ using System.Threading;
 
 namespace ReactiveUI.Tests
 {
-    public class ReactiveCollectionTest : IEnableLogger
+    public class ReactiveCollectionTest
     {
         [Fact]
         public void CollectionCountChangedTest()
@@ -84,7 +84,6 @@ namespace ReactiveUI.Tests
 
             string json = JSONHelper.Serialize(fixture);
             var results = JSONHelper.Deserialize<ReactiveCollection<string>>(json);
-            this.Log().Info(json);
 
             output.AssertAreEqual(results);
 

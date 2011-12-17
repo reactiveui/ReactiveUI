@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading;
+using NLog;
 
 namespace ReactiveUI
 {
@@ -25,8 +26,9 @@ namespace ReactiveUI
     /// </summary>
     /// <typeparam name="TParam">The key type.</typeparam>
     /// <typeparam name="TVal">The type of the value to return from the cache.</typeparam>
-    public sealed class ObservableAsyncMRUCache<TParam, TVal> : IEnableLogger
+    public sealed class ObservableAsyncMRUCache<TParam, TVal>
     {
+        static readonly Logger log = LogManager.GetCurrentClassLogger();
         readonly MemoizingMRUCache<TParam, IObservable<TVal>> _innerCache;
         readonly SemaphoreSubject<long> _callQueue;
         readonly Func<TParam, IObservable<TVal>> _fetcher;
@@ -92,7 +94,7 @@ namespace ReactiveUI
         {
             IObservable<TVal> result;
             if (_innerCache.TryGet(key, out result)) {
-                this.Log().DebugFormat("Cache hit: '{0}'", key);
+                log.Debug("Cache hit: '{0}'", key);
                 return result;
             }
 
@@ -100,7 +102,7 @@ namespace ReactiveUI
 
             var rs = new ReplaySubject<TVal>();
             _callQueue.Where(x => x == myCall).Subscribe(_ => {
-                this.Log().DebugFormat("Dispatching '{0}'", key);
+                log.Debug("Dispatching '{0}'", key);
                 IObservable<TVal> fetched = null;
                 try {
                     fetched = _fetcher(key);
@@ -191,8 +193,9 @@ namespace ReactiveUI
         }
     }
 
-    internal class SemaphoreSubject<T> : ISubject<T>, IEnableLogger
+    internal class SemaphoreSubject<T> : ISubject<T>
     {
+        static readonly Logger log = LogManager.GetCurrentClassLogger();
         readonly ISubject<T> _inner;
         Queue<T> _nextItems = new Queue<T>();
         long _count;
@@ -200,7 +203,7 @@ namespace ReactiveUI
 
         public SemaphoreSubject(int maxCount, IScheduler sched = null)
         {
-            this.Log().DebugFormat("maxCount is '{0}'", maxCount);
+            log.Debug("maxCount is '{0}'", maxCount);
 #if WINDOWS_PHONE
             _inner = new Subject<T>();
 #else
@@ -216,7 +219,7 @@ namespace ReactiveUI
                 return;
 
             lock (queue) {
-                this.Log().DebugFormat("OnNext called for '{0}', count is '{1}'", value, _count);
+                log.Debug("OnNext called for '{0}', count is '{1}'", value, _count);
                 queue.Enqueue(value);
             }
             yieldUntilEmptyOrBlocked();
@@ -226,7 +229,7 @@ namespace ReactiveUI
         {
             Interlocked.Decrement(ref _count);
 
-            this.Log().DebugFormat("Releasing, count is now {0}", _count);
+            log.Debug("Releasing, count is now {0}", _count);
             yieldUntilEmptyOrBlocked();
         }
 
@@ -276,7 +279,7 @@ namespace ReactiveUI
                     next = queue.Dequeue();
                 }
 
-                this.Log().DebugFormat("Yielding '{0}', _count = {1}, _maxCount = {2}", next, _count, _maxCount);
+                log.Debug("Yielding '{0}', _count = {1}, _maxCount = {2}", next, _count, _maxCount);
                 _inner.OnNext(next);
 
                 if (Interlocked.Increment(ref _count) >= _maxCount) {

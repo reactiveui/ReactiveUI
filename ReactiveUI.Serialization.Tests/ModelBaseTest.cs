@@ -22,15 +22,13 @@ namespace ReactiveUI.Serialization.Tests
     }
 
     [PexClass]
-    public partial class ModelBaseTest : IEnableLogger
+    public partial class ModelBaseTest
     {
         [PexMethod]
         public void ItemsChangedShouldFire(string[] setters)
         {
             PexAssume.IsNotNull(setters);
             PexAssume.AreElementsNotNull(setters);
-
-            this.Log().InfoFormat("Setting TestString to [{0}]", String.Join(",", setters));
 
             (new TestScheduler()).With(sched => {
                 var output_changed = new List<object>();
@@ -85,7 +83,6 @@ namespace ReactiveUI.Serialization.Tests
 
                 string latest = null;
                 var changed = fixture.Changed;
-                this.Log().InfoFormat("Subscribing to Changed: 0x{0:X}", changed.GetHashCode());
                 changed.Subscribe(Console.WriteLine);
                 changed.Subscribe(x => latest = x.PropertyName);
                 fixture.TestString = "Bar";

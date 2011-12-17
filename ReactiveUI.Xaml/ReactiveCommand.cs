@@ -5,6 +5,7 @@ using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Windows.Input;
+using NLog;
 using ReactiveUI;
 
 namespace ReactiveUI.Xaml
@@ -15,8 +16,10 @@ namespace ReactiveUI.Xaml
     /// ICommand.Execute and its value is the CommandParameter that was
     /// provided.
     /// </summary>
-    public class ReactiveCommand : IReactiveCommand, IEnableLogger, IDisposable
+    public class ReactiveCommand : IReactiveCommand, IDisposable
     {
+        static readonly Logger log = LogManager.GetCurrentClassLogger();
+
         /// <summary>
         /// Creates a new ReactiveCommand object.
         /// </summary>
@@ -105,7 +108,7 @@ namespace ReactiveUI.Xaml
 
         public void Execute(object parameter)
         {
-            this.Log().InfoFormat("{0:X}: Executed", this.GetHashCode());
+            log.Info("{0:X}: Executed", this.GetHashCode());
             executeSubject.OnNext(parameter);
         }
 

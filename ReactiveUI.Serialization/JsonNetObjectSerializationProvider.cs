@@ -107,7 +107,7 @@ namespace ReactiveUI.Serialization
     /// This class decides what properties to serialize, and for each property,
     /// whether we should hijack the serializer/deserializer.    
     /// </summary>
-    class SerializedItemsToGuidResolver : DefaultContractResolver, IEnableLogger
+    class SerializedItemsToGuidResolver : DefaultContractResolver
     {
         SerializableItemConverter _itemConverter;
         SerializableListConverter _listConverter;

@@ -6,6 +6,7 @@ using System.Diagnostics.Contracts;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using NLog;
 using ReactiveUI;
 
 namespace ReactiveUI.Xaml
@@ -18,8 +19,10 @@ namespace ReactiveUI.Xaml
     /// "Search" button shouldn't have many concurrent requests running if the
     /// user clicks the button many times quickly)
     /// </summary>
-    public class ReactiveAsyncCommand : IReactiveAsyncCommand, IEnableLogger, IDisposable
+    public class ReactiveAsyncCommand : IReactiveAsyncCommand, IDisposable
     {
+        static readonly Logger log = LogManager.GetCurrentClassLogger();
+
         /// <summary>
         /// Constructs a new ReactiveAsyncCommand.
         /// </summary>
@@ -89,7 +92,7 @@ namespace ReactiveUI.Xaml
             ).Scan(0, (acc, x) => {
                 var ret = acc + x;
                 if (ret < 0) {
-                    this.Log().Fatal("Reference count dropped below zero");
+                    log.Fatal("Reference count dropped below zero");
                 }
                 return ret;
             }).Multicast(new BehaviorSubject<int>(0)).PermaRef().ObserveOn(RxApp.DeferredScheduler);
@@ -102,7 +105,7 @@ namespace ReactiveUI.Xaml
                 .DistinctUntilChanged();
 
             CanExecuteObservable.Subscribe(x => {
-                this.Log().InfoFormat("Setting canExecuteLatest to {0}", x);
+                log.Info("Setting canExecuteLatest to {0}", x);
                 _canExecuteLatest = x;
                 if (CanExecuteChanged != null) {
                     CanExecuteChanged(this, new EventArgs());
@@ -142,14 +145,14 @@ namespace ReactiveUI.Xaml
             if (_canExecuteExplicitFunc != null) {
                 _canExecuteSubject.OnNext(_canExecuteExplicitFunc(parameter));
             }
-            this.Log().InfoFormat("CanExecute: returning {0}", _canExecuteLatest);
+            log.Info("CanExecute: returning {0}", _canExecuteLatest);
             return _canExecuteLatest;
         }
 
         public void Execute(object parameter)
         {
             if (!CanExecute(parameter)) {
-                this.Log().Error("Attempted to call Execute when CanExecute is False!");
+                log.Error("Attempted to call Execute when CanExecute is False!");
                 return;
             }
             _executeSubject.OnNext(parameter);

@@ -24,7 +24,7 @@ namespace ReactiveUI.Tests
         }
     }
 
-    public class DependencyObjectMixinTest : IEnableLogger
+    public class DependencyObjectMixinTest
     {
         [Fact]
         public void ObservableFromDPSmokeTest()

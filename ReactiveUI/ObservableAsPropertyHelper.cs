@@ -6,6 +6,7 @@ using System.Linq.Expressions;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using NLog;
 
 namespace ReactiveUI
 {
@@ -20,8 +21,10 @@ namespace ReactiveUI
     /// be chained - for example a "Path" property and a chained
     /// "PathFileNameOnly" property.
     /// </summary>
-    public sealed class ObservableAsPropertyHelper<T> : IEnableLogger, IObservable<T>, IDisposable
+    public sealed class ObservableAsPropertyHelper<T> : IObservable<T>, IDisposable
     {
+        static readonly Logger log = LogManager.GetCurrentClassLogger();
+
         T _lastValue;
         Exception _lastException;
         readonly IObservable<T> _source;
@@ -52,7 +55,7 @@ namespace ReactiveUI
 
             var subj = new ScheduledSubject<T>(scheduler);
             subj.Subscribe(x => {
-                this.Log().DebugFormat("Property helper {0:X} changed", this.GetHashCode());
+                log.Debug("Property helper {0:X} changed", this.GetHashCode());
                 _lastValue = x;
                 onChanged(x);
             }, ex => _lastException = ex);
@@ -72,7 +75,7 @@ namespace ReactiveUI
         public T Value {
             get {
                 if (_lastException != null) {
-                    this.Log().Error("Observable ended with OnError", _lastException);
+                    log.Error("Observable ended with OnError", _lastException);
                     throw _lastException;
                 }
                 return _lastValue;
@@ -116,6 +119,8 @@ namespace ReactiveUI
 
     public static class OAPHCreationHelperMixin
     {
+        static readonly Logger log = LogManager.GetCurrentClassLogger();
+
         /// <summary>
         /// Converts an Observable to an ObservableAsPropertyHelper and
         /// automatically provides the onChanged method to raise the property
@@ -144,12 +149,12 @@ namespace ReactiveUI
             Contract.Requires(property != null);
 
             string prop_name = RxApp.simpleExpressionToPropertyName(property);
-	        var ret = new ObservableAsPropertyHelper<TRet>(observable, 
+            var ret = new ObservableAsPropertyHelper<TRet>(observable, 
                 _ => This.raisePropertyChanged(prop_name), 
                 initialValue, scheduler);
 
-	        This.Log().DebugFormat("OAPH {0:X} is for {1}", ret, prop_name);
-	        return ret;
+            log.Debug("OAPH {0:X} is for {1}", ret, prop_name);
+            return ret;
         }
 
         /// <summary>

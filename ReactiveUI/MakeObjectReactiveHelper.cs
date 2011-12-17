@@ -4,6 +4,7 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Threading;
 using System.Reactive.Subjects;
+using NLog;
 
 namespace ReactiveUI
 {
@@ -16,6 +17,8 @@ namespace ReactiveUI
     /// </summary>
     public class MakeObjectReactiveHelper  : IReactiveNotifyPropertyChanged
     {
+        static readonly Logger log = LogManager.GetCurrentClassLogger();
+
         public MakeObjectReactiveHelper(INotifyPropertyChanged hostObject)
         {
             var hostChanging = hostObject as INotifyPropertyChanging;
@@ -23,7 +26,7 @@ namespace ReactiveUI
                 hostChanging.PropertyChanging += (o, e) => _Changing.OnNext(
                     new ObservedChange<object, object>() { Sender = o, PropertyName = e.PropertyName });
             } else {
-                this.Log().ErrorFormat("'{0}' does not implement INotifyPropertyChanging - RxUI may return duplicate change notifications",
+                log.Error("'{0}' does not implement INotifyPropertyChanging - RxUI may return duplicate change notifications",
                     hostObject.GetType().FullName);
             }
 

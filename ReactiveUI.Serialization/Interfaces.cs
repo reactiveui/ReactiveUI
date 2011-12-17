@@ -107,7 +107,7 @@ namespace ReactiveUI.Serialization
     /// Load and Save individual objects, and create and list Sync Points
     /// (objects that represent an atomic commit to the Storage engine)
     /// </summary>
-    public interface IStorageEngine : IDisposable, IEnableLogger
+    public interface IStorageEngine : IDisposable
     {
         /// <summary>
         /// Loads an object given its Content Hash. Note that it is critical
@@ -245,7 +245,7 @@ namespace ReactiveUI.Serialization
     /// magic; that is, deconstructing objects into their pieces and instead
     /// serializing their content hashes.
     /// </summary>
-    public interface IObjectSerializationProvider : IEnableLogger
+    public interface IObjectSerializationProvider
     {
         /// <summary>
         /// Write an object to memory, including serializing all of the child

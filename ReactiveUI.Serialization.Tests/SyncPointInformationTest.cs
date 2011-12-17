@@ -5,7 +5,7 @@ using ReactiveUI.Tests;
 
 namespace ReactiveUI.Serialization.Tests
 {
-    public class SyncPointInformationTest : IEnableLogger
+    public class SyncPointInformationTest
     {
         [Fact]
         public void EnsureSyncPointInformationCalculatesHash()
@@ -32,7 +32,6 @@ namespace ReactiveUI.Serialization.Tests
         {
             var template = new SyncPointInformation(Guid.NewGuid(), Guid.NewGuid(), typeof (string), "Foo", DateTimeOffset.MinValue);
             var json = JSONHelper.Serialize(template);
-            this.Log().Debug(json);
 
             var expected = new[] {
                 "RootObjectHash",

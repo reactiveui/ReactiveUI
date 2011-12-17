@@ -51,7 +51,7 @@ namespace ReactiveUI.Tests
         }
     }
 
-    public class ReactiveObjectTest : IEnableLogger
+    public class ReactiveObjectTest
     {
         [Fact]        
         public void ReactiveObjectSmokeTest()
@@ -115,7 +115,6 @@ namespace ReactiveUI.Tests
         {
             var fixture = new TestFixture() { IsNotNullString = "Foo", IsOnlyOneWord = "Baz" };
             string json = JSONHelper.Serialize(fixture);
-            this.Log().Info(json);
 
             // Should look something like:
             // {"TestCollection":[],"_IsNotNullString":"Foo","_IsOnlyOneWord":"Baz","_PocoProperty":null,"_UsesExprRaiseSet":null}
@@ -130,7 +129,7 @@ namespace ReactiveUI.Tests
 #if IOS
             Assert.Fail("This crashes Mono in a quite spectacular way");
 #endif
-			
+            
             var fixture = new TestFixture() { IsNotNullString = "Foo", IsOnlyOneWord = "Baz" };
             var output = new List<string>();
             fixture.Changed.Subscribe(x => output.Add(x.PropertyName));
@@ -175,11 +174,11 @@ namespace ReactiveUI.Tests
         {
             string before_set = "Foo";
             string after_set = "Bar"; 
-			
+            
 #if IOS
-	    Assert.Fail("This crashes Mono in a quite spectacular way");
+        Assert.Fail("This crashes Mono in a quite spectacular way");
 #endif
-			
+            
             var fixture = new TestFixture() { IsOnlyOneWord = before_set };
 
             bool before_fired = false;

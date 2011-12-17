@@ -6,7 +6,7 @@ using System;
 
 namespace ReactiveUI.Serialization.Tests
 {
-    public abstract class SerializationItemDataSurrogateTest : IEnableLogger
+    public abstract class SerializationItemDataSurrogateTest
     {
         protected abstract IObjectSerializationProvider createFixture();
 
@@ -18,7 +18,6 @@ namespace ReactiveUI.Serialization.Tests
             var serializer = createFixture();
 
             string json = serializer.SerializedDataToString(serializer.Serialize(input));
-            this.Log().Info(json);
 
             // TODO: Finish this test
         }
@@ -32,7 +31,7 @@ namespace ReactiveUI.Serialization.Tests
         }
     }
 
-    public abstract class SerializedListDataSurrogateTest : IEnableLogger
+    public abstract class SerializedListDataSurrogateTest
     {
         protected abstract IObjectSerializationProvider createFixture();
 
@@ -47,7 +46,6 @@ namespace ReactiveUI.Serialization.Tests
             var serializer = createFixture();
 
             string json = serializer.SerializedDataToString(serializer.Serialize(input));
-            this.Log().Info(json);
 
             // TODO: Finish this test
         }
@@ -63,7 +61,6 @@ namespace ReactiveUI.Serialization.Tests
             var serializer = createFixture();
 
             string json = serializer.SerializedDataToString(serializer.Serialize(input));
-            this.Log().Info(json);
 
             // TODO: Finish this test
         }
@@ -84,7 +81,6 @@ namespace ReactiveUI.Serialization.Tests
             var serializer = createFixture();
 
             string json = serializer.SerializedDataToString(serializer.Serialize(input));
-            this.Log().Info(json);
 
             // TODO: Finish this test
         }
