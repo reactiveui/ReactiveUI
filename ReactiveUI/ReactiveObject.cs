@@ -11,6 +11,7 @@ using System.Reflection;
 using System.Runtime.Serialization;
 using System.Threading;
 using System.Reactive.Concurrency;
+using NLog;
 
 #if DOTNETISOLDANDSAD || WINDOWS_PHONE
 using System.Concurrency;
@@ -26,6 +27,8 @@ namespace ReactiveUI
     [DataContract]
     public class ReactiveObject : IReactiveNotifyPropertyChanged
     {
+        static readonly Logger log = LogManager.GetCurrentClassLogger();
+
         [field:IgnoreDataMember]
         public event PropertyChangingEventHandler PropertyChanging;
 
@@ -48,7 +51,7 @@ namespace ReactiveUI
         public IObservable<IObservedChange<object, object>> Changed {
             get {
 #if DEBUG
-                this.Log().DebugFormat("Changed Subject 0x{0:X}", changedSubject.GetHashCode());
+                log.Debug("Changed Subject 0x{0:X}", changedSubject.GetHashCode());
 #endif
                 return changedSubject;
             }
@@ -121,10 +124,10 @@ namespace ReactiveUI
             Contract.Requires(propertyName != null);
 
             verifyPropertyName(propertyName);
-            this.Log().DebugFormat("{0:X}.{1} changed", this.GetHashCode(), propertyName);
+            log.Debug("{0:X}.{1} changed", this.GetHashCode(), propertyName);
 
             if (!areChangeNotificationsEnabled) {
-                this.Log().DebugFormat("Suppressed change");
+                log.Debug("Suppressed change");
                 return;
             }
 
@@ -155,7 +158,7 @@ namespace ReactiveUI
             // public, instance property on this object.
             if (TypeDescriptor.GetProperties(this)[propertyName] == null) {
                 string msg = "Invalid property name: " + propertyName;
-                this.Log().Error(msg);
+                log.Error(msg);
             }
 #endif
         }
@@ -175,12 +178,12 @@ namespace ReactiveUI
         void notifyObservable<T>(T item, Subject<T> subject)
         {
 #if DEBUG
-            this.Log().DebugFormat("Firing observable to subject 0x{0:X}", subject.GetHashCode());
+            log.Debug("Firing observable to subject 0x{0:X}", subject.GetHashCode());
 #endif
             try {
                 subject.OnNext(item);
             } catch (Exception ex) {
-                this.Log().Error(ex);
+                log.Error(ex);
                 subject.OnError(ex);
             }
         }

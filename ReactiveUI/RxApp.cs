@@ -8,6 +8,7 @@ using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Reflection;
 using System.Threading;
+using NLog;
 
 #if SILVERLIGHT
 using System.Windows;
@@ -33,14 +34,10 @@ namespace ReactiveUI
      */
     public static class RxApp
     {
+        static readonly Logger log = LogManager.GetCurrentClassLogger();
+
         static RxApp()
         {
-#if DEBUG
-            LoggerFactory = (prefix) => new StdErrLogger(prefix) { CurrentLogLevel = LogLevel.Info };
-#else
-            LoggerFactory = (prefix) => new NullLogger(prefix);
-#endif
-
             // Default name for the field backing the "Foo" property => "_Foo"
             // This is used for ReactiveObject's RaiseAndSetIfChanged mixin
             GetFieldNameForPropertyNameFunc = (x => Char.ToLower(x[0]) + x.Substring(1));
@@ -49,13 +46,6 @@ namespace ReactiveUI
                 Console.Error.WriteLine("*** Detected Unit Test Runner, setting Scheduler to Immediate ***");
                 Console.Error.WriteLine("If we are not actually in a test runner, please file a bug\n");
                 DeferredScheduler = Scheduler.Immediate;
-
-#if DEBUG
-                LoggerFactory = (prefix) => new StdErrLogger(prefix) { CurrentLogLevel = LogLevel.Debug };
-#else
-                LoggerFactory = (prefix) => new StdErrLogger(prefix) { CurrentLogLevel = LogLevel.Info };
-#endif
-
 #if FALSE
                 DefaultUnitTestRecoveryResult = RecoveryOptionResult.FailOperation;
 
@@ -142,7 +132,7 @@ namespace ReactiveUI
         /// string parameter is the 'prefix' (usually the class name of the log
         /// entry)
         /// </summary>
-        public static Func<string, ILog> LoggerFactory { get; set; }
+        //public static Func<string, ILog> LoggerFactory { get; set; }
 
         [ThreadStatic] static IMessageBus _UnitTestMessageBus;
         static IMessageBus _MessageBus;
@@ -245,7 +235,7 @@ namespace ReactiveUI
         /// </summary>
         public static void EnableDebugMode()
         {
-            LoggerFactory = (x => new StdErrLogger());
+            //LoggerFactory = (x => new StdErrLogger());
         }
 
 #if FALSE
@@ -306,13 +296,13 @@ namespace ReactiveUI
             try {
                 result = Type.GetType(dispatcherSchedulerQualifiedName, true);
             } catch(Exception ex) {
-                LoggerFactory("RxApp").Error(ex);
+                log.Error(ex);
             }
 
             if (result == null) {
-                LoggerFactory("RxApp").Error("*** WPF Rx.NET DLL reference not added - using Event Loop *** ");
-                LoggerFactory("RxApp").Error("Add a reference to System.Reactive.Windows.Threading.dll if you're using WPF / SL4 / WP7");
-                LoggerFactory("RxApp").Error("or consider explicitly setting RxApp.DeferredScheduler if not");
+                log.Error("*** WPF Rx.NET DLL reference not added - using Event Loop *** ");
+                log.Error("Add a reference to System.Reactive.Windows.Threading.dll if you're using WPF / SL4 / WP7");
+                log.Error("or consider explicitly setting RxApp.DeferredScheduler if not");
                 return new EventLoopScheduler();
             }
 

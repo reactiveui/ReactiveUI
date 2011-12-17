@@ -15,7 +15,7 @@ using ReactiveUI.Testing;
 
 namespace ReactiveUI.Tests
 {
-    public abstract class ReactiveCommandInterfaceTest : IEnableLogger
+    public abstract class ReactiveCommandInterfaceTest
     {
         protected abstract IReactiveCommand createCommand(IObservable<bool> canExecute, IScheduler scheduler = null);
         protected abstract IReactiveCommand createRelayCommand(Func<object, bool> canExecute, IScheduler scheduler = null);
@@ -50,7 +50,6 @@ namespace ReactiveUI.Tests
                 int change_event_count = 0;
                 fixture.CanExecuteChanged += (o, e) => { change_event_count++; };
                 input.Run(x => {
-                    this.Log().InfoFormat("input = {0}", x);
                     can_execute.OnNext(x);
                     sched.Start();
                     Assert.Equal(x, fixture.CanExecute(null));
@@ -75,7 +74,6 @@ namespace ReactiveUI.Tests
             int change_event_count = 0;
             fixture.CanExecuteChanged += (o, e) => { change_event_count++; };
             Enumerable.Range(0, 6).Run(x => {
-                this.Log().InfoFormat("Counter = {0}, x = {1}", counter, x);
                 Assert.Equal(x % 2 == 0, fixture.CanExecute(null));
                 counter++;
             });
@@ -185,7 +183,7 @@ namespace ReactiveUI.Tests
         }
     }
 
-    public class ReactiveAsyncCommandTest : IEnableLogger
+    public class ReactiveAsyncCommandTest
     {
         [Fact]
         public void RegisterAsyncFunctionSmokeTest()
@@ -227,7 +225,6 @@ namespace ReactiveUI.Tests
 
                 fixture.RegisterMemoizedFunction(x => { Thread.Sleep(1000); return ((int) x) * 5; }, 50, null, sched)
                     .Timestamp()
-                    .DebugObservable()
                     .Subscribe(x => results.Add(x));
 
                 Assert.True(fixture.CanExecute(1));
@@ -242,9 +239,8 @@ namespace ReactiveUI.Tests
 
             Assert.Equal(10, results.Count);
 
-            this.Log().Info("Timestamp Deltas");
             results.Select(x => x.Timestamp - start)
-                   .Run(x => this.Log().Info(x));
+                   .Run(x => { });
 
             output.AssertAreEqual(results.Select(x => x.Value));
 
@@ -264,7 +260,6 @@ namespace ReactiveUI.Tests
 
             fixture.RegisterMemoizedFunction(x => { Thread.Sleep(250); return ((int)x) * 5; }, 2, x => released.Add(x), sched)
                    .Timestamp()
-                   .DebugObservable()
                    .Subscribe(x => results.Add(x));
 
             Assert.True(fixture.CanExecute(1));
@@ -277,12 +272,10 @@ namespace ReactiveUI.Tests
 
             Thread.Sleep(1000);
 
-            this.Log().Info("Timestamp Deltas");
             results.Select(x => x.Timestamp - start)
-                   .Run(x => this.Log().Info(x));
+                   .Run(x => { });
 
-            this.Log().Info("Release list");
-            released.Run(x => this.Log().Info(x));
+            released.Run(x => { });
 
             Assert.True(results.Count == 8);
 
@@ -357,9 +350,6 @@ namespace ReactiveUI.Tests
                 fixture.Execute(1);
                 Assert.Equal(5, result.First());
 
-                this.Log().InfoFormat("Scheduled {0} items on deferred, {1} items on Taskpool",
-                    testDeferred.ScheduledItems.Count, testTaskpool.ScheduledItems.Count);
-
                 Assert.True(testDeferred.ScheduledItems.Count >= 1);
                 Assert.True(testTaskpool.ScheduledItems.Count >= 1);
             } finally {
@@ -385,9 +375,6 @@ namespace ReactiveUI.Tests
 
                 fixture.Execute(1);
                 Assert.Equal(5, result.First());
-
-                this.Log().InfoFormat("Scheduled {0} items on deferred, {1} items on Taskpool",
-                    testDeferred.ScheduledItems.Count, testTaskpool.ScheduledItems.Count);
 
                 Assert.True(testDeferred.ScheduledItems.Count >= 1);
                 Assert.True(testTaskpool.ScheduledItems.Count >= 1);

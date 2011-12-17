@@ -10,7 +10,7 @@ using ReactiveUI.Tests;
 
 namespace ReactiveUI.Serialization.Tests
 {
-    public abstract class StorageEngineInterfaceTest : IEnableLogger
+    public abstract class StorageEngineInterfaceTest
     {
         protected abstract IStorageEngine createFixture(int key = -1);
 
@@ -201,7 +201,6 @@ namespace ReactiveUI.Serialization.Tests
             try {
                 fixture.Save(input);
             } catch(Exception ex) {
-                this.Log().Debug(ex);
                 shouldFail = false;
             }
             Assert.False(shouldFail);
@@ -210,7 +209,6 @@ namespace ReactiveUI.Serialization.Tests
             try {
                 fixture.CreateSyncPoint(input);
             } catch(Exception ex) {
-                this.Log().Debug(ex);
                 shouldFail = false;
             }
             Assert.False(shouldFail);
@@ -239,11 +237,9 @@ namespace ReactiveUI.Serialization.Tests
         {
             var di = new DirectoryInfo(".");
             int subdir = (key == -1 ? Interlocked.Increment(ref _nextFreeSubdirectory) : key);
-            this.Log().InfoFormat("Opening db with name '{0}'", subdir.ToString());
 
             di = new DirectoryInfo(Path.Combine(di.FullName, subdir.ToString()));
             if (key == -1 && di.Exists) {
-                this.Log().InfoFormat("'{0}' exists and test requires an empty dir, deleting...", di.FullName);
                 di.Delete(true);
             }
 

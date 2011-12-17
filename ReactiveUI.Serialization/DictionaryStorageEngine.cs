@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.IO;
 using System.Globalization;
+using NLog;
 
 #if SILVERLIGHT
 using System.IO.IsolatedStorage;
@@ -27,6 +28,8 @@ namespace ReactiveUI.Serialization
     /// </summary>
     public class DictionaryStorageEngine : IStorageEngine
     {
+        static readonly Logger log = LogManager.GetCurrentClassLogger();
+
         readonly string _backingStorePath;
         Dictionary<Guid, byte[]> _allItems;
         Dictionary<Guid, string> _itemTypeNames;
@@ -68,17 +71,17 @@ namespace ReactiveUI.Serialization
 
             initializeStoreIfNeeded();
             if (!this._allItems.TryGetValue(contentHash, out ret)) {
-                this.Log().ErrorFormat("Attempted to load '{0}', didn't exist!", contentHash);
+                log.Error("Attempted to load '{0}', didn't exist!", contentHash);
                 return null;
             }
 
-            this.Log().DebugFormat("Loaded '{0}'", contentHash);
+            log.Debug("Loaded '{0}'", contentHash);
 #if DEBUG
-            this.Log().Info(_serializerFactory(contentHash).SerializedDataToString(ret));
+            log.Info(_serializerFactory(contentHash).SerializedDataToString(ret));
 #endif
             var type = Utility.GetTypeByName(this._itemTypeNames[contentHash]);
             if (type == null) {
-                this.Log().FatalFormat("Type '{0}' cannot be found", this._itemTypeNames[contentHash]);
+                log.Fatal("Type '{0}' cannot be found", this._itemTypeNames[contentHash]);
                 throw new Exception("Engine is inconsistent");
             }
             return this._serializerFactory(contentHash).Deserialize(ret, type);
@@ -95,11 +98,11 @@ namespace ReactiveUI.Serialization
             initializeStoreIfNeeded();
 
             if (obj.ContentHash == Guid.Empty) {
-                this.Log().ErrorFormat("Object of type '{0}' has a zero ContentHash", obj.GetType());
+                log.Error("Object of type '{0}' has a zero ContentHash", obj.GetType());
                 throw new Exception("Cannot serialize object with zero ContentHash");
             }
 
-            this.Log().DebugFormat("Saving '{0}", obj.ContentHash);
+            log.Debug("Saving '{0}", obj.ContentHash);
             this._allItems[obj.ContentHash] = this._serializerFactory(obj).Serialize(obj);
             this._itemTypeNames[obj.ContentHash] = obj.GetType().FullName;
         }
@@ -114,7 +117,7 @@ namespace ReactiveUI.Serialization
             }
 
             initializeStoreIfNeeded();
-            this.Log().Info("Flushing changes");
+            log.Info("Flushing changes");
             var dseData = new DSESerializedObjects() {allItems = this._allItems, syncPointIndex = this._syncPointIndex, itemTypeNames = this._itemTypeNames};
 
             using (var sw = getWriteStreamFromBackingStore(this._backingStorePath)) {
@@ -163,7 +166,7 @@ namespace ReactiveUI.Serialization
             Save(ret);
             this._syncPointIndex[key] = ret.ContentHash;
 
-            this.Log().InfoFormat("Created sync point: {0}.{1}", obj.ContentHash, qualifier);
+            log.Info("Created sync point: {0}.{1}", obj.ContentHash, qualifier);
 
             return ret;
         }
@@ -243,7 +246,7 @@ namespace ReactiveUI.Serialization
                 this._syncPointIndex = dseData.syncPointIndex;
                 this._itemTypeNames = dseData.itemTypeNames;
             } catch(FileNotFoundException) {
-                this.Log().WarnFormat("Backing store {0} not found, falling back to empty", this._backingStorePath);
+                log.Warn("Backing store {0} not found, falling back to empty", this._backingStorePath);
                 this._allItems = new Dictionary<Guid, byte[]>();
                 this._syncPointIndex = new Dictionary<string, Guid>();
                 this._itemTypeNames = new Dictionary<Guid, string>();

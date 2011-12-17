@@ -1,4 +1,5 @@
 ﻿using System;
+using NLog;
 
 namespace ReactiveUI.Serialization
 {
@@ -8,26 +9,28 @@ namespace ReactiveUI.Serialization
     /// </summary>
     public class NullStorageEngine : IStorageEngine
     {
+        static readonly Logger log = LogManager.GetCurrentClassLogger();
+
         public T Load<T>(Guid ContentHash) where T : ISerializableItem
         {
-            this.Log().DebugFormat("Loading {0}, returning null", ContentHash);
+            log.Debug("Loading {0}, returning null", ContentHash);
             return default(T);
         }
 
         public object Load(Guid ContentHash) 
         {
-            this.Log().DebugFormat("Loading {0}, returning null", ContentHash);
+            log.Debug("Loading {0}, returning null", ContentHash);
             return null;
         }
 
         public void Save<T>(T Obj) where T : ISerializableItem
         {
-            this.Log().DebugFormat("Saving {0}", Obj.ContentHash);
+            log.Debug("Saving {0}", Obj.ContentHash);
         }
 
         public void FlushChanges()
         {
-            this.Log().Debug("Flush");
+            log.Debug("Flush");
         }
 
         public Guid[] GetAllObjectHashes()
@@ -43,7 +46,7 @@ namespace ReactiveUI.Serialization
         public ISyncPointInformation CreateSyncPoint<T>(T obj, string qualifier = null, DateTimeOffset? createdOn = null) 
             where T : ISerializableItem
         {
-            this.Log().DebugFormat("Creating sync point for {0} ({1})", obj.ContentHash, qualifier);
+            log.Debug("Creating sync point for {0} ({1})", obj.ContentHash, qualifier);
             return new SyncPointInformation(Guid.Empty, Guid.Empty, typeof (T), qualifier ?? String.Empty, createdOn ?? DateTimeOffset.Now);
         }
 

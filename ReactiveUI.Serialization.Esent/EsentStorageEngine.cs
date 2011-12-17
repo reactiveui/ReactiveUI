@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
 using Microsoft.Isam.Esent.Collections.Generic;
+using NLog;
 
 namespace ReactiveUI.Serialization.Esent
 {
@@ -16,6 +17,8 @@ namespace ReactiveUI.Serialization.Esent
 
     public class EsentStorageEngine : IExtendedStorageEngine
     {
+        static readonly Logger log = LogManager.GetCurrentClassLogger();
+
         PersistentDictionary<Guid, byte[]> _backingStore;
         Dictionary<Guid, string> _itemTypeNames;
         Dictionary<string, Guid> _syncPointIndex;
@@ -44,22 +47,22 @@ namespace ReactiveUI.Serialization.Esent
             byte[] data;
 
             if (!_backingStore.TryGetValue(contentHash, out data)) {
-                this.Log().ErrorFormat("Failed to load object: {0}", contentHash);
+                log.Error("Failed to load object: {0}", contentHash);
                 return null;
             }
 
-            this.Log().DebugFormat("Loaded {0}", contentHash);
+            log.Debug("Loaded {0}", contentHash);
             return this._serializerFactory(contentHash).Deserialize(data, Utility.GetTypeByName(_itemTypeNames[contentHash]));
         }
 
         public void Save<T>(T obj) where T : ISerializableItem
         {
             if (obj.ContentHash == Guid.Empty) {
-                this.Log().ErrorFormat("Object of type '{0}' has a zero ContentHash", obj.GetType());
+                log.Error("Object of type '{0}' has a zero ContentHash", obj.GetType());
                 throw new Exception("Cannot serialize object with zero ContentHash");
             }
 
-            this.Log().DebugFormat("Saving {0}: {1}", obj, obj.ContentHash);
+            log.Debug("Saving {0}: {1}", obj, obj.ContentHash);
             _itemTypeNames[obj.ContentHash] = obj.GetType().FullName;
             _backingStore[obj.ContentHash] = this._serializerFactory(obj).Serialize(obj);
         }
@@ -92,7 +95,7 @@ namespace ReactiveUI.Serialization.Esent
             _syncPointIndex[key] = ret.ContentHash;
             _syncPoints.GetOrAdd(key).Add(ret);
 
-            this.Log().InfoFormat("Created sync point: {0}.{1}", obj.ContentHash, qualifier);
+            log.Info("Created sync point: {0}.{1}", obj.ContentHash, qualifier);
 
             FlushChanges();
             return ret;
@@ -138,11 +141,11 @@ namespace ReactiveUI.Serialization.Esent
 
             if (!_backingStore.TryGetValue(Guid.Empty, out data)) {
                 if (_backingStore.Count != 0) {
-                    this.Log().Fatal("Database has been corrupted!");
+                    log.Fatal("Database has been corrupted!");
                     throw new Exception("Database is in an inconsistent state");
                 }
 
-                this.Log().Warn("Could not load metadata, initializing blank");
+                log.Warn("Could not load metadata, initializing blank");
                 _itemTypeNames = new Dictionary<Guid, string>();
                 _syncPointIndex = new Dictionary<string, Guid>();
 
@@ -152,7 +155,7 @@ namespace ReactiveUI.Serialization.Esent
                 _itemTypeNames = metadata.ItemTypeNames;
                 _syncPointIndex = metadata.SyncPointIndex;
                 if (_itemTypeNames == null || _syncPointIndex == null) {
-                    this.Log().Fatal("Database has been corrupted, metadata structures are null");
+                    log.Fatal("Database has been corrupted, metadata structures are null");
                     throw new Exception("Database is in an inconsistent state");
                 }
             }

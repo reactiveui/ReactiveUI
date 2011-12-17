@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.Serialization;
+using NLog;
 
 namespace ReactiveUI.Serialization
 {
@@ -29,6 +30,8 @@ namespace ReactiveUI.Serialization
     public abstract class ModelBase : ReactiveValidatedObject, ISerializableItem
 #endif
     {
+        static readonly Logger log = LogManager.GetCurrentClassLogger();
+
         static Guid inProgressGuid = new Guid(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1);
 
         [IgnoreDataMember] Guid _ContentHash;
@@ -55,7 +58,7 @@ namespace ReactiveUI.Serialization
         void setupModelBase(StreamingContext sc) { setupModelBase(); }
         void setupModelBase()
         {
-            this.Log().InfoFormat("Deserialized ModelBase 0x{0:X}", this.GetHashCode());
+            log.Info("Deserialized ModelBase 0x{0:X}", this.GetHashCode());
             Changed.Subscribe(_ => invalidateHash());
             invalidateHash();
         }

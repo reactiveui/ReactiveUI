@@ -13,7 +13,7 @@ using ReactiveUI.Tests;
 namespace ReactiveUI.Serialization.Tests
 {
     [PexClass(MaxBranches=40000)]
-    public partial class SerializedCollectionTest : IEnableLogger
+    public partial class SerializedCollectionTest
     {
         [PexMethod]
         public void AddingItemsShouldChangeTheContentHash(string[] toAdd) 
@@ -119,9 +119,6 @@ namespace ReactiveUI.Serialization.Tests
                 var coll = new SerializedCollection<ISerializableItem>(new[] {input});
                 var fixture =  new SerializedCollection<ISerializableList<ISerializableItem>>(new[] {(ISerializableList<ISerializableItem>)coll});
 
-                this.Log().DebugFormat("input = {0:X}, coll = {1:X}, fixture = {2:X}",
-                    input.GetHashCode(), coll.GetHashCode(), fixture.GetHashCode());
-
                 bool inputChanging = false; bool inputChanged = false;
                 bool collChanging = false; bool collChanged = false;
                 bool fixtureChanging = false; bool fixtureChanged = false;
@@ -134,13 +131,6 @@ namespace ReactiveUI.Serialization.Tests
 
                 input.TestString = "Bar";
                 sched.RunToMilliseconds(1000);
-
-                this.Log().DebugFormat("inputChanging = {0}", inputChanging);
-                this.Log().DebugFormat("inputChanged = {0}", inputChanged);
-                this.Log().DebugFormat("collChanging = {0}", collChanging);
-                this.Log().DebugFormat("collChanged = {0}", collChanged);
-                this.Log().DebugFormat("fixtureChanging = {0}", fixtureChanging);
-                this.Log().DebugFormat("fixtureChanged = {0}", fixtureChanged);
 
                 Assert.True(inputChanging);
                 Assert.True(inputChanged);

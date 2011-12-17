@@ -7,6 +7,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Reactive.Subjects;
 using System.Reflection;
 using System.Runtime.Serialization;
+using NLog;
 
 namespace ReactiveUI
 {
@@ -16,6 +17,8 @@ namespace ReactiveUI
     [DataContract]
     public class ReactiveValidatedObject : ReactiveObject, IDataErrorInfo
     {
+        static readonly Logger log = LogManager.GetCurrentClassLogger();
+
         /// <summary>
         ///
         /// </summary>
@@ -51,9 +54,9 @@ namespace ReactiveUI
                     return ret;
                 }
 
-                this.Log().DebugFormat("Checking {0:X}.{1}...", this.GetHashCode(), columnName);
+                log.Debug("Checking {0:X}.{1}...", this.GetHashCode(), columnName);
                 ret = getPropertyValidationError(columnName);
-                this.Log().DebugFormat("Validation result: {0}", ret);
+                log.Debug("Validation result: {0}", ret);
 
                 _validationCache[columnName] = ret;
 
@@ -125,7 +128,7 @@ namespace ReactiveUI
                     var pi = RxApp.getPropertyInfoForProperty(pei.Type, propName);
                     v.Validate(pi.GetValue(this, null), ctx);
                 } catch(Exception ex) {
-                    this.Log().InfoFormat("{0:X}.{1} failed validation: {2}", 
+                    log.Info("{0:X}.{1} failed validation: {2}", 
                         this.GetHashCode(), propName, ex.Message);
                     return ex.Message;
                 }
