@@ -77,6 +77,7 @@
     </CodeAnalysisDependentAssemblyPaths>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ErrorsTest.cs" />
     <Compile Include="MakeObjectReactiveHelperTest.cs" />
     <Compile Include="ObservableAsyncMRUCacheTest.cs" />
     <Compile Include="MessageBusTest.cs" />
