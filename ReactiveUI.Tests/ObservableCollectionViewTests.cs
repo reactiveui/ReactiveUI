@@ -156,17 +156,17 @@ namespace ReactiveUI.Tests
 
         public class Mock : ReactiveObject
         {
-            string name;
+            string _Name;
             public string Name
             {
-                get { return name; }
+                get { return _Name; }
                 set { this.RaiseAndSetIfChanged(x => x.Name, value); }
             }
 
-            bool enabled;
+            bool _Enabled;
             public bool Enabled
             {
-                get { return enabled; }
+                get { return _Enabled; }
                 set { this.RaiseAndSetIfChanged(x => x.Enabled, value); }
             }
         }
