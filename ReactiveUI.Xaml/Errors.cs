@@ -94,6 +94,33 @@ namespace ReactiveUI.Xaml
             return Disposable.Create(() => registeredUserErrorHandlers.Remove(errorHandler));
         }
 
+        public static IDisposable RegisterHandler<TException>(Func<TException, RecoveryOptionResult?> errorHandler)
+            where TException : UserError
+        {
+            return RegisterHandler(x => {
+                if (!(x is TException)) {
+                    return null;
+                }
+
+                return errorHandler((TException) x);
+            });
+        }
+
+        public static IDisposable AddRecoveryOption(IRecoveryCommand command, Func<UserError, bool> filter = null)
+        {
+            return RegisterHandler(x => {
+                if (filter != null && !filter(x)) {
+                    return null;
+                }
+
+                if (!x.RecoveryOptions.Contains(command)) {
+                    x.RecoveryOptions.Add(command);
+                }
+
+                return null;
+            });
+        }
+
         public static IDisposable OverrideHandlersForTesting(Func<UserError, RecoveryOptionResult?> errorHandler)
         {
             overriddenRegisteredUserErrorHandlers = errorHandler;
