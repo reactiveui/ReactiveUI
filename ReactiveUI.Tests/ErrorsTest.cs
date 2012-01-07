@@ -7,6 +7,11 @@ using Xunit;
 
 namespace ReactiveUI.Tests
 {
+    class MyAwesomeUserError : UserError
+    {
+        public MyAwesomeUserError() : base("Blargh") {}
+    }
+
     public class ErrorsTest
     { 
         [Fact]
@@ -19,8 +24,7 @@ namespace ReactiveUI.Tests
         [Fact]
         public void HandledUserErrorsShouldNotThrow() 
         {
-            using (UserError.RegisterHandler(x => RecoveryOptionResult.RetryOperation)) 
-            {
+            using (UserError.RegisterHandler(x => RecoveryOptionResult.RetryOperation)) {
                 var result = UserError.Throw("This should catch!");
                 Assert.Equal(RecoveryOptionResult.RetryOperation, result);
             }
@@ -44,6 +48,19 @@ namespace ReactiveUI.Tests
             }
 
             Assert.Throws<UnhandledUserErrorException>(() => UserError.Throw("This should throw!"));
+        }
+
+        [Fact]
+        public void TypeSpecificFiltersShouldntFireOnOtherExceptions()
+        {
+            using (UserError.RegisterHandler<MyAwesomeUserError>(x => RecoveryOptionResult.CancelOperation)) {
+                var result = UserError.Throw(new MyAwesomeUserError());
+                Assert.Equal(RecoveryOptionResult.RetryOperation, result);
+
+                Assert.Throws<UnhandledUserErrorException>(() => UserError.Throw("This should throw!"));
+            }
+
+            Assert.Throws<UnhandledUserErrorException>(() => UserError.Throw(new MyAwesomeUserError()));
         }
     }
 }
