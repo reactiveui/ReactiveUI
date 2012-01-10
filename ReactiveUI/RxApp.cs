@@ -73,9 +73,9 @@ namespace ReactiveUI
             // NB: In Rx 1.0, Tasks are being scheduled synchronously - i.e. 
             // they're not being run on the Task Pool on other threads. Use
             // the old-school Thread pool instead.
-            TaskpoolScheduler = Scheduler.ThreadPool;
+            //TaskpoolScheduler = Scheduler.ThreadPool;
 
-            //TaskpoolScheduler = Scheduler.TaskPool;
+            TaskpoolScheduler = Scheduler.TaskPool;
 #endif
 
             MessageBus = new MessageBus();
