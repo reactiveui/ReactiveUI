@@ -63,9 +63,9 @@ namespace ReactiveUI.Xaml
         [ThreadStatic] static Func<UserError, RecoveryOptionResult?> overriddenRegisteredUserErrorHandlers;
         static readonly List<Func<UserError, RecoveryOptionResult?>> registeredUserErrorHandlers = new List<Func<UserError, RecoveryOptionResult?>>();
 
-        public static RecoveryOptionResult Throw(string localizedErrorMessage)
+        public static RecoveryOptionResult Throw(string localizedErrorMessage, Exception innerException)
         {
-            return Throw(new UserError(localizedErrorMessage));
+            return Throw(new UserError(localizedErrorMessage, innerException: innerException));
         }
 
         public static RecoveryOptionResult Throw(UserError error)
