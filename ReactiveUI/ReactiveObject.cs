@@ -105,16 +105,16 @@ namespace ReactiveUI
             if (!areChangeNotificationsEnabled)
                 return;
 
+            notifyObservable(new ObservedChange<object, object>() {
+                PropertyName = propertyName, Sender = this, Value = null
+            }, changingSubject);
+
             var handler = this.PropertyChanging;
             if (handler != null) {
                 var e = new PropertyChangingEventArgs(propertyName);
                 handler(this, e);
             }
-
-            notifyObservable(new ObservedChange<object, object>() {
-                PropertyName = propertyName, Sender = this, Value = null
-            }, changingSubject);
-        }
+		}
 
         protected internal void raisePropertyChanged(string propertyName)
         {
