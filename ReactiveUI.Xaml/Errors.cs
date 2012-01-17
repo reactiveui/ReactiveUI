@@ -41,6 +41,7 @@ namespace ReactiveUI.Xaml
             ContextInfo = contextInfo ?? new Dictionary<string, object>();
             UserErrorIcon = StockUserErrorIcon.Warning;
             InnerException = innerException;
+            LocalizedDescription = localizedDescription;
         }
 
         public string Domain { get; protected set; }
