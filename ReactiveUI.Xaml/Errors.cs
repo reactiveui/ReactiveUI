@@ -10,8 +10,10 @@ namespace ReactiveUI.Xaml
 {
     public enum StockUserErrorIcon {
         Critical,
+        Error, 
         Question,
         Warning,
+        Notice,
     };
 
     public interface IRecoveryCommand : ICommand
@@ -51,9 +53,7 @@ namespace ReactiveUI.Xaml
 
         public string LocalizedDescription { get; set; }
         public string LocalizedFailureReason { get; set; }
-        public string LocalizedRecoverySuggestion { get; set; }
         public object UserErrorIcon { get; set; }
-        public string FilePathError { get; set; }
         public Exception InnerException { get; protected set; }
 
 
