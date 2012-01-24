@@ -16,7 +16,7 @@ namespace ReactiveUI.Xaml
         Notice,
     };
 
-    public interface IRecoveryCommand : ICommand
+    public interface IRecoveryCommand : IReactiveCommand
     {
         string LocalizedCommandName { get; }
         RecoveryOptionResult RecoveryResult { get; }
@@ -137,6 +137,17 @@ namespace ReactiveUI.Xaml
         }
 
         public UserError ReportedError { get; protected set; }
+    }
+
+    public class RecoveryCommand : ReactiveCommand, IRecoveryCommand
+    {
+        public string LocalizedCommandName { get; protected set; }
+        public RecoveryOptionResult RecoveryResult { get; set; }
+
+        public RecoveryCommand(string localizedCommandName)
+        {
+            LocalizedCommandName = localizedCommandName;
+        }
     }
 }
 
