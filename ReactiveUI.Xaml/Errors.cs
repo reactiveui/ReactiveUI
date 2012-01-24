@@ -32,14 +32,15 @@ namespace ReactiveUI.Xaml
     {
         public UserError(
                 string localizedDescription,
-                string domain = null,
+                string localizedFailureReason = null,
                 IEnumerable<IRecoveryCommand> recoveryOptions = null,
                 Dictionary<string, object> contextInfo = null,
                 Exception innerException = null)
         {
             RecoveryOptions = new List<IRecoveryCommand>(recoveryOptions ?? Enumerable.Empty<IRecoveryCommand>());
 
-            Domain = domain ?? Assembly.GetCallingAssembly().FullName;
+            LocalizedFailureReason = localizedFailureReason;
+            Domain = Assembly.GetCallingAssembly().FullName;
             ContextInfo = contextInfo ?? new Dictionary<string, object>();
             UserErrorIcon = StockUserErrorIcon.Warning;
             InnerException = innerException;
@@ -144,9 +145,34 @@ namespace ReactiveUI.Xaml
         public string LocalizedCommandName { get; protected set; }
         public RecoveryOptionResult RecoveryResult { get; set; }
 
-        public RecoveryCommand(string localizedCommandName)
+        public RecoveryCommand(string localizedCommandName, Func<object, RecoveryOptionResult> handler = null)
         {
             LocalizedCommandName = localizedCommandName;
+
+            if (handler != null)
+            {
+                this.Subscribe(x => RecoveryResult = handler(x));
+            }
+        }
+
+        public static IRecoveryCommand Ok
+        {
+            get { var ret = new RecoveryCommand("Ok"); ret.Subscribe(_ => ret.RecoveryResult = RecoveryOptionResult.RetryOperation); return ret; }
+        }
+
+        public static IRecoveryCommand Cancel
+        {
+            get { var ret = new RecoveryCommand("Cancel"); ret.Subscribe(_ => ret.RecoveryResult = RecoveryOptionResult.FailOperation); return ret; }
+        }
+
+        public static IRecoveryCommand Yes
+        {
+            get { var ret = new RecoveryCommand("Yes"); ret.Subscribe(_ => ret.RecoveryResult = RecoveryOptionResult.RetryOperation); return ret; }
+        }
+
+        public static IRecoveryCommand No
+        {
+            get { var ret = new RecoveryCommand("No"); ret.Subscribe(_ => ret.RecoveryResult = RecoveryOptionResult.FailOperation); return ret; }
         }
     }
 }
