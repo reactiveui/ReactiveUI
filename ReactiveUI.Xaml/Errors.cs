@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Reactive;
+using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using System.Reflection;
 using System.Collections.Generic;
 using System.Linq;
@@ -76,8 +79,9 @@ namespace ReactiveUI.Xaml
                 new[] { overriddenRegisteredUserErrorHandlers } :
                 registeredUserErrorHandlers.ToArray().Reverse();
 
-            foreach(var handler in handlers) {
-                var result = handler(error);
+            foreach(var handler in handlers)
+            {
+                var result = Observable.Start(() => handler(error), RxApp.DeferredScheduler).First();
                 if (result == null) continue;
 
                 if (result.Value == RecoveryOptionResult.FailOperation)
