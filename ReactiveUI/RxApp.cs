@@ -189,6 +189,7 @@ namespace ReactiveUI
                 "QUALITYTOOLS.TIPS.UNITTEST.ADAPTER",
                 "QUALITYTOOLS.UNITTESTING.SILVERLIGHT",
                 "PEX",
+                "MSBUILD",
                 "NBEHAVE",
             };
 

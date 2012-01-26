@@ -29,7 +29,7 @@ namespace ReactiveUI.Xaml
 
             // Track down the DP for this property
             var prop_name = RxApp.simpleExpressionToPropertyName(property);
-            var fi = typeof(TObj).GetField(prop_name + "Property", BindingFlags.Public | BindingFlags.Static);
+            var fi = typeof(TObj).GetField(prop_name + "Property", BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy);
             var dp = fi.GetValue(This) as DependencyProperty;
 
             return new ObservableFromDPHelper<TObj, TRet>(This, dp, prop_name);

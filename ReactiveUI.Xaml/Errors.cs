@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Windows.Input;
+using System.Reactive.Subjects;
 
 namespace ReactiveUI.Xaml
 {
@@ -53,7 +54,7 @@ namespace ReactiveUI.Xaml
         public string Domain { get; protected set; }
         public Dictionary<string, object> ContextInfo { get; protected set; }
 
-        public List<IRecoveryCommand> RecoveryOptions;
+        public List<IRecoveryCommand> RecoveryOptions { get; protected set; }
 
         public string LocalizedDescription { get; set; }
         public string LocalizedFailureReason { get; set; }
@@ -65,42 +66,45 @@ namespace ReactiveUI.Xaml
         // Static API 
         //
 
-        [ThreadStatic] static Func<UserError, RecoveryOptionResult?> overriddenRegisteredUserErrorHandlers;
-        static readonly List<Func<UserError, RecoveryOptionResult?>> registeredUserErrorHandlers = new List<Func<UserError, RecoveryOptionResult?>>();
+        [ThreadStatic] static Func<UserError, IObservable<RecoveryOptionResult>> overriddenRegisteredUserErrorHandlers;
+        static readonly List<Func<UserError, IObservable<RecoveryOptionResult>>> registeredUserErrorHandlers = new List<Func<UserError, IObservable<RecoveryOptionResult>>>();
 
-        public static RecoveryOptionResult Throw(string localizedErrorMessage, Exception innerException)
+        public static IObservable<RecoveryOptionResult> Throw(string localizedErrorMessage, Exception innerException)
         {
             return Throw(new UserError(localizedErrorMessage, innerException: innerException));
         }
 
-        public static RecoveryOptionResult Throw(UserError error)
+        public static IObservable<RecoveryOptionResult> Throw(UserError error)
         {
             var handlers = (overriddenRegisteredUserErrorHandlers != null) ?
                 new[] { overriddenRegisteredUserErrorHandlers } :
                 registeredUserErrorHandlers.ToArray().Reverse();
 
-            foreach(var handler in handlers)
-            {
-                var result = Observable.Start(() => handler(error), RxApp.DeferredScheduler).First();
-                if (result == null) continue;
+            // NB: This is a little complicated - here's the idea: we have a 
+            // list of handlers that we're running down *in order*. If we find
+            // one that doesn't return null, we're going to return this as an 
+            // Observable with one item (the result).
+            //
+            // If *none* of the handlers are interested in this UserError, we're
+            // going to OnError the Observable.
+            var ret = handlers.ToObservable()
+                .Select(handler => handler(error)).Concat()
+                .Concat(Observable.Throw<RecoveryOptionResult>(new UnhandledUserErrorException(error)))
+                .Take(1)
+                .Multicast(new AsyncSubject<RecoveryOptionResult>());
 
-                if (result.Value == RecoveryOptionResult.FailOperation)
-                    throw new UnhandledUserErrorException(error);
-
-                return result.Value;
-            }
-
-            throw new UnhandledUserErrorException(error);
+            ret.Connect();
+            return ret;
         }
 
-        public static IDisposable RegisterHandler(Func<UserError, RecoveryOptionResult?> errorHandler)
+        public static IDisposable RegisterHandler(Func<UserError, IObservable<RecoveryOptionResult>> errorHandler)
         {
             registeredUserErrorHandlers.Add(errorHandler);
 
             return Disposable.Create(() => registeredUserErrorHandlers.Remove(errorHandler));
         }
 
-        public static IDisposable RegisterHandler<TException>(Func<TException, RecoveryOptionResult?> errorHandler)
+        public static IDisposable RegisterHandler<TException>(Func<TException, IObservable<RecoveryOptionResult>> errorHandler)
             where TException : UserError
         {
             return RegisterHandler(x => {
@@ -123,11 +127,11 @@ namespace ReactiveUI.Xaml
                     x.RecoveryOptions.Add(command);
                 }
 
-                return null;
+                return Observable.Empty<RecoveryOptionResult>();
             });
         }
 
-        public static IDisposable OverrideHandlersForTesting(Func<UserError, RecoveryOptionResult?> errorHandler)
+        public static IDisposable OverrideHandlersForTesting(Func<UserError, IObservable<RecoveryOptionResult>> errorHandler)
         {
             overriddenRegisteredUserErrorHandlers = errorHandler;
             return Disposable.Create(() => overriddenRegisteredUserErrorHandlers = null);
