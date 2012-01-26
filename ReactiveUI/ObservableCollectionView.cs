@@ -61,10 +61,6 @@ namespace ReactiveUI
         {
             var changes = source.ObserveCollectionChanged();
 
-            changes.Where(x => x.Action == NotifyCollectionChangedAction.Reset)
-                .ObserveOn(RxApp.DeferredScheduler)
-                .Subscribe(_ => fetchItems());
-
             changes.Where(hasItemsToAdd)
                 .SelectMany(x => x.NewItems.Cast<T>())
                 .Where(filter)
