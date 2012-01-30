@@ -78,10 +78,15 @@ namespace ReactiveUI
 
             source.ObserveCollectionItemChanged<T>()
                 .Where(updateFilter)
-                .Select(x => x.Sender)
-                .Where(filter)
+                .Select(x => new { Item = x.Sender, Match = filter(x.Sender) })
                 .ObserveOn(RxApp.DeferredScheduler)
-                .Subscribe(updateItem);
+                .Subscribe(x => {
+                    if (x.Match) {
+                        updateItem(x.Item);
+                    } else {
+                        removeItem(x.Item);
+                    }
+                });
         }
 
         public IObservable<int> ViewCountChanged

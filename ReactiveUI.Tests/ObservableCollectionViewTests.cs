@@ -154,6 +154,26 @@ namespace ReactiveUI.Tests
             subject.Select(x => x.Name).AssertAreEqual(new[] { "d", "b", "c", "z" });
         }
 
+        [Fact]
+        public void Remove_when_item_property_changes_donot_meet_filter_criteria_in_reactive_collection() {
+            var source = new ReactiveCollection<Mock>(
+                new List<Mock>
+                {
+                    new Mock{Name = "b"},
+                    new Mock{Name = "a", Enabled = true},
+                    new Mock{Name = "c", Enabled = true}
+                }) {
+                    ChangeTrackingEnabled = true
+                };
+            var subject = new ObservableCollectionView<Mock>(
+                source,
+                x => x.Enabled,
+                null);
+
+            source.ForEach(x => x.Enabled = false);
+            subject.Select(x => x.Name).AssertAreEqual(new string[]{});
+        }
+
         public class Mock : ReactiveObject
         {
             string _Name;
