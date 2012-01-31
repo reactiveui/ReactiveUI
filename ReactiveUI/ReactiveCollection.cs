@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -548,11 +549,12 @@ namespace ReactiveUI
         /// <returns>A new collection whose items are equivalent to
         /// Collection.Select().Where().OrderBy() and will mirror changes 
         /// in the initial collection.</returns>
-        public static ReactiveCollection<TNew> CreateDerivedCollection<T, TNew>(
-                this IEnumerable<T> This,
-                Func<T, TNew> selector,
-                Func<T, bool> filter = null,
-                Func<TNew, TNew, int> orderer = null)
+        public static ReactiveCollection<TNew> CreateDerivedCollection<T, TNew, TDontCare>(
+            this IEnumerable<T> This,
+            Func<T, TNew> selector,
+            IObservable<TDontCare> signalReset,
+            Func<T, bool> filter = null,
+            Func<TNew, TNew, int> orderer = null)
         {
             var thisAsColl = (IList<T>)This;
             var collChanged = new Subject<NotifyCollectionChangedEventArgs>();
@@ -573,6 +575,8 @@ namespace ReactiveUI
             if (filter != null && orderer == null) {
                 throw new Exception("If you specify a filter, you must also specify an ordering function");
             }
+
+            signalReset.Subscribe(_ => collChanged.OnNext(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset)));
 
             collChanged.Subscribe(args => {
                 if (args.Action == NotifyCollectionChangedAction.Reset) {
@@ -625,6 +629,15 @@ namespace ReactiveUI
             });
 
             return ret;
+        }
+
+        public static ReactiveCollection<TNew> CreateDerivedCollection<T, TNew>(
+            this IEnumerable<T> This,
+            Func<T, TNew> selector,
+            Func<T, bool> filter = null,
+            Func<TNew, TNew, int> orderer = null)
+        {
+            return This.CreateDerivedCollection(selector, Observable.Never<Unit>(), filter, orderer);
         }
 
         static int positionForNewItem<T>(IList<T> list, T item, Func<T, T, int> orderer)
