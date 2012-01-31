@@ -265,6 +265,44 @@ namespace ReactiveUI.Tests
             fixture.Clear();
             Assert.Equal(0, output.Count);
         }
+
+        [Fact]
+        public void DerivedCollectionsShouldBeFiltered()
+        {
+            var input = new[] {"Foo", "Bar", "Baz", "Bamf"};
+            var fixture = new ReactiveCollection<TestFixture>(
+                input.Select(x => new TestFixture() { IsOnlyOneWord = x }));
+            var itemsAdded = new List<TestFixture>();
+            var itemsRemoved = new List<TestFixture>();
+
+            var output = fixture.CreateDerivedCollection(x => x, x => x.IsOnlyOneWord[0] == 'F', (l,r) => l.IsOnlyOneWord.CompareTo(r.IsOnlyOneWord));
+            output.ItemsAdded.Subscribe(itemsAdded.Add);
+            output.ItemsRemoved.Subscribe(itemsRemoved.Add);
+
+            Assert.Equal(1, output.Count);
+            Assert.Equal(0, itemsAdded.Count);
+            Assert.Equal(0, itemsRemoved.Count);
+
+            fixture.Add(new TestFixture() {IsOnlyOneWord = "Boof"});
+            Assert.Equal(1, output.Count);
+            Assert.Equal(0, itemsAdded.Count);
+            Assert.Equal(0, itemsRemoved.Count);
+
+            fixture.Add(new TestFixture() {IsOnlyOneWord = "Far"});
+            Assert.Equal(2, output.Count);
+            Assert.Equal(1, itemsAdded.Count);
+            Assert.Equal(0, itemsRemoved.Count);
+
+            fixture.RemoveAt(1); // Remove "Bar"
+            Assert.Equal(2, output.Count);
+            Assert.Equal(1, itemsAdded.Count);
+            Assert.Equal(0, itemsRemoved.Count);
+
+            fixture.RemoveAt(0); // Remove "Foo"
+            Assert.Equal(1, output.Count);
+            Assert.Equal(1, itemsAdded.Count);
+            Assert.Equal(1, itemsRemoved.Count);
+        }
     }
 
 #if SILVERLIGHT
