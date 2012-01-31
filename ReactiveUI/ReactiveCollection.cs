@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Reactive.Concurrency;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -540,54 +541,129 @@ namespace ReactiveUI
         /// </summary>
         /// <param name="selector">A Select function that will be run on each
         /// item.</param>
+        /// <param name="filter">A filter to determine whether to exclude items 
+        /// in the derived collection.</param>
+        /// <param name="orderer">A comparator method to determine the ordering of
+        /// the resulting collection.</param>
         /// <returns>A new collection whose items are equivalent to
-        /// Collection.Select(selector) and will mirror the initial collection.</returns>
+        /// Collection.Select().Where().OrderBy() and will mirror changes 
+        /// in the initial collection.</returns>
         public static ReactiveCollection<TNew> CreateDerivedCollection<T, TNew>(
-            this ObservableCollection<T> This, 
-            Func<T, TNew> selector)
+                this IEnumerable<T> This,
+                Func<T, TNew> selector,
+                Func<T, bool> filter = null,
+                Func<TNew, TNew, int> orderer = null)
         {
-            Contract.Requires(selector != null);
+            var thisAsColl = (IList<T>)This;
+            var collChanged = new Subject<NotifyCollectionChangedEventArgs>();
+            selector = selector ?? (x => (TNew)Convert.ChangeType(x, typeof (TNew)));
 
-            var ret = new ReactiveCollection<TNew>(This.Select(selector));
+            var origEnum = (IEnumerable<T>)thisAsColl;
+            origEnum = (filter != null ? origEnum.Where(filter) : origEnum);
+            var enumerable = origEnum.Select(selector);
+            enumerable = (orderer != null ? enumerable.OrderBy(x => x, new FuncComparator<TNew>(orderer)) : enumerable);
 
-            var coll_changed = new Subject<NotifyCollectionChangedEventArgs>();
-            This.CollectionChanged += (o, e) => coll_changed.OnNext(e);
+            var ret = new ReactiveCollection<TNew>(enumerable);
 
-            /* XXX: Ditto as from above
-            var coll_changed = Observable.FromEvent<NotifyCollectionChangedEventHandler, NotifyCollectionChangedEventArgs>(
-                x => This.CollectionChanged += x, x => This.CollectionChanged -= x);
-             */
+            var incc = This as INotifyCollectionChanged;
+            if (incc != null) {
+                ((INotifyCollectionChanged)This).CollectionChanged += (o, e) => collChanged.OnNext(e);
+            }
 
-            coll_changed.Subscribe(x => {
-                switch(x.Action) {
-                case NotifyCollectionChangedAction.Add:
-                case NotifyCollectionChangedAction.Remove:
-                case NotifyCollectionChangedAction.Replace:
-                    // NB: SL4 fills in OldStartingIndex with -1 on Replace :-/
-                    int old_index = (x.Action == NotifyCollectionChangedAction.Replace ?
-                        x.NewStartingIndex : x.OldStartingIndex);
+            if (filter != null && orderer == null) {
+                throw new Exception("If you specify a filter, you must also specify an ordering function");
+            }
 
-                    if (x.OldItems != null) {
-                        foreach(object _ in x.OldItems) {
-                            ret.RemoveAt(old_index);
+            collChanged.Subscribe(args => {
+                if (args.Action == NotifyCollectionChangedAction.Reset) {
+                    using(ret.SuppressChangeNotifications()) {
+                        ret.Clear();
+                        enumerable.ForEach(ret.Add);
+                    }
+
+                    ret.Reset();
+                    return;
+                }
+
+                int oldIndex = (args.Action == NotifyCollectionChangedAction.Replace ?
+                    args.NewStartingIndex : args.OldStartingIndex);
+
+                if (args.OldItems != null) {
+                    // NB: Tracking removes gets hard, because unless the items
+                    // are objects, we have trouble telling them apart. This code
+                    // is also tart, but it works.
+                    foreach(T x in args.OldItems) {
+                        if (filter != null && !filter(x)) {
+                            continue;
+                        }
+                        if (orderer == null) {
+                            ret.RemoveAt(oldIndex);
+                            continue;
+                        }
+                        for(int i = 0; i < ret.Count; i++) {
+                            if (orderer(ret[i], selector(x)) == 0) {
+                                ret.RemoveAt(i);
+                            }
                         }
                     }
-                    if (x.NewItems != null) {
-                        foreach(T item in x.NewItems.Cast<T>()) {
-                            ret.Insert(x.NewStartingIndex, selector(item));
+                }
+
+                if (args.NewItems != null) {
+                    foreach(T x in args.NewItems) {
+                        if (filter != null && !filter(x)) {
+                            continue;
                         }
+                        if (orderer == null) {
+                            ret.Insert(args.NewStartingIndex, selector(x));
+                            continue;
+                        }
+
+                        var toAdd = selector(x);
+                        ret.Insert(positionForNewItem(ret, toAdd, orderer), toAdd);
                     }
-                    break;
-                case NotifyCollectionChangedAction.Reset:
-                    ret.Clear();
-                    break;
-                default:
-                    break;
                 }
             });
 
             return ret;
         }
+
+        static int positionForNewItem<T>(IList<T> list, T item, Func<T, T, int> orderer)
+        {
+            if (list.Count == 0) {
+                return 0;
+            }
+            if (list.Count == 1) {
+                return orderer(list[0], item) >= 0 ? 1 : 0;
+            }
+
+            // NB: This is the most tart way to do this possible
+            int? prevCmp = null;
+            int cmp;
+            for(int i=0; i < list.Count; i++) {
+                cmp = orderer(list[i], item);
+                if (prevCmp.HasValue && cmp != prevCmp) {
+                    return i;
+                }
+                prevCmp = cmp;
+            }
+
+            return list.Count;
+        }
+        
+    class FuncComparator<T> : IComparer<T>
+    {
+        Func<T, T, int> _inner;
+
+        public FuncComparator(Func<T, T, int> comparer)
+        {
+            _inner = comparer;
+        }
+
+        public int Compare(T x, T y)
+        {
+            return _inner(x, y);
+        }
+    }
     }
 }
 
