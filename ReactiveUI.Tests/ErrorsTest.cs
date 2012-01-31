@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive.Linq;
 using System.Text;
 using ReactiveUI.Xaml;
 using Xunit;
@@ -24,8 +25,8 @@ namespace ReactiveUI.Tests
         [Fact]
         public void HandledUserErrorsShouldNotThrow() 
         {
-            using (UserError.RegisterHandler(x => RecoveryOptionResult.RetryOperation)) {
-                var result = UserError.Throw("This should catch!");
+            using (UserError.RegisterHandler(x => Observable.Return(RecoveryOptionResult.RetryOperation))) {
+                var result = UserError.Throw("This should catch!").First();
                 Assert.Equal(RecoveryOptionResult.RetryOperation, result);
             }
 
@@ -36,14 +37,14 @@ namespace ReactiveUI.Tests
         public void NestedHandlersShouldFireInANestedWay()
         {
             RecoveryOptionResult result;
-            using (UserError.RegisterHandler(x => RecoveryOptionResult.CancelOperation)) {
+            using (UserError.RegisterHandler(x => Observable.Return(RecoveryOptionResult.CancelOperation))) {
 
-                using (UserError.RegisterHandler(x => RecoveryOptionResult.RetryOperation)) {
-                    result = UserError.Throw("This should catch!");
+                using (UserError.RegisterHandler(x => Observable.Return(RecoveryOptionResult.RetryOperation))) {
+                    result = UserError.Throw("This should catch!").First();
                     Assert.Equal(RecoveryOptionResult.RetryOperation, result);
                 }
 
-                result = UserError.Throw("This should catch!");
+                result = UserError.Throw("This should catch!").First();
                 Assert.Equal(RecoveryOptionResult.CancelOperation, result);
             }
 
@@ -53,8 +54,8 @@ namespace ReactiveUI.Tests
         [Fact]
         public void TypeSpecificFiltersShouldntFireOnOtherExceptions()
         {
-            using (UserError.RegisterHandler<MyAwesomeUserError>(x => RecoveryOptionResult.CancelOperation)) {
-                var result = UserError.Throw(new MyAwesomeUserError());
+            using (UserError.RegisterHandler<MyAwesomeUserError>(x => Observable.Return(RecoveryOptionResult.CancelOperation))) {
+                var result = UserError.Throw(new MyAwesomeUserError()).First();
                 Assert.Equal(RecoveryOptionResult.RetryOperation, result);
 
                 Assert.Throws<UnhandledUserErrorException>(() => UserError.Throw("This should throw!"));
