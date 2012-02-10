@@ -155,6 +155,8 @@ namespace ReactiveUI.Xaml
 
     public class RecoveryCommand : ReactiveCommand, IRecoveryCommand
     {
+        public bool IsDefault { get; set; }
+        public bool IsCancel { get; set; }
         public string LocalizedCommandName { get; protected set; }
         public RecoveryOptionResult RecoveryResult { get; set; }
 
