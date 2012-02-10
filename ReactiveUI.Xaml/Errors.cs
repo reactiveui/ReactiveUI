@@ -41,7 +41,7 @@ namespace ReactiveUI.Xaml
                 Dictionary<string, object> contextInfo = null,
                 Exception innerException = null)
         {
-            RecoveryOptions = new List<IRecoveryCommand>(recoveryOptions ?? Enumerable.Empty<IRecoveryCommand>());
+            RecoveryOptions = new ReactiveCollection<IRecoveryCommand>(recoveryOptions ?? Enumerable.Empty<IRecoveryCommand>());
 
             LocalizedFailureReason = localizedFailureReason;
             Domain = Assembly.GetCallingAssembly().FullName;
@@ -54,7 +54,12 @@ namespace ReactiveUI.Xaml
         public string Domain { get; protected set; }
         public Dictionary<string, object> ContextInfo { get; protected set; }
 
-        public List<IRecoveryCommand> RecoveryOptions { get; protected set; }
+        ReactiveCollection<IRecoveryCommand> recoveryOptions;
+        public ReactiveCollection<IRecoveryCommand> RecoveryOptions
+        {
+            get { return recoveryOptions; }
+            protected set { this.RaiseAndSetIfChanged(x => x.RecoveryOptions, value); }
+        }
 
         public string LocalizedDescription { get; set; }
         public string LocalizedFailureReason { get; set; }
