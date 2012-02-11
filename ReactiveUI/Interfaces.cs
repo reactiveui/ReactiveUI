@@ -33,7 +33,7 @@ namespace ReactiveUI
         /// as ObservableForProperty. To retrieve the value for the property,
         /// use the Value() extension method.
         /// </summary>
-        TValue Value { get; }   
+        TValue Value { get; }
     }
 
     public class ObservedChange<TSender, TValue> : IObservedChange<TSender, TValue>
@@ -48,7 +48,7 @@ namespace ReactiveUI
     /// INotifyPropertyChanged that also exposes Observables.
     /// </summary>
     public interface IReactiveNotifyPropertyChanged : INotifyPropertyChanged, INotifyPropertyChanging
-    { 
+    {
         /// <summary>
         /// Represents an Observable that fires *before* a property is about to
         /// be changed. Note that this should not fire duplicate change notifications if a
@@ -78,7 +78,7 @@ namespace ReactiveUI
     /// typed versions of Changing and Changed.
     /// </summary>
     public interface IReactiveNotifyPropertyChanged<TSender> : IReactiveNotifyPropertyChanged
-    {    
+    {
         new IObservable<IObservedChange<TSender, object>> Changing { get; }
         new IObservable<IObservedChange<TSender, object>> Changed { get; }
     }
@@ -133,7 +133,6 @@ namespace ReactiveUI
         /// Count.
         /// </summary>
         IObservable<int> CollectionCountChanging { get; }
-
 
         //
         // Change Tracking
@@ -193,6 +192,18 @@ namespace ReactiveUI
     public interface IMessageBus
     {
         /// <summary>
+        /// Registers a scheduler for the type, which may be specified at runtime, and the contract.
+        /// </summary>
+        /// <remarks>If a scheduler is already registered for the specified runtime and contract, this will overrwrite the existing registration.</remarks>
+        /// <typeparam name="T">The type of the message to listen to.</typeparam>
+        /// <param name="scheduler">The scheduler on which to post the
+        /// notifications for the specified type and contract. RxApp.DeferredScheduler by default.</param>
+        /// <param name="contract">A unique string to distinguish messages with
+        /// identical types (i.e. "MyCoolViewModel") - if the message type is
+        /// only used for one purpose, leave this as null.</param>
+        void RegisterScheduler<T>(IScheduler scheduler, string contract = null);
+
+        /// <summary>
         /// Listen provides an Observable that will fire whenever a Message is
         /// provided for this object via RegisterMessageSource or SendMessage.
         /// </summary>
@@ -204,9 +215,9 @@ namespace ReactiveUI
         IObservable<T> Listen<T>(string contract = null);
 
         /// <summary>
-        /// Determins if a particular message Type is registered.
+        /// Determine   s if a particular message Type is registered.
         /// </summary>
-        /// <typeparam name="T">The type of the message.</typeparam>
+        /// <param name="type">The type of the message.</param>
         /// <param name="contract">A unique string to distinguish messages with
         /// identical types (i.e. "MyCoolViewModel") - if the message type is
         /// only used for one purpose, leave this as null.</param>
@@ -224,7 +235,7 @@ namespace ReactiveUI
         /// <param name="contract">A unique string to distinguish messages with
         /// identical types (i.e. "MyCoolViewModel") - if the message type is
         /// only used for one purpose, leave this as null.</param>
-        IDisposable RegisterMessageSource<T>(IObservable<T> source, string contract = null, IScheduler scheduler = null);
+        IDisposable RegisterMessageSource<T>(IObservable<T> source, string contract = null);
 
         /// <summary>
         /// Sends a single message using the specified Type and contract.
@@ -237,7 +248,7 @@ namespace ReactiveUI
         /// <param name="contract">A unique string to distinguish messages with
         /// identical types (i.e. "MyCoolViewModel") - if the message type is
         /// only used for one purpose, leave this as null.</param>
-        void SendMessage<T>(T message, string contract = null, IScheduler scheduler = null);
+        void SendMessage<T>(T message, string contract = null);
     }
 
 #if DEBUG

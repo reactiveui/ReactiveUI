@@ -1,8 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Reactive.Subjects;
 using NLog;
 
@@ -18,12 +17,31 @@ namespace ReactiveUI
     /// unique string used to distinguish between messages of the same Type, and
     /// is arbitrarily set by the client. 
     /// </summary>
-    public class MessageBus : IMessageBus 
+    public class MessageBus : IMessageBus
     {
         static readonly Logger log = LogManager.GetCurrentClassLogger();
 
-        Dictionary<Tuple<Type, string>, NotAWeakReference> messageBus = 
-            new Dictionary<Tuple<Type,string>,NotAWeakReference>();
+        readonly Dictionary<Tuple<Type, string>, NotAWeakReference> messageBus =
+            new Dictionary<Tuple<Type, string>, NotAWeakReference>();
+
+        readonly IDictionary<Tuple<Type, string>, IScheduler> schedulerMappings =
+            new Dictionary<Tuple<Type, string>, IScheduler>();
+
+
+        /// <summary>
+        /// Registers a scheduler for the type, which may be specified at runtime, and the contract.
+        /// </summary>
+        /// <remarks>If a scheduler is already registered for the specified runtime and contract, this will overrwrite the existing registration.</remarks>
+        /// <typeparam name="T">The type of the message to listen to.</typeparam>
+        /// <param name="scheduler">The scheduler on which to post the
+        /// notifications for the specified type and contract. RxApp.DeferredScheduler by default.</param>
+        /// <param name="contract">A unique string to distinguish messages with
+        /// identical types (i.e. "MyCoolViewModel") - if the message type is
+        /// only used for one purpose, leave this as null.</param>
+        public void RegisterScheduler<T>(IScheduler scheduler, string contract = null)
+        {
+            schedulerMappings[new Tuple<Type, string>(typeof (T), contract)] = scheduler;
+        }
 
         /// <summary>
         /// Listen provides an Observable that will fire whenever a Message is
@@ -37,15 +55,13 @@ namespace ReactiveUI
         /// message bus.</returns>
         public IObservable<T> Listen<T>(string contract = null)
         {
-            IObservable<T> ret = null;
-            log.Info("Listening to {0}:{1}", typeof(T), contract);
+            log.Info("Listening to {0}:{1}", typeof (T), contract);
 
-            ret = setupSubjectIfNecessary<T>(contract, null);
-            return ret;
+            return SetupSubjectIfNecessary<T>(contract);
         }
 
         /// <summary>
-        /// Determins if a particular message Type is registered.
+        /// Determines if a particular message Type is registered.
         /// </summary>
         /// <param name="type">The Type of the message to listen to.</param>
         /// <param name="contract">A unique string to distinguish messages with
@@ -55,9 +71,7 @@ namespace ReactiveUI
         public bool IsRegistered(Type type, string contract = null)
         {
             bool ret = false;
-            withMessageBus(type, contract, (mb, tuple) => {
-                ret = mb.ContainsKey(tuple) && mb[tuple].IsAlive;
-            });
+            WithMessageBus(type, contract, (mb, tuple) => { ret = mb.ContainsKey(tuple) && mb[tuple].IsAlive; });
 
             return ret;
         }
@@ -73,14 +87,11 @@ namespace ReactiveUI
         /// <param name="contract">A unique string to distinguish messages with
         /// identical types (i.e. "MyCoolViewModel") - if the message type is
         /// only used for one purpose, leave this as null.</param>
-        /// <param name="scheduler">The scheduler on which to post the
-        /// notifications, RxApp.DeferredScheduler by default.</param>
         public IDisposable RegisterMessageSource<T>(
-            IObservable<T> source, 
-            string contract = null, 
-            IScheduler scheduler = null)
+            IObservable<T> source,
+            string contract = null)
         {
-            return source.Subscribe(setupSubjectIfNecessary<T>(contract, scheduler));
+            return source.Subscribe(SetupSubjectIfNecessary<T>(contract));
         }
 
         /// <summary>
@@ -94,52 +105,57 @@ namespace ReactiveUI
         /// <param name="contract">A unique string to distinguish messages with
         /// identical types (i.e. "MyCoolViewModel") - if the message type is
         /// only used for one purpose, leave this as null.</param>
-        /// <param name="scheduler">The scheduler on which to post the
-        /// notifications, RxApp.DeferredScheduler by default.</param>
-        public void SendMessage<T>(T message, string contract = null, IScheduler scheduler = null)
+        public void SendMessage<T>(T message, string contract = null)
         {
-            setupSubjectIfNecessary<T>(contract, scheduler).OnNext(message);
+            SetupSubjectIfNecessary<T>(contract).OnNext(message);
         }
 
         /// <summary>
         /// Returns the Current MessageBus from the RxApp global object.
         /// </summary>
-        public static IMessageBus Current {
+        public static IMessageBus Current
+        {
             get { return RxApp.MessageBus; }
         }
 
-        ISubject<T> setupSubjectIfNecessary<T>(string contract, IScheduler scheduler)
+        ISubject<T> SetupSubjectIfNecessary<T>(string contract)
         {
-            scheduler = scheduler ?? RxApp.DeferredScheduler;
             ISubject<T> ret = null;
-            NotAWeakReference subjRef = null;
 
-            withMessageBus(typeof(T), contract, (mb, tuple) => {
+            WithMessageBus(typeof (T), contract, (mb, tuple) => {
+                NotAWeakReference subjRef;
                 if (mb.TryGetValue(tuple, out subjRef) && subjRef.IsAlive) {
-                    ret = (ISubject<T>) subjRef.Target;
+                    ret = (ISubject<T>)subjRef.Target;
                     return;
                 }
 
-                ret = new ScheduledSubject<T>(scheduler);
+                ret = new ScheduledSubject<T>(GetScheduler(tuple));
                 mb[tuple] = new NotAWeakReference(ret);
             });
 
             return ret;
         }
 
-        void withMessageBus(
-            Type Type, 
-            string Contract, 
-            Action<Dictionary<Tuple<Type, string>, NotAWeakReference>, 
-            Tuple<Type, string>> block)
+        void WithMessageBus(
+            Type type,
+            string contract,
+            Action<Dictionary<Tuple<Type, string>, NotAWeakReference>,
+                Tuple<Type, string>> block)
         {
-            lock(messageBus) {
-                var tuple = new Tuple<Type, String>(Type, Contract);
+            lock (messageBus) {
+                var tuple = new Tuple<Type, String>(type, contract);
                 block(messageBus, tuple);
                 if (messageBus.ContainsKey(tuple) && !messageBus[tuple].IsAlive) {
                     messageBus.Remove(tuple);
                 }
             }
+        }
+
+        IScheduler GetScheduler(Tuple<Type, string> tuple)
+        {
+            IScheduler scheduler;
+            schedulerMappings.TryGetValue(tuple, out scheduler);
+            return scheduler ?? RxApp.DeferredScheduler;
         }
     }
 
@@ -150,6 +166,7 @@ namespace ReactiveUI
         /// messages; this allows a ViewModel to listen to another ViewModel's
         /// changes in a loosely-typed manner.
         /// </summary>
+        /// <param name="This">The message bus this extends.</param>
         /// <param name="source">The ViewModel to register</param>
         /// <param name="contract">A unique string to distinguish messages with
         /// identical types (i.e. "MyCoolViewModel") - if the message type is
@@ -159,61 +176,63 @@ namespace ReactiveUI
         public static void RegisterViewModel<T>(this IMessageBus This, T source, string contract = null)
             where T : IReactiveNotifyPropertyChanged
         {
-            string contractName = viewModelContractName(typeof(T), contract);
-            if (This.IsRegistered(typeof(ObservedChange<T, object>), contractName)) {
-                throw new Exception(typeof(T).FullName + " must be a singleton class or have a unique contract name");
+            string contractName = ViewModelContractName(typeof (T), contract);
+            if (This.IsRegistered(typeof (ObservedChange<T, object>), contractName)) {
+                throw new Exception(typeof (T).FullName + " must be a singleton class or have a unique contract name");
             }
 
             This.RegisterMessageSource(
                 (source.Changed)
-                    .Select(x => new ObservedChange<T, object>() { Sender = source, PropertyName = x.PropertyName }), 
+                    .Select(x => new ObservedChange<T, object> {Sender = source, PropertyName = x.PropertyName}),
                 contractName);
 
             This.RegisterMessageSource(
-                 Observable.Defer(() => Observable.Return(source)), 
-                 viewModelCurrentValueContractName(typeof(T), contract));
+                Observable.Defer(() => Observable.Return(source)),
+                ViewModelCurrentValueContractName(typeof (T), contract));
         }
 
         /// <summary>
         /// Listens to a registered ViewModel's property change notifications.
         /// </summary>
+        /// <param name="This">The message bus this extends</param>
         /// <param name="contract">A unique string to distinguish messages with
         /// identical types (i.e. "MyCoolViewModel") - if the message type is
         /// only used for one purpose, leave this as null.</param>
         /// <returns>An Observable that fires when an object changes and
         /// provides the property name that has changed.</returns>
         public static IObservable<ObservedChange<T, object>> ListenToViewModel<T>(
-            this IMessageBus This, 
+            this IMessageBus This,
             string contract = null)
         {
-            return This.Listen<ObservedChange<T, object>>(viewModelContractName(typeof(T), contract));
+            return This.Listen<ObservedChange<T, object>>(ViewModelContractName(typeof (T), contract));
         }
 
         /// <summary>
         /// Return the current instance of the ViewModel with the specified
         /// type.
         /// </summary>
+        /// <param name="This">The message bus this extends</param>
         /// <param name="contract">A unique string to distinguish messages with
         /// identical types (i.e. "MyCoolViewModel") - if the message type is
         /// only used for one purpose, leave this as null.</param>
         /// <returns>The ViewModel object registered for this type.</returns>
         public static T ViewModelForType<T>(this IMessageBus This, string contract = null)
         {
-            return This.Listen<T>(viewModelCurrentValueContractName(typeof(T), contract)).First();
+            return This.Listen<T>(ViewModelCurrentValueContractName(typeof (T), contract)).First();
         }
 
-        static string viewModelContractName(Type type, string contract)
+        static string ViewModelContractName(Type type, string contract)
         {
             return type.FullName + "_" + (contract ?? String.Empty);
         }
 
-        static string viewModelCurrentValueContractName(Type type, string contract)
+        static string ViewModelCurrentValueContractName(Type type, string contract)
         {
-            return viewModelContractName(type, contract) + "__current";
+            return ViewModelContractName(type, contract) + "__current";
         }
     }
 
-    internal class NotAWeakReference
+    class NotAWeakReference
     {
         public NotAWeakReference(object target)
         {
@@ -221,7 +240,11 @@ namespace ReactiveUI
         }
 
         public object Target { get; private set; }
-        public bool IsAlive { get { return true; } }
+
+        public bool IsAlive
+        {
+            get { return true; }
+        }
     }
 }
 
