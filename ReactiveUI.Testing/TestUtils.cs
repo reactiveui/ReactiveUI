@@ -131,7 +131,6 @@ namespace ReactiveUI.Testing
         /// incremental, it sets the time.</param>
         public static void RunToMilliseconds(this TestScheduler sched, double milliseconds)
         {
-            Console.WriteLine("Running to time t={0}", milliseconds);
             sched.AdvanceTo(sched.FromTimeSpan(TimeSpan.FromMilliseconds(milliseconds)));
         }
 
