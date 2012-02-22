@@ -45,6 +45,7 @@ namespace ReactiveUI
             _BeforeItemsAdded = new ScheduledSubject<T>(RxApp.DeferredScheduler);
             _BeforeItemsRemoved = new ScheduledSubject<T>(RxApp.DeferredScheduler);
             aboutToClear = new Subject<int>();
+            cleared = new Subject<int>();
 
             if (List != null) {
                 foreach(var v in List) { this.Add(v); }
@@ -80,7 +81,7 @@ namespace ReactiveUI
             );
 
             _CollectionCountChanged = ocChangedEvent
-                .Select(x => this.Count)
+                .Select(x => this.Count()).Merge(cleared)
                 .DistinctUntilChanged();
 
             _ItemChanging = new ScheduledSubject<IObservedChange<T, object>>(RxApp.DeferredScheduler);
@@ -204,6 +205,9 @@ namespace ReactiveUI
 
         [IgnoreDataMember]
         protected Subject<int> aboutToClear;
+
+        [IgnoreDataMember]
+        protected Subject<int> cleared;
 
         [IgnoreDataMember]
         protected IObservable<int> _CollectionCountChanging;
@@ -368,6 +372,7 @@ namespace ReactiveUI
             }
 
             Reset();
+            cleared.OnNext(0);
         }
 
         public void Dispose()
