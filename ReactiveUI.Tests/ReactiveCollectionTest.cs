@@ -1,16 +1,12 @@
-﻿using System.Reactive.Linq;
-using Microsoft.Reactive.Testing;
-using Xunit;
-using System;
-using System.Linq;
+﻿using System;
 using System.Collections.Generic;
-using ReactiveUI;
 using System.IO;
+using System.Linq;
+using System.Reactive.Linq;
 using System.Text;
+using Microsoft.Reactive.Testing;
 using ReactiveUI.Testing;
-using ReactiveUI.Tests;
-using System.Runtime.Serialization.Json;
-using System.Threading;
+using Xunit;
 
 namespace ReactiveUI.Tests
 {
@@ -39,6 +35,18 @@ namespace ReactiveUI.Tests
             var results = new[]{1,2,3,2,0};
             Assert.Equal(results.Length, output.Count);
             results.AssertAreEqual(output);
+        }
+
+        [Fact]           
+        public void CollectionCountChangedFiresWhenClearing()
+        {
+            var items = new ReactiveCollection<object>(new []{new object()});
+            bool countChanged = false;
+            items.CollectionCountChanged.Subscribe(_ => {countChanged = true;});
+
+            items.Clear();
+
+            Assert.True(countChanged);
         }
 
         [Fact]
