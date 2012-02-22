@@ -80,9 +80,11 @@ namespace ReactiveUI
                 aboutToClear
             );
 
-            _CollectionCountChanged = ocChangedEvent
-                .Select(x => this.Count()).Merge(cleared)
-                .DistinctUntilChanged();
+            _CollectionCountChanged = Observable.Merge(
+                _ItemsAdded.Select(_ => this.Count),
+                _ItemsRemoved.Select(_ => this.Count),
+                cleared
+            );
 
             _ItemChanging = new ScheduledSubject<IObservedChange<T, object>>(RxApp.DeferredScheduler);
             _ItemChanged = new ScheduledSubject<IObservedChange<T,object>>(RxApp.DeferredScheduler);
