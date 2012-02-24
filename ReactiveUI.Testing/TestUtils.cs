@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Reactive;
 using System.Reactive.Disposables;
+using System.Threading;
 using Microsoft.Reactive.Testing;
 using ReactiveUI;
 using System.Reactive.Concurrency;
@@ -9,6 +10,9 @@ namespace ReactiveUI.Testing
 {
     public static class TestUtils
     {
+        static readonly object schedGate = 42;
+        static readonly object mbGate = 42;
+
         /// <summary>
         /// WithScheduler overrides the default Deferred and Taskpool schedulers
         /// with the given scheduler until the return value is disposed. This
@@ -20,6 +24,7 @@ namespace ReactiveUI.Testing
         /// schedulers.</returns>
         public static IDisposable WithScheduler(IScheduler sched)
         {
+            Monitor.Enter(schedGate);
             var prevDef = RxApp.DeferredScheduler;
             var prevTask = RxApp.TaskpoolScheduler;
 
@@ -29,6 +34,7 @@ namespace ReactiveUI.Testing
             return Disposable.Create(() => {
                 RxApp.DeferredScheduler = prevDef;
                 RxApp.TaskpoolScheduler = prevTask;
+                Monitor.Exit(schedGate);
             });
         }
 
@@ -103,8 +109,13 @@ namespace ReactiveUI.Testing
         {
             var origMessageBus = RxApp.MessageBus;
 
+            Monitor.Enter(mbGate);
             RxApp.MessageBus = messageBus ?? new MessageBus();
-            return Disposable.Create(() => RxApp.MessageBus = origMessageBus);
+            return Disposable.Create(() =>
+            {
+                RxApp.MessageBus = origMessageBus;
+                Monitor.Exit(mbGate);
+            });
         }
 
         /// <summary>
