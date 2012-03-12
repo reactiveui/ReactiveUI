@@ -319,7 +319,7 @@ namespace ReactiveUI.Tests
         public static string Serialize<T>(T obj)
         {
             using (var mstream = new MemoryStream()) { 
-                var serializer = new DataContractJsonSerializer(obj.GetType());  
+                var serializer = new System.Runtime.Serialization.Json.DataContractJsonSerializer(obj.GetType());  
                 serializer.WriteObject(mstream, obj);  
                 mstream.Position = 0;  
   
@@ -331,7 +331,7 @@ namespace ReactiveUI.Tests
 
         public static T Deserialize<T>(string json)
         {
-            var serializer = new DataContractJsonSerializer(typeof(T));
+            var serializer = new System.Runtime.Serialization.Json.DataContractJsonSerializer(typeof(T));
             return (T)serializer.ReadObject(
                 new MemoryStream(System.Text.Encoding.Unicode.GetBytes(json)));
         }

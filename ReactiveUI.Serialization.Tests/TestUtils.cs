@@ -5,7 +5,6 @@ using System.Diagnostics.Contracts;
 using System.Reactive.Disposables;
 using System.Linq;
 using System.Reactive;
-using Microsoft.Reactive.Testing;
 using System.Runtime.Serialization;
 using Microsoft.Reactive.Testing;
 
