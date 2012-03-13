@@ -74,10 +74,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Silverlight.Testing">
-      <HintPath>$(MSBuildExtensionsPath)\..\Microsoft SDKs\Silverlight\v4.0\Toolkit\Apr10\Testing\Microsoft.Silverlight.Testing.dll</HintPath>
+      <HintPath>..\ext\SL5\Microsoft.Silverlight.Testing.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight">
-      <HintPath>$(MSBuildExtensionsPath)\..\Microsoft SDKs\Silverlight\v4.0\Toolkit\Apr10\Testing\Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll</HintPath>
+      <HintPath>..\ext\SL5\Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json.Silverlight, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
