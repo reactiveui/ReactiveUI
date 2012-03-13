@@ -11,7 +11,7 @@ namespace ReactiveUI.Tests
     public class TestFixture : ReactiveObject
     {
         [DataMember]
-        string _IsNotNullString;
+        public string _IsNotNullString;
         [IgnoreDataMember]
         public string IsNotNullString {
             get { return _IsNotNullString; }
@@ -19,7 +19,7 @@ namespace ReactiveUI.Tests
         }
 
         [DataMember]
-        string _IsOnlyOneWord;
+        public string _IsOnlyOneWord;
         [IgnoreDataMember]
         public string IsOnlyOneWord {
             get { return _IsOnlyOneWord; }
@@ -27,7 +27,7 @@ namespace ReactiveUI.Tests
         }
 
         [DataMember]
-        string _UsesExprRaiseSet;
+        public string _UsesExprRaiseSet;
         [IgnoreDataMember]
         public string UsesExprRaiseSet {
             get { return _UsesExprRaiseSet; }
@@ -35,7 +35,7 @@ namespace ReactiveUI.Tests
         }
 
         [DataMember]
-        string _PocoProperty;
+        public string _PocoProperty;
         [IgnoreDataMember]
         public string PocoProperty {
             get { return _PocoProperty; }
