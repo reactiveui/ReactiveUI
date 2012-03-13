@@ -20,7 +20,7 @@
     <GenerateSilverlightManifest>true</GenerateSilverlightManifest>
     <XapFilename>ReactiveUI.Tests_SL5.xap</XapFilename>
     <SilverlightManifestTemplate>Properties\AppManifest.xml</SilverlightManifestTemplate>
-    <SilverlightAppEntry>ReactiveUI.Tests_SL5.App</SilverlightAppEntry>
+    <SilverlightAppEntry>ReactiveUI.Tests.App</SilverlightAppEntry>
     <TestPageFileName>TestPage.html</TestPageFileName>
     <CreateTestPage>true</CreateTestPage>
     <ValidateXaml>true</ValidateXaml>
@@ -74,12 +74,12 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Silverlight.Testing">
-      <HintPath>$(MSBuildExtensionsPath)\..\Microsoft SDKs\Silverlight\v4.0\Toolkit\Apr10\Testing\Microsoft.Silverlight.Testing.dll</HintPath>
+      <HintPath>..\ext\SL5\Microsoft.Silverlight.Testing.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight">
-      <HintPath>$(MSBuildExtensionsPath)\..\Microsoft SDKs\Silverlight\v4.0\Toolkit\Apr10\Testing\Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll</HintPath>
+      <HintPath>..\ext\SL5\Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll</HintPath>
     </Reference>
-    <Reference Include="System.ComponentModel.DataAnnotations, Version=2.0.5.0, Culture=neutral, PublicKeyToken=ddd0da4d3e678217, processorArchitecture=MSIL" />
+    <Reference Include="System.ComponentModel.DataAnnotations, Version=5.0.5.0, Culture=neutral, PublicKeyToken=ddd0da4d3e678217, processorArchitecture=MSIL" />
     <Reference Include="System.Reactive">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\ext\SL5\System.Reactive.dll</HintPath>
@@ -89,7 +89,7 @@
       <HintPath>..\ext\SL5\Microsoft.Reactive.Testing.dll</HintPath>
     </Reference>
     <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="System.Runtime.Serialization.Json, Version=2.0.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="System.Runtime.Serialization.Json, Version=5.0.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="System.ServiceModel.Web" />
     <Reference Include="System.Windows" />
     <Reference Include="mscorlib" />
@@ -138,19 +138,19 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ReactiveUI.Blend\ReactiveUI.Blend_SL5.csproj">
-      <Project>{5314BB4C-20AE-4B6A-8530-862640A5F956}</Project>
+      <Project>{1E453720-AEE5-4B34-8660-7AD86E5E05AF}</Project>
       <Name>ReactiveUI.Blend_SL5</Name>
     </ProjectReference>
     <ProjectReference Include="..\ReactiveUI.Xaml\ReactiveUI.Xaml_SL5.csproj">
-      <Project>{AE8FF678-935D-42CF-A899-6E73DF9A3B0B}</Project>
+      <Project>{73804A79-A9FC-48FD-8F7C-E796415A8B3A}</Project>
       <Name>ReactiveUI.Xaml_SL5</Name>
     </ProjectReference>
     <ProjectReference Include="..\ReactiveUI.Testing\ReactiveUI.Testing_SL5.csproj">
-      <Project>{44EDFE94-F913-473B-8B47-505F2A2EFFD8}</Project>
+      <Project>{435E1011-E9FE-4E61-8B6D-2627DC6D1F06}</Project>
       <Name>ReactiveUI.Testing_SL5</Name>
     </ProjectReference>
     <ProjectReference Include="..\ReactiveUI\ReactiveUI_SL5.csproj">
-      <Project>{3DB8B68E-1229-45A5-90CD-6F72D086FDFF}</Project>
+      <Project>{B3381C78-C099-4902-89D4-B879AA83BFC9}</Project>
       <Name>ReactiveUI_SL5</Name>
     </ProjectReference>
   </ItemGroup>

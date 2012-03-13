@@ -63,6 +63,9 @@
     <Reference Include="System.Windows" />
     <Reference Include="system" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Windows.Interactivity, Version=5.0.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\ext\SL5\System.Windows.Interactivity.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="System.Net" />
     <Reference Include="System.Windows.Browser" />
@@ -75,11 +78,11 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ReactiveUI.Xaml\ReactiveUI.Xaml_SL5.csproj">
-      <Project>{AE8FF678-935D-42CF-A899-6E73DF9A3B0B}</Project>
+      <Project>{73804A79-A9FC-48FD-8F7C-E796415A8B3A}</Project>
       <Name>ReactiveUI.Xaml_SL5</Name>
     </ProjectReference>
     <ProjectReference Include="..\ReactiveUI\ReactiveUI_SL5.csproj">
-      <Project>{3DB8B68E-1229-45A5-90CD-6F72D086FDFF}</Project>
+      <Project>{B3381C78-C099-4902-89D4-B879AA83BFC9}</Project>
       <Name>ReactiveUI_SL5</Name>
     </ProjectReference>
   </ItemGroup>
