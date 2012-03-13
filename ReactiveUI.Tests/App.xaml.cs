@@ -2,7 +2,7 @@
 using System.Windows;
 using Microsoft.Silverlight.Testing;
 
-namespace ReactiveUI.Tests_SL4
+namespace ReactiveUI.Tests
 {
     public partial class App : Application
     {

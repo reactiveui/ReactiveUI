@@ -1,6 +1,6 @@
 ﻿<Application xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
-             x:Class="ReactiveUI.Tests_SL4.App">
+             x:Class="ReactiveUI.Tests.App">
     <Application.Resources>
         
     </Application.Resources>
