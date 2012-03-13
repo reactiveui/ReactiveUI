@@ -492,7 +492,7 @@ namespace ReactiveUI
 
             // On a timer, dequeue items from queue if they are available
             var queue = new Queue<T>();
-            var disconnect = Observable.Timer(withDelay.Value, RxApp.DeferredScheduler)
+            var disconnect = Observable.Timer(withDelay.Value, withDelay.Value, RxApp.DeferredScheduler)
                 .Subscribe(_ => {
                     if (queue.Count > 0) { 
                         ret.Add(queue.Dequeue());
