@@ -73,10 +73,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.Silverlight.Testing">
+    <Reference Include="Microsoft.Silverlight.Testing, Version=2.0.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\ext\SL5\Microsoft.Silverlight.Testing.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight">
+    <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight, Version=2.0.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\ext\SL5\Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll</HintPath>
     </Reference>
     <Reference Include="System.ComponentModel.DataAnnotations, Version=5.0.5.0, Culture=neutral, PublicKeyToken=ddd0da4d3e678217, processorArchitecture=MSIL" />
