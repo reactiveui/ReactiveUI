@@ -4,6 +4,134 @@
         <name>Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight</name>
     </assembly>
     <members>
+        <member name="T:Microsoft.VisualStudio.TestTools.UnitTesting.Web.UrlToTestAttribute">
+            <summary>
+            UrlToTest specifies the url that should be requested to give context to the test.
+            </summary>
+        </member>
+        <member name="M:Microsoft.VisualStudio.TestTools.UnitTesting.Web.UrlToTestAttribute.#ctor(System.String)">
+            <summary>
+            An unused attribute.
+            </summary>
+            <param name="urlToTest"></param>
+        </member>
+        <member name="P:Microsoft.VisualStudio.TestTools.UnitTesting.Web.UrlToTestAttribute.UrlToTest">
+            <summary>
+            Gets the URL to test.
+            </summary>
+        </member>
+        <member name="T:Microsoft.VisualStudio.TestTools.UnitTesting.Web.AspNetDevelopmentServerAttribute">
+            <summary>
+            AspNetDevelopmentServer specifies the settings to be used for the
+            ASP.NET Development Server for the test.
+            </summary>
+        </member>
+        <member name="M:Microsoft.VisualStudio.TestTools.UnitTesting.Web.AspNetDevelopmentServerAttribute.#ctor(System.String,System.String)">
+            <summary>
+            Initializes the AspNetDevelopmentServerAttribute.
+            </summary>
+            <param name="name">The name.</param>
+            <param name="pathToWebApp">The path to web app.</param>
+        </member>
+        <member name="M:Microsoft.VisualStudio.TestTools.UnitTesting.Web.AspNetDevelopmentServerAttribute.#ctor(System.String,System.String,System.String)">
+            <summary>
+            Initializes the AspNetDevelopmentServerAttribute.
+            </summary>
+            <param name="name">The name.</param>
+            <param name="pathToWebApp">The path to web app.</param>
+            <param name="webAppRoot">The web app root.</param>
+        </member>
+        <member name="P:Microsoft.VisualStudio.TestTools.UnitTesting.Web.AspNetDevelopmentServerAttribute.Name">
+            <summary>
+            Gets the name.
+            </summary>
+        </member>
+        <member name="P:Microsoft.VisualStudio.TestTools.UnitTesting.Web.AspNetDevelopmentServerAttribute.PathToWebApp">
+            <summary>
+            Gets the PathToWebApp.
+            </summary>
+        </member>
+        <member name="P:Microsoft.VisualStudio.TestTools.UnitTesting.Web.AspNetDevelopmentServerAttribute.WebAppRoot">
+            <summary>
+            Gets the web app root.
+            </summary>
+        </member>
+        <member name="T:Microsoft.VisualStudio.TestTools.UnitTesting.Web.AspNetDevelopmentServerHostAttribute">
+            <summary>
+            AspNetDevelopmentServerHost specifies the settings to be used when
+            ASP.NET Development Server is the host server for the test.
+            </summary>
+        </member>
+        <member name="M:Microsoft.VisualStudio.TestTools.UnitTesting.Web.AspNetDevelopmentServerHostAttribute.#ctor(System.String)">
+            <summary>
+            Initializes the AspNetDevelopmentServerHostAttribute.
+            </summary>
+            <param name="pathToWebApp">The path to the web app.</param>
+        </member>
+        <member name="M:Microsoft.VisualStudio.TestTools.UnitTesting.Web.AspNetDevelopmentServerHostAttribute.#ctor(System.String,System.String)">
+            <summary>
+            Initializes the AspNetDevelopmentServerHostAttribute.
+            </summary>
+            <param name="pathToWebApp">The path to the web app.</param>
+            <param name="webAppRoot">The web app root.</param>
+        </member>
+        <member name="P:Microsoft.VisualStudio.TestTools.UnitTesting.Web.AspNetDevelopmentServerHostAttribute.PathToWebApp">
+            <summary>
+            Gets the path to the web application.
+            </summary>
+        </member>
+        <member name="P:Microsoft.VisualStudio.TestTools.UnitTesting.Web.AspNetDevelopmentServerHostAttribute.WebAppRoot">
+            <summary>
+            Gets the WebAppRoot.
+            </summary>
+        </member>
+        <member name="T:Microsoft.VisualStudio.TestTools.UnitTesting.Web.CredentialAttribute">
+            <summary>
+            For ASP.NET sites that require basic authentication, specify the
+            user name and password using the Credential attribute.
+            WARNING: The password is stored in plain text in source code
+            and in the compiled assembly. Restrict access to the source code
+            and assembly to protect this sensitive information.
+            </summary>
+        </member>
+        <member name="M:Microsoft.VisualStudio.TestTools.UnitTesting.Web.CredentialAttribute.#ctor(System.String,System.String)">
+            <summary>
+            Specify the user name and password needed to access the web site under test.
+            </summary>
+            <param name="userName">The user name.</param>
+            <param name="password">
+            The password. WARNING: The password is stored in plain text in source code
+            and in the compiled assembly. Restrict access to the source code and assembly
+            to protect this sensitive information.
+            </param>
+        </member>
+        <member name="M:Microsoft.VisualStudio.TestTools.UnitTesting.Web.CredentialAttribute.#ctor(System.String,System.String,System.String)">
+            <summary>
+            Specify the user name, password, and domain needed to access the web site under test.
+            </summary>
+            <param name="userName">The user name.</param>
+            <param name="password">
+            The password. WARNING: The password is stored in plain text in source code
+            and in the compiled assembly. Restrict access to the source code and assembly
+            to protect this sensitive information.
+            </param>
+            <param name="domain">The domain.</param>
+        </member>
+        <member name="P:Microsoft.VisualStudio.TestTools.UnitTesting.Web.CredentialAttribute.UserName">
+            <summary>
+            Gets the user name.
+            </summary>
+        </member>
+        <member name="P:Microsoft.VisualStudio.TestTools.UnitTesting.Web.CredentialAttribute.Password">
+            <summary>
+            Gets the password.
+            </summary>
+        </member>
+        <member name="P:Microsoft.VisualStudio.TestTools.UnitTesting.Web.CredentialAttribute.Domain">
+            <summary>
+            Gets the domain.
+            </summary>
+        </member>
         <member name="T:Microsoft.VisualStudio.TestTools.UnitTesting.UnitTestAssertException">
             <summary>
             Base class for Framework Exceptions, provides localization trick so that messages are in HA locale.
@@ -2508,134 +2636,6 @@
         <member name="P:Microsoft.VisualStudio.TestTools.UnitTesting.GenericParameterHelper.Data">
             <summary>
             Gets or sets the Data property.
-            </summary>
-        </member>
-        <member name="T:Microsoft.VisualStudio.TestTools.UnitTesting.Web.UrlToTestAttribute">
-            <summary>
-            UrlToTest specifies the url that should be requested to give context to the test.
-            </summary>
-        </member>
-        <member name="M:Microsoft.VisualStudio.TestTools.UnitTesting.Web.UrlToTestAttribute.#ctor(System.String)">
-            <summary>
-            An unused attribute.
-            </summary>
-            <param name="urlToTest"></param>
-        </member>
-        <member name="P:Microsoft.VisualStudio.TestTools.UnitTesting.Web.UrlToTestAttribute.UrlToTest">
-            <summary>
-            Gets the URL to test.
-            </summary>
-        </member>
-        <member name="T:Microsoft.VisualStudio.TestTools.UnitTesting.Web.AspNetDevelopmentServerAttribute">
-            <summary>
-            AspNetDevelopmentServer specifies the settings to be used for the
-            ASP.NET Development Server for the test.
-            </summary>
-        </member>
-        <member name="M:Microsoft.VisualStudio.TestTools.UnitTesting.Web.AspNetDevelopmentServerAttribute.#ctor(System.String,System.String)">
-            <summary>
-            Initializes the AspNetDevelopmentServerAttribute.
-            </summary>
-            <param name="name">The name.</param>
-            <param name="pathToWebApp">The path to web app.</param>
-        </member>
-        <member name="M:Microsoft.VisualStudio.TestTools.UnitTesting.Web.AspNetDevelopmentServerAttribute.#ctor(System.String,System.String,System.String)">
-            <summary>
-            Initializes the AspNetDevelopmentServerAttribute.
-            </summary>
-            <param name="name">The name.</param>
-            <param name="pathToWebApp">The path to web app.</param>
-            <param name="webAppRoot">The web app root.</param>
-        </member>
-        <member name="P:Microsoft.VisualStudio.TestTools.UnitTesting.Web.AspNetDevelopmentServerAttribute.Name">
-            <summary>
-            Gets the name.
-            </summary>
-        </member>
-        <member name="P:Microsoft.VisualStudio.TestTools.UnitTesting.Web.AspNetDevelopmentServerAttribute.PathToWebApp">
-            <summary>
-            Gets the PathToWebApp.
-            </summary>
-        </member>
-        <member name="P:Microsoft.VisualStudio.TestTools.UnitTesting.Web.AspNetDevelopmentServerAttribute.WebAppRoot">
-            <summary>
-            Gets the web app root.
-            </summary>
-        </member>
-        <member name="T:Microsoft.VisualStudio.TestTools.UnitTesting.Web.AspNetDevelopmentServerHostAttribute">
-            <summary>
-            AspNetDevelopmentServerHost specifies the settings to be used when
-            ASP.NET Development Server is the host server for the test.
-            </summary>
-        </member>
-        <member name="M:Microsoft.VisualStudio.TestTools.UnitTesting.Web.AspNetDevelopmentServerHostAttribute.#ctor(System.String)">
-            <summary>
-            Initializes the AspNetDevelopmentServerHostAttribute.
-            </summary>
-            <param name="pathToWebApp">The path to the web app.</param>
-        </member>
-        <member name="M:Microsoft.VisualStudio.TestTools.UnitTesting.Web.AspNetDevelopmentServerHostAttribute.#ctor(System.String,System.String)">
-            <summary>
-            Initializes the AspNetDevelopmentServerHostAttribute.
-            </summary>
-            <param name="pathToWebApp">The path to the web app.</param>
-            <param name="webAppRoot">The web app root.</param>
-        </member>
-        <member name="P:Microsoft.VisualStudio.TestTools.UnitTesting.Web.AspNetDevelopmentServerHostAttribute.PathToWebApp">
-            <summary>
-            Gets the path to the web application.
-            </summary>
-        </member>
-        <member name="P:Microsoft.VisualStudio.TestTools.UnitTesting.Web.AspNetDevelopmentServerHostAttribute.WebAppRoot">
-            <summary>
-            Gets the WebAppRoot.
-            </summary>
-        </member>
-        <member name="T:Microsoft.VisualStudio.TestTools.UnitTesting.Web.CredentialAttribute">
-            <summary>
-            For ASP.NET sites that require basic authentication, specify the
-            user name and password using the Credential attribute.
-            WARNING: The password is stored in plain text in source code
-            and in the compiled assembly. Restrict access to the source code
-            and assembly to protect this sensitive information.
-            </summary>
-        </member>
-        <member name="M:Microsoft.VisualStudio.TestTools.UnitTesting.Web.CredentialAttribute.#ctor(System.String,System.String)">
-            <summary>
-            Specify the user name and password needed to access the web site under test.
-            </summary>
-            <param name="userName">The user name.</param>
-            <param name="password">
-            The password. WARNING: The password is stored in plain text in source code
-            and in the compiled assembly. Restrict access to the source code and assembly
-            to protect this sensitive information.
-            </param>
-        </member>
-        <member name="M:Microsoft.VisualStudio.TestTools.UnitTesting.Web.CredentialAttribute.#ctor(System.String,System.String,System.String)">
-            <summary>
-            Specify the user name, password, and domain needed to access the web site under test.
-            </summary>
-            <param name="userName">The user name.</param>
-            <param name="password">
-            The password. WARNING: The password is stored in plain text in source code
-            and in the compiled assembly. Restrict access to the source code and assembly
-            to protect this sensitive information.
-            </param>
-            <param name="domain">The domain.</param>
-        </member>
-        <member name="P:Microsoft.VisualStudio.TestTools.UnitTesting.Web.CredentialAttribute.UserName">
-            <summary>
-            Gets the user name.
-            </summary>
-        </member>
-        <member name="P:Microsoft.VisualStudio.TestTools.UnitTesting.Web.CredentialAttribute.Password">
-            <summary>
-            Gets the password.
-            </summary>
-        </member>
-        <member name="P:Microsoft.VisualStudio.TestTools.UnitTesting.Web.CredentialAttribute.Domain">
-            <summary>
-            Gets the domain.
             </summary>
         </member>
         <member name="T:Microsoft.VisualStudio.TestTools.UnitTesting.RuntimeTypeHelper">
