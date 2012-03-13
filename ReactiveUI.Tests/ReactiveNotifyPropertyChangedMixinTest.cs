@@ -57,7 +57,7 @@ namespace ReactiveUI.Tests
 
     public class ObjChain1 : ReactiveObject
     {
-        ObjChain2 _Model = new ObjChain2();
+        public ObjChain2 _Model = new ObjChain2();
         public ObjChain2 Model {
             get { return _Model; }
             set { this.RaiseAndSetIfChanged(x => x.Model, value); }
@@ -66,7 +66,7 @@ namespace ReactiveUI.Tests
 
     public class ObjChain2 : ReactiveObject
     {
-        ObjChain3 _Model = new ObjChain3();
+        public ObjChain3 _Model = new ObjChain3();
         public ObjChain3 Model {
             get { return _Model; }
             set { this.RaiseAndSetIfChanged(x => x.Model, value); }
@@ -75,7 +75,7 @@ namespace ReactiveUI.Tests
 
     public class ObjChain3 : ReactiveObject
     {
-        HostTestFixture _Model = new HostTestFixture();
+        public HostTestFixture _Model = new HostTestFixture();
         public HostTestFixture Model {
             get { return _Model; }
             set { this.RaiseAndSetIfChanged(x => x.Model, value); }
