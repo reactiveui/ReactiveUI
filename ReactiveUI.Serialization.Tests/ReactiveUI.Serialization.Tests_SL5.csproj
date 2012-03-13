@@ -73,26 +73,17 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.Moles.Framework">
-      <HintPath>..\..\..\..\..\Program Files (x86)\Microsoft Moles\PublicAssembliesSilverlight\Microsoft.Moles.Framework.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="Microsoft.Silverlight.Testing">
-      <HintPath>$(MSBuildExtensionsPath)\..\Microsoft SDKs\Silverlight\v4.0\Toolkit\Apr10\Testing\Microsoft.Silverlight.Testing.dll</HintPath>
+      <HintPath>..\ext\SL5\Microsoft.Silverlight.Testing.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight">
-      <HintPath>$(MSBuildExtensionsPath)\..\Microsoft SDKs\Silverlight\v4.0\Toolkit\Apr10\Testing\Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll</HintPath>
+      <HintPath>..\ext\SL5\Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json.Silverlight, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\ext\SL5\Newtonsoft.Json.Silverlight.dll</HintPath>
     </Reference>
-    <Reference Include="System.ComponentModel.DataAnnotations, Version=2.0.5.0, Culture=neutral, PublicKeyToken=ddd0da4d3e678217, processorArchitecture=MSIL" />
-    <Reference Include="System.Observable">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\ext\SL5\System.Observable.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
+    <Reference Include="System.ComponentModel.DataAnnotations, Version=5.0.5.0, Culture=neutral, PublicKeyToken=ddd0da4d3e678217, processorArchitecture=MSIL" />
     <Reference Include="System.Reactive">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\ext\SL5\System.Reactive.dll</HintPath>
@@ -143,19 +134,19 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ReactiveUI.Serialization\ReactiveUI.Serialization_SL5.csproj">
-      <Project>{3DB8B68E-1229-45A5-90CD-6F72D086FD3F}</Project>
+      <Project>{7AF8CC6E-C01D-4258-B40F-ADAA52F89632}</Project>
       <Name>ReactiveUI.Serialization_SL5</Name>
     </ProjectReference>
     <ProjectReference Include="..\ReactiveUI.Tests\ReactiveUI.Tests_SL5.csproj">
-      <Project>{AA0B1C80-97AE-49F5-8310-5A7683BE47BF}</Project>
+      <Project>{007E6D54-44FE-45BA-A364-AD108B7C6CDF}</Project>
       <Name>ReactiveUI.Tests_SL5</Name>
     </ProjectReference>
     <ProjectReference Include="..\ReactiveUI.Testing\ReactiveUI.Testing_SL5.csproj">
-      <Project>{44EDFE94-F913-473B-8B47-505F2A2EFFD8}</Project>
+      <Project>{435E1011-E9FE-4E61-8B6D-2627DC6D1F06}</Project>
       <Name>ReactiveUI.Testing_SL5</Name>
     </ProjectReference>
     <ProjectReference Include="..\ReactiveUI\ReactiveUI_SL5.csproj">
-      <Project>{3DB8B68E-1229-45A5-90CD-6F72D086FDFF}</Project>
+      <Project>{B3381C78-C099-4902-89D4-B879AA83BFC9}</Project>
       <Name>ReactiveUI_SL5</Name>
     </ProjectReference>
   </ItemGroup>

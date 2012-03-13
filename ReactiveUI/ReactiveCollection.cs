@@ -565,7 +565,9 @@ namespace ReactiveUI
         {
             var thisAsColl = (IList<T>)This;
             var collChanged = new Subject<NotifyCollectionChangedEventArgs>();
-            selector = selector ?? (x => (TNew)Convert.ChangeType(x, typeof (TNew)));
+
+            if ( selector == null )
+              selector = (x => (TNew)Convert.ChangeType(x, typeof (TNew), Thread.CurrentThread.CurrentCulture));
 
             var origEnum = (IEnumerable<T>)thisAsColl;
             origEnum = (filter != null ? origEnum.Where(filter) : origEnum);

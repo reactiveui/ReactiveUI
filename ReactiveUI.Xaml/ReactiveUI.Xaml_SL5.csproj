@@ -56,6 +56,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="mscorlib" />
+    <Reference Include="NLog">
+      <HintPath>..\packages\NLog.2.0.0.2000\lib\sl4\NLog.dll</HintPath>
+    </Reference>
     <Reference Include="System.Reactive">
       <Private>True</Private>
       <HintPath>..\ext\SL5\System.Reactive.dll</HintPath>
@@ -77,7 +80,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ReactiveUI\ReactiveUI_SL5.csproj">
-      <Project>{3DB8B68E-1229-45A5-90CD-6F72D086FDFF}</Project>
+      <Project>{B3381C78-C099-4902-89D4-B879AA83BFC9}</Project>
       <Name>ReactiveUI_SL5</Name>
     </ProjectReference>
   </ItemGroup>
