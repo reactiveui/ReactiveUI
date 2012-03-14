@@ -179,7 +179,14 @@ namespace ReactiveUI
             IScheduler scheduler = null)
             where TObj : ReactiveObject
         {
-            return source.ObservableToProperty(This, property, initialValue, scheduler);
+            var ret = source.ObservableToProperty(This, property, initialValue, scheduler);
+
+            string propName = RxApp.simpleExpressionToPropertyName(property);
+
+            var fi = RxApp.getFieldInfoForProperty<TObj>(propName);
+            fi.SetValue(source, ret);
+
+            return ret;
         }
     }
 }
