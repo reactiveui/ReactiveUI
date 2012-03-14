@@ -58,18 +58,6 @@
     <Compile Include="Utility.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ReactiveUI.Serialization.Esent\ReactiveUI.Serialization.Esent.csproj">
-      <Project>{0B0ABDC8-4EF3-4172-ADE4-E4FB55E5F91E}</Project>
-      <Name>ReactiveUI.Serialization.Esent</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\ReactiveUI.Serialization.Tests\ReactiveUI.Serialization.Tests.csproj">
-      <Project>{ACA93E36-5301-4F2B-95C8-70897574506B}</Project>
-      <Name>ReactiveUI.Serialization.Tests</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\ReactiveUI.Serialization\ReactiveUI.Serialization.csproj">
-      <Project>{C6A9A8EC-FDA6-45C1-9694-298D44E3C55F}</Project>
-      <Name>ReactiveUI.Serialization</Name>
-    </ProjectReference>
     <ProjectReference Include="..\ReactiveUI.Tests\ReactiveUI.Tests.csproj">
       <Project>{6FBDE6EA-2202-4A70-8EE4-7BA6D515952E}</Project>
       <Name>ReactiveUI.Tests</Name>
