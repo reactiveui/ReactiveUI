@@ -66,10 +66,6 @@
       <Project>{67038157-092E-4D72-BAF4-049EB1532264}</Project>
       <Name>ReactiveUI.Routing</Name>
     </ProjectReference>
-    <ProjectReference Include="..\ReactiveUI.Serialization\ReactiveUI.Serialization.csproj">
-      <Project>{C6A9A8EC-FDA6-45C1-9694-298D44E3C55F}</Project>
-      <Name>ReactiveUI.Serialization</Name>
-    </ProjectReference>
     <ProjectReference Include="..\ReactiveUI.Testing\ReactiveUI.Testing.csproj">
       <Project>{E1F2AD19-276E-4D05-A41A-89AA133CECFC}</Project>
       <Name>ReactiveUI.Testing</Name>
