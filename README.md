@@ -82,3 +82,5 @@ of the inflight requests have been satisfied.
 some of log4net's syntax with the ubiquity of the Rails logger - any class that
 implements the dummy IEnableLogger interface will able to access a logger for
 that class (i.e. `this.Log().Warn("Something bad happened!");`)
+
+This is Totally Awesome
