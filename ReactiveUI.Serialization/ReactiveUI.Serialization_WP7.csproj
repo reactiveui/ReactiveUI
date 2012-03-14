@@ -69,6 +69,9 @@
     <Reference Include="Newtonsoft.Json.WindowsPhone">
       <HintPath>..\ext\WP7\Newtonsoft.Json.WindowsPhone.dll</HintPath>
     </Reference>
+    <Reference Include="NLog">
+      <HintPath>..\packages\NLog.2.0.0.2000\lib\sl3-wp\NLog.dll</HintPath>
+    </Reference>
     <Reference Include="System.Observable" />
     <Reference Include="System.Reactive">
       <SpecificVersion>False</SpecificVersion>
