@@ -54,10 +54,10 @@ namespace ReactiveUI.Xaml
         public string Domain { get; protected set; }
         public Dictionary<string, object> ContextInfo { get; protected set; }
 
-        ReactiveCollection<IRecoveryCommand> recoveryOptions;
+        ReactiveCollection<IRecoveryCommand> _RecoveryOptions;
         public ReactiveCollection<IRecoveryCommand> RecoveryOptions
         {
-            get { return recoveryOptions; }
+            get { return _RecoveryOptions; }
             protected set { this.RaiseAndSetIfChanged(x => x.RecoveryOptions, value); }
         }
 
