@@ -1,0 +1,1811 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>System.Reactive.Core</name>
+    </assembly>
+    <members>
+        <member name="T:System.Reactive.ExperimentalAttribute">
+            <summary>
+            Marks the program elements that are experimental. This class cannot be inherited.
+            </summary>
+        </member>
+        <member name="T:System.ObservableExtensions">
+            <summary>
+            Provides a set of static methods for subscribing delegates to observables.
+            </summary>
+        </member>
+        <member name="M:System.ObservableExtensions.Subscribe``1(System.IObservable{``0})">
+            <summary>
+            Evaluates the observable sequence.
+            </summary>
+            <param name="source">Observable sequence to subscribe to.</param>
+            <returns>IDisposable object used to unsubscribe from the observable sequence.</returns>
+        </member>
+        <member name="M:System.ObservableExtensions.Subscribe``1(System.IObservable{``0},System.Action{``0})">
+            <summary>
+            Subscribes an element handler to an observable sequence.
+            </summary>
+            <param name="source">Observable sequence to subscribe to.</param>
+            <param name="onNext">Action to invoke for each element in the observable sequence.</param>
+            <returns>IDisposable object used to unsubscribe from the observable sequence.</returns>
+        </member>
+        <member name="M:System.ObservableExtensions.Subscribe``1(System.IObservable{``0},System.Action{``0},System.Action{System.Exception})">
+            <summary>
+            Subscribes an element handler and an exception handler to an observable sequence.
+            </summary>
+            <param name="source">Observable sequence to subscribe to.</param>
+            <param name="onNext">Action to invoke for each element in the observable sequence.</param>
+            <param name="onError">Action to invoke upon exceptional termination of the observable sequence.</param>
+            <returns>IDisposable object used to unsubscribe from the observable sequence.</returns>
+        </member>
+        <member name="M:System.ObservableExtensions.Subscribe``1(System.IObservable{``0},System.Action{``0},System.Action)">
+            <summary>
+            Subscribes an element handler and a completion handler to an observable sequence.
+            </summary>
+            <param name="source">Observable sequence to subscribe to.</param>
+            <param name="onNext">Action to invoke for each element in the observable sequence.</param>
+            <param name="onCompleted">Action to invoke upon graceful termination of the observable sequence.</param>
+            <returns>IDisposable object used to unsubscribe from the observable sequence.</returns>
+        </member>
+        <member name="M:System.ObservableExtensions.Subscribe``1(System.IObservable{``0},System.Action{``0},System.Action{System.Exception},System.Action)">
+            <summary>
+            Subscribes an element handler, an exception handler, and a completion handler to an observable sequence.
+            </summary>
+            <param name="source">Observable sequence to subscribe to.</param>
+            <param name="onNext">Action to invoke for each element in the observable sequence.</param>
+            <param name="onError">Action to invoke upon exceptional termination of the observable sequence.</param>
+            <param name="onCompleted">Action to invoke upon graceful termination of the observable sequence.</param>
+            <returns>IDisposable object used to unsubscribe from the observable sequence.</returns>
+        </member>
+        <member name="T:System.Reactive.Observer">
+            <summary>
+            Provides a set of static methods for creating observers.
+            </summary>
+        </member>
+        <member name="M:System.Reactive.Observer.ToObserver``1(System.Action{System.Reactive.Notification{``0}})">
+            <summary>
+            Creates an observer from a notification callback.
+            </summary>
+            <param name="handler">Action that handles a notification.</param>
+            <returns>The observer object that invokes the specified handler using a notification corresponding to each message it receives.</returns>
+        </member>
+        <member name="M:System.Reactive.Observer.ToNotifier``1(System.IObserver{``0})">
+            <summary>
+            Creates a notification callback from an observer.
+            </summary>
+            <param name="observer">Observer object.</param>
+            <returns>The action that forwards its input notification to the underlying observer.</returns>
+        </member>
+        <member name="M:System.Reactive.Observer.Create``1(System.Action{``0})">
+            <summary>
+            Creates an observer from the specified OnNext action.
+            </summary>
+            <param name="onNext">Observer's OnNext action implementation.</param>
+            <returns>The observer object implemented using the given actions.</returns>
+        </member>
+        <member name="M:System.Reactive.Observer.Create``1(System.Action{``0},System.Action{System.Exception})">
+            <summary>
+            Creates an observer from the specified OnNext and OnError actions.
+            </summary>
+            <param name="onNext">Observer's OnNext action implementation.</param>
+            <param name="onError">Observer's OnError action implementation.</param>
+            <returns>The observer object implemented using the given actions.</returns>
+        </member>
+        <member name="M:System.Reactive.Observer.Create``1(System.Action{``0},System.Action)">
+            <summary>
+            Creates an observer from the specified OnNext and OnCompleted actions.
+            </summary>
+            <param name="onNext">Observer's OnNext action implementation.</param>
+            <param name="onCompleted">Observer's OnCompleted action implementation.</param>
+            <returns>The observer object implemented using the given actions.</returns>
+        </member>
+        <member name="M:System.Reactive.Observer.Create``1(System.Action{``0},System.Action{System.Exception},System.Action)">
+            <summary>
+            Creates an observer from the specified OnNext, OnError, and OnCompleted actions.
+            </summary>
+            <param name="onNext">Observer's OnNext action implementation.</param>
+            <param name="onError">Observer's OnError action implementation.</param>
+            <param name="onCompleted">Observer's OnCompleted action implementation.</param>
+            <returns>The observer object implemented using the given actions.</returns>
+        </member>
+        <member name="M:System.Reactive.Observer.AsObserver``1(System.IObserver{``0})">
+            <summary>
+            Hides the identity of an observer.
+            </summary>
+            <param name="observer">An observer whose identity to hide.</param>
+            <returns>An observer that hides the identity of the specified observer.</returns>
+        </member>
+        <member name="M:System.Reactive.Observer.Synchronize``1(System.IObserver{``0},System.Object)">
+            <summary>
+            Synchronizes the observer messages.
+            </summary>
+            <param name="observer">The observer to synchronize.</param>
+            <param name="gate">Gate object to synchronize each observer call on.</param>
+            <returns>The observer whose messages are synchronized on the given gate object.</returns>
+        </member>
+        <member name="M:System.Reactive.Observer.Synchronize``1(System.IObserver{``0})">
+            <summary>
+            Synchronizes the observer messages.
+            </summary>
+            <param name="observer">The observer to synchronize.</param>
+            <returns>The observer whose messages are synchronized.</returns>
+        </member>
+        <member name="M:System.Reactive.Observer.NotifyOn``1(System.IObserver{``0},System.Reactive.Concurrency.IScheduler)">
+            <summary>
+            Schedules the observer messages on the given scheduler.
+            </summary>
+            <param name="observer">The observer to schedule messages for.</param>
+            <param name="scheduler">Scheduler to schedule observer messages on.</param>
+            <returns>Observer whose messages are scheduled on the given scheduler.</returns>
+        </member>
+        <member name="M:System.Reactive.Observer.NotifyOn``1(System.IObserver{``0},System.Threading.SynchronizationContext)">
+            <summary>
+            Schedules the observer messages on the given synchonization context.
+            </summary>
+            <param name="observer">The observer to schedule messages for.</param>
+            <param name="context">Synchonization context to schedule observer messages on.</param>
+            <returns>Observer whose messages are scheduled on the given synchonization context.</returns>
+        </member>
+        <member name="M:System.Reactive.Observer.ToProgress``1(System.IObserver{``0})">
+            <summary>
+            Converts an observer to a progress object.
+            </summary>
+            <param name="observer">The observer to convert.</param>
+            <returns>Progress object whose Report messages correspond to the observer's OnNext messages.</returns>
+        </member>
+        <member name="M:System.Reactive.Observer.ToProgress``1(System.IObserver{``0},System.Reactive.Concurrency.IScheduler)">
+            <summary>
+            Converts an observer to a progress object.
+            </summary>
+            <param name="observer">The observer to convert.</param>
+            <param name="scheduler">Scheduler to report progress on.</param>
+            <returns>Progress object whose Report messages correspond to the observer's OnNext messages.</returns>
+        </member>
+        <member name="M:System.Reactive.Observer.ToObserver``1(System.IProgress{``0})">
+            <summary>
+            Converts a progress object to an observer.
+            </summary>
+            <param name="progress">The progress object to convert.</param>
+            <returns>Observer whose OnNext messages correspond to the progress object's Report messages.</returns>
+        </member>
+        <member name="T:System.Reactive.AnonymousObservable`1">
+            <summary>
+            Allows to create an IObservable&lt;T&gt; instance from a delegate-based implementation of the Subscribe method.
+            </summary>
+            <typeparam name="T">Sequence element type.</typeparam>
+        </member>
+        <member name="T:System.Reactive.ObservableBase`1">
+            <summary>
+            Abstract base class for implementors of the IObservable&lt;T&gt; interface.
+            </summary>
+            <remarks>
+            If you don't need a named type to create an observable sequence (i.e. you rather need
+            an instance rather than a reusable type), use the Observable.Create method to create
+            an observable sequence with specified subscription behavior.
+            </remarks>
+            <typeparam name="T">Sequence element type.</typeparam>
+        </member>
+        <member name="M:System.Reactive.ObservableBase`1.Subscribe(System.IObserver{`0})">
+            <summary>
+            Subscribes the given observer to the observable sequence.
+            </summary>
+            <param name="observer">Observer that will receive notifications from the observable sequence.</param>
+            <returns>Disposable object representing an observer's subscription to the observable sequence.</returns>
+        </member>
+        <member name="M:System.Reactive.ObservableBase`1.SubscribeCore(System.IObserver{`0})">
+            <summary>
+            Implement this method with the core subscription logic for the observable sequence.
+            </summary>
+            <param name="observer">Observer to send notifications to.</param>
+            <returns>Disposable object representing an observer's subscription to the observable sequence.</returns>
+        </member>
+        <member name="M:System.Reactive.AnonymousObservable`1.#ctor(System.Func{System.IObserver{`0},System.IDisposable})">
+            <summary>
+            Creates an observable from the specified subscribe method.
+            </summary>
+            <param name="subscribe">Observable's Subscribe method implementation.</param>
+        </member>
+        <member name="M:System.Reactive.AnonymousObservable`1.SubscribeCore(System.IObserver{`0})">
+            <summary>
+            Calls the subscribe method.
+            </summary>
+        </member>
+        <member name="T:System.Reactive.AnonymousObserver`1">
+            <summary>
+            Allows to create an IObserver&lt;T&gt; instance from delegate-based implementations of the On* methods.
+            </summary>
+            <typeparam name="T">Sequence element type.</typeparam>
+        </member>
+        <member name="T:System.Reactive.ObserverBase`1">
+            <summary>
+            Abstract base class for implementors of the IObserver&lt;T&gt; interface.
+            </summary>
+            <remarks>This base class enforces the grammar of observers where OnError and OnCompleted are terminal messages.</remarks>
+            <typeparam name="T">Sequence element type.</typeparam>
+        </member>
+        <member name="M:System.Reactive.ObserverBase`1.#ctor">
+            <summary>
+            Creates a new observer in a non-stopped state.
+            </summary>
+        </member>
+        <member name="M:System.Reactive.ObserverBase`1.OnNext(`0)">
+            <summary>
+            Notifies the observer of a new element in the sequence.
+            </summary>
+            <param name="value">Next element in the sequence.</param>
+        </member>
+        <member name="M:System.Reactive.ObserverBase`1.Next(`0)">
+            <summary>
+            Implement this method to react to the receival of a new element in the sequence.
+            </summary>
+            <param name="value">Next element in the sequence.</param>
+            <remarks>This method only gets called when the observer hasn't stopped yet.</remarks>
+        </member>
+        <member name="M:System.Reactive.ObserverBase`1.OnError(System.Exception)">
+            <summary>
+            Notifies the observer that an exception has occurred.
+            </summary>
+            <param name="error">The error that has occurred.</param>
+        </member>
+        <member name="M:System.Reactive.ObserverBase`1.Error(System.Exception)">
+            <summary>
+            Implement this method to react to the occurrence of an exception.
+            </summary>
+            <param name="error">The error that has occurred.</param>
+            <remarks>This method only gets called when the observer hasn't stopped yet, and causes the observer to stop.</remarks>
+        </member>
+        <member name="M:System.Reactive.ObserverBase`1.OnCompleted">
+            <summary>
+            Notifies the observer of the end of the sequence.
+            </summary>
+        </member>
+        <member name="M:System.Reactive.ObserverBase`1.Completed">
+            <summary>
+            Implement this method to react to the end of the sequence.
+            </summary>
+            <remarks>This method only gets called when the observer hasn't stopped yet, and causes the observer to stop.</remarks>
+        </member>
+        <member name="M:System.Reactive.ObserverBase`1.Dispose">
+            <summary>
+            Disposes the observer, causing it to transition to the stopped state.
+            </summary>
+        </member>
+        <member name="M:System.Reactive.AnonymousObserver`1.#ctor(System.Action{`0},System.Action{System.Exception},System.Action)">
+            <summary>
+            Creates an observer from the specified OnNext, OnError, and OnCompleted actions.
+            </summary>
+            <param name="onNext">Observer's OnNext action implementation.</param>
+            <param name="onError">Observer's OnError action implementation.</param>
+            <param name="onCompleted">Observer's OnCompleted action implementation.</param>
+        </member>
+        <member name="M:System.Reactive.AnonymousObserver`1.#ctor(System.Action{`0})">
+            <summary>
+            Creates an observer from the specified OnNext action.
+            </summary>
+            <param name="onNext">Observer's OnNext action implementation.</param>
+        </member>
+        <member name="M:System.Reactive.AnonymousObserver`1.#ctor(System.Action{`0},System.Action{System.Exception})">
+            <summary>
+            Creates an observer from the specified OnNext and OnError actions.
+            </summary>
+            <param name="onNext">Observer's OnNext action implementation.</param>
+            <param name="onError">Observer's OnError action implementation.</param>
+        </member>
+        <member name="M:System.Reactive.AnonymousObserver`1.#ctor(System.Action{`0},System.Action)">
+            <summary>
+            Creates an observer from the specified OnNext and OnCompleted actions.
+            </summary>
+            <param name="onNext">Observer's OnNext action implementation.</param>
+            <param name="onCompleted">Observer's OnCompleted action implementation.</param>
+        </member>
+        <member name="M:System.Reactive.AnonymousObserver`1.Next(`0)">
+            <summary>
+            Calls the onNext action.
+            </summary>
+        </member>
+        <member name="M:System.Reactive.AnonymousObserver`1.Error(System.Exception)">
+            <summary>
+            Calls the onError action.
+            </summary>
+        </member>
+        <member name="M:System.Reactive.AnonymousObserver`1.Completed">
+            <summary>
+            Calls the onCompleted action.
+            </summary>
+        </member>
+        <member name="T:System.Reactive.Concurrency.AsyncLock">
+            <summary>
+            Asynchronous lock.
+            </summary>
+        </member>
+        <member name="M:System.Reactive.Concurrency.AsyncLock.Wait(System.Action)">
+            <summary>
+            Queues the action for execution. If the caller acquires the lock and becomes the owner,
+            the queue is processed. If the lock is already owned, the action is queued and will get
+            processed by the owner.
+            </summary>
+            <param name="action">Action to queue for execution.</param>
+        </member>
+        <member name="T:System.Reactive.Concurrency.ConcurrencyAbstractionLayer">
+            <summary>
+            (Infrastructure) Concurrency abstraction layer.
+            </summary>
+        </member>
+        <member name="P:System.Reactive.Concurrency.ConcurrencyAbstractionLayer.Current">
+            <summary>
+            Gets the current CAL. If no CAL has been set yet, it will be initialized to the default.
+            </summary>
+        </member>
+        <member name="T:System.Reactive.Concurrency.IConcurrencyAbstractionLayer">
+            <summary>
+            (Infrastructure) Concurrency abstraction layer interface.
+            </summary>
+        </member>
+        <member name="M:System.Reactive.Concurrency.IConcurrencyAbstractionLayer.StartTimer(System.Action{System.Object},System.Object,System.TimeSpan)">
+            <summary>
+            Queues a method for execution at the specified relative time.
+            </summary>
+            <param name="action">Method to execute.</param>
+            <param name="state">State to pass to the method.</param>
+            <param name="dueTime">Time to execute the method on.</param>
+            <returns>Disposable object that can be used to cancel the queued method.</returns>
+        </member>
+        <member name="M:System.Reactive.Concurrency.IConcurrencyAbstractionLayer.QueueUserWorkItem(System.Action{System.Object},System.Object)">
+            <summary>
+            Queues a method for execution.
+            </summary>
+            <param name="action">Method to execute.</param>
+            <param name="state">State to pass to the method.</param>
+            <returns>Disposable object that can be used to cancel the queued method.</returns>
+        </member>
+        <member name="M:System.Reactive.Concurrency.IConcurrencyAbstractionLayer.Sleep(System.TimeSpan)">
+            <summary>
+            Blocking sleep operation.
+            </summary>
+            <param name="timeout">Time to sleep.</param>
+        </member>
+        <member name="M:System.Reactive.Concurrency.IConcurrencyAbstractionLayer.GetStopwatch">
+            <summary>
+            Gets a new stopwatch object.
+            </summary>
+            <returns>New stopwatch object; started at the time of the request.</returns>
+        </member>
+        <member name="T:System.Reactive.Concurrency.CurrentThreadScheduler">
+            <summary>
+            Represents an object that schedules units of work on the current thread.
+            </summary>
+            <seealso cref="P:System.Reactive.Concurrency.Scheduler.CurrentThread">Singleton instance of this type exposed through this static property.</seealso>
+        </member>
+        <member name="T:System.Reactive.Concurrency.LocalScheduler">
+            <summary>
+            Base class for local schedulers.
+            </summary>
+        </member>
+        <member name="M:System.Reactive.Concurrency.LocalScheduler.Schedule``1(``0,System.Func{System.Reactive.Concurrency.IScheduler,``0,System.IDisposable})">
+            <summary>
+            Schedules an action to be executed.
+            </summary>
+            <param name="state">State passed to the action to be executed.</param>
+            <param name="action">Action to be executed.</param>
+            <returns>The disposable object used to cancel the scheduled action (best effort).</returns>
+        </member>
+        <member name="M:System.Reactive.Concurrency.LocalScheduler.Schedule``1(``0,System.TimeSpan,System.Func{System.Reactive.Concurrency.IScheduler,``0,System.IDisposable})">
+            <summary>
+            Schedules an action to be executed after dueTime.
+            </summary>
+            <param name="state">State passed to the action to be executed.</param>
+            <param name="action">Action to be executed.</param>
+            <param name="dueTime">Relative time after which to execute the action.</param>
+            <returns>The disposable object used to cancel the scheduled action (best effort).</returns>
+        </member>
+        <member name="M:System.Reactive.Concurrency.LocalScheduler.Schedule``1(``0,System.DateTimeOffset,System.Func{System.Reactive.Concurrency.IScheduler,``0,System.IDisposable})">
+            <summary>
+            Schedules an action to be executed at dueTime.
+            </summary>
+            <param name="state">State passed to the action to be executed.</param>
+            <param name="action">Action to be executed.</param>
+            <param name="dueTime">Absolute time at which to execute the action.</param>
+            <returns>The disposable object used to cancel the scheduled action (best effort).</returns>
+        </member>
+        <member name="M:System.Reactive.Concurrency.LocalScheduler.StartStopwatch">
+            <summary>
+            Gets a new stopwatch object.
+            </summary>
+            <returns>New stopwatch object; started at the time of the request.</returns>
+            <remarks>
+            Platform-specific scheduler implementations should reimplement IStopwatchProvider to provide a more
+            efficient IStopwatch implementation (if available).</remarks>
+        </member>
+        <member name="P:System.Reactive.Concurrency.LocalScheduler.Now">
+            <summary>
+            Gets the scheduler's notion of current time.
+            </summary>
+        </member>
+        <member name="M:System.Reactive.Concurrency.CurrentThreadScheduler.Schedule``1(``0,System.TimeSpan,System.Func{System.Reactive.Concurrency.IScheduler,``0,System.IDisposable})">
+            <summary>
+            Schedules an action to be executed after dueTime.
+            </summary>
+            <param name="state">State passed to the action to be executed.</param>
+            <param name="action">Action to be executed.</param>
+            <param name="dueTime">Relative time after which to execute the action.</param>
+            <returns>The disposable object used to cancel the scheduled action (best effort).</returns>
+        </member>
+        <member name="P:System.Reactive.Concurrency.CurrentThreadScheduler.Instance">
+            <summary>
+            Gets the singleton instance of the current thread scheduler.
+            </summary>
+        </member>
+        <member name="P:System.Reactive.Concurrency.CurrentThreadScheduler.ScheduleRequired">
+            <summary>
+            Gets a value that indicates whether the caller must call a schedule method.
+            </summary>
+        </member>
+        <member name="T:System.Reactive.Concurrency.ImmediateScheduler">
+            <summary>
+            Represents an object that schedules units of work to run immediately on the current thread.
+            </summary>
+            <seealso cref="P:System.Reactive.Concurrency.Scheduler.Immediate">Singleton instance of this type exposed through this static property.</seealso>
+        </member>
+        <member name="M:System.Reactive.Concurrency.ImmediateScheduler.Schedule``1(``0,System.Func{System.Reactive.Concurrency.IScheduler,``0,System.IDisposable})">
+            <summary>
+            Schedules an action to be executed.
+            </summary>
+            <param name="state">State passed to the action to be executed.</param>
+            <param name="action">Action to be executed.</param>
+            <returns>The disposable object used to cancel the scheduled action (best effort).</returns>
+        </member>
+        <member name="M:System.Reactive.Concurrency.ImmediateScheduler.Schedule``1(``0,System.TimeSpan,System.Func{System.Reactive.Concurrency.IScheduler,``0,System.IDisposable})">
+            <summary>
+            Schedules an action to be executed after dueTime.
+            </summary>
+            <param name="state">State passed to the action to be executed.</param>
+            <param name="action">Action to be executed.</param>
+            <param name="dueTime">Relative time after which to execute the action.</param>
+            <returns>The disposable object used to cancel the scheduled action (best effort).</returns>
+        </member>
+        <member name="P:System.Reactive.Concurrency.ImmediateScheduler.Instance">
+            <summary>
+            Gets the singleton instance of the immediate scheduler.
+            </summary>
+        </member>
+        <member name="T:System.Reactive.Concurrency.ScheduledItem`1">
+            <summary>
+            Abstract base class for scheduled work items.
+            </summary>
+            <typeparam name="TAbsolute">Absolute time representation type.</typeparam>
+        </member>
+        <member name="M:System.Reactive.Concurrency.ScheduledItem`1.#ctor(`0,System.Collections.Generic.IComparer{`0})">
+            <summary>
+            Creates a new scheduled work item to run at the specified time.
+            </summary>
+            <param name="dueTime">Absolute time at which the work item has to be executed.</param>
+            <param name="comparer">Comparer used to compare work items based on their scheduled time.</param>
+        </member>
+        <member name="M:System.Reactive.Concurrency.ScheduledItem`1.Invoke">
+            <summary>
+            Invokes the work item.
+            </summary>
+        </member>
+        <member name="M:System.Reactive.Concurrency.ScheduledItem`1.InvokeCore">
+            <summary>
+            Implement this method to perform the work item invocation, returning a disposable object for deep cancellation.
+            </summary>
+            <returns>Disposable object used to cancel the work item and/or derived work items.</returns>
+        </member>
+        <member name="M:System.Reactive.Concurrency.ScheduledItem`1.CompareTo(System.Reactive.Concurrency.ScheduledItem{`0})">
+            <summary>
+            Compares the work item with another work item based on absolute time values.
+            </summary>
+            <param name="other">Work item to compare the current work item to.</param>
+            <returns>Relative ordering between this and the specified work item.</returns>
+        </member>
+        <member name="M:System.Reactive.Concurrency.ScheduledItem`1.Cancel">
+            <summary>
+            Cancels the work item by disposing the resource returned by InvokeCore as soon as possible.
+            </summary>
+        </member>
+        <member name="P:System.Reactive.Concurrency.ScheduledItem`1.DueTime">
+            <summary>
+            Get the absolute time at which the item executes.
+            </summary>
+        </member>
+        <member name="P:System.Reactive.Concurrency.ScheduledItem`1.IsCancelled">
+            <summary>
+            Gets whether the work item has received a cancellation request.
+            </summary>
+        </member>
+        <member name="T:System.Reactive.Concurrency.ScheduledItem`2">
+            <summary>
+            Represents a scheduled work item based on the materialization of an IScheduler.Schedule method call.
+            </summary>
+            <typeparam name="TAbsolute">Absolute time representation type.</typeparam>
+            <typeparam name="TValue">Type of the state passed to the scheduled action.</typeparam>
+        </member>
+        <member name="M:System.Reactive.Concurrency.ScheduledItem`2.#ctor(System.Reactive.Concurrency.IScheduler,`1,System.Func{System.Reactive.Concurrency.IScheduler,`1,System.IDisposable},`0,System.Collections.Generic.IComparer{`0})">
+            <summary>
+            Creates a materialized work item.
+            </summary>
+            <param name="scheduler">Recursive scheduler to invoke the scheduled action with.</param>
+            <param name="state">State to pass to the scheduled action.</param>
+            <param name="action">Scheduled action.</param>
+            <param name="dueTime">Time at which to run the scheduled action.</param>
+            <param name="comparer">Comparer used to compare work items based on their scheduled time.</param>
+        </member>
+        <member name="M:System.Reactive.Concurrency.ScheduledItem`2.#ctor(System.Reactive.Concurrency.IScheduler,`1,System.Func{System.Reactive.Concurrency.IScheduler,`1,System.IDisposable},`0)">
+            <summary>
+            Creates a materialized work item.
+            </summary>
+            <param name="scheduler">Recursive scheduler to invoke the scheduled action with.</param>
+            <param name="state">State to pass to the scheduled action.</param>
+            <param name="action">Scheduled action.</param>
+            <param name="dueTime">Time at which to run the scheduled action.</param>
+        </member>
+        <member name="M:System.Reactive.Concurrency.ScheduledItem`2.InvokeCore">
+            <summary>
+            Invokes the scheduled action with the supplied recursive scheduler and state.
+            </summary>
+            <returns>Cancellation resource returned by the scheduled action.</returns>
+        </member>
+        <member name="T:System.Reactive.Concurrency.Scheduler">
+            <summary>
+            Provides a set of static methods for creating Schedulers.
+            </summary>
+        </member>
+        <member name="M:System.Reactive.Concurrency.Scheduler.Yield(System.Reactive.Concurrency.IScheduler)">
+            <summary>
+            Yields execution of the current work item on the scheduler to another work item on the scheduler.
+            The caller should await the result of calling Yield to schedule the remainder of the current work item (known as the continuation).
+            </summary>
+            <param name="scheduler">Scheduler to yield work on.</param>
+            <returns>Scheduler operation object to await in order to schedule the continuation.</returns>
+        </member>
+        <member name="M:System.Reactive.Concurrency.Scheduler.Yield(System.Reactive.Concurrency.IScheduler,System.Threading.CancellationToken)">
+            <summary>
+            Yields execution of the current work item on the scheduler to another work item on the scheduler.
+            The caller should await the result of calling Yield to schedule the remainder of the current work item (known as the continuation).
+            </summary>
+            <param name="scheduler">Scheduler to yield work on.</param>
+            <param name="cancellationToken">Cancellation token to cancel the continuation to run.</param>
+            <returns>Scheduler operation object to await in order to schedule the continuation.</returns>
+        </member>
+        <member name="M:System.Reactive.Concurrency.Scheduler.Sleep(System.Reactive.Concurrency.IScheduler,System.TimeSpan)">
+            <summary>
+            Suspends execution of the current work item on the scheduler for the specified duration.
+            The caller should await the result of calling Sleep to schedule the remainder of the current work item (known as the continuation) after the specified duration.
+            </summary>
+            <param name="scheduler">Scheduler to yield work on.</param>
+            <param name="dueTime">Time when the continuation should run.</param>
+            <returns>Scheduler operation object to await in order to schedule the continuation.</returns>
+        </member>
+        <member name="M:System.Reactive.Concurrency.Scheduler.Sleep(System.Reactive.Concurrency.IScheduler,System.TimeSpan,System.Threading.CancellationToken)">
+            <summary>
+            Suspends execution of the current work item on the scheduler for the specified duration.
+            The caller should await the result of calling Sleep to schedule the remainder of the current work item (known as the continuation) after the specified duration.
+            </summary>
+            <param name="scheduler">Scheduler to yield work on.</param>
+            <param name="dueTime">Time when the continuation should run.</param>
+            <param name="cancellationToken">Cancellation token to cancel the continuation to run.</param>
+            <returns>Scheduler operation object to await in order to schedule the continuation.</returns>
+        </member>
+        <member name="M:System.Reactive.Concurrency.Scheduler.Sleep(System.Reactive.Concurrency.IScheduler,System.DateTimeOffset)">
+            <summary>
+            Suspends execution of the current work item on the scheduler until the specified due time.
+            The caller should await the result of calling Sleep to schedule the remainder of the current work item (known as the continuation) at the specified due time.
+            </summary>
+            <param name="scheduler">Scheduler to yield work on.</param>
+            <param name="dueTime">Time when the continuation should run.</param>
+            <returns>Scheduler operation object to await in order to schedule the continuation.</returns>
+        </member>
+        <member name="M:System.Reactive.Concurrency.Scheduler.Sleep(System.Reactive.Concurrency.IScheduler,System.DateTimeOffset,System.Threading.CancellationToken)">
+            <summary>
+            Suspends execution of the current work item on the scheduler until the specified due time.
+            The caller should await the result of calling Sleep to schedule the remainder of the current work item (known as the continuation) at the specified due time.
+            </summary>
+            <param name="scheduler">Scheduler to yield work on.</param>
+            <param name="dueTime">Time when the continuation should run.</param>
+            <param name="cancellationToken">Cancellation token to cancel the continuation to run.</param>
+            <returns>Scheduler operation object to await in order to schedule the continuation.</returns>
+        </member>
+        <member name="M:System.Reactive.Concurrency.Scheduler.ScheduleAsync``1(System.Reactive.Concurrency.IScheduler,``0,System.Func{System.Reactive.Concurrency.IScheduler,``0,System.Threading.CancellationToken,System.Threading.Tasks.Task{System.IDisposable}})">
+            <summary>
+            Schedules work using an asynchronous method, allowing for cooperative scheduling in an imperative coding style.
+            </summary>
+            <param name="scheduler">Scheduler to schedule work on.</param>
+            <param name="state">State to pass to the asynchronous method.</param>
+            <param name="action">Asynchronous method to run the work, using Yield and Sleep operations for cooperative scheduling and injection of cancellation points.</param>
+            <returns>Disposable object that allows to cancel outstanding work on cooperative cancellation points or through the cancellation token passed to the asynchronous method.</returns>
+        </member>
+        <member name="M:System.Reactive.Concurrency.Scheduler.ScheduleAsync(System.Reactive.Concurrency.IScheduler,System.Func{System.Reactive.Concurrency.IScheduler,System.Threading.CancellationToken,System.Threading.Tasks.Task{System.IDisposable}})">
+            <summary>
+            Schedules work using an asynchronous method, allowing for cooperative scheduling in an imperative coding style.
+            </summary>
+            <param name="scheduler">Scheduler to schedule work on.</param>
+            <param name="action">Asynchronous method to run the work, using Yield and Sleep operations for cooperative scheduling and injection of cancellation points.</param>
+            <returns>Disposable object that allows to cancel outstanding work on cooperative cancellation points or through the cancellation token passed to the asynchronous method.</returns>
+        </member>
+        <member name="M:System.Reactive.Concurrency.Scheduler.ScheduleAsync``1(System.Reactive.Concurrency.IScheduler,``0,System.TimeSpan,System.Func{System.Reactive.Concurrency.IScheduler,``0,System.Threading.CancellationToken,System.Threading.Tasks.Task{System.IDisposable}})">
+            <summary>
+            Schedules work using an asynchronous method, allowing for cooperative scheduling in an imperative coding style.
+            </summary>
+            <param name="scheduler">Scheduler to schedule work on.</param>
+            <param name="state">State to pass to the asynchronous method.</param>
+            <param name="dueTime">Relative time after which to execute the action.</param>
+            <param name="action">Asynchronous method to run the work, using Yield and Sleep operations for cooperative scheduling and injection of cancellation points.</param>
+            <returns>Disposable object that allows to cancel outstanding work on cooperative cancellation points or through the cancellation token passed to the asynchronous method.</returns>
+        </member>
+        <member name="M:System.Reactive.Concurrency.Scheduler.ScheduleAsync(System.Reactive.Concurrency.IScheduler,System.TimeSpan,System.Func{System.Reactive.Concurrency.IScheduler,System.Threading.CancellationToken,System.Threading.Tasks.Task{System.IDisposable}})">
+            <summary>
+            Schedules work using an asynchronous method, allowing for cooperative scheduling in an imperative coding style.
+            </summary>
+            <param name="scheduler">Scheduler to schedule work on.</param>
+            <param name="dueTime">Relative time after which to execute the action.</param>
+            <param name="action">Asynchronous method to run the work, using Yield and Sleep operations for cooperative scheduling and injection of cancellation points.</param>
+            <returns>Disposable object that allows to cancel outstanding work on cooperative cancellation points or through the cancellation token passed to the asynchronous method.</returns>
+        </member>
+        <member name="M:System.Reactive.Concurrency.Scheduler.ScheduleAsync``1(System.Reactive.Concurrency.IScheduler,``0,System.DateTimeOffset,System.Func{System.Reactive.Concurrency.IScheduler,``0,System.Threading.CancellationToken,System.Threading.Tasks.Task{System.IDisposable}})">
+            <summary>
+            Schedules work using an asynchronous method, allowing for cooperative scheduling in an imperative coding style.
+            </summary>
+            <param name="scheduler">Scheduler to schedule work on.</param>
+            <param name="state">State to pass to the asynchronous method.</param>
+            <param name="dueTime">Absolute time at which to execute the action.</param>
+            <param name="action">Asynchronous method to run the work, using Yield and Sleep operations for cooperative scheduling and injection of cancellation points.</param>
+            <returns>Disposable object that allows to cancel outstanding work on cooperative cancellation points or through the cancellation token passed to the asynchronous method.</returns>
+        </member>
+        <member name="M:System.Reactive.Concurrency.Scheduler.ScheduleAsync(System.Reactive.Concurrency.IScheduler,System.DateTimeOffset,System.Func{System.Reactive.Concurrency.IScheduler,System.Threading.CancellationToken,System.Threading.Tasks.Task{System.IDisposable}})">
+            <summary>
+            Schedules work using an asynchronous method, allowing for cooperative scheduling in an imperative coding style.
+            </summary>
+            <param name="scheduler">Scheduler to schedule work on.</param>
+            <param name="dueTime">Absolute time at which to execute the action.</param>
+            <param name="action">Asynchronous method to run the work, using Yield and Sleep operations for cooperative scheduling and injection of cancellation points.</param>
+            <returns>Disposable object that allows to cancel outstanding work on cooperative cancellation points or through the cancellation token passed to the asynchronous method.</returns>
+        </member>
+        <member name="M:System.Reactive.Concurrency.Scheduler.Normalize(System.TimeSpan)">
+            <summary>
+            Ensures that no time spans are negative.
+            </summary>
+            <param name="timeSpan">The time span to normalize.</param>
+            <returns>The time span if it zero or positive otherwise TimeSpan.Zero.</returns>
+        </member>
+        <member name="M:System.Reactive.Concurrency.Scheduler.Schedule(System.Reactive.Concurrency.IScheduler,System.Action{System.Action})">
+            <summary>
+            Schedules an action to be executed recursively.
+            </summary>
+            <param name="scheduler">Scheduler to execute the recursive action on.</param>
+            <param name="action">Action to execute recursively.</param>
+            <returns>The disposable object used to cancel the scheduled action (best effort).</returns>
+        </member>
+        <member name="M:System.Reactive.Concurrency.Scheduler.Schedule``1(System.Reactive.Concurrency.IScheduler,``0,System.Action{``0,System.Action{``0}})">
+            <summary>
+            Schedules an action to be executed recursively.
+            </summary>
+            <param name="scheduler">Scheduler to execute the recursive action on.</param>
+            <param name="state">State passed to the action to be executed.</param>
+            <param name="action">Action to execute recursively.</param>
+            <returns>The disposable object used to cancel the scheduled action (best effort).</returns>
+        </member>
+        <member name="M:System.Reactive.Concurrency.Scheduler.Schedule(System.Reactive.Concurrency.IScheduler,System.TimeSpan,System.Action{System.Action{System.TimeSpan}})">
+            <summary>
+            Schedules an action to be executed recursively after each dueTime.
+            </summary>
+            <param name="scheduler">Scheduler to execute the recursive action on.</param>
+            <param name="action">Action to execute recursively.</param>
+            <param name="dueTime">Relative time after which to execute the action for the first time.</param>
+            <returns>The disposable object used to cancel the scheduled action (best effort).</returns>
+        </member>
+        <member name="M:System.Reactive.Concurrency.Scheduler.Schedule``1(System.Reactive.Concurrency.IScheduler,``0,System.TimeSpan,System.Action{``0,System.Action{``0,System.TimeSpan}})">
+            <summary>
+            Schedules an action to be executed recursively after each dueTime.
+            </summary>
+            <param name="scheduler">Scheduler to execute the recursive action on.</param>
+            <param name="state">State passed to the action to be executed.</param>
+            <param name="action">Action to execute recursively.</param>
+            <param name="dueTime">Relative time after which to execute the action for the first time.</param>
+            <returns>The disposable object used to cancel the scheduled action (best effort).</returns>
+        </member>
+        <member name="M:System.Reactive.Concurrency.Scheduler.Schedule(System.Reactive.Concurrency.IScheduler,System.DateTimeOffset,System.Action{System.Action{System.DateTimeOffset}})">
+            <summary>
+            Schedules an action to be executed recursively at each dueTime.
+            </summary>
+            <param name="scheduler">Scheduler to execute the recursive action on.</param>
+            <param name="action">Action to execute recursively.</param>
+            <param name="dueTime">Absolute time at which to execute the action for the first time.</param>
+            <returns>The disposable object used to cancel the scheduled action (best effort).</returns>
+        </member>
+        <member name="M:System.Reactive.Concurrency.Scheduler.Schedule``1(System.Reactive.Concurrency.IScheduler,``0,System.DateTimeOffset,System.Action{``0,System.Action{``0,System.DateTimeOffset}})">
+            <summary>
+            Schedules an action to be executed recursively at each dueTime.
+            </summary>
+            <param name="scheduler">Scheduler to execute the recursive action on.</param>
+            <param name="state">State passed to the action to be executed.</param>
+            <param name="action">Action to execute recursively.</param>
+            <param name="dueTime">Absolute time at which to execute the action for the first time.</param>
+            <returns>The disposable object used to cancel the scheduled action (best effort).</returns>
+        </member>
+        <member name="M:System.Reactive.Concurrency.Scheduler.Schedule(System.Reactive.Concurrency.IScheduler,System.Action)">
+            <summary>
+            Schedules an action to be executed.
+            </summary>
+            <param name="scheduler">Scheduler to execute the action on.</param>
+            <param name="action">Action to execute.</param>
+            <returns>The disposable object used to cancel the scheduled action (best effort).</returns>
+        </member>
+        <member name="M:System.Reactive.Concurrency.Scheduler.Schedule(System.Reactive.Concurrency.IScheduler,System.TimeSpan,System.Action)">
+            <summary>
+            Schedules an action to be executed after dueTime.
+            </summary>
+            <param name="scheduler">Scheduler to execute the action on.</param>
+            <param name="action">Action to execute.</param>
+            <param name="dueTime">Relative time after which to execute the action.</param>
+            <returns>The disposable object used to cancel the scheduled action (best effort).</returns>
+        </member>
+        <member name="M:System.Reactive.Concurrency.Scheduler.Schedule(System.Reactive.Concurrency.IScheduler,System.DateTimeOffset,System.Action)">
+            <summary>
+            Schedules an action to be executed at dueTime.
+            </summary>
+            <param name="scheduler">Scheduler to execute the action on.</param>
+            <param name="action">Action to execute.</param>
+            <param name="dueTime">Absolute time at which to execute the action.</param>
+            <returns>The disposable object used to cancel the scheduled action (best effort).</returns>
+        </member>
+        <member name="M:System.Reactive.Concurrency.Scheduler.ScheduleLongRunning(System.Reactive.Concurrency.ISchedulerLongRunning,System.Action{System.Reactive.Disposables.ICancelable})">
+            <summary>
+            Schedules an action to be executed.
+            </summary>
+            <param name="scheduler">Scheduler to execute the action on.</param>
+            <param name="action">Action to execute.</param>
+            <returns>The disposable object used to cancel the scheduled action (best effort).</returns>
+        </member>
+        <member name="M:System.Reactive.Concurrency.Scheduler.DisableOptimizations(System.Reactive.Concurrency.IScheduler)">
+            <summary>
+            Returns a scheduler that represents the original scheduler, without its interface-based optimizations (e.g. long running scheduling).
+            </summary>
+            <param name="scheduler">Scheduler to disable optimizations for.</param>
+            <returns>Proxy to the original scheduler but without optimizations enabled.</returns>
+        </member>
+        <member name="P:System.Reactive.Concurrency.Scheduler.Now">
+            <summary>
+            Gets the current date and time.
+            </summary>
+        </member>
+        <member name="P:System.Reactive.Concurrency.Scheduler.Immediate">
+            <summary>
+            Gets the scheduler that schedules work immediately on the current thread.
+            </summary>
+        </member>
+        <member name="P:System.Reactive.Concurrency.Scheduler.CurrentThread">
+            <summary>
+            Gets the scheduler that schedules work as soon as possible on the current thread.
+            </summary>
+        </member>
+        <member name="P:System.Reactive.Concurrency.Scheduler.Default">
+            <summary>
+            Gets the scheduler that schedules work on the platform's default scheduler.
+            </summary>
+        </member>
+        <member name="P:System.Reactive.Concurrency.Scheduler.ThreadPool">
+            <summary>
+            Gets the scheduler that schedules work on the ThreadPool.
+            </summary>
+        </member>
+        <member name="P:System.Reactive.Concurrency.Scheduler.NewThread">
+            <summary>
+            Gets the scheduler that schedules work on a new thread.
+            </summary>
+        </member>
+        <member name="P:System.Reactive.Concurrency.Scheduler.TaskPool">
+            <summary>
+            Gets the scheduler that schedules work on the default Task Factory.
+            </summary>
+        </member>
+        <member name="T:System.Reactive.Concurrency.SchedulerOperation">
+            <summary>
+            Represents an awaitable scheduler operation. Awaiting the object causes the continuation to be posted back to the originating scheduler's work queue.
+            </summary>
+        </member>
+        <member name="M:System.Reactive.Concurrency.SchedulerOperation.ConfigureAwait(System.Boolean)">
+            <summary>
+            Controls whether the continuation is run on the originating synchronization context (false by default).
+            </summary>
+            <param name="continueOnCapturedContext">true to run the continuation on the captured synchronization context; false otherwise (default).</param>
+            <returns>Scheduler operation object with configured await behavior.</returns>
+        </member>
+        <member name="M:System.Reactive.Concurrency.SchedulerOperation.GetAwaiter">
+            <summary>
+            Gets an awaiter for the scheduler operation, used to post back the continuation.
+            </summary>
+            <returns>Awaiter for the scheduler operation.</returns>
+        </member>
+        <member name="T:System.Reactive.Concurrency.SchedulerOperation.SchedulerOperationAwaiter">
+            <summary>
+            Scheduler operation awaiter type.
+            </summary>
+        </member>
+        <member name="M:System.Reactive.Concurrency.SchedulerOperation.SchedulerOperationAwaiter.GetResult">
+            <summary>
+            Completes the scheduler operation, throwing an OperationCanceledException in case cancellation was requested.
+            </summary>
+        </member>
+        <member name="M:System.Reactive.Concurrency.SchedulerOperation.SchedulerOperationAwaiter.OnCompleted(System.Action)">
+            <summary>
+            Registers the continuation with the scheduler operation.
+            </summary>
+            <param name="continuation">Continuation to be run on the originating scheduler.</param>
+        </member>
+        <member name="P:System.Reactive.Concurrency.SchedulerOperation.SchedulerOperationAwaiter.IsCompleted">
+            <summary>
+            Indicates whether the scheduler operation has completed. Returns false unless cancellation was already requested.
+            </summary>
+        </member>
+        <member name="T:System.Reactive.Concurrency.SchedulerQueue`1">
+            <summary>
+            Efficient scheduler queue that maintains scheduled items sorted by absolute time.
+            </summary>
+            <typeparam name="TAbsolute">Absolute time representation type.</typeparam>
+        </member>
+        <member name="M:System.Reactive.Concurrency.SchedulerQueue`1.#ctor">
+            <summary>
+            Creates a new scheduler queue with a default initial capacity.
+            </summary>
+        </member>
+        <member name="M:System.Reactive.Concurrency.SchedulerQueue`1.#ctor(System.Int32)">
+            <summary>
+            Creats a new scheduler queue with the specified initial capacity.
+            </summary>
+            <param name="capacity">Initial capacity of the scheduler queue.</param>
+        </member>
+        <member name="M:System.Reactive.Concurrency.SchedulerQueue`1.Enqueue(System.Reactive.Concurrency.ScheduledItem{`0})">
+            <summary>
+            Enqueues the specified work item to be scheduled.
+            </summary>
+            <param name="scheduledItem">Work item to be scheduled.</param>
+        </member>
+        <member name="M:System.Reactive.Concurrency.SchedulerQueue`1.Remove(System.Reactive.Concurrency.ScheduledItem{`0})">
+            <summary>
+            Removes the specified work item from the scheduler queue.
+            </summary>
+            <param name="scheduledItem">Work item to be removed from the scheduler queue.</param>
+            <returns>true if the item was found; false otherwise.</returns>
+        </member>
+        <member name="M:System.Reactive.Concurrency.SchedulerQueue`1.Dequeue">
+            <summary>
+            Dequeues the next work item from the scheduler queue.
+            </summary>
+            <returns>Next work item in the scheduler queue (removed).</returns>
+        </member>
+        <member name="M:System.Reactive.Concurrency.SchedulerQueue`1.Peek">
+            <summary>
+            Peeks the next work items in the scheduler queue.
+            </summary>
+            <returns>Next work item in the scheduler queue (not removed).</returns>
+        </member>
+        <member name="P:System.Reactive.Concurrency.SchedulerQueue`1.Count">
+            <summary>
+            Gets the number of scheduled items in the scheduler queue.
+            </summary>
+        </member>
+        <member name="T:System.Reactive.Concurrency.Synchronization">
+            <summary>
+            Provides basic synchronization and scheduling services for observable sequences.
+            </summary>
+        </member>
+        <member name="M:System.Reactive.Concurrency.Synchronization.SubscribeOn``1(System.IObservable{``0},System.Reactive.Concurrency.IScheduler)">
+            <summary>
+            Asynchronously subscribes and unsubscribes observers on the specified scheduler.
+            </summary>
+            <param name="source">Source sequence.</param>
+            <param name="scheduler">Scheduler to perform subscription and unsubscription actions on.</param>
+            <returns>The source sequence whose subscriptions and unsubscriptions happen on the specified scheduler.</returns>
+        </member>
+        <member name="M:System.Reactive.Concurrency.Synchronization.SubscribeOn``1(System.IObservable{``0},System.Threading.SynchronizationContext)">
+            <summary>
+            Asynchronously subscribes and unsubscribes observers on the specified synchronization context.
+            </summary>
+            <param name="source">Source sequence.</param>
+            <param name="context">Synchronization context to perform subscription and unsubscription actions on.</param>
+            <returns>The source sequence whose subscriptions and unsubscriptions happen on the specified synchronization context.</returns>
+        </member>
+        <member name="M:System.Reactive.Concurrency.Synchronization.ObserveOn``1(System.IObservable{``0},System.Reactive.Concurrency.IScheduler)">
+            <summary>
+            Asynchronously notify observers on the specified scheduler.
+            </summary>
+            <param name="source">Source sequence.</param>
+            <param name="scheduler">Scheduler to notify observers on.</param>
+            <returns>The source sequence whose observations happen on the specified scheduler.</returns>
+        </member>
+        <member name="M:System.Reactive.Concurrency.Synchronization.ObserveOn``1(System.IObservable{``0},System.Threading.SynchronizationContext)">
+            <summary>
+            Asynchronously notify observers on the specified synchronization context.
+            </summary>
+            <param name="source">Source sequence.</param>
+            <param name="context">Synchronization context to notify observers on.</param>
+            <returns>The source sequence whose observations happen on the specified synchronization context.</returns>
+        </member>
+        <member name="M:System.Reactive.Concurrency.Synchronization.Synchronize``1(System.IObservable{``0})">
+            <summary>
+            Synchronizes the observable sequence.
+            </summary>
+            <param name="source">Source sequence.</param>
+            <returns>The source sequence whose outgoing calls to observers are synchronized.</returns>
+        </member>
+        <member name="M:System.Reactive.Concurrency.Synchronization.Synchronize``1(System.IObservable{``0},System.Object)">
+            <summary>
+            Synchronizes the observable sequence.
+            </summary>
+            <param name="source">Source sequence.</param>
+            <param name="gate">Gate object to synchronize each observer call on.</param>
+            <returns>The source sequence whose outgoing calls to observers are synchronized on the given gate object.</returns>
+        </member>
+        <member name="T:System.Reactive.Producer`1">
+            <summary>
+            Base class for implementation of query operators, providing performance benefits over the use of Observable.Create.
+            </summary>
+            <typeparam name="TSource">Type of the resulting sequence's elements.</typeparam>
+        </member>
+        <member name="M:System.Reactive.Producer`1.Subscribe(System.IObserver{`0})">
+            <summary>
+            Publicly visible Subscribe method.
+            </summary>
+            <param name="observer">Observer to send notifications on. The implementation of a producer must ensure the correct message grammar on the observer.</param>
+            <returns>IDisposable to cancel the subscription. This causes the underlying sink to be notified of unsubscription, causing it to prevent further messages from being sent to the observer.</returns>
+        </member>
+        <member name="M:System.Reactive.Producer`1.Run(System.IObserver{`0},System.IDisposable,System.Action{System.IDisposable})">
+            <summary>
+            Core implementation of the query operator, called upon a new subscription to the producer object.
+            </summary>
+            <param name="observer">Observer to send notifications on. The implementation of a producer must ensure the correct message grammar on the observer.</param>
+            <param name="cancel">The subscription disposable object returned from the Run call, passed in such that it can be forwarded to the sink, allowing it to dispose the subscription upon sending a final message (or prematurely for other reasons).</param>
+            <param name="setSink">Callback to communicate the sink object to the subscriber, allowing consumers to tunnel a Dispose call into the sink, which can stop the processing.</param>
+            <returns>Disposable representing all the resources and/or subscriptions the operator uses to process events.</returns>
+            <remarks>The <paramref name="observer">observer</paramref> passed in to this method is not protected using auto-detach behavior upon an OnError or OnCompleted call. The implementation must ensure proper resource disposal and enforce the message grammar.</remarks>
+        </member>
+        <member name="T:System.Reactive.Sink`1">
+            <summary>
+            Base class for implementation of query operators, providing a lightweight sink that can be disposed to mute the outgoing observer.
+            </summary>
+            <typeparam name="TSource">Type of the resulting sequence's elements.</typeparam>
+            <remarks>Implementations of sinks are responsible to enforce the message grammar on the associated observer. Upon sending a terminal message, a pairing Dispose call should be made to trigger cancellation of related resources and to mute the outgoing observer.</remarks>
+        </member>
+        <member name="T:System.Reactive.Concurrency.SynchronizationContextScheduler">
+            <summary>
+            Represents an object that schedules units of work on a provided SynchronizationContext.
+            </summary>
+        </member>
+        <member name="M:System.Reactive.Concurrency.SynchronizationContextScheduler.#ctor(System.Threading.SynchronizationContext)">
+            <summary>
+            Creates an object that schedules units of work on the provided SynchronizationContext.
+            </summary>
+            <param name="context">Synchronization context to schedule units of work on.</param>
+        </member>
+        <member name="M:System.Reactive.Concurrency.SynchronizationContextScheduler.Schedule``1(``0,System.Func{System.Reactive.Concurrency.IScheduler,``0,System.IDisposable})">
+            <summary>
+            Schedules an action to be executed.
+            </summary>
+            <param name="state">State passed to the action to be executed.</param>
+            <param name="action">Action to be executed.</param>
+            <returns>The disposable object used to cancel the scheduled action (best effort).</returns>
+        </member>
+        <member name="M:System.Reactive.Concurrency.SynchronizationContextScheduler.Schedule``1(``0,System.TimeSpan,System.Func{System.Reactive.Concurrency.IScheduler,``0,System.IDisposable})">
+            <summary>
+            Schedules an action to be executed after dueTime.
+            </summary>
+            <param name="state">State passed to the action to be executed.</param>
+            <param name="action">Action to be executed.</param>
+            <param name="dueTime">Relative time after which to execute the action.</param>
+            <returns>The disposable object used to cancel the scheduled action (best effort).</returns>
+        </member>
+        <member name="T:System.Reactive.Concurrency.DefaultScheduler">
+            <summary>
+            Represents an object that schedules units of work on the platform's default scheduler.
+            </summary>
+            <seealso cref="P:System.Reactive.Concurrency.Scheduler.Default">Singleton instance of this type exposed through this static property.</seealso>
+        </member>
+        <member name="M:System.Reactive.Concurrency.DefaultScheduler.Schedule``1(``0,System.Func{System.Reactive.Concurrency.IScheduler,``0,System.IDisposable})">
+            <summary>
+            Schedules an action to be executed.
+            </summary>
+            <param name="state">State passed to the action to be executed.</param>
+            <param name="action">Action to be executed.</param>
+            <returns>The disposable object used to cancel the scheduled action (best effort).</returns>
+        </member>
+        <member name="M:System.Reactive.Concurrency.DefaultScheduler.Schedule``1(``0,System.TimeSpan,System.Func{System.Reactive.Concurrency.IScheduler,``0,System.IDisposable})">
+            <summary>
+            Schedules an action to be executed after dueTime, using a System.Threading.Timer object.
+            </summary>
+            <param name="state">State passed to the action to be executed.</param>
+            <param name="action">Action to be executed.</param>
+            <param name="dueTime">Relative time after which to execute the action.</param>
+            <returns>The disposable object used to cancel the scheduled action (best effort).</returns>
+        </member>
+        <member name="P:System.Reactive.Concurrency.DefaultScheduler.Instance">
+            <summary>
+            Gets the singleton instance of the default scheduler.
+            </summary>
+        </member>
+        <member name="T:System.Reactive.Disposables.AnonymousDisposable">
+            <summary>
+            Represents an Action-based disposable.
+            </summary>
+        </member>
+        <member name="M:System.Reactive.Disposables.AnonymousDisposable.#ctor(System.Action)">
+            <summary>
+            Constructs a new disposable with the given action used for disposal.
+            </summary>
+            <param name="dispose">Disposal action.</param>
+        </member>
+        <member name="M:System.Reactive.Disposables.AnonymousDisposable.Dispose">
+            <summary>
+            Calls the disposal action.
+            </summary>
+        </member>
+        <member name="P:System.Reactive.Disposables.AnonymousDisposable.IsDisposed">
+            <summary>
+            Gets a value that indicates whether the object is disposed.
+            </summary>
+        </member>
+        <member name="T:System.Reactive.Disposables.BooleanDisposable">
+            <summary>
+            Represents an IDisposable that can be checked for status.
+            </summary>
+        </member>
+        <member name="M:System.Reactive.Disposables.BooleanDisposable.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:System.Reactive.Disposables.BooleanDisposable"/> class.
+            </summary>
+        </member>
+        <member name="M:System.Reactive.Disposables.BooleanDisposable.Dispose">
+            <summary>
+            Sets the status to Disposed.
+            </summary>
+        </member>
+        <member name="P:System.Reactive.Disposables.BooleanDisposable.IsDisposed">
+            <summary>
+            Gets a value that indicates whether the object is disposed.
+            </summary>
+        </member>
+        <member name="T:System.Reactive.Disposables.CancellationDisposable">
+            <summary>
+            Represents an IDisposable that can be checked for cancellation status.
+            </summary>
+        </member>
+        <member name="M:System.Reactive.Disposables.CancellationDisposable.#ctor(System.Threading.CancellationTokenSource)">
+            <summary>
+            Initializes a new instance of the <see cref="T:System.Reactive.Disposables.CancellationDisposable"/> class that uses an existing CancellationTokenSource.
+            </summary>
+            <param name="cts">CancellationTokenSource used for cancellation.</param>
+        </member>
+        <member name="M:System.Reactive.Disposables.CancellationDisposable.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:System.Reactive.Disposables.CancellationDisposable"/> class that uses a new CancellationTokenSource.
+            </summary>
+        </member>
+        <member name="M:System.Reactive.Disposables.CancellationDisposable.Dispose">
+            <summary>
+            Cancels the CancellationTokenSource.
+            </summary>
+        </member>
+        <member name="P:System.Reactive.Disposables.CancellationDisposable.Token">
+            <summary>
+            Gets the CancellationToken used by this CancellationDisposable.
+            </summary>
+        </member>
+        <member name="P:System.Reactive.Disposables.CancellationDisposable.IsDisposed">
+            <summary>
+            Gets a value that indicates whether the object is disposed.
+            </summary>
+        </member>
+        <member name="T:System.Reactive.Disposables.CompositeDisposable">
+            <summary>
+            Represents a group of Disposables that are disposed together.
+            </summary>
+        </member>
+        <member name="M:System.Reactive.Disposables.CompositeDisposable.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:System.Reactive.Disposables.CompositeDisposable"/> class with no disposables contained by it initially.
+            </summary>
+        </member>
+        <member name="M:System.Reactive.Disposables.CompositeDisposable.#ctor(System.Int32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:System.Reactive.Disposables.CompositeDisposable"/> class with the specified number of disposables.
+            </summary>
+            <param name="capacity">The number of disposables that the new CompositeDisposable can initially store.</param>
+        </member>
+        <member name="M:System.Reactive.Disposables.CompositeDisposable.#ctor(System.IDisposable[])">
+            <summary>
+            Initializes a new instance of the <see cref="T:System.Reactive.Disposables.CompositeDisposable"/> class from a group of disposables.
+            </summary>
+            <param name="disposables">Disposables that will be disposed together.</param>
+        </member>
+        <member name="M:System.Reactive.Disposables.CompositeDisposable.#ctor(System.Collections.Generic.IEnumerable{System.IDisposable})">
+            <summary>
+            Initializes a new instance of the <see cref="T:System.Reactive.Disposables.CompositeDisposable"/> class from a group of disposables.
+            </summary>
+            <param name="disposables">Disposables that will be disposed together.</param>
+        </member>
+        <member name="M:System.Reactive.Disposables.CompositeDisposable.Add(System.IDisposable)">
+            <summary>
+            Adds a disposable to the CompositeDisposable or disposes the disposable if the CompositeDisposable is disposed.
+            </summary>
+            <param name="item">Disposable to add.</param>
+        </member>
+        <member name="M:System.Reactive.Disposables.CompositeDisposable.Remove(System.IDisposable)">
+            <summary>
+            Removes and disposes the first occurrence of a disposable from the CompositeDisposable.
+            </summary>
+            <param name="item">Disposable to remove.</param>
+            <returns>true if found; false otherwise.</returns>
+        </member>
+        <member name="M:System.Reactive.Disposables.CompositeDisposable.Dispose">
+            <summary>
+            Disposes all disposables in the group and removes them from the group.
+            </summary>
+        </member>
+        <member name="M:System.Reactive.Disposables.CompositeDisposable.Clear">
+            <summary>
+            Removes and disposes all disposables from the CompositeDisposable, but does not dispose the CompositeDisposable.
+            </summary>
+        </member>
+        <member name="M:System.Reactive.Disposables.CompositeDisposable.Contains(System.IDisposable)">
+            <summary>
+            Determines whether the CompositeDisposable contains a specific disposable.
+            </summary>
+            <param name="item">Disposable to search for.</param>
+            <returns>true if the disposable was found; otherwise, false.</returns>
+        </member>
+        <member name="M:System.Reactive.Disposables.CompositeDisposable.CopyTo(System.IDisposable[],System.Int32)">
+            <summary>
+            Copies the disposables contained in the CompositeDisposable to an array, starting at a particular array index.
+            </summary>
+            <param name="array">Array to copy the contained disposables to.</param>
+            <param name="arrayIndex">Target index at which to copy the first disposable of the group.</param>
+        </member>
+        <member name="M:System.Reactive.Disposables.CompositeDisposable.GetEnumerator">
+            <summary>
+            Returns an enumerator that iterates through the CompositeDisposable.
+            </summary>
+            <returns>An enumerator to iterate over the disposables.</returns>
+        </member>
+        <member name="M:System.Reactive.Disposables.CompositeDisposable.System#Collections#IEnumerable#GetEnumerator">
+            <summary>
+            Returns an enumerator that iterates through the CompositeDisposable.
+            </summary>
+            <returns>An enumerator to iterate over the disposables.</returns>
+        </member>
+        <member name="P:System.Reactive.Disposables.CompositeDisposable.Count">
+            <summary>
+            Gets the number of disposables contained in the CompositeDisposable.
+            </summary>
+        </member>
+        <member name="P:System.Reactive.Disposables.CompositeDisposable.IsReadOnly">
+            <summary>
+            Always returns false.
+            </summary>
+        </member>
+        <member name="P:System.Reactive.Disposables.CompositeDisposable.IsDisposed">
+            <summary>
+            Gets a value that indicates whether the object is disposed.
+            </summary>
+        </member>
+        <member name="T:System.Reactive.Disposables.ContextDisposable">
+            <summary>
+            Represents a thread-affine IDisposable.
+            </summary>
+        </member>
+        <member name="M:System.Reactive.Disposables.ContextDisposable.#ctor(System.Threading.SynchronizationContext,System.IDisposable)">
+            <summary>
+            Initializes a new instance of the <see cref="T:System.Reactive.Disposables.ContextDisposable"/> class that uses a SynchronizationContext on which to dispose the disposable.
+            </summary>
+            <param name="context">Context to perform disposal on.</param>
+            <param name="disposable">Disposable whose Dispose operation to run on the given synchronization context.</param>
+        </member>
+        <member name="M:System.Reactive.Disposables.ContextDisposable.Dispose">
+            <summary>
+            Disposes the wrapped disposable on the provided SynchronizationContext.
+            </summary>
+        </member>
+        <member name="P:System.Reactive.Disposables.ContextDisposable.Context">
+            <summary>
+            Gets the provided SynchronizationContext.
+            </summary>
+        </member>
+        <member name="P:System.Reactive.Disposables.ContextDisposable.IsDisposed">
+            <summary>
+            Gets a value that indicates whether the object is disposed.
+            </summary>
+        </member>
+        <member name="T:System.Reactive.Disposables.DefaultDisposable">
+            <summary>
+            Represents a disposable that does nothing on disposal.
+            </summary>
+        </member>
+        <member name="F:System.Reactive.Disposables.DefaultDisposable.Instance">
+            <summary>
+            Singleton default disposable.
+            </summary>
+        </member>
+        <member name="M:System.Reactive.Disposables.DefaultDisposable.Dispose">
+            <summary>
+            Does nothing.
+            </summary>
+        </member>
+        <member name="T:System.Reactive.Disposables.Disposable">
+            <summary>
+            Provides a set of static methods for creating Disposables.
+            </summary>
+        </member>
+        <member name="M:System.Reactive.Disposables.Disposable.Create(System.Action)">
+            <summary>
+            Creates the disposable that invokes the specified action when disposed.
+            </summary>
+            <param name="dispose">Action to run during IDisposable.Dispose.</param>
+            <returns>The disposable object that runs the given action upon disposal.</returns>
+        </member>
+        <member name="P:System.Reactive.Disposables.Disposable.Empty">
+            <summary>
+            Gets the disposable that does nothing when disposed.
+            </summary>
+        </member>
+        <member name="T:System.Reactive.Disposables.MultipleAssignmentDisposable">
+            <summary>
+            Represents a disposable whose underlying disposable can be swapped for another disposable.
+            </summary>
+        </member>
+        <member name="M:System.Reactive.Disposables.MultipleAssignmentDisposable.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:System.Reactive.Disposables.MultipleAssignmentDisposable"/> class with no current underlying disposable.
+            </summary>
+        </member>
+        <member name="M:System.Reactive.Disposables.MultipleAssignmentDisposable.Dispose">
+            <summary>
+            Disposes the underlying disposable as well as all future replacements.
+            </summary>
+        </member>
+        <member name="P:System.Reactive.Disposables.MultipleAssignmentDisposable.IsDisposed">
+            <summary>
+            Gets a value that indicates whether the object is disposed.
+            </summary>
+        </member>
+        <member name="P:System.Reactive.Disposables.MultipleAssignmentDisposable.Disposable">
+            <summary>
+            Gets or sets the underlying disposable.
+            </summary>
+            <remarks>If the MutableDisposable has already been disposed, assignment to this property causes immediate disposal of the given disposable object.</remarks>
+        </member>
+        <member name="T:System.Reactive.Disposables.RefCountDisposable">
+            <summary>
+            Represents a disposable that only disposes its underlying disposable when all dependent disposables have been disposed.
+            </summary>
+        </member>
+        <member name="M:System.Reactive.Disposables.RefCountDisposable.#ctor(System.IDisposable)">
+            <summary>
+            Initializes a new instance of the <see cref="T:System.Reactive.Disposables.RefCountDisposable"/> class with the specified disposable.
+            </summary>
+            <param name="disposable">Underlying disposable.</param>
+        </member>
+        <member name="M:System.Reactive.Disposables.RefCountDisposable.Dispose">
+            <summary>
+            Disposes the underlying disposable only when all dependent disposables have been disposed.
+            </summary>
+        </member>
+        <member name="M:System.Reactive.Disposables.RefCountDisposable.GetDisposable">
+            <summary>
+            Returns a dependent disposable that when disposed decreases the refcount on the underlying disposable.
+            </summary>
+            <returns>A dependent disposable contributing to the reference count that manages the underlying disposable's lifetime.</returns>
+        </member>
+        <member name="P:System.Reactive.Disposables.RefCountDisposable.IsDisposed">
+            <summary>
+            Gets a value that indicates whether the object is disposed.
+            </summary>
+        </member>
+        <member name="T:System.Reactive.Disposables.ScheduledDisposable">
+            <summary>
+            Represents an object that schedules units of work on a provided scheduler.
+            </summary>
+        </member>
+        <member name="M:System.Reactive.Disposables.ScheduledDisposable.#ctor(System.Reactive.Concurrency.IScheduler,System.IDisposable)">
+            <summary>
+            Initializes a new instance of the <see cref="T:System.Reactive.Disposables.ScheduledDisposable"/> class that uses a scheduler on which to dispose the disposable.
+            </summary>
+        </member>
+        <member name="M:System.Reactive.Disposables.ScheduledDisposable.Dispose">
+            <summary>
+            Disposes the wrapped disposable on the provided scheduler.
+            </summary>
+        </member>
+        <member name="P:System.Reactive.Disposables.ScheduledDisposable.Disposable">
+            <summary>
+            Gets a value that indicates the underlying disposable.
+            </summary>
+        </member>
+        <member name="P:System.Reactive.Disposables.ScheduledDisposable.Scheduler">
+            <summary>
+            Gets a value that indicates the scheduler.
+            </summary>
+        </member>
+        <member name="P:System.Reactive.Disposables.ScheduledDisposable.IsDisposed">
+            <summary>
+            Gets a value that indicates whether the object is disposed.
+            </summary>
+        </member>
+        <member name="T:System.Reactive.Disposables.SerialDisposable">
+            <summary>
+            Represents a disposable whose underlying disposable can be swapped for another disposable which causes the previous underlying disposable to be disposed.
+            </summary>
+        </member>
+        <member name="M:System.Reactive.Disposables.SerialDisposable.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:System.Reactive.Disposables.SerialDisposable"/> class.
+            </summary>
+        </member>
+        <member name="M:System.Reactive.Disposables.SerialDisposable.Dispose">
+            <summary>
+            Disposes the underlying disposable as well as all future replacements.
+            </summary>
+        </member>
+        <member name="P:System.Reactive.Disposables.SerialDisposable.IsDisposed">
+            <summary>
+            Gets a value that indicates whether the object is disposed.
+            </summary>
+        </member>
+        <member name="P:System.Reactive.Disposables.SerialDisposable.Disposable">
+            <summary>
+            Gets or sets the underlying disposable.
+            </summary>
+            <remarks>If the SerialDisposable has already been disposed, assignment to this property causes immediate disposal of the given disposable object.  Assigning this property disposes the previous disposable object.</remarks>
+        </member>
+        <member name="T:System.Reactive.Disposables.SingleAssignmentDisposable">
+            <summary>
+            A SingleAssignmentDisposable only allows a single assignment of its disposable object. If it has already been assigned, attempts to set the underlying object will throw an InvalidOperationException.
+            </summary>
+        </member>
+        <member name="M:System.Reactive.Disposables.SingleAssignmentDisposable.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:System.Reactive.Disposables.SingleAssignmentDisposable"/> class.
+            </summary>
+        </member>
+        <member name="M:System.Reactive.Disposables.SingleAssignmentDisposable.Dispose">
+            <summary>
+            Disposes the underlying disposable.
+            </summary>
+        </member>
+        <member name="P:System.Reactive.Disposables.SingleAssignmentDisposable.IsDisposed">
+            <summary>
+            Gets a value that indicates whether the object is disposed.
+            </summary>
+        </member>
+        <member name="P:System.Reactive.Disposables.SingleAssignmentDisposable.Disposable">
+            <summary>
+            Gets or sets the underlying disposable.
+            </summary>
+            <remarks>If the SingleAssignmentDisposable has already been assigned then it will throw an InvalidOperationException.</remarks>
+        </member>
+        <member name="T:System.Reactive.IPlatformEnlightenmentProvider">
+            <summary>
+            (Infrastructure) Interface for enlightenment providers.
+            </summary>
+        </member>
+        <member name="M:System.Reactive.IPlatformEnlightenmentProvider.GetService``1(System.Object[])">
+            <summary>
+            (Infastructure) Tries to gets the specified service.
+            </summary>
+            <typeparam name="T">Service type.</typeparam>
+            <param name="args">Optional set of arguments.</param>
+            <returns>Service instance or null if not found.</returns>
+        </member>
+        <member name="T:System.Reactive.PlatformEnlightenmentProvider">
+            <summary>
+            (Infrastructure) Provider for platform-specific framework enlightenments.
+            </summary>
+        </member>
+        <member name="P:System.Reactive.PlatformEnlightenmentProvider.Current">
+            <summary>
+            (Infrastructure) Gets the current enlightenment provider. If none is loaded yet, accessing this property triggers provider resolution.
+            </summary>
+        </member>
+        <member name="T:System.Reactive.NotificationKind">
+            <summary>
+            Indicates the type of a notification.
+            </summary>
+        </member>
+        <member name="F:System.Reactive.NotificationKind.OnNext">
+            <summary>
+            Represents an OnNext notification.
+            </summary>
+        </member>
+        <member name="F:System.Reactive.NotificationKind.OnError">
+            <summary>
+            Represents an OnError notification.
+            </summary>
+        </member>
+        <member name="F:System.Reactive.NotificationKind.OnCompleted">
+            <summary>
+            Represents an OnCompleted notification.
+            </summary>
+        </member>
+        <member name="T:System.Reactive.Notification`1">
+            <summary>
+            Represents a notification to an observer.
+            </summary>
+        </member>
+        <member name="M:System.Reactive.Notification`1.Equals(System.Reactive.Notification{`0})">
+            <summary>
+            Indicates whether this instance and other are equal.
+            </summary>
+        </member>
+        <member name="M:System.Reactive.Notification`1.Equals(System.Object)">
+            <summary>
+            Indicates whether this instance and a specified object are equal.
+            </summary>
+        </member>
+        <member name="M:System.Reactive.Notification`1.op_Equality(System.Reactive.Notification{`0},System.Reactive.Notification{`0})">
+            <summary>
+            Indicates whether left and right arguments are equal.       
+            </summary>
+        </member>
+        <member name="M:System.Reactive.Notification`1.op_Inequality(System.Reactive.Notification{`0},System.Reactive.Notification{`0})">
+            <summary>
+            Indicates whether left and right arguments are not equal.       
+            </summary>
+        </member>
+        <member name="M:System.Reactive.Notification`1.Accept(System.IObserver{`0})">
+            <summary>
+            Invokes the observer's method corresponding to the notification.
+            </summary>
+            <param name="observer">Observer to invoke the notification on.</param>
+        </member>
+        <member name="M:System.Reactive.Notification`1.Accept``1(System.Reactive.IObserver{`0,``0})">
+            <summary>
+            Invokes the observer's method corresponding to the notification and returns the produced result.
+            </summary>
+            <param name="observer">Observer to invoke the notification on.</param>
+            <returns>Result produced by the observation.</returns>
+        </member>
+        <member name="M:System.Reactive.Notification`1.Accept(System.Action{`0},System.Action{System.Exception},System.Action)">
+            <summary>
+            Invokes the delegate corresponding to the notification.
+            </summary>
+            <param name="onNext">Delegate to invoke for an OnNext notification.</param>
+            <param name="onError">Delegate to invoke for an OnError notification.</param>
+            <param name="onCompleted">Delegate to invoke for an OnCompleted notification.</param>
+        </member>
+        <member name="M:System.Reactive.Notification`1.Accept``1(System.Func{`0,``0},System.Func{System.Exception,``0},System.Func{``0})">
+            <summary>
+            Invokes the delegate corresponding to the notification and returns the produced result.
+            </summary>
+            <param name="onNext">Delegate to invoke for an OnNext notification.</param>
+            <param name="onError">Delegate to invoke for an OnError notification.</param>
+            <param name="onCompleted">Delegate to invoke for an OnCompleted notification.</param>
+            <returns>Result produced by the observation.</returns>
+        </member>
+        <member name="M:System.Reactive.Notification`1.ToObservable">
+            <summary>
+            Returns an observable sequence with a single notification, using the immediate scheduler.
+            </summary>
+            <returns>The observable sequence that surfaces the behavior of the notification upon subscription.</returns>
+        </member>
+        <member name="M:System.Reactive.Notification`1.ToObservable(System.Reactive.Concurrency.IScheduler)">
+            <summary>
+            Returns an observable sequence with a single notification.
+            </summary>
+            <param name="scheduler">Scheduler to send out the notification calls on.</param>
+            <returns>The observable sequence that surfaces the behavior of the notification upon subscription.</returns>
+        </member>
+        <member name="P:System.Reactive.Notification`1.Value">
+            <summary>
+            Returns the value of an OnNext notification or throws an exception.
+            </summary>
+        </member>
+        <member name="P:System.Reactive.Notification`1.HasValue">
+            <summary>
+            Returns a value that indicates whether the notification has a value.
+            </summary>
+        </member>
+        <member name="P:System.Reactive.Notification`1.Exception">
+            <summary>
+            Returns the exception of an OnError notification or returns null.
+            </summary>
+        </member>
+        <member name="P:System.Reactive.Notification`1.Kind">
+            <summary>
+            Gets the kind of notification that is represented.
+            </summary>
+        </member>
+        <member name="T:System.Reactive.Notification`1.OnNextNotification">
+            <summary>
+            Represents a OnNext notification to an observer.
+            </summary>
+        </member>
+        <member name="M:System.Reactive.Notification`1.OnNextNotification.#ctor(`0)">
+            <summary>
+            Constructs a notification of a new value.
+            </summary>
+        </member>
+        <member name="M:System.Reactive.Notification`1.OnNextNotification.GetHashCode">
+            <summary>
+            Returns the hash code for this instance.
+            </summary>
+        </member>
+        <member name="M:System.Reactive.Notification`1.OnNextNotification.Equals(System.Reactive.Notification{`0})">
+            <summary>
+            Indicates whether this instance and a specified object are equal.
+            </summary>
+        </member>
+        <member name="M:System.Reactive.Notification`1.OnNextNotification.ToString">
+            <summary>
+            Returns a string representation of this instance.
+            </summary>
+        </member>
+        <member name="M:System.Reactive.Notification`1.OnNextNotification.Accept(System.IObserver{`0})">
+            <summary>
+            Invokes the observer's method corresponding to the notification.
+            </summary>
+            <param name="observer">Observer to invoke the notification on.</param>
+        </member>
+        <member name="M:System.Reactive.Notification`1.OnNextNotification.Accept``1(System.Reactive.IObserver{`0,``0})">
+            <summary>
+            Invokes the observer's method corresponding to the notification and returns the produced result.
+            </summary>
+            <param name="observer">Observer to invoke the notification on.</param>
+            <returns>Result produced by the observation.</returns>
+        </member>
+        <member name="M:System.Reactive.Notification`1.OnNextNotification.Accept(System.Action{`0},System.Action{System.Exception},System.Action)">
+            <summary>
+            Invokes the delegate corresponding to the notification.
+            </summary>
+            <param name="onNext">Delegate to invoke for an OnNext notification.</param>
+            <param name="onError">Delegate to invoke for an OnError notification.</param>
+            <param name="onCompleted">Delegate to invoke for an OnCompleted notification.</param>
+        </member>
+        <member name="M:System.Reactive.Notification`1.OnNextNotification.Accept``1(System.Func{`0,``0},System.Func{System.Exception,``0},System.Func{``0})">
+            <summary>
+            Invokes the delegate corresponding to the notification and returns the produced result.
+            </summary>
+            <param name="onNext">Delegate to invoke for an OnNext notification.</param>
+            <param name="onError">Delegate to invoke for an OnError notification.</param>
+            <param name="onCompleted">Delegate to invoke for an OnCompleted notification.</param>
+            <returns>Result produced by the observation.</returns>
+        </member>
+        <member name="P:System.Reactive.Notification`1.OnNextNotification.Value">
+            <summary>
+            Returns the value of an OnNext notification.
+            </summary>
+        </member>
+        <member name="P:System.Reactive.Notification`1.OnNextNotification.Exception">
+            <summary>
+            Returns null.
+            </summary>
+        </member>
+        <member name="P:System.Reactive.Notification`1.OnNextNotification.HasValue">
+            <summary>
+            Returns true.
+            </summary>
+        </member>
+        <member name="P:System.Reactive.Notification`1.OnNextNotification.Kind">
+            <summary>
+            Returns NotificationKind.OnNext.
+            </summary>
+        </member>
+        <member name="T:System.Reactive.Notification`1.OnErrorNotification">
+            <summary>
+            Represents a OnError notification to an observer.
+            </summary>
+        </member>
+        <member name="M:System.Reactive.Notification`1.OnErrorNotification.#ctor(System.Exception)">
+            <summary>
+            Constructs a notification of an exception.
+            </summary>
+        </member>
+        <member name="M:System.Reactive.Notification`1.OnErrorNotification.GetHashCode">
+            <summary>
+            Returns the hash code for this instance.
+            </summary>
+        </member>
+        <member name="M:System.Reactive.Notification`1.OnErrorNotification.Equals(System.Reactive.Notification{`0})">
+            <summary>
+            Indicates whether this instance and other are equal.
+            </summary>
+        </member>
+        <member name="M:System.Reactive.Notification`1.OnErrorNotification.ToString">
+            <summary>
+            Returns a string representation of this instance.
+            </summary>
+        </member>
+        <member name="M:System.Reactive.Notification`1.OnErrorNotification.Accept(System.IObserver{`0})">
+            <summary>
+            Invokes the observer's method corresponding to the notification.
+            </summary>
+            <param name="observer">Observer to invoke the notification on.</param>
+        </member>
+        <member name="M:System.Reactive.Notification`1.OnErrorNotification.Accept``1(System.Reactive.IObserver{`0,``0})">
+            <summary>
+            Invokes the observer's method corresponding to the notification and returns the produced result.
+            </summary>
+            <param name="observer">Observer to invoke the notification on.</param>
+            <returns>Result produced by the observation.</returns>
+        </member>
+        <member name="M:System.Reactive.Notification`1.OnErrorNotification.Accept(System.Action{`0},System.Action{System.Exception},System.Action)">
+            <summary>
+            Invokes the delegate corresponding to the notification.
+            </summary>
+            <param name="onNext">Delegate to invoke for an OnNext notification.</param>
+            <param name="onError">Delegate to invoke for an OnError notification.</param>
+            <param name="onCompleted">Delegate to invoke for an OnCompleted notification.</param>
+        </member>
+        <member name="M:System.Reactive.Notification`1.OnErrorNotification.Accept``1(System.Func{`0,``0},System.Func{System.Exception,``0},System.Func{``0})">
+            <summary>
+            Invokes the delegate corresponding to the notification and returns the produced result.
+            </summary>
+            <param name="onNext">Delegate to invoke for an OnNext notification.</param>
+            <param name="onError">Delegate to invoke for an OnError notification.</param>
+            <param name="onCompleted">Delegate to invoke for an OnCompleted notification.</param>
+            <returns>Result produced by the observation.</returns>
+        </member>
+        <member name="P:System.Reactive.Notification`1.OnErrorNotification.Value">
+            <summary>
+            Throws the exception.
+            </summary>
+        </member>
+        <member name="P:System.Reactive.Notification`1.OnErrorNotification.Exception">
+            <summary>
+            Returns the exception.
+            </summary>
+        </member>
+        <member name="P:System.Reactive.Notification`1.OnErrorNotification.HasValue">
+            <summary>
+            Returns false.
+            </summary>
+        </member>
+        <member name="P:System.Reactive.Notification`1.OnErrorNotification.Kind">
+            <summary>
+            Returns NotificationKind.OnError.
+            </summary>
+        </member>
+        <member name="T:System.Reactive.Notification`1.OnCompletedNotification">
+            <summary>
+            Represents a OnCompleted notification to an observer.
+            </summary>
+        </member>
+        <member name="M:System.Reactive.Notification`1.OnCompletedNotification.#ctor">
+            <summary>
+            Constructs a notification of the end of a sequence.
+            </summary>
+        </member>
+        <member name="M:System.Reactive.Notification`1.OnCompletedNotification.GetHashCode">
+            <summary>
+            Returns the hash code for this instance.
+            </summary>
+        </member>
+        <member name="M:System.Reactive.Notification`1.OnCompletedNotification.Equals(System.Reactive.Notification{`0})">
+            <summary>
+            Indicates whether this instance and other are equal.
+            </summary>
+        </member>
+        <member name="M:System.Reactive.Notification`1.OnCompletedNotification.ToString">
+            <summary>
+            Returns a string representation of this instance.
+            </summary>
+        </member>
+        <member name="M:System.Reactive.Notification`1.OnCompletedNotification.Accept(System.IObserver{`0})">
+            <summary>
+            Invokes the observer's method corresponding to the notification.
+            </summary>
+            <param name="observer">Observer to invoke the notification on.</param>
+        </member>
+        <member name="M:System.Reactive.Notification`1.OnCompletedNotification.Accept``1(System.Reactive.IObserver{`0,``0})">
+            <summary>
+            Invokes the observer's method corresponding to the notification and returns the produced result.
+            </summary>
+            <param name="observer">Observer to invoke the notification on.</param>
+            <returns>Result produced by the observation.</returns>
+        </member>
+        <member name="M:System.Reactive.Notification`1.OnCompletedNotification.Accept(System.Action{`0},System.Action{System.Exception},System.Action)">
+            <summary>
+            Invokes the delegate corresponding to the notification.
+            </summary>
+            <param name="onNext">Delegate to invoke for an OnNext notification.</param>
+            <param name="onError">Delegate to invoke for an OnError notification.</param>
+            <param name="onCompleted">Delegate to invoke for an OnCompleted notification.</param>
+        </member>
+        <member name="M:System.Reactive.Notification`1.OnCompletedNotification.Accept``1(System.Func{`0,``0},System.Func{System.Exception,``0},System.Func{``0})">
+            <summary>
+            Invokes the delegate corresponding to the notification and returns the produced result.
+            </summary>
+            <param name="onNext">Delegate to invoke for an OnNext notification.</param>
+            <param name="onError">Delegate to invoke for an OnError notification.</param>
+            <param name="onCompleted">Delegate to invoke for an OnCompleted notification.</param>
+            <returns>Result produced by the observation.</returns>
+        </member>
+        <member name="P:System.Reactive.Notification`1.OnCompletedNotification.Value">
+            <summary>
+            Throws an InvalidOperationException.
+            </summary>
+        </member>
+        <member name="P:System.Reactive.Notification`1.OnCompletedNotification.Exception">
+            <summary>
+            Returns null.
+            </summary>
+        </member>
+        <member name="P:System.Reactive.Notification`1.OnCompletedNotification.HasValue">
+            <summary>
+            Returns false.
+            </summary>
+        </member>
+        <member name="P:System.Reactive.Notification`1.OnCompletedNotification.Kind">
+            <summary>
+            Returns NotificationKind.OnCompleted.
+            </summary>
+        </member>
+        <member name="T:System.Reactive.Notification">
+            <summary>
+            Provides a set of static methods for constructing notifications.
+            </summary>
+        </member>
+        <member name="M:System.Reactive.Notification.CreateOnNext``1(``0)">
+            <summary>
+            Creates an object that represents an OnNext notification to an observer.
+            </summary>
+            <param name="value">The value contained in the notification.</param>
+            <returns>The OnNext notification containing the value.</returns>
+        </member>
+        <member name="M:System.Reactive.Notification.CreateOnError``1(System.Exception)">
+            <summary>
+            Creates an object that represents an OnError notification to an observer.
+            </summary>
+            <param name="error">The exception contained in the notification.</param>
+            <returns>The OnError notification containing the exception.</returns>
+        </member>
+        <member name="M:System.Reactive.Notification.CreateOnCompleted``1">
+            <summary>
+            Creates an object that represents an OnCompleted notification to an observer.
+            </summary>
+            <returns>The OnCompleted notification.</returns>
+        </member>
+        <member name="T:System.Reactive.Unit">
+            <summary>
+            Represents void.
+            </summary>
+        </member>
+        <member name="M:System.Reactive.Unit.Equals(System.Reactive.Unit)">
+            <summary>
+            Indicates whether the current unit is equal to the specified unit.
+            </summary>
+            <remarks>Always returns true.</remarks>
+        </member>
+        <member name="M:System.Reactive.Unit.Equals(System.Object)">
+            <summary>
+            Indicates whether the current unit is equal to the specified object.
+            </summary>
+            <param name="obj">The System.Object to compare with the current Unit.</param>
+            <returns>true if the current unit is equal to the specified object; otherwise, false.</returns>
+        </member>
+        <member name="M:System.Reactive.Unit.GetHashCode">
+            <summary>
+            Gets the unit value's hash code.
+            </summary>
+            <returns>The unit value's hash code.</returns>
+        </member>
+        <member name="M:System.Reactive.Unit.op_Equality(System.Reactive.Unit,System.Reactive.Unit)">
+            <summary>
+            Indicates whether first and second arguments are equal.
+            </summary>
+            <param name="first">The first Unit to compare, or null.</param>
+            <param name="second">The second Unit to compare, or null.</param>
+            <returns>Always returns true.</returns>
+        </member>
+        <member name="M:System.Reactive.Unit.op_Inequality(System.Reactive.Unit,System.Reactive.Unit)">
+            <summary>
+            Indicates whether first and second arguments are not equal.
+            </summary>
+            <param name="first">The first Unit to compare, or null.</param>
+            <param name="second">The second Unit to compare, or null.</param>
+            <returns>Always returns false.</returns>
+        </member>
+        <member name="P:System.Reactive.Unit.Default">
+            <summary>
+            Gets the single unit value.
+            </summary>
+        </member>
+    </members>
+</doc>
