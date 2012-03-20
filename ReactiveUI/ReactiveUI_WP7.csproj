@@ -101,9 +101,10 @@
     <Compile Include="RxApp.cs" />
     <Compile Include="ThreadLocal.cs" />
     <Compile Include="VariadicTemplates_WP7.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
       <DependentUpon>VariadicTemplates_WP7.tt</DependentUpon>
+      <SubType>Code</SubType>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
     </Compile>
   </ItemGroup>
   <ItemGroup>
