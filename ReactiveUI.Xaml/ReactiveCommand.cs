@@ -30,7 +30,14 @@ namespace ReactiveUI.Xaml
         {
             canExecute = canExecute ?? Observable.Return(true).Concat(Observable.Never<bool>());
             commonCtor(scheduler);
-            _inner = canExecute.Subscribe(canExecuteSubject.OnNext);
+
+            var exSubject = new ScheduledSubject<Exception>(RxApp.DeferredScheduler, RxApp.DefaultExceptionHandler);
+
+            _inner = canExecute.Subscribe(
+                canExecuteSubject.OnNext, 
+                exSubject.OnNext);
+
+            ThrownExceptions = exSubject;
         }
 
         protected ReactiveCommand(Func<object, bool> canExecute, IScheduler scheduler = null)
@@ -62,6 +69,8 @@ namespace ReactiveUI.Xaml
 
             return ret;
         }
+
+        public IObservable<Exception> ThrownExceptions { get; protected set; }
 
         void commonCtor(IScheduler scheduler)
         {

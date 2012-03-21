@@ -79,10 +79,10 @@ namespace ReactiveUI.Xaml
             _canExecuteSubject = new ScheduledSubject<bool>(Scheduler.Immediate);
             _executeSubject = new ScheduledSubject<object>(Scheduler.Immediate);
             _normalSched = scheduler ?? RxApp.DeferredScheduler;
+            _exSubject = new ScheduledSubject<Exception>(_normalSched, RxApp.DefaultExceptionHandler);
 
             AsyncStartedNotification = new ScheduledSubject<Unit>(RxApp.DeferredScheduler);
             AsyncCompletedNotification = new ScheduledSubject<Unit>(RxApp.DeferredScheduler);
-            AsyncErrorNotification = new ScheduledSubject<Exception>(RxApp.DeferredScheduler);
 
             ItemsInflight = Observable.Merge(
                 AsyncStartedNotification.Select(_ => 1),
@@ -111,8 +111,7 @@ namespace ReactiveUI.Xaml
             });
 
             if (canExecute != null) {
-                var ce = canExecute.Multicast(_canExecuteSubject);
-                _inner = ce.Connect();
+                canExecute.Subscribe(_canExecuteSubject.OnNext, _exSubject.OnNext);
             }
 
             _maximumConcurrent = maximumConcurrent;
@@ -125,6 +124,7 @@ namespace ReactiveUI.Xaml
         ISubject<object> _executeSubject;
         int _maximumConcurrent;
         IDisposable _inner = null;
+        ScheduledSubject<Exception> _exSubject;
 
         public IObservable<int> ItemsInflight { get; protected set; }
 
@@ -132,9 +132,9 @@ namespace ReactiveUI.Xaml
 
         public ISubject<Unit> AsyncCompletedNotification { get; protected set; }
 
-        public ISubject<Exception> AsyncErrorNotification { get; protected set; }
-
         public IObservable<bool> CanExecuteObservable { get; protected set; }
+
+        public IObservable<Exception> ThrownExceptions { get; protected set; }
 
         public event EventHandler CanExecuteChanged;
 
@@ -222,7 +222,7 @@ namespace ReactiveUI.Xaml
 
                     return calculationFunc(x)
                         .Catch<TResult, Exception>(ex => {
-                            AsyncErrorNotification.OnNext(ex);
+                            _exSubject.OnNext(ex);
                             return Observable.Empty<TResult>();
                         })
                         .Finally(() => AsyncCompletedNotification.OnNext(Unit.Default));

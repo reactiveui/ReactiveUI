@@ -23,7 +23,13 @@ namespace ReactiveUI.Xaml
         /// this should not fire notifications unless the CanExecute changes
         /// (i.e. it should not fire 'true', 'true').
         /// </summary>
-        IObservable<bool> CanExecuteObservable { get; } 
+        IObservable<bool> CanExecuteObservable { get; }
+
+        /// <summary>
+        /// Fires whenever an exception would normally terminate ReactiveUI 
+        /// internal state.
+        /// </summary>
+        IObservable<Exception> ThrownExceptions { get; }
     }
 
     /// <summary>
@@ -47,11 +53,6 @@ namespace ReactiveUI.Xaml
         /// Should be fired whenever an async operation completes.
         /// </summary>
         ISubject<Unit> AsyncCompletedNotification { get; }
-
-        /// <summary>
-        /// Should be fired whenever an async operation fails.
-        /// </summary>
-        ISubject<Exception> AsyncErrorNotification { get; }
     }
 }
 
