@@ -16,7 +16,7 @@ namespace ReactiveUI.Xaml
     /// ICommand.Execute and its value is the CommandParameter that was
     /// provided.
     /// </summary>
-    public interface IReactiveCommand : ICommand, IObservable<object> 
+    public interface IReactiveCommand : ICommand, IObservable<object>, IHandleObservableErrors
     {
         /// <summary>
         /// Fires whenever the CanExecute of the ICommand changes. Note that
@@ -24,12 +24,6 @@ namespace ReactiveUI.Xaml
         /// (i.e. it should not fire 'true', 'true').
         /// </summary>
         IObservable<bool> CanExecuteObservable { get; }
-
-        /// <summary>
-        /// Fires whenever an exception would normally terminate ReactiveUI 
-        /// internal state.
-        /// </summary>
-        IObservable<Exception> ThrownExceptions { get; }
     }
 
     /// <summary>

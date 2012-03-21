@@ -84,6 +84,26 @@ namespace ReactiveUI
     }
 
     /// <summary>
+    /// This interface is implemented by RxUI objects which are given 
+    /// IObservables as input - when the input IObservables OnError, instead of 
+    /// disabling the RxUI object, we catch the IObservable and pipe it into
+    /// this property.
+    /// 
+    /// Normally this IObservable is implemented with a ScheduledSubject whose 
+    /// default Observer is RxApp.DefaultExceptionHandler - this means, that if
+    /// you aren't listening to ThrownExceptions and one appears, the exception
+    /// will appear on the UI thread and crash the application.
+    /// </summary>
+    public interface IHandleObservableErrors
+    {
+        /// <summary>
+        /// Fires whenever an exception would normally terminate ReactiveUI 
+        /// internal state.
+        /// </summary>
+        IObservable<Exception> ThrownExceptions { get; }
+    }
+
+    /// <summary>
     /// IReactiveCollection represents a collection that can notify when its
     /// contents are changed (either items are added/removed, or the object
     /// itself changes).
@@ -250,27 +270,6 @@ namespace ReactiveUI
         /// only used for one purpose, leave this as null.</param>
         void SendMessage<T>(T message, string contract = null);
     }
-
-#if DEBUG
-    public interface IPromptUserForNewModel<T>
-    {
-        T Prompt(object parameter);
-    }
-
-    public interface IViewForModel<TModel, TViewModel>
-    {
-        IDisposable Present(TModel model, bool asModal, Action onClosed);
-
-        TModel Model { get; set; }
-        TViewModel ViewModel { get; }
-    }
-
-    public interface IViewModel<TModel> : IReactiveNotifyPropertyChanged
-    {
-        TModel Model { get; set; }
-    }
-
-#endif
 }
 
 // vim: tw=120 ts=4 sw=4 et :
