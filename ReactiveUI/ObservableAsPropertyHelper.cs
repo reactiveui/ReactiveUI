@@ -21,7 +21,7 @@ namespace ReactiveUI
     /// be chained - for example a "Path" property and a chained
     /// "PathFileNameOnly" property.
     /// </summary>
-    public sealed class ObservableAsPropertyHelper<T> : IObservable<T>, IDisposable, IEnableLogger
+    public sealed class ObservableAsPropertyHelper<T> : IObservable<T>, IHandleObservableErrors, IDisposable, IEnableLogger
     {
         T _lastValue;
         readonly IObservable<T> _source;
