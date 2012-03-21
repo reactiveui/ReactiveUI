@@ -4,6 +4,7 @@ using System.Reactive.Concurrency;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Reflection;
@@ -428,15 +429,24 @@ namespace ReactiveUI
         }
     }
 
-    public class ScheduledSubject<T> : IDisposable, ISubject<T>
+    public class ScheduledSubject<T> : ISubject<T>
     {
-        public ScheduledSubject(IScheduler scheduler)
+        public ScheduledSubject(IScheduler scheduler, IObserver<T> defaultObserver = null)
         {
             _scheduler = scheduler;
+            _defaultObserver = defaultObserver;
+
+            if (defaultObserver != null) {
+                _defaultObserverSub = _subject.ObserveOn(_scheduler).Subscribe(_defaultObserver);
+            }
         }
 
+        readonly IObserver<T> _defaultObserver;
         readonly IScheduler _scheduler;
         readonly Subject<T> _subject = new Subject<T>();
+
+        int _observerRefCount = 0;
+        IDisposable _defaultObserverSub;
 
         public void Dispose()
         {
@@ -460,7 +470,20 @@ namespace ReactiveUI
 
         public IDisposable Subscribe(IObserver<T> observer)
         {
-            return _subject.ObserveOn(_scheduler).Subscribe(observer);
+            if (_defaultObserverSub != null) {
+                _defaultObserverSub.Dispose();
+                _defaultObserverSub = null;
+            }
+
+            Interlocked.Increment(ref _observerRefCount);
+
+            return new CompositeDisposable(
+                _subject.ObserveOn(_scheduler).Subscribe(observer),
+                Disposable.Create(() => {
+                    if (Interlocked.Decrement(ref _observerRefCount) <= 0 && _defaultObserver != null) {
+                        _defaultObserverSub = _subject.ObserveOn(_scheduler).Subscribe(_defaultObserver);
+                    }
+                }));
         }
     }
 
