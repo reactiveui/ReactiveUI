@@ -47,7 +47,7 @@ namespace ReactiveUI
     /// IReactiveNotifyPropertyChanged represents an extended version of
     /// INotifyPropertyChanged that also exposes Observables.
     /// </summary>
-    public interface IReactiveNotifyPropertyChanged : INotifyPropertyChanged, INotifyPropertyChanging
+    public interface IReactiveNotifyPropertyChanged : INotifyPropertyChanged, INotifyPropertyChanging, IEnableLogger
     {
         /// <summary>
         /// Represents an Observable that fires *before* a property is about to
@@ -189,7 +189,7 @@ namespace ReactiveUI
     /// unique string used to distinguish between messages of the same Type, and
     /// is arbitrarily set by the client. 
     /// </summary>
-    public interface IMessageBus
+    public interface IMessageBus : IEnableLogger
     {
         /// <summary>
         /// Registers a scheduler for the type, which may be specified at runtime, and the contract.

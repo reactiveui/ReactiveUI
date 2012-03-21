@@ -16,10 +16,8 @@ namespace ReactiveUI.Xaml
     /// ICommand.Execute and its value is the CommandParameter that was
     /// provided.
     /// </summary>
-    public class ReactiveCommand : IReactiveCommand, IDisposable
+    public class ReactiveCommand : IReactiveCommand, IDisposable, IEnableLogger
     {
-        static readonly Logger log = LogManager.GetCurrentClassLogger();
-
         /// <summary>
         /// Creates a new ReactiveCommand object.
         /// </summary>
@@ -108,7 +106,7 @@ namespace ReactiveUI.Xaml
 
         public void Execute(object parameter)
         {
-            log.Info("{0:X}: Executed", this.GetHashCode());
+            this.Log().Info("{0:X}: Executed", this.GetHashCode());
             executeSubject.OnNext(parameter);
         }
 

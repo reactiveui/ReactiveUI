@@ -34,8 +34,6 @@ namespace ReactiveUI
      */
     public static class RxApp
     {
-        static readonly Logger log = LogManager.GetCurrentClassLogger();
-
         static RxApp()
         {
             // Default name for the field backing the "Foo" property => "_Foo"
@@ -297,13 +295,13 @@ namespace ReactiveUI
             try {
                 result = Type.GetType(dispatcherSchedulerQualifiedName, true);
             } catch(Exception ex) {
-                log.Error(ex);
+                LogHost.Default.Error(ex);
             }
 
             if (result == null) {
-                log.Error("*** WPF Rx.NET DLL reference not added - using Event Loop *** ");
-                log.Error("Add a reference to System.Reactive.Windows.Threading.dll if you're using WPF / SL4 / WP7");
-                log.Error("or consider explicitly setting RxApp.DeferredScheduler if not");
+                LogHost.Default.Error("*** WPF Rx.NET DLL reference not added - using Event Loop *** ");
+                LogHost.Default.Error("Add a reference to System.Reactive.Windows.Threading.dll if you're using WPF / SL4 / WP7");
+                LogHost.Default.Error("or consider explicitly setting RxApp.DeferredScheduler if not");
                 return new EventLoopScheduler();
             }
 

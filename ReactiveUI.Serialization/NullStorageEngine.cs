@@ -9,28 +9,26 @@ namespace ReactiveUI.Serialization
     /// </summary>
     public class NullStorageEngine : IStorageEngine
     {
-        static readonly Logger log = LogManager.GetCurrentClassLogger();
-
         public T Load<T>(Guid ContentHash) where T : ISerializableItem
         {
-            log.Debug("Loading {0}, returning null", ContentHash);
+            this.Log().Debug("Loading {0}, returning null", ContentHash);
             return default(T);
         }
 
         public object Load(Guid ContentHash) 
         {
-            log.Debug("Loading {0}, returning null", ContentHash);
+            this.Log().Debug("Loading {0}, returning null", ContentHash);
             return null;
         }
 
         public void Save<T>(T Obj) where T : ISerializableItem
         {
-            log.Debug("Saving {0}", Obj.ContentHash);
+            this.Log().Debug("Saving {0}", Obj.ContentHash);
         }
 
         public void FlushChanges()
         {
-            log.Debug("Flush");
+            this.Log().Debug("Flush");
         }
 
         public Guid[] GetAllObjectHashes()
@@ -46,7 +44,7 @@ namespace ReactiveUI.Serialization
         public ISyncPointInformation CreateSyncPoint<T>(T obj, string qualifier = null, DateTimeOffset? createdOn = null) 
             where T : ISerializableItem
         {
-            log.Debug("Creating sync point for {0} ({1})", obj.ContentHash, qualifier);
+            this.Log().Debug("Creating sync point for {0} ({1})", obj.ContentHash, qualifier);
             return new SyncPointInformation(Guid.Empty, Guid.Empty, typeof (T), qualifier ?? String.Empty, createdOn ?? DateTimeOffset.Now);
         }
 

@@ -17,8 +17,6 @@ namespace ReactiveUI
     /// </summary>
     public class MakeObjectReactiveHelper  : IReactiveNotifyPropertyChanged
     {
-        static readonly Logger log = LogManager.GetCurrentClassLogger();
-
         public MakeObjectReactiveHelper(INotifyPropertyChanged hostObject)
         {
             var hostChanging = hostObject as INotifyPropertyChanging;
@@ -26,7 +24,7 @@ namespace ReactiveUI
                 hostChanging.PropertyChanging += (o, e) => _Changing.OnNext(
                     new ObservedChange<object, object>() { Sender = o, PropertyName = e.PropertyName });
             } else {
-                log.Error("'{0}' does not implement INotifyPropertyChanging - RxUI may return duplicate change notifications",
+                this.Log().Error("'{0}' does not implement INotifyPropertyChanging - RxUI may return duplicate change notifications",
                     hostObject.GetType().FullName);
             }
 

@@ -19,8 +19,6 @@ namespace ReactiveUI
     /// </summary>
     public class MessageBus : IMessageBus
     {
-        static readonly Logger log = LogManager.GetCurrentClassLogger();
-
         readonly Dictionary<Tuple<Type, string>, NotAWeakReference> messageBus =
             new Dictionary<Tuple<Type, string>, NotAWeakReference>();
 
@@ -55,7 +53,7 @@ namespace ReactiveUI
         /// message bus.</returns>
         public IObservable<T> Listen<T>(string contract = null)
         {
-            log.Info("Listening to {0}:{1}", typeof (T), contract);
+            this.Log().Info("Listening to {0}:{1}", typeof (T), contract);
 
             return SetupSubjectIfNecessary<T>(contract);
         }
