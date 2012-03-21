@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Diagnostics.Contracts;
 using System.Linq;
@@ -62,6 +63,11 @@ namespace ReactiveUI
 #else
                 DeferredScheduler = findDispatcherScheduler();
 #endif
+
+                DefaultExceptionHandler = Observer.Create<Exception>(ex => 
+                    RxApp.DeferredScheduler.Schedule(() => {
+                        throw new Exception("An exception occurred on an object that would destabilize ReactiveUI. To prevent this, Subscribe to the ThrownExceptions property of your objects", ex);
+                    }));
             }
 
 #if WINDOWS_PHONE
@@ -166,6 +172,14 @@ namespace ReactiveUI
         public static bool? InUnitTestRunnerOverride { get; set; }
 
         /// <summary>
+        /// This Observer is signalled whenever an object that has a 
+        /// ThrownExceptions property doesn't Subscribe to that Observable. Use
+        /// Observer.Create to set up what will happen - the default is to crash
+        /// the application with an error message.
+        /// </summary>
+        public static IObserver<Exception> DefaultExceptionHandler { get; set; }
+
+        /// <summary>
         /// InUnitTestRunner attempts to determine heuristically if the current
         /// application is running in a unit test framework.
         /// </summary>
@@ -228,14 +242,6 @@ namespace ReactiveUI
             return AppDomain.CurrentDomain.GetAssemblies().Any(x =>
                 testAssemblies.Any(name => x.FullName.ToUpperInvariant().Contains(name)));
 #endif
-        }
-
-        /// <summary>
-        ///
-        /// </summary>
-        public static void EnableDebugMode()
-        {
-            //LoggerFactory = (x => new StdErrLogger());
         }
 
 #if FALSE
