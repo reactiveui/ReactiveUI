@@ -24,7 +24,6 @@ namespace ReactiveUI
     public sealed class ObservableAsPropertyHelper<T> : IObservable<T>, IDisposable, IEnableLogger
     {
         T _lastValue;
-        Exception _lastException;
         readonly IObservable<T> _source;
         IDisposable _inner;
 
@@ -52,11 +51,15 @@ namespace ReactiveUI
             _lastValue = initialValue;
 
             var subj = new ScheduledSubject<T>(scheduler);
+            var exSubject = new ScheduledSubject<Exception>(scheduler, RxApp.DefaultExceptionHandler);
+
             subj.Subscribe(x => {
                 this.Log().Debug("Property helper {0:X} changed", this.GetHashCode());
                 _lastValue = x;
                 onChanged(x);
-            }, ex => _lastException = ex);
+            }, exSubject.OnNext);
+
+            ThrownExceptions = exSubject;
 
             // Fire off an initial RaisePropertyChanged to make sure bindings
             // have a value
@@ -71,23 +74,14 @@ namespace ReactiveUI
         /// The last provided value from the Observable. 
         /// </summary>
         public T Value {
-            get {
-                if (_lastException != null) {
-                    this.Log().Error("Observable ended with OnError", _lastException);
-                    throw _lastException;
-                }
-                return _lastValue;
-            }
+            get { return _lastValue; }
         }
 
         /// <summary>
-        /// Returns the Exception which has been provided by the Observable; normally
-        /// steps should be taken to ensure that Observables provided to OAPH should
-        /// never complete or fail.
+        /// Fires whenever an exception would normally terminate ReactiveUI 
+        /// internal state.
         /// </summary>
-        public Exception BindingException {
-            get { return _lastException; }
-        }
+        public IObservable<Exception> ThrownExceptions { get; protected set; }
 
         public IDisposable Subscribe(IObserver<T> observer)
         {
