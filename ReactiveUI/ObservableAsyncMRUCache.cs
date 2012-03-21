@@ -26,9 +26,8 @@ namespace ReactiveUI
     /// </summary>
     /// <typeparam name="TParam">The key type.</typeparam>
     /// <typeparam name="TVal">The type of the value to return from the cache.</typeparam>
-    public sealed class ObservableAsyncMRUCache<TParam, TVal>
+    public sealed class ObservableAsyncMRUCache<TParam, TVal> : IEnableLogger
     {
-        static readonly Logger log = LogManager.GetCurrentClassLogger();
         readonly MemoizingMRUCache<TParam, IObservable<TVal>> _innerCache;
         readonly SemaphoreSubject<long> _callQueue;
         readonly Func<TParam, IObservable<TVal>> _fetcher;
@@ -94,7 +93,7 @@ namespace ReactiveUI
         {
             IObservable<TVal> result;
             if (_innerCache.TryGet(key, out result)) {
-                log.Debug("Cache hit: '{0}'", key);
+                this.Log().Debug("Cache hit: '{0}'", key);
                 return result;
             }
 
@@ -102,7 +101,7 @@ namespace ReactiveUI
 
             var rs = new ReplaySubject<TVal>();
             _callQueue.Where(x => x == myCall).Subscribe(_ => {
-                log.Debug("Dispatching '{0}'", key);
+                this.Log().Debug("Dispatching '{0}'", key);
                 IObservable<TVal> fetched = null;
                 try {
                     fetched = _fetcher(key);
@@ -193,7 +192,7 @@ namespace ReactiveUI
         }
     }
 
-    internal class SemaphoreSubject<T> : ISubject<T>
+    internal class SemaphoreSubject<T> : ISubject<T>, IEnableLogger
     {
         static readonly Logger log = LogManager.GetCurrentClassLogger();
         readonly ISubject<T> _inner;
@@ -203,7 +202,7 @@ namespace ReactiveUI
 
         public SemaphoreSubject(int maxCount, IScheduler sched = null)
         {
-            log.Debug("maxCount is '{0}'", maxCount);
+            this.Log().Debug("maxCount is '{0}'", maxCount);
 #if WINDOWS_PHONE
             _inner = new Subject<T>();
 #else
@@ -219,7 +218,7 @@ namespace ReactiveUI
                 return;
 
             lock (queue) {
-                log.Debug("OnNext called for '{0}', count is '{1}'", value, _count);
+                this.Log().Debug("OnNext called for '{0}', count is '{1}'", value, _count);
                 queue.Enqueue(value);
             }
             yieldUntilEmptyOrBlocked();
@@ -229,7 +228,7 @@ namespace ReactiveUI
         {
             Interlocked.Decrement(ref _count);
 
-            log.Debug("Releasing, count is now {0}", _count);
+            this.Log().Debug("Releasing, count is now {0}", _count);
             yieldUntilEmptyOrBlocked();
         }
 
@@ -279,7 +278,7 @@ namespace ReactiveUI
                     next = queue.Dequeue();
                 }
 
-                log.Debug("Yielding '{0}', _count = {1}, _maxCount = {2}", next, _count, _maxCount);
+                this.Log().Debug("Yielding '{0}', _count = {1}, _maxCount = {2}", next, _count, _maxCount);
                 _inner.OnNext(next);
 
                 if (Interlocked.Increment(ref _count) >= _maxCount) {

@@ -23,8 +23,6 @@ namespace ReactiveUI
     /// <typeparam name="T">The type of the objects in the collection.</typeparam>
     public class ReactiveCollection<T> : ObservableCollection<T>, IReactiveCollection<T>, IDisposable
     {
-        static readonly Logger log = LogManager.GetCurrentClassLogger();
-
         /// <summary>
         /// Constructs a ReactiveCollection.
         /// </summary>
@@ -109,14 +107,14 @@ namespace ReactiveUI
                     new ObservedChange<object, object>() {PropertyName = x.PropertyName, Sender = x.Sender, Value = x.Value}));
 
             _ItemsAdded.Subscribe(x => {
-                log.Debug("Item Added to {0:X} - {1}", this.GetHashCode(), x);
+                this.Log().Debug("Item Added to {0:X} - {1}", this.GetHashCode(), x);
                 if (propertyChangeWatchers == null)
                     return;
                 addItemToPropertyTracking(x);
             });
 
             _ItemsRemoved.Subscribe(x => {
-                log.Debug("Item removed from {0:X} - {1}", this.GetHashCode(), x);
+                this.Log().Debug("Item removed from {0:X} - {1}", this.GetHashCode(), x);
                 if (propertyChangeWatchers == null || !propertyChangeWatchers.ContainsKey(x))
                     return;
 
@@ -125,7 +123,7 @@ namespace ReactiveUI
 
 #if DEBUG
             _ItemChanged.Subscribe(x => 
-                log.Debug("Object {0} changed in collection {1:X}", x, this.GetHashCode()));
+                this.Log().Debug("Object {0} changed in collection {1:X}", x, this.GetHashCode()));
 #endif
         }
 

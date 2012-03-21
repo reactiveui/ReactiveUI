@@ -17,8 +17,6 @@ namespace ReactiveUI
     [DataContract]
     public class ReactiveValidatedObject : ReactiveObject, IDataErrorInfo
     {
-        static readonly Logger log = LogManager.GetCurrentClassLogger();
-
         /// <summary>
         ///
         /// </summary>
@@ -54,9 +52,9 @@ namespace ReactiveUI
                     return ret;
                 }
 
-                log.Debug("Checking {0:X}.{1}...", this.GetHashCode(), columnName);
+                this.Log().Debug("Checking {0:X}.{1}...", this.GetHashCode(), columnName);
                 ret = getPropertyValidationError(columnName);
-                log.Debug("Validation result: {0}", ret);
+                this.Log().Debug("Validation result: {0}", ret);
 
                 _validationCache[columnName] = ret;
 
@@ -128,7 +126,7 @@ namespace ReactiveUI
                     var pi = RxApp.getPropertyInfoForProperty(pei.Type, propName);
                     v.Validate(pi.GetValue(this, null), ctx);
                 } catch(Exception ex) {
-                    log.Info("{0:X}.{1} failed validation: {2}", 
+                    this.Log().Info("{0:X}.{1} failed validation: {2}", 
                         this.GetHashCode(), propName, ex.Message);
                     return ex.Message;
                 }

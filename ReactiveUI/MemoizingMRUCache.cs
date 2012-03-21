@@ -61,20 +61,20 @@ namespace ReactiveUI
             Contract.Requires(key != null);
 
             if (cacheEntries.ContainsKey(key)) {
-                //log.Debug("Cache hit: {0}", key);
+                //this.Log().Debug("Cache hit: {0}", key);
                 var found = cacheEntries[key];
                 cacheMRUList.Remove(found.Item1);
                 cacheMRUList.AddFirst(found.Item1);
-                //log.Debug("[{0}]", String.Join(",", cacheMRUList));
+                //this.Log().Debug("[{0}]", String.Join(",", cacheMRUList));
                 return found.Item2;
             }
 
-            //log.Debug("Cache miss: {0}", key);
+            //this.Log().Debug("Cache miss: {0}", key);
             var result = calculationFunction(key, context);
 
             var node = new LinkedListNode<TParam>(key);
             cacheMRUList.AddFirst(node);
-            //log.Debug("[{0}]", String.Join(",", cacheMRUList));
+            //this.Log().Debug("[{0}]", String.Join(",", cacheMRUList));
             cacheEntries[key] = new Tuple<LinkedListNode<TParam>, TVal>(node, result);
             maintainCache();
 
@@ -88,12 +88,12 @@ namespace ReactiveUI
             Tuple<LinkedListNode<TParam>, TVal> output;
             var ret = cacheEntries.TryGetValue(key, out output);
             if (ret && output != null) {
-                //log.Debug("Cache hit: {0}", key);
+                //this.Log().Debug("Cache hit: {0}", key);
                 cacheMRUList.Remove(output.Item1);
                 cacheMRUList.AddFirst(output.Item1);
                 result = output.Item2;
             } else {
-                //log.Debug("Cache miss: {0}", key);
+                //this.Log().Debug("Cache miss: {0}", key);
                 result = default(TVal);
             }
             return ret;
@@ -149,13 +149,13 @@ namespace ReactiveUI
 
         void maintainCache()
         {
-            //log.Debug("Maintain: [{0}]", String.Join(",", cacheMRUList));
+            //this.Log().Debug("Maintain: [{0}]", String.Join(",", cacheMRUList));
             while (cacheMRUList.Count > maxCacheSize) {
                 var to_remove = cacheMRUList.Last.Value;
                 if (releaseFunction != null)
                     releaseFunction(cacheEntries[to_remove].Item2);
 
-                //log.Debug("Evicting {0}", to_remove);
+                //this.Log().Debug("Evicting {0}", to_remove);
                 cacheEntries.Remove(cacheMRUList.Last.Value);
                 cacheMRUList.RemoveLast();
             }

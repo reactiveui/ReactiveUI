@@ -27,8 +27,6 @@ namespace ReactiveUI
     [DataContract]
     public class ReactiveObject : IReactiveNotifyPropertyChanged
     {
-        static readonly Logger log = LogManager.GetCurrentClassLogger();
-
         [field:IgnoreDataMember]
         public event PropertyChangingEventHandler PropertyChanging;
 
@@ -51,7 +49,7 @@ namespace ReactiveUI
         public IObservable<IObservedChange<object, object>> Changed {
             get {
 #if DEBUG
-                log.Debug("Changed Subject 0x{0:X}", changedSubject.GetHashCode());
+                this.Log().Debug("Changed Subject 0x{0:X}", changedSubject.GetHashCode());
 #endif
                 return changedSubject;
             }
@@ -124,10 +122,10 @@ namespace ReactiveUI
             Contract.Requires(propertyName != null);
 
             verifyPropertyName(propertyName);
-            log.Debug("{0:X}.{1} changed", this.GetHashCode(), propertyName);
+            this.Log().Debug("{0:X}.{1} changed", this.GetHashCode(), propertyName);
 
             if (!areChangeNotificationsEnabled) {
-                log.Debug("Suppressed change");
+                this.Log().Debug("Suppressed change");
                 return;
             }
 
@@ -158,7 +156,7 @@ namespace ReactiveUI
             // public, instance property on this object.
             if (TypeDescriptor.GetProperties(this)[propertyName] == null) {
                 string msg = "Invalid property name: " + propertyName;
-                log.Error(msg);
+                this.Log().Error(msg);
             }
 #endif
         }
@@ -178,12 +176,12 @@ namespace ReactiveUI
         void notifyObservable<T>(T item, Subject<T> subject)
         {
 #if DEBUG
-            log.Debug("Firing observable to subject 0x{0:X}", subject.GetHashCode());
+            this.Log().Debug("Firing observable to subject 0x{0:X}", subject.GetHashCode());
 #endif
             try {
                 subject.OnNext(item);
             } catch (Exception ex) {
-                log.Error(ex);
+                this.Log().Error(ex);
                 subject.OnError(ex);
             }
         }
