@@ -638,6 +638,25 @@ namespace ReactiveUI
             return ret;
         }
 
+        /// <summary>
+        /// Creates a collection whose contents will are a "view" on another
+        /// collection; this method is useful for creating ViewModel collections
+        /// that are automatically updated when the respective Model collection
+        /// is updated.
+        ///
+        /// This overload is against collections that *cannot* be Observed -
+        /// changes to the items in the source will *not* be reflected in the
+        /// result.
+        /// </summary>
+        /// <param name="selector">A Select function that will be run on each
+        /// item.</param>
+        /// <param name="filter">A filter to determine whether to exclude items 
+        /// in the derived collection.</param>
+        /// <param name="orderer">A comparator method to determine the ordering of
+        /// the resulting collection.</param>
+        /// <returns>A new collection whose items are equivalent to
+        /// Collection.Select().Where().OrderBy() and will mirror changes 
+        /// in the initial collection.</returns>
         public static ReactiveCollection<TNew> CreateDerivedCollection<T, TNew>(
             this IEnumerable<T> This,
             Func<T, TNew> selector,

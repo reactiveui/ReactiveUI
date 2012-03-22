@@ -14,7 +14,8 @@ namespace ReactiveUI
             new MemoizingMRUCache<string, string[]>((x,_) => x.Split('.'), 25);
 
         /// <summary>
-        /// Returns the current value of a property given a notification that it has changed.
+        /// Returns the current value of a property given a notification that
+        /// it has changed.
         /// </summary>
         /// <returns>The current value of the property</returns>
         public static TValue GetValue<TSender, TValue>(this IObservedChange<TSender, TValue> This)
@@ -31,8 +32,10 @@ namespace ReactiveUI
         /// notification that it has changed. If any property in the
         /// property expression is null, false is returned.
         /// </summary>
-        /// <param name="changeValue">The value of the property expression.</param>
-        /// <returns>True if the entire expression was able to be followed, false otherwise</returns>
+        /// <param name="changeValue">The value of the property
+        /// expression.</param>
+        /// <returns>True if the entire expression was able to be followed,
+        /// false otherwise</returns>
         public static bool TryGetValue<TSender, TValue>(this IObservedChange<TSender, TValue> This, out TValue changeValue)
         {
             if (!Equals(This.Value, default(TValue))) {
