@@ -26,7 +26,7 @@ namespace ReactiveUI.Serialization
     /// This engine is only suited to very small production use-cases, as you
     /// will almost certainly run out of memory with large collections.
     /// </summary>
-    public class DictionaryStorageEngine : IStorageEngine
+    public class DictionaryStorageEngine : IStorageEngine, IEnableLogger
     {
         readonly string _backingStorePath;
         Dictionary<Guid, byte[]> _allItems;
