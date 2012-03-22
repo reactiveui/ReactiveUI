@@ -7,7 +7,7 @@ namespace ReactiveUI.Serialization
     /// NullStorageEngine is a test implementation of IStorageEngine that
     /// always returns zero results
     /// </summary>
-    public class NullStorageEngine : IStorageEngine
+    public class NullStorageEngine : IStorageEngine, IEnableLogger
     {
         public T Load<T>(Guid ContentHash) where T : ISerializableItem
         {

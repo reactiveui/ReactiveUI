@@ -89,6 +89,7 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="Properties\AppManifest.xml" />
     <None Include="Properties\WMAppManifest.xml" />
     <None Include="Service References\MicrosoftTranslatorService\configuration91.svcinfo" />
