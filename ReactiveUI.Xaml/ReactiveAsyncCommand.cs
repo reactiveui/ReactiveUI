@@ -311,6 +311,9 @@ namespace ReactiveUI.Xaml
 
     public static class ReactiveAsyncCommandMixins
     {
+        /// <summary>
+        /// This method returns the current number of items in flight.
+        /// </summary>
         public static int CurrentItemsInFlight(this IReactiveAsyncCommand This)
         {
             return This.ItemsInflight.First();
