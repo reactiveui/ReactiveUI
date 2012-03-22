@@ -22,12 +22,17 @@ namespace ReactiveUI
         readonly ReplaySubject<int> viewCountChanged;
 
         /// <summary>
-        /// Creates a read only view that tracks a collection providing filtering and sorting
+	/// Creates a read only view that tracks a collection providing
+	/// filtering and sorting
         /// </summary>
         /// <param name="source">The source collection.</param>
-        /// <param name="filter">A filter to be applied to the source. Only items matching this filter will appear in this view.</param>
-        /// <param name="order">A custom sort function to apply to the view.</param>
-        /// <param name="updateFilter">A filter that gives control over which items will be re-filtered and re-sorted when child properties on those items change.</param>
+	/// <param name="filter">A filter to be applied to the source. Only
+	/// items matching this filter will appear in this view.</param>
+	/// <param name="order">A custom sort function to apply to the
+	/// view.</param>
+	/// <param name="updateFilter">A filter that gives control over which
+	/// items will be re-filtered and re-sorted when child properties on
+	/// those items change.</param>
         public ObservableCollectionView(
             IEnumerable<T> source = null,
             Func<T, bool> filter = null,

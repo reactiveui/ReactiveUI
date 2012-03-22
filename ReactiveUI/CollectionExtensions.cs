@@ -1,11 +1,11 @@
-﻿namespace ReactiveUI
-{
-    using System;
-    using System.Collections;
-    using System.Collections.Generic;
-    using System.Collections.Specialized;
-    using System.Reactive.Linq;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Reactive.Linq;
 
+namespace ReactiveUI
+{
     public static class CollectionExtensions
     {
         /// <summary>

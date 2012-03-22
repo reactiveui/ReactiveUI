@@ -111,8 +111,6 @@ namespace ReactiveUI
 
     public static class OAPHCreationHelperMixin
     {
-        static readonly Logger log = LogManager.GetCurrentClassLogger();
-
         /// <summary>
         /// Converts an Observable to an ObservableAsPropertyHelper and
         /// automatically provides the onChanged method to raise the property

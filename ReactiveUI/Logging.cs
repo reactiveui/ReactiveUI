@@ -12,6 +12,11 @@ using NLog.Targets;
 
 namespace ReactiveUI
 {
+    /// <summary>
+    /// "Implement" this interface in your class to get access to the Log() 
+    /// Mixin, which will give you a Logger that includes the class name in the
+    /// log.
+    /// </summary>
     public interface IEnableLogger { }
 
     public static class LogHost
@@ -30,10 +35,18 @@ namespace ReactiveUI
             }
         }
 
+        /// <summary>
+        /// Use this logger inside miscellaneous static methods where creating
+        /// a class-specific logger isn't really worth it.
+        /// </summary>
         public static Logger Default {
             get { return LogManager.GetLogger("Logger"); }
         }
 
+        /// <summary>
+        /// Call this method to write log entries on behalf of the current 
+        /// class.
+        /// </summary>
         public static Logger Log<T>(this T This) where T : IEnableLogger
         {
             return LogManager.GetLogger(typeof(T).FullName);

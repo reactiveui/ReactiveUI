@@ -212,12 +212,16 @@ namespace ReactiveUI
     public interface IMessageBus : IEnableLogger
     {
         /// <summary>
-        /// Registers a scheduler for the type, which may be specified at runtime, and the contract.
+        /// Registers a scheduler for the type, which may be specified at
+        /// runtime, and the contract.
         /// </summary>
-        /// <remarks>If a scheduler is already registered for the specified runtime and contract, this will overrwrite the existing registration.</remarks>
+        /// <remarks>If a scheduler is already registered for the specified
+        /// runtime and contract, this will overrwrite the existing
+        /// registration.</remarks>
         /// <typeparam name="T">The type of the message to listen to.</typeparam>
         /// <param name="scheduler">The scheduler on which to post the
-        /// notifications for the specified type and contract. RxApp.DeferredScheduler by default.</param>
+        /// notifications for the specified type and contract.
+        /// RxApp.DeferredScheduler by default.</param>
         /// <param name="contract">A unique string to distinguish messages with
         /// identical types (i.e. "MyCoolViewModel") - if the message type is
         /// only used for one purpose, leave this as null.</param>
@@ -235,7 +239,7 @@ namespace ReactiveUI
         IObservable<T> Listen<T>(string contract = null);
 
         /// <summary>
-        /// Determine   s if a particular message Type is registered.
+        /// Determines if a particular message Type is registered.
         /// </summary>
         /// <param name="type">The type of the message.</param>
         /// <param name="contract">A unique string to distinguish messages with

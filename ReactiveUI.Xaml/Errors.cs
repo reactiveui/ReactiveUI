@@ -12,6 +12,10 @@ using System.Reactive.Subjects;
 
 namespace ReactiveUI.Xaml
 {
+    /// <summary>
+    /// Describes a stock error icon situation - it is up to the UI to decide
+    /// how to interpret these icons.
+    /// </summary>
     public enum StockUserErrorIcon {
         Critical,
         Error, 
@@ -20,50 +24,126 @@ namespace ReactiveUI.Xaml
         Notice,
     };
 
+    /// <summary>
+    /// A command that represents a recovery from an error. These commands
+    /// will typically be displayed as buttons in the error dialog.
+    /// </summary>
     public interface IRecoveryCommand : IReactiveCommand
     {
-        string LocalizedCommandName { get; }
-        RecoveryOptionResult RecoveryResult { get; }
+        /// <summary>
+        /// The command name, typically displayed as the button text.
+        /// </summary>
+        string CommandName { get; }
+
+        /// <summary>
+        /// When the command is invoked and a result is determined, the
+        /// command should set the recovery result to indicate the action the
+        /// throwing code should take.
+        /// </summary>
+        RecoveryOptionResult? RecoveryResult { get; }
     }
 
+    /// <summary>
+    /// RecoveryOptionResult describes to the code throwing the UserError what
+    /// to do once the error is resolved.
+    /// </summary>
     public enum RecoveryOptionResult {
-        CancelOperation,         // We should give up, but no longer an error
-        RetryOperation,          // Recovery succeeded, try again
-        FailOperation,           // Recovery failed or not possible, you should rethrow
+
+        /// <summary>
+        /// The operation should be cancelled, but it is no longer an error.
+        /// </summary>
+        CancelOperation,
+
+        /// <summary>
+        /// The operation should be retried with the same parameters.
+        /// </summary>
+        RetryOperation,
+
+        /// <summary>
+        /// Recovery failed or not possible, you should rethrow as an
+        /// Exception.
+        /// </summary>
+        FailOperation,
     };
 
+    /// <summary>
+    /// User Errors are similar to Exceptions, except that they are intended
+    /// to be displayed to the user. As such, your error messages should be
+    /// phrased in a friendly way. When a UserError is thrown, code higher up
+    /// in the stack has a chance to resolve the UserError via a user
+    /// interaction. 
+    ///
+    /// Code can also add "Recovery Options" which resolve user errors: for
+    /// example an "Out of Disk Space" error might have an "Open Explorer"
+    /// recovery option.
+    /// </summary>
     public class UserError : ReactiveObject
     {
         public UserError(
-                string localizedDescription,
-                string localizedFailureReason = null,
+                string errorMessage,
+                string errorCauseOrResolution = null,
                 IEnumerable<IRecoveryCommand> recoveryOptions = null,
                 Dictionary<string, object> contextInfo = null,
                 Exception innerException = null)
         {
             RecoveryOptions = new ReactiveCollection<IRecoveryCommand>(recoveryOptions ?? Enumerable.Empty<IRecoveryCommand>());
 
-            LocalizedFailureReason = localizedFailureReason;
+            ErrorCauseOrResolution = errorCauseOrResolution;
             Domain = Assembly.GetCallingAssembly().FullName;
             ContextInfo = contextInfo ?? new Dictionary<string, object>();
             UserErrorIcon = StockUserErrorIcon.Warning;
             InnerException = innerException;
-            LocalizedDescription = localizedDescription;
+            ErrorMessage = errorMessage;
         }
 
+        /// <summary>
+        /// The component that originally threw the error - if this is not
+        /// supplied, it defaults to the assembly name.
+        /// </summary>
         public string Domain { get; protected set; }
+
+        /// <summary>
+        /// A Dictionary that allows UserErrors to contain arbitrary
+        /// application data.
+        /// </summary>
         public Dictionary<string, object> ContextInfo { get; protected set; }
 
         ReactiveCollection<IRecoveryCommand> _RecoveryOptions;
-        public ReactiveCollection<IRecoveryCommand> RecoveryOptions
-        {
+
+        /// <summary>
+        /// The list of available Recovery Options that will be presented to
+        /// the user to resolve the issue - these usually correspond to
+        /// buttons in the dialog.
+        /// </summary>
+        public ReactiveCollection<IRecoveryCommand> RecoveryOptions {
             get { return _RecoveryOptions; }
             protected set { this.RaiseAndSetIfChanged(x => x.RecoveryOptions, value); }
         }
 
-        public string LocalizedDescription { get; set; }
-        public string LocalizedFailureReason { get; set; }
+        /// <summary>
+        /// The "Newspaper Headline" of the message being conveyed to the
+        /// user. This should be one line, short, and informative.
+        /// </summary>
+        public string ErrorMessage { get; set; }
+
+        /// <summary>
+        /// Additional optional information to describe what is happening, or
+        /// the resolution to an information-only error (i.e. a dialog to tell
+        /// the user that something has happened)
+        /// </summary>
+        public string ErrorCauseOrResolution { get; set; }
+
+        /// <summary>
+        /// This object is either a custom icon (usually an ImageSource), or
+        /// it can also be a StockUserErrorIcon. It can also be an
+        /// application-defined type that the handlers know to interpret.
+        /// </summary>
         public object UserErrorIcon { get; set; }
+
+        /// <summary>
+        /// Optionally, The actual Exception that warranted throwing the
+        /// UserError.
+        /// </summary>
         public Exception InnerException { get; protected set; }
 
 
@@ -74,11 +154,31 @@ namespace ReactiveUI.Xaml
         [ThreadStatic] static Func<UserError, IObservable<RecoveryOptionResult>> overriddenRegisteredUserErrorHandlers;
         static readonly List<Func<UserError, IObservable<RecoveryOptionResult>>> registeredUserErrorHandlers = new List<Func<UserError, IObservable<RecoveryOptionResult>>>();
 
-        public static IObservable<RecoveryOptionResult> Throw(string localizedErrorMessage, Exception innerException = null)
+        /// <summary>
+        /// Initiate a user interaction (i.e. "Throw the error to the user to
+        /// deal with") - this method is the simplest way to prompt the user
+        /// that an error has occurred.
+        /// </summary>
+        /// <param name="errorMessage">The message to show to the user. The
+        /// upper level handlers registered with RegisterHandler are
+        /// ultimately responsible for displaying this information.</param>
+        /// <param name="innerException">The Exception that was thrown, if
+        /// relevant - this will *not* ever be shown to the user.</param>
+        /// <returns>An Observable representing the action the code should
+        /// attempt to take, if any.</returns>
+        public static IObservable<RecoveryOptionResult> Throw(string errorMessage, Exception innerException = null)
         {
-            return Throw(new UserError(localizedErrorMessage, innerException: innerException));
+            return Throw(new UserError(errorMessage, innerException: innerException));
         }
 
+        /// <summary>
+        /// Initiate a user interaction (i.e. "Throw the error to the user to
+        /// deal with"). 
+        /// </summary>
+        /// <param name="error">The UserError to show to the user. The
+        /// upper level handlers registered with RegisterHandler are
+        /// ultimately responsible for displaying this information. </param>
+        /// <returns></returns>
         public static IObservable<RecoveryOptionResult> Throw(UserError error)
         {
             var handlers = (overriddenRegisteredUserErrorHandlers != null) ?
@@ -93,7 +193,7 @@ namespace ReactiveUI.Xaml
             // If *none* of the handlers are interested in this UserError, we're
             // going to OnError the Observable.
             var ret = handlers.ToObservable()
-                .Select(handler => handler(error)).Concat()
+                .Select(handler => handler(error) ?? Observable.Empty<RecoveryOptionResult>()).Concat()
                 .Concat(Observable.Throw<RecoveryOptionResult>(new UnhandledUserErrorException(error)))
                 .Take(1)
                 .Multicast(new AsyncSubject<RecoveryOptionResult>());
@@ -102,13 +202,39 @@ namespace ReactiveUI.Xaml
             return ret;
         }
 
+        /// <summary>
+        /// Register code to handle a UserError. Registered handlers are
+        /// called in reverse order to their registration (i.e. the newest
+        /// handler is called first), and they each have a chance to handle a
+        /// UserError. 
+        ///
+        /// If a Handler cannot resolve a UserError, it should return null
+        /// instead of an Observable result.
+        /// </summary>
+        /// <param name="errorHandler">A method that can handle a UserError,
+        /// usually by presenting it to the user. If the handler cannot handle
+        /// the error, it should return null.</param>
+        /// <returns>An IDisposable which will unregister the handler.</returns>
         public static IDisposable RegisterHandler(Func<UserError, IObservable<RecoveryOptionResult>> errorHandler)
         {
             registeredUserErrorHandlers.Add(errorHandler);
 
             return Disposable.Create(() => registeredUserErrorHandlers.Remove(errorHandler));
         }
-
+       
+        /// <summary>
+        /// Register code to handle a specific type of UserError. Registered
+        /// handlers are called in reverse order to their registration (i.e.
+        /// the newest handler is called first), and they each have a chance
+        /// to handle a UserError. 
+        ///
+        /// If a Handler cannot resolve a UserError, it should return null
+        /// instead of an Observable result.
+        /// </summary>
+        /// <param name="errorHandler">A method that can handle a UserError,
+        /// usually by presenting it to the user. If the handler cannot handle
+        /// the error, it should return null.</param>
+        /// <returns>An IDisposable which will unregister the handler.</returns>
         public static IDisposable RegisterHandler<TException>(Func<TException, IObservable<RecoveryOptionResult>> errorHandler)
             where TException : UserError
         {
@@ -121,6 +247,15 @@ namespace ReactiveUI.Xaml
             });
         }
 
+        /// <summary>
+        /// This method is a convenience wrapper around RegisterHandler that
+        /// adds the specified RecoveryCommand to any UserErrors that match
+        /// its filter.
+        /// </summary>
+        /// <param name="command">The RecoveryCommand to add.</param>
+        /// <param name="filter">An optional filter to determine which
+        /// UserErrors to add the command to.</param>
+        /// <returns>An IDisposable which will unregister the handler.</returns>
         public static IDisposable AddRecoveryOption(IRecoveryCommand command, Func<UserError, bool> filter = null)
         {
             return RegisterHandler(x => {
@@ -136,6 +271,12 @@ namespace ReactiveUI.Xaml
             });
         }
 
+        /// <summary>
+        /// This method replaces *all* UserError handlers with the specified
+        /// handler. Use it for testing code that may throw UserErrors.
+        /// </summary>
+        /// <param name="errorHandler">The replacement UserError handler.</param>
+        /// <returns>An IDisposable which will unregister the test handler.</returns>
         public static IDisposable OverrideHandlersForTesting(Func<UserError, IObservable<RecoveryOptionResult>> errorHandler)
         {
             overriddenRegisteredUserErrorHandlers = errorHandler;
@@ -143,9 +284,13 @@ namespace ReactiveUI.Xaml
         }
     }
 
+    /// <summary>
+    /// This Exception will be thrown when a UserError is not handled by any
+    /// of the registered handlers.
+    /// </summary>
     public class UnhandledUserErrorException : Exception 
     {
-        public UnhandledUserErrorException(UserError error) : base(error.LocalizedDescription, error.InnerException)
+        public UnhandledUserErrorException(UserError error) : base(error.ErrorMessage, error.InnerException)
         {
             ReportedError = error;
         }
@@ -153,43 +298,50 @@ namespace ReactiveUI.Xaml
         public UserError ReportedError { get; protected set; }
     }
 
+    /// <summary>
+    /// RecoveryCommand is a straightforward implementation of a recovery
+    /// command - this class represents a command presented to the user
+    /// (usually in the form of a button) that will help resolve or mitigate a
+    /// UserError.
+    /// </summary>
     public class RecoveryCommand : ReactiveCommand, IRecoveryCommand
     {
         public bool IsDefault { get; set; }
         public bool IsCancel { get; set; }
-        public string LocalizedCommandName { get; protected set; }
-        public RecoveryOptionResult RecoveryResult { get; set; }
+        public string CommandName { get; protected set; }
+        public RecoveryOptionResult? RecoveryResult { get; set; }
 
-        public RecoveryCommand(string localizedCommandName, Func<object, RecoveryOptionResult> handler = null)
+        /// <summary>
+        /// Constructs a RecoveryCommand.
+        /// </summary>
+        /// <param name="commandName">The user-visible name of this Command.</param>
+        /// <param name="handler">A convenience handler - equivalent to
+        /// Subscribing to the command and setting the RecoveryResult.</param>
+        public RecoveryCommand(string commandName, Func<object, RecoveryOptionResult> handler = null)
         {
-            LocalizedCommandName = localizedCommandName;
+            CommandName = commandName;
 
-            if (handler != null)
-            {
+            if (handler != null) {
                 this.Subscribe(x => RecoveryResult = handler(x));
             }
         }
 
-        public static IRecoveryCommand Ok
-        {
-            get { var ret = new RecoveryCommand("Ok"); ret.Subscribe(_ => ret.RecoveryResult = RecoveryOptionResult.RetryOperation); return ret; }
+        public static IRecoveryCommand Ok {
+            get { var ret = new RecoveryCommand("Ok") { IsDefault = true }; ret.Subscribe(_ => ret.RecoveryResult = RecoveryOptionResult.RetryOperation); return ret; }
         }
 
-        public static IRecoveryCommand Cancel
-        {
-            get { var ret = new RecoveryCommand("Cancel"); ret.Subscribe(_ => ret.RecoveryResult = RecoveryOptionResult.FailOperation); return ret; }
+        public static IRecoveryCommand Cancel {
+            get { var ret = new RecoveryCommand("Cancel") { IsCancel = true }; ret.Subscribe(_ => ret.RecoveryResult = RecoveryOptionResult.FailOperation); return ret; }
         }
 
-        public static IRecoveryCommand Yes
-        {
-            get { var ret = new RecoveryCommand("Yes"); ret.Subscribe(_ => ret.RecoveryResult = RecoveryOptionResult.RetryOperation); return ret; }
+        public static IRecoveryCommand Yes {
+            get { var ret = new RecoveryCommand("Yes") { IsDefault = true }; ret.Subscribe(_ => ret.RecoveryResult = RecoveryOptionResult.RetryOperation); return ret; }
         }
 
-        public static IRecoveryCommand No
-        {
-            get { var ret = new RecoveryCommand("No"); ret.Subscribe(_ => ret.RecoveryResult = RecoveryOptionResult.FailOperation); return ret; }
+        public static IRecoveryCommand No {
+            get { var ret = new RecoveryCommand("No") { IsCancel = true }; ret.Subscribe(_ => ret.RecoveryResult = RecoveryOptionResult.FailOperation); return ret; }
         }
     }
 }
 
-// vim: tw=120 ts=4 sw=4 et enc=utf8 :
+// vim: tw=120 ts=4 sw=4 et :
