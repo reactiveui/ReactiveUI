@@ -6,9 +6,9 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("ReactiveUI.Routing")]
-[assembly: AssemblyDescription("A ViewModel-based Serializable Routing framework for RxUI")]
+[assembly: AssemblyDescription("A ViewModel-based Routing framework for RxUI")]
 [assembly: AssemblyProduct("ReactiveUI.Routing")]
 
-[assembly: AssemblyVersion("2.5.2.0")]
+[assembly: AssemblyVersion("3.0.0.0")]
 [assembly: InternalsVisibleTo("ReactiveUI.Routing.Tests")]
 [assembly: InternalsVisibleTo("ReactiveUI.Routing.Explorables")]
