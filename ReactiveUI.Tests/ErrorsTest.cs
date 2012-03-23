@@ -19,7 +19,7 @@ namespace ReactiveUI.Tests
         public void UnhandledUserErrorsShouldDie()
         {
             // Since we haven't registered any user error handler
-            Assert.Throws<UnhandledUserErrorException>(() => UserError.Throw("Something Bad Has Happened"));
+            Assert.Throws<UnhandledUserErrorException>(() => UserError.Throw("Something Bad Has Happened").First());
         }
 
         [Fact]
@@ -30,7 +30,7 @@ namespace ReactiveUI.Tests
                 Assert.Equal(RecoveryOptionResult.RetryOperation, result);
             }
 
-            Assert.Throws<UnhandledUserErrorException>(() => UserError.Throw("This should throw!"));
+            Assert.Throws<UnhandledUserErrorException>(() => UserError.Throw("This should throw!").First());
         }
 
         [Fact]
@@ -48,7 +48,7 @@ namespace ReactiveUI.Tests
                 Assert.Equal(RecoveryOptionResult.CancelOperation, result);
             }
 
-            Assert.Throws<UnhandledUserErrorException>(() => UserError.Throw("This should throw!"));
+            Assert.Throws<UnhandledUserErrorException>(() => UserError.Throw("This should throw!").First());
         }
 
         [Fact]
@@ -56,12 +56,12 @@ namespace ReactiveUI.Tests
         {
             using (UserError.RegisterHandler<MyAwesomeUserError>(x => Observable.Return(RecoveryOptionResult.CancelOperation))) {
                 var result = UserError.Throw(new MyAwesomeUserError()).First();
-                Assert.Equal(RecoveryOptionResult.RetryOperation, result);
+                Assert.Equal(RecoveryOptionResult.CancelOperation, result);
 
-                Assert.Throws<UnhandledUserErrorException>(() => UserError.Throw("This should throw!"));
+                Assert.Throws<UnhandledUserErrorException>(() => UserError.Throw("This should throw!").First());
             }
 
-            Assert.Throws<UnhandledUserErrorException>(() => UserError.Throw(new MyAwesomeUserError()));
+            Assert.Throws<UnhandledUserErrorException>(() => UserError.Throw(new MyAwesomeUserError()).First());
         }
     }
 }
