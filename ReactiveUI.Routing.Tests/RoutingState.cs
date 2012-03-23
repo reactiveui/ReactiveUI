@@ -14,7 +14,7 @@ namespace ReactiveUI.Routing.Tests
             set { this.RaiseAndSetIfChanged(x => x.SomeProp, value); }
         }
 
-        public string FriendlyUrlName {
+        public string UrlPathSegment {
             get { return "Test"; }
         }
 
@@ -33,7 +33,7 @@ namespace ReactiveUI.Routing.Tests
             var fixture = new RoutingState();
 
             Assert.False(fixture.NavigateBack.CanExecute(input));
-            fixture.NavigateForward.Execute(input);
+            fixture.Navigate.Execute(input);
 
             Assert.Equal(1, fixture.NavigationStack.Count);
             Assert.True(fixture.NavigateBack.CanExecute(null));
