@@ -248,42 +248,6 @@ namespace ReactiveUI.Tests
         }
 
         [Fact]
-        public void MakeSureMemoizedReleaseFuncGetsCalled()
-        {
-            //Assert.True(false, "When an item gets evicted from the cache before it has a chance to complete, it deadlocks. Fix it.");
-            var input = new[] { 1, 1, 2, 2, 1, 1, 3, 3 };
-
-            var sched = new EventLoopScheduler();
-            var fixture = new ReactiveAsyncCommand();
-            var results = new List<Timestamped<int>>();
-            var released = new List<int>();
-
-            fixture.RegisterMemoizedFunction(x => { Thread.Sleep(250); return ((int)x) * 5; }, 2, x => released.Add(x), sched)
-                   .Timestamp()
-                   .Subscribe(x => results.Add(x));
-
-            Assert.True(fixture.CanExecute(1));
-
-            var start = DateTimeOffset.Now;
-            foreach(var i in input) {
-                Assert.True(fixture.CanExecute(i));
-                fixture.Execute(i);
-            }
-
-            Thread.Sleep(1000);
-
-            results.Select(x => x.Timestamp - start)
-                   .Run(x => { });
-
-            released.Run(x => { });
-
-            Assert.True(results.Count == 8);
-
-            Assert.True(released.Count == 1);
-            Assert.True(released[0] == 2*5);
-        }
-
-        [Fact]
         public void MultipleSubscribersShouldntDecrementRefcountBelowZero()
         {
             (new TestScheduler()).With(sched => {
