@@ -22,5 +22,10 @@ namespace ReactiveUI
         {
             return This.GetTypeInfo().GetDeclaredProperty(name);
         }
+
+        public static IEnumerable<PropertyInfo> GetProperties(this Type This, BindingFlags dontcare)
+        {
+            return This.GetTypeInfo().DeclaredProperties;
+        }
     }
 }
