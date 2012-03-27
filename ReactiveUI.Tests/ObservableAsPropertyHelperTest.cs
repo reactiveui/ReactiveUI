@@ -95,7 +95,7 @@ namespace ReactiveUI.Tests
                 var fixture = new ObservableAsPropertyHelper<string>(inputOaph.Select(x => x.ToString()),
                     result.Add, "0");
 
-                sched.RunToMilliseconds(500);
+                sched.AdvanceToMs(500);
 
                 new[] {"0", "5", "10", "15", "20"}.AssertAreEqual(result);
             });

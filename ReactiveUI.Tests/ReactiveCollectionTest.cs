@@ -237,13 +237,13 @@ namespace ReactiveUI.Tests
                 ReactiveCollection<string> fixture;
 
                 fixture = input.ToObservable(sched).CreateCollection(TimeSpan.FromSeconds(0.5));
-                sched.RunToMilliseconds(1005);
+                sched.AdvanceToMs(1005);
                 fixture.AssertAreEqual(input.Take(2));
                 
-                sched.RunToMilliseconds(1505);
+                sched.AdvanceToMs(1505);
                 fixture.AssertAreEqual(input.Take(3));
     
-                sched.RunToMilliseconds(10000);
+                sched.AdvanceToMs(10000);
                 fixture.AssertAreEqual(input);
             }
         }
