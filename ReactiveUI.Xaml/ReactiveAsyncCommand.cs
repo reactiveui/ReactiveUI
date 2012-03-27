@@ -115,6 +115,8 @@ namespace ReactiveUI.Xaml
             }
 
             _maximumConcurrent = maximumConcurrent;
+
+            ThrownExceptions = _exSubject;
         }
 
         IScheduler _normalSched;
