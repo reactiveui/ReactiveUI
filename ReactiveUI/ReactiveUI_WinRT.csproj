@@ -113,6 +113,9 @@
     <Compile Include="MessageBus.cs" />
     <Compile Include="NLogStub.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ReactiveObject.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="ReflectionStubs.cs" />
     <Compile Include="RxApp.cs" />
   </ItemGroup>
