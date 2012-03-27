@@ -105,19 +105,32 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="CollectionExtensions.cs" />
     <Compile Include="ConsoleStub.cs" />
     <Compile Include="ContractStubs.cs" />
     <Compile Include="Interfaces.cs" />
     <Compile Include="Logging.cs" />
+    <Compile Include="MakeObjectReactiveHelper.cs" />
     <Compile Include="MemoizingMRUCache.cs" />
     <Compile Include="MessageBus.cs" />
     <Compile Include="NLogStub.cs" />
+    <Compile Include="ObservableAsPropertyHelper.cs" />
+    <Compile Include="ObservableAsyncMRUCache.cs" />
+    <Compile Include="ObservedChangedMixin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ReactiveCollection.cs" />
+    <Compile Include="ReactiveNotifyPropertyChangedMixin.cs" />
     <Compile Include="ReactiveObject.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="ReflectionStubs.cs" />
     <Compile Include="RxApp.cs" />
+    <Compile Include="Validation.cs" />
+    <Compile Include="VariadicTemplates.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>VariadicTemplates.tt</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System.Reactive">
@@ -126,6 +139,15 @@
     <Reference Include="System.Reactive.WindowsRuntime">
       <HintPath>..\ext\winrt\System.Reactive.WindowsRuntime.dll</HintPath>
     </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="VariadicTemplates.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>VariadicTemplates.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' ">
     <VisualStudioVersion>11.0</VisualStudioVersion>

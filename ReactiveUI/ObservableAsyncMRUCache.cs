@@ -193,8 +193,7 @@ namespace ReactiveUI
     }
 
     internal class SemaphoreSubject<T> : ISubject<T>, IEnableLogger
-    {
-        static readonly Logger log = LogManager.GetCurrentClassLogger();
+    {        
         readonly ISubject<T> _inner;
         Queue<T> _nextItems = new Queue<T>();
         long _count;

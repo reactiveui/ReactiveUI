@@ -14,6 +14,7 @@ using System.Diagnostics.Contracts;
 using System.Threading;
 using System.Reactive.Disposables;
 using NLog;
+using System.Globalization;
 
 namespace ReactiveUI
 {
@@ -564,8 +565,9 @@ namespace ReactiveUI
             var thisAsColl = (IList<T>)This;
             var collChanged = new Subject<NotifyCollectionChangedEventArgs>();
 
-            if ( selector == null )
-              selector = (x => (TNew)Convert.ChangeType(x, typeof (TNew), Thread.CurrentThread.CurrentCulture));
+            if (selector == null) {
+                selector = (x => (TNew)Convert.ChangeType(x, typeof(TNew), CultureInfo.CurrentCulture));
+            }
 
             var origEnum = (IEnumerable<T>)thisAsColl;
             origEnum = (filter != null ? origEnum.Where(filter) : origEnum);
