@@ -57,7 +57,7 @@ namespace ReactiveUI.Tests
 
                 // N.B. We check against '5' instead of 6 because we're supposed to 
                 // suppress changes that aren't actually changes i.e. false => false
-                sched.RunToMilliseconds(10 * 1000);
+                sched.AdvanceToMs(10 * 1000);
                 return changes_as_observable;
             });
 
@@ -115,7 +115,7 @@ namespace ReactiveUI.Tests
             fixture.Where(x => ((int)x) % 2 == 0).Subscribe(x => even_list.Add((int)x));
 
             input.Run(x => fixture.Execute(x));
-            sched.RunToMilliseconds(1000);
+            sched.AdvanceToMs(1000);
 
             new[]{1,1}.AssertAreEqual(odd_list);
             new[]{2,2}.AssertAreEqual(even_list);
@@ -196,14 +196,14 @@ namespace ReactiveUI.Tests
                     Observable.Return(5).Delay(TimeSpan.FromSeconds(5), sched)).CreateCollection();
 
                 var inflightResults = fixture.ItemsInflight.CreateCollection();
-                sched.RunToMilliseconds(10);
+                sched.AdvanceToMs(10);
                 Assert.True(fixture.CanExecute(null));
 
                 fixture.Execute(null);
-                sched.RunToMilliseconds(1005);
+                sched.AdvanceToMs(1005);
                 Assert.False(fixture.CanExecute(null));
 
-                sched.RunToMilliseconds(5100);
+                sched.AdvanceToMs(5100);
                 Assert.True(fixture.CanExecute(null));
 
                 new[] {0,1,0}.AssertAreEqual(inflightResults);
@@ -264,10 +264,10 @@ namespace ReactiveUI.Tests
                 Assert.True(fixture.CanExecute(null));
 
                 fixture.Execute(null);
-                sched.RunToMilliseconds(2000);
+                sched.AdvanceToMs(2000);
                 Assert.False(fixture.CanExecute(null));
 
-                sched.RunToMilliseconds(6000);
+                sched.AdvanceToMs(6000);
                 Assert.True(fixture.CanExecute(null));
 
                 Assert.True(results.Count == 1);
@@ -373,7 +373,7 @@ namespace ReactiveUI.Tests
 
                 // CanExecute should be true, both input observable is true
                 // and we don't have anything inflight
-                sched.RunToMilliseconds(10);
+                sched.AdvanceToMs(10);
                 Assert.True(fixture.CanExecute(1));
                 Assert.True(latestCanExecute);
 
@@ -381,28 +381,28 @@ namespace ReactiveUI.Tests
                 fixture.Execute(1);
 
                 // At 300ms, input is false
-                sched.RunToMilliseconds(300);
+                sched.AdvanceToMs(300);
                 Assert.False(fixture.CanExecute(1));
                 Assert.False(latestCanExecute);
 
                 // At 600ms, input is true, but the command is still running
-                sched.RunToMilliseconds(600);
+                sched.AdvanceToMs(600);
                 Assert.False(fixture.CanExecute(1));
                 Assert.False(latestCanExecute);
 
                 // After we've completed, we should still be false, since from
                 // 750ms-1000ms the input observable is false
-                sched.RunToMilliseconds(900);
+                sched.AdvanceToMs(900);
                 Assert.False(fixture.CanExecute(1));
                 Assert.False(latestCanExecute);
                 Assert.Equal(-1, calculatedResult);
 
-                sched.RunToMilliseconds(1010);
+                sched.AdvanceToMs(1010);
                 Assert.True(fixture.CanExecute(1));
                 Assert.True(latestCanExecute);
                 Assert.Equal(calculatedResult, 5);
 
-                sched.RunToMilliseconds(1200);
+                sched.AdvanceToMs(1200);
                 Assert.False(fixture.CanExecute(1));
                 Assert.False(latestCanExecute);
             });
