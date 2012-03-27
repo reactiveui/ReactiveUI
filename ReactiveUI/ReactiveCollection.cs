@@ -544,6 +544,12 @@ namespace ReactiveUI
         /// collection; this method is useful for creating ViewModel collections
         /// that are automatically updated when the respective Model collection
         /// is updated.
+        ///
+        /// Note that even though this method attaches itself to any 
+        /// IEnumerable, it will only detect changes from objects implementing
+        /// INotifyCollectionChanged (like ReactiveCollection). If your source
+        /// collection doesn't implement this, signalReset is the way to signal
+        /// the derived collection to reorder/refilter itself.
         /// </summary>
         /// <param name="selector">A Select function that will be run on each
         /// item.</param>
@@ -551,16 +557,21 @@ namespace ReactiveUI
         /// in the derived collection.</param>
         /// <param name="orderer">A comparator method to determine the ordering of
         /// the resulting collection.</param>
+        /// <param name="signalReset">When this Observable is signalled, 
+        /// the derived collection will be manually 
+        /// reordered/refiltered.</param>
         /// <returns>A new collection whose items are equivalent to
         /// Collection.Select().Where().OrderBy() and will mirror changes 
         /// in the initial collection.</returns>
         public static ReactiveCollection<TNew> CreateDerivedCollection<T, TNew, TDontCare>(
             this IEnumerable<T> This,
             Func<T, TNew> selector,
-            IObservable<TDontCare> signalReset,
             Func<T, bool> filter = null,
-            Func<TNew, TNew, int> orderer = null)
+            Func<TNew, TNew, int> orderer = null,
+            IObservable<TDontCare> signalReset = null)
         {
+            Contract.Requires(selector != null);
+
             var thisAsColl = (IList<T>)This;
             var collChanged = new Subject<NotifyCollectionChangedEventArgs>();
 
@@ -639,14 +650,15 @@ namespace ReactiveUI
         }
 
         /// <summary>
-        /// Creates a collection whose contents will are a "view" on another
+        /// Creates a collection whose contents will "follow" another
         /// collection; this method is useful for creating ViewModel collections
         /// that are automatically updated when the respective Model collection
         /// is updated.
-        ///
-        /// This overload is against collections that *cannot* be Observed -
-        /// changes to the items in the source will *not* be reflected in the
-        /// result.
+        /// 
+        /// Be aware that this overload will result in a collection that *only* 
+        /// updates if the source implements INotifyCollectionChanged. If your
+        /// list changes but isn't a ReactiveCollection/ObservableCollection,
+        /// you probably want to use the other overload.
         /// </summary>
         /// <param name="selector">A Select function that will be run on each
         /// item.</param>
@@ -663,7 +675,7 @@ namespace ReactiveUI
             Func<T, bool> filter = null,
             Func<TNew, TNew, int> orderer = null)
         {
-            return This.CreateDerivedCollection(selector, Observable.Never<Unit>(), filter, orderer);
+            return This.CreateDerivedCollection(selector, filter, orderer, Observable.Empty<Unit>());
         }
 
         static int positionForNewItem<T>(IList<T> list, T item, Func<T, T, int> orderer)
