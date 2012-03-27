@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Diagnostics.Contracts;
-using System.Linq;
+using System.Linq;      
 using System.Linq.Expressions;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
@@ -46,23 +46,10 @@ namespace ReactiveUI
                 Console.Error.WriteLine("*** Detected Unit Test Runner, setting Scheduler to Immediate ***");
                 Console.Error.WriteLine("If we are not actually in a test runner, please file a bug\n");
                 DeferredScheduler = Scheduler.Immediate;
-#if FALSE
-                DefaultUnitTestRecoveryResult = RecoveryOptionResult.FailOperation;
-
-                CustomErrorPresentationFunc = new Func<UserException, RecoveryOptionResult>(e => {
-                    Console.Error.WriteLine("Presenting Error: '{0}'", e.LocalizedFailureReason);
-                    Console.Error.WriteLine("Returning default result: {0}", DefaultUnitTestRecoveryResult);
-                    return DefaultUnitTestRecoveryResult;
-                });
-#endif
             } else {
                 Console.Error.WriteLine("Initializing to normal mode");
-#if IOS
-                // XXX: This should be an instance of NSRunloopScheduler
-                DeferredScheduler = new EventLoopScheduler();
-#else
+
                 DeferredScheduler = findDispatcherScheduler();
-#endif
 
                 DefaultExceptionHandler = Observer.Create<Exception>(ex => 
                     RxApp.DeferredScheduler.Schedule(() => {
@@ -74,6 +61,8 @@ namespace ReactiveUI
             TaskpoolScheduler = new EventLoopScheduler();
 #elif SILVERLIGHT || DOTNETISOLDANDSAD
             TaskpoolScheduler = Scheduler.ThreadPool;
+#elif WINRT
+            TaskpoolScheduler = System.Reactive.WindowsRuntime.Concurrency.ThreadPoolScheduler.Instance;
 #else
             // NB: In Rx 1.0, Tasks are being scheduled synchronously - i.e. 
             // they're not being run on the Task Pool on other threads. Use
@@ -158,11 +147,6 @@ namespace ReactiveUI
             }
         }
 
-#if FALSE
-        public static Func<UserException, RecoveryOptionResult> CustomErrorPresentationFunc { get; set; }
-        public static RecoveryOptionResult DefaultUnitTestRecoveryResult { get; set; }
-#endif
-
         /// <summary>
         /// Set this property to override the default field naming convention
         /// of "_PropertyName" with a custom one.
@@ -230,6 +214,9 @@ namespace ReactiveUI
             }
 
             return ret;
+#elif WINRT
+            // NB: We have no way to detect if we're in design mode in WinRT.
+            return false;
 #else
             // Try to detect whether we're in design mode - bonus points, 
             // without access to any WPF references :-/
@@ -243,17 +230,6 @@ namespace ReactiveUI
                 testAssemblies.Any(name => x.FullName.ToUpperInvariant().Contains(name)));
 #endif
         }
-
-#if FALSE
-        public static RecoveryOptionResult PresentUserException(UserException ex)
-        {
-            if (CustomErrorPresentationFunc != null)
-                return CustomErrorPresentationFunc(ex);
-
-            // TODO: Pop the WPF dialog here if we're not in Silverlight
-            throw new NotImplementedException();
-        }
-#endif
 
         /// <summary>
         /// GetFieldNameForProperty returns the corresponding backing field name
@@ -298,6 +274,9 @@ namespace ReactiveUI
 
         internal static IScheduler findDispatcherScheduler()
         {
+#if WINRT
+            return System.Reactive.WindowsRuntime.Concurrency.CoreDispatcherScheduler.Instance;
+#else
             Type result = null;
             try {
                 result = Type.GetType(dispatcherSchedulerQualifiedName, true);
@@ -313,6 +292,7 @@ namespace ReactiveUI
             }
 
             return (IScheduler) result.GetProperty("Instance", BindingFlags.Public | BindingFlags.Static).GetValue(null, null);
+#endif
         }
 
         internal static string[] expressionToPropertyNames<TObj, TRet>(Expression<Func<TObj, TRet>> Property)
@@ -341,7 +321,7 @@ namespace ReactiveUI
             return ret.ToArray();
         }
 
-#if SILVERLIGHT
+#if SILVERLIGHT || WINRT
         static MemoizingMRUCache<Tuple<Type, string>, FieldInfo> fieldInfoTypeCache = 
             new MemoizingMRUCache<Tuple<Type,string>, FieldInfo>(
                 (x, _) => (x.Item1).GetField(RxApp.GetFieldNameForProperty(x.Item2)), 
