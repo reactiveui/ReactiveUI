@@ -55,17 +55,9 @@ namespace ReactiveUI.Routing
         [IgnoreDataMember]
         public IObservable<IRoutableViewModel> CurrentViewModel { get; protected set; }
 
-        [DataMember]
-        string _AutoSaveContract;
-
-        public RoutingState() : this(null)
-        {
-        }
-
-        public RoutingState(string autoSaveContract)
+        public RoutingState()
         {
             _NavigationStack = new ReactiveCollection<IRoutableViewModel>();
-            _AutoSaveContract = autoSaveContract;
             setupRx();
         }
 
