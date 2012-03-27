@@ -17,7 +17,7 @@ namespace System.Diagnostics.Contracts
 
 #endif
 
-#if (SILVERLIGHT && !SILVERLIGHT5) || IOS
+#if (SILVERLIGHT && !SILVERLIGHT5) || IOS || WINRT
 
 namespace System.ComponentModel
 {
