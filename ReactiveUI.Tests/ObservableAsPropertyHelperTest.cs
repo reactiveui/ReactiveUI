@@ -57,8 +57,7 @@ namespace ReactiveUI.Tests
             var input = new Subject<int>();
             var sched = new TestScheduler();
 
-            var fixture = new ObservableAsPropertyHelper<int>(input,
-                _ => { }, -5, sched);
+            var fixture = new ObservableAsPropertyHelper<int>(input, _ => { }, -5, sched);
             var errors = new List<Exception>();
 
             Assert.Equal(-5, fixture.Value);
@@ -77,6 +76,31 @@ namespace ReactiveUI.Tests
             Assert.Equal(4, fixture.Value);
             Assert.Equal(1, errors.Count);
         }
+
+        [Fact]
+        public void NoThrownExceptionsSubscriberEqualsOAPHDeath()
+        {
+            (new TestScheduler()).With(sched => {
+                var input = new Subject<int>();
+                var fixture = new ObservableAsPropertyHelper<int>(input, _ => { }, -5);
+    
+                Assert.Equal(-5, fixture.Value);
+                (new[] { 1, 2, 3, 4 }).Run(x => input.OnNext(x));
+    
+                input.OnError(new Exception("Die!"));
+    
+                bool failed = true;
+                try {
+                    sched.Start();
+                } catch (Exception ex) {
+                    failed = ex.InnerException.Message != "Die!";
+                }
+    
+                Assert.False(failed);
+                Assert.Equal(4, fixture.Value);
+            });
+        }
+
 
         [Fact]
         public void OAPHShouldBeObservable()
