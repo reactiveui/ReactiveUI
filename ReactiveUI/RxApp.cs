@@ -64,10 +64,7 @@ namespace ReactiveUI
                 DeferredScheduler = findDispatcherScheduler();
 #endif
 
-                DefaultExceptionHandler = Observer.Create<Exception>(ex => 
-                    RxApp.DeferredScheduler.Schedule(() => {
-                        throw new Exception("An exception occurred on an object that would destabilize ReactiveUI. To prevent this, Subscribe to the ThrownExceptions property of your objects", ex);
-                    }));
+                
             }
 
 #if WINDOWS_PHONE
@@ -82,6 +79,11 @@ namespace ReactiveUI
 
             TaskpoolScheduler = Scheduler.TaskPool;
 #endif
+
+            DefaultExceptionHandler = Observer.Create<Exception>(ex => 
+                RxApp.DeferredScheduler.Schedule(() => {
+                    throw new Exception("An exception occurred on an object that would destabilize ReactiveUI. To prevent this, Subscribe to the ThrownExceptions property of your objects", ex);
+                }));
 
             MessageBus = new MessageBus();
         }
