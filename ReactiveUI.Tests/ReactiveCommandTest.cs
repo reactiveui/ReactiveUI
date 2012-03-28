@@ -158,6 +158,53 @@ namespace ReactiveUI.Tests
         [Fact]
         public void CanExecuteExceptionShouldntPermabreakCommands()
         {
+            var canExecute = new Subject<bool>();
+            var fixture = createCommand(canExecute);
+
+            var exceptions = new List<Exception>();
+            var canExecuteStates = new List<bool>();
+            fixture.CanExecuteObservable.Subscribe(canExecuteStates.Add);
+            fixture.ThrownExceptions.Subscribe(exceptions.Add);
+
+            canExecute.OnNext(false);
+            Assert.False(fixture.CanExecute(null));
+
+            canExecute.OnNext(true);
+            Assert.True(fixture.CanExecute(null));
+
+            canExecute.OnError(new Exception("Aieeeee!"));
+
+            // The command should just latch at whatever its previous state was
+            // before the exception
+            Assert.True(fixture.CanExecute(null));
+
+            Assert.Equal(1, exceptions.Count);
+            Assert.Equal("Aieeeee!", exceptions[0].Message);
+
+            Assert.Equal(false, canExecuteStates[canExecuteStates.Count-2]);
+            Assert.Equal(true, canExecuteStates[canExecuteStates.Count-1]);
+        }
+
+        [Fact]
+        public void NoSubscriberOfThrownExceptionsEqualsDeath()
+        {
+            (new TestScheduler()).With(sched => {
+                var canExecute = new Subject<bool>();
+                var fixture = createCommand(canExecute);
+
+                canExecute.OnNext(true);
+                canExecute.OnError(new Exception("Aieeeee!"));
+
+                bool failed = true;
+                try {
+                    sched.Start();
+                    Assert.True(fixture.CanExecute(null));
+                } catch (Exception ex) {
+                    failed = (ex.InnerException.Message != "Aieeeee!");
+                }
+
+                Assert.False(failed);
+            });
         }
     }
 
