@@ -61,8 +61,8 @@ namespace ReactiveUI
             TaskpoolScheduler = new EventLoopScheduler();
 #elif SILVERLIGHT || DOTNETISOLDANDSAD
             TaskpoolScheduler = Scheduler.ThreadPool;
-#elif WINRT
-            TaskpoolScheduler = System.Reactive.WindowsRuntime.Concurrency.ThreadPoolScheduler.Instance;
+#elif WINRT            
+            TaskpoolScheduler = System.Reactive.Concurrency.ThreadPoolScheduler.Default;
 #else
             // NB: In Rx 1.0, Tasks are being scheduled synchronously - i.e. 
             // they're not being run on the Task Pool on other threads. Use
@@ -275,7 +275,7 @@ namespace ReactiveUI
         internal static IScheduler findDispatcherScheduler()
         {
 #if WINRT
-            return System.Reactive.WindowsRuntime.Concurrency.CoreDispatcherScheduler.Instance;
+            return System.Reactive.Concurrency.CoreDispatcherScheduler.Default;
 #else
             Type result = null;
             try {
@@ -394,16 +394,16 @@ namespace ReactiveUI
    
     /* TODO: Move this stuff somewhere that actually makes sense */
 
-    internal static class CompatMixins
+    public static class CompatMixins
     {
-        public static void ForEach<T>(this IEnumerable<T> This, Action<T> block)
+        internal static void ForEach<T>(this IEnumerable<T> This, Action<T> block)
         {
             foreach (var v in This) {
                 block(v); 
             }
         }
 
-        public static IEnumerable<T> SkipLast<T>(this IEnumerable<T> This, int count)
+        internal static IEnumerable<T> SkipLast<T>(this IEnumerable<T> This, int count)
         {
             return This.Take(This.Count() - count);
         }
