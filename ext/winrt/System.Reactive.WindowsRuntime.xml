@@ -4,102 +4,6 @@
         <name>System.Reactive.WindowsRuntime</name>
     </assembly>
     <members>
-        <member name="T:System.Reactive.WindowsRuntime.Concurrency.CoreDispatcherScheduler">
-            <summary>
-            Represents an object that schedules units of work on a CoreDispatcher.
-            </summary>
-            <seealso cref="M:DispatcherObservable.ObserveOnDispatcher">This scheduler type is typically used indirectly through the ObserveOnDispatcher method that uses the current Dispatcher.</seealso>
-            <seealso cref="M:DispatcherObservable.SubscribeOnDispatcher">This scheduler type is typically used indirectly through the SubscribeOnDispatcher method that uses the current Dispatcher.</seealso>
-        </member>
-        <member name="M:System.Reactive.WindowsRuntime.Concurrency.CoreDispatcherScheduler.#ctor(Windows.UI.Core.CoreDispatcher)">
-            <summary>
-            Constructs a CoreDispatcherScheduler that schedules units of work on the given dispatcher.
-            </summary>
-            <param name="dispatcher">Dispatcher to schedule work on.</param>
-        </member>
-        <member name="M:System.Reactive.WindowsRuntime.Concurrency.CoreDispatcherScheduler.Schedule``1(``0,System.DateTimeOffset,System.Func{System.Reactive.Concurrency.IScheduler,``0,System.IDisposable})">
-            <summary>
-            Schedules an action to be executed at dueTime on the dispatcher, using a DispatcherTimer object.
-            </summary>
-            <param name="state">State passed to the action to be executed.</param>
-            <param name="action">Action to be executed.</param>
-            <param name="dueTime">Absolute time at which to execute the action.</param>
-            <returns>The disposable object used to cancel the scheduled action (best effort).</returns>
-        </member>
-        <member name="M:System.Reactive.WindowsRuntime.Concurrency.CoreDispatcherScheduler.Schedule``1(``0,System.TimeSpan,System.Func{System.Reactive.Concurrency.IScheduler,``0,System.IDisposable})">
-            <summary>
-            Schedules an action to be executed after dueTime on the dispatcher, using a DispatcherTimer object.
-            </summary>
-            <param name="state">State passed to the action to be executed.</param>
-            <param name="action">Action to be executed.</param>
-            <param name="dueTime">Relative time after which to execute the action.</param>
-            <returns>The disposable object used to cancel the scheduled action (best effort).</returns>
-        </member>
-        <member name="M:System.Reactive.WindowsRuntime.Concurrency.CoreDispatcherScheduler.Schedule``1(``0,System.Func{System.Reactive.Concurrency.IScheduler,``0,System.IDisposable})">
-            <summary>
-            Schedules an action to be executed on the dispatcher.
-            </summary>
-            <param name="state">State passed to the action to be executed.</param>
-            <param name="action">Action to be executed.</param>
-            <returns>The disposable object used to cancel the scheduled action (best effort).</returns>
-        </member>
-        <member name="P:System.Reactive.WindowsRuntime.Concurrency.CoreDispatcherScheduler.Instance">
-            <summary>
-            Gets the scheduler that schedules work on the CoreDispatcher associated with
-            the current CoreWindow.
-            </summary>
-        </member>
-        <member name="P:System.Reactive.WindowsRuntime.Concurrency.CoreDispatcherScheduler.Dispatcher">
-            <summary>
-            Gets the dispatcher associated with the CoreDispatcherScheduler.
-            </summary>
-        </member>
-        <member name="P:System.Reactive.WindowsRuntime.Concurrency.CoreDispatcherScheduler.Now">
-            <summary>
-            Gets the scheduler's notion of current time.
-            </summary>
-        </member>
-        <member name="T:System.Reactive.WindowsRuntime.Concurrency.ThreadPoolScheduler">
-            <summary>
-            Represents an object that schedules units of work on the Windows Runtime threadpool.
-            </summary>
-        </member>
-        <member name="M:System.Reactive.WindowsRuntime.Concurrency.ThreadPoolScheduler.Schedule``1(``0,System.DateTimeOffset,System.Func{System.Reactive.Concurrency.IScheduler,``0,System.IDisposable})">
-            <summary>
-            Schedules an action to be executed at dueTime, using a Windows.System.Threading.ThreadPoolTimer object.
-            </summary>
-            <param name="state">State passed to the action to be executed.</param>
-            <param name="action">Action to be executed.</param>
-            <param name="dueTime">Absolute time at which to execute the action.</param>
-            <returns>The disposable object used to cancel the scheduled action (best effort).</returns>
-        </member>
-        <member name="M:System.Reactive.WindowsRuntime.Concurrency.ThreadPoolScheduler.Schedule``1(``0,System.TimeSpan,System.Func{System.Reactive.Concurrency.IScheduler,``0,System.IDisposable})">
-            <summary>
-            Schedules an action to be executed after dueTime, using a Windows.System.Threading.ThreadPoolTimer object.
-            </summary>
-            <param name="state">State passed to the action to be executed.</param>
-            <param name="action">Action to be executed.</param>
-            <param name="dueTime">Relative time after which to execute the action.</param>
-            <returns>The disposable object used to cancel the scheduled action (best effort).</returns>
-        </member>
-        <member name="M:System.Reactive.WindowsRuntime.Concurrency.ThreadPoolScheduler.Schedule``1(``0,System.Func{System.Reactive.Concurrency.IScheduler,``0,System.IDisposable})">
-            <summary>
-            Schedules an action to be executed.
-            </summary>
-            <param name="state">State passed to the action to be executed.</param>
-            <param name="action">Action to be executed.</param>
-            <returns>The disposable object used to cancel the scheduled action (best effort).</returns>
-        </member>
-        <member name="P:System.Reactive.WindowsRuntime.Concurrency.ThreadPoolScheduler.Instance">
-            <summary>
-            Gets the singleton instance of the Windows Runtime threadpool scheduler.
-            </summary>
-        </member>
-        <member name="P:System.Reactive.WindowsRuntime.Concurrency.ThreadPoolScheduler.Now">
-            <summary>
-            Gets the scheduler's notion of current time.
-            </summary>
-        </member>
         <member name="T:System.Reactive.IEventPatternSource`2">
             <summary>
             Represents a data stream signaling its elements by means of an event.
@@ -261,12 +165,12 @@
             operation. Errors are reported through the result sequence.
             </remarks>
         </member>
-        <member name="T:System.Reactive.Windows.Foundation.AsyncInfoObservable">
+        <member name="T:System.Reactive.Linq.AsyncInfoObservable">
             <summary>
             Provides a set of extension methods to expose observable sequences as WinRT IAsyncInfo objects.
             </summary>
         </member>
-        <member name="M:System.Reactive.Windows.Foundation.AsyncInfoObservable.ToAsyncOperation``1(System.IObservable{``0})">
+        <member name="M:System.Reactive.Linq.AsyncInfoObservable.ToAsyncOperation``1(System.IObservable{``0})">
             <summary>
             Exposes the last element of the observable sequence through an IAsyncOperation object.
             </summary>
@@ -274,7 +178,7 @@
             <param name="source">Source sequence.</param>
             <returns>Asynchronous operation object that exposes the results of the observable sequence.</returns>
         </member>
-        <member name="M:System.Reactive.Windows.Foundation.AsyncInfoObservable.ToAsyncOperationWithProgress``1(System.IObservable{``0})">
+        <member name="M:System.Reactive.Linq.AsyncInfoObservable.ToAsyncOperationWithProgress``1(System.IObservable{``0})">
             <summary>
             Exposes the last element of the observable sequence through an IAsyncOperationWithProgress object,
             reporting incremental progress for each intermediate value produced by the sequence.
@@ -282,7 +186,7 @@
             <param name="source">Source sequence.</param>
             <returns>Asynchronous operation object that exposes the results of the observable sequence.</returns>
         </member>
-        <member name="M:System.Reactive.Windows.Foundation.AsyncInfoObservable.ToAsyncOperationWithProgress``2(System.IObservable{``0},System.Func{System.IObservable{``0},System.IObservable{``1}})">
+        <member name="M:System.Reactive.Linq.AsyncInfoObservable.ToAsyncOperationWithProgress``2(System.IObservable{``0},System.Func{System.IObservable{``0},System.IObservable{``1}})">
             <summary>
             Exposes the last element of the observable sequence through an IAsyncOperationWithProgress object,
             using a selector function to map the source sequence on a progress reporting sequence.
@@ -290,62 +194,6 @@
             <param name="source">Source sequence.</param>
             <param name="getProgress">Selector function to map the source sequence on a progress reporting sequence.</param>
             <returns>Asynchronous operation object that exposes the results of the observable sequence.</returns>
-        </member>
-        <member name="M:System.Reactive.Windows.Foundation.AsyncInfoObservable.ToAsyncOperationWithProgress``3(System.IObservable{``0},System.Func{System.IObservable{``0},System.IObservable{``1}},System.Func{System.IObservable{``0},System.Collections.Generic.IEnumerable{``2}})">
-            <summary>
-            Exposes results computed from the observable sequence through an IAsyncOperationWithProgress object,
-            using a selector function to map the source sequence on a progress reporting sequence and using a
-            selector function to map the source sequence on an enumerable sequence for incremental retrieval of
-            results by calling GetResults (e.g. during progress notifications).
-            </summary>
-            <param name="source">Source sequence.</param>
-            <param name="getProgress">Selector function to map the source sequence on a progress reporting sequence.</param>
-            <param name="getResults">Selector function to map the source sequence on an enumerable sequence for incremental retrieval of results.</param>
-            <returns>Asynchronous operation object that supports incremental retrieval of results by calling GetResults.</returns>
-        </member>
-        <member name="M:System.Reactive.Windows.Foundation.AsyncInfoObservable.ToAsyncOperationWithProgressChunks``1(System.IObservable{``0})">
-            <summary>
-            Exposes results computed from the observable sequence through an IAsyncOperationWithProgress object,
-            reporting incremental progress for each intermediate value produced by the sequence and exposing
-            incremental results through list objects.
-            </summary>
-            <param name="source">Source sequence.</param>
-            <returns>Asynchronous operation object that supports incremental retrieval of chunks of the source sequence by calling GetResults.</returns>
-        </member>
-        <member name="T:System.Reactive.Linq.DispatcherObservable">
-            <summary>
-            Provides a set of extension methods for scheduling actions performed through observable sequences on UI dispatchers.
-            </summary>
-        </member>
-        <member name="M:System.Reactive.Linq.DispatcherObservable.ObserveOn``1(System.IObservable{``0},Windows.UI.Core.CoreDispatcher)">
-            <summary>
-            Asynchronously notify observers using the dispatcher.
-            </summary>
-            <param name="source">Source sequence.</param>
-            <param name="dispatcher">Dispatcher whose associated message loop is used to to notify observers on.</param>
-            <returns>The source sequence whose observations happen on the message loop associated with the specified dispatcher.</returns>
-        </member>
-        <member name="M:System.Reactive.Linq.DispatcherObservable.SubscribeOn``1(System.IObservable{``0},Windows.UI.Core.CoreDispatcher)">
-            <summary>
-            Asynchronously subscribes and unsubscribes observers using the dispatcher.
-            </summary>
-            <param name="source">Source sequence.</param>
-            <param name="dispatcher">Dispatcher whose associated message loop is used to to perform subscription and unsubscription actions on.</param>
-            <returns>The source sequence whose subscriptions and unsubscriptions happen on the message loop associated with the specified dispatcher.</returns>
-        </member>
-        <member name="M:System.Reactive.Linq.DispatcherObservable.ObserveOnDispatcher``1(System.IObservable{``0})">
-            <summary>
-            Asynchronously notify observers using the dispatcher associated with the current window.
-            </summary>
-            <param name="source">Source sequence.</param>
-            <returns>The source sequence whose observations happen on the current window's dispatcher.</returns>
-        </member>
-        <member name="M:System.Reactive.Linq.DispatcherObservable.SubscribeOnDispatcher``1(System.IObservable{``0})">
-            <summary>
-            Asynchronously subscribes and unsubscribes observers on the dispatcher associated with the current window.
-            </summary>
-            <param name="source">Source sequence.</param>
-            <returns>The source sequence whose subscriptions and unsubscriptions happen on the current window's dispatcher.</returns>
         </member>
         <member name="T:System.Reactive.Linq.WindowsObservable">
             <summary>
