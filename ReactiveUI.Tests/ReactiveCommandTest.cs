@@ -121,40 +121,6 @@ namespace ReactiveUI.Tests
             new[]{2,2}.AssertAreEqual(even_list);
         }
 
-        [Fact(Skip="I'm not convinced this is actually true, if you throw in a Subscribe it *should* permabreak")]
-        public void ActionExceptionShouldntPermabreakCommands()
-        {
-            var input = new[] {1,2,3,4};
-            var fixture = createCommand(null);
-            fixture.Subscribe(x => {
-                if (((int)x) == 2)
-                    throw new Exception("Die!");
-            });
-
-            var exception_list = new List<Exception>();
-            var out_list = new List<int>();
-
-            fixture.Subscribe(x => out_list.Add((int)x), ex => exception_list.Add(ex));
-            bool we_threw = false;
-            foreach (int i in input) {
-                try {
-                    fixture.Execute(i);
-                } catch {
-                    we_threw = true;
-                    if (i != 2)
-                        throw;
-                }
-            }
-
-            Assert.True(we_threw);
-            input.AssertAreEqual(out_list);
-
-            // Now, make sure that the command isn't broken
-            fixture.Execute(5);
-            Console.WriteLine(String.Join(",", out_list.Select(x => x.ToString()).ToArray()));
-            Assert.Equal(5, out_list.Count);
-        }
-
         [Fact]
         public void CanExecuteExceptionShouldntPermabreakCommands()
         {
