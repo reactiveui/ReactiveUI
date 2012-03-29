@@ -57,7 +57,7 @@ namespace ReactiveUI.Tests
 
                 // N.B. We check against '5' instead of 6 because we're supposed to 
                 // suppress changes that aren't actually changes i.e. false => false
-                sched.RunToMilliseconds(10 * 1000);
+                sched.AdvanceToMs(10 * 1000);
                 return changes_as_observable;
             });
 
@@ -115,49 +115,62 @@ namespace ReactiveUI.Tests
             fixture.Where(x => ((int)x) % 2 == 0).Subscribe(x => even_list.Add((int)x));
 
             input.Run(x => fixture.Execute(x));
-            sched.RunToMilliseconds(1000);
+            sched.AdvanceToMs(1000);
 
             new[]{1,1}.AssertAreEqual(odd_list);
             new[]{2,2}.AssertAreEqual(even_list);
         }
 
-        [Fact(Skip="I'm not convinced this is actually true, if you throw in a Subscribe it *should* permabreak")]
-        public void ActionExceptionShouldntPermabreakCommands()
-        {
-            var input = new[] {1,2,3,4};
-            var fixture = createCommand(null);
-            fixture.Subscribe(x => {
-                if (((int)x) == 2)
-                    throw new Exception("Die!");
-            });
-
-            var exception_list = new List<Exception>();
-            var out_list = new List<int>();
-
-            fixture.Subscribe(x => out_list.Add((int)x), ex => exception_list.Add(ex));
-            bool we_threw = false;
-            foreach (int i in input) {
-                try {
-                    fixture.Execute(i);
-                } catch {
-                    we_threw = true;
-                    if (i != 2)
-                        throw;
-                }
-            }
-
-            Assert.True(we_threw);
-            input.AssertAreEqual(out_list);
-
-            // Now, make sure that the command isn't broken
-            fixture.Execute(5);
-            Console.WriteLine(String.Join(",", out_list.Select(x => x.ToString()).ToArray()));
-            Assert.Equal(5, out_list.Count);
-        }
-
         [Fact]
         public void CanExecuteExceptionShouldntPermabreakCommands()
         {
+            var canExecute = new Subject<bool>();
+            var fixture = createCommand(canExecute);
+
+            var exceptions = new List<Exception>();
+            var canExecuteStates = new List<bool>();
+            fixture.CanExecuteObservable.Subscribe(canExecuteStates.Add);
+            fixture.ThrownExceptions.Subscribe(exceptions.Add);
+
+            canExecute.OnNext(false);
+            Assert.False(fixture.CanExecute(null));
+
+            canExecute.OnNext(true);
+            Assert.True(fixture.CanExecute(null));
+
+            canExecute.OnError(new Exception("Aieeeee!"));
+
+            // The command should just latch at whatever its previous state was
+            // before the exception
+            Assert.True(fixture.CanExecute(null));
+
+            Assert.Equal(1, exceptions.Count);
+            Assert.Equal("Aieeeee!", exceptions[0].Message);
+
+            Assert.Equal(false, canExecuteStates[canExecuteStates.Count-2]);
+            Assert.Equal(true, canExecuteStates[canExecuteStates.Count-1]);
+        }
+
+        [Fact]
+        public void NoSubscriberOfThrownExceptionsEqualsDeath()
+        {
+            (new TestScheduler()).With(sched => {
+                var canExecute = new Subject<bool>();
+                var fixture = createCommand(canExecute);
+
+                canExecute.OnNext(true);
+                canExecute.OnError(new Exception("Aieeeee!"));
+
+                bool failed = true;
+                try {
+                    sched.Start();
+                    Assert.True(fixture.CanExecute(null));
+                } catch (Exception ex) {
+                    failed = (ex.InnerException.Message != "Aieeeee!");
+                }
+
+                Assert.False(failed);
+            });
         }
     }
 
@@ -196,14 +209,14 @@ namespace ReactiveUI.Tests
                     Observable.Return(5).Delay(TimeSpan.FromSeconds(5), sched)).CreateCollection();
 
                 var inflightResults = fixture.ItemsInflight.CreateCollection();
-                sched.RunToMilliseconds(10);
+                sched.AdvanceToMs(10);
                 Assert.True(fixture.CanExecute(null));
 
                 fixture.Execute(null);
-                sched.RunToMilliseconds(1005);
+                sched.AdvanceToMs(1005);
                 Assert.False(fixture.CanExecute(null));
 
-                sched.RunToMilliseconds(5100);
+                sched.AdvanceToMs(5100);
                 Assert.True(fixture.CanExecute(null));
 
                 new[] {0,1,0}.AssertAreEqual(inflightResults);
@@ -264,10 +277,10 @@ namespace ReactiveUI.Tests
                 Assert.True(fixture.CanExecute(null));
 
                 fixture.Execute(null);
-                sched.RunToMilliseconds(2000);
+                sched.AdvanceToMs(2000);
                 Assert.False(fixture.CanExecute(null));
 
-                sched.RunToMilliseconds(6000);
+                sched.AdvanceToMs(6000);
                 Assert.True(fixture.CanExecute(null));
 
                 Assert.True(results.Count == 1);
@@ -373,7 +386,7 @@ namespace ReactiveUI.Tests
 
                 // CanExecute should be true, both input observable is true
                 // and we don't have anything inflight
-                sched.RunToMilliseconds(10);
+                sched.AdvanceToMs(10);
                 Assert.True(fixture.CanExecute(1));
                 Assert.True(latestCanExecute);
 
@@ -381,28 +394,28 @@ namespace ReactiveUI.Tests
                 fixture.Execute(1);
 
                 // At 300ms, input is false
-                sched.RunToMilliseconds(300);
+                sched.AdvanceToMs(300);
                 Assert.False(fixture.CanExecute(1));
                 Assert.False(latestCanExecute);
 
                 // At 600ms, input is true, but the command is still running
-                sched.RunToMilliseconds(600);
+                sched.AdvanceToMs(600);
                 Assert.False(fixture.CanExecute(1));
                 Assert.False(latestCanExecute);
 
                 // After we've completed, we should still be false, since from
                 // 750ms-1000ms the input observable is false
-                sched.RunToMilliseconds(900);
+                sched.AdvanceToMs(900);
                 Assert.False(fixture.CanExecute(1));
                 Assert.False(latestCanExecute);
                 Assert.Equal(-1, calculatedResult);
 
-                sched.RunToMilliseconds(1010);
+                sched.AdvanceToMs(1010);
                 Assert.True(fixture.CanExecute(1));
                 Assert.True(latestCanExecute);
                 Assert.Equal(calculatedResult, 5);
 
-                sched.RunToMilliseconds(1200);
+                sched.AdvanceToMs(1200);
                 Assert.False(fixture.CanExecute(1));
                 Assert.False(latestCanExecute);
             });

@@ -80,36 +80,6 @@ namespace ReactiveUI.Tests
             results.AssertAreEqual(output);
         }
 
-        /* NB: For now, it is "by-design" that if you throw inside the 
-         * Subscribe block, we're borked - similar to if you throw inside
-         * a WPF binding, the binding gets torn down */
-#if FALSE
-        [Fact]
-        public void SubscriptionExceptionsShouldntPermakillReactiveObject()
-        {
-            Assert.True(false, "This test doesn't work yet");
-
-            var fixture = new TestFixture();
-            int i = 0;
-            fixture.Changed.Subscribe(x => {
-                if (++i == 2)
-                    throw new Exception("Deaded!");
-            });
-
-            fixture.IsNotNullString = "Foo";
-            fixture.IsNotNullString = "Bar";
-            fixture.IsNotNullString = "Baz";
-            fixture.IsNotNullString = "Bamf";
-
-            var output = new List<string>();
-            fixture.Changed.Subscribe(x => output.Add(x.PropertyName));
-            fixture.IsOnlyOneWord = "Bar";
-
-            Assert.Equal("IsOnlyOneWord", output[0]);
-            Assert.Equal(1, output.Count);
-        }
-#endif
-
         [Fact]
         public void ReactiveObjectShouldntSerializeAnythingExtra()
         {

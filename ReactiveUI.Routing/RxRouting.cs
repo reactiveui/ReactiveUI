@@ -50,7 +50,7 @@ namespace ReactiveUI.Routing
         public static IObservable<Unit> NavigatedToMe(this IRoutableViewModel This)
         {
             return Observable.Create<Unit>(subj => {
-                return This.HostScreen.Router.CurrentViewModel
+                return This.HostScreen.Router.ViewModelObservable()
                     .Where(x => x == This)
                     .Select(_ => Unit.Default)
                     .Subscribe(subj);
