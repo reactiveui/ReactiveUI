@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using NLog;
 using ReactiveUI;
@@ -40,11 +41,27 @@ namespace ReactiveUI.Xaml
             ThrownExceptions = exSubject;
         }
 
+        protected ReactiveCommand(Func<object, Task<bool>> canExecuteFunc, IScheduler scheduler = null)
+        {
+            var canExecute = canExecuteProbed.SelectAsync(canExecuteFunc);
+
+            commonCtor(scheduler);
+
+            var exSubject = new ScheduledSubject<Exception>(RxApp.DeferredScheduler, RxApp.DefaultExceptionHandler);
+
+            _inner = canExecute.Subscribe(
+                canExecuteSubject.OnNext, 
+                exSubject.OnNext);
+
+            ThrownExceptions = exSubject;
+        }
+
         protected ReactiveCommand(Func<object, bool> canExecute, IScheduler scheduler = null)
         {
             canExecuteExplicitFunc = canExecute;
             commonCtor(scheduler);
         }
+
 
         /// <summary>
         /// Creates a new ReactiveCommand object in an imperative, non-Rx way,
@@ -70,6 +87,30 @@ namespace ReactiveUI.Xaml
             return ret;
         }
 
+        /// <summary>
+        /// Creates a new ReactiveCommand object in an imperative, non-Rx way,
+        /// similar to RelayCommand, only via a TPL Async method
+        /// </summary>
+        /// <param name="canExecute">A function that determines when the Command
+        /// can execute.</param>
+        /// <param name="executed">A method that will be invoked when the
+        /// Execute method is invoked.</param>
+        /// <param name="scheduler">The scheduler to publish events on - default
+        /// is RxApp.DeferredScheduler.</param>
+        /// <returns>A new ReactiveCommand object.</returns>
+        public static ReactiveCommand Create(
+            Func<object, Task<bool>> canExecute, 
+            Action<object> executed = null, 
+            IScheduler scheduler = null)
+        {
+            var ret = new ReactiveCommand(canExecute, scheduler);
+            if (executed != null) {
+                ret.Subscribe(executed);
+            }
+
+            return ret;
+        }
+
         public IObservable<Exception> ThrownExceptions { get; protected set; }
 
         void commonCtor(IScheduler scheduler)
@@ -81,11 +122,13 @@ namespace ReactiveUI.Xaml
                 b => { if (CanExecuteChanged != null) CanExecuteChanged(this, EventArgs.Empty); },
                 true, scheduler);
 
+            canExecuteProbed = new Subject<object>();
             executeSubject = new Subject<object>();
         }
 
         Func<object, bool> canExecuteExplicitFunc;
         protected ISubject<bool> canExecuteSubject;
+        protected Subject<object> canExecuteProbed;
         IDisposable _inner = null;
 
     
@@ -99,6 +142,7 @@ namespace ReactiveUI.Xaml
         ObservableAsPropertyHelper<bool> canExecuteLatest;
         public virtual bool CanExecute(object parameter)
         {
+            canExecuteProbed.OnNext(parameter);
             if (canExecuteExplicitFunc != null) {
                 bool ret = canExecuteExplicitFunc(parameter);
                 canExecuteSubject.OnNext(ret);
