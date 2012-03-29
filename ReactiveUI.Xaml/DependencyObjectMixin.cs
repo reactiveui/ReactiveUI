@@ -5,7 +5,17 @@ using System.Linq.Expressions;
 using System.Reactive.Subjects;
 using System.Reflection;
 using System.Windows;
+using ReactiveUI;
+
+#if WINRT
+using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Data;
+#else
+using System.Windows.Controls;
 using System.Windows.Data;
+#endif
+
 
 namespace ReactiveUI.Xaml
 {
@@ -45,8 +55,8 @@ namespace ReactiveUI.Xaml
 
             public ObservableFromDPHelper(TObj dobj, DependencyProperty dp, string propName)
             {
-                var b = new Binding(propName) { Source = dobj };
-                var prop = System.Windows.DependencyProperty.RegisterAttached(
+                var b = new Binding() { Source = dobj, Path = new PropertyPath(propName) };
+                var prop = DependencyProperty.RegisterAttached(
                     "ListenAttached" + propName + this.GetHashCode().ToString("{0:x}"),
                     typeof(object),
                     typeof(TObj),

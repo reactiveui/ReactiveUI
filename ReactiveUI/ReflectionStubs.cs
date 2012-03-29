@@ -8,17 +8,17 @@ using System.Threading.Tasks;
 namespace ReactiveUI
 {
     internal enum BindingFlags {
-        Public, NonPublic, Instance, Static 
+        Public, NonPublic, Instance, Static, FlattenHierarchy
     }
 
     internal static class ReflectionStubs
     {
-        public static FieldInfo GetField(this Type This, string name)
+        public static FieldInfo GetField(this Type This, string name, BindingFlags dontcare = default(BindingFlags))
         {
             return This.GetTypeInfo().GetDeclaredField(name);
         }
 
-        public static PropertyInfo GetProperty(this Type This, string name)
+        public static PropertyInfo GetProperty(this Type This, string name, BindingFlags dontcare = default(BindingFlags))
         {
             return This.GetTypeInfo().GetDeclaredProperty(name);
         }
