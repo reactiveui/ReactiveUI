@@ -8,9 +8,11 @@ using System.Linq.Expressions;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using System.Reactive.Threading.Tasks;
 using System.Reflection;
 using System.Threading;
 using NLog;
+using System.Threading.Tasks;
 
 #if SILVERLIGHT
 using System.Windows;
@@ -51,10 +53,7 @@ namespace ReactiveUI
 
                 DeferredScheduler = findDispatcherScheduler();
 
-                DefaultExceptionHandler = Observer.Create<Exception>(ex => 
-                    RxApp.DeferredScheduler.Schedule(() => {
-                        throw new Exception("An exception occurred on an object that would destabilize ReactiveUI. To prevent this, Subscribe to the ThrownExceptions property of your objects", ex);
-                    }));
+                
             }
 
 #if WINDOWS_PHONE
@@ -71,6 +70,11 @@ namespace ReactiveUI
 
             TaskpoolScheduler = Scheduler.TaskPool;
 #endif
+
+            DefaultExceptionHandler = Observer.Create<Exception>(ex => 
+                RxApp.DeferredScheduler.Schedule(() => {
+                    throw new Exception("An exception occurred on an object that would destabilize ReactiveUI. To prevent this, Subscribe to the ThrownExceptions property of your objects", ex);
+                }));
 
             MessageBus = new MessageBus();
         }
@@ -389,6 +393,20 @@ namespace ReactiveUI
                 throw new ArgumentException(String.Format("Type '{0}' must have a property '{1}'", type, propName));
             }
             return ret;
+        }
+    }
+
+    public static class TplMixins
+    {
+        /// <summary>
+        /// Apply a TPL-async method to each item in an IObservable. Like 
+        /// Select but asynchronous via the TPL.
+        /// </summary>
+        /// <param name="selector">The selection method to use.</param>
+        /// <returns>An Observable represented the mapped sequence.</returns>
+        public static IObservable<TRet> SelectAsync<T,TRet>(this IObservable<T> This, Func<T, Task<TRet>> selector)
+        {
+            return This.SelectMany(x => selector(x).ToObservable());
         }
     }
    

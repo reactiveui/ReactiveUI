@@ -39,64 +39,6 @@ namespace ReactiveUI.Testing
         }
 
         /// <summary>
-        /// With is an extension method that uses the given scheduler as the
-        /// default Deferred and Taskpool schedulers for the given Func. Use
-        /// this to initialize objects that store the default scheduler (most
-        /// RxXaml objects).
-        /// </summary>
-        /// <param name="sched">The scheduler to use.</param>
-        /// <param name="block">The function to execute.</param>
-        /// <returns>The return value of the function.</returns>
-        public static TRet With<TRet>(this IScheduler sched, Func<IScheduler, TRet> block)
-        {
-            TRet ret;
-            using (WithScheduler(sched)) {
-                ret = block(sched);
-            }
-            return ret;
-        }
-
-        /// <summary>
-        /// With is an extension method that uses the given scheduler as the
-        /// default Deferred and Taskpool schedulers for the given Action. 
-        /// </summary>
-        /// <param name="sched">The scheduler to use.</param>
-        /// <param name="block">The action to execute.</param>
-        public static void With(this IScheduler sched, Action<IScheduler> block)
-        {
-            sched.With(x => { block(x); return 0; });
-        }
-
-        /// <summary>
-        /// With is an extension method that uses the given scheduler as the
-        /// default Deferred and Taskpool schedulers for the given Func. Use
-        /// this to initialize objects that store the default scheduler (most
-        /// RxXaml objects).
-        /// </summary>
-        /// <param name="sched">The scheduler to use.</param>
-        /// <param name="block">The function to execute.</param>
-        /// <returns>The return value of the function.</returns>
-        public static TRet With<TRet>(this TestScheduler sched, Func<TestScheduler, TRet> block)
-        {
-            TRet ret;
-            using (WithScheduler(sched)) {
-                ret = block(sched);
-            }
-            return ret;
-        }
-
-        /// <summary>
-        /// With is an extension method that uses the given scheduler as the
-        /// default Deferred and Taskpool schedulers for the given Action. 
-        /// </summary>
-        /// <param name="sched">The scheduler to use.</param>
-        /// <param name="block">The action to execute.</param>
-        public static void With(this TestScheduler sched, Action<TestScheduler> block)
-        {
-            sched.With(x => { block(x); return 0; });
-        }
-
-        /// <summary>
         /// WithMessageBus allows you to override the default Message Bus 
         /// implementation until the object returned is disposed. If a 
         /// message bus is not specified, a default empty one is created.
@@ -105,7 +47,7 @@ namespace ReactiveUI.Testing
         /// a new one using the default implementation.</param>
         /// <returns>An object that when disposed, restores the original 
         /// message bus.</returns>
-        public static IDisposable WithMessageBus(this TestScheduler sched, IMessageBus messageBus = null)
+        public static IDisposable WithMessageBus(this IMessageBus messageBus)
         {
             var origMessageBus = RxApp.MessageBus;
 
@@ -119,30 +61,84 @@ namespace ReactiveUI.Testing
         }
 
         /// <summary>
-        /// WithMessageBus allows you to override the default Message Bus 
-        /// implementation for a specified action. If a message bus is not
-        /// specified, a default empty one is created.
-        /// <param name="block">The action to execute.</param>
-        /// <param name="messageBus">The message bus to use, or null to create
-        /// a new one using the default implementation.</param>
-        public static void WithMessageBus(this TestScheduler sched, Action<IMessageBus> block, IMessageBus messageBus = null)
+        /// With is an extension method that uses the given scheduler as the
+        /// default Deferred and Taskpool schedulers for the given Func. Use
+        /// this to initialize objects that store the default scheduler (most
+        /// RxXaml objects).
+        /// </summary>
+        /// <param name="sched">The scheduler to use.</param>
+        /// <param name="block">The function to execute.</param>
+        /// <returns>The return value of the function.</returns>
+        public static TRet With<T, TRet>(this T sched, Func<T, TRet> block)
+            where T : IScheduler
         {
-            messageBus = messageBus ?? new MessageBus();
-            using(var _ = sched.WithMessageBus(messageBus)) {
-                block(messageBus);
+            TRet ret;
+            using (WithScheduler(sched)) {
+                ret = block(sched);
+            }
+            return ret;
+        }
+
+        /// <summary>
+        /// With is an extension method that uses the given scheduler as the
+        /// default Deferred and Taskpool schedulers for the given Action. 
+        /// </summary>
+        /// <param name="sched">The scheduler to use.</param>
+        /// <param name="block">The action to execute.</param>
+        public static void With<T>(this T sched, Action<T> block)
+            where T : IScheduler
+        {
+            sched.With(x => { block(x); return 0; });
+        }
+
+        /// <summary>
+        /// Override the default Message Bus during the specified block.
+        /// </summary>
+        /// <param name="messageBus">The message bus to use for the block.</param>
+        /// <param name="block">The function to execute.</param>
+        /// <returns>The return value of the function.</returns>
+        public static TRet With<TRet>(this IMessageBus messageBus, Func<TRet> block)
+        {
+            using (messageBus.WithMessageBus()) {
+                return block();
             }
         }
 
         /// <summary>
-        /// RunToMilliseconds moves the TestScheduler to the specified time in
+        /// Override the default Message Bus during the specified block.
+        /// </summary>
+        /// <param name="messageBus">The message bus to use for the block.</param>
+        /// <param name="sched">The scheduler to use.</param>
+        /// <param name="block">The action to execute.</param>
+        public static void With(this IMessageBus messageBus, Action block)
+        {
+            using (messageBus.WithMessageBus()) {
+                block();
+            }
+        }
+
+        /// <summary>
+        /// AdvanceToMs moves the TestScheduler to the specified time in
         /// milliseconds.
         /// </summary>
         /// <param name="milliseconds">The time offset to set the TestScheduler
         /// to, in milliseconds. Note that this is *not* additive or
         /// incremental, it sets the time.</param>
-        public static void RunToMilliseconds(this TestScheduler sched, double milliseconds)
+        public static void AdvanceToMs(this TestScheduler sched, double milliseconds)
         {
             sched.AdvanceTo(sched.FromTimeSpan(TimeSpan.FromMilliseconds(milliseconds)));
+        }
+
+        /// <summary>
+        /// AdvanceToMs moves the TestScheduler along by the specified time in
+        /// milliseconds.
+        /// </summary>
+        /// <param name="milliseconds">The time offset to set the TestScheduler
+        /// to, in milliseconds. Note that this is *not* additive or
+        /// incremental, it sets the time.</param>
+        public static void AdvanceByMs(this TestScheduler sched, double milliseconds)
+        {
+            sched.AdvanceBy(sched.FromTimeSpan(TimeSpan.FromMilliseconds(milliseconds)));
         }
 
         /// <summary>

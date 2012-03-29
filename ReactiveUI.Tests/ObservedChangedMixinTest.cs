@@ -33,7 +33,7 @@ namespace ReactiveUI.Tests
 
                 foreach (var v in input) { fixture.IsOnlyOneWord = v; }
 
-                sched.RunToMilliseconds(1000);
+                sched.AdvanceToMs(1000);
 
                 input.AssertAreEqual(output);
                 input.AssertAreEqual(output2);
@@ -89,7 +89,7 @@ namespace ReactiveUI.Tests
 
                 foreach (var v in input) { fixture.IsOnlyOneWord = v; }
 
-                sched.RunToMilliseconds(1000);
+                sched.AdvanceToMs(1000);
 
                 input.AssertAreEqual(output);
                 input.AssertAreEqual(output2);

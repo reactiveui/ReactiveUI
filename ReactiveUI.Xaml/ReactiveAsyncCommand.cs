@@ -6,8 +6,10 @@ using System.Diagnostics.Contracts;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using System.Reactive.Threading.Tasks;
 using NLog;
 using ReactiveUI;
+using System.Threading.Tasks;
 
 namespace ReactiveUI.Xaml
 {
@@ -202,6 +204,33 @@ namespace ReactiveUI.Xaml
         {
             Contract.Requires(calculationFunc != null);
             RegisterAsyncFunction(x => { calculationFunc(x); return new Unit(); }, scheduler);
+        }
+
+        /// <summary>
+        /// RegisterAsyncTask registers an TPL/Async method that runs when a 
+        /// Command gets executed and returns the result
+        /// </summary>
+        /// <returns>An Observable that will fire on the UI thread once per
+        /// invoecation of Execute, once the async method completes. Subscribe to
+        /// this to retrieve the result of the calculationFunc.</returns>
+        public IObservable<TResult> RegisterAsyncTask<TResult>(Func<object, Task<TResult>> calculationFunc)
+        {
+            Contract.Requires(calculationFunc != null);
+            return RegisterAsyncObservable(x => calculationFunc(x).ToObservable());
+        }
+
+        /// <summary>
+        /// RegisterAsyncTask registers an TPL/Async method that runs when a 
+        /// Command gets executed and returns no result. 
+        /// </summary>
+        /// <param name="calculationFunc">The function to be run in the
+        /// background.</param>
+        /// <returns>An Observable that signals when the Task completes, on
+        /// the UI thread.</returns>
+        public IObservable<Unit> RegisterAsyncTask<TResult>(Func<object, Task> calculationFunc)
+        {
+            Contract.Requires(calculationFunc != null);
+            return RegisterAsyncObservable(x => calculationFunc(x).ToObservable());
         }
 
         /// <summary>

@@ -7,6 +7,34 @@ using ReactiveUI.Xaml;
 
 namespace ReactiveUI.Routing
 {
+    public interface IRoutingState
+    {
+        /// <summary>
+        /// Represents the current navigation stack, the last element in the
+        /// collection being the currently visible ViewModel.
+        /// </summary>
+        ReactiveCollection<IRoutableViewModel> NavigationStack { get; }
+
+        /// <summary>
+        /// Navigates back to the previous element in the stack.
+        /// </summary>
+        IReactiveCommand NavigateBack { get; }
+
+        /// <summary>
+        /// Navigates to the a new element in the stack - the Execute parameter
+        /// must be a ViewModel that implements IRoutableViewModel.
+        /// </summary>
+        IReactiveCommand Navigate { get; }
+
+        /// <summary>
+        /// Navigates to a new element and resets the navigation stack (i.e. the
+        /// new ViewModel will now be the only element in the stack) - the
+        /// Execute parameter must be a ViewModel that implements
+        /// IRoutableViewModel.
+        /// </summary>
+        IReactiveCommand NavigateAndReset { get; }
+    }
+
     /// <summary>
     /// Implement this interface for ViewModels that can be navigated to.
     /// </summary>
@@ -51,7 +79,7 @@ namespace ReactiveUI.Routing
         /// <summary>
         /// The Router associated with this Screen.
         /// </summary>
-        RoutingState Router { get; }
+        IRoutingState Router { get; }
     }
 
     /// <summary>

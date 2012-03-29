@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Reactive;
+using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Runtime.Serialization;
@@ -13,7 +14,7 @@ namespace ReactiveUI.Routing
     /// navigate to other ViewModels.
     /// </summary>
     [DataContract]
-    public class RoutingState : ReactiveObject
+    public class RoutingState : ReactiveObject, IRoutingState
     {
         [IgnoreDataMember] ReactiveCollection<IRoutableViewModel> _NavigationStack;
 
@@ -31,14 +32,14 @@ namespace ReactiveUI.Routing
         /// Navigates back to the previous element in the stack.
         /// </summary>
         [IgnoreDataMember]
-        public ReactiveCommand NavigateBack { get; protected set; }
+        public IReactiveCommand NavigateBack { get; protected set; }
 
         /// <summary>
         /// Navigates to the a new element in the stack - the Execute parameter
         /// must be a ViewModel that implements IRoutableViewModel.
         /// </summary>
         [IgnoreDataMember]
-        public ReactiveCommand Navigate { get; protected set; }
+        public IReactiveCommand Navigate { get; protected set; }
 
         /// <summary>
         /// Navigates to a new element and resets the navigation stack (i.e. the
@@ -47,7 +48,7 @@ namespace ReactiveUI.Routing
         /// IRoutableViewModel.
         /// </summary>
         [IgnoreDataMember]
-        public ReactiveCommand NavigateAndReset { get; protected set; }
+        public IReactiveCommand NavigateAndReset { get; protected set; }
 
         /// <summary>
         /// The currently visible ViewModel.
@@ -55,17 +56,9 @@ namespace ReactiveUI.Routing
         [IgnoreDataMember]
         public IObservable<IRoutableViewModel> CurrentViewModel { get; protected set; }
 
-        [DataMember]
-        string _AutoSaveContract;
-
-        public RoutingState() : this(null)
-        {
-        }
-
-        public RoutingState(string autoSaveContract)
+        public RoutingState()
         {
             _NavigationStack = new ReactiveCollection<IRoutableViewModel>();
-            _AutoSaveContract = autoSaveContract;
             setupRx();
         }
 
@@ -87,29 +80,49 @@ namespace ReactiveUI.Routing
                 NavigationStack.Clear();
                 NavigationStack.Add((IRoutableViewModel) x);
             });
-
-            CurrentViewModel = NavigationStack.CollectionCountChanged
-                .Select(_ => NavigationStack.LastOrDefault())
-                .Multicast(new ReplaySubject<IRoutableViewModel>(1)).PermaRef();
         }
+    }
 
+    public static class RoutingStateMixins
+    {
         /// <summary>
         /// Generates a routing Uri based on the current route state
         /// </summary>
         /// <returns></returns>
-        public string GetUrlForCurrentRoute()
+        public static string GetUrlForCurrentRoute(this IRoutingState This)
         {
-            return "app://" + String.Join("/", NavigationStack.Select(x => x.UrlPathSegment));
+            return "app://" + String.Join("/", This.NavigationStack.Select(x => x.UrlPathSegment));
         }
 
         /// <summary>
         /// Locate the first ViewModel in the stack that matches a certain Type.
         /// </summary>
         /// <returns>The matching ViewModel or null if none exists.</returns>
-        public T FindViewModelInStack<T>()
+        public static T FindViewModelInStack<T>(this IRoutingState This)
             where T : IRoutableViewModel
         {
-            return NavigationStack.Reverse().OfType<T>().FirstOrDefault();
+            return This.NavigationStack.Reverse().OfType<T>().FirstOrDefault();
+        }
+
+        /// <summary>
+        /// Returns the currently visible ViewModel
+        /// </summary>
+        public static IRoutableViewModel GetCurrentViewModel(this IRoutingState This)
+        {
+            return This.NavigationStack.LastOrDefault();
+        }
+
+        /// <summary>
+        /// Returns an Observable that signals ViewModel changes. This is a
+        /// Replay Observable, so Subscribing to it will always produce a
+        /// (possibly null) initial value.
+        /// </summary>
+        public static IObservable<IRoutableViewModel> ViewModelObservable(this IRoutingState This)
+        {
+            return This.NavigationStack.CollectionCountChanged
+                .Select(_ => This.GetCurrentViewModel())
+                .StartWith(Scheduler.Immediate, This.GetCurrentViewModel())
+                .Multicast(new ReplaySubject<IRoutableViewModel>(1)).RefCount();
         }
     }
 }

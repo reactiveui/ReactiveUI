@@ -31,13 +31,13 @@ namespace ReactiveUI.Tests
                 t.Start();
 
                 sched.Start();
-                sched.RunToMilliseconds(500);
+                sched.AdvanceToMs(500);
 
                 // NB: The Thread.Sleep is to let our other thread catch up
                 Thread.Sleep(100);
                 Assert.Equal(0, result);
 
-                sched.RunToMilliseconds(1200);
+                sched.AdvanceToMs(1200);
 
                 Thread.Sleep(100);
                 Assert.Equal(25, result);
