@@ -4,9 +4,15 @@ using System.Reactive.Linq;
 using System.Linq;
 using System.Text;
 using System.Windows;
-using System.Windows.Controls;
 using ReactiveUI;
 using ReactiveUI.Xaml;
+
+#if WINRT
+using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
+#else
+using System.Windows.Controls;
+#endif
 
 namespace ReactiveUI.Routing
 {
