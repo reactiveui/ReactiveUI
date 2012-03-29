@@ -9,8 +9,8 @@
     <ProjectGuid>{689EC7C5-2D81-4124-929E-397B330CC358}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ReactiveUI</RootNamespace>
-    <AssemblyName>ReactiveUI_WinRT</AssemblyName>
+    <RootNamespace>ReactiveUI.Xaml</RootNamespace>
+    <AssemblyName>ReactiveUI.Xaml_WinRT</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{BC8A1FFA-BEE3-4634-8014-F334798102B3};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -105,6 +105,7 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="DependencyObjectMixin.cs" />
     <Compile Include="Errors.cs" />
     <Compile Include="Interfaces.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
