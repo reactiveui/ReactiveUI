@@ -9,6 +9,8 @@ using System.Linq;
 using System.Text;
 using System.Windows.Input;
 using System.Reactive.Subjects;
+using System.Reactive.Threading.Tasks;
+using System.Threading.Tasks;
 
 namespace ReactiveUI.Xaml
 {
@@ -246,6 +248,50 @@ namespace ReactiveUI.Xaml
                 return errorHandler((TException) x);
             });
         }
+
+        /// <summary>
+        /// Register code to handle a UserError. Registered handlers are
+        /// called in reverse order to their registration (i.e. the newest
+        /// handler is called first), and they each have a chance to handle a
+        /// UserError. 
+        ///
+        /// If a Handler cannot resolve a UserError, it should return null
+        /// instead of an Observable result.
+        /// </summary>
+        /// <param name="errorHandler">A method that can handle a UserError,
+        /// usually by presenting it to the user. If the handler cannot handle
+        /// the error, it should return null.</param>
+        /// <returns>An IDisposable which will unregister the handler.</returns>
+        public static IDisposable RegisterHandler(Func<UserError, Task<RecoveryOptionResult>> errorHandler)
+        {
+            return RegisterHandler(x => errorHandler(x).ToObservable());
+        }
+
+        /// <summary>
+        /// Register code to handle a specific type of UserError. Registered
+        /// handlers are called in reverse order to their registration (i.e.
+        /// the newest handler is called first), and they each have a chance
+        /// to handle a UserError. 
+        ///
+        /// If a Handler cannot resolve a UserError, it should return null
+        /// instead of an Observable result.
+        /// </summary>
+        /// <param name="errorHandler">A method that can handle a UserError,
+        /// usually by presenting it to the user. If the handler cannot handle
+        /// the error, it should return null.</param>
+        /// <returns>An IDisposable which will unregister the handler.</returns>
+        public static IDisposable RegisterHandler<TException>(Func<TException, Task<RecoveryOptionResult>> errorHandler)
+            where TException : UserError
+        {
+            return RegisterHandler(x => {
+                if (!(x is TException)) {
+                    return null;
+                }
+
+                return errorHandler((TException)x).ToObservable();
+            });
+        }
+
 
         /// <summary>
         /// This method is a convenience wrapper around RegisterHandler that
