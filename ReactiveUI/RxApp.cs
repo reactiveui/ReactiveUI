@@ -173,6 +173,11 @@ namespace ReactiveUI
         /// </summary>
         public static Func<string, string> GetFieldNameForPropertyNameFunc { get; set; }
 
+        /// <summary>
+        /// This method allows you to override the return value of 
+        /// RxApp.InUnitTestRunner - a null value means that InUnitTestRunner
+        /// will determine this using its normal logic.
+        /// </summary>
         public static bool? InUnitTestRunnerOverride { get; set; }
 
         /// <summary>
@@ -270,6 +275,53 @@ namespace ReactiveUI
         public static string GetFieldNameForProperty(string propertyName)
         {
             return GetFieldNameForPropertyNameFunc(propertyName);
+        }
+
+
+        // 
+        // Service Location
+        //
+
+        static Func<Type, string, object> _getService;
+        static Func<Type, string, IEnumerable<object>> _getAllServices;
+
+        public static T GetService<T>(string key = null)
+        {
+            return (T)GetService(typeof(T), key);
+        }
+
+        public static object GetService(Type type, string key = null)
+        {
+            var getService = _getService ??
+                new Func<Type, string, object>((_, __) => { throw new Exception("You need to call RxApp.ConfigureServiceLocator to set up service location"); });
+            return getService(type, key);
+        }
+
+        public static IEnumerable<T> GetAllServices<T>(string key = null)
+        {
+            return GetAllServices(typeof(T), key).Cast<T>().ToArray();
+        }
+
+        public static IEnumerable<object> GetAllServices(Type type, string key = null)
+        {
+            var getAllServices = _getAllServices ??
+                new Func<Type, string, IEnumerable<object>>((_,__) => { throw new Exception("You need to call RxApp.ConfigureServiceLocator to set up service location"); });
+            return getAllServices(type, key).ToArray();
+        }
+
+        public static void ConfigureServiceLocator(Func<Type, string, object> getService, Func<Type, string, IEnumerable<object>> getAllServices)
+        {
+            if (getService == null || getAllServices == null) {
+                throw new ArgumentException("Both getService and getAllServices must be implemented");
+            }
+
+            _getService = getService;
+            _getAllServices = getAllServices;
+        }
+
+        public static bool IsServiceLocationConfigured()
+        {
+            return _getService != null && _getAllServices != null;
         }
 
 
