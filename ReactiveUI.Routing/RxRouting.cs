@@ -4,7 +4,7 @@ using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Text;
-using Microsoft.Practices.ServiceLocation;
+using ReactiveUI;
 
 namespace ReactiveUI.Routing
 {
@@ -34,11 +34,11 @@ namespace ReactiveUI.Routing
             var attrs = type.GetCustomAttributes(typeof (ViewContractAttribute), true);
             string key = null;
 
-            if (attrs.Length > 0) {
-                key = ((ViewContractAttribute) attrs[0]).Contract;
+            if (attrs.Count() > 0) {
+                key = ((ViewContractAttribute) attrs.First()).Contract;
             }
 
-            return (IViewForViewModel)ServiceLocator.Current.GetInstance(type, key);
+            return (IViewForViewModel)RxApp.GetService(type, key);
         }
     }
 
