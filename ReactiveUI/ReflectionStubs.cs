@@ -27,5 +27,10 @@ namespace ReactiveUI
         {
             return This.GetTypeInfo().DeclaredProperties;
         }
+
+        public static IEnumerable<object> GetCustomAttributes(this Type This, Type attributeType, bool inherit)
+        {
+            return This.GetTypeInfo().GetCustomAttributes(attributeType, inherit);
+        }
     }
 }
