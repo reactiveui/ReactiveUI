@@ -49,7 +49,7 @@ namespace ReactiveUI.Routing
                         _inner = null;
                     }
 
-                    _inner = x.Value.CurrentViewModel.Subscribe(vm => {
+                    _inner = x.Value.ViewModelObservable().Subscribe(vm => {
                         if (vm == null) {
                             Content = DefaultContent;
                             return;
