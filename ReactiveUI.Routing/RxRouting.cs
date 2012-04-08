@@ -36,7 +36,8 @@ namespace ReactiveUI.Routing
                 key = ((ViewContractAttribute) attrs.First()).Contract;
             }
 
-            return RxApp.GetService<IViewForViewModel<T>>(key);
+            var viewType = typeof (IViewForViewModel<>);
+            return (IViewForViewModel) RxApp.GetService(viewType.MakeGenericType(viewModel.GetType()), key);
         }
     }
 
