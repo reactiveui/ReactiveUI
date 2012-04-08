@@ -29,16 +29,14 @@ namespace ReactiveUI.Routing
         public static IViewForViewModel ResolveView<T>(T viewModel)
             where T : IReactiveNotifyPropertyChanged
         {
-            string view = ViewModelToViewFunc(viewModel.GetType().AssemblyQualifiedName);
-            var type = Type.GetType(view, true);
-            var attrs = type.GetCustomAttributes(typeof (ViewContractAttribute), true);
+            var attrs = viewModel.GetType().GetCustomAttributes(typeof (ViewContractAttribute), true);
             string key = null;
 
             if (attrs.Count() > 0) {
                 key = ((ViewContractAttribute) attrs.First()).Contract;
             }
 
-            return (IViewForViewModel)RxApp.GetService(type, key);
+            return RxApp.GetService<IViewForViewModel<T>>(key);
         }
     }
 
