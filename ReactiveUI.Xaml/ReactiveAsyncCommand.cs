@@ -6,7 +6,6 @@ using System.Diagnostics.Contracts;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
-using System.Reactive.Threading.Tasks;
 using NLog;
 using ReactiveUI;
 using System.Threading.Tasks;
