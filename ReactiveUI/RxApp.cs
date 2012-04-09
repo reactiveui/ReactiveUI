@@ -11,14 +11,8 @@ using System.Reactive.Subjects;
 using System.Reflection;
 using System.Threading;
 using NLog;
-<<<<<<< HEAD
-=======
-
-#if !WINDOWS_PHONE
 using System.Threading.Tasks;
 using System.Reactive.Threading.Tasks;
-#endif
->>>>>>> 9d2fd26... Silverlight on Windows Phone does not support Tasks.
 
 #if SILVERLIGHT
 using System.Windows;
@@ -228,23 +222,27 @@ namespace ReactiveUI
             };
 
 #if SILVERLIGHT
-            var ret = Deployment.Current.Parts.Any(x => 
-                testAssemblies.Any(name => x.Source.ToUpperInvariant().Contains(name)));
+            // NB: Deployment.Current.Parts throws an exception when accessed in Blend
+            try {
+                var ret = Deployment.Current.Parts.Any(x =>
+                    testAssemblies.Any(name => x.Source.ToUpperInvariant().Contains(name)));
 
-            if (ret) {
-                return ret;
-            };
+                if (ret) {
+                    return ret;
+                }
+            } catch(Exception) {
+                return true;
+            }
 
             try {
                 if (Application.Current.RootVisual != null && System.ComponentModel.DesignerProperties.GetIsInDesignMode(Application.Current.RootVisual)) {
                     return false;
                 }
             } catch {
-                // If we're in some weird state, assume we're not
-                return false;
+                return true;
             }
 
-            return ret;
+            return false;
 #else
             // Try to detect whether we're in design mode - bonus points, 
             // without access to any WPF references :-/
