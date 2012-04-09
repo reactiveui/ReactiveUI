@@ -219,12 +219,18 @@ namespace ReactiveUI
             };
 
 #if SILVERLIGHT
-            var ret = Deployment.Current.Parts.Any(x => 
-                testAssemblies.Any(name => x.Source.ToUpperInvariant().Contains(name)));
+            // Deployment.Current.Parts throws an exception when accessed in Blend
+            try {
+                var ret = Deployment.Current.Parts.Any(x =>
+                    testAssemblies.Any(name => x.Source.ToUpperInvariant().Contains(name)));
 
-            if (ret) {
-                return ret;
-            };
+                if (ret)
+                {
+                    return ret;
+                }
+            }catch(Exception) {
+                return true;
+            }
 
             try {
                 if (Application.Current.RootVisual != null && System.ComponentModel.DesignerProperties.GetIsInDesignMode(Application.Current.RootVisual)) {
@@ -235,7 +241,7 @@ namespace ReactiveUI
                 return false;
             }
 
-            return ret;
+            return false;
 #else
             // Try to detect whether we're in design mode - bonus points, 
             // without access to any WPF references :-/
