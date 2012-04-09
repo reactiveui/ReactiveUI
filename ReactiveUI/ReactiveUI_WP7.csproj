@@ -110,6 +110,7 @@
     <Compile Include="ReactiveObject.cs" />
     <Compile Include="RxApp.cs" />
     <Compile Include="ThreadLocal.cs" />
+    <Compile Include="TplMixins.cs" />
     <Compile Include="VariadicTemplates_WP7.cs">
       <DependentUpon>VariadicTemplates_WP7.tt</DependentUpon>
       <SubType>Code</SubType>
