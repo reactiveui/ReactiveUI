@@ -42,6 +42,9 @@
     <DocumentationFile>Bin\Release\WP7\ReactiveUI.Blend_WP7.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AsyncCtpLibrary_Phone">
+      <HintPath>..\ext\WP71\AsyncCtpLibrary_Phone.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Expression.Interactions, Version=3.7.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.Reactive.Testing">
       <HintPath>..\ext\WP71\Microsoft.Reactive.Testing.dll</HintPath>
