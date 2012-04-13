@@ -335,6 +335,17 @@ namespace ReactiveUI.Xaml
             overriddenRegisteredUserErrorHandlers = errorHandler;
             return Disposable.Create(() => overriddenRegisteredUserErrorHandlers = null);
         }
+
+        /// <summary>
+        /// This method replaces *all* UserError handlers with the specified
+        /// handler. Use it for testing code that may throw UserErrors.
+        /// </summary>
+        /// <param name="errorHandler">The replacement UserError handler.</param>
+        /// <returns>An IDisposable which will unregister the test handler.</returns>
+        public static IDisposable OverrideHandlersForTesting(Func<UserError, RecoveryOptionResult> errorHandler)
+        {
+            return OverrideHandlersForTesting(x => Observable.Return(errorHandler(x)));
+        }
     }
 
     /// <summary>
