@@ -7,7 +7,7 @@ using ReactiveUI.Xaml;
 
 namespace ReactiveUI.Routing
 {
-    public interface IRoutingState
+    public interface IRoutingState : IReactiveNotifyPropertyChanged
     {
         /// <summary>
         /// Represents the current navigation stack, the last element in the

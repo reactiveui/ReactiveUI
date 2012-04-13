@@ -50,12 +50,6 @@ namespace ReactiveUI.Routing
         [IgnoreDataMember]
         public IReactiveCommand NavigateAndReset { get; protected set; }
 
-        /// <summary>
-        /// The currently visible ViewModel.
-        /// </summary>
-        [IgnoreDataMember]
-        public IObservable<IRoutableViewModel> CurrentViewModel { get; protected set; }
-
         public RoutingState()
         {
             _NavigationStack = new ReactiveCollection<IRoutableViewModel>();
@@ -113,16 +107,13 @@ namespace ReactiveUI.Routing
         }
 
         /// <summary>
-        /// Returns an Observable that signals ViewModel changes. This is a
-        /// Replay Observable, so Subscribing to it will always produce a
-        /// (possibly null) initial value.
+        /// Returns an Observable that signals ViewModel changes.
         /// </summary>
         public static IObservable<IRoutableViewModel> ViewModelObservable(this IRoutingState This)
         {
             return This.NavigationStack.CollectionCountChanged
                 .Select(_ => This.GetCurrentViewModel())
-                .StartWith(Scheduler.Immediate, This.GetCurrentViewModel())
-                .Multicast(new ReplaySubject<IRoutableViewModel>(1)).RefCount();
+                .StartWith(This.GetCurrentViewModel());
         }
     }
 }
