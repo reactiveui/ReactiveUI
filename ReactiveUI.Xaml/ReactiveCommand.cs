@@ -4,10 +4,13 @@ using System.Linq;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
-using System.Threading.Tasks;
 using System.Windows.Input;
 using NLog;
 using ReactiveUI;
+
+#if !WINDOWS_PHONE
+using System.Threading.Tasks;
+#endif
 
 namespace ReactiveUI.Xaml
 {
@@ -41,6 +44,7 @@ namespace ReactiveUI.Xaml
             ThrownExceptions = exSubject;
         }
 
+        #if !WINDOWS_PHONE
         protected ReactiveCommand(Func<object, Task<bool>> canExecuteFunc, IScheduler scheduler = null)
         {
             var canExecute = canExecuteProbed.SelectAsync(canExecuteFunc);
@@ -55,6 +59,7 @@ namespace ReactiveUI.Xaml
 
             ThrownExceptions = exSubject;
         }
+#endif
 
         protected ReactiveCommand(Func<object, bool> canExecute, IScheduler scheduler = null)
         {
@@ -87,6 +92,7 @@ namespace ReactiveUI.Xaml
             return ret;
         }
 
+#if !WINDOWS_PHONE
         /// <summary>
         /// Creates a new ReactiveCommand object in an imperative, non-Rx way,
         /// similar to RelayCommand, only via a TPL Async method
@@ -110,6 +116,7 @@ namespace ReactiveUI.Xaml
 
             return ret;
         }
+#endif
 
         public IObservable<Exception> ThrownExceptions { get; protected set; }
 

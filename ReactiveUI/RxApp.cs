@@ -8,11 +8,14 @@ using System.Linq.Expressions;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
-using System.Reactive.Threading.Tasks;
 using System.Reflection;
 using System.Threading;
 using NLog;
+
+#if !WINDOWS_PHONE
 using System.Threading.Tasks;
+using System.Reactive.Threading.Tasks;
+#endif
 
 #if SILVERLIGHT
 using System.Windows;
@@ -468,6 +471,7 @@ namespace ReactiveUI
         }
     }
 
+#if !WINDOWS_PHONE
     public static class TplMixins
     {
         /// <summary>
@@ -481,6 +485,7 @@ namespace ReactiveUI
             return This.SelectMany(x => selector(x).ToObservable());
         }
     }
+#endif
    
     /* TODO: Move this stuff somewhere that actually makes sense */
 
