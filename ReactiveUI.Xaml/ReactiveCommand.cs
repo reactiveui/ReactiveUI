@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using System.Reactive.Threading.Tasks;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using NLog;
@@ -43,7 +44,7 @@ namespace ReactiveUI.Xaml
 
         protected ReactiveCommand(Func<object, Task<bool>> canExecuteFunc, IScheduler scheduler = null)
         {
-            var canExecute = canExecuteProbed.SelectAsync(canExecuteFunc);
+            var canExecute = canExecuteProbed.SelectMany(x => canExecuteFunc(x).ToObservable());
 
             commonCtor(scheduler);
 
