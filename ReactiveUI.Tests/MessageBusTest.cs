@@ -1,6 +1,5 @@
 ﻿using System.Reactive.Linq;
 using System.Reactive.Subjects;
-using Microsoft.Reactive.Testing;
 using Xunit;
 using System;
 using System.Linq;
@@ -12,6 +11,12 @@ using ReactiveUI.Testing;
 using ReactiveUI.Tests;
 using System.Runtime.Serialization.Json;
 using System.Threading;
+
+#if MONO
+using Mono.Reactive.Testing;
+#else
+using Microsoft.Reactive.Testing;
+#endif
 
 namespace ReactiveUI.Tests
 {
