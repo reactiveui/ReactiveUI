@@ -2,9 +2,15 @@
 using System.Linq;
 using System.Reactive.Linq;
 using System.Threading;
-using Microsoft.Reactive.Testing;
 using ReactiveUI.Testing;
 using Xunit;
+
+#if MONO
+using Mono.Reactive.Testing;
+#else
+using Microsoft.Reactive.Testing;
+#endif
+
 
 namespace ReactiveUI.Tests
 {

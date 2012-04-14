@@ -2,9 +2,14 @@
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Threading;
-using Microsoft.Reactive.Testing;
 using ReactiveUI;
 using System.Reactive.Concurrency;
+
+#if MONO
+using Mono.Reactive.Testing;
+#else
+using Microsoft.Reactive.Testing;
+#endif
 
 namespace ReactiveUI.Testing
 {

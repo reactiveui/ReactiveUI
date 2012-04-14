@@ -2,16 +2,21 @@
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
-using Microsoft.Reactive.Testing;
 using ReactiveUI;
 using Xunit;
 using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.Threading;
-using Microsoft.Reactive.Testing;
 using ReactiveUI.Xaml;
 using ReactiveUI.Testing;
+
+#if MONO
+using Mono.Reactive.Testing;
+#else
+using Microsoft.Reactive.Testing;
+#endif
+
 
 namespace ReactiveUI.Tests
 {

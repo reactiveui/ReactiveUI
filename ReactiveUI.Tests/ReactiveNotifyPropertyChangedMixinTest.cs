@@ -4,9 +4,14 @@ using System.ComponentModel;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
-using Microsoft.Reactive.Testing;
 using ReactiveUI.Testing;
 using Xunit;
+
+#if MONO
+using Mono.Reactive.Testing;
+#else
+using Microsoft.Reactive.Testing;
+#endif
 
 namespace ReactiveUI.Tests
 {
