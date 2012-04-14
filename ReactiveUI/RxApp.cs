@@ -8,12 +8,9 @@ using System.Linq.Expressions;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
-using System.Reactive.Threading.Tasks;
 using System.Reflection;
 using System.Threading;
 using NLog;
-using System.Threading.Tasks;
-
 #if SILVERLIGHT
 using System.Windows;
 #endif
@@ -222,12 +219,18 @@ namespace ReactiveUI
             };
 
 #if SILVERLIGHT
-            var ret = Deployment.Current.Parts.Any(x => 
-                testAssemblies.Any(name => x.Source.ToUpperInvariant().Contains(name)));
+            // Deployment.Current.Parts throws an exception when accessed in Blend
+            try {
+                var ret = Deployment.Current.Parts.Any(x =>
+                    testAssemblies.Any(name => x.Source.ToUpperInvariant().Contains(name)));
 
-            if (ret) {
-                return ret;
-            };
+                if (ret)
+                {
+                    return ret;
+                }
+            }catch(Exception) {
+                return true;
+            }
 
             try {
                 if (Application.Current.RootVisual != null && System.ComponentModel.DesignerProperties.GetIsInDesignMode(Application.Current.RootVisual)) {
@@ -238,7 +241,7 @@ namespace ReactiveUI
                 return false;
             }
 
-            return ret;
+            return false;
 #else
             // Try to detect whether we're in design mode - bonus points, 
             // without access to any WPF references :-/
@@ -468,20 +471,6 @@ namespace ReactiveUI
         }
     }
 
-    public static class TplMixins
-    {
-        /// <summary>
-        /// Apply a TPL-async method to each item in an IObservable. Like 
-        /// Select but asynchronous via the TPL.
-        /// </summary>
-        /// <param name="selector">The selection method to use.</param>
-        /// <returns>An Observable represented the mapped sequence.</returns>
-        public static IObservable<TRet> SelectAsync<T,TRet>(this IObservable<T> This, Func<T, Task<TRet>> selector)
-        {
-            return This.SelectMany(x => selector(x).ToObservable());
-        }
-    }
-   
     /* TODO: Move this stuff somewhere that actually makes sense */
 
     internal static class CompatMixins
