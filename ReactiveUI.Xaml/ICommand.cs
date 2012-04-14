@@ -1,6 +1,6 @@
 using System;
 
-namespace ReactiveUI.Xaml
+namespace System.Windows.Input
 {
 	public interface ICommand
 	{
