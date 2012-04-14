@@ -6,10 +6,13 @@ using System.Diagnostics.Contracts;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
-using System.Reactive.Threading.Tasks;
 using NLog;
 using ReactiveUI;
+
+#if !WINDOWS_PHONE
+using System.Reactive.Threading.Tasks;
 using System.Threading.Tasks;
+#endif
 
 namespace ReactiveUI.Xaml
 {
@@ -206,6 +209,7 @@ namespace ReactiveUI.Xaml
             RegisterAsyncFunction(x => { calculationFunc(x); return new Unit(); }, scheduler);
         }
 
+        #if !WINDOWS_PHONE
         /// <summary>
         /// RegisterAsyncTask registers an TPL/Async method that runs when a 
         /// Command gets executed and returns the result
@@ -232,6 +236,7 @@ namespace ReactiveUI.Xaml
             Contract.Requires(calculationFunc != null);
             return RegisterAsyncObservable(x => calculationFunc(x).ToObservable());
         }
+#endif
 
         /// <summary>
         /// RegisterAsyncObservable registers an Rx-based async method whose

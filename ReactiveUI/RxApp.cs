@@ -11,6 +11,14 @@ using System.Reactive.Subjects;
 using System.Reflection;
 using System.Threading;
 using NLog;
+<<<<<<< HEAD
+=======
+
+#if !WINDOWS_PHONE
+using System.Threading.Tasks;
+using System.Reactive.Threading.Tasks;
+#endif
+>>>>>>> 9d2fd26... Silverlight on Windows Phone does not support Tasks.
 
 #if SILVERLIGHT
 using System.Windows;
