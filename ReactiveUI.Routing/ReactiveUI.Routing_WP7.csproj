@@ -66,6 +66,9 @@
     <DocumentationFile>Bin\Release\WP7\ReactiveUI.Routing_WP7.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AsyncCtpLibrary_Phone">
+      <HintPath>..\ext\WP71\AsyncCtpLibrary_Phone.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Practices.ServiceLocation">
       <HintPath>..\ext\WP71\Microsoft.Practices.ServiceLocation.dll</HintPath>
     </Reference>

@@ -11,7 +11,7 @@ namespace ReactiveUI.Routing
     /// the ViewModel property and display it. This control is very useful
     /// inside a DataTemplate to display the View associated with a ViewModel.
     /// </summary>
-    public class ViewModelViewHost : ContentControl
+    public class ViewModelViewHost : TransitioningContentControl
     {
         /// <summary>
         /// The ViewModel to display

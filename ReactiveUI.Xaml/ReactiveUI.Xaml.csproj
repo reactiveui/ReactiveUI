@@ -130,6 +130,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReactiveAsyncCommand.cs" />
     <Compile Include="ReactiveCommand.cs" />
+    <Compile Include="TransitioningContentControl.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj">
@@ -139,6 +140,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="Themes\Generic.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
