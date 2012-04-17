@@ -15,7 +15,7 @@ namespace ReactiveUI.Routing
     /// the View and wire up the ViewModel whenever a new ViewModel is
     /// navigated to. Put this control as the only control in your Window.
     /// </summary>
-    public class RoutedViewHost : ContentControl
+    public class RoutedViewHost : TransitioningContentControl
     {
         IDisposable _inner = null;
 
