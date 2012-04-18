@@ -51,13 +51,13 @@
                                         <DoubleAnimation 
                                             BeginTime="00:00:00" Duration="00:00:00.3"
                                             Storyboard.TargetName="PART_CurrentContentPresentationSite" 
-                                            Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.TranslateY)"
+                                            Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[1].(TranslateTransform.Y)"
                                             From="-30" To="0"/>
 
                                         <DoubleAnimation 
                                             BeginTime="00:00:00" Duration="00:00:00.3"
                                             Storyboard.TargetName="PART_PreviousContentPresentationSite" 
-                                            Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.TranslateY)"
+                                            Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[1].(TranslateTransform.Y)"
                                             From="0" To="30"/>
 
                                         <DoubleAnimation 
@@ -79,7 +79,7 @@
                                     <Storyboard>
                                         <DoubleAnimationUsingKeyFrames 
                                             Storyboard.TargetName="PART_CurrentContentPresentationSite"
-                                            Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.TranslateX)">
+                                            Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[1].(TranslateTransform.X)">
                                             <EasingDoubleKeyFrame KeyTime="00:00:00" Value="-90"/>
                                             <EasingDoubleKeyFrame KeyTime="00:00:00.4" Value="-90"/>
                                             <EasingDoubleKeyFrame KeyTime="00:00:00.7" Value="0">
@@ -113,7 +113,7 @@
                                         <DoubleAnimation 
                                             BeginTime="00:00:00" Duration="00:00:00.2"
                                             Storyboard.TargetName="PART_PreviousContentPresentationSite" 
-                                            Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.TranslateX)"
+                                            Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[1].(TranslateTransform.X)"
                                             From="0" To="-90"/>
 
                                         <ObjectAnimationUsingKeyFrames 
@@ -137,9 +137,17 @@
                             HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                             VerticalAlignment="{TemplateBinding VerticalContentAlignment}">
                             <ContentPresenter.RenderTransform>
+                                <TransformGroup>
+                                    <TransformGroup.Children>
+                                        <ScaleTransform ScaleX="1" ScaleY="1" />
+                                        <TranslateTransform X="0" Y="0" />
+                                    </TransformGroup.Children>
+                                </TransformGroup>
+<!--
                                 <Controls:CompatCompositeTransform 
                                     ScaleX="1" ScaleY="1"
                                     TranslateX="0" TranslateY="0"/>
+-->
                             </ContentPresenter.RenderTransform>
 
                             <!--
@@ -156,9 +164,17 @@
                             HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                             VerticalAlignment="{TemplateBinding VerticalContentAlignment}">
                             <ContentPresenter.RenderTransform>
+                                <TransformGroup>
+                                    <TransformGroup.Children>
+                                        <ScaleTransform ScaleX="1" ScaleY="1" />
+                                        <TranslateTransform X="0" Y="0" />
+                                    </TransformGroup.Children>
+                                </TransformGroup>
+<!--
                                 <Controls:CompatCompositeTransform 
                                     ScaleX="1" ScaleY="1"
                                     TranslateX="0" TranslateY="0"/>
+-->
                             </ContentPresenter.RenderTransform>
 
 
