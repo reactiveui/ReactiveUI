@@ -23,6 +23,7 @@ namespace ReactiveUI
     {
         static LogHost()
         {
+#if !WINRT
             if (LogManager.Configuration == null)
             {
                 var target = new ConsoleTarget() { Layout = "${level:uppercase=true} ${logger}: ${message}${onexception:inner=${newline}${exception:format=tostring}}" };
@@ -33,8 +34,20 @@ namespace ReactiveUI
 
                 LogHost.Default.Info("*** NLog was not configured, setting up a default configuration ***");
             }
+#endif
         }
 
+
+#if WINRT
+        public static dynamic Default {
+            get { return LogManager.GetLogger("Logger"); }
+        }
+
+        public static dynamic Log<T>(this T This) where T : IEnableLogger
+        {
+            return LogManager.GetLogger(typeof(T).FullName);
+        }
+#else
         /// <summary>
         /// Use this logger inside miscellaneous static methods where creating
         /// a class-specific logger isn't really worth it.
@@ -51,6 +64,7 @@ namespace ReactiveUI
         {
             return LogManager.GetLogger(typeof(T).FullName);
         }
+#endif
     }
 
     public static class ObservableLoggingMixin

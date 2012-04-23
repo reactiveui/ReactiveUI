@@ -1,0 +1,379 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Microsoft.Reactive.Testing</name>
+    </assembly>
+    <members>
+        <member name="T:Microsoft.Reactive.Testing.ITestableObservable`1">
+            <summary>
+            Observable that records subscriptions and notifications sent by the observable.
+            </summary>
+            <typeparam name="T"></typeparam>
+        </member>
+        <member name="P:Microsoft.Reactive.Testing.ITestableObservable`1.Subscriptions">
+            <summary>
+            Gets the subscriptions to the observable.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Reactive.Testing.ITestableObservable`1.Messages">
+            <summary>
+            Gets the recorded notifications sent by the observable.
+            </summary>
+        </member>
+        <member name="T:Microsoft.Reactive.Testing.ITestableObserver`1">
+            <summary>
+            Observer that records received notifications.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Reactive.Testing.ITestableObserver`1.Messages">
+            <summary>
+            Gets recorded notifications received by the observer.
+            </summary>
+        </member>
+        <member name="T:Microsoft.Reactive.Testing.ReactiveAssert">
+            <summary>
+            Helper class to write asserts in Rx unit tests.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Reactive.Testing.ReactiveAssert.AreElementsEqual``1(System.Collections.Generic.IEnumerable{``0},System.Collections.Generic.IEnumerable{``0})">
+            <summary>
+            Asserts that both enumerable sequences have equal length and equal elements.
+            </summary>
+            <param name="expected">Expected sequence.</param>
+            <param name="actual">Actual sequence to compare against the expected one.</param>
+        </member>
+        <member name="M:Microsoft.Reactive.Testing.ReactiveAssert.AreElementsEqual``1(System.Collections.Generic.IEnumerable{``0},System.Collections.Generic.IEnumerable{``0},System.String)">
+            <summary>
+            Asserts that both enumerable sequences have equal length and equal elements.
+            </summary>
+            <param name="expected">Expected sequence.</param>
+            <param name="actual">Actual sequence to compare against the expected one.</param>
+            <param name="message">Error message for assert failure.</param>
+        </member>
+        <member name="M:Microsoft.Reactive.Testing.ReactiveAssert.AreElementsEqual``1(System.IObservable{``0},System.IObservable{``0})">
+            <summary>
+            Asserts that both observable sequences have equal length and equal elements.
+            </summary>
+            <param name="expected">Expected sequence.</param>
+            <param name="actual">Actual sequence to compare against the expected one.</param>
+        </member>
+        <member name="M:Microsoft.Reactive.Testing.ReactiveAssert.AreElementsEqual``1(System.IObservable{``0},System.IObservable{``0},System.String)">
+            <summary>
+            Asserts that both observable sequences have equal length and equal elements.
+            </summary>
+            <param name="expected">Expected sequence.</param>
+            <param name="actual">Actual sequence to compare against the expected one.</param>
+            <param name="message">Error message for assert failure.</param>
+        </member>
+        <member name="M:Microsoft.Reactive.Testing.ReactiveAssert.Throws``1(System.Action)">
+            <summary>
+            Asserts that the given action throws an exception of the type specified in the generic parameter.
+            </summary>
+            <typeparam name="TException">Type of the exception to check for.</typeparam>
+            <param name="action">Action to run.</param>
+        </member>
+        <member name="M:Microsoft.Reactive.Testing.ReactiveAssert.Throws``1(System.Action,System.String)">
+            <summary>
+            Asserts that the given action throws an exception of the type specified in the generic parameter.
+            </summary>
+            <typeparam name="TException">Type of the exception to check for.</typeparam>
+            <param name="action">Action to run.</param>
+            <param name="message">Error message for assert failure.</param>
+        </member>
+        <member name="M:Microsoft.Reactive.Testing.ReactiveAssert.Throws``1(``0,System.Action)">
+            <summary>
+            Asserts that the given action throws the specified exception.
+            </summary>
+            <typeparam name="TException">Type of the exception to check for.</typeparam>
+            <param name="exception">Exception to assert being thrown.</param>
+            <param name="action">Action to run.</param>
+        </member>
+        <member name="M:Microsoft.Reactive.Testing.ReactiveAssert.Throws``1(``0,System.Action,System.String)">
+            <summary>
+            Asserts that the given action throws the specified exception.
+            </summary>
+            <typeparam name="TException">Type of the exception to check for.</typeparam>
+            <param name="exception">Exception to assert being thrown.</param>
+            <param name="action">Action to run.</param>
+            <param name="message">Error message for assert failure.</param>
+        </member>
+        <member name="T:Microsoft.Reactive.Testing.ReactiveTest">
+            <summary>
+            Base type to write tests for Rx code.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Reactive.Testing.ReactiveTest.Created">
+            <summary>
+            Default virtual time used for creation of observable sequences in Rx tests.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Reactive.Testing.ReactiveTest.Subscribed">
+            <summary>
+            Default virtual time used to subscribe to an observable sequence in Rx tests.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Reactive.Testing.ReactiveTest.Disposed">
+            <summary>
+            Default virtual time used to dispose subscriptions in Rx tests.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Reactive.Testing.ReactiveTest.OnNext``1(System.Int64,``0)">
+            <summary>
+            Factory method for a recorded OnNext notification at a given time with a given value.
+            </summary>
+            <param name="ticks">Recorded virtual time the OnNext notification occurs.</param>
+            <param name="value">Recorded value stored in the OnNext notification.</param>
+            <returns>Recorded OnNext notification.</returns>
+        </member>
+        <member name="M:Microsoft.Reactive.Testing.ReactiveTest.OnCompleted``1(System.Int64)">
+            <summary>
+            Factory method for a recorded OnCompleted notification at a given time.
+            </summary>
+            <param name="ticks">Recorded virtual time the OnCompleted notification occurs.</param>
+            <returns>Recorded OnCompleted notification.</returns>
+        </member>
+        <member name="M:Microsoft.Reactive.Testing.ReactiveTest.OnError``1(System.Int64,System.Exception)">
+            <summary>
+            Factory method for a recorded OnError notification at a given time with a given error.
+            </summary>
+            <param name="ticks">Recorded virtual time the OnError notification occurs.</param>
+            <param name="exception">Recorded exception stored in the OnError notification.</param>
+            <returns>Recorded OnError notification.</returns>
+        </member>
+        <member name="M:Microsoft.Reactive.Testing.ReactiveTest.Subscribe(System.Int64,System.Int64)">
+            <summary>
+            Factory method for a recorded subscription.
+            </summary>
+            <param name="start">Virtual time indicating when the subscription was created.</param>
+            <param name="end">Virtual time indicating when the subscription was disposed.</param>
+            <returns>Subscription object.</returns>
+        </member>
+        <member name="M:Microsoft.Reactive.Testing.ReactiveTest.Subscribe(System.Int64)">
+            <summary>
+            Factory method for a recorded subscription.
+            </summary>
+            <param name="start">Virtual time indicating when the subscription was created.</param>
+            <returns>Subscription object.</returns>
+        </member>
+        <member name="T:Microsoft.Reactive.Testing.Recorded`1">
+            <summary>
+            Records a value with the time it was produced on.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Reactive.Testing.Recorded`1.#ctor(System.Int64,`0)">
+            <summary>
+            Creates a new object recording the production of the specified value at the given virtual time.
+            </summary>
+            <param name="time">Virtual time the value was produced on.</param>
+            <param name="value">Value that was produced.</param>
+        </member>
+        <member name="M:Microsoft.Reactive.Testing.Recorded`1.Equals(Microsoft.Reactive.Testing.Recorded{`0})">
+            <summary>
+            Checks whether the given recorded object is equal to the current instance.
+            </summary>
+            <param name="other">Recorded object to check for equality.</param>
+            <returns>true if both objects are equal; false otherwise.</returns>
+        </member>
+        <member name="M:Microsoft.Reactive.Testing.Recorded`1.Equals(System.Object)">
+            <summary>
+            Checks whether the given object is equal to the current instance.
+            </summary>
+            <param name="obj">Object to check for equality.</param>
+            <returns>true if both objects are equal; false otherwise.</returns>
+        </member>
+        <member name="M:Microsoft.Reactive.Testing.Recorded`1.GetHashCode">
+            <summary>
+            Computes a hash code for the current instance.
+            </summary>
+            <returns>Hash code.</returns>
+        </member>
+        <member name="M:Microsoft.Reactive.Testing.Recorded`1.ToString">
+            <summary>
+            Gets a friendly string representation of the current instance.
+            </summary>
+            <returns>String representation.</returns>
+        </member>
+        <member name="M:Microsoft.Reactive.Testing.Recorded`1.op_Equality(Microsoft.Reactive.Testing.Recorded{`0},Microsoft.Reactive.Testing.Recorded{`0})">
+            <summary>
+            Checks whether the two given recorded objects are equal.
+            </summary>
+            <param name="left">First object to check for equality.</param>
+            <param name="right">Second object to check for equality.</param>
+            <returns>true if both objects are equal; false otherwise.</returns>
+        </member>
+        <member name="M:Microsoft.Reactive.Testing.Recorded`1.op_Inequality(Microsoft.Reactive.Testing.Recorded{`0},Microsoft.Reactive.Testing.Recorded{`0})">
+            <summary>
+            Checks whether the two given recorded objects are not equal.
+            </summary>
+            <param name="left">First object to check for equality.</param>
+            <param name="right">Second object to check for equality.</param>
+            <returns>true if both objects are inequal; false otherwise.</returns>
+        </member>
+        <member name="P:Microsoft.Reactive.Testing.Recorded`1.Time">
+            <summary>
+            Gets the virtual time the value was produced on.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Reactive.Testing.Recorded`1.Value">
+            <summary>
+            Gets the value.
+            </summary>
+        </member>
+        <member name="T:Microsoft.Reactive.Testing.Subscription">
+            <summary>
+            Records information about subscripts to and unsubscriptions from observable sequences.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Reactive.Testing.Subscription.Infinite">
+            <summary>
+            Infinite virtual time value.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Reactive.Testing.Subscription.#ctor(System.Int64)">
+            <summary>
+            Creates a new subscription object.
+            </summary>
+            <param name="subscribe">Virtual time at which the subscription occurred.</param>-
+        </member>
+        <member name="M:Microsoft.Reactive.Testing.Subscription.#ctor(System.Int64,System.Int64)">
+            <summary>
+            Creates a new subscription object.
+            </summary>
+            <param name="subscribe">Virtual time at which the subscription occurred.</param>
+            <param name="unsubscribe">Virtual time at which the unsubscription occurred.</param>
+        </member>
+        <member name="M:Microsoft.Reactive.Testing.Subscription.Equals(Microsoft.Reactive.Testing.Subscription)">
+            <summary>
+            Checks whether the given subscription is equal to the current instance.
+            </summary>
+            <param name="other">Subscription object to check for equality.</param>
+            <returns>true if both objects are equal; false otherwise.</returns>
+        </member>
+        <member name="M:Microsoft.Reactive.Testing.Subscription.Equals(System.Object)">
+            <summary>
+            Checks whether the given object is equal to the current instance.
+            </summary>
+            <param name="obj">Object to check for equality.</param>
+            <returns>true if both objects are equal; false otherwise.</returns>
+        </member>
+        <member name="M:Microsoft.Reactive.Testing.Subscription.GetHashCode">
+            <summary>
+            Computes a hash code for the current instance.
+            </summary>
+            <returns>Hash code.</returns>
+        </member>
+        <member name="M:Microsoft.Reactive.Testing.Subscription.ToString">
+            <summary>
+            Gets a friendly string representation of the current instance.
+            </summary>
+            <returns>String representation.</returns>
+        </member>
+        <member name="M:Microsoft.Reactive.Testing.Subscription.op_Equality(Microsoft.Reactive.Testing.Subscription,Microsoft.Reactive.Testing.Subscription)">
+            <summary>
+            Checks whether the two given subscription objects are equal.
+            </summary>
+            <param name="left">First object to check for equality.</param>
+            <param name="right">Second object to check for equality.</param>
+            <returns>true if both objects are equal; false otherwise.</returns>
+        </member>
+        <member name="M:Microsoft.Reactive.Testing.Subscription.op_Inequality(Microsoft.Reactive.Testing.Subscription,Microsoft.Reactive.Testing.Subscription)">
+            <summary>
+            Checks whether the two given subscription objects are not equal.
+            </summary>
+            <param name="left">First object to check for equality.</param>
+            <param name="right">Second object to check for equality.</param>
+            <returns>true if both objects are inequal; false otherwise.</returns>
+        </member>
+        <member name="P:Microsoft.Reactive.Testing.Subscription.Subscribe">
+            <summary>
+            Gets the subscription virtual time.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Reactive.Testing.Subscription.Unsubscribe">
+            <summary>
+            Gets the unsubscription virtual time.
+            </summary>
+        </member>
+        <member name="T:Microsoft.Reactive.Testing.TestScheduler">
+            <summary>
+            Base class for testing Rx code.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Reactive.Testing.TestScheduler.ScheduleAbsolute``1(``0,System.Int64,System.Func{System.Reactive.Concurrency.IScheduler,``0,System.IDisposable})">
+            <summary>
+            Schedules an action to be executed at the specified virtual time.
+            </summary>
+            <param name="state">State passed to the action to be executed.</param>
+            <param name="action">Action to be executed.</param>
+            <param name="dueTime">Absolute virtual time at which to execute the action.</param>
+            <returns>Disposable object used to cancel the scheduled action (best effort).</returns>
+        </member>
+        <member name="M:Microsoft.Reactive.Testing.TestScheduler.Add(System.Int64,System.Int64)">
+            <summary>
+            Adds a relative virtual time to an absolute virtual time value.
+            </summary>
+            <param name="absolute">Absolute virtual time value.</param>
+            <param name="relative">Relative virtual time value to add.</param>
+            <returns>Resulting absolute virtual time sum value.</returns>
+        </member>
+        <member name="M:Microsoft.Reactive.Testing.TestScheduler.ToDateTimeOffset(System.Int64)">
+            <summary>
+            Converts the absolute virtual time value to a DateTimeOffset value.
+            </summary>
+            <param name="absolute">Absolute virtual time value to convert.</param>
+            <returns>Corresponding DateTimeOffset value.</returns>
+        </member>
+        <member name="M:Microsoft.Reactive.Testing.TestScheduler.ToRelative(System.TimeSpan)">
+            <summary>
+            Converts the TimeSpan value to a relative virtual time value.
+            </summary>
+            <param name="timeSpan">TimeSpan value to convert.</param>
+            <returns>Corresponding relative virtual time value.</returns>
+        </member>
+        <member name="M:Microsoft.Reactive.Testing.TestScheduler.Start``1(System.Func{System.IObservable{``0}},System.Int64,System.Int64,System.Int64)">
+            <summary>
+            Starts the test scheduler.
+            </summary>
+            <param name="create">Factory method to create an observable sequence.</param>
+            <param name="created">Virtual time at which to invoke the factory to create an observable sequence.</param>
+            <param name="subscribed">Virtual time at which to subscribe to the created observable sequence.</param>
+            <param name="disposed">Virtual time at which to dispose the subscription.</param>
+            <returns>Testable observer with recordings of notifications that occurred.</returns>
+        </member>
+        <member name="M:Microsoft.Reactive.Testing.TestScheduler.Start``1(System.Func{System.IObservable{``0}},System.Int64)">
+            <summary>
+            Starts the test scheduler.
+            </summary>
+            <param name="create">Factory method to create an observable sequence.</param>
+            <param name="disposed">Virtual time at which to dispose the subscription.</param>
+            <returns>Testable observer with recordings of notifications that occurred.</returns>
+        </member>
+        <member name="M:Microsoft.Reactive.Testing.TestScheduler.Start``1(System.Func{System.IObservable{``0}})">
+            <summary>
+            Starts the test scheduler.
+            </summary>
+            <param name="create">Factory method to create an observable sequence.</param>
+            <returns>Testable observer with recordings of notifications that occurred.</returns>
+        </member>
+        <member name="M:Microsoft.Reactive.Testing.TestScheduler.CreateHotObservable``1(Microsoft.Reactive.Testing.Recorded{System.Reactive.Notification{``0}}[])">
+            <summary>
+            Creates a hot observable.
+            </summary>
+            <param name="messages">Notifications to surface through the created sequence.</param>
+            <returns>Hot observable exhibiting the specified message behavior.</returns>
+        </member>
+        <member name="M:Microsoft.Reactive.Testing.TestScheduler.CreateColdObservable``1(Microsoft.Reactive.Testing.Recorded{System.Reactive.Notification{``0}}[])">
+            <summary>
+            Creates a cold observable.
+            </summary>
+            <param name="messages">Notifications to surface through the created sequence.</param>
+            <returns>Cold observable exhibiting the specified message behavior.</returns>
+        </member>
+        <member name="M:Microsoft.Reactive.Testing.TestScheduler.CreateObserver``1">
+            <summary>
+            Creates a testable observer.
+            </summary>
+            <returns>New testable observer object.</returns>
+        </member>
+    </members>
+</doc>

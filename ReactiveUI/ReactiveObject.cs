@@ -81,7 +81,7 @@ namespace ReactiveUI
         void setupRxObj()
         {
             allPublicProperties = new Lazy<PropertyInfo[]>(() =>
-                GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance));
+                GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance).ToArray());
         }
 
         /// <summary>
@@ -151,7 +151,7 @@ namespace ReactiveUI
             if (String.IsNullOrEmpty(propertyName))
                 return;
 
-#if !SILVERLIGHT
+#if !SILVERLIGHT && !WINRT
             // Verify that the property name matches a real,
             // public, instance property on this object.
             if (TypeDescriptor.GetProperties(this)[propertyName] == null) {

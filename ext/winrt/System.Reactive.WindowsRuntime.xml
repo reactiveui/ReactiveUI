@@ -1,0 +1,230 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>System.Reactive.WindowsRuntime</name>
+    </assembly>
+    <members>
+        <member name="T:System.Reactive.IEventPatternSource`2">
+            <summary>
+            Represents a data stream signaling its elements by means of an event.
+            </summary>
+            <typeparam name="TSender">Sender type.</typeparam>
+            <typeparam name="TEventArgs">Event arguments type.</typeparam>
+        </member>
+        <member name="E:System.Reactive.IEventPatternSource`2.OnNext">
+            <summary>
+            Event signaling the next element in the data stream.
+            </summary>
+        </member>
+        <member name="T:System.Reactive.Windows.Foundation.AsyncInfoExtensions">
+            <summary>
+            Provides conversions from WinRT IAsyncInfo types to IObservable.
+            </summary>
+        </member>
+        <member name="M:System.Reactive.Windows.Foundation.AsyncInfoExtensions.ToObservable(Windows.Foundation.IAsyncAction)">
+            <summary>
+            Converts the IAsyncAction to a cold observable sequence. Subscribing to the resulting
+            observable sequence triggers execution of the underlying asynchronous operation.
+            </summary>
+            <param name="source">Asynchronous action to convert.</param>
+            <returns>Observable sequence used to start the asynchronous operation and retrieve its results.</returns>
+        </member>
+        <member name="M:System.Reactive.Windows.Foundation.AsyncInfoExtensions.ToObservable``1(Windows.Foundation.IAsyncActionWithProgress{``0})">
+            <summary>
+            Converts the IAsyncActionWithProgress to a cold observable sequence. Subscribing to the resulting
+            observable sequence triggers execution of the underlying asynchronous operation.
+            </summary>
+            <param name="source">Asynchronous action to convert.</param>
+            <returns>Observable sequence used to start the asynchronous operation and retrieve its results.</returns>
+        </member>
+        <member name="M:System.Reactive.Windows.Foundation.AsyncInfoExtensions.ToObservable``1(Windows.Foundation.IAsyncActionWithProgress{``0},System.IProgress{``0})">
+            <summary>
+            Converts the IAsyncActionWithProgress to a cold observable sequence. Subscribing to the resulting
+            observable sequence triggers execution of the underlying asynchronous operation. Progress information
+            is passed out through the progress parameter.
+            </summary>
+            <param name="source">Asynchronous action to convert.</param>
+            <param name="progress">Progress object to receive progress notifications on.</param>
+            <returns>Observable sequence used to start the asynchronous operation and retrieve its results.</returns>
+        </member>
+        <member name="M:System.Reactive.Windows.Foundation.AsyncInfoExtensions.ToObservable``1(Windows.Foundation.IAsyncActionWithProgress{``0},System.IObservable{``0}@)">
+            <summary>
+            Converts the IAsyncActionWithProgress to a cold observable sequence. Subscribing to the resulting
+            observable sequence triggers execution of the underlying asynchronous operation. Progress information
+            is passed out through a progress observable sequence.
+            </summary>
+            <param name="source">Asynchronous action to convert.</param>
+            <param name="progress">Progress sequence to subscribe for progress notifications.</param>
+            <returns>Observable sequence used to start the asynchronous operation and retrieve its results.</returns>
+            <remarks>
+            The asynchronous operation is only started by subscribing to the result sequence, not by subscribing
+            to the resulting progress sequence.
+            The progress sequence will not observe errors, but will be notified about completion of the asynchronous
+            operation. Errors are reported through the result sequence.
+            </remarks>
+        </member>
+        <member name="M:System.Reactive.Windows.Foundation.AsyncInfoExtensions.ToObservableProgress``1(Windows.Foundation.IAsyncActionWithProgress{``0})">
+            <summary>
+            Converts the IAsyncActionWithProgress to a cold observable sequence. Subscribing to the resulting
+            progress observable sequence triggers execution of the underlying asynchronous operation.
+            </summary>
+            <param name="source">Asynchronous action to convert.</param>
+            <returns>Observable sequence used to start the asynchronous operation and retrieve its progress.</returns>
+            <remarks>The resulting progress sequence is used to report errors and completion.</remarks>
+        </member>
+        <member name="M:System.Reactive.Windows.Foundation.AsyncInfoExtensions.ToObservable``1(Windows.Foundation.IAsyncOperation{``0})">
+            <summary>
+            Converts the IAsyncOperation to a cold observable sequence. Subscribing to the resulting
+            observable sequence triggers execution of the underlying asynchronous operation. The
+            single result of the asynchronous operation is retrieved when the operation has finished.
+            </summary>
+            <param name="source">Asynchronous operation to convert.</param>
+            <returns>Observable sequence used to start the asynchronous operation and retrieve its results.</returns>
+        </member>
+        <member name="M:System.Reactive.Windows.Foundation.AsyncInfoExtensions.ToObservable``2(Windows.Foundation.IAsyncOperationWithProgress{``0,``1})">
+            <summary>
+            Converts the IAsyncOperationWithProgress to a cold observable sequence. Subscribing to the resulting
+            observable sequence triggers execution of the underlying asynchronous operation. The single result
+            of the asynchronous operation is retrieved when the operation has finished.
+            </summary>
+            <param name="source">Asynchronous operation to convert.</param>
+            <returns>Observable sequence used to start the asynchronous operation and retrieve its results.</returns>
+        </member>
+        <member name="M:System.Reactive.Windows.Foundation.AsyncInfoExtensions.ToObservable``2(Windows.Foundation.IAsyncOperationWithProgress{``0,``1},System.IProgress{``1})">
+            <summary>
+            Converts the IAsyncOperationWithProgress to a cold observable sequence. Subscribing to the resulting
+            observable sequence triggers execution of the underlying asynchronous operation. The single result
+            of the asynchronous operation is retrieved when the operation has finished. Progress information
+            is passed out through the progress parameter.
+            </summary>
+            <param name="source">Asynchronous operation to convert.</param>
+            <param name="progress">Progress object to receive progress notifications on.</param>
+            <returns>Observable sequence used to start the asynchronous operation and retrieve its results.</returns>
+        </member>
+        <member name="M:System.Reactive.Windows.Foundation.AsyncInfoExtensions.ToObservable``2(Windows.Foundation.IAsyncOperationWithProgress{``0,``1},System.IObservable{``1}@)">
+            <summary>
+            Converts the IAsyncOperationWithProgress to a cold observable sequence. Subscribing to the resulting
+            observable sequence triggers execution of the underlying asynchronous operation. The single result
+            of the asynchronous operation is retrieved when the operation has finished. Progress information
+            is passed out through a progress observable sequence.
+            </summary>
+            <param name="source">Asynchronous operation to convert.</param>
+            <param name="progress">Progress sequence to subscribe for progress notifications.</param>
+            <returns>Observable sequence used to start the asynchronous operation and retrieve its results.</returns>
+            <remarks>
+            The asynchronous operation is only started by subscribing to the result sequence, not by subscribing
+            to the resulting progress sequence.
+            The progress sequence will not observe errors, but will be notified about completion of the asynchronous
+            operation. Errors are reported through the result sequence.
+            </remarks>
+        </member>
+        <member name="M:System.Reactive.Windows.Foundation.AsyncInfoExtensions.ToObservableProgress``2(Windows.Foundation.IAsyncOperationWithProgress{``0,``1})">
+            <summary>
+            Converts the IAsyncOperationWithProgress to a cold observable sequence. Subscribing to the resulting
+            progress observable sequence triggers execution of the underlying asynchronous operation.
+            </summary>
+            <param name="source">Asynchronous operation to convert.</param>
+            <returns>Observable sequence used to start the asynchronous operation and retrieve its progress.</returns>
+            <remarks>The resulting progress sequence is used to report errors and completion.</remarks>
+        </member>
+        <member name="M:System.Reactive.Windows.Foundation.AsyncInfoExtensions.ToObservableMultiple``2(Windows.Foundation.IAsyncOperationWithProgress{``0,``1})">
+            <summary>
+            Converts the IAsyncOperationWithProgress to a cold observable sequence. Subscribing to the resulting
+            observable sequence triggers execution of the underlying asynchronous operation. The results of
+            the asynchronous operation are retrieved whenever progress is reported and when the operation has
+            finished.
+            </summary>
+            <param name="source">Asynchronous operation to convert.</param>
+            <returns>Observable sequence used to start the asynchronous operation and retrieve its results.</returns>
+        </member>
+        <member name="M:System.Reactive.Windows.Foundation.AsyncInfoExtensions.ToObservableMultiple``2(Windows.Foundation.IAsyncOperationWithProgress{``0,``1},System.IProgress{``1})">
+            <summary>
+            Converts the IAsyncOperationWithProgress to a cold observable sequence. Subscribing to the resulting
+            observable sequence triggers execution of the underlying asynchronous operation. The results of
+            the asynchronous operation are retrieved whenever progress is reported and when the operation has
+            finished. Progress information is passed out through the progress parameter.
+            </summary>
+            <param name="source">Asynchronous operation to convert.</param>
+            <param name="progress">Progress object to receive progress notifications on.</param>
+            <returns>Observable sequence used to start the asynchronous operation and retrieve its results.</returns>
+        </member>
+        <member name="M:System.Reactive.Windows.Foundation.AsyncInfoExtensions.ToObservableMultiple``2(Windows.Foundation.IAsyncOperationWithProgress{``0,``1},System.IObservable{``1}@)">
+            <summary>
+            Converts the IAsyncOperationWithProgress to a cold observable sequence. Subscribing to the resulting
+            observable sequence triggers execution of the underlying asynchronous operation. The results of
+            the asynchronous operation are retrieved whenever progress is reported and when the operation has
+            finished. Progress information is passed out through a progress observable sequence.
+            </summary>
+            <param name="source">Asynchronous operation to convert.</param>
+            <param name="progress">Progress sequence to subscribe for progress notifications.</param>
+            <returns>Observable sequence used to start the asynchronous operation and retrieve its results.</returns>
+            <remarks>
+            The asynchronous operation is only started by subscribing to the result sequence, not by subscribing
+            to the resulting progress sequence.
+            The progress sequence will not observe errors, but will be notified about completion of the asynchronous
+            operation. Errors are reported through the result sequence.
+            </remarks>
+        </member>
+        <member name="T:System.Reactive.Linq.AsyncInfoObservable">
+            <summary>
+            Provides a set of extension methods to expose observable sequences as WinRT IAsyncInfo objects.
+            </summary>
+        </member>
+        <member name="M:System.Reactive.Linq.AsyncInfoObservable.ToAsyncOperation``1(System.IObservable{``0})">
+            <summary>
+            Exposes the last element of the observable sequence through an IAsyncOperation object.
+            </summary>
+            <typeparam name="TSource"></typeparam>
+            <param name="source">Source sequence.</param>
+            <returns>Asynchronous operation object that exposes the results of the observable sequence.</returns>
+        </member>
+        <member name="M:System.Reactive.Linq.AsyncInfoObservable.ToAsyncOperationWithProgress``1(System.IObservable{``0})">
+            <summary>
+            Exposes the last element of the observable sequence through an IAsyncOperationWithProgress object,
+            reporting incremental progress for each intermediate value produced by the sequence.
+            </summary>
+            <param name="source">Source sequence.</param>
+            <returns>Asynchronous operation object that exposes the results of the observable sequence.</returns>
+        </member>
+        <member name="M:System.Reactive.Linq.AsyncInfoObservable.ToAsyncOperationWithProgress``2(System.IObservable{``0},System.Func{System.IObservable{``0},System.IObservable{``1}})">
+            <summary>
+            Exposes the last element of the observable sequence through an IAsyncOperationWithProgress object,
+            using a selector function to map the source sequence on a progress reporting sequence.
+            </summary>
+            <param name="source">Source sequence.</param>
+            <param name="getProgress">Selector function to map the source sequence on a progress reporting sequence.</param>
+            <returns>Asynchronous operation object that exposes the results of the observable sequence.</returns>
+        </member>
+        <member name="T:System.Reactive.Linq.WindowsObservable">
+            <summary>
+            Provides a set of static methods for importing typed events from Windows Runtime APIs.
+            </summary>
+        </member>
+        <member name="M:System.Reactive.Linq.WindowsObservable.FromEventPattern``2(System.Action{Windows.Foundation.TypedEventHandler{``0,``1}},System.Action{Windows.Foundation.TypedEventHandler{``0,``1}})">
+            <summary>
+            Converts a typed event, conforming to the standard event pattern, to an observable sequence.
+            </summary>
+            <param name="addHandler">Action that attaches the given event handler to the underlying .NET event.</param>
+            <param name="removeHandler">Action that detaches the given event handler from the underlying .NET event.</param>
+            <returns>The observable sequence that contains data representations of invocations of the underlying typed event.</returns>
+            <seealso cref="M:System.Reactive.Linq.WindowsObservable.ToEventPattern``2(System.IObservable{System.Reactive.EventPattern{``0,``1}})"/>
+        </member>
+        <member name="M:System.Reactive.Linq.WindowsObservable.FromEventPattern``3(System.Func{Windows.Foundation.TypedEventHandler{``1,``2},``0},System.Action{``0},System.Action{``0})">
+            <summary>
+            Converts a typed event, conforming to the standard event pattern, to an observable sequence.
+            </summary>
+            <param name="conversion">A function used to convert the given event handler to a delegate compatible with the underlying typed event. The resulting delegate is used in calls to the addHandler and removeHandler action parameters.</param>
+            <param name="addHandler">Action that attaches the given event handler to the underlying .NET event.</param>
+            <param name="removeHandler">Action that detaches the given event handler from the underlying .NET event.</param>
+            <returns>The observable sequence that contains data representations of invocations of the underlying typed event.</returns>
+            <seealso cref="M:System.Reactive.Linq.WindowsObservable.ToEventPattern``2(System.IObservable{System.Reactive.EventPattern{``0,``1}})"/>
+        </member>
+        <member name="M:System.Reactive.Linq.WindowsObservable.ToEventPattern``2(System.IObservable{System.Reactive.EventPattern{``0,``1}})">
+            <summary>
+            Exposes an observable sequence as an object with a typed event.
+            </summary>
+            <param name="source">Observable source sequence.</param>
+            <returns>The event source object.</returns>
+        </member>
+    </members>
+</doc>

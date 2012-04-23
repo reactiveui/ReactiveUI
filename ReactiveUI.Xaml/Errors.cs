@@ -91,11 +91,18 @@ namespace ReactiveUI.Xaml
             RecoveryOptions = new ReactiveCollection<IRecoveryCommand>(recoveryOptions ?? Enumerable.Empty<IRecoveryCommand>());
 
             ErrorCauseOrResolution = errorCauseOrResolution;
-            Domain = Assembly.GetCallingAssembly().FullName;
             ContextInfo = contextInfo ?? new Dictionary<string, object>();
             UserErrorIcon = StockUserErrorIcon.Warning;
             InnerException = innerException;
             ErrorMessage = errorMessage;
+
+#if WINRT
+            // NB: I want to do something with CallerMemberNameAttribute here
+            // eventually
+            Domain = "";
+#else
+            Domain = Assembly.GetCallingAssembly().FullName;
+#endif
         }
 
         /// <summary>
