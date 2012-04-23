@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>System.Reactive.Providers</name>
+    </assembly>
+    <members>
+        <member name="T:System.Reactive.Linq.IQbservable`1">
+            <summary>
+            Provides functionality to evaluate queries against a specific data source wherein the type of the data is known.
+            </summary>
+        </member>
+        <member name="T:System.Reactive.Linq.IQbservable">
+            <summary>
+            Provides functionality to evaluate queries against a specific data source wherein the type of the data is not specified.
+            </summary>
+        </member>
+        <member name="P:System.Reactive.Linq.IQbservable.ElementType">
+            <summary>
+            Gets the type of the element(s) that are returned when the expression tree associated with this instance of IQbservable is executed.
+            </summary>
+        </member>
+        <member name="P:System.Reactive.Linq.IQbservable.Expression">
+            <summary>
+            Gets the expression tree that is associated with the instance of IQbservable.
+            </summary>
+        </member>
+        <member name="P:System.Reactive.Linq.IQbservable.Provider">
+            <summary>
+            Gets the query provider that is associated with this data source.
+            </summary>
+        </member>
+        <member name="T:System.Reactive.Linq.IQbservableProvider">
+            <summary>
+            Defines methods to create and execute queries that are described by an IQbservable object.
+            </summary>
+        </member>
+        <member name="M:System.Reactive.Linq.IQbservableProvider.CreateQuery``1(System.Linq.Expressions.Expression)">
+            <summary>
+            Constructs an IQbservable&gt;TResult&lt; object that can evaluate the query represented by a specified expression tree.
+            </summary>
+            <param name="expression">Expression tree representing the query.</param>
+            <returns>IQbservable object that can evaluate the given query expression.</returns>
+        </member>
+        <member name="M:System.Reactive.Linq.Qbservable.AsQbservable``1(System.IObservable{``0})">
+            <summary>
+            Converts an observable sequence into a queryable observable sequence.
+            </summary>
+            <param name="source">Source sequence.</param>
+            <returns>Queryable observable sequence representing the given observable source sequence.</returns>
+        </member>
+        <member name="P:System.Reactive.Linq.Qbservable.Provider">
+            <summary>
+            Gets the local Qbservable provider.
+            </summary>
+        </member>
+    </members>
+</doc>
