@@ -9,6 +9,6 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyDescription("A ViewModel-based Routing framework for RxUI")]
 [assembly: AssemblyProduct("ReactiveUI.Routing")]
 
-[assembly: AssemblyVersion("3.0.0.0")]
+[assembly: AssemblyVersion("3.1.0.0")]
 [assembly: InternalsVisibleTo("ReactiveUI.Routing.Tests")]
 [assembly: InternalsVisibleTo("ReactiveUI.Routing.Explorables")]
