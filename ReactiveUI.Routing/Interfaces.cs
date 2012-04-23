@@ -7,6 +7,9 @@ using ReactiveUI.Xaml;
 
 namespace ReactiveUI.Routing
 {
+    // NB: This is just a name we can bolt extension methods to
+    public interface INavigateCommand : IReactiveCommand { }
+
     public interface IRoutingState : IReactiveNotifyPropertyChanged
     {
         /// <summary>
@@ -24,7 +27,7 @@ namespace ReactiveUI.Routing
         /// Navigates to the a new element in the stack - the Execute parameter
         /// must be a ViewModel that implements IRoutableViewModel.
         /// </summary>
-        IReactiveCommand Navigate { get; }
+        INavigateCommand Navigate { get; }
 
         /// <summary>
         /// Navigates to a new element and resets the navigation stack (i.e. the
@@ -32,7 +35,7 @@ namespace ReactiveUI.Routing
         /// Execute parameter must be a ViewModel that implements
         /// IRoutableViewModel.
         /// </summary>
-        IReactiveCommand NavigateAndReset { get; }
+        INavigateCommand NavigateAndReset { get; }
     }
 
     /// <summary>
