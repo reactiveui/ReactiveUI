@@ -5,7 +5,7 @@ using System.Windows;
 
 [assembly: AssemblyDescription("An MVVM framework that integrates the Reactive Extensions")]
 [assembly: AssemblyProduct("ReactiveUI.Xaml")]
-[assembly: AssemblyVersion("3.0.0.0")]
+[assembly: AssemblyVersion("3.1.0.0")]
 
 /*
 [assembly: ThemeInfo(
