@@ -1,0 +1,78 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>System.Reactive.Windows.Forms</name>
+    </assembly>
+    <members>
+        <member name="T:System.Reactive.Linq.ControlObservable">
+            <summary>
+            Provides a set of static methods for subscribing to IObservables using Windows Forms controls.
+            </summary>
+        </member>
+        <member name="M:System.Reactive.Linq.ControlObservable.SubscribeOn``1(System.IObservable{``0},System.Windows.Forms.Control)">
+            <summary>
+            Asynchronously subscribes and unsubscribes observers using the Windows Forms control.
+            </summary>
+            <param name="source">Source sequence.</param>
+            <param name="control">Windows Forms control whose associated message loop is used to to perform subscription and unsubscription actions on.</param>
+            <returns>The source sequence whose subscriptions and unsubscriptions happen on the Windows Forms message loop associated with the specified control.</returns>
+        </member>
+        <member name="M:System.Reactive.Linq.ControlObservable.ObserveOn``1(System.IObservable{``0},System.Windows.Forms.Control)">
+            <summary>
+            Asynchronously notify observers using the Windows Forms control.
+            </summary>
+            <param name="source">Source sequence.</param>
+            <param name="control">Windows Forms control whose associated message loop is used to to notify observers on.</param>
+            <returns>The source sequence whose observations happen on the Windows Forms message loop associated with the specified control.</returns>
+        </member>
+        <member name="T:System.Reactive.Concurrency.ControlScheduler">
+            <summary>
+            Represents an object that schedules units of work on the message loop associated with a Windows Forms control.
+            </summary>
+        </member>
+        <member name="M:System.Reactive.Concurrency.ControlScheduler.#ctor(System.Windows.Forms.Control)">
+            <summary>
+            Constructs a ControlScheduler that schedules units of work on the message loop associated with the specified Windows Forms control.
+            </summary>
+            <param name="control">Windows Forms control to get the message loop from.</param>
+            <seealso cref="M:Observable.ObserveOn">This scheduler type is typically used indirectly through the ObserveOn overload that takes a Windows Forms control.</seealso>
+            <seealso cref="M:Observable.SubscribeOn">This scheduler type is typically used indirectly through the SubscribeOn overload that takes a Windows Forms control.</seealso>
+        </member>
+        <member name="M:System.Reactive.Concurrency.ControlScheduler.Schedule``1(``0,System.Func{System.Reactive.Concurrency.IScheduler,``0,System.IDisposable})">
+            <summary>
+            Schedules an action to be executed on the message loop associated with the control.
+            </summary>
+            <param name="state">State passed to the action to be executed.</param>
+            <param name="action">Action to be executed.</param>
+            <returns>The disposable object used to cancel the scheduled action (best effort).</returns>
+        </member>
+        <member name="M:System.Reactive.Concurrency.ControlScheduler.Schedule``1(``0,System.TimeSpan,System.Func{System.Reactive.Concurrency.IScheduler,``0,System.IDisposable})">
+            <summary>
+            Schedules an action to be executed after dueTime on the message loop associated with the control, using a Windows Forms Timer object.
+            </summary>
+            <param name="state">State passed to the action to be executed.</param>
+            <param name="action">Action to be executed.</param>
+            <param name="dueTime">Relative time after which to execute the action.</param>
+            <returns>The disposable object used to cancel the scheduled action (best effort).</returns>
+        </member>
+        <member name="M:System.Reactive.Concurrency.ControlScheduler.Schedule``1(``0,System.DateTimeOffset,System.Func{System.Reactive.Concurrency.IScheduler,``0,System.IDisposable})">
+            <summary>
+            Schedules an action to be executed at dueTime on the message loop associated with the control, using a Windows Forms Timer object.
+            </summary>
+            <param name="state">State passed to the action to be executed.</param>
+            <param name="action">Action to be executed.</param>
+            <param name="dueTime">Absolute time at which to execute the action.</param>
+            <returns>The disposable object used to cancel the scheduled action (best effort).</returns>
+        </member>
+        <member name="P:System.Reactive.Concurrency.ControlScheduler.Now">
+            <summary>
+            Gets the scheduler's notion of current time.
+            </summary>
+        </member>
+        <member name="P:System.Reactive.Concurrency.ControlScheduler.Control">
+            <summary>
+            Gets the control associated with the ControlScheduler.
+            </summary>
+        </member>
+    </members>
+</doc>
