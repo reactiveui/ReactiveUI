@@ -5,6 +5,7 @@ using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Runtime.Serialization;
+using System.Windows.Input;
 using ReactiveUI.Xaml;
 
 namespace ReactiveUI.Routing
@@ -39,7 +40,7 @@ namespace ReactiveUI.Routing
         /// must be a ViewModel that implements IRoutableViewModel.
         /// </summary>
         [IgnoreDataMember]
-        public IReactiveCommand Navigate { get; protected set; }
+        public INavigateCommand Navigate { get; protected set; }
 
         /// <summary>
         /// Navigates to a new element and resets the navigation stack (i.e. the
@@ -48,7 +49,7 @@ namespace ReactiveUI.Routing
         /// IRoutableViewModel.
         /// </summary>
         [IgnoreDataMember]
-        public IReactiveCommand NavigateAndReset { get; protected set; }
+        public INavigateCommand NavigateAndReset { get; protected set; }
 
         public RoutingState()
         {
@@ -65,17 +66,25 @@ namespace ReactiveUI.Routing
             NavigateBack.Subscribe(_ =>
                 NavigationStack.RemoveAt(NavigationStack.Count - 1));
 
-            Navigate = new ReactiveCommand();
-            Navigate.Subscribe(x =>
-                NavigationStack.Insert(NavigationStack.Count, (IRoutableViewModel)x));
+            Navigate = new NavigationReactiveCommand();
+            Navigate.Subscribe(x => {
+                var vm = x as IRoutableViewModel;
+                if (vm == null) {
+                    throw new Exception("Navigate must be called on an IRoutableViewModel");
+                }
 
-            NavigateAndReset = new ReactiveCommand();
+                NavigationStack.Add(vm);
+            });
+
+            NavigateAndReset = new NavigationReactiveCommand();
             NavigateAndReset.Subscribe(x => {
                 NavigationStack.Clear();
-                NavigationStack.Add((IRoutableViewModel) x);
+                Navigate.Execute(x);
             });
         }
     }
+
+    class NavigationReactiveCommand : ReactiveCommand, INavigateCommand { }
 
     public static class RoutingStateMixins
     {
@@ -114,6 +123,12 @@ namespace ReactiveUI.Routing
             return This.NavigationStack.CollectionCountChanged
                 .Select(_ => This.GetCurrentViewModel())
                 .StartWith(This.GetCurrentViewModel());
+        }
+
+        public static void Go<T>(this INavigateCommand This, string key = null)
+            where T : IRoutableViewModel
+        {
+            This.Execute(RxApp.GetService<T>(key));
         }
     }
 }

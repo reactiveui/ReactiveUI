@@ -32,8 +32,12 @@ namespace ReactiveUI.Routing.Tests
             var input = new TestViewModel() {SomeProp = "Foo"};
             var fixture = new RoutingState();
 
+            RxApp.ConfigureServiceLocator(
+                (t, s) => new TestViewModel() {SomeProp = "Foo"},
+                (t, s) => Enumerable.Empty<object>());
+
             Assert.False(fixture.NavigateBack.CanExecute(input));
-            fixture.Navigate.Execute(input);
+            fixture.Navigate.Go<TestViewModel>();
 
             Assert.Equal(1, fixture.NavigationStack.Count);
             Assert.True(fixture.NavigateBack.CanExecute(null));
