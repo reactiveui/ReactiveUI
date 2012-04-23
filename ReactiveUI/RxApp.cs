@@ -226,7 +226,7 @@ namespace ReactiveUI
                 return true;
             }
 
-            return ret;
+            return false;
 #elif WINRT
             // NB: We have no way to detect if we're in design mode in WinRT.
             return false;
