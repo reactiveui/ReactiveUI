@@ -89,6 +89,31 @@ namespace ReactiveUI.Xaml
         }
 
         /// <summary>
+        /// Creates a new ReactiveCommand object in an Rx way,
+        /// similar to RelayCommand.
+        /// </summary>
+        /// <param name="canExecute">A function that determines when the Command
+        /// can execute.</param>
+        /// <param name="executed">A method that will be invoked when the
+        /// Execute method is invoked.</param>
+        /// <param name="scheduler">The scheduler to publish events on - default
+        /// is RxApp.DeferredScheduler.</param>
+        /// <returns>A new ReactiveCommand object.</returns>
+        public static ReactiveCommand Create(
+            IObservable<bool> canExecute,
+            Action<object> executed = null,
+            IScheduler scheduler = null)
+        {
+            var ret = new ReactiveCommand(canExecute, scheduler);
+            if (executed != null)
+            {
+                ret.Subscribe(executed);
+            }
+
+            return ret;
+        }
+
+        /// <summary>
         /// Creates a new ReactiveCommand object in an imperative, non-Rx way,
         /// similar to RelayCommand, only via a TPL Async method
         /// </summary>
@@ -110,6 +135,84 @@ namespace ReactiveUI.Xaml
             }
 
             return ret;
+        }
+
+        /// <summary>
+        /// Lazy creates a new ReactiveCommand object in an imperative, non-Rx way,
+        /// similar to RelayCommand, only if the command was not yet created. 
+        /// Otherwise just returns the value of the backing field.
+        /// </summary>
+        /// <param name="backingCommand">The backing field for this Command.</param>
+        /// <param name="canExecute">A function that determines when the Command
+        /// can execute.</param>
+        /// <param name="executed">A method that will be invoked when the
+        /// Execute method is invoked.</param>
+        /// <param name="scheduler">The scheduler to publish events on - default
+        /// is RxApp.DeferredScheduler.</param>
+        /// <returns>A new ReactiveCommand object.</returns>
+        public static ReactiveCommand CreateIfNull(
+            ref ReactiveCommand backingCommand,
+            Func<object, bool> canExecute,
+            Action<object> executed = null,
+            IScheduler scheduler = null)
+        {
+            if (backingCommand != null)
+            {
+                return backingCommand;
+            }
+            return ReactiveCommand.Create(canExecute, executed, scheduler);
+        }
+
+        /// <summary>
+        /// Lazy creates a new ReactiveCommand object in an Rx way,
+        /// similar to RelayCommand, only if the command was not yet created. 
+        /// Otherwise just returns the value of the backing field.
+        /// </summary>
+        /// <param name="backingCommand">The backing field for this Command.</param>
+        /// <param name="canExecute">A function that determines when the Command
+        /// can execute.</param>
+        /// <param name="executed">A method that will be invoked when the
+        /// Execute method is invoked.</param>
+        /// <param name="scheduler">The scheduler to publish events on - default
+        /// is RxApp.DeferredScheduler.</param>
+        /// <returns>A new ReactiveCommand object.</returns>
+        public static ReactiveCommand CreateIfNull(
+            ref ReactiveCommand backingCommand,
+            IObservable<bool> canExecute = null, 
+            Action<object> executed = null, 
+            IScheduler scheduler = null)
+        {
+            if (backingCommand != null)
+            {
+                return backingCommand;
+            }
+            return ReactiveCommand.Create(canExecute, executed, scheduler);
+        }
+
+        /// <summary>
+        /// Lazy creates a new ReactiveCommand object in an imperative, non-Rx way,
+        /// similar to RelayCommand, only via a TPL Async method and if the command 
+        /// was not yet created. Otherwise just returns the value of the backing field.
+        /// </summary>
+        /// <param name="backingCommand">The backing field for this Command.</param>
+        /// <param name="canExecute">A function that determines when the Command
+        /// can execute.</param>
+        /// <param name="executed">A method that will be invoked when the
+        /// Execute method is invoked.</param>
+        /// <param name="scheduler">The scheduler to publish events on - default
+        /// is RxApp.DeferredScheduler.</param>
+        /// <returns>A new ReactiveCommand object.</returns>
+        public static ReactiveCommand CreateIfNull(
+            ref ReactiveCommand backingCommand,
+            Func<object, Task<bool>> canExecute,
+            Action<object> executed = null,
+            IScheduler scheduler = null)
+        {
+            if (backingCommand != null)
+            {
+                return backingCommand;
+            }
+            return ReactiveCommand.Create(canExecute, executed, scheduler);
         }
 
         public IObservable<Exception> ThrownExceptions { get; protected set; }
