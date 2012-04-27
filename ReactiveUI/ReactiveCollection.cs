@@ -344,13 +344,25 @@ namespace ReactiveUI
         protected override void InsertItem(int index, T item)
         {
             _BeforeItemsAdded.OnNext(item);
+            bool fireIsEmpty = this.Count == 0;
             base.InsertItem(index, item);
+            //fire IsEmpty changeNotification
+            if (fireIsEmpty)
+            {
+                this.OnPropertyChanged(new PropertyChangedEventArgs("IsEmpty"));
+            }
         }
 
         protected override void RemoveItem(int index)
         {
             _BeforeItemsRemoved.OnNext(this[index]);
+            bool fireIsEmpty = this.Count == 1;
             base.RemoveItem(index);
+            //fire IsEmpty changeNotification
+            if (fireIsEmpty)
+            {
+                this.OnPropertyChanged(new PropertyChangedEventArgs("IsEmpty"));
+            }
         }
 
         protected override void SetItem(int index, T item)
@@ -378,6 +390,20 @@ namespace ReactiveUI
 
             Reset();
             cleared.OnNext(0);
+
+            //fire IsEmpty changeNotification
+            this.OnPropertyChanged(new PropertyChangedEventArgs("IsEmpty"));
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether this instance is empty.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if this instance is empty; otherwise, <c>false</c>.
+        /// </value>
+        public bool IsEmpty
+        {
+            get { return this.Count == 0; }
         }
 
         public void Dispose()
