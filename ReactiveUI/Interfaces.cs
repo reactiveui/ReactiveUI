@@ -154,6 +154,11 @@ namespace ReactiveUI
         /// </summary>
         IObservable<int> CollectionCountChanging { get; }
 
+        /// <summary>
+        /// Fires when a collection becomes or stops being empty.
+        /// </summary>
+        IObservable<bool> IsEmpty { get; }
+
         //
         // Change Tracking
         //

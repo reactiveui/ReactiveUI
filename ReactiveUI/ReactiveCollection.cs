@@ -122,6 +122,8 @@ namespace ReactiveUI
                 removeItemFromPropertyTracking(x);
             });
 
+            IsEmpty = CollectionCountChanged.Select(x => x == 0);
+
 #if DEBUG
             _ItemChanged.Subscribe(x => 
                 this.Log().Debug("Object {0} changed in collection {1:X}", x, this.GetHashCode()));
@@ -282,6 +284,8 @@ namespace ReactiveUI
         public IObservable<IObservedChange<object, object>> Changed {
             get { return _Changed.Where(_ => areChangeNotificationsEnabled);  }
         }
+
+        public IObservable<bool> IsEmpty { get; protected set; }
 
         [field:IgnoreDataMember]
         public event PropertyChangingEventHandler PropertyChanging;
