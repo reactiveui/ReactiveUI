@@ -29,7 +29,7 @@ namespace ReactiveUI
     public sealed class ObservableAsyncMRUCache<TParam, TVal> : IEnableLogger
     {
         readonly MemoizingMRUCache<TParam, IObservable<TVal>> _innerCache;
-        readonly SemaphoreSubject<long> _callQueue;
+        readonly SemaphoreSubject<int> _callQueue;
         readonly Func<TParam, IObservable<TVal>> _fetcher;
         int currentCall = 0;
 
@@ -67,7 +67,7 @@ namespace ReactiveUI
             IScheduler sched = null)
         {
             sched = sched ?? RxApp.TaskpoolScheduler;
-            _callQueue = new SemaphoreSubject<long>(maxConcurrent, sched);
+            _callQueue = new SemaphoreSubject<int>(maxConcurrent, sched);
             _fetcher = calculationFunc;
 
             Action<IObservable<TVal>> release = null;
@@ -196,7 +196,7 @@ namespace ReactiveUI
     {        
         readonly ISubject<T> _inner;
         Queue<T> _nextItems = new Queue<T>();
-        long _count;
+        int _count;
         readonly int _maxCount;
 
         public SemaphoreSubject(int maxCount, IScheduler sched = null)
