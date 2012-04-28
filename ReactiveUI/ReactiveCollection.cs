@@ -122,7 +122,8 @@ namespace ReactiveUI
                 removeItemFromPropertyTracking(x);
             });
 
-            IsEmpty = CollectionCountChanged.Select(x => x == 0);
+            CollectionIsEmptyChanged = CollectionCountChanged.Select(x => x == 0).DistinctUntilChanged();
+            CollectionIsEmptyChanged.Subscribe(_ => this.OnPropertyChanged(new PropertyChangedEventArgs("IsEmpty")));
 
 #if DEBUG
             _ItemChanged.Subscribe(x => 
@@ -285,7 +286,18 @@ namespace ReactiveUI
             get { return _Changed.Where(_ => areChangeNotificationsEnabled);  }
         }
 
-        public IObservable<bool> IsEmpty { get; protected set; }
+
+        /// <summary>
+        /// Fires whenever the number of items in a collection has changed,
+        /// providing the new Count.
+        /// </summary>
+        [IgnoreDataMember]
+        public IObservable<bool> CollectionIsEmptyChanged { get; protected set; }
+
+        public bool IsEmpty 
+        { 
+            get { return this.Count > 0; } 
+        }
 
         [field:IgnoreDataMember]
         public event PropertyChangingEventHandler PropertyChanging;
