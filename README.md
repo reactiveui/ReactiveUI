@@ -4,81 +4,78 @@ This library is an exploration I've been working on for several weeks on
 combining WPF Model-View-ViewModel paradigm with the Reactive Extensions for
 .NET (Rx). Combining these two make managing concurrency as well as expressing
 complicated interactions between objects possible in a declarative, functional
-way. Put simply, if you've ever had to chain events / callbacks together and
-declare state ints/booleans to keep track of what's going on, Reactive
-Extensions provides a sane alternative.
+way.
 
-## What's in this library
+This library is organized into several high-level assembly:
 
-``ReactiveCommand`` - an implementation of ICommand that is also a Subject whose
-OnNext is raised when Execute is executed. Its CanExecute can also be defined by
-an IObservable<bool> which means the UI will instantly update instead of
-implementations which rely on RequerySuggested.
+- **ReactiveUI** - Core library that doesn't rely on any particular UI
+  framework. `ReactiveObject`, the base ViewModel object, as well as
+  `ReactiveCollection`, a more awesome ObservableCollection, is in here.
 
-``ReactiveAsyncCommand`` - a derivative of ReactiveCommand that encapsulates the
-common pattern of "Fire asynchronous command, then marshal result back onto
-dispatcher thread". Allows you to set a maximum level of concurrency as well
-(i.e. "I only want 3 inflight requests" - when the maximum is reached,
-CanExecute returns false).
+- **ReactiveUI.Xaml** - Classes that require references to a Xaml'ly
+  framework, like WPF or WinRT. `ReactiveCommand`, an implementation of
+  ICommand, as well as the UserError classes are in this assembly.
 
-``ReactiveObject`` - a ViewModel object based on Josh Smith's implementation,
-that also implements IObservable as a way to notify property changes. It also
-allows a straightforward way to observe the changes of a single property.
+- **ReactiveUI.Blend** - This class has several Blend Behaviors and Triggers
+  that make attaching ViewModel changes to Visual State Manager states.
 
-``ReactiveValidatedObject`` - a derivative of ReactiveObject that is validated
-via DataAnnotations by implementing IDataErrorInfo, so properties can be
-annotated with their restrictions and the UI will automatically reflect the
-errors.
+- **ReactiveUI.Routing** - A screens and navigation framework as well as
+  ViewModel locator. This framework helps you to write applications using IoC
+  containers to locate views, as well as navigating back and forwards between
+  views.
 
-``ObservableAsPropertyHelper<T>`` - a class that easily lets you convert an
-IObservable<T> into a property that stores its latest value, as well as fires
-NotifyPropertyChanged when the property changes. This is really useful for
-combining existing properties together and replacing IValueConverters, since
-your ViewModels will also be IObservables.
+## A compelling example
 
-``StopwatchTestScheduler`` - this class allows you to enforce time limits on
-items scheduled on other threads. The main use for this is in unit tests, as
-well as being able to say things in Debug mode like, "If any item runs in the
-Dispatcher scheduler for longer than 400ms that would've made the UI
-unresponsive, crash the application".
+```cs
+public class ColorChooserThatDoesntLikeGreen : ReactiveObject
+{
+  //
+  // Declaring a read/write property
+  //
 
-## Blend SDK Integration
+  byte _Red;
+  public byte Red {
+    get { return _Red; }
+    set { this.RaiseAndSetIfChanged(x => x.Red, value); }
+  }
 
-``AsyncCommandVisualStateBehavior`` - this behavior will watch a
-ReactiveAsyncCommand and transition its target to different states based on the
-command's status - for example, displaying a Spinner while a command is running. 
+  byte _Green;
+  public byte Green {
+    get { return _Green; }
+    set { this.RaiseAndSetIfChanged(x => x.Green, value); }
+  }
 
-``FollowObservableStateBehavior`` - this behavior will use the output of an
-IObservable<string> and call VisualStateManager.GoToState on its target; using
-Observable.Merge makes it fairly straightforward to build a state machine based
-on the changes in the ViewModel.
+  byte _Blue;
+  public byte Blue {
+    get { return _Blue; }
+    set { this.RaiseAndSetIfChanged(x => x.Blue, value); }
+  }
 
-``ObservableTrigger`` - this trigger will fire when an IObservable calls OnNext
-and can be tied to any arbitrary Expression Action.
+  //
+  // Declaring a Property that's based on an Observable
+  // 
 
-## Other stuff that's useful
+  ObservableAsPropertyHelper<Color> _Color;
+  public Color Color {
+    get { return _Color.Value; }
+  }
 
-``MemoizingMRUCache`` - this class is non-threadsafe most recently used cache,
-and can be used to cache the results of expensive lookups. You provide the
-function to use to look up values that aren't known, then it will save the
-results. It also allows a "destructor" to be run when an item is released from
-the cache, so you can use this to manage an on-disk file cache as well (where
-the "Get" function downloads a file, then the "Release" function deletes it).
+  ReactiveCommand OkButton { get; protected set; }
 
-``QueuedAsyncMRUCache`` - this class is by far the most complicated in this
-library, its goals are similar to MemoizingMRUCache, but instead of returning
-the result immediately, it will schedule a Task to run in the background and
-return an IObservable representing the result (a Future). Once the Future
-completes, its result is cached so subsequent requests will come from memory.
+  public ColorChooserThatDoesntLikeGreen()
+  {
+    var finalColor = this.WhenAny(x => x.Red, x => x.Green, x => x.Blue, 
+        (r,g,b) => Color.FromRGB(r.Value, g.Value, b.Value));
 
-The advantage of this class is that subsequent identical requests will block on
-the outstanding one (so if you ask for "foo.com" on 3 separate threads, one of
-them will send out the web request and the other two threads will receive the
-result as well). This class also allows you to place a blocking limit on the
-number of outstanding requests, so that further requests will block until some
-of the inflight requests have been satisfied. 
+    finalColor.ToProperty(this, x => x.Color);
 
-``IEnableLogger`` - this is an implementation of a simple logger that combines
-some of log4net's syntax with the ubiquity of the Rails logger - any class that
-implements the dummy IEnableLogger interface will able to access a logger for
-that class (i.e. `this.Log().Warn("Something bad happened!");`)
+    // When the finalColor has full green, the Ok button is disabled
+    OkButton = new ReactiveCommand(finalColor.Select(x => x.Green != 255));
+  }
+}
+```
+
+## Learn more
+
+For more information on how to use ReactiveUI, check out
+[ReactiveUI](http://www.reactiveui.net).
