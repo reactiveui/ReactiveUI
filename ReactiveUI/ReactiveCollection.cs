@@ -296,7 +296,7 @@ namespace ReactiveUI
 
         public bool IsEmpty 
         { 
-            get { return this.Count > 0; } 
+            get { return this.Count == 0; } 
         }
 
         [field:IgnoreDataMember]
