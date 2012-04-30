@@ -76,6 +76,9 @@ namespace ReactiveUI
         }
 
         [OnDeserialized]
+#if WINDOWS_PHONE
+        public
+#endif
         void setupRxObj(StreamingContext sc) { setupRxObj(); }
 
         void setupRxObj()

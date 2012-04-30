@@ -58,6 +58,9 @@ namespace ReactiveUI.Routing
         }
 
         [OnDeserialized]
+#if WINDOWS_PHONE
+        public
+#endif
         void setupRx(StreamingContext sc) { setupRx();  }
         void setupRx()
         {

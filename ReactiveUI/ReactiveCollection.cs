@@ -37,6 +37,9 @@ namespace ReactiveUI
         public ReactiveCollection(IEnumerable<T> list) { setupRx(list); }
 
         [OnDeserialized]
+#if WINDOWS_PHONE
+		public
+#endif
         void setupRx(StreamingContext _) { setupRx(); }
 
         void setupRx(IEnumerable<T> List = null)
