@@ -7,7 +7,7 @@ using System.Windows;
 [assembly: AssemblyProduct("ReactiveUI.Xaml")]
 [assembly: AssemblyVersion("3.1.1.0")]
 
-#if !WINRT
+#if !(WINRT || SILVERLIGHT)
 [assembly: ThemeInfo(
    ResourceDictionaryLocation.None, //where theme specific resource dictionaries are located
     //(used if a resource is not found in the page, 
