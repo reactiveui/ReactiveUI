@@ -118,7 +118,6 @@
     <Compile Include="ReactiveAsyncCommand.cs" />
     <Compile Include="ReactiveCommand.cs" />
     <Compile Include="ICommand.cs" />
-    <Compile Include="GtkRunloopScheduler.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
