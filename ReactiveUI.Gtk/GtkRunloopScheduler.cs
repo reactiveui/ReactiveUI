@@ -4,7 +4,7 @@ using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
 using GLib;
 
-namespace ReactiveUI.Xaml
+namespace ReactiveUI.Gtk
 {
     public class GtkRunloopScheduler : IScheduler, IDisposable
     {
