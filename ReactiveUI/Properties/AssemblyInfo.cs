@@ -4,7 +4,7 @@ using System.Runtime.CompilerServices;
 
 [assembly: AssemblyDescription("An MVVM framework that integrates the Reactive Extensions")]
 [assembly: AssemblyProduct("ReactiveUI")]
-[assembly: AssemblyVersion("3.1.1.0")]
+[assembly: AssemblyVersion("3.1.2.0")]
 
 [assembly: InternalsVisibleTo("ReactiveUI.Explorables")]
 [assembly: InternalsVisibleTo("ReactiveUI.Xaml")]
