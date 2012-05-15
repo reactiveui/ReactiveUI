@@ -91,6 +91,11 @@ namespace ReactiveUI
             return true;
         }
 
+        protected void InvalidateCache()
+        {
+            _validationCache.Clear();
+        }
+
         [IgnoreDataMember]
         readonly Subject<IObservedChange<object, bool>> _ValidationObservable = new Subject<IObservedChange<object, bool>>();
 
