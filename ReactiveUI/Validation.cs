@@ -278,9 +278,6 @@ namespace ReactiveUI
             var mi = validationContext.ObjectType.GetMethod(func, BindingFlags.Public | BindingFlags.Instance);
             bool result = (bool)mi.Invoke(validationContext.ObjectInstance, new[] { value });
 
-            if (!result)
-                throw new ValidationException(getStandardMessage(validationContext).ErrorMessage);
-
             return result ? null : getStandardMessage(validationContext);
         }
     }
