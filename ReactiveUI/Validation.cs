@@ -91,7 +91,7 @@ namespace ReactiveUI
             return true;
         }
 
-        protected void InvalidateCache()
+        protected void InvalidateValidationCache()
         {
             _validationCache.Clear();
         }
