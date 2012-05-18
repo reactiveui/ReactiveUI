@@ -99,6 +99,9 @@
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Reactive">
+      <HintPath>..\ext\System.Reactive.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CollectionExtensions.cs" />
@@ -144,22 +147,4 @@
   <Target Name="AfterBuild">
   </Target>
   -->
-  <ItemGroup>
-    <ProjectReference Include="..\..\mono-reactive\System.Reactive.Core\System.Reactive.Core.csproj">
-      <Project>{AD27C5E8-8A0C-454D-B7AA-76A54793B81F}</Project>
-      <Name>System.Reactive.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\mono-reactive\System.Reactive.Interfaces\System.Reactive.Interfaces.csproj">
-      <Project>{755E549E-1BDE-4153-A58B-7C969C902CAD}</Project>
-      <Name>System.Reactive.Interfaces</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\mono-reactive\System.Reactive.Linq\System.Reactive.Linq.csproj">
-      <Project>{F0395470-330B-4DBF-B1A5-D873E597DD05}</Project>
-      <Name>System.Reactive.Linq</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\mono-reactive\System.Reactive.PlatformServices\System.Reactive.PlatformServices.csproj">
-      <Project>{AEEBFC85-91B8-410F-BBB7-BD12BBC61BE6}</Project>
-      <Name>System.Reactive.PlatformServices</Name>
-    </ProjectReference>
-  </ItemGroup>
 </Project>
