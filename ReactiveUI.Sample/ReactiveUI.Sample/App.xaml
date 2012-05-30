@@ -9,6 +9,8 @@
             <ResourceDictionary.MergedDictionaries>
             	<ResourceDictionary Source="MetroTheme/CoreStyles.xaml" />
             	<ResourceDictionary Source="MetroTheme/Styles.xaml" />
+                <ResourceDictionary Source="MetroTheme/Fonts.xaml"/>
+                <ResourceDictionary Source="MetroTheme/Brushes.xaml"/>
             </ResourceDictionary.MergedDictionaries>
 
         	<SampleData:SampleAppViewModel x:Key="SampleAppViewModel" d:IsDataSource="True"/>

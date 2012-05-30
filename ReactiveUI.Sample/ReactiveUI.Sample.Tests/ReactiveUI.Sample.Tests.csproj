@@ -34,18 +34,15 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.Reactive.Testing">
+      <HintPath>..\..\ext\Microsoft.Reactive.Testing.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="NLog, Version=2.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\NLog.2.0.0.2000\lib\net40\NLog.dll</HintPath>
+    </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
-    <Reference Include="ReactiveUI">
-      <HintPath>..\ext\ReactiveUI.dll</HintPath>
-    </Reference>
-    <Reference Include="ReactiveUI.Blend">
-      <HintPath>..\ext\ReactiveUI.Blend.dll</HintPath>
-    </Reference>
-    <Reference Include="ReactiveUI.Xaml">
-      <HintPath>..\ext\ReactiveUI.Xaml.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core">
@@ -54,10 +51,7 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Reactive">
-      <HintPath>..\ext\System.Reactive.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Reactive.Testing">
-      <HintPath>..\ext\Microsoft.Reactive.Testing.dll</HintPath>
+      <HintPath>..\..\ext\System.Reactive.dll</HintPath>
     </Reference>
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml" />
@@ -74,10 +68,30 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\ReactiveUI.Blend\ReactiveUI.Blend.csproj">
+      <Project>{3870ea63-afdf-4d49-b4d6-8299506e67b4}</Project>
+      <Name>ReactiveUI.Blend</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\ReactiveUI.Testing\ReactiveUI.Testing.csproj">
+      <Project>{e1f2ad19-276e-4d05-a41a-89aa133cecfc}</Project>
+      <Name>ReactiveUI.Testing</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\ReactiveUI.Xaml\ReactiveUI.Xaml.csproj">
+      <Project>{761ac9ba-4a9c-440c-9b6c-2569978f0610}</Project>
+      <Name>ReactiveUI.Xaml</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\ReactiveUI\ReactiveUI.csproj">
+      <Project>{292a477b-bb94-43c1-984e-e177ef9fedb7}</Project>
+      <Name>ReactiveUI</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ReactiveUI.Sample\ReactiveUI.Sample.csproj">
-      <Project>{9311DEA0-E55B-422E-8781-A69AB05316AC}</Project>
+      <Project>{9311dea0-e55b-422e-8781-a69ab05316ac}</Project>
       <Name>ReactiveUI.Sample</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
