@@ -11,7 +11,7 @@ namespace ReactiveUI.Sample.Models
         {
             var ret = This.PauseList.Aggregate(TimeSpan.Zero, 
                 (acc, x) => acc + (x.EndedAt - x.StartedAt));
-            This.Log().InfoFormat("Pause duration: {0}", ret);
+            This.Log().Info("Pause duration: {0}", ret);
             return ret;
         }
     }

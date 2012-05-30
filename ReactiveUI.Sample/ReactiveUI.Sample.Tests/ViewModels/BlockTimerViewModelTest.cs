@@ -74,11 +74,11 @@ namespace ReactiveUI.Sample.Tests
                 fixture.Start.Execute(null);
 
                 // Fast forward to 25 minutes in, the timer should *not* be done
-                sched.RunToMilliseconds(24 * 60 * 1000);
+                sched.AdvanceByMs(24 * 60 * 1000);
                 Assert.IsFalse(isTimerStateDone);
 
                 // Let's go to 31 minutes
-                sched.RunToMilliseconds(35 * 60 * 1000);
+                sched.AdvanceByMs(35 * 60 * 1000);
 
                 // Make sure our model duration took 30 minutes(ish)
                 var pomodoroLength = (fixture.Model.EndedAt.Value - fixture.Model.StartedAt.Value);
@@ -103,7 +103,7 @@ namespace ReactiveUI.Sample.Tests
                 fixture.Start.Execute(null);
 
                 // After 26 minutes, we should be in our 5-minute break
-                sched.RunToMilliseconds(26 * 60 * 1000);
+                sched.AdvanceByMs(26 * 60 * 1000);
                 fixture.TimeRemaining.TotalMinutes.AssertWithinEpsilonOf(4.0);
                 Assert.AreEqual(BlockTimerViewState.StartedInBreak, lastState);
                 Assert.IsFalse(isTimerStateDone);
@@ -126,27 +126,27 @@ namespace ReactiveUI.Sample.Tests
                 fixture.Start.Execute(null);
 
                 // Five minutes in, hit the pause button
-                sched.RunToMilliseconds(5 * 60 * 1000);
+                sched.AdvanceByMs(5 * 60 * 1000);
                 var timeRemaining = fixture.TimeRemaining;
 
                 fixture.Pause.Execute(null);
 
                 // Fast forward ten more minutes - since we're paused, we 
                 // TimeRemaining shouldn'tve moved
-                sched.RunToMilliseconds(10 * 60 * 1000);
+                sched.AdvanceByMs(10 * 60 * 1000);
                 Assert.AreEqual((int)timeRemaining.TotalMinutes, (int)fixture.TimeRemaining.TotalMinutes);
 
                 fixture.Start.Execute(null);
 
                 // Make sure the TimeRemaining has only advanced 1 minute since 
                 // we resumed (i.e. we shouldn't count paused time as working)
-                sched.RunToMilliseconds(11 * 60 * 1000);
+                sched.AdvanceByMs(11 * 60 * 1000);
 
                 // We should have one pause, and it should be 5 minutes long
                 Assert.AreEqual(1, fixture.Model.PauseList.Count);
 
                 var deltaTime = (fixture.Model.PauseList[0].EndedAt - fixture.Model.PauseList[0].StartedAt).TotalMinutes;
-                this.Log().InfoFormat("Pause Time: {0} mins", deltaTime);
+                this.Log().Info("Pause Time: {0} mins", deltaTime);
 
                 deltaTime.AssertWithinEpsilonOf(5.0);
 
@@ -169,24 +169,24 @@ namespace ReactiveUI.Sample.Tests
                 fixture.Start.Execute(null);
 
                 // At the beginning we should be zero
-                sched.RunToMilliseconds(10);
+                sched.AdvanceByMs(10);
                 lastPercentage.AssertWithinEpsilonOf(0.0);
 
                 // Run to exactly half of the work time 25 mins / 2
-                sched.RunToMilliseconds((12 * 60 + 30) * 1000);
+                sched.AdvanceByMs((12 * 60 + 30) * 1000);
                 lastPercentage.AssertWithinEpsilonOf(0.5);
 
                 // Run to a little before the end, should be near 1.0
-                sched.RunToMilliseconds(25 * 60 * 1000 - 10);
+                sched.AdvanceByMs(25 * 60 * 1000 - 10);
                 lastPercentage.AssertWithinEpsilonOf(1.0);
 
                 // Step to the beginning of the break, we should've moved back 
                 // to zero
-                sched.RunToMilliseconds(25 * 60 * 1000 + 1010);
+                sched.AdvanceByMs(25 * 60 * 1000 + 1010);
                 lastPercentage.AssertWithinEpsilonOf(0.0);
 
                 // Finally run to the end of the break
-                sched.RunToMilliseconds(30 * 60 * 1000 - 10);
+                sched.AdvanceByMs(30 * 60 * 1000 - 10);
                 lastPercentage.AssertWithinEpsilonOf(1.0);
             });
         }
@@ -203,11 +203,11 @@ namespace ReactiveUI.Sample.Tests
                 fixture.Start.Execute(null);
 
                 // At the beginning we should be zero
-                sched.RunToMilliseconds(10);
+                sched.AdvanceByMs(10);
                 lastPercentage.AssertWithinEpsilonOf(0.0);
 
                 // Run to exactly half of the work time 25 mins / 2
-                sched.RunToMilliseconds((12 * 60 + 30) * 1000);
+                sched.AdvanceByMs((12 * 60 + 30) * 1000);
                 lastPercentage.AssertWithinEpsilonOf(0.5);
 
                 // Simulate hitting the Pause button
@@ -215,7 +215,7 @@ namespace ReactiveUI.Sample.Tests
 
                 // Run to 20 minutes; the progress bar shouldn't have moved
                 // since we were paused
-                sched.RunToMilliseconds(20 * 60 * 1000);
+                sched.AdvanceByMs(20 * 60 * 1000);
                 lastPercentage.AssertWithinEpsilonOf(0.5);
 
                 fixture.Start.Execute(null);
@@ -223,7 +223,7 @@ namespace ReactiveUI.Sample.Tests
                 // Move to 25 minutes; the progress bar should've moved 5
                 // minutes worth (remember, since we were paused from 12min
                 // to 20min
-                sched.RunToMilliseconds(25 * 60 * 1000);
+                sched.AdvanceByMs(25 * 60 * 1000);
                 lastPercentage.AssertWithinEpsilonOf(0.5 + 0.2);
             });
         }
@@ -239,15 +239,15 @@ namespace ReactiveUI.Sample.Tests
 
                 fixture.Start.Execute(null);
 
-                sched.RunToMilliseconds(10);
+                sched.AdvanceByMs(10);
                 Assert.AreEqual(BlockTimerViewState.Started, lastState);
 
                 // Run to 10 minutes in and hit Cancel
-                sched.RunToMilliseconds(10 * 60 * 1000);
+                sched.AdvanceByMs(10 * 60 * 1000);
                 fixture.Cancel.Execute(null);
 
                 // Run way past the end
-                sched.RunToMilliseconds(60 * 60 * 1000);
+                sched.AdvanceByMs(60 * 60 * 1000);
                 Assert.AreEqual(BlockTimerViewState.ShouldCancel, lastState);
                 Assert.IsFalse(fixture.Model.IsObjectValid());
             });
