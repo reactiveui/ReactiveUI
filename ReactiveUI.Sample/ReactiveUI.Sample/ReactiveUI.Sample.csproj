@@ -38,26 +38,41 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
-    <Reference Include="ReactiveUI">
-      <HintPath>..\ext\ReactiveUI.dll</HintPath>
+    <Reference Include="Microsoft.Reactive.Testing, Version=1.1.11011.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\ext\Microsoft.Reactive.Testing.dll</HintPath>
     </Reference>
-    <Reference Include="ReactiveUI.Blend">
-      <HintPath>..\ext\ReactiveUI.Blend.dll</HintPath>
-    </Reference>
-    <Reference Include="ReactiveUI.Xaml">
-      <HintPath>..\ext\ReactiveUI.Xaml.dll</HintPath>
+    <Reference Include="NLog, Version=2.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\NLog.2.0.0.2000\lib\net40\NLog.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Data" />
-    <Reference Include="System.Reactive">
+    <Reference Include="System.Reactive, Version=1.1.11011.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\ext\System.Reactive.dll</HintPath>
+      <HintPath>..\..\ext\System.Reactive.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Reactive.Testing">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\ext\Microsoft.Reactive.Testing.dll</HintPath>
+    <Reference Include="System.Reactive.Windows.Threading">
+      <HintPath>..\..\ext\System.Reactive.Windows.Threading.dll</HintPath>
     </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
@@ -113,6 +128,7 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <None Include="app.config" />
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -152,6 +168,20 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\ReactiveUI.Blend\ReactiveUI.Blend.csproj">
+      <Project>{3870ea63-afdf-4d49-b4d6-8299506e67b4}</Project>
+      <Name>ReactiveUI.Blend</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\ReactiveUI.Xaml\ReactiveUI.Xaml.csproj">
+      <Project>{761ac9ba-4a9c-440c-9b6c-2569978f0610}</Project>
+      <Name>ReactiveUI.Xaml</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\ReactiveUI\ReactiveUI.csproj">
+      <Project>{292a477b-bb94-43c1-984e-e177ef9fedb7}</Project>
+      <Name>ReactiveUI</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
