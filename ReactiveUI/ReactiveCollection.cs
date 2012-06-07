@@ -456,7 +456,7 @@ namespace ReactiveUI
             NotifyCollectionChangedEventHandler handler = CollectionChanged;
 
             if (handler != null) {
-                handler(this, e);
+                RxApp.DeferredScheduler.Schedule(() => handler(this, e));
             }
         }
 
@@ -465,7 +465,7 @@ namespace ReactiveUI
             PropertyChangedEventHandler handler = _propertyChangedEventHandler;
 
             if (handler != null) {
-                handler(this, e);
+                RxApp.DeferredScheduler.Schedule(() => handler(this, e));
             }
         }
 #endif
