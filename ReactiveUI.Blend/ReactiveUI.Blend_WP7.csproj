@@ -49,6 +49,7 @@
     <Reference Include="Microsoft.Reactive.Testing">
       <HintPath>..\ext\WP71\Microsoft.Reactive.Testing.dll</HintPath>
     </Reference>
+    <Reference Include="mscorlib.Extensions" />
     <Reference Include="NLog">
       <HintPath>..\packages\NLog.2.0.0.2000\lib\sl4-windowsphone71\NLog.dll</HintPath>
     </Reference>

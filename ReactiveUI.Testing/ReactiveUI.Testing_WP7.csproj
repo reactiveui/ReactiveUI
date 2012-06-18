@@ -67,6 +67,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Reactive.Testing, Version=1.1.11111.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="mscorlib.Extensions" />
     <Reference Include="NLog">
       <HintPath>..\packages\NLog.2.0.0.2000\lib\sl4-windowsphone71\NLog.dll</HintPath>
     </Reference>
