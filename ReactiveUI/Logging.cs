@@ -6,12 +6,44 @@ using System.Text;
 using System.Threading;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
-using NLog;
-using NLog.Config;
-using NLog.Targets;
 
 namespace ReactiveUI
 {
+    public interface Logger
+    {
+        void Fatal(string message);
+
+        void Error(Exception ex);
+
+        void Error(string message, params object[] args);
+        void Warn(string message, params object[] args);
+        void Info(string message, params object[] args);
+        void Debug(string message, params object[] args);
+
+        void WarnException(string message, Exception ex);
+    }
+
+    public static class LogManager
+    {
+        static readonly Logger NullLoggerInstance = new NullLogger();
+
+        public static Func<string, Logger> GetLogger = type => NullLoggerInstance;
+
+        class NullLogger : Logger
+        {
+            public void Fatal(string message) { }
+
+            public void Error(Exception ex) { }
+
+            public void Error(string message, params object[] args) { }
+            public void Warn(string message, params object[] args) { }
+            public void Info(string message, params object[] args) { }
+            public void Debug(string message, params object[] args) { }
+
+            public void WarnException(string message, Exception ex) { }
+        }
+    }
+
     /// <summary>
     /// "Implement" this interface in your class to get access to the Log() 
     /// Mixin, which will give you a Logger that includes the class name in the
@@ -21,23 +53,6 @@ namespace ReactiveUI
 
     public static class LogHost
     {
-        static LogHost()
-        {
-#if !WINRT
-            if (LogManager.Configuration == null)
-            {
-                var target = new ConsoleTarget() { Layout = "${level:uppercase=true} ${logger}: ${message}${onexception:inner=${newline}${exception:format=tostring}}" };
-                var config = new LoggingConfiguration();
-
-                config.LoggingRules.Add(new LoggingRule("*", LogLevel.Info, target));
-                LogManager.Configuration = config;
-
-                LogHost.Default.Info("*** NLog was not configured, setting up a default configuration ***");
-            }
-#endif
-        }
-
-
 #if WINRT
         public static dynamic Default {
             get { return LogManager.GetLogger("Logger"); }

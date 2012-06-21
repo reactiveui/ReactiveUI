@@ -55,9 +55,6 @@
     <Reference Include="xunit.extensions">
       <HintPath>..\ext\xunit\xunit.extensions.dll</HintPath>
     </Reference>
-    <Reference Include="NLog, Version=2.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c">
-      <HintPath>..\packages\NLog.2.0.0.2000\lib\net40\NLog.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ErrorsTest.cs" />

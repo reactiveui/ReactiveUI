@@ -10,7 +10,7 @@ using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Reflection;
 using System.Threading;
-using NLog;
+
 using System.Threading.Tasks;
 using System.Reactive.Threading.Tasks;
 
