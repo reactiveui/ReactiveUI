@@ -7,7 +7,6 @@ using System.Reactive.Subjects;
 using System.Reactive.Threading.Tasks;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using NLog;
 using ReactiveUI;
 
 namespace ReactiveUI.Xaml

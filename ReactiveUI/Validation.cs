@@ -7,7 +7,6 @@ using System.ComponentModel.DataAnnotations;
 using System.Reactive.Subjects;
 using System.Reflection;
 using System.Runtime.Serialization;
-using NLog;
 
 namespace ReactiveUI
 {
