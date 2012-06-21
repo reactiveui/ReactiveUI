@@ -68,9 +68,6 @@
   <ItemGroup>
     <Reference Include="Microsoft.Reactive.Testing, Version=2.0.20814.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="mscorlib.Extensions" />
-    <Reference Include="NLog">
-      <HintPath>..\packages\NLog.2.0.0.2000\lib\sl4-windowsphone71\NLog.dll</HintPath>
-    </Reference>
     <Reference Include="System.Observable" />
 
     <Reference Include="Microsoft.Reactive.Testing, Version=2.0.20814.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">

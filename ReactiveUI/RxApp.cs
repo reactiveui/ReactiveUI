@@ -6,8 +6,10 @@ using System.Reactive.Concurrency;
 using System.Diagnostics.Contracts;
 using System.Linq;      
 using System.Linq.Expressions;
+using System.Reactive.Subjects;
 using System.Reflection;
-using NLog;
+using System.Threading;
+
 using System.Threading.Tasks;
 using System.Reactive.Threading.Tasks;
 
@@ -57,6 +59,8 @@ namespace ReactiveUI
                 }));
 
             MessageBus = new MessageBus();
+
+            LoggerFactory = t => new DebugLogger();
 
             RxApp.Register(typeof(INPCObservableForProperty), typeof(ICreatesObservableForProperty));
             RxApp.Register(typeof(IRNPCObservableForProperty), typeof(ICreatesObservableForProperty));
@@ -141,7 +145,13 @@ namespace ReactiveUI
         /// string parameter is the 'prefix' (usually the class name of the log
         /// entry)
         /// </summary>
-        //public static Func<string, ILog> LoggerFactory { get; set; }
+
+        static Func<Type, IRxUILogger> _LoggerFactory;
+        static internal readonly Subject<Unit> _LoggerFactoryChanged = new Subject<Unit>();
+        public static Func<Type, IRxUILogger> LoggerFactory {
+            get { return _LoggerFactory; }
+            set { _LoggerFactory = value; _LoggerFactoryChanged.OnNext(Unit.Default); }
+        }
 
         [ThreadStatic] static IMessageBus _UnitTestMessageBus;
         static IMessageBus _MessageBus;
