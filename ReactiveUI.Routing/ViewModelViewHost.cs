@@ -1,5 +1,7 @@
 using System;
+using System.Reactive;
 using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using System.Windows;
 using ReactiveUI.Xaml;
 
@@ -27,7 +29,9 @@ namespace ReactiveUI.Routing
             set { SetValue(ViewModelProperty, value); }
         }
         public static readonly DependencyProperty ViewModelProperty = 
-            DependencyProperty.Register("ViewModel", typeof(IReactiveNotifyPropertyChanged), typeof(ViewModelViewHost), new PropertyMetadata(null));
+            DependencyProperty.Register("ViewModel", typeof(IReactiveNotifyPropertyChanged), typeof(ViewModelViewHost), new PropertyMetadata(null, somethingChanged));
+
+        readonly Subject<Unit> updateViewModel = new Subject<Unit>();
 
         /// <summary>
         /// If no ViewModel is displayed, this content (i.e. a control) will be displayed.
@@ -37,14 +41,13 @@ namespace ReactiveUI.Routing
             set { SetValue(DefaultContentProperty, value); }
         }
         public static readonly DependencyProperty DefaultContentProperty =
-            DependencyProperty.Register("DefaultContent", typeof(object), typeof(ViewModelViewHost), new PropertyMetadata(null));
+            DependencyProperty.Register("DefaultContent", typeof(object), typeof(ViewModelViewHost), new PropertyMetadata(null, somethingChanged));
 
         public ViewModelViewHost()
         {
-            var latestViewModel = Observable.CombineLatest(
-                this.ObservableFromDP(x => x.ViewModel).Select(x => x.Value).StartWith((IReactiveNotifyPropertyChanged)null),
-                this.ObservableFromDP(x => x.DataContext).Select(x => x.Value).OfType<IReactiveNotifyPropertyChanged>().StartWith((IReactiveNotifyPropertyChanged)null),
-                (vm, dc) => vm ?? dc);
+            var latestViewModel = updateViewModel
+                .Select(_ => (IReactiveNotifyPropertyChanged)(ViewModel ?? DataContext))
+                .StartWith((IReactiveNotifyPropertyChanged) null);
 
             latestViewModel.Subscribe(vm => {
                 if (vm == null) {
@@ -56,6 +59,11 @@ namespace ReactiveUI.Routing
                 view.ViewModel = vm;
                 Content = view;
             });
+        }
+
+        static void somethingChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs dependencyPropertyChangedEventArgs)
+        {
+            ((ViewModelViewHost)dependencyObject).updateViewModel.OnNext(Unit.Default);
         }
     }
 }
