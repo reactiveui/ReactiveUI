@@ -8,6 +8,7 @@
             <summary>
             Represents an object that schedules units of work on the Windows Runtime threadpool.
             </summary>
+            <seealso cref="P:System.Reactive.Concurrency.ThreadPoolScheduler.Default">Singleton instance of this type exposed through this static property.</seealso>
         </member>
         <member name="M:System.Reactive.Concurrency.ThreadPoolScheduler.#ctor">
             <summary>
@@ -27,22 +28,35 @@
             <param name="priority">Priority for scheduled units of work.</param>
             <param name="options">Options that configure how work is scheduled.</param>
         </member>
+        <member name="M:System.Reactive.Concurrency.ThreadPoolScheduler.Schedule``1(``0,System.Func{System.Reactive.Concurrency.IScheduler,``0,System.IDisposable})">
+            <summary>
+            Schedules an action to be executed.
+            </summary>
+            <typeparam name="TState">The type of the state passed to the scheduled action.</typeparam>
+            <param name="state">State passed to the action to be executed.</param>
+            <param name="action">Action to be executed.</param>
+            <returns>The disposable object used to cancel the scheduled action (best effort).</returns>
+        </member>
         <member name="M:System.Reactive.Concurrency.ThreadPoolScheduler.Schedule``1(``0,System.TimeSpan,System.Func{System.Reactive.Concurrency.IScheduler,``0,System.IDisposable})">
             <summary>
             Schedules an action to be executed after dueTime, using a Windows.System.Threading.ThreadPoolTimer object.
             </summary>
+            <typeparam name="TState">The type of the state passed to the scheduled action.</typeparam>
             <param name="state">State passed to the action to be executed.</param>
             <param name="action">Action to be executed.</param>
             <param name="dueTime">Relative time after which to execute the action.</param>
             <returns>The disposable object used to cancel the scheduled action (best effort).</returns>
         </member>
-        <member name="M:System.Reactive.Concurrency.ThreadPoolScheduler.Schedule``1(``0,System.Func{System.Reactive.Concurrency.IScheduler,``0,System.IDisposable})">
+        <member name="M:System.Reactive.Concurrency.ThreadPoolScheduler.SchedulePeriodic``1(``0,System.TimeSpan,System.Func{``0,``0})">
             <summary>
-            Schedules an action to be executed.
+            Schedules a periodic piece of work, using a Windows.System.Threading.ThreadPoolTimer object.
             </summary>
-            <param name="state">State passed to the action to be executed.</param>
-            <param name="action">Action to be executed.</param>
-            <returns>The disposable object used to cancel the scheduled action (best effort).</returns>
+            <typeparam name="TState">The type of the state passed to the scheduled action.</typeparam>
+            <param name="state">Initial state passed to the action upon the first iteration.</param>
+            <param name="period">Period for running the work periodically.</param>
+            <param name="action">Action to be executed, potentially updating the state.</param>
+            <returns>The disposable object used to cancel the scheduled recurring action (best effort).</returns>
+            <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="period"/> is negative.</exception>
         </member>
         <member name="P:System.Reactive.Concurrency.ThreadPoolScheduler.Default">
             <summary>
@@ -61,8 +75,9 @@
         </member>
         <member name="T:System.Reactive.Concurrency.TaskPoolScheduler">
             <summary>
-            Represents an object that schedules units of work using a provided TaskFactory.
+            Represents an object that schedules units of work on the Task Parallel Library (TPL) taskpool.
             </summary>
+            <seealso cref="P:System.Reactive.Concurrency.TaskPoolScheduler.Default">Instance of this type using the default TaskScheduler to schedule work on the TPL taskpool.</seealso>
         </member>
         <member name="M:System.Reactive.Concurrency.TaskPoolScheduler.#ctor(System.Threading.Tasks.TaskFactory)">
             <summary>
@@ -74,14 +89,16 @@
             <summary>
             Schedules an action to be executed.
             </summary>
+            <typeparam name="TState">The type of the state passed to the scheduled action.</typeparam>
             <param name="state">State passed to the action to be executed.</param>
             <param name="action">Action to be executed.</param>
             <returns>The disposable object used to cancel the scheduled action (best effort).</returns>
         </member>
         <member name="M:System.Reactive.Concurrency.TaskPoolScheduler.Schedule``1(``0,System.TimeSpan,System.Func{System.Reactive.Concurrency.IScheduler,``0,System.IDisposable})">
             <summary>
-            Schedules an action to be executed after dueTime, using a System.Threading.Timer object.
+            Schedules an action to be executed after dueTime.
             </summary>
+            <typeparam name="TState">The type of the state passed to the scheduled action.</typeparam>
             <param name="state">State passed to the action to be executed.</param>
             <param name="action">Action to be executed.</param>
             <param name="dueTime">Relative time after which to execute the action.</param>
@@ -91,27 +108,39 @@
             <summary>
             Schedules a long-running task by creating a new thread. Cancellation happens through polling.
             </summary>
+            <typeparam name="TState">The type of the state passed to the scheduled action.</typeparam>
             <param name="state">State passed to the action to be executed.</param>
             <param name="action">Action to be executed.</param>
             <returns>The disposable object used to cancel the scheduled action (best effort).</returns>
         </member>
         <member name="M:System.Reactive.Concurrency.TaskPoolScheduler.StartStopwatch">
             <summary>
-            Gets a new stopwatch object.
+            Gets a new stopwatch ob ject.
             </summary>
             <returns>New stopwatch object; started at the time of the request.</returns>
+        </member>
+        <member name="M:System.Reactive.Concurrency.TaskPoolScheduler.SchedulePeriodic``1(``0,System.TimeSpan,System.Func{``0,``0})">
+            <summary>
+            Schedules a periodic piece of work.
+            </summary>
+            <typeparam name="TState">The type of the state passed to the scheduled action.</typeparam>
+            <param name="state">Initial state passed to the action upon the first iteration.</param>
+            <param name="period">Period for running the work periodically.</param>
+            <param name="action">Action to be executed, potentially updating the state.</param>
+            <returns>The disposable object used to cancel the scheduled recurring action (best effort).</returns>
+            <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="period"/> is negative.</exception>
         </member>
         <member name="P:System.Reactive.Concurrency.TaskPoolScheduler.Default">
             <summary>
             Gets an instance of this scheduler that uses the default TaskScheduler.
             </summary>
         </member>
-        <member name="T:System.Reactive.PlatformServices.PlatformEnlightenmentProvider">
+        <member name="T:System.Reactive.PlatformServices.CurrentPlatformEnlightenmentProvider">
             <summary>
             (Infrastructure) Provider for platform-specific framework enlightenments.
             </summary>
         </member>
-        <member name="M:System.Reactive.PlatformServices.PlatformEnlightenmentProvider.GetService``1(System.Object[])">
+        <member name="M:System.Reactive.PlatformServices.CurrentPlatformEnlightenmentProvider.GetService``1(System.Object[])">
             <summary>
             (Infastructure) Tries to gets the specified service.
             </summary>
