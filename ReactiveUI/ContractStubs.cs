@@ -17,7 +17,7 @@ namespace System.Diagnostics.Contracts
 
 #endif
 
-#if IOS
+#if IOS || WINRT
 
 namespace System.ComponentModel
 {
