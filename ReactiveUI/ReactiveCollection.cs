@@ -13,7 +13,6 @@ using System.Runtime.Serialization;
 using System.Diagnostics.Contracts;
 using System.Threading;
 using System.Reactive.Disposables;
-using NLog;
 using System.Globalization;
 
 namespace ReactiveUI

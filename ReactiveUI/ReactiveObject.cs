@@ -11,7 +11,6 @@ using System.Reflection;
 using System.Runtime.Serialization;
 using System.Threading;
 using System.Reactive.Concurrency;
-using NLog;
 
 #if DOTNETISOLDANDSAD || WINDOWS_PHONE
 using System.Concurrency;
