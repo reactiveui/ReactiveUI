@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Reactive.Linq;
 using System.Linq;
+using System.Reactive.Subjects;
 using System.Text;
 using System.Windows;
 using ReactiveUI;
@@ -33,7 +34,9 @@ namespace ReactiveUI.Routing
             set { SetValue(RouterProperty, value); }
         }
         public static readonly DependencyProperty RouterProperty =
-            DependencyProperty.Register("Router", typeof(RoutingState), typeof(RoutedViewHost), new PropertyMetadata(null));
+            DependencyProperty.Register("Router", typeof(RoutingState), typeof(RoutedViewHost), new PropertyMetadata(null, routerChanged));
+
+        readonly Subject<RoutingState> routerChange;
 
         /// <summary>
         /// This content is displayed whenever there is no page currently
@@ -48,24 +51,34 @@ namespace ReactiveUI.Routing
 
         public RoutedViewHost()
         {
-            this.ObservableFromDP(x => x.Router)
-                .Subscribe(x => {
-                    if (_inner != null) {
-                        _inner.Dispose();
-                        _inner = null;
+            routerChange = new Subject<RoutingState>();
+
+            routerChange.Subscribe(x => {
+                if (_inner != null) {
+                    _inner.Dispose();
+                    _inner = null;
+                }
+
+                _inner = x.ViewModelObservable().Subscribe(vm => {
+                    if (vm == null) {
+                        Content = DefaultContent;
+                        return;
                     }
 
-                    _inner = x.Value.ViewModelObservable().Subscribe(vm => {
-                        if (vm == null) {
-                            Content = DefaultContent;
-                            return;
-                        }
-
-                        var view = RxRouting.ResolveView(vm);
-                        view.ViewModel = vm;
-                        Content = view;
-                    });
+                    var view = RxRouting.ResolveView(vm);
+                    view.ViewModel = vm;
+                    Content = view;
                 });
+            });
         }
+
+        static void routerChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs dependencyPropertyChangedEventArgs)
+        {
+            // XXX: This is to work around the fact that ObservableFromDP 
+            // is broken in WinRT
+            var This = ((RoutedViewHost) dependencyObject);
+            This.routerChange.OnNext(This.Router);
+        }
+
     }
 }
