@@ -335,7 +335,7 @@ namespace ReactiveUI
         internal static IScheduler findDispatcherScheduler()
         {
 #if WINRT
-            return System.Reactive.Concurrency.CoreDispatcherScheduler.Default;
+            return System.Reactive.Concurrency.CoreDispatcherScheduler.Current;
 #else
             Type result = null;
             try {

@@ -17,7 +17,7 @@ namespace System.Diagnostics.Contracts
 
 #endif
 
-#if (SILVERLIGHT && !SILVERLIGHT5) || IOS || WINRT
+#if IOS || WINRT
 
 namespace System.ComponentModel
 {
@@ -40,20 +40,6 @@ namespace System.ComponentModel
     {
         event PropertyChangingEventHandler PropertyChanging;
     }
-}
-
-#endif
-
-#if IOS
-
-namespace System.Windows.Input
-{
-	public interface ICommand 
-	{
-		bool CanExecute(object parameter);
-		void Execute(object parameter);
-		event EventHandler CanExecuteChanged;
-	}
 }
 
 #endif
