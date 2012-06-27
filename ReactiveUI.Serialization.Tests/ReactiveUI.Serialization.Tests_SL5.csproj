@@ -79,8 +79,7 @@
     <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight">
       <HintPath>..\ext\SL5\Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json.Silverlight, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="Newtonsoft.Json.Silverlight">
       <HintPath>..\ext\SL5\Newtonsoft.Json.Silverlight.dll</HintPath>
     </Reference>
     <Reference Include="NLog">
@@ -88,9 +87,7 @@
     </Reference>
     <Reference Include="System.ComponentModel.DataAnnotations, Version=5.0.5.0, Culture=neutral, PublicKeyToken=ddd0da4d3e678217, processorArchitecture=MSIL" />
     <Reference Include="System.Reactive">
-      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\ext\SL5\System.Reactive.dll</HintPath>
-      <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Reactive.Testing">
       <HintPath>..\ext\SL5\Microsoft.Reactive.Testing.dll</HintPath>
@@ -110,7 +107,9 @@
     <Reference Include="xunit.extensions-silverlight4">
       <HintPath>..\ext\xunit\xunit.extensions-silverlight4.dll</HintPath>
     </Reference>
-    <Reference Include="xunitcontrib.runner.silverlight.toolkit-silverlight4, Version=0.1.0.40356, Culture=neutral, processorArchitecture=MSIL" />
+    <Reference Include="xunitcontrib.runner.silverlight.toolkit-silverlight4">
+      <HintPath>..\ext\xunit\xunitcontrib.runner.silverlight.toolkit-silverlight4.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App.xaml.cs">
