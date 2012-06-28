@@ -580,14 +580,13 @@ namespace ReactiveUI
         {
             Contract.Requires(selector != null);
 
-            var thisAsColl = (IList<T>)This;
             var collChanged = new Subject<NotifyCollectionChangedEventArgs>();
 
             if (selector == null) {
                 selector = (x => (TNew)Convert.ChangeType(x, typeof(TNew), CultureInfo.CurrentCulture));
             }
 
-            var origEnum = (IEnumerable<T>)thisAsColl;
+            var origEnum = This;
             origEnum = (filter != null ? origEnum.Where(filter) : origEnum);
             var enumerable = origEnum.Select(selector);
             enumerable = (orderer != null ? enumerable.OrderBy(x => x, new FuncComparator<TNew>(orderer)) : enumerable);
