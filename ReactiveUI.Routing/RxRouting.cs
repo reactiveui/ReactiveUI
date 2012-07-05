@@ -29,15 +29,50 @@ namespace ReactiveUI.Routing
         public static IViewForViewModel ResolveView<T>(T viewModel)
             where T : IReactiveNotifyPropertyChanged
         {
+            // Given IFooBarViewModel (whose name we derive from T), we'll look 
+            // for a few things:
+            // * IFooBarView that implements IViewForViewModel
+            // * IViewForViewModel<IFooBarViewModel>
+            // * IViewForViewModel<FooBarViewModel> (the original behavior in RxUI 3.1)
+
             var attrs = viewModel.GetType().GetCustomAttributes(typeof (ViewContractAttribute), true);
             string key = null;
 
-            if (attrs.Count() > 0) {
+            if (attrs.Any()) {
                 key = ((ViewContractAttribute) attrs.First()).Contract;
             }
 
+            // IFooBarView that implements IViewForViewModel
+            var typeToFind = interfaceifyTypeName(ViewModelToViewFunc(typeof(T).FullName));
+            try {
+                var type = RxApp.reallyFindType(typeToFind, true);
+
+                var ret = RxApp.GetService(type, key) as IViewForViewModel;
+                if (ret != null) return ret;
+            } catch (TypeLoadException ex) {
+                LogHost.Default.DebugException("Couldn't instantiate " + typeToFind, ex);
+            }
+
             var viewType = typeof (IViewForViewModel<>);
+
+            // IViewForViewModel<IFooBarViewModel>
+            try {
+                var type = RxApp.reallyFindType(interfaceifyTypeName(typeof(T).FullName), true);
+                var ret =  RxApp.GetService(viewType.MakeGenericType(type), key) as IViewForViewModel;
+                if (ret != null) return ret;
+            } catch (TypeLoadException ex) {
+                LogHost.Default.DebugException("Couldn't instantiate View via pure interface type", ex);
+            }
+
+            // IViewForViewModel<FooBarViewModel> (the original behavior in RxUI 3.1)
             return (IViewForViewModel) RxApp.GetService(viewType.MakeGenericType(viewModel.GetType()), key);
+        }
+
+        static string interfaceifyTypeName(string typeName)
+        {
+            var parts = typeName.Split('.');
+            parts[parts.Length - 1] = "I" + parts[parts.Length - 1];
+            return String.Join(".", parts, 0, parts.Length);
         }
     }
 

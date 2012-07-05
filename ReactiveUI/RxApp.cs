@@ -450,6 +450,22 @@ namespace ReactiveUI
             }
             return ret;
         }
+
+        static MemoizingMRUCache<string, Type> typeCache = new MemoizingMRUCache<string, Type>((type,_) => {
+            return AppDomain.CurrentDomain.GetAssemblies()
+                .SelectMany(x => x.GetTypes())
+                .Where(x => x.FullName == type)
+                .FirstOrDefault();
+        }, 20);
+
+        internal static Type reallyFindType(string type, bool throwOnFailure) 
+        {
+            lock (typeCache) {
+                var ret = typeCache.Get(type);
+                if (ret != null || !throwOnFailure) return ret;
+                throw new TypeLoadException();
+            }
+        }
     }
 
     /* TODO: Move this stuff somewhere that actually makes sense */

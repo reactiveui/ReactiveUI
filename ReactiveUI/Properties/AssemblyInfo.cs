@@ -17,4 +17,7 @@ using System.Runtime.CompilerServices;
 [assembly: InternalsVisibleTo("ReactiveUI.Tests_SL4")]
 [assembly: InternalsVisibleTo("ReactiveUI.Tests_SL5")]
 [assembly: InternalsVisibleTo("ReactiveUI.Tests_WinRT")]
+[assembly: InternalsVisibleTo("ReactiveUI.Routing")]
+[assembly: InternalsVisibleTo("ReactiveUI.Routing_SL5")]
+[assembly: InternalsVisibleTo("ReactiveUI.Routing_WP7")]
 [assembly: InternalsVisibleTo("ReactiveUI.Routing_WinRT")]
