@@ -452,10 +452,15 @@ namespace ReactiveUI
         }
 
         static MemoizingMRUCache<string, Type> typeCache = new MemoizingMRUCache<string, Type>((type,_) => {
+#if WINRT
+            // WinRT hates your favorite band too.
+            return Type.GetType(type, false);
+#else
             return AppDomain.CurrentDomain.GetAssemblies()
                 .SelectMany(x => x.GetTypes())
                 .Where(x => x.FullName == type)
                 .FirstOrDefault();
+#endif
         }, 20);
 
         internal static Type reallyFindType(string type, bool throwOnFailure) 
