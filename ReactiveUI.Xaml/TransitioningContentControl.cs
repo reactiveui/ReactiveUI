@@ -53,8 +53,6 @@ namespace ReactiveUI.Xaml
         public TransitioningContentControl()
         {
             this.DefaultStyleKey = typeof (TransitioningContentControl);
-
-            this.Loaded += this.TransitioningContentControlLoaded;
         }
 
         /// <summary>
@@ -286,7 +284,7 @@ namespace ReactiveUI.Xaml
             return transition;
         }
 
-        void TransitioningContentControlLoaded(object sender, RoutedEventArgs e)
+        public override void OnApplyTemplate()
         {
             // Wire up all of the various control parts.
             this.container = (Grid) GetTemplateChild("PART_Container");
