@@ -404,7 +404,7 @@ namespace ReactiveUI
             }, 50/*items*/);
 #endif
 
-        internal static FieldInfo getFieldInfoForProperty<TObj>(string prop_name) 
+        internal static FieldInfo getFieldInfoForProperty<TObj>(string prop_name, bool dontThrow = false)
             where TObj : IReactiveNotifyPropertyChanged
         {
             Contract.Requires(prop_name != null);
@@ -414,10 +414,11 @@ namespace ReactiveUI
                 field = fieldInfoTypeCache.Get(new Tuple<Type,string>(typeof(TObj), prop_name));
             }
 
-            if (field == null) {
+            if (field == null && !dontThrow) {
                 throw new ArgumentException("You must declare a backing field for this property named: " + 
                     RxApp.GetFieldNameForProperty(prop_name));
             }
+
             return field;
         }
 
