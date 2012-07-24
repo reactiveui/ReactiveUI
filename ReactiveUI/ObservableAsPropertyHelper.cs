@@ -173,8 +173,11 @@ namespace ReactiveUI
 
             string propName = RxApp.simpleExpressionToPropertyName(property);
 
-            var fi = RxApp.getFieldInfoForProperty<TObj>(propName);
-            fi.SetValue(source, ret);
+            // NB: Some people decided to name their backing field something
+            // weird and use the return value of this method in RxUI 2. If they
+            // did that, we'll just roll with it.
+            var fi = RxApp.getFieldInfoForProperty<TObj>(propName, true);
+            if (fi != null) fi.SetValue(source, ret);
 
             return ret;
         }
