@@ -160,7 +160,7 @@ namespace ReactiveUI.Xaml
 
         public void Execute(object parameter)
         {
-            this.Log().Info("{0:X}: Executed", this.GetHashCode());
+            this.Log().Debug("{0:X}: Executed", this.GetHashCode());
             executeSubject.OnNext(parameter);
         }
 

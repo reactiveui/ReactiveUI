@@ -105,7 +105,7 @@ namespace ReactiveUI.Xaml
                 .DistinctUntilChanged();
 
             CanExecuteObservable.Subscribe(x => {
-                this.Log().Info("Setting canExecuteLatest to {0}", x);
+                this.Log().Debug("Setting canExecuteLatest to {0}", x);
                 _canExecuteLatest = x;
                 if (CanExecuteChanged != null) {
                     CanExecuteChanged(this, new EventArgs());
@@ -147,7 +147,7 @@ namespace ReactiveUI.Xaml
             if (_canExecuteExplicitFunc != null) {
                 _canExecuteSubject.OnNext(_canExecuteExplicitFunc(parameter));
             }
-            this.Log().Info("CanExecute: returning {0}", _canExecuteLatest);
+            this.Log().Debug("CanExecute: returning {0}", _canExecuteLatest);
             return _canExecuteLatest;
         }
 
