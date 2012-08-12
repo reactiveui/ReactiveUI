@@ -117,6 +117,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DependencyObjectObservableForProperty.cs" />
     <Compile Include="Errors.cs" />
     <Compile Include="DependencyObjectMixin.cs" />
     <Compile Include="Interfaces.cs" />
