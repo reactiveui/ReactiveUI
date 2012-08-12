@@ -66,7 +66,8 @@ namespace ReactiveUI.Routing.Tests
         {
             RxApp.ConfigureServiceLocator(
                 (x, _) => (x.Name == "IBazView" ? new BazView() : null), 
-                (x, _) => null);
+                (x, _) => null,
+                (c, t, k) => { });
 
             var vm = new BazViewModel(null);
 
@@ -80,7 +81,8 @@ namespace ReactiveUI.Routing.Tests
         {
             RxApp.ConfigureServiceLocator(
                 (x, _) => (x == typeof(IViewForViewModel<IFooBarViewModel>) ? new FooBarView() : null), 
-                (x, _) => null);
+                (x, _) => null,
+                (c, t, k) => { });
 
             var vm = new FooBarViewModel(null);
 
