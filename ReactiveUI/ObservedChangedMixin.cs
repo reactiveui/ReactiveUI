@@ -157,7 +157,7 @@ namespace ReactiveUI
                 this IObservable<TValue> This, 
                 TTarget target,
                 Expression<Func<TTarget, TValue>> property)
-            where TTarget : IReactiveNotifyPropertyChanged
+            where TTarget : class
         {
             var sourceSub = new MultipleAssignmentDisposable();
             var source = This;
@@ -182,13 +182,11 @@ namespace ReactiveUI
                 }
 
                 pi = RxApp.getPropertyInfoOrThrow(current.GetType(), propNames.Last());
-                sourceSub.Disposable = This.Subscribe(x => {
-                    pi.SetValue(current, x, null);
-                });
+                sourceSub.Disposable = This.Subscribe(x => pi.SetValue(current, x, null));
             });
 
-            IDisposable[] toDispose = new IDisposable[] {sourceSub, null};
-            string[] propertyNames = RxApp.expressionToPropertyNames(property);
+            var toDispose = new IDisposable[] {sourceSub, null};
+            var propertyNames = RxApp.expressionToPropertyNames(property);
             toDispose[1] = target.ObservableForProperty(property).Subscribe(_ => subscribify(target, propertyNames));
 
             subscribify(target, propertyNames);

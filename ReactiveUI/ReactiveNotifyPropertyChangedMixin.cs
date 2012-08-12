@@ -31,7 +31,7 @@ namespace ReactiveUI
                 this TSender This,
                 Expression<Func<TSender, TValue>> property,
                 bool beforeChange = false)
-            where TSender : INotifyPropertyChanged
+            where TSender : class
         {
             var propertyNames = new LinkedList<string>(RxApp.expressionToPropertyNames(property));
             var subscriptions = new LinkedList<IDisposable>(propertyNames.Select(x => (IDisposable) null));
@@ -62,7 +62,7 @@ namespace ReactiveUI
                 ret);
 
             return Observable.Create<IObservedChange<TSender, TValue>>(x => {
-                var disp = ret.Subscribe(x.OnNext, x.OnError, x.OnCompleted);
+                var disp = ret.Subscribe(x);
                 return () => {
                     subscriptions.ForEach(y => y.Dispose());
                     disp.Dispose();
@@ -93,8 +93,7 @@ namespace ReactiveUI
                     throw new ArgumentException(String.Format("Property '{0}' does not exist in expression", current.Value));
                 }
 
-                var notifyObj = wrapInpcObjectIfNeeded(currentObj);
-                if (notifyObj != null) {
+                if (currentObj != null) {
                     var capture = new {current, currentObj, pi, currentSub};
                     var toDispose = new IDisposable[2];
 
@@ -107,11 +106,11 @@ namespace ReactiveUI
                     TValue prevVal = default(TValue);
                     bool prevValSet = valGetter.TryGetValue(out prevVal);
 
-                    toDispose[0] = notifyObj.Changing.Where(x => x.PropertyName == capture.current.Value).Subscribe(x => {
+                    toDispose[0] = notifyForProperty(currentObj, capture.current.Value, true).Subscribe(x => {
                         prevValSet = valGetter.TryGetValue(out prevVal);
                     });
 
-                    toDispose[1] = notifyObj.Changed.Where(x => x.PropertyName == capture.current.Value).Subscribe(x => {
+                    toDispose[1] = notifyForProperty(currentObj, capture.current.Value, false).Subscribe(x => {
                         subscribeToExpressionChain(origSource, origPath, capture.pi.GetValue(capture.currentObj, null), capture.current.Next, capture.currentSub.Next, beforeChange, subject);
 
                         TValue newVal;
@@ -144,19 +143,18 @@ namespace ReactiveUI
                 currentObj = pi.GetValue(currentObj, null);
             }
 
-            var finalNotify = wrapInpcObjectIfNeeded(currentObj);
             if (currentSub.Value != null) {
                 currentSub.Value.Dispose();
             }
 
-            if (finalNotify == null) {
+            if (currentObj == null) {
                 return;
             }
 
             var propName = current.Value;
             pi = RxApp.getPropertyInfoForProperty(currentObj.GetType(), current.Value);
 
-            currentSub.Value = (beforeChange ? finalNotify.Changing : finalNotify.Changed).Where(x => x.PropertyName == propName).Subscribe(x => {
+            currentSub.Value = notifyForProperty(currentObj, propName, beforeChange).Subscribe(x => {
                 obsCh = new ObservedChange<TSender, TValue>() {
                     Sender = origSource,
                     PropertyName = origPath,
@@ -167,28 +165,25 @@ namespace ReactiveUI
             });
         }
 
-        static MemoizingMRUCache<INotifyPropertyChanged, IReactiveNotifyPropertyChanged> wrapperCache =
-            new MemoizingMRUCache<INotifyPropertyChanged, IReactiveNotifyPropertyChanged>(
-                (x, _) => new MakeObjectReactiveHelper(x),
-                25);
+        static readonly MemoizingMRUCache<Type, ICreatesObservableForProperty> notifyFactoryCache =
+            new MemoizingMRUCache<Type, ICreatesObservableForProperty>((t, _) => {
+                return RxApp.GetAllServices<ICreatesObservableForProperty>()
+                    .Aggregate(Tuple.Create(0, (ICreatesObservableForProperty)null), (acc, x) => {
+                        int score = x.GetAffinityForObject(t);
+                        return (score > acc.Item1) ? Tuple.Create(score, x) : acc;
+                    }).Item2;
+            }, 50);
 
-        static IReactiveNotifyPropertyChanged wrapInpcObjectIfNeeded(object obj)
+        static IObservable<IObservedChange<object, object>> notifyForProperty(object sender, string propertyName, bool beforeChange)
         {
-            if (obj == null) {
-                return null;
+            var result = notifyFactoryCache.Get(sender.GetType());
+            if (result == null) {
+                throw new Exception(
+                    String.Format("Couldn't find a ICreatesObservableForProperty for {0}. This should never happen, your service locator is probably broken.", 
+                    sender.GetType()));
             }
-
-            var ret = obj as IReactiveNotifyPropertyChanged;
-            if (ret != null) {
-                return ret;
-            }
-
-            var inpc = obj as INotifyPropertyChanged;
-            if (inpc != null) {
-                return wrapperCache.Get(inpc);
-            }
-
-            return null;
+            
+            return result.GetNotificationForProperty(sender, propertyName, beforeChange);
         }
 
         static string buildPropPathFromNodePtr(LinkedListNode<string> node)
@@ -226,7 +221,7 @@ namespace ReactiveUI
                 Expression<Func<TSender, TValue>> property, 
                 Func<TValue, TRet> selector, 
                 bool beforeChange = false)
-            where TSender : INotifyPropertyChanged
+            where TSender : class
         {           
             Contract.Requires(selector != null);
             return This.ObservableForProperty(property, beforeChange).Select(x => selector(x.Value));
