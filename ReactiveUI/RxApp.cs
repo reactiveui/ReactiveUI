@@ -75,6 +75,10 @@ namespace ReactiveUI
                 }));
 
             MessageBus = new MessageBus();
+
+            RxApp.Register(typeof(INPCObservableForProperty), typeof(ICreatesObservableForProperty));
+            RxApp.Register(typeof(IRNPCObservableForProperty), typeof(ICreatesObservableForProperty));
+            RxApp.Register(typeof(POCOObservableForProperty), typeof(ICreatesObservableForProperty));
         }
 
         [ThreadStatic] static IScheduler _UnitTestDeferredScheduler;

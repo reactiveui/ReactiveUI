@@ -55,6 +55,7 @@ namespace ReactiveUI.Tests
                 }
                 _InpcProperty = value;
 
+                if (PropertyChanged == null) return;
                 PropertyChanged(this, new PropertyChangedEventArgs("InpcProperty"));
             }
         }

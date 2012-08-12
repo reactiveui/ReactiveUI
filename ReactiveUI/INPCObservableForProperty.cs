@@ -15,10 +15,10 @@ namespace ReactiveUI
         public IObservable<IObservedChange<object, object>> GetNotificationForProperty(object sender, string propertyName, bool beforeChanged)
         {
             var before = sender as INotifyPropertyChanging;
-            var after = sender as INotifyPropertyChanging;
+            var after = sender as INotifyPropertyChanged;
 
             if (beforeChanged ? before == null : after == null) {
-                throw new ArgumentException("Sender doesn't implement INotifyPropertyChanging / INotifyPropertyChanged");
+                return Observable.Never<IObservedChange<object, object>>();
             }
 
             return Observable.Create<IObservedChange<object, object>>(subj => {
@@ -30,8 +30,8 @@ namespace ReactiveUI
                         .Select(x => new ObservedChange<object, object>() { Sender = sender, PropertyName = x.EventArgs.PropertyName })
                         .Subscribe(subj);
                 } else {
-                    var obs = Observable.FromEventPattern<PropertyChangingEventHandler, PropertyChangingEventArgs>(
-                        x => after.PropertyChanging += x, x => after.PropertyChanging -= x);
+                    var obs = Observable.FromEventPattern<PropertyChangedEventHandler, PropertyChangedEventArgs>(
+                        x => after.PropertyChanged += x, x => after.PropertyChanged -= x);
 
                     return obs.Where(x => x.EventArgs.PropertyName == propertyName)
                         .Select(x => new ObservedChange<object, object>() { Sender = sender, PropertyName = x.EventArgs.PropertyName })

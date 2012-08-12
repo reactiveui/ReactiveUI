@@ -42,7 +42,7 @@ namespace ReactiveUI
                 Expression<Func<TSender, T<#=i#>>> property<#=i#>, 
 			<# } #>
                 Func<<#= selectorTypeParams #>, TRet> selector)
-            where TSender : IReactiveNotifyPropertyChanged
+            where TSender : class
         {
 			<# for(int i=1; i <= length; i++) { #>
 

@@ -25,7 +25,7 @@ namespace ReactiveUI
         public static IObservable<TRet> WhenAny<TSender, TRet, T1>(this TSender This, 
 			                Expression<Func<TSender, T1>> property1, 
 			                Func<IObservedChange<TSender, T1>, TRet> selector)
-            where TSender : IReactiveNotifyPropertyChanged
+            where TSender : class
         {
 			
 			var slot1 = new ObservedChange<TSender, T1>() {
@@ -57,7 +57,7 @@ namespace ReactiveUI
 			                Expression<Func<TSender, T1>> property1, 
 			                Expression<Func<TSender, T2>> property2, 
 			                Func<IObservedChange<TSender, T1>, IObservedChange<TSender, T2>, TRet> selector)
-            where TSender : IReactiveNotifyPropertyChanged
+            where TSender : class
         {
 			
 			var slot1 = new ObservedChange<TSender, T1>() {
@@ -99,7 +99,7 @@ namespace ReactiveUI
 			                Expression<Func<TSender, T2>> property2, 
 			                Expression<Func<TSender, T3>> property3, 
 			                Func<IObservedChange<TSender, T1>, IObservedChange<TSender, T2>, IObservedChange<TSender, T3>, TRet> selector)
-            where TSender : IReactiveNotifyPropertyChanged
+            where TSender : class
         {
 			
 			var slot1 = new ObservedChange<TSender, T1>() {
@@ -151,7 +151,7 @@ namespace ReactiveUI
 			                Expression<Func<TSender, T3>> property3, 
 			                Expression<Func<TSender, T4>> property4, 
 			                Func<IObservedChange<TSender, T1>, IObservedChange<TSender, T2>, IObservedChange<TSender, T3>, IObservedChange<TSender, T4>, TRet> selector)
-            where TSender : IReactiveNotifyPropertyChanged
+            where TSender : class
         {
 			
 			var slot1 = new ObservedChange<TSender, T1>() {
@@ -213,7 +213,7 @@ namespace ReactiveUI
 			                Expression<Func<TSender, T4>> property4, 
 			                Expression<Func<TSender, T5>> property5, 
 			                Func<IObservedChange<TSender, T1>, IObservedChange<TSender, T2>, IObservedChange<TSender, T3>, IObservedChange<TSender, T4>, IObservedChange<TSender, T5>, TRet> selector)
-            where TSender : IReactiveNotifyPropertyChanged
+            where TSender : class
         {
 			
 			var slot1 = new ObservedChange<TSender, T1>() {
@@ -285,7 +285,7 @@ namespace ReactiveUI
 			                Expression<Func<TSender, T5>> property5, 
 			                Expression<Func<TSender, T6>> property6, 
 			                Func<IObservedChange<TSender, T1>, IObservedChange<TSender, T2>, IObservedChange<TSender, T3>, IObservedChange<TSender, T4>, IObservedChange<TSender, T5>, IObservedChange<TSender, T6>, TRet> selector)
-            where TSender : IReactiveNotifyPropertyChanged
+            where TSender : class
         {
 			
 			var slot1 = new ObservedChange<TSender, T1>() {
@@ -367,7 +367,7 @@ namespace ReactiveUI
 			                Expression<Func<TSender, T6>> property6, 
 			                Expression<Func<TSender, T7>> property7, 
 			                Func<IObservedChange<TSender, T1>, IObservedChange<TSender, T2>, IObservedChange<TSender, T3>, IObservedChange<TSender, T4>, IObservedChange<TSender, T5>, IObservedChange<TSender, T6>, IObservedChange<TSender, T7>, TRet> selector)
-            where TSender : IReactiveNotifyPropertyChanged
+            where TSender : class
         {
 			
 			var slot1 = new ObservedChange<TSender, T1>() {
@@ -459,7 +459,7 @@ namespace ReactiveUI
 			                Expression<Func<TSender, T7>> property7, 
 			                Expression<Func<TSender, T8>> property8, 
 			                Func<IObservedChange<TSender, T1>, IObservedChange<TSender, T2>, IObservedChange<TSender, T3>, IObservedChange<TSender, T4>, IObservedChange<TSender, T5>, IObservedChange<TSender, T6>, IObservedChange<TSender, T7>, IObservedChange<TSender, T8>, TRet> selector)
-            where TSender : IReactiveNotifyPropertyChanged
+            where TSender : class
         {
 			
 			var slot1 = new ObservedChange<TSender, T1>() {
@@ -561,7 +561,7 @@ namespace ReactiveUI
 			                Expression<Func<TSender, T8>> property8, 
 			                Expression<Func<TSender, T9>> property9, 
 			                Func<IObservedChange<TSender, T1>, IObservedChange<TSender, T2>, IObservedChange<TSender, T3>, IObservedChange<TSender, T4>, IObservedChange<TSender, T5>, IObservedChange<TSender, T6>, IObservedChange<TSender, T7>, IObservedChange<TSender, T8>, IObservedChange<TSender, T9>, TRet> selector)
-            where TSender : IReactiveNotifyPropertyChanged
+            where TSender : class
         {
 			
 			var slot1 = new ObservedChange<TSender, T1>() {
@@ -673,7 +673,7 @@ namespace ReactiveUI
 			                Expression<Func<TSender, T9>> property9, 
 			                Expression<Func<TSender, T10>> property10, 
 			                Func<IObservedChange<TSender, T1>, IObservedChange<TSender, T2>, IObservedChange<TSender, T3>, IObservedChange<TSender, T4>, IObservedChange<TSender, T5>, IObservedChange<TSender, T6>, IObservedChange<TSender, T7>, IObservedChange<TSender, T8>, IObservedChange<TSender, T9>, IObservedChange<TSender, T10>, TRet> selector)
-            where TSender : IReactiveNotifyPropertyChanged
+            where TSender : class
         {
 			
 			var slot1 = new ObservedChange<TSender, T1>() {
@@ -795,7 +795,7 @@ namespace ReactiveUI
 			                Expression<Func<TSender, T10>> property10, 
 			                Expression<Func<TSender, T11>> property11, 
 			                Func<IObservedChange<TSender, T1>, IObservedChange<TSender, T2>, IObservedChange<TSender, T3>, IObservedChange<TSender, T4>, IObservedChange<TSender, T5>, IObservedChange<TSender, T6>, IObservedChange<TSender, T7>, IObservedChange<TSender, T8>, IObservedChange<TSender, T9>, IObservedChange<TSender, T10>, IObservedChange<TSender, T11>, TRet> selector)
-            where TSender : IReactiveNotifyPropertyChanged
+            where TSender : class
         {
 			
 			var slot1 = new ObservedChange<TSender, T1>() {
@@ -927,7 +927,7 @@ namespace ReactiveUI
 			                Expression<Func<TSender, T11>> property11, 
 			                Expression<Func<TSender, T12>> property12, 
 			                Func<IObservedChange<TSender, T1>, IObservedChange<TSender, T2>, IObservedChange<TSender, T3>, IObservedChange<TSender, T4>, IObservedChange<TSender, T5>, IObservedChange<TSender, T6>, IObservedChange<TSender, T7>, IObservedChange<TSender, T8>, IObservedChange<TSender, T9>, IObservedChange<TSender, T10>, IObservedChange<TSender, T11>, IObservedChange<TSender, T12>, TRet> selector)
-            where TSender : IReactiveNotifyPropertyChanged
+            where TSender : class
         {
 			
 			var slot1 = new ObservedChange<TSender, T1>() {
