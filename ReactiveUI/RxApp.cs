@@ -52,8 +52,6 @@ namespace ReactiveUI
                 Console.Error.WriteLine("Initializing to normal mode");
 
                 DeferredScheduler = findDispatcherScheduler();
-
-                
             }
 
 #if WINDOWS_PHONE
@@ -264,6 +262,7 @@ namespace ReactiveUI
 
         static Func<Type, string, object> _getService;
         static Func<Type, string, IEnumerable<object>> _getAllServices;
+        static Action<Type, Type, string> _register;
 
         public static T GetService<T>(string key = null)
         {
@@ -272,8 +271,17 @@ namespace ReactiveUI
 
         public static object GetService(Type type, string key = null)
         {
+            lock (_preregisteredTypes) {
+                if (_preregisteredTypes.Count == 0) goto callSl;
+
+                var k = Tuple.Create(type, key);
+                if (!_preregisteredTypes.ContainsKey(k)) goto callSl;
+                return Activator.CreateInstance(_preregisteredTypes[k].First());
+            }
+            
+        callSl:
             var getService = _getService ??
-                new Func<Type, string, object>((_, __) => { throw new Exception("You need to call RxApp.ConfigureServiceLocator to set up service location"); });
+                ((_, __) => { throw new Exception("You need to call RxApp.ConfigureServiceLocator to set up service location"); });
             return getService(type, key);
         }
 
@@ -284,19 +292,61 @@ namespace ReactiveUI
 
         public static IEnumerable<object> GetAllServices(Type type, string key = null)
         {
+            lock (_preregisteredTypes) {
+                if (_preregisteredTypes.Count == 0) goto callSl;
+
+                var k = Tuple.Create(type, key);
+                if (!_preregisteredTypes.ContainsKey(k)) goto callSl;
+                return _preregisteredTypes[k].Select(Activator.CreateInstance).ToArray();
+            }
+            
+        callSl:
             var getAllServices = _getAllServices ??
-                new Func<Type, string, IEnumerable<object>>((_,__) => { throw new Exception("You need to call RxApp.ConfigureServiceLocator to set up service location"); });
+                ((_,__) => { throw new Exception("You need to call RxApp.ConfigureServiceLocator to set up service location"); });
             return getAllServices(type, key).ToArray();
         }
 
-        public static void ConfigureServiceLocator(Func<Type, string, object> getService, Func<Type, string, IEnumerable<object>> getAllServices)
+        static readonly Dictionary<Tuple<Type, string>, List<Type>> _preregisteredTypes = new Dictionary<Tuple<Type, string>, List<Type>>();
+        public static void Register(Type concreteType, Type interfaceType, string key = null)
         {
-            if (getService == null || getAllServices == null) {
+            // NB: This allows ReactiveUI itself (as well as other libraries) 
+            // to register types before the actual service locator is set up,
+            // or to serve as an ultra-crappy service locator if the app doesn't
+            // use service location
+            lock (_preregisteredTypes) {
+                if (_register == null) {
+                    var k = Tuple.Create(interfaceType, key);
+                    if (!_preregisteredTypes.ContainsKey(k)) _preregisteredTypes[k] = new List<Type>();
+                    _preregisteredTypes[k].Add(concreteType);
+                } else {
+                    _register(concreteType, interfaceType, key);
+                }
+            }
+        }
+
+        public static void ConfigureServiceLocator(
+            Func<Type, string, object> getService, 
+            Func<Type, string, IEnumerable<object>> getAllServices,
+            Action<Type, Type, string> register)
+        {
+            if (getService == null || getAllServices == null || register == null) {
                 throw new ArgumentException("Both getService and getAllServices must be implemented");
             }
 
             _getService = getService;
             _getAllServices = getAllServices;
+            _register = register;
+
+            // Empty out the types that were registered before service location
+            // was set up.
+            lock (_preregisteredTypes) {
+                _preregisteredTypes.Keys
+                    .SelectMany(x => _preregisteredTypes[x]
+                        .Select(v => Tuple.Create(v, x.Item1, x.Item2)))
+                    .ForEach(x => _register(x.Item1, x.Item2, x.Item3));
+
+                _preregisteredTypes.Clear();
+            }
         }
 
         public static bool IsServiceLocationConfigured()
