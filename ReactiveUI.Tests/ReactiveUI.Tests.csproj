@@ -79,11 +79,11 @@
     </CodeAnalysisDependentAssemblyPaths>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DependencyObjectObservableForPropertyTest.cs" />
     <Compile Include="ErrorsTest.cs" />
     <Compile Include="MakeObjectReactiveHelperTest.cs" />
     <Compile Include="ObservableAsyncMRUCacheTest.cs" />
     <Compile Include="MessageBusTest.cs" />
-    <Compile Include="DependencyObjectMixinTest.cs" />
     <Compile Include="ObservableAsPropertyHelperTest.cs" />
     <Compile Include="ObservedChangedMixinTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
