@@ -317,6 +317,24 @@ namespace ReactiveUI
         /// specified value of beforeChanged, return Observable.Never</returns>
         IObservable<IObservedChange<object, object>> GetNotificationForProperty(object sender, string propertyName, bool beforeChanged = false);
     }
+
+    public interface IViewForViewModel
+    {
+        object ViewModel { get; set; }
+    }
+
+    /// <summary>
+    /// Implement this interface on your Views to support Routing and Binding.
+    /// </summary>
+    public interface IViewForViewModel<T> : IViewForViewModel
+        where T : class
+    {
+        /// <summary>
+        /// The ViewModel corresponding to this specific View.
+        /// </summary>
+        T ViewModel { get; set; }
+    }
+
 }
 
 // vim: tw=120 ts=4 sw=4 et :
