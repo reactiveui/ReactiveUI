@@ -27,7 +27,7 @@ namespace ReactiveUI.Routing
         /// associated View.</param>
         /// <returns>The View for the ViewModel.</returns>
         public static IViewForViewModel ResolveView<T>(T viewModel)
-            where T : IReactiveNotifyPropertyChanged
+            where T : class
         {
             // Given IFooBarViewModel (whose name we derive from T), we'll look 
             // for a few things:

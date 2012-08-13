@@ -65,7 +65,7 @@ namespace ReactiveUI.Routing
     /// Implement this interface on your Views.
     /// </summary>
     public interface IViewForViewModel<T> : IViewForViewModel
-        where T : IReactiveNotifyPropertyChanged
+        where T : class
     {
         /// <summary>
         /// The ViewModel corresponding to this specific View.
