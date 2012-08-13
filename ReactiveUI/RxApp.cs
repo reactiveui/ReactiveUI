@@ -79,6 +79,11 @@ namespace ReactiveUI
             RxApp.Register(typeof(INPCObservableForProperty), typeof(ICreatesObservableForProperty));
             RxApp.Register(typeof(IRNPCObservableForProperty), typeof(ICreatesObservableForProperty));
             RxApp.Register(typeof(POCOObservableForProperty), typeof(ICreatesObservableForProperty));
+
+            var depPropObserver = Type.GetType("ReactiveUI.Xaml.DependencyObjectObservableForProperty, ReactiveUI.Xaml, Version=3.2.0.0, Culture=neutral, PublicKeyToken=null");
+            if (depPropObserver != null) {
+                RxApp.Register(depPropObserver, typeof(ICreatesObservableForProperty));
+            }
         }
 
         [ThreadStatic] static IScheduler _UnitTestDeferredScheduler;
