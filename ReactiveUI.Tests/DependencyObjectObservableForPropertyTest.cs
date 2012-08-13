@@ -40,5 +40,19 @@ namespace ReactiveUI.Tests
             disp1.Dispose();
             disp2.Dispose();
         }
+
+        [Fact]
+        public void WhenAnyWithDependencyObjectTest()
+        {
+            var inputs = new[] {"Foo", "Bar", "Baz"};
+            var fixture = new DepObjFixture();
+
+            var outputs = fixture.WhenAny(x => x.TestString, x => x.Value).CreateCollection();
+            inputs.ForEach(x => fixture.TestString = x);
+
+            Assert.Null(outputs.First());
+            Assert.Equal(4, outputs.Count);
+            Assert.True(inputs.Zip(outputs.Skip(1), (expected, actual) => expected == actual).All(x => x));
+        }
     }
 }
