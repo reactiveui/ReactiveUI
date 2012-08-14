@@ -511,6 +511,22 @@ namespace ReactiveUI
             return ret;
         }
 
+        internal static void setValueToPropertyChain<TValue, TTarget>(TTarget target, Expression<Func<TTarget, TValue>> property, TValue value)
+        {
+            object current = target;
+            string[] propNames = RxApp.expressionToPropertyNames(property);
+
+            PropertyInfo pi;
+            foreach (var propName in propNames.SkipLast(1)) {
+                pi = RxApp.getPropertyInfoOrThrow(current.GetType(), propName);
+                current = pi.GetValue(current, null);
+            }
+
+            pi = RxApp.getPropertyInfoForProperty(current.GetType(), propNames.Last());
+            pi.SetValue(current, value, null);
+        }
+
+
         static MemoizingMRUCache<string, Type> typeCache = new MemoizingMRUCache<string, Type>((type,_) => {
 #if WINRT
             // WinRT hates your favorite band too.
