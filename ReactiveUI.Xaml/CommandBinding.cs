@@ -133,8 +133,8 @@ namespace ReactiveUI.Xaml
             where TView : IViewForViewModel<TViewModel>
             where TProp : ICommand
         {
-            var ctlName = RxApp.simpleExpressionToPropertyName(propertyName);
-            var viewPi = RxApp.getPropertyInfoOrThrow(typeof (TView), ctlName);
+            var ctlName = Reflection.SimpleExpressionToPropertyName(propertyName);
+            var viewPi = Reflection.GetPropertyInfoOrThrow(typeof (TView), ctlName);
             return bindCommandInternal(viewModel, view, propertyName, viewPi, Observable.Empty<object>(), toEvent);
         }
 
@@ -149,8 +149,8 @@ namespace ReactiveUI.Xaml
             where TView : IViewForViewModel<TViewModel>
             where TProp : ICommand
         {
-            var ctlName = RxApp.simpleExpressionToPropertyName(controlName);
-            var viewPi = RxApp.getPropertyInfoOrThrow(typeof (TView), ctlName);
+            var ctlName = Reflection.SimpleExpressionToPropertyName(controlName);
+            var viewPi = Reflection.GetPropertyInfoOrThrow(typeof (TView), ctlName);
 
             return bindCommandInternal(viewModel, view, propertyName, viewPi, Observable.Empty<object>(), toEvent, cmd => {
                 var rc = cmd as IReactiveCommand;
@@ -175,8 +175,8 @@ namespace ReactiveUI.Xaml
             where TView : IViewForViewModel<TViewModel>
             where TProp : ICommand
         {
-            var ctlName = RxApp.simpleExpressionToPropertyName(controlName);
-            var viewPi = RxApp.getPropertyInfoOrThrow(typeof (TView), ctlName);
+            var ctlName = Reflection.SimpleExpressionToPropertyName(controlName);
+            var viewPi = Reflection.GetPropertyInfoOrThrow(typeof (TView), ctlName);
             return bindCommandInternal(viewModel, view, propertyName, viewPi, withParameter, toEvent);
         }
 
@@ -192,7 +192,7 @@ namespace ReactiveUI.Xaml
             where TView : IViewForViewModel<TViewModel>
             where TProp : ICommand
         {
-            var propName = RxApp.simpleExpressionToPropertyName(propertyName);
+            var propName = Reflection.SimpleExpressionToPropertyName(propertyName);
 
             IDisposable disp = Disposable.Empty;
 

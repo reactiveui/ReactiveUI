@@ -42,7 +42,7 @@ namespace ReactiveUI
             object current = This.Sender;
             string fullPropName = This.PropertyName;
 
-            return RxApp.tryGetValueForPropertyChain(out changeValue, current, fullPropName.Split('.'));
+            return Reflection.TryGetValueForPropertyChain(out changeValue, current, fullPropName.Split('.'));
         }
 
         internal static IObservedChange<TSender, TValue> fillInValue<TSender, TValue>(this IObservedChange<TSender, TValue> This)
@@ -69,7 +69,7 @@ namespace ReactiveUI
             TTarget target,
             Expression<Func<TTarget, TValue>> property)
         {
-            RxApp.setValueToPropertyChain(target, RxApp.expressionToPropertyNames(property), This.GetValue());
+            Reflection.SetValueToPropertyChain(target, Reflection.ExpressionToPropertyNames(property), This.GetValue());
         }
 
         /// <summary>

@@ -45,7 +45,7 @@ namespace ReactiveUI.Routing
             // IFooBarView that implements IViewForViewModel
             var typeToFind = interfaceifyTypeName(ViewModelToViewFunc(typeof(T).FullName));
             try {
-                var type = RxApp.reallyFindType(typeToFind, true);
+                var type = Reflection.ReallyFindType(typeToFind, true);
 
                 var ret = RxApp.GetService(type, key) as IViewForViewModel;
                 if (ret != null) return ret;
@@ -57,7 +57,7 @@ namespace ReactiveUI.Routing
 
             // IViewForViewModel<IFooBarViewModel>
             try {
-                var type = RxApp.reallyFindType(interfaceifyTypeName(typeof(T).FullName), true);
+                var type = Reflection.ReallyFindType(interfaceifyTypeName(typeof(T).FullName), true);
                 var ret =  RxApp.GetService(viewType.MakeGenericType(type), key) as IViewForViewModel;
                 if (ret != null) return ret;
             } catch (TypeLoadException ex) {

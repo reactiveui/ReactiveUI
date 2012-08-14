@@ -30,7 +30,7 @@ namespace ReactiveUI
 			
 			var slot1 = new ObservedChange<TSender, T1>() {
                 Sender = This,
-                PropertyName = String.Join(".", RxApp.expressionToPropertyNames(property1)),
+                PropertyName = String.Join(".", Reflection.ExpressionToPropertyNames(property1)),
             };
             T1 slot1Value = default(T1); slot1.TryGetValue(out slot1Value); slot1.Value = slot1Value;
             IObservedChange<TSender, T1> islot1 = slot1;
@@ -62,7 +62,7 @@ namespace ReactiveUI
 			
 			var slot1 = new ObservedChange<TSender, T1>() {
                 Sender = This,
-                PropertyName = String.Join(".", RxApp.expressionToPropertyNames(property1)),
+                PropertyName = String.Join(".", Reflection.ExpressionToPropertyNames(property1)),
             };
             T1 slot1Value = default(T1); slot1.TryGetValue(out slot1Value); slot1.Value = slot1Value;
             IObservedChange<TSender, T1> islot1 = slot1;
@@ -70,7 +70,7 @@ namespace ReactiveUI
 			
 			var slot2 = new ObservedChange<TSender, T2>() {
                 Sender = This,
-                PropertyName = String.Join(".", RxApp.expressionToPropertyNames(property2)),
+                PropertyName = String.Join(".", Reflection.ExpressionToPropertyNames(property2)),
             };
             T2 slot2Value = default(T2); slot2.TryGetValue(out slot2Value); slot2.Value = slot2Value;
             IObservedChange<TSender, T2> islot2 = slot2;
@@ -104,7 +104,7 @@ namespace ReactiveUI
 			
 			var slot1 = new ObservedChange<TSender, T1>() {
                 Sender = This,
-                PropertyName = String.Join(".", RxApp.expressionToPropertyNames(property1)),
+                PropertyName = String.Join(".", Reflection.ExpressionToPropertyNames(property1)),
             };
             T1 slot1Value = default(T1); slot1.TryGetValue(out slot1Value); slot1.Value = slot1Value;
             IObservedChange<TSender, T1> islot1 = slot1;
@@ -112,7 +112,7 @@ namespace ReactiveUI
 			
 			var slot2 = new ObservedChange<TSender, T2>() {
                 Sender = This,
-                PropertyName = String.Join(".", RxApp.expressionToPropertyNames(property2)),
+                PropertyName = String.Join(".", Reflection.ExpressionToPropertyNames(property2)),
             };
             T2 slot2Value = default(T2); slot2.TryGetValue(out slot2Value); slot2.Value = slot2Value;
             IObservedChange<TSender, T2> islot2 = slot2;
@@ -120,7 +120,7 @@ namespace ReactiveUI
 			
 			var slot3 = new ObservedChange<TSender, T3>() {
                 Sender = This,
-                PropertyName = String.Join(".", RxApp.expressionToPropertyNames(property3)),
+                PropertyName = String.Join(".", Reflection.ExpressionToPropertyNames(property3)),
             };
             T3 slot3Value = default(T3); slot3.TryGetValue(out slot3Value); slot3.Value = slot3Value;
             IObservedChange<TSender, T3> islot3 = slot3;
@@ -156,7 +156,7 @@ namespace ReactiveUI
 			
 			var slot1 = new ObservedChange<TSender, T1>() {
                 Sender = This,
-                PropertyName = String.Join(".", RxApp.expressionToPropertyNames(property1)),
+                PropertyName = String.Join(".", Reflection.ExpressionToPropertyNames(property1)),
             };
             T1 slot1Value = default(T1); slot1.TryGetValue(out slot1Value); slot1.Value = slot1Value;
             IObservedChange<TSender, T1> islot1 = slot1;
@@ -164,7 +164,7 @@ namespace ReactiveUI
 			
 			var slot2 = new ObservedChange<TSender, T2>() {
                 Sender = This,
-                PropertyName = String.Join(".", RxApp.expressionToPropertyNames(property2)),
+                PropertyName = String.Join(".", Reflection.ExpressionToPropertyNames(property2)),
             };
             T2 slot2Value = default(T2); slot2.TryGetValue(out slot2Value); slot2.Value = slot2Value;
             IObservedChange<TSender, T2> islot2 = slot2;
@@ -172,7 +172,7 @@ namespace ReactiveUI
 			
 			var slot3 = new ObservedChange<TSender, T3>() {
                 Sender = This,
-                PropertyName = String.Join(".", RxApp.expressionToPropertyNames(property3)),
+                PropertyName = String.Join(".", Reflection.ExpressionToPropertyNames(property3)),
             };
             T3 slot3Value = default(T3); slot3.TryGetValue(out slot3Value); slot3.Value = slot3Value;
             IObservedChange<TSender, T3> islot3 = slot3;
@@ -180,7 +180,7 @@ namespace ReactiveUI
 			
 			var slot4 = new ObservedChange<TSender, T4>() {
                 Sender = This,
-                PropertyName = String.Join(".", RxApp.expressionToPropertyNames(property4)),
+                PropertyName = String.Join(".", Reflection.ExpressionToPropertyNames(property4)),
             };
             T4 slot4Value = default(T4); slot4.TryGetValue(out slot4Value); slot4.Value = slot4Value;
             IObservedChange<TSender, T4> islot4 = slot4;
@@ -218,7 +218,7 @@ namespace ReactiveUI
 			
 			var slot1 = new ObservedChange<TSender, T1>() {
                 Sender = This,
-                PropertyName = String.Join(".", RxApp.expressionToPropertyNames(property1)),
+                PropertyName = String.Join(".", Reflection.ExpressionToPropertyNames(property1)),
             };
             T1 slot1Value = default(T1); slot1.TryGetValue(out slot1Value); slot1.Value = slot1Value;
             IObservedChange<TSender, T1> islot1 = slot1;
@@ -226,7 +226,7 @@ namespace ReactiveUI
 			
 			var slot2 = new ObservedChange<TSender, T2>() {
                 Sender = This,
-                PropertyName = String.Join(".", RxApp.expressionToPropertyNames(property2)),
+                PropertyName = String.Join(".", Reflection.ExpressionToPropertyNames(property2)),
             };
             T2 slot2Value = default(T2); slot2.TryGetValue(out slot2Value); slot2.Value = slot2Value;
             IObservedChange<TSender, T2> islot2 = slot2;
@@ -234,7 +234,7 @@ namespace ReactiveUI
 			
 			var slot3 = new ObservedChange<TSender, T3>() {
                 Sender = This,
-                PropertyName = String.Join(".", RxApp.expressionToPropertyNames(property3)),
+                PropertyName = String.Join(".", Reflection.ExpressionToPropertyNames(property3)),
             };
             T3 slot3Value = default(T3); slot3.TryGetValue(out slot3Value); slot3.Value = slot3Value;
             IObservedChange<TSender, T3> islot3 = slot3;
@@ -242,7 +242,7 @@ namespace ReactiveUI
 			
 			var slot4 = new ObservedChange<TSender, T4>() {
                 Sender = This,
-                PropertyName = String.Join(".", RxApp.expressionToPropertyNames(property4)),
+                PropertyName = String.Join(".", Reflection.ExpressionToPropertyNames(property4)),
             };
             T4 slot4Value = default(T4); slot4.TryGetValue(out slot4Value); slot4.Value = slot4Value;
             IObservedChange<TSender, T4> islot4 = slot4;
@@ -250,7 +250,7 @@ namespace ReactiveUI
 			
 			var slot5 = new ObservedChange<TSender, T5>() {
                 Sender = This,
-                PropertyName = String.Join(".", RxApp.expressionToPropertyNames(property5)),
+                PropertyName = String.Join(".", Reflection.ExpressionToPropertyNames(property5)),
             };
             T5 slot5Value = default(T5); slot5.TryGetValue(out slot5Value); slot5.Value = slot5Value;
             IObservedChange<TSender, T5> islot5 = slot5;
@@ -290,7 +290,7 @@ namespace ReactiveUI
 			
 			var slot1 = new ObservedChange<TSender, T1>() {
                 Sender = This,
-                PropertyName = String.Join(".", RxApp.expressionToPropertyNames(property1)),
+                PropertyName = String.Join(".", Reflection.ExpressionToPropertyNames(property1)),
             };
             T1 slot1Value = default(T1); slot1.TryGetValue(out slot1Value); slot1.Value = slot1Value;
             IObservedChange<TSender, T1> islot1 = slot1;
@@ -298,7 +298,7 @@ namespace ReactiveUI
 			
 			var slot2 = new ObservedChange<TSender, T2>() {
                 Sender = This,
-                PropertyName = String.Join(".", RxApp.expressionToPropertyNames(property2)),
+                PropertyName = String.Join(".", Reflection.ExpressionToPropertyNames(property2)),
             };
             T2 slot2Value = default(T2); slot2.TryGetValue(out slot2Value); slot2.Value = slot2Value;
             IObservedChange<TSender, T2> islot2 = slot2;
@@ -306,7 +306,7 @@ namespace ReactiveUI
 			
 			var slot3 = new ObservedChange<TSender, T3>() {
                 Sender = This,
-                PropertyName = String.Join(".", RxApp.expressionToPropertyNames(property3)),
+                PropertyName = String.Join(".", Reflection.ExpressionToPropertyNames(property3)),
             };
             T3 slot3Value = default(T3); slot3.TryGetValue(out slot3Value); slot3.Value = slot3Value;
             IObservedChange<TSender, T3> islot3 = slot3;
@@ -314,7 +314,7 @@ namespace ReactiveUI
 			
 			var slot4 = new ObservedChange<TSender, T4>() {
                 Sender = This,
-                PropertyName = String.Join(".", RxApp.expressionToPropertyNames(property4)),
+                PropertyName = String.Join(".", Reflection.ExpressionToPropertyNames(property4)),
             };
             T4 slot4Value = default(T4); slot4.TryGetValue(out slot4Value); slot4.Value = slot4Value;
             IObservedChange<TSender, T4> islot4 = slot4;
@@ -322,7 +322,7 @@ namespace ReactiveUI
 			
 			var slot5 = new ObservedChange<TSender, T5>() {
                 Sender = This,
-                PropertyName = String.Join(".", RxApp.expressionToPropertyNames(property5)),
+                PropertyName = String.Join(".", Reflection.ExpressionToPropertyNames(property5)),
             };
             T5 slot5Value = default(T5); slot5.TryGetValue(out slot5Value); slot5.Value = slot5Value;
             IObservedChange<TSender, T5> islot5 = slot5;
@@ -330,7 +330,7 @@ namespace ReactiveUI
 			
 			var slot6 = new ObservedChange<TSender, T6>() {
                 Sender = This,
-                PropertyName = String.Join(".", RxApp.expressionToPropertyNames(property6)),
+                PropertyName = String.Join(".", Reflection.ExpressionToPropertyNames(property6)),
             };
             T6 slot6Value = default(T6); slot6.TryGetValue(out slot6Value); slot6.Value = slot6Value;
             IObservedChange<TSender, T6> islot6 = slot6;
@@ -372,7 +372,7 @@ namespace ReactiveUI
 			
 			var slot1 = new ObservedChange<TSender, T1>() {
                 Sender = This,
-                PropertyName = String.Join(".", RxApp.expressionToPropertyNames(property1)),
+                PropertyName = String.Join(".", Reflection.ExpressionToPropertyNames(property1)),
             };
             T1 slot1Value = default(T1); slot1.TryGetValue(out slot1Value); slot1.Value = slot1Value;
             IObservedChange<TSender, T1> islot1 = slot1;
@@ -380,7 +380,7 @@ namespace ReactiveUI
 			
 			var slot2 = new ObservedChange<TSender, T2>() {
                 Sender = This,
-                PropertyName = String.Join(".", RxApp.expressionToPropertyNames(property2)),
+                PropertyName = String.Join(".", Reflection.ExpressionToPropertyNames(property2)),
             };
             T2 slot2Value = default(T2); slot2.TryGetValue(out slot2Value); slot2.Value = slot2Value;
             IObservedChange<TSender, T2> islot2 = slot2;
@@ -388,7 +388,7 @@ namespace ReactiveUI
 			
 			var slot3 = new ObservedChange<TSender, T3>() {
                 Sender = This,
-                PropertyName = String.Join(".", RxApp.expressionToPropertyNames(property3)),
+                PropertyName = String.Join(".", Reflection.ExpressionToPropertyNames(property3)),
             };
             T3 slot3Value = default(T3); slot3.TryGetValue(out slot3Value); slot3.Value = slot3Value;
             IObservedChange<TSender, T3> islot3 = slot3;
@@ -396,7 +396,7 @@ namespace ReactiveUI
 			
 			var slot4 = new ObservedChange<TSender, T4>() {
                 Sender = This,
-                PropertyName = String.Join(".", RxApp.expressionToPropertyNames(property4)),
+                PropertyName = String.Join(".", Reflection.ExpressionToPropertyNames(property4)),
             };
             T4 slot4Value = default(T4); slot4.TryGetValue(out slot4Value); slot4.Value = slot4Value;
             IObservedChange<TSender, T4> islot4 = slot4;
@@ -404,7 +404,7 @@ namespace ReactiveUI
 			
 			var slot5 = new ObservedChange<TSender, T5>() {
                 Sender = This,
-                PropertyName = String.Join(".", RxApp.expressionToPropertyNames(property5)),
+                PropertyName = String.Join(".", Reflection.ExpressionToPropertyNames(property5)),
             };
             T5 slot5Value = default(T5); slot5.TryGetValue(out slot5Value); slot5.Value = slot5Value;
             IObservedChange<TSender, T5> islot5 = slot5;
@@ -412,7 +412,7 @@ namespace ReactiveUI
 			
 			var slot6 = new ObservedChange<TSender, T6>() {
                 Sender = This,
-                PropertyName = String.Join(".", RxApp.expressionToPropertyNames(property6)),
+                PropertyName = String.Join(".", Reflection.ExpressionToPropertyNames(property6)),
             };
             T6 slot6Value = default(T6); slot6.TryGetValue(out slot6Value); slot6.Value = slot6Value;
             IObservedChange<TSender, T6> islot6 = slot6;
@@ -420,7 +420,7 @@ namespace ReactiveUI
 			
 			var slot7 = new ObservedChange<TSender, T7>() {
                 Sender = This,
-                PropertyName = String.Join(".", RxApp.expressionToPropertyNames(property7)),
+                PropertyName = String.Join(".", Reflection.ExpressionToPropertyNames(property7)),
             };
             T7 slot7Value = default(T7); slot7.TryGetValue(out slot7Value); slot7.Value = slot7Value;
             IObservedChange<TSender, T7> islot7 = slot7;
@@ -464,7 +464,7 @@ namespace ReactiveUI
 			
 			var slot1 = new ObservedChange<TSender, T1>() {
                 Sender = This,
-                PropertyName = String.Join(".", RxApp.expressionToPropertyNames(property1)),
+                PropertyName = String.Join(".", Reflection.ExpressionToPropertyNames(property1)),
             };
             T1 slot1Value = default(T1); slot1.TryGetValue(out slot1Value); slot1.Value = slot1Value;
             IObservedChange<TSender, T1> islot1 = slot1;
@@ -472,7 +472,7 @@ namespace ReactiveUI
 			
 			var slot2 = new ObservedChange<TSender, T2>() {
                 Sender = This,
-                PropertyName = String.Join(".", RxApp.expressionToPropertyNames(property2)),
+                PropertyName = String.Join(".", Reflection.ExpressionToPropertyNames(property2)),
             };
             T2 slot2Value = default(T2); slot2.TryGetValue(out slot2Value); slot2.Value = slot2Value;
             IObservedChange<TSender, T2> islot2 = slot2;
@@ -480,7 +480,7 @@ namespace ReactiveUI
 			
 			var slot3 = new ObservedChange<TSender, T3>() {
                 Sender = This,
-                PropertyName = String.Join(".", RxApp.expressionToPropertyNames(property3)),
+                PropertyName = String.Join(".", Reflection.ExpressionToPropertyNames(property3)),
             };
             T3 slot3Value = default(T3); slot3.TryGetValue(out slot3Value); slot3.Value = slot3Value;
             IObservedChange<TSender, T3> islot3 = slot3;
@@ -488,7 +488,7 @@ namespace ReactiveUI
 			
 			var slot4 = new ObservedChange<TSender, T4>() {
                 Sender = This,
-                PropertyName = String.Join(".", RxApp.expressionToPropertyNames(property4)),
+                PropertyName = String.Join(".", Reflection.ExpressionToPropertyNames(property4)),
             };
             T4 slot4Value = default(T4); slot4.TryGetValue(out slot4Value); slot4.Value = slot4Value;
             IObservedChange<TSender, T4> islot4 = slot4;
@@ -496,7 +496,7 @@ namespace ReactiveUI
 			
 			var slot5 = new ObservedChange<TSender, T5>() {
                 Sender = This,
-                PropertyName = String.Join(".", RxApp.expressionToPropertyNames(property5)),
+                PropertyName = String.Join(".", Reflection.ExpressionToPropertyNames(property5)),
             };
             T5 slot5Value = default(T5); slot5.TryGetValue(out slot5Value); slot5.Value = slot5Value;
             IObservedChange<TSender, T5> islot5 = slot5;
@@ -504,7 +504,7 @@ namespace ReactiveUI
 			
 			var slot6 = new ObservedChange<TSender, T6>() {
                 Sender = This,
-                PropertyName = String.Join(".", RxApp.expressionToPropertyNames(property6)),
+                PropertyName = String.Join(".", Reflection.ExpressionToPropertyNames(property6)),
             };
             T6 slot6Value = default(T6); slot6.TryGetValue(out slot6Value); slot6.Value = slot6Value;
             IObservedChange<TSender, T6> islot6 = slot6;
@@ -512,7 +512,7 @@ namespace ReactiveUI
 			
 			var slot7 = new ObservedChange<TSender, T7>() {
                 Sender = This,
-                PropertyName = String.Join(".", RxApp.expressionToPropertyNames(property7)),
+                PropertyName = String.Join(".", Reflection.ExpressionToPropertyNames(property7)),
             };
             T7 slot7Value = default(T7); slot7.TryGetValue(out slot7Value); slot7.Value = slot7Value;
             IObservedChange<TSender, T7> islot7 = slot7;
@@ -520,7 +520,7 @@ namespace ReactiveUI
 			
 			var slot8 = new ObservedChange<TSender, T8>() {
                 Sender = This,
-                PropertyName = String.Join(".", RxApp.expressionToPropertyNames(property8)),
+                PropertyName = String.Join(".", Reflection.ExpressionToPropertyNames(property8)),
             };
             T8 slot8Value = default(T8); slot8.TryGetValue(out slot8Value); slot8.Value = slot8Value;
             IObservedChange<TSender, T8> islot8 = slot8;
@@ -566,7 +566,7 @@ namespace ReactiveUI
 			
 			var slot1 = new ObservedChange<TSender, T1>() {
                 Sender = This,
-                PropertyName = String.Join(".", RxApp.expressionToPropertyNames(property1)),
+                PropertyName = String.Join(".", Reflection.ExpressionToPropertyNames(property1)),
             };
             T1 slot1Value = default(T1); slot1.TryGetValue(out slot1Value); slot1.Value = slot1Value;
             IObservedChange<TSender, T1> islot1 = slot1;
@@ -574,7 +574,7 @@ namespace ReactiveUI
 			
 			var slot2 = new ObservedChange<TSender, T2>() {
                 Sender = This,
-                PropertyName = String.Join(".", RxApp.expressionToPropertyNames(property2)),
+                PropertyName = String.Join(".", Reflection.ExpressionToPropertyNames(property2)),
             };
             T2 slot2Value = default(T2); slot2.TryGetValue(out slot2Value); slot2.Value = slot2Value;
             IObservedChange<TSender, T2> islot2 = slot2;
@@ -582,7 +582,7 @@ namespace ReactiveUI
 			
 			var slot3 = new ObservedChange<TSender, T3>() {
                 Sender = This,
-                PropertyName = String.Join(".", RxApp.expressionToPropertyNames(property3)),
+                PropertyName = String.Join(".", Reflection.ExpressionToPropertyNames(property3)),
             };
             T3 slot3Value = default(T3); slot3.TryGetValue(out slot3Value); slot3.Value = slot3Value;
             IObservedChange<TSender, T3> islot3 = slot3;
@@ -590,7 +590,7 @@ namespace ReactiveUI
 			
 			var slot4 = new ObservedChange<TSender, T4>() {
                 Sender = This,
-                PropertyName = String.Join(".", RxApp.expressionToPropertyNames(property4)),
+                PropertyName = String.Join(".", Reflection.ExpressionToPropertyNames(property4)),
             };
             T4 slot4Value = default(T4); slot4.TryGetValue(out slot4Value); slot4.Value = slot4Value;
             IObservedChange<TSender, T4> islot4 = slot4;
@@ -598,7 +598,7 @@ namespace ReactiveUI
 			
 			var slot5 = new ObservedChange<TSender, T5>() {
                 Sender = This,
-                PropertyName = String.Join(".", RxApp.expressionToPropertyNames(property5)),
+                PropertyName = String.Join(".", Reflection.ExpressionToPropertyNames(property5)),
             };
             T5 slot5Value = default(T5); slot5.TryGetValue(out slot5Value); slot5.Value = slot5Value;
             IObservedChange<TSender, T5> islot5 = slot5;
@@ -606,7 +606,7 @@ namespace ReactiveUI
 			
 			var slot6 = new ObservedChange<TSender, T6>() {
                 Sender = This,
-                PropertyName = String.Join(".", RxApp.expressionToPropertyNames(property6)),
+                PropertyName = String.Join(".", Reflection.ExpressionToPropertyNames(property6)),
             };
             T6 slot6Value = default(T6); slot6.TryGetValue(out slot6Value); slot6.Value = slot6Value;
             IObservedChange<TSender, T6> islot6 = slot6;
@@ -614,7 +614,7 @@ namespace ReactiveUI
 			
 			var slot7 = new ObservedChange<TSender, T7>() {
                 Sender = This,
-                PropertyName = String.Join(".", RxApp.expressionToPropertyNames(property7)),
+                PropertyName = String.Join(".", Reflection.ExpressionToPropertyNames(property7)),
             };
             T7 slot7Value = default(T7); slot7.TryGetValue(out slot7Value); slot7.Value = slot7Value;
             IObservedChange<TSender, T7> islot7 = slot7;
@@ -622,7 +622,7 @@ namespace ReactiveUI
 			
 			var slot8 = new ObservedChange<TSender, T8>() {
                 Sender = This,
-                PropertyName = String.Join(".", RxApp.expressionToPropertyNames(property8)),
+                PropertyName = String.Join(".", Reflection.ExpressionToPropertyNames(property8)),
             };
             T8 slot8Value = default(T8); slot8.TryGetValue(out slot8Value); slot8.Value = slot8Value;
             IObservedChange<TSender, T8> islot8 = slot8;
@@ -630,7 +630,7 @@ namespace ReactiveUI
 			
 			var slot9 = new ObservedChange<TSender, T9>() {
                 Sender = This,
-                PropertyName = String.Join(".", RxApp.expressionToPropertyNames(property9)),
+                PropertyName = String.Join(".", Reflection.ExpressionToPropertyNames(property9)),
             };
             T9 slot9Value = default(T9); slot9.TryGetValue(out slot9Value); slot9.Value = slot9Value;
             IObservedChange<TSender, T9> islot9 = slot9;
@@ -678,7 +678,7 @@ namespace ReactiveUI
 			
 			var slot1 = new ObservedChange<TSender, T1>() {
                 Sender = This,
-                PropertyName = String.Join(".", RxApp.expressionToPropertyNames(property1)),
+                PropertyName = String.Join(".", Reflection.ExpressionToPropertyNames(property1)),
             };
             T1 slot1Value = default(T1); slot1.TryGetValue(out slot1Value); slot1.Value = slot1Value;
             IObservedChange<TSender, T1> islot1 = slot1;
@@ -686,7 +686,7 @@ namespace ReactiveUI
 			
 			var slot2 = new ObservedChange<TSender, T2>() {
                 Sender = This,
-                PropertyName = String.Join(".", RxApp.expressionToPropertyNames(property2)),
+                PropertyName = String.Join(".", Reflection.ExpressionToPropertyNames(property2)),
             };
             T2 slot2Value = default(T2); slot2.TryGetValue(out slot2Value); slot2.Value = slot2Value;
             IObservedChange<TSender, T2> islot2 = slot2;
@@ -694,7 +694,7 @@ namespace ReactiveUI
 			
 			var slot3 = new ObservedChange<TSender, T3>() {
                 Sender = This,
-                PropertyName = String.Join(".", RxApp.expressionToPropertyNames(property3)),
+                PropertyName = String.Join(".", Reflection.ExpressionToPropertyNames(property3)),
             };
             T3 slot3Value = default(T3); slot3.TryGetValue(out slot3Value); slot3.Value = slot3Value;
             IObservedChange<TSender, T3> islot3 = slot3;
@@ -702,7 +702,7 @@ namespace ReactiveUI
 			
 			var slot4 = new ObservedChange<TSender, T4>() {
                 Sender = This,
-                PropertyName = String.Join(".", RxApp.expressionToPropertyNames(property4)),
+                PropertyName = String.Join(".", Reflection.ExpressionToPropertyNames(property4)),
             };
             T4 slot4Value = default(T4); slot4.TryGetValue(out slot4Value); slot4.Value = slot4Value;
             IObservedChange<TSender, T4> islot4 = slot4;
@@ -710,7 +710,7 @@ namespace ReactiveUI
 			
 			var slot5 = new ObservedChange<TSender, T5>() {
                 Sender = This,
-                PropertyName = String.Join(".", RxApp.expressionToPropertyNames(property5)),
+                PropertyName = String.Join(".", Reflection.ExpressionToPropertyNames(property5)),
             };
             T5 slot5Value = default(T5); slot5.TryGetValue(out slot5Value); slot5.Value = slot5Value;
             IObservedChange<TSender, T5> islot5 = slot5;
@@ -718,7 +718,7 @@ namespace ReactiveUI
 			
 			var slot6 = new ObservedChange<TSender, T6>() {
                 Sender = This,
-                PropertyName = String.Join(".", RxApp.expressionToPropertyNames(property6)),
+                PropertyName = String.Join(".", Reflection.ExpressionToPropertyNames(property6)),
             };
             T6 slot6Value = default(T6); slot6.TryGetValue(out slot6Value); slot6.Value = slot6Value;
             IObservedChange<TSender, T6> islot6 = slot6;
@@ -726,7 +726,7 @@ namespace ReactiveUI
 			
 			var slot7 = new ObservedChange<TSender, T7>() {
                 Sender = This,
-                PropertyName = String.Join(".", RxApp.expressionToPropertyNames(property7)),
+                PropertyName = String.Join(".", Reflection.ExpressionToPropertyNames(property7)),
             };
             T7 slot7Value = default(T7); slot7.TryGetValue(out slot7Value); slot7.Value = slot7Value;
             IObservedChange<TSender, T7> islot7 = slot7;
@@ -734,7 +734,7 @@ namespace ReactiveUI
 			
 			var slot8 = new ObservedChange<TSender, T8>() {
                 Sender = This,
-                PropertyName = String.Join(".", RxApp.expressionToPropertyNames(property8)),
+                PropertyName = String.Join(".", Reflection.ExpressionToPropertyNames(property8)),
             };
             T8 slot8Value = default(T8); slot8.TryGetValue(out slot8Value); slot8.Value = slot8Value;
             IObservedChange<TSender, T8> islot8 = slot8;
@@ -742,7 +742,7 @@ namespace ReactiveUI
 			
 			var slot9 = new ObservedChange<TSender, T9>() {
                 Sender = This,
-                PropertyName = String.Join(".", RxApp.expressionToPropertyNames(property9)),
+                PropertyName = String.Join(".", Reflection.ExpressionToPropertyNames(property9)),
             };
             T9 slot9Value = default(T9); slot9.TryGetValue(out slot9Value); slot9.Value = slot9Value;
             IObservedChange<TSender, T9> islot9 = slot9;
@@ -750,7 +750,7 @@ namespace ReactiveUI
 			
 			var slot10 = new ObservedChange<TSender, T10>() {
                 Sender = This,
-                PropertyName = String.Join(".", RxApp.expressionToPropertyNames(property10)),
+                PropertyName = String.Join(".", Reflection.ExpressionToPropertyNames(property10)),
             };
             T10 slot10Value = default(T10); slot10.TryGetValue(out slot10Value); slot10.Value = slot10Value;
             IObservedChange<TSender, T10> islot10 = slot10;
@@ -800,7 +800,7 @@ namespace ReactiveUI
 			
 			var slot1 = new ObservedChange<TSender, T1>() {
                 Sender = This,
-                PropertyName = String.Join(".", RxApp.expressionToPropertyNames(property1)),
+                PropertyName = String.Join(".", Reflection.ExpressionToPropertyNames(property1)),
             };
             T1 slot1Value = default(T1); slot1.TryGetValue(out slot1Value); slot1.Value = slot1Value;
             IObservedChange<TSender, T1> islot1 = slot1;
@@ -808,7 +808,7 @@ namespace ReactiveUI
 			
 			var slot2 = new ObservedChange<TSender, T2>() {
                 Sender = This,
-                PropertyName = String.Join(".", RxApp.expressionToPropertyNames(property2)),
+                PropertyName = String.Join(".", Reflection.ExpressionToPropertyNames(property2)),
             };
             T2 slot2Value = default(T2); slot2.TryGetValue(out slot2Value); slot2.Value = slot2Value;
             IObservedChange<TSender, T2> islot2 = slot2;
@@ -816,7 +816,7 @@ namespace ReactiveUI
 			
 			var slot3 = new ObservedChange<TSender, T3>() {
                 Sender = This,
-                PropertyName = String.Join(".", RxApp.expressionToPropertyNames(property3)),
+                PropertyName = String.Join(".", Reflection.ExpressionToPropertyNames(property3)),
             };
             T3 slot3Value = default(T3); slot3.TryGetValue(out slot3Value); slot3.Value = slot3Value;
             IObservedChange<TSender, T3> islot3 = slot3;
@@ -824,7 +824,7 @@ namespace ReactiveUI
 			
 			var slot4 = new ObservedChange<TSender, T4>() {
                 Sender = This,
-                PropertyName = String.Join(".", RxApp.expressionToPropertyNames(property4)),
+                PropertyName = String.Join(".", Reflection.ExpressionToPropertyNames(property4)),
             };
             T4 slot4Value = default(T4); slot4.TryGetValue(out slot4Value); slot4.Value = slot4Value;
             IObservedChange<TSender, T4> islot4 = slot4;
@@ -832,7 +832,7 @@ namespace ReactiveUI
 			
 			var slot5 = new ObservedChange<TSender, T5>() {
                 Sender = This,
-                PropertyName = String.Join(".", RxApp.expressionToPropertyNames(property5)),
+                PropertyName = String.Join(".", Reflection.ExpressionToPropertyNames(property5)),
             };
             T5 slot5Value = default(T5); slot5.TryGetValue(out slot5Value); slot5.Value = slot5Value;
             IObservedChange<TSender, T5> islot5 = slot5;
@@ -840,7 +840,7 @@ namespace ReactiveUI
 			
 			var slot6 = new ObservedChange<TSender, T6>() {
                 Sender = This,
-                PropertyName = String.Join(".", RxApp.expressionToPropertyNames(property6)),
+                PropertyName = String.Join(".", Reflection.ExpressionToPropertyNames(property6)),
             };
             T6 slot6Value = default(T6); slot6.TryGetValue(out slot6Value); slot6.Value = slot6Value;
             IObservedChange<TSender, T6> islot6 = slot6;
@@ -848,7 +848,7 @@ namespace ReactiveUI
 			
 			var slot7 = new ObservedChange<TSender, T7>() {
                 Sender = This,
-                PropertyName = String.Join(".", RxApp.expressionToPropertyNames(property7)),
+                PropertyName = String.Join(".", Reflection.ExpressionToPropertyNames(property7)),
             };
             T7 slot7Value = default(T7); slot7.TryGetValue(out slot7Value); slot7.Value = slot7Value;
             IObservedChange<TSender, T7> islot7 = slot7;
@@ -856,7 +856,7 @@ namespace ReactiveUI
 			
 			var slot8 = new ObservedChange<TSender, T8>() {
                 Sender = This,
-                PropertyName = String.Join(".", RxApp.expressionToPropertyNames(property8)),
+                PropertyName = String.Join(".", Reflection.ExpressionToPropertyNames(property8)),
             };
             T8 slot8Value = default(T8); slot8.TryGetValue(out slot8Value); slot8.Value = slot8Value;
             IObservedChange<TSender, T8> islot8 = slot8;
@@ -864,7 +864,7 @@ namespace ReactiveUI
 			
 			var slot9 = new ObservedChange<TSender, T9>() {
                 Sender = This,
-                PropertyName = String.Join(".", RxApp.expressionToPropertyNames(property9)),
+                PropertyName = String.Join(".", Reflection.ExpressionToPropertyNames(property9)),
             };
             T9 slot9Value = default(T9); slot9.TryGetValue(out slot9Value); slot9.Value = slot9Value;
             IObservedChange<TSender, T9> islot9 = slot9;
@@ -872,7 +872,7 @@ namespace ReactiveUI
 			
 			var slot10 = new ObservedChange<TSender, T10>() {
                 Sender = This,
-                PropertyName = String.Join(".", RxApp.expressionToPropertyNames(property10)),
+                PropertyName = String.Join(".", Reflection.ExpressionToPropertyNames(property10)),
             };
             T10 slot10Value = default(T10); slot10.TryGetValue(out slot10Value); slot10.Value = slot10Value;
             IObservedChange<TSender, T10> islot10 = slot10;
@@ -880,7 +880,7 @@ namespace ReactiveUI
 			
 			var slot11 = new ObservedChange<TSender, T11>() {
                 Sender = This,
-                PropertyName = String.Join(".", RxApp.expressionToPropertyNames(property11)),
+                PropertyName = String.Join(".", Reflection.ExpressionToPropertyNames(property11)),
             };
             T11 slot11Value = default(T11); slot11.TryGetValue(out slot11Value); slot11.Value = slot11Value;
             IObservedChange<TSender, T11> islot11 = slot11;
@@ -932,7 +932,7 @@ namespace ReactiveUI
 			
 			var slot1 = new ObservedChange<TSender, T1>() {
                 Sender = This,
-                PropertyName = String.Join(".", RxApp.expressionToPropertyNames(property1)),
+                PropertyName = String.Join(".", Reflection.ExpressionToPropertyNames(property1)),
             };
             T1 slot1Value = default(T1); slot1.TryGetValue(out slot1Value); slot1.Value = slot1Value;
             IObservedChange<TSender, T1> islot1 = slot1;
@@ -940,7 +940,7 @@ namespace ReactiveUI
 			
 			var slot2 = new ObservedChange<TSender, T2>() {
                 Sender = This,
-                PropertyName = String.Join(".", RxApp.expressionToPropertyNames(property2)),
+                PropertyName = String.Join(".", Reflection.ExpressionToPropertyNames(property2)),
             };
             T2 slot2Value = default(T2); slot2.TryGetValue(out slot2Value); slot2.Value = slot2Value;
             IObservedChange<TSender, T2> islot2 = slot2;
@@ -948,7 +948,7 @@ namespace ReactiveUI
 			
 			var slot3 = new ObservedChange<TSender, T3>() {
                 Sender = This,
-                PropertyName = String.Join(".", RxApp.expressionToPropertyNames(property3)),
+                PropertyName = String.Join(".", Reflection.ExpressionToPropertyNames(property3)),
             };
             T3 slot3Value = default(T3); slot3.TryGetValue(out slot3Value); slot3.Value = slot3Value;
             IObservedChange<TSender, T3> islot3 = slot3;
@@ -956,7 +956,7 @@ namespace ReactiveUI
 			
 			var slot4 = new ObservedChange<TSender, T4>() {
                 Sender = This,
-                PropertyName = String.Join(".", RxApp.expressionToPropertyNames(property4)),
+                PropertyName = String.Join(".", Reflection.ExpressionToPropertyNames(property4)),
             };
             T4 slot4Value = default(T4); slot4.TryGetValue(out slot4Value); slot4.Value = slot4Value;
             IObservedChange<TSender, T4> islot4 = slot4;
@@ -964,7 +964,7 @@ namespace ReactiveUI
 			
 			var slot5 = new ObservedChange<TSender, T5>() {
                 Sender = This,
-                PropertyName = String.Join(".", RxApp.expressionToPropertyNames(property5)),
+                PropertyName = String.Join(".", Reflection.ExpressionToPropertyNames(property5)),
             };
             T5 slot5Value = default(T5); slot5.TryGetValue(out slot5Value); slot5.Value = slot5Value;
             IObservedChange<TSender, T5> islot5 = slot5;
@@ -972,7 +972,7 @@ namespace ReactiveUI
 			
 			var slot6 = new ObservedChange<TSender, T6>() {
                 Sender = This,
-                PropertyName = String.Join(".", RxApp.expressionToPropertyNames(property6)),
+                PropertyName = String.Join(".", Reflection.ExpressionToPropertyNames(property6)),
             };
             T6 slot6Value = default(T6); slot6.TryGetValue(out slot6Value); slot6.Value = slot6Value;
             IObservedChange<TSender, T6> islot6 = slot6;
@@ -980,7 +980,7 @@ namespace ReactiveUI
 			
 			var slot7 = new ObservedChange<TSender, T7>() {
                 Sender = This,
-                PropertyName = String.Join(".", RxApp.expressionToPropertyNames(property7)),
+                PropertyName = String.Join(".", Reflection.ExpressionToPropertyNames(property7)),
             };
             T7 slot7Value = default(T7); slot7.TryGetValue(out slot7Value); slot7.Value = slot7Value;
             IObservedChange<TSender, T7> islot7 = slot7;
@@ -988,7 +988,7 @@ namespace ReactiveUI
 			
 			var slot8 = new ObservedChange<TSender, T8>() {
                 Sender = This,
-                PropertyName = String.Join(".", RxApp.expressionToPropertyNames(property8)),
+                PropertyName = String.Join(".", Reflection.ExpressionToPropertyNames(property8)),
             };
             T8 slot8Value = default(T8); slot8.TryGetValue(out slot8Value); slot8.Value = slot8Value;
             IObservedChange<TSender, T8> islot8 = slot8;
@@ -996,7 +996,7 @@ namespace ReactiveUI
 			
 			var slot9 = new ObservedChange<TSender, T9>() {
                 Sender = This,
-                PropertyName = String.Join(".", RxApp.expressionToPropertyNames(property9)),
+                PropertyName = String.Join(".", Reflection.ExpressionToPropertyNames(property9)),
             };
             T9 slot9Value = default(T9); slot9.TryGetValue(out slot9Value); slot9.Value = slot9Value;
             IObservedChange<TSender, T9> islot9 = slot9;
@@ -1004,7 +1004,7 @@ namespace ReactiveUI
 			
 			var slot10 = new ObservedChange<TSender, T10>() {
                 Sender = This,
-                PropertyName = String.Join(".", RxApp.expressionToPropertyNames(property10)),
+                PropertyName = String.Join(".", Reflection.ExpressionToPropertyNames(property10)),
             };
             T10 slot10Value = default(T10); slot10.TryGetValue(out slot10Value); slot10.Value = slot10Value;
             IObservedChange<TSender, T10> islot10 = slot10;
@@ -1012,7 +1012,7 @@ namespace ReactiveUI
 			
 			var slot11 = new ObservedChange<TSender, T11>() {
                 Sender = This,
-                PropertyName = String.Join(".", RxApp.expressionToPropertyNames(property11)),
+                PropertyName = String.Join(".", Reflection.ExpressionToPropertyNames(property11)),
             };
             T11 slot11Value = default(T11); slot11.TryGetValue(out slot11Value); slot11.Value = slot11Value;
             IObservedChange<TSender, T11> islot11 = slot11;
@@ -1020,7 +1020,7 @@ namespace ReactiveUI
 			
 			var slot12 = new ObservedChange<TSender, T12>() {
                 Sender = This,
-                PropertyName = String.Join(".", RxApp.expressionToPropertyNames(property12)),
+                PropertyName = String.Join(".", Reflection.ExpressionToPropertyNames(property12)),
             };
             T12 slot12Value = default(T12); slot12.TryGetValue(out slot12Value); slot12.Value = slot12Value;
             IObservedChange<TSender, T12> islot12 = slot12;

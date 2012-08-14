@@ -126,30 +126,30 @@ namespace ReactiveUI
                 view.WhenAny(viewProperty, x => x.Value)
             ).Multicast(new Subject<TProp>());
 
-            var vmPropChain = RxApp.expressionToPropertyNames(vmProperty);
+            var vmPropChain = Reflection.ExpressionToPropertyNames(vmProperty);
             ret.Add(somethingChanged.Where(x => {
                 TProp result;
-                if (!RxApp.tryGetValueForPropertyChain(out result, viewModel, vmPropChain))
+                if (!Reflection.TryGetValueForPropertyChain(out result, viewModel, vmPropChain))
                     return false;
                 return EqualityComparer<TProp>.Default.Equals(result, x) != true;
-            }).Subscribe(x => RxApp.setValueToPropertyChain(viewModel, vmPropChain, x, false)));
+            }).Subscribe(x => Reflection.SetValueToPropertyChain(viewModel, vmPropChain, x, false)));
 
-            var viewPropChain = RxApp.expressionToPropertyNames(viewProperty);
+            var viewPropChain = Reflection.ExpressionToPropertyNames(viewProperty);
             ret.Add(somethingChanged.Where(x => {
                 TProp result;
-                if (!RxApp.tryGetValueForPropertyChain(out result, view, viewPropChain))
+                if (!Reflection.TryGetValueForPropertyChain(out result, view, viewPropChain))
                     return false;
                 return EqualityComparer<TProp>.Default.Equals(result, x) != true;
-            }).Subscribe(x => RxApp.setValueToPropertyChain(view, viewPropChain, x, false)));
+            }).Subscribe(x => Reflection.SetValueToPropertyChain(view, viewPropChain, x, false)));
 
             // NB: Even though it's technically a two-way bind, most people 
             // want the ViewModel to win at first.
             TProp initialVal;
-            bool shouldSet = RxApp.tryGetValueForPropertyChain(out initialVal, viewModel, vmPropChain);
+            bool shouldSet = Reflection.TryGetValueForPropertyChain(out initialVal, viewModel, vmPropChain);
 
             ret.Add(somethingChanged.Connect());
 
-            if (shouldSet) RxApp.setValueToPropertyChain(view, viewPropChain, initialVal);
+            if (shouldSet) Reflection.SetValueToPropertyChain(view, viewPropChain, initialVal);
             return ret;
         }
 
@@ -240,13 +240,13 @@ namespace ReactiveUI
                     }
 
                     type = current.GetType();
-                    fi = RxApp.getFieldInfoForField(type, propName);
+                    fi = Reflection.GetFieldInfoForField(type, propName);
                     if (fi != null) {
                         current = fi.GetValue(current);
                         continue;
                     }
 
-                    pi = RxApp.getPropertyInfoOrThrow(current.GetType(), propName);
+                    pi = Reflection.GetPropertyInfoOrThrow(current.GetType(), propName);
                     current = pi.GetValue(current, null);
                 }
                 if (current == null) {
@@ -254,18 +254,18 @@ namespace ReactiveUI
                 }
 
                 type = current.GetType();
-                fi = RxApp.getFieldInfoForField(type, propNames.Last());
+                fi = Reflection.GetFieldInfoForField(type, propNames.Last());
                 if (fi != null) {
                     sourceSub.Disposable = This.Subscribe(x => fi.SetValue(current, x));
                     return;
                 }
 
-                pi = RxApp.getPropertyInfoOrThrow(type, propNames.Last());
+                pi = Reflection.GetPropertyInfoOrThrow(type, propNames.Last());
                 sourceSub.Disposable = This.Subscribe(x => pi.SetValue(current, x, null));
             });
 
             var toDispose = new IDisposable[] {sourceSub, null};
-            var propertyNames = RxApp.expressionToPropertyNames(property);
+            var propertyNames = Reflection.ExpressionToPropertyNames(property);
             toDispose[1] = target.WhenAny(property, _ => Unit.Default)
                 .Subscribe(_ => subscribify(target, propertyNames));
 

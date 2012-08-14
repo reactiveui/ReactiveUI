@@ -128,7 +128,7 @@ namespace ReactiveUI
             foreach(var v in pei.ValidationAttributes) {
                 try {
                     var ctx = new ValidationContext(this, null, null) {MemberName = propName};
-                    var pi = RxApp.getPropertyInfoForProperty(pei.Type, propName);
+                    var pi = Reflection.GetPropertyInfoForProperty(pei.Type, propName);
                     v.Validate(pi.GetValue(this, null), ctx);
                 } catch(Exception ex) {
                     this.Log().Info("{0:X}.{1} failed validation: {2}", 
@@ -156,7 +156,7 @@ namespace ReactiveUI
         public static PropertyExtraInfo CreateFromTypeAndName(Type type, string propertyName, bool nullOnEmptyValidationAttrs = false)
         {
             object[] attrs;
-            var pi = RxApp.getPropertyInfoForProperty(type, propertyName);
+            var pi = Reflection.GetPropertyInfoForProperty(type, propertyName);
 
             if (pi == null) {
                 throw new ArgumentException("Property not found on type");

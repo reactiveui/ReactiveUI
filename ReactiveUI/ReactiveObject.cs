@@ -213,9 +213,9 @@ namespace ReactiveUI
             Contract.Requires(property != null);
 
             FieldInfo field;
-            string prop_name = RxApp.simpleExpressionToPropertyName<TObj, TRet>(property);
+            string prop_name = Reflection.SimpleExpressionToPropertyName(property);
 
-            field = RxApp.getBackingFieldInfoForProperty<TObj>(prop_name);
+            field = Reflection.GetBackingFieldInfoForProperty<TObj>(prop_name);
 
             var field_val = field.GetValue(This);
 
@@ -260,7 +260,7 @@ namespace ReactiveUI
                 return newValue;
             }
 
-            string prop_name = RxApp.simpleExpressionToPropertyName(property);
+            string prop_name = Reflection.SimpleExpressionToPropertyName(property);
 
             This.raisePropertyChanging(prop_name);
             backingField = newValue;
@@ -279,7 +279,7 @@ namespace ReactiveUI
                 Expression<Func<TObj, TRet>> property)
             where TObj : ReactiveObject
         {
-            var propName = RxApp.simpleExpressionToPropertyName(property);
+            var propName = Reflection.SimpleExpressionToPropertyName(property);
             This.raisePropertyChanging(propName);
         }
 
@@ -294,7 +294,7 @@ namespace ReactiveUI
                 Expression<Func<TObj, TRet>> property)
             where TObj : ReactiveObject
         {
-            var propName = RxApp.simpleExpressionToPropertyName(property);
+            var propName = Reflection.SimpleExpressionToPropertyName(property);
             This.raisePropertyChanged(propName);
         }
     }
@@ -323,7 +323,7 @@ namespace ReactiveUI
         public static void RaisePropertyChanging<TSender, TValue>(TSender target, Expression<Func<TSender, TValue>> property)
             where TSender : ReactiveObject
         {
-            RaisePropertyChanging(target, RxApp.simpleExpressionToPropertyName(property));
+            RaisePropertyChanging(target, Reflection.SimpleExpressionToPropertyName(property));
         }
 
         /// <summary>
@@ -348,7 +348,7 @@ namespace ReactiveUI
         public static void RaisePropertyChanged<TSender, TValue>(TSender target, Expression<Func<TSender, TValue>> property)
             where TSender : ReactiveObject
         {
-            RaisePropertyChanged(target, RxApp.simpleExpressionToPropertyName(property));
+            RaisePropertyChanged(target, Reflection.SimpleExpressionToPropertyName(property));
         }
     }
 }

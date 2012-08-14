@@ -106,6 +106,7 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CompatMixins.cs" />
     <Compile Include="INPCObservableForProperty.cs" />
     <Compile Include="Interfaces.cs">
       <SubType>Code</SubType>
@@ -126,7 +127,10 @@
     <Compile Include="ReactiveNotifyPropertyChangedMixin.cs" />
     <Compile Include="ReactiveObject.cs" />
     <Compile Include="MakeObjectReactiveHelper.cs" />
+    <Compile Include="RefcountDisposeWrapper.cs" />
+    <Compile Include="Reflection.cs" />
     <Compile Include="RxApp.cs" />
+    <Compile Include="ScheduledSubject.cs" />
     <Compile Include="Validation.cs" />
     <Compile Include="VariadicTemplates.cs">
       <AutoGen>True</AutoGen>

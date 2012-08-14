@@ -33,7 +33,7 @@ namespace ReactiveUI
                 bool beforeChange = false)
             where TSender : class
         {
-            var propertyNames = new LinkedList<string>(RxApp.expressionToPropertyNames(property));
+            var propertyNames = new LinkedList<string>(Reflection.ExpressionToPropertyNames(property));
             var subscriptions = new LinkedList<IDisposable>(propertyNames.Select(x => (IDisposable) null));
             var ret = new Subject<IObservedChange<TSender, TValue>>();
 
@@ -87,7 +87,7 @@ namespace ReactiveUI
             ObservedChange<TSender, TValue> obsCh;
 
             while(current.Next != null) {
-                pi = RxApp.getPropertyInfoForProperty(currentObj.GetType(), current.Value);
+                pi = Reflection.GetPropertyInfoForProperty(currentObj.GetType(), current.Value);
                 if (pi == null) {
                     subscriptions.List.Where(x => x != null).ForEach(x => x.Dispose());
                     throw new ArgumentException(String.Format("Property '{0}' does not exist in expression", current.Value));
@@ -152,7 +152,7 @@ namespace ReactiveUI
             }
 
             var propName = current.Value;
-            pi = RxApp.getPropertyInfoForProperty(currentObj.GetType(), current.Value);
+            pi = Reflection.GetPropertyInfoForProperty(currentObj.GetType(), current.Value);
 
             currentSub.Value = notifyForProperty(currentObj, propName, beforeChange).Subscribe(x => {
                 obsCh = new ObservedChange<TSender, TValue>() {
