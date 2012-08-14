@@ -511,19 +511,51 @@ namespace ReactiveUI
             return ret;
         }
 
-        internal static void setValueToPropertyChain<TValue, TTarget>(TTarget target, Expression<Func<TTarget, TValue>> property, TValue value)
+        internal static bool tryGetValueForPropertyChain<TValue>(out TValue changeValue, object current, string[] propNames)
         {
-            object current = target;
-            string[] propNames = RxApp.expressionToPropertyNames(property);
-
             PropertyInfo pi;
             foreach (var propName in propNames.SkipLast(1)) {
+                if (current == null) {
+                    changeValue = default(TValue);
+                    return false;
+                }
+
                 pi = RxApp.getPropertyInfoOrThrow(current.GetType(), propName);
                 current = pi.GetValue(current, null);
             }
 
-            pi = RxApp.getPropertyInfoForProperty(current.GetType(), propNames.Last());
-            pi.SetValue(current, value, null);
+            if (current == null) {
+                changeValue = default(TValue);
+                return false;
+            }
+
+            pi = RxApp.getPropertyInfoOrThrow(current.GetType(), propNames.Last());
+            changeValue = (TValue) pi.GetValue(current, null);
+            return true;
+        }
+
+        internal static bool setValueToPropertyChain<TValue>(object target, string[] propNames, TValue value, bool shouldThrow = true)
+        {
+            PropertyInfo pi;
+            foreach (var propName in propNames.SkipLast(1)) {
+                pi = shouldThrow ? 
+                    RxApp.getPropertyInfoOrThrow(target.GetType(), propName) :
+                    RxApp.getPropertyInfoForProperty(target.GetType(), propName);
+
+                if (pi == null) {
+                    return false;
+                }
+                target = pi.GetValue(target, null);
+            }
+
+            pi = shouldThrow ? 
+                RxApp.getPropertyInfoOrThrow(target.GetType(), propNames.Last()) :
+                RxApp.getPropertyInfoForProperty(target.GetType(), propNames.Last());
+
+            if (pi == null) return false;
+
+            pi.SetValue(target, value, null);
+            return true;
         }
 
 

@@ -5,12 +5,13 @@ using System.Linq.Expressions;
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using System.Reflection;
 using System.Text;
 
 namespace ReactiveUI
 {
-    interface IPropertyBinderImplementation
+    public interface IPropertyBinderImplementation
     {
         IDisposable Bind<TViewModel, TView, TProp>(
                 TViewModel viewModel,
@@ -18,7 +19,7 @@ namespace ReactiveUI
                 Expression<Func<TViewModel, TProp>> vmProperty,
                 Expression<Func<TView, TProp>> viewProperty)
             where TViewModel : class
-            where TView : IViewForViewModel<TViewModel>;
+            where TView : class, IViewForViewModel<TViewModel>;
 
         IDisposable OneWayBind<TViewModel, TView, TProp>(
                 TViewModel viewModel,
@@ -48,6 +49,88 @@ namespace ReactiveUI
                 Func<TOut> fallbackValue = null)
             where TViewModel : class
             where TView : IViewForViewModel<TViewModel>;
+    }
+
+    class PropertyBinderImplementation : IPropertyBinderImplementation 
+    {
+        public IDisposable Bind<TViewModel, TView, TProp>(
+                TViewModel viewModel,
+                TView view,
+                Expression<Func<TViewModel, TProp>> vmProperty,
+                Expression<Func<TView, TProp>> viewProperty)
+            where TViewModel : class
+            where TView : class, IViewForViewModel<TViewModel>
+        {
+            var ret = new CompositeDisposable();
+            var somethingChanged = Observable.Merge(
+                viewModel.WhenAny(vmProperty, x => x.Value),
+                view.WhenAny(viewProperty, x => x.Value)
+            ).Multicast(new Subject<TProp>());
+
+            var vmPropChain = RxApp.expressionToPropertyNames(vmProperty);
+            ret.Add(somethingChanged.Where(x => {
+                TProp result;
+                if (!RxApp.tryGetValueForPropertyChain(out result, viewModel, vmPropChain))
+                    return false;
+                return EqualityComparer<TProp>.Default.Equals(result, x) != true;
+            }).Subscribe(x => RxApp.setValueToPropertyChain(viewModel, vmPropChain, x, false)));
+
+            var viewPropChain = RxApp.expressionToPropertyNames(viewProperty);
+            ret.Add(somethingChanged.Where(x => {
+                TProp result;
+                if (!RxApp.tryGetValueForPropertyChain(out result, view, viewPropChain))
+                    return false;
+                return EqualityComparer<TProp>.Default.Equals(result, x) != true;
+            }).Subscribe(x => RxApp.setValueToPropertyChain(view, viewPropChain, x, false)));
+
+            // NB: Even though it's technically a two-way bind, most people 
+            // want the ViewModel to win at first.
+            TProp initialVal;
+            bool shouldSet = RxApp.tryGetValueForPropertyChain(out initialVal, viewModel, vmPropChain);
+
+            ret.Add(somethingChanged.Connect());
+
+            if (shouldSet) RxApp.setValueToPropertyChain(view, viewPropChain, initialVal);
+            return ret;
+        }
+
+        public IDisposable OneWayBind<TViewModel, TView, TProp>(
+                TViewModel viewModel,
+                TView view,
+                Expression<Func<TViewModel, TProp>> vmProperty,
+                Expression<Func<TView, TProp>> viewProperty,
+                Func<TProp> fallbackValue = null)
+            where TViewModel : class
+            where TView : IViewForViewModel<TViewModel>
+        {
+            throw new NotImplementedException();
+        }
+
+        public IDisposable OneWayBind<TViewModel, TView, TProp, TOut>(
+                TViewModel viewModel,
+                TView view,
+                Expression<Func<TViewModel, TProp>> vmProperty,
+                Expression<Func<TView, TProp>> viewProperty,
+                Func<TProp, TOut> selector,
+                Func<TOut> fallbackValue = null)
+            where TViewModel : class
+            where TView : IViewForViewModel<TViewModel>
+        {
+            throw new NotImplementedException();
+        }
+
+        public IDisposable AsyncOneWayBind<TViewModel, TView, TProp, TOut>(
+                TViewModel viewModel,
+                TView view,
+                Expression<Func<TViewModel, TProp>> vmProperty,
+                Expression<Func<TView, TProp>> viewProperty,
+                Func<TProp, IObservable<TOut>> selector,
+                Func<TOut> fallbackValue = null)
+            where TViewModel : class
+            where TView : IViewForViewModel<TViewModel>
+        {
+            throw new NotImplementedException();
+        }
     }
 
     public static class ObservableBindingMixins

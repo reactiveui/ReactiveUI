@@ -108,7 +108,7 @@ namespace ReactiveUI.Tests
                 var input = new ScheduledSubject<string>(sched);
                 var fixture = new HostTestFixture() {Child = new TestFixture()};
 
-                input.BindTo(fixture, x => x.Child.IsNotNullString);
+                input.OneWayBind(fixture, x => x.Child.IsNotNullString);
 
                 Assert.Null(fixture.Child.IsNotNullString);
 
@@ -129,7 +129,7 @@ namespace ReactiveUI.Tests
                 var input = new ScheduledSubject<string>(sched);
                 var fixture = new HostTestFixture() {Child = new TestFixture()};
 
-                var subscription = input.BindTo(fixture, x => x.Child.IsNotNullString);
+                var subscription = input.OneWayBind(fixture, x => x.Child.IsNotNullString);
 
                 Assert.Null(fixture.Child.IsNotNullString);
 
@@ -152,7 +152,7 @@ namespace ReactiveUI.Tests
                 var input = new ScheduledSubject<string>(sched);
                 var fixture = new HostTestFixture() {Child = new TestFixture()};
 
-                var subscription = input.BindTo(fixture, x => x.Child.IsNotNullString);
+                var subscription = input.OneWayBind(fixture, x => x.Child.IsNotNullString);
 
                 Assert.Null(fixture.Child.IsNotNullString);
 
