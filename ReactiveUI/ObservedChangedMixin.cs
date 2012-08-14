@@ -9,9 +9,6 @@ namespace ReactiveUI
 {
     public static class ObservedChangedMixin
     {
-        static MemoizingMRUCache<string, string[]> propStringToNameCache = 
-            new MemoizingMRUCache<string, string[]>((x,_) => x.Split('.'), 25);
-
         /// <summary>
         /// Returns the current value of a property given a notification that
         /// it has changed.
@@ -43,28 +40,9 @@ namespace ReactiveUI
             }
 
             object current = This.Sender;
-            string[] propNames = null;
-            lock(propStringToNameCache) { propNames = propStringToNameCache.Get(This.PropertyName); }
+            string fullPropName = This.PropertyName;
 
-            PropertyInfo pi;
-            foreach(var propName in propNames.SkipLast(1)) {
-                if (current == null) {
-                    changeValue = default(TValue);
-                    return false;
-                }
-
-                pi = RxApp.getPropertyInfoOrThrow(current.GetType(), propName);
-                current = pi.GetValue(current, null);
-            }
-
-            if (current == null) {
-                changeValue = default(TValue);
-                return false;
-            }
-
-            pi = RxApp.getPropertyInfoOrThrow(current.GetType(), propNames.Last());
-            changeValue = (TValue)pi.GetValue(current, null);
-            return true;
+            return RxApp.tryGetValueForPropertyChain(out changeValue, current, fullPropName.Split('.'));
         }
 
         internal static IObservedChange<TSender, TValue> fillInValue<TSender, TValue>(this IObservedChange<TSender, TValue> This)
@@ -91,7 +69,7 @@ namespace ReactiveUI
             TTarget target,
             Expression<Func<TTarget, TValue>> property)
         {
-            RxApp.setValueToPropertyChain(target, property, This.GetValue());
+            RxApp.setValueToPropertyChain(target, RxApp.expressionToPropertyNames(property), This.GetValue());
         }
 
         /// <summary>
