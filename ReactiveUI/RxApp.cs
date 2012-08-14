@@ -441,21 +441,31 @@ namespace ReactiveUI
         }
 
 #if SILVERLIGHT || WINRT
-        static MemoizingMRUCache<Tuple<Type, string>, FieldInfo> fieldInfoTypeCache = 
+        static MemoizingMRUCache<Tuple<Type, string>, FieldInfo> backingFieldInfoTypeCache = 
             new MemoizingMRUCache<Tuple<Type,string>, FieldInfo>(
                 (x, _) => (x.Item1).GetField(RxApp.GetFieldNameForProperty(x.Item2)), 
                 15 /*items*/);
+        static MemoizingMRUCache<Tuple<Type, string>, FieldInfo> fieldInfoTypeCache = 
+            new MemoizingMRUCache<Tuple<Type,string>, FieldInfo>((x,_) => {
+                var ret = (x.Item1).GetField(x.Item2, BindingFlags.Public | BindingFlags.Instance);
+                return ret;
+            }, 50/*items*/);
         static MemoizingMRUCache<Tuple<Type, string>, PropertyInfo> propInfoTypeCache = 
             new MemoizingMRUCache<Tuple<Type,string>, PropertyInfo>(
                 (x, _) => (x.Item1).GetProperty(x.Item2), 
                 15 /*items*/);
 #else
-        static MemoizingMRUCache<Tuple<Type, string>, FieldInfo> fieldInfoTypeCache = 
+        static MemoizingMRUCache<Tuple<Type, string>, FieldInfo> backingFieldInfoTypeCache = 
             new MemoizingMRUCache<Tuple<Type,string>, FieldInfo>((x, _) => {
                 var field_name = RxApp.GetFieldNameForProperty(x.Item2);
                 var ret = (x.Item1).GetField(field_name, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
                 return ret;
             }, 50 /*items*/);
+        static MemoizingMRUCache<Tuple<Type, string>, FieldInfo> fieldInfoTypeCache = 
+            new MemoizingMRUCache<Tuple<Type,string>, FieldInfo>((x,_) => {
+                var ret = (x.Item1).GetField(x.Item2, BindingFlags.Public | BindingFlags.Instance);
+                return ret;
+            }, 50/*items*/);
         static MemoizingMRUCache<Tuple<Type, string>, PropertyInfo> propInfoTypeCache = 
             new MemoizingMRUCache<Tuple<Type,string>, PropertyInfo>((x,_) => {
                 var ret = (x.Item1).GetProperty(x.Item2, BindingFlags.Public | BindingFlags.Instance);
@@ -463,14 +473,14 @@ namespace ReactiveUI
             }, 50/*items*/);
 #endif
 
-        internal static FieldInfo getFieldInfoForProperty<TObj>(string prop_name, bool dontThrow = false)
+        internal static FieldInfo getBackingFieldInfoForProperty<TObj>(string prop_name, bool dontThrow = false)
             where TObj : IReactiveNotifyPropertyChanged
         {
             Contract.Requires(prop_name != null);
             FieldInfo field;
 
-            lock(fieldInfoTypeCache) {
-                field = fieldInfoTypeCache.Get(new Tuple<Type,string>(typeof(TObj), prop_name));
+            lock(backingFieldInfoTypeCache) {
+                field = backingFieldInfoTypeCache.Get(new Tuple<Type,string>(typeof(TObj), prop_name));
             }
 
             if (field == null && !dontThrow) {
@@ -495,12 +505,26 @@ namespace ReactiveUI
                 pi = propInfoTypeCache.Get(new Tuple<Type,string>(type, prop_name));
             }
 
-            if (pi == null) {
-                throw new ArgumentException("You must declare a property named: " + prop_name);
-            }
-
             return pi;
         }
+
+        internal static FieldInfo getFieldInfoForField<TObj>(string prop_name)
+        {
+            return getFieldInfoForField(typeof (TObj), prop_name);
+        }
+
+        internal static FieldInfo getFieldInfoForField(Type type, string prop_name)
+        {
+            Contract.Requires(prop_name != null);
+            FieldInfo fi;
+
+            lock(fieldInfoTypeCache) {
+                fi = fieldInfoTypeCache.Get(new Tuple<Type,string>(type, prop_name));
+            }
+
+            return fi;
+        }
+
 
         internal static PropertyInfo getPropertyInfoOrThrow(Type type, string propName)
         {
@@ -514,19 +538,36 @@ namespace ReactiveUI
         internal static bool tryGetValueForPropertyChain<TValue>(out TValue changeValue, object current, string[] propNames)
         {
             PropertyInfo pi;
+            FieldInfo fi;
+            Type currentType;
+
             foreach (var propName in propNames.SkipLast(1)) {
                 if (current == null) {
                     changeValue = default(TValue);
                     return false;
                 }
 
-                pi = RxApp.getPropertyInfoOrThrow(current.GetType(), propName);
+                currentType = current.GetType();
+                fi = RxApp.getFieldInfoForField(currentType, propName);
+                if (fi != null) {
+                    current = fi.GetValue(current);
+                    continue;
+                }
+
+                pi = RxApp.getPropertyInfoOrThrow(currentType, propName);
                 current = pi.GetValue(current, null);
             }
 
             if (current == null) {
                 changeValue = default(TValue);
                 return false;
+            }
+
+            currentType = current.GetType();
+            fi = RxApp.getFieldInfoForField(currentType, propNames.Last());
+            if (fi != null) {
+                changeValue = (TValue)fi.GetValue(current);
+                return true;
             }
 
             pi = RxApp.getPropertyInfoOrThrow(current.GetType(), propNames.Last());
@@ -537,15 +578,34 @@ namespace ReactiveUI
         internal static bool setValueToPropertyChain<TValue>(object target, string[] propNames, TValue value, bool shouldThrow = true)
         {
             PropertyInfo pi;
+            FieldInfo fi;
+            Type type;
+
             foreach (var propName in propNames.SkipLast(1)) {
+                type = target.GetType();
+
+                fi = RxApp.getFieldInfoForField(type, propName);
+                if (fi != null) {
+                    target = fi.GetValue(target);
+                    continue;
+                }
+
                 pi = shouldThrow ? 
-                    RxApp.getPropertyInfoOrThrow(target.GetType(), propName) :
-                    RxApp.getPropertyInfoForProperty(target.GetType(), propName);
+                    RxApp.getPropertyInfoOrThrow(type, propName) :
+                    RxApp.getPropertyInfoForProperty(type, propName);
 
                 if (pi == null) {
                     return false;
                 }
                 target = pi.GetValue(target, null);
+            }
+
+            type = target.GetType();
+            fi = RxApp.getFieldInfoForField(type, propNames.Last());
+
+            if (fi != null) {
+                fi.SetValue(target, value);
+                return true;
             }
 
             pi = shouldThrow ? 

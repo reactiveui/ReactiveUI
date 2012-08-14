@@ -215,7 +215,7 @@ namespace ReactiveUI
             FieldInfo field;
             string prop_name = RxApp.simpleExpressionToPropertyName<TObj, TRet>(property);
 
-            field = RxApp.getFieldInfoForProperty<TObj>(prop_name);
+            field = RxApp.getBackingFieldInfoForProperty<TObj>(prop_name);
 
             var field_val = field.GetValue(This);
 
