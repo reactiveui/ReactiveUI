@@ -93,9 +93,16 @@ namespace ReactiveUI.Tests
             set { this.RaiseAndSetIfChanged(x => x.Command1, value); }
         }
 
+        ReactiveCommand _Command2;
+        public ReactiveCommand Command2 {
+            get { return _Command2; }
+            set { this.RaiseAndSetIfChanged(x => x.Command2, value); }
+        }
+
         public CommandBindViewModel()
         {
             Command1 = new ReactiveCommand();
+            Command2 = new ReactiveCommand();
         }
     }
 
@@ -110,9 +117,12 @@ namespace ReactiveUI.Tests
 
         public Button Command1 { get; protected set; }
 
+        public Image Command2 { get; protected set; }
+
         public CommandBindView()
         {
             Command1 = new Button();
+            Command2 = new Image();
         }
     }
 
@@ -156,6 +166,26 @@ namespace ReactiveUI.Tests
 
             disp.Dispose();
             Assert.Null(view.Command1.Command);
+        }
+
+        [Fact]
+        public void CommandBindToExplicitEventWireup()
+        {
+            var vm = new CommandBindViewModel();
+            var view = new CommandBindView() {ViewModel = vm};
+            var fixture = new CommandBinderImplementation();
+
+            int invokeCount = 0;
+            vm.Command2.Subscribe(_ => invokeCount += 1);
+
+            var disp = fixture.BindCommand(vm, view, x => x.Command2, x => x.Command2, "MouseUp");
+
+            view.Command2.RaiseEvent(new MouseButtonEventArgs(Mouse.PrimaryDevice, 0, MouseButton.Left) { RoutedEvent = Image.MouseUpEvent });
+
+            disp.Dispose();
+
+            view.Command2.RaiseEvent(new MouseButtonEventArgs(Mouse.PrimaryDevice, 0, MouseButton.Left) { RoutedEvent = Image.MouseUpEvent });
+            Assert.Equal(1, invokeCount);
         }
     }
 }

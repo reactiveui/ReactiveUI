@@ -16,7 +16,8 @@ namespace ReactiveUI.Xaml
         IDisposable BindCommand<TView, TViewModel, TProp>(
                 TViewModel viewModel, 
                 TView view, 
-                Expression<Func<TViewModel, TProp>> propertyName)
+                Expression<Func<TViewModel, TProp>> propertyName,
+                string toEvent = null)
             where TViewModel : class
             where TView : IViewForViewModel<TViewModel>
             where TProp : ICommand;
@@ -26,7 +27,8 @@ namespace ReactiveUI.Xaml
                 TView view, 
                 Expression<Func<TViewModel, TProp>> propertyName, 
                 Expression<Func<TView, TControl>> controlName,
-                Func<TParam> withParameter)
+                Func<TParam> withParameter,
+                string toEvent = null)
             where TViewModel : class
             where TView : IViewForViewModel<TViewModel>
             where TProp : ICommand;
@@ -36,7 +38,8 @@ namespace ReactiveUI.Xaml
                 TView view, 
                 Expression<Func<TViewModel, TProp>> propertyName, 
                 Expression<Func<TView, TControl>> controlName,
-                IObservable<TParam> withParameter)
+                IObservable<TParam> withParameter,
+                string toEvent = null)
             where TViewModel : class
             where TView : IViewForViewModel<TViewModel>
             where TProp : ICommand;
@@ -47,14 +50,15 @@ namespace ReactiveUI.Xaml
         public IDisposable BindCommand<TView, TViewModel, TProp>(
                 TViewModel viewModel, 
                 TView view, 
-                Expression<Func<TViewModel, TProp>> propertyName)
+                Expression<Func<TViewModel, TProp>> propertyName,
+                string toEvent = null)
             where TViewModel : class
             where TView : IViewForViewModel<TViewModel>
             where TProp : ICommand
         {
             var ctlName = RxApp.simpleExpressionToPropertyName(propertyName);
             var viewPi = RxApp.getPropertyInfoOrThrow(typeof (TView), ctlName);
-            return bindCommandInternal(viewModel, view, propertyName, viewPi, Observable.Empty<object>());
+            return bindCommandInternal(viewModel, view, propertyName, viewPi, Observable.Empty<object>(), toEvent);
         }
 
         public IDisposable BindCommand<TView, TViewModel, TProp, TControl, TParam>(
@@ -62,7 +66,8 @@ namespace ReactiveUI.Xaml
                 TView view, 
                 Expression<Func<TViewModel, TProp>> propertyName, 
                 Expression<Func<TView, TControl>> controlName,
-                Func<TParam> withParameter)
+                Func<TParam> withParameter,
+                string toEvent = null)
             where TViewModel : class
             where TView : IViewForViewModel<TViewModel>
             where TProp : ICommand
@@ -70,7 +75,7 @@ namespace ReactiveUI.Xaml
             var ctlName = RxApp.simpleExpressionToPropertyName(controlName);
             var viewPi = RxApp.getPropertyInfoOrThrow(typeof (TView), ctlName);
 
-            return bindCommandInternal(viewModel, view, propertyName, viewPi, Observable.Empty<object>(), cmd => {
+            return bindCommandInternal(viewModel, view, propertyName, viewPi, Observable.Empty<object>(), toEvent, cmd => {
                 var rc = cmd as IReactiveCommand;
                 if (rc == null) {
                     return ReactiveCommand.Create(x => cmd.CanExecute(x), _ => cmd.Execute(withParameter()));
@@ -87,14 +92,15 @@ namespace ReactiveUI.Xaml
                 TView view, 
                 Expression<Func<TViewModel, TProp>> propertyName, 
                 Expression<Func<TView, TControl>> controlName,
-                IObservable<TParam> withParameter)
+                IObservable<TParam> withParameter,
+                string toEvent = null)
             where TViewModel : class
             where TView : IViewForViewModel<TViewModel>
             where TProp : ICommand
         {
             var ctlName = RxApp.simpleExpressionToPropertyName(controlName);
             var viewPi = RxApp.getPropertyInfoOrThrow(typeof (TView), ctlName);
-            return bindCommandInternal(viewModel, view, propertyName, viewPi, withParameter);
+            return bindCommandInternal(viewModel, view, propertyName, viewPi, withParameter, toEvent);
         }
 
         IDisposable bindCommandInternal<TView, TViewModel, TProp, TParam>(
@@ -103,6 +109,7 @@ namespace ReactiveUI.Xaml
                 Expression<Func<TViewModel, TProp>> propertyName, 
                 PropertyInfo viewPi,
                 IObservable<TParam> withParameter,
+                string toEvent,
                 Func<ICommand, ICommand> commandFixuper = null)
             where TViewModel : class
             where TView : IViewForViewModel<TViewModel>
@@ -112,7 +119,7 @@ namespace ReactiveUI.Xaml
 
             IDisposable disp = Disposable.Empty;
 
-            var propSub = view.ViewModel.WhenAny(propertyName, x => x.Value).Subscribe(x => {
+            var propSub = viewModel.WhenAny(propertyName, x => x.Value).Subscribe(x => {
                 disp.Dispose();
                 if (x == null) {
                     disp = Disposable.Empty;
@@ -127,7 +134,11 @@ namespace ReactiveUI.Xaml
                 }
 
                 var cmd = commandFixuper != null ? commandFixuper(x) : x;
-                disp = CreatesCommandBinding.BindCommandToObject(cmd, target, withParameter.Select(y => (object)y));
+                if (toEvent != null) {
+                    disp = CreatesCommandBinding.BindCommandToObject(cmd, target, withParameter.Select(y => (object)y), toEvent);
+                } else {
+                    disp = CreatesCommandBinding.BindCommandToObject(cmd, target, withParameter.Select(y => (object)y));
+                }
             });
 
             return Disposable.Create(() => {
@@ -144,12 +155,13 @@ namespace ReactiveUI.Xaml
                 TViewModel viewModel, 
                 TView view, 
                 Expression<Func<TViewModel, TProp>> propertyName, 
-                Expression<Func<TView, TControl>> controlName)
+                Expression<Func<TView, TControl>> controlName,
+                string toEvent = null)
             where TViewModel : class
             where TView : IViewForViewModel<TViewModel>
             where TProp : ICommand
         {
-            return This.BindCommand(viewModel, view, propertyName, controlName, Observable.Empty<object>());
+            return This.BindCommand(viewModel, view, propertyName, controlName, Observable.Empty<object>(), toEvent);
         }
 
         public static IDisposable BindCommand<TView, TViewModel, TProp, TControl, TParam>(
@@ -158,12 +170,13 @@ namespace ReactiveUI.Xaml
                 TView view, 
                 Expression<Func<TViewModel, TProp>> propertyName, 
                 Expression<Func<TView, TControl>> controlName,
-                Expression<Func<TViewModel, TParam>> withParameter)
+                Expression<Func<TViewModel, TParam>> withParameter,
+                string toEvent = null)
             where TViewModel : class
             where TView : IViewForViewModel<TViewModel>
             where TProp : ICommand
         {
-            return This.BindCommand(viewModel, view, propertyName, controlName, view.ViewModel.WhenAny(withParameter, x => x.Value));
+            return This.BindCommand(viewModel, view, propertyName, controlName, view.ViewModel.WhenAny(withParameter, x => x.Value), toEvent);
         }
     }
 
@@ -209,7 +222,7 @@ namespace ReactiveUI.Xaml
             return ret;
         }
 
-        public static IDisposable BindCommandToObject<TEventArgs>(ICommand command, object target, IObservable<object> commandParameter, string eventName) where TEventArgs : EventArgs
+        public static IDisposable BindCommandToObject(ICommand command, object target, IObservable<object> commandParameter, string eventName)
         {
             var type = target.GetType();
             var binder = bindCommandEventCache.Get(type);
@@ -217,7 +230,20 @@ namespace ReactiveUI.Xaml
                 throw new Exception(String.Format("Couldn't find a Command Binder for {0} and event {1}", type.FullName, eventName));
             }
 
-            var ret = binder.BindCommandToObject<TEventArgs>(command, target, commandParameter, eventName);
+            var ei = type.GetEvent(eventName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy);
+            if (ei == null) {
+                throw new Exception(String.Format("Couldn't find {0}.{1}", type.FullName, eventName));
+            }
+
+            // Find the EventArgs type parameter of the event via digging around via reflection
+            var eventArgsType = ei.EventHandlerType.GetMethods()
+                .First(x => x.Name == "Invoke")
+                .GetParameters()[1].ParameterType;
+            var mi = binder.GetType().GetMethods().First(x => x.Name == "BindCommandToObject" && x.IsGenericMethod);
+            mi = mi.MakeGenericMethod(new[] {eventArgsType});
+
+            //var ret = binder.BindCommandToObject<TEventArgs>(command, target, commandParameter, eventName);
+            var ret = (IDisposable) mi.Invoke(binder, new[] {command, target, commandParameter, eventName});
             if (ret == null) {
                 throw new Exception(String.Format("Couldn't bind Command Binder for {0} and event {1}", type.FullName, eventName));
             }
