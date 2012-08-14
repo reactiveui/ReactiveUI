@@ -463,7 +463,7 @@ namespace ReactiveUI
             }, 50 /*items*/);
         static MemoizingMRUCache<Tuple<Type, string>, FieldInfo> fieldInfoTypeCache = 
             new MemoizingMRUCache<Tuple<Type,string>, FieldInfo>((x,_) => {
-                var ret = (x.Item1).GetField(x.Item2, BindingFlags.Public | BindingFlags.Instance);
+                var ret = (x.Item1).GetField(x.Item2, BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy);
                 return ret;
             }, 50/*items*/);
         static MemoizingMRUCache<Tuple<Type, string>, PropertyInfo> propInfoTypeCache = 
