@@ -13,7 +13,7 @@ using Xunit;
 
 namespace ReactiveUI.Tests
 {
-    public class CommandBindingTests
+    public class CreatesCommandBindingTests
     {
         [Fact]
         public void CommandBinderBindsToButton()
@@ -85,4 +85,77 @@ namespace ReactiveUI.Tests
         }
     }
 
+    public class CommandBindViewModel : ReactiveObject
+    {
+        ReactiveCommand _Command1;
+        public ReactiveCommand Command1 {
+            get { return _Command1; }
+            set { this.RaiseAndSetIfChanged(x => x.Command1, value); }
+        }
+
+        public CommandBindViewModel()
+        {
+            Command1 = new ReactiveCommand();
+        }
+    }
+
+    public class CommandBindView : IViewForViewModel<CommandBindViewModel>
+    {
+        object IViewForViewModel.ViewModel { 
+            get { return ViewModel; }
+            set { ViewModel = (CommandBindViewModel)value; } 
+        }
+
+        public CommandBindViewModel ViewModel { get; set; }
+
+        public Button Command1 { get; protected set; }
+
+        public CommandBindView()
+        {
+            Command1 = new Button();
+        }
+    }
+
+    public class CommandBindingImplementationTests
+    {
+        [Fact]
+        public void CommandBindConventionWireup()
+        {
+            var vm = new CommandBindViewModel();
+            var view = new CommandBindView() {ViewModel = vm};
+            var fixture = new CommandBinderImplementation();
+
+            Assert.Null(view.Command1.Command);
+
+            var disp = fixture.BindCommand(vm, view, x => x.Command1);
+            Assert.Equal(vm.Command1, view.Command1.Command);
+
+            var newCmd = new ReactiveCommand();
+            vm.Command1 = newCmd;
+            Assert.Equal(newCmd, view.Command1.Command);
+
+            disp.Dispose();
+            Assert.Null(view.Command1.Command);
+        }
+
+        [Fact]
+        public void CommandBindByNameWireup()
+        {
+            var vm = new CommandBindViewModel();
+            var view = new CommandBindView() {ViewModel = vm};
+            var fixture = new CommandBinderImplementation();
+
+            Assert.Null(view.Command1.Command);
+
+            var disp = fixture.BindCommand(vm, view, x => x.Command1, x => x.Command1);
+            Assert.Equal(vm.Command1, view.Command1.Command);
+
+            var newCmd = new ReactiveCommand();
+            vm.Command1 = newCmd;
+            Assert.Equal(newCmd, view.Command1.Command);
+
+            disp.Dispose();
+            Assert.Null(view.Command1.Command);
+        }
+    }
 }

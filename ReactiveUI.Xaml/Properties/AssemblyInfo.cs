@@ -17,3 +17,8 @@ using System.Windows;
     // app, or any theme specific resource dictionaries)
 )]
 #endif
+
+[assembly: InternalsVisibleTo("ReactiveUI.Tests")]
+[assembly: InternalsVisibleTo("ReactiveUI.Tests_SL4")]
+[assembly: InternalsVisibleTo("ReactiveUI.Tests_SL5")]
+[assembly: InternalsVisibleTo("ReactiveUI.Tests_WinRT")]

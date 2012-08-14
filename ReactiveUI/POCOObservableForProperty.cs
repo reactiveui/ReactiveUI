@@ -4,7 +4,8 @@ using System.Reactive.Linq;
 
 namespace ReactiveUI
 {
-    class POCOObservableForProperty : ICreatesObservableForProperty {
+    class POCOObservableForProperty : ICreatesObservableForProperty 
+    {
         public int GetAffinityForObject(Type type, bool beforeChanged = false)
         {
             return 1;
