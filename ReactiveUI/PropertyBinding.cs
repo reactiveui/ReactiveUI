@@ -28,27 +28,27 @@ namespace ReactiveUI
                 Expression<Func<TView, TProp>> viewProperty,
                 Func<TProp> fallbackValue = null)
             where TViewModel : class
-            where TView : IViewForViewModel<TViewModel>;
+            where TView : class, IViewForViewModel<TViewModel>;
 
         IDisposable OneWayBind<TViewModel, TView, TProp, TOut>(
                 TViewModel viewModel,
                 TView view,
                 Expression<Func<TViewModel, TProp>> vmProperty,
-                Expression<Func<TView, TProp>> viewProperty,
+                Expression<Func<TView, TOut>> viewProperty,
                 Func<TProp, TOut> selector,
                 Func<TOut> fallbackValue = null)
             where TViewModel : class
-            where TView : IViewForViewModel<TViewModel>;
+            where TView : class, IViewForViewModel<TViewModel>;
 
         IDisposable AsyncOneWayBind<TViewModel, TView, TProp, TOut>(
                 TViewModel viewModel,
                 TView view,
                 Expression<Func<TViewModel, TProp>> vmProperty,
-                Expression<Func<TView, TProp>> viewProperty,
+                Expression<Func<TView, TOut>> viewProperty,
                 Func<TProp, IObservable<TOut>> selector,
                 Func<TOut> fallbackValue = null)
             where TViewModel : class
-            where TView : IViewForViewModel<TViewModel>;
+            where TView : class, IViewForViewModel<TViewModel>;
     }
 
     class PropertyBinderImplementation : IPropertyBinderImplementation 
@@ -101,35 +101,43 @@ namespace ReactiveUI
                 Expression<Func<TView, TProp>> viewProperty,
                 Func<TProp> fallbackValue = null)
             where TViewModel : class
-            where TView : IViewForViewModel<TViewModel>
+            where TView : class, IViewForViewModel<TViewModel>
         {
-            throw new NotImplementedException();
+            return viewModel
+                .WhenAny(vmProperty, x => x.Value)
+                .OneWayBind(view, viewProperty, fallbackValue);
         }
 
         public IDisposable OneWayBind<TViewModel, TView, TProp, TOut>(
                 TViewModel viewModel,
                 TView view,
                 Expression<Func<TViewModel, TProp>> vmProperty,
-                Expression<Func<TView, TProp>> viewProperty,
+                Expression<Func<TView, TOut>> viewProperty,
                 Func<TProp, TOut> selector,
                 Func<TOut> fallbackValue = null)
             where TViewModel : class
-            where TView : IViewForViewModel<TViewModel>
+            where TView : class, IViewForViewModel<TViewModel>
         {
-            throw new NotImplementedException();
+            return viewModel
+                .WhenAny(vmProperty, x => x.Value)
+                .Select(selector)
+                .OneWayBind(view, viewProperty, fallbackValue);
         }
 
         public IDisposable AsyncOneWayBind<TViewModel, TView, TProp, TOut>(
                 TViewModel viewModel,
                 TView view,
                 Expression<Func<TViewModel, TProp>> vmProperty,
-                Expression<Func<TView, TProp>> viewProperty,
+                Expression<Func<TView, TOut>> viewProperty,
                 Func<TProp, IObservable<TOut>> selector,
                 Func<TOut> fallbackValue = null)
             where TViewModel : class
-            where TView : IViewForViewModel<TViewModel>
+            where TView : class, IViewForViewModel<TViewModel>
         {
-            throw new NotImplementedException();
+            return viewModel
+                .WhenAny(vmProperty, x => x.Value)
+                .SelectMany(selector)
+                .OneWayBind(view, viewProperty, fallbackValue);
         }
     }
 
