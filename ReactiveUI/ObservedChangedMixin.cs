@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reactive;
 using System.Reactive.Disposables;
 using System.Linq;
 using System.Linq.Expressions;
@@ -187,9 +188,7 @@ namespace ReactiveUI
 
             var toDispose = new IDisposable[] {sourceSub, null};
             var propertyNames = RxApp.expressionToPropertyNames(property);
-            toDispose[1] = target.ObservableForProperty(property).Subscribe(_ => subscribify(target, propertyNames));
-
-            subscribify(target, propertyNames);
+            toDispose[1] = target.WhenAny(property, _ => Unit.Default).Subscribe(_ => subscribify(target, propertyNames));
 
             return Disposable.Create(() => { toDispose[0].Dispose(); toDispose[1].Dispose(); });
         }
