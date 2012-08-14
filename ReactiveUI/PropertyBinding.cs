@@ -232,9 +232,18 @@ namespace ReactiveUI
 
                 object current = tgt;
                 PropertyInfo pi = null;
+                FieldInfo fi = null;
+                Type type;
                 foreach(var propName in propNames.SkipLast(1)) {
                     if (current == null) {
                         return;
+                    }
+
+                    type = current.GetType();
+                    fi = RxApp.getFieldInfoForField(type, propName);
+                    if (fi != null) {
+                        current = fi.GetValue(current);
+                        continue;
                     }
 
                     pi = RxApp.getPropertyInfoOrThrow(current.GetType(), propName);
@@ -244,13 +253,21 @@ namespace ReactiveUI
                     return;
                 }
 
-                pi = RxApp.getPropertyInfoOrThrow(current.GetType(), propNames.Last());
+                type = current.GetType();
+                fi = RxApp.getFieldInfoForField(type, propNames.Last());
+                if (fi != null) {
+                    sourceSub.Disposable = This.Subscribe(x => fi.SetValue(current, x));
+                    return;
+                }
+
+                pi = RxApp.getPropertyInfoOrThrow(type, propNames.Last());
                 sourceSub.Disposable = This.Subscribe(x => pi.SetValue(current, x, null));
             });
 
             var toDispose = new IDisposable[] {sourceSub, null};
             var propertyNames = RxApp.expressionToPropertyNames(property);
-            toDispose[1] = target.WhenAny(property, _ => Unit.Default).Subscribe(_ => subscribify(target, propertyNames));
+            toDispose[1] = target.WhenAny(property, _ => Unit.Default)
+                .Subscribe(_ => subscribify(target, propertyNames));
 
             return Disposable.Create(() => { toDispose[0].Dispose(); toDispose[1].Dispose(); });
         }
