@@ -11,6 +11,65 @@ using System.Text;
 
 namespace ReactiveUI
 {
+    public static class BindingMixins
+    {
+        static IPropertyBinderImplementation binderImplementation;
+
+        static BindingMixins()
+        {
+            binderImplementation = new PropertyBinderImplementation();
+        }
+
+        public static IDisposable Bind<TViewModel, TView, TProp>(
+                this TView view,
+                TViewModel viewModel,
+                Expression<Func<TViewModel, TProp>> vmProperty,
+                Expression<Func<TView, TProp>> viewProperty)
+            where TViewModel : class
+            where TView : class, IViewForViewModel<TViewModel>
+        {
+            return binderImplementation.Bind(viewModel, view, vmProperty, viewProperty);
+        }
+
+        public static IDisposable OneWayBind<TViewModel, TView, TProp>(
+                this TView view,
+                TViewModel viewModel,
+                Expression<Func<TViewModel, TProp>> vmProperty,
+                Expression<Func<TView, TProp>> viewProperty,
+                Func<TProp> fallbackValue = null)
+            where TViewModel : class
+            where TView : class, IViewForViewModel<TViewModel>
+        {
+            return binderImplementation.OneWayBind(viewModel, view, vmProperty, viewProperty, fallbackValue);
+        }
+
+        public static IDisposable OneWayBind<TViewModel, TView, TProp, TOut>(
+                this TView view,
+                TViewModel viewModel,
+                Expression<Func<TViewModel, TProp>> vmProperty,
+                Expression<Func<TView, TOut>> viewProperty,
+                Func<TProp, TOut> selector,
+                Func<TOut> fallbackValue = null)
+            where TViewModel : class
+            where TView : class, IViewForViewModel<TViewModel>
+        {
+            return binderImplementation.OneWayBind(viewModel, view, vmProperty, viewProperty, selector, fallbackValue);
+        }
+
+        public static IDisposable AsyncOneWayBind<TViewModel, TView, TProp, TOut>(
+                this TView view,
+                TViewModel viewModel,
+                Expression<Func<TViewModel, TProp>> vmProperty,
+                Expression<Func<TView, TOut>> viewProperty,
+                Func<TProp, IObservable<TOut>> selector,
+                Func<TOut> fallbackValue = null)
+            where TViewModel : class
+            where TView : class, IViewForViewModel<TViewModel>
+        {
+            return binderImplementation.AsyncOneWayBind(viewModel, view, vmProperty, viewProperty, selector, fallbackValue);
+        }
+    }
+
     public interface IPropertyBinderImplementation
     {
         IDisposable Bind<TViewModel, TView, TProp>(
