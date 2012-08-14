@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Reactive;
-using System.Reactive.Disposables;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reactive.Linq;
@@ -93,17 +91,7 @@ namespace ReactiveUI
             TTarget target,
             Expression<Func<TTarget, TValue>> property)
         {
-            object current = target;
-            string[] propNames = RxApp.expressionToPropertyNames(property);
-
-            PropertyInfo pi;
-            foreach(var propName in propNames.SkipLast(1)) {
-                pi = RxApp.getPropertyInfoOrThrow(current.GetType(), propName);
-                current = pi.GetValue(current, null);
-            }
-
-            pi = RxApp.getPropertyInfoForProperty(current.GetType(), propNames.Last());
-            pi.SetValue(current, This.GetValue(), null);
+            RxApp.setValueToPropertyChain(target, property, This.GetValue());
         }
 
         /// <summary>
@@ -139,58 +127,6 @@ namespace ReactiveUI
         {
             // XXX: There is almost certainly a non-retarded way to do this
             return This.Select(x => (TRet)((object)GetValue(x)));
-        }
-    }
-
-    public static class BindingMixins
-    {
-        /// <summary>
-        /// BindTo takes an Observable stream and applies it to a target
-        /// property. Conceptually it is similar to "Subscribe(x =&gt;
-        /// target.property = x)", but allows you to use child properties
-        /// without the null checks.
-        /// </summary>
-        /// <param name="target">The target object whose property will be set.</param>
-        /// <param name="property">An expression representing the target
-        /// property to set. This can be a child property (i.e. x.Foo.Bar.Baz).</param>
-        /// <returns>An object that when disposed, disconnects the binding.</returns>
-        public static IDisposable BindTo<TTarget, TValue>(
-                this IObservable<TValue> This, 
-                TTarget target,
-                Expression<Func<TTarget, TValue>> property)
-            where TTarget : class
-        {
-            var sourceSub = new MultipleAssignmentDisposable();
-            var source = This;
-
-            var subscribify = new Action<TTarget, string[]>((tgt, propNames) => {
-                if (sourceSub.Disposable != null) {
-                    sourceSub.Disposable.Dispose();
-                }
-
-                object current = tgt;
-                PropertyInfo pi = null;
-                foreach(var propName in propNames.SkipLast(1)) {
-                    if (current == null) {
-                        return;
-                    }
-
-                    pi = RxApp.getPropertyInfoOrThrow(current.GetType(), propName);
-                    current = pi.GetValue(current, null);
-                }
-                if (current == null) {
-                    return;
-                }
-
-                pi = RxApp.getPropertyInfoOrThrow(current.GetType(), propNames.Last());
-                sourceSub.Disposable = This.Subscribe(x => pi.SetValue(current, x, null));
-            });
-
-            var toDispose = new IDisposable[] {sourceSub, null};
-            var propertyNames = RxApp.expressionToPropertyNames(property);
-            toDispose[1] = target.WhenAny(property, _ => Unit.Default).Subscribe(_ => subscribify(target, propertyNames));
-
-            return Disposable.Create(() => { toDispose[0].Dispose(); toDispose[1].Dispose(); });
         }
     }
 }
