@@ -11,6 +11,83 @@ using System.Windows.Input;
 
 namespace ReactiveUI.Xaml
 {
+    public static class CommandBinder
+    {
+        static ICommandBinderImplementation binderImplementation;
+
+        static CommandBinder()
+        {
+            binderImplementation = new CommandBinderImplementation();
+        }
+
+        public static IDisposable BindCommand<TView, TViewModel, TProp>(
+                this TView view, 
+                TViewModel viewModel, 
+                Expression<Func<TViewModel, TProp>> propertyName,
+                string toEvent = null)
+            where TViewModel : class
+            where TView : IViewForViewModel<TViewModel>
+            where TProp : ICommand
+        {
+            return binderImplementation.BindCommand(viewModel, view, propertyName, toEvent);
+        }
+
+        public static IDisposable BindCommand<TView, TViewModel, TProp, TControl, TParam>(
+                this TView view, 
+                TViewModel viewModel, 
+                Expression<Func<TViewModel, TProp>> propertyName, 
+                Expression<Func<TView, TControl>> controlName,
+                Func<TParam> withParameter,
+                string toEvent = null)
+            where TViewModel : class
+            where TView : IViewForViewModel<TViewModel>
+            where TProp : ICommand
+        {
+            return binderImplementation.BindCommand(viewModel, view, propertyName, controlName, withParameter, toEvent);
+        }
+
+        public static IDisposable BindCommand<TView, TViewModel, TProp, TControl, TParam>(
+                this TView view, 
+                TViewModel viewModel, 
+                Expression<Func<TViewModel, TProp>> propertyName, 
+                Expression<Func<TView, TControl>> controlName,
+                IObservable<TParam> withParameter,
+                string toEvent = null)
+            where TViewModel : class
+            where TView : IViewForViewModel<TViewModel>
+            where TProp : ICommand
+        {
+            return binderImplementation.BindCommand(viewModel, view, propertyName, controlName, withParameter, toEvent);
+        }
+
+        public static IDisposable BindCommand<TView, TViewModel, TProp, TControl>(
+                this TView view, 
+                TViewModel viewModel, 
+                Expression<Func<TViewModel, TProp>> propertyName, 
+                Expression<Func<TView, TControl>> controlName,
+                string toEvent = null)
+            where TViewModel : class
+            where TView : IViewForViewModel<TViewModel>
+            where TProp : ICommand
+        {
+            return binderImplementation.BindCommand(viewModel, view, propertyName, controlName, toEvent);
+        }
+
+        public static IDisposable BindCommand<TView, TViewModel, TProp, TControl, TParam>(
+                this TView view, 
+                TViewModel viewModel, 
+                Expression<Func<TViewModel, TProp>> propertyName, 
+                Expression<Func<TView, TControl>> controlName,
+                Expression<Func<TViewModel, TParam>> withParameter,
+                string toEvent = null)
+            where TViewModel : class
+            where TView : IViewForViewModel<TViewModel>
+            where TProp : ICommand
+        {
+            return binderImplementation.BindCommand(viewModel, view, propertyName, controlName, withParameter, toEvent);
+        }
+    }
+
     interface ICommandBinderImplementation : IEnableLogger
     {
         IDisposable BindCommand<TView, TViewModel, TProp>(
