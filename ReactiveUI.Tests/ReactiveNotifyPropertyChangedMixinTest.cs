@@ -315,7 +315,7 @@ namespace ReactiveUI.Tests
                 {x => x.Child.IsOnlyOneWord.Length, new[] {"Child", "IsOnlyOneWord", "Length"}},
             };
 
-            var results = data.Keys.Select(x => new {input = x, output = RxApp.expressionToPropertyNames(x)});
+            var results = data.Keys.Select(x => new {input = x, output = Reflection.ExpressionToPropertyNames(x)});
 
             foreach(var x in results) {
                 data[x.input].AssertAreEqual(x.output);
