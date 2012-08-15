@@ -48,7 +48,7 @@ namespace ReactiveUI
 
 			var slot<#=i#> = new ObservedChange<TSender, T<#=i#>>() {
                 Sender = This,
-                PropertyName = String.Join(".", RxApp.expressionToPropertyNames(property<#=i#>)),
+                PropertyName = String.Join(".", Reflection.ExpressionToPropertyNames(property<#=i#>)),
             };
             T<#=i#> slot<#=i#>Value = default(T<#=i#>); slot<#=i#>.TryGetValue(out slot<#=i#>Value); slot<#=i#>.Value = slot<#=i#>Value;
             IObservedChange<TSender, T<#=i#>> islot<#=i#> = slot<#=i#>;
