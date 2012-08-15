@@ -6,6 +6,7 @@ using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using System.Reflection;
 using System.Text;
 using System.Windows;
 using System.Windows.Data;
@@ -30,8 +31,18 @@ namespace ReactiveUI.Xaml
             Contract.Requires(sender != null && sender is DependencyObject);
 
             var dobj = sender as DependencyObject;
+            var type = dobj.GetType();
+
+            // Look for the DependencyProperty attached to this property name
+            var fi = type.GetField(propertyName + "Property", BindingFlags.Static | BindingFlags.Public | BindingFlags.FlattenHierarchy);
+            if (fi == null) {
+                this.Log().Debug("Tried to bind DO {0}.{1}, but DP doesn't exist. Binding as POCO object",
+                    type.FullName, propertyName);
+                var ret = new POCOObservableForProperty();
+                return ret.GetNotificationForProperty(sender, propertyName, beforeChanged);
+            }
+
             return Observable.Create<IObservedChange<object, object>>(subj => {
-                var type = dobj.GetType();
                 DependencyProperty attachedProp;
 
                 if (!attachedProperties.ContainsKey(type)) {
