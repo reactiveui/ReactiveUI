@@ -37,6 +37,10 @@ namespace ReactiveUI
             var subscriptions = new LinkedList<IDisposable>(propertyNames.Select(x => (IDisposable) null));
             var ret = new Subject<IObservedChange<TSender, TValue>>();
 
+            if (This == null) {
+                throw new ArgumentNullException("Sender");
+            }
+
             /* x => x.Foo.Bar.Baz;
              * 
              * Subscribe to This, look for Foo

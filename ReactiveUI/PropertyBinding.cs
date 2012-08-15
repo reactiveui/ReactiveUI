@@ -122,17 +122,17 @@ namespace ReactiveUI
         {
             var ret = new CompositeDisposable();
             var somethingChanged = Observable.Merge(
-                viewModel.WhenAny(vmProperty, x => x.Value),
+                Reflection.ViewModelWhenAnyValue(viewModel, view, vmProperty),
                 view.WhenAny(viewProperty, x => x.Value)
             ).Multicast(new Subject<TProp>());
 
             var vmPropChain = Reflection.ExpressionToPropertyNames(vmProperty);
             ret.Add(somethingChanged.Where(x => {
                 TProp result;
-                if (!Reflection.TryGetValueForPropertyChain(out result, viewModel, vmPropChain))
+                if (!Reflection.TryGetValueForPropertyChain(out result, view.ViewModel, vmPropChain))
                     return false;
                 return EqualityComparer<TProp>.Default.Equals(result, x) != true;
-            }).Subscribe(x => Reflection.SetValueToPropertyChain(viewModel, vmPropChain, x, false)));
+            }).Subscribe(x => Reflection.SetValueToPropertyChain(view.ViewModel, vmPropChain, x, false)));
 
             var viewPropChain = Reflection.ExpressionToPropertyNames(viewProperty);
             ret.Add(somethingChanged.Where(x => {
@@ -145,7 +145,7 @@ namespace ReactiveUI
             // NB: Even though it's technically a two-way bind, most people 
             // want the ViewModel to win at first.
             TProp initialVal;
-            bool shouldSet = Reflection.TryGetValueForPropertyChain(out initialVal, viewModel, vmPropChain);
+            bool shouldSet = Reflection.TryGetValueForPropertyChain(out initialVal, view.ViewModel, vmPropChain);
 
             ret.Add(somethingChanged.Connect());
 
@@ -162,8 +162,8 @@ namespace ReactiveUI
             where TViewModel : class
             where TView : class, IViewForViewModel<TViewModel>
         {
-            return viewModel
-                .WhenAny(vmProperty, x => x.Value)
+            
+            return Reflection.ViewModelWhenAnyValue(viewModel, view, vmProperty)
                 .OneWayBind(view, viewProperty, fallbackValue);
         }
 
@@ -177,8 +177,7 @@ namespace ReactiveUI
             where TViewModel : class
             where TView : class, IViewForViewModel<TViewModel>
         {
-            return viewModel
-                .WhenAny(vmProperty, x => x.Value)
+            return Reflection.ViewModelWhenAnyValue(viewModel, view, vmProperty)
                 .Select(selector)
                 .OneWayBind(view, viewProperty, fallbackValue);
         }
@@ -193,8 +192,7 @@ namespace ReactiveUI
             where TViewModel : class
             where TView : class, IViewForViewModel<TViewModel>
         {
-            return viewModel
-                .WhenAny(vmProperty, x => x.Value)
+            return Reflection.ViewModelWhenAnyValue(viewModel, view, vmProperty)
                 .SelectMany(selector)
                 .OneWayBind(view, viewProperty, fallbackValue);
         }
