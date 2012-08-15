@@ -219,40 +219,14 @@ namespace ReactiveUI
             Func<TValue> fallbackValue = null)
             where TTarget : class
         {
-            var sourceSub = new MultipleAssignmentDisposable();
-            if (fallbackValue != null) {
-                This = This.StartWith(fallbackValue())
-                    .Select(x => (EqualityComparer<TValue>.Default.Equals(x, default(TValue)) ? fallbackValue() : x));
-            }
+            var pn = Reflection.ExpressionToPropertyNames(property);
 
-            var subscribify = new Action<TTarget, string[]>((tgt, propNames) => {
-                if (sourceSub.Disposable != null) {
-                    sourceSub.Disposable.Dispose();
-                }
-
-                object current = tgt;
-
-                foreach(var propName in propNames.SkipLast(1)) {
-                    if (current == null) {
-                        return;
-                    }
-
-                    current = Reflection.GetValueFetcherOrThrow(current.GetType(), propName)(current);
-                }
-                if (current == null) {
-                    return;
-                }
-
-                var setter = Reflection.GetValueSetterOrThrow(current.GetType(), propNames.Last());
-                sourceSub.Disposable = This.Subscribe(x => setter(current, x));
-            });
-
-            var toDispose = new IDisposable[] {sourceSub, null};
-            var propertyNames = Reflection.ExpressionToPropertyNames(property);
-            toDispose[1] = target.WhenAny(property, _ => Unit.Default)
-                .Subscribe(_ => subscribify(target, propertyNames));
-
-            return Disposable.Create(() => { toDispose[0].Dispose(); toDispose[1].Dispose(); });
+            var lastValue = default(TValue);
+            return Observable.Merge(target.WhenAny(property, _ => lastValue).Skip(1), This)
+                .Subscribe(x => {
+                    lastValue = x;
+                    Reflection.SetValueToPropertyChain(target, pn, x);
+                });
         }
     }
 }
