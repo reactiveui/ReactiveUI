@@ -26,7 +26,7 @@ namespace ReactiveUI.Xaml
                 Expression<Func<TViewModel, TProp>> propertyName,
                 string toEvent = null)
             where TViewModel : class
-            where TView : IViewForViewModel<TViewModel>
+            where TView : class, IViewForViewModel<TViewModel>
             where TProp : ICommand
         {
             return binderImplementation.BindCommand(viewModel, view, propertyName, toEvent);
@@ -40,7 +40,7 @@ namespace ReactiveUI.Xaml
                 Func<TParam> withParameter,
                 string toEvent = null)
             where TViewModel : class
-            where TView : IViewForViewModel<TViewModel>
+            where TView : class, IViewForViewModel<TViewModel>
             where TProp : ICommand
         {
             return binderImplementation.BindCommand(viewModel, view, propertyName, controlName, withParameter, toEvent);
@@ -54,7 +54,7 @@ namespace ReactiveUI.Xaml
                 IObservable<TParam> withParameter,
                 string toEvent = null)
             where TViewModel : class
-            where TView : IViewForViewModel<TViewModel>
+            where TView : class, IViewForViewModel<TViewModel>
             where TProp : ICommand
         {
             return binderImplementation.BindCommand(viewModel, view, propertyName, controlName, withParameter, toEvent);
@@ -67,7 +67,7 @@ namespace ReactiveUI.Xaml
                 Expression<Func<TView, TControl>> controlName,
                 string toEvent = null)
             where TViewModel : class
-            where TView : IViewForViewModel<TViewModel>
+            where TView : class, IViewForViewModel<TViewModel>
             where TProp : ICommand
         {
             return binderImplementation.BindCommand(viewModel, view, propertyName, controlName, toEvent);
@@ -81,7 +81,7 @@ namespace ReactiveUI.Xaml
                 Expression<Func<TViewModel, TParam>> withParameter,
                 string toEvent = null)
             where TViewModel : class
-            where TView : IViewForViewModel<TViewModel>
+            where TView : class, IViewForViewModel<TViewModel>
             where TProp : ICommand
         {
             return binderImplementation.BindCommand(viewModel, view, propertyName, controlName, withParameter, toEvent);
@@ -96,7 +96,7 @@ namespace ReactiveUI.Xaml
                 Expression<Func<TViewModel, TProp>> propertyName,
                 string toEvent = null)
             where TViewModel : class
-            where TView : IViewForViewModel<TViewModel>
+            where TView : class, IViewForViewModel<TViewModel>
             where TProp : ICommand;
 
         IDisposable BindCommand<TView, TViewModel, TProp, TControl, TParam>(
@@ -107,7 +107,7 @@ namespace ReactiveUI.Xaml
                 Func<TParam> withParameter,
                 string toEvent = null)
             where TViewModel : class
-            where TView : IViewForViewModel<TViewModel>
+            where TView : class, IViewForViewModel<TViewModel>
             where TProp : ICommand;
 
         IDisposable BindCommand<TView, TViewModel, TProp, TControl, TParam>(
@@ -118,7 +118,7 @@ namespace ReactiveUI.Xaml
                 IObservable<TParam> withParameter,
                 string toEvent = null)
             where TViewModel : class
-            where TView : IViewForViewModel<TViewModel>
+            where TView : class, IViewForViewModel<TViewModel>
             where TProp : ICommand;
     }
 
@@ -130,7 +130,7 @@ namespace ReactiveUI.Xaml
                 Expression<Func<TViewModel, TProp>> propertyName,
                 string toEvent = null)
             where TViewModel : class
-            where TView : IViewForViewModel<TViewModel>
+            where TView : class, IViewForViewModel<TViewModel>
             where TProp : ICommand
         {
             var ctlName = Reflection.SimpleExpressionToPropertyName(propertyName);
@@ -147,7 +147,7 @@ namespace ReactiveUI.Xaml
                 Func<TParam> withParameter,
                 string toEvent = null)
             where TViewModel : class
-            where TView : IViewForViewModel<TViewModel>
+            where TView : class, IViewForViewModel<TViewModel>
             where TProp : ICommand
         {
             var ctlName = Reflection.SimpleExpressionToPropertyName(controlName);
@@ -173,7 +173,7 @@ namespace ReactiveUI.Xaml
                 IObservable<TParam> withParameter,
                 string toEvent = null)
             where TViewModel : class
-            where TView : IViewForViewModel<TViewModel>
+            where TView : class, IViewForViewModel<TViewModel>
             where TProp : ICommand
         {
             var ctlName = Reflection.SimpleExpressionToPropertyName(controlName);
@@ -190,14 +190,14 @@ namespace ReactiveUI.Xaml
                 string toEvent,
                 Func<ICommand, ICommand> commandFixuper = null)
             where TViewModel : class
-            where TView : IViewForViewModel<TViewModel>
+            where TView : class, IViewForViewModel<TViewModel>
             where TProp : ICommand
         {
             var propName = Reflection.SimpleExpressionToPropertyName(propertyName);
 
             IDisposable disp = Disposable.Empty;
 
-            var propSub = viewModel.WhenAny(propertyName, x => x.Value).Subscribe(x => {
+            var propSub = Reflection.ViewModelWhenAnyValue(viewModel, view, propertyName).Subscribe(x => {
                 disp.Dispose();
                 if (x == null) {
                     disp = Disposable.Empty;
@@ -236,7 +236,7 @@ namespace ReactiveUI.Xaml
                 Expression<Func<TView, TControl>> controlName,
                 string toEvent = null)
             where TViewModel : class
-            where TView : IViewForViewModel<TViewModel>
+            where TView : class, IViewForViewModel<TViewModel>
             where TProp : ICommand
         {
             return This.BindCommand(viewModel, view, propertyName, controlName, Observable.Empty<object>(), toEvent);
@@ -251,7 +251,7 @@ namespace ReactiveUI.Xaml
                 Expression<Func<TViewModel, TParam>> withParameter,
                 string toEvent = null)
             where TViewModel : class
-            where TView : IViewForViewModel<TViewModel>
+            where TView : class, IViewForViewModel<TViewModel>
             where TProp : ICommand
         {
             return This.BindCommand(viewModel, view, propertyName, controlName, view.ViewModel.WhenAny(withParameter, x => x.Value), toEvent);

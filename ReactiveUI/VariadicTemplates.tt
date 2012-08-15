@@ -45,7 +45,6 @@ namespace ReactiveUI
             where TSender : class
         {
 			<# for(int i=1; i <= length; i++) { #>
-
 			var slot<#=i#> = new ObservedChange<TSender, T<#=i#>>() {
                 Sender = This,
                 PropertyName = String.Join(".", Reflection.ExpressionToPropertyNames(property<#=i#>)),

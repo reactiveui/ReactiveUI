@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reactive.Linq;
 using System.Reflection;
 using ReactiveUI;
 
@@ -234,6 +235,15 @@ namespace ReactiveUI
                 if (ret != null || !throwOnFailure) return ret;
                 throw new TypeLoadException();
             }
+        }
+
+        internal static IObservable<TProp> ViewModelWhenAnyValue<TView, TViewModel, TProp>(TViewModel viewModel, TView view, Expression<Func<TViewModel, TProp>> property)
+            where TView : class, IViewForViewModel<TViewModel>
+            where TViewModel : class
+        {
+            return view.WhenAny(x => x.ViewModel, x => x.Value)
+                .Where(x => x != null)
+                .SelectMany(x => x.WhenAny(property, y => y.Value));
         }
     }
 }
