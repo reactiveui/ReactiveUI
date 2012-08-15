@@ -231,37 +231,20 @@ namespace ReactiveUI
                 }
 
                 object current = tgt;
-                PropertyInfo pi = null;
-                FieldInfo fi = null;
-                Type type;
+
                 foreach(var propName in propNames.SkipLast(1)) {
                     if (current == null) {
                         return;
                     }
 
-                    type = current.GetType();
-                    fi = Reflection.GetFieldInfoForField(type, propName);
-                    if (fi != null) {
-                        current = fi.GetValue(current);
-                        continue;
-                    }
-
-                    pi = Reflection.GetPropertyInfoOrThrow(current.GetType(), propName);
-                    current = pi.GetValue(current, null);
+                    current = Reflection.GetValueFetcherOrThrow(current.GetType(), propName)(current);
                 }
                 if (current == null) {
                     return;
                 }
 
-                type = current.GetType();
-                fi = Reflection.GetFieldInfoForField(type, propNames.Last());
-                if (fi != null) {
-                    sourceSub.Disposable = This.Subscribe(x => fi.SetValue(current, x));
-                    return;
-                }
-
-                pi = Reflection.GetPropertyInfoOrThrow(type, propNames.Last());
-                sourceSub.Disposable = This.Subscribe(x => pi.SetValue(current, x, null));
+                var setter = Reflection.GetValueSetterOrThrow(current.GetType(), propNames.Last());
+                sourceSub.Disposable = This.Subscribe(x => setter(current, x));
             });
 
             var toDispose = new IDisposable[] {sourceSub, null};
