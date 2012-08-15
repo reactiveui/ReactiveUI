@@ -134,8 +134,9 @@ namespace ReactiveUI.Xaml
             where TProp : ICommand
         {
             var ctlName = Reflection.SimpleExpressionToPropertyName(propertyName);
-            var viewPi = Reflection.GetPropertyInfoOrThrow(typeof (TView), ctlName);
-            return bindCommandInternal(viewModel, view, propertyName, viewPi, Observable.Empty<object>(), toEvent);
+            var viewPropGetter = Reflection.GetValueFetcherForProperty(typeof (TView), ctlName);
+
+            return bindCommandInternal(viewModel, view, propertyName, viewPropGetter, Observable.Empty<object>(), toEvent);
         }
 
         public IDisposable BindCommand<TView, TViewModel, TProp, TControl, TParam>(
@@ -150,9 +151,9 @@ namespace ReactiveUI.Xaml
             where TProp : ICommand
         {
             var ctlName = Reflection.SimpleExpressionToPropertyName(controlName);
-            var viewPi = Reflection.GetPropertyInfoOrThrow(typeof (TView), ctlName);
+            var viewPropGetter = Reflection.GetValueFetcherForProperty(typeof (TView), ctlName);
 
-            return bindCommandInternal(viewModel, view, propertyName, viewPi, Observable.Empty<object>(), toEvent, cmd => {
+            return bindCommandInternal(viewModel, view, propertyName, viewPropGetter, Observable.Empty<object>(), toEvent, cmd => {
                 var rc = cmd as IReactiveCommand;
                 if (rc == null) {
                     return ReactiveCommand.Create(x => cmd.CanExecute(x), _ => cmd.Execute(withParameter()));
@@ -176,15 +177,15 @@ namespace ReactiveUI.Xaml
             where TProp : ICommand
         {
             var ctlName = Reflection.SimpleExpressionToPropertyName(controlName);
-            var viewPi = Reflection.GetPropertyInfoOrThrow(typeof (TView), ctlName);
-            return bindCommandInternal(viewModel, view, propertyName, viewPi, withParameter, toEvent);
+            var viewPropGetter = Reflection.GetValueFetcherForProperty(typeof (TView), ctlName);
+            return bindCommandInternal(viewModel, view, propertyName, viewPropGetter, withParameter, toEvent);
         }
 
         IDisposable bindCommandInternal<TView, TViewModel, TProp, TParam>(
                 TViewModel viewModel, 
                 TView view, 
                 Expression<Func<TViewModel, TProp>> propertyName, 
-                PropertyInfo viewPi,
+                Func<object, object> viewPropGetter,
                 IObservable<TParam> withParameter,
                 string toEvent,
                 Func<ICommand, ICommand> commandFixuper = null)
@@ -203,7 +204,7 @@ namespace ReactiveUI.Xaml
                     return;
                 }
 
-                var target = viewPi.GetValue(view, null);
+                var target = viewPropGetter(view);
                 if (target == null) {
                     this.Log().Error("Binding {0}.{1} => {2}.{1} failed because target is null",
                         typeof(TViewModel).FullName, propName, view.GetType().FullName);

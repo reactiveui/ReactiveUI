@@ -83,18 +83,17 @@ namespace ReactiveUI
             var current = propertyNames;
             var currentSub = subscriptions;
             object currentObj = source;
-            PropertyInfo pi = null;
             ObservedChange<TSender, TValue> obsCh;
 
             while(current.Next != null) {
-                pi = Reflection.GetPropertyInfoForProperty(currentObj.GetType(), current.Value);
-                if (pi == null) {
+                var getter = Reflection.GetValueFetcherForProperty(currentObj.GetType(), current.Value);
+                if (getter == null) {
                     subscriptions.List.Where(x => x != null).ForEach(x => x.Dispose());
                     throw new ArgumentException(String.Format("Property '{0}' does not exist in expression", current.Value));
                 }
 
                 if (currentObj != null) {
-                    var capture = new {current, currentObj, pi, currentSub};
+                    var capture = new {current, currentObj, getter, currentSub};
                     var toDispose = new IDisposable[2];
 
                     var valGetter = new ObservedChange<object, TValue>() {
@@ -111,7 +110,7 @@ namespace ReactiveUI
                     });
 
                     toDispose[1] = notifyForProperty(currentObj, capture.current.Value, false).Subscribe(x => {
-                        subscribeToExpressionChain(origSource, origPath, capture.pi.GetValue(capture.currentObj, null), capture.current.Next, capture.currentSub.Next, beforeChange, subject);
+                        subscribeToExpressionChain(origSource, origPath, capture.getter(capture.currentObj), capture.current.Next, capture.currentSub.Next, beforeChange, subject);
 
                         TValue newVal;
                         if (!valGetter.TryGetValue(out newVal)) {
@@ -140,7 +139,7 @@ namespace ReactiveUI
 
                 current = current.Next;
                 currentSub = currentSub.Next;
-                currentObj = pi.GetValue(currentObj, null);
+                currentObj = getter(currentObj);
             }
 
             if (currentSub.Value != null) {
@@ -152,13 +151,13 @@ namespace ReactiveUI
             }
 
             var propName = current.Value;
-            pi = Reflection.GetPropertyInfoForProperty(currentObj.GetType(), current.Value);
+            var finalGetter = Reflection.GetValueFetcherForProperty(currentObj.GetType(), current.Value);
 
             currentSub.Value = notifyForProperty(currentObj, propName, beforeChange).Subscribe(x => {
                 obsCh = new ObservedChange<TSender, TValue>() {
                     Sender = origSource,
                     PropertyName = origPath,
-                    Value = (TValue)pi.GetValue(currentObj, null),
+                    Value = (TValue)finalGetter(currentObj),
                 };
 
                 subject.OnNext(obsCh);
