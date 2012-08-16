@@ -57,11 +57,6 @@ namespace ReactiveUI
 #elif WINRT            
             TaskpoolScheduler = System.Reactive.Concurrency.ThreadPoolScheduler.Default;
 #else
-            // NB: In Rx 1.0, Tasks are being scheduled synchronously - i.e. 
-            // they're not being run on the Task Pool on other threads. Use
-            // the old-school Thread pool instead.
-            //TaskpoolScheduler = Scheduler.ThreadPool;
-
             TaskpoolScheduler = Scheduler.TaskPool;
 #endif
 
@@ -76,9 +71,10 @@ namespace ReactiveUI
             RxApp.Register(typeof(IRNPCObservableForProperty), typeof(ICreatesObservableForProperty));
             RxApp.Register(typeof(POCOObservableForProperty), typeof(ICreatesObservableForProperty));
 
-            var depPropObserver = Type.GetType("ReactiveUI.Xaml.DependencyObjectObservableForProperty, ReactiveUI.Xaml, Version=3.2.0.0, Culture=neutral, PublicKeyToken=null");
-            if (depPropObserver != null) {
-                RxApp.Register(depPropObserver, typeof(ICreatesObservableForProperty));
+            var registerTypeClass = Reflection.ReallyFindType("ReactiveUI.Xaml.ServiceLocationRegistration", false);
+            if (registerTypeClass != null) {
+                var registerer = (IWantsToRegisterStuff) Activator.CreateInstance(registerTypeClass);
+                registerer.Register();
             }
         }
 
