@@ -207,6 +207,8 @@ namespace ReactiveUI
                 target = getter(target);
             }
 
+            if (target == null) return false;
+
             var setter = shouldThrow ?
                 GetValueSetterOrThrow(target.GetType(), propNames.Last()) :
                 GetValueSetterForProperty(target.GetType(), propNames.Last());
