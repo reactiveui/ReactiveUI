@@ -335,6 +335,10 @@ namespace ReactiveUI
         T ViewModel { get; set; }
     }
 
+    internal interface IWantsToRegisterStuff
+    {
+        void Register();
+    }
 }
 
 // vim: tw=120 ts=4 sw=4 et :
