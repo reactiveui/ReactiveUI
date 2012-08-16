@@ -335,6 +335,11 @@ namespace ReactiveUI
         T ViewModel { get; set; }
     }
 
+    public interface IDefaultPropertyBindingProvider
+    {
+        Tuple<string, int> GetPropertyForControl(object control);
+    }
+
     internal interface IWantsToRegisterStuff
     {
         void Register();
