@@ -127,6 +127,7 @@
     <Compile Include="ReactiveCommand.cs" />
     <Compile Include="ServiceLocationRegistration.cs" />
     <Compile Include="TransitioningContentControl.cs" />
+    <Compile Include="XamlDefaultPropertyBinding.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj">

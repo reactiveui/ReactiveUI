@@ -107,6 +107,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CompatMixins.cs" />
+    <Compile Include="DefaultPropertyBinding.cs" />
     <Compile Include="INPCObservableForProperty.cs" />
     <Compile Include="Interfaces.cs">
       <SubType>Code</SubType>
