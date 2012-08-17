@@ -83,22 +83,6 @@
   </Target>
   -->
   <ItemGroup>
-    <ProjectReference Include="..\..\mono-reactive\System.Reactive.Core\System.Reactive.Core.csproj">
-      <Project>{AD27C5E8-8A0C-454D-B7AA-76A54793B81F}</Project>
-      <Name>System.Reactive.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\mono-reactive\System.Reactive.PlatformServices\System.Reactive.PlatformServices.csproj">
-      <Project>{AEEBFC85-91B8-410F-BBB7-BD12BBC61BE6}</Project>
-      <Name>System.Reactive.PlatformServices</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\mono-reactive\System.Reactive.Linq\System.Reactive.Linq.csproj">
-      <Project>{F0395470-330B-4DBF-B1A5-D873E597DD05}</Project>
-      <Name>System.Reactive.Linq</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\mono-reactive\System.Reactive.Interfaces\System.Reactive.Interfaces.csproj">
-      <Project>{755E549E-1BDE-4153-A58B-7C969C902CAD}</Project>
-      <Name>System.Reactive.Interfaces</Name>
-    </ProjectReference>
     <ProjectReference Include="..\ReactiveUI\ReactiveUI_Mono.csproj">
       <Project>{292A477B-BB94-43C1-984E-E177EF9FEDB7}</Project>
       <Name>ReactiveUI_Mono</Name>
@@ -110,10 +94,6 @@
     <ProjectReference Include="..\ReactiveUI.Testing\ReactiveUI.Testing_Mono.csproj">
       <Project>{E1F2AD19-276E-4D05-A41A-89AA133CECFC}</Project>
       <Name>ReactiveUI.Testing_Mono</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\mono-reactive\Mono.Reactive.Testing\Mono.Reactive.Testing.csproj">
-      <Project>{9FE08AE0-EF24-4498-A50F-6D314F51F18C}</Project>
-      <Name>Mono.Reactive.Testing</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>
