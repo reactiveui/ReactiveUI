@@ -30,6 +30,20 @@ namespace ReactiveUI
 
                 return null;
             }, 15);
+
+        static readonly MemoizingMRUCache<Tuple<Type, string>, Action<object, object>> propWriterCache = 
+            new MemoizingMRUCache<Tuple<Type, string>, Action<object, object>>((x,_) => {
+                var fi = (x.Item1).GetField(x.Item2, BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy);
+                if (fi != null) {
+                    return (fi.SetValue);
+                }
+                var pi = (x.Item1).GetProperty(x.Item2, BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy);
+                if (pi != null) {
+                    return ((y,v) => pi.SetValue(y, v, null));
+                }
+
+                return null;
+            }, 15);
     #else
         static readonly MemoizingMRUCache<Tuple<Type, string>, FieldInfo> backingFieldInfoTypeCache = 
             new MemoizingMRUCache<Tuple<Type, string>, FieldInfo>((x, _) => {
