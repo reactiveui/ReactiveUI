@@ -240,12 +240,12 @@ namespace ReactiveUI
         }
 
         internal static IObservable<TProp> ViewModelWhenAnyValue<TView, TViewModel, TProp>(TViewModel viewModel, TView view, Expression<Func<TViewModel, TProp>> property)
-            where TView : IViewForViewModel<TViewModel>
+            where TView : IViewForViewModel
             where TViewModel : class
         {
             return view.WhenAny(x => x.ViewModel, x => x.Value)
                 .Where(x => x != null)
-                .SelectMany(x => x.WhenAny(property, y => y.Value));
+                .SelectMany(x => ((TViewModel)x).WhenAny(property, y => y.Value));
         }
     }
 }
