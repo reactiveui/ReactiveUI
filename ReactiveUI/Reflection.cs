@@ -32,7 +32,7 @@ namespace ReactiveUI
             }, 15);
     #else
         static readonly MemoizingMRUCache<Tuple<Type, string>, FieldInfo> backingFieldInfoTypeCache = 
-            new MemoizingMRUCache<Tuple<Type,string>, FieldInfo>((x, _) => {
+            new MemoizingMRUCache<Tuple<Type, string>, FieldInfo>((x, _) => {
                 var fieldName = RxApp.GetFieldNameForProperty(x.Item2);
                 var ret = (x.Item1).GetField(fieldName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
                 return ret;
@@ -120,7 +120,7 @@ namespace ReactiveUI
             FieldInfo field;
 
             lock(backingFieldInfoTypeCache) {
-                field = backingFieldInfoTypeCache.Get(new Tuple<Type,string>(typeof(TObj), propName));
+                field = backingFieldInfoTypeCache.Get(new Tuple<Type, string>(typeof(TObj), propName));
             }
 
             if (field == null && !dontThrow) {
@@ -246,6 +246,23 @@ namespace ReactiveUI
             return view.WhenAny(x => x.ViewModel, x => x.Value)
                 .Where(x => x != null)
                 .SelectMany(x => ((TViewModel)x).WhenAny(property, y => y.Value));
+        }
+
+        internal static string[] getDefaultViewPropChain(object view, string[] vmPropChain)
+        {
+            var vmPropertyName = vmPropChain.First();
+            var control = GetValueFetcherForProperty(view.GetType(), vmPropertyName)(view);
+
+            if (control == null) {
+                throw new Exception(String.Format("Tried to bind to control but it was null: {0}.{1}", view.GetType().FullName,
+                    vmPropertyName));
+            }
+
+            var defaultProperty = DefaultPropertyBinding.GetPropertyForControl(control);
+            if (defaultProperty == null) {
+                throw new Exception(String.Format("Couldn't find a default property for type {0}", control.GetType()));
+            }
+            return new[] {vmPropertyName, defaultProperty};
         }
     }
 }
