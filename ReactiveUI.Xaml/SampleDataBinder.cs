@@ -61,6 +61,7 @@ namespace ReactiveUI.Xaml
             return ShuffledList(items);
         }
 
+#if !SILVERLIGHT
         public string ImageFrom(string pathOrRelativePath)
         {
             var di = new DirectoryInfo(pathOrRelativePath);
@@ -76,7 +77,7 @@ namespace ReactiveUI.Xaml
                 }
             }
 
-            return RepeatingListOf(di.GetFiles().Select(x => x.FullName), 1).FirstOrDefault();
+            return RepeatingListOf(di.EnumerateFiles().Select(x => x.FullName), 1).FirstOrDefault();
         }
 
         public IEnumerable<string> ImagesFrom(string pathOrRelativePath, int count)
@@ -90,13 +91,14 @@ namespace ReactiveUI.Xaml
 
             var di = new DirectoryInfo(Path.GetDirectoryName(thisAssembly.FullName));
             while (di != null) {
-                if (di.GetFiles().Any(x => x.Name.EndsWith(".sln", StringComparison.OrdinalIgnoreCase))) {
+                if (di.EnumerateFiles().Any(x => x.Name.EndsWith(".sln", StringComparison.OrdinalIgnoreCase))) {
                     return di.FullName;
                 }
             }
 
             return null;
         }
+#endif
 
         internal static Type findSampleClassForViewModel(Type objectType)
         {

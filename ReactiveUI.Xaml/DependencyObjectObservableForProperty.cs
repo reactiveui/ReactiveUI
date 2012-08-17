@@ -68,7 +68,10 @@ namespace ReactiveUI.Xaml
                 if (!subjects.ContainsKey(sender)) {
                     var disposer = new RefcountDisposeWrapper(
                         Disposable.Create(() => {
+#if !SILVERLIGHT
+                            // XXX: Apparently it's simply impossible to unset a binding in SL :-/
                             BindingOperations.ClearBinding(dobj, attachedProp);
+#endif
                             subjects.Remove(dobj);
                         }));
 
@@ -81,7 +84,7 @@ namespace ReactiveUI.Xaml
                 }
 
                 var disp = subjects[sender].Item1
-                    .Select(x => new ObservedChange<object, object>() { Sender = x, PropertyName = propertyName })
+                    .Select(x => (IObservedChange<object, object>) new ObservedChange<object, object>() { Sender = x, PropertyName = propertyName })
                     .Subscribe(subj);
 
                 return Disposable.Create(() => {

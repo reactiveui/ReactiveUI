@@ -18,14 +18,18 @@ namespace ReactiveUI.Xaml
             var items = new[] {
                 new { Type = typeof(RichTextBox), Property = "Document" },
                 new { Type = typeof(Slider), Property = "Value" },
+#if !SILVERLIGHT
                 new { Type = typeof(Expander), Property = "IsExpanded" },
+#endif 
                 new { Type = typeof(ToggleButton), Property = "IsChecked" },
                 new { Type = typeof(TextBox), Property = "Text" },
                 new { Type = typeof(TextBlock), Property = "Text" },
                 new { Type = typeof(ProgressBar), Property = "Value" },
                 new { Type = typeof(ItemsControl), Property = "ItemsSource" },
                 new { Type = typeof(Image), Property = "Source" },
+#if !SILVERLIGHT
                 new { Type = typeof(FrameworkContentElement), Property = "Content" },
+#endif
                 new { Type = typeof(FrameworkElement), Property = "Visibility" },
             };
 
