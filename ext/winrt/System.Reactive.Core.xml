@@ -4,11 +4,6 @@
         <name>System.Reactive.Core</name>
     </assembly>
     <members>
-        <member name="T:System.Reactive.ExperimentalAttribute">
-            <summary>
-            Marks the program elements that are experimental. This class cannot be inherited.
-            </summary>
-        </member>
         <member name="T:System.Reactive.PlatformServices.NamespaceDoc">
             <summary>
             The <b>System.Reactive.PlatformServices</b> namespace contains interfaces and classes used by the runtime infrastructure of Reactive Extensions.
@@ -28,6 +23,7 @@
             <typeparam name="T">The type of the elements in the source sequence.</typeparam>
             <param name="source">Observable sequence to subscribe to.</param>
             <returns>IDisposable object used to unsubscribe from the observable sequence.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="source"/> is null.</exception>
         </member>
         <member name="M:System.ObservableExtensions.Subscribe``1(System.IObservable{``0},System.Action{``0})">
             <summary>
@@ -37,6 +33,7 @@
             <param name="source">Observable sequence to subscribe to.</param>
             <param name="onNext">Action to invoke for each element in the observable sequence.</param>
             <returns>IDisposable object used to unsubscribe from the observable sequence.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="source"/> or <paramref name="onNext"/> is null.</exception>
         </member>
         <member name="M:System.ObservableExtensions.Subscribe``1(System.IObservable{``0},System.Action{``0},System.Action{System.Exception})">
             <summary>
@@ -47,6 +44,7 @@
             <param name="onNext">Action to invoke for each element in the observable sequence.</param>
             <param name="onError">Action to invoke upon exceptional termination of the observable sequence.</param>
             <returns>IDisposable object used to unsubscribe from the observable sequence.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="source"/> or <paramref name="onNext"/> or <paramref name="onError"/> is null.</exception>
         </member>
         <member name="M:System.ObservableExtensions.Subscribe``1(System.IObservable{``0},System.Action{``0},System.Action)">
             <summary>
@@ -57,6 +55,7 @@
             <param name="onNext">Action to invoke for each element in the observable sequence.</param>
             <param name="onCompleted">Action to invoke upon graceful termination of the observable sequence.</param>
             <returns>IDisposable object used to unsubscribe from the observable sequence.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="source"/> or <paramref name="onNext"/> or <paramref name="onCompleted"/> is null.</exception>
         </member>
         <member name="M:System.ObservableExtensions.Subscribe``1(System.IObservable{``0},System.Action{``0},System.Action{System.Exception},System.Action)">
             <summary>
@@ -68,6 +67,7 @@
             <param name="onError">Action to invoke upon exceptional termination of the observable sequence.</param>
             <param name="onCompleted">Action to invoke upon graceful termination of the observable sequence.</param>
             <returns>IDisposable object used to unsubscribe from the observable sequence.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="source"/> or <paramref name="onNext"/> or <paramref name="onError"/> or <paramref name="onCompleted"/> is null.</exception>
         </member>
         <member name="M:System.ObservableExtensions.SubscribeSafe``1(System.IObservable{``0},System.IObserver{``0})">
             <summary>
@@ -78,6 +78,7 @@
             <param name="source">Observable sequence to subscribe to.</param>
             <param name="observer">Observer that will be passed to the observable sequence, and that will be used for exception propagation.</param>
             <returns>IDisposable object used to unsubscribe from the observable sequence.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="source"/> or <paramref name="observer"/> is null.</exception>
         </member>
         <member name="T:System.Reactive.Observer">
             <summary>
@@ -91,6 +92,7 @@
             <typeparam name="T">The type of the elements received by the observer.</typeparam>
             <param name="handler">Action that handles a notification.</param>
             <returns>The observer object that invokes the specified handler using a notification corresponding to each message it receives.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="handler"/> is null.</exception>
         </member>
         <member name="M:System.Reactive.Observer.ToNotifier``1(System.IObserver{``0})">
             <summary>
@@ -99,6 +101,7 @@
             <typeparam name="T">The type of the elements received by the observer.</typeparam>
             <param name="observer">Observer object.</param>
             <returns>The action that forwards its input notification to the underlying observer.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="observer"/> is null.</exception>
         </member>
         <member name="M:System.Reactive.Observer.Create``1(System.Action{``0})">
             <summary>
@@ -107,6 +110,7 @@
             <typeparam name="T">The type of the elements received by the observer.</typeparam>
             <param name="onNext">Observer's OnNext action implementation.</param>
             <returns>The observer object implemented using the given actions.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="onNext"/> is null.</exception>
         </member>
         <member name="M:System.Reactive.Observer.Create``1(System.Action{``0},System.Action{System.Exception})">
             <summary>
@@ -116,6 +120,7 @@
             <param name="onNext">Observer's OnNext action implementation.</param>
             <param name="onError">Observer's OnError action implementation.</param>
             <returns>The observer object implemented using the given actions.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="onNext"/> or <paramref name="onError"/> is null.</exception>
         </member>
         <member name="M:System.Reactive.Observer.Create``1(System.Action{``0},System.Action)">
             <summary>
@@ -125,6 +130,7 @@
             <param name="onNext">Observer's OnNext action implementation.</param>
             <param name="onCompleted">Observer's OnCompleted action implementation.</param>
             <returns>The observer object implemented using the given actions.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="onNext"/> or <paramref name="onCompleted"/> is null.</exception>
         </member>
         <member name="M:System.Reactive.Observer.Create``1(System.Action{``0},System.Action{System.Exception},System.Action)">
             <summary>
@@ -135,6 +141,7 @@
             <param name="onError">Observer's OnError action implementation.</param>
             <param name="onCompleted">Observer's OnCompleted action implementation.</param>
             <returns>The observer object implemented using the given actions.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="onNext"/> or <paramref name="onError"/> or <paramref name="onCompleted"/> is null.</exception>
         </member>
         <member name="M:System.Reactive.Observer.AsObserver``1(System.IObserver{``0})">
             <summary>
@@ -143,25 +150,76 @@
             <typeparam name="T">The type of the elements received by the source observer.</typeparam>
             <param name="observer">An observer whose identity to hide.</param>
             <returns>An observer that hides the identity of the specified observer.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="observer"/> is null.</exception>
         </member>
-        <member name="M:System.Reactive.Observer.Synchronize``1(System.IObserver{``0},System.Object)">
+        <member name="M:System.Reactive.Observer.Checked``1(System.IObserver{``0})">
             <summary>
-            Synchronizes the observer such that observer methods cannot be called concurrently, using the specified gate object.
-            This overload is useful when coordinating multiple observers that access shared state by synchronizing on a common gate object.
+            Checks access to the observer for grammar violations. This includes checking for multiple OnError or OnCompleted calls, as well as reentrancy in any of the observer methods.
+            If a violation is detected, an InvalidOperationException is thrown from the offending observer method call.
             </summary>
             <typeparam name="T">The type of the elements received by the source observer.</typeparam>
-            <param name="observer">The observer to synchronize.</param>
-            <param name="gate">Gate object to synchronize each observer call on.</param>
-            <returns>The observer whose messages are synchronized on the given gate object.</returns>
+            <param name="observer">The observer whose callback invocations should be checked for grammar violations.</param>
+            <returns>An observer that checks callbacks invocations against the observer grammar and, if the checks pass, forwards those to the specified observer.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="observer"/> is null.</exception>
         </member>
         <member name="M:System.Reactive.Observer.Synchronize``1(System.IObserver{``0})">
             <summary>
-            Synchronizes the observer such that observer methods cannot be called concurrently.
-            This overload is useful to "fix" an observer that exhibits concurrent callbacks, which is invalid behavior according to the observer grammar.
+            Synchronizes access to the observer such that its callback methods cannot be called concurrently from multiple threads. This overload is useful when coordinating access to an observer.
+            Notice reentrant observer callbacks on the same thread are still possible.
             </summary>
             <typeparam name="T">The type of the elements received by the source observer.</typeparam>
-            <param name="observer">The observer to synchronize.</param>
-            <returns>The observer whose messages are synchronized.</returns>
+            <param name="observer">The observer whose callbacks should be synchronized.</param>
+            <returns>An observer that delivers callbacks to the specified observer in a synchronized manner.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="observer"/> is null.</exception>
+            <remarks>
+            Because a <see cref="T:System.Threading.Monitor">Monitor</see> is used to perform the synchronization, there's no protection against reentrancy from the same thread.
+            Hence, overlapped observer callbacks are still possible, which is invalid behavior according to the observer grammar. In order to protect against this behavior as
+            well, use the <see cref="M:System.Reactive.Observer.Synchronize``1(System.IObserver{``0},System.Boolean)"/> overload, passing true for the second parameter.
+            </remarks>
+        </member>
+        <member name="M:System.Reactive.Observer.Synchronize``1(System.IObserver{``0},System.Boolean)">
+            <summary>
+            Synchronizes access to the observer such that its callback methods cannot be called concurrently. This overload is useful when coordinating access to an observer.
+            The <paramref name="preventReentrancy"/> parameter configures the type of lock used for synchronization.
+            </summary>
+            <typeparam name="T">The type of the elements received by the source observer.</typeparam>
+            <param name="observer">The observer whose callbacks should be synchronized.</param>
+            <param name="preventReentrancy">If set to true, reentrant observer callbacks will be queued up and get delivered to the observer in a sequential manner.</param>
+            <returns>An observer that delivers callbacks to the specified observer in a synchronized manner.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="observer"/> is null.</exception>
+            <remarks>
+            When the <paramref name="preventReentrancy"/> parameter is set to false, behavior is identical to the <see cref="M:System.Reactive.Observer.Synchronize``1(System.IObserver{``0})"/> overload which uses
+            a <see cref="T:System.Threading.Monitor">Monitor</see> for synchronization. When the <paramref name="preventReentrancy"/> parameter is set to true, an <see cref="T:System.Reactive.Concurrency.AsyncLock"/>
+            is used to queue up callbacks to the specified observer if a reentrant call is made.
+            </remarks>
+        </member>
+        <member name="M:System.Reactive.Observer.Synchronize``1(System.IObserver{``0},System.Object)">
+            <summary>
+            Synchronizes access to the observer such that its callback methods cannot be called concurrently by multiple threads, using the specified gate object for use by a <see cref="T:System.Threading.Monitor">Monitor</see>-based lock.
+            This overload is useful when coordinating multiple observers that access shared state by synchronizing on a common gate object.
+            Notice reentrant observer callbacks on the same thread are still possible.
+            </summary>
+            <typeparam name="T">The type of the elements received by the source observer.</typeparam>
+            <param name="observer">The observer whose callbacks should be synchronized.</param>
+            <param name="gate">Gate object to synchronize each observer call on.</param>
+            <returns>An observer that delivers callbacks to the specified observer in a synchronized manner.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="observer"/> or <paramref name="gate"/> is null.</exception>
+            <remarks>
+            Because a <see cref="T:System.Threading.Monitor">Monitor</see> is used to perform the synchronization, there's no protection against reentrancy from the same thread.
+            Hence, overlapped observer callbacks are still possible, which is invalid behavior according to the observer grammar. In order to protect against this behavior as
+            well, use the <see cref="M:System.Reactive.Observer.Synchronize``1(System.IObserver{``0},System.Reactive.Concurrency.AsyncLock)"/> overload.
+            </remarks>
+        </member>
+        <member name="M:System.Reactive.Observer.Synchronize``1(System.IObserver{``0},System.Reactive.Concurrency.AsyncLock)">
+            <summary>
+            Synchronizes access to the observer such that its callback methods cannot be called concurrently, using the specified asynchronous lock to protect against concurrent and reentrant access.
+            This overload is useful when coordinating multiple observers that access shared state by synchronizing on a common asynchronous lock.
+            </summary>
+            <typeparam name="T">The type of the elements received by the source observer.</typeparam>
+            <param name="observer">The observer whose callbacks should be synchronized.</param>
+            <param name="asyncLock">Gate object to synchronize each observer call on.</param>
+            <returns>An observer that delivers callbacks to the specified observer in a synchronized manner.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="observer"/> or <paramref name="asyncLock"/> is null.</exception>
         </member>
         <member name="M:System.Reactive.Observer.NotifyOn``1(System.IObserver{``0},System.Reactive.Concurrency.IScheduler)">
             <summary>
@@ -171,6 +229,7 @@
             <param name="observer">The observer to schedule messages for.</param>
             <param name="scheduler">Scheduler to schedule observer messages on.</param>
             <returns>Observer whose messages are scheduled on the given scheduler.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="observer"/> or <paramref name="scheduler"/> is null.</exception>
         </member>
         <member name="M:System.Reactive.Observer.NotifyOn``1(System.IObserver{``0},System.Threading.SynchronizationContext)">
             <summary>
@@ -180,6 +239,7 @@
             <param name="observer">The observer to schedule messages for.</param>
             <param name="context">Synchonization context to schedule observer messages on.</param>
             <returns>Observer whose messages are scheduled on the given synchonization context.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="observer"/> or <paramref name="context"/> is null.</exception>
         </member>
         <member name="M:System.Reactive.Observer.ToProgress``1(System.IObserver{``0})">
             <summary>
@@ -188,6 +248,7 @@
             <typeparam name="T">The type of the progress objects received by the source observer.</typeparam>
             <param name="observer">The observer to convert.</param>
             <returns>Progress object whose Report messages correspond to the observer's OnNext messages.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="observer"/> is null.</exception>
         </member>
         <member name="M:System.Reactive.Observer.ToProgress``1(System.IObserver{``0},System.Reactive.Concurrency.IScheduler)">
             <summary>
@@ -197,6 +258,7 @@
             <param name="observer">The observer to convert.</param>
             <param name="scheduler">Scheduler to report progress on.</param>
             <returns>Progress object whose Report messages correspond to the observer's OnNext messages.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="observer"/> or <paramref name="scheduler"/> is null.</exception>
         </member>
         <member name="M:System.Reactive.Observer.ToObserver``1(System.IProgress{``0})">
             <summary>
@@ -205,6 +267,7 @@
             <typeparam name="T">The type of the progress objects received by the progress reporter.</typeparam>
             <param name="progress">The progress object to convert.</param>
             <returns>Observer whose OnNext messages correspond to the progress object's Report messages.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="progress"/> is null.</exception>
         </member>
         <member name="T:System.Reactive.AnonymousObservable`1">
             <summary>
@@ -229,6 +292,7 @@
             </summary>
             <param name="observer">Observer that will receive notifications from the observable sequence.</param>
             <returns>Disposable object representing an observer's subscription to the observable sequence.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="observer"/> is null.</exception>
         </member>
         <member name="M:System.Reactive.ObservableBase`1.SubscribeCore(System.IObserver{`0})">
             <summary>
@@ -242,6 +306,7 @@
             Creates an observable sequence object from the specified subscription function.
             </summary>
             <param name="subscribe">Subscribe method implementation.</param>
+            <exception cref="T:System.ArgumentNullException"><paramref name="subscribe"/> is null.</exception>
         </member>
         <member name="M:System.Reactive.AnonymousObservable`1.SubscribeCore(System.IObserver{`0})">
             <summary>
@@ -286,6 +351,7 @@
             Notifies the observer that an exception has occurred.
             </summary>
             <param name="error">The error that has occurred.</param>
+            <exception cref="T:System.ArgumentNullException"><paramref name="error"/> is null.</exception>
         </member>
         <member name="M:System.Reactive.ObserverBase`1.OnErrorCore(System.Exception)">
             <summary>
@@ -323,12 +389,14 @@
             <param name="onNext">Observer's OnNext action implementation.</param>
             <param name="onError">Observer's OnError action implementation.</param>
             <param name="onCompleted">Observer's OnCompleted action implementation.</param>
+            <exception cref="T:System.ArgumentNullException"><paramref name="onNext"/> or <paramref name="onError"/> or <paramref name="onCompleted"/> is null.</exception>
         </member>
         <member name="M:System.Reactive.AnonymousObserver`1.#ctor(System.Action{`0})">
             <summary>
             Creates an observer from the specified OnNext action.
             </summary>
             <param name="onNext">Observer's OnNext action implementation.</param>
+            <exception cref="T:System.ArgumentNullException"><paramref name="onNext"/> is null.</exception>
         </member>
         <member name="M:System.Reactive.AnonymousObserver`1.#ctor(System.Action{`0},System.Action{System.Exception})">
             <summary>
@@ -336,6 +404,7 @@
             </summary>
             <param name="onNext">Observer's OnNext action implementation.</param>
             <param name="onError">Observer's OnError action implementation.</param>
+            <exception cref="T:System.ArgumentNullException"><paramref name="onNext"/> or <paramref name="onError"/> is null.</exception>
         </member>
         <member name="M:System.Reactive.AnonymousObserver`1.#ctor(System.Action{`0},System.Action)">
             <summary>
@@ -343,6 +412,7 @@
             </summary>
             <param name="onNext">Observer's OnNext action implementation.</param>
             <param name="onCompleted">Observer's OnCompleted action implementation.</param>
+            <exception cref="T:System.ArgumentNullException"><paramref name="onNext"/> or <paramref name="onCompleted"/> is null.</exception>
         </member>
         <member name="M:System.Reactive.AnonymousObserver`1.OnNextCore(`0)">
             <summary>
@@ -361,6 +431,15 @@
             Calls the onCompleted action.
             </summary>
         </member>
+        <member name="T:System.Reactive.AnonymousSafeObserver`1">
+            <summary>
+            This class fuses logic from ObserverBase, AnonymousObserver, and SafeObserver into one class. When an observer
+            needs to be safeguarded, an instance of this type can be created by SafeObserver.Create when it detects its
+            input is an AnonymousObserver, which is commonly used by end users when using the Subscribe extension methods
+            that accept delegates for the On* handlers. By doing the fusion, we make the call stack depth shorter which
+            helps debugging and some performance.
+            </summary>
+        </member>
         <member name="T:System.Reactive.Concurrency.AsyncLock">
             <summary>
             Asynchronous lock.
@@ -373,6 +452,7 @@
             processed by the owner.
             </summary>
             <param name="action">Action to queue for execution.</param>
+            <exception cref="T:System.ArgumentNullException"><paramref name="action"/> is null.</exception>
         </member>
         <member name="M:System.Reactive.Concurrency.AsyncLock.Dispose">
             <summary>
@@ -393,6 +473,10 @@
             <summary>
             (Infrastructure) Concurrency abstraction layer interface.
             </summary>
+            <remarks>
+            This type is used by the Rx infrastructure and not meant for public consumption or implementation.
+            No guarantees are made about forward compatibility of the type's functionality and its usage.
+            </remarks>
         </member>
         <member name="M:System.Reactive.Concurrency.IConcurrencyAbstractionLayer.StartTimer(System.Action{System.Object},System.Object,System.TimeSpan)">
             <summary>
@@ -401,7 +485,7 @@
             <param name="action">Method to execute.</param>
             <param name="state">State to pass to the method.</param>
             <param name="dueTime">Time to execute the method on.</param>
-            <returns>Disposable object that can be used to cancel the queued method.</returns>
+            <returns>Disposable object that can be used to stop the timer.</returns>
         </member>
         <member name="M:System.Reactive.Concurrency.IConcurrencyAbstractionLayer.StartPeriodicTimer(System.Action,System.TimeSpan)">
             <summary>
@@ -409,7 +493,7 @@
             </summary>
             <param name="action">Method to execute; should be safe for reentrancy.</param>
             <param name="period">Period for running the method periodically.</param>
-            <returns>Disposable object that can be used to cancel the queued method.</returns>
+            <returns>Disposable object that can be used to stop the timer.</returns>
         </member>
         <member name="M:System.Reactive.Concurrency.IConcurrencyAbstractionLayer.QueueUserWorkItem(System.Action{System.Object},System.Object)">
             <summary>
@@ -431,6 +515,18 @@
             </summary>
             <returns>New stopwatch object; started at the time of the request.</returns>
         </member>
+        <member name="M:System.Reactive.Concurrency.IConcurrencyAbstractionLayer.StartThread(System.Action{System.Object},System.Object)">
+            <summary>
+            Starts a new long-running thread.
+            </summary>
+            <param name="action">Method to execute.</param>
+            <param name="state">State to pass to the method.</param>
+        </member>
+        <member name="P:System.Reactive.Concurrency.IConcurrencyAbstractionLayer.SupportsLongRunning">
+            <summary>
+            Gets whether long-running scheduling is supported.
+            </summary>
+        </member>
         <member name="T:System.Reactive.Concurrency.Scheduler">
             <summary>
             Provides a set of static properties to access commonly used schedulers.
@@ -442,6 +538,7 @@
             </summary>
             <param name="scheduler">Scheduler to disable all optimizations for.</param>
             <returns>Proxy to the original scheduler but without any optimizations enabled.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="scheduler"/> is null.</exception>
         </member>
         <member name="M:System.Reactive.Concurrency.Scheduler.DisableOptimizations(System.Reactive.Concurrency.IScheduler,System.Type[])">
             <summary>
@@ -450,6 +547,7 @@
             <param name="scheduler">Scheduler to disable the specified optimizations for.</param>
             <param name="optimizationInterfaces">Types of the optimization interfaces that have to be disabled.</param>
             <returns>Proxy to the original scheduler but without the specified optimizations enabled.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="scheduler"/> or <paramref name="optimizationInterfaces"/> is null.</exception>
         </member>
         <member name="M:System.Reactive.Concurrency.Scheduler.Catch``1(System.Reactive.Concurrency.IScheduler,System.Func{``0,System.Boolean})">
             <summary>
@@ -459,6 +557,7 @@
             <param name="scheduler">Scheduler to apply an exception filter for.</param>
             <param name="handler">Handler that's run if an exception is caught. The exception will be rethrown if the handler returns false.</param>
             <returns>Wrapper around the original scheduler, enforcing exception handling.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="scheduler"/> or <paramref name="handler"/> is null.</exception>
         </member>
         <member name="M:System.Reactive.Concurrency.Scheduler.SchedulePeriodic``1(System.Reactive.Concurrency.IScheduler,``0,System.TimeSpan,System.Func{``0,``0})">
             <summary>
@@ -473,7 +572,8 @@
             <param name="period">Period for running the work periodically.</param>
             <param name="action">Action to be executed, potentially updating the state.</param>
             <returns>The disposable object used to cancel the scheduled recurring action (best effort).</returns>
-            <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="period"/> is negative.</exception>
+            <exception cref="T:System.ArgumentNullException"><paramref name="scheduler"/> or <paramref name="action"/> is null.</exception>
+            <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="period"/> is less than TimeSpan.Zero.</exception>
         </member>
         <member name="M:System.Reactive.Concurrency.Scheduler.SchedulePeriodic``1(System.Reactive.Concurrency.IScheduler,``0,System.TimeSpan,System.Action{``0})">
             <summary>
@@ -488,7 +588,8 @@
             <param name="period">Period for running the work periodically.</param>
             <param name="action">Action to be executed.</param>
             <returns>The disposable object used to cancel the scheduled recurring action (best effort).</returns>
-            <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="period"/> is negative.</exception>
+            <exception cref="T:System.ArgumentNullException"><paramref name="scheduler"/> or <paramref name="action"/> is null.</exception>
+            <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="period"/> is less than TimeSpan.Zero.</exception>
         </member>
         <member name="M:System.Reactive.Concurrency.Scheduler.SchedulePeriodic(System.Reactive.Concurrency.IScheduler,System.TimeSpan,System.Action)">
             <summary>
@@ -501,7 +602,8 @@
             <param name="period">Period for running the work periodically.</param>
             <param name="action">Action to be executed.</param>
             <returns>The disposable object used to cancel the scheduled recurring action (best effort).</returns>
-            <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="period"/> is negative.</exception>
+            <exception cref="T:System.ArgumentNullException"><paramref name="scheduler"/> or <paramref name="action"/> is null.</exception>
+            <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="period"/> is less than TimeSpan.Zero.</exception>
         </member>
         <member name="M:System.Reactive.Concurrency.Scheduler.StartStopwatch(System.Reactive.Concurrency.IScheduler)">
             <summary>
@@ -511,7 +613,56 @@
             </summary>
             <param name="scheduler">Scheduler to obtain a stopwatch for.</param>
             <returns>New stopwatch object; started at the time of the request.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="scheduler"/> is null.</exception>
             <remarks>The resulting stopwatch object can have non-monotonic behavior.</remarks>
+        </member>
+        <member name="M:System.Reactive.Concurrency.Scheduler.AsLongRunning(System.Reactive.Concurrency.IScheduler)">
+            <summary>
+            Returns the ISchedulerLongRunning implementation of the specified scheduler, or null if no such implementation is available.
+            </summary>
+            <param name="scheduler">Scheduler to get the ISchedulerLongRunning implementation for.</param>
+            <returns>The scheduler's ISchedulerLongRunning implementation if available; null otherwise.</returns>
+            <remarks>
+            This helper method is made available for query operator authors in order to discover scheduler services by using the required
+            IServiceProvider pattern, which allows for interception or redefinition of scheduler services.
+            </remarks>
+        </member>
+        <member name="M:System.Reactive.Concurrency.Scheduler.AsStopwatchProvider(System.Reactive.Concurrency.IScheduler)">
+            <summary>
+            Returns the IStopwatchProvider implementation of the specified scheduler, or null if no such implementation is available.
+            </summary>
+            <param name="scheduler">Scheduler to get the IStopwatchProvider implementation for.</param>
+            <returns>The scheduler's IStopwatchProvider implementation if available; null otherwise.</returns>
+            <remarks>
+            <para>
+            This helper method is made available for query operator authors in order to discover scheduler services by using the required
+            IServiceProvider pattern, which allows for interception or redefinition of scheduler services.
+            </para>
+            <para>
+            Consider using <see cref="M:System.Reactive.Concurrency.Scheduler.StartStopwatch(System.Reactive.Concurrency.IScheduler)"/> in case a stopwatch is required, but use of emulation stopwatch based
+            on the scheduler's clock is acceptable. Use of this method is recommended for best-effort use of the stopwatch provider
+            scheduler service, where the caller falls back to not using stopwatches if this facility wasn't found.
+            </para>
+            </remarks>
+        </member>
+        <member name="M:System.Reactive.Concurrency.Scheduler.AsPeriodic(System.Reactive.Concurrency.IScheduler)">
+            <summary>
+            Returns the IStopwatchProvider implementation of the specified scheduler, or null if no such implementation is available.
+            </summary>
+            <param name="scheduler">Scheduler to get the IStopwatchProvider implementation for.</param>
+            <returns>The scheduler's IStopwatchProvider implementation if available; null otherwise.</returns>
+            <remarks>
+            <para>
+            This helper method is made available for query operator authors in order to discover scheduler services by using the required
+            IServiceProvider pattern, which allows for interception or redefinition of scheduler services.
+            </para>
+            <para>
+            Consider using the Scheduler.SchedulePeriodic extension methods for IScheduler in case periodic scheduling is required and
+            emulation of periodic behavior using other scheduler services is desirable. Use of this method is recommended for best-effort
+            use of the periodic scheduling service, where the caller falls back to not using periodic scheduling if this facility wasn't
+            found.
+            </para>
+            </remarks>
         </member>
         <member name="M:System.Reactive.Concurrency.Scheduler.Yield(System.Reactive.Concurrency.IScheduler)">
             <summary>
@@ -520,6 +671,7 @@
             </summary>
             <param name="scheduler">Scheduler to yield work on.</param>
             <returns>Scheduler operation object to await in order to schedule the continuation.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="scheduler"/> is null.</exception>
         </member>
         <member name="M:System.Reactive.Concurrency.Scheduler.Yield(System.Reactive.Concurrency.IScheduler,System.Threading.CancellationToken)">
             <summary>
@@ -529,6 +681,7 @@
             <param name="scheduler">Scheduler to yield work on.</param>
             <param name="cancellationToken">Cancellation token to cancel the continuation to run.</param>
             <returns>Scheduler operation object to await in order to schedule the continuation.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="scheduler"/> is null.</exception>
         </member>
         <member name="M:System.Reactive.Concurrency.Scheduler.Sleep(System.Reactive.Concurrency.IScheduler,System.TimeSpan)">
             <summary>
@@ -538,6 +691,7 @@
             <param name="scheduler">Scheduler to yield work on.</param>
             <param name="dueTime">Time when the continuation should run.</param>
             <returns>Scheduler operation object to await in order to schedule the continuation.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="scheduler"/> is null.</exception>
         </member>
         <member name="M:System.Reactive.Concurrency.Scheduler.Sleep(System.Reactive.Concurrency.IScheduler,System.TimeSpan,System.Threading.CancellationToken)">
             <summary>
@@ -548,6 +702,7 @@
             <param name="dueTime">Time when the continuation should run.</param>
             <param name="cancellationToken">Cancellation token to cancel the continuation to run.</param>
             <returns>Scheduler operation object to await in order to schedule the continuation.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="scheduler"/> is null.</exception>
         </member>
         <member name="M:System.Reactive.Concurrency.Scheduler.Sleep(System.Reactive.Concurrency.IScheduler,System.DateTimeOffset)">
             <summary>
@@ -557,6 +712,7 @@
             <param name="scheduler">Scheduler to yield work on.</param>
             <param name="dueTime">Time when the continuation should run.</param>
             <returns>Scheduler operation object to await in order to schedule the continuation.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="scheduler"/> is null.</exception>
         </member>
         <member name="M:System.Reactive.Concurrency.Scheduler.Sleep(System.Reactive.Concurrency.IScheduler,System.DateTimeOffset,System.Threading.CancellationToken)">
             <summary>
@@ -567,6 +723,7 @@
             <param name="dueTime">Time when the continuation should run.</param>
             <param name="cancellationToken">Cancellation token to cancel the continuation to run.</param>
             <returns>Scheduler operation object to await in order to schedule the continuation.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="scheduler"/> is null.</exception>
         </member>
         <member name="M:System.Reactive.Concurrency.Scheduler.ScheduleAsync``1(System.Reactive.Concurrency.IScheduler,``0,System.Func{System.Reactive.Concurrency.IScheduler,``0,System.Threading.CancellationToken,System.Threading.Tasks.Task})">
             <summary>
@@ -577,6 +734,7 @@
             <param name="state">State to pass to the asynchronous method.</param>
             <param name="action">Asynchronous method to run the work, using Yield and Sleep operations for cooperative scheduling and injection of cancellation points.</param>
             <returns>Disposable object that allows to cancel outstanding work on cooperative cancellation points or through the cancellation token passed to the asynchronous method.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="scheduler"/> or <paramref name="action"/> is null.</exception>
         </member>
         <member name="M:System.Reactive.Concurrency.Scheduler.ScheduleAsync``1(System.Reactive.Concurrency.IScheduler,``0,System.Func{System.Reactive.Concurrency.IScheduler,``0,System.Threading.CancellationToken,System.Threading.Tasks.Task{System.IDisposable}})">
             <summary>
@@ -587,6 +745,7 @@
             <param name="state">State to pass to the asynchronous method.</param>
             <param name="action">Asynchronous method to run the work, using Yield and Sleep operations for cooperative scheduling and injection of cancellation points.</param>
             <returns>Disposable object that allows to cancel outstanding work on cooperative cancellation points or through the cancellation token passed to the asynchronous method.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="scheduler"/> or <paramref name="action"/> is null.</exception>
         </member>
         <member name="M:System.Reactive.Concurrency.Scheduler.ScheduleAsync(System.Reactive.Concurrency.IScheduler,System.Func{System.Reactive.Concurrency.IScheduler,System.Threading.CancellationToken,System.Threading.Tasks.Task})">
             <summary>
@@ -595,6 +754,7 @@
             <param name="scheduler">Scheduler to schedule work on.</param>
             <param name="action">Asynchronous method to run the work, using Yield and Sleep operations for cooperative scheduling and injection of cancellation points.</param>
             <returns>Disposable object that allows to cancel outstanding work on cooperative cancellation points or through the cancellation token passed to the asynchronous method.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="scheduler"/> or <paramref name="action"/> is null.</exception>
         </member>
         <member name="M:System.Reactive.Concurrency.Scheduler.ScheduleAsync(System.Reactive.Concurrency.IScheduler,System.Func{System.Reactive.Concurrency.IScheduler,System.Threading.CancellationToken,System.Threading.Tasks.Task{System.IDisposable}})">
             <summary>
@@ -603,6 +763,7 @@
             <param name="scheduler">Scheduler to schedule work on.</param>
             <param name="action">Asynchronous method to run the work, using Yield and Sleep operations for cooperative scheduling and injection of cancellation points.</param>
             <returns>Disposable object that allows to cancel outstanding work on cooperative cancellation points or through the cancellation token passed to the asynchronous method.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="scheduler"/> or <paramref name="action"/> is null.</exception>
         </member>
         <member name="M:System.Reactive.Concurrency.Scheduler.ScheduleAsync``1(System.Reactive.Concurrency.IScheduler,``0,System.TimeSpan,System.Func{System.Reactive.Concurrency.IScheduler,``0,System.Threading.CancellationToken,System.Threading.Tasks.Task})">
             <summary>
@@ -614,6 +775,7 @@
             <param name="dueTime">Relative time after which to execute the action.</param>
             <param name="action">Asynchronous method to run the work, using Yield and Sleep operations for cooperative scheduling and injection of cancellation points.</param>
             <returns>Disposable object that allows to cancel outstanding work on cooperative cancellation points or through the cancellation token passed to the asynchronous method.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="scheduler"/> or <paramref name="action"/> is null.</exception>
         </member>
         <member name="M:System.Reactive.Concurrency.Scheduler.ScheduleAsync``1(System.Reactive.Concurrency.IScheduler,``0,System.TimeSpan,System.Func{System.Reactive.Concurrency.IScheduler,``0,System.Threading.CancellationToken,System.Threading.Tasks.Task{System.IDisposable}})">
             <summary>
@@ -625,6 +787,7 @@
             <param name="dueTime">Relative time after which to execute the action.</param>
             <param name="action">Asynchronous method to run the work, using Yield and Sleep operations for cooperative scheduling and injection of cancellation points.</param>
             <returns>Disposable object that allows to cancel outstanding work on cooperative cancellation points or through the cancellation token passed to the asynchronous method.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="scheduler"/> or <paramref name="action"/> is null.</exception>
         </member>
         <member name="M:System.Reactive.Concurrency.Scheduler.ScheduleAsync(System.Reactive.Concurrency.IScheduler,System.TimeSpan,System.Func{System.Reactive.Concurrency.IScheduler,System.Threading.CancellationToken,System.Threading.Tasks.Task})">
             <summary>
@@ -634,6 +797,7 @@
             <param name="dueTime">Relative time after which to execute the action.</param>
             <param name="action">Asynchronous method to run the work, using Yield and Sleep operations for cooperative scheduling and injection of cancellation points.</param>
             <returns>Disposable object that allows to cancel outstanding work on cooperative cancellation points or through the cancellation token passed to the asynchronous method.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="scheduler"/> or <paramref name="action"/> is null.</exception>
         </member>
         <member name="M:System.Reactive.Concurrency.Scheduler.ScheduleAsync(System.Reactive.Concurrency.IScheduler,System.TimeSpan,System.Func{System.Reactive.Concurrency.IScheduler,System.Threading.CancellationToken,System.Threading.Tasks.Task{System.IDisposable}})">
             <summary>
@@ -643,6 +807,7 @@
             <param name="dueTime">Relative time after which to execute the action.</param>
             <param name="action">Asynchronous method to run the work, using Yield and Sleep operations for cooperative scheduling and injection of cancellation points.</param>
             <returns>Disposable object that allows to cancel outstanding work on cooperative cancellation points or through the cancellation token passed to the asynchronous method.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="scheduler"/> or <paramref name="action"/> is null.</exception>
         </member>
         <member name="M:System.Reactive.Concurrency.Scheduler.ScheduleAsync``1(System.Reactive.Concurrency.IScheduler,``0,System.DateTimeOffset,System.Func{System.Reactive.Concurrency.IScheduler,``0,System.Threading.CancellationToken,System.Threading.Tasks.Task})">
             <summary>
@@ -654,6 +819,7 @@
             <param name="dueTime">Absolute time at which to execute the action.</param>
             <param name="action">Asynchronous method to run the work, using Yield and Sleep operations for cooperative scheduling and injection of cancellation points.</param>
             <returns>Disposable object that allows to cancel outstanding work on cooperative cancellation points or through the cancellation token passed to the asynchronous method.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="scheduler"/> or <paramref name="action"/> is null.</exception>
         </member>
         <member name="M:System.Reactive.Concurrency.Scheduler.ScheduleAsync``1(System.Reactive.Concurrency.IScheduler,``0,System.DateTimeOffset,System.Func{System.Reactive.Concurrency.IScheduler,``0,System.Threading.CancellationToken,System.Threading.Tasks.Task{System.IDisposable}})">
             <summary>
@@ -665,6 +831,7 @@
             <param name="dueTime">Absolute time at which to execute the action.</param>
             <param name="action">Asynchronous method to run the work, using Yield and Sleep operations for cooperative scheduling and injection of cancellation points.</param>
             <returns>Disposable object that allows to cancel outstanding work on cooperative cancellation points or through the cancellation token passed to the asynchronous method.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="scheduler"/> or <paramref name="action"/> is null.</exception>
         </member>
         <member name="M:System.Reactive.Concurrency.Scheduler.ScheduleAsync(System.Reactive.Concurrency.IScheduler,System.DateTimeOffset,System.Func{System.Reactive.Concurrency.IScheduler,System.Threading.CancellationToken,System.Threading.Tasks.Task})">
             <summary>
@@ -674,6 +841,7 @@
             <param name="dueTime">Absolute time at which to execute the action.</param>
             <param name="action">Asynchronous method to run the work, using Yield and Sleep operations for cooperative scheduling and injection of cancellation points.</param>
             <returns>Disposable object that allows to cancel outstanding work on cooperative cancellation points or through the cancellation token passed to the asynchronous method.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="scheduler"/> or <paramref name="action"/> is null.</exception>
         </member>
         <member name="M:System.Reactive.Concurrency.Scheduler.ScheduleAsync(System.Reactive.Concurrency.IScheduler,System.DateTimeOffset,System.Func{System.Reactive.Concurrency.IScheduler,System.Threading.CancellationToken,System.Threading.Tasks.Task{System.IDisposable}})">
             <summary>
@@ -683,6 +851,7 @@
             <param name="dueTime">Absolute time at which to execute the action.</param>
             <param name="action">Asynchronous method to run the work, using Yield and Sleep operations for cooperative scheduling and injection of cancellation points.</param>
             <returns>Disposable object that allows to cancel outstanding work on cooperative cancellation points or through the cancellation token passed to the asynchronous method.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="scheduler"/> or <paramref name="action"/> is null.</exception>
         </member>
         <member name="M:System.Reactive.Concurrency.Scheduler.Normalize(System.TimeSpan)">
             <summary>
@@ -698,6 +867,7 @@
             <param name="scheduler">Scheduler to execute the recursive action on.</param>
             <param name="action">Action to execute recursively. The parameter passed to the action is used to trigger recursive scheduling of the action.</param>
             <returns>The disposable object used to cancel the scheduled action (best effort).</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="scheduler"/> or <paramref name="action"/> is null.</exception>
         </member>
         <member name="M:System.Reactive.Concurrency.Scheduler.Schedule``1(System.Reactive.Concurrency.IScheduler,``0,System.Action{``0,System.Action{``0}})">
             <summary>
@@ -708,6 +878,7 @@
             <param name="state">State passed to the action to be executed.</param>
             <param name="action">Action to execute recursively. The last parameter passed to the action is used to trigger recursive scheduling of the action, passing in recursive invocation state.</param>
             <returns>The disposable object used to cancel the scheduled action (best effort).</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="scheduler"/> or <paramref name="action"/> is null.</exception>
         </member>
         <member name="M:System.Reactive.Concurrency.Scheduler.Schedule(System.Reactive.Concurrency.IScheduler,System.TimeSpan,System.Action{System.Action{System.TimeSpan}})">
             <summary>
@@ -717,6 +888,7 @@
             <param name="action">Action to execute recursively. The parameter passed to the action is used to trigger recursive scheduling of the action at the specified relative time.</param>
             <param name="dueTime">Relative time after which to execute the action for the first time.</param>
             <returns>The disposable object used to cancel the scheduled action (best effort).</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="scheduler"/> or <paramref name="action"/> is null.</exception>
         </member>
         <member name="M:System.Reactive.Concurrency.Scheduler.Schedule``1(System.Reactive.Concurrency.IScheduler,``0,System.TimeSpan,System.Action{``0,System.Action{``0,System.TimeSpan}})">
             <summary>
@@ -728,6 +900,7 @@
             <param name="action">Action to execute recursively. The last parameter passed to the action is used to trigger recursive scheduling of the action, passing in the recursive due time and invocation state.</param>
             <param name="dueTime">Relative time after which to execute the action for the first time.</param>
             <returns>The disposable object used to cancel the scheduled action (best effort).</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="scheduler"/> or <paramref name="action"/> is null.</exception>
         </member>
         <member name="M:System.Reactive.Concurrency.Scheduler.Schedule(System.Reactive.Concurrency.IScheduler,System.DateTimeOffset,System.Action{System.Action{System.DateTimeOffset}})">
             <summary>
@@ -737,6 +910,7 @@
             <param name="action">Action to execute recursively. The parameter passed to the action is used to trigger recursive scheduling of the action at the specified absolute time.</param>
             <param name="dueTime">Absolute time at which to execute the action for the first time.</param>
             <returns>The disposable object used to cancel the scheduled action (best effort).</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="scheduler"/> or <paramref name="action"/> is null.</exception>
         </member>
         <member name="M:System.Reactive.Concurrency.Scheduler.Schedule``1(System.Reactive.Concurrency.IScheduler,``0,System.DateTimeOffset,System.Action{``0,System.Action{``0,System.DateTimeOffset}})">
             <summary>
@@ -748,6 +922,7 @@
             <param name="action">Action to execute recursively. The last parameter passed to the action is used to trigger recursive scheduling of the action, passing in the recursive due time and invocation state.</param>
             <param name="dueTime">Absolute time at which to execute the action for the first time.</param>
             <returns>The disposable object used to cancel the scheduled action (best effort).</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="scheduler"/> or <paramref name="action"/> is null.</exception>
         </member>
         <member name="M:System.Reactive.Concurrency.Scheduler.Schedule(System.Reactive.Concurrency.IScheduler,System.Action)">
             <summary>
@@ -756,6 +931,7 @@
             <param name="scheduler">Scheduler to execute the action on.</param>
             <param name="action">Action to execute.</param>
             <returns>The disposable object used to cancel the scheduled action (best effort).</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="scheduler"/> or <paramref name="action"/> is null.</exception>
         </member>
         <member name="M:System.Reactive.Concurrency.Scheduler.Schedule(System.Reactive.Concurrency.IScheduler,System.TimeSpan,System.Action)">
             <summary>
@@ -765,6 +941,7 @@
             <param name="action">Action to execute.</param>
             <param name="dueTime">Relative time after which to execute the action.</param>
             <returns>The disposable object used to cancel the scheduled action (best effort).</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="scheduler"/> or <paramref name="action"/> is null.</exception>
         </member>
         <member name="M:System.Reactive.Concurrency.Scheduler.Schedule(System.Reactive.Concurrency.IScheduler,System.DateTimeOffset,System.Action)">
             <summary>
@@ -774,6 +951,7 @@
             <param name="action">Action to execute.</param>
             <param name="dueTime">Absolute time at which to execute the action.</param>
             <returns>The disposable object used to cancel the scheduled action (best effort).</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="scheduler"/> or <paramref name="action"/> is null.</exception>
         </member>
         <member name="M:System.Reactive.Concurrency.Scheduler.ScheduleLongRunning(System.Reactive.Concurrency.ISchedulerLongRunning,System.Action{System.Reactive.Disposables.ICancelable})">
             <summary>
@@ -782,6 +960,7 @@
             <param name="scheduler">Scheduler to execute the action on.</param>
             <param name="action">Action to execute.</param>
             <returns>The disposable object used to cancel the scheduled action (best effort).</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="scheduler"/> or <paramref name="action"/> is null.</exception>
         </member>
         <member name="P:System.Reactive.Concurrency.Scheduler.Now">
             <summary>
@@ -790,27 +969,32 @@
         </member>
         <member name="P:System.Reactive.Concurrency.Scheduler.Immediate">
             <summary>
-            Gets the scheduler that schedules work immediately on the current thread.
+            Gets a scheduler that schedules work immediately on the current thread.
             </summary>
         </member>
         <member name="P:System.Reactive.Concurrency.Scheduler.CurrentThread">
             <summary>
-            Gets the scheduler that schedules work as soon as possible on the current thread.
+            Gets a scheduler that schedules work as soon as possible on the current thread.
             </summary>
         </member>
         <member name="P:System.Reactive.Concurrency.Scheduler.Default">
             <summary>
-            Gets the scheduler that schedules work on the platform's default scheduler.
+            Gets a scheduler that schedules work on the platform's default scheduler.
             </summary>
         </member>
         <member name="P:System.Reactive.Concurrency.Scheduler.ThreadPool">
             <summary>
-            Gets the scheduler that schedules work on the ThreadPool.
+            Gets a scheduler that schedules work on the thread pool.
+            </summary>
+        </member>
+        <member name="P:System.Reactive.Concurrency.Scheduler.NewThread">
+            <summary>
+            Gets a scheduler that schedules work on a new thread using default thread creation options.
             </summary>
         </member>
         <member name="P:System.Reactive.Concurrency.Scheduler.TaskPool">
             <summary>
-            Gets the scheduler that schedules work on the default Task Factory.
+            Gets a scheduler that schedules work on Task Parallel Library (TPL) task pool using the default TaskScheduler.
             </summary>
         </member>
         <member name="T:System.Reactive.Concurrency.LocalScheduler">
@@ -961,6 +1145,7 @@
             <param name="state">State passed to the action to be executed.</param>
             <param name="action">Action to be executed.</param>
             <returns>The disposable object used to cancel the scheduled action (best effort).</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="action"/> is null.</exception>
         </member>
         <member name="M:System.Reactive.Concurrency.LocalScheduler.Schedule``1(``0,System.TimeSpan,System.Func{System.Reactive.Concurrency.IScheduler,``0,System.IDisposable})">
             <summary>
@@ -981,6 +1166,7 @@
             <param name="action">Action to be executed.</param>
             <param name="dueTime">Absolute time at which to execute the action.</param>
             <returns>The disposable object used to cancel the scheduled action (best effort).</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="action"/> is null.</exception>
         </member>
         <member name="M:System.Reactive.Concurrency.LocalScheduler.StartStopwatch">
             <summary>
@@ -991,6 +1177,15 @@
             Platform-specific scheduler implementations should reimplement IStopwatchProvider to provide a more
             efficient IStopwatch implementation (if available).
             </remarks>
+        </member>
+        <member name="M:System.Reactive.Concurrency.LocalScheduler.GetService(System.Type)">
+            <summary>
+            Discovers scheduler services by interface type. The base class implementation returns
+            requested services for each scheduler interface implemented by the derived class. For
+            more control over service discovery, derived types can override this method.
+            </summary>
+            <param name="serviceType">Scheduler service interface type to discover.</param>
+            <returns>Object implementing the requested service, if available; null otherwise.</returns>
         </member>
         <member name="P:System.Reactive.Concurrency.LocalScheduler.Now">
             <summary>
@@ -1027,6 +1222,7 @@
             <param name="action">Action to be executed.</param>
             <param name="dueTime">Relative time after which to execute the action.</param>
             <returns>The disposable object used to cancel the scheduled action (best effort).</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="action"/> is null.</exception>
         </member>
         <member name="P:System.Reactive.Concurrency.CurrentThreadScheduler.Instance">
             <summary>
@@ -1057,6 +1253,7 @@
             <param name="state">State passed to the action to be executed.</param>
             <param name="action">Action to be executed.</param>
             <returns>The disposable object used to cancel the scheduled action (best effort).</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="action"/> is null.</exception>
         </member>
         <member name="M:System.Reactive.Concurrency.ImmediateScheduler.Schedule``1(``0,System.TimeSpan,System.Func{System.Reactive.Concurrency.IScheduler,``0,System.IDisposable})">
             <summary>
@@ -1067,6 +1264,7 @@
             <param name="action">Action to be executed.</param>
             <param name="dueTime">Relative time after which to execute the action.</param>
             <returns>The disposable object used to cancel the scheduled action (best effort).</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="action"/> is null.</exception>
         </member>
         <member name="P:System.Reactive.Concurrency.ImmediateScheduler.Instance">
             <summary>
@@ -1085,6 +1283,7 @@
             </summary>
             <param name="dueTime">Absolute time at which the work item has to be executed.</param>
             <param name="comparer">Comparer used to compare work items based on their scheduled time.</param>
+            <exception cref="T:System.ArgumentNullException"><paramref name="comparer"/> is null.</exception>
         </member>
         <member name="M:System.Reactive.Concurrency.ScheduledItem`1.Invoke">
             <summary>
@@ -1203,6 +1402,7 @@
             <param name="action">Scheduled action.</param>
             <param name="dueTime">Time at which to run the scheduled action.</param>
             <param name="comparer">Comparer used to compare work items based on their scheduled time.</param>
+            <exception cref="T:System.ArgumentNullException"><paramref name="scheduler"/> or <paramref name="action"/> or <paramref name="comparer"/> is null.</exception>
         </member>
         <member name="M:System.Reactive.Concurrency.ScheduledItem`2.#ctor(System.Reactive.Concurrency.IScheduler,`1,System.Func{System.Reactive.Concurrency.IScheduler,`1,System.IDisposable},`0)">
             <summary>
@@ -1212,6 +1412,7 @@
             <param name="state">State to pass to the scheduled action.</param>
             <param name="action">Scheduled action.</param>
             <param name="dueTime">Time at which to run the scheduled action.</param>
+            <exception cref="T:System.ArgumentNullException"><paramref name="scheduler"/> or <paramref name="action"/> is null.</exception>
         </member>
         <member name="M:System.Reactive.Concurrency.ScheduledItem`2.InvokeCore">
             <summary>
@@ -1239,7 +1440,7 @@
         </member>
         <member name="T:System.Reactive.Concurrency.SchedulerOperationAwaiter">
             <summary>
-            (Infrastructure) Scheduler operation awaiter type used when by the code generated for C# await and Visual Basic Await expressions.
+            (Infrastructure) Scheduler operation awaiter type used by the code generated for C# await and Visual Basic Await expressions.
             </summary>
         </member>
         <member name="M:System.Reactive.Concurrency.SchedulerOperationAwaiter.GetResult">
@@ -1275,6 +1476,7 @@
             Creats a new scheduler queue with the specified initial capacity.
             </summary>
             <param name="capacity">Initial capacity of the scheduler queue.</param>
+            <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="capacity"/> is less than zero.</exception>
         </member>
         <member name="M:System.Reactive.Concurrency.SchedulerQueue`1.Enqueue(System.Reactive.Concurrency.ScheduledItem{`0})">
             <summary>
@@ -1313,56 +1515,70 @@
         </member>
         <member name="M:System.Reactive.Concurrency.Synchronization.SubscribeOn``1(System.IObservable{``0},System.Reactive.Concurrency.IScheduler)">
             <summary>
-            Asynchronously subscribes and unsubscribes observers on the specified scheduler.
+            Wraps the source sequence in order to run its subscription and unsubscription logic on the specified scheduler.
             </summary>
             <typeparam name="TSource">The type of the elements in the source sequence.</typeparam>
             <param name="source">Source sequence.</param>
             <param name="scheduler">Scheduler to perform subscription and unsubscription actions on.</param>
             <returns>The source sequence whose subscriptions and unsubscriptions happen on the specified scheduler.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="source"/> or <paramref name="scheduler"/> is null.</exception>
+            <remarks>
+            Only the side-effects of subscribing to the source sequence and disposing subscriptions to the source sequence are run on the specified scheduler.
+            In order to invoke observer callbacks on the specified scheduler, e.g. to offload callback processing to a dedicated thread, use <see cref="M:System.Reactive.Concurrency.Synchronization.ObserveOn``1(System.IObservable{``0},System.Reactive.Concurrency.IScheduler)"/>.
+            </remarks>
         </member>
         <member name="M:System.Reactive.Concurrency.Synchronization.SubscribeOn``1(System.IObservable{``0},System.Threading.SynchronizationContext)">
             <summary>
-            Asynchronously subscribes and unsubscribes observers on the specified synchronization context.
+            Wraps the source sequence in order to run its subscription and unsubscription logic on the specified synchronization context.
             </summary>
             <typeparam name="TSource">The type of the elements in the source sequence.</typeparam>
             <param name="source">Source sequence.</param>
             <param name="context">Synchronization context to perform subscription and unsubscription actions on.</param>
             <returns>The source sequence whose subscriptions and unsubscriptions happen on the specified synchronization context.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="source"/> or <paramref name="context"/> is null.</exception>
+            <remarks>
+            Only the side-effects of subscribing to the source sequence and disposing subscriptions to the source sequence are run on the specified synchronization context.
+            In order to invoke observer callbacks on the specified synchronization context, e.g. to post callbacks to a UI thread represented by the synchronization context, use <see cref="M:System.Reactive.Concurrency.Synchronization.ObserveOn``1(System.IObservable{``0},System.Threading.SynchronizationContext)"/>.
+            </remarks>
         </member>
         <member name="M:System.Reactive.Concurrency.Synchronization.ObserveOn``1(System.IObservable{``0},System.Reactive.Concurrency.IScheduler)">
             <summary>
-            Asynchronously notify observers on the specified scheduler.
+            Wraps the source sequence in order to run its observer callbacks on the specified scheduler.
             </summary>
             <typeparam name="TSource">The type of the elements in the source sequence.</typeparam>
             <param name="source">Source sequence.</param>
             <param name="scheduler">Scheduler to notify observers on.</param>
             <returns>The source sequence whose observations happen on the specified scheduler.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="source"/> or <paramref name="scheduler"/> is null.</exception>
         </member>
         <member name="M:System.Reactive.Concurrency.Synchronization.ObserveOn``1(System.IObservable{``0},System.Threading.SynchronizationContext)">
             <summary>
-            Asynchronously notify observers on the specified synchronization context.
+            Wraps the source sequence in order to run its observer callbacks on the specified synchronization context.
             </summary>
             <typeparam name="TSource">The type of the elements in the source sequence.</typeparam>
             <param name="source">Source sequence.</param>
             <param name="context">Synchronization context to notify observers on.</param>
             <returns>The source sequence whose observations happen on the specified synchronization context.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="source"/> or <paramref name="context"/> is null.</exception>
         </member>
         <member name="M:System.Reactive.Concurrency.Synchronization.Synchronize``1(System.IObservable{``0})">
             <summary>
-            Synchronizes the observable sequence.
+            Wraps the source sequence in order to ensure observer callbacks are properly serialized.
             </summary>
             <typeparam name="TSource">The type of the elements in the source sequence.</typeparam>
             <param name="source">Source sequence.</param>
             <returns>The source sequence whose outgoing calls to observers are synchronized.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="source"/> is null.</exception>
         </member>
         <member name="M:System.Reactive.Concurrency.Synchronization.Synchronize``1(System.IObservable{``0},System.Object)">
             <summary>
-            Synchronizes the observable sequence.
+            Wraps the source sequence in order to ensure observer callbacks are synchronized using the specified gate object.
             </summary>
             <typeparam name="TSource">The type of the elements in the source sequence.</typeparam>
             <param name="source">Source sequence.</param>
             <param name="gate">Gate object to synchronize each observer call on.</param>
             <returns>The source sequence whose outgoing calls to observers are synchronized on the given gate object.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="source"/> or <paramref name="gate"/> is null.</exception>
         </member>
         <member name="T:System.Reactive.Producer`1">
             <summary>
@@ -1404,6 +1620,7 @@
             Creates an object that schedules units of work on the provided <see cref="T:System.Threading.SynchronizationContext"/>.
             </summary>
             <param name="context">Synchronization context to schedule units of work on.</param>
+            <exception cref="T:System.ArgumentNullException"><paramref name="context"/> is null.</exception>
         </member>
         <member name="M:System.Reactive.Concurrency.SynchronizationContextScheduler.#ctor(System.Threading.SynchronizationContext,System.Boolean)">
             <summary>
@@ -1411,6 +1628,7 @@
             </summary>
             <param name="context">Synchronization context to schedule units of work on.</param>
             <param name="alwaysPost">Configures whether scheduling always posts to the synchronization context, regardless whether the caller is on the same synchronization context.</param>
+            <exception cref="T:System.ArgumentNullException"><paramref name="context"/> is null.</exception>
         </member>
         <member name="M:System.Reactive.Concurrency.SynchronizationContextScheduler.Schedule``1(``0,System.Func{System.Reactive.Concurrency.IScheduler,``0,System.IDisposable})">
             <summary>
@@ -1420,6 +1638,7 @@
             <param name="state">State passed to the action to be executed.</param>
             <param name="action">Action to be executed.</param>
             <returns>The disposable object used to cancel the scheduled action (best effort).</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="action"/> is null.</exception>
         </member>
         <member name="M:System.Reactive.Concurrency.SynchronizationContextScheduler.Schedule``1(``0,System.TimeSpan,System.Func{System.Reactive.Concurrency.IScheduler,``0,System.IDisposable})">
             <summary>
@@ -1430,6 +1649,7 @@
             <param name="action">Action to be executed.</param>
             <param name="dueTime">Relative time after which to execute the action.</param>
             <returns>The disposable object used to cancel the scheduled action (best effort).</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="action"/> is null.</exception>
         </member>
         <member name="T:System.Reactive.Concurrency.DefaultScheduler">
             <summary>
@@ -1445,6 +1665,7 @@
             <param name="state">State passed to the action to be executed.</param>
             <param name="action">Action to be executed.</param>
             <returns>The disposable object used to cancel the scheduled action (best effort).</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="action"/> is null.</exception>
         </member>
         <member name="M:System.Reactive.Concurrency.DefaultScheduler.Schedule``1(``0,System.TimeSpan,System.Func{System.Reactive.Concurrency.IScheduler,``0,System.IDisposable})">
             <summary>
@@ -1455,6 +1676,7 @@
             <param name="action">Action to be executed.</param>
             <param name="dueTime">Relative time after which to execute the action.</param>
             <returns>The disposable object used to cancel the scheduled action (best effort).</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="action"/> is null.</exception>
         </member>
         <member name="M:System.Reactive.Concurrency.DefaultScheduler.SchedulePeriodic``1(``0,System.TimeSpan,System.Func{``0,``0})">
             <summary>
@@ -1465,7 +1687,15 @@
             <param name="period">Period for running the work periodically.</param>
             <param name="action">Action to be executed, potentially updating the state.</param>
             <returns>The disposable object used to cancel the scheduled recurring action (best effort).</returns>
-            <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="period"/> is negative.</exception>
+            <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="period"/> is less than TimeSpan.Zero.</exception>
+            <exception cref="T:System.ArgumentNullException"><paramref name="action"/> is null.</exception>
+        </member>
+        <member name="M:System.Reactive.Concurrency.DefaultScheduler.GetService(System.Type)">
+            <summary>
+            Discovers scheduler services by interface type.
+            </summary>
+            <param name="serviceType">Scheduler service interface type to discover.</param>
+            <returns>Object implementing the requested service, if available; null otherwise.</returns>
         </member>
         <member name="P:System.Reactive.Concurrency.DefaultScheduler.Instance">
             <summary>
@@ -1523,6 +1753,7 @@
             Initializes a new instance of the <see cref="T:System.Reactive.Disposables.CancellationDisposable"/> class that uses an existing <seealso cref="T:System.Threading.CancellationTokenSource"/>.
             </summary>
             <param name="cts"><seealso cref="T:System.Threading.CancellationTokenSource"/> used for cancellation.</param>
+            <exception cref="T:System.ArgumentNullException"><paramref name="cts"/> is null.</exception>
         </member>
         <member name="M:System.Reactive.Disposables.CancellationDisposable.#ctor">
             <summary>
@@ -1559,24 +1790,28 @@
             Initializes a new instance of the <see cref="T:System.Reactive.Disposables.CompositeDisposable"/> class with the specified number of disposables.
             </summary>
             <param name="capacity">The number of disposables that the new CompositeDisposable can initially store.</param>
+            <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="capacity"/> is less than zero.</exception>
         </member>
         <member name="M:System.Reactive.Disposables.CompositeDisposable.#ctor(System.IDisposable[])">
             <summary>
             Initializes a new instance of the <see cref="T:System.Reactive.Disposables.CompositeDisposable"/> class from a group of disposables.
             </summary>
             <param name="disposables">Disposables that will be disposed together.</param>
+            <exception cref="T:System.ArgumentNullException"><paramref name="disposables"/> is null.</exception>
         </member>
         <member name="M:System.Reactive.Disposables.CompositeDisposable.#ctor(System.Collections.Generic.IEnumerable{System.IDisposable})">
             <summary>
             Initializes a new instance of the <see cref="T:System.Reactive.Disposables.CompositeDisposable"/> class from a group of disposables.
             </summary>
             <param name="disposables">Disposables that will be disposed together.</param>
+            <exception cref="T:System.ArgumentNullException"><paramref name="disposables"/> is null.</exception>
         </member>
         <member name="M:System.Reactive.Disposables.CompositeDisposable.Add(System.IDisposable)">
             <summary>
             Adds a disposable to the CompositeDisposable or disposes the disposable if the CompositeDisposable is disposed.
             </summary>
             <param name="item">Disposable to add.</param>
+            <exception cref="T:System.ArgumentNullException"><paramref name="item"/> is null.</exception>
         </member>
         <member name="M:System.Reactive.Disposables.CompositeDisposable.Remove(System.IDisposable)">
             <summary>
@@ -1584,6 +1819,7 @@
             </summary>
             <param name="item">Disposable to remove.</param>
             <returns>true if found; false otherwise.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="item"/> is null.</exception>
         </member>
         <member name="M:System.Reactive.Disposables.CompositeDisposable.Dispose">
             <summary>
@@ -1601,6 +1837,7 @@
             </summary>
             <param name="item">Disposable to search for.</param>
             <returns>true if the disposable was found; otherwise, false.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="item"/> is null.</exception>
         </member>
         <member name="M:System.Reactive.Disposables.CompositeDisposable.CopyTo(System.IDisposable[],System.Int32)">
             <summary>
@@ -1608,6 +1845,8 @@
             </summary>
             <param name="array">Array to copy the contained disposables to.</param>
             <param name="arrayIndex">Target index at which to copy the first disposable of the group.</param>
+            <exception cref="T:System.ArgumentNullException"><paramref name="array"/> is null.</exception>
+            <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="arrayIndex"/> is less than zero. -or - <paramref name="arrayIndex"/> is larger than or equal to the array length.</exception>
         </member>
         <member name="M:System.Reactive.Disposables.CompositeDisposable.GetEnumerator">
             <summary>
@@ -1647,6 +1886,7 @@
             </summary>
             <param name="context">Context to perform disposal on.</param>
             <param name="disposable">Disposable whose Dispose operation to run on the given synchronization context.</param>
+            <exception cref="T:System.ArgumentNullException"><paramref name="context"/> or <paramref name="disposable"/> is null.</exception>
         </member>
         <member name="M:System.Reactive.Disposables.ContextDisposable.Dispose">
             <summary>
@@ -1689,6 +1929,7 @@
             </summary>
             <param name="dispose">Action to run during the first call to <see cref="M:System.IDisposable.Dispose"/>. The action is guaranteed to be run at most once.</param>
             <returns>The disposable object that runs the given action upon disposal.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="dispose"/> is null.</exception>
         </member>
         <member name="P:System.Reactive.Disposables.Disposable.Empty">
             <summary>
@@ -1731,6 +1972,7 @@
             Initializes a new instance of the <see cref="T:System.Reactive.Disposables.RefCountDisposable"/> class with the specified disposable.
             </summary>
             <param name="disposable">Underlying disposable.</param>
+            <exception cref="T:System.ArgumentNullException"><paramref name="disposable"/> is null.</exception>
         </member>
         <member name="M:System.Reactive.Disposables.RefCountDisposable.GetDisposable">
             <summary>
@@ -1759,6 +2001,7 @@
             </summary>
             <param name="scheduler">Scheduler where the disposable resource will be disposed on.</param>
             <param name="disposable">Disposable resource to dispose on the given scheduler.</param>
+            <exception cref="T:System.ArgumentNullException"><paramref name="scheduler"/> or <paramref name="disposable"/> is null.</exception>
         </member>
         <member name="M:System.Reactive.Disposables.ScheduledDisposable.Dispose">
             <summary>
@@ -1837,6 +2080,10 @@
             <summary>
             (Infrastructure) Services to rethrow exceptions.
             </summary>
+            <remarks>
+            This type is used by the Rx infrastructure and not meant for public consumption or implementation.
+            No guarantees are made about forward compatibility of the type's functionality and its usage.
+            </remarks>
         </member>
         <member name="M:System.Reactive.PlatformServices.IExceptionServices.Rethrow(System.Exception)">
             <summary>
@@ -1899,6 +2146,10 @@
             <summary>
             (Infrastructure) Interface for enlightenment providers.
             </summary>
+            <remarks>
+            This type is used by the Rx infrastructure and not meant for public consumption or implementation.
+            No guarantees are made about forward compatibility of the type's functionality and its usage.
+            </remarks>
         </member>
         <member name="M:System.Reactive.PlatformServices.IPlatformEnlightenmentProvider.GetService``1(System.Object[])">
             <summary>
@@ -1912,16 +2163,26 @@
             <summary>
             (Infrastructure) Provider for platform-specific framework enlightenments.
             </summary>
+            <remarks>
+            This type is used by the Rx infrastructure and not meant for public consumption or implementation.
+            </remarks>
         </member>
         <member name="P:System.Reactive.PlatformServices.PlatformEnlightenmentProvider.Current">
             <summary>
             (Infrastructure) Gets the current enlightenment provider. If none is loaded yet, accessing this property triggers provider resolution.
             </summary>
+            <remarks>
+            This member is used by the Rx infrastructure and not meant for public consumption or implementation.
+            </remarks>
         </member>
         <member name="T:System.Reactive.PlatformServices.SystemClock">
             <summary>
             (Infrastructure) Provides access to local system clock services.
             </summary>
+            <remarks>
+            This type is used by the Rx infrastructure and not meant for public consumption or implementation.
+            No guarantees are made about forward compatibility of the type's functionality and its usage.
+            </remarks>
         </member>
         <member name="M:System.Reactive.PlatformServices.SystemClock.AddRef">
             <summary>
@@ -1949,6 +2210,10 @@
             <summary>
             (Infrastructure) Provides access to the local system clock.
             </summary>
+            <remarks>
+            This type is used by the Rx infrastructure and not meant for public consumption or implementation.
+            No guarantees are made about forward compatibility of the type's functionality and its usage.
+            </remarks>
         </member>
         <member name="P:System.Reactive.PlatformServices.ISystemClock.UtcNow">
             <summary>
@@ -1959,6 +2224,10 @@
             <summary>
             (Infrastructure) Provides a mechanism to notify local schedulers about system clock changes.
             </summary>
+            <remarks>
+            This type is used by the Rx infrastructure and not meant for public consumption or implementation.
+            No guarantees are made about forward compatibility of the type's functionality and its usage.
+            </remarks>
         </member>
         <member name="E:System.Reactive.PlatformServices.INotifySystemClockChanged.SystemClockChanged">
             <summary>
@@ -1969,6 +2238,10 @@
             <summary>
             (Infrastructure) Event arguments for system clock change notifications.
             </summary>
+            <remarks>
+            This type is used by the Rx infrastructure and not meant for public consumption or implementation.
+            No guarantees are made about forward compatibility of the type's functionality and its usage.
+            </remarks>
         </member>
         <member name="M:System.Reactive.PlatformServices.SystemClockChangedEventArgs.#ctor">
             <summary>
@@ -2043,6 +2316,11 @@
             Represents a notification to an observer.
             </summary>
             <typeparam name="T">The type of the elements received by the observer.</typeparam>
+        </member>
+        <member name="M:System.Reactive.Notification`1.#ctor">
+            <summary>
+            Default constructor used by derived types.
+            </summary>
         </member>
         <member name="M:System.Reactive.Notification`1.Equals(System.Reactive.Notification{`0})">
             <summary>
@@ -2404,6 +2682,7 @@
             <typeparam name="T">The type of the elements received by the observer. Upon dematerialization of the notifications into an observable sequence, this type is used as the element type for the sequence.</typeparam>
             <param name="error">The exception contained in the notification.</param>
             <returns>The OnError notification containing the exception.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="error"/> is null.</exception>
         </member>
         <member name="M:System.Reactive.Notification.CreateOnCompleted``1">
             <summary>
@@ -2503,6 +2782,16 @@
         <member name="P:System.Reactive.Strings_Core.HEAP_EMPTY">
             <summary>
               Looks up a localized string similar to Heap is empty..
+            </summary>
+        </member>
+        <member name="P:System.Reactive.Strings_Core.REENTRANCY_DETECTED">
+            <summary>
+              Looks up a localized string similar to Reentrancy has been detected..
+            </summary>
+        </member>
+        <member name="P:System.Reactive.Strings_Core.OBSERVER_TERMINATED">
+            <summary>
+              Looks up a localized string similar to Observer has already terminated..
             </summary>
         </member>
         <member name="P:System.Reactive.Strings_Core.SCHEDULER_OPERATION_ALREADY_AWAITED">
