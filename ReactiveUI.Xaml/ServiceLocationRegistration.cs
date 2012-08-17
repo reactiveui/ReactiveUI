@@ -19,6 +19,10 @@ namespace ReactiveUI.Xaml
         {
             RxApp.Register(typeof (DependencyObjectObservableForProperty), typeof (ICreatesObservableForProperty));
             RxApp.Register(typeof (XamlDefaultPropertyBinding), typeof (IDefaultPropertyBindingProvider));
+
+            if (InDesignMode) {
+                RxApp.Register(typeof(SampleDataProviderBinder), typeof(IPropertyBinderImplementation));
+            }
         }
 
         static bool? inDesignMode;

@@ -171,7 +171,7 @@ namespace ReactiveUI
             string[] viewPropChain;
 
             if (viewProperty == null) {
-                viewPropChain = getDefaultViewPropChain(view, vmPropChain);
+                viewPropChain = Reflection.getDefaultViewPropChain(view, vmPropChain);
             } else {
                 viewPropChain = Reflection.ExpressionToPropertyNames(viewProperty);
             }
@@ -216,7 +216,7 @@ namespace ReactiveUI
             where TView : IViewForViewModel
         {
             if (viewProperty == null) {
-                var viewPropChain = getDefaultViewPropChain(view, Reflection.ExpressionToPropertyNames(vmProperty));
+                var viewPropChain = Reflection.getDefaultViewPropChain(view, Reflection.ExpressionToPropertyNames(vmProperty));
 
                 return Reflection.ViewModelWhenAnyValue(viewModel, view, vmProperty)
                     .Subscribe(x => Reflection.SetValueToPropertyChain(view, viewPropChain, x, false));
@@ -237,7 +237,7 @@ namespace ReactiveUI
             where TView : IViewForViewModel
         {
             if (viewProperty == null) {
-                var viewPropChain = getDefaultViewPropChain(view, Reflection.ExpressionToPropertyNames(vmProperty));
+                var viewPropChain = Reflection.getDefaultViewPropChain(view, Reflection.ExpressionToPropertyNames(vmProperty));
 
                 return Reflection.ViewModelWhenAnyValue(viewModel, view, vmProperty)
                     .Select(selector)
@@ -260,7 +260,7 @@ namespace ReactiveUI
             where TView : IViewForViewModel
         {
             if (viewProperty == null) {
-                var viewPropChain = getDefaultViewPropChain(view, Reflection.ExpressionToPropertyNames(vmProperty));
+                var viewPropChain = Reflection.getDefaultViewPropChain(view, Reflection.ExpressionToPropertyNames(vmProperty));
 
                 return Reflection.ViewModelWhenAnyValue(viewModel, view, vmProperty)
                     .SelectMany(selector)
@@ -270,23 +270,6 @@ namespace ReactiveUI
             return Reflection.ViewModelWhenAnyValue(viewModel, view, vmProperty)
                 .SelectMany(selector)
                 .BindTo(view, viewProperty, fallbackValue);
-        }
-
-        static string[] getDefaultViewPropChain(object view, string[] vmPropChain)
-        {
-            var vmPropertyName = vmPropChain.First();
-            var control = Reflection.GetValueFetcherForProperty(view.GetType(), vmPropertyName)(view);
-
-            if (control == null) {
-                throw new Exception(String.Format("Tried to bind to control but it was null: {0}.{1}", view.GetType().FullName,
-                    vmPropertyName));
-            }
-
-            var defaultProperty = DefaultPropertyBinding.GetPropertyForControl(control);
-            if (defaultProperty == null) {
-                throw new Exception(String.Format("Couldn't find a default property for type {0}", control.GetType()));
-            }
-            return new[] {vmPropertyName, defaultProperty};
         }
     }
 
