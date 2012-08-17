@@ -66,9 +66,13 @@ namespace ReactiveUI.Xaml
     {
         // NB: These are in priority order
         static readonly List<Tuple<string, Type>> defaultEventsToBind = new List<Tuple<string, Type>>() {
+#if !MONO
             Tuple.Create("Click", typeof (RoutedEventArgs)),
+#endif
             Tuple.Create("TouchUpInside", typeof (EventArgs)),
+#if !MONO
             Tuple.Create("MouseUp", typeof (MouseButtonEventArgs)),
+#endif
         };
 
         public int GetAffinityForObject(Type type, bool hasEventTarget)

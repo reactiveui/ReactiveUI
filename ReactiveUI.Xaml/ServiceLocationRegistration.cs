@@ -17,12 +17,14 @@ namespace ReactiveUI.Xaml
     {
         public void Register()
         {
+#if !MONO
             RxApp.Register(typeof (DependencyObjectObservableForProperty), typeof (ICreatesObservableForProperty));
-            RxApp.Register(typeof (XamlDefaultPropertyBinding), typeof (IDefaultPropertyBindingProvider));
+			RxApp.Register(typeof (XamlDefaultPropertyBinding), typeof (IDefaultPropertyBindingProvider));
 
             if (InDesignMode) {
                 RxApp.Register(typeof(SampleDataProviderBinder), typeof(IPropertyBinderImplementation));
             }
+#endif
         }
 
         static bool? inDesignMode;
@@ -37,6 +39,8 @@ namespace ReactiveUI.Xaml
                     inDesignMode = DesignMode.DesignModeEnabled;
 #elif SILVERLIGHT
                     inDesignMode = DesignerProperties.IsInDesignTool;
+#elif MONO
+					return false;
 #else
                     var prop = DesignerProperties.IsInDesignModeProperty;
                     inDesignMode = (bool)DependencyPropertyDescriptor.FromProperty(prop, typeof(FrameworkElement)).Metadata.DefaultValue;

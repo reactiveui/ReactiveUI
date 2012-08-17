@@ -99,12 +99,20 @@
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Reactive">
-      <HintPath>..\ext\System.Reactive.dll</HintPath>
+    <Reference Include="System.Reactive.Core">
+      <HintPath>..\ext\System.Reactive.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reactive.Interfaces">
+      <HintPath>..\ext\System.Reactive.Interfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reactive.Linq">
+      <HintPath>..\ext\System.Reactive.Linq.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reactive.PlatformServices">
+      <HintPath>..\ext\System.Reactive.PlatformServices.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CollectionExtensions.cs" />
     <Compile Include="Interfaces.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -123,18 +131,19 @@
     <Compile Include="MakeObjectReactiveHelper.cs" />
     <Compile Include="RxApp.cs" />
     <Compile Include="Validation.cs" />
-    <Compile Include="VariadicTemplates.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>VariadicTemplates.tt</DependentUpon>
-    </Compile>
+    <Compile Include="CompatMixins.cs" />
+    <Compile Include="DefaultPropertyBinding.cs" />
+    <Compile Include="INPCObservableForProperty.cs" />
+    <Compile Include="IRNPCObservableForProperty.cs" />
+    <Compile Include="POCOObservableForProperty.cs" />
+    <Compile Include="PropertyBinding.cs" />
+    <Compile Include="RefcountDisposeWrapper.cs" />
+    <Compile Include="Reflection.cs" />
+    <Compile Include="ScheduledSubject.cs" />
+    <Compile Include="VariadicTemplates.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-    <None Include="VariadicTemplates.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>VariadicTemplates.cs</LastGenOutput>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />

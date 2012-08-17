@@ -110,8 +110,17 @@
     <Reference Include="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <Private>False</Private>
     </Reference>
-    <Reference Include="System.Reactive">
-      <HintPath>..\ext\System.Reactive.dll</HintPath>
+    <Reference Include="System.Reactive.Core">
+      <HintPath>..\ext\System.Reactive.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reactive.Interfaces">
+      <HintPath>..\ext\System.Reactive.Interfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reactive.Linq">
+      <HintPath>..\ext\System.Reactive.Linq.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reactive.PlatformServices">
+      <HintPath>..\ext\System.Reactive.PlatformServices.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -121,6 +130,10 @@
     <Compile Include="ReactiveAsyncCommand.cs" />
     <Compile Include="ReactiveCommand.cs" />
     <Compile Include="ICommand.cs" />
+    <Compile Include="CommandBinding.cs" />
+    <Compile Include="CreatesCommandBinding.cs" />
+    <Compile Include="SampleDataBinder.cs" />
+    <Compile Include="ServiceLocationRegistration.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
