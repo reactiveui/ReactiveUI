@@ -10,7 +10,7 @@ namespace ReactiveUI.Tests
 {
     public class PropertyBindViewModel : ReactiveObject
     {
-        string _Property1;
+        public string _Property1;
         public string Property1 {
             get { return _Property1; }
             set { this.RaiseAndSetIfChanged(x => x.Property1, value); }

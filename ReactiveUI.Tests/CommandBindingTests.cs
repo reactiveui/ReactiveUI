@@ -19,7 +19,7 @@ namespace ReactiveUI.Tests
         public void CommandBinderBindsToButton()
         {
             var fixture = new CreatesCommandBindingViaCommandParameter();
-            var origCmd = new RoutedCommand();
+            var origCmd = new ReactiveAsyncCommand();
             var cmd = new ReactiveCommand();
             var input = new Button { Command = origCmd, CommandParameter = 42 };
 
@@ -60,6 +60,7 @@ namespace ReactiveUI.Tests
             Assert.False(wasCalled);
         }
 
+#if !SILVERLIGHT
         [Fact]
         public void EventBinderBindsToImplicitEvent()
         {
@@ -83,17 +84,18 @@ namespace ReactiveUI.Tests
             input.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
             Assert.Equal(1, invokeCount);
         }
+#endif
     }
 
     public class CommandBindViewModel : ReactiveObject
     {
-        ReactiveCommand _Command1;
+        public ReactiveCommand _Command1;
         public ReactiveCommand Command1 {
             get { return _Command1; }
             set { this.RaiseAndSetIfChanged(x => x.Command1, value); }
         }
 
-        ReactiveCommand _Command2;
+        public ReactiveCommand _Command2;
         public ReactiveCommand Command2 {
             get { return _Command2; }
             set { this.RaiseAndSetIfChanged(x => x.Command2, value); }
@@ -168,6 +170,7 @@ namespace ReactiveUI.Tests
             Assert.Null(view.Command1.Command);
         }
 
+#if !SILVERLIGHT
         [Fact]
         public void CommandBindToExplicitEventWireup()
         {
@@ -187,5 +190,6 @@ namespace ReactiveUI.Tests
             view.Command2.RaiseEvent(new MouseButtonEventArgs(Mouse.PrimaryDevice, 0, MouseButton.Left) { RoutedEvent = Image.MouseUpEvent });
             Assert.Equal(1, invokeCount);
         }
+#endif
     }
 }
