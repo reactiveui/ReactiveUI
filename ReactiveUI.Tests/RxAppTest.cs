@@ -11,16 +11,17 @@ namespace ReactiveUI.Tests
     public class RxAppTest
     {
         [Fact]
-        public void DispatcherSchedulerAssemblyStringMustBeCorrect()
-        {
-            Assert.Equal(typeof (DispatcherScheduler).AssemblyQualifiedName, RxApp.dispatcherSchedulerQualifiedName);
-        }
-
-        [Fact]
         public void DepPropNotifierShouldBeFound()
         {
             Assert.True(RxApp.GetAllServices<ICreatesObservableForProperty>()
                 .Any(x => x is DependencyObjectObservableForProperty));
+        }
+
+        [Fact]
+        public void SchedulerShouldBeImmediateInTestRunner()
+        {
+            Console.WriteLine(RxApp.DeferredScheduler.GetType().FullName);
+            Assert.Equal(Scheduler.Immediate, RxApp.DeferredScheduler);
         }
     }
 }

@@ -25,6 +25,12 @@ namespace ReactiveUI.Xaml
                 RxApp.Register(typeof(SampleDataProviderBinder), typeof(IPropertyBinderImplementation));
             }
 #endif
+
+#if WINRT
+            RxApp.DeferredScheduler = System.Reactive.Concurrency.CoreDispatcherScheduler.Current;
+#else
+            RxApp.DeferredScheduler = System.Reactive.Concurrency.DispatcherScheduler.Current;
+#endif
         }
 
         static bool? inDesignMode;
