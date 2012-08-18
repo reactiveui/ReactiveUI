@@ -40,16 +40,6 @@ namespace ReactiveUI
             // This is used for ReactiveObject's RaiseAndSetIfChanged mixin
             GetFieldNameForPropertyNameFunc = new Func<string,string>(x => "_" + x);
 
-            if (InUnitTestRunner()) {
-                Console.Error.WriteLine("*** Detected Unit Test Runner, setting Scheduler to Immediate ***");
-                Console.Error.WriteLine("If we are not actually in a test runner, please file a bug\n");
-                DeferredScheduler = Scheduler.Immediate;
-            } else {
-                Console.Error.WriteLine("Initializing to normal mode");
-
-                DeferredScheduler = findDispatcherScheduler();
-            }
-
 #if WINDOWS_PHONE
             TaskpoolScheduler = new EventLoopScheduler();
 #elif SILVERLIGHT || DOTNETISOLDANDSAD
@@ -75,6 +65,21 @@ namespace ReactiveUI
             if (registerTypeClass != null) {
                 var registerer = (IWantsToRegisterStuff) Activator.CreateInstance(registerTypeClass);
                 registerer.Register();
+            }
+
+            if (InUnitTestRunner()) {
+                Console.Error.WriteLine("*** Detected Unit Test Runner, setting Scheduler to Immediate ***");
+                Console.Error.WriteLine("If we are not actually in a test runner, please file a bug\n");
+                DeferredScheduler = Scheduler.Immediate;
+            } else {
+                Console.Error.WriteLine("Initializing to normal mode");
+            }
+
+            if (DeferredScheduler == null) {
+                LogHost.Default.Error("*** ReactiveUI.Xaml DLL reference not added - using Event Loop *** ");
+                LogHost.Default.Error("Add a reference to ReactiveUI.Xaml if you're using WPF / SL5 / WP7 / WinRT");
+                LogHost.Default.Error("or consider explicitly setting RxApp.DeferredScheduler if not");
+                RxApp.DeferredScheduler = new EventLoopScheduler();
             }
         }
 
@@ -354,39 +359,6 @@ namespace ReactiveUI
         {
             return _getService != null && _getAllServices != null;
         }
-
-
-        //
-        // Internal utility functions
-        //
-
-        // NB: Silverlight barfs unless we give this full name here
-        internal const string dispatcherSchedulerQualifiedName =
-            @"System.Reactive.Concurrency.DispatcherScheduler, System.Reactive.Windows.Threading, Version=1.1.11111.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35";
-
-        internal static IScheduler findDispatcherScheduler()
-        {
-#if WINRT
-            return System.Reactive.Concurrency.CoreDispatcherScheduler.Current;
-#else
-            Type result = null;
-            try {
-                result = Type.GetType(dispatcherSchedulerQualifiedName, true);
-            } catch(Exception ex) {
-                LogHost.Default.Error(ex);
-            }
-
-            if (result == null) {
-                LogHost.Default.Error("*** WPF Rx.NET DLL reference not added - using Event Loop *** ");
-                LogHost.Default.Error("Add a reference to System.Reactive.Windows.Threading.dll if you're using WPF / SL4 / WP7");
-                LogHost.Default.Error("or consider explicitly setting RxApp.DeferredScheduler if not");
-                return new EventLoopScheduler();
-            }
-
-            return (IScheduler) result.GetProperty("Instance", BindingFlags.Public | BindingFlags.Static).GetValue(null, null);
-#endif
-        }
-
     }
 }
 
