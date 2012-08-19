@@ -252,6 +252,18 @@ namespace ReactiveUI
                 throw new TypeLoadException();
             }
         }
+    
+        public static Type GetEventArgsTypeForEvent(Type type, string eventName)
+        {
+            var ei = type.GetEvent(eventName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy);
+            if (ei == null) {
+                throw new Exception(String.Format("Couldn't find {0}.{1}", type.FullName, eventName));
+            }
+    
+            // Find the EventArgs type parameter of the event via digging around via reflection
+            var eventArgsType = ei.EventHandlerType.GetMethods().First(x => x.Name == "Invoke").GetParameters()[1].ParameterType;
+            return eventArgsType;
+        }
 
         internal static IObservable<TProp> ViewModelWhenAnyValue<TView, TViewModel, TProp>(TViewModel viewModel, TView view, Expression<Func<TViewModel, TProp>> property)
             where TView : IViewForViewModel
