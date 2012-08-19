@@ -28,7 +28,7 @@ namespace ReactiveUI
             where TViewModel : class
             where TView : IViewForViewModel
         {
-            return binderImplementation.Bind(viewModel, view, vmProperty, viewProperty);
+            return binderImplementation.Bind(viewModel, view, vmProperty, viewProperty, (IObservable<Unit>)null);
         }
 
         public static IDisposable Bind<TViewModel, TView, TProp>(
@@ -38,7 +38,30 @@ namespace ReactiveUI
             where TViewModel : class
             where TView : IViewForViewModel
         {
-            return binderImplementation.Bind(viewModel, view, vmProperty, null);
+            return binderImplementation.Bind(viewModel, view, vmProperty, null, (IObservable<Unit>)null);
+        }
+
+        public static IDisposable Bind<TViewModel, TView, TProp, TDontCare>(
+                this TView view,
+                TViewModel viewModel,
+                Expression<Func<TViewModel, TProp>> vmProperty,
+                Expression<Func<TView, TProp>> viewProperty,
+                IObservable<TDontCare> signalViewUpdate)
+            where TViewModel : class
+            where TView : IViewForViewModel
+        {
+            return binderImplementation.Bind(viewModel, view, vmProperty, viewProperty, signalViewUpdate);
+        }
+
+        public static IDisposable Bind<TViewModel, TView, TProp, TDontCare>(
+                this TView view,
+                TViewModel viewModel,
+                Expression<Func<TViewModel, TProp>> vmProperty,
+                IObservable<TDontCare> signalViewUpdate)
+            where TViewModel : class
+            where TView : IViewForViewModel
+        {
+            return binderImplementation.Bind(viewModel, view, vmProperty, null, signalViewUpdate);
         }
 
         public static IDisposable OneWayBind<TViewModel, TView, TProp>(
@@ -117,11 +140,12 @@ namespace ReactiveUI
 
     public interface IPropertyBinderImplementation
     {
-        IDisposable Bind<TViewModel, TView, TProp>(
+        IDisposable Bind<TViewModel, TView, TProp, TDontCare>(
                 TViewModel viewModel,
                 TView view,
                 Expression<Func<TViewModel, TProp>> vmProperty,
-                Expression<Func<TView, TProp>> viewProperty)
+                Expression<Func<TView, TProp>> viewProperty,
+                IObservable<TDontCare> signalViewUpdate)
             where TViewModel : class
             where TView : IViewForViewModel;
 
@@ -157,11 +181,12 @@ namespace ReactiveUI
 
     class PropertyBinderImplementation : IPropertyBinderImplementation 
     {
-        public IDisposable Bind<TViewModel, TView, TProp>(
+        public IDisposable Bind<TViewModel, TView, TProp, TDontCare>(
                 TViewModel viewModel,
                 TView view,
                 Expression<Func<TViewModel, TProp>> vmProperty,
-                Expression<Func<TView, TProp>> viewProperty)
+                Expression<Func<TView, TProp>> viewProperty,
+                IObservable<TDontCare> signalViewUpdate)
             where TViewModel : class
             where TView : IViewForViewModel
         {
@@ -176,9 +201,17 @@ namespace ReactiveUI
                 viewPropChain = Reflection.ExpressionToPropertyNames(viewProperty);
             }
 
+            // NB: If an explicit signalViewUpdate is specified, we're not going
+            // to set up a WhenAny on the View Property.
             var somethingChanged = Observable.Merge(
                 Reflection.ViewModelWhenAnyValue(viewModel, view, vmProperty),
-                view.WhenAnyDynamic(viewPropChain, x => (TProp)x.Value)
+                signalViewUpdate != null ? Observable.Never<TProp>() : view.WhenAnyDynamic(viewPropChain, x => (TProp)x.Value),
+                signalViewUpdate == null ? Observable.Never<TProp>() : signalViewUpdate.SelectMany(_ => {
+                    TProp val = default(TProp);
+                    return Reflection.TryGetValueForPropertyChain(out val, view, viewPropChain) ? 
+                        Observable.Return(val) :
+                        Observable.Empty<TProp>();
+                })
             ).Multicast(new Subject<TProp>());
 
             ret.Add(somethingChanged.Where(x => {
