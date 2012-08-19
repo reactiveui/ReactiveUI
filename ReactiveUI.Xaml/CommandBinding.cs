@@ -308,15 +308,7 @@ namespace ReactiveUI.Xaml
                 throw new Exception(String.Format("Couldn't find a Command Binder for {0} and event {1}", type.FullName, eventName));
             }
 
-            var ei = type.GetEvent(eventName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy);
-            if (ei == null) {
-                throw new Exception(String.Format("Couldn't find {0}.{1}", type.FullName, eventName));
-            }
-
-            // Find the EventArgs type parameter of the event via digging around via reflection
-            var eventArgsType = ei.EventHandlerType.GetMethods()
-                .First(x => x.Name == "Invoke")
-                .GetParameters()[1].ParameterType;
+            var eventArgsType = Reflection.GetEventArgsTypeForEvent(type, eventName);
             var mi = binder.GetType().GetMethods().First(x => x.Name == "BindCommandToObject" && x.IsGenericMethod);
             mi = mi.MakeGenericMethod(new[] {eventArgsType});
 
