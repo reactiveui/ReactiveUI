@@ -125,7 +125,7 @@ namespace ReactiveUI.Xaml
     {
         static readonly PropertyBinderImplementation inner = new PropertyBinderImplementation();
 
-        public IDisposable Bind<TViewModel, TView, TProp>(TViewModel viewModel, TView view, Expression<Func<TViewModel, TProp>> vmProperty, Expression<Func<TView, TProp>> viewProperty) 
+        public IDisposable Bind<TViewModel, TView, TProp, TDontCare>(TViewModel viewModel, TView view, Expression<Func<TViewModel, TProp>> vmProperty, Expression<Func<TView, TProp>> viewProperty, IObservable<TDontCare> dontCare) 
             where TViewModel : class 
             where TView : IViewForViewModel
         {
