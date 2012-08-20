@@ -54,6 +54,7 @@
     <Reference Include="System.Reactive.PlatformServices">
       <HintPath>..\ext\System.Reactive.PlatformServices.dll</HintPath>
     </Reference>
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Interfaces.cs" />

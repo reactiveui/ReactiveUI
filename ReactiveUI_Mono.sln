@@ -18,6 +18,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Routing_Mono", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Gtk_Mono", "ReactiveUI.Gtk\ReactiveUI.Gtk_Mono.csproj", "{482DE1CC-A08C-49F7-AB36-445DC9724482}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Cocoa", "ReactiveUI.Cocoa\ReactiveUI.Cocoa.csproj", "{0913BF79-061F-4667-ADF9-8E6CDA6D1213}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -26,8 +28,23 @@ Global
 		Release|Any CPU = Release|Any CPU
 		Release|Mixed Platforms = Release|Mixed Platforms
 		Release|x86 = Release|x86
+		AppStore|Any CPU = AppStore|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0913BF79-061F-4667-ADF9-8E6CDA6D1213}.AppStore|Any CPU.ActiveCfg = AppStore|Any CPU
+		{0913BF79-061F-4667-ADF9-8E6CDA6D1213}.AppStore|Any CPU.Build.0 = AppStore|Any CPU
+		{0913BF79-061F-4667-ADF9-8E6CDA6D1213}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0913BF79-061F-4667-ADF9-8E6CDA6D1213}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0913BF79-061F-4667-ADF9-8E6CDA6D1213}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{0913BF79-061F-4667-ADF9-8E6CDA6D1213}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{0913BF79-061F-4667-ADF9-8E6CDA6D1213}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{0913BF79-061F-4667-ADF9-8E6CDA6D1213}.Debug|x86.Build.0 = Debug|Any CPU
+		{0913BF79-061F-4667-ADF9-8E6CDA6D1213}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0913BF79-061F-4667-ADF9-8E6CDA6D1213}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0913BF79-061F-4667-ADF9-8E6CDA6D1213}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{0913BF79-061F-4667-ADF9-8E6CDA6D1213}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{0913BF79-061F-4667-ADF9-8E6CDA6D1213}.Release|x86.ActiveCfg = Release|Any CPU
+		{0913BF79-061F-4667-ADF9-8E6CDA6D1213}.Release|x86.Build.0 = Release|Any CPU
 		{292A477B-BB94-43C1-984E-E177EF9FEDB7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{292A477B-BB94-43C1-984E-E177EF9FEDB7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{292A477B-BB94-43C1-984E-E177EF9FEDB7}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
