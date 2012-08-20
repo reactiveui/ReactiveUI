@@ -127,6 +127,33 @@ namespace ReactiveUI
             return ret.ToArray();
         }
 
+        public static Type[] ExpressionToPropertyTypes<TObj, TRet>(Expression<Func<TObj, TRet>> property)
+        {
+            var ret = new List<Type>();
+
+            var current = property.Body;
+            while(current.NodeType != ExpressionType.Parameter) {
+                // This happens when a value type gets boxed
+                if (current.NodeType == ExpressionType.Convert || current.NodeType == ExpressionType.ConvertChecked) {
+                    var ue = (UnaryExpression) current;
+                    current = ue.Operand;
+                    continue;
+                }
+
+                if (current.NodeType != ExpressionType.MemberAccess) {
+                    throw new ArgumentException("Property expression must be of the form 'x => x.SomeProperty.SomeOtherProperty'");
+                }
+
+                var me = (MemberExpression)current;
+                ret.Insert(0, me.Member.ReflectedType);
+                current = me.Expression;
+            }
+
+            ret.Insert(0, ((ParameterExpression) current).Type);
+            return ret.ToArray();
+        }
+
+
         public static FieldInfo GetBackingFieldInfoForProperty<TObj>(string propName, bool dontThrow = false)
             where TObj : IReactiveNotifyPropertyChanged
         {
