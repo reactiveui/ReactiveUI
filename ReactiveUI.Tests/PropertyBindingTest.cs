@@ -18,9 +18,9 @@ namespace ReactiveUI.Tests
         }
     }
 
-    public class PropertyBindView : IViewForViewModel<PropertyBindViewModel>
+    public class PropertyBindView : IViewFor<PropertyBindViewModel>
     {
-        object IViewForViewModel.ViewModel { 
+        object IViewFor.ViewModel { 
             get { return ViewModel; }
             set { ViewModel = (PropertyBindViewModel)value; } 
         }

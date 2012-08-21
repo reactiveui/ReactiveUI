@@ -127,14 +127,14 @@ namespace ReactiveUI.Xaml
 
         public IDisposable Bind<TViewModel, TView, TProp, TDontCare>(TViewModel viewModel, TView view, Expression<Func<TViewModel, TProp>> vmProperty, Expression<Func<TView, TProp>> viewProperty, IObservable<TDontCare> dontCare) 
             where TViewModel : class 
-            where TView : IViewForViewModel
+            where TView : IViewFor
         {
             return OneWayBind(viewModel, view, vmProperty, viewProperty);
         }
 
         public IDisposable OneWayBind<TViewModel, TView, TProp>(TViewModel viewModel, TView view, Expression<Func<TViewModel, TProp>> vmProperty, Expression<Func<TView, TProp>> viewProperty, Func<TProp> fallbackValue = null) 
             where TViewModel : class 
-            where TView : IViewForViewModel
+            where TView : IViewFor
         {
             var sampleVmType = SampleData.findSampleClassForViewModel(typeof (TViewModel));
             var sampleVm = Activator.CreateInstance(sampleVmType);
@@ -153,7 +153,7 @@ namespace ReactiveUI.Xaml
 
         public IDisposable OneWayBind<TViewModel, TView, TProp, TOut>(TViewModel viewModel, TView view, Expression<Func<TViewModel, TProp>> vmProperty, Expression<Func<TView, TOut>> viewProperty, Func<TProp, TOut> selector, Func<TOut> fallbackValue = null) 
             where TViewModel : class 
-            where TView : IViewForViewModel
+            where TView : IViewFor
         {
             var sampleVmType = SampleData.findSampleClassForViewModel(typeof (TViewModel));
             var sampleVm = Activator.CreateInstance(sampleVmType);
@@ -174,7 +174,7 @@ namespace ReactiveUI.Xaml
 
         public IDisposable AsyncOneWayBind<TViewModel, TView, TProp, TOut>(TViewModel viewModel, TView view, Expression<Func<TViewModel, TProp>> vmProperty, Expression<Func<TView, TOut>> viewProperty, Func<TProp, IObservable<TOut>> selector, Func<TOut> fallbackValue = null) 
             where TViewModel : class 
-            where TView : IViewForViewModel
+            where TView : IViewFor
         {
             var sampleVmType = SampleData.findSampleClassForViewModel(typeof (TViewModel));
             var sampleVm = Activator.CreateInstance(sampleVmType);
