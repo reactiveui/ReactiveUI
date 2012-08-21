@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Diagnostics.Contracts;
@@ -61,11 +62,15 @@ namespace ReactiveUI
             RxApp.Register(typeof(IRNPCObservableForProperty), typeof(ICreatesObservableForProperty));
             RxApp.Register(typeof(POCOObservableForProperty), typeof(ICreatesObservableForProperty));
 
-            var registerTypeClass = Reflection.ReallyFindType("ReactiveUI.Xaml.ServiceLocationRegistration", false);
-            if (registerTypeClass != null) {
-                var registerer = (IWantsToRegisterStuff) Activator.CreateInstance(registerTypeClass);
-                registerer.Register();
-            }
+            var namespaces = attemptToEarlyLoadReactiveUIDLLs();
+
+            namespaces.ForEach(ns => {
+                var registerTypeClass = Reflection.ReallyFindType(ns + ".ServiceLocationRegistration", false);
+                if (registerTypeClass != null) {
+                    var registerer = (IWantsToRegisterStuff) Activator.CreateInstance(registerTypeClass);
+                    registerer.Register();
+                }
+            });
 
             if (InUnitTestRunner()) {
                 Console.Error.WriteLine("*** Detected Unit Test Runner, setting Scheduler to Immediate ***");
@@ -359,6 +364,23 @@ namespace ReactiveUI
         {
             return _getService != null && _getAllServices != null;
         }
+
+        static IEnumerable<string> attemptToEarlyLoadReactiveUIDLLs()
+        {
+            var loc = Assembly.GetExecutingAssembly().Location;
+            var di = new DirectoryInfo(Path.GetDirectoryName(loc));
+
+            var ret = di.EnumerateFiles("*.dll")
+                .Where(x => x.Name.StartsWith("ReactiveUI", StringComparison.OrdinalIgnoreCase))
+                .ToArray();
+
+            ret.ForEach(x => {
+                LogHost.Default.Info("Attempting to early-load {0}", x.Name);
+                Assembly.LoadFile(x.FullName);
+            });
+            return ret.Select(x => x.Name.Replace(".dll", "")).ToArray();
+        }
+
     }
 }
 
