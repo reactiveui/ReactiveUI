@@ -61,6 +61,8 @@ namespace ReactiveUI
             RxApp.Register(typeof(INPCObservableForProperty), typeof(ICreatesObservableForProperty));
             RxApp.Register(typeof(IRNPCObservableForProperty), typeof(ICreatesObservableForProperty));
             RxApp.Register(typeof(POCOObservableForProperty), typeof(ICreatesObservableForProperty));
+            RxApp.Register(typeof(PropertyBinderImplementation), typeof(IPropertyBinderImplementation));
+            RxApp.Register(typeof(NullDefaultPropertyBindingProvider), typeof(IDefaultPropertyBindingProvider));
 
             var namespaces = attemptToEarlyLoadReactiveUIDLLs();
 
@@ -390,6 +392,14 @@ namespace ReactiveUI
                 }
             });
 #endif
+        }
+    }
+
+    public class NullDefaultPropertyBindingProvider : IDefaultPropertyBindingProvider
+    {
+        public Tuple<string, int> GetPropertyForControl(object control)
+        {
+            return null;
         }
     }
 }
