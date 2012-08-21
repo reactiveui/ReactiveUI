@@ -373,7 +373,12 @@ namespace ReactiveUI
                 "ReactiveUI.Cocoa",
             };
 
+#if WINRT || SILVERLIGHT
+            // NB: WinRT hates your Freedom
+            return new[] {"ReactiveUI.Xaml"};
+#else
             var name = Assembly.GetExecutingAssembly().GetName();
+
             return guiLibs.SelectMany(x => {
                 var fullName = String.Format("{0}, Version={1}, Culture=neutral, PublicKeyToken=null", x, name.Version.ToString());
                 try {
@@ -384,6 +389,7 @@ namespace ReactiveUI
                     return Enumerable.Empty<string>();
                 }
             });
+#endif
         }
     }
 }

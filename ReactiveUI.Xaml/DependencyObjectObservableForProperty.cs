@@ -8,8 +8,14 @@ using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Reflection;
 using System.Text;
+
+#if WINRT
+using Windows.UI.Xaml;
+using Windows.UI.Xaml.Data;
+#else
 using System.Windows;
 using System.Windows.Data;
+#endif
 
 namespace ReactiveUI.Xaml
 {
@@ -52,7 +58,7 @@ namespace ReactiveUI.Xaml
                     attachedProp = DependencyProperty.RegisterAttached(
                         "ListenAttached" + propertyName + this.GetHashCode().ToString("{0:x}"),
                         typeof(object), type,
-                        new PropertyMetadata((o,e) => subjects[o].Item1.OnNext(o)));
+                        new PropertyMetadata(null, (o,e) => subjects[o].Item1.OnNext(o)));
                     attachedProperties[type] = attachedProp;
                 } else {
                     attachedProp = attachedProperties[type];
@@ -68,7 +74,7 @@ namespace ReactiveUI.Xaml
                 if (!subjects.ContainsKey(sender)) {
                     var disposer = new RefcountDisposeWrapper(
                         Disposable.Create(() => {
-#if !SILVERLIGHT
+#if !SILVERLIGHT && !WINRT
                             // XXX: Apparently it's simply impossible to unset a binding in SL :-/
                             BindingOperations.ClearBinding(dobj, attachedProp);
 #endif

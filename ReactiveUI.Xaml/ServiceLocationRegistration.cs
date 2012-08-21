@@ -6,6 +6,10 @@ using System.Linq;
 using System.Text;
 using System.Windows;
 
+#if WINRT
+using Windows.ApplicationModel;
+#endif
+
 namespace ReactiveUI.Xaml
 {
     /// <summary>

@@ -7,6 +7,11 @@ using System.Reflection;
 using System.Windows;
 using System.Windows.Input;
 
+#if WINRT
+using Windows.UI.Xaml;
+using Windows.UI.Xaml.Input;
+#endif
+
 namespace ReactiveUI.Xaml
 {
     public interface ICreatesCommandBinding
@@ -70,8 +75,11 @@ namespace ReactiveUI.Xaml
             Tuple.Create("Click", typeof (RoutedEventArgs)),
 #endif
             Tuple.Create("TouchUpInside", typeof (EventArgs)),
-#if !MONO
+#if !MONO && !WINRT
             Tuple.Create("MouseUp", typeof (MouseButtonEventArgs)),
+#elif WINRT
+            Tuple.Create("PointerReleased", typeof(PointerRoutedEventArgs)),
+            Tuple.Create("Tapped", typeof(TappedRoutedEventArgs)),
 #endif
         };
 
