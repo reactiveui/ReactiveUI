@@ -367,20 +367,24 @@ namespace ReactiveUI
 
         static IEnumerable<string> attemptToEarlyLoadReactiveUIDLLs()
         {
-            var loc = Assembly.GetExecutingAssembly().Location;
-            var di = new DirectoryInfo(Path.GetDirectoryName(loc));
+            var guiLibs = new[] {
+                "ReactiveUI.Xaml",
+                "ReactiveUI.Gtk",
+                "ReactiveUI.Cocoa",
+            };
 
-            var ret = di.EnumerateFiles("*.dll")
-                .Where(x => x.Name.StartsWith("ReactiveUI", StringComparison.OrdinalIgnoreCase))
-                .ToArray();
-
-            ret.ForEach(x => {
-                LogHost.Default.Info("Attempting to early-load {0}", x.Name);
-                Assembly.LoadFile(x.FullName);
+            var name = Assembly.GetExecutingAssembly().GetName();
+            return guiLibs.SelectMany(x => {
+                var fullName = String.Format("{0}, Version={1}, Culture=neutral, PublicKeyToken=null", x, name.Version.ToString());
+                try {
+                    Assembly.Load(fullName);
+                    return new[] {x};
+                } catch (Exception ex) {
+                    LogHost.Default.DebugException("Couldn't load " + x, ex);
+                    return Enumerable.Empty<string>();
+                }
             });
-            return ret.Select(x => x.Name.Replace(".dll", "")).ToArray();
         }
-
     }
 }
 

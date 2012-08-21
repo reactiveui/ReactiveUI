@@ -31,7 +31,9 @@ namespace ReactiveUI.Xaml
 #elif MONO
             // NB: Mono has like 37 UI Frameworks :)
 #else
-            RxApp.DeferredScheduler = System.Reactive.Concurrency.DispatcherScheduler.Current;
+            if (!RxApp.InUnitTestRunner()) {
+                RxApp.DeferredScheduler = System.Reactive.Concurrency.DispatcherScheduler.Current;
+            }
 #endif
         }
 
