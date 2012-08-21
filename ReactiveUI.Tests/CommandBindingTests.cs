@@ -108,9 +108,9 @@ namespace ReactiveUI.Tests
         }
     }
 
-    public class CommandBindView : IViewForViewModel<CommandBindViewModel>
+    public class CommandBindView : IViewFor<CommandBindViewModel>
     {
-        object IViewForViewModel.ViewModel { 
+        object IViewFor.ViewModel { 
             get { return ViewModel; }
             set { ViewModel = (CommandBindViewModel)value; } 
         }
