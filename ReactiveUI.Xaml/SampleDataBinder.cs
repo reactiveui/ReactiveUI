@@ -61,7 +61,7 @@ namespace ReactiveUI.Xaml
             return ShuffledList(items);
         }
 
-#if !SILVERLIGHT
+#if !SILVERLIGHT && !WINRT
         public string ImageFrom(string pathOrRelativePath)
         {
             var di = new DirectoryInfo(pathOrRelativePath);
@@ -102,7 +102,7 @@ namespace ReactiveUI.Xaml
 
         internal static Type findSampleClassForViewModel(Type objectType)
         {
-            var sampleAttr = objectType.GetCustomAttributes(true)
+            var sampleAttr = objectType.GetCustomAttributes(typeof(SampleClassAttribute), true)
                 .OfType<SampleClassAttribute>()
                 .Select(x => x.SampleType)
                 .FirstOrDefault();

@@ -145,7 +145,7 @@ namespace ReactiveUI
                 }
 
                 var me = (MemberExpression)current;
-                ret.Insert(0, me.Member.ReflectedType);
+                ret.Insert(0, me.Member.DeclaringType);
                 current = me.Expression;
             }
 

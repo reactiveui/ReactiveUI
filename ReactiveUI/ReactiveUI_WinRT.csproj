@@ -105,10 +105,13 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="CollectionExtensions.cs" />
+    <Compile Include="CompatMixins.cs" />
     <Compile Include="ConsoleStub.cs" />
     <Compile Include="ContractStubs.cs" />
+    <Compile Include="DefaultPropertyBinding.cs" />
+    <Compile Include="INPCObservableForProperty.cs" />
     <Compile Include="Interfaces.cs" />
+    <Compile Include="IRNPCObservableForProperty.cs" />
     <Compile Include="Logging.cs" />
     <Compile Include="MakeObjectReactiveHelper.cs" />
     <Compile Include="MemoizingMRUCache.cs" />
@@ -117,14 +120,19 @@
     <Compile Include="ObservableAsPropertyHelper.cs" />
     <Compile Include="ObservableAsyncMRUCache.cs" />
     <Compile Include="ObservedChangedMixin.cs" />
+    <Compile Include="POCOObservableForProperty.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="PropertyBinding.cs" />
     <Compile Include="ReactiveCollection.cs" />
     <Compile Include="ReactiveNotifyPropertyChangedMixin.cs" />
     <Compile Include="ReactiveObject.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="RefcountDisposeWrapper.cs" />
+    <Compile Include="Reflection.cs" />
     <Compile Include="ReflectionStubs.cs" />
     <Compile Include="RxApp.cs" />
+    <Compile Include="ScheduledSubject.cs" />
     <Compile Include="VariadicTemplates.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
