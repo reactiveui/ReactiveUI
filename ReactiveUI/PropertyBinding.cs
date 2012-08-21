@@ -138,7 +138,7 @@ namespace ReactiveUI
         }
     }
 
-    public interface IPropertyBinderImplementation
+    public interface IPropertyBinderImplementation : IEnableLogger
     {
         IDisposable Bind<TViewModel, TView, TProp, TDontCare>(
                 TViewModel viewModel,
@@ -214,18 +214,30 @@ namespace ReactiveUI
                 })
             ).Multicast(new Subject<TProp>());
 
+            string vmChangedString = String.Format("Setting {0}.{1} => {2}.{3}: ",
+                typeof (TViewModel).Name, String.Join(".", vmPropChain),
+                typeof (TView).Name, String.Join(".", viewPropChain));
+
             ret.Add(somethingChanged.Where(x => {
                 TProp result;
                 if (!Reflection.TryGetValueForPropertyChain(out result, view.ViewModel, vmPropChain))
                     return false;
-                return EqualityComparer<TProp>.Default.Equals(result, x) != true;
+                var vmChanged = EqualityComparer<TProp>.Default.Equals(result, x) != true;
+                if (vmChanged)  this.Log().Info(vmChangedString + x.ToString());
+                return vmChanged;
             }).Subscribe(x => Reflection.SetValueToPropertyChain(view.ViewModel, vmPropChain, x, false)));
+
+            string viewChangedString = String.Format("Setting {0}.{1} => {2}.{3}: ",
+                typeof (TView).Name, String.Join(".", viewPropChain),
+                typeof (TViewModel).Name, String.Join(".", vmPropChain));
 
             ret.Add(somethingChanged.Where(x => {
                 TProp result;
                 if (!Reflection.TryGetValueForPropertyChain(out result, view, viewPropChain))
                     return false;
-                return EqualityComparer<TProp>.Default.Equals(result, x) != true;
+                var viewChanged = EqualityComparer<TProp>.Default.Equals(result, x) != true;
+                if (viewChanged)  this.Log().Info(viewChangedString + x.ToString());
+                return viewChanged;
             }).Subscribe(x => Reflection.SetValueToPropertyChain(view, viewPropChain, x, false)));
 
             // NB: Even though it's technically a two-way bind, most people 
