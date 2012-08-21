@@ -264,9 +264,11 @@ namespace ReactiveUI
             // WinRT hates your favorite band too.
             return Type.GetType(type, false);
     #else
+            AppDomain.CurrentDomain.GetAssemblies().ForEach(x => Console.WriteLine(x.FullName));
+
             return AppDomain.CurrentDomain.GetAssemblies()
                 .SelectMany(x => x.GetTypes())
-                .Where(x => x.FullName == type)
+                .Where(x => x.FullName.Equals(type, StringComparison.InvariantCulture))
                 .FirstOrDefault();
     #endif
         }, 20);
