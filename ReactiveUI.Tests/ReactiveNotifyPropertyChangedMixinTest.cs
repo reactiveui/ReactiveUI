@@ -322,7 +322,6 @@ namespace ReactiveUI.Tests
                 {x => x.Child.IsOnlyOneWord.Length, new[] {typeof(TestFixture), typeof(string), typeof(int) }},
             };
 
-
             var results = data.Keys.Select(x => new {input = x, output = Reflection.ExpressionToPropertyNames(x)}).ToArray();
             var resultTypes = dataTypes.Keys.Select(x => new {input = x, output = Reflection.ExpressionToPropertyTypes(x)}).ToArray();
 
