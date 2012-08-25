@@ -23,7 +23,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>Bin\Debug\SL4_WindowsPhone71\</OutputPath>
+    <OutputPath>Bin\Debug\SL4-WindowsPhone71\</OutputPath>
     <DefineConstants>DEBUG;TRACE;SILVERLIGHT;WINDOWS_PHONE</DefineConstants>
     <NoStdLib>true</NoStdLib>
     <NoConfig>true</NoConfig>
@@ -33,13 +33,13 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>Bin\Release\SL4_WindowsPhone71\</OutputPath>
+    <OutputPath>Bin\Release\SL4-WindowsPhone71\</OutputPath>
     <DefineConstants>TRACE;SILVERLIGHT;WINDOWS_PHONE</DefineConstants>
     <NoStdLib>true</NoStdLib>
     <NoConfig>true</NoConfig>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>Bin\Release\SL4_WindowsPhone71\ReactiveUI.Blend_WP7.xml</DocumentationFile>
+    <DocumentationFile>Bin\Release\SL4-WindowsPhone71\ReactiveUI.Blend_WP7.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="AsyncCtpLibrary_Phone">
