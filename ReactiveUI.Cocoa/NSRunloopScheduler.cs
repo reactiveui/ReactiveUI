@@ -38,8 +38,10 @@ namespace ReactiveUI.Cocoa
         
         public IDisposable Schedule<TState>(TState state, Func<IScheduler, TState, IDisposable> action)
         {
-            theApp.BeginInvokeOnMainThread(new NSAction(() => action(this, state)));
-            return Disposable.Empty;
+            IDisposable innerDisp = Disposable.Empty;
+            theApp.BeginInvokeOnMainThread(new NSAction(() => innerDisp = action(this, state)));
+            
+            return innerDisp;
         }
         
         public IDisposable Schedule<TState>(TState state, DateTimeOffset dueTime, Func<IScheduler, TState, IDisposable> action)
@@ -53,15 +55,17 @@ namespace ReactiveUI.Cocoa
         
         public IDisposable Schedule<TState>(TState state, TimeSpan dueTime, Func<IScheduler, TState, IDisposable> action)
         {
+            var innerDisp = Disposable.Empty;
             bool isCancelled = false;
             
             var timer = NSTimer.CreateScheduledTimer(dueTime, () => {
-                if (!isCancelled) action(this, state);
+                if (!isCancelled) innerDisp = action(this, state);
             });
             
             return Disposable.Create(() => {
                 isCancelled = true;
                 timer.Invalidate();
+                innerDisp.Dispose();
             });
         }
     }

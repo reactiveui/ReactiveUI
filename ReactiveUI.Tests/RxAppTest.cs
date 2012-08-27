@@ -10,12 +10,14 @@ namespace ReactiveUI.Tests
 {
     public class RxAppTest
     {
+#if !MONO
         [Fact]
         public void DepPropNotifierShouldBeFound()
         {
             Assert.True(RxApp.GetAllServices<ICreatesObservableForProperty>()
                 .Any(x => x is DependencyObjectObservableForProperty));
         }
+#endif
 
         [Fact]
         public void SchedulerShouldBeImmediateInTestRunner()

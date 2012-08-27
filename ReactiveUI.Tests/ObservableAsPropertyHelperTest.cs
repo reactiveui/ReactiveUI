@@ -7,11 +7,7 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 
-#if MONO
-using Mono.Reactive.Testing;
-#else
 using Microsoft.Reactive.Testing;
-#endif
 
 namespace ReactiveUI.Tests
 {

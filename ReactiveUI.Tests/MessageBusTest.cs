@@ -12,11 +12,7 @@ using ReactiveUI.Tests;
 using System.Runtime.Serialization.Json;
 using System.Threading;
 
-#if MONO
-using Mono.Reactive.Testing;
-#else
 using Microsoft.Reactive.Testing;
-#endif
 
 namespace ReactiveUI.Tests
 {
