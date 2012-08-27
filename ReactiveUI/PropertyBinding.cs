@@ -223,7 +223,7 @@ namespace ReactiveUI
                 if (!Reflection.TryGetValueForPropertyChain(out result, view.ViewModel, vmPropChain))
                     return false;
                 var vmChanged = EqualityComparer<TProp>.Default.Equals(result, x) != true;
-                if (vmChanged)  this.Log().Info(vmChangedString + x.ToString());
+                if (vmChanged)  this.Log().Info(vmChangedString + (x != null ? x.ToString() : "(null)"));
                 return vmChanged;
             }).Subscribe(x => Reflection.SetValueToPropertyChain(view.ViewModel, vmPropChain, x, false)));
 
@@ -236,7 +236,7 @@ namespace ReactiveUI
                 if (!Reflection.TryGetValueForPropertyChain(out result, view, viewPropChain))
                     return false;
                 var viewChanged = EqualityComparer<TProp>.Default.Equals(result, x) != true;
-                if (viewChanged)  this.Log().Info(viewChangedString + x.ToString());
+                if (viewChanged)  this.Log().Info(viewChangedString + (x != null ? x.ToString() : "(null)"));
                 return viewChanged;
             }).Subscribe(x => Reflection.SetValueToPropertyChain(view, viewPropChain, x, false)));
 
