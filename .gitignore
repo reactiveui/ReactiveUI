@@ -13,3 +13,5 @@ ReactiveUI/Generated/*.cs
 StyleCop.Cache
 TestResults
 _ReSharper*
+Release
+NuGet-Release
