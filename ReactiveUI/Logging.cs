@@ -103,8 +103,10 @@ namespace ReactiveUI
             return new WrappingFullLogger(ret, type);
         }, 30);
 
+        static readonly IRxUIFullLogger nullLogger = new WrappingFullLogger(new NullLogger(), typeof(MemoizingMRUCache<Type, IRxUIFullLogger>));
         public static IRxUIFullLogger GetLogger(Type type)
         {
+            if (type == typeof(MemoizingMRUCache<Type, IRxUIFullLogger>)) return nullLogger;
             lock (loggerCache) {
                 return loggerCache.Get(type);
             }
