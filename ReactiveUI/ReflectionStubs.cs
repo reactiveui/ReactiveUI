@@ -33,6 +33,14 @@ namespace ReactiveUI
             return This.GetTypeInfo().DeclaredProperties;
         }
 
+        public static MethodInfo GetMethod(this Type This, string methodName, Type[] paramTypes)
+        {
+            return This.GetTypeInfo().GetDeclaredMethods(methodName)
+                .FirstOrDefault(x => {
+                    return paramTypes.Zip(x.GetParameters().Select(y => y.ParameterType), (l, r) => l == r).All(y => y != false);
+                });
+        }
+
         public static IEnumerable<MethodInfo> GetMethods(this Type This)
         {
             return This.GetTypeInfo().DeclaredMethods;
