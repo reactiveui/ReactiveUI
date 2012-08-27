@@ -6,11 +6,7 @@ using System.Reactive.Subjects;
 using Xunit;
 using ReactiveUI.Testing;
 
-#if MONO
-using Mono.Reactive.Testing;
-#else
 using Microsoft.Reactive.Testing;
-#endif
 
 namespace ReactiveUI.Tests
 {

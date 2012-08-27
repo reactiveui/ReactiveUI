@@ -1,96 +1,105 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>
-    </ProductVersion>
+    <ProductVersion>10.0.0</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{6FBDE6EA-2202-4A70-8EE4-7BA6D515952E}</ProjectGuid>
+    <ProjectGuid>{7CA675EF-FF6D-4A41-8271-C7D72AA57705}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ReactiveUI.Tests</RootNamespace>
-    <AssemblyName>ReactiveUI.Tests</AssemblyName>
-    <FileAlignment>512</FileAlignment>
-    <SccProjectName>
-    </SccProjectName>
-    <SccLocalPath>
-    </SccLocalPath>
-    <SccAuxPath>
-    </SccAuxPath>
-    <SccProvider>
-    </SccProvider>
+    <RootNamespace>ReactiveUI.Tests_Mono</RootNamespace>
+    <AssemblyName>ReactiveUI.Tests_Mono</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
+    <DebugSymbols>True</DebugSymbols>
     <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE;MONO</DefineConstants>
+    <Optimize>False</Optimize>
+    <OutputPath>bin\Debug</OutputPath>
+    <DefineConstants>DEBUG; MONO</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <ConsolePause>False</ConsolePause>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE;MONO</DefineConstants>
+    <DebugType>none</DebugType>
+    <Optimize>True</Optimize>
+    <OutputPath>bin\Release</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <ConsolePause>False</ConsolePause>
+    <DefineConstants>MONO</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.CSharp" />
     <Reference Include="System" />
-    <Reference Include="System.ComponentModel.DataAnnotations" />
-    <Reference Include="System.Core">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    <Reference Include="System.Reactive.Core">
+      <HintPath>..\ext\System.Reactive.Core.dll</HintPath>
     </Reference>
-    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Reactive.Interfaces">
+      <HintPath>..\ext\System.Reactive.Interfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reactive.Linq">
+      <HintPath>..\ext\System.Reactive.Linq.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reactive.PlatformServices">
+      <HintPath>..\ext\System.Reactive.PlatformServices.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Reactive.Testing">
+      <HintPath>..\ext\Microsoft.Reactive.Testing.dll</HintPath>
+    </Reference>
+    <Reference Include="WindowsBase" />
     <Reference Include="System.Xaml" />
-    <Reference Include="System.Xml" />
-    <Reference Include="System.Xml.Linq" />
     <Reference Include="xunit">
       <HintPath>..\ext\xunit\xunit.dll</HintPath>
     </Reference>
-    <Reference Include="xunit.extensions">
-      <HintPath>..\ext\xunit\xunit.extensions.dll</HintPath>
-    </Reference>
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <Compile Include="ErrorsTest.cs" />
     <Compile Include="MakeObjectReactiveHelperTest.cs" />
-    <Compile Include="ObservableAsyncMRUCacheTest.cs" />
     <Compile Include="MessageBusTest.cs" />
     <Compile Include="ObservableAsPropertyHelperTest.cs" />
+    <Compile Include="ObservableAsyncMRUCacheTest.cs" />
     <Compile Include="ObservedChangedMixinTest.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReactiveCollectionTest.cs" />
     <Compile Include="ReactiveCommandTest.cs" />
     <Compile Include="ReactiveNotifyPropertyChangedMixinTest.cs" />
     <Compile Include="ReactiveObjectTest.cs" />
     <Compile Include="ReactiveValidatedObjectTest.cs" />
+    <Compile Include="RxAppTest.cs" />
     <Compile Include="Utility.cs" />
   </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
   <ItemGroup>
-    <ProjectReference Include="..\ReactiveUI\ReactiveUI_Mono.csproj">
-      <Project>{292A477B-BB94-43C1-984E-E177EF9FEDB7}</Project>
-      <Name>ReactiveUI_Mono</Name>
+    <ProjectReference Include="..\ReactiveUI.Cocoa\ReactiveUI.Cocoa.csproj">
+      <Project>{0913BF79-061F-4667-ADF9-8E6CDA6D1213}</Project>
+      <Name>ReactiveUI.Cocoa</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ReactiveUI.Gtk\ReactiveUI.Gtk_Mono.csproj">
+      <Project>{482DE1CC-A08C-49F7-AB36-445DC9724482}</Project>
+      <Name>ReactiveUI.Gtk_Mono</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ReactiveUI.NLog\ReactiveUI.NLog_Mono.csproj">
+      <Project>{67038157-092E-4D72-BAF4-949EB1532264}</Project>
+      <Name>ReactiveUI.NLog_Mono</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ReactiveUI.Routing\ReactiveUI.Routing_Mono.csproj">
+      <Project>{67038157-092E-4D72-BAF4-049EB1532264}</Project>
+      <Name>ReactiveUI.Routing_Mono</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ReactiveUI.Testing\ReactiveUI.Testing_Mono.csproj">
+      <Project>{E1F2AD19-276E-4D05-A41A-89AA133CECFC}</Project>
+      <Name>ReactiveUI.Testing_Mono</Name>
     </ProjectReference>
     <ProjectReference Include="..\ReactiveUI.Xaml\ReactiveUI.Xaml_Mono.csproj">
       <Project>{761AC9BA-4A9C-440C-9B6C-2569978F0610}</Project>
       <Name>ReactiveUI.Xaml_Mono</Name>
     </ProjectReference>
-    <ProjectReference Include="..\ReactiveUI.Testing\ReactiveUI.Testing_Mono.csproj">
-      <Project>{E1F2AD19-276E-4D05-A41A-89AA133CECFC}</Project>
-      <Name>ReactiveUI.Testing_Mono</Name>
+    <ProjectReference Include="..\ReactiveUI\ReactiveUI_Mono.csproj">
+      <Project>{292A477B-BB94-43C1-984E-E177EF9FEDB7}</Project>
+      <Name>ReactiveUI_Mono</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>
