@@ -13,7 +13,7 @@
 		<dependencies>
 			<dependency id="reactiveui-core" version="[3.99.1-beta]" />
 			<dependency id="reactiveui-xaml" version="[3.99.1-beta]" />
-			<dependency id="reactiveui-testing" version="[3.99.1-beta]" />
+			<dependency id="Rx-WinRT" version="[2.0.20823]" />
 		</dependencies>
 	</metadata>
 </package>
