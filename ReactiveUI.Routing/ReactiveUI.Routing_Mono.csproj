@@ -41,8 +41,6 @@
     <Reference Include="System.Xml" />
     <Reference Include="System.Reactive.Core">
       <HintPath>..\ext\System.Reactive.Core.dll</HintPath>
-    <Reference Include="System.Reactive">
-      <HintPath>..\ext\System.Reactive.dll</HintPath>
     </Reference>
     <Reference Include="System.Reactive.Interfaces">
       <HintPath>..\ext\System.Reactive.Interfaces.dll</HintPath>

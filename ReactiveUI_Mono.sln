@@ -20,6 +20,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Gtk_Mono", "Reac
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Cocoa", "ReactiveUI.Cocoa\ReactiveUI.Cocoa.csproj", "{0913BF79-061F-4667-ADF9-8E6CDA6D1213}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.NLog_Mono", "ReactiveUI.NLog\ReactiveUI.NLog_Mono.csproj", "{67038157-092E-4D72-BAF4-049EB1532264}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -69,17 +71,33 @@ Global
 		{482DE1CC-A08C-49F7-AB36-445DC9724482}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{482DE1CC-A08C-49F7-AB36-445DC9724482}.Release|x86.ActiveCfg = Release|Any CPU
 		{482DE1CC-A08C-49F7-AB36-445DC9724482}.Release|x86.Build.0 = Release|Any CPU
+		{67038157-092E-4D72-BAF4-049EB1532264}.AppStore|Any CPU.ActiveCfg = Debug|Any CPU
+		{67038157-092E-4D72-BAF4-049EB1532264}.AppStore|Any CPU.ActiveCfg = Debug|Any CPU
+		{67038157-092E-4D72-BAF4-049EB1532264}.AppStore|Any CPU.Build.0 = Debug|Any CPU
+		{67038157-092E-4D72-BAF4-049EB1532264}.AppStore|Any CPU.Build.0 = Debug|Any CPU
+		{67038157-092E-4D72-BAF4-049EB1532264}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{67038157-092E-4D72-BAF4-049EB1532264}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{67038157-092E-4D72-BAF4-049EB1532264}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{67038157-092E-4D72-BAF4-049EB1532264}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{67038157-092E-4D72-BAF4-049EB1532264}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
 		{67038157-092E-4D72-BAF4-049EB1532264}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
 		{67038157-092E-4D72-BAF4-049EB1532264}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{67038157-092E-4D72-BAF4-049EB1532264}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{67038157-092E-4D72-BAF4-049EB1532264}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{67038157-092E-4D72-BAF4-049EB1532264}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{67038157-092E-4D72-BAF4-049EB1532264}.Debug|x86.Build.0 = Debug|Any CPU
+		{67038157-092E-4D72-BAF4-049EB1532264}.Debug|x86.Build.0 = Debug|Any CPU
+		{67038157-092E-4D72-BAF4-049EB1532264}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{67038157-092E-4D72-BAF4-049EB1532264}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{67038157-092E-4D72-BAF4-049EB1532264}.Release|Any CPU.Build.0 = Release|Any CPU
+		{67038157-092E-4D72-BAF4-049EB1532264}.Release|Any CPU.Build.0 = Release|Any CPU
+		{67038157-092E-4D72-BAF4-049EB1532264}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{67038157-092E-4D72-BAF4-049EB1532264}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{67038157-092E-4D72-BAF4-049EB1532264}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{67038157-092E-4D72-BAF4-049EB1532264}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{67038157-092E-4D72-BAF4-049EB1532264}.Release|x86.ActiveCfg = Release|Any CPU
+		{67038157-092E-4D72-BAF4-049EB1532264}.Release|x86.ActiveCfg = Release|Any CPU
+		{67038157-092E-4D72-BAF4-049EB1532264}.Release|x86.Build.0 = Release|Any CPU
 		{67038157-092E-4D72-BAF4-049EB1532264}.Release|x86.Build.0 = Release|Any CPU
 		{761AC9BA-4A9C-440C-9B6C-2569978F0610}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{761AC9BA-4A9C-440C-9B6C-2569978F0610}.Debug|Any CPU.Build.0 = Debug|Any CPU
