@@ -1,0 +1,90 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>System.Reactive.Windows.Forms</name>
+    </assembly>
+    <members>
+        <member name="T:System.Reactive.Linq.ControlObservable">
+            <summary>
+            Provides a set of static methods for subscribing to IObservables using Windows Forms controls.
+            </summary>
+        </member>
+        <member name="M:System.Reactive.Linq.ControlObservable.SubscribeOn``1(System.IObservable{``0},System.Windows.Forms.Control)">
+            <summary>
+            Wraps the source sequence in order to run its subscription and unsubscription logic on the Windows Forms message loop associated with the specified control.
+            </summary>
+            <typeparam name="TSource">The type of the elements in the source sequence.</typeparam>
+            <param name="source">Source sequence.</param>
+            <param name="control">Windows Forms control whose associated message loop is used to to perform subscription and unsubscription actions on.</param>
+            <returns>The source sequence whose subscriptions and unsubscriptions happen on the Windows Forms message loop associated with the specified control.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="source"/> or <paramref name="control"/> is null.</exception>
+            <remarks>
+            Only the side-effects of subscribing to the source sequence and disposing subscriptions to the source sequence are run on the specified control.
+            In order to invoke observer callbacks on the specified control, e.g. to render results in a control, use <see cref="M:System.Reactive.Linq.ControlObservable.ObserveOn``1(System.IObservable{``0},System.Windows.Forms.Control)"/>.
+            </remarks>
+        </member>
+        <member name="M:System.Reactive.Linq.ControlObservable.ObserveOn``1(System.IObservable{``0},System.Windows.Forms.Control)">
+            <summary>
+            Wraps the source sequence in order to run its observer callbacks on the Windows Forms message loop associated with the specified control.
+            </summary>
+            <typeparam name="TSource">The type of the elements in the source sequence.</typeparam>
+            <param name="source">Source sequence.</param>
+            <param name="control">Windows Forms control whose associated message loop is used to to notify observers on.</param>
+            <returns>The source sequence whose observations happen on the Windows Forms message loop associated with the specified control.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="source"/> or <paramref name="control"/> is null.</exception>
+        </member>
+        <member name="T:System.Reactive.Concurrency.ControlScheduler">
+            <summary>
+            Represents an object that schedules units of work on the message loop associated with a Windows Forms control.
+            </summary>
+        </member>
+        <member name="M:System.Reactive.Concurrency.ControlScheduler.#ctor(System.Windows.Forms.Control)">
+            <summary>
+            Constructs a ControlScheduler that schedules units of work on the message loop associated with the specified Windows Forms control.
+            </summary>
+            <param name="control">Windows Forms control to get the message loop from.</param>
+            <exception cref="T:System.ArgumentNullException"><paramref name="control"/> is null.</exception>
+            <remarks>
+            This scheduler type is typically used indirectly through the <see cref="M:System.Reactive.Linq.ControlObservable.ObserveOn``1(System.IObservable{``0},System.Windows.Forms.Control)"/> and <see cref="M:System.Reactive.Linq.ControlObservable.SubscribeOn``1(System.IObservable{``0},System.Windows.Forms.Control)"/> method overloads that take a Windows Forms control.
+            </remarks>
+        </member>
+        <member name="M:System.Reactive.Concurrency.ControlScheduler.Schedule``1(``0,System.Func{System.Reactive.Concurrency.IScheduler,``0,System.IDisposable})">
+            <summary>
+            Schedules an action to be executed on the message loop associated with the control.
+            </summary>
+            <typeparam name="TState">The type of the state passed to the scheduled action.</typeparam>
+            <param name="state">State passed to the action to be executed.</param>
+            <param name="action">Action to be executed.</param>
+            <returns>The disposable object used to cancel the scheduled action (best effort).</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="action"/> is null.</exception>
+        </member>
+        <member name="M:System.Reactive.Concurrency.ControlScheduler.Schedule``1(``0,System.TimeSpan,System.Func{System.Reactive.Concurrency.IScheduler,``0,System.IDisposable})">
+            <summary>
+            Schedules an action to be executed after dueTime on the message loop associated with the control, using a Windows Forms Timer object.
+            </summary>
+            <typeparam name="TState">The type of the state passed to the scheduled action.</typeparam>
+            <param name="state">State passed to the action to be executed.</param>
+            <param name="action">Action to be executed.</param>
+            <param name="dueTime">Relative time after which to execute the action.</param>
+            <returns>The disposable object used to cancel the scheduled action (best effort).</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="action"/> is null.</exception>
+        </member>
+        <member name="M:System.Reactive.Concurrency.ControlScheduler.SchedulePeriodic``1(``0,System.TimeSpan,System.Func{``0,``0})">
+            <summary>
+            Schedules a periodic piece of work on the message loop associated with the control, using a Windows Forms Timer object.
+            </summary>
+            <typeparam name="TState">The type of the state passed to the scheduled action.</typeparam>
+            <param name="state">Initial state passed to the action upon the first iteration.</param>
+            <param name="period">Period for running the work periodically.</param>
+            <param name="action">Action to be executed, potentially updating the state.</param>
+            <returns>The disposable object used to cancel the scheduled recurring action (best effort).</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="action"/> is null.</exception>
+            <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="period"/> is less than one millisecond.</exception>
+        </member>
+        <member name="P:System.Reactive.Concurrency.ControlScheduler.Control">
+            <summary>
+            Gets the control associated with the ControlScheduler.
+            </summary>
+        </member>
+    </members>
+</doc>
