@@ -383,6 +383,7 @@ namespace ReactiveUI
                 "ReactiveUI.Xaml",
                 "ReactiveUI.Gtk",
                 "ReactiveUI.Cocoa",
+                "ReactiveUI.NLog",
             };
 
 #if WINRT || SILVERLIGHT

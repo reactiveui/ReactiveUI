@@ -25,6 +25,8 @@
     </SccAuxPath>
     <SccProvider>
     </SccProvider>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
   </PropertyGroup>
   <!-- This property group is only here to support building this project using the 
        MSBuild 3.5 toolset. In order to work correctly with this older toolset, it needs 
@@ -55,7 +57,6 @@
     <DocumentationFile>Bin\Release\SL5\ReactiveUI.Testing_SL5.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-
     <Reference Include="System.Reactive.Core, Version=2.0.20814.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\ext\SL5\System.Reactive.Core.dll</HintPath>
@@ -76,7 +77,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\ext\SL5\System.Reactive.Windows.Threading.dll</HintPath>
     </Reference>
-
     <Reference Include="Microsoft.Reactive.Testing, Version=2.0.20814.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\ext\SL5\Microsoft.Reactive.Testing.dll</HintPath>
@@ -112,6 +112,7 @@
       </FlavorProperties>
     </VisualStudio>
   </ProjectExtensions>
+  <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
