@@ -92,37 +92,39 @@ namespace ReactiveUI
         public IObservable<TVal> AsyncGet(TParam key)
         {
             IObservable<TVal> result;
-            if (_innerCache.TryGet(key, out result)) {
-                this.Log().Debug("Cache hit: '{0}'", key);
-                return result;
-            }
-
-            int myCall = Interlocked.Increment(ref currentCall);
-
+            int myCall;
             var rs = new ReplaySubject<TVal>();
-            _callQueue.Where(x => x == myCall).Subscribe(_ => {
-                this.Log().Debug("Dispatching '{0}'", key);
-                IObservable<TVal> fetched = null;
-                try {
-                    fetched = _fetcher(key);
-                } catch (Exception ex) {
-                    _callQueue.Release();
-                    rs.OnError(ex);
-                    return;
+
+            lock (_innerCache) {
+                if (_innerCache.TryGet(key, out result)) {
+                    this.Log().Debug("Cache hit: '{0}'", key);
+                    return result;
                 }
 
-                fetched.Subscribe(x => {
-                    rs.OnNext(x);
-                }, ex => {
-                    _callQueue.Release();
-                    rs.OnError(ex);
-                }, () => {
-                    _callQueue.Release();
-                    rs.OnCompleted();
-                });
-            });
+                myCall = Interlocked.Increment(ref currentCall);
 
-            lock(_innerCache) {
+                _callQueue.Where(x => x == myCall).Subscribe(_ => {
+                    this.Log().Debug("Dispatching '{0}'", key);
+                    IObservable<TVal> fetched = null;
+                    try {
+                        fetched = _fetcher(key);
+                    } catch (Exception ex) {
+                        _callQueue.Release();
+                        rs.OnError(ex);
+                        return;
+                    }
+
+                    fetched.Subscribe(x => {
+                        rs.OnNext(x);
+                    }, ex => {
+                        _callQueue.Release();
+                        rs.OnError(ex);
+                    }, () => {
+                        _callQueue.Release();
+                        rs.OnCompleted();
+                    });
+                });
+
                 _innerCache.Get(key, rs);
             }
 
