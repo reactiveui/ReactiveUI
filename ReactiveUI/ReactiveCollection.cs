@@ -24,6 +24,8 @@ namespace ReactiveUI
     /// <typeparam name="T">The type of the objects in the collection.</typeparam>
     public class ReactiveCollection<T> : ObservableCollection<T>, IReactiveCollection<T>, IDisposable
     {
+        private ISubject<NotifyCollectionChangedEventArgs> ocChangedEvent;
+
         /// <summary>
         /// Constructs a ReactiveCollection.
         /// </summary>
@@ -53,8 +55,7 @@ namespace ReactiveUI
                 foreach(var v in List) { this.Add(v); }
             }
 
-            var ocChangedEvent = new Subject<NotifyCollectionChangedEventArgs>();
-            CollectionChanged += (o, e) => ocChangedEvent.OnNext(e);
+            ocChangedEvent = new Subject<NotifyCollectionChangedEventArgs>();
 
             _ItemsAdded = ocChangedEvent
                 .Where(x =>
@@ -88,6 +89,8 @@ namespace ReactiveUI
                 cleared
             );
 
+            _CollectionIsEmptyChanged = CollectionCountChanged.Select(x => x == 0).DistinctUntilChanged();
+
             _ItemChanging = new ScheduledSubject<IObservedChange<T, object>>(RxApp.DeferredScheduler);
             _ItemChanged = new ScheduledSubject<IObservedChange<T,object>>(RxApp.DeferredScheduler);
 
@@ -107,6 +110,8 @@ namespace ReactiveUI
                     new ObservedChange<object, object>() {PropertyName = "Items", Sender = this, Value = this}),
                 _ItemsRemoved.Select<T, IObservedChange<object, object>>(x => 
                     new ObservedChange<object, object>() {PropertyName =  "Items", Sender = this, Value = this}),
+                cleared.Select<int, IObservedChange<object, object>>(x =>
+                    new ObservedChange<object, object>() { PropertyName = "Items", Sender = this, Value = this }),
                 _ItemChanged.Select<IObservedChange<T, object>, IObservedChange<object, object>>(x => 
                     new ObservedChange<object, object>() {PropertyName = x.PropertyName, Sender = x.Sender, Value = x.Value}));
 
@@ -124,8 +129,6 @@ namespace ReactiveUI
 
                 removeItemFromPropertyTracking(x);
             });
-
-            IsEmpty = CollectionCountChanged.Select(x => x == 0);
 
 #if DEBUG
             _ItemChanged.Subscribe(x => 
@@ -165,6 +168,8 @@ namespace ReactiveUI
             propertyChangeWatchers[toUntrack].Release();
         }
 
+        #region ItemsAdded
+
         [IgnoreDataMember]
         protected IObservable<T> _ItemsAdded;
 
@@ -186,6 +191,10 @@ namespace ReactiveUI
         public IObservable<T> BeforeItemsAdded {
             get { return _BeforeItemsAdded.Where(_ => areChangeNotificationsEnabled); }
         }
+
+        #endregion
+
+        #region ItemsRemoved
 
         [IgnoreDataMember]
         protected IObservable<T> _ItemsRemoved;
@@ -209,11 +218,15 @@ namespace ReactiveUI
             get { return _BeforeItemsRemoved.Where(_ => areChangeNotificationsEnabled); }
         }
 
+        #endregion
+
         [IgnoreDataMember]
         protected Subject<int> aboutToClear;
 
         [IgnoreDataMember]
         protected Subject<int> cleared;
+
+        #region Count
 
         [IgnoreDataMember]
         protected IObservable<int> _CollectionCountChanging;
@@ -236,6 +249,10 @@ namespace ReactiveUI
         public IObservable<int> CollectionCountChanged {
             get { return _CollectionCountChanged.Where(_ => areChangeNotificationsEnabled); }
         }
+
+        #endregion
+
+        #region ItemChanged
 
         [IgnoreDataMember]
         protected ISubject<IObservedChange<T, object>> _ItemChanging;
@@ -266,6 +283,10 @@ namespace ReactiveUI
             get { return (IObservable<IObservedChange<object, object>>)ItemChanged; }
         }
 
+        #endregion
+
+        #region Changed
+
         [IgnoreDataMember]
         protected IObservable<IObservedChange<object, object>> _Changing;
 
@@ -288,7 +309,28 @@ namespace ReactiveUI
             get { return _Changed.Where(_ => areChangeNotificationsEnabled);  }
         }
 
-        public IObservable<bool> IsEmpty { get; protected set; }
+        #endregion
+        
+        #region IsEmpty
+
+        [IgnoreDataMember]
+        protected IObservable<bool> _CollectionIsEmptyChanged;
+
+        /// <summary>
+        /// Fires whenever the number of items in a collection has changed,
+        /// providing the new Count.
+        /// </summary>
+        public IObservable<bool> CollectionIsEmptyChanged
+        {
+            get { return _CollectionIsEmptyChanged.Where(_ => areChangeNotificationsEnabled); }
+        }
+
+        #endregion
+
+        public bool IsEmpty 
+        { 
+            get { return this.Count == 0; } 
+        }
 
         [field:IgnoreDataMember]
         public event PropertyChangingEventHandler PropertyChanging;
@@ -336,9 +378,11 @@ namespace ReactiveUI
         public void Reset()
         {
 #if !SILVERLIGHT
-            if (changeNotificationsSuppressed == 0 && CollectionChanged != null) {
-                CollectionChanged.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
-            }
+            this.OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+            //if (areChangeNotificationsEnabled && CollectionChanged != null)
+            //{
+            //    CollectionChanged.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+            //}
 #else
             // XXX: SL4 and WP7 hate on this
 #endif
@@ -347,13 +391,28 @@ namespace ReactiveUI
         protected override void InsertItem(int index, T item)
         {
             _BeforeItemsAdded.OnNext(item);
+
+            bool fireIsEmpty = this.Count == 0;
+
             base.InsertItem(index, item);
+
+            if (fireIsEmpty)
+            {
+                this.OnPropertyChanged(new PropertyChangedEventArgs("IsEmpty"));
+            }
         }
 
         protected override void RemoveItem(int index)
         {
             _BeforeItemsRemoved.OnNext(this[index]);
+
             base.RemoveItem(index);
+
+            bool fireIsEmpty = this.Count == 0;
+            if (fireIsEmpty)
+            {
+                this.OnPropertyChanged(new PropertyChangedEventArgs("IsEmpty"));
+            }
         }
 
         protected override void SetItem(int index, T item)
@@ -371,6 +430,8 @@ namespace ReactiveUI
             // we have to release the watchers or else we leak them.
             releasePropChangeWatchers();
 
+            bool fireIsEmpty = this.Count > 0;
+
             // N.B: This is less efficient, but Clear will always trigger the 
             // reset, even if SuppressChangeNotifications is enabled.
             using(SuppressChangeNotifications()) {
@@ -379,7 +440,13 @@ namespace ReactiveUI
                 }
             }
 
-            Reset();
+            base.ClearItems();
+
+            if (fireIsEmpty)
+            {
+                this.OnPropertyChanged(new PropertyChangedEventArgs("IsEmpty"));
+            }
+                        
             cleared.OnNext(0);
         }
 
@@ -403,7 +470,7 @@ namespace ReactiveUI
             Interlocked.Increment(ref changeNotificationsSuppressed);
             return Disposable.Create(() => {
                 Interlocked.Decrement(ref changeNotificationsSuppressed);
-                RxApp.DeferredScheduler.Schedule(() => Reset());
+                //RxApp.DeferredScheduler.Schedule(() => Reset());
             });
         }
 
@@ -453,19 +520,29 @@ namespace ReactiveUI
 
         protected override void OnCollectionChanged(NotifyCollectionChangedEventArgs e)
         {
-            NotifyCollectionChangedEventHandler handler = CollectionChanged;
+            ocChangedEvent.OnNext(e);
 
-            if (handler != null) {
-                handler(this, e);
+            if (areChangeNotificationsEnabled)
+            {
+                NotifyCollectionChangedEventHandler handler = CollectionChanged;
+
+                if (handler != null)
+                {
+                    handler(this, e);
+                }
             }
         }
 
         protected override void OnPropertyChanged(PropertyChangedEventArgs e)
         {
-            PropertyChangedEventHandler handler = _propertyChangedEventHandler;
+            if (areChangeNotificationsEnabled)
+            {
+                PropertyChangedEventHandler handler = _propertyChangedEventHandler;
 
-            if (handler != null) {
-                handler(this, e);
+                if (handler != null)
+                {
+                    handler(this, e);
+                }
             }
         }
 #endif
