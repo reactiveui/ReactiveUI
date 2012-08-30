@@ -499,59 +499,66 @@ namespace ReactiveUI
 
     public class ScheduledSubject<T> : ISubject<T>
     {
-        public ScheduledSubject(IScheduler scheduler, IObserver<T> defaultObserver = null)
-        {
+	    public ScheduledSubject(IScheduler scheduler, IObserver<T> defaultObserver = null, ISubject<T> internalSubject = null)
+	    {
             _scheduler = scheduler;
             _defaultObserver = defaultObserver;
-
-            if (defaultObserver != null) {
+            _subject = internalSubject ?? new Subject<T>();
+ 
+            if (defaultObserver != null) 
+            {
                 _defaultObserverSub = _subject.ObserveOn(_scheduler).Subscribe(_defaultObserver);
             }
         }
-
-        readonly IObserver<T> _defaultObserver;
+         
+        readonly IObserver<T> _defaultObserver; 
         readonly IScheduler _scheduler;
-        readonly Subject<T> _subject = new Subject<T>();
-
+        readonly ISubject<T> _subject;
+ 
         int _observerRefCount = 0;
+ 
         IDisposable _defaultObserverSub;
-
+ 
         public void Dispose()
         {
-            _subject.Dispose();
+            IDisposable disp = _subject as IDisposable;
+            if (disp != null)
+            {
+                disp.Dispose();
+            }
         }
-
+        
         public void OnCompleted()
         {
             _subject.OnCompleted();
         }
-
-        public void OnError(Exception error)
+  
+        public void OnError(Exception error) 
         {
-            _subject.OnError(error);
+             _subject.OnError(error);
         }
 
         public void OnNext(T value)
-        {
-            _subject.OnNext(value);
+        { 
+            _subject.OnNext(value); 
         }
-
+ 
         public IDisposable Subscribe(IObserver<T> observer)
-        {
-            if (_defaultObserverSub != null) {
+        { 
+            if (_defaultObserverSub != null) 
+            { 
                 _defaultObserverSub.Dispose();
                 _defaultObserverSub = null;
-            }
-
+            }              
             Interlocked.Increment(ref _observerRefCount);
-
-            return new CompositeDisposable(
-                _subject.ObserveOn(_scheduler).Subscribe(observer),
-                Disposable.Create(() => {
-                    if (Interlocked.Decrement(ref _observerRefCount) <= 0 && _defaultObserver != null) {
-                        _defaultObserverSub = _subject.ObserveOn(_scheduler).Subscribe(_defaultObserver);
-                    }
-                }));
+ 
+            return new CompositeDisposable( 
+                _subject.ObserveOn(_scheduler).Subscribe(observer), 
+                Disposable.Create(() => { 
+                    if (Interlocked.Decrement(ref _observerRefCount) <= 0 && _defaultObserver != null) { 
+                        _defaultObserverSub = _subject.ObserveOn(_scheduler).Subscribe(_defaultObserver); 
+                    } 
+                })); 
         }
     }
 
