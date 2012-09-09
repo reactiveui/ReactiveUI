@@ -43,13 +43,13 @@ namespace ReactiveUI.Routing
             }
 
             // IFooBarView that implements IViewFor
-            var typeToFind = interfaceifyTypeName(ViewModelToViewFunc(typeof(T).FullName));
+            var typeToFind = interfaceifyTypeName(ViewModelToViewFunc(viewModel.GetType().AssemblyQualifiedName));
             try {
                 var type = Reflection.ReallyFindType(typeToFind, true);
 
                 var ret = RxApp.GetService(type, key) as IViewFor;
                 if (ret != null) return ret;
-            } catch (TypeLoadException ex) {
+            } catch (Exception ex) {
                 LogHost.Default.DebugException("Couldn't instantiate " + typeToFind, ex);
             }
 
@@ -57,10 +57,10 @@ namespace ReactiveUI.Routing
 
             // IViewFor<IFooBarViewModel>
             try {
-                var type = Reflection.ReallyFindType(interfaceifyTypeName(typeof(T).FullName), true);
+                var type = Reflection.ReallyFindType(interfaceifyTypeName(viewModel.GetType().AssemblyQualifiedName), true);
                 var ret =  RxApp.GetService(viewType.MakeGenericType(type), key) as IViewFor;
                 if (ret != null) return ret;
-            } catch (TypeLoadException ex) {
+            } catch (Exception ex) {
                 LogHost.Default.DebugException("Couldn't instantiate View via pure interface type", ex);
             }
 
@@ -70,9 +70,12 @@ namespace ReactiveUI.Routing
 
         static string interfaceifyTypeName(string typeName)
         {
-            var parts = typeName.Split('.');
+            var typeVsAssembly = typeName.Split(',');
+            var parts = typeVsAssembly[0].Split('.');
             parts[parts.Length - 1] = "I" + parts[parts.Length - 1];
-            return String.Join(".", parts, 0, parts.Length);
+
+            var newType = String.Join(".", parts, 0, parts.Length);
+            return newType + "," + String.Join(",", typeVsAssembly.Skip(1));
         }
     }
 
