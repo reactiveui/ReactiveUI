@@ -57,7 +57,8 @@ namespace ReactiveUI.Routing
 
             // IViewFor<IFooBarViewModel>
             try {
-                var type = Reflection.ReallyFindType(interfaceifyTypeName(viewModel.GetType().AssemblyQualifiedName), true);
+                var ifn = interfaceifyTypeName(viewModel.GetType().AssemblyQualifiedName);
+                var type = Reflection.ReallyFindType(ifn, true);
                 var ret =  RxApp.GetService(viewType.MakeGenericType(type), key) as IViewFor;
                 if (ret != null) return ret;
             } catch (Exception ex) {
