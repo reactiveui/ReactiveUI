@@ -22,7 +22,10 @@ namespace ReactiveUI.Xaml
         public void Register()
         {
 #if !MONO
+#if !WINRT
             RxApp.Register(typeof (DependencyObjectObservableForProperty), typeof (ICreatesObservableForProperty));
+#endif
+
 			RxApp.Register(typeof (XamlDefaultPropertyBinding), typeof (IDefaultPropertyBindingProvider));
             RxApp.Register(typeof (CommandBinderImplementation), typeof (ICommandBinderImplementation));
             RxApp.Register(typeof (CreatesCommandBindingViaCommandParameter), typeof(ICreatesCommandBinding));
