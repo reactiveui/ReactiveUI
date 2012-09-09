@@ -29,14 +29,14 @@ namespace ReactiveUI.Routing
         /// <summary>
         /// The Router associated with this View Host.
         /// </summary>
-        public RoutingState Router {
-            get { return (RoutingState)GetValue(RouterProperty); }
+        public IRoutingState Router {
+            get { return (IRoutingState)GetValue(RouterProperty); }
             set { SetValue(RouterProperty, value); }
         }
         public static readonly DependencyProperty RouterProperty =
-            DependencyProperty.Register("Router", typeof(RoutingState), typeof(RoutedViewHost), new PropertyMetadata(null, routerChanged));
+            DependencyProperty.Register("Router", typeof(IRoutingState), typeof(RoutedViewHost), new PropertyMetadata(null, routerChanged));
 
-        readonly Subject<RoutingState> routerChange;
+        readonly Subject<IRoutingState> routerChange;
 
         /// <summary>
         /// This content is displayed whenever there is no page currently
@@ -51,7 +51,9 @@ namespace ReactiveUI.Routing
 
         public RoutedViewHost()
         {
-            routerChange = new Subject<RoutingState>();
+            HorizontalContentAlignment = HorizontalAlignment.Stretch;
+            VerticalContentAlignment = VerticalAlignment.Stretch;
+            routerChange = new Subject<IRoutingState>();
 
             routerChange.Subscribe(x => {
                 if (_inner != null) {
