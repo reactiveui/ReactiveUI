@@ -307,7 +307,7 @@ namespace ReactiveUI
 
         internal static string[] getDefaultViewPropChain(object view, string[] vmPropChain)
         {
-            var vmPropertyName = vmPropChain.First();
+            var vmPropertyName = vmPropChain.Last();
             var control = GetValueFetcherForProperty(view.GetType(), vmPropertyName)(view);
 
             if (control == null) {
