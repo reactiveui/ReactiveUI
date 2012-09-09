@@ -266,6 +266,8 @@ namespace ReactiveUI
     #else
             AppDomain.CurrentDomain.GetAssemblies().ForEach(x => Console.WriteLine(x.FullName));
 
+            var ret = Type.GetType(type, false);
+            if (ret != null) return ret;
             return AppDomain.CurrentDomain.GetAssemblies()
                 .SelectMany(x => x.GetTypes())
                 .Where(x => x.FullName.Equals(type, StringComparison.InvariantCulture))
