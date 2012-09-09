@@ -71,7 +71,13 @@ namespace ReactiveUI
             var namespaces = attemptToEarlyLoadReactiveUIDLLs();
 
             namespaces.ForEach(ns => {
-                var registerTypeClass = Reflection.ReallyFindType(ns + ".ServiceLocationRegistration", false);
+                var assm = typeof (RxApp).GetTypeInfo().Assembly;
+                var fullName = typeof (RxApp).AssemblyQualifiedName;
+                var targetType = ns + ".ServiceLocationRegistration";
+                fullName = fullName.Replace("ReactiveUI.RxApp", targetType);
+                fullName = fullName.Replace(assm.FullName, assm.FullName.Replace("ReactiveUI", ns));
+
+                var registerTypeClass = Reflection.ReallyFindType(fullName, false);
                 if (registerTypeClass != null) {
                     var registerer = (IWantsToRegisterStuff) Activator.CreateInstance(registerTypeClass);
                     registerer.Register();
