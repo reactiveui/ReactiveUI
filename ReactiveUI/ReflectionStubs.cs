@@ -8,37 +8,57 @@ using System.Threading.Tasks;
 namespace ReactiveUI
 {
     internal enum BindingFlags {
-        Public, NonPublic, Instance, Static, FlattenHierarchy
+        Public = 1, 
+        NonPublic = 1 << 1, 
+        Instance = 1 << 2, 
+        Static = 1 << 3, 
+        FlattenHierarchy = 1 << 4
     }
 
     internal static class ReflectionStubs
     {
-        public static FieldInfo GetField(this Type This, string name, BindingFlags dontcare = default(BindingFlags))
+        public static FieldInfo GetField(this Type This, string name, BindingFlags flags = default(BindingFlags))
         {
-            return This.GetTypeInfo().GetDeclaredField(name);
+            var ti = This.GetTypeInfo();
+            var ret = ti.GetDeclaredField(name);
+            if (ret != null || !flags.HasFlag(BindingFlags.FlattenHierarchy) || ti.BaseType == null) return ret;
+
+            return ti.BaseType.GetField(name, flags);
         }
 
-        public static PropertyInfo GetProperty(this Type This, string name, BindingFlags dontcare = default(BindingFlags))
+        public static PropertyInfo GetProperty(this Type This, string name, BindingFlags flags = default(BindingFlags))
         {
-            return This.GetTypeInfo().GetDeclaredProperty(name);
+            var ti = This.GetTypeInfo();
+            var ret = ti.GetDeclaredProperty(name);
+            if (ret != null || !flags.HasFlag(BindingFlags.FlattenHierarchy) || ti.BaseType == null) return ret;
+
+            return ti.BaseType.GetProperty(name, flags);
         }
 
-        public static EventInfo GetEvent(this Type This, string name, BindingFlags dontcare)
+        public static EventInfo GetEvent(this Type This, string name, BindingFlags flags = default(BindingFlags))
         {
-            return This.GetTypeInfo().GetDeclaredEvent(name);
+            var ti = This.GetTypeInfo();
+            var ret = ti.GetDeclaredEvent(name);
+            if (ret != null || !flags.HasFlag(BindingFlags.FlattenHierarchy) || ti.BaseType == null) return ret;
+
+            return ti.BaseType.GetEvent(name, flags);
         }
 
-        public static IEnumerable<PropertyInfo> GetProperties(this Type This, BindingFlags dontcare)
+        public static IEnumerable<PropertyInfo> GetProperties(this Type This, BindingFlags flags = default(BindingFlags))
         {
             return This.GetTypeInfo().DeclaredProperties;
         }
 
-        public static MethodInfo GetMethod(this Type This, string methodName, Type[] paramTypes)
+        public static MethodInfo GetMethod(this Type This, string methodName, Type[] paramTypes, BindingFlags flags = default(BindingFlags))
         {
-            return This.GetTypeInfo().GetDeclaredMethods(methodName)
+            var ti = This.GetTypeInfo();
+            var ret = ti.GetDeclaredMethods(methodName)
                 .FirstOrDefault(x => {
                     return paramTypes.Zip(x.GetParameters().Select(y => y.ParameterType), (l, r) => l == r).All(y => y != false);
                 });
+
+            if (ret != null || !flags.HasFlag(BindingFlags.FlattenHierarchy) || ti.BaseType == null) return ret;
+            return ti.BaseType.GetMethod(methodName, paramTypes, flags);
         }
 
         public static IEnumerable<MethodInfo> GetMethods(this Type This)
