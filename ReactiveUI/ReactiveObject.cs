@@ -61,13 +61,11 @@ namespace ReactiveUI
         [IgnoreDataMember]
         protected Lazy<PropertyInfo[]> allPublicProperties;
 
-        [IgnoreDataMember] 
-        readonly Subject<IObservedChange<object, object>> changingSubject = 
-            new Subject<IObservedChange<object, object>>();
+        [IgnoreDataMember]
+        Subject<IObservedChange<object, object>> changingSubject;
 
         [IgnoreDataMember]
-        readonly Subject<IObservedChange<object, object>> changedSubject = 
-            new Subject<IObservedChange<object, object>>();
+        Subject<IObservedChange<object, object>> changedSubject;
 
         [IgnoreDataMember]
         long changeNotificationsSuppressed = 0;
@@ -86,6 +84,8 @@ namespace ReactiveUI
 
         void setupRxObj()
         {
+            changingSubject = new Subject<IObservedChange<object, object>>();
+            changedSubject = new Subject<IObservedChange<object, object>>();
             allPublicProperties = new Lazy<PropertyInfo[]>(() =>
                 GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance).ToArray());
         }
@@ -111,7 +111,7 @@ namespace ReactiveUI
             Contract.Requires(propertyName != null);
 
             verifyPropertyName(propertyName);
-            if (!areChangeNotificationsEnabled)
+            if (!areChangeNotificationsEnabled || changingSubject == null)
                 return;
 
             var handler = this.PropertyChanging;
@@ -132,7 +132,7 @@ namespace ReactiveUI
             verifyPropertyName(propertyName);
             this.Log().Debug("{0:X}.{1} changed", this.GetHashCode(), propertyName);
 
-            if (!areChangeNotificationsEnabled) {
+            if (!areChangeNotificationsEnabled || changedSubject == null) {
                 this.Log().Debug("Suppressed change");
                 return;
             }
