@@ -139,7 +139,7 @@ namespace ReactiveUI.Xaml
             };
 
             return propsToFind.All(x => {
-                var pi = type.GetProperty(x.Name);
+                var pi = type.GetProperty(x.Name, BindingFlags.FlattenHierarchy);
                 return pi != null && x.TargetType.IsAssignableFrom(pi.PropertyType);
             }) ? 5 : 0;
         }
