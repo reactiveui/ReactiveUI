@@ -308,7 +308,13 @@ namespace ReactiveUI
         internal static string[] getDefaultViewPropChain(object view, string[] vmPropChain)
         {
             var vmPropertyName = vmPropChain.Last();
-            var control = GetValueFetcherForProperty(view.GetType(), vmPropertyName)(view);
+            var getter = GetValueFetcherForProperty(view.GetType(), vmPropertyName);
+            if (getter == null) {
+                throw new Exception(String.Format("Tried to bind to control but it wasn't present on the object: {0}.{1}",
+                    view.GetType().FullName, vmPropertyName));
+            }
+
+            var control = getter(view);
 
             if (control == null) {
                 throw new Exception(String.Format("Tried to bind to control but it was null: {0}.{1}", view.GetType().FullName,
