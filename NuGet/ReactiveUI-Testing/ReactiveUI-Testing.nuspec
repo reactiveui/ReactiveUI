@@ -2,7 +2,7 @@
 <package xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
 	<metadata xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
 		<id>reactiveui-testing</id>
-		<version>3.99.3-beta</version>
+		<version>3.99.4-beta</version>
 		<description>A library to aid in writing unit tests for ReactiveUI projects</description>
 		<authors>Paul Betts</authors>
 		<projectUrl>http://www.reactiveui.net</projectUrl>
@@ -11,7 +11,7 @@
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 
 		<dependencies>
-			<dependency id="reactiveui-core" version="[3.99.3-beta]" />
+			<dependency id="reactiveui-core" version="[3.99.4-beta]" />
 			<dependency id="Rx-Testing" version="[2.0.20823]" />
 		</dependencies>
 	</metadata>
