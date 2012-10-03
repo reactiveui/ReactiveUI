@@ -175,12 +175,12 @@ namespace ReactiveUI
 
             if (stringifier != null) {
                 return This.Do(
-                    x => klass.Log().Info("{0} OnNext: {1}", stringifier(x)),
+                    x => klass.Log().Info("{0} OnNext: {1}", message, stringifier(x)),
                     ex => klass.Log().WarnException(message + " " + "OnError", ex),
                     () => klass.Log().Info("{0} OnCompleted", message));
             } else {
                 return This.Do(
-                    x => klass.Log().Info("{0} OnNext: {1}", x),
+                    x => klass.Log().Info("{0} OnNext: {1}", message, x),
                     ex => klass.Log().WarnException(message + " " + "OnError", ex),
                     () => klass.Log().Info("{0} OnCompleted", message));
             }
