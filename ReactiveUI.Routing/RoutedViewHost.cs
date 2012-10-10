@@ -81,6 +81,5 @@ namespace ReactiveUI.Routing
             var This = ((RoutedViewHost) dependencyObject);
             This.routerChange.OnNext(This.Router);
         }
-
     }
 }

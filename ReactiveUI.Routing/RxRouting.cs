@@ -14,8 +14,7 @@ namespace ReactiveUI.Routing
 
         static RxRouting()
         {
-            ViewModelToViewFunc = (vm) => 
-                vm.Replace("ViewModel", "View");
+            ViewModelToViewFunc = (vm) => interfaceifyTypeName(vm.Replace("ViewModel", "View"));
         }
 
         /// <summary>
@@ -42,8 +41,8 @@ namespace ReactiveUI.Routing
                 key = ((ViewContractAttribute) attrs.First()).Contract;
             }
 
-            // IFooBarView that implements IViewFor
-            var typeToFind = interfaceifyTypeName(ViewModelToViewFunc(viewModel.GetType().AssemblyQualifiedName));
+            // IFooBarView that implements IViewFor (or custom ViewModelToViewFunc)
+            var typeToFind = ViewModelToViewFunc(viewModel.GetType().AssemblyQualifiedName);
             try {
                 var type = Reflection.ReallyFindType(typeToFind, true);
 
