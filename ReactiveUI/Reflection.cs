@@ -23,7 +23,8 @@ namespace ReactiveUI
                 if (fi != null) {
                     return (fi.GetValue);
                 }
-                var pi = (x.Item1).GetProperty(x.Item2, BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy);
+
+                var pi = getSafeProperty(x.Item1, x.Item2, BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy);
                 if (pi != null) {
                     return (y => pi.GetValue(y, null));
                 }
@@ -37,7 +38,8 @@ namespace ReactiveUI
                 if (fi != null) {
                     return (fi.SetValue);
                 }
-                var pi = (x.Item1).GetProperty(x.Item2, BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy);
+
+                var pi = getSafeProperty(x.Item1, x.Item2, BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy);
                 if (pi != null) {
                     return ((y,v) => pi.SetValue(y, v, null));
                 }
@@ -58,7 +60,8 @@ namespace ReactiveUI
                 if (fi != null) {
                     return (fi.GetValue);
                 }
-                var pi = (x.Item1).GetProperty(x.Item2, BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy);
+
+                var pi = getSafeProperty(x.Item1, x.Item2, BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy);
                 if (pi != null) {
                     return (y => pi.GetValue(y, null));
                 }
@@ -72,7 +75,8 @@ namespace ReactiveUI
                 if (fi != null) {
                     return (fi.SetValue);
                 }
-                var pi = (x.Item1).GetProperty(x.Item2, BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy);
+
+                var pi = getSafeProperty(x.Item1, x.Item2, BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy);
                 if (pi != null) {
                     return ((y,v) => pi.SetValue(y, v, null));
                 }
@@ -269,7 +273,14 @@ namespace ReactiveUI
             var ret = Type.GetType(type, false);
             if (ret != null) return ret;
             return AppDomain.CurrentDomain.GetAssemblies()
-                .SelectMany(x => x.GetTypes())
+                .SelectMany(x => {
+                    try {
+                        return x.GetTypes();
+                    } catch (Exception ex) {
+                        LogHost.Default.WarnException("Couldn't load types for " + x.FullName, ex);
+                        return Enumerable.Empty<Type>();
+                    }
+                })
                 .Where(x => x.FullName.Equals(type, StringComparison.InvariantCulture))
                 .FirstOrDefault();
     #endif
@@ -303,6 +314,17 @@ namespace ReactiveUI
             return view.WhenAny(x => x.ViewModel, x => x.Value)
                 .Where(x => x != null)
                 .SelectMany(x => ((TViewModel)x).WhenAny(property, y => y.Value));
+        }
+
+        static PropertyInfo getSafeProperty(Type type, string propertyName, BindingFlags flags)
+        {
+            try {
+                return type.GetProperty(propertyName, flags);
+            } 
+            catch (AmbiguousMatchException _) {
+                return type.GetProperties(flags).First(pi => pi.Name == propertyName);
+            }
+
         }
 
         internal static string[] getDefaultViewPropChain(object view, string[] vmPropChain)

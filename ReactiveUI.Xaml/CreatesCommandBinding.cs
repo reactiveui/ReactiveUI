@@ -139,8 +139,8 @@ namespace ReactiveUI.Xaml
             };
 
             return propsToFind.All(x => {
-                var pi = type.GetProperty(x.Name, BindingFlags.FlattenHierarchy);
-                return pi != null && x.TargetType.IsAssignableFrom(pi.PropertyType);
+                var pi = Reflection.GetValueFetcherForProperty(type, x.Name);
+                return pi != null;
             }) ? 5 : 0;
         }
 
