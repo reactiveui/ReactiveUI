@@ -37,14 +37,14 @@ namespace ReactiveUI
                 if (fi != null) {
                     return (fi.SetValue);
                 }
-                var pi = (x.Item1).GetProperty(x.Item2, BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy);
+                var pi = GetSafeProperty(x, BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy);
                 if (pi != null) {
                     return ((y,v) => pi.SetValue(y, v, null));
                 }
 
                 return null;
             }, 15);
-    #else
+#else
         static readonly MemoizingMRUCache<Tuple<Type, string>, FieldInfo> backingFieldInfoTypeCache = 
             new MemoizingMRUCache<Tuple<Type, string>, FieldInfo>((x, _) => {
                 var fieldName = RxApp.GetFieldNameForProperty(x.Item2);
@@ -58,13 +58,24 @@ namespace ReactiveUI
                 if (fi != null) {
                     return (fi.GetValue);
                 }
-                var pi = (x.Item1).GetProperty(x.Item2, BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy);
+                var pi = GetSafeProperty(x, BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy);
                 if (pi != null) {
                     return (y => pi.GetValue(y, null));
                 }
 
                 return null;
             }, 50);
+
+        static PropertyInfo GetSafeProperty(Tuple<Type, string> x, BindingFlags flags)
+        {
+            try {
+                return (x.Item1).GetProperty(x.Item2, flags);
+            } 
+            catch (AmbiguousMatchException _) {
+                return (x.Item1).GetProperties(flags).First(pi => pi.Name == x.Item2);
+            }
+
+        }
 
         static readonly MemoizingMRUCache<Tuple<Type, string>, Action<object, object>> propWriterCache = 
             new MemoizingMRUCache<Tuple<Type, string>, Action<object, object>>((x,_) => {
