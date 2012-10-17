@@ -44,7 +44,7 @@ namespace ReactiveUI
 
                 return null;
             }, 15);
-#else
+    #else
         static readonly MemoizingMRUCache<Tuple<Type, string>, FieldInfo> backingFieldInfoTypeCache = 
             new MemoizingMRUCache<Tuple<Type, string>, FieldInfo>((x, _) => {
                 var fieldName = RxApp.GetFieldNameForProperty(x.Item2);
@@ -58,7 +58,7 @@ namespace ReactiveUI
                 if (fi != null) {
                     return (fi.GetValue);
                 }
-                var pi = GetSafeProperty(x, BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy);
+                var pi = getSafeProperty(x.Item1, x.Item2, BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy);
                 if (pi != null) {
                     return (y => pi.GetValue(y, null));
                 }
@@ -66,13 +66,12 @@ namespace ReactiveUI
                 return null;
             }, 50);
 
-        static PropertyInfo GetSafeProperty(Tuple<Type, string> x, BindingFlags flags)
+        static PropertyInfo getSafeProperty(Type type, string name, BindingFlags flags)
         {
             try {
-                return (x.Item1).GetProperty(x.Item2, flags);
-            } 
-            catch (AmbiguousMatchException _) {
-                return (x.Item1).GetProperties(flags).First(pi => pi.Name == x.Item2);
+                return type.GetProperty(name, flags);
+            } catch (AmbiguousMatchException) {
+                return type.GetProperties(flags).First(pi => pi.Name == name);
             }
 
         }
