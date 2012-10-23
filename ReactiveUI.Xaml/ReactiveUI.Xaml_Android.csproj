@@ -3,9 +3,9 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.30703</ProductVersion>
+    <ProductVersion>10.0.0</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{761AC9BA-4A9C-440C-9B6C-2569978F0610}</ProjectGuid>
+    <ProjectGuid>{F61AC9BA-4A9C-440C-9B6C-2569978F0610}</ProjectGuid>
     <ProjectTypeGuids>{EFBA0AD7-5A72-4C68-AF49-83D382785DCF};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
@@ -143,7 +143,7 @@
       <Name>System.Reactive.Providers2</Name>
     </ProjectReference>
     <ProjectReference Include="..\ReactiveUI\ReactiveUI_Android.csproj">
-      <Project>{292A477B-BB94-43C1-984E-E177EF9FEDB7}</Project>
+      <Project>{F92A477B-BB94-43C1-984E-E177EF9FEDB7}</Project>
       <Name>ReactiveUI_Android</Name>
     </ProjectReference>
   </ItemGroup>
