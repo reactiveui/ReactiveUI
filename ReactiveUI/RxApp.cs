@@ -391,6 +391,7 @@ namespace ReactiveUI
                 "ReactiveUI.Xaml",
                 "ReactiveUI.Gtk",
                 "ReactiveUI.Cocoa",
+                "ReactiveUI.Android",
                 "ReactiveUI.NLog",
             };
 
