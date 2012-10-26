@@ -25,8 +25,7 @@ namespace ReactiveUI.Xaml
 #if !WINRT
             RxApp.Register(typeof (DependencyObjectObservableForProperty), typeof (ICreatesObservableForProperty));
 #endif
-
-			RxApp.Register(typeof (XamlDefaultPropertyBinding), typeof (IDefaultPropertyBindingProvider));
+            RxApp.Register(typeof (XamlDefaultPropertyBinding), typeof (IDefaultPropertyBindingProvider));
             RxApp.Register(typeof (CommandBinderImplementation), typeof (ICommandBinderImplementation));
             RxApp.Register(typeof (CreatesCommandBindingViaCommandParameter), typeof(ICreatesCommandBinding));
             RxApp.Register(typeof (CreatesCommandBindingViaEvent), typeof(ICreatesCommandBinding));
