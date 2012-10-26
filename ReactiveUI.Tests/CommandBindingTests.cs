@@ -13,6 +13,34 @@ using Xunit;
 
 namespace ReactiveUI.Tests
 {
+    public class FakeViewModel : ReactiveObject
+    {
+        public ReactiveCommand Cmd { get; protected set; }
+
+        public FakeViewModel()
+        {
+            Cmd = new ReactiveCommand();
+        }
+    }
+
+    public class FakeView : IViewFor<FakeViewModel>
+    {
+        public TextBox TheTextBox { get; protected set; }
+
+        public FakeView()
+        {
+            TheTextBox = new TextBox();
+            ViewModel = new FakeViewModel();
+        }
+
+        object IViewFor.ViewModel {
+            get { return ViewModel; }
+            set { ViewModel = (FakeViewModel)value; }
+        }
+
+        public FakeViewModel ViewModel { get; set; }
+    }
+
     public class CreatesCommandBindingTests
     {
         [Fact]
@@ -59,6 +87,14 @@ namespace ReactiveUI.Tests
             input.InpcProperty = new TestFixture();
             Assert.False(wasCalled);
         }
+
+        [Fact]
+        public void EventBinderBindsToExplicitInheritedEvent()
+        {
+            var fixture = new FakeView();
+            fixture.BindCommand(fixture.ViewModel, x => x.Cmd, x => x.TheTextBox, "MouseDown");
+        }
+
 
 #if !SILVERLIGHT
         [Fact]
