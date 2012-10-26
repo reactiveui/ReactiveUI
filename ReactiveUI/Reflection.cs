@@ -37,7 +37,7 @@ namespace ReactiveUI
                 if (fi != null) {
                     return (fi.SetValue);
                 }
-                var pi = (x.Item1).GetProperty(x.Item2, BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy);
+                var pi = GetSafeProperty(x, BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy);
                 if (pi != null) {
                     return ((y,v) => pi.SetValue(y, v, null));
                 }
@@ -58,13 +58,23 @@ namespace ReactiveUI
                 if (fi != null) {
                     return (fi.GetValue);
                 }
-                var pi = (x.Item1).GetProperty(x.Item2, BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy);
+                var pi = getSafeProperty(x.Item1, x.Item2, BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy);
                 if (pi != null) {
                     return (y => pi.GetValue(y, null));
                 }
 
                 return null;
             }, 50);
+
+        static PropertyInfo getSafeProperty(Type type, string name, BindingFlags flags)
+        {
+            try {
+                return type.GetProperty(name, flags);
+            } catch (AmbiguousMatchException) {
+                return type.GetProperties(flags).First(pi => pi.Name == name);
+            }
+
+        }
 
         static readonly MemoizingMRUCache<Tuple<Type, string>, Action<object, object>> propWriterCache = 
             new MemoizingMRUCache<Tuple<Type, string>, Action<object, object>>((x,_) => {
