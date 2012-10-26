@@ -30,6 +30,7 @@ namespace ReactiveUI.Xaml
         public ReactiveCommand(IObservable<bool> canExecute = null, IScheduler scheduler = null)
         {
             canExecute = canExecute ?? Observable.Return(true).Concat(Observable.Never<bool>());
+            canExecute = canExecute.ObserveOn(scheduler ?? RxApp.DeferredScheduler);
             commonCtor(scheduler);
 
             var exSubject = new ScheduledSubject<Exception>(RxApp.DeferredScheduler, RxApp.DefaultExceptionHandler);
