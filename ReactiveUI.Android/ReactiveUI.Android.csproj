@@ -75,4 +75,5 @@
   <ItemGroup>
     <Compile Include="AndroidUIScheduler.cs" />
   </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath)\Novell\Novell.MonoDroid.CSharp.targets" />
 </Project>
