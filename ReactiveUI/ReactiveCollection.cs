@@ -59,7 +59,7 @@ namespace ReactiveUI
             _inner = _inner ?? new List<T>();
 
             _changing = new ScheduledSubject<NotifyCollectionChangedEventArgs>(scheduler);
-            _changing.Where(_ => CollectionChanged != null && _suppressionRefCount == 0).Subscribe(x => CollectionChanged(this, x));
+            _changing.Where(_ => CollectionChanging != null && _suppressionRefCount == 0).Subscribe(x => CollectionChanging(this, x));
 
             _changed = new ScheduledSubject<NotifyCollectionChangedEventArgs>(scheduler);
             _changed.Where(_ => CollectionChanged != null && _suppressionRefCount == 0).Subscribe(x => CollectionChanged(this, x));
@@ -114,7 +114,7 @@ namespace ReactiveUI
             }
 
             var item = _inner[index];
-            var ea = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item, index);
+            var ea = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, item, index);
 
             _changing.OnNext(ea);
             if (_beforeItemsRemoved.IsValueCreated) _beforeItemsRemoved.Value.OnNext(item);
@@ -146,7 +146,7 @@ namespace ReactiveUI
             }
 
             _inner[index] = item;
-            _changing.OnNext(ea);
+            _changed.OnNext(ea);
         }
 
         protected override void ClearItems()
