@@ -1325,6 +1325,12 @@
             </summary>
             <typeparam name="TSource">Type of the resulting sequence's elements.</typeparam>
         </member>
+        <member name="T:System.Reactive.IProducer`1">
+            <summary>
+            Interface with variance annotation; allows for better type checking when detecting capabilities in SubscribeSafe.
+            </summary>
+            <typeparam name="TSource">Type of the resulting sequence's elements.</typeparam>
+        </member>
         <member name="M:System.Reactive.Producer`1.Subscribe(System.IObserver{`0})">
             <summary>
             Publicly visible Subscribe method.

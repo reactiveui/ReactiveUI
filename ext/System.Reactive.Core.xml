@@ -69,6 +69,70 @@
             <returns>IDisposable object used to unsubscribe from the observable sequence.</returns>
             <exception cref="T:System.ArgumentNullException"><paramref name="source"/> or <paramref name="onNext"/> or <paramref name="onError"/> or <paramref name="onCompleted"/> is null.</exception>
         </member>
+        <member name="M:System.ObservableExtensions.Subscribe``1(System.IObservable{``0},System.IObserver{``0},System.Threading.CancellationToken)">
+            <summary>
+            Subscribes an observer to an observable sequence, using a CancellationToken to support unsubscription.
+            </summary>
+            <typeparam name="T">The type of the elements in the source sequence.</typeparam>
+            <param name="source">Observable sequence to subscribe to.</param>
+            <param name="observer">Observer to subscribe to the sequence.</param>
+            <param name="token">CancellationToken that can be signaled to unsubscribe from the source sequence.</param>
+            <exception cref="T:System.ArgumentNullException"><paramref name="source"/> or <paramref name="observer"/> is null.</exception>
+        </member>
+        <member name="M:System.ObservableExtensions.Subscribe``1(System.IObservable{``0},System.Threading.CancellationToken)">
+            <summary>
+            Subscribes to the observable sequence without specifying any handlers, using a CancellationToken to support unsubscription.
+            This method can be used to evaluate the observable sequence for its side-effects only.
+            </summary>
+            <typeparam name="T">The type of the elements in the source sequence.</typeparam>
+            <param name="source">Observable sequence to subscribe to.</param>
+            <param name="token">CancellationToken that can be signaled to unsubscribe from the source sequence.</param>
+            <exception cref="T:System.ArgumentNullException"><paramref name="source"/> is null.</exception>
+        </member>
+        <member name="M:System.ObservableExtensions.Subscribe``1(System.IObservable{``0},System.Action{``0},System.Threading.CancellationToken)">
+            <summary>
+            Subscribes an element handler to an observable sequence, using a CancellationToken to support unsubscription.
+            </summary>
+            <typeparam name="T">The type of the elements in the source sequence.</typeparam>
+            <param name="source">Observable sequence to subscribe to.</param>
+            <param name="onNext">Action to invoke for each element in the observable sequence.</param>
+            <param name="token">CancellationToken that can be signaled to unsubscribe from the source sequence.</param>
+            <exception cref="T:System.ArgumentNullException"><paramref name="source"/> or <paramref name="onNext"/> is null.</exception>
+        </member>
+        <member name="M:System.ObservableExtensions.Subscribe``1(System.IObservable{``0},System.Action{``0},System.Action{System.Exception},System.Threading.CancellationToken)">
+            <summary>
+            Subscribes an element handler and an exception handler to an observable sequence, using a CancellationToken to support unsubscription.
+            </summary>
+            <typeparam name="T">The type of the elements in the source sequence.</typeparam>
+            <param name="source">Observable sequence to subscribe to.</param>
+            <param name="onNext">Action to invoke for each element in the observable sequence.</param>
+            <param name="onError">Action to invoke upon exceptional termination of the observable sequence.</param>
+            <param name="token">CancellationToken that can be signaled to unsubscribe from the source sequence.</param>
+            <exception cref="T:System.ArgumentNullException"><paramref name="source"/> or <paramref name="onNext"/> or <paramref name="onError"/> is null.</exception>
+        </member>
+        <member name="M:System.ObservableExtensions.Subscribe``1(System.IObservable{``0},System.Action{``0},System.Action,System.Threading.CancellationToken)">
+            <summary>
+            Subscribes an element handler and a completion handler to an observable sequence, using a CancellationToken to support unsubscription.
+            </summary>
+            <typeparam name="T">The type of the elements in the source sequence.</typeparam>
+            <param name="source">Observable sequence to subscribe to.</param>
+            <param name="onNext">Action to invoke for each element in the observable sequence.</param>
+            <param name="onCompleted">Action to invoke upon graceful termination of the observable sequence.</param>
+            <param name="token">CancellationToken that can be signaled to unsubscribe from the source sequence.</param>
+            <exception cref="T:System.ArgumentNullException"><paramref name="source"/> or <paramref name="onNext"/> or <paramref name="onCompleted"/> is null.</exception>
+        </member>
+        <member name="M:System.ObservableExtensions.Subscribe``1(System.IObservable{``0},System.Action{``0},System.Action{System.Exception},System.Action,System.Threading.CancellationToken)">
+            <summary>
+            Subscribes an element handler, an exception handler, and a completion handler to an observable sequence, using a CancellationToken to support unsubscription.
+            </summary>
+            <typeparam name="T">The type of the elements in the source sequence.</typeparam>
+            <param name="source">Observable sequence to subscribe to.</param>
+            <param name="onNext">Action to invoke for each element in the observable sequence.</param>
+            <param name="onError">Action to invoke upon exceptional termination of the observable sequence.</param>
+            <param name="onCompleted">Action to invoke upon graceful termination of the observable sequence.</param>
+            <param name="token">CancellationToken that can be signaled to unsubscribe from the source sequence.</param>
+            <exception cref="T:System.ArgumentNullException"><paramref name="source"/> or <paramref name="onNext"/> or <paramref name="onError"/> or <paramref name="onCompleted"/> is null.</exception>
+        </member>
         <member name="M:System.ObservableExtensions.SubscribeSafe``1(System.IObservable{``0},System.IObserver{``0})">
             <summary>
             Subscribes to the specified source, re-routing synchronous exceptions during invocation of the Subscribe method to the observer's OnError channel.
@@ -1327,6 +1391,12 @@
         <member name="T:System.Reactive.Producer`1">
             <summary>
             Base class for implementation of query operators, providing performance benefits over the use of Observable.Create.
+            </summary>
+            <typeparam name="TSource">Type of the resulting sequence's elements.</typeparam>
+        </member>
+        <member name="T:System.Reactive.IProducer`1">
+            <summary>
+            Interface with variance annotation; allows for better type checking when detecting capabilities in SubscribeSafe.
             </summary>
             <typeparam name="TSource">Type of the resulting sequence's elements.</typeparam>
         </member>
