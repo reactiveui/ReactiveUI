@@ -403,6 +403,13 @@ namespace ReactiveUI
 
             return guiLibs.SelectMany(x => {
                 var fullName = String.Format("{0}, Version={1}, Culture=neutral, PublicKeyToken=null", x, name.Version.ToString());
+
+                var path = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), x);
+                if (!File.Exists(path)) {
+                    LogHost.Default.Debug("Couldn't find {0}", path);
+                    return Enumerable.Empty<string>();
+                }
+
                 try {
                     Assembly.Load(fullName);
                     return new[] {x};
