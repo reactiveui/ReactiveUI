@@ -12,7 +12,7 @@ using System.Runtime.Serialization;
 using System.Threading;
 using System.Reactive.Concurrency;
 
-#if DOTNETISOLDANDSAD || WINDOWS_PHONE
+#if DOTNETISOLDANDSAD || WP7
 using System.Concurrency;
 #endif
 
@@ -77,7 +77,7 @@ namespace ReactiveUI
         }
 
         [OnDeserialized]
-#if WINDOWS_PHONE
+#if WP7
         public
 #endif
         void setupRxObj(StreamingContext sc) { setupRxObj(); }

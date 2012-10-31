@@ -48,7 +48,7 @@ namespace ReactiveUI
         }
 
         [OnDeserialized]
-#if WINDOWS_PHONE
+#if WP7
 		public
 #endif
         void setupRx(StreamingContext _) { setupRx(); }

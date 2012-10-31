@@ -164,7 +164,7 @@ namespace ReactiveUI
         }
     }
 
-#if DOTNETISOLDANDSAD || WINDOWS_PHONE
+#if DOTNETISOLDANDSAD || WP7
     public static class Tuple
     {
         public static Tuple<T1, T2> Create<T1, T2>(T1 val1, T2 val2)

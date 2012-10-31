@@ -38,7 +38,7 @@ namespace System.Threading
     }
 }
 
-#if WINDOWS_PHONE || DOTNETISOLDANDSAD
+#if WP7 || DOTNETISOLDANDSAD
 namespace System.Concurrency 
 {
     public class Lazy<T>
