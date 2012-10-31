@@ -103,7 +103,6 @@
     <Compile Include="MessageBus.cs" />
     <Compile Include="ObservableAsPropertyHelper.cs" />
     <Compile Include="ObservableAsyncMRUCache.cs" />
-    <Compile Include="ObservableToTaskShim.cs" />
     <Compile Include="ObservedChangedMixin.cs" />
     <Compile Include="POCOObservableForProperty.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
