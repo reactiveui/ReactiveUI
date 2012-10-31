@@ -64,12 +64,8 @@
     <DocumentationFile>Bin\Release\WP8\ReactiveUI_WP8.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AsyncCtpLibrary_Phone">
-      <HintPath>..\ext\WP8\AsyncCtpLibrary_Phone.dll</HintPath>
-    </Reference>
     <Reference Include="mscorlib.Extensions" />
     <Reference Include="System.Observable" />
-
     <Reference Include="System.Reactive.Core, Version=2.0.20823.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\ext\WP8\System.Reactive.Core.dll</HintPath>
@@ -86,7 +82,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\ext\WP8\System.Reactive.PlatformServices.dll</HintPath>
     </Reference>
-
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Windows" />
     <Reference Include="system" />
@@ -121,11 +116,10 @@
     <Compile Include="RxApp.cs" />
     <Compile Include="ScheduledSubject.cs" />
     <Compile Include="ThreadLocal.cs" />
-    <Compile Include="VariadicTemplates_WP8.cs">
-      <DependentUpon>VariadicTemplates_WP8.tt</DependentUpon>
-      <SubType>Code</SubType>
-      <DesignTime>True</DesignTime>
+    <Compile Include="VariadicTemplates_WP7.cs">
       <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>VariadicTemplates_WP7.tt</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
@@ -135,9 +129,9 @@
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="VariadicTemplates_WP8.tt">
+    <None Include="VariadicTemplates_WP7.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>VariadicTemplates_WP8.cs</LastGenOutput>
+      <LastGenOutput>VariadicTemplates_WP7.cs</LastGenOutput>
     </None>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\$(TargetFrameworkIdentifier)\$(TargetFrameworkVersion)\Microsoft.$(TargetFrameworkIdentifier).$(TargetFrameworkVersion).Overrides.targets" />
