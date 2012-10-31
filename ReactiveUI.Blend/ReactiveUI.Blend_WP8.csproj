@@ -13,7 +13,7 @@
     <AssemblyName>ReactiveUI.Blend_WP8</AssemblyName>
     <ValidateXaml>true</ValidateXaml>
     <ThrowErrorsInValidation>true</ThrowErrorsInValidation>
-<TargetFrameworkVersion>v8.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v8.0</TargetFrameworkVersion>
     <TargetFrameworkIdentifier>WindowsPhone</TargetFrameworkIdentifier>
     <SilverlightVersion>$(TargetFrameworkVersion)</SilverlightVersion>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
@@ -42,10 +42,6 @@
     <DocumentationFile>Bin\Release\WP8\ReactiveUI.Blend_WP8.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AsyncCtpLibrary_Phone">
-      <HintPath>..\ext\WP8\AsyncCtpLibrary_Phone.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Expression.Interactions, Version=3.7.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="mscorlib.Extensions" />
     <Reference Include="System.Observable" />
     <Reference Include="System.Reactive.Core, Version=2.0.20823.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -95,7 +91,7 @@
     <None Include="app.config" />
   </ItemGroup>
   <ProjectExtensions />
-    <Import Project="$(MSBuildExtensionsPath)\Microsoft\$(TargetFrameworkIdentifier)\$(TargetFrameworkVersion)\Microsoft.$(TargetFrameworkIdentifier).$(TargetFrameworkVersion).Overrides.targets" />
+  <Import Project="$(MSBuildExtensionsPath)\Microsoft\$(TargetFrameworkIdentifier)\$(TargetFrameworkVersion)\Microsoft.$(TargetFrameworkIdentifier).$(TargetFrameworkVersion).Overrides.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\$(TargetFrameworkIdentifier)\$(TargetFrameworkVersion)\Microsoft.$(TargetFrameworkIdentifier).CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
