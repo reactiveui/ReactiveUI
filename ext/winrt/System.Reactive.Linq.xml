@@ -9456,6 +9456,11 @@
             <returns>The last element of the subject. Throws an InvalidOperationException if no element was received.</returns>
             <exception cref="T:System.InvalidOperationException">The source sequence is empty.</exception>
         </member>
+        <member name="P:System.Reactive.Subjects.AsyncSubject`1.HasObservers">
+            <summary>
+            Indicates whether the subject has observers subscribed to it.
+            </summary>
+        </member>
         <member name="P:System.Reactive.Subjects.AsyncSubject`1.IsCompleted">
             <summary>
             Gets whether the AsyncSubject has completed.
@@ -9505,6 +9510,11 @@
             Unsubscribe all observers and release resources.
             </summary>
         </member>
+        <member name="P:System.Reactive.Subjects.BehaviorSubject`1.HasObservers">
+            <summary>
+            Indicates whether the subject has observers subscribed to it.
+            </summary>
+        </member>
         <member name="T:System.Reactive.Subjects.Subject`1">
             <summary>
             Represents an object that is both an observable sequence as well as an observer.
@@ -9546,6 +9556,11 @@
         <member name="M:System.Reactive.Subjects.Subject`1.Dispose">
             <summary>
             Releases all resources used by the current instance of the <see cref="T:System.Reactive.Subjects.Subject`1"/> class and unsubscribes all observers.
+            </summary>
+        </member>
+        <member name="P:System.Reactive.Subjects.Subject`1.HasObservers">
+            <summary>
+            Indicates whether the subject has observers subscribed to it.
             </summary>
         </member>
         <member name="T:System.Reactive.Joins.Pattern">
@@ -10143,6 +10158,11 @@
         <member name="M:System.Reactive.Subjects.ReplaySubject`1.Dispose">
             <summary>
             Releases all resources used by the current instance of the <see cref="T:System.Reactive.Subjects.ReplaySubject`1"/> class and unsubscribe all observers.
+            </summary>
+        </member>
+        <member name="P:System.Reactive.Subjects.ReplaySubject`1.HasObservers">
+            <summary>
+            Indicates whether the subject has observers subscribed to it.
             </summary>
         </member>
         <member name="T:System.Reactive.Threading.Tasks.NamespaceDoc">
