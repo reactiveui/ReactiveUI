@@ -1,6 +1,6 @@
 ﻿using System;
 
-#if DOTNETISOLDANDSAD || WINDOWS_PHONE
+#if DOTNETISOLDANDSAD || WP7
 
 namespace System.Diagnostics.Contracts
 {

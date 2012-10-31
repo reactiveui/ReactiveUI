@@ -43,7 +43,7 @@ namespace ReactiveUI
             // This is used for ReactiveObject's RaiseAndSetIfChanged mixin
             GetFieldNameForPropertyNameFunc = new Func<string,string>(x => "_" + x);
 
-#if WINDOWS_PHONE
+#if WP7
             TaskpoolScheduler = new EventLoopScheduler();
 #elif SILVERLIGHT || DOTNETISOLDANDSAD
             TaskpoolScheduler = Scheduler.ThreadPool;
