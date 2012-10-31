@@ -64,12 +64,8 @@
     <DocumentationFile>Bin\Release\WP8\ReactiveUI.Xaml_WP8.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AsyncCtpLibrary_Phone">
-      <HintPath>..\ext\WP8\AsyncCtpLibrary_Phone.dll</HintPath>
-    </Reference>
     <Reference Include="mscorlib.Extensions" />
     <Reference Include="System.Observable" />
-
     <Reference Include="System.Reactive.Core, Version=2.0.20823.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\ext\WP8\System.Reactive.Core.dll</HintPath>
@@ -90,7 +86,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\ext\WP8\System.Reactive.Windows.Threading.dll</HintPath>
     </Reference>
-
     <Reference Include="System.Windows" />
     <Reference Include="system" />
     <Reference Include="System.Core" />
