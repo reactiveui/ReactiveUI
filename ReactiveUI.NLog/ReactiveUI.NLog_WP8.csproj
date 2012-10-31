@@ -66,9 +66,6 @@
     <DocumentationFile>Bin\Release\WP8\ReactiveUI.NLog_WP8.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AsyncCtpLibrary_Phone">
-      <HintPath>..\ext\WP8\AsyncCtpLibrary_Phone.dll</HintPath>
-    </Reference>
     <Reference Include="mscorlib.Extensions" />
     <Reference Include="NLog">
       <HintPath>C:\Users\Paul\Documents\GitHub\Akavache\packages\NLog.2.0.0.2000\lib\sl4-windowsphone71\NLog.dll</HintPath>
