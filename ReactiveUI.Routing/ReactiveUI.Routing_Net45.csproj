@@ -5,7 +5,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{67038157-092E-4D72-BAF4-049EB1532264}</ProjectGuid>
+    <ProjectGuid>{1B7576E0-F1B6-41A7-B607-B521DEA1DAA9}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ReactiveUI.Routing</RootNamespace>

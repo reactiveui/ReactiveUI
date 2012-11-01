@@ -5,7 +5,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{168E460F-6ABC-40AE-B1F4-1712C91952D9}</ProjectGuid>
+    <ProjectGuid>{08D3606B-EE79-43EE-8382-72A1091F1F30}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ReactiveUI.NLog</RootNamespace>

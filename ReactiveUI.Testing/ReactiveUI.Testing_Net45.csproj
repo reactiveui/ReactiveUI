@@ -5,7 +5,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{E1F2AD19-276E-4D05-A41A-89AA133CECFC}</ProjectGuid>
+    <ProjectGuid>{DD99FD0F-82F6-4C30-930E-4A1D0DF01D65}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ReactiveUI.Testing</RootNamespace>
