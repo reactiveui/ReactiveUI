@@ -5,7 +5,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{3870EA63-AFDF-4D49-B4D6-8299506E67B4}</ProjectGuid>
+    <ProjectGuid>{7866B5B1-5457-43A2-976A-E784EB10F2DA}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ReactiveUI.Blend</RootNamespace>
