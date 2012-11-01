@@ -28,21 +28,11 @@
             <param name="comparer">The comparer used to equate objects in the collection with the expected object</param>
             <exception cref="T:Xunit.Sdk.ContainsException">Thrown when the object is not present in the collection</exception>
         </member>
-        <member name="M:Xunit.Extensions.Assertions.Contains``1(``0,System.Collections.Generic.IEnumerable{``0},System.Collections.Generic.IComparer{``0})">
-            <summary>
-            Verifies that a collection contains a given object, using a comparer.
-            </summary>
-            <typeparam name="T">The type of the object to be verified</typeparam>
-            <param name="expected">The object expected to be in the collection</param>
-            <param name="collection">The collection to be inspected</param>
-            <param name="comparer">The comparer used to equate objects in the collection with the expected object</param>
-            <exception cref="T:Xunit.Sdk.ContainsException">Thrown when the object is not present in the collection</exception>
-        </member>
         <member name="M:Xunit.Extensions.Assertions.Contains(System.String,System.String)">
             <summary>
             Verifies that a string contains a given sub-string, using the current culture.
             </summary>
-            <param name="expectedSubString">The sub-string expected to be in the string</param>
+            <param name="expectedSubstring">The sub-string expected to be in the string</param>
             <param name="actualString">The string to be inspected</param>
             <exception cref="T:Xunit.Sdk.ContainsException">Thrown when the sub-string is not present inside the string</exception>
         </member>
@@ -50,7 +40,7 @@
             <summary>
             Verifies that a string contains a given sub-string, using the given comparison type.
             </summary>
-            <param name="expectedSubString">The sub-string expected to be in the string</param>
+            <param name="expectedSubstring">The sub-string expected to be in the string</param>
             <param name="actualString">The string to be inspected</param>
             <param name="comparisonType">The type of string comparison to perform</param>
             <exception cref="T:Xunit.Sdk.ContainsException">Thrown when the sub-string is not present inside the string</exception>
@@ -74,21 +64,11 @@
             <param name="comparer">The comparer used to equate objects in the collection with the expected object</param>
             <exception cref="T:Xunit.Sdk.DoesNotContainException">Thrown when the object is present inside the container</exception>
         </member>
-        <member name="M:Xunit.Extensions.Assertions.DoesNotContain``1(``0,System.Collections.Generic.IEnumerable{``0},System.Collections.Generic.IComparer{``0})">
-            <summary>
-            Verifies that a collection does not contain a given object, using a comparer.
-            </summary>
-            <typeparam name="T">The type of the object to be compared</typeparam>
-            <param name="expected">The object that is expected not to be in the collection</param>
-            <param name="collection">The collection to be inspected</param>
-            <param name="comparer">The comparer used to equate objects in the collection with the expected object</param>
-            <exception cref="T:Xunit.Sdk.DoesNotContainException">Thrown when the object is present inside the container</exception>
-        </member>
         <member name="M:Xunit.Extensions.Assertions.DoesNotContain(System.String,System.String)">
             <summary>
             Verifies that a string does not contain a given sub-string, using the current culture.
             </summary>
-            <param name="expectedSubString">The sub-string which is expected not to be in the string</param>
+            <param name="expectedSubstring">The sub-string which is expected not to be in the string</param>
             <param name="actualString">The string to be inspected</param>
             <exception cref="T:Xunit.Sdk.DoesNotContainException">Thrown when the sub-string is present inside the string</exception>
         </member>
@@ -96,7 +76,7 @@
             <summary>
             Verifies that a string does not contain a given sub-string, using the current culture.
             </summary>
-            <param name="expectedSubString">The sub-string which is expected not to be in the string</param>
+            <param name="expectedSubstring">The sub-string which is expected not to be in the string</param>
             <param name="actualString">The string to be inspected</param>
             <param name="comparisonType">The type of string comparison to perform</param>
             <exception cref="T:Xunit.Sdk.DoesNotContainException">Thrown when the sub-string is present inside the given string</exception>
@@ -134,15 +114,25 @@
             <param name="comparer">The comparer used to compare the two objects</param>
             <exception cref="T:Xunit.Sdk.EqualException">Thrown when the objects are not equal</exception>
         </member>
-        <member name="M:Xunit.Extensions.Assertions.Equal``1(``0,``0,System.Collections.Generic.IComparer{``0})">
+        <member name="M:Xunit.Extensions.Assertions.Equal(System.Double,System.Double,System.Int32)">
             <summary>
-            Verifies that two objects are equal, using a custom comparer.
+            Verifies that two <see cref="T:System.Double"/> values are equal, within the number of decimal
+            places given by <paramref name="precision"/>.
             </summary>
-            <typeparam name="T">The type of the objects to be compared</typeparam>
             <param name="expected">The expected value</param>
             <param name="actual">The value to be compared against</param>
-            <param name="comparer">The comparer used to compare the two objects</param>
-            <exception cref="T:Xunit.Sdk.EqualException">Thrown when the objects are not equal</exception>
+            <param name="precision">The number of decimal places (valid values: 0-15)</param>
+            <exception cref="T:Xunit.Sdk.EqualException">Thrown when the values are not equal</exception>
+        </member>
+        <member name="M:Xunit.Extensions.Assertions.Equal(System.Decimal,System.Decimal,System.Int32)">
+            <summary>
+            Verifies that two <see cref="T:System.Decimal"/> values are equal, within the number of decimal
+            places given by <paramref name="precision"/>.
+            </summary>
+            <param name="expected">The expected value</param>
+            <param name="actual">The value to be compared against</param>
+            <param name="precision">The number of decimal places (valid values: 0-15)</param>
+            <exception cref="T:Xunit.Sdk.EqualException">Thrown when the values are not equal</exception>
         </member>
         <member name="M:Xunit.Extensions.Assertions.False(System.Boolean)">
             <summary>
@@ -250,16 +240,6 @@
         <member name="M:Xunit.Extensions.Assertions.NotEqual``1(``0,``0,System.Collections.Generic.IEqualityComparer{``0})">
             <summary>
             Verifies that two objects are not equal, using a custom equality comparer.
-            </summary>
-            <typeparam name="T">The type of the objects to be compared</typeparam>
-            <param name="expected">The expected object</param>
-            <param name="actual">The actual object</param>
-            <param name="comparer">The comparer used to examine the objects</param>
-            <exception cref="T:Xunit.Sdk.NotEqualException">Thrown when the objects are equal</exception>
-        </member>
-        <member name="M:Xunit.Extensions.Assertions.NotEqual``1(``0,``0,System.Collections.Generic.IComparer{``0})">
-            <summary>
-            Verifies that two objects are not equal, using a custom comparer.
             </summary>
             <typeparam name="T">The type of the objects to be compared</typeparam>
             <param name="expected">The expected object</param>
@@ -428,6 +408,11 @@
             </summary>
             <param name="methodUnderTest">The method under test</param>
         </member>
+        <member name="P:Xunit.Extensions.AssumeIdentityAttribute.Name">
+            <summary>
+            Gets the name.
+            </summary>
+        </member>
         <member name="T:Xunit.Extensions.AutoRollbackAttribute">
             <summary>
             Apply this attribute to your test method to automatically create a
@@ -506,6 +491,11 @@
         <member name="M:Xunit.Extensions.ClassDataAttribute.GetData(System.Reflection.MethodInfo,System.Type[])">
             <inheritdoc/>
         </member>
+        <member name="P:Xunit.Extensions.ClassDataAttribute.Class">
+            <summary>
+            Gets the type of the class that provides the data.
+            </summary>
+        </member>
         <member name="T:Xunit.Extensions.DataAdapterDataAttribute">
             <summary>
             Represents an implementation of <see cref="T:Xunit.Extensions.DataAttribute"/> which uses an
@@ -548,6 +538,11 @@
             <param name="parameterTypes">The types of the parameters for the test method</param>
             <returns>The theory data, in table form</returns>
         </member>
+        <member name="P:Xunit.Extensions.InlineDataAttribute.DataValues">
+            <summary>
+            Gets the data values.
+            </summary>
+        </member>
         <member name="T:Xunit.Extensions.OleDbDataAttribute">
             <summary>
             Provides a data source for a data theory, with the data coming from an OLEDB connection.
@@ -559,6 +554,16 @@
             </summary>
             <param name="connectionString">The OLEDB connection string to the data</param>
             <param name="selectStatement">The SELECT statement used to return the data for the theory</param>
+        </member>
+        <member name="P:Xunit.Extensions.OleDbDataAttribute.ConnectionString">
+            <summary>
+            Gets the connection string.
+            </summary>
+        </member>
+        <member name="P:Xunit.Extensions.OleDbDataAttribute.SelectStatement">
+            <summary>
+            Gets the select statement.
+            </summary>
         </member>
         <member name="P:Xunit.Extensions.OleDbDataAttribute.DataAdapter">
             <inheritdoc/>
@@ -582,6 +587,17 @@
             <param name="methodUnderTest">The method that is being tested</param>
             <param name="parameterTypes">The types of the parameters for the test method</param>
             <returns>The theory data, in table form</returns>
+        </member>
+        <member name="P:Xunit.Extensions.PropertyDataAttribute.PropertyName">
+            <summary>
+            Gets the property name.
+            </summary>
+        </member>
+        <member name="P:Xunit.Extensions.PropertyDataAttribute.PropertyType">
+            <summary>
+            Gets or sets the type to retrieve the property data from. If not set, then the property will be
+            retrieved from the unit test class.
+            </summary>
         </member>
         <member name="T:Xunit.Extensions.SqlServerDataAttribute">
             <summary>
@@ -757,6 +773,14 @@
             </summary>
             <param name="testMethod">The method under test</param>
             <param name="parameters">The parameters to be passed to the test method</param>
+        </member>
+        <member name="M:Xunit.Extensions.TheoryCommand.#ctor(Xunit.Sdk.IMethodInfo,System.Object[],System.Type[])">
+            <summary>
+            Creates a new instance of <see cref="T:Xunit.Extensions.TheoryCommand"/> based on a generic theory.
+            </summary>
+            <param name="testMethod">The method under test</param>
+            <param name="parameters">The parameters to be passed to the test method</param>
+            <param name="genericTypes">The generic types that were used to resolved the generic method.</param>
         </member>
         <member name="M:Xunit.Extensions.TheoryCommand.Execute(System.Object)">
             <inheritdoc/>

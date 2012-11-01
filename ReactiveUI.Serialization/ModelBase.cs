@@ -4,7 +4,7 @@ using NLog;
 
 namespace ReactiveUI.Serialization
 {
-#if WINDOWS_PHONE
+#if WP7
     /// <summary>
     /// ModelBase represents the base implementation of ISerializableItem and
     /// handles a lot of the infrastructure plumbing around maintaining the

@@ -5,7 +5,6 @@ using System.Linq;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading;
-using NLog;
 
 namespace ReactiveUI
 {
@@ -204,7 +203,7 @@ namespace ReactiveUI
         public SemaphoreSubject(int maxCount, IScheduler sched = null)
         {
             this.Log().Debug("maxCount is '{0}'", maxCount);
-#if WINDOWS_PHONE
+#if WP7
             _inner = new Subject<T>();
 #else
             _inner = (sched != null ? (ISubject<T>)new ScheduledSubject<T>(sched) : new Subject<T>());

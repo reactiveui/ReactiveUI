@@ -31,11 +31,14 @@ namespace ReactiveUI
                 this TSender This,
                 Expression<Func<TSender, TValue>> property,
                 bool beforeChange = false)
-            where TSender : INotifyPropertyChanged
         {
-            var propertyNames = new LinkedList<string>(RxApp.expressionToPropertyNames(property));
+            var propertyNames = new LinkedList<string>(Reflection.ExpressionToPropertyNames(property));
             var subscriptions = new LinkedList<IDisposable>(propertyNames.Select(x => (IDisposable) null));
             var ret = new Subject<IObservedChange<TSender, TValue>>();
+
+            if (This == null) {
+                throw new ArgumentNullException("Sender");
+            }
 
             /* x => x.Foo.Bar.Baz;
              * 
@@ -62,13 +65,73 @@ namespace ReactiveUI
                 ret);
 
             return Observable.Create<IObservedChange<TSender, TValue>>(x => {
-                var disp = ret.Subscribe(x.OnNext, x.OnError, x.OnCompleted);
+                var disp = ret.Subscribe(x);
                 return () => {
                     subscriptions.ForEach(y => y.Dispose());
                     disp.Dispose();
                 };
             });
         }
+
+        /// <summary>
+        /// ObservableForPropertyDynamic returns an Observable representing the
+        /// property change notifications for a specific property on a
+        /// ReactiveObject. This method (unlike other Observables that return
+        /// IObservedChange) guarantees that the Value property of
+        /// the IObservedChange is set.
+        /// </summary>
+        /// <param name="property">An Expression representing the property (i.e.
+        /// 'x => x.SomeProperty.SomeOtherProperty'</param>
+        /// <param name="beforeChange">If True, the Observable will notify
+        /// immediately before a property is going to change.</param>
+        /// <returns>An Observable representing the property change
+        /// notifications for the given property.</returns>
+        public static IObservable<IObservedChange<TSender, object>> ObservableForProperty<TSender>(
+                this TSender This,
+                string[] property,
+                bool beforeChange = false)
+        {
+            var propertyNames = new LinkedList<string>(property);
+            var subscriptions = new LinkedList<IDisposable>(propertyNames.Select(x => (IDisposable) null));
+            var ret = new Subject<IObservedChange<TSender, object>>();
+
+            if (This == null) {
+                throw new ArgumentNullException("Sender");
+            }
+
+            /* x => x.Foo.Bar.Baz;
+             * 
+             * Subscribe to This, look for Foo
+             * Subscribe to Foo, look for Bar
+             * Subscribe to Bar, look for Baz
+             * Subscribe to Baz, publish to Subject
+             * Return Subject
+             * 
+             * If Bar changes (notification fires on Foo), resubscribe to new Bar
+             * 	Resubscribe to new Baz, publish to Subject
+             * 
+             * If Baz changes (notification fires on Bar),
+             * 	Resubscribe to new Baz, publish to Subject
+             */
+
+            subscribeToExpressionChain(
+                This, 
+                buildPropPathFromNodePtr(propertyNames.First),
+                This, 
+                propertyNames.First, 
+                subscriptions.First, 
+                beforeChange, 
+                ret);
+
+            return Observable.Create<IObservedChange<TSender, object>>(x => {
+                var disp = ret.Subscribe(x);
+                return () => {
+                    subscriptions.ForEach(y => y.Dispose());
+                    disp.Dispose();
+                };
+            });
+        }
+
 
         static void subscribeToExpressionChain<TSender, TValue>(
                 TSender origSource,
@@ -83,19 +146,17 @@ namespace ReactiveUI
             var current = propertyNames;
             var currentSub = subscriptions;
             object currentObj = source;
-            PropertyInfo pi = null;
             ObservedChange<TSender, TValue> obsCh;
 
             while(current.Next != null) {
-                pi = RxApp.getPropertyInfoForProperty(currentObj.GetType(), current.Value);
-                if (pi == null) {
+                var getter = Reflection.GetValueFetcherForProperty(currentObj.GetType(), current.Value);
+                if (getter == null) {
                     subscriptions.List.Where(x => x != null).ForEach(x => x.Dispose());
                     throw new ArgumentException(String.Format("Property '{0}' does not exist in expression", current.Value));
                 }
 
-                var notifyObj = wrapInpcObjectIfNeeded(currentObj);
-                if (notifyObj != null) {
-                    var capture = new {current, currentObj, pi, currentSub};
+                if (currentObj != null) {
+                    var capture = new {current, currentObj, getter, currentSub};
                     var toDispose = new IDisposable[2];
 
                     var valGetter = new ObservedChange<object, TValue>() {
@@ -107,12 +168,12 @@ namespace ReactiveUI
                     TValue prevVal = default(TValue);
                     bool prevValSet = valGetter.TryGetValue(out prevVal);
 
-                    toDispose[0] = notifyObj.Changing.Where(x => x.PropertyName == capture.current.Value).Subscribe(x => {
+                    toDispose[0] = notifyForProperty(currentObj, capture.current.Value, true).Subscribe(x => {
                         prevValSet = valGetter.TryGetValue(out prevVal);
                     });
 
-                    toDispose[1] = notifyObj.Changed.Where(x => x.PropertyName == capture.current.Value).Subscribe(x => {
-                        subscribeToExpressionChain(origSource, origPath, capture.pi.GetValue(capture.currentObj, null), capture.current.Next, capture.currentSub.Next, beforeChange, subject);
+                    toDispose[1] = notifyForProperty(currentObj, capture.current.Value, false).Subscribe(x => {
+                        subscribeToExpressionChain(origSource, origPath, capture.getter(capture.currentObj), capture.current.Next, capture.currentSub.Next, beforeChange, subject);
 
                         TValue newVal;
                         if (!valGetter.TryGetValue(out newVal)) {
@@ -141,54 +202,50 @@ namespace ReactiveUI
 
                 current = current.Next;
                 currentSub = currentSub.Next;
-                currentObj = pi.GetValue(currentObj, null);
+                currentObj = getter(currentObj);
             }
 
-            var finalNotify = wrapInpcObjectIfNeeded(currentObj);
             if (currentSub.Value != null) {
                 currentSub.Value.Dispose();
             }
 
-            if (finalNotify == null) {
+            if (currentObj == null) {
                 return;
             }
 
             var propName = current.Value;
-            pi = RxApp.getPropertyInfoForProperty(currentObj.GetType(), current.Value);
+            var finalGetter = Reflection.GetValueFetcherForProperty(currentObj.GetType(), current.Value);
 
-            currentSub.Value = (beforeChange ? finalNotify.Changing : finalNotify.Changed).Where(x => x.PropertyName == propName).Subscribe(x => {
+            currentSub.Value = notifyForProperty(currentObj, propName, beforeChange).Subscribe(x => {
                 obsCh = new ObservedChange<TSender, TValue>() {
                     Sender = origSource,
                     PropertyName = origPath,
-                    Value = (TValue)pi.GetValue(currentObj, null),
+                    Value = (TValue)finalGetter(currentObj),
                 };
 
                 subject.OnNext(obsCh);
             });
         }
 
-        static MemoizingMRUCache<INotifyPropertyChanged, IReactiveNotifyPropertyChanged> wrapperCache =
-            new MemoizingMRUCache<INotifyPropertyChanged, IReactiveNotifyPropertyChanged>(
-                (x, _) => new MakeObjectReactiveHelper(x),
-                25);
+        static readonly MemoizingMRUCache<Type, ICreatesObservableForProperty> notifyFactoryCache =
+            new MemoizingMRUCache<Type, ICreatesObservableForProperty>((t, _) => {
+                return RxApp.GetAllServices<ICreatesObservableForProperty>()
+                    .Aggregate(Tuple.Create(0, (ICreatesObservableForProperty)null), (acc, x) => {
+                        int score = x.GetAffinityForObject(t);
+                        return (score > acc.Item1) ? Tuple.Create(score, x) : acc;
+                    }).Item2;
+            }, 50);
 
-        static IReactiveNotifyPropertyChanged wrapInpcObjectIfNeeded(object obj)
+        static IObservable<IObservedChange<object, object>> notifyForProperty(object sender, string propertyName, bool beforeChange)
         {
-            if (obj == null) {
-                return null;
+            var result = notifyFactoryCache.Get(sender.GetType());
+            if (result == null) {
+                throw new Exception(
+                    String.Format("Couldn't find a ICreatesObservableForProperty for {0}. This should never happen, your service locator is probably broken.", 
+                    sender.GetType()));
             }
-
-            var ret = obj as IReactiveNotifyPropertyChanged;
-            if (ret != null) {
-                return ret;
-            }
-
-            var inpc = obj as INotifyPropertyChanged;
-            if (inpc != null) {
-                return wrapperCache.Get(inpc);
-            }
-
-            return null;
+            
+            return result.GetNotificationForProperty(sender, propertyName, beforeChange);
         }
 
         static string buildPropPathFromNodePtr(LinkedListNode<string> node)
@@ -226,7 +283,7 @@ namespace ReactiveUI
                 Expression<Func<TSender, TValue>> property, 
                 Func<TValue, TRet> selector, 
                 bool beforeChange = false)
-            where TSender : INotifyPropertyChanged
+            where TSender : class
         {           
             Contract.Requires(selector != null);
             return This.ObservableForProperty(property, beforeChange).Select(x => selector(x.Value));

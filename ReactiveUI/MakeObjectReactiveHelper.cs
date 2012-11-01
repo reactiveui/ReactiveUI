@@ -4,7 +4,6 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Threading;
 using System.Reactive.Subjects;
-using NLog;
 
 namespace ReactiveUI
 {

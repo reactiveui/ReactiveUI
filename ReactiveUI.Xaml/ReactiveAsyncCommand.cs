@@ -7,7 +7,6 @@ using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Reactive.Threading.Tasks;
-using NLog;
 using ReactiveUI;
 using System.Threading.Tasks;
 
@@ -78,9 +77,9 @@ namespace ReactiveUI.Xaml
 
         void commonCtor(int maximumConcurrent, IScheduler scheduler, IObservable<bool> canExecute = null)
         {
-            _canExecuteSubject = new ScheduledSubject<bool>(Scheduler.Immediate);
-            _executeSubject = new ScheduledSubject<object>(Scheduler.Immediate);
             _normalSched = scheduler ?? RxApp.DeferredScheduler;
+            _canExecuteSubject = new ScheduledSubject<bool>(_normalSched);
+            _executeSubject = new ScheduledSubject<object>(Scheduler.Immediate);
             _exSubject = new ScheduledSubject<Exception>(_normalSched, RxApp.DefaultExceptionHandler);
 
             AsyncStartedNotification = new ScheduledSubject<Unit>(RxApp.DeferredScheduler);

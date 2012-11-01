@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Linq.Expressions;
 using System.Reactive.Concurrency;
 
 namespace ReactiveUI
@@ -112,7 +113,7 @@ namespace ReactiveUI
     /// IReactiveNotifyPropertyChanged semantically as "Fire when *anything* in
     /// the collection or any of its items have changed, in any way".
     /// </summary>
-    public interface IReactiveCollection : IReactiveNotifyPropertyChanged, IEnumerable, INotifyCollectionChanged
+    public interface IReactiveCollection : IEnumerable, INotifyCollectionChanged
     {
         //
         // Collection Tracking
@@ -278,6 +279,70 @@ namespace ReactiveUI
         /// identical types (i.e. "MyCoolViewModel") - if the message type is
         /// only used for one purpose, leave this as null.</param>
         void SendMessage<T>(T message, string contract = null);
+    }
+
+    /// <summary>
+    /// ICreatesObservableForProperty represents an object that knows how to
+    /// create notifications for a given type of object. Implement this if you
+    /// are porting RxUI to a new UI toolkit, or generally want to enable WhenAny
+    /// for another type of object that can be observed in a unique way.
+    /// </summary>
+    public interface ICreatesObservableForProperty : IEnableLogger
+    {
+        /// <summary>
+        /// Returns a positive integer when this class supports 
+        /// GetNotificationForProperty for this particular Type. If the method
+        /// isn't supported at all, return a non-positive integer. When multiple
+        /// implementations return a positive value, the host will use the one
+        /// which returns the highest value. When in doubt, return '2' or '0'
+        /// </summary>
+        /// <param name="type">The type to query for.</param>
+        /// <returns>A positive integer if GNFP is supported, zero or a negative
+        /// value otherwise</returns>
+        int GetAffinityForObject(Type type, bool beforeChanged = false);
+
+        /// <summary>
+        /// Subscribe to notifications on the specified property, given an 
+        /// object and a property name.
+        /// </summary>
+        /// <param name="sender">The object to observe.</param>
+        /// <param name="propertyName">The property on the object to observe. 
+        /// This property will not be a dotted property, only a simple name.
+        /// </param>
+        /// <param name="beforeChanged">If true, signal just before the 
+        /// property value actually changes. If false, signal after the 
+        /// property changes.</param>
+        /// <returns>An IObservable which is signalled whenever the specified
+        /// property on the object changes. If this cannot be done for a 
+        /// specified value of beforeChanged, return Observable.Never</returns>
+        IObservable<IObservedChange<object, object>> GetNotificationForProperty(object sender, string propertyName, bool beforeChanged = false);
+    }
+
+    public interface IViewFor
+    {
+        object ViewModel { get; set; }
+    }
+
+    /// <summary>
+    /// Implement this interface on your Views to support Routing and Binding.
+    /// </summary>
+    public interface IViewFor<T> : IViewFor
+        where T : class
+    {
+        /// <summary>
+        /// The ViewModel corresponding to this specific View.
+        /// </summary>
+        T ViewModel { get; set; }
+    }
+
+    public interface IDefaultPropertyBindingProvider
+    {
+        Tuple<string, int> GetPropertyForControl(object control);
+    }
+
+    internal interface IWantsToRegisterStuff
+    {                       
+        void Register();
     }
 }
 

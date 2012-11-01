@@ -5,12 +5,7 @@ using System.Threading;
 using ReactiveUI.Testing;
 using Xunit;
 
-#if MONO
-using Mono.Reactive.Testing;
-#else
 using Microsoft.Reactive.Testing;
-#endif
-
 
 namespace ReactiveUI.Tests
 {

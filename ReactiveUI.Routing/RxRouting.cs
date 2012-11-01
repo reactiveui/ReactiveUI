@@ -14,8 +14,7 @@ namespace ReactiveUI.Routing
 
         static RxRouting()
         {
-            ViewModelToViewFunc = (vm) => 
-                vm.Replace("ViewModel", "View");
+            ViewModelToViewFunc = (vm) => interfaceifyTypeName(vm.Replace("ViewModel", "View"));
         }
 
         /// <summary>
@@ -26,14 +25,14 @@ namespace ReactiveUI.Routing
         /// <param name="viewModel">The ViewModel for which to find the
         /// associated View.</param>
         /// <returns>The View for the ViewModel.</returns>
-        public static IViewForViewModel ResolveView<T>(T viewModel)
-            where T : IReactiveNotifyPropertyChanged
+        public static IViewFor ResolveView<T>(T viewModel)
+            where T : class
         {
             // Given IFooBarViewModel (whose name we derive from T), we'll look 
             // for a few things:
-            // * IFooBarView that implements IViewForViewModel
-            // * IViewForViewModel<IFooBarViewModel>
-            // * IViewForViewModel<FooBarViewModel> (the original behavior in RxUI 3.1)
+            // * IFooBarView that implements IViewFor
+            // * IViewFor<IFooBarViewModel>
+            // * IViewFor<FooBarViewModel> (the original behavior in RxUI 3.1)
 
             var attrs = viewModel.GetType().GetCustomAttributes(typeof (ViewContractAttribute), true);
             string key = null;
@@ -42,37 +41,41 @@ namespace ReactiveUI.Routing
                 key = ((ViewContractAttribute) attrs.First()).Contract;
             }
 
-            // IFooBarView that implements IViewForViewModel
-            var typeToFind = interfaceifyTypeName(ViewModelToViewFunc(typeof(T).FullName));
+            // IFooBarView that implements IViewFor (or custom ViewModelToViewFunc)
+            var typeToFind = ViewModelToViewFunc(viewModel.GetType().AssemblyQualifiedName);
             try {
-                var type = RxApp.reallyFindType(typeToFind, true);
+                var type = Reflection.ReallyFindType(typeToFind, true);
 
-                var ret = RxApp.GetService(type, key) as IViewForViewModel;
+                var ret = RxApp.GetService(type, key) as IViewFor;
                 if (ret != null) return ret;
-            } catch (TypeLoadException ex) {
+            } catch (Exception ex) {
                 LogHost.Default.DebugException("Couldn't instantiate " + typeToFind, ex);
             }
 
-            var viewType = typeof (IViewForViewModel<>);
+            var viewType = typeof (IViewFor<>);
 
-            // IViewForViewModel<IFooBarViewModel>
+            // IViewFor<IFooBarViewModel>
             try {
-                var type = RxApp.reallyFindType(interfaceifyTypeName(typeof(T).FullName), true);
-                var ret =  RxApp.GetService(viewType.MakeGenericType(type), key) as IViewForViewModel;
+                var ifn = interfaceifyTypeName(viewModel.GetType().AssemblyQualifiedName);
+                var type = Reflection.ReallyFindType(ifn, true);
+                var ret =  RxApp.GetService(viewType.MakeGenericType(type), key) as IViewFor;
                 if (ret != null) return ret;
-            } catch (TypeLoadException ex) {
+            } catch (Exception ex) {
                 LogHost.Default.DebugException("Couldn't instantiate View via pure interface type", ex);
             }
 
-            // IViewForViewModel<FooBarViewModel> (the original behavior in RxUI 3.1)
-            return (IViewForViewModel) RxApp.GetService(viewType.MakeGenericType(viewModel.GetType()), key);
+            // IViewFor<FooBarViewModel> (the original behavior in RxUI 3.1)
+            return (IViewFor) RxApp.GetService(viewType.MakeGenericType(viewModel.GetType()), key);
         }
 
         static string interfaceifyTypeName(string typeName)
         {
-            var parts = typeName.Split('.');
+            var typeVsAssembly = typeName.Split(',');
+            var parts = typeVsAssembly[0].Split('.');
             parts[parts.Length - 1] = "I" + parts[parts.Length - 1];
-            return String.Join(".", parts, 0, parts.Length);
+
+            var newType = String.Join(".", parts, 0, parts.Length);
+            return newType + "," + String.Join(",", typeVsAssembly.Skip(1));
         }
     }
 
