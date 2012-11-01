@@ -39,18 +39,34 @@ namespace System.Threading
 }
 
 #if WP7 || DOTNETISOLDANDSAD
-namespace System.Concurrency 
+namespace System
 {
     public class Lazy<T>
     {
-        public Lazy(Func<T> ValueFetcher) 
+        object _gate = 42;
+
+        Func<T> _valueFetcher;
+        public Lazy(Func<T> valueFetcher)
         {
-            _Value = ValueFetcher();
+            _valueFetcher = valueFetcher;
+        }
+
+        public bool IsValueCreated {
+            get { return _valueFetcher != null; }
         }
 
         T _Value;
-        T Value {
-            get { return _Value; }
+        public T Value {
+            get {
+                lock (_gate) {
+                    if (_valueFetcher != null) {
+                        _Value = _valueFetcher();
+                        _valueFetcher = null;
+                    }
+
+                    return _Value;
+                }
+            }
         }
     }
 
