@@ -306,18 +306,6 @@
             <param name="testMethod">The test method.</param>
             <returns>Return true to continue running tests; return false to stop the test run.</returns>
         </member>
-        <member name="T:Xunit.ITestMethodRunner">
-            <summary>
-            Represents the ability to run one or more test methods.
-            </summary>
-        </member>
-        <member name="M:Xunit.ITestMethodRunner.Run(System.Collections.Generic.IEnumerable{Xunit.TestMethod},Xunit.ITestMethodRunnerCallback)">
-            <summary>
-            Runs the specified test methods.
-            </summary>
-            <param name="testMethods">The test methods to run.</param>
-            <param name="callback">The run status information callback.</param>
-        </member>
         <member name="T:Xunit.MultiAssemblyTestEnvironment">
             <summary>
             Represents the ability to load and unload test assemblies, as well as enumerate
@@ -344,6 +332,9 @@
             <summary>
             The test assemblies loaded into the environment.
             </summary>
+        </member>
+        <member name="M:Xunit.MultiAssemblyTestEnvironment.Dispose">
+            <inheritdoc/>
         </member>
         <member name="M:Xunit.MultiAssemblyTestEnvironment.EnumerateTestAssemblies">
             <summary>
@@ -398,7 +389,12 @@
             loaded test assembly.</returns>
         </member>
         <member name="M:Xunit.MultiAssemblyTestEnvironment.Run(System.Collections.Generic.IEnumerable{Xunit.TestMethod},Xunit.ITestMethodRunnerCallback)">
-            <inheritdoc/>
+            <summary>
+            Runs the specified test methods.
+            </summary>
+            <param name="testMethods">The test methods to run.</param>
+            <param name="callback">The run status information callback.</param>
+            <returns>Returns the result as XML.</returns>
         </member>
         <member name="M:Xunit.MultiAssemblyTestEnvironment.Unload(Xunit.TestAssembly)">
             <summary>
@@ -655,6 +651,33 @@
             At least one test result for the last run was skipped, and none failed
             </summary>
         </member>
+        <member name="T:Xunit.XunitFilters">
+            <summary>
+            Represents a set of filters for an <see cref="T:Xunit.XunitProject"/>.
+            </summary>
+        </member>
+        <member name="M:Xunit.XunitFilters.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Xunit.XunitFilters"/> class.
+            </summary>
+        </member>
+        <member name="M:Xunit.XunitFilters.Filter(Xunit.TestMethod)">
+            <summary>
+            Filters the given method using the defined filter values.
+            </summary>
+            <param name="method">The methods to filter.</param>
+            <returns>Returns true if the method passed the filter; return false otherwise.</returns>
+        </member>
+        <member name="P:Xunit.XunitFilters.ExcludedTraits">
+            <summary>
+            Gets the set of trait filters for tests to exclude.
+            </summary>
+        </member>
+        <member name="P:Xunit.XunitFilters.IncludedTraits">
+            <summary>
+            Gets the set of trait filters for tests to include.
+            </summary>
+        </member>
         <member name="T:Xunit.XunitProject">
             <summary>
             Represents an xUnit Test Project file (.xunit file)
@@ -703,6 +726,11 @@
         <member name="P:Xunit.XunitProject.Filename">
             <summary>
             Gets or set the filename of the project.
+            </summary>
+        </member>
+        <member name="P:Xunit.XunitProject.Filters">
+            <summary>
+            Gets the filters applied to this project.
             </summary>
         </member>
         <member name="P:Xunit.XunitProject.IsDirty">
@@ -818,7 +846,12 @@
             <inheritdoc/>
         </member>
         <member name="M:Xunit.TestAssembly.Run(System.Collections.Generic.IEnumerable{Xunit.TestMethod},Xunit.ITestMethodRunnerCallback)">
-            <inheritdoc/>
+            <summary>
+            Runs the specified test methods.
+            </summary>
+            <param name="testMethods">The test methods to run.</param>
+            <param name="callback">The run status information callback.</param>
+            <returns>Returns the result as XML.</returns>
         </member>
         <member name="P:Xunit.TestAssembly.AssemblyFilename">
             <summary>
@@ -859,15 +892,21 @@
         <member name="M:Xunit.TestClass.EnumerateTestMethods(System.Predicate{Xunit.TestMethod})">
             <inheritdoc/>
         </member>
-        <member name="M:Xunit.TestClass.GetTestRunner(Xunit.ITestMethodRunnerCallback)">
-            <summary>
-            Gets the test runner used to run tests. Exists as an overload primarily
-            for the purposes of unit testing.
-            </summary>
-            <param name="callback">The run status information callback.</param>
-        </member>
         <member name="M:Xunit.TestClass.Run(System.Collections.Generic.IEnumerable{Xunit.TestMethod},Xunit.ITestMethodRunnerCallback)">
-            <inheritdoc/>
+            <summary>
+            Runs the specified test methods.
+            </summary>
+            <param name="testMethods">The test methods to run.</param>
+            <param name="callback">The run status information callback.</param>
+            <returns>Returns the result as XML.</returns>
+        </member>
+        <member name="M:Xunit.TestClass.RunTests(System.Collections.Generic.List{System.String},Xunit.ITestMethodRunnerCallback)">
+            <summary>
+            Runs the specified tests in the given type, calling the callback as appropriate.
+            This override point exists primarily for unit testing purposes.
+            </summary>
+            <param name="methods">The test methods to run</param>
+            <param name="callback">The run status information callback.</param>
         </member>
         <member name="P:Xunit.TestClass.TestAssembly">
             <summary>

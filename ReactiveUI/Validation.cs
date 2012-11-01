@@ -7,7 +7,6 @@ using System.ComponentModel.DataAnnotations;
 using System.Reactive.Subjects;
 using System.Reflection;
 using System.Runtime.Serialization;
-using NLog;
 
 namespace ReactiveUI
 {
@@ -128,8 +127,8 @@ namespace ReactiveUI
             foreach(var v in pei.ValidationAttributes) {
                 try {
                     var ctx = new ValidationContext(this, null, null) {MemberName = propName};
-                    var pi = RxApp.getPropertyInfoForProperty(pei.Type, propName);
-                    v.Validate(pi.GetValue(this, null), ctx);
+                    var getter = Reflection.GetValueFetcherForProperty(pei.Type, propName);
+                    v.Validate(getter(this), ctx);
                 } catch(Exception ex) {
                     this.Log().Info("{0:X}.{1} failed validation: {2}", 
                         this.GetHashCode(), propName, ex.Message);
@@ -156,7 +155,7 @@ namespace ReactiveUI
         public static PropertyExtraInfo CreateFromTypeAndName(Type type, string propertyName, bool nullOnEmptyValidationAttrs = false)
         {
             object[] attrs;
-            var pi = RxApp.getPropertyInfoForProperty(type, propertyName);
+            var pi = type.GetProperty(propertyName, BindingFlags.Public | BindingFlags.FlattenHierarchy | BindingFlags.Instance);
 
             if (pi == null) {
                 throw new ArgumentException("Property not found on type");

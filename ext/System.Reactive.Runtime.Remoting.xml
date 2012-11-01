@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>System.Reactive.Runtime.Remoting</name>
+    </assembly>
+    <members>
+        <member name="T:System.Reactive.Linq.RemotingObservable">
+            <summary>
+            Provides a set of static methods for exposing observable sequences through .NET Remoting.
+            </summary>
+        </member>
+        <member name="M:System.Reactive.Linq.RemotingObservable.Remotable``1(System.IObservable{``0})">
+            <summary>
+            Makes an observable sequence remotable, using an infinite lease for the <see cref="T:System.MarshalByRefObject"/> wrapping the source.
+            </summary>
+            <typeparam name="TSource">The type of the elements in the source sequence.</typeparam>
+            <param name="source">Source sequence.</param>
+            <returns>The observable sequence that supports remote subscriptions.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="source"/> is null.</exception>
+        </member>
+        <member name="M:System.Reactive.Linq.RemotingObservable.Remotable``1(System.IObservable{``0},System.Runtime.Remoting.Lifetime.ILease)">
+            <summary>
+            Makes an observable sequence remotable, using a controllable lease for the <see cref="T:System.MarshalByRefObject"/> wrapping the source.
+            </summary>
+            <typeparam name="TSource">The type of the elements in the source sequence.</typeparam>
+            <param name="source">Source sequence.</param>
+            <param name="lease">Lease object to control lifetime of the remotable sequence. Notice null is a supported value.</param>
+            <returns>The observable sequence that supports remote subscriptions.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="source"/> is null.</exception>
+        </member>
+        <member name="M:System.Reactive.Linq.RemotingObservable.Remotable``1(System.Reactive.Linq.IQbservable{``0})">
+            <summary>
+            Makes an observable sequence remotable, using an infinite lease for the <see cref="T:System.MarshalByRefObject"/> wrapping the source.
+            </summary>
+            <typeparam name="TSource">The type of the elements in the source sequence.</typeparam>
+            <param name="source">Source sequence.</param>
+            <returns>The observable sequence that supports remote subscriptions.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="source"/> is null.</exception>
+        </member>
+        <member name="M:System.Reactive.Linq.RemotingObservable.Remotable``1(System.Reactive.Linq.IQbservable{``0},System.Runtime.Remoting.Lifetime.ILease)">
+            <summary>
+            Makes an observable sequence remotable, using a controllable lease for the <see cref="T:System.MarshalByRefObject"/> wrapping the source.
+            </summary>
+            <typeparam name="TSource">The type of the elements in the source sequence.</typeparam>
+            <param name="source">Source sequence.</param>
+            <param name="lease">Lease object to control lifetime of the remotable sequence. Notice null is a supported value.</param>
+            <returns>The observable sequence that supports remote subscriptions.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="source"/> is null.</exception>
+        </member>
+    </members>
+</doc>

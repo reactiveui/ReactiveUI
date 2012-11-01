@@ -34,31 +34,11 @@
             <param name="comparer">The comparer used to equate objects in the collection with the expected object</param>
             <exception cref="T:Xunit.Sdk.ContainsException">Thrown when the object is not present in the collection</exception>
         </member>
-        <member name="M:Xunit.Assert.Contains(System.String,System.Collections.Generic.IEnumerable{System.String},System.StringComparer)">
-            <summary>
-            Verifies that a collection contains a given string, using a string comparer.
-            </summary>
-            <typeparam name="T">The type of the object to be verified</typeparam>
-            <param name="expected">The string expected to be in the collection</param>
-            <param name="collection">The collection to be inspected</param>
-            <param name="comparer">The comparer used to equate objects in the collection with the expected string</param>
-            <exception cref="T:Xunit.Sdk.ContainsException">Thrown when the string is not present in the collection</exception>
-        </member>
-        <member name="M:Xunit.Assert.Contains``1(``0,System.Collections.Generic.IEnumerable{``0},System.Collections.Generic.IComparer{``0})">
-            <summary>
-            Verifies that a collection contains a given object, using a comparer.
-            </summary>
-            <typeparam name="T">The type of the object to be verified</typeparam>
-            <param name="expected">The object expected to be in the collection</param>
-            <param name="collection">The collection to be inspected</param>
-            <param name="comparer">The comparer used to equate objects in the collection with the expected object</param>
-            <exception cref="T:Xunit.Sdk.ContainsException">Thrown when the object is not present in the collection</exception>
-        </member>
         <member name="M:Xunit.Assert.Contains(System.String,System.String)">
             <summary>
             Verifies that a string contains a given sub-string, using the current culture.
             </summary>
-            <param name="expectedSubString">The sub-string expected to be in the string</param>
+            <param name="expectedSubstring">The sub-string expected to be in the string</param>
             <param name="actualString">The string to be inspected</param>
             <exception cref="T:Xunit.Sdk.ContainsException">Thrown when the sub-string is not present inside the string</exception>
         </member>
@@ -66,7 +46,7 @@
             <summary>
             Verifies that a string contains a given sub-string, using the given comparison type.
             </summary>
-            <param name="expectedSubString">The sub-string expected to be in the string</param>
+            <param name="expectedSubstring">The sub-string expected to be in the string</param>
             <param name="actualString">The string to be inspected</param>
             <param name="comparisonType">The type of string comparison to perform</param>
             <exception cref="T:Xunit.Sdk.ContainsException">Thrown when the sub-string is not present inside the string</exception>
@@ -90,31 +70,11 @@
             <param name="comparer">The comparer used to equate objects in the collection with the expected object</param>
             <exception cref="T:Xunit.Sdk.DoesNotContainException">Thrown when the object is present inside the container</exception>
         </member>
-        <member name="M:Xunit.Assert.DoesNotContain(System.String,System.Collections.Generic.IEnumerable{System.String},System.StringComparer)">
-            <summary>
-            Verifies that a collection does not contain a given string, using a string comparer.
-            </summary>
-            <typeparam name="T">The type of the string to be compared</typeparam>
-            <param name="expected">The string that is expected not to be in the collection</param>
-            <param name="collection">The collection to be inspected</param>
-            <param name="comparer">The comparer used to equate strings in the collection with the expected string</param>
-            <exception cref="T:Xunit.Sdk.DoesNotContainException">Thrown when the string is present inside the container</exception>
-        </member>
-        <member name="M:Xunit.Assert.DoesNotContain``1(``0,System.Collections.Generic.IEnumerable{``0},System.Collections.Generic.IComparer{``0})">
-            <summary>
-            Verifies that a collection does not contain a given object, using a comparer.
-            </summary>
-            <typeparam name="T">The type of the object to be compared</typeparam>
-            <param name="expected">The object that is expected not to be in the collection</param>
-            <param name="collection">The collection to be inspected</param>
-            <param name="comparer">The comparer used to equate objects in the collection with the expected object</param>
-            <exception cref="T:Xunit.Sdk.DoesNotContainException">Thrown when the object is present inside the container</exception>
-        </member>
         <member name="M:Xunit.Assert.DoesNotContain(System.String,System.String)">
             <summary>
             Verifies that a string does not contain a given sub-string, using the current culture.
             </summary>
-            <param name="expectedSubString">The sub-string which is expected not to be in the string</param>
+            <param name="expectedSubstring">The sub-string which is expected not to be in the string</param>
             <param name="actualString">The string to be inspected</param>
             <exception cref="T:Xunit.Sdk.DoesNotContainException">Thrown when the sub-string is present inside the string</exception>
         </member>
@@ -122,7 +82,7 @@
             <summary>
             Verifies that a string does not contain a given sub-string, using the current culture.
             </summary>
-            <param name="expectedSubString">The sub-string which is expected not to be in the string</param>
+            <param name="expectedSubstring">The sub-string which is expected not to be in the string</param>
             <param name="actualString">The string to be inspected</param>
             <param name="comparisonType">The type of string comparison to perform</param>
             <exception cref="T:Xunit.Sdk.DoesNotContainException">Thrown when the sub-string is present inside the given string</exception>
@@ -160,19 +120,38 @@
             <param name="comparer">The comparer used to compare the two objects</param>
             <exception cref="T:Xunit.Sdk.EqualException">Thrown when the objects are not equal</exception>
         </member>
-        <member name="M:Xunit.Assert.Equal(System.String,System.String,System.StringComparer)">
+        <member name="M:Xunit.Assert.Equal(System.Double,System.Double,System.Int32)">
             <summary>
-            Verifies that two strings are equal, using the given string comparer.
+            Verifies that two <see cref="T:System.Double"/> values are equal, within the number of decimal
+            places given by <paramref name="precision"/>.
             </summary>
-            <typeparam name="T">The type of the strings to be compared</typeparam>
             <param name="expected">The expected value</param>
             <param name="actual">The value to be compared against</param>
-            <param name="comparer">The comparer used to compare the two strings</param>
-            <exception cref="T:Xunit.Sdk.EqualException">Thrown when the strings are not equal</exception>
+            <param name="precision">The number of decimal places (valid values: 0-15)</param>
+            <exception cref="T:Xunit.Sdk.EqualException">Thrown when the values are not equal</exception>
         </member>
-        <member name="M:Xunit.Assert.Equal``1(``0,``0,System.Collections.Generic.IComparer{``0})">
+        <member name="M:Xunit.Assert.Equal(System.Decimal,System.Decimal,System.Int32)">
             <summary>
-            Verifies that two objects are equal, using a custom comparer.
+            Verifies that two <see cref="T:System.Decimal"/> values are equal, within the number of decimal
+            places given by <paramref name="precision"/>.
+            </summary>
+            <param name="expected">The expected value</param>
+            <param name="actual">The value to be compared against</param>
+            <param name="precision">The number of decimal places (valid values: 0-15)</param>
+            <exception cref="T:Xunit.Sdk.EqualException">Thrown when the values are not equal</exception>
+        </member>
+        <member name="M:Xunit.Assert.Equal``1(System.Collections.Generic.IEnumerable{``0},System.Collections.Generic.IEnumerable{``0})">
+            <summary>
+            Verifies that two sequences are equivalent, using a default comparer.
+            </summary>
+            <typeparam name="T">The type of the objects to be compared</typeparam>
+            <param name="expected">The expected value</param>
+            <param name="actual">The value to be compared against</param>
+            <exception cref="T:Xunit.Sdk.EqualException">Thrown when the objects are not equal</exception>
+        </member>
+        <member name="M:Xunit.Assert.Equal``1(System.Collections.Generic.IEnumerable{``0},System.Collections.Generic.IEnumerable{``0},System.Collections.Generic.IEqualityComparer{``0})">
+            <summary>
+            Verifies that two sequences are equivalent, using a custom equatable comparer.
             </summary>
             <typeparam name="T">The type of the objects to be compared</typeparam>
             <param name="expected">The expected value</param>
@@ -296,24 +275,23 @@
             <param name="comparer">The comparer used to examine the objects</param>
             <exception cref="T:Xunit.Sdk.NotEqualException">Thrown when the objects are equal</exception>
         </member>
-        <member name="M:Xunit.Assert.NotEqual(System.String,System.String,System.StringComparer)">
+        <member name="M:Xunit.Assert.NotEqual``1(System.Collections.Generic.IEnumerable{``0},System.Collections.Generic.IEnumerable{``0})">
             <summary>
-            Verifies that two strings are not equal, using the given string comparer.
-            </summary>
-            <typeparam name="T">The type of the strings to be compared</typeparam>
-            <param name="expected">The expected string</param>
-            <param name="actual">The actual string</param>
-            <param name="comparer">The comparer used to examine the strings</param>
-            <exception cref="T:Xunit.Sdk.NotEqualException">Thrown when the strings are equal</exception>
-        </member>
-        <member name="M:Xunit.Assert.NotEqual``1(``0,``0,System.Collections.Generic.IComparer{``0})">
-            <summary>
-            Verifies that two objects are not equal, using a custom comparer.
+            Verifies that two sequences are not equivalent, using a default comparer.
             </summary>
             <typeparam name="T">The type of the objects to be compared</typeparam>
             <param name="expected">The expected object</param>
             <param name="actual">The actual object</param>
-            <param name="comparer">The comparer used to examine the objects</param>
+            <exception cref="T:Xunit.Sdk.NotEqualException">Thrown when the objects are equal</exception>
+        </member>
+        <member name="M:Xunit.Assert.NotEqual``1(System.Collections.Generic.IEnumerable{``0},System.Collections.Generic.IEnumerable{``0},System.Collections.Generic.IEqualityComparer{``0})">
+            <summary>
+            Verifies that two sequences are not equivalent, using a custom equality comparer.
+            </summary>
+            <typeparam name="T">The type of the objects to be compared</typeparam>
+            <param name="expected">The expected object</param>
+            <param name="actual">The actual object</param>
+            <param name="comparer">The comparer used to compare the two objects</param>
             <exception cref="T:Xunit.Sdk.NotEqualException">Thrown when the objects are equal</exception>
         </member>
         <member name="M:Xunit.Assert.NotInRange``1(``0,``0,``0)">
@@ -359,6 +337,16 @@
             <param name="object">The object to be inspected</param>
             <exception cref="T:Xunit.Sdk.NullException">Thrown when the object reference is not null</exception>
         </member>
+        <member name="M:Xunit.Assert.PropertyChanged(System.ComponentModel.INotifyPropertyChanged,System.String,Xunit.Assert.PropertyChangedDelegate)">
+            <summary>
+            Verifies that the provided object raised INotifyPropertyChanged.PropertyChanged
+            as a result of executing the given test code.
+            </summary>
+            <param name="object">The object which should raise the notification</param>
+            <param name="propertyName">The property name for which the notification should be raised</param>
+            <param name="testCode">The test code which should cause the notification to be raised</param>
+            <exception cref="T:Xunit.Sdk.PropertyChangedException">Thrown when the notification is not raised</exception>
+        </member>
         <member name="M:Xunit.Assert.Same(System.Object,System.Object)">
             <summary>
             Verifies that two objects are the same instance.
@@ -377,6 +365,18 @@
             <exception cref="T:Xunit.Sdk.SingleException">Thrown when the collection does not contain
             exactly one element.</exception>
         </member>
+        <member name="M:Xunit.Assert.Single(System.Collections.IEnumerable,System.Object)">
+            <summary>
+            Verifies that the given collection contains only a single
+            element of the given value. The collection may or may not
+            contain other values.
+            </summary>
+            <param name="collection">The collection.</param>
+            <param name="expected">The value to find in the collection.</param>
+            <returns>The single item in the collection.</returns>
+            <exception cref="T:Xunit.Sdk.SingleException">Thrown when the collection does not contain
+            exactly one element.</exception>
+        </member>
         <member name="M:Xunit.Assert.Single``1(System.Collections.Generic.IEnumerable{``0})">
             <summary>
             Verifies that the given collection contains only a single
@@ -391,7 +391,9 @@
         <member name="M:Xunit.Assert.Single``1(System.Collections.Generic.IEnumerable{``0},System.Predicate{``0})">
             <summary>
             Verifies that the given collection contains only a single
-            element of the given type which matches the given predicate.
+            element of the given type which matches the given predicate. The
+            collection may or may not contain other values which do not
+            match the given predicate.
             </summary>
             <typeparam name="T">The collection type.</typeparam>
             <param name="collection">The collection.</param>
@@ -452,6 +454,11 @@
             <param name="condition">The condition to be inspected</param>
             <param name="userMessage">The message to be shown when the condition is false</param>
             <exception cref="T:Xunit.Sdk.TrueException">Thrown when the condition is false</exception>
+        </member>
+        <member name="T:Xunit.Assert.PropertyChangedDelegate">
+            <summary>
+            Used by the PropertyChanged.
+            </summary>
         </member>
         <member name="T:Xunit.Assert.ThrowsDelegate">
             <summary>
@@ -646,12 +653,26 @@
             <param name="userMessage">The user message to be displayed</param>
             <param name="stackTrace">The stack trace to be displayed</param>
         </member>
+        <member name="M:Xunit.Sdk.AssertException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Xunit.Sdk.AssertException.ExcludeStackFrame(System.String)">
+            <summary>
+            Determines whether to exclude a line from the stack frame. By default, this method
+            removes all stack frames from methods beginning with Xunit.Assert or Xunit.Sdk.
+            </summary>
+            <param name="stackFrame">The stack frame to be filtered.</param>
+            <returns>Return true to exclude the line from the stack frame; false, otherwise.</returns>
+        </member>
         <member name="M:Xunit.Sdk.AssertException.FilterStackTrace(System.String)">
             <summary>
             Filters the stack trace to remove all lines that occur within the testing framework.
             </summary>
-            <param name="stackTrace">The original stack trace</param>
+            <param name="stack">The original stack trace</param>
             <returns>The filtered stack trace</returns>
+        </member>
+        <member name="M:Xunit.Sdk.AssertException.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <inheritdoc/>
         </member>
         <member name="P:Xunit.Sdk.AssertException.StackTrace">
             <summary>
@@ -681,6 +702,12 @@
             <param name="userMessage">The user message to be shown</param>
             <param name="skipPositionCheck">Set to true to skip the check for difference position</param>
         </member>
+        <member name="M:Xunit.Sdk.AssertActualExpectedException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Xunit.Sdk.AssertActualExpectedException.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <inheritdoc/>
+        </member>
         <member name="P:Xunit.Sdk.AssertActualExpectedException.Actual">
             <summary>
             Gets the actual value.
@@ -709,17 +736,42 @@
             </summary>
             <param name="expected">The expected object value</param>
         </member>
-        <member name="T:Xunit.Sdk.ParamterCountMismatchException">
+        <member name="M:Xunit.Sdk.ContainsException.#ctor(System.Object,System.Object)">
+            <summary>
+            Creates a new instance of the <see cref="T:Xunit.Sdk.ContainsException"/> class.
+            </summary>
+            <param name="expected">The expected object value</param>
+            <param name="actual">The actual value</param>
+        </member>
+        <member name="M:Xunit.Sdk.ContainsException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <inheritdoc/>
+        </member>
+        <member name="T:Xunit.Sdk.ParameterCountMismatchException">
             <summary>
             Exception to be thrown from <see cref="M:Xunit.Sdk.IMethodInfo.Invoke(System.Object,System.Object[])"/> when the number of
             parameter values does not the test method signature.
             </summary>
         </member>
-        <member name="M:Xunit.Sdk.ParamterCountMismatchException.#ctor">
+        <member name="M:Xunit.Sdk.ParameterCountMismatchException.#ctor">
             <summary/>
         </member>
-        <member name="M:Xunit.Sdk.ParamterCountMismatchException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+        <member name="M:Xunit.Sdk.ParameterCountMismatchException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
             <summary/>
+        </member>
+        <member name="T:Xunit.Sdk.PropertyChangedException">
+            <summary>
+            Exception thrown when code unexpectedly fails change a property.
+            </summary>
+        </member>
+        <member name="M:Xunit.Sdk.PropertyChangedException.#ctor(System.String)">
+            <summary>
+            Creates a new instance of the <see cref="T:Xunit.Sdk.PropertyChangedException"/> class. Call this constructor
+            when no exception was thrown.
+            </summary>
+            <param name="propertyName">The name of the property that was expected to be changed.</param>
+        </member>
+        <member name="M:Xunit.Sdk.PropertyChangedException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <inheritdoc/>
         </member>
         <member name="T:Xunit.Sdk.SingleException">
             <summary>
@@ -731,6 +783,16 @@
             Initializes a new instance of the <see cref="T:Xunit.Sdk.SingleException"/> class.
             </summary>
             <param name="count">The numbers of items in the collection.</param>
+        </member>
+        <member name="M:Xunit.Sdk.SingleException.#ctor(System.Int32,System.Object)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Xunit.Sdk.SingleException"/> class.
+            </summary>
+            <param name="count">The numbers of items in the collection.</param>
+            <param name="expected">The object expected to be in the collection.</param>
+        </member>
+        <member name="M:Xunit.Sdk.SingleException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <inheritdoc/>
         </member>
         <member name="T:Xunit.Sdk.Executor">
             <summary>
@@ -811,6 +873,9 @@
             <param name="expected">The expected type</param>
             <param name="actual">The actual object value</param>
         </member>
+        <member name="M:Xunit.Sdk.IsAssignableFromException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <inheritdoc/>
+        </member>
         <member name="T:Xunit.Record">
             <summary>
             Allows the user to record actions for a test.
@@ -848,6 +913,12 @@
             Initializes a new instance of the <see cref="T:Xunit.Sdk.AfterTestException"/> class.
             </summary>
             <param name="exceptions">The exceptions.</param>
+        </member>
+        <member name="M:Xunit.Sdk.AfterTestException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Xunit.Sdk.AfterTestException.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <inheritdoc/>
         </member>
         <member name="P:Xunit.Sdk.AfterTestException.AfterExceptions">
             <summary>
@@ -1069,6 +1140,13 @@
             <param name="name">The child element name.</param>
             <returns>The new child XML element.</returns>
         </member>
+        <member name="M:Xunit.Sdk.XmlUtility.SetInnerText(System.Xml.XmlNode,System.String)">
+            <summary>
+            Sets the inner text of the XML node, properly escaping it as necessary.
+            </summary>
+            <param name="element">The element whose inner text will be set.</param>
+            <param name="value">The inner text to be escaped and then set.</param>
+        </member>
         <member name="T:Xunit.Sdk.TraceAssertException">
             <summary>
             Exception that is thrown when a call to Debug.Assert() fails.
@@ -1086,6 +1164,12 @@
             </summary>
             <param name="assertMessage">The original assert message</param>
             <param name="assertDetailedMessage">The original assert detailed message</param>
+        </member>
+        <member name="M:Xunit.Sdk.TraceAssertException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Xunit.Sdk.TraceAssertException.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <inheritdoc/>
         </member>
         <member name="P:Xunit.Sdk.TraceAssertException.AssertDetailedMessage">
             <summary>
@@ -1113,6 +1197,9 @@
             </summary>
             <param name="expected">The expected object value</param>
         </member>
+        <member name="M:Xunit.Sdk.DoesNotContainException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <inheritdoc/>
+        </member>
         <member name="T:Xunit.Sdk.DoesNotThrowException">
             <summary>
             Exception thrown when code unexpectedly throws an exception.
@@ -1123,6 +1210,17 @@
             Creates a new instance of the <see cref="T:Xunit.Sdk.DoesNotThrowException"/> class.
             </summary>
             <param name="actual">Actual exception</param>
+        </member>
+        <member name="M:Xunit.Sdk.DoesNotThrowException.#ctor(System.String)">
+            <summary>
+            THIS CONSTRUCTOR IS FOR UNIT TESTING PURPOSES ONLY.
+            </summary>
+        </member>
+        <member name="M:Xunit.Sdk.DoesNotThrowException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Xunit.Sdk.DoesNotThrowException.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <inheritdoc/>
         </member>
         <member name="P:Xunit.Sdk.DoesNotThrowException.StackTrace">
             <summary>
@@ -1140,6 +1238,9 @@
             Creates a new instance of the <see cref="T:Xunit.Sdk.EmptyException"/> class.
             </summary>
         </member>
+        <member name="M:Xunit.Sdk.EmptyException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <inheritdoc/>
+        </member>
         <member name="T:Xunit.Sdk.EqualException">
             <summary>
             Exception thrown when two values are unexpectedly not equal.
@@ -1152,6 +1253,17 @@
             <param name="expected">The expected object value</param>
             <param name="actual">The actual object value</param>
         </member>
+        <member name="M:Xunit.Sdk.EqualException.#ctor(System.Object,System.Object,System.Boolean)">
+            <summary>
+            Creates a new instance of the <see cref="T:Xunit.Sdk.EqualException"/> class.
+            </summary>
+            <param name="expected">The expected object value</param>
+            <param name="actual">The actual object value</param>
+            <param name="skipPositionCheck">Set to true to skip the check for difference position</param>
+        </member>
+        <member name="M:Xunit.Sdk.EqualException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <inheritdoc/>
+        </member>
         <member name="T:Xunit.Sdk.FalseException">
             <summary>
             Exception thrown when a value is unexpectedly true.
@@ -1162,6 +1274,9 @@
             Creates a new instance of the <see cref="T:Xunit.Sdk.FalseException"/> class.
             </summary>
             <param name="userMessage">The user message to be display, or null for the default message</param>
+        </member>
+        <member name="M:Xunit.Sdk.FalseException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <inheritdoc/>
         </member>
         <member name="T:Xunit.Sdk.InRangeException">
             <summary>
@@ -1175,6 +1290,12 @@
             <param name="actual">The actual object value</param>
             <param name="low">The low value of the range</param>
             <param name="high">The high value of the range</param>
+        </member>
+        <member name="M:Xunit.Sdk.InRangeException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Xunit.Sdk.InRangeException.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <inheritdoc/>
         </member>
         <member name="P:Xunit.Sdk.InRangeException.Actual">
             <summary>
@@ -1209,6 +1330,9 @@
             <param name="expected">The expected type</param>
             <param name="actual">The actual object value</param>
         </member>
+        <member name="M:Xunit.Sdk.IsNotTypeException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <inheritdoc/>
+        </member>
         <member name="T:Xunit.Sdk.IsTypeException">
             <summary>
             Exception thrown when the value is unexpectedly not of the exact given type.
@@ -1220,6 +1344,9 @@
             </summary>
             <param name="expected">The expected type</param>
             <param name="actual">The actual object value</param>
+        </member>
+        <member name="M:Xunit.Sdk.IsTypeException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <inheritdoc/>
         </member>
         <member name="T:Xunit.IUseFixture`1">
             <summary>
@@ -1250,6 +1377,12 @@
             <param name="actual">The actual object value</param>
             <param name="low">The low value of the range</param>
             <param name="high">The high value of the range</param>
+        </member>
+        <member name="M:Xunit.Sdk.NotInRangeException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Xunit.Sdk.NotInRangeException.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <inheritdoc/>
         </member>
         <member name="P:Xunit.Sdk.NotInRangeException.Actual">
             <summary>
@@ -1303,6 +1436,9 @@
             Creates a new instance of the <see cref="T:Xunit.Sdk.NotEmptyException"/> class.
             </summary>
         </member>
+        <member name="M:Xunit.Sdk.NotEmptyException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <inheritdoc/>
+        </member>
         <member name="T:Xunit.Sdk.NotEqualException">
             <summary>
             Exception thrown when two values are unexpectedly equal.
@@ -1312,6 +1448,9 @@
             <summary>
             Creates a new instance of the <see cref="T:Xunit.Sdk.NotEqualException"/> class.
             </summary>
+        </member>
+        <member name="M:Xunit.Sdk.NotEqualException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <inheritdoc/>
         </member>
         <member name="T:Xunit.Sdk.NotNullException">
             <summary>
@@ -1323,6 +1462,9 @@
             Creates a new instance of the <see cref="T:Xunit.Sdk.NotNullException"/> class.
             </summary>
         </member>
+        <member name="M:Xunit.Sdk.NotNullException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <inheritdoc/>
+        </member>
         <member name="T:Xunit.Sdk.NotSameException">
             <summary>
             Exception thrown when two values are unexpected the same instance.
@@ -1332,6 +1474,9 @@
             <summary>
             Creates a new instance of the <see cref="T:Xunit.Sdk.NotSameException"/> class.
             </summary>
+        </member>
+        <member name="M:Xunit.Sdk.NotSameException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <inheritdoc/>
         </member>
         <member name="T:Xunit.Sdk.NullException">
             <summary>
@@ -1343,6 +1488,9 @@
             Creates a new instance of the <see cref="T:Xunit.Sdk.NullException"/> class.
             </summary>
             <param name="actual"></param>
+        </member>
+        <member name="M:Xunit.Sdk.NullException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <inheritdoc/>
         </member>
         <member name="T:Xunit.Sdk.LifetimeCommand">
             <summary>
@@ -1698,7 +1846,7 @@
             <summary>
             Creates a new instance of the <see cref="T:Xunit.RunWithAttribute"/> class.
             </summary>
-            <param name="commandType">The class which implements ITestClassCommand and acts as the runner
+            <param name="testClassCommand">The class which implements ITestClassCommand and acts as the runner
             for the test fixture.</param>
         </member>
         <member name="P:Xunit.RunWithAttribute.TestClassCommand">
@@ -1717,6 +1865,9 @@
             </summary>
             <param name="expected">The expected object reference</param>
             <param name="actual">The actual object reference</param>
+        </member>
+        <member name="M:Xunit.Sdk.SameException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <inheritdoc/>
         </member>
         <member name="T:Xunit.Sdk.AssemblyResult">
             <summary>
@@ -2094,6 +2245,12 @@
             the test method is static).</param>
             <param name="parameters">The parameters to be passed to the test method.</param>
         </member>
+        <member name="P:Xunit.Sdk.IMethodInfo.Class">
+            <summary>
+            Gets a value which represents the class that this method was
+            reflected from (i.e., equivalent to MethodInfo.ReflectedType)
+            </summary>
+        </member>
         <member name="P:Xunit.Sdk.IMethodInfo.IsAbstract">
             <summary>
             Gets a value indicating whether the method is abstract.
@@ -2405,6 +2562,17 @@
             <param name="expectedType">The type of the exception that was expected</param>
             <param name="actual">The actual exception that was thrown</param>
         </member>
+        <member name="M:Xunit.Sdk.ThrowsException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Xunit.Sdk.ThrowsException.#ctor(System.Type,System.String,System.String,System.String)">
+            <summary>
+            THIS CONSTRUCTOR IS FOR UNIT TESTING PURPOSES ONLY.
+            </summary>
+        </member>
+        <member name="M:Xunit.Sdk.ThrowsException.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <inheritdoc/>
+        </member>
         <member name="P:Xunit.Sdk.ThrowsException.StackTrace">
             <summary>
             Gets a string representation of the frames on the call stack at the time the current exception was thrown.
@@ -2422,6 +2590,9 @@
             </summary>
             <param name="timeout">The timeout value, in milliseconds</param>
         </member>
+        <member name="M:Xunit.Sdk.TimeoutException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <inheritdoc/>
+        </member>
         <member name="T:Xunit.Sdk.TrueException">
             <summary>
             Exception thrown when a value is unexpectedly false.
@@ -2432,6 +2603,9 @@
             Creates a new instance of the <see cref="T:Xunit.Sdk.TrueException"/> class.
             </summary>
             <param name="userMessage">The user message to be displayed, or null for the default message</param>
+        </member>
+        <member name="M:Xunit.Sdk.TrueException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <inheritdoc/>
         </member>
     </members>
 </doc>

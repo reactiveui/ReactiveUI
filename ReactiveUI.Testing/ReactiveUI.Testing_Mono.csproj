@@ -22,9 +22,9 @@
     <CodeContractsAssemblyMode>1</CodeContractsAssemblyMode>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
+    <DebugSymbols>True</DebugSymbols>
     <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
+    <Optimize>False</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE;MONO</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
@@ -58,7 +58,7 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
+    <Optimize>True</Optimize>
     <OutputPath>bin\Release\Mono\</OutputPath>
     <DefineConstants>TRACE;MONO</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
@@ -87,7 +87,6 @@
     <CodeContractsRuntimeCheckingLevel>Full</CodeContractsRuntimeCheckingLevel>
     <CodeContractsReferenceAssembly>%28none%29</CodeContractsReferenceAssembly>
     <DocumentationFile>bin\Release\Mono\ReactiveUI.Testing.xml</DocumentationFile>
-    <NoWarn>1591, 1573, 1711, 1587, 1570, 1572</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -98,8 +97,20 @@
     <Reference Include="System.Xml.Linq" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Xml" />
-    <Reference Include="NLog, Version=2.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c">
-      <HintPath>..\packages\NLog.2.0.0.2000\lib\net40\NLog.dll</HintPath>
+    <Reference Include="System.Reactive.Core">
+      <HintPath>..\ext\System.Reactive.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reactive.Interfaces">
+      <HintPath>..\ext\System.Reactive.Interfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reactive.Linq">
+      <HintPath>..\ext\System.Reactive.Linq.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reactive.PlatformServices">
+      <HintPath>..\ext\System.Reactive.PlatformServices.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Reactive.Testing">
+      <HintPath>..\ext\Microsoft.Reactive.Testing.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -118,29 +129,9 @@
   </Target>
   -->
   <ItemGroup>
-    <ProjectReference Include="..\..\mono-reactive\System.Reactive.Core\System.Reactive.Core.csproj">
-      <Project>{AD27C5E8-8A0C-454D-B7AA-76A54793B81F}</Project>
-      <Name>System.Reactive.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\mono-reactive\System.Reactive.Interfaces\System.Reactive.Interfaces.csproj">
-      <Project>{755E549E-1BDE-4153-A58B-7C969C902CAD}</Project>
-      <Name>System.Reactive.Interfaces</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\mono-reactive\System.Reactive.Linq\System.Reactive.Linq.csproj">
-      <Project>{F0395470-330B-4DBF-B1A5-D873E597DD05}</Project>
-      <Name>System.Reactive.Linq</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\mono-reactive\System.Reactive.PlatformServices\System.Reactive.PlatformServices.csproj">
-      <Project>{AEEBFC85-91B8-410F-BBB7-BD12BBC61BE6}</Project>
-      <Name>System.Reactive.PlatformServices</Name>
-    </ProjectReference>
     <ProjectReference Include="..\ReactiveUI\ReactiveUI_Mono.csproj">
       <Project>{292A477B-BB94-43C1-984E-E177EF9FEDB7}</Project>
       <Name>ReactiveUI_Mono</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\mono-reactive\Mono.Reactive.Testing\Mono.Reactive.Testing.csproj">
-      <Project>{9FE08AE0-EF24-4498-A50F-6D314F51F18C}</Project>
-      <Name>Mono.Reactive.Testing</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>

@@ -6,11 +6,7 @@ using System.Reactive.Subjects;
 using Xunit;
 using ReactiveUI.Testing;
 
-#if MONO
-using Mono.Reactive.Testing;
-#else
 using Microsoft.Reactive.Testing;
-#endif
 
 namespace ReactiveUI.Tests
 {
@@ -162,7 +158,7 @@ namespace ReactiveUI.Tests
 
                 fixture.Child = new TestFixture();
                 sched.Start();
-                Assert.Null(fixture.Child.IsNotNullString);
+                Assert.Equal("Foo", fixture.Child.IsNotNullString);
 
                 input.OnNext("Bar");
                 sched.Start();

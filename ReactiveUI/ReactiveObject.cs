@@ -11,10 +11,9 @@ using System.Reflection;
 using System.Runtime.Serialization;
 using System.Threading;
 using System.Reactive.Concurrency;
-using NLog;
 
-#if DOTNETISOLDANDSAD || WINDOWS_PHONE
-using System.Concurrency;
+#if NET_45
+using System.Runtime.CompilerServices;
 #endif
 
 namespace ReactiveUI
@@ -58,13 +57,11 @@ namespace ReactiveUI
         [IgnoreDataMember]
         protected Lazy<PropertyInfo[]> allPublicProperties;
 
-        [IgnoreDataMember] 
-        readonly Subject<IObservedChange<object, object>> changingSubject = 
-            new Subject<IObservedChange<object, object>>();
+        [IgnoreDataMember]
+        Subject<IObservedChange<object, object>> changingSubject;
 
         [IgnoreDataMember]
-        readonly Subject<IObservedChange<object, object>> changedSubject = 
-            new Subject<IObservedChange<object, object>>();
+        Subject<IObservedChange<object, object>> changedSubject;
 
         [IgnoreDataMember]
         long changeNotificationsSuppressed = 0;
@@ -76,13 +73,15 @@ namespace ReactiveUI
         }
 
         [OnDeserialized]
-#if WINDOWS_PHONE
+#if WP7
         public
 #endif
         void setupRxObj(StreamingContext sc) { setupRxObj(); }
 
         void setupRxObj()
         {
+            changingSubject = new Subject<IObservedChange<object, object>>();
+            changedSubject = new Subject<IObservedChange<object, object>>();
             allPublicProperties = new Lazy<PropertyInfo[]>(() =>
                 GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance).ToArray());
         }
@@ -101,12 +100,14 @@ namespace ReactiveUI
                 Interlocked.Decrement(ref changeNotificationsSuppressed));
         }
 
+
+
         protected internal void raisePropertyChanging(string propertyName)
         {
             Contract.Requires(propertyName != null);
 
             verifyPropertyName(propertyName);
-            if (!areChangeNotificationsEnabled)
+            if (!areChangeNotificationsEnabled || changingSubject == null)
                 return;
 
             var handler = this.PropertyChanging;
@@ -127,7 +128,7 @@ namespace ReactiveUI
             verifyPropertyName(propertyName);
             this.Log().Debug("{0:X}.{1} changed", this.GetHashCode(), propertyName);
 
-            if (!areChangeNotificationsEnabled) {
+            if (!areChangeNotificationsEnabled || changedSubject == null) {
                 this.Log().Debug("Suppressed change");
                 return;
             }
@@ -213,9 +214,9 @@ namespace ReactiveUI
             Contract.Requires(property != null);
 
             FieldInfo field;
-            string prop_name = RxApp.simpleExpressionToPropertyName<TObj, TRet>(property);
+            string prop_name = Reflection.SimpleExpressionToPropertyName(property);
 
-            field = RxApp.getFieldInfoForProperty<TObj>(prop_name);
+            field = Reflection.GetBackingFieldInfoForProperty<TObj>(prop_name);
 
             var field_val = field.GetValue(This);
 
@@ -260,7 +261,7 @@ namespace ReactiveUI
                 return newValue;
             }
 
-            string prop_name = RxApp.simpleExpressionToPropertyName(property);
+            string prop_name = Reflection.SimpleExpressionToPropertyName(property);
 
             This.raisePropertyChanging(prop_name);
             backingField = newValue;
@@ -279,7 +280,7 @@ namespace ReactiveUI
                 Expression<Func<TObj, TRet>> property)
             where TObj : ReactiveObject
         {
-            var propName = RxApp.simpleExpressionToPropertyName(property);
+            var propName = Reflection.SimpleExpressionToPropertyName(property);
             This.raisePropertyChanging(propName);
         }
 
@@ -294,9 +295,111 @@ namespace ReactiveUI
                 Expression<Func<TObj, TRet>> property)
             where TObj : ReactiveObject
         {
-            var propName = RxApp.simpleExpressionToPropertyName(property);
+            var propName = Reflection.SimpleExpressionToPropertyName(property);
             This.raisePropertyChanged(propName);
         }
+
+#if NET_45
+        /// <summary>
+        /// RaiseAndSetIfChanged fully implements a Setter for a read-write
+        /// property on a ReactiveObject, making the assumption that the
+        /// property has a backing field named "_NameOfProperty". To change this
+        /// assumption, set RxApp.GetFieldNameForPropertyNameFunc.
+        /// </summary>
+        /// <param name="property">An Expression representing the property (i.e.
+        /// 'x => x.SomeProperty'</param>
+        /// <param name="newValue">The new value to set the property to, almost
+        /// always the 'value' keyword.</param>
+        /// <returns>The newly set value, normally discarded.</returns>
+        public static TRet RaiseAndSetIfChanged<TObj, TRet>(
+                this TObj This,
+                TRet newValue,
+                [CallerMemberName] string propertyName = null
+            )
+            where TObj : ReactiveObject
+        {
+            Contract.Requires(This != null);
+            Contract.Requires(propertyName != null);
+
+            var fi = Reflection.GetBackingFieldInfoForProperty<TObj>(propertyName);
+
+            var field_val = fi.GetValue(This);
+
+            if (EqualityComparer<TRet>.Default.Equals((TRet)field_val, (TRet)newValue)) {
+                return newValue;
+            }
+
+            This.raisePropertyChanging(propertyName);
+            fi.SetValue(This, newValue);
+            This.raisePropertyChanged(propertyName);
+
+            return newValue;
+        }
+
+
+        /// <summary>
+        /// RaiseAndSetIfChanged fully implements a Setter for a read-write
+        /// property on a ReactiveObject, making the assumption that the
+        /// property has a backing field named "_NameOfProperty". To change this
+        /// assumption, set RxApp.GetFieldNameForPropertyNameFunc.  This
+        /// overload is intended for Silverlight and WP7 where reflection
+        /// cannot access the private backing field.
+        /// </summary>
+        /// <param name="property">An Expression representing the property (i.e.
+        /// 'x => x.SomeProperty'</param>
+        /// <param name="backingField">A Reference to the backing field for this
+        /// property.</param>
+        /// <param name="newValue">The new value to set the property to, almost
+        /// always the 'value' keyword.</param>
+        /// <returns>The newly set value, normally discarded.</returns>
+        public static TRet RaiseAndSetIfChanged<TObj, TRet>(
+                this TObj This,
+                ref TRet backingField,
+                TRet newValue,
+                [CallerMemberName] string propertyName = null)
+            where TObj : ReactiveObject
+        {
+            Contract.Requires(This != null);
+            Contract.Requires(propertyName != null);
+
+            if (EqualityComparer<TRet>.Default.Equals(backingField, newValue)) {
+                return newValue;
+            }
+
+            This.raisePropertyChanging(propertyName);
+            backingField = newValue;
+            This.raisePropertyChanged(propertyName);
+            return newValue;
+        }
+
+        /// <summary>
+        /// Use this method in your ReactiveObject classes when creating custom
+        /// properties where raiseAndSetIfChanged doesn't suffice.
+        /// </summary>
+        /// <param name="property">An Expression representing the property (i.e.
+        /// 'x => x.SomeProperty'</param>
+        public static void RaisePropertyChanging<TObj, TRet>(
+                this TObj This,
+                [CallerMemberName] string propertyName = null)
+            where TObj : ReactiveObject
+        {
+            This.raisePropertyChanging(propertyName);
+        }
+
+        /// <summary>
+        /// Use this method in your ReactiveObject classes when creating custom
+        /// properties where raiseAndSetIfChanged doesn't suffice.
+        /// </summary>
+        /// <param name="property">An Expression representing the property (i.e.
+        /// 'x => x.SomeProperty'</param>
+        public static void RaisePropertyChanged<TObj, TRet>(
+                this TObj This,
+                [CallerMemberName] string propertyName = null)
+            where TObj : ReactiveObject
+        {
+            This.raisePropertyChanged(propertyName);
+        }
+#endif
     }
 
     public static class ReactiveObjectTestMixin
@@ -323,7 +426,7 @@ namespace ReactiveUI
         public static void RaisePropertyChanging<TSender, TValue>(TSender target, Expression<Func<TSender, TValue>> property)
             where TSender : ReactiveObject
         {
-            RaisePropertyChanging(target, RxApp.simpleExpressionToPropertyName(property));
+            RaisePropertyChanging(target, Reflection.SimpleExpressionToPropertyName(property));
         }
 
         /// <summary>
@@ -348,7 +451,7 @@ namespace ReactiveUI
         public static void RaisePropertyChanged<TSender, TValue>(TSender target, Expression<Func<TSender, TValue>> property)
             where TSender : ReactiveObject
         {
-            RaisePropertyChanged(target, RxApp.simpleExpressionToPropertyName(property));
+            RaisePropertyChanged(target, Reflection.SimpleExpressionToPropertyName(property));
         }
     }
 }
