@@ -7,11 +7,7 @@ using System.Text;
 using ReactiveUI.Testing;
 using Xunit;
 
-#if MONO
-using Mono.Reactive.Testing;
-#else
 using Microsoft.Reactive.Testing;
-#endif
 
 namespace ReactiveUI.Tests
 {
@@ -55,6 +51,7 @@ namespace ReactiveUI.Tests
                 }
                 _InpcProperty = value;
 
+                if (PropertyChanged == null) return;
                 PropertyChanged(this, new PropertyChangedEventArgs("InpcProperty"));
             }
         }
@@ -314,10 +311,21 @@ namespace ReactiveUI.Tests
                 {x => x.Child.IsOnlyOneWord.Length, new[] {"Child", "IsOnlyOneWord", "Length"}},
             };
 
-            var results = data.Keys.Select(x => new {input = x, output = RxApp.expressionToPropertyNames(x)});
+            var dataTypes = new Dictionary<Expression<Func<HostTestFixture, object>>, Type[]>() {
+                {x => x.SomeOtherParam, new[] { typeof(int) }},
+                {x => x.Child.IsNotNullString, new[] {typeof(TestFixture), typeof(string)}},
+                {x => x.Child.Changed, new[] {typeof(TestFixture), typeof(IObservable<IObservedChange<object, object>>)}},
+                {x => x.Child.IsOnlyOneWord.Length, new[] {typeof(TestFixture), typeof(string), typeof(int) }},
+            };
+
+            var results = data.Keys.Select(x => new {input = x, output = Reflection.ExpressionToPropertyNames(x)}).ToArray();
+            var resultTypes = dataTypes.Keys.Select(x => new {input = x, output = Reflection.ExpressionToPropertyTypes(x)}).ToArray();
 
             foreach(var x in results) {
                 data[x.input].AssertAreEqual(x.output);
+            }
+            foreach (var x in resultTypes) {
+                dataTypes[x.input].AssertAreEqual(x.output);
             }
         }
 

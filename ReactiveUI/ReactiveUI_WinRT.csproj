@@ -19,18 +19,19 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\WinRT\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;WINRT</DefineConstants>
+    <OutputPath>bin\Debug\WinRT45\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;WINRT, NET_45</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\WinRT\</OutputPath>
-    <DefineConstants>TRACE;WINRT</DefineConstants>
+    <OutputPath>bin\Release\WinRT45\</OutputPath>
+    <DefineConstants>TRACE;WINRT, NET_45</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Release\WinRT45\ReactiveUI_WinRT.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|ARM'">
     <DebugSymbols>true</DebugSymbols>
@@ -105,26 +106,32 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="CollectionExtensions.cs" />
-    <Compile Include="ConsoleStub.cs" />
+    <Compile Include="CompatMixins.cs" />
     <Compile Include="ContractStubs.cs" />
+    <Compile Include="DefaultPropertyBinding.cs" />
+    <Compile Include="INPCObservableForProperty.cs" />
     <Compile Include="Interfaces.cs" />
+    <Compile Include="IRNPCObservableForProperty.cs" />
     <Compile Include="Logging.cs" />
     <Compile Include="MakeObjectReactiveHelper.cs" />
     <Compile Include="MemoizingMRUCache.cs" />
     <Compile Include="MessageBus.cs" />
-    <Compile Include="NLogStub.cs" />
     <Compile Include="ObservableAsPropertyHelper.cs" />
     <Compile Include="ObservableAsyncMRUCache.cs" />
     <Compile Include="ObservedChangedMixin.cs" />
+    <Compile Include="POCOObservableForProperty.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="PropertyBinding.cs" />
     <Compile Include="ReactiveCollection.cs" />
     <Compile Include="ReactiveNotifyPropertyChangedMixin.cs" />
     <Compile Include="ReactiveObject.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="RefcountDisposeWrapper.cs" />
+    <Compile Include="Reflection.cs" />
     <Compile Include="ReflectionStubs.cs" />
     <Compile Include="RxApp.cs" />
+    <Compile Include="ScheduledSubject.cs" />
     <Compile Include="VariadicTemplates.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

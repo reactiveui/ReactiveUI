@@ -5,7 +5,7 @@ using System.Windows;
 
 [assembly: AssemblyDescription("An MVVM framework that integrates the Reactive Extensions")]
 [assembly: AssemblyProduct("ReactiveUI.Xaml")]
-[assembly: AssemblyVersion("3.2.0.0")]
+[assembly: AssemblyVersion("4.0.0.0")]
 
 #if !(WINRT || SILVERLIGHT || MONO)
 [assembly: ThemeInfo(
@@ -17,3 +17,8 @@ using System.Windows;
     // app, or any theme specific resource dictionaries)
 )]
 #endif
+
+[assembly: InternalsVisibleTo("ReactiveUI.Tests")]
+[assembly: InternalsVisibleTo("ReactiveUI.Tests_SL4")]
+[assembly: InternalsVisibleTo("ReactiveUI.Tests_SL5")]
+[assembly: InternalsVisibleTo("ReactiveUI.Tests_WinRT")]

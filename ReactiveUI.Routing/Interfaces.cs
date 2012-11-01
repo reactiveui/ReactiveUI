@@ -56,23 +56,6 @@ namespace ReactiveUI.Routing
         IScreen HostScreen { get; }
     }
 
-    public interface IViewForViewModel
-    {
-        object ViewModel { get; set; }
-    }
-
-    /// <summary>
-    /// Implement this interface on your Views.
-    /// </summary>
-    public interface IViewForViewModel<T> : IViewForViewModel
-        where T : IReactiveNotifyPropertyChanged
-    {
-        /// <summary>
-        /// The ViewModel corresponding to this specific View.
-        /// </summary>
-        T ViewModel { get; set; }
-    }
-
     /// <summary>
     /// IScreen represents any object that is hosting its own routing -
     /// usually this object is your AppViewModel or MainWindow object.

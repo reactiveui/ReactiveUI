@@ -11,12 +11,7 @@ using System.Threading;
 using ReactiveUI.Xaml;
 using ReactiveUI.Testing;
 
-#if MONO
-using Mono.Reactive.Testing;
-#else
 using Microsoft.Reactive.Testing;
-#endif
-
 
 namespace ReactiveUI.Tests
 {

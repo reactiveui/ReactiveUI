@@ -6,7 +6,6 @@ using System.Linq.Expressions;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
-using NLog;
 
 namespace ReactiveUI
 {
@@ -138,7 +137,7 @@ namespace ReactiveUI
             Contract.Requires(observable != null);
             Contract.Requires(property != null);
 
-            string prop_name = RxApp.simpleExpressionToPropertyName(property);
+            string prop_name = Reflection.SimpleExpressionToPropertyName(property);
             var ret = new ObservableAsPropertyHelper<TRet>(observable, 
                 _ => This.raisePropertyChanged(prop_name), 
                 initialValue, scheduler);
@@ -166,18 +165,18 @@ namespace ReactiveUI
             TObj source,
             Expression<Func<TObj, TRet>> property,
             TRet initialValue = default(TRet),
-            IScheduler scheduler = null)
+            IScheduler scheduler = null,
+            bool setViaReflection = true)
             where TObj : ReactiveObject
         {
             var ret = source.ObservableToProperty(This, property, initialValue, scheduler);
 
-            string propName = RxApp.simpleExpressionToPropertyName(property);
+            string propName = Reflection.SimpleExpressionToPropertyName(property);
 
-            // NB: Some people decided to name their backing field something
-            // weird and use the return value of this method in RxUI 2. If they
-            // did that, we'll just roll with it.
-            var fi = RxApp.getFieldInfoForProperty<TObj>(propName, true);
-            if (fi != null) fi.SetValue(source, ret);
+            if (setViaReflection) {
+                var fi = Reflection.GetBackingFieldInfoForProperty<TObj>(propName, true);
+                if (fi != null) fi.SetValue(source, ret);
+            }
 
             return ret;
         }

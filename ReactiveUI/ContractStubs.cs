@@ -1,6 +1,6 @@
 ﻿using System;
 
-#if DOTNETISOLDANDSAD || WINDOWS_PHONE
+#if DOTNETISOLDANDSAD || WP7
 
 namespace System.Diagnostics.Contracts
 {
@@ -41,7 +41,20 @@ namespace System.ComponentModel
         event PropertyChangingEventHandler PropertyChanging;
     }
 }
+#endif
 
+#if SILVERLIGHT || WINRT
+namespace System
+{
+    [AttributeUsage(AttributeTargets.All, Inherited = false, AllowMultiple = true)]
+    public sealed class LocalizableAttribute : Attribute
+    {
+        // This is a positional argument
+        public LocalizableAttribute(bool isLocalizable)
+        {
+        }
+    }
+}
 #endif
 
 // vim: tw=120 ts=4 sw=4 et :

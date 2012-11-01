@@ -39,17 +39,17 @@ namespace Foobar.Views
 {
     using ViewModels;
 
-    public class FooBarView : IViewForViewModel<IFooBarViewModel> 
+    public class FooBarView : IViewFor<IFooBarViewModel> 
     {
-        object IViewForViewModel.ViewModel { get { return ViewModel; } set { ViewModel = (IFooBarViewModel) value; } }
+        object IViewFor.ViewModel { get { return ViewModel; } set { ViewModel = (IFooBarViewModel) value; } }
         public IFooBarViewModel ViewModel { get; set; }
     }
 
-    public interface IBazView : IViewForViewModel<IBazViewModel> {}
+    public interface IBazView : IViewFor<IBazViewModel> {}
 
     public class BazView : IBazView 
     {
-        object IViewForViewModel.ViewModel { get { return ViewModel; } set { ViewModel = (IBazViewModel)value; } }
+        object IViewFor.ViewModel { get { return ViewModel; } set { ViewModel = (IBazViewModel)value; } }
         public IBazViewModel ViewModel { get; set; }
     }
 }
@@ -66,7 +66,8 @@ namespace ReactiveUI.Routing.Tests
         {
             RxApp.ConfigureServiceLocator(
                 (x, _) => (x.Name == "IBazView" ? new BazView() : null), 
-                (x, _) => null);
+                (x, _) => null,
+                (c, t, k) => { });
 
             var vm = new BazViewModel(null);
 
@@ -79,8 +80,9 @@ namespace ReactiveUI.Routing.Tests
         public void ResolvePureInterfaceType() 
         {
             RxApp.ConfigureServiceLocator(
-                (x, _) => (x == typeof(IViewForViewModel<IFooBarViewModel>) ? new FooBarView() : null), 
-                (x, _) => null);
+                (x, _) => (x == typeof(IViewFor<IFooBarViewModel>) ? new FooBarView() : null), 
+                (x, _) => null,
+                (c, t, k) => { });
 
             var vm = new FooBarViewModel(null);
 

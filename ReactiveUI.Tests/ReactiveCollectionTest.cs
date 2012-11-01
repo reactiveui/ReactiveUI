@@ -7,11 +7,7 @@ using System.Text;
 using ReactiveUI.Testing;
 using Xunit;
 
-#if MONO
-using Mono.Reactive.Testing;
-#else
 using Microsoft.Reactive.Testing;
-#endif
 
 namespace ReactiveUI.Tests
 {
@@ -266,14 +262,14 @@ namespace ReactiveUI.Tests
 
             fixture.Add(new TestFixture() { IsOnlyOneWord = "Hello" });
             Assert.Equal(5, output.Count);
-            Assert.Equal(output[4], "Hello");
+            Assert.Equal("Hello", output[4]);
 
             fixture.RemoveAt(4);
             Assert.Equal(4, output.Count);
 
             fixture[1] = new TestFixture() { IsOnlyOneWord = "Goodbye" };
             Assert.Equal(4, output.Count);
-            Assert.Equal(output[1], "Goodbye");
+            Assert.Equal("Goodbye", output[1]);
 
             fixture.Clear();
             Assert.Equal(0, output.Count);
