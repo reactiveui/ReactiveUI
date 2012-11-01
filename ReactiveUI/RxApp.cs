@@ -89,11 +89,11 @@ namespace ReactiveUI
             });
 
             if (InUnitTestRunner()) {
-                Console.Error.WriteLine("*** Detected Unit Test Runner, setting Scheduler to Immediate ***");
-                Console.Error.WriteLine("If we are not actually in a test runner, please file a bug\n");
+                LogHost.Default.Warn("*** Detected Unit Test Runner, setting Scheduler to Immediate ***");
+                LogHost.Default.Warn("If we are not actually in a test runner, please file a bug\n");
                 DeferredScheduler = Scheduler.Immediate;
             } else {
-                Console.Error.WriteLine("Initializing to normal mode");
+                LogHost.Default.Info("Initializing to normal mode");
             }
 
             if (DeferredScheduler == null) {
