@@ -40,6 +40,13 @@ namespace ReactiveUI.Xaml
             var type = dobj.GetType();
 
             // Look for the DependencyProperty attached to this property name
+#if WINRT
+            var pi = type.GetProperty(propertyName + "Property", BindingFlags.Static | BindingFlags.Public | BindingFlags.FlattenHierarchy);
+            if (pi != null) {
+                goto itWorks;
+            }
+#endif
+
             var fi = type.GetField(propertyName + "Property", BindingFlags.Static | BindingFlags.Public | BindingFlags.FlattenHierarchy);
             if (fi == null) {
                 this.Log().Debug("Tried to bind DO {0}.{1}, but DP doesn't exist. Binding as POCO object",
@@ -48,6 +55,7 @@ namespace ReactiveUI.Xaml
                 return ret.GetNotificationForProperty(sender, propertyName, beforeChanged);
             }
 
+        itWorks:
             return Observable.Create<IObservedChange<object, object>>(subj => {
                 DependencyProperty attachedProp;
 
