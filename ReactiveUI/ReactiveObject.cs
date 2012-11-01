@@ -12,10 +12,6 @@ using System.Runtime.Serialization;
 using System.Threading;
 using System.Reactive.Concurrency;
 
-#if DOTNETISOLDANDSAD || WP7
-using System.Concurrency;
-#endif
-
 #if NET_45
 using System.Runtime.CompilerServices;
 #endif
