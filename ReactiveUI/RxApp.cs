@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Reactive;
 using System.Reactive.Concurrency;
@@ -53,10 +54,21 @@ namespace ReactiveUI
             TaskpoolScheduler = Scheduler.TaskPool;
 #endif
 
-            DefaultExceptionHandler = Observer.Create<Exception>(ex => 
+            DefaultExceptionHandler = Observer.Create<Exception>(ex => {
+                // NB: If you're seeing this, it means that an 
+                // ObservableAsPropertyHelper or the CanExecute of a 
+                // ReactiveCommand ended in an OnError. Instead of silently 
+                // breaking, ReactiveUI will halt here if a debugger is attached.
+                if (Debugger.IsAttached) {
+                    Debugger.Break();
+                }
+
                 RxApp.DeferredScheduler.Schedule(() => {
-                    throw new Exception("An exception occurred on an object that would destabilize ReactiveUI. To prevent this, Subscribe to the ThrownExceptions property of your objects", ex);
-                }));
+                    throw new Exception(
+                        "An OnError occurred on an object (usually ObservableAsPropertyHelper) that would break a binding or command. To prevent this, Subscribe to the ThrownExceptions property of your objects",
+                        ex);
+                });
+            });
 
             MessageBus = new MessageBus();
 
