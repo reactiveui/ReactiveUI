@@ -23,19 +23,19 @@ namespace ReactiveUI
         public event NotifyCollectionChangedEventHandler CollectionChanging;
         public event NotifyCollectionChangedEventHandler CollectionChanged;
 
-        [IgnoreDataMember] ScheduledSubject<NotifyCollectionChangedEventArgs> _changing;
-        [IgnoreDataMember] ScheduledSubject<NotifyCollectionChangedEventArgs> _changed;
+        [IgnoreDataMember] Subject<NotifyCollectionChangedEventArgs> _changing;
+        [IgnoreDataMember] Subject<NotifyCollectionChangedEventArgs> _changed;
         
         [DataMember] List<T> _inner;
 
         [IgnoreDataMember] int _suppressionRefCount = 0;
 
-        [IgnoreDataMember] Lazy<ScheduledSubject<T>> _beforeItemsAdded;
-        [IgnoreDataMember] Lazy<ScheduledSubject<T>> _itemsAdded;
-        [IgnoreDataMember] Lazy<ScheduledSubject<T>> _beforeItemsRemoved;
-        [IgnoreDataMember] Lazy<ScheduledSubject<T>> _itemsRemoved;
-        [IgnoreDataMember] Lazy<ScheduledSubject<IObservedChange<T, object>>> _itemChanging;
-        [IgnoreDataMember] Lazy<ScheduledSubject<IObservedChange<T, object>>> _itemChanged;
+        [IgnoreDataMember] Lazy<Subject<T>> _beforeItemsAdded;
+        [IgnoreDataMember] Lazy<Subject<T>> _itemsAdded;
+        [IgnoreDataMember] Lazy<Subject<T>> _beforeItemsRemoved;
+        [IgnoreDataMember] Lazy<Subject<T>> _itemsRemoved;
+        [IgnoreDataMember] Lazy<Subject<IObservedChange<T, object>>> _itemChanging;
+        [IgnoreDataMember] Lazy<Subject<IObservedChange<T, object>>> _itemChanged;
 
         [IgnoreDataMember] Dictionary<object, RefcountDisposeWrapper> _propertyChangeWatchers = null;
 
@@ -58,20 +58,20 @@ namespace ReactiveUI
             scheduler = scheduler ?? RxApp.DeferredScheduler;
             _inner = _inner ?? new List<T>();
 
-            _changing = new ScheduledSubject<NotifyCollectionChangedEventArgs>(scheduler);
+            _changing = new Subject<NotifyCollectionChangedEventArgs>();
             _changing.Where(_ => CollectionChanging != null && _suppressionRefCount == 0).Subscribe(x => CollectionChanging(this, x));
 
-            _changed = new ScheduledSubject<NotifyCollectionChangedEventArgs>(scheduler);
+            _changed = new Subject<NotifyCollectionChangedEventArgs>();
             _changed.Where(_ => CollectionChanged != null && _suppressionRefCount == 0).Subscribe(x => CollectionChanged(this, x));
 
             ResetChangeThreshold = resetChangeThreshold;
 
-            _beforeItemsAdded = new Lazy<ScheduledSubject<T>>(() => new ScheduledSubject<T>(scheduler));
-            _itemsAdded = new Lazy<ScheduledSubject<T>>(() => new ScheduledSubject<T>(scheduler));
-            _beforeItemsRemoved = new Lazy<ScheduledSubject<T>>(() => new ScheduledSubject<T>(scheduler));
-            _itemsRemoved = new Lazy<ScheduledSubject<T>>(() => new ScheduledSubject<T>(scheduler));
-            _itemChanging = new Lazy<ScheduledSubject<IObservedChange<T, object>>>(() => new ScheduledSubject<IObservedChange<T, object>>(scheduler));
-            _itemChanged = new Lazy<ScheduledSubject<IObservedChange<T, object>>>(() => new ScheduledSubject<IObservedChange<T, object>>(scheduler));
+            _beforeItemsAdded = new Lazy<Subject<T>>(() => new Subject<T>());
+            _itemsAdded = new Lazy<Subject<T>>(() => new Subject<T>());
+            _beforeItemsRemoved = new Lazy<Subject<T>>(() => new Subject<T>());
+            _itemsRemoved = new Lazy<Subject<T>>(() => new Subject<T>());
+            _itemChanging = new Lazy<Subject<IObservedChange<T, object>>>(() => new Subject<IObservedChange<T, object>>());
+            _itemChanged = new Lazy<Subject<IObservedChange<T, object>>>(() => new Subject<IObservedChange<T, object>>());
 
             // NB: We have to do this instead of initializing _inner so that
             // Collection<T>'s accounting is correct
