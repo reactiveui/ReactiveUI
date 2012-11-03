@@ -184,7 +184,7 @@ namespace ReactiveUI
         public void InsertRange(int index, IEnumerable<T> collection)
         {
             var arr = collection.ToArray();
-            var disp = ((double)arr.Length / _inner.Count > ResetChangeThreshold) ?
+            var disp = isLengthAboveResetThreshold(arr.Length) ?
                 SuppressChangeNotifications() : Disposable.Empty;
 
             using (disp) {
@@ -198,7 +198,7 @@ namespace ReactiveUI
 
         public void RemoveRange(int index, int count)
         {
-            var disp = ((double)count / _inner.Count > ResetChangeThreshold) ?
+            var disp = isLengthAboveResetThreshold(count) ?
                 SuppressChangeNotifications() : Disposable.Empty;
 
             using (disp) {
@@ -235,6 +235,11 @@ namespace ReactiveUI
             _changed.OnNext(ea);
         }
 
+        bool isLengthAboveResetThreshold(int toChangeLength)
+        {
+            return (double) toChangeLength/_inner.Count > ResetChangeThreshold &&
+                toChangeLength > 10;
+        }
 
         /*
          * IReactiveCollection<T>
