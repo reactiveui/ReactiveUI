@@ -182,7 +182,7 @@ namespace ReactiveUI
 
 
         /*
-         * List<T> methods we can make faster by possibly sending Reset 
+         * List<T> methods we can make faster by possibly sending ShouldReset 
          * notifications instead of thrashing the UI by readding items
          * one at a time
          */
@@ -331,6 +331,28 @@ namespace ReactiveUI
         public IObservable<bool> IsEmpty {
             get { return _changed.Select(_ => _inner.Count == 0).DistinctUntilChanged(); }
         }
+
+        public IObservable<NotifyCollectionChangedEventArgs> Changing {
+            get { return _changing; }
+        }
+
+        public IObservable<NotifyCollectionChangedEventArgs> Changed {
+            get { return _changed; }
+        }
+
+        public IObservable<Unit> ShouldReset {
+            get {
+                return _changed.SelectMany(x => 
+                    x.Action != NotifyCollectionChangedAction.Reset ?
+                        Observable.Empty<Unit>() :
+                        Observable.Return(Unit.Default));
+            }
+        }
+
+
+        /*
+         * Property Change Tracking
+         */
 
         void addItemToPropertyTracking(T toTrack)
         {
