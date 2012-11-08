@@ -199,14 +199,14 @@ namespace ReactiveUI
         IObservable<NotifyCollectionChangedEventArgs> Changed { get; }
 
         /// <summary>
-        /// This Observable is fired when a Reset fires on the collection. This
+        /// This Observable is fired when a ShouldReset fires on the collection. This
         /// means that you should forget your previous knowledge of the state
         /// of the collection and reread it.
         /// 
         /// This does *not* mean Clear, and if you interpret it as such, you are
         /// Doing It Wrong.
         /// </summary>
-        IObservable<Unit> Reset { get; }
+        IObservable<Unit> ShouldReset { get; }
     }
 
     /// <summary>
