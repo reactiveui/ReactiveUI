@@ -39,6 +39,9 @@ namespace ReactiveUI
 
         [IgnoreDataMember] Dictionary<object, RefcountDisposeWrapper> _propertyChangeWatchers = null;
 
+        [IgnoreDataMember] int _resetSubCount = 0;
+        static bool _hasWhinedAboutNoResetSub = false;
+
         // NB: This exists so the serializer doesn't whine
         public ReactiveCollection() : this(null) { }
 
@@ -278,6 +281,13 @@ namespace ReactiveUI
         {
             Interlocked.Increment(ref _suppressionRefCount);
 
+            if (!_hasWhinedAboutNoResetSub && _resetSubCount == 0) {
+                LogHost.Default.Warn("SuppressChangeNotifications was called (perhaps via AddRange), yet you do not");
+                LogHost.Default.Warn("have a subscription to ShouldReset. This probably isn't what you want, as ItemsAdded");
+                LogHost.Default.Warn("and friends will appear to 'miss' items");
+                _hasWhinedAboutNoResetSub = true;
+            }
+
             return Disposable.Create(() => {
                 if (Interlocked.Decrement(ref _suppressionRefCount) == 0) {
                     Reset();
@@ -342,10 +352,10 @@ namespace ReactiveUI
 
         public IObservable<Unit> ShouldReset {
             get {
-                return _changed.SelectMany(x => 
+                return refcountSubscribers(_changed.SelectMany(x => 
                     x.Action != NotifyCollectionChangedAction.Reset ?
                         Observable.Empty<Unit>() :
-                        Observable.Return(Unit.Default));
+                        Observable.Return(Unit.Default)), x => _resetSubCount += x);
             }
         }
 
@@ -389,6 +399,17 @@ namespace ReactiveUI
         void clearAllPropertyChangeWatchers()
         {
             while (_propertyChangeWatchers.Count > 0) _propertyChangeWatchers.Values.First().Release();
+        }
+
+        static IObservable<TObs> refcountSubscribers<TObs>(IObservable<TObs> input, Action<int> block)
+        {
+            return Observable.Create<TObs>(subj => {
+                block(1);
+
+                return new CompositeDisposable(
+                    input.Subscribe(subj),
+                    Disposable.Create(() => block(-1)));
+            });
         }
     }
 
