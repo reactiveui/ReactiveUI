@@ -11,7 +11,7 @@
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 
 		<dependencies>
-			<dependency id="Rx-Main" version="[2.0.21030]" />
+			<dependency id="Rx-Main" version="[2.0.21103]" />
 		</dependencies>
 	</metadata>
 </package>
