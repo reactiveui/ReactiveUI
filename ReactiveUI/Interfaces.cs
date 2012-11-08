@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq.Expressions;
+using System.Reactive;
 using System.Reactive.Concurrency;
 
 namespace ReactiveUI
@@ -184,6 +185,28 @@ namespace ReactiveUI
         /// rebroadcast through ItemChanging/ItemChanged.
         /// </summary>
         bool ChangeTrackingEnabled { get; set; }
+
+        /// <summary>
+        /// This Observable is equivalent to the NotifyCollectionChanged event,
+        /// but fires before the collection is changed
+        /// </summary>
+        IObservable<NotifyCollectionChangedEventArgs> Changing { get; }
+
+        /// <summary>
+        /// This Observable is equivalent to the NotifyCollectionChanged event,
+        /// and fires after the collection is changed
+        /// </summary>
+        IObservable<NotifyCollectionChangedEventArgs> Changed { get; }
+
+        /// <summary>
+        /// This Observable is fired when a Reset fires on the collection. This
+        /// means that you should forget your previous knowledge of the state
+        /// of the collection and reread it.
+        /// 
+        /// This does *not* mean Clear, and if you interpret it as such, you are
+        /// Doing It Wrong.
+        /// </summary>
+        IObservable<Unit> Reset { get; }
     }
 
     /// <summary>
