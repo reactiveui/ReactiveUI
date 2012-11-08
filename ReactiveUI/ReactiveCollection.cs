@@ -88,6 +88,8 @@ namespace ReactiveUI
             if (_suppressionRefCount > 0) {
                 base.InsertItem(index, item);
                 _inner.Insert(index, item);
+            
+                if (ChangeTrackingEnabled) addItemToPropertyTracking(item);
                 return;
             }
 
@@ -107,13 +109,16 @@ namespace ReactiveUI
 
         protected override void RemoveItem(int index)
         {
+            var item = _inner[index];
+
             if (_suppressionRefCount > 0) {
                 base.RemoveItem(index);
                 _inner.RemoveAt(index);
+            
+                if (ChangeTrackingEnabled) removeItemFromPropertyTracking(item);
                 return;
             }
 
-            var item = _inner[index];
             var ea = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, item, index);
 
             _changing.OnNext(ea);
@@ -132,6 +137,12 @@ namespace ReactiveUI
             if (_suppressionRefCount > 0) {
                 base.SetItem(index, item);
                 _inner[index] = item;
+
+                if (ChangeTrackingEnabled) {
+                    removeItemFromPropertyTracking(_inner[index]);
+                    addItemToPropertyTracking(item);
+                }
+
                 return;
             }
 
@@ -154,6 +165,8 @@ namespace ReactiveUI
             if (_suppressionRefCount > 0) {
                 base.ClearItems();
                 _inner.Clear();
+            
+                if (ChangeTrackingEnabled) clearAllPropertyChangeWatchers();
                 return;
             }
 
