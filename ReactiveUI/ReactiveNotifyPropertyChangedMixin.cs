@@ -149,14 +149,18 @@ namespace ReactiveUI
             ObservedChange<TSender, TValue> obsCh;
 
             while(current.Next != null) {
-                var getter = Reflection.GetValueFetcherForProperty(currentObj.GetType(), current.Value);
-                if (getter == null) {
-                    subscriptions.List.Where(x => x != null).ForEach(x => x.Dispose());
-                    throw new ArgumentException(String.Format("Property '{0}' does not exist in expression", current.Value));
-                }
+                Func<object, object> getter = null;
 
                 if (currentObj != null) {
+                    getter = Reflection.GetValueFetcherForProperty(currentObj.GetType(), current.Value);
+
+                    if (getter == null) {
+                        subscriptions.List.Where(x => x != null).ForEach(x => x.Dispose());
+                        throw new ArgumentException(String.Format("Property '{0}' does not exist in expression", current.Value));
+                    }
+
                     var capture = new {current, currentObj, getter, currentSub};
+
                     var toDispose = new IDisposable[2];
 
                     var valGetter = new ObservedChange<object, TValue>() {
@@ -202,7 +206,7 @@ namespace ReactiveUI
 
                 current = current.Next;
                 currentSub = currentSub.Next;
-                currentObj = getter(currentObj);
+                currentObj = getter != null ? getter(currentObj) : null;
             }
 
             if (currentSub.Value != null) {
