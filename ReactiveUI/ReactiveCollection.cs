@@ -18,10 +18,13 @@ using System.Globalization;
 
 namespace ReactiveUI
 {
-    public class ReactiveCollection<T> : Collection<T>, IReactiveCollection<T>
+    public class ReactiveCollection<T> : Collection<T>, IReactiveCollection<T>, INotifyPropertyChanging, INotifyPropertyChanged
     {
         public event NotifyCollectionChangedEventHandler CollectionChanging;
         public event NotifyCollectionChangedEventHandler CollectionChanged;
+
+        public event PropertyChangingEventHandler PropertyChanging;
+        public event PropertyChangedEventHandler PropertyChanged;
 
         [IgnoreDataMember] Subject<NotifyCollectionChangedEventArgs> _changing;
         [IgnoreDataMember] Subject<NotifyCollectionChangedEventArgs> _changed;
@@ -79,6 +82,25 @@ namespace ReactiveUI
             // NB: We have to do this instead of initializing _inner so that
             // Collection<T>'s accounting is correct
             foreach (var item in initialContents ?? Enumerable.Empty<T>()) { Add(item); }
+
+            // NB: ObservableCollection has a Secret Handshake with WPF where 
+            // they fire an INPC notification with the token "Item[]". Emulate 
+            // it here
+            CollectionCountChanging.Subscribe(_ => {
+                if (PropertyChanging != null) PropertyChanging(this, new PropertyChangingEventArgs("Count"));
+            });
+
+            CollectionCountChanged.Subscribe(_ => {
+                if (PropertyChanged != null) PropertyChanged(this, new PropertyChangedEventArgs("Count"));
+            });
+
+            Changing.Subscribe(_ => {
+                if (PropertyChanging != null) PropertyChanging(this, new PropertyChangingEventArgs("Item[]"));
+            });
+
+            Changed.Subscribe(_ => {
+                if (PropertyChanged != null) PropertyChanged(this, new PropertyChangedEventArgs("Item[]"));
+            });
         }
 
 
