@@ -56,7 +56,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="mscorlib" />
-
     <Reference Include="System.Reactive.Core, Version=2.0.20823.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\ext\SL5\System.Reactive.Core.dll</HintPath>
@@ -77,9 +76,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\ext\SL5\System.Reactive.Windows.Threading.dll</HintPath>
     </Reference>
-
-    <Reference Include="System.Reactive, Version=1.1.11111.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
-    <Reference Include="System.Reactive.Windows.Threading, Version=1.1.11111.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Windows" />
     <Reference Include="system" />
