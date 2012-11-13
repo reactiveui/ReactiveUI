@@ -47,6 +47,7 @@ namespace ReactiveUI.Xaml
             }
         }
 
+#if FALSE
         public static IEnumerable<T> RandomSamples<T>(int count)
         {
             var sampleType = findSampleClassForViewModel(typeof (T)) ?? typeof (T);
@@ -55,6 +56,7 @@ namespace ReactiveUI.Xaml
                 .Select(_ => Activator.CreateInstance(sampleType))
                 .OfType<T>();
         }
+#endif
 
         public static IEnumerable<T> Shuffled<T>(params T[] items)
         {
@@ -100,6 +102,7 @@ namespace ReactiveUI.Xaml
         }
 #endif
 
+#if FALSE
         internal static Type findSampleClassForViewModel(Type objectType)
         {
             var sampleAttr = objectType.GetCustomAttributes(typeof(SampleClassAttribute), true)
@@ -109,8 +112,10 @@ namespace ReactiveUI.Xaml
 
             return sampleAttr;
         }
+#endif
     }
 
+#if FALSE
     [AttributeUsage(AttributeTargets.Interface | AttributeTargets.Class)]
     public class SampleClassAttribute : Attribute
     {
@@ -125,14 +130,26 @@ namespace ReactiveUI.Xaml
     {
         static readonly PropertyBinderImplementation inner = new PropertyBinderImplementation();
 
-        public IDisposable Bind<TViewModel, TView, TProp, TDontCare>(TViewModel viewModel, TView view, Expression<Func<TViewModel, TProp>> vmProperty, Expression<Func<TView, TProp>> viewProperty, IObservable<TDontCare> dontCare) 
+        public IDisposable Bind<TViewModel, TView, TProp, TDontCare>(
+                TViewModel viewModel, 
+                TView view, 
+                Expression<Func<TViewModel, TProp>> vmProperty, 
+                Expression<Func<TView, TProp>> viewProperty, 
+                IObservable<TDontCare> dontCare,
+                object conversionHint) 
             where TViewModel : class 
             where TView : IViewFor
         {
             return OneWayBind(viewModel, view, vmProperty, viewProperty);
         }
 
-        public IDisposable OneWayBind<TViewModel, TView, TProp>(TViewModel viewModel, TView view, Expression<Func<TViewModel, TProp>> vmProperty, Expression<Func<TView, TProp>> viewProperty, Func<TProp> fallbackValue = null) 
+        public IDisposable OneWayBind<TViewModel, TView, TProp>(
+                TViewModel viewModel, 
+                TView view, 
+                Expression<Func<TViewModel, TProp>> vmProperty, 
+                Expression<Func<TView, TProp>> viewProperty, 
+                Func<TProp> fallbackValue = null,
+                object conversionHint = null) 
             where TViewModel : class 
             where TView : IViewFor
         {
@@ -151,7 +168,13 @@ namespace ReactiveUI.Xaml
                 .BindTo(view, viewProperty, fallbackValue);
         }
 
-        public IDisposable OneWayBind<TViewModel, TView, TProp, TOut>(TViewModel viewModel, TView view, Expression<Func<TViewModel, TProp>> vmProperty, Expression<Func<TView, TOut>> viewProperty, Func<TProp, TOut> selector, Func<TOut> fallbackValue = null) 
+        public IDisposable OneWayBind<TViewModel, TView, TProp, TOut>(
+                TViewModel viewModel, 
+                TView view, 
+                Expression<Func<TViewModel, TProp>> vmProperty, 
+                Expression<Func<TView, TOut>> viewProperty, 
+                Func<TProp, TOut> selector, 
+                Func<TOut> fallbackValue = null) 
             where TViewModel : class 
             where TView : IViewFor
         {
@@ -172,7 +195,13 @@ namespace ReactiveUI.Xaml
                 .BindTo(view, viewProperty, fallbackValue);
         }
 
-        public IDisposable AsyncOneWayBind<TViewModel, TView, TProp, TOut>(TViewModel viewModel, TView view, Expression<Func<TViewModel, TProp>> vmProperty, Expression<Func<TView, TOut>> viewProperty, Func<TProp, IObservable<TOut>> selector, Func<TOut> fallbackValue = null) 
+        public IDisposable AsyncOneWayBind<TViewModel, TView, TProp, TOut>(
+                TViewModel viewModel, 
+                TView view, 
+                Expression<Func<TViewModel, TProp>> vmProperty, 
+                Expression<Func<TView, TOut>> viewProperty, 
+                Func<TProp, IObservable<TOut>> selector, 
+                Func<TOut> fallbackValue = null) 
             where TViewModel : class 
             where TView : IViewFor
         {
@@ -193,4 +222,5 @@ namespace ReactiveUI.Xaml
                 .BindTo(view, viewProperty, fallbackValue);
         }
     }
+#endif
 }

@@ -341,6 +341,54 @@ namespace ReactiveUI
         IObservable<IObservedChange<object, object>> GetNotificationForProperty(object sender, string propertyName, bool beforeChanged = false);
     }
 
+    /// <summary>
+    /// This class is the extensible implementation of IValueConverters for 
+    /// Bind and OneWayBind. Implement this to teach Bind and OneWayBind how to
+    /// convert between types.
+    /// </summary>
+    public interface IBindingTypeConverter : IEnableLogger
+    {
+        /// <summary>
+        /// Returns a positive integer when this class supports 
+        /// Convert for this particular Type. If the method isn't supported at 
+        /// all, return a non-positive integer. When multiple implementations 
+        /// return a positive value, the host will use the one which returns 
+        /// the highest value. When in doubt, return '2' or '0'.
+        /// </summary>
+        /// <param name="lhs">The left-hand object to compare (i.e. 'from')</param>
+        /// <param name="rhs">The right-hand object to compare (i.e. 'to')</param>
+        /// <returns>A positive integer if Convert is supported, 
+        /// zero or a negative value otherwise</returns>
+        int GetAffinityForObjects(Type lhs, Type rhs);
+
+        /// <summary>
+        /// Convert a given object to the specified type.
+        /// </summary>
+        /// <param name="from">The object to convert.</param>
+        /// <param name="toType">The type to coerce the object to.</param>
+        /// <param name="conversionHint">An implementation-defined value, 
+        /// usually to specify things like locale awareness.</param>
+        /// <returns>An object that is of the type 'to'</returns>
+        object Convert(object from, Type toType, object conversionHint);
+    }
+
+    /// <summary>
+    /// Implement this to teach Bind and OneWayBind how to guess the most 
+    /// "common" property on a given control, so if the caller doesn't specify it,
+    /// it'll pick the right control
+    /// </summary>
+    public interface IDefaultPropertyBindingProvider
+    {
+        /// <summary>
+        /// Given a certain control, figure out the default property to bind to
+        /// </summary>
+        /// <param name="control">The control to look at.</param>
+        /// <returns>A tuple of PropertyName and Affinity for that property.
+        /// Use the same rules about affinity as others, but return null if
+        /// the property can't be determined.</returns>
+        Tuple<string, int> GetPropertyForControl(object control);
+    }
+
     public interface IViewFor
     {
         object ViewModel { get; set; }
@@ -356,11 +404,6 @@ namespace ReactiveUI
         /// The ViewModel corresponding to this specific View.
         /// </summary>
         T ViewModel { get; set; }
-    }
-
-    public interface IDefaultPropertyBindingProvider
-    {
-        Tuple<string, int> GetPropertyForControl(object control);
     }
 
     internal interface IWantsToRegisterStuff
