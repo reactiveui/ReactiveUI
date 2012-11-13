@@ -305,17 +305,17 @@ namespace ReactiveUI.Tests
         public void MultiPropertyExpressionsShouldBeProperlyResolved()
         {
             var data = new Dictionary<Expression<Func<HostTestFixture, object>>, string[]>() {
+                {x => x.Child.IsOnlyOneWord.Length, new[] {"Child", "IsOnlyOneWord", "Length"}},
                 {x => x.SomeOtherParam, new[] {"SomeOtherParam"}},
                 {x => x.Child.IsNotNullString, new[] {"Child", "IsNotNullString"}},
                 {x => x.Child.Changed, new[] {"Child", "Changed"}},
-                {x => x.Child.IsOnlyOneWord.Length, new[] {"Child", "IsOnlyOneWord", "Length"}},
             };
 
             var dataTypes = new Dictionary<Expression<Func<HostTestFixture, object>>, Type[]>() {
+                {x => x.Child.IsOnlyOneWord.Length, new[] {typeof(TestFixture), typeof(string), typeof(int) }},
                 {x => x.SomeOtherParam, new[] { typeof(int) }},
                 {x => x.Child.IsNotNullString, new[] {typeof(TestFixture), typeof(string)}},
                 {x => x.Child.Changed, new[] {typeof(TestFixture), typeof(IObservable<IObservedChange<object, object>>)}},
-                {x => x.Child.IsOnlyOneWord.Length, new[] {typeof(TestFixture), typeof(string), typeof(int) }},
             };
 
             var results = data.Keys.Select(x => new {input = x, output = Reflection.ExpressionToPropertyNames(x)}).ToArray();
