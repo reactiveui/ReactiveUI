@@ -320,6 +320,20 @@ namespace ReactiveUI
                 .SelectMany(selector)
                 .BindTo(view, viewProperty, fallbackValue);
         }
+
+        MemoizingMRUCache<Tuple<Type, Type>, IBindingTypeConverter> typeConverterCache = new MemoizingMRUCache<Tuple<Type, Type>, IBindingTypeConverter>(
+            (types, _) =>
+                RxApp.GetAllServices<IBindingTypeConverter>()
+                    .Aggregate(Tuple.Create(-1, default(IBindingTypeConverter)), (acc, x) => {
+                        var score = x.GetAffinityForObjects(types.Item1, types.Item2);
+                        return score > acc.Item1 ? Tuple.Create(score, x) : acc;
+                    }).Item2
+            , 25);
+
+        IBindingTypeConverter getConverterForTypes(Type lhs, Type rhs)
+        {
+            return typeConverterCache.Get(Tuple.Create(lhs, rhs));
+        }
     }
 
     public static class ObservableBindingMixins
