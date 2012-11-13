@@ -28,7 +28,7 @@ namespace ReactiveUI
             where TViewModel : class
             where TView : IViewFor
         {
-            return binderImplementation.Bind(viewModel, view, vmProperty, viewProperty, (IObservable<Unit>)null);
+            return binderImplementation.Bind(viewModel, view, vmProperty, viewProperty, (IObservable<Unit>)null, null);
         }
 
         public static IDisposable Bind<TViewModel, TView, TProp>(
@@ -38,7 +38,7 @@ namespace ReactiveUI
             where TViewModel : class
             where TView : IViewFor
         {
-            return binderImplementation.Bind(viewModel, view, vmProperty, null, (IObservable<Unit>)null);
+            return binderImplementation.Bind(viewModel, view, vmProperty, null, (IObservable<Unit>)null, null);
         }
 
         public static IDisposable Bind<TViewModel, TView, TProp, TDontCare>(
@@ -50,7 +50,7 @@ namespace ReactiveUI
             where TViewModel : class
             where TView : IViewFor
         {
-            return binderImplementation.Bind(viewModel, view, vmProperty, viewProperty, signalViewUpdate);
+            return binderImplementation.Bind(viewModel, view, vmProperty, viewProperty, signalViewUpdate, null);
         }
 
         public static IDisposable Bind<TViewModel, TView, TProp, TDontCare>(
@@ -61,7 +61,7 @@ namespace ReactiveUI
             where TViewModel : class
             where TView : IViewFor
         {
-            return binderImplementation.Bind(viewModel, view, vmProperty, null, signalViewUpdate);
+            return binderImplementation.Bind(viewModel, view, vmProperty, null, signalViewUpdate, null);
         }
 
         public static IDisposable OneWayBind<TViewModel, TView, TProp>(
@@ -145,7 +145,8 @@ namespace ReactiveUI
                 TView view,
                 Expression<Func<TViewModel, TProp>> vmProperty,
                 Expression<Func<TView, TProp>> viewProperty,
-                IObservable<TDontCare> signalViewUpdate)
+                IObservable<TDontCare> signalViewUpdate,
+                object conversionHint)
             where TViewModel : class
             where TView : IViewFor;
 
@@ -154,7 +155,8 @@ namespace ReactiveUI
                 TView view,
                 Expression<Func<TViewModel, TProp>> vmProperty,
                 Expression<Func<TView, TProp>> viewProperty,
-                Func<TProp> fallbackValue = null)
+                Func<TProp> fallbackValue = null,
+                object conversionHint = null)
             where TViewModel : class
             where TView : IViewFor;
 
@@ -186,7 +188,8 @@ namespace ReactiveUI
                 TView view,
                 Expression<Func<TViewModel, TProp>> vmProperty,
                 Expression<Func<TView, TProp>> viewProperty,
-                IObservable<TDontCare> signalViewUpdate)
+                IObservable<TDontCare> signalViewUpdate,
+                object conversionHint)
             where TViewModel : class
             where TView : IViewFor
         {
@@ -256,7 +259,8 @@ namespace ReactiveUI
                 TView view,
                 Expression<Func<TViewModel, TProp>> vmProperty,
                 Expression<Func<TView, TProp>> viewProperty,
-                Func<TProp> fallbackValue = null)
+                Func<TProp> fallbackValue = null,
+                object conversionHint = null)
             where TViewModel : class
             where TView : IViewFor
         {

@@ -47,7 +47,7 @@ namespace ReactiveUI.Tests
             vm.Property1 = "Foo";
             Assert.NotEqual(vm.Property1, view.SomeTextBox.Text);
 
-            var disp = fixture.Bind(vm, view, x => x.Property1, x => x.SomeTextBox.Text, (IObservable<Unit>)null);
+            var disp = fixture.Bind(vm, view, x => x.Property1, x => x.SomeTextBox.Text, (IObservable<Unit>)null, null);
 
             Assert.Equal(vm.Property1, view.SomeTextBox.Text);
             Assert.Equal("Foo", vm.Property1);
