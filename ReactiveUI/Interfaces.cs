@@ -346,7 +346,7 @@ namespace ReactiveUI
     /// Bind and OneWayBind. Implement this to teach Bind and OneWayBind how to
     /// convert between types.
     /// </summary>
-    public interface IConvertsBindingTypes : IEnableLogger
+    public interface IBindingTypeConverter : IEnableLogger
     {
         /// <summary>
         /// Returns a positive integer when this class supports 
