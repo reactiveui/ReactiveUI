@@ -47,6 +47,7 @@ namespace ReactiveUI.Xaml
             }
         }
 
+#if FALSE
         public static IEnumerable<T> RandomSamples<T>(int count)
         {
             var sampleType = findSampleClassForViewModel(typeof (T)) ?? typeof (T);
@@ -55,6 +56,7 @@ namespace ReactiveUI.Xaml
                 .Select(_ => Activator.CreateInstance(sampleType))
                 .OfType<T>();
         }
+#endif
 
         public static IEnumerable<T> Shuffled<T>(params T[] items)
         {
@@ -100,6 +102,7 @@ namespace ReactiveUI.Xaml
         }
 #endif
 
+#if FALSE
         internal static Type findSampleClassForViewModel(Type objectType)
         {
             var sampleAttr = objectType.GetCustomAttributes(typeof(SampleClassAttribute), true)
@@ -109,8 +112,10 @@ namespace ReactiveUI.Xaml
 
             return sampleAttr;
         }
+#endif
     }
 
+#if FALSE
     [AttributeUsage(AttributeTargets.Interface | AttributeTargets.Class)]
     public class SampleClassAttribute : Attribute
     {
@@ -217,4 +222,5 @@ namespace ReactiveUI.Xaml
                 .BindTo(view, viewProperty, fallbackValue);
         }
     }
+#endif
 }
