@@ -22,9 +22,9 @@ namespace ReactiveUI
             return 0;
         }
 
-        public object ConvertObjectToType(object from, Type toType, object conversionHint)
+        public object Convert(object from, Type toType, object conversionHint)
         {
-            return Convert.ChangeType(from, toType);
+            return System.Convert.ChangeType(from, toType);
         }
     }
 
@@ -40,7 +40,7 @@ namespace ReactiveUI
             return typeConverterCache.Get(Tuple.Create(lhs, rhs)) != null ? 10 : 0;
         }
 
-        public object ConvertObjectToType(object from, Type toType, object conversionHint)
+        public object Convert(object from, Type toType, object conversionHint)
         {
             var fromType = from.GetType();
             var converter = typeConverterCache.Get(Tuple.Create(fromType, toType));

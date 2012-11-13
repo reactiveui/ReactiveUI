@@ -236,14 +236,14 @@ namespace ReactiveUI
                 }
 
                 if (isVm) {
-                    var vmAsView = (TVProp)vmToViewConverter.ConvertObjectToType(vmValue, typeof (TVProp), conversionHint);
+                    var vmAsView = (TVProp)vmToViewConverter.Convert(vmValue, typeof (TVProp), conversionHint);
                     var changed = EqualityComparer<TVProp>.Default.Equals(vValue, vmAsView) != true;
                     if (!changed) return null;
 
                     this.Log().Info(vmChangedString + (vmAsView != null ? vmAsView.ToString() : "(null)"));
                     return Tuple.Create((object)vmAsView, isVm);
                 } else {
-                    var vAsViewModel = (TVMProp)viewToVMConverter.ConvertObjectToType(vValue, typeof (TVMProp), conversionHint);
+                    var vAsViewModel = (TVMProp)viewToVMConverter.Convert(vValue, typeof (TVMProp), conversionHint);
                     var changed = EqualityComparer<TVMProp>.Default.Equals(vmValue, vAsViewModel) != true;
                     if (!changed) return null;
 
@@ -290,7 +290,7 @@ namespace ReactiveUI
                 }
 
                 return Reflection.ViewModelWhenAnyValue(viewModel, view, vmProperty)
-                    .Select(x => converter.ConvertObjectToType(x, viewType, conversionHint))
+                    .Select(x => converter.Convert(x, viewType, conversionHint))
                     .Subscribe(x => Reflection.SetValueToPropertyChain(view, viewPropChain, x, false));
             } else {
                 var converter = getConverterForTypes(typeof (TVMProp), typeof (TVProp));
@@ -300,8 +300,8 @@ namespace ReactiveUI
                 }
 
                 return Reflection.ViewModelWhenAnyValue(viewModel, view, vmProperty)
-                    .Select(x => (TVProp)converter.ConvertObjectToType(x, typeof(TVProp), conversionHint))
-                    .BindTo(view, viewProperty, () => (TVProp)converter.ConvertObjectToType(fallbackValue(), typeof(TVProp), conversionHint));
+                    .Select(x => (TVProp)converter.Convert(x, typeof(TVProp), conversionHint))
+                    .BindTo(view, viewProperty, () => (TVProp)converter.Convert(fallbackValue(), typeof(TVProp), conversionHint));
             }
         }
 
