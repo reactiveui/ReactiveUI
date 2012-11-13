@@ -64,12 +64,13 @@ namespace ReactiveUI
             return binderImplementation.Bind(viewModel, view, vmProperty, null, signalViewUpdate, null);
         }
 
-        public static IDisposable OneWayBind<TViewModel, TView, TProp>(
+        public static IDisposable OneWayBind<TViewModel, TView, TVMProp, TVProp>(
                 this TView view,
                 TViewModel viewModel,
-                Expression<Func<TViewModel, TProp>> vmProperty,
-                Expression<Func<TView, TProp>> viewProperty,
-                Func<TProp> fallbackValue = null)
+                Expression<Func<TViewModel, TVMProp>> vmProperty,
+                Expression<Func<TView, TVProp>> viewProperty,
+                Func<TVMProp> fallbackValue = null,
+                object conversionHint = null)
             where TViewModel : class
             where TView : IViewFor
         {
@@ -80,11 +81,12 @@ namespace ReactiveUI
                 this TView view,
                 TViewModel viewModel,
                 Expression<Func<TViewModel, TProp>> vmProperty,
-                Func<TProp> fallbackValue = null)
+                Func<TProp> fallbackValue = null,
+                object conversionHint = null)
             where TViewModel : class
             where TView : IViewFor
         {
-            return binderImplementation.OneWayBind(viewModel, view, vmProperty, null, fallbackValue);
+            return binderImplementation.OneWayBind<TViewModel, TView, TProp, Unit>(viewModel, view, vmProperty, null, fallbackValue, null);
         }
 
         public static IDisposable OneWayBind<TViewModel, TView, TProp, TOut>(
@@ -150,12 +152,12 @@ namespace ReactiveUI
             where TViewModel : class
             where TView : IViewFor;
 
-        IDisposable OneWayBind<TViewModel, TView, TProp>(
+        IDisposable OneWayBind<TViewModel, TView, TVMProp, TVProp>(
                 TViewModel viewModel,
                 TView view,
-                Expression<Func<TViewModel, TProp>> vmProperty,
-                Expression<Func<TView, TProp>> viewProperty,
-                Func<TProp> fallbackValue = null,
+                Expression<Func<TViewModel, TVMProp>> vmProperty,
+                Expression<Func<TView, TVProp>> viewProperty,
+                Func<TVMProp> fallbackValue = null,
                 object conversionHint = null)
             where TViewModel : class
             where TView : IViewFor;
@@ -254,12 +256,12 @@ namespace ReactiveUI
             return ret;
         }
 
-        public IDisposable OneWayBind<TViewModel, TView, TProp>(
+        public IDisposable OneWayBind<TViewModel, TView, TVMProp, TVProp>(
                 TViewModel viewModel,
                 TView view,
-                Expression<Func<TViewModel, TProp>> vmProperty,
-                Expression<Func<TView, TProp>> viewProperty,
-                Func<TProp> fallbackValue = null,
+                Expression<Func<TViewModel, TVMProp>> vmProperty,
+                Expression<Func<TView, TVProp>> viewProperty,
+                Func<TVMProp> fallbackValue = null,
                 object conversionHint = null)
             where TViewModel : class
             where TView : IViewFor
@@ -267,12 +269,27 @@ namespace ReactiveUI
             if (viewProperty == null) {
                 var viewPropChain = Reflection.getDefaultViewPropChain(view, Reflection.ExpressionToPropertyNames(vmProperty));
 
-                return Reflection.ViewModelWhenAnyValue(viewModel, view, vmProperty)
-                    .Subscribe(x => Reflection.SetValueToPropertyChain(view, viewPropChain, x, false));
-            }
+                var viewType = Reflection.GetTypesForPropChain(typeof (TView), viewPropChain).Last();
+                var converter = getConverterForTypes(typeof (TVMProp), viewType);
 
-            return Reflection.ViewModelWhenAnyValue(viewModel, view, vmProperty)
-                .BindTo(view, viewProperty, fallbackValue);
+                if (converter == null) {
+                    throw new ArgumentException(String.Format("Can't convert {0} to {1}. To fix this, register a IBindingTypeConverter", typeof (TVMProp), viewType));
+                }
+
+                return Reflection.ViewModelWhenAnyValue(viewModel, view, vmProperty)
+                    .Select(x => converter.ConvertObjectToType(x, viewType, conversionHint))
+                    .Subscribe(x => Reflection.SetValueToPropertyChain(view, viewPropChain, x, false));
+            } else {
+                var converter = getConverterForTypes(typeof (TVMProp), typeof (TVProp));
+
+                if (converter == null) {
+                    throw new ArgumentException(String.Format("Can't convert {0} to {1}. To fix this, register a IBindingTypeConverter", typeof (TVMProp), typeof(TVProp)));
+                }
+
+                return Reflection.ViewModelWhenAnyValue(viewModel, view, vmProperty)
+                    .Select(x => (TVProp)converter.ConvertObjectToType(x, typeof(TVProp), conversionHint))
+                    .BindTo(view, viewProperty, () => (TVProp)converter.ConvertObjectToType(fallbackValue(), typeof(TVProp), conversionHint));
+            }
         }
 
         public IDisposable OneWayBind<TViewModel, TView, TProp, TOut>(
