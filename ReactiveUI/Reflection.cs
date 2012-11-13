@@ -24,7 +24,7 @@ namespace ReactiveUI
                     return (fi.GetValue);
                 }
 
-                var pi = getSafeProperty(x.Item1, x.Item2, BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy);
+                var pi = GetSafeProperty(x.Item1, x.Item2, BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy);
                 if (pi != null) {
                     return (y => pi.GetValue(y, null));
                 }
@@ -39,7 +39,7 @@ namespace ReactiveUI
                     return (fi.SetValue);
                 }
 
-                var pi = getSafeProperty(x.Item1, x.Item2, BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy);
+                var pi = GetSafeProperty(x.Item1, x.Item2, BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy);
                 if (pi != null) {
                     return ((y,v) => pi.SetValue(y, v, null));
                 }
@@ -61,7 +61,7 @@ namespace ReactiveUI
                     return (fi.GetValue);
                 }
 
-                var pi = getSafeProperty(x.Item1, x.Item2, BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy);
+                var pi = GetSafeProperty(x.Item1, x.Item2, BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy);
                 if (pi != null) {
                     return (y => pi.GetValue(y, null));
                 }
@@ -76,7 +76,7 @@ namespace ReactiveUI
                     return (fi.SetValue);
                 }
 
-                var pi = getSafeProperty(x.Item1, x.Item2, BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy);
+                var pi = GetSafeProperty(x.Item1, x.Item2, BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy);
                 if (pi != null) {
                     return ((y,v) => pi.SetValue(y, v, null));
                 }
@@ -133,9 +133,8 @@ namespace ReactiveUI
 
         public static Type[] ExpressionToPropertyTypes<TObj, TRet>(Expression<Func<TObj, TRet>> property)
         {
-            var ret = new List<Type>();
-
             var current = property.Body;
+
             while(current.NodeType != ExpressionType.Parameter) {
                 // This happens when a value type gets boxed
                 if (current.NodeType == ExpressionType.Convert || current.NodeType == ExpressionType.ConvertChecked) {
@@ -149,14 +148,30 @@ namespace ReactiveUI
                 }
 
                 var me = (MemberExpression)current;
-                ret.Insert(0, me.Member.DeclaringType);
                 current = me.Expression;
             }
 
-            ret.Insert(0, ((ParameterExpression) current).Type);
-            return ret.ToArray();
-        }
+            var startingType = ((ParameterExpression) current).Type;
+            var propNames = ExpressionToPropertyNames(property);
 
+            return propNames.Aggregate(new List<Type>(new[] {startingType}), (acc, x) => {
+                var type = acc.Last();
+
+                var pi = GetSafeProperty(type, x, BindingFlags.FlattenHierarchy | BindingFlags.Instance | BindingFlags.Public);
+                if (pi != null) {
+                    acc.Add(pi.PropertyType);
+                    return acc;
+                }
+
+                var fi = GetSafeField(type, x, BindingFlags.FlattenHierarchy | BindingFlags.Instance | BindingFlags.Public);
+                if (fi != null) {
+                    acc.Add(fi.FieldType);
+                    return acc;
+                }
+
+                throw new ArgumentException("Property expression must be of the form 'x => x.SomeProperty.SomeOtherProperty'");
+            }).Skip(1).ToArray();
+        }
 
         public static FieldInfo GetBackingFieldInfoForProperty<TObj>(string propName, bool dontThrow = false)
             where TObj : IReactiveNotifyPropertyChanged
@@ -314,7 +329,17 @@ namespace ReactiveUI
                 .SelectMany(x => ((TViewModel)x).WhenAny(property, y => y.Value));
         }
 
-        static PropertyInfo getSafeProperty(Type type, string propertyName, BindingFlags flags)
+        public static FieldInfo GetSafeField(Type type, string propertyName, BindingFlags flags)
+        {
+            try {
+                return type.GetField(propertyName, flags);
+            } 
+            catch (AmbiguousMatchException _) {
+                return type.GetFields(flags).First(pi => pi.Name == propertyName);
+            }
+        }
+
+        public static PropertyInfo GetSafeProperty(Type type, string propertyName, BindingFlags flags)
         {
             try {
                 return type.GetProperty(propertyName, flags);
@@ -322,7 +347,6 @@ namespace ReactiveUI
             catch (AmbiguousMatchException _) {
                 return type.GetProperties(flags).First(pi => pi.Name == propertyName);
             }
-
         }
 
         internal static string[] getDefaultViewPropChain(object view, string[] vmPropChain)
