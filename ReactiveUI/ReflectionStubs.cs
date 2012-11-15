@@ -49,6 +49,12 @@ namespace ReactiveUI
             return This.GetTypeInfo().DeclaredProperties;
         }
 
+        public static IEnumerable<FieldInfo> GetFields(this Type This, BindingFlags flags = default(BindingFlags))
+        {
+            return This.GetTypeInfo().DeclaredFields;
+        }
+
+
         public static MethodInfo GetMethod(this Type This, string methodName, Type[] paramTypes, BindingFlags flags = default(BindingFlags))
         {
             var ti = This.GetTypeInfo();

@@ -334,7 +334,7 @@ namespace ReactiveUI
                 .SelectMany(x => ((TViewModel)x).WhenAny(property, y => y.Value));
         }
 
-        public static FieldInfo GetSafeField(Type type, string propertyName, BindingFlags flags)
+        internal static FieldInfo GetSafeField(Type type, string propertyName, BindingFlags flags)
         {
             try {
                 return type.GetField(propertyName, flags);
@@ -344,7 +344,7 @@ namespace ReactiveUI
             }
         }
 
-        public static PropertyInfo GetSafeProperty(Type type, string propertyName, BindingFlags flags)
+        internal static PropertyInfo GetSafeProperty(Type type, string propertyName, BindingFlags flags)
         {
             try {
                 return type.GetProperty(propertyName, flags);

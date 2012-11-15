@@ -24,10 +24,11 @@ namespace ReactiveUI
 
         public object Convert(object from, Type toType, object conversionHint)
         {
-            return System.Convert.ChangeType(from, toType);
+            return System.Convert.ChangeType(from, toType, null);
         }
     }
 
+#if !SILVERLIGHT && !WINRT
     public class ComponentModelTypeConverter : IBindingTypeConverter
     {
         readonly MemoizingMRUCache<Tuple<Type, Type>, TypeConverter> typeConverterCache = new MemoizingMRUCache<Tuple<Type, Type>, TypeConverter>((types, _) => {
@@ -53,4 +54,5 @@ namespace ReactiveUI
             return converter.ConvertTo(from, toType);
         }
     }
+#endif
 }
