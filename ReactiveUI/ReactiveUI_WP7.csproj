@@ -71,7 +71,6 @@
     </Reference>
     <Reference Include="mscorlib.Extensions" />
     <Reference Include="System.Observable" />
-
     <Reference Include="System.Reactive.Core, Version=2.0.20823.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\ext\WP71\System.Reactive.Core.dll</HintPath>
@@ -88,7 +87,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\ext\WP71\System.Reactive.PlatformServices.dll</HintPath>
     </Reference>
-
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Windows" />
     <Reference Include="system" />
@@ -98,6 +96,7 @@
     <Reference Include="System.Net" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BindingTypeConverters.cs" />
     <Compile Include="CompatMixins.cs" />
     <Compile Include="ContractStubs.cs" />
     <Compile Include="DefaultPropertyBinding.cs" />

@@ -46,6 +46,8 @@ namespace ReactiveUI
 
 #if WP7
             TaskpoolScheduler = new EventLoopScheduler();
+#elif WP8
+            TaskpoolScheduler = Scheduler.TaskPool;
 #elif SILVERLIGHT || DOTNETISOLDANDSAD
             TaskpoolScheduler = Scheduler.ThreadPool;
 #elif WINRT            
@@ -80,7 +82,10 @@ namespace ReactiveUI
             RxApp.Register(typeof(PropertyBinderImplementation), typeof(IPropertyBinderImplementation));
             RxApp.Register(typeof(NullDefaultPropertyBindingProvider), typeof(IDefaultPropertyBindingProvider));
             RxApp.Register(typeof(EqualityTypeConverter), typeof(IBindingTypeConverter));
+
+#if !SILVERLIGHT && !WINRT
             RxApp.Register(typeof(ComponentModelTypeConverter), typeof(IBindingTypeConverter));
+#endif
 
             var namespaces = attemptToEarlyLoadReactiveUIDLLs();
 

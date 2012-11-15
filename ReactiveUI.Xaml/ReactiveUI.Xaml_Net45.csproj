@@ -125,6 +125,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BindingTypeConverters.cs" />
     <Compile Include="CommandBinding.cs" />
     <Compile Include="CreatesCommandBinding.cs" />
     <Compile Include="DependencyObjectObservableForProperty.cs" />
