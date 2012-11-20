@@ -26,6 +26,8 @@ namespace ReactiveUI
         public event PropertyChangingEventHandler PropertyChanging;
         public event PropertyChangedEventHandler PropertyChanged;
 
+        [field: IgnoreDataMember]
+        bool rxObjectsSetup = false;
         [IgnoreDataMember] Subject<NotifyCollectionChangedEventArgs> _changing;
         [IgnoreDataMember] Subject<NotifyCollectionChangedEventArgs> _changed;
         
@@ -61,6 +63,8 @@ namespace ReactiveUI
 
         void setupRx(IEnumerable<T> initialContents = null, IScheduler scheduler = null, double resetChangeThreshold = 0.3)
         {
+            if (rxObjectsSetup) return; 
+
             scheduler = scheduler ?? RxApp.DeferredScheduler;
             _inner = _inner ?? new List<T>();
 
@@ -101,6 +105,8 @@ namespace ReactiveUI
             Changed.Subscribe(_ => {
                 if (PropertyChanged != null) PropertyChanged(this, new PropertyChangedEventArgs("Item[]"));
             });
+
+            rxObjectsSetup = true;
         }
 
 
