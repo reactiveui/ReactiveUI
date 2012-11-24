@@ -1,24 +1,31 @@
-﻿using System.Reactive;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
-using ReactiveUI;
-using Xunit;
-using System;
-using System.Linq;
-using System.Collections.Generic;
 using System.Threading;
-using ReactiveUI.Xaml;
+using Microsoft.Reactive.Testing;
 using ReactiveUI.Testing;
 
 using Microsoft.Reactive.Testing;
+using ReactiveUI.Xaml;
+using Xunit;
+#if MONO
+using Mono.Reactive.Testing;
+#else
+
+#endif
 
 namespace ReactiveUI.Tests
 {
     public abstract class ReactiveCommandInterfaceTest
     {
         protected abstract IReactiveCommand createCommand(IObservable<bool> canExecute, IScheduler scheduler = null);
-        protected abstract IReactiveCommand createRelayCommand(Func<object, bool> canExecute, IScheduler scheduler = null);
+
+        protected abstract IReactiveCommand createRelayCommand(Func<object, bool> canExecute,
+            IScheduler scheduler = null);
 
         [Fact]
         public void CompletelyDefaultReactiveCommandShouldFire()
@@ -57,7 +64,7 @@ namespace ReactiveUI.Tests
 
                 // N.B. We check against '5' instead of 6 because we're supposed to 
                 // suppress changes that aren't actually changes i.e. false => false
-                sched.AdvanceToMs(10 * 1000);
+                sched.AdvanceToMs(10*1000);
                 return changes_as_observable;
             });
 
@@ -68,13 +75,13 @@ namespace ReactiveUI.Tests
         public void ObservableCanExecuteFuncShouldShowUpInCommand()
         {
             int counter = 0;
-            var fixture = createRelayCommand(_ => (counter % 2 == 0));
+            var fixture = createRelayCommand(_ => (counter%2 == 0));
             var changes_as_observable = fixture.CanExecuteObservable.CreateCollection();
 
             int change_event_count = 0;
             fixture.CanExecuteChanged += (o, e) => { change_event_count++; };
             Enumerable.Range(0, 6).Run(x => {
-                Assert.Equal(x % 2 == 0, fixture.CanExecute(null));
+                Assert.Equal(x%2 == 0, fixture.CanExecute(null));
                 counter++;
             });
 
@@ -97,7 +104,7 @@ namespace ReactiveUI.Tests
             range.AssertAreEqual(executed_params.OfType<int>());
 
             range.ToObservable()
-                .Zip(observed_params, (expected, actual) => new { expected, actual })
+                .Zip(observed_params, (expected, actual) => new {expected, actual})
                 .Do(Console.WriteLine)
                 .Subscribe(x => Assert.Equal(x.expected, x.actual));
         }
@@ -105,20 +112,20 @@ namespace ReactiveUI.Tests
         [Fact]
         public void MultipleSubscribesShouldntResultInMultipleNotifications()
         {
-            var input = new[] { 1, 2, 1, 2 };
+            var input = new[] {1, 2, 1, 2};
             var sched = new TestScheduler();
             var fixture = createCommand(null, sched);
 
             var odd_list = new List<int>();
             var even_list = new List<int>();
-            fixture.Where(x => ((int)x) % 2 != 0).Subscribe(x => odd_list.Add((int)x));
-            fixture.Where(x => ((int)x) % 2 == 0).Subscribe(x => even_list.Add((int)x));
+            fixture.Where(x => ((int)x)%2 != 0).Subscribe(x => odd_list.Add((int)x));
+            fixture.Where(x => ((int)x)%2 == 0).Subscribe(x => even_list.Add((int)x));
 
             input.Run(x => fixture.Execute(x));
             sched.AdvanceToMs(1000);
 
-            new[]{1,1}.AssertAreEqual(odd_list);
-            new[]{2,2}.AssertAreEqual(even_list);
+            new[] {1, 1}.AssertAreEqual(odd_list);
+            new[] {2, 2}.AssertAreEqual(even_list);
         }
 
         [Fact]
@@ -147,8 +154,8 @@ namespace ReactiveUI.Tests
             Assert.Equal(1, exceptions.Count);
             Assert.Equal("Aieeeee!", exceptions[0].Message);
 
-            Assert.Equal(false, canExecuteStates[canExecuteStates.Count-2]);
-            Assert.Equal(true, canExecuteStates[canExecuteStates.Count-1]);
+            Assert.Equal(false, canExecuteStates[canExecuteStates.Count - 2]);
+            Assert.Equal(true, canExecuteStates[canExecuteStates.Count - 1]);
         }
 
         [Fact]
@@ -176,22 +183,42 @@ namespace ReactiveUI.Tests
 
     public class ReactiveCommandTest : ReactiveCommandInterfaceTest
     {
-        protected override IReactiveCommand createCommand(IObservable<bool> canExecute, IScheduler scheduler = null) {
+        protected override IReactiveCommand createCommand(IObservable<bool> canExecute, IScheduler scheduler = null)
+        {
             return new ReactiveCommand(canExecute, scheduler);
         }
 
-        protected override IReactiveCommand createRelayCommand(Func<object, bool> canExecute, IScheduler scheduler = null) {
+        protected override IReactiveCommand createRelayCommand(Func<object, bool> canExecute,
+            IScheduler scheduler = null)
+        {
             return ReactiveCommand.Create(canExecute, null, scheduler);
+        }
+
+        public class TheCreateCommandMethod
+        {
+            [Fact]
+            public void CreatesCommandThatHandlesThrownExceptions()
+            {
+                var command = ReactiveCommand.Create(_ => true, _ => { throw new Exception(); });
+                Assert.NotNull(command.ThrownExceptions);
+                bool handled = false;
+                command.ThrownExceptions.Subscribe(e => handled = true);
+                command.Execute(null);
+                Assert.True(handled);
+            }
         }
     }
 
     public class ReactiveAsyncCommandBaseTest : ReactiveCommandInterfaceTest
     {
-        protected override IReactiveCommand createCommand(IObservable<bool> canExecute, IScheduler scheduler = null) {
+        protected override IReactiveCommand createCommand(IObservable<bool> canExecute, IScheduler scheduler = null)
+        {
             return new ReactiveAsyncCommand(canExecute, 1, scheduler);
         }
 
-        protected override IReactiveCommand createRelayCommand(Func<object, bool> canExecute, IScheduler scheduler = null) {
+        protected override IReactiveCommand createRelayCommand(Func<object, bool> canExecute,
+            IScheduler scheduler = null)
+        {
             return ReactiveAsyncCommand.Create(x => 1, x => { }, canExecute, 1, scheduler);
         }
     }
@@ -205,7 +232,7 @@ namespace ReactiveUI.Tests
                 var fixture = new ReactiveAsyncCommand(null, 1);
                 ReactiveCollection<int> results;
 
-                results = fixture.RegisterAsyncObservable(_ => 
+                results = fixture.RegisterAsyncObservable(_ =>
                     Observable.Return(5).Delay(TimeSpan.FromSeconds(5), sched)).CreateCollection();
 
                 var inflightResults = fixture.ItemsInflight.CreateCollection();
@@ -219,7 +246,7 @@ namespace ReactiveUI.Tests
                 sched.AdvanceToMs(5100);
                 Assert.True(fixture.CanExecute(null));
 
-                new[] {0,1,0}.AssertAreEqual(inflightResults);
+                new[] {0, 1, 0}.AssertAreEqual(inflightResults);
                 new[] {5}.AssertAreEqual(results);
             });
         }
@@ -227,8 +254,8 @@ namespace ReactiveUI.Tests
         [Fact]
         public void RegisterMemoizedFunctionSmokeTest()
         {
-            var input = new[] { 1, 1, 1, 1, 1, 2, 2, 2, 2, 2 };
-            var output = new[] { 5, 5, 5, 5, 5, 10, 10, 10, 10, 10 };
+            var input = new[] {1, 1, 1, 1, 1, 2, 2, 2, 2, 2};
+            var output = new[] {5, 5, 5, 5, 5, 10, 10, 10, 10, 10};
             var sched = new EventLoopScheduler();
             var results = new List<Timestamped<int>>();
 
@@ -236,7 +263,10 @@ namespace ReactiveUI.Tests
             sched.With(_ => {
                 var fixture = new ReactiveAsyncCommand(null, 5, sched);
 
-                fixture.RegisterMemoizedFunction(x => { Thread.Sleep(1000); return ((int) x) * 5; }, 50, null, sched)
+                fixture.RegisterMemoizedFunction(x => {
+                    Thread.Sleep(1000);
+                    return ((int)x)*5;
+                }, 50, null, sched)
                     .Timestamp()
                     .Subscribe(x => results.Add(x));
 
@@ -253,7 +283,7 @@ namespace ReactiveUI.Tests
             Assert.Equal(10, results.Count);
 
             results.Select(x => x.Timestamp - start)
-                   .Run(x => { });
+                .Run(x => { });
 
             output.AssertAreEqual(results.Select(x => x.Value));
 
@@ -266,14 +296,14 @@ namespace ReactiveUI.Tests
             (new TestScheduler()).With(sched => {
                 var fixture = new ReactiveAsyncCommand();
                 var results = new List<int>();
-                bool[] subscribers = new[] { false, false, false, false, false };
-    			
-    			var output = fixture.RegisterAsyncObservable(_ => 
-    				Observable.Return(5).Delay(TimeSpan.FromMilliseconds(5000), sched));
+                bool[] subscribers = new[] {false, false, false, false, false};
+
+                var output = fixture.RegisterAsyncObservable(_ =>
+                    Observable.Return(5).Delay(TimeSpan.FromMilliseconds(5000), sched));
                 output.Subscribe(x => results.Add(x));
 
                 Enumerable.Range(0, 5).Run(x => output.Subscribe(_ => subscribers[x] = true));
-                
+
                 Assert.True(fixture.CanExecute(null));
 
                 fixture.Execute(null);
@@ -285,7 +315,7 @@ namespace ReactiveUI.Tests
 
                 Assert.True(results.Count == 1);
                 Assert.True(results[0] == 5);
-                Assert.True(subscribers.All(x => x == true));
+                Assert.True(subscribers.All(x => x));
             });
         }
 
@@ -319,10 +349,14 @@ namespace ReactiveUI.Tests
             try {
                 var testDeferred = new CountingTestScheduler(Scheduler.Immediate);
                 var testTaskpool = new CountingTestScheduler(Scheduler.NewThread);
-                RxApp.DeferredScheduler = testDeferred; RxApp.TaskpoolScheduler = testTaskpool;
+                RxApp.DeferredScheduler = testDeferred;
+                RxApp.TaskpoolScheduler = testTaskpool;
 
                 var fixture = new ReactiveAsyncCommand();
-                var result = fixture.RegisterAsyncFunction(x => { Thread.Sleep(1000); return (int)x * 5; });
+                var result = fixture.RegisterAsyncFunction(x => {
+                    Thread.Sleep(1000);
+                    return (int)x*5;
+                });
 
                 fixture.Execute(1);
                 Assert.Equal(5, result.First());
@@ -344,11 +378,12 @@ namespace ReactiveUI.Tests
             try {
                 var testDeferred = new CountingTestScheduler(Scheduler.Immediate);
                 var testTaskpool = new CountingTestScheduler(Scheduler.NewThread);
-                RxApp.DeferredScheduler = testDeferred; RxApp.TaskpoolScheduler = testTaskpool;
+                RxApp.DeferredScheduler = testDeferred;
+                RxApp.TaskpoolScheduler = testTaskpool;
 
                 var fixture = new ReactiveAsyncCommand();
-                var result = fixture.RegisterAsyncObservable(x => 
-                    Observable.Return((int)x * 5).Delay(TimeSpan.FromSeconds(1), RxApp.TaskpoolScheduler));
+                var result = fixture.RegisterAsyncObservable(x =>
+                    Observable.Return((int)x*5).Delay(TimeSpan.FromSeconds(1), RxApp.TaskpoolScheduler));
 
                 fixture.Execute(1);
                 Assert.Equal(5, result.First());
@@ -372,14 +407,14 @@ namespace ReactiveUI.Tests
                     sched.OnNextAt(750, false),
                     sched.OnNextAt(1000, true),
                     sched.OnNextAt(1100, false)
-                );
+                    );
 
                 var fixture = new ReactiveAsyncCommand(canExecute);
                 int calculatedResult = -1;
                 bool latestCanExecute = false;
 
                 fixture.RegisterAsyncObservable(x =>
-                    Observable.Return((int)x * 5).Delay(TimeSpan.FromMilliseconds(900), RxApp.DeferredScheduler))
+                    Observable.Return((int)x*5).Delay(TimeSpan.FromMilliseconds(900), RxApp.DeferredScheduler))
                     .Subscribe(x => calculatedResult = x);
 
                 fixture.CanExecuteObservable.Subscribe(x => latestCanExecute = x);
