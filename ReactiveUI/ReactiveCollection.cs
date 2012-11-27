@@ -451,17 +451,21 @@ namespace ReactiveUI
         /// </summary>
         /// <param name="fromObservable">The Observable whose items will be put
         /// into the new collection.</param>
+        /// <param name="onError">The handler for errors from the Observable. If
+        /// not specified, an error will go to DefaultExceptionHandler.</param>
         /// <param name="withDelay">If set, items will be populated in the
         /// collection no faster than the delay provided.</param>
         /// <returns>A new collection which will be populated with the
         /// Observable.</returns>
         public static ReactiveCollection<T> CreateCollection<T>(
             this IObservable<T> fromObservable, 
-            TimeSpan? withDelay = null)
+            TimeSpan? withDelay = null,
+            Action<Exception> onError = null)
         {
             var ret = new ReactiveCollection<T>();
+            onError = onError ?? (ex => RxApp.DefaultExceptionHandler.OnNext(ex));
             if (withDelay == null) {
-                fromObservable.ObserveOn(RxApp.DeferredScheduler).Subscribe(ret.Add);
+                fromObservable.ObserveOn(RxApp.DeferredScheduler).Subscribe(ret.Add, onError);
                 return ret;
             }
 
@@ -477,7 +481,7 @@ namespace ReactiveUI
             // When new items come in from the observable, stuff them in the queue.
             // Using the DeferredScheduler guarantees we'll always access the queue
             // from the same thread.
-            fromObservable.ObserveOn(RxApp.DeferredScheduler).Subscribe(queue.Enqueue);
+            fromObservable.ObserveOn(RxApp.DeferredScheduler).Subscribe(queue.Enqueue, onError);
 
             // This is a bit clever - keep a running count of the items actually 
             // added and compare them to the final count of items provided by the
