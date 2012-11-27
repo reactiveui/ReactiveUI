@@ -46,7 +46,12 @@ namespace ReactiveUI
         static bool _hasWhinedAboutNoResetSub = false;
 
         // NB: This exists so the serializer doesn't whine
-        public ReactiveCollection() : this(null) { }
+        //
+        // 2nd NB: VB.NET doesn't deal well with default parameters, create 
+        // some overloads so people can continue to make bad life choices instead
+        // of using C#
+        public ReactiveCollection() { setupRx(); }
+        public ReactiveCollection(IEnumerable<T> initialContents) { setupRx(initialContents); }
 
         public ReactiveCollection(IEnumerable<T> initialContents = null, IScheduler scheduler = null, double resetChangeThreshold = 0.3)
         {
