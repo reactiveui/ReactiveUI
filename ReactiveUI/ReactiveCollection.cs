@@ -216,7 +216,7 @@ namespace ReactiveUI
 
         public void AddRange(IEnumerable<T> collection)
         {
-            InsertRange(0, collection);
+            InsertRange(_inner.Count, collection);
         }
 
         public void InsertRange(int index, IEnumerable<T> collection)
