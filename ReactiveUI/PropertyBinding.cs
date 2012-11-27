@@ -244,14 +244,24 @@ namespace ReactiveUI
                 }
 
                 if (isVm) {
-                    var vmAsView = (TVProp)vmToViewConverter.Convert(vmValue, typeof (TVProp), conversionHint);
+                    object tmp;
+                    if (!vmToViewConverter.TryConvert(vmValue, typeof (TVProp), conversionHint, out tmp)) {
+                        return null;
+                    }
+
+                    var vmAsView = (tmp == null ? default(TVProp) : (TVProp) tmp);
                     var changed = EqualityComparer<TVProp>.Default.Equals(vValue, vmAsView) != true;
                     if (!changed) return null;
 
                     this.Log().Info(vmChangedString + (vmAsView != null ? vmAsView.ToString() : "(null)"));
                     return Tuple.Create((object)vmAsView, isVm);
                 } else {
-                    var vAsViewModel = (TVMProp)viewToVMConverter.Convert(vValue, typeof (TVMProp), conversionHint);
+                    object tmp;
+                    if (!viewToVMConverter.TryConvert(vValue, typeof (TVMProp), conversionHint, out tmp)) {
+                        return null;
+                    }
+
+                    var vAsViewModel = (tmp == null ? default(TVMProp) : (TVMProp) tmp);
                     var changed = EqualityComparer<TVMProp>.Default.Equals(vmValue, vAsViewModel) != true;
                     if (!changed) return null;
 
@@ -298,7 +308,11 @@ namespace ReactiveUI
                 }
 
                 return Reflection.ViewModelWhenAnyValue(viewModel, view, vmProperty)
-                    .Select(x => converter.Convert(x, viewType, conversionHint))
+                    .SelectMany(x => {
+                        object tmp;
+                        if (!converter.TryConvert(x, viewType, conversionHint, out tmp)) return Observable.Empty<object>();
+                        return Observable.Return(tmp);
+                    })
                     .Subscribe(x => Reflection.SetValueToPropertyChain(view, viewPropChain, x, false));
             } else {
                 var converter = getConverterForTypes(typeof (TVMProp), typeof (TVProp));
@@ -308,8 +322,15 @@ namespace ReactiveUI
                 }
 
                 return Reflection.ViewModelWhenAnyValue(viewModel, view, vmProperty)
-                    .Select(x => (TVProp)converter.Convert(x, typeof(TVProp), conversionHint))
-                    .BindTo(view, viewProperty, () => (TVProp)converter.Convert(fallbackValue(), typeof(TVProp), conversionHint));
+                    .SelectMany(x => {
+                        object tmp;
+                        if (!converter.TryConvert(x, typeof(TVProp), conversionHint, out tmp)) return Observable.Empty<TVProp>();
+                        return Observable.Return(tmp == null ? default(TVProp) : (TVProp) tmp);
+                    })
+                    .BindTo(view, viewProperty, () => {
+                        object tmp;
+                        return converter.TryConvert(fallbackValue(), typeof(TVProp), conversionHint, out tmp) ?  (TVProp)tmp : default(TVProp);
+                    });
             }
         }
 

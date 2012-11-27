@@ -30,10 +30,11 @@ namespace ReactiveUI
             return genericMi.MakeGenericMethod(new[] {t});
         }, 25);
 
-        public object Convert(object from, Type toType, object conversionHint)
+        public bool TryConvert(object from, Type toType, object conversionHint, out object result)
         {
             var mi = referenceCastCache.Get(toType);
-            return mi.Invoke(null, new[] {from});
+            result = mi.Invoke(null, new[] {from});
+            return true;
         }
 
         public static object DoReferenceCast<T>(object from)
@@ -58,10 +59,11 @@ namespace ReactiveUI
             return (rhs == typeof (string) ? 2 : 0);
         }
 
-        public object Convert(object from, Type toType, object conversionHint)
+        public bool TryConvert(object from, Type toType, object conversionHint, out object result)
         {
             // XXX: All Of The Localization
-            return from.ToString();
+            result = from.ToString();
+            return true;
         }
     }
 
@@ -86,7 +88,7 @@ namespace ReactiveUI
             return converter != null ? 10 : 0;
         }
 
-        public object Convert(object from, Type toType, object conversionHint)
+        public bool TryConvert(object from, Type toType, object conversionHint, out object result)
         {
             var fromType = from.GetType();
             var converter = typeConverterCache.Get(Tuple.Create(fromType, toType));
@@ -95,8 +97,14 @@ namespace ReactiveUI
                 throw new ArgumentException(String.Format("Can't convert {0} to {1}. To fix this, register a IBindingTypeConverter", fromType, toType));
             }
 
-            // TODO: This should use conversionHint to determine whether this is locale-aware or not
-            return converter.ConvertTo(from, toType);
+            try {
+                // TODO: This should use conversionHint to determine whether this is locale-aware or not
+                result = converter.ConvertTo(from, toType);
+                return true;
+            } catch (FormatException) {
+                result = null;
+                return false;
+            }
         }
     }
 #endif
