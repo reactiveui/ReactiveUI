@@ -356,7 +356,8 @@ namespace ReactiveUI
                 RxApp.GetAllServices<IBindingTypeConverter>()
                     .Aggregate(Tuple.Create(-1, default(IBindingTypeConverter)), (acc, x) => {
                         var score = x.GetAffinityForObjects(types.Item1, types.Item2);
-                        return score > acc.Item1 ? Tuple.Create(score, x) : acc;
+                        return score > acc.Item1 && score > 0 ? 
+                            Tuple.Create(score, x) : acc;
                     }).Item2
             , 25);
 

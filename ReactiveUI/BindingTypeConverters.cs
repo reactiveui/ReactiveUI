@@ -38,7 +38,25 @@ namespace ReactiveUI
 
         public static object DoReferenceCast<T>(object from)
         {
-            return (T) from;
+            if (typeof (T).IsValueType) {
+                return System.Convert.ChangeType(from, typeof (T));
+            } else {
+                return (T) from;
+            }
+        }
+    }
+
+    public class StringificationConverter : IBindingTypeConverter
+    {
+        public int GetAffinityForObjects(Type lhs, Type rhs)
+        {
+            return (rhs == typeof (string) ? 2 : 0);
+        }
+
+        public object Convert(object from, Type toType, object conversionHint)
+        {
+            // XXX: All Of The Localization
+            return from.ToString();
         }
     }
 
@@ -46,13 +64,21 @@ namespace ReactiveUI
     public class ComponentModelTypeConverter : IBindingTypeConverter
     {
         readonly MemoizingMRUCache<Tuple<Type, Type>, TypeConverter> typeConverterCache = new MemoizingMRUCache<Tuple<Type, Type>, TypeConverter>((types, _) => {
+            // NB: String is a Magical Type(tm) to TypeConverters. If we are
+            // converting from string => int, we need the Int converter, not
+            // the string converter :-/
+            if (types.Item1 == typeof (string)) {
+                types = Tuple.Create(types.Item2, types.Item1);
+            }
+
             var converter = TypeDescriptor.GetConverter(types.Item1);
             return converter.CanConvertTo(types.Item2) ? converter : null;
         }, 25);
 
         public int GetAffinityForObjects(Type lhs, Type rhs)
         {
-            return typeConverterCache.Get(Tuple.Create(lhs, rhs)) != null ? 10 : 0;
+            var converter = typeConverterCache.Get(Tuple.Create(lhs, rhs));
+            return converter != null ? 10 : 0;
         }
 
         public object Convert(object from, Type toType, object conversionHint)
