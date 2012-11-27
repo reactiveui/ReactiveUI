@@ -47,7 +47,8 @@ namespace ReactiveUI
 #if WP7
             TaskpoolScheduler = new EventLoopScheduler();
 #elif WP8
-            TaskpoolScheduler = Scheduler.TaskPool;
+            //TaskpoolScheduler = Scheduler.TaskPool;
+            TaskpoolScheduler = Scheduler.ThreadPool;
 #elif SILVERLIGHT || DOTNETISOLDANDSAD
             TaskpoolScheduler = Scheduler.ThreadPool;
 #elif WINRT            

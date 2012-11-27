@@ -44,7 +44,7 @@ namespace ReactiveUI
             bool isValueType = typeof (T).IsValueType;
 #endif
             if (isValueType) {
-                return System.Convert.ChangeType(from, typeof (T));
+                return System.Convert.ChangeType(from, typeof (T), null);
             } else {
                 return (T) from;
             }
