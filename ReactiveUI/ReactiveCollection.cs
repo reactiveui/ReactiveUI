@@ -253,6 +253,20 @@ namespace ReactiveUI
             }
         }
 
+        public void RemoveAll(IEnumerable<T> items)
+        {
+             var disp = isLengthAboveResetThreshold(items.Count()) ?
+                SuppressChangeNotifications() : Disposable.Empty;
+
+            using (disp) {
+                // NB: If we don't do this, we'll break Collection<T>'s
+                // accounting of the length
+                foreach (var v in items) {
+                    Remove(v);
+                }
+            }
+        }
+
         public void Sort(int index, int count, IComparer<T> comparer)
         {
             _inner.Sort(index, count, comparer);
