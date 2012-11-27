@@ -56,7 +56,7 @@ namespace ReactiveUI
             subj.Subscribe(x => {
                 // Suppress a non-change between initialValue and the first value
                 // from a Subscribe
-                if (EqualityComparer<T>.Default.Equals(x, _lastValue) && firedInitial) return;
+                if (firedInitial && EqualityComparer<T>.Default.Equals(x, _lastValue)) return;
 
                 this.Log().Debug("Property helper {0:X} changed", this.GetHashCode());
                 _lastValue = x;

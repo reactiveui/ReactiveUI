@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -32,6 +33,8 @@ namespace ReactiveUI
 
         public bool TryConvert(object from, Type toType, object conversionHint, out object result)
         {
+            Contract.Requires(toType != null);
+
             var mi = referenceCastCache.Get(toType);
             result = mi.Invoke(null, new[] {from});
             return true;
@@ -52,7 +55,7 @@ namespace ReactiveUI
         }
     }
 
-    public class StringificationConverter : IBindingTypeConverter
+    public class StringConverter : IBindingTypeConverter
     {
         public int GetAffinityForObjects(Type lhs, Type rhs)
         {
