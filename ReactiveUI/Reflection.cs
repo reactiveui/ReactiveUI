@@ -162,13 +162,13 @@ namespace ReactiveUI
             return propNames.Aggregate(new List<Type>(new[] {startingType}), (acc, x) => {
                 var type = acc.Last();
 
-                var pi = GetSafeProperty(type, x, BindingFlags.FlattenHierarchy | BindingFlags.Instance | BindingFlags.Public);
+                var pi = GetSafeProperty(type, x, BindingFlags.FlattenHierarchy | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
                 if (pi != null) {
                     acc.Add(pi.PropertyType);
                     return acc;
                 }
 
-                var fi = GetSafeField(type, x, BindingFlags.FlattenHierarchy | BindingFlags.Instance | BindingFlags.Public);
+                var fi = GetSafeField(type, x, BindingFlags.FlattenHierarchy | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
                 if (fi != null) {
                     acc.Add(fi.FieldType);
                     return acc;
