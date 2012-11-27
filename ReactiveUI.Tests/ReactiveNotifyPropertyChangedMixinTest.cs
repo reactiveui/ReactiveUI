@@ -3,7 +3,10 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reactive.Concurrency;
+using System.Reactive.Linq;
 using System.Text;
+using System.Threading;
 using ReactiveUI.Testing;
 using Xunit;
 
@@ -383,6 +386,27 @@ namespace ReactiveUI.Tests
             Assert.Equal(fixture, output[0].Sender);
             Assert.Equal("PocoProperty", output[0].PropertyName);
             Assert.Equal("Bamf", output[0].Value);
+        }
+
+        [Fact]
+        public void WhenAnyShouldRunInContext()
+        {
+            var tid = Thread.CurrentThread.ManagedThreadId;
+
+            (Scheduler.TaskPool).With(sched => {
+                int whenAnyTid = 0;
+                var fixture = new TestFixture() { IsNotNullString = "Foo", IsOnlyOneWord = "Baz", PocoProperty = "Bamf" };
+
+                fixture.WhenAny(x => x.IsNotNullString, x => x.Value).Subscribe(x => {
+                    whenAnyTid = Thread.CurrentThread.ManagedThreadId;
+                });
+
+                int timeout = 10;
+                fixture.IsNotNullString = "Bar";
+                while (--timeout > 0 && whenAnyTid == 0) Thread.Sleep(250);
+
+                Assert.Equal(tid, whenAnyTid);
+            });
         }
     }
 }

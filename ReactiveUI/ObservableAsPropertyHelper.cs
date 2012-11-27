@@ -52,10 +52,16 @@ namespace ReactiveUI
             var subj = new ScheduledSubject<T>(scheduler);
             var exSubject = new ScheduledSubject<Exception>(scheduler, RxApp.DefaultExceptionHandler);
 
+            bool firedInitial = false;
             subj.Subscribe(x => {
+                // Suppress a non-change between initialValue and the first value
+                // from a Subscribe
+                if (EqualityComparer<T>.Default.Equals(x, _lastValue) && firedInitial) return;
+
                 this.Log().Debug("Property helper {0:X} changed", this.GetHashCode());
                 _lastValue = x;
                 onChanged(x);
+                firedInitial = true;
             }, exSubject.OnNext);
 
             ThrownExceptions = exSubject;
