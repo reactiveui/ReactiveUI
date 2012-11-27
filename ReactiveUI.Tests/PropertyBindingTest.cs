@@ -22,6 +22,13 @@ namespace ReactiveUI.Tests
             get { return _Property2; }
             set { this.RaiseAndSetIfChanged(x => x.Property2, value); }
         }
+
+        public ReactiveCollection<string> SomeCollectionOfStrings { get; protected set; }
+
+        public PropertyBindViewModel()
+        {
+            SomeCollectionOfStrings = new ReactiveCollection<string>(new[] { "Foo", "Bar" });
+        }
     }
 
     public class PropertyBindView : IViewFor<PropertyBindViewModel>
@@ -34,10 +41,12 @@ namespace ReactiveUI.Tests
         public PropertyBindViewModel ViewModel { get; set; }
 
         public TextBox SomeTextBox { get; protected set; }
+        public ListBox SomeListBox { get; protected set; }
 
         public PropertyBindView()
         {
             SomeTextBox = new TextBox();
+            SomeListBox = new ListBox();
         }
     }
 
@@ -91,6 +100,16 @@ namespace ReactiveUI.Tests
 
             Assert.Equal(0, vm.Property2);
             Assert.NotEqual("0", view.SomeTextBox.Text);
+        }
+
+        [Fact]
+        public void BindingToItemsControl()
+        {
+            var vm = new PropertyBindViewModel();
+            var view = new PropertyBindView() {ViewModel = vm};
+
+            view.OneWayBind(view.ViewModel, x => x.SomeCollectionOfStrings, x => x.SomeListBox.ItemsSource);
+            Assert.True(view.SomeListBox.ItemsSource.OfType<string>().Count() > 1);
         }
     }
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 
 namespace ReactiveUI
@@ -22,9 +23,22 @@ namespace ReactiveUI
             return 0;
         }
 
+        static MethodInfo genericMi = null;
+        static MemoizingMRUCache<Type, MethodInfo> referenceCastCache = new MemoizingMRUCache<Type, MethodInfo>((t, _) => {
+            genericMi = genericMi ?? 
+                typeof (EqualityTypeConverter).GetMethod("DoReferenceCast", BindingFlags.Public | BindingFlags.Static);
+            return genericMi.MakeGenericMethod(new[] {t});
+        }, 25);
+
         public object Convert(object from, Type toType, object conversionHint)
         {
-            return System.Convert.ChangeType(from, toType, null);
+            var mi = referenceCastCache.Get(toType);
+            return mi.Invoke(null, new[] {from});
+        }
+
+        public static object DoReferenceCast<T>(object from)
+        {
+            return (T) from;
         }
     }
 
