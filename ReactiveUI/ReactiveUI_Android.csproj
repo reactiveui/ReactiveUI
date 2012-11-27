@@ -99,6 +99,18 @@
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Reactive.Core">
+      <HintPath>..\ext\mono\System.Reactive.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reactive.Interfaces">
+      <HintPath>..\ext\mono\System.Reactive.Interfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="&lt;Module&gt;">
+      <HintPath>..\ext\mono\System.Reactive.Linq.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reactive.PlatformServices">
+      <HintPath>..\ext\mono\System.Reactive.PlatformServices.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Interfaces.cs">
@@ -143,27 +155,5 @@
   <Target Name="AfterBuild">
   </Target>
   -->
-  <ItemGroup>
-    <ProjectReference Include="..\ext\mono.reactive\System.Reactive.Core\System.Reactive.Core.csproj">
-      <Project>{AD27C5E8-8A0C-454D-B7AA-76A54793B81F}</Project>
-      <Name>System.Reactive.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\ext\mono.reactive\System.Reactive.Interfaces\System.Reactive.Interfaces.csproj">
-      <Project>{755E549E-1BDE-4153-A58B-7C969C902CAD}</Project>
-      <Name>System.Reactive.Interfaces</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\ext\mono.reactive\System.Reactive.Linq\System.Reactive.Linq.csproj">
-      <Project>{F0395470-330B-4DBF-B1A5-D873E597DD05}</Project>
-      <Name>System.Reactive.Linq</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\ext\mono.reactive\System.Reactive.PlatformServices\System.Reactive.PlatformServices.csproj">
-      <Project>{AEEBFC85-91B8-410F-BBB7-BD12BBC61BE6}</Project>
-      <Name>System.Reactive.PlatformServices</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\ext\mono.reactive\System.Reactive.Providers2\System.Reactive.Providers2.csproj">
-      <Project>{9652D18A-CF8D-40D7-BC1D-2090E58EC1FF}</Project>
-      <Name>System.Reactive.Providers2</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Novell\Novell.MonoDroid.CSharp.targets" />
 </Project>

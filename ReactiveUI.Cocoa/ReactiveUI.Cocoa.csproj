@@ -62,17 +62,17 @@
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Drawing" />
     <Reference Include="MonoMac" />
-    <Reference Include="System.Reactive.PlatformServices">
-      <HintPath>..\ext\System.Reactive.PlatformServices.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Reactive.Linq">
-      <HintPath>..\ext\System.Reactive.Linq.dll</HintPath>
+    <Reference Include="System.Reactive.Core">
+      <HintPath>..\ext\mono\System.Reactive.Core.dll</HintPath>
     </Reference>
     <Reference Include="System.Reactive.Interfaces">
-      <HintPath>..\ext\System.Reactive.Interfaces.dll</HintPath>
+      <HintPath>..\ext\mono\System.Reactive.Interfaces.dll</HintPath>
     </Reference>
-    <Reference Include="System.Reactive.Core">
-      <HintPath>..\ext\System.Reactive.Core.dll</HintPath>
+    <Reference Include="&lt;Module&gt;">
+      <HintPath>..\ext\mono\System.Reactive.Linq.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reactive.PlatformServices">
+      <HintPath>..\ext\mono\System.Reactive.PlatformServices.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
