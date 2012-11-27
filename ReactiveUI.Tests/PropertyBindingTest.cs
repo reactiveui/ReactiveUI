@@ -58,11 +58,13 @@ namespace ReactiveUI.Tests
         
         public TextBox SomeTextBox;
         public ListBox SomeListBox;
+        public TextBox Property2;
 
         public PropertyBindView()
         {
             SomeTextBox = new TextBox();
             SomeListBox = new ListBox();
+            Property2 = new TextBox();
         }
     }
 
@@ -136,6 +138,21 @@ namespace ReactiveUI.Tests
 
             view.OneWayBind(view.ViewModel, x => x.Model.AnotherThing, x => x.SomeTextBox.Text);
             Assert.Equal("Baz", view.SomeTextBox.Text);
+        }
+
+        [Fact]
+        public void ImplicitBindPlusTypeConversion() 
+        {
+            var vm = new PropertyBindViewModel();
+            var view = new PropertyBindView() {ViewModel = vm};
+
+            view.Bind(view.ViewModel, x => x.Property2);
+
+            vm.Property2 = 42;
+            Assert.Equal("42", view.Property2.Text);
+
+            view.Property2.Text = "7";
+            Assert.Equal(7, vm.Property2);
         }
     }
 }

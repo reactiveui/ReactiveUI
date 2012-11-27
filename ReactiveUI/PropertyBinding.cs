@@ -38,7 +38,7 @@ namespace ReactiveUI
             where TViewModel : class
             where TView : IViewFor
         {
-            return binderImplementation.Bind<TViewModel, TView, TProp, Unit, Unit>(viewModel, view, vmProperty, null, null, null);
+            return binderImplementation.Bind<TViewModel, TView, TProp, TProp, Unit>(viewModel, view, vmProperty, null, null, null);
         }
 
         public static IDisposable Bind<TViewModel, TView, TProp, TDontCare>(
@@ -200,7 +200,15 @@ namespace ReactiveUI
             string[] viewPropChain;
 
             if (viewProperty == null) {
+                // NB: In this case, TVProp is possibly wrong due to type 
+                // conversion. Figure out if this is the case, then re-call Bind
+                // with the right TVProp
                 viewPropChain = Reflection.getDefaultViewPropChain(view, vmPropChain);
+                var tvProp = Reflection.GetTypesForPropChain(typeof (TView), viewPropChain).Last();
+                if (tvProp != typeof (TVProp)) {
+                    var mi = this.GetType().GetMethod("Bind").MakeGenericMethod(typeof (TViewModel), typeof (TView), typeof (TVMProp), tvProp, typeof (TDontCare));
+                    return (IDisposable) mi.Invoke(this, new[] {viewModel, view, vmProperty, null, signalViewUpdate, conversionHint});
+                }
             } else {
                 viewPropChain = Reflection.ExpressionToPropertyNames(viewProperty);
             }
