@@ -441,6 +441,7 @@ namespace ReactiveUI.Tests
             });
 
             Assert.Equal(0, output.Count);
+            Assert.Null(fixture.ViewModel);
 
             fixture.ViewModel = vm;
             Assert.Equal(1, output.Count);
