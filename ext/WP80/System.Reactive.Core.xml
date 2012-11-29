@@ -69,70 +69,6 @@
             <returns>IDisposable object used to unsubscribe from the observable sequence.</returns>
             <exception cref="T:System.ArgumentNullException"><paramref name="source"/> or <paramref name="onNext"/> or <paramref name="onError"/> or <paramref name="onCompleted"/> is null.</exception>
         </member>
-        <member name="M:System.ObservableExtensions.Subscribe``1(System.IObservable{``0},System.IObserver{``0},System.Threading.CancellationToken)">
-            <summary>
-            Subscribes an observer to an observable sequence, using a CancellationToken to support unsubscription.
-            </summary>
-            <typeparam name="T">The type of the elements in the source sequence.</typeparam>
-            <param name="source">Observable sequence to subscribe to.</param>
-            <param name="observer">Observer to subscribe to the sequence.</param>
-            <param name="token">CancellationToken that can be signaled to unsubscribe from the source sequence.</param>
-            <exception cref="T:System.ArgumentNullException"><paramref name="source"/> or <paramref name="observer"/> is null.</exception>
-        </member>
-        <member name="M:System.ObservableExtensions.Subscribe``1(System.IObservable{``0},System.Threading.CancellationToken)">
-            <summary>
-            Subscribes to the observable sequence without specifying any handlers, using a CancellationToken to support unsubscription.
-            This method can be used to evaluate the observable sequence for its side-effects only.
-            </summary>
-            <typeparam name="T">The type of the elements in the source sequence.</typeparam>
-            <param name="source">Observable sequence to subscribe to.</param>
-            <param name="token">CancellationToken that can be signaled to unsubscribe from the source sequence.</param>
-            <exception cref="T:System.ArgumentNullException"><paramref name="source"/> is null.</exception>
-        </member>
-        <member name="M:System.ObservableExtensions.Subscribe``1(System.IObservable{``0},System.Action{``0},System.Threading.CancellationToken)">
-            <summary>
-            Subscribes an element handler to an observable sequence, using a CancellationToken to support unsubscription.
-            </summary>
-            <typeparam name="T">The type of the elements in the source sequence.</typeparam>
-            <param name="source">Observable sequence to subscribe to.</param>
-            <param name="onNext">Action to invoke for each element in the observable sequence.</param>
-            <param name="token">CancellationToken that can be signaled to unsubscribe from the source sequence.</param>
-            <exception cref="T:System.ArgumentNullException"><paramref name="source"/> or <paramref name="onNext"/> is null.</exception>
-        </member>
-        <member name="M:System.ObservableExtensions.Subscribe``1(System.IObservable{``0},System.Action{``0},System.Action{System.Exception},System.Threading.CancellationToken)">
-            <summary>
-            Subscribes an element handler and an exception handler to an observable sequence, using a CancellationToken to support unsubscription.
-            </summary>
-            <typeparam name="T">The type of the elements in the source sequence.</typeparam>
-            <param name="source">Observable sequence to subscribe to.</param>
-            <param name="onNext">Action to invoke for each element in the observable sequence.</param>
-            <param name="onError">Action to invoke upon exceptional termination of the observable sequence.</param>
-            <param name="token">CancellationToken that can be signaled to unsubscribe from the source sequence.</param>
-            <exception cref="T:System.ArgumentNullException"><paramref name="source"/> or <paramref name="onNext"/> or <paramref name="onError"/> is null.</exception>
-        </member>
-        <member name="M:System.ObservableExtensions.Subscribe``1(System.IObservable{``0},System.Action{``0},System.Action,System.Threading.CancellationToken)">
-            <summary>
-            Subscribes an element handler and a completion handler to an observable sequence, using a CancellationToken to support unsubscription.
-            </summary>
-            <typeparam name="T">The type of the elements in the source sequence.</typeparam>
-            <param name="source">Observable sequence to subscribe to.</param>
-            <param name="onNext">Action to invoke for each element in the observable sequence.</param>
-            <param name="onCompleted">Action to invoke upon graceful termination of the observable sequence.</param>
-            <param name="token">CancellationToken that can be signaled to unsubscribe from the source sequence.</param>
-            <exception cref="T:System.ArgumentNullException"><paramref name="source"/> or <paramref name="onNext"/> or <paramref name="onCompleted"/> is null.</exception>
-        </member>
-        <member name="M:System.ObservableExtensions.Subscribe``1(System.IObservable{``0},System.Action{``0},System.Action{System.Exception},System.Action,System.Threading.CancellationToken)">
-            <summary>
-            Subscribes an element handler, an exception handler, and a completion handler to an observable sequence, using a CancellationToken to support unsubscription.
-            </summary>
-            <typeparam name="T">The type of the elements in the source sequence.</typeparam>
-            <param name="source">Observable sequence to subscribe to.</param>
-            <param name="onNext">Action to invoke for each element in the observable sequence.</param>
-            <param name="onError">Action to invoke upon exceptional termination of the observable sequence.</param>
-            <param name="onCompleted">Action to invoke upon graceful termination of the observable sequence.</param>
-            <param name="token">CancellationToken that can be signaled to unsubscribe from the source sequence.</param>
-            <exception cref="T:System.ArgumentNullException"><paramref name="source"/> or <paramref name="onNext"/> or <paramref name="onError"/> or <paramref name="onCompleted"/> is null.</exception>
-        </member>
         <member name="M:System.ObservableExtensions.SubscribeSafe``1(System.IObservable{``0},System.IObserver{``0})">
             <summary>
             Subscribes to the specified source, re-routing synchronous exceptions during invocation of the Subscribe method to the observer's OnError channel.
@@ -304,34 +240,6 @@
             <param name="context">Synchonization context to schedule observer messages on.</param>
             <returns>Observer whose messages are scheduled on the given synchonization context.</returns>
             <exception cref="T:System.ArgumentNullException"><paramref name="observer"/> or <paramref name="context"/> is null.</exception>
-        </member>
-        <member name="M:System.Reactive.Observer.ToProgress``1(System.IObserver{``0})">
-            <summary>
-            Converts an observer to a progress object.
-            </summary>
-            <typeparam name="T">The type of the progress objects received by the source observer.</typeparam>
-            <param name="observer">The observer to convert.</param>
-            <returns>Progress object whose Report messages correspond to the observer's OnNext messages.</returns>
-            <exception cref="T:System.ArgumentNullException"><paramref name="observer"/> is null.</exception>
-        </member>
-        <member name="M:System.Reactive.Observer.ToProgress``1(System.IObserver{``0},System.Reactive.Concurrency.IScheduler)">
-            <summary>
-            Converts an observer to a progress object, using the specified scheduler to invoke the progress reporting method.
-            </summary>
-            <typeparam name="T">The type of the progress objects received by the source observer.</typeparam>
-            <param name="observer">The observer to convert.</param>
-            <param name="scheduler">Scheduler to report progress on.</param>
-            <returns>Progress object whose Report messages correspond to the observer's OnNext messages.</returns>
-            <exception cref="T:System.ArgumentNullException"><paramref name="observer"/> or <paramref name="scheduler"/> is null.</exception>
-        </member>
-        <member name="M:System.Reactive.Observer.ToObserver``1(System.IProgress{``0})">
-            <summary>
-            Converts a progress object to an observer.
-            </summary>
-            <typeparam name="T">The type of the progress objects received by the progress reporter.</typeparam>
-            <param name="progress">The progress object to convert.</param>
-            <returns>Observer whose OnNext messages correspond to the progress object's Report messages.</returns>
-            <exception cref="T:System.ArgumentNullException"><paramref name="progress"/> is null.</exception>
         </member>
         <member name="T:System.Reactive.AnonymousObservable`1">
             <summary>
@@ -728,195 +636,6 @@
             </para>
             </remarks>
         </member>
-        <member name="M:System.Reactive.Concurrency.Scheduler.Yield(System.Reactive.Concurrency.IScheduler)">
-            <summary>
-            Yields execution of the current work item on the scheduler to another work item on the scheduler.
-            The caller should await the result of calling Yield to schedule the remainder of the current work item (known as the continuation).
-            </summary>
-            <param name="scheduler">Scheduler to yield work on.</param>
-            <returns>Scheduler operation object to await in order to schedule the continuation.</returns>
-            <exception cref="T:System.ArgumentNullException"><paramref name="scheduler"/> is null.</exception>
-        </member>
-        <member name="M:System.Reactive.Concurrency.Scheduler.Yield(System.Reactive.Concurrency.IScheduler,System.Threading.CancellationToken)">
-            <summary>
-            Yields execution of the current work item on the scheduler to another work item on the scheduler.
-            The caller should await the result of calling Yield to schedule the remainder of the current work item (known as the continuation).
-            </summary>
-            <param name="scheduler">Scheduler to yield work on.</param>
-            <param name="cancellationToken">Cancellation token to cancel the continuation to run.</param>
-            <returns>Scheduler operation object to await in order to schedule the continuation.</returns>
-            <exception cref="T:System.ArgumentNullException"><paramref name="scheduler"/> is null.</exception>
-        </member>
-        <member name="M:System.Reactive.Concurrency.Scheduler.Sleep(System.Reactive.Concurrency.IScheduler,System.TimeSpan)">
-            <summary>
-            Suspends execution of the current work item on the scheduler for the specified duration.
-            The caller should await the result of calling Sleep to schedule the remainder of the current work item (known as the continuation) after the specified duration.
-            </summary>
-            <param name="scheduler">Scheduler to yield work on.</param>
-            <param name="dueTime">Time when the continuation should run.</param>
-            <returns>Scheduler operation object to await in order to schedule the continuation.</returns>
-            <exception cref="T:System.ArgumentNullException"><paramref name="scheduler"/> is null.</exception>
-        </member>
-        <member name="M:System.Reactive.Concurrency.Scheduler.Sleep(System.Reactive.Concurrency.IScheduler,System.TimeSpan,System.Threading.CancellationToken)">
-            <summary>
-            Suspends execution of the current work item on the scheduler for the specified duration.
-            The caller should await the result of calling Sleep to schedule the remainder of the current work item (known as the continuation) after the specified duration.
-            </summary>
-            <param name="scheduler">Scheduler to yield work on.</param>
-            <param name="dueTime">Time when the continuation should run.</param>
-            <param name="cancellationToken">Cancellation token to cancel the continuation to run.</param>
-            <returns>Scheduler operation object to await in order to schedule the continuation.</returns>
-            <exception cref="T:System.ArgumentNullException"><paramref name="scheduler"/> is null.</exception>
-        </member>
-        <member name="M:System.Reactive.Concurrency.Scheduler.Sleep(System.Reactive.Concurrency.IScheduler,System.DateTimeOffset)">
-            <summary>
-            Suspends execution of the current work item on the scheduler until the specified due time.
-            The caller should await the result of calling Sleep to schedule the remainder of the current work item (known as the continuation) at the specified due time.
-            </summary>
-            <param name="scheduler">Scheduler to yield work on.</param>
-            <param name="dueTime">Time when the continuation should run.</param>
-            <returns>Scheduler operation object to await in order to schedule the continuation.</returns>
-            <exception cref="T:System.ArgumentNullException"><paramref name="scheduler"/> is null.</exception>
-        </member>
-        <member name="M:System.Reactive.Concurrency.Scheduler.Sleep(System.Reactive.Concurrency.IScheduler,System.DateTimeOffset,System.Threading.CancellationToken)">
-            <summary>
-            Suspends execution of the current work item on the scheduler until the specified due time.
-            The caller should await the result of calling Sleep to schedule the remainder of the current work item (known as the continuation) at the specified due time.
-            </summary>
-            <param name="scheduler">Scheduler to yield work on.</param>
-            <param name="dueTime">Time when the continuation should run.</param>
-            <param name="cancellationToken">Cancellation token to cancel the continuation to run.</param>
-            <returns>Scheduler operation object to await in order to schedule the continuation.</returns>
-            <exception cref="T:System.ArgumentNullException"><paramref name="scheduler"/> is null.</exception>
-        </member>
-        <member name="M:System.Reactive.Concurrency.Scheduler.ScheduleAsync``1(System.Reactive.Concurrency.IScheduler,``0,System.Func{System.Reactive.Concurrency.IScheduler,``0,System.Threading.CancellationToken,System.Threading.Tasks.Task})">
-            <summary>
-            Schedules work using an asynchronous method, allowing for cooperative scheduling in an imperative coding style.
-            </summary>
-            <typeparam name="TState">The type of the state passed to the scheduled action.</typeparam>
-            <param name="scheduler">Scheduler to schedule work on.</param>
-            <param name="state">State to pass to the asynchronous method.</param>
-            <param name="action">Asynchronous method to run the work, using Yield and Sleep operations for cooperative scheduling and injection of cancellation points.</param>
-            <returns>Disposable object that allows to cancel outstanding work on cooperative cancellation points or through the cancellation token passed to the asynchronous method.</returns>
-            <exception cref="T:System.ArgumentNullException"><paramref name="scheduler"/> or <paramref name="action"/> is null.</exception>
-        </member>
-        <member name="M:System.Reactive.Concurrency.Scheduler.ScheduleAsync``1(System.Reactive.Concurrency.IScheduler,``0,System.Func{System.Reactive.Concurrency.IScheduler,``0,System.Threading.CancellationToken,System.Threading.Tasks.Task{System.IDisposable}})">
-            <summary>
-            Schedules work using an asynchronous method, allowing for cooperative scheduling in an imperative coding style.
-            </summary>
-            <typeparam name="TState">The type of the state passed to the scheduled action.</typeparam>
-            <param name="scheduler">Scheduler to schedule work on.</param>
-            <param name="state">State to pass to the asynchronous method.</param>
-            <param name="action">Asynchronous method to run the work, using Yield and Sleep operations for cooperative scheduling and injection of cancellation points.</param>
-            <returns>Disposable object that allows to cancel outstanding work on cooperative cancellation points or through the cancellation token passed to the asynchronous method.</returns>
-            <exception cref="T:System.ArgumentNullException"><paramref name="scheduler"/> or <paramref name="action"/> is null.</exception>
-        </member>
-        <member name="M:System.Reactive.Concurrency.Scheduler.ScheduleAsync(System.Reactive.Concurrency.IScheduler,System.Func{System.Reactive.Concurrency.IScheduler,System.Threading.CancellationToken,System.Threading.Tasks.Task})">
-            <summary>
-            Schedules work using an asynchronous method, allowing for cooperative scheduling in an imperative coding style.
-            </summary>
-            <param name="scheduler">Scheduler to schedule work on.</param>
-            <param name="action">Asynchronous method to run the work, using Yield and Sleep operations for cooperative scheduling and injection of cancellation points.</param>
-            <returns>Disposable object that allows to cancel outstanding work on cooperative cancellation points or through the cancellation token passed to the asynchronous method.</returns>
-            <exception cref="T:System.ArgumentNullException"><paramref name="scheduler"/> or <paramref name="action"/> is null.</exception>
-        </member>
-        <member name="M:System.Reactive.Concurrency.Scheduler.ScheduleAsync(System.Reactive.Concurrency.IScheduler,System.Func{System.Reactive.Concurrency.IScheduler,System.Threading.CancellationToken,System.Threading.Tasks.Task{System.IDisposable}})">
-            <summary>
-            Schedules work using an asynchronous method, allowing for cooperative scheduling in an imperative coding style.
-            </summary>
-            <param name="scheduler">Scheduler to schedule work on.</param>
-            <param name="action">Asynchronous method to run the work, using Yield and Sleep operations for cooperative scheduling and injection of cancellation points.</param>
-            <returns>Disposable object that allows to cancel outstanding work on cooperative cancellation points or through the cancellation token passed to the asynchronous method.</returns>
-            <exception cref="T:System.ArgumentNullException"><paramref name="scheduler"/> or <paramref name="action"/> is null.</exception>
-        </member>
-        <member name="M:System.Reactive.Concurrency.Scheduler.ScheduleAsync``1(System.Reactive.Concurrency.IScheduler,``0,System.TimeSpan,System.Func{System.Reactive.Concurrency.IScheduler,``0,System.Threading.CancellationToken,System.Threading.Tasks.Task})">
-            <summary>
-            Schedules work using an asynchronous method, allowing for cooperative scheduling in an imperative coding style.
-            </summary>
-            <typeparam name="TState">The type of the state passed to the scheduled action.</typeparam>
-            <param name="scheduler">Scheduler to schedule work on.</param>
-            <param name="state">State to pass to the asynchronous method.</param>
-            <param name="dueTime">Relative time after which to execute the action.</param>
-            <param name="action">Asynchronous method to run the work, using Yield and Sleep operations for cooperative scheduling and injection of cancellation points.</param>
-            <returns>Disposable object that allows to cancel outstanding work on cooperative cancellation points or through the cancellation token passed to the asynchronous method.</returns>
-            <exception cref="T:System.ArgumentNullException"><paramref name="scheduler"/> or <paramref name="action"/> is null.</exception>
-        </member>
-        <member name="M:System.Reactive.Concurrency.Scheduler.ScheduleAsync``1(System.Reactive.Concurrency.IScheduler,``0,System.TimeSpan,System.Func{System.Reactive.Concurrency.IScheduler,``0,System.Threading.CancellationToken,System.Threading.Tasks.Task{System.IDisposable}})">
-            <summary>
-            Schedules work using an asynchronous method, allowing for cooperative scheduling in an imperative coding style.
-            </summary>
-            <typeparam name="TState">The type of the state passed to the scheduled action.</typeparam>
-            <param name="scheduler">Scheduler to schedule work on.</param>
-            <param name="state">State to pass to the asynchronous method.</param>
-            <param name="dueTime">Relative time after which to execute the action.</param>
-            <param name="action">Asynchronous method to run the work, using Yield and Sleep operations for cooperative scheduling and injection of cancellation points.</param>
-            <returns>Disposable object that allows to cancel outstanding work on cooperative cancellation points or through the cancellation token passed to the asynchronous method.</returns>
-            <exception cref="T:System.ArgumentNullException"><paramref name="scheduler"/> or <paramref name="action"/> is null.</exception>
-        </member>
-        <member name="M:System.Reactive.Concurrency.Scheduler.ScheduleAsync(System.Reactive.Concurrency.IScheduler,System.TimeSpan,System.Func{System.Reactive.Concurrency.IScheduler,System.Threading.CancellationToken,System.Threading.Tasks.Task})">
-            <summary>
-            Schedules work using an asynchronous method, allowing for cooperative scheduling in an imperative coding style.
-            </summary>
-            <param name="scheduler">Scheduler to schedule work on.</param>
-            <param name="dueTime">Relative time after which to execute the action.</param>
-            <param name="action">Asynchronous method to run the work, using Yield and Sleep operations for cooperative scheduling and injection of cancellation points.</param>
-            <returns>Disposable object that allows to cancel outstanding work on cooperative cancellation points or through the cancellation token passed to the asynchronous method.</returns>
-            <exception cref="T:System.ArgumentNullException"><paramref name="scheduler"/> or <paramref name="action"/> is null.</exception>
-        </member>
-        <member name="M:System.Reactive.Concurrency.Scheduler.ScheduleAsync(System.Reactive.Concurrency.IScheduler,System.TimeSpan,System.Func{System.Reactive.Concurrency.IScheduler,System.Threading.CancellationToken,System.Threading.Tasks.Task{System.IDisposable}})">
-            <summary>
-            Schedules work using an asynchronous method, allowing for cooperative scheduling in an imperative coding style.
-            </summary>
-            <param name="scheduler">Scheduler to schedule work on.</param>
-            <param name="dueTime">Relative time after which to execute the action.</param>
-            <param name="action">Asynchronous method to run the work, using Yield and Sleep operations for cooperative scheduling and injection of cancellation points.</param>
-            <returns>Disposable object that allows to cancel outstanding work on cooperative cancellation points or through the cancellation token passed to the asynchronous method.</returns>
-            <exception cref="T:System.ArgumentNullException"><paramref name="scheduler"/> or <paramref name="action"/> is null.</exception>
-        </member>
-        <member name="M:System.Reactive.Concurrency.Scheduler.ScheduleAsync``1(System.Reactive.Concurrency.IScheduler,``0,System.DateTimeOffset,System.Func{System.Reactive.Concurrency.IScheduler,``0,System.Threading.CancellationToken,System.Threading.Tasks.Task})">
-            <summary>
-            Schedules work using an asynchronous method, allowing for cooperative scheduling in an imperative coding style.
-            </summary>
-            <typeparam name="TState">The type of the state passed to the scheduled action.</typeparam>
-            <param name="scheduler">Scheduler to schedule work on.</param>
-            <param name="state">State to pass to the asynchronous method.</param>
-            <param name="dueTime">Absolute time at which to execute the action.</param>
-            <param name="action">Asynchronous method to run the work, using Yield and Sleep operations for cooperative scheduling and injection of cancellation points.</param>
-            <returns>Disposable object that allows to cancel outstanding work on cooperative cancellation points or through the cancellation token passed to the asynchronous method.</returns>
-            <exception cref="T:System.ArgumentNullException"><paramref name="scheduler"/> or <paramref name="action"/> is null.</exception>
-        </member>
-        <member name="M:System.Reactive.Concurrency.Scheduler.ScheduleAsync``1(System.Reactive.Concurrency.IScheduler,``0,System.DateTimeOffset,System.Func{System.Reactive.Concurrency.IScheduler,``0,System.Threading.CancellationToken,System.Threading.Tasks.Task{System.IDisposable}})">
-            <summary>
-            Schedules work using an asynchronous method, allowing for cooperative scheduling in an imperative coding style.
-            </summary>
-            <typeparam name="TState">The type of the state passed to the scheduled action.</typeparam>
-            <param name="scheduler">Scheduler to schedule work on.</param>
-            <param name="state">State to pass to the asynchronous method.</param>
-            <param name="dueTime">Absolute time at which to execute the action.</param>
-            <param name="action">Asynchronous method to run the work, using Yield and Sleep operations for cooperative scheduling and injection of cancellation points.</param>
-            <returns>Disposable object that allows to cancel outstanding work on cooperative cancellation points or through the cancellation token passed to the asynchronous method.</returns>
-            <exception cref="T:System.ArgumentNullException"><paramref name="scheduler"/> or <paramref name="action"/> is null.</exception>
-        </member>
-        <member name="M:System.Reactive.Concurrency.Scheduler.ScheduleAsync(System.Reactive.Concurrency.IScheduler,System.DateTimeOffset,System.Func{System.Reactive.Concurrency.IScheduler,System.Threading.CancellationToken,System.Threading.Tasks.Task})">
-            <summary>
-            Schedules work using an asynchronous method, allowing for cooperative scheduling in an imperative coding style.
-            </summary>
-            <param name="scheduler">Scheduler to schedule work on.</param>
-            <param name="dueTime">Absolute time at which to execute the action.</param>
-            <param name="action">Asynchronous method to run the work, using Yield and Sleep operations for cooperative scheduling and injection of cancellation points.</param>
-            <returns>Disposable object that allows to cancel outstanding work on cooperative cancellation points or through the cancellation token passed to the asynchronous method.</returns>
-            <exception cref="T:System.ArgumentNullException"><paramref name="scheduler"/> or <paramref name="action"/> is null.</exception>
-        </member>
-        <member name="M:System.Reactive.Concurrency.Scheduler.ScheduleAsync(System.Reactive.Concurrency.IScheduler,System.DateTimeOffset,System.Func{System.Reactive.Concurrency.IScheduler,System.Threading.CancellationToken,System.Threading.Tasks.Task{System.IDisposable}})">
-            <summary>
-            Schedules work using an asynchronous method, allowing for cooperative scheduling in an imperative coding style.
-            </summary>
-            <param name="scheduler">Scheduler to schedule work on.</param>
-            <param name="dueTime">Absolute time at which to execute the action.</param>
-            <param name="action">Asynchronous method to run the work, using Yield and Sleep operations for cooperative scheduling and injection of cancellation points.</param>
-            <returns>Disposable object that allows to cancel outstanding work on cooperative cancellation points or through the cancellation token passed to the asynchronous method.</returns>
-            <exception cref="T:System.ArgumentNullException"><paramref name="scheduler"/> or <paramref name="action"/> is null.</exception>
-        </member>
         <member name="M:System.Reactive.Concurrency.Scheduler.Normalize(System.TimeSpan)">
             <summary>
             Normalizes the specified TimeSpan value to a positive value.
@@ -1054,11 +773,6 @@
         <member name="P:System.Reactive.Concurrency.Scheduler.NewThread">
             <summary>
             Gets a scheduler that schedules work on a new thread using default thread creation options.
-            </summary>
-        </member>
-        <member name="P:System.Reactive.Concurrency.Scheduler.TaskPool">
-            <summary>
-            Gets a scheduler that schedules work on Task Parallel Library (TPL) task pool using the default TaskScheduler.
             </summary>
         </member>
         <member name="T:System.Reactive.Concurrency.LocalScheduler">
@@ -1484,45 +1198,6 @@
             </summary>
             <returns>Cancellation resource returned by the scheduled action.</returns>
         </member>
-        <member name="T:System.Reactive.Concurrency.SchedulerOperation">
-            <summary>
-            Represents an awaitable scheduler operation. Awaiting the object causes the continuation to be posted back to the originating scheduler's work queue.
-            </summary>
-        </member>
-        <member name="M:System.Reactive.Concurrency.SchedulerOperation.ConfigureAwait(System.Boolean)">
-            <summary>
-            Controls whether the continuation is run on the originating synchronization context (false by default).
-            </summary>
-            <param name="continueOnCapturedContext">true to run the continuation on the captured synchronization context; false otherwise (default).</param>
-            <returns>Scheduler operation object with configured await behavior.</returns>
-        </member>
-        <member name="M:System.Reactive.Concurrency.SchedulerOperation.GetAwaiter">
-            <summary>
-            Gets an awaiter for the scheduler operation, used to post back the continuation.
-            </summary>
-            <returns>Awaiter for the scheduler operation.</returns>
-        </member>
-        <member name="T:System.Reactive.Concurrency.SchedulerOperationAwaiter">
-            <summary>
-            (Infrastructure) Scheduler operation awaiter type used by the code generated for C# await and Visual Basic Await expressions.
-            </summary>
-        </member>
-        <member name="M:System.Reactive.Concurrency.SchedulerOperationAwaiter.GetResult">
-            <summary>
-            Completes the scheduler operation, throwing an OperationCanceledException in case cancellation was requested.
-            </summary>
-        </member>
-        <member name="M:System.Reactive.Concurrency.SchedulerOperationAwaiter.OnCompleted(System.Action)">
-            <summary>
-            Registers the continuation with the scheduler operation.
-            </summary>
-            <param name="continuation">Continuation to be run on the originating scheduler.</param>
-        </member>
-        <member name="P:System.Reactive.Concurrency.SchedulerOperationAwaiter.IsCompleted">
-            <summary>
-            Indicates whether the scheduler operation has completed. Returns false unless cancellation was already requested.
-            </summary>
-        </member>
         <member name="T:System.Reactive.Concurrency.SchedulerQueue`1">
             <summary>
             Efficient scheduler queue that maintains scheduled items sorted by absolute time.
@@ -1809,38 +1484,6 @@
             </summary>
         </member>
         <member name="P:System.Reactive.Disposables.BooleanDisposable.IsDisposed">
-            <summary>
-            Gets a value that indicates whether the object is disposed.
-            </summary>
-        </member>
-        <member name="T:System.Reactive.Disposables.CancellationDisposable">
-            <summary>
-            Represents a disposable resource that has an associated <seealso cref="T:System.Threading.CancellationToken"/> that will be set to the cancellation requested state upon disposal.
-            </summary>
-        </member>
-        <member name="M:System.Reactive.Disposables.CancellationDisposable.#ctor(System.Threading.CancellationTokenSource)">
-            <summary>
-            Initializes a new instance of the <see cref="T:System.Reactive.Disposables.CancellationDisposable"/> class that uses an existing <seealso cref="T:System.Threading.CancellationTokenSource"/>.
-            </summary>
-            <param name="cts"><seealso cref="T:System.Threading.CancellationTokenSource"/> used for cancellation.</param>
-            <exception cref="T:System.ArgumentNullException"><paramref name="cts"/> is null.</exception>
-        </member>
-        <member name="M:System.Reactive.Disposables.CancellationDisposable.#ctor">
-            <summary>
-            Initializes a new instance of the <see cref="T:System.Reactive.Disposables.CancellationDisposable"/> class that uses a new <seealso cref="T:System.Threading.CancellationTokenSource"/>.
-            </summary>
-        </member>
-        <member name="M:System.Reactive.Disposables.CancellationDisposable.Dispose">
-            <summary>
-            Cancels the underlying <seealso cref="T:System.Threading.CancellationTokenSource"/>.
-            </summary>
-        </member>
-        <member name="P:System.Reactive.Disposables.CancellationDisposable.Token">
-            <summary>
-            Gets the <see cref="T:System.Threading.CancellationToken"/> used by this CancellationDisposable.
-            </summary>
-        </member>
-        <member name="P:System.Reactive.Disposables.CancellationDisposable.IsDisposed">
             <summary>
             Gets a value that indicates whether the object is disposed.
             </summary>
