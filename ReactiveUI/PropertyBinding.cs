@@ -38,7 +38,7 @@ namespace ReactiveUI
             where TViewModel : class
             where TView : IViewFor
         {
-            return binderImplementation.Bind<TViewModel, TView, TProp, Unit, Unit>(viewModel, view, vmProperty, null, null, null);
+            return binderImplementation.Bind<TViewModel, TView, TProp, TProp, Unit>(viewModel, view, vmProperty, null, null, null);
         }
 
         public static IDisposable Bind<TViewModel, TView, TProp, TDontCare>(
@@ -200,7 +200,15 @@ namespace ReactiveUI
             string[] viewPropChain;
 
             if (viewProperty == null) {
+                // NB: In this case, TVProp is possibly wrong due to type 
+                // conversion. Figure out if this is the case, then re-call Bind
+                // with the right TVProp
                 viewPropChain = Reflection.getDefaultViewPropChain(view, vmPropChain);
+                var tvProp = Reflection.GetTypesForPropChain(typeof (TView), viewPropChain).Last();
+                if (tvProp != typeof (TVProp)) {
+                    var mi = this.GetType().GetMethod("Bind").MakeGenericMethod(typeof (TViewModel), typeof (TView), typeof (TVMProp), tvProp, typeof (TDontCare));
+                    return (IDisposable) mi.Invoke(this, new[] {viewModel, view, vmProperty, null, signalViewUpdate, conversionHint});
+                }
             } else {
                 viewPropChain = Reflection.ExpressionToPropertyNames(viewProperty);
             }
@@ -236,14 +244,24 @@ namespace ReactiveUI
                 }
 
                 if (isVm) {
-                    var vmAsView = (TVProp)vmToViewConverter.Convert(vmValue, typeof (TVProp), conversionHint);
+                    object tmp;
+                    if (!vmToViewConverter.TryConvert(vmValue, typeof (TVProp), conversionHint, out tmp)) {
+                        return null;
+                    }
+
+                    var vmAsView = (tmp == null ? default(TVProp) : (TVProp) tmp);
                     var changed = EqualityComparer<TVProp>.Default.Equals(vValue, vmAsView) != true;
                     if (!changed) return null;
 
                     this.Log().Info(vmChangedString + (vmAsView != null ? vmAsView.ToString() : "(null)"));
                     return Tuple.Create((object)vmAsView, isVm);
                 } else {
-                    var vAsViewModel = (TVMProp)viewToVMConverter.Convert(vValue, typeof (TVMProp), conversionHint);
+                    object tmp;
+                    if (!viewToVMConverter.TryConvert(vValue, typeof (TVMProp), conversionHint, out tmp)) {
+                        return null;
+                    }
+
+                    var vAsViewModel = (tmp == null ? default(TVMProp) : (TVMProp) tmp);
                     var changed = EqualityComparer<TVMProp>.Default.Equals(vmValue, vAsViewModel) != true;
                     if (!changed) return null;
 
@@ -290,7 +308,11 @@ namespace ReactiveUI
                 }
 
                 return Reflection.ViewModelWhenAnyValue(viewModel, view, vmProperty)
-                    .Select(x => converter.Convert(x, viewType, conversionHint))
+                    .SelectMany(x => {
+                        object tmp;
+                        if (!converter.TryConvert(x, viewType, conversionHint, out tmp)) return Observable.Empty<object>();
+                        return Observable.Return(tmp);
+                    })
                     .Subscribe(x => Reflection.SetValueToPropertyChain(view, viewPropChain, x, false));
             } else {
                 var converter = getConverterForTypes(typeof (TVMProp), typeof (TVProp));
@@ -300,8 +322,15 @@ namespace ReactiveUI
                 }
 
                 return Reflection.ViewModelWhenAnyValue(viewModel, view, vmProperty)
-                    .Select(x => (TVProp)converter.Convert(x, typeof(TVProp), conversionHint))
-                    .BindTo(view, viewProperty, () => (TVProp)converter.Convert(fallbackValue(), typeof(TVProp), conversionHint));
+                    .SelectMany(x => {
+                        object tmp;
+                        if (!converter.TryConvert(x, typeof(TVProp), conversionHint, out tmp)) return Observable.Empty<TVProp>();
+                        return Observable.Return(tmp == null ? default(TVProp) : (TVProp) tmp);
+                    })
+                    .BindTo(view, viewProperty, () => {
+                        object tmp;
+                        return converter.TryConvert(fallbackValue(), typeof(TVProp), conversionHint, out tmp) ?  (TVProp)tmp : default(TVProp);
+                    });
             }
         }
 
@@ -356,7 +385,8 @@ namespace ReactiveUI
                 RxApp.GetAllServices<IBindingTypeConverter>()
                     .Aggregate(Tuple.Create(-1, default(IBindingTypeConverter)), (acc, x) => {
                         var score = x.GetAffinityForObjects(types.Item1, types.Item2);
-                        return score > acc.Item1 ? Tuple.Create(score, x) : acc;
+                        return score > acc.Item1 && score > 0 ? 
+                            Tuple.Create(score, x) : acc;
                     }).Item2
             , 25);
 
