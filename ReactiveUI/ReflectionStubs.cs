@@ -26,6 +26,15 @@ namespace ReactiveUI
             return ti.BaseType.GetField(name, flags);
         }
 
+        public static MethodInfo GetMethod(this Type This, string name, BindingFlags flags = default(BindingFlags))
+        {
+            var ti = This.GetTypeInfo();
+            var ret = ti.GetDeclaredMethod(name);
+            if (ret != null || !flags.HasFlag(BindingFlags.FlattenHierarchy) || ti.BaseType == null) return ret;
+
+            return ti.BaseType.GetMethod(name, flags);
+        }
+
         public static PropertyInfo GetProperty(this Type This, string name, BindingFlags flags = default(BindingFlags))
         {
             var ti = This.GetTypeInfo();

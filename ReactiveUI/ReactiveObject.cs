@@ -107,8 +107,6 @@ namespace ReactiveUI
                 Interlocked.Decrement(ref changeNotificationsSuppressed));
         }
 
-
-
         protected internal void raisePropertyChanging(string propertyName)
         {
             Contract.Requires(propertyName != null);

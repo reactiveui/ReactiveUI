@@ -3,7 +3,12 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reactive.Concurrency;
+using System.Reactive.Linq;
 using System.Text;
+using System.Threading;
+using System.Windows;
+using System.Windows.Controls;
 using ReactiveUI.Testing;
 using Xunit;
 
@@ -54,6 +59,21 @@ namespace ReactiveUI.Tests
                 if (PropertyChanged == null) return;
                 PropertyChanged(this, new PropertyChangedEventArgs("InpcProperty"));
             }
+        }
+    }
+
+    public class HostTestView : Control, IViewFor<HostTestFixture>
+    {
+        public HostTestFixture ViewModel {
+            get { return (HostTestFixture)GetValue(ViewModelProperty); }
+            set { SetValue(ViewModelProperty, value); }
+        }
+        public static readonly DependencyProperty ViewModelProperty =
+            DependencyProperty.Register("ViewModel", typeof(HostTestFixture), typeof(HostTestView), new PropertyMetadata(null));
+
+        object IViewFor.ViewModel {
+            get { return ViewModel; }
+            set { ViewModel = (HostTestFixture) value; }
         }
     }
 
@@ -383,6 +403,52 @@ namespace ReactiveUI.Tests
             Assert.Equal(fixture, output[0].Sender);
             Assert.Equal("PocoProperty", output[0].PropertyName);
             Assert.Equal("Bamf", output[0].Value);
+        }
+
+        [Fact]
+        public void WhenAnyShouldRunInContext()
+        {
+            var tid = Thread.CurrentThread.ManagedThreadId;
+
+            (Scheduler.TaskPool).With(sched => {
+                int whenAnyTid = 0;
+                var fixture = new TestFixture() { IsNotNullString = "Foo", IsOnlyOneWord = "Baz", PocoProperty = "Bamf" };
+
+                fixture.WhenAny(x => x.IsNotNullString, x => x.Value).Subscribe(x => {
+                    whenAnyTid = Thread.CurrentThread.ManagedThreadId;
+                });
+
+                int timeout = 10;
+                fixture.IsNotNullString = "Bar";
+                while (--timeout > 0 && whenAnyTid == 0) Thread.Sleep(250);
+
+                Assert.Equal(tid, whenAnyTid);
+            });
+        }
+
+        [Fact]
+        public void WhenAnyThroughAViewShouldntGiveNullValues()
+        {
+            var vm = new HostTestFixture() {
+                Child = new TestFixture() {IsNotNullString = "Foo", IsOnlyOneWord = "Baz", PocoProperty = "Bamf"},
+            };
+
+            var fixture = new HostTestView();
+
+            var output = new List<string>();
+            fixture.WhenAny(x => x.ViewModel.Child.IsNotNullString, x => x.Value).Subscribe(x => {
+                output.Add(x);
+            });
+
+            Assert.Equal(0, output.Count);
+            Assert.Null(fixture.ViewModel);
+
+            fixture.ViewModel = vm;
+            Assert.Equal(1, output.Count);
+
+            fixture.ViewModel.Child.IsNotNullString = "Bar";
+            Assert.Equal(2, output.Count);
+            new[] { "Foo", "Bar" }.AssertAreEqual(output);
         }
     }
 }

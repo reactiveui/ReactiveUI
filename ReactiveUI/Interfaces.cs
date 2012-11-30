@@ -350,14 +350,14 @@ namespace ReactiveUI
     {
         /// <summary>
         /// Returns a positive integer when this class supports 
-        /// Convert for this particular Type. If the method isn't supported at 
+        /// TryConvert for this particular Type. If the method isn't supported at 
         /// all, return a non-positive integer. When multiple implementations 
         /// return a positive value, the host will use the one which returns 
         /// the highest value. When in doubt, return '2' or '0'.
         /// </summary>
         /// <param name="lhs">The left-hand object to compare (i.e. 'from')</param>
         /// <param name="rhs">The right-hand object to compare (i.e. 'to')</param>
-        /// <returns>A positive integer if Convert is supported, 
+        /// <returns>A positive integer if TryConvert is supported, 
         /// zero or a negative value otherwise</returns>
         int GetAffinityForObjects(Type lhs, Type rhs);
 
@@ -369,7 +369,7 @@ namespace ReactiveUI
         /// <param name="conversionHint">An implementation-defined value, 
         /// usually to specify things like locale awareness.</param>
         /// <returns>An object that is of the type 'to'</returns>
-        object Convert(object from, Type toType, object conversionHint);
+        bool TryConvert(object from, Type toType, object conversionHint, out object result);
     }
 
     /// <summary>

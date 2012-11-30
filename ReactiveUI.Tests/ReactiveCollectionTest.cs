@@ -312,6 +312,64 @@ namespace ReactiveUI.Tests
             Assert.Equal(1, itemsAdded.Count);
             Assert.Equal(1, itemsRemoved.Count);
         }
+
+        [Fact]
+        public void AddRangeSmokeTest()
+        {
+            var fixture = new ReactiveCollection<string>();
+            var output = fixture.CreateDerivedCollection(x => "Prefix" + x);
+
+            fixture.Add("Bamf");
+            Assert.Equal(1, fixture.Count);
+            Assert.Equal(1, output.Count);
+            Assert.Equal("Bamf", fixture[0]);
+            Assert.Equal("PrefixBamf", output[0]);
+
+            fixture.AddRange(Enumerable.Repeat("Bar", 4));
+            Assert.Equal(5, fixture.Count);
+            Assert.Equal(5, output.Count);
+            Assert.Equal("Bamf", fixture[0]);
+            Assert.Equal("PrefixBamf", output[0]);
+
+            Assert.True(fixture.Skip(1).All(x => x == "Bar"));
+            Assert.True(output.Skip(1).All(x => x == "PrefixBar"));
+
+            // Trigger the Reset by adding a ton of items
+            fixture.AddRange(Enumerable.Repeat("Bar", 35));
+            Assert.Equal(40, fixture.Count);
+            Assert.Equal(40, output.Count);
+            Assert.Equal("Bamf", fixture[0]);
+            Assert.Equal("PrefixBamf", output[0]);
+        }
+
+        [Fact]
+        public void InsertRangeSmokeTest()
+        {
+            var fixture = new ReactiveCollection<string>();
+            var output = fixture.CreateDerivedCollection(x => "Prefix" + x);
+
+            fixture.Add("Bamf");
+            Assert.Equal(1, fixture.Count);
+            Assert.Equal(1, output.Count);
+            Assert.Equal("Bamf", fixture[0]);
+            Assert.Equal("PrefixBamf", output[0]);
+
+            fixture.InsertRange(0, Enumerable.Repeat("Bar", 4));
+            Assert.Equal(5, fixture.Count);
+            Assert.Equal(5, output.Count);
+            Assert.Equal("Bamf", fixture[4]);
+            Assert.Equal("PrefixBamf", output[4]);
+
+            Assert.True(fixture.Take(4).All(x => x == "Bar"));
+            Assert.True(output.Take(4).All(x => x == "PrefixBar"));
+
+            // Trigger the Reset by adding a ton of items
+            fixture.InsertRange(0, Enumerable.Repeat("Bar", 35));
+            Assert.Equal(40, fixture.Count);
+            Assert.Equal(40, output.Count);
+            Assert.Equal("Bamf", fixture[39]);
+            Assert.Equal("PrefixBamf", output[39]);
+        }
     }
 
 #if SILVERLIGHT

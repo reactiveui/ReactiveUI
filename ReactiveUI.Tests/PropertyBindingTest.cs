@@ -1,14 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Reactive;
 using System.Text;
+using System.Windows;
 using System.Windows.Controls;
 using ReactiveUI.Xaml;
 using Xunit;
 
 namespace ReactiveUI.Tests
 {
+    public class PropertyBindModel
+    {
+        public int AThing { get; set; }
+        public string AnotherThing { get; set; }
+    }
+
     public class PropertyBindViewModel : ReactiveObject
     {
         public string _Property1;
@@ -22,22 +30,41 @@ namespace ReactiveUI.Tests
             get { return _Property2; }
             set { this.RaiseAndSetIfChanged(x => x.Property2, value); }
         }
+
+        public ReactiveCollection<string> SomeCollectionOfStrings { get; protected set; }
+
+        public PropertyBindModel Model { get; protected set; }
+
+        public PropertyBindViewModel()
+        {
+            Model = new PropertyBindModel() {AThing = 42, AnotherThing = "Baz"};
+            SomeCollectionOfStrings = new ReactiveCollection<string>(new[] { "Foo", "Bar" });
+        }
     }
 
-    public class PropertyBindView : IViewFor<PropertyBindViewModel>
+    public class PropertyBindView : Control, IViewFor<PropertyBindViewModel>
     {
+        public PropertyBindViewModel ViewModel {
+            get { return (PropertyBindViewModel)GetValue(ViewModelProperty); }
+            set { SetValue(ViewModelProperty, value); }
+        }
+        public static readonly DependencyProperty ViewModelProperty =
+            DependencyProperty.Register("ViewModel", typeof(PropertyBindViewModel), typeof(PropertyBindView), new PropertyMetadata(null));
+
         object IViewFor.ViewModel { 
             get { return ViewModel; }
             set { ViewModel = (PropertyBindViewModel)value; } 
         }
-
-        public PropertyBindViewModel ViewModel { get; set; }
-
-        public TextBox SomeTextBox { get; protected set; }
+        
+        public TextBox SomeTextBox;
+        public ListBox SomeListBox;
+        public TextBox Property2;
 
         public PropertyBindView()
         {
             SomeTextBox = new TextBox();
+            SomeListBox = new ListBox();
+            Property2 = new TextBox();
         }
     }
 
@@ -91,6 +118,41 @@ namespace ReactiveUI.Tests
 
             Assert.Equal(0, vm.Property2);
             Assert.NotEqual("0", view.SomeTextBox.Text);
+        }
+
+        [Fact]
+        public void BindingToItemsControl()
+        {
+            var vm = new PropertyBindViewModel();
+            var view = new PropertyBindView() {ViewModel = vm};
+
+            view.OneWayBind(view.ViewModel, x => x.SomeCollectionOfStrings, x => x.SomeListBox.ItemsSource);
+            Assert.True(view.SomeListBox.ItemsSource.OfType<string>().Count() > 1);
+        }
+
+        [Fact]
+        public void BindingIntoModelObjects()
+        {
+            var vm = new PropertyBindViewModel();
+            var view = new PropertyBindView() {ViewModel = vm};
+
+            view.OneWayBind(view.ViewModel, x => x.Model.AnotherThing, x => x.SomeTextBox.Text);
+            Assert.Equal("Baz", view.SomeTextBox.Text);
+        }
+
+        [Fact]
+        public void ImplicitBindPlusTypeConversion() 
+        {
+            var vm = new PropertyBindViewModel();
+            var view = new PropertyBindView() {ViewModel = vm};
+
+            view.Bind(view.ViewModel, x => x.Property2);
+
+            vm.Property2 = 42;
+            Assert.Equal("42", view.Property2.Text);
+
+            view.Property2.Text = "7";
+            Assert.Equal(7, vm.Property2);
         }
     }
 }

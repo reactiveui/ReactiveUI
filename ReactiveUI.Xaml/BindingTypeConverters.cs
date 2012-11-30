@@ -26,7 +26,7 @@ namespace ReactiveUI.Xaml
             return 0;
         }
 
-        public object Convert(object from, Type toType, object conversionHint)
+        public bool TryConvert(object from, Type toType, object conversionHint, out object result)
         {
             var hint = conversionHint is BooleanToVisibilityHint ? 
                 (BooleanToVisibilityHint) conversionHint : 
@@ -39,10 +39,12 @@ namespace ReactiveUI.Xaml
 #else
                 var notVisible = Visibility.Collapsed;
 #endif
-                return fromAsBool ? Visibility.Visible : notVisible;
+                result = fromAsBool ? Visibility.Visible : notVisible;
+                return true;
             } else {
                 var fromAsVis = (Visibility) from;
-                return (fromAsVis == Visibility.Visible) ^ (!hint.HasFlag(BooleanToVisibilityHint.Inverse));
+                result = (fromAsVis == Visibility.Visible) ^ (!hint.HasFlag(BooleanToVisibilityHint.Inverse));
+                return true;
             }
         }
     }

@@ -44,20 +44,23 @@ namespace ReactiveUI
 			<# } #>
                 Func<<#= selectorTypeParams #>, TRet> selector)
         {
+			bool allInputsWorked = true;
 			<# for(int i=1; i <= length; i++) { #>
 			var slot<#=i#> = new ObservedChange<TSender, T<#=i#>>() {
                 Sender = This,
                 PropertyName = String.Join(".", Reflection.ExpressionToPropertyNames(property<#=i#>)),
             };
-            T<#=i#> slot<#=i#>Value = default(T<#=i#>); slot<#=i#>.TryGetValue(out slot<#=i#>Value); slot<#=i#>.Value = slot<#=i#>Value;
+            T<#=i#> slot<#=i#>Value = default(T<#=i#>); allInputsWorked &= slot<#=i#>.TryGetValue(out slot<#=i#>Value); slot<#=i#>.Value = slot<#=i#>Value;
             IObservedChange<TSender, T<#=i#>> islot<#=i#> = slot<#=i#>;
 			<# } #>
 
             return Observable.Create<TRet>(subject => {
-                subject.OnNext(<#= selectorCall #>);
+                if (allInputsWorked) subject.OnNext(<#= selectorCall #>);
 
                 return Observable.Merge(<# for(int i=1; i <= length; i++) { #>
+
                     This.ObservableForProperty(property<#=i#>).Do(x => { lock (slot<#=i#>) { islot<#=i#> = x.fillInValue(); } }).Select(x => <#= selectorCall #>)<#= (i==length?"":",") #> <# } #>
+
                 ).Subscribe(subject);
             });
         }
