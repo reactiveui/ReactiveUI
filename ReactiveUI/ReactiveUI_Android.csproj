@@ -100,16 +100,16 @@
     <Reference Include="System.Xml.Linq" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Reactive.Core">
-      <HintPath>..\ext\mono\System.Reactive.Core.dll</HintPath>
+      <HintPath>..\ext\monodroid\System.Reactive.Core.dll</HintPath>
     </Reference>
     <Reference Include="System.Reactive.Interfaces">
-      <HintPath>..\ext\mono\System.Reactive.Interfaces.dll</HintPath>
+      <HintPath>..\ext\monodroid\System.Reactive.Interfaces.dll</HintPath>
     </Reference>
-    <Reference Include="&lt;Module&gt;">
-      <HintPath>..\ext\mono\System.Reactive.Linq.dll</HintPath>
+    <Reference Include="System.Reactive.Linq">
+      <HintPath>..\ext\monodroid\System.Reactive.Linq.dll</HintPath>
     </Reference>
     <Reference Include="System.Reactive.PlatformServices">
-      <HintPath>..\ext\mono\System.Reactive.PlatformServices.dll</HintPath>
+      <HintPath>..\ext\monodroid\System.Reactive.PlatformServices.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -140,6 +140,7 @@
     <Compile Include="Reflection.cs" />
     <Compile Include="ScheduledSubject.cs" />
     <Compile Include="VariadicTemplates.cs" />
+    <Compile Include="BindingTypeConverters.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
