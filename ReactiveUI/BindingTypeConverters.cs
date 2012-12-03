@@ -42,16 +42,18 @@ namespace ReactiveUI
 
         public static object DoReferenceCast<T>(object from)
         {
-#if WINRT
-            bool isValueType = typeof (T).GetTypeInfo().IsValueType;
-#else
-            bool isValueType = typeof (T).IsValueType;
-#endif
-            if (isValueType) {
-                return System.Convert.ChangeType(from, typeof (T), null);
-            } else {
-                return (T) from;
+            var t = typeof (T);
+            var u = Nullable.GetUnderlyingType(t);
+
+            if (u == null) {
+                return (T) Convert.ChangeType(from, t);
             }
+
+            if (from == null) {
+                return default(T);
+            }
+
+            return (T) Convert.ChangeType(from, u);
         }
     }
 
