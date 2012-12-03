@@ -1,4 +1,11 @@
-## How to start hacking on ReactiveUI
+## The quick version
+
+1. Open `ReactiveUI_Net4Only.sln` in VS2010 / VS2012
+1. Run tests, build ReactiveUI.sln in VS2012 on Win8
+1. Submit PR
+
+
+## How to start hacking on ReactiveUI (the more verbose version)
 
 1. Fork and Clone the source
 1. Create a new branch for your feature / bugfix
