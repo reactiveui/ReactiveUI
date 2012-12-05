@@ -20,11 +20,11 @@ namespace ReactiveUI
             binderImplementation = new PropertyBinderImplementation();
         }
 
-        public static IDisposable Bind<TViewModel, TView, TProp>(
+        public static IDisposable Bind<TViewModel, TView, TVMProp, TVProp>(
                 this TView view,
                 TViewModel viewModel,
-                Expression<Func<TViewModel, TProp>> vmProperty,
-                Expression<Func<TView, TProp>> viewProperty)
+                Expression<Func<TViewModel, TVMProp>> vmProperty,
+                Expression<Func<TView, TVProp>> viewProperty)
             where TViewModel : class
             where TView : IViewFor
         {
@@ -41,11 +41,11 @@ namespace ReactiveUI
             return binderImplementation.Bind<TViewModel, TView, TProp, TProp, Unit>(viewModel, view, vmProperty, null, null, null);
         }
 
-        public static IDisposable Bind<TViewModel, TView, TProp, TDontCare>(
+        public static IDisposable Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(
                 this TView view,
                 TViewModel viewModel,
-                Expression<Func<TViewModel, TProp>> vmProperty,
-                Expression<Func<TView, TProp>> viewProperty,
+                Expression<Func<TViewModel, TVMProp>> vmProperty,
+                Expression<Func<TView, TVProp>> viewProperty,
                 IObservable<TDontCare> signalViewUpdate)
             where TViewModel : class
             where TView : IViewFor
