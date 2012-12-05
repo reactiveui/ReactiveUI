@@ -62,7 +62,7 @@ namespace ReactiveUI
             var backingNullableType = Nullable.GetUnderlyingType(targetType);
 
             if (backingNullableType == null) {
-                return (T) Convert.ChangeType(from, targetType);
+                return (T) Convert.ChangeType(from, targetType, null);
             }
 
             if (from == null) {
@@ -73,7 +73,7 @@ namespace ReactiveUI
                 return default(T);
             }
 
-            return (T) Convert.ChangeType(from, backingNullableType);
+            return (T) Convert.ChangeType(from, backingNullableType, null);
         }
     }
 
