@@ -21,6 +21,16 @@ namespace ReactiveUI
                 return 100;
             }
 
+            var realType = Nullable.GetUnderlyingType(lhs);
+            if (realType != null) {
+                return GetAffinityForObjects(realType, rhs);
+            }
+
+            realType = Nullable.GetUnderlyingType(rhs);
+            if (realType != null) {
+                return GetAffinityForObjects(lhs, realType);
+            }
+
             return 0;
         }
 
