@@ -46,24 +46,34 @@ namespace ReactiveUI
             Contract.Requires(toType != null);
 
             var mi = referenceCastCache.Get(toType);
-            result = mi.Invoke(null, new[] {from});
+            try {
+                result = mi.Invoke(null, new[] {from});
+            } catch (Exception ex) {
+                this.Log().WarnException("Couldn't convert object to type: " + toType, ex);
+                result = null;
+                return false;
+            }
             return true;
         }
 
         public static object DoReferenceCast<T>(object from)
         {
-            var t = typeof (T);
-            var u = Nullable.GetUnderlyingType(t);
+            var targetType = typeof (T);
+            var backingNullableType = Nullable.GetUnderlyingType(targetType);
 
-            if (u == null) {
-                return (T) Convert.ChangeType(from, t);
+            if (backingNullableType == null) {
+                return (T) Convert.ChangeType(from, targetType);
             }
 
             if (from == null) {
+                var ut = Nullable.GetUnderlyingType(targetType);
+                if (ut == null) {
+                    throw new Exception("Can't convert from nullable-type which is null to non-nullable type");
+                }
                 return default(T);
             }
 
-            return (T) Convert.ChangeType(from, u);
+            return (T) Convert.ChangeType(from, backingNullableType);
         }
     }
 
@@ -105,6 +115,11 @@ namespace ReactiveUI
 
         public bool TryConvert(object from, Type toType, object conversionHint, out object result)
         {
+            if (from == null) {
+                result = null;
+                return true;
+            }
+
             var fromType = from.GetType();
             var converter = typeConverterCache.Get(Tuple.Create(fromType, toType));
 
