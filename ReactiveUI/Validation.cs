@@ -21,7 +21,7 @@ namespace ReactiveUI
         /// </summary>
         public ReactiveValidatedObject()
         {
-            this.Changed.Subscribe(x => {
+            this.Changing.Subscribe(x => {
                 if (x.Sender != this) {
                     return;
                 }
