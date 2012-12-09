@@ -10,7 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xamarin.Geolocation;
 
-namespace ReactiveUI.Mobile_WinRT
+namespace ReactiveUI.Mobile
 {
     public interface IReactiveGeolocator
     {
