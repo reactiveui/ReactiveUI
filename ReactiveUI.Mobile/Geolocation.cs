@@ -93,16 +93,18 @@ namespace ReactiveUI.Mobile
             ret.Connect();
             return ret;
         }
-    }
 
-    public class GeolocationException : Exception
-    {
-        public GeolocationException(GeolocationError error)
+        public static IDisposable WithGeolocator(IReactiveGeolocator implementation)
         {
-            Info = error;
+            var orig = Implementation;
+            Implementation = implementation;
+            return Disposable.Create(() => Implementation = orig);
         }
 
-        public GeolocationError Info { get; protected set; }
+        public static IDisposable UseLocationData(IObservable<Position> positionStream, IScheduler scheduler = null)
+        {
+            return WithGeolocator(new TestGeolocator(positionStream, scheduler));
+        }
     }
 
     public class TestGeolocator : IReactiveGeolocator
@@ -150,5 +152,15 @@ namespace ReactiveUI.Mobile
                 Math.Pow(rhs.Latitude - lhs.Latitude, 2.0) +
                 Math.Pow(rhs.Longitude - lhs.Longitude, 2.0));
         }
+    }
+
+    public class GeolocationException : Exception
+    {
+        public GeolocationException(GeolocationError error)
+        {
+            Info = error;
+        }
+
+        public GeolocationError Info { get; protected set; }
     }
 }
