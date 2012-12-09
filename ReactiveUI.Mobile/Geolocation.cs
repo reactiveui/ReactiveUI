@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
@@ -102,5 +103,52 @@ namespace ReactiveUI.Mobile
         }
 
         public GeolocationError Info { get; protected set; }
+    }
+
+    public class TestGeolocator : IReactiveGeolocator
+    {
+        readonly BehaviorSubject<Position> _latestPosition = new BehaviorSubject<Position>(null);
+        readonly IScheduler _scheduler;
+
+        public TestGeolocator(IObservable<Position> positionStream, IScheduler scheduler = null)
+        {
+            positionStream.Multicast(_latestPosition).Connect();
+            _scheduler = scheduler ?? RxApp.DeferredScheduler;
+        }
+
+        public IObservable<Position> Listen(int minUpdateTime, double minUpdateDist, bool includeHeading = false)
+        {
+            DateTimeOffset? lastStamp = null;
+            Position lastPos = null;
+
+            return _latestPosition.Skip(1)
+                .Timestamp(_scheduler)
+                .Where(x => {
+                    var ret = lastStamp == null || x.Timestamp - lastStamp > TimeSpan.FromMilliseconds(minUpdateTime);
+                    lastStamp = x.Timestamp;
+                    return ret;
+                })
+                .Where(x => {
+                    var ret = lastPos == null || distForPos(lastPos, x.Value) > minUpdateDist;
+                    lastPos = x.Value;
+                    return ret;
+                })
+                .Select(x => x.Value);
+        }
+
+        public IObservable<Position> GetPosition(bool includeHeading = false)
+        {
+            var ret = _latestPosition.Take(1).Multicast(new AsyncSubject<Position>());
+
+            ret.Connect();
+            return ret;
+        }
+
+        double distForPos(Position lhs, Position rhs)
+        {
+            return Math.Sqrt(
+                Math.Pow(rhs.Latitude - lhs.Latitude, 2.0) +
+                Math.Pow(rhs.Longitude - lhs.Longitude, 2.0));
+        }
     }
 }
