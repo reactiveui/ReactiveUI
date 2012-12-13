@@ -61,35 +61,5 @@
   <Target Name="AfterBuild">
   </Target>
   -->
-  <ItemGroup>
-    <ProjectReference Include="..\ext\mono.reactive\System.Reactive.Interfaces\System.Reactive.Interfaces.csproj">
-      <Project>{755E549E-1BDE-4153-A58B-7C969C902CAD}</Project>
-      <Name>System.Reactive.Interfaces</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\ext\mono.reactive\System.Reactive.Core\System.Reactive.Core.csproj">
-      <Project>{AD27C5E8-8A0C-454D-B7AA-76A54793B81F}</Project>
-      <Name>System.Reactive.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\ext\mono.reactive\System.Reactive.Linq\System.Reactive.Linq.csproj">
-      <Project>{F0395470-330B-4DBF-B1A5-D873E597DD05}</Project>
-      <Name>System.Reactive.Linq</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\ext\mono.reactive\System.Reactive.PlatformServices\System.Reactive.PlatformServices.csproj">
-      <Project>{AEEBFC85-91B8-410F-BBB7-BD12BBC61BE6}</Project>
-      <Name>System.Reactive.PlatformServices</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\ext\mono.reactive\System.Reactive.Providers2\System.Reactive.Providers2.csproj">
-      <Project>{9652D18A-CF8D-40D7-BC1D-2090E58EC1FF}</Project>
-      <Name>System.Reactive.Providers2</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\ReactiveUI.Xaml\ReactiveUI.Xaml_Android.csproj">
-      <Project>{F61AC9BA-4A9C-440C-9B6C-2569978F0610}</Project>
-      <Name>ReactiveUI.Xaml_Android</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\ReactiveUI\ReactiveUI_Android.csproj">
-      <Project>{F92A477B-BB94-43C1-984E-E177EF9FEDB7}</Project>
-      <Name>ReactiveUI_Android</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Novell\Novell.MonoDroid.CSharp.targets" />
 </Project>

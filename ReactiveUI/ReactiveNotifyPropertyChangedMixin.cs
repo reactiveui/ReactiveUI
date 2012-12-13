@@ -231,18 +231,18 @@ namespace ReactiveUI
             });
         }
 
-        static readonly MemoizingMRUCache<Type, ICreatesObservableForProperty> notifyFactoryCache =
-            new MemoizingMRUCache<Type, ICreatesObservableForProperty>((t, _) => {
+        static readonly MemoizingMRUCache<Tuple<Type, bool>, ICreatesObservableForProperty> notifyFactoryCache =
+            new MemoizingMRUCache<Tuple<Type, bool>, ICreatesObservableForProperty>((t, _) => {
                 return RxApp.GetAllServices<ICreatesObservableForProperty>()
                     .Aggregate(Tuple.Create(0, (ICreatesObservableForProperty)null), (acc, x) => {
-                        int score = x.GetAffinityForObject(t);
+                        int score = x.GetAffinityForObject(t.Item1, t.Item2);
                         return (score > acc.Item1) ? Tuple.Create(score, x) : acc;
                     }).Item2;
             }, 50);
 
         static IObservable<IObservedChange<object, object>> notifyForProperty(object sender, string propertyName, bool beforeChange)
         {
-            var result = notifyFactoryCache.Get(sender.GetType());
+            var result = notifyFactoryCache.Get(Tuple.Create(sender.GetType(), beforeChange));
             if (result == null) {
                 throw new Exception(
                     String.Format("Couldn't find a ICreatesObservableForProperty for {0}. This should never happen, your service locator is probably broken.", 
