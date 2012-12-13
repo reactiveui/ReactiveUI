@@ -23,10 +23,7 @@ namespace ReactiveUI.Xaml
     {
         public int GetAffinityForObject(Type type, bool beforeChanged = false)
         {
-            // NB: Since every IRNPC is also an INPC, we need to bind more 
-            // tightly than INPCObservableForProperty, so we return 10 here 
-            // instead of one
-            return typeof (DependencyObject).IsAssignableFrom(type) ? 4 : 0;
+            return typeof (DependencyObject).IsAssignableFrom(type) && beforeChanged == false ? 4 : 0;
         }
 
         static readonly Dictionary<Type, DependencyProperty> attachedProperties = new Dictionary<Type, DependencyProperty>();

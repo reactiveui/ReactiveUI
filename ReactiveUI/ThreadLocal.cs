@@ -52,7 +52,7 @@ namespace System
         }
 
         public bool IsValueCreated {
-            get { return _valueFetcher != null; }
+            get { return _valueFetcher == null; }
         }
 
         T _Value;
