@@ -27,10 +27,13 @@ namespace ReactiveUI.Xaml
             RxApp.Register(typeof (CommandBinderImplementation), typeof (ICommandBinderImplementation));
             RxApp.Register(typeof (CreatesCommandBindingViaCommandParameter), typeof(ICreatesCommandBinding));
             RxApp.Register(typeof (CreatesCommandBindingViaEvent), typeof(ICreatesCommandBinding));
+            RxApp.Register(typeof (BooleanToVisibilityTypeConverter), typeof (IBindingTypeConverter));
 
+#if FALSE
             if (InDesignMode) {
                 RxApp.Register(typeof(SampleDataProviderBinder), typeof(IPropertyBinderImplementation));
             }
+#endif
 #endif
 
 #if WINRT
