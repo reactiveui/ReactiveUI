@@ -68,7 +68,6 @@
     <DocumentationFile>Bin\Release\SL4-WindowsPhone71\ReactiveUI.Testing_WP7.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.Reactive.Testing, Version=2.0.20823.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="mscorlib.Extensions" />
     <Reference Include="System.Observable" />
     <Reference Include="Microsoft.Reactive.Testing, Version=2.0.20823.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
