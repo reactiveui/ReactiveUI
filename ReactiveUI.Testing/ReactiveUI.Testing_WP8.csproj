@@ -68,6 +68,7 @@
   <ItemGroup>
     <Reference Include="Microsoft.Reactive.Testing, Version=2.0.20823.0, Culture=neutral, PublicKeyToken=f300afd708cefcd3, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
+    </Reference>
     <Reference Include="Microsoft.Reactive.Testing">
       <HintPath>..\ext\WP80\Microsoft.Reactive.Testing.dll</HintPath>
     </Reference>
@@ -87,6 +88,7 @@
     </Reference>
     <Reference Include="System.Reactive.PlatformServices, Version=2.0.20823.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
+    </Reference>
     <Reference Include="System.Reactive.Core">
       <HintPath>..\ext\WP80\System.Reactive.Core.dll</HintPath>
     </Reference>

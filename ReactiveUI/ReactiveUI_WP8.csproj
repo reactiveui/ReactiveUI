@@ -80,6 +80,7 @@
     </Reference>
     <Reference Include="System.Reactive.PlatformServices, Version=2.0.20823.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
+    </Reference>
     <Reference Include="System.Reactive.Core">
       <HintPath>..\ext\WP80\System.Reactive.Core.dll</HintPath>
     </Reference>
