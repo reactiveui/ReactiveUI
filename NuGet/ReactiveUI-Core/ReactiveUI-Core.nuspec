@@ -12,6 +12,7 @@
 
 		<dependencies>
 			<dependency id="Rx-Main" version="[2.0.21114]" />
+			<dependency id="Microsoft.Bcl.Async.NotBeta" version="1.0" />
 		</dependencies>
 	</metadata>
 </package>
