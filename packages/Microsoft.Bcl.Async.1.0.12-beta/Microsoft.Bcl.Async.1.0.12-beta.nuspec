@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/10/nuspec.xsd">
+  <metadata>
+    <id>Microsoft.Bcl.Async</id>
+    <version>1.0.12-beta</version>
+    <title>Async for .NET Framework 4, Silverlight 4 and 5, and Windows Phone 7.5</title>
+    <authors>Microsoft</authors>
+    <owners>Microsoft</owners>
+    <licenseUrl>http://go.microsoft.com/fwlink/?LinkID=262007&amp;clcid=0x409</licenseUrl>
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <description>This package enables Visual Studio 2012 projects targeting .NET Framework 4 (with KB2468871), Silverlight 4 and 5, and Windows Phone 7.5 (including any portable library combinations) to use the new 'async' and 'await' keywords. This package also includes Task-based extension methods that allow using some of the existing asynchronous APIs with the new language keywords.
+
+This package is not supported in Visual Studio 2010, and is not required for projects targeting .NET Framework 4.5 or .NET for Windows Store apps.</description>
+    <summary>Enables usage of the 'async' and 'await' keywords from projects targeting .NET Framework 4 (with with KB2468871), Silverlight 4 and 5, and Windows Phone 7.5.</summary>
+    <copyright>Copyright © Microsoft Corportation</copyright>
+    <tags>BCL Microsoft System Async Await Asynchronous</tags>
+    <dependencies>
+      <dependency id="Microsoft.Bcl" version="1.0.0-beta" />
+    </dependencies>
+  </metadata>
+</package>
