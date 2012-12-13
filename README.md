@@ -33,19 +33,19 @@ public class ColorChooserThatDoesntLikeGreen : ReactiveObject
   byte _Red;
   public byte Red {
     get { return _Red; }
-    set { this.RaiseAndSetIfChanged(x => x.Red, value); }
+    set { this.RaiseAndSetIfChanged(value); }
   }
 
   byte _Green;
   public byte Green {
     get { return _Green; }
-    set { this.RaiseAndSetIfChanged(x => x.Green, value); }
+    set { this.RaiseAndSetIfChanged(value); }
   }
 
   byte _Blue;
   public byte Blue {
     get { return _Blue; }
-    set { this.RaiseAndSetIfChanged(x => x.Blue, value); }
+    set { this.RaiseAndSetIfChanged(value); }
   }
 
   //
