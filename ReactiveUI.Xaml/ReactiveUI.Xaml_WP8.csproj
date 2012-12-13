@@ -84,6 +84,7 @@
     </Reference>
     <Reference Include="System.Reactive.Windows.Threading">
       <SpecificVersion>False</SpecificVersion>
+    </Reference>
     <Reference Include="System.Reactive.Core">
       <HintPath>..\ext\WP80\System.Reactive.Core.dll</HintPath>
     </Reference>
