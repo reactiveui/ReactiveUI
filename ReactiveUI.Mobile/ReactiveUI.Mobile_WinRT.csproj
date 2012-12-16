@@ -9,8 +9,8 @@
     <ProjectGuid>{30540F2B-0F4C-40A0-B3B6-FFDDFA09D8FD}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ReactiveUI.Mobile_WinRT</RootNamespace>
-    <AssemblyName>ReactiveUI.Mobile</AssemblyName>
+    <RootNamespace>ReactiveUI.Mobile</RootNamespace>
+    <AssemblyName>ReactiveUI.Mobile_WinRT</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{BC8A1FFA-BEE3-4634-8014-F334798102B3};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -31,7 +31,7 @@
     <DefineConstants>TRACE;WINRT, NET_45</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Release\WinRT45\ReactiveUI.Mobile.XML</DocumentationFile>
+    <DocumentationFile>bin\Release\WinRT45\ReactiveUI.Mobile_WinRT.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|ARM'">
     <DebugSymbols>true</DebugSymbols>
