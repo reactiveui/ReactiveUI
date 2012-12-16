@@ -90,8 +90,7 @@ namespace ReactiveUI.Mobile
                 return disp;
             }).Multicast(new AsyncSubject<Position>());
 
-            ret.Connect();
-            return ret;
+            return ret.RefCount();
         }
 
         public static IDisposable WithGeolocator(IReactiveGeolocator implementation)
