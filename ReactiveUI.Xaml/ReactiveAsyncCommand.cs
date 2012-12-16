@@ -161,7 +161,11 @@ namespace ReactiveUI.Xaml
 
         public IDisposable Subscribe(IObserver<object> observer)
         {
-            return _executeSubject.Subscribe(observer);
+            return _executeSubject.Subscribe(
+                Observer.Create<object>(
+                    x => marshalFailures(observer.OnNext, x),
+                    ex => marshalFailures(observer.OnError, ex),
+                    () => marshalFailures(observer.OnCompleted)));
         }
 
         public void Dispose()
@@ -336,6 +340,20 @@ namespace ReactiveUI.Xaml
             var cache = new ObservableAsyncMRUCache<object, TResult>(
                 calculationFunc, maxSize, _maximumConcurrent, onRelease, sched);
             return this.RegisterAsyncObservable(cache.AsyncGet);
+        }
+
+        void marshalFailures<T>(Action<T> block, T param)
+        {
+            try {
+                block(param);
+            } catch (Exception ex) {
+                _exSubject.OnNext(ex);
+            }
+        }
+
+        void marshalFailures(Action block)
+        {
+            marshalFailures(_ => block(), Unit.Default);
         }
     }
 

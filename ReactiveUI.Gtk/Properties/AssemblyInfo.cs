@@ -8,4 +8,4 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyDescription("Gtk# support for ReactiveUI")]
 [assembly: AssemblyProduct("ReactiveUI.Gtk")]
 
-[assembly: AssemblyVersion("4.1.0")]
+[assembly: AssemblyVersion("4.2.1")]
