@@ -76,6 +76,7 @@ namespace ReactiveUI.Mobile
                 return Implementation.GetPosition(includeHeading);
             }
 
+#if !WP7 && !WP8
             var ret = Observable.Create<Position>(subj => {
                 var geo = new Geolocator();
                 var cts = new CancellationTokenSource();
@@ -89,6 +90,23 @@ namespace ReactiveUI.Mobile
                 disp.Add(geo.GetPositionAsync(cts.Token, includeHeading).ToObservable().Subscribe(subj));
                 return disp;
             }).Multicast(new AsyncSubject<Position>());
+#else
+            // NB: Xamarin.Mobile.dll references CancellationTokenSource, but 
+            // the one we have comes from the BCL Async library - if we try to
+            // pass in our type into the Xamarin library, it gets confused.
+            var ret = Observable.Create<Position>(subj => {
+                var geo = new Geolocator();
+                var disp = new CompositeDisposable();
+
+                if (!geo.IsGeolocationAvailable || !geo.IsGeolocationEnabled) {
+                    return Observable.Throw<Position>(new Exception("Geolocation isn't available")).Subscribe(subj);
+                }
+
+                disp.Add(geo.GetPositionAsync(Int32.MaxValue, includeHeading).ToObservable().Subscribe(subj));
+                return disp;
+            }).Multicast(new AsyncSubject<Position>());
+#endif
+
 
             return ret.RefCount();
         }
