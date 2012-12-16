@@ -9,6 +9,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reactive.Subjects;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using System.Threading;
 
 using System.Threading.Tasks;
@@ -421,15 +422,16 @@ namespace ReactiveUI
             return new[] {"ReactiveUI.Xaml"};
 #else
             var name = Assembly.GetExecutingAssembly().GetName();
+            var suffix = getArchSuffixForPath(Assembly.GetExecutingAssembly().Location);
 
             return guiLibs.SelectMany(x => {
-                var fullName = String.Format("{0}, Version={1}, Culture=neutral, PublicKeyToken=null", x, name.Version.ToString());
+                var fullName = String.Format("{0}{1}, Version={2}, Culture=neutral, PublicKeyToken=null", x, suffix, name.Version.ToString());
 
                 var assemblyLocation = Assembly.GetExecutingAssembly().Location;
                 if (String.IsNullOrEmpty(assemblyLocation))
                     return Enumerable.Empty<string>();
 
-                var path = Path.Combine(Path.GetDirectoryName(assemblyLocation), x + ".dll");
+                var path = Path.Combine(Path.GetDirectoryName(assemblyLocation), x + suffix + ".dll");
                 if (!File.Exists(path) && !RxApp.InUnitTestRunner()) {
                     LogHost.Default.Debug("Couldn't find {0}", path);
                     return Enumerable.Empty<string>();
@@ -444,6 +446,13 @@ namespace ReactiveUI
                 }
             });
 #endif
+        }
+
+        static string getArchSuffixForPath(string path)
+        {
+            var re = new Regex(@"(_[A-Za-z0-9]+)\.");
+            var m = re.Match(Path.GetFileName(path));
+            return m.Success ? m.Groups[1].Value : "";
         }
     }
 
