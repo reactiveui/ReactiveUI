@@ -14,7 +14,6 @@
 			<dependency id="reactiveui-core" version="[4.2.1]" />
 			<dependency id="reactiveui-nlog" version="[4.2.1]" />
 			<dependency id="reactiveui-xaml" version="[4.2.1]" />
-			<dependency id="reactiveui-testing" version="[4.2.1]" />
 		</dependencies>
 	</metadata>
 </package>
