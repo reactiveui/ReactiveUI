@@ -9,7 +9,8 @@
     <ProjectTypeGuids>{948B3504-5B70-4649-8FE4-BDE1FB46EC69};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <RootNamespace>ReactiveUI.Cocoa</RootNamespace>
-    <AssemblyName>ReactiveUI.Cocoa</AssemblyName>
+    <AssemblyName>ReactiveUI.Cocoa_Mono</AssemblyName>
+    <LastXamMacNagTime>12/15/2012 10:45:01 PM</LastXamMacNagTime>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
@@ -25,6 +26,7 @@
     <EnableCodeSigning>False</EnableCodeSigning>
     <CreatePackage>False</CreatePackage>
     <CodeSigningKey>Mac Developer</CodeSigningKey>
+    <UseSGen>False</UseSGen>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
@@ -39,6 +41,7 @@
     <EnableCodeSigning>False</EnableCodeSigning>
     <CreatePackage>False</CreatePackage>
     <CodeSigningKey>Mac Developer</CodeSigningKey>
+    <UseSGen>False</UseSGen>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'AppStore|AnyCPU' ">
     <DebugType>none</DebugType>
@@ -54,6 +57,7 @@
     <EnableCodeSigning>True</EnableCodeSigning>
     <CreatePackage>True</CreatePackage>
     <CodeSigningKey>3rd Party Mac Developer Application</CodeSigningKey>
+    <UseSGen>False</UseSGen>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -68,11 +72,11 @@
     <Reference Include="System.Reactive.Interfaces">
       <HintPath>..\ext\mono\System.Reactive.Interfaces.dll</HintPath>
     </Reference>
-    <Reference Include="&lt;Module&gt;">
-      <HintPath>..\ext\mono\System.Reactive.Linq.dll</HintPath>
-    </Reference>
     <Reference Include="System.Reactive.PlatformServices">
       <HintPath>..\ext\mono\System.Reactive.PlatformServices.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reactive.Linq">
+      <HintPath>..\ext\mono\System.Reactive.Linq.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
