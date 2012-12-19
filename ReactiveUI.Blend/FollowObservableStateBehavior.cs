@@ -67,7 +67,17 @@ namespace ReactiveUI.Blend
             }
 
             This.watcher = ((IObservable<string>)e.NewValue).ObserveOn(RxApp.DeferredScheduler).Subscribe(
-                x => VisualStateManager.GoToState(This.TargetObject ?? This.AssociatedObject, x, true),
+                x => {
+                    var target = This.TargetObject ?? This.AssociatedObject;
+#if SILVERLIGHT
+                    VisualStateManager.GoToState(target, x, true);
+#else
+                    if (target is Control)
+                        VisualStateManager.GoToState(target, x, true);
+                    else
+                        VisualStateManager.GoToElementState(target, x, true);
+#endif
+                },
                 ex => {
                     if (!This.AutoResubscribeOnError)
                         return;
