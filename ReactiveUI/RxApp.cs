@@ -7,16 +7,22 @@ using System.Reactive.Concurrency;
 using System.Diagnostics.Contracts;
 using System.Linq;      
 using System.Linq.Expressions;
+using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading;
 
 using System.Threading.Tasks;
-using System.Reactive.Threading.Tasks;
 
 #if SILVERLIGHT
 using System.Windows;
+#endif
+
+#if WINRT
+using Windows.ApplicationModel;
+using System.Reactive.Windows.Foundation;
+using System.Reactive.Threading.Tasks;
 #endif
 
 namespace ReactiveUI
@@ -225,6 +231,8 @@ namespace ReactiveUI
         /// </summary>
         public static IObserver<Exception> DefaultExceptionHandler { get; set; }
 
+        static bool? _inUnitTestRunner;
+
         /// <summary>
         /// InUnitTestRunner attempts to determine heuristically if the current
         /// application is running in a unit test framework.
@@ -237,6 +245,14 @@ namespace ReactiveUI
                 return InUnitTestRunnerOverride.Value;
             }
 
+            if (_inUnitTestRunner.HasValue) return _inUnitTestRunner.Value;
+
+            _inUnitTestRunner = inUnitTestRunner();
+            return _inUnitTestRunner.Value;
+        }
+
+        static bool inUnitTestRunner()
+        {
             // XXX: This is hacky and evil, but I can't think of any better way
             // to do this
             string[] testAssemblies = new[] {
@@ -250,6 +266,7 @@ namespace ReactiveUI
                 "PEX",
                 "MSBUILD",
                 "NBEHAVE",
+                "TESTPLATFORM",
             };
 
             string[] designEnvironments = new[] {
@@ -281,8 +298,17 @@ namespace ReactiveUI
 
             return false;
 #elif WINRT
-            // NB: We have no way to detect if we're in design mode in WinRT.
-            return false;
+            if (DesignMode.DesignModeEnabled) return true;
+
+            var depPackages = Package.Current.Dependencies.Select(x => x.Id.FullName);
+            if (depPackages.Any(x => testAssemblies.Any(name => x.ToUpperInvariant().Contains(name)))) return true;
+
+            var files = Package.Current.InstalledLocation.GetFilesAsync().ToObservable()
+                .Select(x => x.Select(y => y.Path).ToArray())
+                .First();
+
+            return files.Any(x => testAssemblies.Any(name => x.ToUpperInvariant().Contains(name)));
+
 #else
             // Try to detect whether we're in design mode - bonus points, 
             // without access to any WPF references :-/
@@ -296,6 +322,15 @@ namespace ReactiveUI
                 testAssemblies.Any(name => x.FullName.ToUpperInvariant().Contains(name)));
 #endif
         }
+
+#if WINRT
+        public static async Task<string[]> getAssemblyListWinRT()
+        {
+            var pkgRoot = Package.Current.InstalledLocation;
+            var files = await pkgRoot.GetFilesAsync();
+            return files.Select(x => x.Path).ToArray();
+        }
+#endif
 
         /// <summary>
         /// GetFieldNameForProperty returns the corresponding backing field name
