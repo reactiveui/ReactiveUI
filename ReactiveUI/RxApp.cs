@@ -303,12 +303,12 @@ namespace ReactiveUI
             var depPackages = Package.Current.Dependencies.Select(x => x.Id.FullName);
             if (depPackages.Any(x => testAssemblies.Any(name => x.ToUpperInvariant().Contains(name)))) return true;
 
-            var files = Package.Current.InstalledLocation.GetFilesAsync().ToObservable()
-                .Select(x => x.Select(y => y.Path).ToArray())
-                .First();
+            var fileTask = Task.Run(async () => {
+                var files = await Package.Current.InstalledLocation.GetFilesAsync();
+                return files.Select(x => x.Path).ToArray();
+            });
 
-            return files.Any(x => testAssemblies.Any(name => x.ToUpperInvariant().Contains(name)));
-
+            return fileTask.Result.Any(x => testAssemblies.Any(name => x.ToUpperInvariant().Contains(name)));
 #else
             // Try to detect whether we're in design mode - bonus points, 
             // without access to any WPF references :-/
