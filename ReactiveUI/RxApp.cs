@@ -10,6 +10,7 @@ using System.Linq.Expressions;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using System.Threading;
 
@@ -267,6 +268,8 @@ namespace ReactiveUI
                 "MSBUILD",
                 "NBEHAVE",
                 "TESTPLATFORM",
+                "VSTEST",
+                "EXECUTIONENGINE",
             };
 
             string[] designEnvironments = new[] {
@@ -300,15 +303,13 @@ namespace ReactiveUI
 #elif WINRT
             if (DesignMode.DesignModeEnabled) return true;
 
-            var depPackages = Package.Current.Dependencies.Select(x => x.Id.FullName);
-            if (depPackages.Any(x => testAssemblies.Any(name => x.ToUpperInvariant().Contains(name)))) return true;
+            var modList = new List<string>();
+            EnumerateLoadedModules64(GetCurrentProcess(), (name, basePtr, size, dontcare) => {
+                modList.Add(name);
+                return true;
+            }, IntPtr.Zero);
 
-            var fileTask = Task.Run(async () => {
-                var files = await Package.Current.InstalledLocation.GetFilesAsync();
-                return files.Select(x => x.Path).ToArray();
-            });
-
-            return fileTask.Result.Any(x => testAssemblies.Any(name => x.ToUpperInvariant().Contains(name)));
+            return modList.Any(x => testAssemblies.Any(name => x.ToUpperInvariant().Contains(name)));
 #else
             // Try to detect whether we're in design mode - bonus points, 
             // without access to any WPF references :-/
@@ -489,6 +490,14 @@ namespace ReactiveUI
             var m = re.Match(Path.GetFileName(path));
             return m.Success ? m.Groups[1].Value : "";
         }
+
+        internal delegate bool EnumLoadedModulesCallback([MarshalAs(UnmanagedType.LPStr)] string moduleName, ulong moduleBase, uint moduleSize, IntPtr dontCare);
+
+        [DllImport("dbghelp.dll")]
+        internal static extern bool EnumerateLoadedModules64(IntPtr hProcess, EnumLoadedModulesCallback callback, IntPtr useZero);
+
+        [DllImport("kernel32.dll")]
+        internal static extern IntPtr GetCurrentProcess();
     }
 
     public class NullDefaultPropertyBindingProvider : IDefaultPropertyBindingProvider
