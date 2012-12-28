@@ -24,6 +24,8 @@ using System.Windows;
 using Windows.ApplicationModel;
 using System.Reactive.Windows.Foundation;
 using System.Reactive.Threading.Tasks;
+using Windows.ApplicationModel.Store;
+
 #endif
 
 namespace ReactiveUI
@@ -303,6 +305,15 @@ namespace ReactiveUI
 #elif WINRT
             if (DesignMode.DesignModeEnabled) return true;
 
+            try {
+                // NB: Prevent apps from calling banned Win32 API when in the store
+                if (CurrentApp.LicenseInformation.IsActive) {
+                    return false;
+                }
+            } catch (Exception ex) {
+                // Not in the store apparently
+            }
+
             var modList = new List<string>();
             EnumerateLoadedModules64(GetCurrentProcess(), (name, basePtr, size, dontcare) => {
                 modList.Add(name);
@@ -324,14 +335,6 @@ namespace ReactiveUI
 #endif
         }
 
-#if WINRT
-        public static async Task<string[]> getAssemblyListWinRT()
-        {
-            var pkgRoot = Package.Current.InstalledLocation;
-            var files = await pkgRoot.GetFilesAsync();
-            return files.Select(x => x.Path).ToArray();
-        }
-#endif
 
         /// <summary>
         /// GetFieldNameForProperty returns the corresponding backing field name
