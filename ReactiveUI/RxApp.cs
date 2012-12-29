@@ -181,14 +181,14 @@ namespace ReactiveUI
             }
         }
 
+        static Func<Type, IRxUILogger> _LoggerFactory;
+        static internal readonly Subject<Unit> _LoggerFactoryChanged = new Subject<Unit>();
+
         /// <summary>
         /// Set this property to implement a custom logger provider - the
         /// string parameter is the 'prefix' (usually the class name of the log
         /// entry)
         /// </summary>
-
-        static Func<Type, IRxUILogger> _LoggerFactory;
-        static internal readonly Subject<Unit> _LoggerFactoryChanged = new Subject<Unit>();
         public static Func<Type, IRxUILogger> LoggerFactory {
             get { return _LoggerFactory; }
             set { _LoggerFactory = value; _LoggerFactoryChanged.OnNext(Unit.Default); }
@@ -250,89 +250,10 @@ namespace ReactiveUI
 
             if (_inUnitTestRunner.HasValue) return _inUnitTestRunner.Value;
 
-            _inUnitTestRunner = inUnitTestRunner();
+            // NB: This is in a separate static ctor to avoid a deadlock on 
+            // the static ctor lock when blocking on async methods 
+            _inUnitTestRunner = RealUnitTestDetector.InUnitTestRunner();
             return _inUnitTestRunner.Value;
-        }
-
-        static bool inUnitTestRunner()
-        {
-            // XXX: This is hacky and evil, but I can't think of any better way
-            // to do this
-            string[] testAssemblies = new[] {
-                "CSUNIT",
-                "NUNIT",
-                "XUNIT",
-                "MBUNIT",
-                "TESTDRIVEN",
-                "QUALITYTOOLS.TIPS.UNITTEST.ADAPTER",
-                "QUALITYTOOLS.UNITTESTING.SILVERLIGHT",
-                "PEX",
-                "MSBUILD",
-                "NBEHAVE",
-                "TESTPLATFORM",
-                "VSTEST",
-                "EXECUTIONENGINE",
-            };
-
-            string[] designEnvironments = new[] {
-                "BLEND.EXE",
-                "MONODEVELOP",
-                "SHARPDEVELOP.EXE",
-            };
-
-#if SILVERLIGHT
-            // NB: Deployment.Current.Parts throws an exception when accessed in Blend
-            try {
-                var ret = Deployment.Current.Parts.Any(x =>
-                    testAssemblies.Any(name => x.Source.ToUpperInvariant().Contains(name)));
-
-                if (ret) {
-                    return ret;
-                }
-            } catch(Exception) {
-                return true;
-            }
-
-            try {
-                if (Application.Current.RootVisual != null && System.ComponentModel.DesignerProperties.GetIsInDesignMode(Application.Current.RootVisual)) {
-                    return false;
-                }
-            } catch {
-                return true;
-            }
-
-            return false;
-#elif WINRT
-            if (DesignMode.DesignModeEnabled) return true;
-
-            try {
-                // NB: Prevent apps from calling banned Win32 API when in the store
-                if (CurrentApp.LicenseInformation.IsActive) {
-                    return false;
-                }
-            } catch (Exception ex) {
-                // Not in the store apparently
-            }
-
-            var modList = new List<string>();
-            EnumerateLoadedModules64(GetCurrentProcess(), (name, basePtr, size, dontcare) => {
-                modList.Add(name);
-                return true;
-            }, IntPtr.Zero);
-
-            return modList.Any(x => testAssemblies.Any(name => x.ToUpperInvariant().Contains(name)));
-#else
-            // Try to detect whether we're in design mode - bonus points, 
-            // without access to any WPF references :-/
-            var entry = Assembly.GetEntryAssembly();
-            var exeName = (entry != null ? entry.Location.ToUpperInvariant() : "");
-            if (designEnvironments.Any(x => x.Contains(exeName))) {
-                return true;
-            }
-
-            return AppDomain.CurrentDomain.GetAssemblies().Any(x =>
-                testAssemblies.Any(name => x.FullName.ToUpperInvariant().Contains(name)));
-#endif
         }
 
 
@@ -493,14 +414,6 @@ namespace ReactiveUI
             var m = re.Match(Path.GetFileName(path));
             return m.Success ? m.Groups[1].Value : "";
         }
-
-        internal delegate bool EnumLoadedModulesCallback([MarshalAs(UnmanagedType.LPStr)] string moduleName, ulong moduleBase, uint moduleSize, IntPtr dontCare);
-
-        [DllImport("dbghelp.dll")]
-        internal static extern bool EnumerateLoadedModules64(IntPtr hProcess, EnumLoadedModulesCallback callback, IntPtr useZero);
-
-        [DllImport("kernel32.dll")]
-        internal static extern IntPtr GetCurrentProcess();
     }
 
     public class NullDefaultPropertyBindingProvider : IDefaultPropertyBindingProvider
@@ -509,6 +422,84 @@ namespace ReactiveUI
         {
             return null;
         }
+    }
+
+    internal static class RealUnitTestDetector
+    {
+        public static bool InUnitTestRunner()
+        {
+            // XXX: This is hacky and evil, but I can't think of any better way
+            // to do this
+            string[] testAssemblies = new[] {
+                "CSUNIT",
+                "NUNIT",
+                "XUNIT",
+                "MBUNIT",
+                "TESTDRIVEN",
+                "QUALITYTOOLS.TIPS.UNITTEST.ADAPTER",
+                "QUALITYTOOLS.UNITTESTING.SILVERLIGHT",
+                "PEX",
+                "MSBUILD",
+                "NBEHAVE",
+                "TESTPLATFORM",
+            };
+
+            string[] designEnvironments = new[] {
+                "BLEND.EXE",
+                "MONODEVELOP",
+                "SHARPDEVELOP.EXE",
+            };
+
+#if SILVERLIGHT
+            // NB: Deployment.Current.Parts throws an exception when accessed in Blend
+            try {
+                var ret = Deployment.Current.Parts.Any(x =>
+                    testAssemblies.Any(name => x.Source.ToUpperInvariant().Contains(name)));
+
+                if (ret) {
+                    return ret;
+                }
+            } catch(Exception) {
+                return true;
+            }
+
+            try {
+                if (Application.Current.RootVisual != null && System.ComponentModel.DesignerProperties.GetIsInDesignMode(Application.Current.RootVisual)) {
+                    return false;
+                }
+            } catch {
+                return true;
+            }
+
+            return false;
+#elif WINRT
+            if (DesignMode.DesignModeEnabled) return true;
+
+            var depPackages = Package.Current.Dependencies.Select(x => x.Id.FullName);
+            if (depPackages.Any(x => testAssemblies.Any(name => x.ToUpperInvariant().Contains(name)))) return true;
+
+
+            var fileTask = Task.Factory.StartNew(async () =>
+            {
+                var files = await Package.Current.InstalledLocation.GetFilesAsync();
+                return files.Select(x => x.Path).ToArray();
+            }, TaskCreationOptions.HideScheduler).Unwrap();
+
+            return fileTask.Result.Any(x => testAssemblies.Any(name => x.ToUpperInvariant().Contains(name)));
+#else
+            // Try to detect whether we're in design mode - bonus points, 
+            // without access to any WPF references :-/
+            var entry = Assembly.GetEntryAssembly();
+            var exeName = (entry != null ? entry.Location.ToUpperInvariant() : "");
+            if (designEnvironments.Any(x => x.Contains(exeName))) {
+                return true;
+            }
+
+            return AppDomain.CurrentDomain.GetAssemblies().Any(x =>
+                testAssemblies.Any(name => x.FullName.ToUpperInvariant().Contains(name)));
+#endif
+        }
+
     }
 }
 
