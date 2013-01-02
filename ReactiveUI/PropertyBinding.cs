@@ -228,13 +228,10 @@ namespace ReactiveUI
                     signalViewUpdate.Select(_ => false) : 
                     view.WhenAnyDynamic(viewPropChain, x => (TVProp) x.Value).Select(_ => false));
 
-            string vmChangedString = String.Format("Setting {0}.{1} => {2}.{3}: ",
-                typeof (TViewModel).Name, String.Join(".", vmPropChain),
-                typeof (TView).Name, String.Join(".", viewPropChain));
-
-            string viewChangedString = String.Format("Setting {0}.{1} => {2}.{3}: ",
-                typeof (TView).Name, String.Join(".", viewPropChain),
-                typeof (TViewModel).Name, String.Join(".", vmPropChain));
+            var vmString = String.Format("{0}.{1}", typeof (TViewModel).Name, String.Join(".", vmPropChain));
+            var vString = String.Format("{0}.{1}", typeof (TView).Name, String.Join(".", viewPropChain));
+            var vmChangedString = String.Format("Setting {0} => {1}", vmString, vString);
+            var viewChangedString = String.Format("Setting {0} => {1}", vString, vmString);
 
             var changeWithValues = somethingChanged.Select(isVm => {
                 TVMProp vmValue; TVProp vValue;
@@ -270,6 +267,15 @@ namespace ReactiveUI
                 }
             });
 
+            var hooks = RxApp.GetAllServices<IPropertyBindingHook>();
+            var shouldBail = hooks.Aggregate(true, (acc, x) => 
+                acc && x.ExecuteHook(viewModel, view, vmString, vString, BindingDirection.TwoWay));
+
+            if (shouldBail) {
+                this.Log().Warn("Binding hook asked to disable binding {0} => {1}", vmString, vString);
+                return Disposable.Empty;
+            }
+
             var ret = changeWithValues.Subscribe(isVmWithLatestValue => {
                 if (isVmWithLatestValue == null) return;
 
@@ -297,6 +303,9 @@ namespace ReactiveUI
             where TViewModel : class
             where TView : IViewFor
         {
+            var vmPropChain = Reflection.ExpressionToPropertyNames(vmProperty);
+            var vmString = String.Format("{0}.{1}", typeof (TViewModel).Name, String.Join(".", vmPropChain));
+
             if (viewProperty == null) {
                 var viewPropChain = Reflection.getDefaultViewPropChain(view, Reflection.ExpressionToPropertyNames(vmProperty));
 
@@ -305,6 +314,17 @@ namespace ReactiveUI
 
                 if (converter == null) {
                     throw new ArgumentException(String.Format("Can't convert {0} to {1}. To fix this, register a IBindingTypeConverter", typeof (TVMProp), viewType));
+                }
+
+                var vString = String.Format("{0}.{1}", viewType.Name, String.Join(".", viewPropChain));
+
+                var hooks = RxApp.GetAllServices<IPropertyBindingHook>();
+                var shouldBail = hooks.Aggregate(true, (acc, x) => 
+                    acc && x.ExecuteHook(viewModel, view, vmString, vString, BindingDirection.OneWay));
+
+                if (shouldBail) {
+                    this.Log().Warn("Binding hook asked to disable binding {0} => {1}", vmString, vString);
+                    return Disposable.Empty;
                 }
 
                 return Reflection.ViewModelWhenAnyValue(viewModel, view, vmProperty)
@@ -319,6 +339,18 @@ namespace ReactiveUI
 
                 if (converter == null) {
                     throw new ArgumentException(String.Format("Can't convert {0} to {1}. To fix this, register a IBindingTypeConverter", typeof (TVMProp), typeof(TVProp)));
+                }
+
+                var viewPropChain = Reflection.ExpressionToPropertyNames(viewProperty);
+                var vString = String.Format("{0}.{1}", typeof(TView), String.Join(".", viewPropChain));
+
+                var hooks = RxApp.GetAllServices<IPropertyBindingHook>();
+                var shouldBail = hooks.Aggregate(true, (acc, x) => 
+                    acc && x.ExecuteHook(viewModel, view, vmString, vString, BindingDirection.OneWay));
+
+                if (shouldBail) {
+                    this.Log().Warn("Binding hook asked to disable binding {0} => {1}", vmString, vString);
+                    return Disposable.Empty;
                 }
 
                 return Reflection.ViewModelWhenAnyValue(viewModel, view, vmProperty)
@@ -344,17 +376,42 @@ namespace ReactiveUI
             where TViewModel : class
             where TView : IViewFor
         {
+            var vmPropChain = Reflection.ExpressionToPropertyNames(vmProperty);
+            var vmString = String.Format("{0}.{1}", typeof (TViewModel).Name, String.Join(".", vmPropChain));
+
             if (viewProperty == null) {
                 var viewPropChain = Reflection.getDefaultViewPropChain(view, Reflection.ExpressionToPropertyNames(vmProperty));
+                var vString = String.Format("{0}.{1}", typeof (TView), String.Join(".", viewPropChain));
+
+                var hooks = RxApp.GetAllServices<IPropertyBindingHook>();
+                var shouldBail = hooks.Aggregate(true, (acc, x) =>
+                    acc && x.ExecuteHook(viewModel, view, vmString, vString, BindingDirection.OneWay));
+
+                if (shouldBail) {
+                    this.Log().Warn("Binding hook asked to disable binding {0} => {1}", vmString, vString);
+                    return Disposable.Empty;
+                }
+
+                return Reflection.ViewModelWhenAnyValue(viewModel, view, vmProperty)
+                                 .Select(selector)
+                                 .Subscribe(x => Reflection.SetValueToPropertyChain(view, viewPropChain, x, false));
+            } else {
+                var viewPropChain = Reflection.ExpressionToPropertyNames(viewProperty);
+                var vString = String.Format("{0}.{1}", typeof(TView), String.Join(".", viewPropChain));
+
+                var hooks = RxApp.GetAllServices<IPropertyBindingHook>();
+                var shouldBail = hooks.Aggregate(true, (acc, x) =>
+                    acc && x.ExecuteHook(viewModel, view, vmString, vString, BindingDirection.OneWay));
+
+                if (shouldBail) {
+                    this.Log().Warn("Binding hook asked to disable binding {0} => {1}", vmString, vString);
+                    return Disposable.Empty;
+                }
 
                 return Reflection.ViewModelWhenAnyValue(viewModel, view, vmProperty)
                     .Select(selector)
-                    .Subscribe(x => Reflection.SetValueToPropertyChain(view, viewPropChain, x, false));
+                    .BindTo(view, viewProperty, fallbackValue);
             }
-
-            return Reflection.ViewModelWhenAnyValue(viewModel, view, vmProperty)
-                .Select(selector)
-                .BindTo(view, viewProperty, fallbackValue);
         }
 
         public IDisposable AsyncOneWayBind<TViewModel, TView, TProp, TOut>(
@@ -367,17 +424,43 @@ namespace ReactiveUI
             where TViewModel : class
             where TView : IViewFor
         {
+            var vmPropChain = Reflection.ExpressionToPropertyNames(vmProperty);
+            var vmString = String.Format("{0}.{1}", typeof (TViewModel).Name, String.Join(".", vmPropChain));
+
             if (viewProperty == null) {
-                var viewPropChain = Reflection.getDefaultViewPropChain(view, Reflection.ExpressionToPropertyNames(vmProperty));
+                var viewPropChain = Reflection.getDefaultViewPropChain(view,
+                    Reflection.ExpressionToPropertyNames(vmProperty));
+                var vString = String.Format("{0}.{1}", typeof (TView), String.Join(".", viewPropChain));
+
+                var hooks = RxApp.GetAllServices<IPropertyBindingHook>();
+                var shouldBail = hooks.Aggregate(true, (acc, x) =>
+                    acc && x.ExecuteHook(viewModel, view, vmString, vString, BindingDirection.AsyncOneWay));
+
+                if (shouldBail) {
+                    this.Log().Warn("Binding hook asked to disable binding {0} => {1}", vmString, vString);
+                    return Disposable.Empty;
+                }
+
+                return Reflection.ViewModelWhenAnyValue(viewModel, view, vmProperty)
+                                 .SelectMany(selector)
+                                 .Subscribe(x => Reflection.SetValueToPropertyChain(view, viewPropChain, x, false));
+            } else {
+                var viewPropChain = Reflection.ExpressionToPropertyNames(viewProperty);
+                var vString = String.Format("{0}.{1}", typeof(TView), String.Join(".", viewPropChain));
+
+                var hooks = RxApp.GetAllServices<IPropertyBindingHook>();
+                var shouldBail = hooks.Aggregate(true, (acc, x) =>
+                    acc && x.ExecuteHook(viewModel, view, vmString, vString, BindingDirection.OneWay));
+
+                if (shouldBail) {
+                    this.Log().Warn("Binding hook asked to disable binding {0} => {1}", vmString, vString);
+                    return Disposable.Empty;
+                }
 
                 return Reflection.ViewModelWhenAnyValue(viewModel, view, vmProperty)
                     .SelectMany(selector)
-                    .Subscribe(x => Reflection.SetValueToPropertyChain(view, viewPropChain, x, false));
+                    .BindTo(view, viewProperty, fallbackValue);
             }
-
-            return Reflection.ViewModelWhenAnyValue(viewModel, view, vmProperty)
-                .SelectMany(selector)
-                .BindTo(view, viewProperty, fallbackValue);
         }
 
         MemoizingMRUCache<Tuple<Type, Type>, IBindingTypeConverter> typeConverterCache = new MemoizingMRUCache<Tuple<Type, Type>, IBindingTypeConverter>(
