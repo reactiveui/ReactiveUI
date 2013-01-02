@@ -10,7 +10,9 @@ namespace ReactiveUI.Routing
     {
         public void Register()
         {
+#if !MONO
             RxApp.Register(typeof(AutoDataTemplateBindingHook), typeof(IPropertyBindingHook));
+#endif
         }
     }
 }
