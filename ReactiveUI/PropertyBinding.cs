@@ -6,8 +6,10 @@ using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using System.Reactive.Threading.Tasks;
 using System.Reflection;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace ReactiveUI
 {
@@ -131,12 +133,37 @@ namespace ReactiveUI
                 this TView view,
                 TViewModel viewModel,
                 Expression<Func<TViewModel, TProp>> vmProperty,
+                Expression<Func<TView, TOut>> viewProperty,
+                Func<TProp, Task<TOut>> selector,
+                Func<TOut> fallbackValue = null)
+            where TViewModel : class
+            where TView : IViewFor
+        {
+            return binderImplementation.AsyncOneWayBind(viewModel, view, vmProperty, viewProperty, x => selector(x).ToObservable(), fallbackValue);
+        }
+
+        public static IDisposable AsyncOneWayBind<TViewModel, TView, TProp, TOut>(
+                this TView view,
+                TViewModel viewModel,
+                Expression<Func<TViewModel, TProp>> vmProperty,
                 Func<TProp, IObservable<TOut>> selector,
                 Func<TOut> fallbackValue = null)
             where TViewModel : class
             where TView : IViewFor
         {
             return binderImplementation.AsyncOneWayBind(viewModel, view, vmProperty, null, selector, fallbackValue);
+        }
+
+        public static IDisposable AsyncOneWayBind<TViewModel, TView, TProp, TOut>(
+                this TView view,
+                TViewModel viewModel,
+                Expression<Func<TViewModel, TProp>> vmProperty,
+                Func<TProp, Task<TOut>> selector,
+                Func<TOut> fallbackValue = null)
+            where TViewModel : class
+            where TView : IViewFor
+        {
+            return binderImplementation.AsyncOneWayBind(viewModel, view, vmProperty, null, x => selector(x).ToObservable(), fallbackValue);
         }
     }
 
