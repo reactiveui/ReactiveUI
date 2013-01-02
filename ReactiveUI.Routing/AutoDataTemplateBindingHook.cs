@@ -8,6 +8,10 @@ using System.Threading.Tasks;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Markup;
+#else
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Markup;
 #endif
 
 namespace ReactiveUI.Routing
@@ -37,7 +41,11 @@ namespace ReactiveUI.Routing
             var itemsControl = target as ItemsControl;
             if (itemsControl == null) return true;
 
-            if (itemsControl.ItemTemplate != null || itemsControl.ItemTemplateSelector != null) return true;
+            if (itemsControl.ItemTemplate != null) return true;
+
+#if !SILVERLIGHT
+            if (itemsControl.ItemTemplateSelector != null) return true;
+#endif
 
             itemsControl.ItemTemplate = DefaultItemTemplate;
             return true;
