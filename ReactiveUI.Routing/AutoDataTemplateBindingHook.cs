@@ -1,0 +1,46 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+#if WINRT
+using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Markup;
+#endif
+
+namespace ReactiveUI.Routing
+{
+    public class AutoDataTemplateBindingHook : IPropertyBindingHook
+    {
+        public static DataTemplate DefaultItemTemplate = (DataTemplate)
+            #if SILVERLIGHT || WINRT
+            XamlReader.Load(
+            #else
+            XamlReader.Parse(
+            #endif
+                #if WINRT
+                "<DataTemplate xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation' xmlns:routing='using:ReactiveUI.Routing'>" +
+                    "<routing:ViewModelViewHost ViewModel=\"{Binding}\" VerticalContentAlignment=\"Stretch\" HorizontalContentAlignment=\"Stretch\" IsTabStop=\"False\" />" +
+                "</DataTemplate>"
+                #else
+                "<DataTemplate xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation' " +
+                        "xmlns:routing='clr-namespace:ReactiveUI.Routing;assembly=ReactiveUI.Routing'> " +
+                    "<routing:ViewModelViewHost ViewModel=\"{Binding}\" VerticalContentAlignment=\"Stretch\" HorizontalContentAlignment=\"Stretch\" IsTabStop=\"False\" />" +
+                "</DataTemplate>"
+                #endif
+            );
+
+        public bool ExecuteHook(object source, object target, string sourceProperty, string targetProperty, BindingDirection direction)
+        {
+            var itemsControl = target as ItemsControl;
+            if (itemsControl == null) return true;
+
+            if (itemsControl.ItemTemplate != null || itemsControl.ItemTemplateSelector != null) return true;
+
+            itemsControl.ItemTemplate = DefaultItemTemplate;
+            return true;
+        }
+    }
+}
