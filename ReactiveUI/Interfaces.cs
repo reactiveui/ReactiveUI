@@ -389,6 +389,18 @@ namespace ReactiveUI
         Tuple<string, int> GetPropertyForControl(object control);
     }
 
+    public enum BindingDirection
+    {
+        OneWay,
+        TwoWay,
+        AsyncOneWay,
+    }
+
+    public interface IPropertyBindingHook
+    {
+        bool ExecuteHook(object source, object target, string sourceProperty, string targetProperty, BindingDirection direction);
+    }
+
     public interface IViewFor
     {
         object ViewModel { get; set; }
@@ -401,7 +413,8 @@ namespace ReactiveUI
         where T : class
     {
         /// <summary>
-        /// The ViewModel corresponding to this specific View.
+        /// The ViewModel corresponding to this specific View. This should be
+        /// a DependencyProperty if you're using XAML.
         /// </summary>
         T ViewModel { get; set; }
     }
