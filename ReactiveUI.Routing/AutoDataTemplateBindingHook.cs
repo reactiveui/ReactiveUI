@@ -41,6 +41,8 @@ namespace ReactiveUI.Routing
             var itemsControl = target as ItemsControl;
             if (itemsControl == null) return true;
 
+            if (!targetProperty.EndsWith("ItemsSource", StringComparison.OrdinalIgnoreCase)) return true;
+
             if (itemsControl.ItemTemplate != null) return true;
 
 #if !SILVERLIGHT
