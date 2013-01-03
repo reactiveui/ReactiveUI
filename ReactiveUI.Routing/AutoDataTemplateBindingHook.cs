@@ -36,12 +36,14 @@ namespace ReactiveUI.Routing
                 #endif
             );
 
-        public bool ExecuteHook(object source, object target, string sourceProperty, string targetProperty, BindingDirection direction)
+        public bool ExecuteHook(object source, object target, Func<IObservedChange<object, object>[]> getCurrentViewModelProperties, Func<IObservedChange<object, object>[]> getCurrentViewProperties, BindingDirection direction)
         {
-            var itemsControl = target as ItemsControl;
+            var viewProperties = getCurrentViewProperties();
+
+            var itemsControl = viewProperties.Last().Sender as ItemsControl;
             if (itemsControl == null) return true;
 
-            if (!targetProperty.EndsWith("ItemsSource", StringComparison.OrdinalIgnoreCase)) return true;
+            if (viewProperties.Last().PropertyName != "ItemsSource") return true;
 
             if (itemsControl.ItemTemplate != null) return true;
 
