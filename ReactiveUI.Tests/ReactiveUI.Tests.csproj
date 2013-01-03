@@ -125,10 +125,16 @@
     <Compile Include="ReactiveNotifyPropertyChangedMixinTest.cs" />
     <Compile Include="ReactiveObjectTest.cs" />
     <Compile Include="ReactiveValidatedObjectTest.cs" />
+    <Compile Include="RoutingState.cs" />
     <Compile Include="RxAppTest.cs" />
+    <Compile Include="RxRouting.cs" />
     <Compile Include="Utility.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ReactiveUI.Routing\ReactiveUI.Routing.csproj">
+      <Project>{67038157-092e-4d72-baf4-049eb1532264}</Project>
+      <Name>ReactiveUI.Routing</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ReactiveUI.Xaml\ReactiveUI.Xaml.csproj">
       <Project>{761AC9BA-4A9C-440C-9B6C-2569978F0610}</Project>
       <Name>ReactiveUI.Xaml</Name>
