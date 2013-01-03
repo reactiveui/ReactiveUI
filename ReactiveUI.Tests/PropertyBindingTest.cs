@@ -72,6 +72,7 @@ namespace ReactiveUI.Tests
         public ListBox SomeListBox;
         public TextBox Property2;
         public PropertyBindFakeControl FakeControl;
+        public ItemsControl FakeItemsControl;
 
         public PropertyBindView()
         {
@@ -79,6 +80,7 @@ namespace ReactiveUI.Tests
             SomeListBox = new ListBox();
             Property2 = new TextBox();
             FakeControl = new PropertyBindFakeControl();
+            FakeItemsControl = new ItemsControl();
         }
     }
 
@@ -241,6 +243,18 @@ namespace ReactiveUI.Tests
 
             view.FakeControl.NullableDouble = 0.0;
             Assert.Equal(0.0, vm.NullableDouble);
+        }
+
+        [Fact]
+        public void ItemsControlShouldGetADataTemplate()
+        {
+            var vm = new PropertyBindViewModel();
+            var view = new PropertyBindView() {ViewModel = vm};
+
+            Assert.Null(view.FakeItemsControl.ItemTemplate);
+            view.OneWayBind(vm, x => x.SomeCollectionOfStrings, x => x.FakeItemsControl.ItemsSource);
+
+            Assert.NotNull(view.FakeItemsControl.ItemTemplate);
         }
     }
 }
