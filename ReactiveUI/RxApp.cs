@@ -371,6 +371,7 @@ namespace ReactiveUI
         {
             var guiLibs = new[] {
                 "ReactiveUI.Xaml",
+                "ReactiveUI.Routing",
                 "ReactiveUI.Gtk",
                 "ReactiveUI.Cocoa",
                 "ReactiveUI.Android",
@@ -379,7 +380,7 @@ namespace ReactiveUI
 
 #if WINRT || SILVERLIGHT
             // NB: WinRT hates your Freedom
-            return new[] {"ReactiveUI.Xaml"};
+            return new[] {"ReactiveUI.Xaml", "ReactiveUI.Routing"};
 #else
             var name = Assembly.GetExecutingAssembly().GetName();
             var suffix = getArchSuffixForPath(Assembly.GetExecutingAssembly().Location);
