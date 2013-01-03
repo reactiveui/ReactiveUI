@@ -295,10 +295,10 @@ namespace ReactiveUI
             });
 
             var hooks = RxApp.GetAllServices<IPropertyBindingHook>();
-            var shouldBail = hooks.Aggregate(true, (acc, x) => 
+            var shouldBind = hooks.Aggregate(true, (acc, x) => 
                 acc && x.ExecuteHook(viewModel, view, vmString, vString, BindingDirection.TwoWay));
 
-            if (shouldBail) {
+            if (!shouldBind) {
                 this.Log().Warn("Binding hook asked to disable binding {0} => {1}", vmString, vString);
                 return Disposable.Empty;
             }
@@ -346,10 +346,10 @@ namespace ReactiveUI
                 var vString = String.Format("{0}.{1}", viewType.Name, String.Join(".", viewPropChain));
 
                 var hooks = RxApp.GetAllServices<IPropertyBindingHook>();
-                var shouldBail = hooks.Aggregate(true, (acc, x) => 
+                var shouldBind = hooks.Aggregate(true, (acc, x) => 
                     acc && x.ExecuteHook(viewModel, view, vmString, vString, BindingDirection.OneWay));
 
-                if (shouldBail) {
+                if (!shouldBind) {
                     this.Log().Warn("Binding hook asked to disable binding {0} => {1}", vmString, vString);
                     return Disposable.Empty;
                 }
@@ -372,10 +372,10 @@ namespace ReactiveUI
                 var vString = String.Format("{0}.{1}", typeof(TView), String.Join(".", viewPropChain));
 
                 var hooks = RxApp.GetAllServices<IPropertyBindingHook>();
-                var shouldBail = hooks.Aggregate(true, (acc, x) => 
+                var shouldBind = hooks.Aggregate(true, (acc, x) => 
                     acc && x.ExecuteHook(viewModel, view, vmString, vString, BindingDirection.OneWay));
 
-                if (shouldBail) {
+                if (!shouldBind) {
                     this.Log().Warn("Binding hook asked to disable binding {0} => {1}", vmString, vString);
                     return Disposable.Empty;
                 }
@@ -411,10 +411,10 @@ namespace ReactiveUI
                 var vString = String.Format("{0}.{1}", typeof (TView), String.Join(".", viewPropChain));
 
                 var hooks = RxApp.GetAllServices<IPropertyBindingHook>();
-                var shouldBail = hooks.Aggregate(true, (acc, x) =>
+                var shouldBind = hooks.Aggregate(true, (acc, x) =>
                     acc && x.ExecuteHook(viewModel, view, vmString, vString, BindingDirection.OneWay));
 
-                if (shouldBail) {
+                if (!shouldBind) {
                     this.Log().Warn("Binding hook asked to disable binding {0} => {1}", vmString, vString);
                     return Disposable.Empty;
                 }
@@ -427,10 +427,10 @@ namespace ReactiveUI
                 var vString = String.Format("{0}.{1}", typeof(TView), String.Join(".", viewPropChain));
 
                 var hooks = RxApp.GetAllServices<IPropertyBindingHook>();
-                var shouldBail = hooks.Aggregate(true, (acc, x) =>
+                var shouldBind = hooks.Aggregate(true, (acc, x) =>
                     acc && x.ExecuteHook(viewModel, view, vmString, vString, BindingDirection.OneWay));
 
-                if (shouldBail) {
+                if (!shouldBind) {
                     this.Log().Warn("Binding hook asked to disable binding {0} => {1}", vmString, vString);
                     return Disposable.Empty;
                 }
@@ -460,10 +460,10 @@ namespace ReactiveUI
                 var vString = String.Format("{0}.{1}", typeof (TView), String.Join(".", viewPropChain));
 
                 var hooks = RxApp.GetAllServices<IPropertyBindingHook>();
-                var shouldBail = hooks.Aggregate(true, (acc, x) =>
+                var shouldBind = hooks.Aggregate(true, (acc, x) =>
                     acc && x.ExecuteHook(viewModel, view, vmString, vString, BindingDirection.AsyncOneWay));
 
-                if (shouldBail) {
+                if (!shouldBind) {
                     this.Log().Warn("Binding hook asked to disable binding {0} => {1}", vmString, vString);
                     return Disposable.Empty;
                 }
@@ -476,10 +476,10 @@ namespace ReactiveUI
                 var vString = String.Format("{0}.{1}", typeof(TView), String.Join(".", viewPropChain));
 
                 var hooks = RxApp.GetAllServices<IPropertyBindingHook>();
-                var shouldBail = hooks.Aggregate(true, (acc, x) =>
+                var shouldBind = hooks.Aggregate(true, (acc, x) =>
                     acc && x.ExecuteHook(viewModel, view, vmString, vString, BindingDirection.OneWay));
 
-                if (shouldBail) {
+                if (!shouldBind) {
                     this.Log().Warn("Binding hook asked to disable binding {0} => {1}", vmString, vString);
                     return Disposable.Empty;
                 }
