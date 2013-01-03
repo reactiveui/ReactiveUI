@@ -10,7 +10,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>ReactiveUI.Cocoa</RootNamespace>
     <AssemblyName>ReactiveUI.Cocoa_Mono</AssemblyName>
-    <LastXamMacNagTime>12/15/2012 10:45:01 PM</LastXamMacNagTime>
+    <LastXamMacNagTime>1/2/2013 10:55:11 PM</LastXamMacNagTime>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
