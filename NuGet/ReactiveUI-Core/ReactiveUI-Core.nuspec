@@ -11,7 +11,12 @@
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 
 		<dependencies>
-			<dependency id="Rx-Main" version="[2.0.21114]" />
+			<group>
+				<dependency id="Rx-Main" version="[2.0.21114]" />
+			</group>
+			<group targetFramework="winrt45">
+				<dependency id="Rx-WindowStoreApps" version="[2.0.21114]" />
+			</group>
 		</dependencies>
 	</metadata>
 </package>
