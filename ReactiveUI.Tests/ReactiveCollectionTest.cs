@@ -370,6 +370,15 @@ namespace ReactiveUI.Tests
             Assert.Equal("Bamf", fixture[39]);
             Assert.Equal("PrefixBamf", output[39]);
         }
+
+        [Fact]
+        public void SortShouldActuallySort()
+        {
+            var fixture = new ReactiveCollection<int>(new[] {5, 1, 3, 2, 4,});
+            fixture.Sort();
+
+            Assert.True(new[] {1, 2, 3, 4, 5,}.Zip(fixture, (expected, actual) => expected == actual).All(x => x));
+        }
     }
 
 #if SILVERLIGHT
