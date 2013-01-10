@@ -6,6 +6,7 @@ using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Reactive.Testing;
 using ReactiveUI.Testing;
 
@@ -453,6 +454,61 @@ namespace ReactiveUI.Tests
                 sched.AdvanceToMs(1200);
                 Assert.False(fixture.CanExecute(1));
                 Assert.False(latestCanExecute);
+            });
+        }
+
+
+
+        private Task<bool> DummyTestFunction()
+        {
+            return Task.Factory.StartNew(() => true);
+        }
+
+        [Fact]
+        public void ReactiveAsyncCommandInitialConditionDefaultBehavior()
+        {
+            (new TestScheduler()).With(sched => {
+                var canExecute = sched.CreateHotObservable(
+                    sched.OnNextAt(0, false),
+                    sched.OnNextAt(250, true)
+                    );
+
+                var fixture = new ReactiveAsyncCommand(canExecute);
+
+                fixture.RegisterAsyncTask(_ => DummyTestFunction());
+
+                Assert.True(fixture.CanExecute(null));
+
+                sched.AdvanceToMs(10);
+                Assert.False(fixture.CanExecute(null));
+
+                sched.AdvanceToMs(255);
+                Assert.True(fixture.CanExecute(null));
+            });
+        }
+
+
+        [Fact]
+        public void ReactiveAsyncCommandInitialConditionNewBehavior()
+        {
+            (new TestScheduler()).With(sched =>
+            {
+                var canExecute = sched.CreateHotObservable(
+                    sched.OnNextAt(0, false),
+                    sched.OnNextAt(250, true)
+                   );
+
+                var fixture = new ReactiveAsyncCommand(canExecute, initialCondition:false);
+                
+                fixture.RegisterAsyncTask(_ => DummyTestFunction());
+
+                Assert.False(fixture.CanExecute(null));
+                
+                sched.AdvanceToMs(10);
+                Assert.False(fixture.CanExecute(null));
+
+                sched.AdvanceToMs(255);
+                Assert.True(fixture.CanExecute(null));              
             });
         }
     }
