@@ -31,6 +31,7 @@ namespace ReactiveUI.Xaml
         /// operations at a time - defaults to one.</param>
         /// <param name="scheduler">The scheduler to run the asynchronous
         /// operations on - defaults to the Taskpool scheduler.</param>
+        /// <param name="initialCondition">Initial CanExecute state</param>
         public ReactiveAsyncCommand(
             IObservable<bool> canExecute = null, 
             int maximumConcurrent = 1, 

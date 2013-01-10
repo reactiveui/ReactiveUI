@@ -511,5 +511,50 @@ namespace ReactiveUI.Tests
                 Assert.True(fixture.CanExecute(null));              
             });
         }
+
+        [Fact]
+        public void ReactiveCommandInitialConditionDefaultBehavior()
+        {
+            (new TestScheduler()).With(sched =>
+            {
+                var canExecute = sched.CreateHotObservable(
+                    sched.OnNextAt(0, false),
+                    sched.OnNextAt(250, true)
+                    );
+
+                var fixture = new ReactiveCommand(canExecute);
+
+                Assert.True(fixture.CanExecute(null));
+
+                sched.AdvanceToMs(10);
+                Assert.False(fixture.CanExecute(null));
+
+                sched.AdvanceToMs(255);
+                Assert.True(fixture.CanExecute(null));
+            });
+        }
+
+
+        [Fact]
+        public void ReactiveCommandInitialConditionNewBehavior()
+        {
+            (new TestScheduler()).With(sched =>
+            {
+                var canExecute = sched.CreateHotObservable(
+                    sched.OnNextAt(0, false),
+                    sched.OnNextAt(250, true)
+                   );
+
+                var fixture = new ReactiveCommand(canExecute, initialCondition:false);
+
+                Assert.False(fixture.CanExecute(null));
+
+                sched.AdvanceToMs(10);
+                Assert.False(fixture.CanExecute(null));
+
+                sched.AdvanceToMs(255);
+                Assert.True(fixture.CanExecute(null));
+            });
+        }
     }
 }
