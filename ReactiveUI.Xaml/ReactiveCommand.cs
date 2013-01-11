@@ -28,11 +28,12 @@ namespace ReactiveUI.Xaml
         /// execute.</param>
         /// <param name="scheduler">The scheduler to publish events on - default
         /// is RxApp.DeferredScheduler.</param>
-        public ReactiveCommand(IObservable<bool> canExecute = null, IScheduler scheduler = null)
+        /// <param name="initialCondition">Initial CanExecute state</param>
+        public ReactiveCommand(IObservable<bool> canExecute = null, IScheduler scheduler = null, bool initialCondition = true)
         {
             canExecute = canExecute ?? Observable.Return(true).Concat(Observable.Never<bool>());
             canExecute = canExecute.ObserveOn(scheduler ?? RxApp.DeferredScheduler);
-            commonCtor(scheduler);
+            commonCtor(scheduler, initialCondition);
 
             _inner = canExecute.Subscribe(
                 _canExecuteSubject.OnNext, 
@@ -109,14 +110,14 @@ namespace ReactiveUI.Xaml
 
         public IObservable<Exception> ThrownExceptions { get; protected set; }
 
-        void commonCtor(IScheduler scheduler)
+        void commonCtor(IScheduler scheduler, bool initialCondition = true)
         {
             this.scheduler = scheduler ?? RxApp.DeferredScheduler;
 
             _canExecuteSubject = new ScheduledSubject<bool>(RxApp.DeferredScheduler);
             canExecuteLatest = new ObservableAsPropertyHelper<bool>(_canExecuteSubject,
                 b => { if (CanExecuteChanged != null) CanExecuteChanged(this, EventArgs.Empty); },
-                true, scheduler);
+                initialCondition, scheduler);
 
             _canExecuteProbed = new Subject<object>();
             executeSubject = new Subject<object>();
