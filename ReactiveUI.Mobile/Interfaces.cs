@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reactive;
+using ReactiveUI.Routing;
 using Xamarin.Geolocation;
 
 namespace ReactiveUI.Mobile
@@ -26,13 +27,17 @@ namespace ReactiveUI.Mobile
     {
         IObservable<Unit> IsLaunchingNew { get; }
         IObservable<Unit> IsResuming { get; }
-        IObservable<Unit> IsUnpaused { get; }
+        IObservable<Unit> IsUnpausing { get; }
         IObservable<Unit> ShouldPersistState { get; }
+        IObservable<Unit> ShouldInvalidateState { get; }
     }
 
     public interface ISuspensionDriver
     {
         IObservable<T> LoadState<T>();
         IObservable<Unit> SaveState<T>(T state);
+        IObservable<Unit> InvalidateState();
     }
+
+    public interface IApplicationRootState : IScreen { }
 }
