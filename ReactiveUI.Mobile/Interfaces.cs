@@ -28,7 +28,7 @@ namespace ReactiveUI.Mobile
         IObservable<Unit> IsLaunchingNew { get; }
         IObservable<Unit> IsResuming { get; }
         IObservable<Unit> IsUnpausing { get; }
-        IObservable<Unit> ShouldPersistState { get; }
+        IObservable<IDisposable> ShouldPersistState { get; }
         IObservable<Unit> ShouldInvalidateState { get; }
     }
 
