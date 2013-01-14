@@ -34,8 +34,8 @@ namespace ReactiveUI.Mobile
 
     public interface ISuspensionDriver
     {
-        IObservable<T> LoadState<T>();
-        IObservable<Unit> SaveState<T>(T state);
+        IObservable<T> LoadState<T>() where T : class, IApplicationRootState;
+        IObservable<Unit> SaveState<T>(T state) where T : class, IApplicationRootState;
         IObservable<Unit> InvalidateState();
     }
 
