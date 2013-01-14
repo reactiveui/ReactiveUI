@@ -120,6 +120,10 @@
     <Compile Include="SuspensionHost.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ReactiveUI.Routing\ReactiveUI.Routing_WP8.csproj">
+      <Project>{9F70B056-893E-487D-8DD1-C012C4440618}</Project>
+      <Name>ReactiveUI.Routing_WP8</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ReactiveUI.Xaml\ReactiveUI.Xaml_WP8.csproj">
       <Project>{06C34984-B706-49BF-85BB-9282DD6238D1}</Project>
       <Name>ReactiveUI.Xaml_WP8</Name>
