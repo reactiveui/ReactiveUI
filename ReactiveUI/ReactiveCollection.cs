@@ -18,7 +18,7 @@ using System.Globalization;
 
 namespace ReactiveUI
 {
-    public class ReactiveCollection<T> : IList<T>, IReactiveCollection<T>, INotifyPropertyChanging, INotifyPropertyChanged
+    public class ReactiveCollection<T> : IList<T>, IList, IReactiveCollection<T>, INotifyPropertyChanging, INotifyPropertyChanged
     {
         public event NotifyCollectionChangedEventHandler CollectionChanging;
         public event NotifyCollectionChangedEventHandler CollectionChanged;
@@ -32,6 +32,7 @@ namespace ReactiveUI
         [IgnoreDataMember] Subject<NotifyCollectionChangedEventArgs> _changed;
         
         [DataMember] List<T> _inner;
+        [IgnoreDataMember] object _syncRoot;
 
         [IgnoreDataMember] int _suppressionRefCount = 0;
 
@@ -454,7 +455,7 @@ namespace ReactiveUI
             });
         }
 
-        #region Super Boring IList<T> crap
+        #region Super Boring IList crap
         public IEnumerator<T> GetEnumerator()
         {
             return _inner.GetEnumerator();
@@ -516,6 +517,64 @@ namespace ReactiveUI
         public T this[int index] {
             get { return _inner[index]; }
             set { SetItem(index, value); }
+        }
+
+        public int Add(object value)
+        {
+            Add((T)value);
+            return Count - 1;
+        }
+
+        public bool Contains(object value)
+        {
+            return IsCompatibleObject(value) && Contains((T)value);
+        }
+
+        public int IndexOf(object value)
+        {
+            return IsCompatibleObject(value) ? IndexOf((T)value) : -1;
+        }
+
+        public void Insert(int index, object value)
+        {
+            Insert(index, (T)value);
+        }
+
+        public bool IsFixedSize { get { return false; } }
+
+        public void Remove(object value)
+        {
+            if (IsCompatibleObject(value)) Remove((T)value);
+        }
+
+        object IList.this[int index]
+        {
+            get { return this[index]; }
+            set { this[index] = (T)value; }
+        }
+
+        public void CopyTo(Array array, int index)
+        {
+            ((IList)_inner).CopyTo(array, index);
+        }
+
+        public bool IsSynchronized { get { return false; } }
+
+        public object SyncRoot
+        {
+            get
+            {
+                if (_syncRoot == null)
+                {
+                    Interlocked.CompareExchange<object>(ref _syncRoot, new object(), null);
+                }
+                return _syncRoot;
+            }
+        }
+
+        private static bool IsCompatibleObject(object value)
+        {
+            return ((value is T) || ((value == null) && (default(T) == null)));
         }
         #endregion
     }
