@@ -134,10 +134,9 @@ namespace ReactiveUI
         }
 
         void WithMessageBus(
-            Type type,
-            string contract,
-            Action<Dictionary<Tuple<Type, string>, NotAWeakReference>,
-                Tuple<Type, string>> block)
+            Type type, string contract,
+            Action<Dictionary<Tuple<Type, string>, NotAWeakReference>, 
+            Tuple<Type, string>> block)
         {
             lock (messageBus) {
                 var tuple = new Tuple<Type, String>(type, contract);

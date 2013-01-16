@@ -26,17 +26,20 @@ namespace ReactiveUI
 			                Expression<Func<TSender, T1>> property1, 
 			                Func<IObservedChange<TSender, T1>, TRet> selector)
         {
+			bool allInputsWorked = true;
 						var slot1 = new ObservedChange<TSender, T1>() {
                 Sender = This,
                 PropertyName = String.Join(".", Reflection.ExpressionToPropertyNames(property1)),
             };
-            T1 slot1Value = default(T1); slot1.TryGetValue(out slot1Value); slot1.Value = slot1Value;
+            T1 slot1Value = default(T1); allInputsWorked &= slot1.TryGetValue(out slot1Value); slot1.Value = slot1Value;
             IObservedChange<TSender, T1> islot1 = slot1;
 			
             return Observable.Create<TRet>(subject => {
-                subject.OnNext(selector(islot1));
+                if (allInputsWorked) subject.OnNext(selector(islot1));
 
-                return Observable.Merge(                    This.ObservableForProperty(property1).Do(x => { lock (slot1) { islot1 = x.fillInValue(); } }).Select(x => selector(islot1))                 ).Subscribe(subject);
+                return Observable.Merge(
+                    This.ObservableForProperty(property1).Do(x => { lock (slot1) { islot1 = x.fillInValue(); } }).Select(x => selector(islot1)) 
+                ).Subscribe(subject);
             });
         }
 
@@ -78,23 +81,27 @@ namespace ReactiveUI
 			                Expression<Func<TSender, T2>> property2, 
 			                Func<IObservedChange<TSender, T1>, IObservedChange<TSender, T2>, TRet> selector)
         {
+			bool allInputsWorked = true;
 						var slot1 = new ObservedChange<TSender, T1>() {
                 Sender = This,
                 PropertyName = String.Join(".", Reflection.ExpressionToPropertyNames(property1)),
             };
-            T1 slot1Value = default(T1); slot1.TryGetValue(out slot1Value); slot1.Value = slot1Value;
+            T1 slot1Value = default(T1); allInputsWorked &= slot1.TryGetValue(out slot1Value); slot1.Value = slot1Value;
             IObservedChange<TSender, T1> islot1 = slot1;
 						var slot2 = new ObservedChange<TSender, T2>() {
                 Sender = This,
                 PropertyName = String.Join(".", Reflection.ExpressionToPropertyNames(property2)),
             };
-            T2 slot2Value = default(T2); slot2.TryGetValue(out slot2Value); slot2.Value = slot2Value;
+            T2 slot2Value = default(T2); allInputsWorked &= slot2.TryGetValue(out slot2Value); slot2.Value = slot2Value;
             IObservedChange<TSender, T2> islot2 = slot2;
 			
             return Observable.Create<TRet>(subject => {
-                subject.OnNext(selector(islot1, islot2));
+                if (allInputsWorked) subject.OnNext(selector(islot1, islot2));
 
-                return Observable.Merge(                    This.ObservableForProperty(property1).Do(x => { lock (slot1) { islot1 = x.fillInValue(); } }).Select(x => selector(islot1, islot2)),                     This.ObservableForProperty(property2).Do(x => { lock (slot2) { islot2 = x.fillInValue(); } }).Select(x => selector(islot1, islot2))                 ).Subscribe(subject);
+                return Observable.Merge(
+                    This.ObservableForProperty(property1).Do(x => { lock (slot1) { islot1 = x.fillInValue(); } }).Select(x => selector(islot1, islot2)), 
+                    This.ObservableForProperty(property2).Do(x => { lock (slot2) { islot2 = x.fillInValue(); } }).Select(x => selector(islot1, islot2)) 
+                ).Subscribe(subject);
             });
         }
 
@@ -144,29 +151,34 @@ namespace ReactiveUI
 			                Expression<Func<TSender, T3>> property3, 
 			                Func<IObservedChange<TSender, T1>, IObservedChange<TSender, T2>, IObservedChange<TSender, T3>, TRet> selector)
         {
+			bool allInputsWorked = true;
 						var slot1 = new ObservedChange<TSender, T1>() {
                 Sender = This,
                 PropertyName = String.Join(".", Reflection.ExpressionToPropertyNames(property1)),
             };
-            T1 slot1Value = default(T1); slot1.TryGetValue(out slot1Value); slot1.Value = slot1Value;
+            T1 slot1Value = default(T1); allInputsWorked &= slot1.TryGetValue(out slot1Value); slot1.Value = slot1Value;
             IObservedChange<TSender, T1> islot1 = slot1;
 						var slot2 = new ObservedChange<TSender, T2>() {
                 Sender = This,
                 PropertyName = String.Join(".", Reflection.ExpressionToPropertyNames(property2)),
             };
-            T2 slot2Value = default(T2); slot2.TryGetValue(out slot2Value); slot2.Value = slot2Value;
+            T2 slot2Value = default(T2); allInputsWorked &= slot2.TryGetValue(out slot2Value); slot2.Value = slot2Value;
             IObservedChange<TSender, T2> islot2 = slot2;
 						var slot3 = new ObservedChange<TSender, T3>() {
                 Sender = This,
                 PropertyName = String.Join(".", Reflection.ExpressionToPropertyNames(property3)),
             };
-            T3 slot3Value = default(T3); slot3.TryGetValue(out slot3Value); slot3.Value = slot3Value;
+            T3 slot3Value = default(T3); allInputsWorked &= slot3.TryGetValue(out slot3Value); slot3.Value = slot3Value;
             IObservedChange<TSender, T3> islot3 = slot3;
 			
             return Observable.Create<TRet>(subject => {
-                subject.OnNext(selector(islot1, islot2, islot3));
+                if (allInputsWorked) subject.OnNext(selector(islot1, islot2, islot3));
 
-                return Observable.Merge(                    This.ObservableForProperty(property1).Do(x => { lock (slot1) { islot1 = x.fillInValue(); } }).Select(x => selector(islot1, islot2, islot3)),                     This.ObservableForProperty(property2).Do(x => { lock (slot2) { islot2 = x.fillInValue(); } }).Select(x => selector(islot1, islot2, islot3)),                     This.ObservableForProperty(property3).Do(x => { lock (slot3) { islot3 = x.fillInValue(); } }).Select(x => selector(islot1, islot2, islot3))                 ).Subscribe(subject);
+                return Observable.Merge(
+                    This.ObservableForProperty(property1).Do(x => { lock (slot1) { islot1 = x.fillInValue(); } }).Select(x => selector(islot1, islot2, islot3)), 
+                    This.ObservableForProperty(property2).Do(x => { lock (slot2) { islot2 = x.fillInValue(); } }).Select(x => selector(islot1, islot2, islot3)), 
+                    This.ObservableForProperty(property3).Do(x => { lock (slot3) { islot3 = x.fillInValue(); } }).Select(x => selector(islot1, islot2, islot3)) 
+                ).Subscribe(subject);
             });
         }
 
@@ -224,35 +236,41 @@ namespace ReactiveUI
 			                Expression<Func<TSender, T4>> property4, 
 			                Func<IObservedChange<TSender, T1>, IObservedChange<TSender, T2>, IObservedChange<TSender, T3>, IObservedChange<TSender, T4>, TRet> selector)
         {
+			bool allInputsWorked = true;
 						var slot1 = new ObservedChange<TSender, T1>() {
                 Sender = This,
                 PropertyName = String.Join(".", Reflection.ExpressionToPropertyNames(property1)),
             };
-            T1 slot1Value = default(T1); slot1.TryGetValue(out slot1Value); slot1.Value = slot1Value;
+            T1 slot1Value = default(T1); allInputsWorked &= slot1.TryGetValue(out slot1Value); slot1.Value = slot1Value;
             IObservedChange<TSender, T1> islot1 = slot1;
 						var slot2 = new ObservedChange<TSender, T2>() {
                 Sender = This,
                 PropertyName = String.Join(".", Reflection.ExpressionToPropertyNames(property2)),
             };
-            T2 slot2Value = default(T2); slot2.TryGetValue(out slot2Value); slot2.Value = slot2Value;
+            T2 slot2Value = default(T2); allInputsWorked &= slot2.TryGetValue(out slot2Value); slot2.Value = slot2Value;
             IObservedChange<TSender, T2> islot2 = slot2;
 						var slot3 = new ObservedChange<TSender, T3>() {
                 Sender = This,
                 PropertyName = String.Join(".", Reflection.ExpressionToPropertyNames(property3)),
             };
-            T3 slot3Value = default(T3); slot3.TryGetValue(out slot3Value); slot3.Value = slot3Value;
+            T3 slot3Value = default(T3); allInputsWorked &= slot3.TryGetValue(out slot3Value); slot3.Value = slot3Value;
             IObservedChange<TSender, T3> islot3 = slot3;
 						var slot4 = new ObservedChange<TSender, T4>() {
                 Sender = This,
                 PropertyName = String.Join(".", Reflection.ExpressionToPropertyNames(property4)),
             };
-            T4 slot4Value = default(T4); slot4.TryGetValue(out slot4Value); slot4.Value = slot4Value;
+            T4 slot4Value = default(T4); allInputsWorked &= slot4.TryGetValue(out slot4Value); slot4.Value = slot4Value;
             IObservedChange<TSender, T4> islot4 = slot4;
 			
             return Observable.Create<TRet>(subject => {
-                subject.OnNext(selector(islot1, islot2, islot3, islot4));
+                if (allInputsWorked) subject.OnNext(selector(islot1, islot2, islot3, islot4));
 
-                return Observable.Merge(                    This.ObservableForProperty(property1).Do(x => { lock (slot1) { islot1 = x.fillInValue(); } }).Select(x => selector(islot1, islot2, islot3, islot4)),                     This.ObservableForProperty(property2).Do(x => { lock (slot2) { islot2 = x.fillInValue(); } }).Select(x => selector(islot1, islot2, islot3, islot4)),                     This.ObservableForProperty(property3).Do(x => { lock (slot3) { islot3 = x.fillInValue(); } }).Select(x => selector(islot1, islot2, islot3, islot4)),                     This.ObservableForProperty(property4).Do(x => { lock (slot4) { islot4 = x.fillInValue(); } }).Select(x => selector(islot1, islot2, islot3, islot4))                 ).Subscribe(subject);
+                return Observable.Merge(
+                    This.ObservableForProperty(property1).Do(x => { lock (slot1) { islot1 = x.fillInValue(); } }).Select(x => selector(islot1, islot2, islot3, islot4)), 
+                    This.ObservableForProperty(property2).Do(x => { lock (slot2) { islot2 = x.fillInValue(); } }).Select(x => selector(islot1, islot2, islot3, islot4)), 
+                    This.ObservableForProperty(property3).Do(x => { lock (slot3) { islot3 = x.fillInValue(); } }).Select(x => selector(islot1, islot2, islot3, islot4)), 
+                    This.ObservableForProperty(property4).Do(x => { lock (slot4) { islot4 = x.fillInValue(); } }).Select(x => selector(islot1, islot2, islot3, islot4)) 
+                ).Subscribe(subject);
             });
         }
 
