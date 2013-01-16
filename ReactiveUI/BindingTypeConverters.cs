@@ -21,6 +21,16 @@ namespace ReactiveUI
                 return 100;
             }
 
+            var realType = Nullable.GetUnderlyingType(lhs);
+            if (realType != null) {
+                return GetAffinityForObjects(realType, rhs);
+            }
+
+            realType = Nullable.GetUnderlyingType(rhs);
+            if (realType != null) {
+                return GetAffinityForObjects(lhs, realType);
+            }
+
             return 0;
         }
 
@@ -36,22 +46,34 @@ namespace ReactiveUI
             Contract.Requires(toType != null);
 
             var mi = referenceCastCache.Get(toType);
-            result = mi.Invoke(null, new[] {from});
+            try {
+                result = mi.Invoke(null, new[] {from});
+            } catch (Exception ex) {
+                this.Log().WarnException("Couldn't convert object to type: " + toType, ex);
+                result = null;
+                return false;
+            }
             return true;
         }
 
         public static object DoReferenceCast<T>(object from)
         {
-#if WINRT
-            bool isValueType = typeof (T).GetTypeInfo().IsValueType;
-#else
-            bool isValueType = typeof (T).IsValueType;
-#endif
-            if (isValueType) {
-                return System.Convert.ChangeType(from, typeof (T), null);
-            } else {
+            var targetType = typeof (T);
+            var backingNullableType = Nullable.GetUnderlyingType(targetType);
+
+            if (backingNullableType == null) {
                 return (T) from;
             }
+
+            if (from == null) {
+                var ut = Nullable.GetUnderlyingType(targetType);
+                if (ut == null) {
+                    throw new Exception("Can't convert from nullable-type which is null to non-nullable type");
+                }
+                return default(T);
+            }
+
+            return (T) Convert.ChangeType(from, backingNullableType, null);
         }
     }
 
@@ -93,6 +115,11 @@ namespace ReactiveUI
 
         public bool TryConvert(object from, Type toType, object conversionHint, out object result)
         {
+            if (from == null) {
+                result = null;
+                return true;
+            }
+
             var fromType = from.GetType();
             var converter = typeConverterCache.Get(Tuple.Create(fromType, toType));
 

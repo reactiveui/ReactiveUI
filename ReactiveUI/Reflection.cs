@@ -262,6 +262,39 @@ namespace ReactiveUI
             return true;
         }
 
+        public static bool TryGetAllValuesForPropertyChain(out IObservedChange<object, object>[] changeValues, object current, string[] propNames)
+        {
+            int currentIndex = 0;
+            changeValues = new IObservedChange<object,object>[propNames.Length];
+
+            foreach (var propName in propNames.SkipLast(1)) {
+                if (current == null) {
+                    changeValues[currentIndex] = null;
+                    return false;
+                }
+
+                var box = new ObservedChange<object, object> { Sender = current, PropertyName = propName };
+                current = GetValueFetcherOrThrow(current.GetType(), propName)(current);
+                box.Value = current;
+
+                changeValues[currentIndex] = box;
+                currentIndex++;
+            }
+
+            if (current == null) {
+                changeValues[currentIndex] = null;
+                return false;
+            }
+
+            changeValues[currentIndex] = new ObservedChange<object, object> {
+                Sender = current,
+                PropertyName = propNames.Last(),
+                Value = GetValueFetcherOrThrow(current.GetType(), propNames.Last())(current)
+            };
+
+            return true;
+        }
+
         public static bool SetValueToPropertyChain<TValue>(object target, string[] propNames, TValue value, bool shouldThrow = true)
         {
             foreach (var propName in propNames.SkipLast(1)) {
