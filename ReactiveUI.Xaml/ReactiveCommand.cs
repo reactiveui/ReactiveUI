@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
@@ -27,39 +28,34 @@ namespace ReactiveUI.Xaml
         /// execute.</param>
         /// <param name="scheduler">The scheduler to publish events on - default
         /// is RxApp.DeferredScheduler.</param>
-        public ReactiveCommand(IObservable<bool> canExecute = null, IScheduler scheduler = null)
+        /// <param name="initialCondition">Initial CanExecute state</param>
+        public ReactiveCommand(IObservable<bool> canExecute = null, IScheduler scheduler = null, bool initialCondition = true)
         {
             canExecute = canExecute ?? Observable.Return(true).Concat(Observable.Never<bool>());
             canExecute = canExecute.ObserveOn(scheduler ?? RxApp.DeferredScheduler);
-            commonCtor(scheduler);
-
-            var exSubject = new ScheduledSubject<Exception>(RxApp.DeferredScheduler, RxApp.DefaultExceptionHandler);
+            commonCtor(scheduler, initialCondition);
 
             _inner = canExecute.Subscribe(
-                canExecuteSubject.OnNext, 
-                exSubject.OnNext);
+                _canExecuteSubject.OnNext, 
+                _exSubject.OnNext);
 
-            ThrownExceptions = exSubject;
+            ThrownExceptions = _exSubject;
         }
 
         protected ReactiveCommand(Func<object, Task<bool>> canExecuteFunc, IScheduler scheduler = null)
         {
-            var canExecute = canExecuteProbed.SelectMany(x => canExecuteFunc(x).ToObservable());
+            var canExecute = _canExecuteProbed.SelectMany(x => canExecuteFunc(x).ToObservable());
 
             commonCtor(scheduler);
 
-            var exSubject = new ScheduledSubject<Exception>(RxApp.DeferredScheduler, RxApp.DefaultExceptionHandler);
-
             _inner = canExecute.Subscribe(
-                canExecuteSubject.OnNext, 
-                exSubject.OnNext);
-
-            ThrownExceptions = exSubject;
+                _canExecuteSubject.OnNext, 
+                _exSubject.OnNext);
         }
 
         protected ReactiveCommand(Func<object, bool> canExecute, IScheduler scheduler = null)
         {
-            canExecuteExplicitFunc = canExecute;
+            _canExecuteExplicitFunc = canExecute;
             commonCtor(scheduler);
         }
 
@@ -114,39 +110,42 @@ namespace ReactiveUI.Xaml
 
         public IObservable<Exception> ThrownExceptions { get; protected set; }
 
-        void commonCtor(IScheduler scheduler)
+        void commonCtor(IScheduler scheduler, bool initialCondition = true)
         {
             this.scheduler = scheduler ?? RxApp.DeferredScheduler;
 
-            canExecuteSubject = new ScheduledSubject<bool>(RxApp.DeferredScheduler);
-            canExecuteLatest = new ObservableAsPropertyHelper<bool>(canExecuteSubject,
+            _canExecuteSubject = new ScheduledSubject<bool>(RxApp.DeferredScheduler);
+            canExecuteLatest = new ObservableAsPropertyHelper<bool>(_canExecuteSubject,
                 b => { if (CanExecuteChanged != null) CanExecuteChanged(this, EventArgs.Empty); },
-                true, scheduler);
+                initialCondition, scheduler);
 
-            canExecuteProbed = new Subject<object>();
+            _canExecuteProbed = new Subject<object>();
             executeSubject = new Subject<object>();
+
+            _exSubject = new ScheduledSubject<Exception>(RxApp.DeferredScheduler, RxApp.DefaultExceptionHandler);
+            ThrownExceptions = _exSubject;
         }
 
-        Func<object, bool> canExecuteExplicitFunc;
-        protected ISubject<bool> canExecuteSubject;
-        protected Subject<object> canExecuteProbed;
+        Func<object, bool> _canExecuteExplicitFunc;
+        protected ISubject<bool> _canExecuteSubject;
+        protected Subject<object> _canExecuteProbed;
         IDisposable _inner = null;
-
+        ScheduledSubject<Exception> _exSubject;
     
         /// <summary>
         /// Fires whenever the CanExecute of the ICommand changes. 
         /// </summary>
         public IObservable<bool> CanExecuteObservable {
-            get { return canExecuteSubject.DistinctUntilChanged(); }
+            get { return _canExecuteSubject.DistinctUntilChanged(); }
         }
 
         ObservableAsPropertyHelper<bool> canExecuteLatest;
         public virtual bool CanExecute(object parameter)
         {
-            canExecuteProbed.OnNext(parameter);
-            if (canExecuteExplicitFunc != null) {
-                bool ret = canExecuteExplicitFunc(parameter);
-                canExecuteSubject.OnNext(ret);
+            _canExecuteProbed.OnNext(parameter);
+            if (_canExecuteExplicitFunc != null) {
+                bool ret = _canExecuteExplicitFunc(parameter);
+                _canExecuteSubject.OnNext(ret);
                 return ret;
             }
 
@@ -166,7 +165,11 @@ namespace ReactiveUI.Xaml
 
         public IDisposable Subscribe(IObserver<object> observer)
         {
-            return executeSubject.ObserveOn(scheduler).Subscribe(observer);
+            return executeSubject.ObserveOn(scheduler).Subscribe(
+                Observer.Create<object>(
+                    x => marshalFailures(observer.OnNext, x),
+                    ex => marshalFailures(observer.OnError, ex),
+                    () => marshalFailures(observer.OnCompleted)));
         }
 
         public void Dispose()
@@ -174,6 +177,20 @@ namespace ReactiveUI.Xaml
             if (_inner != null) {
                 _inner.Dispose();
             }
+        }
+
+        void marshalFailures<T>(Action<T> block, T param)
+        {
+            try {
+                block(param);
+            } catch (Exception ex) {
+                _exSubject.OnNext(ex);
+            }
+        }
+
+        void marshalFailures(Action block)
+        {
+            marshalFailures(_ => block(), Unit.Default);
         }
     }
 

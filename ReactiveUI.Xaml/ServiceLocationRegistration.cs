@@ -37,7 +37,13 @@ namespace ReactiveUI.Xaml
 #endif
 
 #if WINRT
-            RxApp.DeferredScheduler = System.Reactive.Concurrency.CoreDispatcherScheduler.Current;
+            if (!RxApp.InUnitTestRunner()) {
+                try {
+                    RxApp.DeferredScheduler = System.Reactive.Concurrency.CoreDispatcherScheduler.Current;
+                } catch (Exception ex) {
+                    throw new Exception("Core Dispatcher is null - this means you've accessed ReactiveUI too early in WinRT initialization", ex);
+                }
+            }
 #elif MONO
             // NB: Mono has like 37 UI Frameworks :)
 #else

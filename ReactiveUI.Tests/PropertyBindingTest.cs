@@ -31,6 +31,18 @@ namespace ReactiveUI.Tests
             set { this.RaiseAndSetIfChanged(x => x.Property2, value); }
         }
 
+        public double _JustADouble;
+        public double JustADouble {
+            get { return _JustADouble; }
+            set { this.RaiseAndSetIfChanged(x => x.JustADouble, value); }
+        }
+
+        public double? _NullableDouble;
+        public double? NullableDouble {
+            get { return _NullableDouble; }
+            set { this.RaiseAndSetIfChanged(x => x.NullableDouble, value); }
+        }
+
         public ReactiveCollection<string> SomeCollectionOfStrings { get; protected set; }
 
         public PropertyBindModel Model { get; protected set; }
@@ -59,13 +71,34 @@ namespace ReactiveUI.Tests
         public TextBox SomeTextBox;
         public ListBox SomeListBox;
         public TextBox Property2;
+        public PropertyBindFakeControl FakeControl;
+        public ItemsControl FakeItemsControl;
 
         public PropertyBindView()
         {
             SomeTextBox = new TextBox();
             SomeListBox = new ListBox();
             Property2 = new TextBox();
+            FakeControl = new PropertyBindFakeControl();
+            FakeItemsControl = new ItemsControl();
         }
+    }
+
+    public class PropertyBindFakeControl : Control
+    {
+        public double? NullableDouble {
+            get { return (double?)GetValue(NullableDoubleProperty); }
+            set { SetValue(NullableDoubleProperty, value); }
+        }
+        public static readonly DependencyProperty NullableDoubleProperty =
+            DependencyProperty.Register("NullableDouble", typeof(double?), typeof(PropertyBindFakeControl), new PropertyMetadata(null));
+
+        public double JustADouble {
+            get { return (double)GetValue(JustADoubleProperty); }
+            set { SetValue(JustADoubleProperty, value); }
+        }
+        public static readonly DependencyProperty JustADoubleProperty =
+            DependencyProperty.Register("JustADouble", typeof(double), typeof(PropertyBindFakeControl), new PropertyMetadata(0.0));
     }
 
     public class PropertyBindingTest
@@ -153,6 +186,75 @@ namespace ReactiveUI.Tests
 
             view.Property2.Text = "7";
             Assert.Equal(7, vm.Property2);
+        }
+
+        [Fact]
+        public void ViewModelNullableToViewNonNullable()
+        {
+            var vm = new PropertyBindViewModel();
+            var view = new PropertyBindView() {ViewModel = vm};
+
+            view.Bind(view.ViewModel, x => x.NullableDouble, x => x.FakeControl.JustADouble);
+            Assert.Equal(0.0, view.FakeControl.JustADouble);
+
+            vm.NullableDouble = 4.0;
+            Assert.Equal(4.0, view.FakeControl.JustADouble);
+
+            vm.NullableDouble = null;
+            Assert.Equal(4.0, view.FakeControl.JustADouble);
+
+            vm.NullableDouble = 0.0;
+            Assert.Equal(0.0, view.FakeControl.JustADouble);
+        }
+
+        [Fact]
+        public void ViewModelNonNullableToViewNullable()
+        {
+            var vm = new PropertyBindViewModel();
+            var view = new PropertyBindView() {ViewModel = vm};
+
+            view.Bind(view.ViewModel, x => x.JustADouble, x => x.FakeControl.NullableDouble);
+            Assert.Equal(0.0, vm.JustADouble);
+
+            view.FakeControl.NullableDouble = 4.0;
+            Assert.Equal(4.0, vm.JustADouble);
+
+            view.FakeControl.NullableDouble = null;
+            Assert.Equal(4.0, vm.JustADouble);
+
+            view.FakeControl.NullableDouble = 0.0;
+            Assert.Equal(0.0, vm.JustADouble);
+        }
+
+        [Fact]
+        public void ViewModelNullableToViewNullable()
+        {
+            var vm = new PropertyBindViewModel();
+            var view = new PropertyBindView() {ViewModel = vm};
+
+            view.Bind(view.ViewModel, x => x.NullableDouble, x => x.FakeControl.NullableDouble);
+            Assert.Equal(null, vm.NullableDouble);
+
+            view.FakeControl.NullableDouble = 4.0;
+            Assert.Equal(4.0, vm.NullableDouble);
+
+            view.FakeControl.NullableDouble = null;
+            Assert.Equal(null, vm.NullableDouble);
+
+            view.FakeControl.NullableDouble = 0.0;
+            Assert.Equal(0.0, vm.NullableDouble);
+        }
+
+        [Fact]
+        public void ItemsControlShouldGetADataTemplate()
+        {
+            var vm = new PropertyBindViewModel();
+            var view = new PropertyBindView() {ViewModel = vm};
+
+            Assert.Null(view.FakeItemsControl.ItemTemplate);
+            view.OneWayBind(vm, x => x.SomeCollectionOfStrings, x => x.FakeItemsControl.ItemsSource);
+
+            Assert.NotNull(view.FakeItemsControl.ItemTemplate);
         }
     }
 }
