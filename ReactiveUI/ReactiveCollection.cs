@@ -32,7 +32,6 @@ namespace ReactiveUI
         [IgnoreDataMember] Subject<NotifyCollectionChangedEventArgs> _changed;
         
         [DataMember] List<T> _inner;
-        [IgnoreDataMember] object _syncRoot;
 
         [IgnoreDataMember] int _suppressionRefCount = 0;
 
@@ -560,17 +559,7 @@ namespace ReactiveUI
 
         public bool IsSynchronized { get { return false; } }
 
-        public object SyncRoot
-        {
-            get
-            {
-                if (_syncRoot == null)
-                {
-                    Interlocked.CompareExchange<object>(ref _syncRoot, new object(), null);
-                }
-                return _syncRoot;
-            }
-        }
+        public object SyncRoot { get { return this; } }
 
         private static bool IsCompatibleObject(object value)
         {
