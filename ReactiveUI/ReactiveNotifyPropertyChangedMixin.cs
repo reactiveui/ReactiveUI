@@ -172,7 +172,13 @@ namespace ReactiveUI
                     TValue prevVal = default(TValue);
                     bool prevValSet = valGetter.TryGetValue(out prevVal);
 
-                    toDispose[0] = notifyForProperty(currentObj, capture.current.Value, true).Subscribe(x => {
+                    // NB: Some notifyForProperty implementations (notably, 
+                    // DependencyProperties) don't actually support beforeChanged,
+                    // but they need to prevent others from claiming it, since 
+                    // POCOObservableForProperty works with all objects. They 
+                    // do this by returning NULL.
+                    var beforePropChangedObs = notifyForProperty(currentObj, capture.current.Value, true) ?? Observable.Return(default(IObservedChange<object, object>));
+                    toDispose[0] = beforePropChangedObs.Subscribe(x => {
                         prevValSet = valGetter.TryGetValue(out prevVal);
                     });
 

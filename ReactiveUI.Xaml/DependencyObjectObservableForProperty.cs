@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Reactive;
@@ -23,7 +24,7 @@ namespace ReactiveUI.Xaml
     {
         public int GetAffinityForObject(Type type, bool beforeChanged = false)
         {
-            return typeof (DependencyObject).IsAssignableFrom(type) && beforeChanged == false ? 4 : 0;
+            return typeof(DependencyObject).IsAssignableFrom(type) ? 4 : 0;
         }
 
         static readonly Dictionary<Type, DependencyProperty> attachedProperties = new Dictionary<Type, DependencyProperty>();
@@ -32,6 +33,8 @@ namespace ReactiveUI.Xaml
         public IObservable<IObservedChange<object, object>> GetNotificationForProperty(object sender, string propertyName, bool beforeChanged = false)
         {
             Contract.Requires(sender != null && sender is DependencyObject);
+
+            if (beforeChanged == true) return null;
 
             var dobj = sender as DependencyObject;
             var type = dobj.GetType();
@@ -51,6 +54,18 @@ namespace ReactiveUI.Xaml
                 var ret = new POCOObservableForProperty();
                 return ret.GetNotificationForProperty(sender, propertyName, beforeChanged);
             }
+
+#if !WINRT && !SILVERLIGHT
+            return Observable.Create<IObservedChange<object, object>>(subj =>
+            {
+                var dp = (DependencyProperty) fi.GetValue(null);
+                var dpd = DependencyPropertyDescriptor.FromProperty(dp, type);
+                var ev = new EventHandler((o, e) => subj.OnNext(new ObservedChange<object, object>() {Sender = sender, PropertyName = propertyName,}));
+                dpd.AddValueChanged(sender, ev);
+
+                return Disposable.Create(() => dpd.RemoveValueChanged(sender, ev));
+            });
+#else
 
         itWorks:
             return Observable.Create<IObservedChange<object, object>>(subj => {
@@ -103,6 +118,7 @@ namespace ReactiveUI.Xaml
                     subjects[sender].Item2.Release();
                 });
             });
+#endif
         }
     }
 }
