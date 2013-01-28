@@ -481,7 +481,9 @@ namespace ReactiveUI
 
         IBindingTypeConverter getConverterForTypes(Type lhs, Type rhs)
         {
-            return typeConverterCache.Get(Tuple.Create(lhs, rhs));
+            lock (typeConverterCache) {
+                return typeConverterCache.Get(Tuple.Create(lhs, rhs));
+            }
         }
     }
 
