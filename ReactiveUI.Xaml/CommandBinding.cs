@@ -286,8 +286,13 @@ namespace ReactiveUI.Xaml
 
         public static IDisposable BindCommandToObject(ICommand command, object target, IObservable<object> commandParameter)
         {
+            var binder = default(ICreatesCommandBinding);
             var type = target.GetType();
-            var binder = bindCommandCache.Get(type);
+
+            lock(bindCommandCache) {
+                binder = bindCommandCache.Get(type);
+            }
+
             if (binder == null) {
                 throw new Exception(String.Format("Couldn't find a Command Binder for {0}", type.FullName));
             }
