@@ -248,7 +248,11 @@ namespace ReactiveUI
 
         static IObservable<IObservedChange<object, object>> notifyForProperty(object sender, string propertyName, bool beforeChange)
         {
-            var result = notifyFactoryCache.Get(Tuple.Create(sender.GetType(), beforeChange));
+            var result = default(ICreatesObservableForProperty);
+            lock (notifyFactoryCache) {
+                result = notifyFactoryCache.Get(Tuple.Create(sender.GetType(), beforeChange));
+            }
+
             if (result == null) {
                 throw new Exception(
                     String.Format("Couldn't find a ICreatesObservableForProperty for {0}. This should never happen, your service locator is probably broken.", 
