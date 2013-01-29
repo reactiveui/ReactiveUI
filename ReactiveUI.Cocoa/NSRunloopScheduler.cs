@@ -13,7 +13,7 @@ using MonoMac.AppKit;
 using MonoMac.Foundation;
 #endif
 
-namespace ReactiveUIMicro
+namespace ReactiveUI.Cocoa
 {
 	public class NSRunloopScheduler : IScheduler
 	{
