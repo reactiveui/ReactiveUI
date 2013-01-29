@@ -66,19 +66,19 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Drawing" />
+    <Reference Include="XamMac" />
     <Reference Include="System.Reactive.Core">
       <HintPath>..\ext\mono\System.Reactive.Core.dll</HintPath>
     </Reference>
     <Reference Include="System.Reactive.Interfaces">
       <HintPath>..\ext\mono\System.Reactive.Interfaces.dll</HintPath>
     </Reference>
-    <Reference Include="System.Reactive.PlatformServices">
-      <HintPath>..\ext\mono\System.Reactive.PlatformServices.dll</HintPath>
-    </Reference>
     <Reference Include="System.Reactive.Linq">
       <HintPath>..\ext\mono\System.Reactive.Linq.dll</HintPath>
     </Reference>
-    <Reference Include="XamMac" />
+    <Reference Include="System.Reactive.PlatformServices">
+      <HintPath>..\ext\mono\System.Reactive.PlatformServices.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <None Include="Info.plist" />
