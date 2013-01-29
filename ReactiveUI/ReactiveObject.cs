@@ -11,10 +11,7 @@ using System.Reflection;
 using System.Runtime.Serialization;
 using System.Threading;
 using System.Reactive.Concurrency;
-
-#if NET_45
 using System.Runtime.CompilerServices;
-#endif
 
 namespace ReactiveUI
 {
@@ -304,7 +301,6 @@ namespace ReactiveUI
             This.raisePropertyChanged(propName);
         }
 
-#if NET_45
         /// <summary>
         /// RaiseAndSetIfChanged fully implements a Setter for a read-write
         /// property on a ReactiveObject, making the assumption that the
@@ -404,7 +400,6 @@ namespace ReactiveUI
         {
             This.raisePropertyChanged(propertyName);
         }
-#endif
     }
 
     public static class ReactiveObjectTestMixin
