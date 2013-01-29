@@ -9,7 +9,7 @@
     <ProjectTypeGuids>{42C0BBD9-55CE-4FC1-8D90-A7348ABAFB23};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <RootNamespace>ReactiveUI.Cocoa</RootNamespace>
-    <AssemblyName>ReactiveUI.Cocoa_Mono</AssemblyName>
+    <AssemblyName>ReactiveUI.Cocoa</AssemblyName>
     <LastXamMacNagTime>1/2/2013 10:55:11 PM</LastXamMacNagTime>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
