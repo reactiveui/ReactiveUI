@@ -20,6 +20,7 @@
     <SccProvider>
     </SccProvider>
     <CodeContractsAssemblyMode>1</CodeContractsAssemblyMode>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
@@ -112,9 +113,6 @@
     <Reference Include="System.Reactive.Interfaces">
       <HintPath>..\ext\mono\System.Reactive.Interfaces.dll</HintPath>
     </Reference>
-    <Reference Include="&lt;Module&gt;">
-      <HintPath>..\ext\mono\System.Reactive.Linq.dll</HintPath>
-    </Reference>
     <Reference Include="System.Reactive.PlatformServices">
       <HintPath>..\ext\mono\System.Reactive.PlatformServices.dll</HintPath>
     </Reference>
@@ -122,6 +120,9 @@
       <HintPath>..\ext\mono\System.Reactive.Windows.Threading.dll</HintPath>
     </Reference>
     <Reference Include="WindowsBase" />
+    <Reference Include="System.Reactive.Linq">
+      <HintPath>..\ext\mono\System.Reactive.Linq.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Errors.cs" />
