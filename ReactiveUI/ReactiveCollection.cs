@@ -18,7 +18,7 @@ using System.Globalization;
 
 namespace ReactiveUI
 {
-    public class ReactiveCollection<T> : Collection<T>, IReactiveCollection<T>, INotifyPropertyChanging, INotifyPropertyChanged
+    public class ReactiveCollection<T> : IList<T>, IList, IReactiveCollection<T>, INotifyPropertyChanging, INotifyPropertyChanged
     {
         public event NotifyCollectionChangedEventHandler CollectionChanging;
         public event NotifyCollectionChangedEventHandler CollectionChanged;
@@ -119,10 +119,9 @@ namespace ReactiveUI
          * Collection<T> core methods
          */
 
-        protected override void InsertItem(int index, T item)
+        protected void InsertItem(int index, T item)
         {
             if (_suppressionRefCount > 0) {
-                base.InsertItem(index, item);
                 _inner.Insert(index, item);
             
                 if (ChangeTrackingEnabled) addItemToPropertyTracking(item);
@@ -134,7 +133,6 @@ namespace ReactiveUI
             _changing.OnNext(ea);
             if (_beforeItemsAdded.IsValueCreated) _beforeItemsAdded.Value.OnNext(item);
 
-            base.InsertItem(index, item);
             _inner.Insert(index, item);
 
             _changed.OnNext(ea);
@@ -143,12 +141,11 @@ namespace ReactiveUI
             if (ChangeTrackingEnabled) addItemToPropertyTracking(item);
         }
 
-        protected override void RemoveItem(int index)
+        protected void RemoveItem(int index)
         {
             var item = _inner[index];
 
             if (_suppressionRefCount > 0) {
-                base.RemoveItem(index);
                 _inner.RemoveAt(index);
             
                 if (ChangeTrackingEnabled) removeItemFromPropertyTracking(item);
@@ -160,7 +157,6 @@ namespace ReactiveUI
             _changing.OnNext(ea);
             if (_beforeItemsRemoved.IsValueCreated) _beforeItemsRemoved.Value.OnNext(item);
 
-            base.RemoveItem(index);
             _inner.RemoveAt(index);
 
             _changed.OnNext(ea);
@@ -168,10 +164,9 @@ namespace ReactiveUI
             if (ChangeTrackingEnabled) removeItemFromPropertyTracking(item);
         }
 
-        protected override void SetItem(int index, T item)
+        protected void SetItem(int index, T item)
         {
             if (_suppressionRefCount > 0) {
-                base.SetItem(index, item);
                 _inner[index] = item;
 
                 if (ChangeTrackingEnabled) {
@@ -185,7 +180,6 @@ namespace ReactiveUI
             var ea = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, item, _inner[index], index);
 
             _changing.OnNext(ea);
-            base.SetItem(index, item);
 
             if (ChangeTrackingEnabled) {
                 removeItemFromPropertyTracking(_inner[index]);
@@ -196,10 +190,9 @@ namespace ReactiveUI
             _changed.OnNext(ea);
         }
 
-        protected override void ClearItems()
+        protected void ClearItems()
         {
             if (_suppressionRefCount > 0) {
-                base.ClearItems();
                 _inner.Clear();
             
                 if (ChangeTrackingEnabled) clearAllPropertyChangeWatchers();
@@ -209,7 +202,6 @@ namespace ReactiveUI
             var ea = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset);
 
             _changing.OnNext(ea);
-            base.ClearItems();
             _inner.Clear();
             _changed.OnNext(ea);
 
@@ -305,6 +297,7 @@ namespace ReactiveUI
             return (double) toChangeLength/_inner.Count > ResetChangeThreshold &&
                 toChangeLength > 10;
         }
+
 
         /*
          * IReactiveCollection<T>
@@ -460,6 +453,119 @@ namespace ReactiveUI
                     Disposable.Create(() => block(-1)));
             });
         }
+
+        #region Super Boring IList crap
+        public IEnumerator<T> GetEnumerator()
+        {
+            return _inner.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
+        public void Add(T item)
+        {
+            InsertItem(_inner.Count, item);
+        }
+
+        public void Clear()
+        {
+            ClearItems();
+        }
+
+        public bool Contains(T item)
+        {
+            return _inner.Contains(item);
+        }
+
+        public void CopyTo(T[] array, int arrayIndex)
+        {
+            _inner.CopyTo(array, arrayIndex);
+        }
+
+        public bool Remove(T item)
+        {
+            int index = _inner.IndexOf(item);
+            if (index < 0) return false;
+
+            RemoveItem(index);
+            return true;
+        }
+
+        public int Count { get { return _inner.Count; } }
+
+        public bool IsReadOnly { get { return false; } }
+
+        public int IndexOf(T item)
+        {
+            return _inner.IndexOf(item);
+        }
+
+        public void Insert(int index, T item)
+        {
+            InsertItem(index, item);
+        }
+
+        public void RemoveAt(int index)
+        {
+            RemoveItem(index);
+        }
+
+        public T this[int index] {
+            get { return _inner[index]; }
+            set { SetItem(index, value); }
+        }
+
+        public int Add(object value)
+        {
+            Add((T)value);
+            return Count - 1;
+        }
+
+        public bool Contains(object value)
+        {
+            return IsCompatibleObject(value) && Contains((T)value);
+        }
+
+        public int IndexOf(object value)
+        {
+            return IsCompatibleObject(value) ? IndexOf((T)value) : -1;
+        }
+
+        public void Insert(int index, object value)
+        {
+            Insert(index, (T)value);
+        }
+
+        public bool IsFixedSize { get { return false; } }
+
+        public void Remove(object value)
+        {
+            if (IsCompatibleObject(value)) Remove((T)value);
+        }
+
+        object IList.this[int index]
+        {
+            get { return this[index]; }
+            set { this[index] = (T)value; }
+        }
+
+        public void CopyTo(Array array, int index)
+        {
+            ((IList)_inner).CopyTo(array, index);
+        }
+
+        public bool IsSynchronized { get { return false; } }
+
+        public object SyncRoot { get { return this; } }
+
+        private static bool IsCompatibleObject(object value)
+        {
+            return ((value is T) || ((value == null) && (default(T) == null)));
+        }
+        #endregion
     }
 
     public static class ReactiveCollectionMixins

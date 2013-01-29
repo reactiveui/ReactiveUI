@@ -45,7 +45,11 @@ namespace ReactiveUI
         {
             Contract.Requires(toType != null);
 
-            var mi = referenceCastCache.Get(toType);
+            var mi = default(MethodInfo);
+            lock (referenceCastCache) {
+                mi = referenceCastCache.Get(toType);
+            }
+
             try {
                 result = mi.Invoke(null, new[] {from});
             } catch (Exception ex) {
@@ -62,7 +66,7 @@ namespace ReactiveUI
             var backingNullableType = Nullable.GetUnderlyingType(targetType);
 
             if (backingNullableType == null) {
-                return (T) Convert.ChangeType(from, targetType, null);
+                return (T) from;
             }
 
             if (from == null) {

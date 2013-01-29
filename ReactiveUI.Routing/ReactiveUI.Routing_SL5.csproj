@@ -88,20 +88,22 @@
     <Reference Include="System.Windows.Browser" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AutoDataTemplateBindingHook.cs" />
     <Compile Include="Interfaces.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RoutedViewHost.cs" />
     <Compile Include="RoutingState.cs" />
     <Compile Include="RxRouting.cs" />
+    <Compile Include="ServiceLocationRegistration.cs" />
     <Compile Include="ViewModelViewHost.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ReactiveUI.Xaml\ReactiveUI.Xaml_SL5.csproj">
-      <Project>{73804A79-A9FC-48FD-8F7C-E796415A8B3A}</Project>
+      <Project>{73804a79-a9fc-48fd-8f7c-e796415a8b3a}</Project>
       <Name>ReactiveUI.Xaml_SL5</Name>
     </ProjectReference>
     <ProjectReference Include="..\ReactiveUI\ReactiveUI_SL5.csproj">
-      <Project>{B3381C78-C099-4902-89D4-B879AA83BFC9}</Project>
+      <Project>{b3381c78-c099-4902-89d4-b879aa83bfc9}</Project>
       <Name>ReactiveUI_SL5</Name>
     </ProjectReference>
   </ItemGroup>
