@@ -7,15 +7,25 @@ using System.Reactive.Concurrency;
 using System.Diagnostics.Contracts;
 using System.Linq;      
 using System.Linq.Expressions;
+using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Reflection;
+using System.Runtime.InteropServices;
+using System.Text.RegularExpressions;
 using System.Threading;
 
 using System.Threading.Tasks;
-using System.Reactive.Threading.Tasks;
 
 #if SILVERLIGHT
 using System.Windows;
+#endif
+
+#if WINRT
+using Windows.ApplicationModel;
+using System.Reactive.Windows.Foundation;
+using System.Reactive.Threading.Tasks;
+using Windows.ApplicationModel.Store;
+
 #endif
 
 namespace ReactiveUI
@@ -171,14 +181,14 @@ namespace ReactiveUI
             }
         }
 
+        static Func<Type, IRxUILogger> _LoggerFactory;
+        static internal readonly Subject<Unit> _LoggerFactoryChanged = new Subject<Unit>();
+
         /// <summary>
         /// Set this property to implement a custom logger provider - the
         /// string parameter is the 'prefix' (usually the class name of the log
         /// entry)
         /// </summary>
-
-        static Func<Type, IRxUILogger> _LoggerFactory;
-        static internal readonly Subject<Unit> _LoggerFactoryChanged = new Subject<Unit>();
         public static Func<Type, IRxUILogger> LoggerFactory {
             get { return _LoggerFactory; }
             set { _LoggerFactory = value; _LoggerFactoryChanged.OnNext(Unit.Default); }
@@ -224,6 +234,8 @@ namespace ReactiveUI
         /// </summary>
         public static IObserver<Exception> DefaultExceptionHandler { get; set; }
 
+        static bool? _inUnitTestRunner;
+
         /// <summary>
         /// InUnitTestRunner attempts to determine heuristically if the current
         /// application is running in a unit test framework.
@@ -236,65 +248,14 @@ namespace ReactiveUI
                 return InUnitTestRunnerOverride.Value;
             }
 
-            // XXX: This is hacky and evil, but I can't think of any better way
-            // to do this
-            string[] testAssemblies = new[] {
-                "CSUNIT",
-                "NUNIT",
-                "XUNIT",
-                "MBUNIT",
-                "TESTDRIVEN",
-                "QUALITYTOOLS.TIPS.UNITTEST.ADAPTER",
-                "QUALITYTOOLS.UNITTESTING.SILVERLIGHT",
-                "PEX",
-                "MSBUILD",
-                "NBEHAVE",
-            };
+            if (_inUnitTestRunner.HasValue) return _inUnitTestRunner.Value;
 
-            string[] designEnvironments = new[] {
-                "BLEND.EXE",
-                "MONODEVELOP",
-                "SHARPDEVELOP.EXE",
-            };
-
-#if SILVERLIGHT
-            // NB: Deployment.Current.Parts throws an exception when accessed in Blend
-            try {
-                var ret = Deployment.Current.Parts.Any(x =>
-                    testAssemblies.Any(name => x.Source.ToUpperInvariant().Contains(name)));
-
-                if (ret) {
-                    return ret;
-                }
-            } catch(Exception) {
-                return true;
-            }
-
-            try {
-                if (Application.Current.RootVisual != null && System.ComponentModel.DesignerProperties.GetIsInDesignMode(Application.Current.RootVisual)) {
-                    return false;
-                }
-            } catch {
-                return true;
-            }
-
-            return false;
-#elif WINRT
-            // NB: We have no way to detect if we're in design mode in WinRT.
-            return false;
-#else
-            // Try to detect whether we're in design mode - bonus points, 
-            // without access to any WPF references :-/
-            var entry = Assembly.GetEntryAssembly();
-            var exeName = (entry != null ? entry.Location.ToUpperInvariant() : "");
-            if (designEnvironments.Any(x => x.Contains(exeName))) {
-                return true;
-            }
-
-            return AppDomain.CurrentDomain.GetAssemblies().Any(x =>
-                testAssemblies.Any(name => x.FullName.ToUpperInvariant().Contains(name)));
-#endif
+            // NB: This is in a separate static ctor to avoid a deadlock on 
+            // the static ctor lock when blocking on async methods 
+            _inUnitTestRunner = RealUnitTestDetector.InUnitTestRunner();
+            return _inUnitTestRunner.Value;
         }
+
 
         /// <summary>
         /// GetFieldNameForProperty returns the corresponding backing field name
@@ -410,6 +371,7 @@ namespace ReactiveUI
         {
             var guiLibs = new[] {
                 "ReactiveUI.Xaml",
+                "ReactiveUI.Routing",
                 "ReactiveUI.Gtk",
                 "ReactiveUI.Cocoa",
                 "ReactiveUI.Android",
@@ -418,18 +380,19 @@ namespace ReactiveUI
 
 #if WINRT || SILVERLIGHT
             // NB: WinRT hates your Freedom
-            return new[] {"ReactiveUI.Xaml"};
+            return new[] {"ReactiveUI.Xaml", "ReactiveUI.Routing"};
 #else
             var name = Assembly.GetExecutingAssembly().GetName();
+            var suffix = getArchSuffixForPath(Assembly.GetExecutingAssembly().Location);
 
             return guiLibs.SelectMany(x => {
-                var fullName = String.Format("{0}, Version={1}, Culture=neutral, PublicKeyToken=null", x, name.Version.ToString());
+                var fullName = String.Format("{0}{1}, Version={2}, Culture=neutral, PublicKeyToken=null", x, suffix, name.Version.ToString());
 
                 var assemblyLocation = Assembly.GetExecutingAssembly().Location;
                 if (String.IsNullOrEmpty(assemblyLocation))
                     return Enumerable.Empty<string>();
 
-                var path = Path.Combine(Path.GetDirectoryName(assemblyLocation), x + ".dll");
+                var path = Path.Combine(Path.GetDirectoryName(assemblyLocation), x + suffix + ".dll");
                 if (!File.Exists(path) && !RxApp.InUnitTestRunner()) {
                     LogHost.Default.Debug("Couldn't find {0}", path);
                     return Enumerable.Empty<string>();
@@ -445,6 +408,13 @@ namespace ReactiveUI
             });
 #endif
         }
+
+        static string getArchSuffixForPath(string path)
+        {
+            var re = new Regex(@"(_[A-Za-z0-9]+)\.");
+            var m = re.Match(Path.GetFileName(path));
+            return m.Success ? m.Groups[1].Value : "";
+        }
     }
 
     public class NullDefaultPropertyBindingProvider : IDefaultPropertyBindingProvider
@@ -453,6 +423,84 @@ namespace ReactiveUI
         {
             return null;
         }
+    }
+
+    internal static class RealUnitTestDetector
+    {
+        public static bool InUnitTestRunner()
+        {
+            // XXX: This is hacky and evil, but I can't think of any better way
+            // to do this
+            string[] testAssemblies = new[] {
+                "CSUNIT",
+                "NUNIT",
+                "XUNIT",
+                "MBUNIT",
+                "TESTDRIVEN",
+                "QUALITYTOOLS.TIPS.UNITTEST.ADAPTER",
+                "QUALITYTOOLS.UNITTESTING.SILVERLIGHT",
+                "PEX",
+                "MSBUILD",
+                "NBEHAVE",
+                "TESTPLATFORM",
+            };
+
+            string[] designEnvironments = new[] {
+                "BLEND.EXE",
+                "MONODEVELOP",
+                "SHARPDEVELOP.EXE",
+            };
+
+#if SILVERLIGHT
+            // NB: Deployment.Current.Parts throws an exception when accessed in Blend
+            try {
+                var ret = Deployment.Current.Parts.Any(x =>
+                    testAssemblies.Any(name => x.Source.ToUpperInvariant().Contains(name)));
+
+                if (ret) {
+                    return ret;
+                }
+            } catch(Exception) {
+                return true;
+            }
+
+            try {
+                if (Application.Current.RootVisual != null && System.ComponentModel.DesignerProperties.GetIsInDesignMode(Application.Current.RootVisual)) {
+                    return false;
+                }
+            } catch {
+                return true;
+            }
+
+            return false;
+#elif WINRT
+            if (DesignMode.DesignModeEnabled) return true;
+
+            var depPackages = Package.Current.Dependencies.Select(x => x.Id.FullName);
+            if (depPackages.Any(x => testAssemblies.Any(name => x.ToUpperInvariant().Contains(name)))) return true;
+
+
+            var fileTask = Task.Factory.StartNew(async () =>
+            {
+                var files = await Package.Current.InstalledLocation.GetFilesAsync();
+                return files.Select(x => x.Path).ToArray();
+            }, TaskCreationOptions.HideScheduler).Unwrap();
+
+            return fileTask.Result.Any(x => testAssemblies.Any(name => x.ToUpperInvariant().Contains(name)));
+#else
+            // Try to detect whether we're in design mode - bonus points, 
+            // without access to any WPF references :-/
+            var entry = Assembly.GetEntryAssembly();
+            var exeName = (entry != null ? entry.Location.ToUpperInvariant() : "");
+            if (designEnvironments.Any(x => x.Contains(exeName))) {
+                return true;
+            }
+
+            return AppDomain.CurrentDomain.GetAssemblies().Any(x =>
+                testAssemblies.Any(name => x.FullName.ToUpperInvariant().Contains(name)));
+#endif
+        }
+
     }
 }
 

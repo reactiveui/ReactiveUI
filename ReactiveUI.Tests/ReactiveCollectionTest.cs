@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -369,6 +370,108 @@ namespace ReactiveUI.Tests
             Assert.Equal(40, output.Count);
             Assert.Equal("Bamf", fixture[39]);
             Assert.Equal("PrefixBamf", output[39]);
+        }
+
+        [Fact]
+        public void SortShouldActuallySort()
+        {
+            var fixture = new ReactiveCollection<int>(new[] {5, 1, 3, 2, 4,});
+            fixture.Sort();
+
+            Assert.True(new[] {1, 2, 3, 4, 5,}.Zip(fixture, (expected, actual) => expected == actual).All(x => x));
+        }
+
+        [Fact]
+        public void IListTSmokeTest() {
+            var fixture = new ReactiveCollection<string>() as IList<string>;
+            Assert.NotNull(fixture);
+
+            fixture.Add("foo");
+            Assert.Equal(1, fixture.Count);
+            Assert.True(fixture.Contains("foo"));
+
+            fixture.Insert(0, "bar");
+            Assert.Equal(0, fixture.IndexOf("bar"));
+            Assert.Equal(1, fixture.IndexOf("foo"));
+            Assert.Equal("bar", fixture[0]);
+            Assert.Equal("foo", fixture[1]);
+
+            var genericEnum = ((IEnumerable<string>)fixture).GetEnumerator();
+            Assert.NotNull(genericEnum);
+            bool result = genericEnum.MoveNext();
+            Assert.True(result);
+            Assert.Equal("bar", genericEnum.Current);
+            result = genericEnum.MoveNext();
+            Assert.True(result);
+            Assert.Equal("foo", genericEnum.Current);
+            result = genericEnum.MoveNext();
+            Assert.False(result);
+
+            var plainEnum = ((IEnumerable)fixture).GetEnumerator();
+            Assert.NotNull(plainEnum);
+            result = plainEnum.MoveNext();
+            Assert.True(result);
+            Assert.Equal("bar", plainEnum.Current as string);
+            result = plainEnum.MoveNext();
+            Assert.True(result);
+            Assert.Equal("foo", plainEnum.Current as string);
+            result = plainEnum.MoveNext();
+            Assert.False(result);
+
+            var arr = new string[2];
+            fixture.CopyTo(arr, 0);
+            Assert.Equal(2, arr.Length);
+            Assert.Equal("bar", arr[0]);
+            Assert.Equal("foo", arr[1]);
+
+            fixture[1] = "baz";
+            Assert.Equal(1, fixture.IndexOf("baz"));
+            Assert.Equal(-1, fixture.IndexOf("foo"));
+            Assert.Equal("baz", fixture[1]);
+            Assert.False(fixture.Contains("foo"));
+            Assert.True(fixture.Contains("baz"));
+
+            fixture.RemoveAt(1);
+            Assert.False(fixture.Contains("baz"));
+
+            fixture.Remove("bar");
+            Assert.Equal(0, fixture.Count);
+            Assert.False(fixture.Contains("bar"));
+        }
+
+        [Fact]
+        public void IListSmokeTest()
+        {
+            var fixture = new ReactiveCollection<string>() as IList;
+            Assert.NotNull(fixture);
+
+            var pos = fixture.Add("foo");
+            Assert.Equal(0, pos);
+            Assert.Equal(1, fixture.Count);
+            Assert.True(fixture.Contains("foo"));
+
+            fixture.Insert(0, "bar");
+            Assert.Equal(0, fixture.IndexOf("bar"));
+            Assert.Equal(1, fixture.IndexOf("foo"));
+            Assert.Equal("bar", fixture[0] as string);
+            Assert.Equal("foo", fixture[1] as string);
+
+            var arr = new string[2];
+            fixture.CopyTo(arr, 0);
+            Assert.Equal(2, arr.Length);
+            Assert.Equal("bar", arr[0]);
+            Assert.Equal("foo", arr[1]);
+
+            fixture[1] = "baz";
+            Assert.Equal(1, fixture.IndexOf("baz"));
+            Assert.Equal(-1, fixture.IndexOf("foo"));
+            Assert.Equal("baz", fixture[1] as string);
+            Assert.False(fixture.Contains("foo"));
+            Assert.True(fixture.Contains("baz"));
+
+            fixture.Remove("bar");
+            Assert.Equal(1, fixture.Count);
+            Assert.False(fixture.Contains("bar"));
         }
     }
 

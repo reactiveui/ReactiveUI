@@ -31,12 +31,14 @@ namespace ReactiveUI.Xaml
         /// operations at a time - defaults to one.</param>
         /// <param name="scheduler">The scheduler to run the asynchronous
         /// operations on - defaults to the Taskpool scheduler.</param>
+        /// <param name="initialCondition">Initial CanExecute state</param>
         public ReactiveAsyncCommand(
             IObservable<bool> canExecute = null, 
             int maximumConcurrent = 1, 
-            IScheduler scheduler = null)
+            IScheduler scheduler = null,
+            bool initialCondition = true)
         {
-            commonCtor(maximumConcurrent, scheduler, canExecute);
+            commonCtor(maximumConcurrent, scheduler, canExecute, initialCondition);
         }
 
         protected ReactiveAsyncCommand(
@@ -75,7 +77,7 @@ namespace ReactiveUI.Xaml
             return ret;
         }
 
-        void commonCtor(int maximumConcurrent, IScheduler scheduler, IObservable<bool> canExecute = null)
+        void commonCtor(int maximumConcurrent, IScheduler scheduler, IObservable<bool> canExecute = null, bool initialCondition = true)
         {
             _normalSched = scheduler ?? RxApp.DeferredScheduler;
             _canExecuteSubject = new ScheduledSubject<bool>(_normalSched);
@@ -96,7 +98,7 @@ namespace ReactiveUI.Xaml
                 return ret;
             }).Multicast(new BehaviorSubject<int>(0)).PermaRef().ObserveOn(RxApp.DeferredScheduler);
 
-            bool startCE = (_canExecuteExplicitFunc != null ? _canExecuteExplicitFunc(null) : true);
+            bool startCE = (_canExecuteExplicitFunc != null ? _canExecuteExplicitFunc(null) : initialCondition);
 
             CanExecuteObservable = Observable.CombineLatest(
                     _canExecuteSubject.StartWith(startCE), ItemsInflight.Select(x => x < maximumConcurrent).StartWith(true),
@@ -161,7 +163,11 @@ namespace ReactiveUI.Xaml
 
         public IDisposable Subscribe(IObserver<object> observer)
         {
-            return _executeSubject.Subscribe(observer);
+            return _executeSubject.Subscribe(
+                Observer.Create<object>(
+                    x => marshalFailures(observer.OnNext, x),
+                    ex => marshalFailures(observer.OnError, ex),
+                    () => marshalFailures(observer.OnCompleted)));
         }
 
         public void Dispose()
@@ -336,6 +342,20 @@ namespace ReactiveUI.Xaml
             var cache = new ObservableAsyncMRUCache<object, TResult>(
                 calculationFunc, maxSize, _maximumConcurrent, onRelease, sched);
             return this.RegisterAsyncObservable(cache.AsyncGet);
+        }
+
+        void marshalFailures<T>(Action<T> block, T param)
+        {
+            try {
+                block(param);
+            } catch (Exception ex) {
+                _exSubject.OnNext(ex);
+            }
+        }
+
+        void marshalFailures(Action block)
+        {
+            marshalFailures(_ => block(), Unit.Default);
         }
     }
 
