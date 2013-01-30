@@ -8,4 +8,4 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("ReactiveUI.Serialization.Esent")]
 [assembly: AssemblyDescription("ESENT-based storage provider for ReactiveUI.Serialization")]
 [assembly: AssemblyProduct("ReactiveUI.Serialization")]
-[assembly: AssemblyVersion("4.3.1")]
+[assembly: AssemblyVersion("4.3.2")]
