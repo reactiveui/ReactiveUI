@@ -44,6 +44,10 @@ namespace ReactiveUI.Routing
 
         public bool ExecuteHook(object source, object target, Func<IObservedChange<object, object>[]> getCurrentViewModelProperties, Func<IObservedChange<object, object>[]> getCurrentViewProperties, BindingDirection direction)
         {
+            // NB: If ReactiveUI.Routing is registered but they're not actually 
+            // using it, we don't want to help them out here.
+            if (!RxApp.IsServiceLocationConfigured()) return true;
+
             var viewProperties = getCurrentViewProperties();
 
             var itemsControl = viewProperties.Last().Sender as ItemsControl;
