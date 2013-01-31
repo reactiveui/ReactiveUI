@@ -9,6 +9,7 @@ using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Reflection;
 using System.Text;
+using System.Windows.Data;
 
 #if WINRT
 using Windows.UI.Xaml;
@@ -22,6 +23,36 @@ namespace ReactiveUI.Xaml
 {
     public class DependencyObjectObservableForProperty : ICreatesObservableForProperty
     {
+
+        public class DPChangeProxy : DependencyObject 
+        {
+
+            public Subject<object> Notifications = new Subject<object>();
+ 
+            public static readonly DependencyProperty ValueProperty = DependencyProperty.Register(
+                "Value",
+                typeof(object),
+                typeof(DPChangeProxy),
+                new FrameworkPropertyMetadata(
+                    null,
+                    FrameworkPropertyMetadataOptions.None,
+                    new PropertyChangedCallback(OnValueChanged)
+                )
+            );
+
+            private static void OnValueChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+            {
+                DPChangeProxy proxy = (DPChangeProxy)d;
+                proxy.Notifications.OnNext(e.NewValue);
+            }
+
+            public double Value
+            {
+              get { return (double)GetValue(ValueProperty); }
+              set { SetValue(ValueProperty, value); }
+            }
+        }
+
         public int GetAffinityForObject(Type type, bool beforeChanged = false)
         {
             return typeof(DependencyObject).IsAssignableFrom(type) ? 4 : 0;
@@ -58,12 +89,18 @@ namespace ReactiveUI.Xaml
 #if !WINRT && !SILVERLIGHT
             return Observable.Create<IObservedChange<object, object>>(subj =>
             {
-                var dp = (DependencyProperty) fi.GetValue(null);
+                var dp = (DependencyProperty)fi.GetValue(null);
                 var dpd = DependencyPropertyDescriptor.FromProperty(dp, type);
-                var ev = new EventHandler((o, e) => subj.OnNext(new ObservedChange<object, object>() {Sender = sender, PropertyName = propertyName,}));
-                dpd.AddValueChanged(sender, ev);
+                Action<object> fn = x => subj.OnNext(new ObservedChange<object,object>(){PropertyName=dp.Name, Sender=dobj, Value=x});
+                var proxy = new DPChangeProxy();
+                var disposable = proxy.Notifications.Subscribe(fn);
+                System.Windows.Data.BindingOperations.SetBinding(proxy, DPChangeProxy.ValueProperty, new Binding(dp.Name){ Source = dobj});
+                return Disposable.Create(() =>
+                    {
+                        disposable.Dispose();
+                        BindingOperations.ClearBinding(proxy, DPChangeProxy.ValueProperty);
+                    });
 
-                return Disposable.Create(() => dpd.RemoveValueChanged(sender, ev));
             });
 #else
 
