@@ -315,6 +315,22 @@ namespace ReactiveUI.Tests
         }
 
         [Fact]
+        public void DerivedCollectionShouldBeSorted()
+        {
+            var input = new[] { "Foo", "Bar", "Baz" };
+            var fixture = new ReactiveCollection<string>(input);
+
+            var output = fixture.CreateDerivedCollection(x => x, orderer: (l, r) => l.CompareTo(r));
+
+            Assert.Equal(3, output.Count);
+            Assert.True(new[] { "Bar", "Baz", "Foo" }.Zip(output, (expected, actual) => expected == actual).All(x => x));
+
+            fixture.Add("Bamf");
+            Assert.Equal(4, output.Count);
+            Assert.True(new[] { "Bamf", "Bar", "Baz", "Foo" }.Zip(output, (expected, actual) => expected == actual).All(x => x));
+        }
+
+        [Fact]
         public void AddRangeSmokeTest()
         {
             var fixture = new ReactiveCollection<string>();
