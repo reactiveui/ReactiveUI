@@ -148,18 +148,18 @@ namespace ReactiveUI
         /// Fires whenever the number of items in a collection has changed,
         /// providing the new Count.
         /// </summary>
-        IObservable<int> CollectionCountChanged { get; }
+        IObservable<int> CountChanged { get; }
 
         /// <summary>
         /// Fires before a collection is about to change, providing the previous
         /// Count.
         /// </summary>
-        IObservable<int> CollectionCountChanging { get; }
+        IObservable<int> CountChanging { get; }
 
         /// <summary>
         /// Fires when a collection becomes or stops being empty.
         /// </summary>
-        IObservable<bool> IsEmpty { get; }
+        IObservable<bool> IsEmptyChanged { get; }
 
         //
         // Change Tracking
