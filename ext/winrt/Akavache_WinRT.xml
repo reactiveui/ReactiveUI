@@ -1,0 +1,429 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Akavache_WinRT</name>
+    </assembly>
+    <members>
+        <member name="M:Akavache.BitmapImageMixin.LoadImage(Akavache.IBlobCache,System.String)">
+            <summary>
+            Load a XAML image from the blob cache.
+            </summary>
+            <param name="key">The key to look up in the cache.</param>
+            <returns>A Future result representing the bitmap image. This
+            Observable is guaranteed to be returned on the UI thread.</returns>
+        </member>
+        <member name="M:Akavache.BitmapImageMixin.LoadImageFromUrl(Akavache.IBlobCache,System.String,System.Boolean,System.Nullable{System.DateTimeOffset})">
+            <summary>
+            A combination of DownloadUrl and LoadImage, this method fetches an
+            image from a remote URL (using the cached value if possible) and
+            returns the XAML image. 
+            </summary>
+            <param name="url">The URL to download.</param>
+            <returns>A Future result representing the bitmap image. This
+            Observable is guaranteed to be returned on the UI thread.</returns>
+        </member>
+        <member name="P:Akavache.BlobCache.ApplicationName">
+            <summary>
+            Your application's name. Set this at startup, this defines where
+            your data will be stored (usually at %AppData%\[ApplicationName])
+            </summary>
+        </member>
+        <member name="P:Akavache.BlobCache.LocalMachine">
+            <summary>
+            The local machine cache. Store data here that is unrelated to the
+            user account or shouldn't be uploaded to other machines (i.e.
+            image cache data)
+            </summary>
+        </member>
+        <member name="P:Akavache.BlobCache.UserAccount">
+            <summary>
+            The user account cache. Store data here that is associated with
+            the user; in large organizations, this data will be synced to all
+            machines via NT Roaming Profiles.
+            </summary>
+        </member>
+        <member name="P:Akavache.BlobCache.Secure">
+            <summary>
+            An IBlobCache that is encrypted - store sensitive data in this
+            cache such as login information.
+            </summary>
+        </member>
+        <member name="P:Akavache.BlobCache.InMemory">
+            <summary>
+            An IBlobCache that simply stores data in memory. Data stored in
+            this cache will be lost when the application restarts.
+            </summary>
+        </member>
+        <member name="M:Akavache.JsonSerializationMixin.InsertObject``1(Akavache.IBlobCache,System.String,``0,System.Nullable{System.DateTimeOffset})">
+            <summary>
+            Insert an object into the cache, via the JSON serializer.
+            </summary>
+            <param name="key">The key to associate with the object.</param>
+            <param name="value">The object to serialize.</param>
+            <param name="absoluteExpiration">An optional expiration date.</param>
+        </member>
+        <member name="M:Akavache.JsonSerializationMixin.GetObjectAsync``1(Akavache.IBlobCache,System.String,System.Boolean)">
+            <summary>
+            Get an object from the cache and deserialize it via the JSON
+            serializer.
+            </summary>
+            <param name="key">The key to look up in the cache.</param>
+            <param name="noTypePrefix">Use the exact key name instead of a
+            modified key name. If this is true, GetAllObjects will not find this object.</param>
+            <returns>A Future result representing the object in the cache.</returns>
+        </member>
+        <member name="M:Akavache.JsonSerializationMixin.GetAllObjects``1(Akavache.IBlobCache)">
+            <summary>
+            Return all objects of a specific Type in the cache.
+            </summary>
+            <returns>A Future result representing all objects in the cache
+            with the specified Type.</returns>
+        </member>
+        <member name="M:Akavache.JsonSerializationMixin.GetOrFetchObject``1(Akavache.IBlobCache,System.String,System.Func{System.IObservable{``0}},System.Nullable{System.DateTimeOffset})">
+             <summary>
+             Attempt to return an object from the cache. If the item doesn't
+             exist or returns an error, call a Func to return the latest
+             version of an object and insert the result in the cache.
+            
+             For most Internet applications, this method is the best method to
+             call to fetch static data (i.e. images) from the network.
+             </summary>
+             <param name="key">The key to associate with the object.</param>
+             <param name="fetchFunc">A Func which will asynchronously return
+             the latest value for the object should the cache not contain the
+             key. 
+            
+             Observable.Start is the most straightforward way (though not the
+             most efficient!) to implement this Func.</param>
+             <param name="absoluteExpiration">An optional expiration date.</param>
+             <returns>A Future result representing the deserialized object from
+             the cache.</returns>
+        </member>
+        <member name="M:Akavache.JsonSerializationMixin.GetOrFetchObject``1(Akavache.IBlobCache,System.String,System.Func{System.Threading.Tasks.Task{``0}},System.Nullable{System.DateTimeOffset})">
+             <summary>
+             Attempt to return an object from the cache. If the item doesn't
+             exist or returns an error, call a Func to return the latest
+             version of an object and insert the result in the cache.
+            
+             For most Internet applications, this method is the best method to
+             call to fetch static data (i.e. images) from the network.
+             </summary>
+             <param name="key">The key to associate with the object.</param>
+             <param name="fetchFunc">A Func which will asynchronously return
+             the latest value for the object should the cache not contain the
+             key. </param>
+             <param name="absoluteExpiration">An optional expiration date.</param>
+             <returns>A Future result representing the deserialized object from
+             the cache.</returns>
+        </member>
+        <member name="M:Akavache.JsonSerializationMixin.GetOrCreateObject``1(Akavache.IBlobCache,System.String,System.Func{``0},System.Nullable{System.DateTimeOffset})">
+             <summary>
+             Attempt to return an object from the cache. If the item doesn't
+             exist or returns an error, call a Func to create a new one.
+            
+             For most Internet applications, this method is the best method to
+             call to fetch static data (i.e. images) from the network.
+             </summary>
+             <param name="key">The key to associate with the object.</param>
+             <param name="fetchFunc">A Func which will return
+             the latest value for the object should the cache not contain the
+             key. </param>
+             <param name="absoluteExpiration">An optional expiration date.</param>
+             <returns>A Future result representing the deserialized object from
+             the cache.</returns>
+        </member>
+        <member name="M:Akavache.JsonSerializationMixin.GetAndFetchLatest``1(Akavache.IBlobCache,System.String,System.Func{System.IObservable{``0}},System.Func{System.DateTimeOffset,System.Boolean},System.Nullable{System.DateTimeOffset})">
+             <summary>
+             This method attempts to returned a cached value, while
+             simultaneously calling a Func to return the latest value. When the
+             latest data comes back, it replaces what was previously in the
+             cache.
+            
+             This method is best suited for loading dynamic data from the
+             Internet, while still showing the user earlier data.
+            
+             This method returns an IObservable that may return *two* results
+             (first the cached data, then the latest data). Therefore, it's
+             important for UI applications that in your Subscribe method, you
+             write the code to merge the second result when it comes in.
+            
+             This also means that await'ing this method is a Bad Idea(tm), always
+             use Subscribe.
+             </summary>
+             <param name="key">The key to store the returned result under.</param>
+             <param name="fetchFunc"></param>
+             <param name="fetchPredicate">An optional Func to determine whether
+             the updated item should be fetched. If the cached version isn't found,
+             this parameter is ignored and the item is always fetched.</param>
+             <param name="absoluteExpiration">An optional expiration date.</param>
+             <returns>An Observable stream containing either one or two
+             results (possibly a cached version, then the latest version)</returns>
+        </member>
+        <member name="M:Akavache.JsonSerializationMixin.GetAndFetchLatest``1(Akavache.IBlobCache,System.String,System.Func{System.Threading.Tasks.Task{``0}},System.Func{System.DateTimeOffset,System.Boolean},System.Nullable{System.DateTimeOffset})">
+             <summary>
+             This method attempts to returned a cached value, while
+             simultaneously calling a Func to return the latest value. When the
+             latest data comes back, it replaces what was previously in the
+             cache.
+            
+             This method is best suited for loading dynamic data from the
+             Internet, while still showing the user earlier data.
+            
+             This method returns an IObservable that may return *two* results
+             (first the cached data, then the latest data). Therefore, it's
+             important for UI applications that in your Subscribe method, you
+             write the code to merge the second result when it comes in.
+             
+             This also means that await'ing this method is a Bad Idea(tm), always
+             use Subscribe.
+             </summary>
+             <param name="key">The key to store the returned result under.</param>
+             <param name="fetchFunc"></param>
+             <param name="fetchPredicate">An optional Func to determine whether
+             the updated item should be fetched. If the cached version isn't found,
+             this parameter is ignored and the item is always fetched.</param>
+             <param name="absoluteExpiration">An optional expiration date.</param>
+             <returns>An Observable stream containing either one or two
+             results (possibly a cached version, then the latest version)</returns>
+        </member>
+        <member name="M:Akavache.JsonSerializationMixin.InvalidateObject``1(Akavache.IBlobCache,System.String)">
+            <summary>
+            Invalidates a single object from the cache. It is important that the Type
+            Parameter for this method be correct, and you cannot use 
+            IBlobCache.Invalidate to perform the same task.
+            </summary>
+            <param name="key">The key to invalidate.</param>
+        </member>
+        <member name="M:Akavache.JsonSerializationMixin.InvalidateAllObjects``1(Akavache.IBlobCache)">
+            <summary>
+            Invalidates all objects of the specified type. To invalidate all
+            objects regardless of type, use InvalidateAll.
+            </summary>
+        </member>
+        <member name="M:Akavache.HttpMixin.DownloadUrl(Akavache.IBlobCache,System.String,System.Collections.Generic.Dictionary{System.String,System.String},System.Boolean,System.Nullable{System.DateTimeOffset})">
+            <summary>
+            Download data from an HTTP URL and insert the result into the
+            cache. If the data is already in the cache, this returns
+            a cached value. The URL itself is used as the key.
+            </summary>
+            <param name="url">The URL to download.</param>
+            <param name="headers">An optional Dictionary containing the HTTP
+            request headers.</param>
+            <param name="fetchAlways">Force a web request to always be issued, skipping the cache.</param>
+            <param name="absoluteExpiration">An optional expiration date.</param>
+            <returns>The data downloaded from the URL.</returns>
+        </member>
+        <member name="M:Akavache.LoginMixin.SaveLogin(Akavache.ISecureBlobCache,System.String,System.String,System.String,System.Nullable{System.DateTimeOffset})">
+            <summary>
+            Save a user/password combination in a secure blob cache. Note that
+            this method only allows exactly *one* user/pass combo to be saved,
+            calling this more than once will overwrite the previous entry.
+            </summary>
+            <param name="user">The user name to save.</param>
+            <param name="password">The associated password</param>
+            <param name="absoluteExpiration">An optional expiration date.</param>
+        </member>
+        <member name="M:Akavache.LoginMixin.GetLoginAsync(Akavache.ISecureBlobCache,System.String)">
+            <summary>
+            Returns the currently cached user/password. If the cache does not
+            contain a user/password, this returns an Observable which
+            OnError's with KeyNotFoundException.
+            </summary>
+            <returns>A Future result representing the user/password Tuple.</returns>
+        </member>
+        <member name="M:Akavache.LoginMixin.EraseLogin(Akavache.ISecureBlobCache,System.String)">
+            <summary>
+            Erases the login associated with the specified host
+            </summary>
+        </member>
+        <member name="T:Akavache.IFilesystemProvider">
+            <summary>
+            An abstraction for the simple file operations that an IBlobCache can
+            perform. Create a new instance of this when adapting IBlobCache to
+            different platforms or backing stores, or for testing purposes.
+            </summary>
+        </member>
+        <member name="M:Akavache.IFilesystemProvider.SafeOpenFileAsync(System.String,System.IO.FileMode,System.IO.FileAccess,System.IO.FileShare,System.Reactive.Concurrency.IScheduler)">
+            <summary>
+            Open a file on a background thread, with the File object in 'async
+            mode'. It is critical that this operation is deferred and returns
+            immediately (i.e. wrapped in an Observable.Start).
+            </summary>
+            <param name="path">The path to the file</param>
+            <param name="mode">The file mode</param>
+            <param name="access">The required access privileges</param>
+            <param name="share">The allowed file sharing modes.</param>
+            <param name="scheduler">The scheduler to schedule the open under.</param>
+            <returns>A Future result representing the Open file.</returns>
+        </member>
+        <member name="M:Akavache.IFilesystemProvider.CreateRecursive(System.String)">
+            <summary>
+            Create a directory and its parents. If the directory already
+            exists, this method does nothing (i.e. it does not throw if a
+            directory exists)
+            </summary>
+            <param name="path">The path to create.</param>
+        </member>
+        <member name="M:Akavache.IFilesystemProvider.Delete(System.String)">
+            <summary>
+            Deletes a file.
+            </summary>
+            <param name="path">The path to the file</param>
+        </member>
+        <member name="T:Akavache.IBlobCache">
+            <summary>
+            IBlobCache is the core interface on which Akavache is built, it is an
+            interface describing an asynchronous persistent key-value store. 
+            </summary>
+        </member>
+        <member name="M:Akavache.IBlobCache.Insert(System.String,System.Byte[],System.Nullable{System.DateTimeOffset})">
+            <summary>
+            Insert a blob into the cache with the specified key and expiration
+            date.
+            </summary>
+            <param name="key">The key to use for the data.</param>
+            <param name="data">The data to save in the cache.</param>
+            <param name="absoluteExpiration">An optional expiration date.
+            After the specified date, the key-value pair should be removed.</param>
+            <returns>A signal to indicate when the key has been inserted.</returns>
+        </member>
+        <member name="M:Akavache.IBlobCache.GetAsync(System.String)">
+            <summary>
+            Retrieve a value from the key-value cache. If the key is not in
+            the cache, this method should return an IObservable which
+            OnError's with KeyNotFoundException.
+            </summary>
+            <param name="key">The key to return asynchronously.</param>
+            <returns>A Future result representing the byte data.</returns>
+        </member>
+        <member name="M:Akavache.IBlobCache.GetAllKeys">
+            <summary>
+            Return all keys in the cache. Note that this method is normally
+            for diagnostic / testing purposes, and that it is not guaranteed
+            to be accurate with respect to in-flight requests.
+            </summary>
+            <returns>A list of valid keys for the cache.</returns>
+        </member>
+        <member name="M:Akavache.IBlobCache.GetCreatedAt(System.String)">
+            <summary>
+            Returns the time that the key was added to the cache, or returns 
+            null if the key isn't in the cache.
+            </summary>
+            <param name="key">The key to return the date for.</param>
+            <returns>The date the key was created on.</returns>
+        </member>
+        <member name="M:Akavache.IBlobCache.Flush">
+            <summary>
+            This method guarantees that all in-flight inserts have completed
+            and any indexes have been written to disk.
+            </summary>
+            <returns>A signal indicating when the flush is complete.</returns>
+        </member>
+        <member name="M:Akavache.IBlobCache.Invalidate(System.String)">
+            <summary>
+            Remove a key from the cache. If the key doesn't exist, this method
+            should do nothing and return (*not* throw KeyNotFoundException).
+            </summary>
+            <param name="key">The key to remove from the cache.</param>
+        </member>
+        <member name="M:Akavache.IBlobCache.InvalidateAll">
+            <summary>
+            Invalidate all entries in the cache (i.e. clear it). Note that
+            this method is blocking and incurs a significant performance
+            penalty if used while the cache is being used on other threads. 
+            </summary>
+        </member>
+        <member name="P:Akavache.IBlobCache.Scheduler">
+            <summary>
+            The IScheduler used to defer operations. By default, this is
+            RxApp.TaskPoolScheduler.
+            </summary>
+        </member>
+        <member name="P:Akavache.IBlobCache.ServiceProvider">
+            <summary>
+            Service provider used to create instances of objects retrieved 
+            from the cache. This uses the value set in BlobCache.ServiceProvider.
+            If none is set, it just uses the old behavior.
+            </summary>
+        </member>
+        <member name="T:Akavache.ISecureBlobCache">
+             <summary>
+             This interface indicates that the underlying BlobCache implementation
+             encrypts or otherwise secures its persisted content. 
+            
+             By implementing this interface, you must guarantee that the data
+             saved to disk cannot be easily read by a third party.
+             </summary>
+        </member>
+        <member name="M:Akavache.IObjectBlobCache.InsertObject``1(System.String,``0,System.Nullable{System.DateTimeOffset})">
+            <summary>
+            Insert an object into the cache, via the JSON serializer.
+            </summary>
+            <param name="key">The key to associate with the object.</param>
+            <param name="value">The object to serialize.</param>
+            <param name="absoluteExpiration">An optional expiration date.</param>
+        </member>
+        <member name="M:Akavache.IObjectBlobCache.GetObjectAsync``1(System.String,System.Boolean)">
+            <summary>
+            Get an object from the cache and deserialize it via the JSON
+            serializer.
+            </summary>
+            <param name="key">The key to look up in the cache.</param>
+            <param name="noTypePrefix">Use the exact key name instead of a
+            modified key name. If this is true, GetAllObjects will not find this object.</param>
+            <returns>A Future result representing the object in the cache.</returns>
+        </member>
+        <member name="M:Akavache.IObjectBlobCache.GetAllObjects``1">
+            <summary>
+            Return all objects of a specific Type in the cache.
+            </summary>
+            <returns>A Future result representing all objects in the cache
+            with the specified Type.</returns>
+        </member>
+        <member name="M:Akavache.IObjectBlobCache.InvalidateObject``1(System.String)">
+            <summary>
+            Invalidates a single object from the cache. It is important that the Type
+            Parameter for this method be correct, and you cannot use 
+            IBlobCache.Invalidate to perform the same task.
+            </summary>
+            <param name="key">The key to invalidate.</param>
+        </member>
+        <member name="M:Akavache.IObjectBlobCache.InvalidateAllObjects``1">
+            <summary>
+            Invalidates all objects of the specified type. To invalidate all
+            objects regardless of type, use InvalidateAll.
+            </summary>
+        </member>
+        <member name="T:Akavache.PersistentBlobCache">
+            <summary>
+            This class represents an asynchronous key-value store backed by a 
+            directory. It stores the last 'n' key requests in memory.
+            </summary>
+        </member>
+        <member name="M:Akavache.PersistentBlobCache.BeforeWriteToDiskFilter(System.Byte[],System.Reactive.Concurrency.IScheduler)">
+            <summary>
+            This method is called immediately before writing any data to disk.
+            Override this in encrypting data stores in order to encrypt the
+            data.
+            </summary>
+            <param name="data">The byte data about to be written to disk.</param>
+            <param name="scheduler">The scheduler to use if an operation has
+            to be deferred. If the operation can be done immediately, use
+            Observable.Return and ignore this parameter.</param>
+            <returns>A Future result representing the encrypted data</returns>
+        </member>
+        <member name="M:Akavache.PersistentBlobCache.AfterReadFromDiskFilter(System.Byte[],System.Reactive.Concurrency.IScheduler)">
+            <summary>
+            This method is called immediately after reading any data to disk.
+            Override this in encrypting data stores in order to decrypt the
+            data.
+            </summary>
+            <param name="data">The byte data that has just been read from
+            disk.</param>
+            <param name="scheduler">The scheduler to use if an operation has
+            to be deferred. If the operation can be done immediately, use
+            Observable.Return and ignore this parameter.</param>
+            <returns>A Future result representing the decrypted data</returns>
+        </member>
+    </members>
+</doc>
