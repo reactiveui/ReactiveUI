@@ -30,6 +30,8 @@ namespace ReactiveUI.Mobile
         IObservable<Unit> IsUnpausing { get; }
         IObservable<IDisposable> ShouldPersistState { get; }
         IObservable<Unit> ShouldInvalidateState { get; }
+
+        void SetupDefaultSuspendResume(ISuspensionDriver driver = null);
     }
 
     public interface ISuspensionDriver
