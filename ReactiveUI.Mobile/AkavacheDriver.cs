@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Reactive;
 using System.Reactive.Linq;
+using System.Threading;
 using Akavache;
 using Newtonsoft.Json;
 
@@ -26,7 +27,8 @@ namespace ReactiveUI.Mobile
 
         public IObservable<Unit> SaveState<T>(T state) where T : class, IApplicationRootState
         {
-            return BlobCache.UserAccount.InsertObject("__AppState", state);
+            return BlobCache.UserAccount.InsertObject("__AppState", state)
+                .SelectMany(BlobCache.UserAccount.Flush());
         }
 
         public IObservable<Unit> InvalidateState()
