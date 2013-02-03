@@ -100,6 +100,18 @@ namespace ReactiveUI.Mobile
                 }
 
                 page.ViewModel = vm;
+                var pg = page as PhoneApplicationPage;
+                if (pg != null) {
+                    pg.BackKeyPress += (o, e) => {
+                        if (ViewModel.Router.NavigationStack.Count <= 1 ||
+                            ViewModel.Router.NavigateBack.CanExecute(null)) {
+                            return;
+                        }
+
+                        e.Cancel = true;
+                        ViewModel.Router.NavigateBack.Execute(null);
+                    };
+                }
             });
 
             SuspensionHost.ShouldInvalidateState
