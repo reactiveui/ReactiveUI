@@ -19,6 +19,12 @@ namespace ReactiveUI.Mobile
         public IObservable<Unit> IsUnpausing { get { return AutoSuspendApplication.SuspensionHost.IsUnpausing; } }
         public IObservable<IDisposable> ShouldPersistState { get { return AutoSuspendApplication.SuspensionHost.ShouldPersistState; } }
         public IObservable<Unit> ShouldInvalidateState { get { return AutoSuspendApplication.SuspensionHost.ShouldInvalidateState; } }
+
+        public void SetupDefaultSuspendResume(ISuspensionDriver driver = null)
+        {
+            var app = (AutoSuspendApplication) Application.Current;
+            app.setupDefaultSuspendResume(driver);
+        }
     }
 
     public abstract class AutoSuspendApplication : Application, IEnableLogger
@@ -67,9 +73,9 @@ namespace ReactiveUI.Mobile
             SuspensionHost = host;
         }
 
-        protected void SetupDefaultSuspendResume()
+        internal void setupDefaultSuspendResume(ISuspensionDriver driver)
         {
-            var driver = RxApp.GetService<ISuspensionDriver>();
+            driver = driver ?? RxApp.GetService<ISuspensionDriver>();
 
             _viewModelChanged.Subscribe(vm => {
                 var page = default(IViewFor);
