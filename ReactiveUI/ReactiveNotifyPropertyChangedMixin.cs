@@ -172,7 +172,13 @@ namespace ReactiveUI
                     TValue prevVal = default(TValue);
                     bool prevValSet = valGetter.TryGetValue(out prevVal);
 
-                    toDispose[0] = notifyForProperty(currentObj, capture.current.Value, true).Subscribe(x => {
+                    // NB: Some notifyForProperty implementations (notably, 
+                    // DependencyProperties) don't actually support beforeChanged,
+                    // but they need to prevent others from claiming it, since 
+                    // POCOObservableForProperty works with all objects. They 
+                    // do this by returning NULL.
+                    var beforePropChangedObs = notifyForProperty(currentObj, capture.current.Value, true) ?? Observable.Return(default(IObservedChange<object, object>));
+                    toDispose[0] = beforePropChangedObs.Subscribe(x => {
                         prevValSet = valGetter.TryGetValue(out prevVal);
                     });
 
@@ -242,7 +248,11 @@ namespace ReactiveUI
 
         static IObservable<IObservedChange<object, object>> notifyForProperty(object sender, string propertyName, bool beforeChange)
         {
-            var result = notifyFactoryCache.Get(Tuple.Create(sender.GetType(), beforeChange));
+            var result = default(ICreatesObservableForProperty);
+            lock (notifyFactoryCache) {
+                result = notifyFactoryCache.Get(Tuple.Create(sender.GetType(), beforeChange));
+            }
+
             if (result == null) {
                 throw new Exception(
                     String.Format("Couldn't find a ICreatesObservableForProperty for {0}. This should never happen, your service locator is probably broken.", 
