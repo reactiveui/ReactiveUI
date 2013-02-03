@@ -70,6 +70,9 @@
       <HintPath>..\ext\WP80\Akavache_WP8.dll</HintPath>
     </Reference>
     <Reference Include="mscorlib.Extensions" />
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\ext\WP80\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System.Observable" />
     <Reference Include="System.Reactive.Core, Version=2.0.20823.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -122,6 +125,7 @@
     <Compile Include="Interfaces.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SuspensionHost.cs" />
+    <Compile Include="WP8AutoSuspendApplication.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ReactiveUI.Routing\ReactiveUI.Routing_WP8.csproj">
