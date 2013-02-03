@@ -1,18 +1,17 @@
 ﻿using System;
-using System.Linq;
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
-using System.Threading.Tasks;
-using Windows.ApplicationModel;
-using Windows.ApplicationModel.Activation;
-using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Interop;
+using Microsoft.Phone.Controls;
+using Microsoft.Phone.Shell;
 
 namespace ReactiveUI.Mobile
 {
-    class WinRTSuspensionHost : ISuspensionHost
+    class WP8SuspensionHost : ISuspensionHost
     {
         public IObservable<Unit> IsLaunchingNew { get { return AutoSuspendApplication.SuspensionHost.IsLaunchingNew; } }
         public IObservable<Unit> IsResuming { get { return AutoSuspendApplication.SuspensionHost.IsResuming; } }
@@ -29,7 +28,6 @@ namespace ReactiveUI.Mobile
 
     public abstract class AutoSuspendApplication : Application, IEnableLogger
     {
-        readonly ReplaySubject<LaunchActivatedEventArgs> _launched = new ReplaySubject<LaunchActivatedEventArgs>();
         internal static SuspensionHost SuspensionHost;
 
         readonly Subject<IApplicationRootState> _viewModelChanged = new Subject<IApplicationRootState>();
@@ -44,31 +42,41 @@ namespace ReactiveUI.Mobile
         {
             var host = new SuspensionHost();
 
-            var launchNew = new[] { ApplicationExecutionState.ClosedByUser, ApplicationExecutionState.NotRunning, };
-            host.IsLaunchingNew = _launched
-                .Where(x => launchNew.Contains(x.PreviousExecutionState))
-                .Select(_ => Unit.Default);
+            host.IsLaunchingNew =
+                Observable.FromEventPattern<LaunchingEventArgs>(
+                    x => PhoneApplicationService.Current.Launching += x, x => PhoneApplicationService.Current.Launching -= x)
+                    .Select(_ => Unit.Default);
 
-            host.IsResuming = _launched
-                .Where(x => x.PreviousExecutionState == ApplicationExecutionState.Terminated)
-                .Select(_ => Unit.Default);
+            host.IsUnpausing =
+                Observable.FromEventPattern<ActivatedEventArgs>(
+                    x => PhoneApplicationService.Current.Activated += x, x => PhoneApplicationService.Current.Activated -= x)
+                    .Where(x => x.EventArgs.IsApplicationInstancePreserved)
+                    .Select(_ => Unit.Default);
 
-            var unpausing = new[] { ApplicationExecutionState.Suspended, ApplicationExecutionState.Running, };
-            host.IsUnpausing = _launched
-                .Where(x => unpausing.Contains(x.PreviousExecutionState))
-                .Select(_ => Unit.Default);
+            // NB: "Applications should not perform resource-intensive tasks 
+            // such as loading from isolated storage or a network resource 
+            // during the Activated event handler because it increase the time 
+            // it takes for the application to resume"
+            host.IsResuming =
+                Observable.FromEventPattern<ActivatedEventArgs>(
+                    x => PhoneApplicationService.Current.Activated += x, x => PhoneApplicationService.Current.Activated -= x)
+                    .Where(x => !x.EventArgs.IsApplicationInstancePreserved)
+                    .Select(_ => Unit.Default)
+                    .ObserveOn(RxApp.TaskpoolScheduler);
 
-            var shouldPersistState = new Subject<SuspendingEventArgs>();
-            Suspending += (o, e) => shouldPersistState.OnNext(e);
-            host.ShouldPersistState =
-                shouldPersistState.Select(x => {
-                    var deferral = x.SuspendingOperation.GetDeferral();
-                    return Disposable.Create(deferral.Complete);
-                });
+            // NB: No way to tell OS that we need time to suspend, we have to
+            // do it in-process
+            host.ShouldPersistState = Observable.Merge(
+                Observable.FromEventPattern<DeactivatedEventArgs>(
+                    x => PhoneApplicationService.Current.Deactivated += x, x => PhoneApplicationService.Current.Deactivated -= x)
+                    .Select(_ => Disposable.Empty),
+                Observable.FromEventPattern<ClosingEventArgs>(
+                    x => PhoneApplicationService.Current.Closing += x, x => PhoneApplicationService.Current.Closing -= x)
+                    .Select(_ => Disposable.Empty));
 
-            var shouldInvalidateState = new Subject<Unit>();
-            UnhandledException += (o, e) => shouldInvalidateState.OnNext(Unit.Default);
-            host.ShouldInvalidateState = shouldInvalidateState;
+            host.ShouldInvalidateState =
+                Observable.FromEventPattern<ApplicationUnhandledExceptionEventArgs>(x => UnhandledException += x, x => UnhandledException -= x)
+                    .Select(_ => Unit.Default);
 
             SuspensionHost = host;
         }
@@ -79,20 +87,19 @@ namespace ReactiveUI.Mobile
 
             _viewModelChanged.Subscribe(vm => {
                 var page = default(IViewFor);
-                var frame = Window.Current.Content as Frame;
+                var frame = RootVisual as PhoneApplicationFrame;
 
                 if (frame == null) {
                     page = RxApp.GetService<IViewFor>("InitialPage");
 
-                    frame = new Frame() {
+                    frame = new PhoneApplicationFrame() {
                         Content = page,
                     };
 
-                    Window.Current.Content = frame;
+                    RootVisual = frame;
                 }
 
                 page.ViewModel = vm;
-                Window.Current.Activate();
             });
 
             SuspensionHost.ShouldInvalidateState
@@ -118,15 +125,6 @@ namespace ReactiveUI.Mobile
             SuspensionHost.IsLaunchingNew.Subscribe(_ => {
                 ViewModel = RxApp.GetService<IApplicationRootState>();
             });
-        }
-
-        protected override void OnLaunched(LaunchActivatedEventArgs args)
-        {
-            base.OnLaunched(args);
-
-            // NB: We can't touch RxApp until OnLaunched is called :-/
-            RxApp.Register(typeof(WinRTSuspensionHost), typeof(ISuspensionHost));
-            _launched.OnNext(args);
         }
     }
 }
