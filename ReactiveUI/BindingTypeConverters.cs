@@ -45,7 +45,11 @@ namespace ReactiveUI
         {
             Contract.Requires(toType != null);
 
-            var mi = referenceCastCache.Get(toType);
+            var mi = default(MethodInfo);
+            lock (referenceCastCache) {
+                mi = referenceCastCache.Get(toType);
+            }
+
             try {
                 result = mi.Invoke(null, new[] {from});
             } catch (Exception ex) {
