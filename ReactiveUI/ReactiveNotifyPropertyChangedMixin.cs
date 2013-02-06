@@ -60,23 +60,6 @@ namespace ReactiveUI
                 propertyNames,
                 beforeChange
                 );
-
-            //subscribeToExpressionChain(
-            //    This, 
-            //    buildPropPathFromNodePtr(propertyNames.First),
-            //    This, 
-            //    propertyNames.First, 
-            //    subscriptions.First, 
-            //    beforeChange, 
-            //    ret);
-
-            //return Observable.Create<IObservedChange<TSender, TValue>>(x => {
-            //    var disp = ret.Subscribe(x);
-            //    return () => {
-            //        subscriptions.ForEach(y => y.Dispose());
-            //        disp.Dispose();
-            //    };
-            //});
         }
 
         /// <summary>
@@ -186,109 +169,6 @@ namespace ReactiveUI
 
 
 
-        //static void subscribeToExpressionChain<TSender, TValue>(
-        //        TSender origSource,
-        //        string origPath,
-        //        object source,
-        //        LinkedListNode<string> propertyNames, 
-        //        LinkedListNode<IDisposable> subscriptions, 
-        //        bool beforeChange,
-        //        Subject<IObservedChange<TSender, TValue>> subject
-        //    )
-        //{
-        //    var current = propertyNames;
-        //    var currentSub = subscriptions;
-        //    object currentObj = source;
-        //    ObservedChange<TSender, TValue> obsCh;
-
-        //    while(current.Next != null) {
-        //        Func<object, object> getter = null;
-
-        //        if (currentObj != null) {
-        //            getter = Reflection.GetValueFetcherForProperty(currentObj.GetType(), current.Value);
-
-        //            if (getter == null) {
-        //                subscriptions.List.Where(x => x != null).ForEach(x => x.Dispose());
-        //                throw new ArgumentException(String.Format("Property '{0}' does not exist in expression", current.Value));
-        //            }
-
-        //            var capture = new {current, currentObj, getter, currentSub};
-
-        //            var toDispose = new IDisposable[2];
-
-        //            var valGetter = new ObservedChange<object, TValue>() {
-        //                Sender = capture.currentObj,
-        //                PropertyName = buildPropPathFromNodePtr(capture.current),
-        //                Value = default(TValue),
-        //            };
-
-        //            TValue prevVal = default(TValue);
-        //            bool prevValSet = valGetter.TryGetValue(out prevVal);
-
-        //            // NB: Some notifyForProperty implementations (notably, 
-        //            // DependencyProperties) don't actually support beforeChanged,
-        //            // but they need to prevent others from claiming it, since 
-        //            // POCOObservableForProperty works with all objects. They 
-        //            // do this by returning NULL.
-        //            var beforePropChangedObs = notifyForProperty(currentObj, capture.current.Value, true) ?? Observable.Return(default(IObservedChange<object, object>));
-        //            toDispose[0] = beforePropChangedObs.Subscribe(x => {
-        //                prevValSet = valGetter.TryGetValue(out prevVal);
-        //            });
-
-        //            toDispose[1] = notifyForProperty(currentObj, capture.current.Value, false).Subscribe(x => {
-        //                subscribeToExpressionChain(origSource, origPath, capture.getter(capture.currentObj), capture.current.Next, capture.currentSub.Next, beforeChange, subject);
-
-        //                TValue newVal;
-        //                if (!valGetter.TryGetValue(out newVal)) {
-        //                    return;
-        //                }
-                        
-        //                if (prevValSet && EqualityComparer<TValue>.Default.Equals(prevVal, newVal)) {
-        //                    return;
-        //                }
-
-        //                obsCh = new ObservedChange<TSender, TValue>() {
-        //                    Sender = origSource,
-        //                    PropertyName = origPath,
-        //                    Value = default(TValue),
-        //                };
-
-        //                TValue obsChVal;
-        //                if (obsCh.TryGetValue(out obsChVal)) {
-        //                    obsCh.Value = obsChVal;
-        //                    subject.OnNext(obsCh);
-        //                }
-        //            });
-
-        //            currentSub.Value = Disposable.Create(() => { toDispose[0].Dispose(); toDispose[1].Dispose(); });
-        //        }
-
-        //        current = current.Next;
-        //        currentSub = currentSub.Next;
-        //        currentObj = getter != null ? getter(currentObj) : null;
-        //    }
-
-        //    if (currentSub.Value != null) {
-        //        currentSub.Value.Dispose();
-        //    }
-
-        //    if (currentObj == null) {
-        //        return;
-        //    }
-
-        //    var propName = current.Value;
-        //    var finalGetter = Reflection.GetValueFetcherForProperty(currentObj.GetType(), current.Value);
-
-        //    currentSub.Value = notifyForProperty(currentObj, propName, beforeChange).Subscribe(x => {
-        //        obsCh = new ObservedChange<TSender, TValue>() {
-        //            Sender = origSource,
-        //            PropertyName = origPath,
-        //            Value = (TValue)finalGetter(currentObj),
-        //        };
-
-        //        subject.OnNext(obsCh);
-        //    });
-        //}
 
         static readonly MemoizingMRUCache<Tuple<Type, bool>, ICreatesObservableForProperty> notifyFactoryCache =
             new MemoizingMRUCache<Tuple<Type, bool>, ICreatesObservableForProperty>((t, _) => {
