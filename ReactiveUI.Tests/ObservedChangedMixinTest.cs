@@ -165,5 +165,28 @@ namespace ReactiveUI.Tests
                 Assert.Equal("Bar", fixture.Child.IsNotNullString);
             });
         }
+
+        [Fact]
+        public void BindToStackOverFlowTest()
+        {
+            // Before the code changes packed in the same commit
+            // as this test the test would go into an infinite 
+            // event storm. The critical issue is that the
+            // property StackOverflowTrigger will clone the
+            // value before setting it.
+            //
+            // If this test executes through without hanging then
+            // the problem has been fixed.
+            (new TestScheduler()).With(sched => {
+                var fixturea = new TestFixture();
+                var fixtureb = new TestFixture();
+
+                var source = new BehaviorSubject<List<string>>(new List<string>());
+
+                source.BindTo(fixturea,x=>x.StackOverflowTrigger);
+            });
+            
+        }
+
     }
 }
