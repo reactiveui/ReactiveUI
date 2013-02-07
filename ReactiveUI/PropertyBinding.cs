@@ -505,11 +505,23 @@ namespace ReactiveUI
             Expression<Func<TTarget, TValue>> property,
             Func<TValue> fallbackValue = null)
         {
+
             var pn = Reflection.ExpressionToPropertyNames(property);
+            var bn = pn.Take(pn.Length - 1);
 
             var lastValue = default(TValue);
-            return Observable.Merge(target.WhenAny(property, _ => lastValue).Skip(1), This)
-                .Subscribe(x => {
+
+            var o = ReactiveNotifyPropertyChangedMixin
+                .SubscribeToExpressionChain<TTarget, object>
+                (target
+                , bn
+                , false
+                , true)
+                .Select(x => lastValue);
+
+            return Observable.Merge(o, This)
+                .Subscribe(x =>
+                {
                     lastValue = x;
                     Reflection.SetValueToPropertyChain(target, pn, x);
                 });
