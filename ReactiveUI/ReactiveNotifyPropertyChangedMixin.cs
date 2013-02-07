@@ -59,8 +59,7 @@ namespace ReactiveUI
                 This,
                 propertyNames,
                 beforeChange,
-                skipInitial 
-                );
+                skipInitial);
         }
 
         /// <summary>
@@ -83,8 +82,6 @@ namespace ReactiveUI
                 bool skipInitial = true)
         {
             var propertyNames = new LinkedList<string>(property);
-            var subscriptions = new LinkedList<IDisposable>(propertyNames.Select(x => (IDisposable) null));
-            var ret = new Subject<IObservedChange<TSender, object>>();
 
             if (This == null) {
                 throw new ArgumentNullException("Sender");
@@ -109,37 +106,33 @@ namespace ReactiveUI
                 This,
                 propertyNames,
                 beforeChange,
-                skipInitial 
-                );
-
+                skipInitial);
         }
 
 
-        private static IObservedChange<object, object> 
-            observedChangeFor(string propertyName, IObservedChange<object, object> sourceChange)
+        static IObservedChange<object, object> observedChangeFor(string propertyName, IObservedChange<object, object> sourceChange)
         {
-            var p = new ObservedChange<object, object>()
-            { Sender = sourceChange.Value
-            , PropertyName = propertyName
+            var p = new ObservedChange<object, object>() { 
+                Sender = sourceChange.Value, 
+                PropertyName = propertyName,
             };
 
-            if (sourceChange.Value==null)
-            {
+            if (sourceChange.Value == null) {
                 return p;
             }
             
             return p.fillInValue();
         }
 
-        private static IObservable<IObservedChange<object, object>> 
-            nestedObservedChanges(string propertyName, IObservedChange<object, object> sourceChange, bool beforeChange)
+        static IObservable<IObservedChange<object, object>> nestedObservedChanges(string propertyName, IObservedChange<object, object> sourceChange, bool beforeChange)
         {
             // Make sure a change at a root node propogates events down
             var kicker = observedChangeFor(propertyName, sourceChange);
 
             // Handle null values in the chain
-            if (sourceChange.Value == null)
+            if (sourceChange.Value == null) {
                 return Observable.Return(kicker);
+            }
 
             // Handle non null values in the chain
             return notifyForProperty(sourceChange.Value, propertyName, beforeChange)
@@ -148,44 +141,37 @@ namespace ReactiveUI
         }
 
         public static IObservable<IObservedChange<TSender, TValue>> SubscribeToExpressionChain<TSender, TValue> ( 
-                this TSender source,
-                IEnumerable<string> propertyNames, 
-                bool beforeChange = false,
-                bool skipInitial = true
-            )
+            this TSender source,
+            IEnumerable<string> propertyNames, 
+            bool beforeChange = false,
+            bool skipInitial = true)
         {
             var path = String.Join(".", propertyNames);
 
-            IObservable<IObservedChange<object, object>> notifier
-                = Observable.Return
-                    (new ObservedChange<object, object>() 
-                        { Value = source });
+            IObservable<IObservedChange<object, object>> notifier = 
+                Observable.Return(new ObservedChange<object, object>() { Value = source });
 
-            notifier = propertyNames.Aggregate(notifier, (n, name) => n
-                        .Select(y => nestedObservedChanges(name, y, beforeChange))
-                        .Switch());
+            notifier = propertyNames.Aggregate(notifier, 
+                (n, name) => n
+                    .Select(y => nestedObservedChanges(name, y, beforeChange))
+                    .Switch());
 
-            if (skipInitial)
+            if (skipInitial) {
                 notifier = notifier.Skip(1);
+            }
 
             notifier = notifier.Where(x => x.Sender != null);
 
-            var r = notifier.Select(x => x.fillInValue())
-                .Select(x => new ObservedChange<TSender, TValue>()
-                {
-                    Sender = source
-                ,
-                    PropertyName = path
-                ,
-                    Value = (TValue)x.Value
+            var r = notifier
+                .Select(x => x.fillInValue())
+                .Select(x => new ObservedChange<TSender, TValue>() {
+                    Sender = source,
+                    PropertyName = path,
+                    Value = (TValue)x.Value,
                 });
-
 
             return r.DistinctUntilChanged(x=>x.Value);
         }
-
-
-
 
         static readonly MemoizingMRUCache<Tuple<Type, bool>, ICreatesObservableForProperty> notifyFactoryCache =
             new MemoizingMRUCache<Tuple<Type, bool>, ICreatesObservableForProperty>((t, _) => {
@@ -211,22 +197,6 @@ namespace ReactiveUI
             
             return result.GetNotificationForProperty(sender, propertyName, beforeChange);
         }
-
-        static string buildPropPathFromNodePtr(LinkedListNode<string> node)
-        {
-            var ret = new StringBuilder();
-            var current = node;
-
-            while(current.Next != null) {
-                ret.Append(current.Value);
-                ret.Append('.');
-                current = current.Next;
-            }
-
-            ret.Append(current.Value);
-            return ret.ToString();
-        }
-
 
         /// <summary>
         /// ObservableForProperty returns an Observable representing the
