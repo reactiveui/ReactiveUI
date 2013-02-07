@@ -148,7 +148,7 @@ namespace ReactiveUI.Tests
                 var input = new ScheduledSubject<string>(sched);
                 var fixture = new HostTestFixture() {Child = new TestFixture()};
 
-                var subscription = input.BindTo(fixture, x => x.Child.IsNotNullString);
+                input.BindTo(fixture, x => x.Child.IsNotNullString);
 
                 Assert.Null(fixture.Child.IsNotNullString);
 
@@ -183,7 +183,7 @@ namespace ReactiveUI.Tests
 
                 var source = new BehaviorSubject<List<string>>(new List<string>());
 
-                source.BindTo(fixturea,x=>x.StackOverflowTrigger);
+                source.BindTo(fixturea, x => x.StackOverflowTrigger);
             });
             
         }
