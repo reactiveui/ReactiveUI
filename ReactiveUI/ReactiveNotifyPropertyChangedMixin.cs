@@ -116,14 +116,14 @@ namespace ReactiveUI
 
 
         private static IObservedChange<object, object> 
-            observedChangeFor(string propertyName, IObservedChange<object, object> y)
+            observedChangeFor(string propertyName, IObservedChange<object, object> sourceChange)
         {
             var p = new ObservedChange<object, object>()
-            { Sender = y.Value
+            { Sender = sourceChange.Value
             , PropertyName = propertyName
             };
 
-            if (y.Value==null)
+            if (sourceChange.Value==null)
             {
                 return p;
             }
@@ -132,17 +132,17 @@ namespace ReactiveUI
         }
 
         private static IObservable<IObservedChange<object, object>> 
-            nestedObservedChanges(string propertyName, IObservedChange<object, object> sourceChange)
+            nestedObservedChanges(string propertyName, IObservedChange<object, object> sourceChange, bool beforeChange)
         {
             // Make sure a change at a root node propogates events down
             var kicker = observedChangeFor(propertyName, sourceChange);
 
             // Handle null values in the chain
             if (sourceChange.Value == null)
-                return Observable.Empty<IObservedChange<object,object>>();
+                return Observable.Return(kicker);
 
             // Handle non null values in the chain
-            return notifyForProperty(sourceChange.Value, propertyName, false)
+            return notifyForProperty(sourceChange.Value, propertyName, beforeChange)
                 .Select(x => x.fillInValue())
                 .StartWith(kicker);
         }
@@ -162,8 +162,13 @@ namespace ReactiveUI
                         { Value = source });
 
             notifier = propertyNames.Aggregate(notifier, (n, name) => n
-                        .Select(y => nestedObservedChanges(name, y))
+                        .Select(y => nestedObservedChanges(name, y, beforeChange))
                         .Switch());
+
+            if (skipInitial)
+                notifier = notifier.Skip(1);
+
+            notifier = notifier.Where(x => x.Sender != null);
 
             var r = notifier.Select(x => x.fillInValue())
                 .Select(x => new ObservedChange<TSender, TValue>()
@@ -175,8 +180,6 @@ namespace ReactiveUI
                     Value = (TValue)x.Value
                 });
 
-            if (skipInitial)
-                r = r.Skip(1);
 
             return r.DistinctUntilChanged(x=>x.Value);
         }
