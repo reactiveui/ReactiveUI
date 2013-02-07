@@ -277,13 +277,6 @@ namespace ReactiveUI.Tests
                 fixture.InpcProperty.IsOnlyOneWord = "Bar";
                 sched.Start();
                 Assert.Equal(3, changes.Count);
-
-                // BPH: I don't agree with this assertion here. This
-                // violates the Distinct constraint and should be
-                // skipped.
-                fixture.InpcProperty = new TestFixture() {IsOnlyOneWord = "Bar"};
-                sched.Start();
-                Assert.Equal(4, changes.Count);
             });
         }
 
