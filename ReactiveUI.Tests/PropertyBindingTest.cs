@@ -251,10 +251,25 @@ namespace ReactiveUI.Tests
             var vm = new PropertyBindViewModel();
             var view = new PropertyBindView() {ViewModel = vm};
 
+            configureDummyServiceLocator();
+
             Assert.Null(view.FakeItemsControl.ItemTemplate);
             view.OneWayBind(vm, x => x.SomeCollectionOfStrings, x => x.FakeItemsControl.ItemsSource);
 
             Assert.NotNull(view.FakeItemsControl.ItemTemplate);
+        }
+
+        void configureDummyServiceLocator()
+        {
+            var types = new Dictionary<Tuple<Type, string>, List<Type>>();
+            RxApp.ConfigureServiceLocator(
+                (t, s) => Activator.CreateInstance(types[Tuple.Create(t, s)].First()),
+                (t, s) => types[Tuple.Create(t, s)].Select(Activator.CreateInstance).ToArray(),
+                (c, t, s) => {
+                    var tuple = Tuple.Create(t, s);
+                    if (!types.ContainsKey(tuple)) types[tuple] = new List<Type>();
+                    types[tuple].Add(c);
+                });
         }
     }
 }
