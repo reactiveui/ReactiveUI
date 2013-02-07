@@ -104,8 +104,64 @@ namespace ReactiveUI.Tests
         }
     }
 
+    public class DisposableObjectWithChild : ReactiveObject, IDisposable
+    {
+        private readonly ObservableAsPropertyHelper<ChildObject> childObject;
+        private readonly ObservableAsPropertyHelper<string> currentName;
+
+        public DisposableObjectWithChild()
+        {
+            this.childObject = Observable.Interval(TimeSpan.FromSeconds(0.6))
+                .Select(x => x % 1 == 0 ? null : new ChildObject())
+                .ToProperty(this, x => x.ChildObject);
+
+            this.currentName = this.WhenAny(x => x.ChildObject.Name, x => x.Value)
+                .ToProperty(this, x => x.CurrentName);
+        }
+
+        public ChildObject ChildObject
+        {
+            get { return this.childObject.Value; }
+        }
+
+        public string CurrentName
+        {
+            get { return this.currentName.Value; }
+        }
+
+        public void Dispose()
+        {
+            this.childObject.Dispose();
+            this.currentName.Dispose();
+        }
+    }
+
+    public class ChildObject : ReactiveObject
+    {
+        private readonly ObservableAsPropertyHelper<string> name;
+
+        public ChildObject()
+        {
+            this.name = Observable.Return("Kent")
+                .ToProperty(this, x => x.Name);
+        }
+
+        public string Name
+        {
+            get { return this.name.Value; }
+        }
+    }
+
     public class ReactiveNotifyPropertyChangedMixinTest
     {
+        [Fact]
+        public void DisposeTest()
+        {
+            using (new DisposableObjectWithChild())
+            {
+            }
+        }
+
         [Fact]
         public void OFPSimplePropertyTest()
         {
