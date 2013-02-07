@@ -117,7 +117,6 @@
     <Compile Include="MessageBus.cs" />
     <Compile Include="ObservableAsPropertyHelper.cs" />
     <Compile Include="ObservableAsyncMRUCache.cs" />
-    <Compile Include="ObservableToTaskShim.cs" />
     <Compile Include="ObservedChangedMixin.cs" />
     <Compile Include="POCOObservableForProperty.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -127,9 +126,6 @@
     <Compile Include="ReactiveObject.cs" />
     <Compile Include="RefcountDisposeWrapper.cs" />
     <Compile Include="Reflection.cs" />
-    <Compile Include="Rx-Shim\AwaitableAsyncSubject.cs" />
-    <Compile Include="Rx-Shim\GetAwaiter.cs" />
-    <Compile Include="Rx-Shim\ImmutableList.cs" />
     <Compile Include="RxApp.cs" />
     <Compile Include="ScheduledSubject.cs" />
     <Compile Include="ThreadLocal.cs" />
@@ -146,7 +142,6 @@
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Rx-Shim\LICENSE" />
     <None Include="VariadicTemplates_WP7.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>VariadicTemplates_WP7.cs</LastGenOutput>
