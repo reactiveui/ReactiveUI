@@ -23,13 +23,13 @@ int maxFuncLength = 4;
 
 namespace ReactiveUI
 {
-	public static class WhenAnyMixin 
-	{
-		<# for(int length=1; length <= maxFuncLength; length++) { #>
-		<# var templParams = Enumerable.Range(1, length).Select(x => "T" + x.ToString()); #>
-		<# string selectorTypeParams = String.Join(", ", templParams.Select(x => String.Format("IObservedChange<TSender, {0}>", x))); #>
-		<# string dynamicSelectorTypeParams = String.Join(", ", templParams.Select(x => "IObservedChange<TSender, object>")); #>
-		<# string selectorCall = "selector(" + String.Join(", ", Enumerable.Range(1, length).Select(x => "islot" + x.ToString())) + ")"; #>
+    public static class WhenAnyMixin 
+    {
+        <# for(int length=1; length <= maxFuncLength; length++) { #>
+        <# var templParams = Enumerable.Range(1, length).Select(x => "T" + x.ToString()); #>
+        <# string selectorTypeParams = String.Join(", ", templParams.Select(x => String.Format("IObservedChange<TSender, {0}>", x))); #>
+        <# string dynamicSelectorTypeParams = String.Join(", ", templParams.Select(x => "IObservedChange<TSender, object>")); #>
+        <# string selectorCall = "selector(" + String.Join(", ", Enumerable.Range(1, length).Select(x => "islot" + x.ToString())) + ")"; #>
 
         /// <summary>
         /// WhenAny allows you to observe whenever one or more properties on an
@@ -39,30 +39,21 @@ namespace ReactiveUI
         /// initial setup.
         /// </summary>
         public static IObservable<TRet> WhenAny<TSender, TRet, <#= String.Join(",", templParams) #>>(this TSender This, 
-			<# for(int i=1; i <= length; i++) { #>
+            <# for(int i=1; i <= length; i++) { #>
                 Expression<Func<TSender, T<#=i#>>> property<#=i#>, 
-			<# } #>
+            <# } #>
                 Func<<#= selectorTypeParams #>, TRet> selector)
         {
-			bool allInputsWorked = true;
-			<# for(int i=1; i <= length; i++) { #>
-			var slot<#=i#> = new ObservedChange<TSender, T<#=i#>>() {
-                Sender = This,
-                PropertyName = String.Join(".", Reflection.ExpressionToPropertyNames(property<#=i#>)),
-            };
-            T<#=i#> slot<#=i#>Value = default(T<#=i#>); allInputsWorked &= slot<#=i#>.TryGetValue(out slot<#=i#>Value); slot<#=i#>.Value = slot<#=i#>Value;
-            IObservedChange<TSender, T<#=i#>> islot<#=i#> = slot<#=i#>;
-			<# } #>
-
-            return Observable.Create<TRet>(subject => {
-                if (allInputsWorked) subject.OnNext(<#= selectorCall #>);
-
-                return Observable.Merge(<# for(int i=1; i <= length; i++) { #>
-
-                    This.ObservableForProperty(property<#=i#>).Do(x => { lock (slot<#=i#>) { islot<#=i#> = x.fillInValue(); } }).Select(x => <#= selectorCall #>)<#= (i==length?"":",") #> <# } #>
-
-                ).Subscribe(subject);
-            });
+            <# if (length == 1){ #>
+                return This.ObservableForProperty(property<#=1#>, beforeChange:false, skipInitial:false).Select(selector); 
+            <# }else{ #>
+            return Observable.CombineLatest(
+                <# for(int i=1; i <= length; i++) { #>
+                    This.ObservableForProperty(property<#=i#>, beforeChange: false, skipInitial:false), 
+                <# } #>
+                selector
+            );
+            <# } #>
         }
 
         /// <summary>
@@ -73,29 +64,25 @@ namespace ReactiveUI
         /// initial setup.
         /// </summary>
         public static IObservable<TRet> WhenAnyDynamic<TSender, TRet>(this TSender This, 
-			<# for(int i=1; i <= length; i++) { #>
+            <# for(int i=1; i <= length; i++) { #>
                 string[] property<#=i#>, 
-			<# } #>
+            <# } #>
                 Func<<#= dynamicSelectorTypeParams #>, TRet> selector)
         {
-			<# for(int i=1; i <= length; i++) { #>
-			var slot<#=i#> = new ObservedChange<TSender, object>() {
-                Sender = This,
-                PropertyName = String.Join(".", property<#=i#>),
-            };
-            object slot<#=i#>Value = default(object); slot<#=i#>.TryGetValue(out slot<#=i#>Value); slot<#=i#>.Value = slot<#=i#>Value;
-            IObservedChange<TSender, object> islot<#=i#> = slot<#=i#>;
-			<# } #>
-
-            return Observable.Create<TRet>(subject => {
-                subject.OnNext(<#= selectorCall #>);
-
-                return Observable.Merge(<# for(int i=1; i <= length; i++) { #>
-                    This.ObservableForProperty(property<#=i#>).Do(x => { lock (slot<#=i#>) { islot<#=i#> = x.fillInValue(); } }).Select(x => <#= selectorCall #>)<#= (i==length?"":",") #> <# } #>
-                ).Subscribe(subject);
-            });
+            <# if (length == 1){ #>
+                return ReactiveNotifyPropertyChangedMixin
+                    .SubscribeToExpressionChain<TSender,object>(This, property<#=1#>, beforeChange:false, skipInitial:false).Select(selector); 
+            <# }else{ #>
+            return Observable.CombineLatest(
+                <# for(int i=1; i <= length; i++) { #>
+                    ReactiveNotifyPropertyChangedMixin
+                        .SubscribeToExpressionChain<TSender,object>(This, property<#=i#>, beforeChange: false, skipInitial:false), 
+                <# } #>
+                selector
+            );
+            <# } #>
         }
 
-	<# } #>
-	}
+    <# } #>
+    }
 }

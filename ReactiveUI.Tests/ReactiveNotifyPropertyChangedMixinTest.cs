@@ -437,10 +437,7 @@ namespace ReactiveUI.Tests
             Assert.Equal(0, output.Count);
             Assert.Null(fixture.ViewModel);
 
-            fixture.WhenAny(x => x.ViewModel.Child.IsNotNullString, x => x.Value).Subscribe(x =>
-            {
-                output.Add(x);
-            });
+            fixture.WhenAny(x => x.ViewModel.Child.IsNotNullString, x => x.Value).Subscribe(output.Add);
 
             fixture.ViewModel = vm;
             Assert.Equal(1, output.Count);
