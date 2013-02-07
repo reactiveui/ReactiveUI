@@ -30,15 +30,15 @@ namespace ReactiveUI
         public static IObservable<IObservedChange<TSender, TValue>> ObservableForProperty<TSender, TValue>(
                 this TSender This,
                 Expression<Func<TSender, TValue>> property,
-                bool beforeChange = false)
+                bool beforeChange = false,
+                bool skipInitial = true)
         {
-            var propertyNames = new LinkedList<string>(Reflection.ExpressionToPropertyNames(property));
-            var subscriptions = new LinkedList<IDisposable>(propertyNames.Select(x => (IDisposable) null));
-            var ret = new Subject<IObservedChange<TSender, TValue>>();
 
             if (This == null) {
                 throw new ArgumentNullException("Sender");
             }
+
+            var propertyNames = Reflection.ExpressionToPropertyNames(property);
 
             /* x => x.Foo.Bar.Baz;
              * 
@@ -55,10 +55,11 @@ namespace ReactiveUI
              * 	Resubscribe to new Baz, publish to Subject
              */
 
-            return subscribeToExpressionChain<TSender, TValue>(
+            return SubscribeToExpressionChain<TSender, TValue>(
                 This,
                 propertyNames,
-                beforeChange
+                beforeChange,
+                skipInitial 
                 );
         }
 
@@ -78,7 +79,8 @@ namespace ReactiveUI
         public static IObservable<IObservedChange<TSender, object>> ObservableForProperty<TSender>(
                 this TSender This,
                 string[] property,
-                bool beforeChange = false)
+                bool beforeChange = false,
+                bool skipInitial = true)
         {
             var propertyNames = new LinkedList<string>(property);
             var subscriptions = new LinkedList<IDisposable>(propertyNames.Select(x => (IDisposable) null));
@@ -103,16 +105,18 @@ namespace ReactiveUI
              * 	Resubscribe to new Baz, publish to Subject
              */
 
-            return subscribeToExpressionChain<TSender, object>(
+            return SubscribeToExpressionChain<TSender, object>(
                 This,
                 propertyNames,
-                beforeChange
+                beforeChange,
+                skipInitial 
                 );
 
         }
 
 
-        private static IObservedChange<object, object> observedChangeFor(string propertyName, IObservedChange<object, object> y)
+        private static IObservedChange<object, object> 
+            observedChangeFor(string propertyName, IObservedChange<object, object> y)
         {
             var p = new ObservedChange<object, object>()
             { Sender = y.Value
@@ -127,25 +131,27 @@ namespace ReactiveUI
             return p.fillInValue();
         }
 
-        private static IObservable<IObservedChange<object, object>> nestedObservedChanges(string propertyName, IObservedChange<object, object> y)
+        private static IObservable<IObservedChange<object, object>> 
+            nestedObservedChanges(string propertyName, IObservedChange<object, object> sourceChange)
         {
             // Make sure a change at a root node propogates events down
-            var kicker = observedChangeFor(propertyName, y);
+            var kicker = observedChangeFor(propertyName, sourceChange);
 
             // Handle null values in the chain
             if (sourceChange.Value == null)
                 return Observable.Empty<IObservedChange<object,object>>();
 
             // Handle non null values in the chain
-            return notifyForProperty(y.Value, propertyName, false)
+            return notifyForProperty(sourceChange.Value, propertyName, false)
                 .Select(x => x.fillInValue())
                 .StartWith(kicker);
         }
 
-        static IObservable<IObservedChange<TSender, TValue>> subscribeToExpressionChain<TSender, TValue> ( 
-                TSender source,
+        public static IObservable<IObservedChange<TSender, TValue>> SubscribeToExpressionChain<TSender, TValue> ( 
+                this TSender source,
                 IEnumerable<string> propertyNames, 
-                bool beforeChange
+                bool beforeChange = false,
+                bool skipInitial = true
             )
         {
             var path = String.Join(".", propertyNames);
@@ -159,12 +165,20 @@ namespace ReactiveUI
                         .Select(y => nestedObservedChanges(name, y))
                         .Switch());
 
-            return notifier.Select(x => x.fillInValue())
+            var r = notifier.Select(x => x.fillInValue())
                 .Select(x => new ObservedChange<TSender, TValue>()
-                { Sender = source
-                , PropertyName = path
-                , Value = (TValue)x.Value
-                }).Skip(1);
+                {
+                    Sender = source
+                ,
+                    PropertyName = path
+                ,
+                    Value = (TValue)x.Value
+                });
+
+            if (skipInitial)
+                r = r.Skip(1);
+
+            return r.DistinctUntilChanged(x=>x.Value);
         }
 
 
