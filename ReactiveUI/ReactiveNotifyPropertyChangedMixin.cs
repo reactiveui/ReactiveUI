@@ -133,8 +133,8 @@ namespace ReactiveUI
             var kicker = observedChangeFor(propertyName, y);
 
             // Handle null values in the chain
-            if (y.Value == null)
-                return Observable.Return(kicker);
+            if (sourceChange.Value == null)
+                return Observable.Empty<IObservedChange<object,object>>();
 
             // Handle non null values in the chain
             return notifyForProperty(y.Value, propertyName, false)
