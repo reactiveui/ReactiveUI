@@ -149,7 +149,7 @@ namespace ReactiveUI
             var path = String.Join(".", propertyNames);
 
             IObservable<IObservedChange<object, object>> notifier = 
-                Observable.Return(new ObservedChange<object, object>() { Value = source });
+                Observable.Return((IObservedChange<object, object>)new ObservedChange<object, object>() { Value = source });
 
             notifier = propertyNames.Aggregate(notifier, 
                 (n, name) => n
@@ -164,7 +164,7 @@ namespace ReactiveUI
 
             var r = notifier
                 .Select(x => x.fillInValue())
-                .Select(x => new ObservedChange<TSender, TValue>() {
+                .Select(x => (IObservedChange<TSender, TValue>) new ObservedChange<TSender, TValue>() {
                     Sender = source,
                     PropertyName = path,
                     Value = (TValue)x.Value,
