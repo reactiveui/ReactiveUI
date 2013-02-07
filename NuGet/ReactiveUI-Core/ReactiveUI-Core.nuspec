@@ -12,10 +12,10 @@
 
 		<dependencies>
 			<group>
-				<dependency id="Rx-Main" version="[2.0.21114]" />
+				<dependency id="Rx-Main" version="[2.1.30204.0]" />
 			</group>
 			<group targetFramework="winrt45">
-				<dependency id="Rx-WindowStoreApps" version="[2.0.21114]" />
+				<dependency id="Rx-WindowStoreApps" version="[2.1.30204.0]" />
 			</group>
 		</dependencies>
 	</metadata>
