@@ -266,7 +266,7 @@ namespace ReactiveUI.Tests
 
                 var changes = fixture.ObservableForProperty(x => x.InpcProperty.IsOnlyOneWord).CreateCollection();
 
-                fixture.InpcProperty = new TestFixture();
+                fixture.InpcProperty = new TestFixture(); 
                 sched.Start();
                 Assert.Equal(1, changes.Count);
 
@@ -278,6 +278,9 @@ namespace ReactiveUI.Tests
                 sched.Start();
                 Assert.Equal(3, changes.Count);
 
+                // BPH: I don't agree with this assertion here. This
+                // violates the Distinct constraint and should be
+                // skipped.
                 fixture.InpcProperty = new TestFixture() {IsOnlyOneWord = "Bar"};
                 sched.Start();
                 Assert.Equal(4, changes.Count);
@@ -289,6 +292,7 @@ namespace ReactiveUI.Tests
         {
             var obj = new ObjChain1();
             bool obsUpdated;
+
             obj.ObservableForProperty(x => x.Model.Model.Model.SomeOtherParam).Subscribe(_ => obsUpdated = true);
            
             obsUpdated = false;
@@ -436,12 +440,14 @@ namespace ReactiveUI.Tests
             var fixture = new HostTestView();
 
             var output = new List<string>();
-            fixture.WhenAny(x => x.ViewModel.Child.IsNotNullString, x => x.Value).Subscribe(x => {
-                output.Add(x);
-            });
 
             Assert.Equal(0, output.Count);
             Assert.Null(fixture.ViewModel);
+
+            fixture.WhenAny(x => x.ViewModel.Child.IsNotNullString, x => x.Value).Subscribe(x =>
+            {
+                output.Add(x);
+            });
 
             fixture.ViewModel = vm;
             Assert.Equal(1, output.Count);
