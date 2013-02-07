@@ -66,9 +66,6 @@
     <DocumentationFile>Bin\Release\WP8\ReactiveUI.Mobile_WP8.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Akavache_WP8">
-      <HintPath>..\ext\WP80\Akavache_WP8.dll</HintPath>
-    </Reference>
     <Reference Include="mscorlib.Extensions" />
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\ext\WP80\Newtonsoft.Json.dll</HintPath>
@@ -120,7 +117,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AkavacheDriver.cs" />
     <Compile Include="Geolocation.cs" />
     <Compile Include="Interfaces.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
