@@ -100,7 +100,6 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="AkavacheDriver.cs" />
     <Compile Include="Geolocation.cs" />
     <Compile Include="Interfaces.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -108,9 +107,6 @@
     <Compile Include="WinRTAutoSuspendApplication.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Akavache_WinRT">
-      <HintPath>..\ext\winrt\Akavache_WinRT.dll</HintPath>
-    </Reference>
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\ext\winrt\Newtonsoft.Json.dll</HintPath>
     </Reference>
