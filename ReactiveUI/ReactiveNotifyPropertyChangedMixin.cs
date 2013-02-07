@@ -67,7 +67,7 @@ namespace ReactiveUI
             return Observable.Create<IObservedChange<TSender, TValue>>(x => {
                 var disp = ret.Subscribe(x);
                 return () => {
-                    subscriptions.ForEach(y => y.Dispose());
+                    subscriptions.Where(y => y != null).ForEach(y => y.Dispose());
                     disp.Dispose();
                 };
             });
@@ -126,7 +126,7 @@ namespace ReactiveUI
             return Observable.Create<IObservedChange<TSender, object>>(x => {
                 var disp = ret.Subscribe(x);
                 return () => {
-                    subscriptions.ForEach(y => y.Dispose());
+                    subscriptions.Where(y => y != null).ForEach(y => y.Dispose());
                     disp.Dispose();
                 };
             });
