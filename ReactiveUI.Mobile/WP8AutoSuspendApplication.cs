@@ -11,7 +11,7 @@ using Microsoft.Phone.Shell;
 
 namespace ReactiveUI.Mobile
 {
-    public class WP8SuspensionHost : ISuspensionHost
+    class WP8SuspensionHost : ISuspensionHost
     {
         public IObservable<Unit> IsLaunchingNew { get { return AutoSuspendApplication.SuspensionHost.IsLaunchingNew; } }
         public IObservable<Unit> IsResuming { get { return AutoSuspendApplication.SuspensionHost.IsResuming; } }
