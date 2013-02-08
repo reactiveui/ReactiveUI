@@ -2,7 +2,7 @@
 <package xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
 	<metadata xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
 		<id>reactiveui-nlog</id>
-		<version>4.3.2</version>
+		<version>4.4.0</version>
 		<description>An adapter to initialize NLog as the logger for ReactiveUI.</description>
 		<authors>Paul Betts</authors>
 		<projectUrl>http://www.reactiveui.net</projectUrl>
@@ -11,7 +11,7 @@
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 
 		<dependencies>
-			<dependency id="reactiveui-core" version="[4.3.2]" />
+			<dependency id="reactiveui-core" version="[4.4.0]" />
 			<dependency id="NLog" version="2.0.0.2000" />
 		</dependencies>
 	</metadata>
