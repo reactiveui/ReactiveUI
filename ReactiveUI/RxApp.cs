@@ -469,10 +469,12 @@ namespace ReactiveUI
             // Try to detect whether we're in design mode - bonus points, 
             // without access to any WPF references :-/
             var entry = Assembly.GetEntryAssembly();
-            var exeName = (entry != null ? entry.Location.ToUpperInvariant() : "");
-            if (designEnvironments.Any(x => x.Contains(exeName)))
-            {
-                return true;
+            if (entry != null) {
+                var exeName = entry.Location.ToUpperInvariant(); 
+
+                if (designEnvironments.Any(x => x.Contains(exeName))) {
+                    return true;
+                }
             }
 
             return AppDomain.CurrentDomain.GetAssemblies().Any(x =>
