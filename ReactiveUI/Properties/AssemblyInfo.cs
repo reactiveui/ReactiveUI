@@ -34,3 +34,5 @@ using System.Runtime.CompilerServices;
 [assembly: InternalsVisibleTo("ReactiveUI.Gtk")]
 [assembly: InternalsVisibleTo("ReactiveUI.Cocoa")]
 [assembly: InternalsVisibleTo("ReactiveUI.Android")]
+[assembly: InternalsVisibleTo("ReactiveUI.Mobile_WinRT")]
+[assembly: InternalsVisibleTo("ReactiveUI.Mobile_WP8")]

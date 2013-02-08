@@ -376,6 +376,7 @@ namespace ReactiveUI
                 "ReactiveUI.Cocoa",
                 "ReactiveUI.Android",
                 "ReactiveUI.NLog",
+                "ReactiveUI.Mobile",
             };
 
 #if WINRT || SILVERLIGHT
