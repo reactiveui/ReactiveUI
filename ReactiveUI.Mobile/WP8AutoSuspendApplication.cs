@@ -85,18 +85,15 @@ namespace ReactiveUI.Mobile
         {
             driver = driver ?? RxApp.GetService<ISuspensionDriver>();
 
-            _viewModelChanged.Subscribe(vm => {
+            _viewModelChanged.StartWith(ViewModel).Where(x => x != null).Subscribe(vm => {
                 var page = default(IViewFor);
                 var frame = RootVisual as PhoneApplicationFrame;
 
+                page = RxApp.GetService<IViewFor>("InitialPage");
                 if (frame == null) {
-                    page = RxApp.GetService<IViewFor>("InitialPage");
-
                     frame = new PhoneApplicationFrame() {
                         Content = page,
                     };
-
-                    RootVisual = frame;
                 }
 
                 page.ViewModel = vm;
@@ -112,6 +109,8 @@ namespace ReactiveUI.Mobile
                         ViewModel.Router.NavigateBack.Execute(null);
                     };
                 }
+                    
+                RootVisual = frame;
             });
 
             SuspensionHost.ShouldInvalidateState
