@@ -7,10 +7,11 @@ using System.Windows.Navigation;
 using Microsoft.Phone.Controls;
 using Microsoft.Phone.Shell;
 using MobileSample_WP8.Resources;
+using ReactiveUI.Mobile;
 
 namespace MobileSample_WP8
 {
-    public partial class App : Application
+    public partial class App : AutoSuspendApplication
     {
         /// <summary>
         /// Provides easy access to the root frame of the Phone Application.
