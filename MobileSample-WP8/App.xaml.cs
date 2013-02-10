@@ -7,6 +7,8 @@ using System.Windows.Navigation;
 using Microsoft.Phone.Controls;
 using Microsoft.Phone.Shell;
 using MobileSample_WP8.Resources;
+using MobileSample_WP8.ViewModels;
+using ReactiveUI;
 using ReactiveUI.Mobile;
 
 namespace MobileSample_WP8
@@ -14,24 +16,12 @@ namespace MobileSample_WP8
     public partial class App : AutoSuspendApplication
     {
         /// <summary>
-        /// Provides easy access to the root frame of the Phone Application.
-        /// </summary>
-        /// <returns>The root frame of the Phone Application.</returns>
-        public static PhoneApplicationFrame RootFrame { get; private set; }
-
-        /// <summary>
         /// Constructor for the Application object.
         /// </summary>
         public App()
         {
-            // Global handler for uncaught exceptions.
-            UnhandledException += Application_UnhandledException;
-
             // Standard XAML initialization
             InitializeComponent();
-
-            // Phone-specific initialization
-            InitializePhoneApplication();
 
             // Language display initialization
             InitializeLanguage();
@@ -56,6 +46,10 @@ namespace MobileSample_WP8
                 PhoneApplicationService.Current.UserIdleDetectionMode = IdleDetectionMode.Disabled;
             }
 
+            RxApp.Register(typeof (AppBootstrapper), typeof (IApplicationRootState));
+
+            var host = RxApp.GetService<ISuspensionHost>();
+            host.SetupDefaultSuspendResume();
         }
 
         // Code to execute when the application is launching (eg, from Start)
@@ -103,6 +97,7 @@ namespace MobileSample_WP8
         }
 
         #region Phone application initialization
+#if FALSE
 
         // Avoid double-initialization
         private bool phoneApplicationInitialized = false;
@@ -163,6 +158,7 @@ namespace MobileSample_WP8
             }
         }
 
+#endif
         #endregion
 
         // Initialize the app's font and flow direction as defined in its localized resource strings.
