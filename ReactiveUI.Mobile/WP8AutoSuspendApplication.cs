@@ -129,7 +129,7 @@ namespace ReactiveUI.Mobile
 
             _viewModelChanged.StartWith(ViewModel).Where(x => x != null).Subscribe(vm => {
                 var viewFor = default(IViewFor);
-                if (currentViewFor.TryGetTarget(out viewFor)) {
+                if (currentViewFor != null && currentViewFor.TryGetTarget(out viewFor)) {
                     viewFor.ViewModel = vm;
                 }
             });
@@ -145,6 +145,7 @@ namespace ReactiveUI.Mobile
 
         internal void setupDefaultSuspendResume(ISuspensionDriver driver)
         {
+            RxApp.GetService<IApplicationRootState>();
             driver = driver ?? RxApp.GetService<ISuspensionDriver>();
 
             SuspensionHost.ShouldInvalidateState
