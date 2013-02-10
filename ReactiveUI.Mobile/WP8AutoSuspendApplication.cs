@@ -39,7 +39,7 @@ namespace ReactiveUI.Mobile
             get { return _ViewModel; }
             set {
                 if (_ViewModel == value) return;
-                _ViewModel = value;
+                _ViewModel = value; 
                 _viewModelChanged.OnNext(value);
             }
         }
@@ -87,39 +87,65 @@ namespace ReactiveUI.Mobile
                     .Select(_ => Unit.Default);
 
             SuspensionHost = host;
+
+            //
+            // Do the equivalent steps that the boilerplate code does for WP8 apps
+            //
+
+            if (RootFrame != null) return;
+            RootFrame = new PhoneApplicationFrame();
+
+            var currentBackHook = default(IDisposable);
+            var currentViewFor = default(WeakReference<IViewFor>);
+
+            RootFrame.Navigated += (o, e) => {
+                // Always clear the WP8 Back Stack, we're using our own
+                while (RootFrame.RemoveBackEntry() != null) {}
+
+                if (currentBackHook != null) currentBackHook.Dispose();
+                var page = RootFrame.Content as PhoneApplicationPage;
+                if (page != null) {
+                    currentBackHook = Observable.FromEventPattern<CancelEventArgs>(x => page.BackKeyPress += x, x => page.BackKeyPress -= x)
+                        .Where(_ => ViewModel != null)
+                        .Subscribe(x => {
+                            if (!ViewModel.Router.NavigateBack.CanExecute(null)) return;
+
+                            x.EventArgs.Cancel = true;
+                            ViewModel.Router.NavigateBack.Execute(null);
+                        });
+
+                    var viewFor = page as IViewFor;
+                    if (viewFor == null) {
+                        throw new Exception("Your Main Page (i.e. the one that is pointed to by WMAppManifest) must implement IViewFor<YourAppBootstrapperClass>");
+                    }
+
+                    currentViewFor = new WeakReference<IViewFor>(viewFor);
+                    viewFor.ViewModel = ViewModel;
+                }
+
+                // Finally make it live
+                RootVisual = RootFrame;
+            };
+
+            _viewModelChanged.StartWith(ViewModel).Where(x => x != null).Subscribe(vm => {
+                var viewFor = default(IViewFor);
+                if (currentViewFor.TryGetTarget(out viewFor)) {
+                    viewFor.ViewModel = vm;
+                }
+            });
+
+            UnhandledException += (o, e) => {
+                if (Debugger.IsAttached) Debugger.Break();
+            };
+
+            RootFrame.NavigationFailed += (o, e) => {
+                if (Debugger.IsAttached) Debugger.Break();
+            };
         }
 
         internal void setupDefaultSuspendResume(ISuspensionDriver driver)
         {
             driver = driver ?? RxApp.GetService<ISuspensionDriver>();
-
-            _viewModelChanged.StartWith(ViewModel).Where(x => x != null).Subscribe(vm => {
-                var page = default(IViewFor);
-                var frame = RootVisual as PhoneApplicationFrame;
-
-                page = RxApp.GetService<IViewFor>("InitialPage");
-                if (frame == null) {
-                    frame = new PhoneApplicationFrame() {
-                        Content = page,
-                    };
-                }
-
-                page.ViewModel = vm;
-                var pg = page as PhoneApplicationPage;
-                if (pg != null) {
-                    pg.BackKeyPress += (o, e) => {
-                        if (ViewModel.Router.NavigationStack.Count <= 1 ||
-                            ViewModel.Router.NavigateBack.CanExecute(null)) {
-                            return;
-                        }
-
-                        e.Cancel = true;
-                        ViewModel.Router.NavigateBack.Execute(null);
-                    };
-                }
-                    
-                RootVisual = frame;
-            });
 
             SuspensionHost.ShouldInvalidateState
                 .SelectMany(_ => driver.InvalidateState())
@@ -137,9 +163,7 @@ namespace ReactiveUI.Mobile
                     Observable.Defer(() => Observable.Return(RxApp.GetService<IApplicationRootState>())),
                     "Failed to restore app state from storage, creating from scratch")
                 .ObserveOn(RxApp.DeferredScheduler)
-                .Subscribe(x => {
-                    ViewModel = x;
-                });
+                .Subscribe(x => ViewModel = x);
 
             SuspensionHost.IsLaunchingNew.Subscribe(_ => {
                 ViewModel = RxApp.GetService<IApplicationRootState>();
