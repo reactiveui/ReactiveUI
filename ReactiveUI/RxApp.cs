@@ -379,8 +379,10 @@ namespace ReactiveUI
                 "ReactiveUI.Mobile",
             };
 
-#if WINRT || SILVERLIGHT
+#if WINRT || WP8
             // NB: WinRT hates your Freedom
+            return new[] {"ReactiveUI.Xaml", "ReactiveUI.Routing", "ReactiveUI.Mobile", };
+#elif SILVERLIGHT
             return new[] {"ReactiveUI.Xaml", "ReactiveUI.Routing"};
 #else
             var name = Assembly.GetExecutingAssembly().GetName();
