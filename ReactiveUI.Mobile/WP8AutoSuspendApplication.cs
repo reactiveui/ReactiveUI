@@ -1,4 +1,6 @@
 ﻿using System;
+using System.ComponentModel;
+using System.Diagnostics;
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
@@ -35,8 +37,14 @@ namespace ReactiveUI.Mobile
 
         public IApplicationRootState ViewModel {
             get { return _ViewModel; }
-            set { _ViewModel = value; _viewModelChanged.OnNext(value); }
+            set {
+                if (_ViewModel == value) return;
+                _ViewModel = value;
+                _viewModelChanged.OnNext(value);
+            }
         }
+
+        public static PhoneApplicationFrame RootFrame { get; protected set; }
 
         protected AutoSuspendApplication()
         {
