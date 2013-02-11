@@ -1,9 +1,8 @@
-﻿<Application
+﻿<mobile:AutoSuspendApplication
     x:Class="MobileSample_WinRT.App"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:MobileSample_WinRT"
-    xmlns:localData="using:MobileSample_WinRT.Data">
+    xmlns:mobile="using:ReactiveUI.Mobile">
 
     <Application.Resources>
         <ResourceDictionary>
@@ -21,4 +20,4 @@
             <x:String x:Key="AppName">MobileSample-WinRT</x:String>
         </ResourceDictionary>
     </Application.Resources>
-</Application>
+</mobile:AutoSuspendApplication>
