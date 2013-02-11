@@ -9,7 +9,8 @@
     Foreground="{StaticResource PhoneForegroundBrush}"
     d:DesignHeight="480" d:DesignWidth="480">
     
-    <Grid x:Name="LayoutRoot" Background="{StaticResource PhoneChromeBrush}">
-        <TextBlock FontSize="72" Text="hello." HorizontalAlignment="Center" VerticalAlignment="Center" />
-    </Grid>
+    <StackPanel x:Name="LayoutRoot" Background="{StaticResource PhoneChromeBrush}" VerticalAlignment="Center">
+        <TextBlock FontSize="72" Text="Page 1." HorizontalAlignment="Center" VerticalAlignment="Center" />
+        <TextBlock x:Name="RandomGuid" FontSize="24" HorizontalAlignment="Center" VerticalAlignment="Center" />
+    </StackPanel>
 </UserControl>

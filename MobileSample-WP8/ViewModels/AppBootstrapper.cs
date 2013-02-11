@@ -49,30 +49,6 @@ namespace MobileSample_WP8.ViewModels
     }
 #endif
 
-    public class PhoneServiceStateDriver : ISuspensionDriver
-    {
-        public IObservable<T> LoadState<T>() where T : class, IApplicationRootState
-        {
-            try {
-                return Observable.Return((T)PhoneApplicationService.Current.State["state"]);
-            } catch (Exception ex) {
-                return Observable.Return(default(T));
-            }
-        }
-
-        public IObservable<Unit> SaveState<T>(T state) where T : class, IApplicationRootState
-        {
-            PhoneApplicationService.Current.State["state"] = state;
-            return Observable.Return(Unit.Default);
-        }
-
-        public IObservable<Unit> InvalidateState()
-        {
-            PhoneApplicationService.Current.State["state"] = null;
-            return Observable.Return(Unit.Default);
-        }
-    }
-
     [DataContract]
     public class AppBootstrapper : ReactiveObject, IApplicationRootState
     {
@@ -83,6 +59,7 @@ namespace MobileSample_WP8.ViewModels
             set { _Router = (RoutingState) value; } // XXX: This is dumb.
         }
 
+        [IgnoreDataMember]
         public IKernel Kernel { get; protected set; }
 
         public AppBootstrapper()
@@ -92,7 +69,6 @@ namespace MobileSample_WP8.ViewModels
             Kernel = new StandardKernel();
             Kernel.Bind<IViewFor<TestPage1ViewModel>>().To<TestPage1View>();
 
-            Kernel.Bind<ISuspensionDriver>().To<PhoneServiceStateDriver>();
             Kernel.Bind<IApplicationRootState>().ToConstant(this);
 
             Kernel.Bind<IScreen>().ToConstant(this);
