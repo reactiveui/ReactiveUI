@@ -37,8 +37,14 @@ namespace ReactiveUI.Mobile
 
         public IApplicationRootState ViewModel {
             get { return _ViewModel; }
-            set { _ViewModel = value; _viewModelChanged.OnNext(value); }
+            set {
+                if (_ViewModel == value) return;
+                _ViewModel = value; 
+                _viewModelChanged.OnNext(value);
+            }
         }
+
+
 
         protected AutoSuspendApplication()
         {
@@ -111,9 +117,7 @@ namespace ReactiveUI.Mobile
                     Observable.Defer(() => Observable.Return(RxApp.GetService<IApplicationRootState>())),
                     "Failed to restore app state from storage, creating from scratch")
                 .ObserveOn(RxApp.DeferredScheduler)
-                .Subscribe(x => {
-                    ViewModel = x;
-                });
+                .Subscribe(x => ViewModel = x);
 
             SuspensionHost.IsLaunchingNew.Subscribe(_ => {
                 ViewModel = RxApp.GetService<IApplicationRootState>();
@@ -123,9 +127,6 @@ namespace ReactiveUI.Mobile
         protected override void OnLaunched(LaunchActivatedEventArgs args)
         {
             base.OnLaunched(args);
-
-            // NB: We can't touch RxApp until OnLaunched is called :-/
-            RxApp.Register(typeof(WinRTSuspensionHost), typeof(ISuspensionHost));
             _launched.OnNext(args);
         }
     }

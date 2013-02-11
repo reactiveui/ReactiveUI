@@ -25,7 +25,8 @@ namespace ReactiveUI.Mobile
         {
             var serializer = JsonSerializer.Create(SerializerSettings);
             try {
-                var reader = new JsonTextReader(new StringReader((string)PhoneApplicationService.Current.State["state"]));
+                var state = (string) PhoneApplicationService.Current.State["state"];
+                var reader = new JsonTextReader(new StringReader(state));
                 return Observable.Return(serializer.Deserialize<T>(reader));
             } catch (Exception ex) {
                 return Observable.Throw<T>(ex);
