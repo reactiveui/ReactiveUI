@@ -69,7 +69,7 @@ namespace ReactiveUI.Routing
             if (rxObjectsSetup) return;
 
             NavigateBack = new ReactiveCommand(
-                NavigationStack.CollectionCountChanged.StartWith(_NavigationStack.Count).Select(x => x > 0));
+                NavigationStack.CollectionCountChanged.StartWith(_NavigationStack.Count).Select(x => x > 1));
             NavigateBack.Subscribe(_ =>
                 NavigationStack.RemoveAt(NavigationStack.Count - 1));
 
