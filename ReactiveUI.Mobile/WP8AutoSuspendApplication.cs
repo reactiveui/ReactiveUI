@@ -145,7 +145,6 @@ namespace ReactiveUI.Mobile
 
         internal void setupDefaultSuspendResume(ISuspensionDriver driver)
         {
-            RxApp.GetService<IApplicationRootState>();
             driver = driver ?? RxApp.GetService<ISuspensionDriver>();
 
             SuspensionHost.ShouldInvalidateState
