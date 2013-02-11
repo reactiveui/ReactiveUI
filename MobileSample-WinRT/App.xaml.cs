@@ -27,10 +27,11 @@ namespace MobileSample_WinRT
             this.InitializeComponent();
         }
 
-        protected override async void OnLaunched(LaunchActivatedEventArgs args)
+        protected override void OnLaunched(LaunchActivatedEventArgs args)
         {
             RxApp.Register(typeof(AppBootstrapper), typeof(IApplicationRootState));
 
+            base.OnLaunched(args);
             var host = RxApp.GetService<ISuspensionHost>();
             host.SetupDefaultSuspendResume();
         }

@@ -9,8 +9,8 @@
 
     <Grid Background="{StaticResource ApplicationPageBackgroundThemeBrush}">
         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-            <TextBlock Style="{StaticResource HeaderTextStyle}" Text="Page 1."/>
-            <TextBlock x:Name="RandomGuid" Style="{StaticResource ItemTextStyle}" />
+            <TextBlock Style="{StaticResource HeaderTextStyle}" Text="Page 1." HorizontalAlignment="Center"/>
+            <TextBlock x:Name="RandomGuid" Style="{StaticResource BodyTextStyle}" Margin="0,16,0,0" FontSize="24" HorizontalAlignment="Center"/>
         </StackPanel>
     </Grid>
 </Page>
