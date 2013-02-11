@@ -12,6 +12,7 @@ namespace ReactiveUI.Mobile
         {
 #if WP8
             RxApp.Register(typeof(WP8SuspensionHost), typeof (ISuspensionHost));
+            RxApp.Register(typeof(PhoneServiceStateDriver), typeof (ISuspensionDriver));
 #elif WINRT
             RxApp.Register(typeof(WinRTSuspensionHost), typeof (ISuspensionHost));
 #endif
