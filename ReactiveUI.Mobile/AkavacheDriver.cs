@@ -12,8 +12,7 @@ namespace ReactiveUI.Mobile
         public AkavacheDriver(string applicationName)
         {
             BlobCache.ApplicationName = applicationName;
-            BlobCache.SerializerSettings = new JsonSerializerSettings()
-            {
+            BlobCache.SerializerSettings = new JsonSerializerSettings() {
                 ObjectCreationHandling = ObjectCreationHandling.Replace,
                 ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
                 TypeNameHandling = TypeNameHandling.All,
@@ -22,7 +21,7 @@ namespace ReactiveUI.Mobile
 
         public IObservable<T> LoadState<T>() where T : class, IApplicationRootState
         {
-            return BlobCache.UserAccount.GetObjectAsync<T>("__AppState");;;;
+            return BlobCache.UserAccount.GetObjectAsync<T>("__AppState");
         }
 
         public IObservable<Unit> SaveState<T>(T state) where T : class, IApplicationRootState
