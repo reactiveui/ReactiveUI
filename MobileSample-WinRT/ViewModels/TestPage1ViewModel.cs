@@ -11,6 +11,7 @@ namespace MobileSample_WinRT.ViewModels
         public string UrlPathSegment { get { return "test1"; } }
         public IScreen HostScreen { get; private set; }
 
+        [DataMember]
         Guid _RandomGuid;
         public Guid RandomGuid {
             get { return _RandomGuid; }
