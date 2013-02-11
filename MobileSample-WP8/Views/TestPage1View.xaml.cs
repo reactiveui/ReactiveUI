@@ -17,6 +17,8 @@ namespace MobileSample_WP8.Views
         public TestPage1View()
         {
             InitializeComponent();
+
+            this.OneWayBind(ViewModel, x => x.RandomGuid, x => x.RandomGuid.Text);
         }
 
         public TestPage1ViewModel ViewModel {
