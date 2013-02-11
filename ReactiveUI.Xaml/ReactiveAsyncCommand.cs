@@ -114,7 +114,7 @@ namespace ReactiveUI.Xaml
             });
 
             if (canExecute != null) {
-                canExecute.Subscribe(_canExecuteSubject.OnNext, _exSubject.OnNext);
+                _inner = canExecute.Subscribe(_canExecuteSubject.OnNext, _exSubject.OnNext);
             }
 
             _maximumConcurrent = maximumConcurrent;
