@@ -15,6 +15,7 @@ namespace ReactiveUI.Mobile
             RxApp.Register(typeof(PhoneServiceStateDriver), typeof (ISuspensionDriver));
 #elif WINRT
             RxApp.Register(typeof(WinRTSuspensionHost), typeof (ISuspensionHost));
+            RxApp.Register(typeof(WinRTAppDataDriver), typeof (ISuspensionDriver));
 #endif
         }
     }

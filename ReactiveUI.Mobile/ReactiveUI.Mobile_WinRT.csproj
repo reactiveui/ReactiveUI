@@ -105,6 +105,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ServiceLocationRegistration.cs" />
     <Compile Include="SuspensionHost.cs" />
+    <Compile Include="WinRTAppDataDriver.cs" />
     <Compile Include="WinRTAutoSuspendApplication.cs" />
   </ItemGroup>
   <ItemGroup>
