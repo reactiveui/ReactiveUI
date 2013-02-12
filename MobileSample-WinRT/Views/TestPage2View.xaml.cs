@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using MobileSample_WinRT.ViewModels;
 using ReactiveUI;
-using ReactiveUI.Xaml;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI.Xaml;
@@ -19,26 +18,24 @@ using Windows.UI.Xaml.Navigation;
 
 namespace MobileSample_WinRT.Views
 {
-    public sealed partial class TestPage1View : Page, IViewFor<TestPage1ViewModel>
+    public sealed partial class TestPage2View : Page, IViewFor<TestPage2ViewModel>
     {
-        public TestPage1View()
+        public TestPage2View()
         {
             this.InitializeComponent();
             this.OneWayBind(ViewModel, x => x.RandomGuid, x => x.RandomGuid.Text);
-            this.BindCommand(ViewModel, x => x.NavPage2, x => x.NavPage2);
-            this.BindCommand(ViewModel, x => x.NavPage3, x => x.NavPage3);
         }
 
-        public TestPage1ViewModel ViewModel {
-            get { return (TestPage1ViewModel)GetValue(ViewModelProperty); }
+        public TestPage2ViewModel ViewModel {
+            get { return (TestPage2ViewModel)GetValue(ViewModelProperty); }
             set { SetValue(ViewModelProperty, value); }
         }
         public static readonly DependencyProperty ViewModelProperty =
-            DependencyProperty.Register("ViewModel", typeof(TestPage1ViewModel), typeof(TestPage1View), new PropertyMetadata(null));
+            DependencyProperty.Register("ViewModel", typeof(TestPage2ViewModel), typeof(TestPage2View), new PropertyMetadata(null));
 
         object IViewFor.ViewModel {
             get { return ViewModel; }
-            set { ViewModel = (TestPage1ViewModel)value; }
+            set { ViewModel = (TestPage2ViewModel)value; }
         }
     }
 }
