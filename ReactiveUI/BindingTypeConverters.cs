@@ -133,7 +133,11 @@ namespace ReactiveUI
 
             try {
                 // TODO: This should use conversionHint to determine whether this is locale-aware or not
-                result = converter.ConvertTo(from, toType);
+                if(fromType==typeof(string)){
+                    result = converter.ConvertFrom(from);
+                }else{
+                    result = converter.ConvertTo(from, toType);
+                } 
                 return true;
             } catch (FormatException) {
                 result = null;

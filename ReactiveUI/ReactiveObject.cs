@@ -23,9 +23,6 @@ namespace ReactiveUI
     [DataContract]
     public class ReactiveObject : IReactiveNotifyPropertyChanged
     {
-        [field: IgnoreDataMember]
-        bool rxObjectsSetup = false;
-
         [field:IgnoreDataMember]
         public event PropertyChangingEventHandler PropertyChanging;
 
@@ -80,14 +77,10 @@ namespace ReactiveUI
 
         void setupRxObj()
         {
-            if (rxObjectsSetup) return;
-
             changingSubject = new Subject<IObservedChange<object, object>>();
             changedSubject = new Subject<IObservedChange<object, object>>();
             allPublicProperties = new Lazy<PropertyInfo[]>(() =>
                 GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance).ToArray());
-
-            rxObjectsSetup = true;
         }
 
         /// <summary>

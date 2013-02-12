@@ -17,8 +17,6 @@ namespace ReactiveUI.Routing
     [DataContract]
     public class RoutingState : ReactiveObject, IRoutingState
     {
-        [field: IgnoreDataMember]
-        bool rxObjectsSetup = false;
         [IgnoreDataMember] ReactiveCollection<IRoutableViewModel> _NavigationStack;
 
         /// <summary>
@@ -66,8 +64,6 @@ namespace ReactiveUI.Routing
         void setupRx(StreamingContext sc) { setupRx();  }
         void setupRx()
         {
-            if (rxObjectsSetup) return;
-
             NavigateBack = new ReactiveCommand(
                 NavigationStack.CollectionCountChanged.StartWith(_NavigationStack.Count).Select(x => x > 1));
             NavigateBack.Subscribe(_ =>
@@ -88,8 +84,6 @@ namespace ReactiveUI.Routing
                 NavigationStack.Clear();
                 Navigate.Execute(x);
             });
-
-            rxObjectsSetup = true;
         }
     }
 

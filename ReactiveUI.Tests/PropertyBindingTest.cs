@@ -37,6 +37,13 @@ namespace ReactiveUI.Tests
             set { this.RaiseAndSetIfChanged(x => x.JustADouble, value); }
         }
 
+        decimal _JustADecimal;
+        public decimal JustADecimal
+        {
+            get { return _JustADecimal; }
+            set { this.RaiseAndSetIfChanged(value); }
+        }
+
         public double? _NullableDouble;
         public double? NullableDouble {
             get { return _NullableDouble; }
@@ -151,6 +158,23 @@ namespace ReactiveUI.Tests
 
             Assert.Equal(0, vm.Property2);
             Assert.NotEqual("0", view.SomeTextBox.Text);
+
+            {
+                vm.JustADecimal = 17.2m;
+                var disp1 = fixture.Bind(vm, view, x => x.JustADecimal, x => x.SomeTextBox.Text, (IObservable<Unit>)null, null);
+
+                Assert.Equal(vm.JustADecimal.ToString(), view.SomeTextBox.Text);
+                Assert.Equal(17.2m, vm.JustADecimal );
+
+                view.SomeTextBox.Text = 42.3m.ToString();
+                Assert.Equal(42.3m, vm.JustADecimal );
+
+                disp1.Dispose();
+                vm.JustADecimal = 0;
+
+                Assert.Equal(0, vm.JustADecimal);
+                Assert.NotEqual("0", view.SomeTextBox.Text);
+            }
         }
 
         [Fact]
