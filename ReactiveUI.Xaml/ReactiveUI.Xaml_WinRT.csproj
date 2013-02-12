@@ -45,6 +45,7 @@
     <Compile Include="ReactiveCommand.cs" />
     <Compile Include="SampleDataBinder.cs" />
     <Compile Include="ServiceLocationRegistration.cs" />
+    <Compile Include="WaitForDispatcherScheduler.cs" />
     <Compile Include="XamlDefaultPropertyBinding.cs" />
   </ItemGroup>
   <ItemGroup>
