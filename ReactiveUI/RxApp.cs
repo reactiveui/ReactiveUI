@@ -286,6 +286,8 @@ namespace ReactiveUI
 
         public static object GetService(Type type, string key = null)
         {
+            if (_getService != null) goto callSl;
+
             lock (_preregisteredTypes) {
                 if (_preregisteredTypes.Count == 0) goto callSl;
 
@@ -307,6 +309,8 @@ namespace ReactiveUI
 
         public static IEnumerable<object> GetAllServices(Type type, string key = null)
         {
+            if (_getAllServices != null) goto callSl;
+
             lock (_preregisteredTypes) {
                 if (_preregisteredTypes.Count == 0) goto callSl;
 
@@ -318,7 +322,7 @@ namespace ReactiveUI
         callSl:
             var getAllServices = _getAllServices ??
                 ((_,__) => { throw new Exception("You need to call RxApp.ConfigureServiceLocator to set up service location"); });
-            return getAllServices(type, key).ToArray();
+            return (getAllServices(type, key) ?? Enumerable.Empty<object>()).ToArray();
         }
 
         static readonly Dictionary<Tuple<Type, string>, List<Type>> _preregisteredTypes = new Dictionary<Tuple<Type, string>, List<Type>>();
