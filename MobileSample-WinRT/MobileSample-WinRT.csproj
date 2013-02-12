@@ -117,7 +117,15 @@
     <Compile Include="Common\RichTextColumns.cs" />
     <Compile Include="Common\SuspensionManager.cs" />
     <Compile Include="ViewModels\AppBootstrapper.cs" />
+    <Compile Include="ViewModels\TestPage2ViewModel.cs" />
+    <Compile Include="ViewModels\TestPage3ViewModel.cs" />
     <Compile Include="ViewModels\TestPage1ViewModel.cs" />
+    <Compile Include="Views\TestPage3View.xaml.cs">
+      <DependentUpon>TestPage3View.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\TestPage2View.xaml.cs">
+      <DependentUpon>TestPage2View.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\TestPage1View.xaml.cs">
       <DependentUpon>TestPage1View.xaml</DependentUpon>
     </Compile>
@@ -150,6 +158,14 @@
     <Page Include="MainPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\TestPage3View.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\TestPage2View.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\TestPage1View.xaml">
       <SubType>Designer</SubType>
