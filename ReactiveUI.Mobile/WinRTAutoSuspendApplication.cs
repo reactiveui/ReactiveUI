@@ -44,8 +44,6 @@ namespace ReactiveUI.Mobile
             }
         }
 
-
-
         protected AutoSuspendApplication()
         {
             var host = new SuspensionHost();
