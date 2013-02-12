@@ -125,6 +125,7 @@
     <Compile Include="TransitioningContentControl.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="WaitForDispatcherScheduler.cs" />
     <Compile Include="XamlDefaultPropertyBinding.cs" />
   </ItemGroup>
   <ItemGroup>
