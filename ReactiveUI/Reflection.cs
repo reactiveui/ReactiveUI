@@ -332,7 +332,7 @@ namespace ReactiveUI
                         return Enumerable.Empty<Type>();
                     }
                 })
-                .Where(x => x.FullName.Equals(type, StringComparison.InvariantCulture))
+                .Where(x => x.AssemblyQualifiedName.Equals(type, StringComparison.InvariantCulture))
                 .FirstOrDefault();
     #endif
         }, 20);
