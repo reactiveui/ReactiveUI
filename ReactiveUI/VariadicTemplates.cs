@@ -771,4 +771,68 @@ namespace ReactiveUI
                     }
 
         }
+
+    public static class WhenAnyObservableMixin
+    {
+        public static IObservable<TRet> WhenAnyObservable<TSender, TRet>(this TSender This, Expression<Func<TSender, IObservable<TRet>>> obs1)
+        {
+            return This.WhenAny(obs1, x => x.Value).Merge();
+        }
+
+                                	public static IObservable<TRet> WhenAnyObservable<TSender, TRet>(this TSender This, Expression<Func<TSender, IObservable<TRet>>> obs1, Expression<Func<TSender, IObservable<TRet>>> obs2)
+        {
+            return This.WhenAny(obs1, obs2, (o1, o2) => new[] {o1.Value, o2.Value})
+                .SelectMany(x => x.Merge());
+        }
+                                	public static IObservable<TRet> WhenAnyObservable<TSender, TRet>(this TSender This, Expression<Func<TSender, IObservable<TRet>>> obs1, Expression<Func<TSender, IObservable<TRet>>> obs2, Expression<Func<TSender, IObservable<TRet>>> obs3)
+        {
+            return This.WhenAny(obs1, obs2, obs3, (o1, o2, o3) => new[] {o1.Value, o2.Value, o3.Value})
+                .SelectMany(x => x.Merge());
+        }
+                                	public static IObservable<TRet> WhenAnyObservable<TSender, TRet>(this TSender This, Expression<Func<TSender, IObservable<TRet>>> obs1, Expression<Func<TSender, IObservable<TRet>>> obs2, Expression<Func<TSender, IObservable<TRet>>> obs3, Expression<Func<TSender, IObservable<TRet>>> obs4)
+        {
+            return This.WhenAny(obs1, obs2, obs3, obs4, (o1, o2, o3, o4) => new[] {o1.Value, o2.Value, o3.Value, o4.Value})
+                .SelectMany(x => x.Merge());
+        }
+                                	public static IObservable<TRet> WhenAnyObservable<TSender, TRet>(this TSender This, Expression<Func<TSender, IObservable<TRet>>> obs1, Expression<Func<TSender, IObservable<TRet>>> obs2, Expression<Func<TSender, IObservable<TRet>>> obs3, Expression<Func<TSender, IObservable<TRet>>> obs4, Expression<Func<TSender, IObservable<TRet>>> obs5)
+        {
+            return This.WhenAny(obs1, obs2, obs3, obs4, obs5, (o1, o2, o3, o4, o5) => new[] {o1.Value, o2.Value, o3.Value, o4.Value, o5.Value})
+                .SelectMany(x => x.Merge());
+        }
+                                	public static IObservable<TRet> WhenAnyObservable<TSender, TRet>(this TSender This, Expression<Func<TSender, IObservable<TRet>>> obs1, Expression<Func<TSender, IObservable<TRet>>> obs2, Expression<Func<TSender, IObservable<TRet>>> obs3, Expression<Func<TSender, IObservable<TRet>>> obs4, Expression<Func<TSender, IObservable<TRet>>> obs5, Expression<Func<TSender, IObservable<TRet>>> obs6)
+        {
+            return This.WhenAny(obs1, obs2, obs3, obs4, obs5, obs6, (o1, o2, o3, o4, o5, o6) => new[] {o1.Value, o2.Value, o3.Value, o4.Value, o5.Value, o6.Value})
+                .SelectMany(x => x.Merge());
+        }
+                                	public static IObservable<TRet> WhenAnyObservable<TSender, TRet>(this TSender This, Expression<Func<TSender, IObservable<TRet>>> obs1, Expression<Func<TSender, IObservable<TRet>>> obs2, Expression<Func<TSender, IObservable<TRet>>> obs3, Expression<Func<TSender, IObservable<TRet>>> obs4, Expression<Func<TSender, IObservable<TRet>>> obs5, Expression<Func<TSender, IObservable<TRet>>> obs6, Expression<Func<TSender, IObservable<TRet>>> obs7)
+        {
+            return This.WhenAny(obs1, obs2, obs3, obs4, obs5, obs6, obs7, (o1, o2, o3, o4, o5, o6, o7) => new[] {o1.Value, o2.Value, o3.Value, o4.Value, o5.Value, o6.Value, o7.Value})
+                .SelectMany(x => x.Merge());
+        }
+                                	public static IObservable<TRet> WhenAnyObservable<TSender, TRet>(this TSender This, Expression<Func<TSender, IObservable<TRet>>> obs1, Expression<Func<TSender, IObservable<TRet>>> obs2, Expression<Func<TSender, IObservable<TRet>>> obs3, Expression<Func<TSender, IObservable<TRet>>> obs4, Expression<Func<TSender, IObservable<TRet>>> obs5, Expression<Func<TSender, IObservable<TRet>>> obs6, Expression<Func<TSender, IObservable<TRet>>> obs7, Expression<Func<TSender, IObservable<TRet>>> obs8)
+        {
+            return This.WhenAny(obs1, obs2, obs3, obs4, obs5, obs6, obs7, obs8, (o1, o2, o3, o4, o5, o6, o7, o8) => new[] {o1.Value, o2.Value, o3.Value, o4.Value, o5.Value, o6.Value, o7.Value, o8.Value})
+                .SelectMany(x => x.Merge());
+        }
+                                	public static IObservable<TRet> WhenAnyObservable<TSender, TRet>(this TSender This, Expression<Func<TSender, IObservable<TRet>>> obs1, Expression<Func<TSender, IObservable<TRet>>> obs2, Expression<Func<TSender, IObservable<TRet>>> obs3, Expression<Func<TSender, IObservable<TRet>>> obs4, Expression<Func<TSender, IObservable<TRet>>> obs5, Expression<Func<TSender, IObservable<TRet>>> obs6, Expression<Func<TSender, IObservable<TRet>>> obs7, Expression<Func<TSender, IObservable<TRet>>> obs8, Expression<Func<TSender, IObservable<TRet>>> obs9)
+        {
+            return This.WhenAny(obs1, obs2, obs3, obs4, obs5, obs6, obs7, obs8, obs9, (o1, o2, o3, o4, o5, o6, o7, o8, o9) => new[] {o1.Value, o2.Value, o3.Value, o4.Value, o5.Value, o6.Value, o7.Value, o8.Value, o9.Value})
+                .SelectMany(x => x.Merge());
+        }
+                                	public static IObservable<TRet> WhenAnyObservable<TSender, TRet>(this TSender This, Expression<Func<TSender, IObservable<TRet>>> obs1, Expression<Func<TSender, IObservable<TRet>>> obs2, Expression<Func<TSender, IObservable<TRet>>> obs3, Expression<Func<TSender, IObservable<TRet>>> obs4, Expression<Func<TSender, IObservable<TRet>>> obs5, Expression<Func<TSender, IObservable<TRet>>> obs6, Expression<Func<TSender, IObservable<TRet>>> obs7, Expression<Func<TSender, IObservable<TRet>>> obs8, Expression<Func<TSender, IObservable<TRet>>> obs9, Expression<Func<TSender, IObservable<TRet>>> obs10)
+        {
+            return This.WhenAny(obs1, obs2, obs3, obs4, obs5, obs6, obs7, obs8, obs9, obs10, (o1, o2, o3, o4, o5, o6, o7, o8, o9, o10) => new[] {o1.Value, o2.Value, o3.Value, o4.Value, o5.Value, o6.Value, o7.Value, o8.Value, o9.Value, o10.Value})
+                .SelectMany(x => x.Merge());
+        }
+                                	public static IObservable<TRet> WhenAnyObservable<TSender, TRet>(this TSender This, Expression<Func<TSender, IObservable<TRet>>> obs1, Expression<Func<TSender, IObservable<TRet>>> obs2, Expression<Func<TSender, IObservable<TRet>>> obs3, Expression<Func<TSender, IObservable<TRet>>> obs4, Expression<Func<TSender, IObservable<TRet>>> obs5, Expression<Func<TSender, IObservable<TRet>>> obs6, Expression<Func<TSender, IObservable<TRet>>> obs7, Expression<Func<TSender, IObservable<TRet>>> obs8, Expression<Func<TSender, IObservable<TRet>>> obs9, Expression<Func<TSender, IObservable<TRet>>> obs10, Expression<Func<TSender, IObservable<TRet>>> obs11)
+        {
+            return This.WhenAny(obs1, obs2, obs3, obs4, obs5, obs6, obs7, obs8, obs9, obs10, obs11, (o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11) => new[] {o1.Value, o2.Value, o3.Value, o4.Value, o5.Value, o6.Value, o7.Value, o8.Value, o9.Value, o10.Value, o11.Value})
+                .SelectMany(x => x.Merge());
+        }
+                                	public static IObservable<TRet> WhenAnyObservable<TSender, TRet>(this TSender This, Expression<Func<TSender, IObservable<TRet>>> obs1, Expression<Func<TSender, IObservable<TRet>>> obs2, Expression<Func<TSender, IObservable<TRet>>> obs3, Expression<Func<TSender, IObservable<TRet>>> obs4, Expression<Func<TSender, IObservable<TRet>>> obs5, Expression<Func<TSender, IObservable<TRet>>> obs6, Expression<Func<TSender, IObservable<TRet>>> obs7, Expression<Func<TSender, IObservable<TRet>>> obs8, Expression<Func<TSender, IObservable<TRet>>> obs9, Expression<Func<TSender, IObservable<TRet>>> obs10, Expression<Func<TSender, IObservable<TRet>>> obs11, Expression<Func<TSender, IObservable<TRet>>> obs12)
+        {
+            return This.WhenAny(obs1, obs2, obs3, obs4, obs5, obs6, obs7, obs8, obs9, obs10, obs11, obs12, (o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12) => new[] {o1.Value, o2.Value, o3.Value, o4.Value, o5.Value, o6.Value, o7.Value, o8.Value, o9.Value, o10.Value, o11.Value, o12.Value})
+                .SelectMany(x => x.Merge());
+        }
+            }
 }
