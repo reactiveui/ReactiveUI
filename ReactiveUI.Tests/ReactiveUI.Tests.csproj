@@ -133,7 +133,6 @@
     <Compile Include="RxAppTest.cs" />
     <Compile Include="RxRouting.cs" />
     <Compile Include="Utility.cs" />
-    <Compile Include="WhenAnyObservableTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ReactiveUI.Routing\ReactiveUI.Routing.csproj">
