@@ -141,6 +141,23 @@ namespace ReactiveUI
                 result = null;
                 return false;
             }
+            catch (Exception e)
+            {
+                // Errors from ConvertFrom end up here but wrapped in 
+                // outer exception. Add more types here as required.
+                // IndexOutOfRangeException is given when trying to
+                // convert empty strings with some/all? converters
+                if (e.InnerException is IndexOutOfRangeException ||
+                    e.InnerException is FormatException)
+                {
+                    result = null;
+                    return false;
+                }
+                else
+                {
+                    throw;
+                }
+            }
         }
     }
 #endif
