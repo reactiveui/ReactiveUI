@@ -175,7 +175,7 @@ namespace ReactiveUI
 
         public static PropertyExtraInfo[] CreateFromType(Type type)
         {
-            return type.GetProperties()
+            return type.GetProperties(BindingFlags.Instance | BindingFlags.Public)
                 .Select(x => CreateFromTypeAndName(type, x.Name, true))
                 .Where(x => x != null)
                 .ToArray();
