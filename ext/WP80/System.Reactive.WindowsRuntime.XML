@@ -1,0 +1,312 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>System.Reactive.WindowsRuntime</name>
+    </assembly>
+    <members>
+        <member name="T:System.Reactive.IEventPatternSource`2">
+            <summary>
+            Represents a data stream signaling its elements by means of an event.
+            </summary>
+            <typeparam name="TSender">Sender type.</typeparam>
+            <typeparam name="TEventArgs">Event arguments type.</typeparam>
+        </member>
+        <member name="E:System.Reactive.IEventPatternSource`2.OnNext">
+            <summary>
+            Event signaling the next element in the data stream.
+            </summary>
+        </member>
+        <member name="T:System.Reactive.Windows.Foundation.AsyncInfoObservableExtensions">
+            <summary>
+            Provides conversions from Windows Runtime asynchronous actions and operations to observable sequences.
+            </summary>
+        </member>
+        <member name="M:System.Reactive.Windows.Foundation.AsyncInfoObservableExtensions.ToObservable(Windows.Foundation.IAsyncAction)">
+            <summary>
+            Converts a Windows Runtime asynchronous action to an observable sequence.
+            Each observer subscribed to the resulting observable sequence will be notified about the action's successful or exceptional completion.
+            </summary>
+            <param name="source">Asynchronous action to convert.</param>
+            <returns>An observable sequence that produces a unit value when the asynchronous action completes, or propagates the exception produced by the asynchronous action.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="source"/> is null.</exception>
+        </member>
+        <member name="M:System.Reactive.Windows.Foundation.AsyncInfoObservableExtensions.ToObservable``1(Windows.Foundation.IAsyncActionWithProgress{``0})">
+            <summary>
+            Converts a Windows Runtime asynchronous action to an observable sequence, ignoring its progress notifications.
+            Each observer subscribed to the resulting observable sequence will be notified about the action's successful or exceptional completion.
+            </summary>
+            <typeparam name="TProgress">The type of the reported progress objects, which get ignored by this conversion.</typeparam>
+            <param name="source">Asynchronous action to convert.</param>
+            <returns>An observable sequence that produces a unit value when the asynchronous action completes, or propagates the exception produced by the asynchronous action.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="source"/> is null.</exception>
+        </member>
+        <member name="M:System.Reactive.Windows.Foundation.AsyncInfoObservableExtensions.ToObservable``1(Windows.Foundation.IAsyncActionWithProgress{``0},System.IProgress{``0})">
+            <summary>
+            Converts a Windows Runtime asynchronous action to an observable sequence, reporting its progress through the supplied progress object.
+            Each observer subscribed to the resulting observable sequence will be notified about the action's successful or exceptional completion.
+            </summary>
+            <typeparam name="TProgress">The type of the reported progress objects.</typeparam>
+            <param name="source">Asynchronous action to convert.</param>
+            <param name="progress">Progress object to receive progress notifications on.</param>
+            <returns>An observable sequence that produces a unit value when the asynchronous action completes, or propagates the exception produced by the asynchronous action.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="source"/> or <paramref name="progress"/> is null.</exception>
+        </member>
+        <member name="M:System.Reactive.Windows.Foundation.AsyncInfoObservableExtensions.ToObservableProgress``1(Windows.Foundation.IAsyncActionWithProgress{``0})">
+            <summary>
+            Converts a Windows Runtime asynchronous action to an observable sequence reporting its progress.
+            Each observer subscribed to the resulting observable sequence will be notified about the action's succesful or exceptional completion.
+            </summary>
+            <typeparam name="TProgress">The type of the reported progress objects.</typeparam>
+            <param name="source">Asynchronous action to convert.</param>
+            <returns>An observable sequence that produces progress values from the asynchronous action and notifies observers about the action's completion.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="source"/> is null.</exception>
+        </member>
+        <member name="M:System.Reactive.Windows.Foundation.AsyncInfoObservableExtensions.ToObservable``1(Windows.Foundation.IAsyncOperation{``0})">
+            <summary>
+            Converts a Windows Runtime asynchronous operation to an observable sequence reporting its result.
+            Each observer subscribed to the resulting observable sequence will be notified about the operation's single result and its successful exceptional completion.
+            </summary>
+            <typeparam name="TResult">The type of the asynchronous operation's result.</typeparam>
+            <param name="source">Asynchronous operation to convert.</param>
+            <returns>An observable sequence that notifies observers about the asynchronous operation's result value and completion.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="source"/> is null.</exception>
+        </member>
+        <member name="M:System.Reactive.Windows.Foundation.AsyncInfoObservableExtensions.ToObservable``2(Windows.Foundation.IAsyncOperationWithProgress{``0,``1})">
+            <summary>
+            Converts a Windows Runtime asynchronous operation to an observable sequence reporting its result but ignoring its progress notifications.
+            Each observer subscribed to the resulting observable sequence will be notified about the operations's single result and its successful or exceptional completion.
+            </summary>
+            <typeparam name="TResult">The type of the asynchronous operation's result.</typeparam>
+            <typeparam name="TProgress">The type of the reported progress objects, which get ignored by this conversion.</typeparam>
+            <param name="source">Asynchronous action to convert.</param>
+            <returns>An observable sequence that notifies observers about the asynchronous operation's result value and completion.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="source"/> is null.</exception>
+        </member>
+        <member name="M:System.Reactive.Windows.Foundation.AsyncInfoObservableExtensions.ToObservable``2(Windows.Foundation.IAsyncOperationWithProgress{``0,``1},System.IProgress{``1})">
+            <summary>
+            Converts a Windows Runtime asynchronous operation to an observable sequence reporting its result and reporting its progress through the supplied progress object.
+            Each observer subscribed to the resulting observable sequence will be notified about the operations's single result and its successful or exceptional completion.
+            </summary>
+            <typeparam name="TResult">The type of the asynchronous operation's result.</typeparam>
+            <typeparam name="TProgress">The type of the reported progress objects.</typeparam>
+            <param name="source">Asynchronous action to convert.</param>
+            <param name="progress">Progress object to receive progress notifications on.</param>
+            <returns>An observable sequence that notifies observers about the asynchronous operation's result value and completion.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="source"/> or <paramref name="progress"/> is null.</exception>
+        </member>
+        <member name="M:System.Reactive.Windows.Foundation.AsyncInfoObservableExtensions.ToObservableProgress``2(Windows.Foundation.IAsyncOperationWithProgress{``0,``1})">
+            <summary>
+            Converts a Windows Runtime asynchronous operation to an observable sequence reporting its progress but ignoring its result value.
+            Each observer subscribed to the resulting observable sequence will be notified about the action's succesful or exceptional completion.
+            </summary>
+            <typeparam name="TResult">The type of the asynchronous operation's result, which gets ignored by this conversion.</typeparam>
+            <typeparam name="TProgress">The type of the reported progress objects.</typeparam>
+            <param name="source">Asynchronous action to convert.</param>
+            <returns>An observable sequence that produces progress values from the asynchronous operatin and notifies observers about the operations's completion.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="source"/> is null.</exception>
+        </member>
+        <member name="M:System.Reactive.Windows.Foundation.AsyncInfoObservableExtensions.ToObservableMultiple``2(Windows.Foundation.IAsyncOperationWithProgress{``0,``1})">
+            <summary>
+            Converts a Windows Runtime asynchronous operation to an observable sequence by retrieving the operation's results whenever progress is reported and when the operation completes.
+            Each observer subscribed to the resulting observable sequence will be notified about the action's succesful or exceptional completion.
+            </summary>
+            <typeparam name="TResult">The type of the asynchronous operation's result.</typeparam>
+            <typeparam name="TProgress">The type of the reported progress objects, which are used internally in the conversion but aren't exposed.</typeparam>
+            <param name="source">Asynchronous operation to convert.</param>
+            <returns>An observable sequence that notifies observers about the asynchronous operation's (incremental) result value(s) and completion.</returns>
+            <remarks>This conversion can be used with Windows Runtime APIs that support incremental retrieval of results during an asynchronous operation's execution.</remarks>
+            <exception cref="T:System.ArgumentNullException"><paramref name="source"/> is null.</exception>
+        </member>
+        <member name="M:System.Reactive.Windows.Foundation.AsyncInfoObservableExtensions.ToObservableMultiple``2(Windows.Foundation.IAsyncOperationWithProgress{``0,``1},System.IProgress{``1})">
+            <summary>
+            Converts a Windows Runtime asynchronous operation to an observable sequence by retrieving the operation's results whenever progress is reported and when the operation completes. The operation's progress is reported through the supplied progress object.
+            Each observer subscribed to the resulting observable sequence will be notified about the action's succesful or exceptional completion.
+            </summary>
+            <typeparam name="TResult">The type of the asynchronous operation's result.</typeparam>
+            <typeparam name="TProgress">The type of the reported progress objects.</typeparam>
+            <param name="source">Asynchronous operation to convert.</param>
+            <param name="progress">Progress object to receive progress notifications on.</param>
+            <returns>An observable sequence that notifies observers about the asynchronous operation's (incremental) result value(s) and completion.</returns>
+            <remarks>This conversion can be used with Windows Runtime APIs that support incremental retrieval of results during an asynchronous operation's execution.</remarks>
+            <exception cref="T:System.ArgumentNullException"><paramref name="source"/> or <paramref name="progress"/> is null.</exception>
+        </member>
+        <member name="T:System.Reactive.Linq.AsyncInfoObservable">
+            <summary>
+            Provides a set of extension methods to expose observable sequences as Windows Runtime asynchronous actions and operations.
+            </summary>
+        </member>
+        <member name="M:System.Reactive.Linq.AsyncInfoObservable.ToAsyncAction``1(System.IObservable{``0})">
+            <summary>
+            Creates a Windows Runtime asynchronous action that represents the completion of the observable sequence.
+            Upon cancellation of the asynchronous action, the subscription to the source sequence will be disposed.
+            </summary>
+            <typeparam name="TSource">The type of the elements in the source sequence.</typeparam>
+            <param name="source">Source sequence to expose as an asynchronous action.</param>
+            <returns>Windows Runtime asynchronous action object representing the completion of the observable sequence.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="source"/> is null.</exception>
+        </member>
+        <member name="M:System.Reactive.Linq.AsyncInfoObservable.ToAsyncActionWithProgress``1(System.IObservable{``0})">
+            <summary>
+            Creates a Windows Runtime asynchronous action that represents the completion of the observable sequence, reporting incremental progress for each element produced by the sequence.
+            Upon cancellation of the asynchronous action, the subscription to the source sequence will be disposed.
+            </summary>
+            <typeparam name="TSource">The type of the elements in the source sequence.</typeparam>
+            <param name="source">Source sequence to expose as an asynchronous action.</param>
+            <returns>Windows Runtime asynchronous action object representing the completion of the observable sequence, reporting incremental progress for each source sequence element.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="source"/> is null.</exception>
+        </member>
+        <member name="M:System.Reactive.Linq.AsyncInfoObservable.ToAsyncActionWithProgress``2(System.IObservable{``0},System.Func{System.IObservable{``0},System.IObservable{``1}})">
+            <summary>
+            Creates a Windows Runtime asynchronous action that represents the completion of the observable sequence, using a selector function to map the source sequence on a progress reporting sequence.
+            Upon cancellation of the asynchronous action, the subscription to the source sequence will be disposed.
+            </summary>
+            <typeparam name="TSource">The type of the elements in the source sequence.</typeparam>
+            <typeparam name="TProgress">The type of the elements in the progress sequence.</typeparam>
+            <param name="source">Source sequence to expose as an asynchronous action and to compute a progress sequence that gets reported through the asynchronous action.</param>
+            <param name="progressSelector">Selector function to map the source sequence on a progress reporting sequence.</param>
+            <returns>Windows Runtime asynchronous action object representing the completion of the result sequence, reporting progress computed through the progress sequence.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="source"/> or <paramref name="progressSelector"/> is null.</exception>
+        </member>
+        <member name="M:System.Reactive.Linq.AsyncInfoObservable.ToAsyncOperation``1(System.IObservable{``0})">
+            <summary>
+            Creates a Windows Runtime asynchronous operation that returns the last element of the observable sequence.
+            Upon cancellation of the asynchronous operation, the subscription to the source sequence will be disposed.
+            </summary>
+            <typeparam name="TSource">The type of the elements in the source sequence.</typeparam>
+            <param name="source">Source sequence to expose as an asynchronous operation.</param>
+            <returns>Windows Runtime asynchronous operation object that returns the last element of the observable sequence.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="source"/> is null.</exception>
+        </member>
+        <member name="M:System.Reactive.Linq.AsyncInfoObservable.ToAsyncOperationWithProgress``1(System.IObservable{``0})">
+            <summary>
+            Creates a Windows Runtime asynchronous operation that returns the last element of the observable sequence, reporting incremental progress for each element produced by the sequence.
+            Upon cancellation of the asynchronous operation, the subscription to the source sequence will be disposed.
+            </summary>
+            <typeparam name="TSource">The type of the elements in the source sequence.</typeparam>
+            <param name="source">Source sequence to expose as an asynchronous operation.</param>
+            <returns>Windows Runtime asynchronous operation object that returns the last element of the observable sequence, reporting incremental progress for each source sequence element.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="source"/> is null.</exception>
+        </member>
+        <member name="M:System.Reactive.Linq.AsyncInfoObservable.ToAsyncOperationWithProgress``2(System.IObservable{``0},System.Func{System.IObservable{``0},System.IObservable{``1}})">
+            <summary>
+            Creates a Windows Runtime asynchronous operation that returns the last element of the result sequence, reporting incremental progress for each element produced by the source sequence.
+            Upon cancellation of the asynchronous operation, the subscription to the source sequence will be disposed.
+            </summary>
+            <typeparam name="TSource">The type of the elements in the source sequence.</typeparam>
+            <typeparam name="TResult">The type of the elements in the result sequence.</typeparam>
+            <param name="source">Source sequence to compute a result sequence that gets exposed as an asynchronous operation.</param>
+            <param name="resultSelector">Selector function to map the source sequence on a result sequence.</param>
+            <returns>Windows Runtime asynchronous operation object that returns the last element of the result sequence, reporting incremental progress for each source sequence element.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="source"/> or <paramref name="resultSelector"/> is null.</exception>
+        </member>
+        <member name="M:System.Reactive.Linq.AsyncInfoObservable.ToAsyncOperationWithProgress``3(System.IObservable{``0},System.Func{System.IObservable{``0},System.IObservable{``1}},System.Func{System.IObservable{``0},System.IObservable{``2}})">
+            <summary>
+            Creates a Windows Runtime asynchronous operation that returns the last element of the result sequence, using a selector function to map the source sequence on a progress reporting sequence.
+            Upon cancellation of the asynchronous operation, the subscription to the source sequence will be disposed.
+            </summary>
+            <typeparam name="TSource">The type of the elements in the source sequence.</typeparam>
+            <typeparam name="TResult">The type of the elements in the result sequence.</typeparam>
+            <typeparam name="TProgress">The type of the elements in the progress sequence.</typeparam>
+            <param name="source">Source sequence to compute a result sequence that gets exposed as an asynchronous operation and a progress sequence that gets reported through the asynchronous operation.</param>
+            <param name="resultSelector">Selector function to map the source sequence on a result sequence.</param>
+            <param name="progressSelector">Selector function to map the source sequence on a progress reporting sequence.</param>
+            <returns>Windows Runtime asynchronous operation object that returns the last element of the result sequence, reporting progress computed through the progress sequence.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="source"/> or <paramref name="resultSelector"/> or <paramref name="progressSelector"/> is null.</exception>
+        </member>
+        <member name="T:System.Reactive.Linq.WindowsObservable">
+            <summary>
+            Provides a set of static methods for importing typed events from Windows Runtime APIs.
+            </summary>
+        </member>
+        <member name="M:System.Reactive.Linq.WindowsObservable.SelectMany``2(System.IObservable{``0},System.Func{``0,Windows.Foundation.IAsyncOperation{``1}})">
+            <summary>
+            Projects each element of an observable sequence to a Windows Runtime asynchronous operation and merges all of the asynchronous operation results into one observable sequence.
+            </summary>
+            <typeparam name="TSource">The type of the elements in the source sequence.</typeparam>
+            <typeparam name="TResult">The type of the result produced by the projected asynchronous operations and the elements in the merged result sequence.</typeparam>
+            <param name="source">An observable sequence of elements to project.</param>
+            <param name="selector">A transform function to apply to each element.</param>
+            <returns>An observable sequence whose elements are the result of the asynchronous operations executed for each element of the input sequence.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="source"/> or <paramref name="selector"/> is null.</exception>
+            <remarks>This overload supports composition of observable sequences and Windows Runtime asynchronous operations, without requiring manual conversion of the asynchronous operations to observable sequences using <see cref="M:System.Reactive.Windows.Foundation.AsyncInfoObservableExtensions.ToObservable``1(Windows.Foundation.IAsyncOperation{``0})"/>.</remarks>
+        </member>
+        <member name="M:System.Reactive.Linq.WindowsObservable.SelectMany``3(System.IObservable{``0},System.Func{``0,Windows.Foundation.IAsyncOperationWithProgress{``1,``2}})">
+            <summary>
+            Projects each element of an observable sequence to a Windows Runtime asynchronous operation and merges all of the asynchronous operation results into one observable sequence.
+            </summary>
+            <typeparam name="TSource">The type of the elements in the source sequence.</typeparam>
+            <typeparam name="TResult">The type of the result produced by the projected asynchronous operations and the elements in the merged result sequence.</typeparam>
+            <typeparam name="TProgress">The type of the reported progress objects, which get ignored by this query operator.</typeparam>
+            <param name="source">An observable sequence of elements to project.</param>
+            <param name="selector">A transform function to apply to each element.</param>
+            <returns>An observable sequence whose elements are the result of the asynchronous operations executed for each element of the input sequence.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="source"/> or <paramref name="selector"/> is null.</exception>
+            <remarks>This overload supports composition of observable sequences and Windows Runtime asynchronous operations, without requiring manual conversion of the asynchronous operations to observable sequences using <see cref="M:System.Reactive.Windows.Foundation.AsyncInfoObservableExtensions.ToObservable``1(Windows.Foundation.IAsyncOperation{``0})"/>.</remarks>
+        </member>
+        <member name="M:System.Reactive.Linq.WindowsObservable.SelectMany``3(System.IObservable{``0},System.Func{``0,Windows.Foundation.IAsyncOperation{``1}},System.Func{``0,``1,``2})">
+            <summary>
+            Projects each element of an observable sequence to a Windows Runtime asynchronous operation, invokes the result selector for the source element and the asynchronous operation result, and merges the results into one observable sequence.
+            </summary>
+            <typeparam name="TSource">The type of the elements in the source sequence.</typeparam>
+            <typeparam name="TAsyncOperationResult">The type of the results produced by the projected asynchronous operations.</typeparam>
+            <typeparam name="TResult">The type of the elements in the result sequence, obtained by using the selector to combine source sequence elements with their corresponding intermediate asynchronous operation results.</typeparam>
+            <param name="source">An observable sequence of elements to project.</param>
+            <param name="asyncOperationSelector">A transform function to apply to each element.</param>
+            <param name="resultSelector">A transform function to apply to each element of the intermediate sequence.</param>
+            <returns>An observable sequence whose elements are the result of obtaining an asynchronous operation for each element of the input sequence and then mapping the asynchronous operation's result and its corresponding source element to a result element.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="source"/> or <paramref name="asyncOperationSelector"/> or <paramref name="resultSelector"/> is null.</exception>
+            <remarks>This overload supports using LINQ query comprehension syntax in C# and Visual Basic to compose observable sequences and Windows Runtime asynchronous operations, without requiring manual conversion of the asynchronous operations to observable sequences using <see cref="M:System.Reactive.Windows.Foundation.AsyncInfoObservableExtensions.ToObservable``1(Windows.Foundation.IAsyncOperation{``0})"/>.</remarks>
+        </member>
+        <member name="M:System.Reactive.Linq.WindowsObservable.SelectMany``4(System.IObservable{``0},System.Func{``0,Windows.Foundation.IAsyncOperationWithProgress{``1,``2}},System.Func{``0,``1,``3})">
+            <summary>
+            Projects each element of an observable sequence to a Windows Runtime asynchronous operation, invokes the result selector for the source element and the asynchronous operation result, and merges the results into one observable sequence.
+            </summary>
+            <typeparam name="TSource">The type of the elements in the source sequence.</typeparam>
+            <typeparam name="TAsyncOperationResult">The type of the results produced by the projected asynchronous operations.</typeparam>
+            <typeparam name="TAsyncOperationProgress">The type of the reported progress objects, which get ignored by this query operator.</typeparam>
+            <typeparam name="TResult">The type of the elements in the result sequence, obtained by using the selector to combine source sequence elements with their corresponding intermediate asynchronous operation results.</typeparam>
+            <param name="source">An observable sequence of elements to project.</param>
+            <param name="asyncOperationSelector">A transform function to apply to each element.</param>
+            <param name="resultSelector">A transform function to apply to each element of the intermediate sequence.</param>
+            <returns>An observable sequence whose elements are the result of obtaining an asynchronous operation for each element of the input sequence and then mapping the asynchronous operation's result and its corresponding source element to a result element.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="source"/> or <paramref name="asyncOperationSelector"/> or <paramref name="resultSelector"/> is null.</exception>
+            <remarks>This overload supports using LINQ query comprehension syntax in C# and Visual Basic to compose observable sequences and Windows Runtime asynchronous operations, without requiring manual conversion of the asynchronous operations to observable sequences using <see cref="M:System.Reactive.Windows.Foundation.AsyncInfoObservableExtensions.ToObservable``1(Windows.Foundation.IAsyncOperation{``0})"/>.</remarks>
+        </member>
+        <member name="M:System.Reactive.Linq.WindowsObservable.FromEventPattern``2(System.Action{Windows.Foundation.TypedEventHandler{``0,``1}},System.Action{Windows.Foundation.TypedEventHandler{``0,``1}})">
+            <summary>
+            Converts a typed event, conforming to the standard event pattern, to an observable sequence.
+            </summary>
+            <typeparam name="TSender">The type of the sender that raises the event.</typeparam>
+            <typeparam name="TResult">The type of the event data generated by the event.</typeparam>
+            <param name="addHandler">Action that attaches the given event handler to the underlying .NET event.</param>
+            <param name="removeHandler">Action that detaches the given event handler from the underlying .NET event.</param>
+            <returns>The observable sequence that contains data representations of invocations of the underlying typed event.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="addHandler"/> or <paramref name="removeHandler"/> is null.</exception>
+            <seealso cref="M:System.Reactive.Linq.WindowsObservable.ToEventPattern``2(System.IObservable{System.Reactive.EventPattern{``0,``1}})"/>
+        </member>
+        <member name="M:System.Reactive.Linq.WindowsObservable.FromEventPattern``3(System.Func{Windows.Foundation.TypedEventHandler{``1,``2},``0},System.Action{``0},System.Action{``0})">
+            <summary>
+            Converts a typed event, conforming to the standard event pattern, to an observable sequence.
+            </summary>
+            <typeparam name="TDelegate">The delegate type of the event to be converted.</typeparam>
+            <typeparam name="TSender">The type of the sender that raises the event.</typeparam>
+            <typeparam name="TResult">The type of the event data generated by the event.</typeparam>
+            <param name="conversion">A function used to convert the given event handler to a delegate compatible with the underlying typed event. The resulting delegate is used in calls to the addHandler and removeHandler action parameters.</param>
+            <param name="addHandler">Action that attaches the given event handler to the underlying .NET event.</param>
+            <param name="removeHandler">Action that detaches the given event handler from the underlying .NET event.</param>
+            <returns>The observable sequence that contains data representations of invocations of the underlying typed event.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="conversion"/> or <paramref name="addHandler"/> or <paramref name="removeHandler"/> is null.</exception>
+            <seealso cref="M:System.Reactive.Linq.WindowsObservable.ToEventPattern``2(System.IObservable{System.Reactive.EventPattern{``0,``1}})"/>
+        </member>
+        <member name="M:System.Reactive.Linq.WindowsObservable.ToEventPattern``2(System.IObservable{System.Reactive.EventPattern{``0,``1}})">
+            <summary>
+            Exposes an observable sequence as an object with a typed event.
+            </summary>
+            <typeparam name="TSender">The type of the sender that raises the event.</typeparam>
+            <typeparam name="TEventArgs">The type of the event data generated by the event.</typeparam>
+            <param name="source">Observable source sequence.</param>
+            <returns>The event source object.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="source"/> is null.</exception>
+        </member>
+    </members>
+</doc>
