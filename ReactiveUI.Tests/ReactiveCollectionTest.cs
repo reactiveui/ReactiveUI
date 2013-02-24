@@ -315,6 +315,34 @@ namespace ReactiveUI.Tests
         }
 
         [Fact]
+        public void DerivedCollectionShouldBeSorted()
+        {
+            var input = new[] { "Foo", "Bar", "Baz" };
+            var fixture = new ReactiveCollection<string>(input);
+
+            var output = fixture.CreateDerivedCollection(x => x, orderer: String.CompareOrdinal);
+
+            Assert.Equal(3, output.Count);
+            Assert.True(new[] { "Bar", "Baz", "Foo" }.Zip(output, (expected, actual) => expected == actual).All(x => x));
+
+            fixture.Add("Bamf");
+            Assert.Equal(4, output.Count);
+            Assert.True(new[] { "Bamf", "Bar", "Baz", "Foo" }.Zip(output, (expected, actual) => expected == actual).All(x => x));
+
+            fixture.Add("Eoo");
+            Assert.Equal(5, output.Count);
+            Assert.True(new[] { "Bamf", "Bar", "Baz", "Eoo", "Foo" }.Zip(output, (expected, actual) => expected == actual).All(x => x));
+
+            fixture.Add("Roo");
+            Assert.Equal(6, output.Count);
+            Assert.True(new[] { "Bamf", "Bar", "Baz", "Eoo", "Foo", "Roo" }.Zip(output, (expected, actual) => expected == actual).All(x => x));
+
+            fixture.Add("Bar");
+            Assert.Equal(7, output.Count);
+            Assert.True(new[] { "Bamf", "Bar", "Bar", "Baz", "Eoo", "Foo", "Roo" }.Zip(output, (expected, actual) => expected == actual).All(x => x));
+        }
+
+        [Fact]
         public void AddRangeSmokeTest()
         {
             var fixture = new ReactiveCollection<string>();

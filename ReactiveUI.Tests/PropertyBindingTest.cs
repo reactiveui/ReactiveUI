@@ -37,6 +37,18 @@ namespace ReactiveUI.Tests
             set { this.RaiseAndSetIfChanged(x => x.JustADouble, value); }
         }
 
+        public decimal _JustADecimal;
+        public decimal JustADecimal {
+            get { return _JustADecimal; }
+            set { this.RaiseAndSetIfChanged(x => x.JustADecimal, value); }
+        }
+
+        public int _JustAInt32;
+        public int JustAInt32 {
+            get { return _JustAInt32; }
+            set { this.RaiseAndSetIfChanged(x => x.JustAInt32, value); }
+        }
+
         public double? _NullableDouble;
         public double? NullableDouble {
             get { return _NullableDouble; }
@@ -146,11 +158,49 @@ namespace ReactiveUI.Tests
             view.SomeTextBox.Text = "42";
             Assert.Equal(42, vm.Property2);
 
+            // Bad formatting error
+            view.SomeTextBox.Text = "--";
+            Assert.Equal(42, vm.Property2);
+
             disp.Dispose();
             vm.Property2 = 0;
 
             Assert.Equal(0, vm.Property2);
             Assert.NotEqual("0", view.SomeTextBox.Text);
+
+            vm.JustADecimal = 17.2m;
+            var disp1 = fixture.Bind(vm, view, x => x.JustADecimal, x => x.SomeTextBox.Text, (IObservable<Unit>)null, null);
+
+            Assert.Equal(vm.JustADecimal.ToString(), view.SomeTextBox.Text);
+            Assert.Equal(17.2m, vm.JustADecimal );
+
+            view.SomeTextBox.Text = 42.3m.ToString();
+            Assert.Equal(42.3m, vm.JustADecimal );
+
+            // Bad formatting.
+            view.SomeTextBox.Text = "--";
+            Assert.Equal(42.3m, vm.JustADecimal );
+
+            disp1.Dispose();
+
+            vm.JustADecimal = 0;
+
+            Assert.Equal(0, vm.JustADecimal);
+            Assert.NotEqual("0", view.SomeTextBox.Text);
+
+            // Empty test
+            vm.JustAInt32 = 12;
+            var disp2 = fixture.Bind(vm, view, x => x.JustAInt32, x => x.SomeTextBox.Text, (IObservable<Unit>)null, null);
+
+            view.SomeTextBox.Text = "";
+            Assert.Equal(12, vm.JustAInt32);
+
+            view.SomeTextBox.Text = "1.2";
+
+            Assert.Equal(12, vm.JustAInt32);
+
+            view.SomeTextBox.Text = "13";
+            Assert.Equal(13, vm.JustAInt32);
         }
 
         [Fact]
@@ -251,10 +301,25 @@ namespace ReactiveUI.Tests
             var vm = new PropertyBindViewModel();
             var view = new PropertyBindView() {ViewModel = vm};
 
+            configureDummyServiceLocator();
+
             Assert.Null(view.FakeItemsControl.ItemTemplate);
             view.OneWayBind(vm, x => x.SomeCollectionOfStrings, x => x.FakeItemsControl.ItemsSource);
 
             Assert.NotNull(view.FakeItemsControl.ItemTemplate);
+        }
+
+        void configureDummyServiceLocator()
+        {
+            var types = new Dictionary<Tuple<Type, string>, List<Type>>();
+            RxApp.ConfigureServiceLocator(
+                (t, s) => Activator.CreateInstance(types[Tuple.Create(t, s)].First()),
+                (t, s) => types[Tuple.Create(t, s)].Select(Activator.CreateInstance).ToArray(),
+                (c, t, s) => {
+                    var tuple = Tuple.Create(t, s);
+                    if (!types.ContainsKey(tuple)) types[tuple] = new List<Type>();
+                    types[tuple].Add(c);
+                });
         }
     }
 }

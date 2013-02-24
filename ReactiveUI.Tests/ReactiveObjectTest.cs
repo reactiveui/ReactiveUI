@@ -27,6 +27,14 @@ namespace ReactiveUI.Tests
         }
 
         [DataMember]
+        public List<string> _StackOverflowTrigger;
+        [IgnoreDataMember]
+        public List<string> StackOverflowTrigger {
+            get { return _StackOverflowTrigger; }
+            set { this.RaiseAndSetIfChanged(value.ToList()); }
+        }
+
+        [DataMember]
         public string _UsesExprRaiseSet;
         [IgnoreDataMember]
         public string UsesExprRaiseSet {
@@ -87,10 +95,10 @@ namespace ReactiveUI.Tests
             string json = JSONHelper.Serialize(fixture);
 
             // Should look something like:
-            // {"TestCollection":[],"_IsNotNullString":"Foo","_IsOnlyOneWord":"Baz","_PocoProperty":null,"_UsesExprRaiseSet":null}
-            Assert.True(json.Count(x => x == ',') == 4);
-            Assert.True(json.Count(x => x == ':') == 5);
-            Assert.True(json.Count(x => x == '"') == 14);
+            // "{"TestCollection":[],"_IsNotNullString":"Foo","_IsOnlyOneWord":"Baz","_PocoProperty":null,"_StackOverflowTrigger":null,"_UsesExprRaiseSet":null}"
+            Assert.True(json.Count(x => x == ',') == 5);
+            Assert.True(json.Count(x => x == ':') == 6);
+            Assert.True(json.Count(x => x == '"') == 16);
         }
 
         [Fact]
