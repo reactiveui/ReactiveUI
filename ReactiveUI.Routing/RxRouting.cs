@@ -43,26 +43,28 @@ namespace ReactiveUI.Routing
 
             // IFooBarView that implements IViewFor (or custom ViewModelToViewFunc)
             var typeToFind = ViewModelToViewFunc(viewModel.GetType().AssemblyQualifiedName);
-            try {
-                var type = Reflection.ReallyFindType(typeToFind, true);
+            Type type = Reflection.ReallyFindType(typeToFind, false);
 
+            if (type != null) {
                 var ret = RxApp.GetService(type, key) as IViewFor;
+
                 if (ret != null) return ret;
-            } catch (Exception ex) {
-                LogHost.Default.DebugException("Couldn't instantiate " + typeToFind, ex);
             }
+
+            LogHost.Default.Debug("Couldn't instantiate " + typeToFind);
 
             var viewType = typeof (IViewFor<>);
 
             // IViewFor<IFooBarViewModel>
-            try {
-                var ifn = interfaceifyTypeName(viewModel.GetType().AssemblyQualifiedName);
-                var type = Reflection.ReallyFindType(ifn, true);
-                var ret =  RxApp.GetService(viewType.MakeGenericType(type), key) as IViewFor;
+            var ifn = interfaceifyTypeName(viewModel.GetType().AssemblyQualifiedName);
+            type = Reflection.ReallyFindType(ifn, false);
+
+            if (type != null) {
+                var ret = RxApp.GetService(viewType.MakeGenericType(type), key) as IViewFor;
                 if (ret != null) return ret;
-            } catch (Exception ex) {
-                LogHost.Default.DebugException("Couldn't instantiate View via pure interface type", ex);
             }
+
+            LogHost.Default.Debug("Couldn't instantiate View via pure interface type");
 
             // IViewFor<FooBarViewModel> (the original behavior in RxUI 3.1)
             return (IViewFor) RxApp.GetService(viewType.MakeGenericType(viewModel.GetType()), key);
