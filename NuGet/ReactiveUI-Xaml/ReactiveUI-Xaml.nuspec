@@ -12,7 +12,7 @@
 
 		<dependencies>
 			<dependency id="reactiveui-core" version="[4.4.1]" />
-			<dependency id="Rx-Xaml" version="2.1.30204.0" />
+			<dependency id="Rx-Xaml" version="2.1.30214.0" />
 		</dependencies>
 	</metadata>
 </package>
