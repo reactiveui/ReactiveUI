@@ -30,15 +30,15 @@ namespace ReactiveUI
         public static IObservable<IObservedChange<TSender, TValue>> ObservableForProperty<TSender, TValue>(
                 this TSender This,
                 Expression<Func<TSender, TValue>> property,
-                bool beforeChange = false)
+                bool beforeChange = false,
+                bool skipInitial = true)
         {
-            var propertyNames = new LinkedList<string>(Reflection.ExpressionToPropertyNames(property));
-            var subscriptions = new LinkedList<IDisposable>(propertyNames.Select(x => (IDisposable) null));
-            var ret = new Subject<IObservedChange<TSender, TValue>>();
 
             if (This == null) {
                 throw new ArgumentNullException("Sender");
             }
+
+            var propertyNames = Reflection.ExpressionToPropertyNames(property);
 
             /* x => x.Foo.Bar.Baz;
              * 
@@ -55,22 +55,11 @@ namespace ReactiveUI
              * 	Resubscribe to new Baz, publish to Subject
              */
 
-            subscribeToExpressionChain(
-                This, 
-                buildPropPathFromNodePtr(propertyNames.First),
-                This, 
-                propertyNames.First, 
-                subscriptions.First, 
-                beforeChange, 
-                ret);
-
-            return Observable.Create<IObservedChange<TSender, TValue>>(x => {
-                var disp = ret.Subscribe(x);
-                return () => {
-                    subscriptions.ForEach(y => y.Dispose());
-                    disp.Dispose();
-                };
-            });
+            return SubscribeToExpressionChain<TSender, TValue>(
+                This,
+                propertyNames,
+                beforeChange,
+                skipInitial);
         }
 
         /// <summary>
@@ -89,11 +78,10 @@ namespace ReactiveUI
         public static IObservable<IObservedChange<TSender, object>> ObservableForProperty<TSender>(
                 this TSender This,
                 string[] property,
-                bool beforeChange = false)
+                bool beforeChange = false,
+                bool skipInitial = true)
         {
             var propertyNames = new LinkedList<string>(property);
-            var subscriptions = new LinkedList<IDisposable>(propertyNames.Select(x => (IDisposable) null));
-            var ret = new Subject<IObservedChange<TSender, object>>();
 
             if (This == null) {
                 throw new ArgumentNullException("Sender");
@@ -114,127 +102,75 @@ namespace ReactiveUI
              * 	Resubscribe to new Baz, publish to Subject
              */
 
-            subscribeToExpressionChain(
-                This, 
-                buildPropPathFromNodePtr(propertyNames.First),
-                This, 
-                propertyNames.First, 
-                subscriptions.First, 
-                beforeChange, 
-                ret);
-
-            return Observable.Create<IObservedChange<TSender, object>>(x => {
-                var disp = ret.Subscribe(x);
-                return () => {
-                    subscriptions.ForEach(y => y.Dispose());
-                    disp.Dispose();
-                };
-            });
+            return SubscribeToExpressionChain<TSender, object>(
+                This,
+                propertyNames,
+                beforeChange,
+                skipInitial);
         }
 
 
-        static void subscribeToExpressionChain<TSender, TValue>(
-                TSender origSource,
-                string origPath,
-                object source,
-                LinkedListNode<string> propertyNames, 
-                LinkedListNode<IDisposable> subscriptions, 
-                bool beforeChange,
-                Subject<IObservedChange<TSender, TValue>> subject
-            )
+        static IObservedChange<object, object> observedChangeFor(string propertyName, IObservedChange<object, object> sourceChange)
         {
-            var current = propertyNames;
-            var currentSub = subscriptions;
-            object currentObj = source;
-            ObservedChange<TSender, TValue> obsCh;
+            var p = new ObservedChange<object, object>() { 
+                Sender = sourceChange.Value, 
+                PropertyName = propertyName,
+            };
 
-            while(current.Next != null) {
-                Func<object, object> getter = null;
+            if (sourceChange.Value == null) {
+                return p;
+            }
+            
+            return p.fillInValue();
+        }
 
-                if (currentObj != null) {
-                    getter = Reflection.GetValueFetcherForProperty(currentObj.GetType(), current.Value);
+        static IObservable<IObservedChange<object, object>> nestedObservedChanges(string propertyName, IObservedChange<object, object> sourceChange, bool beforeChange)
+        {
+            // Make sure a change at a root node propogates events down
+            var kicker = observedChangeFor(propertyName, sourceChange);
 
-                    if (getter == null) {
-                        subscriptions.List.Where(x => x != null).ForEach(x => x.Dispose());
-                        throw new ArgumentException(String.Format("Property '{0}' does not exist in expression", current.Value));
-                    }
-
-                    var capture = new {current, currentObj, getter, currentSub};
-
-                    var toDispose = new IDisposable[2];
-
-                    var valGetter = new ObservedChange<object, TValue>() {
-                        Sender = capture.currentObj,
-                        PropertyName = buildPropPathFromNodePtr(capture.current),
-                        Value = default(TValue),
-                    };
-
-                    TValue prevVal = default(TValue);
-                    bool prevValSet = valGetter.TryGetValue(out prevVal);
-
-                    // NB: Some notifyForProperty implementations (notably, 
-                    // DependencyProperties) don't actually support beforeChanged,
-                    // but they need to prevent others from claiming it, since 
-                    // POCOObservableForProperty works with all objects. They 
-                    // do this by returning NULL.
-                    var beforePropChangedObs = notifyForProperty(currentObj, capture.current.Value, true) ?? Observable.Return(default(IObservedChange<object, object>));
-                    toDispose[0] = beforePropChangedObs.Subscribe(x => {
-                        prevValSet = valGetter.TryGetValue(out prevVal);
-                    });
-
-                    toDispose[1] = notifyForProperty(currentObj, capture.current.Value, false).Subscribe(x => {
-                        subscribeToExpressionChain(origSource, origPath, capture.getter(capture.currentObj), capture.current.Next, capture.currentSub.Next, beforeChange, subject);
-
-                        TValue newVal;
-                        if (!valGetter.TryGetValue(out newVal)) {
-                            return;
-                        }
-                        
-                        if (prevValSet && EqualityComparer<TValue>.Default.Equals(prevVal, newVal)) {
-                            return;
-                        }
-
-                        obsCh = new ObservedChange<TSender, TValue>() {
-                            Sender = origSource,
-                            PropertyName = origPath,
-                            Value = default(TValue),
-                        };
-
-                        TValue obsChVal;
-                        if (obsCh.TryGetValue(out obsChVal)) {
-                            obsCh.Value = obsChVal;
-                            subject.OnNext(obsCh);
-                        }
-                    });
-
-                    currentSub.Value = Disposable.Create(() => { toDispose[0].Dispose(); toDispose[1].Dispose(); });
-                }
-
-                current = current.Next;
-                currentSub = currentSub.Next;
-                currentObj = getter != null ? getter(currentObj) : null;
+            // Handle null values in the chain
+            if (sourceChange.Value == null) {
+                return Observable.Return(kicker);
             }
 
-            if (currentSub.Value != null) {
-                currentSub.Value.Dispose();
+            // Handle non null values in the chain
+            return notifyForProperty(sourceChange.Value, propertyName, beforeChange)
+                .Select(x => x.fillInValue())
+                .StartWith(kicker);
+        }
+
+        public static IObservable<IObservedChange<TSender, TValue>> SubscribeToExpressionChain<TSender, TValue> ( 
+            this TSender source,
+            IEnumerable<string> propertyNames, 
+            bool beforeChange = false,
+            bool skipInitial = true)
+        {
+            var path = String.Join(".", propertyNames);
+
+            IObservable<IObservedChange<object, object>> notifier = 
+                Observable.Return((IObservedChange<object, object>)new ObservedChange<object, object>() { Value = source });
+
+            notifier = propertyNames.Aggregate(notifier, 
+                (n, name) => n
+                    .Select(y => nestedObservedChanges(name, y, beforeChange))
+                    .Switch());
+
+            if (skipInitial) {
+                notifier = notifier.Skip(1);
             }
 
-            if (currentObj == null) {
-                return;
-            }
+            notifier = notifier.Where(x => x.Sender != null);
 
-            var propName = current.Value;
-            var finalGetter = Reflection.GetValueFetcherForProperty(currentObj.GetType(), current.Value);
+            var r = notifier
+                .Select(x => x.fillInValue())
+                .Select(x => (IObservedChange<TSender, TValue>) new ObservedChange<TSender, TValue>() {
+                    Sender = source,
+                    PropertyName = path,
+                    Value = (TValue)x.Value,
+                });
 
-            currentSub.Value = notifyForProperty(currentObj, propName, beforeChange).Subscribe(x => {
-                obsCh = new ObservedChange<TSender, TValue>() {
-                    Sender = origSource,
-                    PropertyName = origPath,
-                    Value = (TValue)finalGetter(currentObj),
-                };
-
-                subject.OnNext(obsCh);
-            });
+            return r.DistinctUntilChanged(x=>x.Value);
         }
 
         static readonly MemoizingMRUCache<Tuple<Type, bool>, ICreatesObservableForProperty> notifyFactoryCache =
@@ -261,22 +197,6 @@ namespace ReactiveUI
             
             return result.GetNotificationForProperty(sender, propertyName, beforeChange);
         }
-
-        static string buildPropPathFromNodePtr(LinkedListNode<string> node)
-        {
-            var ret = new StringBuilder();
-            var current = node;
-
-            while(current.Next != null) {
-                ret.Append(current.Value);
-                ret.Append('.');
-                current = current.Next;
-            }
-
-            ret.Append(current.Value);
-            return ret.ToString();
-        }
-
 
         /// <summary>
         /// ObservableForProperty returns an Observable representing the

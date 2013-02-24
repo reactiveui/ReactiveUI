@@ -792,22 +792,32 @@ namespace ReactiveUI
             if (list.Count == 0) {
                 return 0;
             }
+
             if (list.Count == 1) {
                 return orderer(list[0], item) >= 0 ? 1 : 0;
             }
 
+            if (orderer(list[0], item) >= 1) return 0;
+
             // NB: This is the most tart way to do this possible
             int? prevCmp = null;
             int cmp;
-            for(int i=0; i < list.Count; i++) {
-                cmp = orderer(list[i], item);
+
+            for (int i = 0; i < list.Count; i++) {
+                cmp = sign(orderer(list[i], item));
                 if (prevCmp.HasValue && cmp != prevCmp) {
                     return i;
                 }
+
                 prevCmp = cmp;
             }
 
             return list.Count;
+        }
+
+        static int sign(int i)
+        {
+            return (i == 0 ? 0 : i / Math.Abs(i));
         }
         
         class FuncComparator<T> : IComparer<T>
