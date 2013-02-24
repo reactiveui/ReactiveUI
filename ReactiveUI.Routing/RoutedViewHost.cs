@@ -34,9 +34,7 @@ namespace ReactiveUI.Routing
             set { SetValue(RouterProperty, value); }
         }
         public static readonly DependencyProperty RouterProperty =
-            DependencyProperty.Register("Router", typeof(IRoutingState), typeof(RoutedViewHost), new PropertyMetadata(null, routerChanged));
-
-        readonly Subject<IRoutingState> routerChange;
+            DependencyProperty.Register("Router", typeof(IRoutingState), typeof(RoutedViewHost), new PropertyMetadata(null));
 
         /// <summary>
         /// This content is displayed whenever there is no page currently
@@ -53,15 +51,10 @@ namespace ReactiveUI.Routing
         {
             HorizontalContentAlignment = HorizontalAlignment.Stretch;
             VerticalContentAlignment = VerticalAlignment.Stretch;
-            routerChange = new Subject<IRoutingState>();
 
-            routerChange.Subscribe(x => {
-                if (_inner != null) {
-                    _inner.Dispose();
-                    _inner = null;
-                }
-
-                _inner = x.ViewModelObservable().Subscribe(vm => {
+            this.WhenAny(x => x.Router.NavigationStack, x => x.Value)
+                .SelectMany(x => x.CollectionCountChanged.StartWith(x.Count).Select(_ => x.LastOrDefault()))
+                .Subscribe(vm => {
                     if (vm == null) {
                         Content = DefaultContent;
                         return;
@@ -70,16 +63,7 @@ namespace ReactiveUI.Routing
                     var view = RxRouting.ResolveView(vm);
                     view.ViewModel = vm;
                     Content = view;
-                });
-            });
-        }
-
-        static void routerChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs dependencyPropertyChangedEventArgs)
-        {
-            // XXX: This is to work around the fact that ObservableFromDP 
-            // is broken in WinRT
-            var This = ((RoutedViewHost) dependencyObject);
-            This.routerChange.OnNext(This.Router);
+                }, ex => RxApp.DefaultExceptionHandler.OnNext(ex));
         }
     }
 }

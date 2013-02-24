@@ -13,12 +13,6 @@ using Xamarin.Geolocation;
 
 namespace ReactiveUI.Mobile
 {
-    public interface IReactiveGeolocator
-    {
-        IObservable<Position> Listen(int minUpdateTime, double minUpdateDist, bool includeHeading = false);
-        IObservable<Position> GetPosition(bool includeHeading = false);
-    }
-
     public static class ReactiveGeolocator
     {
         [ThreadStatic] static IReactiveGeolocator _UnitTestImplementation;

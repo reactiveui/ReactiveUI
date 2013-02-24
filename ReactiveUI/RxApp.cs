@@ -286,6 +286,8 @@ namespace ReactiveUI
 
         public static object GetService(Type type, string key = null)
         {
+            if (_getService != null) goto callSl;
+
             lock (_preregisteredTypes) {
                 if (_preregisteredTypes.Count == 0) goto callSl;
 
@@ -307,6 +309,8 @@ namespace ReactiveUI
 
         public static IEnumerable<object> GetAllServices(Type type, string key = null)
         {
+            if (_getAllServices != null) goto callSl;
+
             lock (_preregisteredTypes) {
                 if (_preregisteredTypes.Count == 0) goto callSl;
 
@@ -318,7 +322,7 @@ namespace ReactiveUI
         callSl:
             var getAllServices = _getAllServices ??
                 ((_,__) => { throw new Exception("You need to call RxApp.ConfigureServiceLocator to set up service location"); });
-            return getAllServices(type, key).ToArray();
+            return (getAllServices(type, key) ?? Enumerable.Empty<object>()).ToArray();
         }
 
         static readonly Dictionary<Tuple<Type, string>, List<Type>> _preregisteredTypes = new Dictionary<Tuple<Type, string>, List<Type>>();
@@ -376,10 +380,13 @@ namespace ReactiveUI
                 "ReactiveUI.Cocoa",
                 "ReactiveUI.Android",
                 "ReactiveUI.NLog",
+                "ReactiveUI.Mobile",
             };
 
-#if WINRT || SILVERLIGHT
+#if WINRT || WP8
             // NB: WinRT hates your Freedom
+            return new[] {"ReactiveUI.Xaml", "ReactiveUI.Routing", "ReactiveUI.Mobile", };
+#elif SILVERLIGHT
             return new[] {"ReactiveUI.Xaml", "ReactiveUI.Routing"};
 #else
             var name = Assembly.GetExecutingAssembly().GetName();
@@ -427,30 +434,8 @@ namespace ReactiveUI
 
     internal static class RealUnitTestDetector
     {
-        public static bool InUnitTestRunner()
+        public static bool InUnitTestRunner(string[] testAssemblies, string[] designEnvironments)
         {
-            // XXX: This is hacky and evil, but I can't think of any better way
-            // to do this
-            string[] testAssemblies = new[] {
-                "CSUNIT",
-                "NUNIT",
-                "XUNIT",
-                "MBUNIT",
-                "TESTDRIVEN",
-                "QUALITYTOOLS.TIPS.UNITTEST.ADAPTER",
-                "QUALITYTOOLS.UNITTESTING.SILVERLIGHT",
-                "PEX",
-                "MSBUILD",
-                "NBEHAVE",
-                "TESTPLATFORM",
-            };
-
-            string[] designEnvironments = new[] {
-                "BLEND.EXE",
-                "MONODEVELOP",
-                "SHARPDEVELOP.EXE",
-            };
-
 #if SILVERLIGHT
             // NB: Deployment.Current.Parts throws an exception when accessed in Blend
             try {
@@ -491,14 +476,44 @@ namespace ReactiveUI
             // Try to detect whether we're in design mode - bonus points, 
             // without access to any WPF references :-/
             var entry = Assembly.GetEntryAssembly();
-            var exeName = (entry != null ? entry.Location.ToUpperInvariant() : "");
-            if (designEnvironments.Any(x => x.Contains(exeName))) {
-                return true;
+            if (entry != null) {
+                var exeName = entry.Location.ToUpperInvariant(); 
+
+                if (designEnvironments.Any(x => x.Contains(exeName))) {
+                    return true;
+                }
             }
 
             return AppDomain.CurrentDomain.GetAssemblies().Any(x =>
                 testAssemblies.Any(name => x.FullName.ToUpperInvariant().Contains(name)));
 #endif
+        }
+
+        public static bool InUnitTestRunner()
+        {
+            // XXX: This is hacky and evil, but I can't think of any better way
+            // to do this
+            string[] testAssemblies = new[] {
+                "CSUNIT",
+                "NUNIT",
+                "XUNIT",
+                "MBUNIT",
+                "TESTDRIVEN",
+                "QUALITYTOOLS.TIPS.UNITTEST.ADAPTER",
+                "QUALITYTOOLS.UNITTESTING.SILVERLIGHT",
+                "PEX",
+                "MSBUILD",
+                "NBEHAVE",
+                "TESTPLATFORM",
+            };
+
+            string[] designEnvironments = new[] {
+                "BLEND.EXE",
+                "MONODEVELOP",
+                "SHARPDEVELOP.EXE",
+            };
+
+            return InUnitTestRunner(testAssemblies, designEnvironments);
         }
 
     }

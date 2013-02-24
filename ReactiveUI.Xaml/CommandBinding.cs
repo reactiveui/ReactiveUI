@@ -260,12 +260,6 @@ namespace ReactiveUI.Xaml
 
     class CreatesCommandBinding
     {
-        static CreatesCommandBinding()
-        {
-            RxApp.Register(typeof(CreatesCommandBindingViaCommandParameter), typeof(ICreatesCommandBinding));
-            RxApp.Register(typeof(CreatesCommandBindingViaEvent), typeof(ICreatesCommandBinding));
-        }
-
         static readonly MemoizingMRUCache<Type, ICreatesCommandBinding> bindCommandCache = 
             new MemoizingMRUCache<Type, ICreatesCommandBinding>((t, _) => {
                 return RxApp.GetAllServices<ICreatesCommandBinding>()

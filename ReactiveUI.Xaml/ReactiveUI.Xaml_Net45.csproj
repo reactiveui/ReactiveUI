@@ -142,6 +142,7 @@
     <Compile Include="SampleDataBinder.cs" />
     <Compile Include="ServiceLocationRegistration.cs" />
     <Compile Include="TransitioningContentControl.cs" />
+    <Compile Include="WaitForDispatcherScheduler.cs" />
     <Compile Include="XamlDefaultPropertyBinding.cs" />
   </ItemGroup>
   <ItemGroup>
