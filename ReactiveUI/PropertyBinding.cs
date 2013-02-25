@@ -13,6 +13,9 @@ using System.Threading.Tasks;
 
 namespace ReactiveUI
 {
+    /// <summary>
+    /// This class provides extension methods for the ReactiveUI view binding mechanism.
+    /// </summary>
     public static class BindingMixins
     {
         static IPropertyBinderImplementation binderImplementation;
@@ -22,6 +25,29 @@ namespace ReactiveUI
             binderImplementation = new PropertyBinderImplementation();
         }
 
+        /// <summary>
+        /// Binds the specified view model property to the given view property.
+        /// </summary>
+        /// <typeparam name="TViewModel">The type of the view model being bound.</typeparam>
+        /// <typeparam name="TView">The type of the view being bound.</typeparam>
+        /// <typeparam name="TVMProp">The type of the property bound on the view model.</typeparam>
+        /// <typeparam name="TVProp">The type of the property bound on the view.</typeparam>
+        /// <param name="view">The instance of the view to bind.</param>
+        /// <param name="viewModel">The instance of the view model to bind.</param>
+        /// <param name="vmProperty">
+        /// An expression indicating the property that is bound on the view model.
+        /// This can be a chain of properties of the form <code>vm =&gt; vm.Foo.Bar.Baz</code>
+        /// and the binder will attempt to subscribe to changes on each recursively.
+        /// </param>
+        /// <param name="viewProperty">
+        /// The property on the view that is to be bound.
+        /// This can be a chain of properties of the form <code>view => view.Foo.Bar.Baz</code>
+        /// and the binder will attempt to set the last one each time the view model property is updated.
+        /// </param>
+        /// <returns>
+        /// An instance of <see cref="IDisposable"/> that, when disposed,
+        /// disconnects the binding.
+        /// </returns>
         public static IDisposable Bind<TViewModel, TView, TVMProp, TVProp>(
                 this TView view,
                 TViewModel viewModel,
@@ -33,6 +59,26 @@ namespace ReactiveUI
             return binderImplementation.Bind(viewModel, view, vmProperty, viewProperty, (IObservable<Unit>)null, null);
         }
 
+
+        /// <summary>
+        /// Binds the specified view model property to the given view,
+        /// and tries to automagically guess the control/property to be bound on the
+        /// view by looking at the name of the property bound on the view model.
+        /// </summary>
+        /// <typeparam name="TViewModel">The type of the view model being bound.</typeparam>
+        /// <typeparam name="TView">The type of the view being bound.</typeparam>
+        /// <typeparam name="TProp">The type of the property bound on the view model.</typeparam>
+        /// <param name="view">The instance of the view to bind.</param>
+        /// <param name="viewModel">The instance of the view model to bind.</param>
+        /// <param name="vmProperty">
+        /// An expression indicating the property that is bound on the view model.
+        /// This can be a chain of properties of the form <code>vm =&gt; vm.Foo.Bar.Baz</code>
+        /// and the binder will attempt to subscribe to changes on each recursively.
+        /// </param>
+        /// <returns>
+        /// An instance of <see cref="IDisposable"/> that, when disposed,
+        /// disconnects the binding.
+        /// </returns>
         public static IDisposable Bind<TViewModel, TView, TProp>(
                 this TView view,
                 TViewModel viewModel,
@@ -43,6 +89,39 @@ namespace ReactiveUI
             return binderImplementation.Bind<TViewModel, TView, TProp, TProp, Unit>(viewModel, view, vmProperty, null, null, null);
         }
 
+        /// <summary>
+        /// Binds the specified view model property to the given view property, and 
+        /// provide a custom view update signaller to signal when the view property has been updated.
+        /// </summary>
+        /// <typeparam name="TViewModel">The type of the view model being bound.</typeparam>
+        /// <typeparam name="TView">The type of the view being bound.</typeparam>
+        /// <typeparam name="TVMProp">The type of the property bound on the view model.</typeparam>
+        /// <typeparam name="TVProp">The type of the property bound on the view.</typeparam>
+        /// <param name="view">The instance of the view to bind.</param>
+        /// <typeparam name="TDontCare">
+        /// A dummy type, only the fact that <paramref name="signalViewUpdate"/> 
+        /// emits values is considered, not the actual values emitted.
+        /// </typeparam>
+        /// <param name="viewModel">The instance of the view model to bind.</param>
+        /// <param name="vmProperty">
+        /// An expression indicating the property that is bound on the view model.
+        /// This can be a chain of properties of the form <code>vm =&gt; vm.Foo.Bar.Baz</code>
+        /// and the binder will attempt to subscribe to changes on each recursively.
+        /// </param>
+        /// <param name="viewProperty">
+        /// The property on the view that is to be bound.
+        /// This can be a chain of properties of the form <code>view => view.Foo.Bar.Baz</code>
+        /// and the binder will attempt to set the last one each time the view model property is updated.
+        /// </param>
+        /// <param name="signalViewUpdate">
+        /// An observable, that when signaled, indicates that the view property 
+        /// has been changed, and that the binding should update the view model
+        /// property accordingly.
+        /// </param>
+        /// <returns>
+        /// An instance of <see cref="IDisposable"/> that, when disposed,
+        /// disconnects the binding.
+        /// </returns>
         public static IDisposable Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(
                 this TView view,
                 TViewModel viewModel,
@@ -55,6 +134,33 @@ namespace ReactiveUI
             return binderImplementation.Bind(viewModel, view, vmProperty, viewProperty, signalViewUpdate, null);
         }
 
+        /// <summary>
+        /// Binds the specified view model property to an automagically guessed control/property on the view, and 
+        /// provide a custom view update signaller to signal when the view property has been updated.
+        /// </summary>
+        /// <typeparam name="TViewModel">The type of the view model being bound.</typeparam>
+        /// <typeparam name="TView">The type of the view being bound.</typeparam>
+        /// <param name="view">The instance of the view to bind.</param>
+        /// <typeparam name="TProp">The type of the property bound on the view model.</typeparam>
+        /// <typeparam name="TDontCare">
+        /// A dummy type, only the fact that <paramref name="signalViewUpdate"/> 
+        /// emits values is considered, not the actual values emitted.
+        /// </typeparam>
+        /// <param name="viewModel">The instance of the view model to bind.</param>
+        /// <param name="vmProperty">
+        /// An expression indicating the property that is bound on the view model.
+        /// This can be a chain of properties of the form <code>vm =&gt; vm.Foo.Bar.Baz</code>
+        /// and the binder will attempt to subscribe to changes on each recursively.
+        /// </param>
+        /// <param name="signalViewUpdate">
+        /// An observable, that when signaled, indicates that the view property 
+        /// has been changed, and that the binding should update the view model
+        /// property accordingly.
+        /// </param>
+        /// <returns>
+        /// An instance of <see cref="IDisposable"/> that, when disposed,
+        /// disconnects the binding.
+        /// </returns>
         public static IDisposable Bind<TViewModel, TView, TProp, TDontCare>(
                 this TView view,
                 TViewModel viewModel,
@@ -66,6 +172,43 @@ namespace ReactiveUI
             return binderImplementation.Bind<TViewModel, TView, TProp, TDontCare, TDontCare>(viewModel, view, vmProperty, null, signalViewUpdate, null);
         }
 
+        /// <summary>
+        /// Binds the given property on the view model to a given property on the view in a one-way (view model to view) fashion.
+        /// </summary>
+        /// <typeparam name="TViewModel">The type of the view model.</typeparam>
+        /// <typeparam name="TView">The type of the view.</typeparam>
+        /// <typeparam name="TVMProp">The type of view model property.</typeparam>
+        /// <typeparam name="TVProp">The type of the property bound on the view.</typeparam>
+        /// <param name="view">
+        /// The instance of the view object which is bound. Usually, it is the <code>this</code>
+        /// instance.
+        /// </param>
+        /// <param name="viewModel">
+        /// The view model that is bound. 
+        /// It is usually set to the <see cref="IViewFor.ViewModel"/> property of the <paramref name="view"/>.</param>
+        /// <param name="vmProperty">
+        /// An expression indicating the property that is bound on the view model.
+        /// This can be a chain of properties of the form <code>vm => vm.Foo.Bar.Baz</code>
+        /// and the binder will attempt to subscribe to changes on each recursively.
+        /// </param>
+        /// <param name="viewProperty">
+        /// The property on the view that is to be bound.
+        /// This can be a chain of properties of the form <code>view => view.Foo.Bar.Baz</code>
+        /// and the binder will attempt to set the last one each time the view model property is updated.
+        /// </param>
+        /// <param name="fallbackValue">
+        /// A function providing a fallback value. 
+        /// The parameter is currently IGNORED.
+        /// </param>
+        /// <param name="conversionHint">
+        /// An object that can provide a hint for the converter.
+        /// The semantics of this object is defined by the converter used.
+        /// This parameter is currently IGNORED.
+        /// </param>
+        /// <returns>
+        /// An instance of <see cref="IDisposable"/> that, when disposed,
+        /// disconnects the binding.
+        /// </returns>
         public static IDisposable OneWayBind<TViewModel, TView, TVMProp, TVProp>(
                 this TView view,
                 TViewModel viewModel,
@@ -79,6 +222,34 @@ namespace ReactiveUI
             return binderImplementation.OneWayBind(viewModel, view, vmProperty, viewProperty, fallbackValue);
         }
 
+        /// <summary>
+        /// Binds the specified view model property property to the given view in a one-way (view model to view) fashion,
+        /// and tries to automagically guess the control/property to be bound on the
+        /// view by looking at the name of the property bound on the view model.
+        /// </summary>
+        /// <typeparam name="TViewModel">The type of the view model being bound.</typeparam>
+        /// <typeparam name="TView">The type of the view being bound.</typeparam>
+        /// <typeparam name="TProp">The type of the property bound on the view model.</typeparam>
+        /// <param name="view">The instance of the view to bind.</param>
+        /// <param name="viewModel">The instance of the view model to bind.</param>
+        /// <param name="vmProperty">
+        /// An expression indicating the property that is bound on the view model.
+        /// This can be a chain of properties of the form <code>vm =&gt; vm.Foo.Bar.Baz</code>
+        /// and the binder will attempt to subscribe to changes on each recursively.
+        /// </param>
+        /// <param name="fallbackValue">
+        /// A function providing a fallback value. 
+        /// The parameter is currently IGNORED.
+        /// </param>
+        /// <param name="conversionHint">
+        /// An object that can provide a hint for the converter.
+        /// The semantics of this object is defined by the converter used.
+        /// This parameter is currently IGNORED.
+        /// </param>
+        /// <returns>
+        /// An instance of <see cref="IDisposable"/> that, when disposed,
+        /// disconnects the binding.
+        /// </returns>
         public static IDisposable OneWayBind<TViewModel, TView, TProp>(
                 this TView view,
                 TViewModel viewModel,
@@ -91,6 +262,39 @@ namespace ReactiveUI
             return binderImplementation.OneWayBind<TViewModel, TView, TProp, Unit>(viewModel, view, vmProperty, null, fallbackValue, null);
         }
 
+        /// <summary>
+        /// Binds the specified view model property to the given view, in a one-way (view model to view) fashion,
+        /// with the value of the view model property mapped through a <paramref name="selector"/> function.
+        /// </summary>
+        /// <typeparam name="TViewModel">The type of the view model that is bound.</typeparam>
+        /// <typeparam name="TView">The type of the view that is bound.</typeparam>
+        /// <typeparam name="TProp">The type of the property bound on the view model.</typeparam>
+        /// <typeparam name="TOut">The return type of the <paramref name="selector"/>.</typeparam>
+        /// <param name="viewModel">The instance of the view model to bind to.</param>
+        /// <param name="view">The instance of the view to bind to.</param>
+        /// <param name="vmProperty">
+        /// An expression representing the property to be bound to on the view model.
+        /// This can be a child property, for example <c>x =&gt; x.Foo.Bar.Baz</c> in which case
+        /// the binding will attempt to subscribe recursively to updates in order to
+        /// always get the last value of the property chain.
+        /// </param>
+        /// <param name="viewProperty">
+        /// An expression representing the property to be bound to on the view.
+        /// This can be a child property, for example <c>x =&gt; x.Foo.Bar.Baz</c> in which case
+        /// the binding will attempt to subscribe recursively to updates in order to
+        /// always set the correct property.
+        /// </param>
+        /// <param name="selector">
+        /// A function that will be used to transform the values of the property on the view model
+        /// before being bound to the view property.
+        /// </param>
+        /// <param name="fallbackValue">
+        /// A function that provides a fallback value. Note that this property is IGNORED in this implementation.
+        /// </param>
+        /// <returns>
+        /// An instance of <see cref="IDisposable"/> that, when disposed,
+        /// disconnects the binding.
+        /// </returns>
         public static IDisposable OneWayBind<TViewModel, TView, TProp, TOut>(
                 this TView view,
                 TViewModel viewModel,
@@ -104,6 +308,34 @@ namespace ReactiveUI
             return binderImplementation.OneWayBind(viewModel, view, vmProperty, viewProperty, selector, fallbackValue);
         }
 
+        /// <summary>
+        /// Binds the specified view model property to the given view, automagically guessing
+        /// the control/property to be bound, in a one-way (view model to view) fashion,
+        /// with the value of the view model property mapped through a <paramref name="selector"/> function.
+        /// </summary>
+        /// <typeparam name="TViewModel">The type of the view model that is bound.</typeparam>
+        /// <typeparam name="TView">The type of the view that is bound.</typeparam>
+        /// <typeparam name="TProp">The type of the property bound on the view model.</typeparam>
+        /// <typeparam name="TOut">The return type of the <paramref name="selector"/>.</typeparam>
+        /// <param name="viewModel">The instance of the view model to bind to.</param>
+        /// <param name="view">The instance of the view to bind to.</param>
+        /// <param name="vmProperty">
+        /// An expression representing the property to be bound to on the view model.
+        /// This can be a child property, for example <c>x =&gt; x.Foo.Bar.Baz</c> in which case
+        /// the binding will attempt to subscribe recursively to updates in order to
+        /// always get the last value of the property chain.
+        /// </param>
+        /// <param name="selector">
+        /// A function that will be used to transform the values of the property on the view model
+        /// before being bound to the view property.
+        /// </param>
+        /// <param name="fallbackValue">
+        /// A function that provides a fallback value. Note that this property is IGNORED in this implementation.
+        /// </param>
+        /// <returns>
+        /// An instance of <see cref="IDisposable"/> that, when disposed,
+        /// disconnects the binding.
+        /// </returns>
         public static IDisposable OneWayBind<TViewModel, TView, TProp, TOut>(
                 this TView view,
                 TViewModel viewModel,
@@ -116,6 +348,48 @@ namespace ReactiveUI
             return binderImplementation.OneWayBind(viewModel, view, vmProperty, null, selector, fallbackValue);
         }
 
+        /// <summary>
+        /// Binds the specified view model property to the given view property in an asynchronous fashion.
+        /// </summary>
+        /// <typeparam name="TViewModel">The type of the view model that is bound.</typeparam>
+        /// <typeparam name="TView">The type of the view that is bound.</typeparam>
+        /// <typeparam name="TProp">The type of the property bound on the view model.</typeparam>
+        /// <typeparam name="TOut">
+        /// The return type of the <paramref name="selector"/>, 
+        /// when considered synchronously.
+        /// </typeparam>
+        /// <param name="viewModel">The instance of the view model to bind to.</param>
+        /// <param name="view">The instance of the view to bind to.</param>>
+        /// <param name="vmProperty">
+        /// An expression representing the property to be bound to on the view model.
+        /// This can be a child property, for example <c>x =&gt; x.Foo.Bar.Baz</c> in which case
+        /// the binding will attempt to subscribe recursively to updates in order to
+        /// always get the last value of the property chain.
+        /// </param>
+        /// <param name="viewProperty">
+        /// An expression representing the property to be bound to on the view.
+        /// This can be a child property, for example <c>x =&gt; x.Foo.Bar.Baz</c> in which case
+        /// the binding will attempt to subscribe recursively to updates in order to
+        /// always set the correct property.
+        /// 
+        /// If it is left null, the framework will attempt to automagically figure out
+        /// the control and property that is to be bound, by looking for a control of the
+        /// same name as the <see cref="vmProperty"/>, and its most natural property.
+        /// </param>
+        /// <param name="selector">
+        /// A function that maps values of the view model properties to
+        /// an observable representing values of the view property.
+        /// The view property will be updated for every value emitted by
+        /// the returned observable as long as it corresponds to the current
+        /// value of the view model property.
+        /// </param>
+        /// <param name="fallbackValue">
+        /// A function that provides a fallback value. Note that this property is IGNORED in this implementation.
+        /// </param>>
+        /// <returns>
+        /// An instance of <see cref="IDisposable"/> that, when disposed,
+        /// disconnects the binding.
+        /// </returns>
         public static IDisposable AsyncOneWayBind<TViewModel, TView, TProp, TOut>(
                 this TView view,
                 TViewModel viewModel,
@@ -129,6 +403,45 @@ namespace ReactiveUI
             return binderImplementation.AsyncOneWayBind(viewModel, view, vmProperty, viewProperty, selector, fallbackValue);
         }
 
+        /// <summary>
+        /// Binds the specified view model property to the given view property in an asynchronous fashion.
+        /// </summary>
+        /// <typeparam name="TViewModel">The type of the view model that is bound.</typeparam>
+        /// <typeparam name="TView">The type of the view that is bound.</typeparam>
+        /// <typeparam name="TProp">The type of the property bound on the view model.</typeparam>
+        /// <typeparam name="TOut">
+        /// The return type of the <paramref name="selector"/>, 
+        /// when considered synchronously.
+        /// </typeparam>
+        /// <param name="viewModel">The instance of the view model to bind to.</param>
+        /// <param name="view">The instance of the view to bind to.</param>>
+        /// <param name="vmProperty">
+        /// An expression representing the property to be bound to on the view model.
+        /// This can be a child property, for example <c>x =&gt; x.Foo.Bar.Baz</c> in which case
+        /// the binding will attempt to subscribe recursively to updates in order to
+        /// always get the last value of the property chain.
+        /// </param>
+        /// <param name="viewProperty">
+        /// An expression representing the property to be bound to on the view.
+        /// This can be a child property, for example <c>x =&gt; x.Foo.Bar.Baz</c> in which case
+        /// the binding will attempt to subscribe recursively to updates in order to
+        /// always set the correct property.
+        /// 
+        /// If it is left null, the framework will attempt to automagically figure out
+        /// the control and property that is to be bound, by looking for a control of the
+        /// same name as the <see cref="vmProperty"/>, and its most natural property.
+        /// </param>
+        /// <param name="selector">
+        /// A function that maps values of the view model properties to
+        /// a task. The view property is updated when the task completes.
+        /// </param>
+        /// <param name="fallbackValue">
+        /// A function that provides a fallback value. Note that this property is IGNORED in this implementation.
+        /// </param>>
+        /// <returns>
+        /// An instance of <see cref="IDisposable"/> that, when disposed,
+        /// disconnects the binding.
+        /// </returns>
         public static IDisposable AsyncOneWayBind<TViewModel, TView, TProp, TOut>(
                 this TView view,
                 TViewModel viewModel,
@@ -142,6 +455,38 @@ namespace ReactiveUI
             return binderImplementation.AsyncOneWayBind(viewModel, view, vmProperty, viewProperty, x => selector(x).ToObservable(), fallbackValue);
         }
 
+        /// <summary>
+        /// Binds the specified view model property to an automagically guessed control/property on the view in an asynchronous fashion.
+        /// </summary>
+        /// <typeparam name="TViewModel">The type of the view model that is bound.</typeparam>
+        /// <typeparam name="TView">The type of the view that is bound.</typeparam>
+        /// <typeparam name="TProp">The type of the property bound on the view model.</typeparam>
+        /// <typeparam name="TOut">
+        /// The return type of the <paramref name="selector"/>, 
+        /// when considered synchronously.
+        /// </typeparam>
+        /// <param name="viewModel">The instance of the view model to bind to.</param>
+        /// <param name="view">The instance of the view to bind to.</param>>
+        /// <param name="vmProperty">
+        /// An expression representing the property to be bound to on the view model.
+        /// This can be a child property, for example <c>x =&gt; x.Foo.Bar.Baz</c> in which case
+        /// the binding will attempt to subscribe recursively to updates in order to
+        /// always get the last value of the property chain.
+        /// </param>
+        /// <param name="selector">
+        /// A function that maps values of the view model properties to
+        /// an observable representing values of the view property.
+        /// The view property will be updated for every value emitted by
+        /// the returned observable as long as it corresponds to the current
+        /// value of the view model property.
+        /// </param>
+        /// <param name="fallbackValue">
+        /// A function that provides a fallback value. Note that this property is IGNORED in this implementation.
+        /// </param>>
+        /// <returns>
+        /// An instance of <see cref="IDisposable"/> that, when disposed,
+        /// disconnects the binding.
+        /// </returns>
         public static IDisposable AsyncOneWayBind<TViewModel, TView, TProp, TOut>(
                 this TView view,
                 TViewModel viewModel,
@@ -154,6 +499,35 @@ namespace ReactiveUI
             return binderImplementation.AsyncOneWayBind(viewModel, view, vmProperty, null, selector, fallbackValue);
         }
 
+        /// <summary>
+        /// Binds the specified view model property to an automagically guessed control/property on the view in an asynchronous fashion.
+        /// </summary>
+        /// <typeparam name="TViewModel">The type of the view model that is bound.</typeparam>
+        /// <typeparam name="TView">The type of the view that is bound.</typeparam>
+        /// <typeparam name="TProp">The type of the property bound on the view model.</typeparam>
+        /// <typeparam name="TOut">
+        /// The return type of the <paramref name="selector"/>, 
+        /// when considered synchronously.
+        /// </typeparam>
+        /// <param name="viewModel">The instance of the view model to bind to.</param>
+        /// <param name="view">The instance of the view to bind to.</param>>
+        /// <param name="vmProperty">
+        /// An expression representing the property to be bound to on the view model.
+        /// This can be a child property, for example <c>x =&gt; x.Foo.Bar.Baz</c> in which case
+        /// the binding will attempt to subscribe recursively to updates in order to
+        /// always get the last value of the property chain.
+        /// </param>
+        /// <param name="selector">
+        /// A function that maps values of the view model properties to
+        /// a task. The view property is updated when the task completes.
+        /// </param>
+        /// <param name="fallbackValue">
+        /// A function that provides a fallback value. Note that this property is IGNORED in this implementation.
+        /// </param>>
+        /// <returns>
+        /// An instance of <see cref="IDisposable"/> that, when disposed,
+        /// disconnects the binding.
+        /// </returns>
         public static IDisposable AsyncOneWayBind<TViewModel, TView, TProp, TOut>(
                 this TView view,
                 TViewModel viewModel,
@@ -167,8 +541,53 @@ namespace ReactiveUI
         }
     }
 
+    /// <summary>
+    /// This interface represents an object that is capable
+    /// of providing binding implementations.
+    /// </summary>
     public interface IPropertyBinderImplementation : IEnableLogger
     {
+        /// <summary>
+        /// Creates a two-way binding between a view model and a view.
+        /// This binding will attempt to convert the values of the 
+        /// view and view model properties using a <see cref="IBindingTypeConverter"/>
+        /// if they are not of the same type.
+        /// </summary>
+        /// <typeparam name="TViewModel">The type of the view model that is bound.</typeparam>
+        /// <typeparam name="TView">The type of the view model that is bound.</typeparam>
+        /// <typeparam name="TVMProp">The type of the property bound on the view model.</typeparam>
+        /// <typeparam name="TVProp">The type of the property bound on the view.</typeparam>
+        /// <typeparam name="TDontCare">
+        /// A dummy type, only the fact that <paramref name="signalViewUpdate"/> 
+        /// emits values is considered, not the actual values emitted.
+        /// </typeparam>
+        /// <param name="viewModel">The instance of the view model object to be bound.</param>
+        /// <param name="view">The instance of the view object to be bound.</param>
+        /// <param name="vmProperty">
+        /// An expression representing the property to be bound to on the view model.
+        /// This can be a child property, for example <c>x =&gt; x.Foo.Bar.Baz</c> in which case
+        /// the binding will attempt to subscribe recursively to updates in order to
+        /// always get and set the correct property.
+        /// </param>
+        /// <param name="viewProperty">
+        /// An expression representing the property to be bound to on the view.
+        /// This can be a child property, for example <c>x =&gt; x.Foo.Bar.Baz</c> in which case
+        /// the binding will attempt to subscribe recursively to updates in order to
+        /// always get and set the correct property.
+        /// </param>
+        /// <param name="signalViewUpdate">
+        /// An observable, that when signaled, indicates that the view property 
+        /// has been changed, and that the binding should update the view model
+        /// property accordingly.
+        /// </param>
+        /// <param name="conversionHint">
+        /// An object that can provide a hint for the converter.
+        /// The semantics of this object is defined by the converter used.
+        /// </param>
+        /// <returns>
+        /// An instance of <see cref="IDisposable"/> that, when disposed,
+        /// disconnects the binding.
+        /// </returns>
         IDisposable Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(
                 TViewModel viewModel,
                 TView view,
@@ -179,6 +598,44 @@ namespace ReactiveUI
             where TViewModel : class
             where TView : IViewFor;
 
+        /// <summary>
+        /// Creates a one-way binding, i.e. a binding that flows from the
+        /// <paramref name="viewModel"/> to the <paramref name="view"/> only. This binding will
+        /// attempt to convert the value of the view model property to the view property if they
+        /// are not of the same type.
+        /// </summary>
+        /// <typeparam name="TViewModel">The type of the view model that is bound.</typeparam>
+        /// <typeparam name="TView">The type of the view that is bound.</typeparam>
+        /// <typeparam name="TVMProp">The type of the property bound on the view model.</typeparam>
+        /// <typeparam name="TVProp">The type of the property bound on the view</typeparam>
+        /// <param name="viewModel">The instance of the view model to bind to.</param>
+        /// <param name="view">The instance of the view to bind to.</param>
+        /// <param name="vmProperty">
+        /// An expression representing the property to be bound to on the view model.
+        /// This can be a child property, for example <c>x =&gt; x.Foo.Bar.Baz</c> in which case
+        /// the binding will attempt to subscribe recursively to updates in order to
+        /// always get the last value of the property chain.
+        /// </param>
+        /// <param name="viewProperty">
+        /// An expression representing the property to be bound to on the view.
+        /// This can be a child property, for example <c>x =&gt; x.Foo.Bar.Baz</c> in which case
+        /// the binding will attempt to subscribe recursively to updates in order to
+        /// always set the correct property.
+        /// </param>
+        /// <param name="fallbackValue">
+        /// A function that provides a fallback value. Note that this property is IGNORED in this implementation.
+        /// </param>
+        /// <param name="conversionHint">
+        /// An object that can provide a hint for the converter.
+        /// The semantics of this object is defined by the converter used.
+        /// </param>
+        /// <returns>
+        /// An instance of <see cref="IDisposable"/> that, when disposed,
+        /// disconnects the binding.
+        /// </returns>
+        /// <exception cref="System.ArgumentException">
+        /// There is no registered converter from <typeparamref name="TVMProp"/> to <typeparamref name="TVProp"/>.
+        /// </exception>
         IDisposable OneWayBind<TViewModel, TView, TVMProp, TVProp>(
                 TViewModel viewModel,
                 TView view,
@@ -189,6 +646,40 @@ namespace ReactiveUI
             where TViewModel : class
             where TView : IViewFor;
 
+        /// <summary>
+        /// Creates a one way binding with a selector, i.e. a binding that flows from the
+        /// <paramref name="viewModel"/> to the <paramref name="view"/> only, and where the value of the view model
+        /// property is mapped through the <paramref name="selector"/> before being set to the view.
+        /// </summary>
+        /// <typeparam name="TViewModel">The type of the view model that is bound.</typeparam>
+        /// <typeparam name="TView">The type of the view that is bound.</typeparam>
+        /// <typeparam name="TProp">The type of the property bound on the view model.</typeparam>
+        /// <typeparam name="TOut">The return type of the <paramref name="selector"/>.</typeparam>
+        /// <param name="viewModel">The instance of the view model to bind to.</param>
+        /// <param name="view">The instance of the view to bind to.</param>
+        /// <param name="vmProperty">
+        /// An expression representing the property to be bound to on the view model.
+        /// This can be a child property, for example <c>x =&gt; x.Foo.Bar.Baz</c> in which case
+        /// the binding will attempt to subscribe recursively to updates in order to
+        /// always get the last value of the property chain.
+        /// </param>
+        /// <param name="viewProperty">
+        /// An expression representing the property to be bound to on the view.
+        /// This can be a child property, for example <c>x =&gt; x.Foo.Bar.Baz</c> in which case
+        /// the binding will attempt to subscribe recursively to updates in order to
+        /// always set the correct property.
+        /// </param>
+        /// <param name="selector">
+        /// A function that will be used to transform the values of the property on the view model
+        /// before being bound to the view property.
+        /// </param>
+        /// <param name="fallbackValue">
+        /// A function that provides a fallback value. Note that this property is IGNORED in this implementation.
+        /// </param>
+        /// <returns>
+        /// An instance of <see cref="IDisposable"/> that, when disposed,
+        /// disconnects the binding.
+        /// </returns>
         IDisposable OneWayBind<TViewModel, TView, TProp, TOut>(
                 TViewModel viewModel,
                 TView view,
@@ -199,6 +690,46 @@ namespace ReactiveUI
             where TViewModel : class
             where TView : IViewFor;
 
+        /// <summary>
+        /// Creates a one way binding with a selector, i.e. a binding that flows from the
+        /// <paramref name="viewModel"/> to the <paramref name="view"/> only, and where the value of the view model
+        /// property is mapped through the <paramref name="selector"/> asynchronously before being set to the view.
+        /// </summary>
+        /// <typeparam name="TViewModel">The type of the view model that is bound.</typeparam>
+        /// <typeparam name="TView">The type of the view that is bound.</typeparam>
+        /// <typeparam name="TProp">The type of the property bound on the view model.</typeparam>
+        /// <typeparam name="TOut">
+        /// The return type of the <paramref name="selector"/>, 
+        /// when considered synchronously.
+        /// </typeparam>
+        /// <param name="viewModel">The instance of the view model to bind to.</param>
+        /// <param name="view">The instance of the view to bind to.</param>>
+        /// <param name="vmProperty">
+        /// An expression representing the property to be bound to on the view model.
+        /// This can be a child property, for example <c>x =&gt; x.Foo.Bar.Baz</c> in which case
+        /// the binding will attempt to subscribe recursively to updates in order to
+        /// always get the last value of the property chain.
+        /// </param>
+        /// <param name="viewProperty">
+        /// An expression representing the property to be bound to on the view.
+        /// This can be a child property, for example <c>x =&gt; x.Foo.Bar.Baz</c> in which case
+        /// the binding will attempt to subscribe recursively to updates in order to
+        /// always set the correct property.
+        /// </param>
+        /// <param name="selector">
+        /// A function that maps values of the view model properties to
+        /// an observable representing values of the view property.
+        /// The view property will be updated for every value emitted by
+        /// the returned observable as long as it corresponds to the current
+        /// value of the view model property.
+        /// </param>
+        /// <param name="fallbackValue">
+        /// A function that provides a fallback value. Note that this property is IGNORED in this implementation.
+        /// </param>>
+        /// <returns>
+        /// An instance of <see cref="IDisposable"/> that, when disposed,
+        /// disconnects the binding.
+        /// </returns>
         IDisposable AsyncOneWayBind<TViewModel, TView, TProp, TOut>(
                 TViewModel viewModel,
                 TView view,
@@ -212,6 +743,51 @@ namespace ReactiveUI
 
     class PropertyBinderImplementation : IPropertyBinderImplementation 
     {
+        /// <summary>
+        /// Creates a two-way binding between a view model and a view.
+        /// This binding will attempt to convert the values of the 
+        /// view and view model properties using a <see cref="IBindingTypeConverter"/>
+        /// if they are not of the same type.
+        /// </summary>
+        /// <typeparam name="TViewModel">The type of the view model that is bound.</typeparam>
+        /// <typeparam name="TView">The type of the view model that is bound.</typeparam>
+        /// <typeparam name="TVMProp">The type of the property bound on the view model.</typeparam>
+        /// <typeparam name="TVProp">The type of the property bound on the view.</typeparam>
+        /// <typeparam name="TDontCare">
+        /// A dummy type, only the fact that <paramref name="signalViewUpdate"/> 
+        /// emits values is considered, not the actual values emitted.
+        /// </typeparam>
+        /// <param name="viewModel">The instance of the view model object to be bound.</param>
+        /// <param name="view">The instance of the view object to be bound.</param>
+        /// <param name="vmProperty">
+        /// An expression representing the property to be bound to on the view model.
+        /// This can be a child property, for example <c>x =&gt; x.Foo.Bar.Baz</c> in which case
+        /// the binding will attempt to subscribe recursively to updates in order to
+        /// always get and set the correct property.
+        /// </param>
+        /// <param name="viewProperty">
+        /// An expression representing the property to be bound to on the view.
+        /// This can be a child property, for example <c>x =&gt; x.Foo.Bar.Baz</c> in which case
+        /// the binding will attempt to subscribe recursively to updates in order to
+        /// always get and set the correct property.
+        /// 
+        /// If it is left null, the framework will attempt to automagically figure out
+        /// the control and property that is to be bound, by looking for a control of the
+        /// same name as the <see cref="vmProperty"/>, and its most natural property.
+        /// </param>
+        /// <param name="signalViewUpdate">
+        /// An observable, that when signaled, indicates that the view property 
+        /// has been changed, and that the binding should update the view model
+        /// property accordingly.
+        /// </param>
+        /// <param name="conversionHint">
+        /// An object that can provide a hint for the converter.
+        /// The semantics of this object is defined by the converter used.
+        /// </param>
+        /// <returns>
+        /// An instance of <see cref="IDisposable"/> that, when disposed,
+        /// disconnects the binding.
+        /// </returns
         public IDisposable Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(
                 TViewModel viewModel,
                 TView view,
@@ -314,7 +890,48 @@ namespace ReactiveUI
             return ret;
         }
 
-        
+        /// <summary>
+        /// Creates a one-way binding, i.e. a binding that flows from the
+        /// <paramref name="viewModel"/> to the <paramref name="view"/> only. This binding will
+        /// attempt to convert the value of the view model property to the view property if they
+        /// are not of the same type.
+        /// </summary>
+        /// <typeparam name="TViewModel">The type of the view model that is bound.</typeparam>
+        /// <typeparam name="TView">The type of the view that is bound.</typeparam>
+        /// <typeparam name="TVMProp">The type of the property bound on the view model.</typeparam>
+        /// <typeparam name="TVProp">The type of the property bound on the view</typeparam>
+        /// <param name="viewModel">The instance of the view model to bind to.</param>
+        /// <param name="view">The instance of the view to bind to.</param>
+        /// <param name="vmProperty">
+        /// An expression representing the property to be bound to on the view model.
+        /// This can be a child property, for example <c>x =&gt; x.Foo.Bar.Baz</c> in which case
+        /// the binding will attempt to subscribe recursively to updates in order to
+        /// always get the last value of the property chain.
+        /// </param>
+        /// <param name="viewProperty">
+        /// An expression representing the property to be bound to on the view.
+        /// This can be a child property, for example <c>x =&gt; x.Foo.Bar.Baz</c> in which case
+        /// the binding will attempt to subscribe recursively to updates in order to
+        /// always set the correct property.
+        /// 
+        /// If it is left null, the framework will attempt to automagically figure out
+        /// the control and property that is to be bound, by looking for a control of the
+        /// same name as the <see cref="vmProperty"/>, and its most natural property.
+        /// </param>
+        /// <param name="fallbackValue">
+        /// A function that provides a fallback value. Note that this property is IGNORED in this implementation.
+        /// </param>
+        /// <param name="conversionHint">
+        /// An object that can provide a hint for the converter.
+        /// The semantics of this object is defined by the converter used.
+        /// </param>
+        /// <returns>
+        /// An instance of <see cref="IDisposable"/> that, when disposed,
+        /// disconnects the binding.
+        /// </returns>
+        /// <exception cref="System.ArgumentException">
+        /// There is no registered converter from <typeparamref name="TVMProp"/> to <typeparamref name="TVProp"/>.
+        /// </exception>
         public IDisposable OneWayBind<TViewModel, TView, TVMProp, TVProp>(
                 TViewModel viewModel,
                 TView view,
@@ -373,6 +990,44 @@ namespace ReactiveUI
             }
         }
 
+        /// <summary>
+        /// Creates a one way binding with a selector, i.e. a binding that flows from the
+        /// <paramref name="viewModel"/> to the <paramref name="view"/> only, and where the value of the view model
+        /// property is mapped through the <paramref name="selector"/> before being set to the view.
+        /// </summary>
+        /// <typeparam name="TViewModel">The type of the view model that is bound.</typeparam>
+        /// <typeparam name="TView">The type of the view that is bound.</typeparam>
+        /// <typeparam name="TProp">The type of the property bound on the view model.</typeparam>
+        /// <typeparam name="TOut">The return type of the <paramref name="selector"/>.</typeparam>
+        /// <param name="viewModel">The instance of the view model to bind to.</param>
+        /// <param name="view">The instance of the view to bind to.</param>
+        /// <param name="vmProperty">
+        /// An expression representing the property to be bound to on the view model.
+        /// This can be a child property, for example <c>x =&gt; x.Foo.Bar.Baz</c> in which case
+        /// the binding will attempt to subscribe recursively to updates in order to
+        /// always get the last value of the property chain.
+        /// </param>
+        /// <param name="viewProperty">
+        /// An expression representing the property to be bound to on the view.
+        /// This can be a child property, for example <c>x =&gt; x.Foo.Bar.Baz</c> in which case
+        /// the binding will attempt to subscribe recursively to updates in order to
+        /// always set the correct property.
+        /// 
+        /// If it is left null, the framework will attempt to automagically figure out
+        /// the control and property that is to be bound, by looking for a control of the
+        /// same name as the <see cref="vmProperty"/>, and its most natural property.
+        /// </param>
+        /// <param name="selector">
+        /// A function that will be used to transform the values of the property on the view model
+        /// before being bound to the view property.
+        /// </param>
+        /// <param name="fallbackValue">
+        /// A function that provides a fallback value. Note that this property is IGNORED in this implementation.
+        /// </param>
+        /// <returns>
+        /// An instance of <see cref="IDisposable"/> that, when disposed,
+        /// disconnects the binding.
+        /// </returns>
         public IDisposable OneWayBind<TViewModel, TView, TProp, TOut>(
                 TViewModel viewModel,
                 TView view,
@@ -406,6 +1061,50 @@ namespace ReactiveUI
             }
         }
 
+        /// <summary>
+        /// Creates a one way binding with a selector, i.e. a binding that flows from the
+        /// <paramref name="viewModel"/> to the <paramref name="view"/> only, and where the value of the view model
+        /// property is mapped through the <paramref name="selector"/> asynchronously before being set to the view.
+        /// </summary>
+        /// <typeparam name="TViewModel">The type of the view model that is bound.</typeparam>
+        /// <typeparam name="TView">The type of the view that is bound.</typeparam>
+        /// <typeparam name="TProp">The type of the property bound on the view model.</typeparam>
+        /// <typeparam name="TOut">
+        /// The return type of the <paramref name="selector"/>, 
+        /// when considered synchronously.
+        /// </typeparam>
+        /// <param name="viewModel">The instance of the view model to bind to.</param>
+        /// <param name="view">The instance of the view to bind to.</param>>
+        /// <param name="vmProperty">
+        /// An expression representing the property to be bound to on the view model.
+        /// This can be a child property, for example <c>x =&gt; x.Foo.Bar.Baz</c> in which case
+        /// the binding will attempt to subscribe recursively to updates in order to
+        /// always get the last value of the property chain.
+        /// </param>
+        /// <param name="viewProperty">
+        /// An expression representing the property to be bound to on the view.
+        /// This can be a child property, for example <c>x =&gt; x.Foo.Bar.Baz</c> in which case
+        /// the binding will attempt to subscribe recursively to updates in order to
+        /// always set the correct property.
+        /// 
+        /// If it is left null, the framework will attempt to automagically figure out
+        /// the control and property that is to be bound, by looking for a control of the
+        /// same name as the <see cref="vmProperty"/>, and its most natural property.
+        /// </param>
+        /// <param name="selector">
+        /// A function that maps values of the view model properties to
+        /// an observable representing values of the view property.
+        /// The view property will be updated for every value emitted by
+        /// the returned observable as long as it corresponds to the current
+        /// value of the view model property.
+        /// </param>
+        /// <param name="fallbackValue">
+        /// A function that provides a fallback value. Note that this property is IGNORED in this implementation.
+        /// </param>>
+        /// <returns>
+        /// An instance of <see cref="IDisposable"/> that, when disposed,
+        /// disconnects the binding.
+        /// </returns>
         public IDisposable AsyncOneWayBind<TViewModel, TView, TProp, TOut>(
                 TViewModel viewModel,
                 TView view,
