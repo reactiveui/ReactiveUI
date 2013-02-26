@@ -65,6 +65,7 @@ namespace ReactiveUI.Xaml
         /// <returns>An IDisposable which will disconnect the binding when 
         /// disposed.</returns>
         IDisposable BindCommandToObject<TEventArgs>(ICommand command, object target, IObservable<object> commandParameter, string eventName) where TEventArgs : EventArgs;
+        IDisposable BindCommandToObject2<TEventArgs>(ICommand command, object target, IObservable<object> commandParameter, string eventName) where TEventArgs : RoutedEventArgs;
     }
 
     public class CreatesCommandBindingViaEvent : ICreatesCommandBinding
@@ -126,14 +127,44 @@ namespace ReactiveUI.Xaml
                 () => useEventArgsInstead = true));
 
             var evt = Observable.FromEventPattern<TEventArgs>(target, eventName);
-            ret.Add(evt.Subscribe(ea => {
-                if (command.CanExecute(useEventArgsInstead ? ea : latestParameter)) {
+            ret.Add(evt.Subscribe(ea =>
+            {
+                if (command.CanExecute(useEventArgsInstead ? ea : latestParameter))
+                {
                     command.Execute(useEventArgsInstead ? ea : latestParameter);
                 }
             }));
 
             return ret;
         }
+
+        public IDisposable BindCommandToObject2<TRoutedEventArgs>(ICommand command, object target, IObservable<object> commandParameter, string eventName)
+            where TRoutedEventArgs : RoutedEventArgs
+        {
+            var ret = new CompositeDisposable();
+
+            object latestParameter = null;
+            bool useEventArgsInstead = false;
+
+            // NB: This is a bit of a hack - if commandParameter isn't specified,
+            // it will default to Observable.Empty. We're going to use termination
+            // of the commandParameter as a signal to use EventArgs.
+            ret.Add(commandParameter.Subscribe(
+                x => latestParameter = x,
+                () => useEventArgsInstead = true));
+
+            var evt = Observable.FromEventPattern<TRoutedEventArgs>(target, eventName);
+            ret.Add(evt.Subscribe(ea =>
+            {
+                if (command.CanExecute(useEventArgsInstead ? ea : latestParameter))
+                {
+                    command.Execute(useEventArgsInstead ? ea : latestParameter);
+                }
+            }));
+
+            return ret;
+        }
+
     }
 
     public class CreatesCommandBindingViaCommandParameter : ICreatesCommandBinding
@@ -181,5 +212,14 @@ namespace ReactiveUI.Xaml
             // an event target is specified
             return null;
         }
+
+        public IDisposable BindCommandToObject2<TEventArgs>(ICommand command, object target, IObservable<object> commandParameter, string eventName)
+            where TEventArgs : RoutedEventArgs
+        {
+            // NB: We should fall back to the generic Event-based handler if
+            // an event target is specified
+            return null;
+        }
+
     }
 }

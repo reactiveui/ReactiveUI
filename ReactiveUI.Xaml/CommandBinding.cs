@@ -8,6 +8,7 @@ using System.Reactive.Subjects;
 using System.Reflection;
 using System.Text;
 using System.Windows.Input;
+using Windows.UI.Xaml;
 
 namespace ReactiveUI.Xaml
 {
@@ -307,17 +308,36 @@ namespace ReactiveUI.Xaml
                 throw new Exception(String.Format("Couldn't find a Command Binder for {0} and event {1}", type.FullName, eventName));
             }
 
-            var eventArgsType = Reflection.GetEventArgsTypeForEvent(type, eventName);
-            var mi = binder.GetType().GetMethods().First(x => x.Name == "BindCommandToObject" && x.IsGenericMethod);
-            mi = mi.MakeGenericMethod(new[] {eventArgsType});
+            Type eventArgsType = Reflection.GetEventArgsTypeForEvent(type, eventName);
+            if (typeof(RoutedEventArgs).IsAssignableFrom(eventArgsType))
+            {
+                var mi = binder.GetType().GetMethods().First(x => x.Name == "BindCommandToObject2" && x.IsGenericMethod);
+                mi = mi.MakeGenericMethod(new[] { eventArgsType });
 
-            //var ret = binder.BindCommandToObject<TEventArgs>(command, target, commandParameter, eventName);
-            var ret = (IDisposable) mi.Invoke(binder, new[] {command, target, commandParameter, eventName});
-            if (ret == null) {
-                throw new Exception(String.Format("Couldn't bind Command Binder for {0} and event {1}", type.FullName, eventName));
+                //var ret = binder.BindCommandToObject<TEventArgs>(command, target, commandParameter, eventName);
+                var ret = (IDisposable)mi.Invoke(binder, new[] { command, target, commandParameter, eventName });
+                if (ret == null)
+                {
+                    throw new Exception(String.Format("Couldn't bind Command Binder for {0} and event {1}", type.FullName, eventName));
+                }
+
+                return ret;
             }
+            else
+            {
+                var mi = binder.GetType().GetMethods().First(x => x.Name == "BindCommandToObject" && x.IsGenericMethod);
+                mi = mi.MakeGenericMethod(new[] { eventArgsType });
 
-            return ret;
+                //var ret = binder.BindCommandToObject<TEventArgs>(command, target, commandParameter, eventName);
+                var ret = (IDisposable)mi.Invoke(binder, new[] { command, target, commandParameter, eventName });
+                if (ret == null)
+                {
+                    throw new Exception(String.Format("Couldn't bind Command Binder for {0} and event {1}", type.FullName, eventName));
+                }
+
+                return ret;
+            }
         }
+
     }
 }
