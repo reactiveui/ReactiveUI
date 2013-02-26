@@ -222,40 +222,6 @@ namespace ReactiveUI
             Contract.Requires(selector != null);
             return This.ObservableForProperty(property, beforeChange).Select(x => selector(x.Value));
         }
-
-        /* NOTE: This is left here for reference - the real one is expanded out 
-         * to 10 parameters in VariadicTemplates.tt */
-#if FALSE
-        public static IObservable<TRet> WhenAny<TSender, T1, T2, TRet>(this TSender This, 
-                Expression<Func<TSender, T1>> property1, 
-                Expression<Func<TSender, T2>> property2,
-                Func<IObservedChange<TSender, T1>, IObservedChange<TSender, T2>, TRet> selector)
-            where TSender : IReactiveNotifyPropertyChanged
-        {
-            var slot1 = new ObservedChange<TSender, T1>() {
-                Sender = This,
-                PropertyName = String.Join(".", RxApp.expressionToPropertyNames(property1)),
-            };
-            T1 slot1Value = default(T1); slot1.TryGetValue(out slot1Value); slot1.Value = slot1Value;
-
-            var slot2 = new ObservedChange<TSender, T2>() {
-                Sender = This,
-                PropertyName = String.Join(".", RxApp.expressionToPropertyNames(property2)),
-            };
-            T2 slot2Value = default(T2); slot2.TryGetValue(out slot2Value); slot2.Value = slot2Value;
-
-            IObservedChange<TSender, T1> islot1 = slot1;
-            IObservedChange<TSender, T2> islot2 = slot2;
-            return Observable.CreateWithDisposable<TRet>(subject => {
-                subject.OnNext(selector(slot1, slot2));
-
-                return Observable.Merge(
-                    This.ObservableForProperty(property1).Do(x => { lock (slot1) { islot1 = x.fillInValue(); } }).Select(x => selector(islot1, islot2)),
-                    This.ObservableForProperty(property2).Do(x => { lock (slot2) { islot2 = x.fillInValue(); } }).Select(x => selector(islot1, islot2))
-                ).Subscribe(subject);
-            });
-        }
-#endif
     }
 }
 
