@@ -13,8 +13,8 @@ namespace MobileSample_WinRT.ViewModels
         public string UrlPathSegment { get { return "test1"; } }
         public IScreen HostScreen { get; private set; }
 
-        public ReactiveCommand NavPage2 { get; protected set; }
-        public ReactiveCommand NavPage3 { get; protected set; }
+        public IReactiveCommand NavPage2 { get; protected set; }
+        public IReactiveCommand NavPage3 { get; protected set; }
 
         [DataMember]
         Guid _RandomGuid;
@@ -25,15 +25,11 @@ namespace MobileSample_WinRT.ViewModels
 
         public TestPage1ViewModel(IScreen screen = null)
         {
-            HostScreen = screen;
+            HostScreen = screen ?? RxApp.GetService<IScreen>();
             RandomGuid = Guid.NewGuid();
 
-            // XXX: This is hella jank
-            NavPage2 = new ReactiveCommand(screen.Router.Navigate.CanExecuteObservable);
-            NavPage2.Select(_ => new TestPage2ViewModel(screen)).InvokeCommand(screen.Router.Navigate);
-
-            NavPage3 = new ReactiveCommand(screen.Router.Navigate.CanExecuteObservable);
-            NavPage3.Select(_ => new TestPage3ViewModel(screen)).InvokeCommand(screen.Router.Navigate);
+            NavPage2 = HostScreen.Router.NavigateCommandFor<TestPage2ViewModel>();
+            NavPage3 = HostScreen.Router.NavigateCommandFor<TestPage3ViewModel>();
         }
     }
 }
