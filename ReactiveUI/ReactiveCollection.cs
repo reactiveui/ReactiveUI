@@ -18,7 +18,7 @@ using System.Globalization;
 
 namespace ReactiveUI
 {
-    public class ReactiveCollection<T> : IList<T>, IList, IReactiveCollection<T>, INotifyPropertyChanging, INotifyPropertyChanged
+    public class ReactiveCollection<T> : IList<T>, IList, IReactiveCollection<T>, INotifyPropertyChanging, INotifyPropertyChanged, IEnableLogger
     {
         public event NotifyCollectionChangedEventHandler CollectionChanging;
         public event NotifyCollectionChangedEventHandler CollectionChanged;
@@ -408,20 +408,37 @@ namespace ReactiveUI
 
         void addItemToPropertyTracking(T toTrack)
         {
-            var item = toTrack as IReactiveNotifyPropertyChanged;
-            if (item == null)
-                return;
-
             if (_propertyChangeWatchers.ContainsKey(toTrack)) {
                 _propertyChangeWatchers[toTrack].AddRef();
                 return;
             }
 
+            var changing = Observable.Never<IObservedChange<object, object>>();
+            var changed = Observable.Never<IObservedChange<object, object>>();
+
+            var irnpc = toTrack as IReactiveNotifyPropertyChanged;
+            if (irnpc != null) {
+                changing = irnpc.Changing;
+                changed = irnpc.Changed;
+                goto isSetup;
+            }
+
+            var inpc = toTrack as INotifyPropertyChanged;
+            if (inpc != null) {
+                changed = Observable.FromEventPattern<PropertyChangedEventHandler, PropertyChangedEventArgs>(x => inpc.PropertyChanged += x, x => inpc.PropertyChanged -= x)
+                    .Select(x => (IObservedChange<object, object>)
+                        new ObservedChange<object, object>() { PropertyName = x.EventArgs.PropertyName, Sender = inpc });
+                goto isSetup;
+            }
+
+            this.Log().Warn("Property change notifications are enabled and type {0} isn't INotifyPropertyChanged or ReactiveObject", typeof(T));
+
+        isSetup:
             var toDispose = new[] {
-                item.Changing.Where(_ => _suppressionRefCount == 0).Subscribe(beforeChange =>
+                changing.Where(_ => _suppressionRefCount == 0).Subscribe(beforeChange =>
                     _itemChanging.Value.OnNext(new ObservedChange<T, object>() { 
                         Sender = toTrack, PropertyName = beforeChange.PropertyName })),
-                item.Changed.Where(_ => _suppressionRefCount == 0).Subscribe(change => 
+                changed.Where(_ => _suppressionRefCount == 0).Subscribe(change => 
                     _itemChanged.Value.OnNext(new ObservedChange<T,object>() { 
                         Sender = toTrack, PropertyName = change.PropertyName })),
             };
