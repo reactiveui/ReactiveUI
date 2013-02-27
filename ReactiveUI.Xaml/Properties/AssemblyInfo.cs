@@ -5,7 +5,7 @@ using System.Windows;
 
 [assembly: AssemblyDescription("An MVVM framework that integrates the Reactive Extensions")]
 [assembly: AssemblyProduct("ReactiveUI.Xaml")]
-[assembly: AssemblyVersion("4.4.1")]
+[assembly: AssemblyVersion("4.4.2")]
 
 #if !(WINRT || SILVERLIGHT || MONO)
 [assembly: ThemeInfo(
