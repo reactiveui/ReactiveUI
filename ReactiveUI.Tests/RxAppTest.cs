@@ -81,5 +81,23 @@ namespace ReactiveUI.Tests
 
             Assert.False(isInUnitTestRunner);
         }
+        
+        [Fact]
+        public void ReferenceDetectorReturnsReferencesForAssembliesLoadedIntoAppdomain()
+        {
+            var expectedAssembly = typeof(RxApp).Assembly.GetName().FullName;
+            var assemblyReferences = RxApp.buildListOfReferencedAssemblies();
+
+            Assert.True(assemblyReferences.Any(x => x.FullName.Equals(expectedAssembly, StringComparison.Ordinal)));
+        }
+
+        [Fact]
+        public void ReferenceDetectorCanFilterReferences()
+        {
+            var expectedAssembly = typeof(RxApp).Assembly.GetName().FullName;
+            var assemblyReferences = RxApp.buildListOfReferencedAssemblies(name => name.FullName.Equals(expectedAssembly));
+
+            Assert.Equal(assemblyReferences.Count(), 1);
+        }
     }
 }
