@@ -811,7 +811,7 @@ namespace ReactiveUI
             }
 
             if (list.Count == 1) {
-                return orderer(list[0], item) >= 0 ? 1 : 0;
+                return orderer(list[0], item) >= 0 ? 0 : 1;
             }
 
             if (orderer(list[0], item) >= 1) return 0;
