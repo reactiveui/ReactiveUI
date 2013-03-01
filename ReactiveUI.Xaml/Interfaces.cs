@@ -47,6 +47,24 @@ namespace ReactiveUI.Xaml
         /// Should be fired whenever an async operation completes.
         /// </summary>
         ISubject<Unit> AsyncCompletedNotification { get; }
+
+        /// <summary>
+        /// RegisterAsyncObservable registers an Rx-based async method whose
+        /// results will be returned on the UI thread.
+        /// </summary>
+        /// <param name="calculationFunc">A calculation method that returns a
+        /// future result, such as a method returned via
+        /// Observable.FromAsyncPattern.</param>
+        /// <returns>An Observable representing the items returned by the
+        /// calculation result. Note that with this method it is possible with a
+        /// calculationFunc to return multiple items per invocation of Execute.</returns>
+        IObservable<TResult> RegisterAsyncObservable<TResult>(Func<object, IObservable<TResult>> calculationFunc);
+
+        /// <summary>
+        /// The maximum number of in-flight
+        /// operations at a time - defaults to one.
+        /// </summary>
+        int MaximumConcurrent { get; }
     }
 }
 
