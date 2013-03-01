@@ -117,7 +117,7 @@ namespace ReactiveUI.Xaml
                 _inner = canExecute.Subscribe(_canExecuteSubject.OnNext, _exSubject.OnNext);
             }
 
-            _maximumConcurrent = maximumConcurrent;
+            MaximumConcurrent = maximumConcurrent;
 
             ThrownExceptions = _exSubject;
         }
@@ -127,9 +127,10 @@ namespace ReactiveUI.Xaml
         ISubject<bool> _canExecuteSubject;
         bool _canExecuteLatest;
         ISubject<object> _executeSubject;
-        int _maximumConcurrent;
         IDisposable _inner = null;
         ScheduledSubject<Exception> _exSubject;
+
+        public int MaximumConcurrent { get; protected set; }
 
         public IObservable<int> ItemsInflight { get; protected set; }
 
@@ -177,77 +178,6 @@ namespace ReactiveUI.Xaml
             }
         }
 
-        /// <summary>
-        /// RegisterAsyncFunction registers an asynchronous method that returns a result
-        /// to be called whenever the Command's Execute method is called.
-        /// </summary>
-        /// <param name="calculationFunc">The function to be run in the
-        /// background.</param>
-        /// <param name="scheduler"></param>
-        /// <returns>An Observable that will fire on the UI thread once per
-        /// invoecation of Execute, once the async method completes. Subscribe to
-        /// this to retrieve the result of the calculationFunc.</returns>
-        public IObservable<TResult> RegisterAsyncFunction<TResult>(
-            Func<object, TResult> calculationFunc, 
-            IScheduler scheduler = null)
-        {
-            Contract.Requires(calculationFunc != null);
-
-            var asyncFunc = calculationFunc.ToAsync(scheduler ?? RxApp.TaskpoolScheduler);
-            return RegisterAsyncObservable(asyncFunc);
-        }
-
-        /// <summary>
-        /// RegisterAsyncAction registers an asynchronous method that runs
-        /// whenever the Command's Execute method is called and doesn't return a
-        /// result.
-        /// </summary>
-        /// <param name="calculationFunc">The function to be run in the
-        /// background.</param>
-        public void RegisterAsyncAction(Action<object> calculationFunc, 
-            IScheduler scheduler = null)
-        {
-            Contract.Requires(calculationFunc != null);
-            RegisterAsyncFunction(x => { calculationFunc(x); return new Unit(); }, scheduler);
-        }
-
-        /// <summary>
-        /// RegisterAsyncTask registers an TPL/Async method that runs when a 
-        /// Command gets executed and returns the result
-        /// </summary>
-        /// <returns>An Observable that will fire on the UI thread once per
-        /// invoecation of Execute, once the async method completes. Subscribe to
-        /// this to retrieve the result of the calculationFunc.</returns>
-        public IObservable<TResult> RegisterAsyncTask<TResult>(Func<object, Task<TResult>> calculationFunc)
-        {
-            Contract.Requires(calculationFunc != null);
-            return RegisterAsyncObservable(x => calculationFunc(x).ToObservable());
-        }
-
-        /// <summary>
-        /// RegisterAsyncTask registers an TPL/Async method that runs when a 
-        /// Command gets executed and returns no result. 
-        /// </summary>
-        /// <param name="calculationFunc">The function to be run in the
-        /// background.</param>
-        /// <returns>An Observable that signals when the Task completes, on
-        /// the UI thread.</returns>
-        public IObservable<Unit> RegisterAsyncTask<TResult>(Func<object, Task> calculationFunc)
-        {
-            Contract.Requires(calculationFunc != null);
-            return RegisterAsyncObservable(x => calculationFunc(x).ToObservable());
-        }
-
-        /// <summary>
-        /// RegisterAsyncObservable registers an Rx-based async method whose
-        /// results will be returned on the UI thread.
-        /// </summary>
-        /// <param name="calculationFunc">A calculation method that returns a
-        /// future result, such as a method returned via
-        /// Observable.FromAsyncPattern.</param>
-        /// <returns>An Observable representing the items returned by the
-        /// calculation result. Note that with this method it is possible with a
-        /// calculationFunc to return multiple items per invocation of Execute.</returns>
         public IObservable<TResult> RegisterAsyncObservable<TResult>(Func<object, IObservable<TResult>> calculationFunc)
         {
             Contract.Requires(calculationFunc != null);
@@ -265,6 +195,93 @@ namespace ReactiveUI.Xaml
                 });
 
             return ret.Merge().Multicast(new ScheduledSubject<TResult>(RxApp.DeferredScheduler)).PermaRef();
+        }
+
+        void marshalFailures<T>(Action<T> block, T param)
+        {
+            try {
+                block(param);
+            } catch (Exception ex) {
+                _exSubject.OnNext(ex);
+            }
+        }
+
+        void marshalFailures(Action block)
+        {
+            marshalFailures(_ => block(), Unit.Default);
+        }
+    }
+
+    public static class ReactiveAsyncCommandMixins
+    {
+        /// <summary>
+        /// This method returns the current number of items in flight.
+        /// </summary>
+        public static int CurrentItemsInFlight(this IReactiveAsyncCommand This)
+        {
+            return This.ItemsInflight.First();
+        }
+
+        /// <summary>
+        /// RegisterAsyncFunction registers an asynchronous method that returns a result
+        /// to be called whenever the Command's Execute method is called.
+        /// </summary>
+        /// <param name="calculationFunc">The function to be run in the
+        /// background.</param>
+        /// <param name="scheduler"></param>
+        /// <returns>An Observable that will fire on the UI thread once per
+        /// invoecation of Execute, once the async method completes. Subscribe to
+        /// this to retrieve the result of the calculationFunc.</returns>
+        public static IObservable<TResult> RegisterAsyncFunction<TResult>(this IReactiveAsyncCommand This,
+            Func<object, TResult> calculationFunc,
+            IScheduler scheduler = null)
+        {
+            Contract.Requires(calculationFunc != null);
+
+            var asyncFunc = calculationFunc.ToAsync(scheduler ?? RxApp.TaskpoolScheduler);
+            return This.RegisterAsyncObservable(asyncFunc);
+        }
+
+        /// <summary>
+        /// RegisterAsyncAction registers an asynchronous method that runs
+        /// whenever the Command's Execute method is called and doesn't return a
+        /// result.
+        /// </summary>
+        /// <param name="calculationFunc">The function to be run in the
+        /// background.</param>
+        public static void RegisterAsyncAction(this IReactiveAsyncCommand This, 
+            Action<object> calculationFunc,
+            IScheduler scheduler = null)
+        {
+            Contract.Requires(calculationFunc != null);
+            This.RegisterAsyncFunction(x => { calculationFunc(x); return new Unit(); }, scheduler);
+        }
+
+        /// <summary>
+        /// RegisterAsyncTask registers an TPL/Async method that runs when a 
+        /// Command gets executed and returns the result
+        /// </summary>
+        /// <returns>An Observable that will fire on the UI thread once per
+        /// invoecation of Execute, once the async method completes. Subscribe to
+        /// this to retrieve the result of the calculationFunc.</returns>
+        public static IObservable<TResult> RegisterAsyncTask<TResult>(this IReactiveAsyncCommand This, Func<object, Task<TResult>> calculationFunc)
+        {
+            Contract.Requires(calculationFunc != null);
+            return This.RegisterAsyncObservable(x => calculationFunc(x).ToObservable());
+        }
+
+        /// <summary>
+        /// RegisterAsyncTask registers an TPL/Async method that runs when a 
+        /// Command gets executed and returns no result. 
+        /// </summary>
+        /// <param name="calculationFunc">The function to be run in the
+        /// background.</param>
+        /// <returns>An Observable that signals when the Task completes, on
+        /// the UI thread.</returns>
+        public static IObservable<Unit> RegisterAsyncTask<TResult>(this IReactiveAsyncCommand This, Func<object, Task> calculationFunc)
+        {
+            Contract.Requires(calculationFunc != null);
+            return This.RegisterAsyncObservable(x => calculationFunc(x).ToObservable());
         }
 
         /// <summary>
@@ -291,17 +308,18 @@ namespace ReactiveUI.Xaml
         /// <returns>An Observable that will fire on the UI thread once per
         /// invocation of Execute, once the async method completes. Subscribe to
         /// this to retrieve the result of the calculationFunc.</returns>
-        public IObservable<TResult> RegisterMemoizedFunction<TResult>(
-            Func<object, TResult> calculationFunc, 
-            int maxSize = 50, 
-            Action<TResult> onRelease = null, 
+        public static IObservable<TResult> RegisterMemoizedFunction<TResult>(
+            this IReactiveAsyncCommand This,
+            Func<object, TResult> calculationFunc,
+            int maxSize = 50,
+            Action<TResult> onRelease = null,
             IScheduler sched = null)
         {
             Contract.Requires(calculationFunc != null);
             Contract.Requires(maxSize > 0);
 
             sched = sched ?? RxApp.TaskpoolScheduler;
-            return RegisterMemoizedObservable(x => Observable.Return(calculationFunc(x), sched), maxSize, onRelease, sched);
+            return RegisterMemoizedObservable(This, x => Observable.Return(calculationFunc(x), sched), maxSize, onRelease, sched);
         }
 
         /// <summary>
@@ -329,10 +347,11 @@ namespace ReactiveUI.Xaml
         /// <returns>An Observable representing the items returned by the
         /// calculation result. Note that with this method it is possible with a
         /// calculationFunc to return multiple items per invocation of Execute.</returns>
-        public IObservable<TResult> RegisterMemoizedObservable<TResult>(
-            Func<object, IObservable<TResult>> calculationFunc, 
+        public static IObservable<TResult> RegisterMemoizedObservable<TResult>(
+            this IReactiveAsyncCommand This,
+            Func<object, IObservable<TResult>> calculationFunc,
             int maxSize = 50,
-            Action<TResult> onRelease = null,  
+            Action<TResult> onRelease = null,
             IScheduler sched = null)
         {
             Contract.Requires(calculationFunc != null);
@@ -340,33 +359,8 @@ namespace ReactiveUI.Xaml
 
             sched = sched ?? RxApp.TaskpoolScheduler;
             var cache = new ObservableAsyncMRUCache<object, TResult>(
-                calculationFunc, maxSize, _maximumConcurrent, onRelease, sched);
-            return this.RegisterAsyncObservable(cache.AsyncGet);
-        }
-
-        void marshalFailures<T>(Action<T> block, T param)
-        {
-            try {
-                block(param);
-            } catch (Exception ex) {
-                _exSubject.OnNext(ex);
-            }
-        }
-
-        void marshalFailures(Action block)
-        {
-            marshalFailures(_ => block(), Unit.Default);
-        }
-    }
-
-    public static class ReactiveAsyncCommandMixins
-    {
-        /// <summary>
-        /// This method returns the current number of items in flight.
-        /// </summary>
-        public static int CurrentItemsInFlight(this IReactiveAsyncCommand This)
-        {
-            return This.ItemsInflight.First();
+                calculationFunc, maxSize, This.MaximumConcurrent, onRelease, sched);
+            return This.RegisterAsyncObservable(cache.AsyncGet);
         }
     }
 }
