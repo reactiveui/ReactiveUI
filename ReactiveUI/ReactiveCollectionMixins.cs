@@ -7,9 +7,34 @@ using System.Diagnostics.Contracts;
 using System.Collections.Specialized;
 using System.Reactive.Subjects;
 using System.Globalization;
+using System.Threading;
+using System.Reactive.Disposables;
 
 namespace ReactiveUI
 {
+    public sealed class ReactiveDerivedCollection<T> : ReactiveCollection<T>, IDisposable
+    {
+        IDisposable inner = null;
+
+        public ReactiveDerivedCollection(IDisposable disposable) : base()
+        {
+            inner = disposable;
+        }
+
+        public ReactiveDerivedCollection(IEnumerable<T> items, IDisposable disposable) : base(items)
+        {
+            inner = disposable;
+        }
+
+        public void Dispose()
+        {
+            var disp = Interlocked.Exchange(ref inner, null);
+            if (disp == null) return;
+
+            disp.Dispose();
+        }
+    }
+
     public static class ReactiveCollectionMixins
     {
         /// <summary>
@@ -27,15 +52,17 @@ namespace ReactiveUI
         /// collection no faster than the delay provided.</param>
         /// <returns>A new collection which will be populated with the
         /// Observable.</returns>
-        public static ReactiveCollection<T> CreateCollection<T>(
+        public static ReactiveDerivedCollection<T> CreateCollection<T>(
             this IObservable<T> fromObservable, 
             TimeSpan? withDelay = null,
             Action<Exception> onError = null)
         {
-            var ret = new ReactiveCollection<T>();
+            var disp = new SingleAssignmentDisposable();
+            var ret = new ReactiveDerivedCollection<T>(disp);
+
             onError = onError ?? (ex => RxApp.DefaultExceptionHandler.OnNext(ex));
             if (withDelay == null) {
-                fromObservable.ObserveOn(RxApp.DeferredScheduler).Subscribe(ret.Add, onError);
+                disp.Disposable = fromObservable.ObserveOn(RxApp.DeferredScheduler).Subscribe(ret.Add, onError);
                 return ret;
             }
 
@@ -47,6 +74,8 @@ namespace ReactiveUI
                         ret.Add(queue.Dequeue());
                     }
                 });
+
+            disp.Disposable = disconnect;
 
             // When new items come in from the observable, stuff them in the queue.
             // Using the DeferredScheduler guarantees we'll always access the queue
@@ -78,7 +107,7 @@ namespace ReactiveUI
         /// collection no faster than the delay provided.</param>
         /// <returns>A new collection which will be populated with the
         /// Observable.</returns>
-        public static ReactiveCollection<TRet> CreateCollection<T, TRet>(
+        public static ReactiveDerivedCollection<TRet> CreateCollection<T, TRet>(
             this IObservable<T> fromObservable, 
             Func<T, TRet> selector, 
             TimeSpan? withDelay = null)
@@ -114,7 +143,7 @@ namespace ReactiveUI
         /// <returns>A new collection whose items are equivalent to
         /// Collection.Select().Where().OrderBy() and will mirror changes 
         /// in the initial collection.</returns>
-        public static ReactiveCollection<TNew> CreateDerivedCollection<T, TNew, TDontCare>(
+        public static ReactiveDerivedCollection<TNew> CreateDerivedCollection<T, TNew, TDontCare>(
             this IEnumerable<T> This,
             Func<T, TNew> selector,
             Func<T, bool> filter = null,
@@ -123,6 +152,7 @@ namespace ReactiveUI
         {
             Contract.Requires(selector != null);
 
+            var disp = new CompositeDisposable();
             var collChanged = new Subject<NotifyCollectionChangedEventArgs>();
 
             if (selector == null) {
@@ -134,20 +164,24 @@ namespace ReactiveUI
             var enumerable = origEnum.Select(selector);
             enumerable = (orderer != null ? enumerable.OrderBy(x => x, new FuncComparator<TNew>(orderer)) : enumerable);
 
-            var ret = new ReactiveCollection<TNew>(enumerable);
+            var ret = new ReactiveDerivedCollection<TNew>(enumerable, disp);
 
             var incc = This as INotifyCollectionChanged;
             if (incc != null) {
-                ((INotifyCollectionChanged)This).CollectionChanged += (o, e) => collChanged.OnNext(e);
+                var connObs = Observable.FromEventPattern<NotifyCollectionChangedEventHandler, NotifyCollectionChangedEventArgs>(x => incc.CollectionChanged += x, x => incc.CollectionChanged -= x)
+                    .Select(x => x.EventArgs)
+                    .Multicast(collChanged);
+
+                disp.Add(connObs.Connect());
             }
 
             if (filter != null && orderer == null) {
                 throw new Exception("If you specify a filter, you must also specify an ordering function");
             }
 
-            signalReset.Subscribe(_ => collChanged.OnNext(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset)));
+            disp.Add(signalReset.Subscribe(_ => collChanged.OnNext(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset))));
 
-            collChanged.Subscribe(args => {
+            disp.Add(collChanged.Subscribe(args => {
                 if (args.Action == NotifyCollectionChangedAction.Reset) {
                     using(ret.SuppressChangeNotifications()) {
                         ret.Clear();
@@ -195,7 +229,7 @@ namespace ReactiveUI
                         ret.Insert(positionForNewItem(ret, toAdd, orderer), toAdd);
                     }
                 }
-            });
+            }));
 
             return ret;
         }
@@ -220,7 +254,7 @@ namespace ReactiveUI
         /// <returns>A new collection whose items are equivalent to
         /// Collection.Select().Where().OrderBy() and will mirror changes 
         /// in the initial collection.</returns>
-        public static ReactiveCollection<TNew> CreateDerivedCollection<T, TNew>(
+        public static ReactiveDerivedCollection<TNew> CreateDerivedCollection<T, TNew>(
             this IEnumerable<T> This,
             Func<T, TNew> selector,
             Func<T, bool> filter = null,
