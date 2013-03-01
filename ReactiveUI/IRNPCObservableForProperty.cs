@@ -3,7 +3,7 @@ using System.Reactive.Linq;
 
 namespace ReactiveUI
 {
-    class IRNPCObservableForProperty : ICreatesObservableForProperty
+    public class IRNPCObservableForProperty : ICreatesObservableForProperty
     {
         public int GetAffinityForObject(Type type, bool beforeChanged = false)
         {
