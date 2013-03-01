@@ -388,30 +388,22 @@ namespace ReactiveUI
             return new[] {"ReactiveUI.Xaml", "ReactiveUI.Routing", "ReactiveUI.Mobile", };
 #elif SILVERLIGHT
             return new[] {"ReactiveUI.Xaml", "ReactiveUI.Routing"};
-#else
-            var referencedGuiLibs =
-                           from assemblyName in buildListOfReferencedAssemblies(a => a.Name.StartsWith("ReactiveUI"), a => a.FullName)
-                           from guiLib in guiLibs
-                           where assemblyName.Name.StartsWith(guiLib)
-                           select new { assemblyName, guiLib };
-
-            return referencedGuiLibs.SelectMany(x =>
-            {
-                try
-                {
+#else            
+            return buildListOfReferencedAssemblies(a => a.Name.StartsWith("ReactiveUI"), a => a.FullName)
+                .SelectMany(a => guiLibs.Where(g => a.Name.StartsWith(g)), (assemblyName, guiLib) => new { assemblyName, guiLib })
+                .SelectMany(x => {            
+                try {
                     Assembly.Load(x.assemblyName.FullName);
                     return new[] { x.guiLib };
-                }
-                catch (Exception ex)
-                {
-                    LogHost.Default.DebugException("Couldn't load " + x, ex);
+                } catch (Exception ex) {
+                    LogHost.Default.DebugException("Couldn't load " + x.guiLib, ex);
                     return Enumerable.Empty<string>();
-                }
+                }   
             });
 #endif
         }
 
-        internal static IEnumerable<AssemblyName> buildListOfReferencedAssemblies(Predicate<AssemblyName> filter = null, Func<AssemblyName, string> identityGenerator = null)
+        internal static IEnumerable<AssemblyName> buildListOfReferencedAssemblies(Func<AssemblyName, bool> filter = null, Func<AssemblyName, string> identityGenerator = null)
         {
             filter = filter ?? (s => true);
             identityGenerator = identityGenerator ?? (name => name.FullName);
@@ -419,26 +411,24 @@ namespace ReactiveUI
             var pendingAssemblies = new Queue<AssemblyName>(AppDomain.CurrentDomain.GetAssemblies().Select(x => x.GetName()));
             var referencedAssemblies = new List<string>();
 
-            while (pendingAssemblies.Any())
-            {
+            while (pendingAssemblies.Any()) {
                 var assemblyName = pendingAssemblies.Dequeue();
 
                 var identity = identityGenerator(assemblyName);
-                if (referencedAssemblies.Contains(identity)) continue;
+                if (referencedAssemblies.Contains(identity)) {
+                    continue;
+                }
                 referencedAssemblies.Add(identity);
 
-                if (filter(assemblyName))
+                if (filter(assemblyName)) {
                     yield return assemblyName;
+                }
 
-                try
-                {
-                    foreach (var assemblyReference in Assembly.ReflectionOnlyLoad(assemblyName.FullName).GetReferencedAssemblies())
-                    {
+                try {
+                    foreach (var assemblyReference in Assembly.ReflectionOnlyLoad(assemblyName.FullName).GetReferencedAssemblies()) {
                         pendingAssemblies.Enqueue(assemblyReference);
                     }
-                }
-                catch (Exception ex)
-                {
+                } catch (Exception ex) {
                     LogHost.Default.DebugException("Couldn't load reflection context for " + assemblyName.FullName, ex);
                 }
             }
