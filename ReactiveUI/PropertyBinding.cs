@@ -741,7 +741,7 @@ namespace ReactiveUI
             where TView : IViewFor;
     }
 
-    class PropertyBinderImplementation : IPropertyBinderImplementation 
+    public class PropertyBinderImplementation : IPropertyBinderImplementation 
     {
         /// <summary>
         /// Creates a two-way binding between a view model and a view.

@@ -122,7 +122,7 @@ namespace ReactiveUI.Xaml
             where TProp : ICommand;
     }
 
-    class CommandBinderImplementation : ICommandBinderImplementation 
+    public class CommandBinderImplementation : ICommandBinderImplementation 
     {
         public IDisposable BindCommand<TView, TViewModel, TProp>(
                 TViewModel viewModel, 
