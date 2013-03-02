@@ -410,6 +410,38 @@ namespace ReactiveUI.Tests
         }
 
         [Fact]
+        public void DerivedCollectionShouldOrderCorrectly()
+        {
+            var collection = new ReactiveCollection<int>();
+            var orderedCollection = collection.CreateDerivedCollection(x => x, null, (x, y) => x.CompareTo(y));
+
+            collection.Add(1);
+            collection.Add(2);
+
+            Assert.Equal(2, orderedCollection.Count);
+            Assert.Equal(1, orderedCollection[0]);
+            Assert.Equal(2, orderedCollection[1]);
+        }
+
+        [Fact]
+        public void DerivedCollectionShouldStopFollowingAfterDisposal()
+        {
+            var collection = new ReactiveCollection<int>();
+            var orderedCollection = collection.CreateDerivedCollection(x => x.ToString(), null, (x, y) => x.CompareTo(y));
+
+            collection.Add(1);
+            collection.Add(2);
+
+            Assert.Equal(2, orderedCollection.Count);
+
+            orderedCollection.Dispose();
+
+            collection.Add(3);
+            Assert.Equal(2, orderedCollection.Count);
+        }
+
+
+        [Fact]
         public void IListTSmokeTest() {
             var fixture = new ReactiveCollection<string>() as IList<string>;
             Assert.NotNull(fixture);
