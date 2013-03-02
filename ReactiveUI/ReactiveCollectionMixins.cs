@@ -18,7 +18,7 @@ namespace ReactiveUI
 
         public ReactiveDerivedCollection(IDisposable disposable) : base()
         {
-            inner = disposable;
+            inner = disposable ?? Disposable.Empty;
         }
 
         public ReactiveDerivedCollection(IEnumerable<T> items, IDisposable disposable) : base(items)
