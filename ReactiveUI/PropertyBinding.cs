@@ -905,7 +905,7 @@ namespace ReactiveUI
                 }
             });
 
-            var ret = evalBindingHooks(viewModel, view, vmPropChain, viewPropChain);
+            var ret = evalBindingHooks(viewModel, view, vmPropChain, viewPropChain, BindingDirection.TwoWay);
             if (ret != null) return ret;
 
             ret = changeWithValues.Subscribe(isVmWithLatestValue => {
@@ -990,7 +990,7 @@ namespace ReactiveUI
                     throw new ArgumentException(String.Format("Can't convert {0} to {1}. To fix this, register a IBindingTypeConverter", typeof (TVMProp), viewType));
                 }
 
-                var ret = evalBindingHooks(viewModel, view, vmPropChain, viewPropChain);
+                var ret = evalBindingHooks(viewModel, view, vmPropChain, viewPropChain, BindingDirection.OneWay);
                 if (ret != null) return ret;
 
                 return Reflection.ViewModelWhenAnyValue(viewModel, view, vmProperty)
@@ -1009,7 +1009,7 @@ namespace ReactiveUI
 
                 var viewPropChain = Reflection.ExpressionToPropertyNames(viewProperty);
 
-                var ret = evalBindingHooks(viewModel, view, vmPropChain, viewPropChain);
+                var ret = evalBindingHooks(viewModel, view, vmPropChain, viewPropChain, BindingDirection.OneWay);
                 if (ret != null) return ret;
 
                 return Reflection.ViewModelWhenAnyValue(viewModel, view, vmProperty)
@@ -1079,7 +1079,7 @@ namespace ReactiveUI
             if (viewProperty == null) {
                 var viewPropChain = Reflection.getDefaultViewPropChain(view, Reflection.ExpressionToPropertyNames(vmProperty));
 
-                var ret = evalBindingHooks(viewModel, view, vmPropChain, viewPropChain);
+                var ret = evalBindingHooks(viewModel, view, vmPropChain, viewPropChain, BindingDirection.OneWay);
                 if (ret != null) return ret;
 
                 return Reflection.ViewModelWhenAnyValue(viewModel, view, vmProperty)
@@ -1087,7 +1087,7 @@ namespace ReactiveUI
                                  .Subscribe(x => Reflection.SetValueToPropertyChain(view, viewPropChain, x, false));
             } else {
                 var viewPropChain = Reflection.ExpressionToPropertyNames(viewProperty);
-                var ret = evalBindingHooks(viewModel, view, vmPropChain, viewPropChain);
+                var ret = evalBindingHooks(viewModel, view, vmPropChain, viewPropChain, BindingDirection.OneWay);
                 if (ret != null) return ret;
 
                 return Reflection.ViewModelWhenAnyValue(viewModel, view, vmProperty)
@@ -1156,7 +1156,7 @@ namespace ReactiveUI
             if (viewProperty == null) {
                 var viewPropChain = Reflection.getDefaultViewPropChain(view, Reflection.ExpressionToPropertyNames(vmProperty));
 
-                var ret = evalBindingHooks(viewModel, view, vmPropChain, viewPropChain);
+                var ret = evalBindingHooks(viewModel, view, vmPropChain, viewPropChain, BindingDirection.AsyncOneWay);
                 if (ret != null) return ret;
 
                 return Reflection.ViewModelWhenAnyValue(viewModel, view, vmProperty)
@@ -1165,7 +1165,7 @@ namespace ReactiveUI
             } else {
                 var viewPropChain = Reflection.ExpressionToPropertyNames(viewProperty);
 
-                var ret = evalBindingHooks(viewModel, view, vmPropChain, viewPropChain);
+                var ret = evalBindingHooks(viewModel, view, vmPropChain, viewPropChain, BindingDirection.AsyncOneWay);
                 if (ret != null) return ret;
 
                 return Reflection.ViewModelWhenAnyValue(viewModel, view, vmProperty)
@@ -1202,7 +1202,7 @@ namespace ReactiveUI
             });
 
             var shouldBind = hooks.Aggregate(true, (acc, x) =>
-                acc && x.ExecuteHook(viewModel, view, vmFetcher, vFetcher, BindingDirection.TwoWay));
+                acc && x.ExecuteHook(viewModel, view, vmFetcher, vFetcher, direction));
 
             if (!shouldBind) {
                 var vmString = String.Format("{0}.{1}", typeof (TViewModel).Name, String.Join(".", vmPropChain));
