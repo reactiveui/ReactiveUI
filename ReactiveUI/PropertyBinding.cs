@@ -539,6 +539,25 @@ namespace ReactiveUI
         {
             return binderImplementation.AsyncOneWayBind(viewModel, view, vmProperty, null, x => selector(x).ToObservable(), fallbackValue);
         }
+
+        /// <summary>
+        /// BindTo takes an Observable stream and applies it to a target
+        /// property. Conceptually it is similar to "Subscribe(x =&gt;
+        /// target.property = x)", but allows you to use child properties
+        /// without the null checks.
+        /// </summary>
+        /// <param name="target">The target object whose property will be set.</param>
+        /// <param name="property">An expression representing the target
+        /// property to set. This can be a child property (i.e. x.Foo.Bar.Baz).</param>
+        /// <returns>An object that when disposed, disconnects the binding.</returns>
+        public static IDisposable BindTo<TTarget, TValue>(
+            this IObservable<TValue> This,
+            TTarget target,
+            Expression<Func<TTarget, TValue>> property,
+            Func<TValue> fallbackValue = null)
+        {
+            return binderImplementation.BindTo(This, target, property, fallbackValue);
+        }
     }
 
     /// <summary>
@@ -739,6 +758,22 @@ namespace ReactiveUI
                 Func<TOut> fallbackValue = null)
             where TViewModel : class
             where TView : IViewFor;
+
+        /// <summary>
+        /// BindTo takes an Observable stream and applies it to a target
+        /// property. Conceptually it is similar to "Subscribe(x =&gt;
+        /// target.property = x)", but allows you to use child properties
+        /// without the null checks.
+        /// </summary>
+        /// <param name="target">The target object whose property will be set.</param>
+        /// <param name="property">An expression representing the target
+        /// property to set. This can be a child property (i.e. x.Foo.Bar.Baz).</param>
+        /// <returns>An object that when disposed, disconnects the binding.</returns>
+        IDisposable BindTo<TTarget, TValue>(
+            IObservable<TValue> This,
+            TTarget target,
+            Expression<Func<TTarget, TValue>> property,
+            Func<TValue> fallbackValue = null);
     }
 
     public class PropertyBinderImplementation : IPropertyBinderImplementation 
@@ -1139,21 +1174,33 @@ namespace ReactiveUI
             }
         }
 
+        public IDisposable BindTo<TTarget, TValue>(
+            IObservable<TValue> This,
+            TTarget target,
+            Expression<Func<TTarget, TValue>> property,
+            Func<TValue> fallbackValue = null)
+        {
+            throw new NotImplementedException();
+        }
+
         IDisposable evalBindingHooks<TViewModel, TView>(TViewModel viewModel, TView view, string[] vmPropChain, string[] viewPropChain)
             where TViewModel : class
             where TView : IViewFor
         {
             var hooks = RxApp.GetAllServices<IPropertyBindingHook>();
+
             var vmFetcher = new Func<IObservedChange<object, object>[]>(() => {
                 IObservedChange<object, object>[] fetchedValues;
                 Reflection.TryGetAllValuesForPropertyChain(out fetchedValues, viewModel, vmPropChain);
                 return fetchedValues;
             });
+            
             var vFetcher = new Func<IObservedChange<object, object>[]>(() => {
                 IObservedChange<object, object>[] fetchedValues;
                 Reflection.TryGetAllValuesForPropertyChain(out fetchedValues, view, viewPropChain);
                 return fetchedValues;
             });
+
             var shouldBind = hooks.Aggregate(true, (acc, x) =>
                 acc && x.ExecuteHook(viewModel, view, vmFetcher, vFetcher, BindingDirection.TwoWay));
 
@@ -1178,45 +1225,11 @@ namespace ReactiveUI
                     }).Item2
             , 25);
 
-        IBindingTypeConverter getConverterForTypes(Type lhs, Type rhs)
+        internal IBindingTypeConverter getConverterForTypes(Type lhs, Type rhs)
         {
             lock (typeConverterCache) {
                 return typeConverterCache.Get(Tuple.Create(lhs, rhs));
             }
-        }
-    }
-
-    public static class ObservableBindingMixins
-    {
-        /// <summary>
-        /// BindTo takes an Observable stream and applies it to a target
-        /// property. Conceptually it is similar to "Subscribe(x =&gt;
-        /// target.property = x)", but allows you to use child properties
-        /// without the null checks.
-        /// </summary>
-        /// <param name="target">The target object whose property will be set.</param>
-        /// <param name="property">An expression representing the target
-        /// property to set. This can be a child property (i.e. x.Foo.Bar.Baz).</param>
-        /// <returns>An object that when disposed, disconnects the binding.</returns>
-        public static IDisposable BindTo<TTarget, TValue>(
-            this IObservable<TValue> This, 
-            TTarget target,
-            Expression<Func<TTarget, TValue>> property,
-            Func<TValue> fallbackValue = null)
-        {
-            var pn = Reflection.ExpressionToPropertyNames(property);
-            var bn = pn.Take(pn.Length - 1);
-
-            var lastValue = default(TValue);
-
-            var o = target.SubscribeToExpressionChain<TTarget, object>(bn, false, true)
-                .Select(x => lastValue);
-
-            return Observable.Merge(o, This)
-                .Subscribe(x => {
-                    lastValue = x;
-                    Reflection.SetValueToPropertyChain(target, pn, x);
-                });
         }
     }
 }
