@@ -1180,20 +1180,30 @@ namespace ReactiveUI
             Expression<Func<TTarget, TValue>> property,
             Func<TValue> fallbackValue = null)
         {
-            throw new NotImplementedException();
         }
 
-        IDisposable evalBindingHooks<TViewModel, TView>(TViewModel viewModel, TView view, string[] vmPropChain, string[] viewPropChain)
+        IDisposable evalBindingHooks<TViewModel, TView>(TViewModel viewModel, TView view, string[] vmPropChain, string[] viewPropChain, BindingDirection direction)
             where TViewModel : class
             where TView : IViewFor
         {
             var hooks = RxApp.GetAllServices<IPropertyBindingHook>();
 
-            var vmFetcher = new Func<IObservedChange<object, object>[]>(() => {
-                IObservedChange<object, object>[] fetchedValues;
-                Reflection.TryGetAllValuesForPropertyChain(out fetchedValues, viewModel, vmPropChain);
-                return fetchedValues;
-            });
+            var vmFetcher = default(Func<IObservedChange<object, object>[]>);
+            if (vmPropChain != null) {
+                vmFetcher = () => {
+                    IObservedChange<object, object>[] fetchedValues;
+                    Reflection.TryGetAllValuesForPropertyChain(out fetchedValues, viewModel, vmPropChain);
+                    return fetchedValues;
+                };
+            } else {
+                vmFetcher = () => {
+                    return new[] { 
+                        new ObservedChange<object, object>() { 
+                            Sender = null, PropertyName = null, Value = viewModel, 
+                        } 
+                    };
+                };
+            }
             
             var vFetcher = new Func<IObservedChange<object, object>[]>(() => {
                 IObservedChange<object, object>[] fetchedValues;
@@ -1214,16 +1224,16 @@ namespace ReactiveUI
             return null;
         }
 
-
         MemoizingMRUCache<Tuple<Type, Type>, IBindingTypeConverter> typeConverterCache = new MemoizingMRUCache<Tuple<Type, Type>, IBindingTypeConverter>(
-            (types, _) =>
-                RxApp.GetAllServices<IBindingTypeConverter>()
-                    .Aggregate(Tuple.Create(-1, default(IBindingTypeConverter)), (acc, x) => {
+            (types, _) => {
+                return RxApp.GetAllServices<IBindingTypeConverter>()
+                    .Aggregate(Tuple.Create(-1, default(IBindingTypeConverter)), (acc, x) =>
+                    {
                         var score = x.GetAffinityForObjects(types.Item1, types.Item2);
-                        return score > acc.Item1 && score > 0 ? 
+                        return score > acc.Item1 && score > 0 ?
                             Tuple.Create(score, x) : acc;
-                    }).Item2
-            , 25);
+                    }).Item2;
+            }, 25);
 
         internal IBindingTypeConverter getConverterForTypes(Type lhs, Type rhs)
         {
