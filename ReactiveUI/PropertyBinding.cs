@@ -539,6 +539,26 @@ namespace ReactiveUI
         {
             return binderImplementation.AsyncOneWayBind(viewModel, view, vmProperty, null, x => selector(x).ToObservable(), fallbackValue);
         }
+
+        /// <summary>
+        /// BindTo takes an Observable stream and applies it to a target
+        /// property. Conceptually it is similar to "Subscribe(x =&gt;
+        /// target.property = x)", but allows you to use child properties
+        /// without the null checks.
+        /// </summary>
+        /// <param name="target">The target object whose property will be set.</param>
+        /// <param name="property">An expression representing the target
+        /// property to set. This can be a child property (i.e. x.Foo.Bar.Baz).</param>
+        /// <returns>An object that when disposed, disconnects the binding.</returns>
+        public static IDisposable BindTo<TValue, TTarget, TTValue>(
+            this IObservable<TValue> This,
+            TTarget target,
+            Expression<Func<TTarget, TTValue>> property,
+            Func<TValue> fallbackValue = null,
+            object conversionHint = null)
+        {
+            return binderImplementation.BindTo(This, target, property, fallbackValue);
+        }
     }
 
     /// <summary>
@@ -739,6 +759,23 @@ namespace ReactiveUI
                 Func<TOut> fallbackValue = null)
             where TViewModel : class
             where TView : IViewFor;
+
+        /// <summary>
+        /// BindTo takes an Observable stream and applies it to a target
+        /// property. Conceptually it is similar to "Subscribe(x =&gt;
+        /// target.property = x)", but allows you to use child properties
+        /// without the null checks.
+        /// </summary>
+        /// <param name="target">The target object whose property will be set.</param>
+        /// <param name="property">An expression representing the target
+        /// property to set. This can be a child property (i.e. x.Foo.Bar.Baz).</param>
+        /// <returns>An object that when disposed, disconnects the binding.</returns>
+        IDisposable BindTo<TValue, TTarget, TTValue>(
+            IObservable<TValue> This,
+            TTarget target,
+            Expression<Func<TTarget, TTValue>> property,
+            Func<TValue> fallbackValue = null,
+            object conversionHint = null);
     }
 
     public class PropertyBinderImplementation : IPropertyBinderImplementation 
@@ -870,7 +907,7 @@ namespace ReactiveUI
                 }
             });
 
-            var ret = evalBindingHooks(viewModel, view, vmPropChain, viewPropChain);
+            var ret = evalBindingHooks(viewModel, view, vmPropChain, viewPropChain, BindingDirection.TwoWay);
             if (ret != null) return ret;
 
             ret = changeWithValues.Subscribe(isVmWithLatestValue => {
@@ -944,6 +981,8 @@ namespace ReactiveUI
         {
             var vmPropChain = Reflection.ExpressionToPropertyNames(vmProperty);
             var vmString = String.Format("{0}.{1}", typeof (TViewModel).Name, String.Join(".", vmPropChain));
+            var source = default(IObservable<TVProp>);
+            var fallbackWrapper = default(Func<TVProp>);
 
             if (viewProperty == null) {
                 var viewPropChain = Reflection.getDefaultViewPropChain(view, Reflection.ExpressionToPropertyNames(vmProperty));
@@ -955,16 +994,20 @@ namespace ReactiveUI
                     throw new ArgumentException(String.Format("Can't convert {0} to {1}. To fix this, register a IBindingTypeConverter", typeof (TVMProp), viewType));
                 }
 
-                var ret = evalBindingHooks(viewModel, view, vmPropChain, viewPropChain);
+                var ret = evalBindingHooks(viewModel, view, vmPropChain, viewPropChain, BindingDirection.OneWay);
                 if (ret != null) return ret;
 
-                return Reflection.ViewModelWhenAnyValue(viewModel, view, vmProperty)
+                source = Reflection.ViewModelWhenAnyValue(viewModel, view, vmProperty)
                     .SelectMany(x => {
                         object tmp;
-                        if (!converter.TryConvert(x, viewType, conversionHint, out tmp)) return Observable.Empty<object>();
-                        return Observable.Return(tmp);
-                    })
-                    .Subscribe(x => Reflection.SetValueToPropertyChain(view, viewPropChain, x, false));
+                        if (!converter.TryConvert(x, viewType, conversionHint, out tmp)) return Observable.Empty<TVProp>();
+                        return Observable.Return((TVProp)tmp);
+                    });
+
+                fallbackWrapper = () => {
+                    object tmp;
+                    return converter.TryConvert(fallbackValue(), typeof(TVProp), conversionHint, out tmp) ? (TVProp)tmp : default(TVProp);
+                };
             } else {
                 var converter = getConverterForTypes(typeof (TVMProp), typeof (TVProp));
 
@@ -974,20 +1017,23 @@ namespace ReactiveUI
 
                 var viewPropChain = Reflection.ExpressionToPropertyNames(viewProperty);
 
-                var ret = evalBindingHooks(viewModel, view, vmPropChain, viewPropChain);
+                var ret = evalBindingHooks(viewModel, view, vmPropChain, viewPropChain, BindingDirection.OneWay);
                 if (ret != null) return ret;
 
-                return Reflection.ViewModelWhenAnyValue(viewModel, view, vmProperty)
+                source = Reflection.ViewModelWhenAnyValue(viewModel, view, vmProperty)
                     .SelectMany(x => {
                         object tmp;
                         if (!converter.TryConvert(x, typeof(TVProp), conversionHint, out tmp)) return Observable.Empty<TVProp>();
-                        return Observable.Return(tmp == null ? default(TVProp) : (TVProp) tmp);
-                    })
-                    .BindTo(view, viewProperty, () => {
-                        object tmp;
-                        return converter.TryConvert(fallbackValue(), typeof(TVProp), conversionHint, out tmp) ?  (TVProp)tmp : default(TVProp);
+                        return Observable.Return(tmp == null ? default(TVProp) : (TVProp)tmp);
                     });
+
+                fallbackWrapper = () => {
+                    object tmp;
+                    return converter.TryConvert(fallbackValue(), typeof(TVProp), conversionHint, out tmp) ?  (TVProp)tmp : default(TVProp);
+                };
             }
+
+            return bindToDirect(source, view, viewProperty, fallbackWrapper);
         }
 
         /// <summary>
@@ -1040,25 +1086,24 @@ namespace ReactiveUI
         {
             var vmPropChain = Reflection.ExpressionToPropertyNames(vmProperty);
             var vmString = String.Format("{0}.{1}", typeof (TViewModel).Name, String.Join(".", vmPropChain));
+            var source = default(IObservable<TOut>);
 
             if (viewProperty == null) {
                 var viewPropChain = Reflection.getDefaultViewPropChain(view, Reflection.ExpressionToPropertyNames(vmProperty));
 
-                var ret = evalBindingHooks(viewModel, view, vmPropChain, viewPropChain);
+                var ret = evalBindingHooks(viewModel, view, vmPropChain, viewPropChain, BindingDirection.OneWay);
                 if (ret != null) return ret;
 
-                return Reflection.ViewModelWhenAnyValue(viewModel, view, vmProperty)
-                                 .Select(selector)
-                                 .Subscribe(x => Reflection.SetValueToPropertyChain(view, viewPropChain, x, false));
+                source = Reflection.ViewModelWhenAnyValue(viewModel, view, vmProperty).Select(selector);
             } else {
                 var viewPropChain = Reflection.ExpressionToPropertyNames(viewProperty);
-                var ret = evalBindingHooks(viewModel, view, vmPropChain, viewPropChain);
+                var ret = evalBindingHooks(viewModel, view, vmPropChain, viewPropChain, BindingDirection.OneWay);
                 if (ret != null) return ret;
 
-                return Reflection.ViewModelWhenAnyValue(viewModel, view, vmProperty)
-                    .Select(selector)
-                    .BindTo(view, viewProperty, fallbackValue);
+                source = Reflection.ViewModelWhenAnyValue(viewModel, view, vmProperty).Select(selector);
             }
+
+            return bindToDirect(source, view, viewProperty, fallbackValue);
         }
 
         /// <summary>
@@ -1117,45 +1162,120 @@ namespace ReactiveUI
         {
             var vmPropChain = Reflection.ExpressionToPropertyNames(vmProperty);
             var vmString = String.Format("{0}.{1}", typeof (TViewModel).Name, String.Join(".", vmPropChain));
+            var source = default(IObservable<TOut>);
 
             if (viewProperty == null) {
                 var viewPropChain = Reflection.getDefaultViewPropChain(view, Reflection.ExpressionToPropertyNames(vmProperty));
 
-                var ret = evalBindingHooks(viewModel, view, vmPropChain, viewPropChain);
+                var ret = evalBindingHooks(viewModel, view, vmPropChain, viewPropChain, BindingDirection.AsyncOneWay);
                 if (ret != null) return ret;
 
-                return Reflection.ViewModelWhenAnyValue(viewModel, view, vmProperty)
-                                 .SelectMany(selector)
-                                 .Subscribe(x => Reflection.SetValueToPropertyChain(view, viewPropChain, x, false));
+                source = Reflection.ViewModelWhenAnyValue(viewModel, view, vmProperty).SelectMany(selector);
             } else {
                 var viewPropChain = Reflection.ExpressionToPropertyNames(viewProperty);
 
-                var ret = evalBindingHooks(viewModel, view, vmPropChain, viewPropChain);
+                var ret = evalBindingHooks(viewModel, view, vmPropChain, viewPropChain, BindingDirection.AsyncOneWay);
                 if (ret != null) return ret;
 
-                return Reflection.ViewModelWhenAnyValue(viewModel, view, vmProperty)
-                    .SelectMany(selector)
-                    .BindTo(view, viewProperty, fallbackValue);
+                source = Reflection.ViewModelWhenAnyValue(viewModel, view, vmProperty).SelectMany(selector);
             }
+
+            return bindToDirect(source, view, viewProperty, fallbackValue);
         }
 
-        IDisposable evalBindingHooks<TViewModel, TView>(TViewModel viewModel, TView view, string[] vmPropChain, string[] viewPropChain)
+        public IDisposable BindTo<TValue, TTarget, TTValue>(
+            IObservable<TValue> This,
+            TTarget target,
+            Expression<Func<TTarget, TTValue>> property,
+            Func<TValue> fallbackValue = null,
+            object conversionHint = null)
+        {
+            var viewPropChain = Reflection.ExpressionToPropertyNames(property);
+            var ret = evalBindingHooks(This, target, null, viewPropChain, BindingDirection.OneWay);
+            if (ret != null) return ret;
+                
+            var converter = getConverterForTypes(typeof (TValue), typeof(TTValue));
+
+            if (converter == null) {
+                throw new ArgumentException(String.Format("Can't convert {0} to {1}. To fix this, register a IBindingTypeConverter", typeof (TValue), typeof(TTValue)));
+            }
+
+            var source = This.SelectMany(x => {
+                object tmp;
+                if (!converter.TryConvert(x, typeof(TTValue), conversionHint, out tmp)) return Observable.Empty<TTValue>();
+                return Observable.Return(tmp == null ? default(TTValue) : (TTValue)tmp);
+            });
+
+            return bindToDirect(source, target, property, fallbackValue == null ? default(Func<TTValue>) : new Func<TTValue>(() => {
+                object tmp;
+                if (!converter.TryConvert(fallbackValue(), typeof(TTValue), conversionHint, out tmp)) return default(TTValue);
+                return tmp == null ? default(TTValue) : (TTValue)tmp;
+            }));
+        }
+
+        IDisposable bindToDirect<TTarget, TValue>(
+            IObservable<TValue> This,
+            TTarget target,
+            Expression<Func<TTarget, TValue>> property,
+            Func<TValue> fallbackValue = null)
+        {
+            var types = new[] { typeof(TTarget) }.Concat(Reflection.ExpressionToPropertyTypes(property)).ToArray();
+            var names = Reflection.ExpressionToPropertyNames(property);
+
+            var setter = Reflection.GetValueSetterOrThrow(types.Reverse().Skip(1).First(), names.Last());
+            if (names.Length == 1) {
+                return This.Subscribe(
+                    x => setter(target, x),
+                    ex => {
+                        this.Log().ErrorException("Binding recieved an Exception!", ex);
+                        if (fallbackValue != null) setter(target, fallbackValue());
+                    });
+            }
+
+            var bindInfo = Observable.CombineLatest(
+                This, target.WhenAnyDynamic(names.SkipLast(1).ToArray(), x => x.Value),
+                (val, host) => new { val, host });
+
+            return bindInfo
+                .Where(x => x.host != null)
+                .Subscribe(
+                    x => setter(x.host, x.val),
+                    ex => {
+                        this.Log().ErrorException("Binding recieved an Exception!", ex);
+                        if (fallbackValue != null) setter(target, fallbackValue());
+                    });
+        }
+
+        IDisposable evalBindingHooks<TViewModel, TView>(TViewModel viewModel, TView view, string[] vmPropChain, string[] viewPropChain, BindingDirection direction)
             where TViewModel : class
-            where TView : IViewFor
         {
             var hooks = RxApp.GetAllServices<IPropertyBindingHook>();
-            var vmFetcher = new Func<IObservedChange<object, object>[]>(() => {
-                IObservedChange<object, object>[] fetchedValues;
-                Reflection.TryGetAllValuesForPropertyChain(out fetchedValues, viewModel, vmPropChain);
-                return fetchedValues;
-            });
+
+            var vmFetcher = default(Func<IObservedChange<object, object>[]>);
+            if (vmPropChain != null) {
+                vmFetcher = () => {
+                    IObservedChange<object, object>[] fetchedValues;
+                    Reflection.TryGetAllValuesForPropertyChain(out fetchedValues, viewModel, vmPropChain);
+                    return fetchedValues;
+                };
+            } else {
+                vmFetcher = () => {
+                    return new[] { 
+                        new ObservedChange<object, object>() { 
+                            Sender = null, PropertyName = null, Value = viewModel, 
+                        } 
+                    };
+                };
+            }
+            
             var vFetcher = new Func<IObservedChange<object, object>[]>(() => {
                 IObservedChange<object, object>[] fetchedValues;
                 Reflection.TryGetAllValuesForPropertyChain(out fetchedValues, view, viewPropChain);
                 return fetchedValues;
             });
+
             var shouldBind = hooks.Aggregate(true, (acc, x) =>
-                acc && x.ExecuteHook(viewModel, view, vmFetcher, vFetcher, BindingDirection.TwoWay));
+                acc && x.ExecuteHook(viewModel, view, vmFetcher, vFetcher, direction));
 
             if (!shouldBind) {
                 var vmString = String.Format("{0}.{1}", typeof (TViewModel).Name, String.Join(".", vmPropChain));
@@ -1167,56 +1287,22 @@ namespace ReactiveUI
             return null;
         }
 
-
         MemoizingMRUCache<Tuple<Type, Type>, IBindingTypeConverter> typeConverterCache = new MemoizingMRUCache<Tuple<Type, Type>, IBindingTypeConverter>(
-            (types, _) =>
-                RxApp.GetAllServices<IBindingTypeConverter>()
-                    .Aggregate(Tuple.Create(-1, default(IBindingTypeConverter)), (acc, x) => {
+            (types, _) => {
+                return RxApp.GetAllServices<IBindingTypeConverter>()
+                    .Aggregate(Tuple.Create(-1, default(IBindingTypeConverter)), (acc, x) =>
+                    {
                         var score = x.GetAffinityForObjects(types.Item1, types.Item2);
-                        return score > acc.Item1 && score > 0 ? 
+                        return score > acc.Item1 && score > 0 ?
                             Tuple.Create(score, x) : acc;
-                    }).Item2
-            , 25);
+                    }).Item2;
+            }, 25);
 
-        IBindingTypeConverter getConverterForTypes(Type lhs, Type rhs)
+        internal IBindingTypeConverter getConverterForTypes(Type lhs, Type rhs)
         {
             lock (typeConverterCache) {
                 return typeConverterCache.Get(Tuple.Create(lhs, rhs));
             }
-        }
-    }
-
-    public static class ObservableBindingMixins
-    {
-        /// <summary>
-        /// BindTo takes an Observable stream and applies it to a target
-        /// property. Conceptually it is similar to "Subscribe(x =&gt;
-        /// target.property = x)", but allows you to use child properties
-        /// without the null checks.
-        /// </summary>
-        /// <param name="target">The target object whose property will be set.</param>
-        /// <param name="property">An expression representing the target
-        /// property to set. This can be a child property (i.e. x.Foo.Bar.Baz).</param>
-        /// <returns>An object that when disposed, disconnects the binding.</returns>
-        public static IDisposable BindTo<TTarget, TValue>(
-            this IObservable<TValue> This, 
-            TTarget target,
-            Expression<Func<TTarget, TValue>> property,
-            Func<TValue> fallbackValue = null)
-        {
-            var pn = Reflection.ExpressionToPropertyNames(property);
-            var bn = pn.Take(pn.Length - 1);
-
-            var lastValue = default(TValue);
-
-            var o = target.SubscribeToExpressionChain<TTarget, object>(bn, false, true)
-                .Select(x => lastValue);
-
-            return Observable.Merge(o, This)
-                .Subscribe(x => {
-                    lastValue = x;
-                    Reflection.SetValueToPropertyChain(target, pn, x);
-                });
         }
     }
 }
