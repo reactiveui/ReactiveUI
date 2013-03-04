@@ -4,4 +4,4 @@ using System.Runtime.CompilerServices;
 
 [assembly: AssemblyDescription("Classes that aid in testing ReactiveUI projects")]
 [assembly: AssemblyProduct("ReactiveUI.Testing")]
-[assembly: AssemblyVersion("4.4.2")]
+[assembly: AssemblyVersion("4.4.3")]
