@@ -57,11 +57,15 @@ namespace ReactiveUI.Tests
 
         public ReactiveCollection<string> SomeCollectionOfStrings { get; protected set; }
 
-        public PropertyBindModel Model { get; protected set; }
+        public PropertyBindModel _Model;
+        public PropertyBindModel Model {
+            get { return _Model; }
+            set { this.RaiseAndSetIfChanged(x => x.Model, value); }
+        }
 
-        public PropertyBindViewModel()
+        public PropertyBindViewModel(PropertyBindModel model = null)
         {
-            Model = new PropertyBindModel() {AThing = 42, AnotherThing = "Baz"};
+            Model = model ?? new PropertyBindModel() {AThing = 42, AnotherThing = "Baz"};
             SomeCollectionOfStrings = new ReactiveCollection<string>(new[] { "Foo", "Bar" });
         }
     }
@@ -111,6 +115,16 @@ namespace ReactiveUI.Tests
         }
         public static readonly DependencyProperty JustADoubleProperty =
             DependencyProperty.Register("JustADouble", typeof(double), typeof(PropertyBindFakeControl), new PropertyMetadata(0.0));
+
+        public string NullHatingString {
+            get { return (string)GetValue(NullHatingStringProperty); }
+            set {
+                if (value == null) throw new ArgumentNullException("No nulls! I get confused!");
+                SetValue(NullHatingStringProperty, value); 
+            }
+        }
+        public static readonly DependencyProperty NullHatingStringProperty =
+            DependencyProperty.Register("NullHatingString", typeof(string), typeof(PropertyBindFakeControl), new PropertyMetadata(""));
     }
 
     public class PropertyBindingTest
@@ -307,6 +321,19 @@ namespace ReactiveUI.Tests
             view.OneWayBind(vm, x => x.SomeCollectionOfStrings, x => x.FakeItemsControl.ItemsSource);
 
             Assert.NotNull(view.FakeItemsControl.ItemTemplate);
+        }
+
+        [Fact]
+        public void BindToShouldntInitiallySetToNull()
+        {
+            var vm = new PropertyBindViewModel();
+            var view = new PropertyBindView() {ViewModel = null};
+
+            view.OneWayBind(vm, x => x.Model.AnotherThing, x => x.FakeControl.NullHatingString);
+            Assert.Equal("", view.FakeControl.NullHatingString);
+
+            view.ViewModel = vm;
+            Assert.Equal(vm.Model.AnotherThing, view.FakeControl.NullHatingString);
         }
 
         void configureDummyServiceLocator()
