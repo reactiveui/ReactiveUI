@@ -550,11 +550,12 @@ namespace ReactiveUI
         /// <param name="property">An expression representing the target
         /// property to set. This can be a child property (i.e. x.Foo.Bar.Baz).</param>
         /// <returns>An object that when disposed, disconnects the binding.</returns>
-        public static IDisposable BindTo<TTarget, TValue>(
+        public static IDisposable BindTo<TValue, TTarget, TTValue>(
             this IObservable<TValue> This,
             TTarget target,
-            Expression<Func<TTarget, TValue>> property,
-            Func<TValue> fallbackValue = null)
+            Expression<Func<TTarget, TTValue>> property,
+            Func<TValue> fallbackValue = null,
+            object conversionHint = null)
         {
             return binderImplementation.BindTo(This, target, property, fallbackValue);
         }
@@ -769,11 +770,12 @@ namespace ReactiveUI
         /// <param name="property">An expression representing the target
         /// property to set. This can be a child property (i.e. x.Foo.Bar.Baz).</param>
         /// <returns>An object that when disposed, disconnects the binding.</returns>
-        IDisposable BindTo<TTarget, TValue>(
+        IDisposable BindTo<TValue, TTarget, TTValue>(
             IObservable<TValue> This,
             TTarget target,
-            Expression<Func<TTarget, TValue>> property,
-            Func<TValue> fallbackValue = null);
+            Expression<Func<TTarget, TTValue>> property,
+            Func<TValue> fallbackValue = null,
+            object conversionHint = null);
     }
 
     public class PropertyBinderImplementation : IPropertyBinderImplementation 
@@ -1181,13 +1183,34 @@ namespace ReactiveUI
             return bindToDirect(source, view, viewProperty, fallbackValue);
         }
 
-        public IDisposable BindTo<TTarget, TValue>(
+        public IDisposable BindTo<TValue, TTarget, TTValue>(
             IObservable<TValue> This,
             TTarget target,
-            Expression<Func<TTarget, TValue>> property,
-            Func<TValue> fallbackValue = null)
+            Expression<Func<TTarget, TTValue>> property,
+            Func<TValue> fallbackValue = null,
+            object conversionHint = null)
         {
-            throw new NotImplementedException();
+            var viewPropChain = Reflection.ExpressionToPropertyNames(property);
+            var ret = evalBindingHooks(This, target, null, viewPropChain, BindingDirection.OneWay);
+            if (ret != null) return ret;
+                
+            var converter = getConverterForTypes(typeof (TValue), typeof(TTValue));
+
+            if (converter == null) {
+                throw new ArgumentException(String.Format("Can't convert {0} to {1}. To fix this, register a IBindingTypeConverter", typeof (TValue), typeof(TTValue)));
+            }
+
+            var source = This.SelectMany(x => {
+                object tmp;
+                if (!converter.TryConvert(x, typeof(TTValue), conversionHint, out tmp)) return Observable.Empty<TTValue>();
+                return Observable.Return(tmp == null ? default(TTValue) : (TTValue)tmp);
+            });
+
+            return bindToDirect(source, target, property, fallbackValue == null ? default(Func<TTValue>) : new Func<TTValue>(() => {
+                object tmp;
+                if (!converter.TryConvert(fallbackValue(), typeof(TTValue), conversionHint, out tmp)) return default(TTValue);
+                return tmp == null ? default(TTValue) : (TTValue)tmp;
+            }));
         }
 
         IDisposable bindToDirect<TTarget, TValue>(
