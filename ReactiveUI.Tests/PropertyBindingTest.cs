@@ -336,6 +336,21 @@ namespace ReactiveUI.Tests
             Assert.Equal(vm.Model.AnotherThing, view.FakeControl.NullHatingString);
         }
 
+        [Fact]
+        public void BindToTypeConversionSmokeTest()
+        {
+            var vm = new PropertyBindViewModel();
+            var view = new PropertyBindView() {ViewModel = null};
+
+            view.WhenAny(x => x.ViewModel.JustADouble, x => x.Value)
+                .BindTo(view, x => x.FakeControl.NullHatingString);
+
+            Assert.Equal("", view.FakeControl.NullHatingString);
+
+            view.ViewModel = vm;
+            Assert.Equal(vm.JustADouble.ToString(), view.FakeControl.NullHatingString);
+        }
+
         void configureDummyServiceLocator()
         {
             var types = new Dictionary<Tuple<Type, string>, List<Type>>();
