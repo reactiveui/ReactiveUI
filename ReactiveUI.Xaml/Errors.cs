@@ -201,7 +201,7 @@ namespace ReactiveUI.Xaml
             //
             // If *none* of the handlers are interested in this UserError, we're
             // going to OnError the Observable.
-            var handler = handlers.Select(x => x(error)).FirstOrDefault() ?? Observable.Empty<RecoveryOptionResult>()
+            var handler = handlers.Select(x => x(error)).FirstOrDefault(x => x != null) ?? Observable.Empty<RecoveryOptionResult>()
                 .Concat(Observable.Throw<RecoveryOptionResult>(new UnhandledUserErrorException(error)));
 
             var ret = handler.Take(1).PublishLast();
