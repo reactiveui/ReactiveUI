@@ -88,7 +88,7 @@ namespace ReactiveUI.Tests
         public ListBox SomeListBox;
         public TextBox Property2;
         public PropertyBindFakeControl FakeControl;
-        public ItemsControl FakeItemsControl;
+        public ListBox FakeItemsControl;
 
         public PropertyBindView()
         {
@@ -96,7 +96,7 @@ namespace ReactiveUI.Tests
             SomeListBox = new ListBox();
             Property2 = new TextBox();
             FakeControl = new PropertyBindFakeControl();
-            FakeItemsControl = new ItemsControl();
+            FakeItemsControl = new ListBox();
         }
     }
 
@@ -321,6 +321,24 @@ namespace ReactiveUI.Tests
             view.OneWayBind(vm, x => x.SomeCollectionOfStrings, x => x.FakeItemsControl.ItemsSource);
 
             Assert.NotNull(view.FakeItemsControl.ItemTemplate);
+        }
+
+        [Fact]
+        public void ItemsControlShouldGetADataTemplateInBindTo()
+        {
+            var vm = new PropertyBindViewModel();
+            var view = new PropertyBindView() {ViewModel = vm};
+
+            configureDummyServiceLocator();
+
+            Assert.Null(view.FakeItemsControl.ItemTemplate);
+            vm.WhenAny(x => x.SomeCollectionOfStrings, x => x.Value)
+                .BindTo(view, v => v.FakeItemsControl.ItemsSource);
+
+            Assert.NotNull(view.FakeItemsControl.ItemTemplate);
+
+            view.WhenAny(x => x.FakeItemsControl.SelectedItem, x => x.Value)
+                .BindTo(vm, x => x.Property1);
         }
 
         [Fact]
