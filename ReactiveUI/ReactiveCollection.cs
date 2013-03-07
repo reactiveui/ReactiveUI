@@ -15,9 +15,12 @@ using System.Diagnostics.Contracts;
 using System.Threading;
 using System.Reactive.Disposables;
 using System.Globalization;
+using System.Diagnostics;
 
 namespace ReactiveUI
 {
+    [DebuggerDisplay("Count = {Count}")]
+    [DebuggerTypeProxy(typeof(CollectionDebugView<>))]
     public class ReactiveCollection<T> : IList<T>, IList, IReactiveCollection<T>, INotifyPropertyChanging, INotifyPropertyChanged, IEnableLogger
     {
         public event NotifyCollectionChangedEventHandler CollectionChanging;
