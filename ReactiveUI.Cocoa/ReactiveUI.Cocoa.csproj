@@ -89,6 +89,7 @@
     <Compile Include="NSRunloopScheduler.cs" />
     <Compile Include="KVOObservableForProperty.cs" />
     <Compile Include="ServiceLocationRegistration.cs" />
+    <Compile Include="CocoaDefaultPropertyBinding.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ReactiveUI\ReactiveUI_Mono.csproj">
