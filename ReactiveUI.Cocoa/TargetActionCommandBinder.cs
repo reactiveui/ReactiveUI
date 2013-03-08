@@ -1,11 +1,13 @@
 using System;
 using System.Linq;
 using System.Windows.Input;
+using ReactiveUI;
 using ReactiveUI.Xaml;
 using MonoMac.Foundation;
 using MonoMac.AppKit;
 using MonoMac.ObjCRuntime;
 using System.Reactive.Disposables;
+using System.Reactive.Linq;
 
 namespace ReactiveUI.Cocoa
 {
@@ -33,8 +35,12 @@ namespace ReactiveUI.Cocoa
 
         public IDisposable BindCommandToObject(ICommand command, object target, IObservable<object> commandParameter)
         {
+            commandParameter = commandParameter ?? Observable.Return(target);
+
+            object latestParam = null;
             var ctlDelegate = new ControlDelegate(x => {
-                if (command.CanExecute(x)) command.Execute(x);
+                if (command.CanExecute(latestParam))
+                    command.Execute(latestParam);
             });
 
             var sel = new Selector("theAction:");
@@ -43,7 +49,18 @@ namespace ReactiveUI.Cocoa
             var targetSetter = Reflection.GetValueSetterOrThrow(target.GetType(), "Target");
             targetSetter(target, ctlDelegate);
 
-            return Disposable.Create(() => targetSetter(target, null));
+            var enabledSetter = Reflection.GetValueSetterForProperty(target.GetType(), "Enabled");
+            var disp = new CompositeDisposable(
+                Disposable.Create(() => targetSetter(target, null)),
+                commandParameter.Subscribe(x => latestParam = x),
+                Observable.FromEventPattern<EventHandler, EventArgs>(x => command.CanExecuteChanged += x, x => command.CanExecuteChanged -= x)
+                    .Select(_ => command.CanExecute(latestParam))
+                    .Subscribe(x => {
+                        if (enabledSetter == null) return;
+                        enabledSetter(target, x);
+                    }));
+
+            return disp;
         }
 
         class ControlDelegate : NSObject
