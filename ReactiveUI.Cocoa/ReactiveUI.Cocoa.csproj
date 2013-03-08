@@ -92,6 +92,7 @@
     <Compile Include="CocoaDefaultPropertyBinding.cs" />
     <Compile Include="TargetActionCommandBinder.cs" />
     <Compile Include="ViewModelViewHost.cs" />
+    <Compile Include="RoutedViewHost.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ReactiveUI\ReactiveUI_Mono.csproj">
