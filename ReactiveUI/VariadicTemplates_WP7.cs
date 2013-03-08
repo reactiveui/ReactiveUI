@@ -26,7 +26,7 @@ namespace ReactiveUI
                             Expression<Func<TSender, T1>> property1, 
                             Func<IObservedChange<TSender, T1>, TRet> selector)
         {
-                            return This.ObservableForProperty(property1, beforeChange:false, skipInitial:false).Select(selector); 
+                            return This.ObservableForProperty(property1, false, false).Select(selector); 
                     }
 
         /// <summary>
@@ -41,7 +41,7 @@ namespace ReactiveUI
                             Func<IObservedChange<TSender, object>, TRet> selector)
         {
                             return ReactiveNotifyPropertyChangedMixin
-                    .SubscribeToExpressionChain<TSender,object>(This, property1, beforeChange:false, skipInitial:false).Select(selector); 
+                    .SubscribeToExpressionChain<TSender,object>(This, property1, false, false).Select(selector); 
                     }
 
                                     
@@ -58,8 +58,8 @@ namespace ReactiveUI
                             Func<IObservedChange<TSender, T1>, IObservedChange<TSender, T2>, TRet> selector)
         {
                         return Observable.CombineLatest(
-                                    This.ObservableForProperty(property1, beforeChange: false, skipInitial:false), 
-                                    This.ObservableForProperty(property2, beforeChange: false, skipInitial:false), 
+                                    This.ObservableForProperty(property1, false, false), 
+                                    This.ObservableForProperty(property2, false, false), 
                                 selector
             );
                     }
@@ -78,9 +78,9 @@ namespace ReactiveUI
         {
                         return Observable.CombineLatest(
                                     ReactiveNotifyPropertyChangedMixin
-                        .SubscribeToExpressionChain<TSender,object>(This, property1, beforeChange: false, skipInitial:false), 
+                        .SubscribeToExpressionChain<TSender,object>(This, property1, false, false), 
                                     ReactiveNotifyPropertyChangedMixin
-                        .SubscribeToExpressionChain<TSender,object>(This, property2, beforeChange: false, skipInitial:false), 
+                        .SubscribeToExpressionChain<TSender,object>(This, property2, false, false), 
                                 selector
             );
                     }
@@ -100,9 +100,9 @@ namespace ReactiveUI
                             Func<IObservedChange<TSender, T1>, IObservedChange<TSender, T2>, IObservedChange<TSender, T3>, TRet> selector)
         {
                         return Observable.CombineLatest(
-                                    This.ObservableForProperty(property1, beforeChange: false, skipInitial:false), 
-                                    This.ObservableForProperty(property2, beforeChange: false, skipInitial:false), 
-                                    This.ObservableForProperty(property3, beforeChange: false, skipInitial:false), 
+                                    This.ObservableForProperty(property1, false, false), 
+                                    This.ObservableForProperty(property2, false, false), 
+                                    This.ObservableForProperty(property3, false, false), 
                                 selector
             );
                     }
@@ -122,11 +122,11 @@ namespace ReactiveUI
         {
                         return Observable.CombineLatest(
                                     ReactiveNotifyPropertyChangedMixin
-                        .SubscribeToExpressionChain<TSender,object>(This, property1, beforeChange: false, skipInitial:false), 
+                        .SubscribeToExpressionChain<TSender,object>(This, property1, false, false), 
                                     ReactiveNotifyPropertyChangedMixin
-                        .SubscribeToExpressionChain<TSender,object>(This, property2, beforeChange: false, skipInitial:false), 
+                        .SubscribeToExpressionChain<TSender,object>(This, property2, false, false), 
                                     ReactiveNotifyPropertyChangedMixin
-                        .SubscribeToExpressionChain<TSender,object>(This, property3, beforeChange: false, skipInitial:false), 
+                        .SubscribeToExpressionChain<TSender,object>(This, property3, false, false), 
                                 selector
             );
                     }
@@ -147,10 +147,10 @@ namespace ReactiveUI
                             Func<IObservedChange<TSender, T1>, IObservedChange<TSender, T2>, IObservedChange<TSender, T3>, IObservedChange<TSender, T4>, TRet> selector)
         {
                         return Observable.CombineLatest(
-                                    This.ObservableForProperty(property1, beforeChange: false, skipInitial:false), 
-                                    This.ObservableForProperty(property2, beforeChange: false, skipInitial:false), 
-                                    This.ObservableForProperty(property3, beforeChange: false, skipInitial:false), 
-                                    This.ObservableForProperty(property4, beforeChange: false, skipInitial:false), 
+                                    This.ObservableForProperty(property1, false, false), 
+                                    This.ObservableForProperty(property2, false, false), 
+                                    This.ObservableForProperty(property3, false, false), 
+                                    This.ObservableForProperty(property4, false, false), 
                                 selector
             );
                     }
@@ -171,13 +171,13 @@ namespace ReactiveUI
         {
                         return Observable.CombineLatest(
                                     ReactiveNotifyPropertyChangedMixin
-                        .SubscribeToExpressionChain<TSender,object>(This, property1, beforeChange: false, skipInitial:false), 
+                        .SubscribeToExpressionChain<TSender,object>(This, property1, false, false), 
                                     ReactiveNotifyPropertyChangedMixin
-                        .SubscribeToExpressionChain<TSender,object>(This, property2, beforeChange: false, skipInitial:false), 
+                        .SubscribeToExpressionChain<TSender,object>(This, property2, false, false), 
                                     ReactiveNotifyPropertyChangedMixin
-                        .SubscribeToExpressionChain<TSender,object>(This, property3, beforeChange: false, skipInitial:false), 
+                        .SubscribeToExpressionChain<TSender,object>(This, property3, false, false), 
                                     ReactiveNotifyPropertyChangedMixin
-                        .SubscribeToExpressionChain<TSender,object>(This, property4, beforeChange: false, skipInitial:false), 
+                        .SubscribeToExpressionChain<TSender,object>(This, property4, false, false), 
                                 selector
             );
                     }
