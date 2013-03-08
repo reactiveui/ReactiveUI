@@ -20,6 +20,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Cocoa", "Reactiv
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.NLog_Mono", "ReactiveUI.NLog\ReactiveUI.NLog_Mono.csproj", "{67038157-092E-4D72-BAF4-949EB1532264}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XamarinMacPlayground", "XamarinMacPlayground\XamarinMacPlayground.csproj", "{F59E041D-0598-43FD-A6D5-52A25BAB8158}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -59,6 +61,8 @@ Global
 		{292A477B-BB94-43C1-984E-E177EF9FEDB7}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{292A477B-BB94-43C1-984E-E177EF9FEDB7}.Release|x86.ActiveCfg = Release|Any CPU
 		{292A477B-BB94-43C1-984E-E177EF9FEDB7}.Release|x86.Build.0 = Release|Any CPU
+		{482DE1CC-A08C-49F7-AB36-445DC9724482}.AppStore|Any CPU.ActiveCfg = Debug|Any CPU
+		{482DE1CC-A08C-49F7-AB36-445DC9724482}.AppStore|Any CPU.Build.0 = Debug|Any CPU
 		{482DE1CC-A08C-49F7-AB36-445DC9724482}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{482DE1CC-A08C-49F7-AB36-445DC9724482}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{482DE1CC-A08C-49F7-AB36-445DC9724482}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
@@ -113,11 +117,25 @@ Global
 		{761AC9BA-4A9C-440C-9B6C-2569978F0610}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{761AC9BA-4A9C-440C-9B6C-2569978F0610}.Release|x86.ActiveCfg = Release|Any CPU
 		{761AC9BA-4A9C-440C-9B6C-2569978F0610}.Release|x86.Build.0 = Release|Any CPU
+		{F59E041D-0598-43FD-A6D5-52A25BAB8158}.AppStore|Any CPU.ActiveCfg = AppStore|Any CPU
+		{F59E041D-0598-43FD-A6D5-52A25BAB8158}.AppStore|Any CPU.Build.0 = AppStore|Any CPU
+		{F59E041D-0598-43FD-A6D5-52A25BAB8158}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F59E041D-0598-43FD-A6D5-52A25BAB8158}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F59E041D-0598-43FD-A6D5-52A25BAB8158}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{F59E041D-0598-43FD-A6D5-52A25BAB8158}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{F59E041D-0598-43FD-A6D5-52A25BAB8158}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{F59E041D-0598-43FD-A6D5-52A25BAB8158}.Debug|x86.Build.0 = Debug|Any CPU
+		{F59E041D-0598-43FD-A6D5-52A25BAB8158}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F59E041D-0598-43FD-A6D5-52A25BAB8158}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F59E041D-0598-43FD-A6D5-52A25BAB8158}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{F59E041D-0598-43FD-A6D5-52A25BAB8158}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{F59E041D-0598-43FD-A6D5-52A25BAB8158}.Release|x86.ActiveCfg = Release|Any CPU
+		{F59E041D-0598-43FD-A6D5-52A25BAB8158}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
-		StartupItem = ReactiveUI\ReactiveUI_Mono.csproj
+		StartupItem = XamarinMacPlayground\XamarinMacPlayground.csproj
 	EndGlobalSection
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = ReactiveUI.vsmdi
