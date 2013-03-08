@@ -13,12 +13,20 @@ namespace XamarinMacPlayground
 	{
 		[Outlet]
 		MonoMac.AppKit.NSButton doIt { get; set; }
+
+		[Outlet]
+		MonoMac.AppKit.NSView viewModelHost { get; set; }
 		
 		void ReleaseDesignerOutlets ()
 		{
 			if (doIt != null) {
 				doIt.Dispose ();
 				doIt = null;
+			}
+
+			if (viewModelHost != null) {
+				viewModelHost.Dispose ();
+				viewModelHost = null;
 			}
 		}
 	}
