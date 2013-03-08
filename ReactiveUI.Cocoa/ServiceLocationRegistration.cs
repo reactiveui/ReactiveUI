@@ -6,7 +6,8 @@ namespace ReactiveUI.Cocoa
     {
         public void Register ()
         {
-            RxApp.Register (typeof(KVOObservableForProperty), typeof(ICreatesObservableForProperty));
+            RxApp.Register(typeof(KVOObservableForProperty), typeof(ICreatesObservableForProperty));
+            RxApp.Register(typeof(CocoaDefaultPropertyBinding), typeof(IDefaultPropertyBindingProvider));
         }
     }
 }
