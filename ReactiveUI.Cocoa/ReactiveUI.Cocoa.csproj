@@ -90,6 +90,7 @@
     <Compile Include="KVOObservableForProperty.cs" />
     <Compile Include="ServiceLocationRegistration.cs" />
     <Compile Include="CocoaDefaultPropertyBinding.cs" />
+    <Compile Include="TargetActionCommandBinder.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ReactiveUI\ReactiveUI_Mono.csproj">
