@@ -94,10 +94,16 @@
     <Compile Include="AppDelegate.designer.cs">
       <DependentUpon>AppDelegate.cs</DependentUpon>
     </Compile>
+    <Compile Include="TestView.cs" />
+    <Compile Include="TestViewController.cs" />
+    <Compile Include="TestView.designer.cs">
+      <DependentUpon>TestView.cs</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <InterfaceDefinition Include="MainWindow.xib" />
     <InterfaceDefinition Include="MainMenu.xib" />
+    <InterfaceDefinition Include="TestView.xib" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Info.plist" />
