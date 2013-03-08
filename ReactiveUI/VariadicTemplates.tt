@@ -45,11 +45,11 @@ namespace ReactiveUI
                 Func<<#= selectorTypeParams #>, TRet> selector)
         {
             <# if (length == 1){ #>
-                return This.ObservableForProperty(property<#=1#>, beforeChange:false, skipInitial:false).Select(selector); 
+                return This.ObservableForProperty(property<#=1#>, false, false).Select(selector); 
             <# }else{ #>
             return Observable.CombineLatest(
                 <# for(int i=1; i <= length; i++) { #>
-                    This.ObservableForProperty(property<#=i#>, beforeChange: false, skipInitial:false), 
+                    This.ObservableForProperty(property<#=i#>, false, false), 
                 <# } #>
                 selector
             );
@@ -71,12 +71,12 @@ namespace ReactiveUI
         {
             <# if (length == 1){ #>
                 return ReactiveNotifyPropertyChangedMixin
-                    .SubscribeToExpressionChain<TSender,object>(This, property<#=1#>, beforeChange:false, skipInitial:false).Select(selector); 
+                    .SubscribeToExpressionChain<TSender,object>(This, property<#=1#>, false, false).Select(selector); 
             <# }else{ #>
             return Observable.CombineLatest(
                 <# for(int i=1; i <= length; i++) { #>
                     ReactiveNotifyPropertyChangedMixin
-                        .SubscribeToExpressionChain<TSender,object>(This, property<#=i#>, beforeChange: false, skipInitial:false), 
+                        .SubscribeToExpressionChain<TSender,object>(This, property<#=i#>, false, false), 
                 <# } #>
                 selector
             );
