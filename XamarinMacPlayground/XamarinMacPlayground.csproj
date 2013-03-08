@@ -5,60 +5,60 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>10.0.0</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{0913BF79-061F-4667-ADF9-8E6CDA6D1213}</ProjectGuid>
+    <ProjectGuid>{F59E041D-0598-43FD-A6D5-52A25BAB8158}</ProjectGuid>
     <ProjectTypeGuids>{42C0BBD9-55CE-4FC1-8D90-A7348ABAFB23};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <OutputType>Library</OutputType>
-    <RootNamespace>ReactiveUI.Cocoa</RootNamespace>
-    <AssemblyName>ReactiveUI.Cocoa</AssemblyName>
-    <LastXamMacNagTime>1/2/2013 10:55:11 PM</LastXamMacNagTime>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>XamarinMacPlayground</RootNamespace>
+    <MonoMacResourcePrefix>Resources</MonoMacResourcePrefix>
+    <AssemblyName>XamarinMacPlayground</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>False</Optimize>
-    <OutputPath>bin\Debug\Mono</OutputPath>
+    <OutputPath>bin\Debug</OutputPath>
     <DefineConstants>DEBUG;</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <EnablePackageSigning>False</EnablePackageSigning>
     <IncludeMonoRuntime>False</IncludeMonoRuntime>
+    <UseSGen>False</UseSGen>
+    <EnablePackageSigning>False</EnablePackageSigning>
     <ConsolePause>False</ConsolePause>
     <EnableCodeSigning>False</EnableCodeSigning>
     <CreatePackage>False</CreatePackage>
     <CodeSigningKey>Mac Developer</CodeSigningKey>
-    <UseSGen>False</UseSGen>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
     <Optimize>True</Optimize>
-    <OutputPath>bin\Release\Mono</OutputPath>
+    <OutputPath>bin\Release</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <EnablePackageSigning>False</EnablePackageSigning>
-    <IncludeMonoRuntime>False</IncludeMonoRuntime>
-    <LinkMode>Full</LinkMode>
-    <ConsolePause>False</ConsolePause>
-    <EnableCodeSigning>False</EnableCodeSigning>
-    <CreatePackage>False</CreatePackage>
-    <CodeSigningKey>Mac Developer</CodeSigningKey>
+    <IncludeMonoRuntime>True</IncludeMonoRuntime>
     <UseSGen>False</UseSGen>
+    <LinkMode>Full</LinkMode>
+    <EnablePackageSigning>False</EnablePackageSigning>
+    <ConsolePause>False</ConsolePause>
+    <EnableCodeSigning>True</EnableCodeSigning>
+    <CreatePackage>True</CreatePackage>
+    <CodeSigningKey>Developer ID Application</CodeSigningKey>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'AppStore|AnyCPU' ">
     <DebugType>none</DebugType>
     <Optimize>True</Optimize>
-    <OutputPath>bin\AppStore\Mono</OutputPath>
+    <OutputPath>bin\AppStore</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <PackageSigningKey>3rd Party Mac Developer Installer</PackageSigningKey>
     <IncludeMonoRuntime>True</IncludeMonoRuntime>
+    <PackageSigningKey>3rd Party Mac Developer Installer</PackageSigningKey>
     <LinkMode>Full</LinkMode>
-    <EnablePackageSigning>True</EnablePackageSigning>
-    <ConsolePause>False</ConsolePause>
+    <UseSGen>False</UseSGen>
     <EnableCodeSigning>True</EnableCodeSigning>
+    <ConsolePause>False</ConsolePause>
+    <EnablePackageSigning>True</EnablePackageSigning>
     <CreatePackage>True</CreatePackage>
     <CodeSigningKey>3rd Party Mac Developer Application</CodeSigningKey>
-    <UseSGen>False</UseSGen>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -81,19 +81,35 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Resources\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="MainWindow.cs" />
+    <Compile Include="MainWindowController.cs" />
+    <Compile Include="MainWindow.designer.cs">
+      <DependentUpon>MainWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Main.cs" />
+    <Compile Include="AppDelegate.cs" />
+    <Compile Include="AppDelegate.designer.cs">
+      <DependentUpon>AppDelegate.cs</DependentUpon>
+    </Compile>
+    <Compile Include="TestView.cs" />
+    <Compile Include="TestViewController.cs" />
+    <Compile Include="TestView.designer.cs">
+      <DependentUpon>TestView.cs</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <InterfaceDefinition Include="MainWindow.xib" />
+    <InterfaceDefinition Include="MainMenu.xib" />
+    <InterfaceDefinition Include="TestView.xib" />
+  </ItemGroup>
+  <ItemGroup>
     <None Include="Info.plist" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <Import Project="$(MSBuildExtensionsPath)\Mono\MonoMac\v0.0\Mono.MonoMac.targets" />
-  <ItemGroup>
-    <Compile Include="NSRunloopScheduler.cs" />
-    <Compile Include="KVOObservableForProperty.cs" />
-    <Compile Include="ServiceLocationRegistration.cs" />
-    <Compile Include="CocoaDefaultPropertyBinding.cs" />
-    <Compile Include="TargetActionCommandBinder.cs" />
-    <Compile Include="ViewModelViewHost.cs" />
-    <Compile Include="RoutedViewHost.cs" />
-  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath)\Xamarin\Mac\v0.0\Xamarin.Mac.targets" />
   <ItemGroup>
     <ProjectReference Include="..\ReactiveUI\ReactiveUI_Mono.csproj">
       <Project>{292A477B-BB94-43C1-984E-E177EF9FEDB7}</Project>
@@ -106,6 +122,10 @@
     <ProjectReference Include="..\ReactiveUI.Routing\ReactiveUI.Routing_Mono.csproj">
       <Project>{67038157-092E-4D72-BAF4-049EB1532264}</Project>
       <Name>ReactiveUI.Routing_Mono</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ReactiveUI.Cocoa\ReactiveUI.Cocoa.csproj">
+      <Project>{0913BF79-061F-4667-ADF9-8E6CDA6D1213}</Project>
+      <Name>ReactiveUI.Cocoa</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>
