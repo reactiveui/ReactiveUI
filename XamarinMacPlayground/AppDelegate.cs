@@ -3,6 +3,7 @@ using System.Drawing;
 using MonoMac.Foundation;
 using MonoMac.AppKit;
 using MonoMac.ObjCRuntime;
+using ReactiveUI;
 
 namespace XamarinMacPlayground
 {
@@ -16,6 +17,8 @@ namespace XamarinMacPlayground
 
         public override void FinishedLaunching (NSObject notification)
         {
+            RxApp.Register(typeof(TestViewController), typeof(IViewFor<TestViewModel>));
+
             mainWindowController = new MainWindowController ();
             mainWindowController.Window.MakeKeyAndOrderFront (this);
         }
