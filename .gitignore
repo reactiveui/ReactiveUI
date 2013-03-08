@@ -18,3 +18,5 @@ Release
 NuGet-Release
 
 *.nupkg
+
+**/AppPackages
