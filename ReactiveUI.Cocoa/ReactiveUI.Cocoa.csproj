@@ -91,6 +91,7 @@
     <Compile Include="ServiceLocationRegistration.cs" />
     <Compile Include="CocoaDefaultPropertyBinding.cs" />
     <Compile Include="TargetActionCommandBinder.cs" />
+    <Compile Include="ViewModelViewHost.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ReactiveUI\ReactiveUI_Mono.csproj">
