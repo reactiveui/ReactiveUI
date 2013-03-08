@@ -66,7 +66,13 @@ namespace MobileSample_WinRT.ViewModels
             Router = new RoutingState();
 
             Kernel = new StandardKernel();
+            Kernel.Bind<TestPage1ViewModel>().ToSelf();
+            Kernel.Bind<TestPage2ViewModel>().ToSelf();
+            Kernel.Bind<TestPage3ViewModel>().ToSelf();
+
             Kernel.Bind<IViewFor<TestPage1ViewModel>>().To<TestPage1View>();
+            Kernel.Bind<IViewFor<TestPage2ViewModel>>().To<TestPage2View>();
+            Kernel.Bind<IViewFor<TestPage3ViewModel>>().To<TestPage3View>();
 
             Kernel.Bind<IApplicationRootState>().ToConstant(this);
             Kernel.Bind<IViewFor>().To<MainPage>().Named("InitialPage");
