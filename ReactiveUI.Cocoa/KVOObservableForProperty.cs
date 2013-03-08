@@ -1,7 +1,9 @@
 using System;
+using System.Linq;
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using System.Reflection;
 using ReactiveUI;
 
 #if UIKIT
@@ -22,10 +24,7 @@ namespace ReactiveUI.Cocoa
         
         public int GetAffinityForObject(Type type, bool beforeChanged = false)
         {
-            // NB: Since every IRNPC is also an INPC, we need to bind more 
-            // tightly than INPCObservableForProperty, so we return 10 here 
-            // instead of one
-            return typeof (NSObject).IsAssignableFrom(type) ? 10 : 0;
+            return typeof (NSObject).IsAssignableFrom(type) ? 4 : 0;
         }
 
         public IObservable<IObservedChange<object, object>> GetNotificationForProperty(object sender, string propertyName, bool beforeChanged = false)
@@ -40,11 +39,32 @@ namespace ReactiveUI.Cocoa
                     subj.OnNext(new ObservedChange<object, object>() { Sender = s, PropertyName = propertyName });
                 });
                 
-                obj.AddObserver(bobs, (NSString)propertyName, beforeChanged ? NSKeyValueObservingOptions.Old : NSKeyValueObservingOptions.New, IntPtr.Zero);
+                obj.AddObserver(bobs, (NSString)findCocoaNameFromNetName(sender.GetType(), propertyName), beforeChanged ? NSKeyValueObservingOptions.Old : NSKeyValueObservingOptions.New, IntPtr.Zero);
                 return Disposable.Create(() => {
                     obj.RemoveObserver(bobs, (NSString) propertyName);
                 });
             });
+        }
+
+        string findCocoaNameFromNetName(Type senderType, string propertyName)
+        {
+            bool propIsBoolean = false;
+
+            var pi = Reflection.GetSafeProperty (senderType, propertyName, BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
+            if (pi == null) goto attemptGuess;
+
+            if (pi.DeclaringType == typeof(bool)) propIsBoolean = true;
+
+            var mi = pi.GetGetMethod();
+            if (mi == null) goto attemptGuess;
+
+            var attr = mi.GetCustomAttributes(true).Select(x => x as ExportAttribute).FirstOrDefault(x => x != null);
+            if (attr == null) goto attemptGuess;
+            return attr.Selector;
+
+        attemptGuess:
+            if (propIsBoolean) propertyName = "Is" + propertyName;
+            return Char.ToLowerInvariant(propertyName[0]).ToString() + propertyName.Substring(1);
         }
     }
     
