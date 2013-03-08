@@ -357,7 +357,7 @@ namespace ReactiveUI
             var eventArgsType = ei.EventHandlerType.GetMethods().First(x => x.Name == "Invoke").GetParameters()[1].ParameterType;
             return eventArgsType;
         }
-
+		/*
         internal static IObservable<TProp> ViewModelWhenAnyValue<TView, TViewModel, TProp>(TViewModel viewModel, TView view, Expression<Func<TViewModel, TProp>> property)
             where TView : IViewFor
             where TViewModel : class
@@ -366,6 +366,7 @@ namespace ReactiveUI
                 .Where(x => x != null)
                 .SelectMany(x => ((TViewModel)x).WhenAny(property, y => y.Value));
         }
+        */
 
         internal static FieldInfo GetSafeField(Type type, string propertyName, BindingFlags flags)
         {

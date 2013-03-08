@@ -13,6 +13,11 @@ using System.Threading;
 using System.Reactive.Concurrency;
 using System.Runtime.CompilerServices;
 
+namespace System
+{
+	public class CallerMemberNameAttribute : Attribute {}
+}
+
 namespace ReactiveUI
 {
     /// <summary>
