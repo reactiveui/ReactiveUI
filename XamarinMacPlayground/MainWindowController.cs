@@ -12,8 +12,6 @@ namespace XamarinMacPlayground
 {
     public partial class MainWindowController : MonoMac.AppKit.NSWindowController, IViewFor<MainWindowViewModel>
     {
-		#region Constructors
-		
         // Called when created from unmanaged code
         public MainWindowController (IntPtr handle) : base (handle)
         {
@@ -42,15 +40,10 @@ namespace XamarinMacPlayground
         public override void WindowDidLoad()
         {
             base.WindowDidLoad();
-
             this.BindCommand(ViewModel, x => x.DoIt, x => x.doIt);
         }
 
-		#endregion
-
         public MainWindowViewModel ViewModel { get; set; }
-
-        #region IViewFor implementation
 
         object IViewFor.ViewModel
         {
@@ -58,8 +51,6 @@ namespace XamarinMacPlayground
             set { this.ViewModel = (MainWindowViewModel)value; }
         }
 
-        #endregion
-		
         //strongly typed window accessor
         public new MainWindow Window {
             get {
