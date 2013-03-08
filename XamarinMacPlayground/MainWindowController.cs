@@ -7,6 +7,7 @@ using MonoMac.AppKit;
 using ReactiveUI;
 using ReactiveUI.Xaml;
 using System.Reactive.Linq;
+using ReactiveUI.Cocoa;
 
 namespace XamarinMacPlayground
 {
@@ -37,10 +38,14 @@ namespace XamarinMacPlayground
             ViewModel = new MainWindowViewModel();
         }
 
+        ViewModelViewHost realViewModelHost;
         public override void WindowDidLoad()
         {
             base.WindowDidLoad();
             this.BindCommand(ViewModel, x => x.DoIt, x => x.doIt);
+
+            realViewModelHost = new ViewModelViewHost(viewModelHost);
+            realViewModelHost.ViewModel = new TestViewModel();
         }
 
         public MainWindowViewModel ViewModel { get; set; }
