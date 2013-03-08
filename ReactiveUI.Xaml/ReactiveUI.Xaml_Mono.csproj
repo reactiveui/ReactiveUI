@@ -122,6 +122,7 @@
     <Compile Include="CreatesCommandBinding.cs" />
     <Compile Include="SampleDataBinder.cs" />
     <Compile Include="ServiceLocationRegistration.cs" />
+    <Compile Include="WaitForDispatcherScheduler.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
