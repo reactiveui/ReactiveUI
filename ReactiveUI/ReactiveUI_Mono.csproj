@@ -140,6 +140,7 @@
     <Compile Include="VariadicTemplates.cs" />
     <Compile Include="BindingTypeConverters.cs" />
     <Compile Include="CallerMemberNameAttribute.cs" />
+    <Compile Include="CollectionDebugView.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
