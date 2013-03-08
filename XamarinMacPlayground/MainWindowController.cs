@@ -1,13 +1,15 @@
-
 using System;
+using System.Reactive.Concurrency;
 using System.Collections.Generic;
 using System.Linq;
 using MonoMac.Foundation;
 using MonoMac.AppKit;
+using ReactiveUI;
+using ReactiveUI.Xaml;
 
 namespace XamarinMacPlayground
 {
-    public partial class MainWindowController : MonoMac.AppKit.NSWindowController
+    public partial class MainWindowController : MonoMac.AppKit.NSWindowController, IViewFor<MainWindowViewModel>
     {
 		#region Constructors
 		
@@ -33,9 +35,29 @@ namespace XamarinMacPlayground
         // Shared initialization code
         void Initialize ()
         {
+            ViewModel = new MainWindowViewModel();
         }
-		
+
+        public override void WindowDidLoad()
+        {
+            base.WindowDidLoad();
+
+            this.BindCommand(ViewModel, x => x.DoIt, x => x.doIt);
+        }
+
 		#endregion
+
+        public MainWindowViewModel ViewModel { get; set; }
+
+        #region IViewFor implementation
+
+        object IViewFor.ViewModel
+        {
+            get { return this.ViewModel; }
+            set { this.ViewModel = (MainWindowViewModel)value; }
+        }
+
+        #endregion
 		
         //strongly typed window accessor
         public new MainWindow Window {
@@ -44,5 +66,16 @@ namespace XamarinMacPlayground
             }
         }
     }
-}
 
+    public class MainWindowViewModel : ReactiveObject
+    {
+        public ReactiveCommand DoIt { get; protected set; }
+        public MainWindowViewModel()
+        {
+            DoIt = new ReactiveCommand();
+            DoIt.Subscribe(_ => {
+                Console.WriteLine("Boom");
+            });
+        }
+    }
+}
