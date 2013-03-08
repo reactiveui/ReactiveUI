@@ -6,6 +6,7 @@ using MonoMac.Foundation;
 using MonoMac.AppKit;
 using ReactiveUI;
 using ReactiveUI.Xaml;
+using System.Reactive.Linq;
 
 namespace XamarinMacPlayground
 {
@@ -69,13 +70,14 @@ namespace XamarinMacPlayground
 
     public class MainWindowViewModel : ReactiveObject
     {
-        public ReactiveCommand DoIt { get; protected set; }
+        public ReactiveAsyncCommand DoIt { get; protected set; }
         public MainWindowViewModel()
         {
-            DoIt = new ReactiveCommand();
-            DoIt.Subscribe(_ => {
-                Console.WriteLine("Boom");
-            });
+            DoIt = new ReactiveAsyncCommand();
+            DoIt.RegisterAsyncObservable(_ => Observable.Timer(TimeSpan.FromSeconds(5.0), RxApp.TaskpoolScheduler))
+                .Subscribe(_ => {
+                    Console.WriteLine("Boom");
+                });
         }
     }
 }
