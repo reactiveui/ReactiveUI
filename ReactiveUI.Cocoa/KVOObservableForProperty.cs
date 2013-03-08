@@ -5,6 +5,7 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reflection;
 using ReactiveUI;
+using System.Runtime.InteropServices;
 
 #if UIKIT
 using MonoTouch.UIKit;
@@ -38,10 +39,12 @@ namespace ReactiveUI.Cocoa
                 var bobs = new BlockObserveValueDelegate((key,s,_) => {
                     subj.OnNext(new ObservedChange<object, object>() { Sender = s, PropertyName = propertyName });
                 });
+                var pin = GCHandle.Alloc(bobs);
                 
                 obj.AddObserver(bobs, (NSString)findCocoaNameFromNetName(sender.GetType(), propertyName), beforeChanged ? NSKeyValueObservingOptions.Old : NSKeyValueObservingOptions.New, IntPtr.Zero);
                 return Disposable.Create(() => {
                     obj.RemoveObserver(bobs, (NSString) propertyName);
+                    pin.Free();
                 });
             });
         }
