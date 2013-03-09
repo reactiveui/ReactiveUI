@@ -39,14 +39,9 @@
     <Reference Include="System" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
+    <Reference Include="Mono.Android" />
     <Reference Include="System.Reactive.Core">
       <HintPath>..\ext\monodroid\System.Reactive.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Reactive.Debugger">
-      <HintPath>..\ext\monodroid\System.Reactive.Debugger.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Reactive.Experimental">
-      <HintPath>..\ext\monodroid\System.Reactive.Experimental.dll</HintPath>
     </Reference>
     <Reference Include="System.Reactive.Interfaces">
       <HintPath>..\ext\monodroid\System.Reactive.Interfaces.dll</HintPath>
@@ -60,10 +55,6 @@
     <Reference Include="System.Reactive.Providers">
       <HintPath>..\ext\monodroid\System.Reactive.Providers.dll</HintPath>
     </Reference>
-    <Reference Include="System.Reactive.Runtime.Remoting">
-      <HintPath>..\ext\monodroid\System.Reactive.Runtime.Remoting.dll</HintPath>
-    </Reference>
-    <Reference Include="Mono.Android" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Novell\Novell.MonoDroid.CSharp.targets" />
   <ItemGroup>
