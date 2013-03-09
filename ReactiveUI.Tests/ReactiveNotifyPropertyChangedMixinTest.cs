@@ -10,12 +10,25 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using ReactiveUI.Testing;
+using ReactiveUI.Xaml;
 using Xunit;
 
 using Microsoft.Reactive.Testing;
 
 namespace ReactiveUI.Tests
 {
+    public class TestWhenAnyObsViewModel : ReactiveObject
+    {
+        public ReactiveCommand Command1 { get; protected set; }
+        public ReactiveCommand Command2 { get; protected set; }
+
+        public TestWhenAnyObsViewModel()
+        {
+            Command1 = new ReactiveCommand();
+            Command2 = new ReactiveCommand();
+        }
+    }
+
     public class HostTestFixture : ReactiveObject
     {
         public TestFixture _Child;
@@ -266,7 +279,7 @@ namespace ReactiveUI.Tests
 
                 var changes = fixture.ObservableForProperty(x => x.InpcProperty.IsOnlyOneWord).CreateCollection();
 
-                fixture.InpcProperty = new TestFixture();
+                fixture.InpcProperty = new TestFixture(); 
                 sched.Start();
                 Assert.Equal(1, changes.Count);
 
@@ -277,10 +290,6 @@ namespace ReactiveUI.Tests
                 fixture.InpcProperty.IsOnlyOneWord = "Bar";
                 sched.Start();
                 Assert.Equal(3, changes.Count);
-
-                fixture.InpcProperty = new TestFixture() {IsOnlyOneWord = "Bar"};
-                sched.Start();
-                Assert.Equal(4, changes.Count);
             });
         }
 
@@ -289,6 +298,7 @@ namespace ReactiveUI.Tests
         {
             var obj = new ObjChain1();
             bool obsUpdated;
+
             obj.ObservableForProperty(x => x.Model.Model.Model.SomeOtherParam).Subscribe(_ => obsUpdated = true);
            
             obsUpdated = false;
@@ -436,12 +446,11 @@ namespace ReactiveUI.Tests
             var fixture = new HostTestView();
 
             var output = new List<string>();
-            fixture.WhenAny(x => x.ViewModel.Child.IsNotNullString, x => x.Value).Subscribe(x => {
-                output.Add(x);
-            });
 
             Assert.Equal(0, output.Count);
             Assert.Null(fixture.ViewModel);
+
+            fixture.WhenAny(x => x.ViewModel.Child.IsNotNullString, x => x.Value).Subscribe(output.Add);
 
             fixture.ViewModel = vm;
             Assert.Equal(1, output.Count);
@@ -451,4 +460,33 @@ namespace ReactiveUI.Tests
             new[] { "Foo", "Bar" }.AssertAreEqual(output);
         }
     }
+
+    public class WhenAnyObservableTests
+    {
+        [Fact]
+        public void WhenAnyObservableSmokeTest()
+        {
+            var fixture = new TestWhenAnyObsViewModel();
+
+            var list = new List<int>();
+            fixture.WhenAnyObservable(x => x.Command1, x => x.Command2)
+                   .Subscribe(x => list.Add((int)x));
+
+            Assert.Equal(0, list.Count);
+
+            fixture.Command1.Execute(1);
+            Assert.Equal(1, list.Count);
+
+            fixture.Command2.Execute(2);
+            Assert.Equal(2, list.Count);
+
+            fixture.Command1.Execute(1);
+            Assert.Equal(3, list.Count);
+
+            Assert.True(
+                new[] {1, 2, 1,}.Zip(list, (expected, actual) => new {expected, actual})
+                                .All(x => x.expected == x.actual));
+        }
+    }
+
 }

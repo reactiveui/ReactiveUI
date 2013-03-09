@@ -122,7 +122,7 @@ namespace ReactiveUI.Xaml
             where TProp : ICommand;
     }
 
-    class CommandBinderImplementation : ICommandBinderImplementation 
+    public class CommandBinderImplementation : ICommandBinderImplementation 
     {
         public IDisposable BindCommand<TView, TViewModel, TProp>(
                 TViewModel viewModel, 
@@ -260,12 +260,6 @@ namespace ReactiveUI.Xaml
 
     class CreatesCommandBinding
     {
-        static CreatesCommandBinding()
-        {
-            RxApp.Register(typeof(CreatesCommandBindingViaCommandParameter), typeof(ICreatesCommandBinding));
-            RxApp.Register(typeof(CreatesCommandBindingViaEvent), typeof(ICreatesCommandBinding));
-        }
-
         static readonly MemoizingMRUCache<Type, ICreatesCommandBinding> bindCommandCache = 
             new MemoizingMRUCache<Type, ICreatesCommandBinding>((t, _) => {
                 return RxApp.GetAllServices<ICreatesCommandBinding>()
@@ -286,8 +280,13 @@ namespace ReactiveUI.Xaml
 
         public static IDisposable BindCommandToObject(ICommand command, object target, IObservable<object> commandParameter)
         {
+            var binder = default(ICreatesCommandBinding);
             var type = target.GetType();
-            var binder = bindCommandCache.Get(type);
+
+            lock(bindCommandCache) {
+                binder = bindCommandCache.Get(type);
+            }
+
             if (binder == null) {
                 throw new Exception(String.Format("Couldn't find a Command Binder for {0}", type.FullName));
             }
