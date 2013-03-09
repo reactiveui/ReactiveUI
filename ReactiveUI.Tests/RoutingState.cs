@@ -41,11 +41,16 @@ namespace ReactiveUI.Routing.Tests
             fixture.Navigate.Go<TestViewModel>();
 
             Assert.Equal(1, fixture.NavigationStack.Count);
+            Assert.False(fixture.NavigateBack.CanExecute(null));
+
+            fixture.Navigate.Go<TestViewModel>();
+
+            Assert.Equal(2, fixture.NavigationStack.Count);
             Assert.True(fixture.NavigateBack.CanExecute(null));
 
             fixture.NavigateBack.Execute(null);
 
-            Assert.Equal(0, fixture.NavigationStack.Count);
+            Assert.Equal(1, fixture.NavigationStack.Count);
         }
     }
 }
