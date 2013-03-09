@@ -37,6 +37,18 @@ namespace ReactiveUI.Tests
             set { this.RaiseAndSetIfChanged(x => x.JustADouble, value); }
         }
 
+        public decimal _JustADecimal;
+        public decimal JustADecimal {
+            get { return _JustADecimal; }
+            set { this.RaiseAndSetIfChanged(x => x.JustADecimal, value); }
+        }
+
+        public int _JustAInt32;
+        public int JustAInt32 {
+            get { return _JustAInt32; }
+            set { this.RaiseAndSetIfChanged(x => x.JustAInt32, value); }
+        }
+
         public double? _NullableDouble;
         public double? NullableDouble {
             get { return _NullableDouble; }
@@ -45,11 +57,15 @@ namespace ReactiveUI.Tests
 
         public ReactiveCollection<string> SomeCollectionOfStrings { get; protected set; }
 
-        public PropertyBindModel Model { get; protected set; }
+        public PropertyBindModel _Model;
+        public PropertyBindModel Model {
+            get { return _Model; }
+            set { this.RaiseAndSetIfChanged(x => x.Model, value); }
+        }
 
-        public PropertyBindViewModel()
+        public PropertyBindViewModel(PropertyBindModel model = null)
         {
-            Model = new PropertyBindModel() {AThing = 42, AnotherThing = "Baz"};
+            Model = model ?? new PropertyBindModel() {AThing = 42, AnotherThing = "Baz"};
             SomeCollectionOfStrings = new ReactiveCollection<string>(new[] { "Foo", "Bar" });
         }
     }
@@ -72,7 +88,7 @@ namespace ReactiveUI.Tests
         public ListBox SomeListBox;
         public TextBox Property2;
         public PropertyBindFakeControl FakeControl;
-        public ItemsControl FakeItemsControl;
+        public ListBox FakeItemsControl;
 
         public PropertyBindView()
         {
@@ -80,7 +96,7 @@ namespace ReactiveUI.Tests
             SomeListBox = new ListBox();
             Property2 = new TextBox();
             FakeControl = new PropertyBindFakeControl();
-            FakeItemsControl = new ItemsControl();
+            FakeItemsControl = new ListBox();
         }
     }
 
@@ -99,6 +115,16 @@ namespace ReactiveUI.Tests
         }
         public static readonly DependencyProperty JustADoubleProperty =
             DependencyProperty.Register("JustADouble", typeof(double), typeof(PropertyBindFakeControl), new PropertyMetadata(0.0));
+
+        public string NullHatingString {
+            get { return (string)GetValue(NullHatingStringProperty); }
+            set {
+                if (value == null) throw new ArgumentNullException("No nulls! I get confused!");
+                SetValue(NullHatingStringProperty, value); 
+            }
+        }
+        public static readonly DependencyProperty NullHatingStringProperty =
+            DependencyProperty.Register("NullHatingString", typeof(string), typeof(PropertyBindFakeControl), new PropertyMetadata(""));
     }
 
     public class PropertyBindingTest
@@ -146,11 +172,49 @@ namespace ReactiveUI.Tests
             view.SomeTextBox.Text = "42";
             Assert.Equal(42, vm.Property2);
 
+            // Bad formatting error
+            view.SomeTextBox.Text = "--";
+            Assert.Equal(42, vm.Property2);
+
             disp.Dispose();
             vm.Property2 = 0;
 
             Assert.Equal(0, vm.Property2);
             Assert.NotEqual("0", view.SomeTextBox.Text);
+
+            vm.JustADecimal = 17.2m;
+            var disp1 = fixture.Bind(vm, view, x => x.JustADecimal, x => x.SomeTextBox.Text, (IObservable<Unit>)null, null);
+
+            Assert.Equal(vm.JustADecimal.ToString(), view.SomeTextBox.Text);
+            Assert.Equal(17.2m, vm.JustADecimal );
+
+            view.SomeTextBox.Text = 42.3m.ToString();
+            Assert.Equal(42.3m, vm.JustADecimal );
+
+            // Bad formatting.
+            view.SomeTextBox.Text = "--";
+            Assert.Equal(42.3m, vm.JustADecimal );
+
+            disp1.Dispose();
+
+            vm.JustADecimal = 0;
+
+            Assert.Equal(0, vm.JustADecimal);
+            Assert.NotEqual("0", view.SomeTextBox.Text);
+
+            // Empty test
+            vm.JustAInt32 = 12;
+            var disp2 = fixture.Bind(vm, view, x => x.JustAInt32, x => x.SomeTextBox.Text, (IObservable<Unit>)null, null);
+
+            view.SomeTextBox.Text = "";
+            Assert.Equal(12, vm.JustAInt32);
+
+            view.SomeTextBox.Text = "1.2";
+
+            Assert.Equal(12, vm.JustAInt32);
+
+            view.SomeTextBox.Text = "13";
+            Assert.Equal(13, vm.JustAInt32);
         }
 
         [Fact]
@@ -251,10 +315,71 @@ namespace ReactiveUI.Tests
             var vm = new PropertyBindViewModel();
             var view = new PropertyBindView() {ViewModel = vm};
 
+            configureDummyServiceLocator();
+
             Assert.Null(view.FakeItemsControl.ItemTemplate);
             view.OneWayBind(vm, x => x.SomeCollectionOfStrings, x => x.FakeItemsControl.ItemsSource);
 
             Assert.NotNull(view.FakeItemsControl.ItemTemplate);
+        }
+
+        [Fact]
+        public void ItemsControlShouldGetADataTemplateInBindTo()
+        {
+            var vm = new PropertyBindViewModel();
+            var view = new PropertyBindView() {ViewModel = vm};
+
+            configureDummyServiceLocator();
+
+            Assert.Null(view.FakeItemsControl.ItemTemplate);
+            vm.WhenAny(x => x.SomeCollectionOfStrings, x => x.Value)
+                .BindTo(view, v => v.FakeItemsControl.ItemsSource);
+
+            Assert.NotNull(view.FakeItemsControl.ItemTemplate);
+
+            view.WhenAny(x => x.FakeItemsControl.SelectedItem, x => x.Value)
+                .BindTo(vm, x => x.Property1);
+        }
+
+        [Fact]
+        public void BindToShouldntInitiallySetToNull()
+        {
+            var vm = new PropertyBindViewModel();
+            var view = new PropertyBindView() {ViewModel = null};
+
+            view.OneWayBind(vm, x => x.Model.AnotherThing, x => x.FakeControl.NullHatingString);
+            Assert.Equal("", view.FakeControl.NullHatingString);
+
+            view.ViewModel = vm;
+            Assert.Equal(vm.Model.AnotherThing, view.FakeControl.NullHatingString);
+        }
+
+        [Fact]
+        public void BindToTypeConversionSmokeTest()
+        {
+            var vm = new PropertyBindViewModel();
+            var view = new PropertyBindView() {ViewModel = null};
+
+            view.WhenAny(x => x.ViewModel.JustADouble, x => x.Value)
+                .BindTo(view, x => x.FakeControl.NullHatingString);
+
+            Assert.Equal("", view.FakeControl.NullHatingString);
+
+            view.ViewModel = vm;
+            Assert.Equal(vm.JustADouble.ToString(), view.FakeControl.NullHatingString);
+        }
+
+        void configureDummyServiceLocator()
+        {
+            var types = new Dictionary<Tuple<Type, string>, List<Type>>();
+            RxApp.ConfigureServiceLocator(
+                (t, s) => Activator.CreateInstance(types[Tuple.Create(t, s)].First()),
+                (t, s) => types[Tuple.Create(t, s)].Select(Activator.CreateInstance).ToArray(),
+                (c, t, s) => {
+                    var tuple = Tuple.Create(t, s);
+                    if (!types.ContainsKey(tuple)) types[tuple] = new List<Type>();
+                    types[tuple].Add(c);
+                });
         }
     }
 }

@@ -24,22 +24,16 @@ namespace ReactiveUI.Xaml
 #if !MONO
             RxApp.Register(typeof (DependencyObjectObservableForProperty), typeof (ICreatesObservableForProperty));
             RxApp.Register(typeof (XamlDefaultPropertyBinding), typeof (IDefaultPropertyBindingProvider));
-            RxApp.Register(typeof (CommandBinderImplementation), typeof (ICommandBinderImplementation));
             RxApp.Register(typeof (CreatesCommandBindingViaCommandParameter), typeof(ICreatesCommandBinding));
             RxApp.Register(typeof (CreatesCommandBindingViaEvent), typeof(ICreatesCommandBinding));
             RxApp.Register(typeof (BooleanToVisibilityTypeConverter), typeof (IBindingTypeConverter));
-
-#if FALSE
-            if (InDesignMode) {
-                RxApp.Register(typeof(SampleDataProviderBinder), typeof(IPropertyBinderImplementation));
-            }
-#endif
 #endif
 
 #if WINRT
             if (!RxApp.InUnitTestRunner()) {
                 try {
-                    RxApp.DeferredScheduler = System.Reactive.Concurrency.CoreDispatcherScheduler.Current;
+                    RxApp.DeferredScheduler = new WaitForDispatcherScheduler(() => 
+                        System.Reactive.Concurrency.CoreDispatcherScheduler.Current);
                 } catch (Exception ex) {
                     throw new Exception("Core Dispatcher is null - this means you've accessed ReactiveUI too early in WinRT initialization", ex);
                 }
@@ -48,7 +42,8 @@ namespace ReactiveUI.Xaml
             // NB: Mono has like 37 UI Frameworks :)
 #else
             if (!RxApp.InUnitTestRunner()) {
-                RxApp.DeferredScheduler = System.Reactive.Concurrency.DispatcherScheduler.Current;
+                RxApp.DeferredScheduler = new WaitForDispatcherScheduler(() => 
+                    System.Reactive.Concurrency.DispatcherScheduler.Current);
             }
 #endif
         }
