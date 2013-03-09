@@ -99,29 +99,20 @@
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Reactive.Runtime.Remoting">
-      <HintPath>..\ext\monodroid\System.Reactive.Runtime.Remoting.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Reactive.Providers">
-      <HintPath>..\ext\monodroid\System.Reactive.Providers.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Reactive.PlatformServices">
-      <HintPath>..\ext\monodroid\System.Reactive.PlatformServices.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Reactive.Linq">
-      <HintPath>..\ext\monodroid\System.Reactive.Linq.dll</HintPath>
+    <Reference Include="System.Reactive.Core">
+      <HintPath>..\ext\monodroid\System.Reactive.Core.dll</HintPath>
     </Reference>
     <Reference Include="System.Reactive.Interfaces">
       <HintPath>..\ext\monodroid\System.Reactive.Interfaces.dll</HintPath>
     </Reference>
-    <Reference Include="System.Reactive.Experimental">
-      <HintPath>..\ext\monodroid\System.Reactive.Experimental.dll</HintPath>
+    <Reference Include="System.Reactive.Linq">
+      <HintPath>..\ext\monodroid\System.Reactive.Linq.dll</HintPath>
     </Reference>
-    <Reference Include="System.Reactive.Debugger">
-      <HintPath>..\ext\monodroid\System.Reactive.Debugger.dll</HintPath>
+    <Reference Include="System.Reactive.PlatformServices">
+      <HintPath>..\ext\monodroid\System.Reactive.PlatformServices.dll</HintPath>
     </Reference>
-    <Reference Include="System.Reactive.Core">
-      <HintPath>..\ext\monodroid\System.Reactive.Core.dll</HintPath>
+    <Reference Include="System.Reactive.Providers">
+      <HintPath>..\ext\monodroid\System.Reactive.Providers.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -151,6 +142,9 @@
     <Compile Include="Reflection.cs" />
     <Compile Include="ScheduledSubject.cs" />
     <Compile Include="BindingTypeConverters.cs" />
+    <Compile Include="CallerMemberNameAttribute.cs" />
+    <Compile Include="CollectionDebugView.cs" />
+    <Compile Include="VariadicTemplates.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
