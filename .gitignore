@@ -17,5 +17,6 @@ _ReSharper*
 Release
 NuGet-Release
 
-packages
 *.nupkg
+
+**/AppPackages
