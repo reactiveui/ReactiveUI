@@ -6,11 +6,12 @@
     <ProductVersion>10.0.0</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{0913BF79-061F-4667-ADF9-8E6CDA6D1213}</ProjectGuid>
-    <ProjectTypeGuids>{948B3504-5B70-4649-8FE4-BDE1FB46EC69};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <ProjectTypeGuids>{42C0BBD9-55CE-4FC1-8D90-A7348ABAFB23};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <RootNamespace>ReactiveUI.Cocoa</RootNamespace>
-    <AssemblyName>ReactiveUI.Cocoa_Mono</AssemblyName>
+    <AssemblyName>ReactiveUI.Cocoa</AssemblyName>
     <LastXamMacNagTime>1/2/2013 10:55:11 PM</LastXamMacNagTime>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
@@ -65,18 +66,18 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Drawing" />
-    <Reference Include="MonoMac" />
+    <Reference Include="XamMac" />
     <Reference Include="System.Reactive.Core">
       <HintPath>..\ext\mono\System.Reactive.Core.dll</HintPath>
     </Reference>
     <Reference Include="System.Reactive.Interfaces">
       <HintPath>..\ext\mono\System.Reactive.Interfaces.dll</HintPath>
     </Reference>
-    <Reference Include="System.Reactive.PlatformServices">
-      <HintPath>..\ext\mono\System.Reactive.PlatformServices.dll</HintPath>
-    </Reference>
     <Reference Include="System.Reactive.Linq">
       <HintPath>..\ext\mono\System.Reactive.Linq.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reactive.PlatformServices">
+      <HintPath>..\ext\mono\System.Reactive.PlatformServices.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -87,6 +88,11 @@
   <ItemGroup>
     <Compile Include="NSRunloopScheduler.cs" />
     <Compile Include="KVOObservableForProperty.cs" />
+    <Compile Include="ServiceLocationRegistration.cs" />
+    <Compile Include="CocoaDefaultPropertyBinding.cs" />
+    <Compile Include="TargetActionCommandBinder.cs" />
+    <Compile Include="ViewModelViewHost.cs" />
+    <Compile Include="RoutedViewHost.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ReactiveUI\ReactiveUI_Mono.csproj">

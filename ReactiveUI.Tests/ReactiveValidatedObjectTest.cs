@@ -31,6 +31,19 @@ namespace ReactiveUI.Tests
         }
     }
 
+    public class ValidatedIgnoresStaticPropertyTestFixture : ReactiveValidatedObject
+    {
+        public static int StaticProperty
+        {
+            get { return 5; }
+        }
+
+        public string NonStaticProperty
+        {
+            get { return "A string"; }
+        }
+    }
+
     public class ReactiveValidatedObjectTest
     {
         [Fact]
@@ -59,6 +72,17 @@ namespace ReactiveUI.Tests
                 .Do(Console.WriteLine)
                 .ForEach(x => Assert.Equal(x.expected, x.actual));
              */
+        }
+
+        [Fact]
+        public void IgnoresStaticPropertiesTest()
+        {
+            var fixture = new ValidatedIgnoresStaticPropertyTestFixture();
+
+            Assert.DoesNotThrow(delegate
+            {
+                var error = fixture["NonStaticProperty"];
+            });
         }
     }
 }

@@ -69,7 +69,7 @@ namespace ReactiveUI.Routing
             if (rxObjectsSetup) return;
 
             NavigateBack = new ReactiveCommand(
-                NavigationStack.CollectionCountChanged.StartWith(_NavigationStack.Count).Select(x => x > 0));
+                NavigationStack.CollectionCountChanged.StartWith(_NavigationStack.Count).Select(x => x > 1));
             NavigateBack.Subscribe(_ =>
                 NavigationStack.RemoveAt(NavigationStack.Count - 1));
 
@@ -138,6 +138,14 @@ namespace ReactiveUI.Routing
             where T : IRoutableViewModel
         {
             This.Execute(RxApp.GetService<T>(key));
+        }
+
+        public static IReactiveCommand NavigateCommandFor<T>(this IRoutingState This)
+            where T : IRoutableViewModel
+        {
+	    var ret = new ReactiveCommand(This.Navigate.CanExecuteObservable);
+            ret.Select(_ => (IRoutableViewModel) RxApp.GetService<T>()).InvokeCommand(This.Navigate);
+            return ret;
         }
     }
 }
