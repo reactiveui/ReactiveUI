@@ -24,7 +24,7 @@ namespace ReactiveUI.Cocoa
         public TargetActionCommandBinder() 
         {
 #if UIKIT
-			validTypes = new[]
+            validTypes = new[]
             {
                 typeof(UIControl),
             };
