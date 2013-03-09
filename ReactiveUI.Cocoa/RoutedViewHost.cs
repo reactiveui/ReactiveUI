@@ -1,8 +1,16 @@
 using System;
-using MonoMac.AppKit;
 using ReactiveUI.Routing;
 using System.Linq;
 using System.Reactive.Linq;
+
+#if UIKIT
+using MonoTouch.UIKit;
+#else
+using MonoMac.AppKit;
+#endif
+
+using NSView = MonoTouch.UIKit.UIView;
+using NSViewController = MonoTouch.UIKit.UIViewController;
 
 namespace ReactiveUI.Cocoa
 {

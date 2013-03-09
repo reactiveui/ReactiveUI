@@ -3,11 +3,18 @@ using System.Linq;
 using System.Windows.Input;
 using ReactiveUI;
 using ReactiveUI.Xaml;
+using System.Reactive.Disposables;
+using System.Reactive.Linq;
+
+#if UIKIT
+using MonoTouch.Foundation;
+using MonoTouch.ObjCRuntime;
+using MonoTouch.UIKit;
+#else
 using MonoMac.Foundation;
 using MonoMac.AppKit;
 using MonoMac.ObjCRuntime;
-using System.Reactive.Disposables;
-using System.Reactive.Linq;
+#endif
 
 namespace ReactiveUI.Cocoa
 {
@@ -16,6 +23,12 @@ namespace ReactiveUI.Cocoa
         Type[] validTypes;
         public TargetActionCommandBinder() 
         {
+#if UIKIT
+			validTypes = new[]
+            {
+                typeof(UIControl),
+            };
+#else
             validTypes = new[]
             {
                 typeof(NSControl),
@@ -23,6 +36,7 @@ namespace ReactiveUI.Cocoa
                 typeof(NSMenu),
                 typeof(NSMenuItem),
             };
+#endif
         }
 
         public int GetAffinityForObject(Type type, bool hasEventTarget)
