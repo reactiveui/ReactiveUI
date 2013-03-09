@@ -4,7 +4,7 @@ using System.Runtime.CompilerServices;
 
 [assembly: AssemblyDescription("An MVVM framework that integrates the Reactive Extensions")]
 [assembly: AssemblyProduct("ReactiveUI")]
-[assembly: AssemblyVersion("4.3.0")]
+[assembly: AssemblyVersion("4.4.3")]
 
 [assembly: InternalsVisibleTo("ReactiveUI.Explorables")]
 [assembly: InternalsVisibleTo("ReactiveUI.Xaml")]
@@ -15,6 +15,7 @@ using System.Runtime.CompilerServices;
 [assembly: InternalsVisibleTo("ReactiveUI.Xaml_WinRT")]
 [assembly: InternalsVisibleTo("ReactiveUI.Xaml_WP7")]
 [assembly: InternalsVisibleTo("ReactiveUI.Xaml_WP8")]
+[assembly: InternalsVisibleTo("ReactiveUI.Xaml_Monotouch")]
 [assembly: InternalsVisibleTo("ReactiveUI.Tests")]
 [assembly: InternalsVisibleTo("ReactiveUI.Tests_SL4")]
 [assembly: InternalsVisibleTo("ReactiveUI.Tests_SL5")]
@@ -25,6 +26,7 @@ using System.Runtime.CompilerServices;
 [assembly: InternalsVisibleTo("ReactiveUI.Routing_WP7")]
 [assembly: InternalsVisibleTo("ReactiveUI.Routing_WP8")]
 [assembly: InternalsVisibleTo("ReactiveUI.Routing_WinRT")]
+[assembly: InternalsVisibleTo("ReactiveUI.Routing_Monotouch")]
 [assembly: InternalsVisibleTo("ReactiveUI.NLog")]
 [assembly: InternalsVisibleTo("ReactiveUI.NLog_Net45")]
 [assembly: InternalsVisibleTo("ReactiveUI.NLog_SL5")]
@@ -33,4 +35,7 @@ using System.Runtime.CompilerServices;
 [assembly: InternalsVisibleTo("ReactiveUI.NLog_WinRT")]
 [assembly: InternalsVisibleTo("ReactiveUI.Gtk")]
 [assembly: InternalsVisibleTo("ReactiveUI.Cocoa")]
+[assembly: InternalsVisibleTo("ReactiveUI.Cocoa_Monotouch")]
 [assembly: InternalsVisibleTo("ReactiveUI.Android")]
+[assembly: InternalsVisibleTo("ReactiveUI.Mobile_WinRT")]
+[assembly: InternalsVisibleTo("ReactiveUI.Mobile_WP8")]
