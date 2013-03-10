@@ -5,12 +5,12 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>10.0.0</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{F61AC9BA-4A9C-440C-9B6C-2569978F0610}</ProjectGuid>
+    <ProjectGuid>{F92A477B-BB94-43C1-984E-E177EF9FEDB7}</ProjectGuid>
     <ProjectTypeGuids>{EFBA0AD7-5A72-4C68-AF49-83D382785DCF};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ReactiveUI.Xaml</RootNamespace>
-    <AssemblyName>ReactiveUI.Xaml</AssemblyName>
+    <RootNamespace>ReactiveUI</RootNamespace>
+    <AssemblyName>ReactiveUI_Monodroid</AssemblyName>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>
     </SccProjectName>
@@ -27,8 +27,8 @@
     <DebugSymbols>True</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>False</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE; MONO</DefineConstants>
+    <OutputPath>..\ReactiveUI.Android\bin\Debug\Monodroid</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CodeContractsEnableRuntimeChecking>False</CodeContractsEnableRuntimeChecking>
@@ -62,8 +62,8 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>True</Optimize>
-    <OutputPath>bin\Release\Android\</OutputPath>
-    <DefineConstants>TRACE; MONO</DefineConstants>
+    <OutputPath>..\ReactiveUI.Android\bin\Release\Monodroid</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CodeContractsEnableRuntimeChecking>False</CodeContractsEnableRuntimeChecking>
@@ -89,7 +89,7 @@
     <CodeContractsCacheAnalysisResults>True</CodeContractsCacheAnalysisResults>
     <CodeContractsRuntimeCheckingLevel>Full</CodeContractsRuntimeCheckingLevel>
     <CodeContractsReferenceAssembly>%28none%29</CodeContractsReferenceAssembly>
-    <DocumentationFile>bin\Release\Android\ReactiveUI.Xaml.xml</DocumentationFile>
+    <DocumentationFile>bin\Release\Android\ReactiveUI.xml</DocumentationFile>
     <AndroidLinkMode>SdkOnly</AndroidLinkMode>
     <AndroidUseSharedRuntime>False</AndroidUseSharedRuntime>
   </PropertyGroup>
@@ -99,19 +99,58 @@
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Xml" />
+    <Reference Include="System.Reactive.Core">
+      <HintPath>..\ext\monodroid\System.Reactive.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reactive.Interfaces">
+      <HintPath>..\ext\monodroid\System.Reactive.Interfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reactive.Linq">
+      <HintPath>..\ext\monodroid\System.Reactive.Linq.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reactive.PlatformServices">
+      <HintPath>..\ext\monodroid\System.Reactive.PlatformServices.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reactive.Providers">
+      <HintPath>..\ext\monodroid\System.Reactive.Providers.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Errors.cs" />
-    <Compile Include="Interfaces.cs" />
+    <Compile Include="Interfaces.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Logging.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MemoizingMRUCache.cs" />
+    <Compile Include="MessageBus.cs" />
+    <Compile Include="ObservableAsPropertyHelper.cs" />
+    <Compile Include="ObservableAsyncMRUCache.cs" />
+    <Compile Include="ObservedChangedMixin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ReactiveAsyncCommand.cs" />
-    <Compile Include="ReactiveCommand.cs" />
-    <Compile Include="ICommand.cs" />
-    <Compile Include="CommandBinding.cs" />
-    <Compile Include="CreatesCommandBinding.cs" />
-    <Compile Include="SampleDataBinder.cs" />
-    <Compile Include="ServiceLocationRegistration.cs" />
+    <Compile Include="ReactiveCollection.cs" />
+    <Compile Include="ReactiveNotifyPropertyChangedMixin.cs" />
+    <Compile Include="ReactiveObject.cs" />
+    <Compile Include="MakeObjectReactiveHelper.cs" />
+    <Compile Include="RxApp.cs" />
+    <Compile Include="CompatMixins.cs" />
+    <Compile Include="DefaultPropertyBinding.cs" />
+    <Compile Include="INPCObservableForProperty.cs" />
+    <Compile Include="IRNPCObservableForProperty.cs" />
+    <Compile Include="POCOObservableForProperty.cs" />
+    <Compile Include="RefcountDisposeWrapper.cs" />
+    <Compile Include="Reflection.cs" />
+    <Compile Include="ScheduledSubject.cs" />
+    <Compile Include="BindingTypeConverters.cs" />
+    <Compile Include="CallerMemberNameAttribute.cs" />
+    <Compile Include="CollectionDebugView.cs" />
+    <Compile Include="VariadicTemplates.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
@@ -121,11 +160,5 @@
   <Target Name="AfterBuild">
   </Target>
   -->
-  <ItemGroup>
-    <ProjectReference Include="..\ReactiveUI\ReactiveUI_Android.csproj">
-      <Project>{F92A477B-BB94-43C1-984E-E177EF9FEDB7}</Project>
-      <Name>ReactiveUI_Android</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Novell\Novell.MonoDroid.CSharp.targets" />
 </Project>
