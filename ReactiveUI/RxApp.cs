@@ -387,39 +387,50 @@ namespace ReactiveUI
             return new[] {"ReactiveUI.Xaml", "ReactiveUI.Routing", "ReactiveUI.Mobile", };
 #elif SILVERLIGHT
             return new[] {"ReactiveUI.Xaml", "ReactiveUI.Routing"};
-#else
-            var name = Assembly.GetExecutingAssembly().GetName();
-            var suffix = getArchSuffixForPath(Assembly.GetExecutingAssembly().Location);
-
-            return guiLibs.SelectMany(x => {
-                var fullName = String.Format("{0}{1}, Version={2}, Culture=neutral, PublicKeyToken=null", x, suffix, name.Version.ToString());
-
-                var assemblyLocation = Assembly.GetExecutingAssembly().Location;
-                if (String.IsNullOrEmpty(assemblyLocation))
-                    return Enumerable.Empty<string>();
-
-                var path = Path.Combine(Path.GetDirectoryName(assemblyLocation), x + suffix + ".dll");
-                if (!File.Exists(path) && !RxApp.InUnitTestRunner()) {
-                    LogHost.Default.Debug("Couldn't find {0}", path);
-                    return Enumerable.Empty<string>();
-                }
-
+#else            
+            return buildListOfReferencedAssemblies(a => a.Name.StartsWith("ReactiveUI"), a => a.FullName)
+                .SelectMany(a => guiLibs.Where(g => a.Name.StartsWith(g)), (assemblyName, guiLib) => new { assemblyName, guiLib })
+                .SelectMany(x => {            
                 try {
-                    Assembly.Load(fullName);
-                    return new[] {x};
+                    Assembly.Load(x.assemblyName.FullName);
+                    return new[] { x.guiLib };
                 } catch (Exception ex) {
-                    LogHost.Default.DebugException("Couldn't load " + x, ex);
+                    LogHost.Default.DebugException("Couldn't load " + x.guiLib, ex);
                     return Enumerable.Empty<string>();
-                }
+                }   
             });
 #endif
         }
 
-        static string getArchSuffixForPath(string path)
+        internal static IEnumerable<AssemblyName> buildListOfReferencedAssemblies(Func<AssemblyName, bool> filter = null, Func<AssemblyName, string> identityGenerator = null)
         {
-            var re = new Regex(@"(_[A-Za-z0-9]+)\.");
-            var m = re.Match(Path.GetFileName(path));
-            return m.Success ? m.Groups[1].Value : "";
+            filter = filter ?? (s => true);
+            identityGenerator = identityGenerator ?? (name => name.FullName);
+
+            var pendingAssemblies = new Queue<AssemblyName>(AppDomain.CurrentDomain.GetAssemblies().Select(x => x.GetName()));
+            var referencedAssemblies = new List<string>();
+
+            while (pendingAssemblies.Any()) {
+                var assemblyName = pendingAssemblies.Dequeue();
+
+                var identity = identityGenerator(assemblyName);
+                if (referencedAssemblies.Contains(identity)) {
+                    continue;
+                }
+                referencedAssemblies.Add(identity);
+
+                if (filter(assemblyName)) {
+                    yield return assemblyName;
+                }
+
+                try {
+                    foreach (var assemblyReference in Assembly.ReflectionOnlyLoad(assemblyName.FullName).GetReferencedAssemblies()) {
+                        pendingAssemblies.Enqueue(assemblyReference);
+                    }
+                } catch (Exception ex) {
+                    LogHost.Default.DebugException("Couldn't load reflection context for " + assemblyName.FullName, ex);
+                }
+            }
         }
     }
 
