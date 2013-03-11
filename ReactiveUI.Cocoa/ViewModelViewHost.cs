@@ -4,13 +4,13 @@ using System.Reactive;
 
 #if UIKIT
 using MonoTouch.UIKit;
+
+using NSView = MonoTouch.UIKit.UIView;
+using NSViewController = MonoTouch.UIKit.UIViewController;
 #else
 using MonoMac.AppKit;
 using MonoMac.Foundation;
 #endif
-
-using NSView = MonoTouch.UIKit.UIView;
-using NSViewController = MonoTouch.UIKit.UIViewController;
 
 namespace ReactiveUI.Cocoa
 {
