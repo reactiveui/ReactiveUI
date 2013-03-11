@@ -9,7 +9,7 @@
     <ProjectTypeGuids>{EFBA0AD7-5A72-4C68-AF49-83D382785DCF};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ReactiveUI</RootNamespace>
+    <RootNamespace>ReactiveUI.Xaml</RootNamespace>
     <AssemblyName>ReactiveUI.Xaml_Monodroid</AssemblyName>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>
@@ -27,7 +27,7 @@
     <DebugSymbols>True</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>False</Optimize>
-    <OutputPath>..\ReactiveUI.Android\bin\Debug\Monodroid</OutputPath>
+    <OutputPath>bin\Debug\Monodroid</OutputPath>
     <DefineConstants>DEBUG;TRACE; MONO</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -62,7 +62,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>True</Optimize>
-    <OutputPath>..\ReactiveUI.Android\bin\Release\Monodroid</OutputPath>
+    <OutputPath>bin\Release\Monodroid</OutputPath>
     <DefineConstants>TRACE; MONO</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
