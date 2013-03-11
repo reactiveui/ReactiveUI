@@ -4,11 +4,10 @@ using ReactiveUI.Xaml;
 
 #if UIKIT
 using MonoTouch.UIKit;
+using NSApplication = MonoTouch.UIKit.UIApplication;
 #else
 using MonoMac.AppKit;
 #endif
-
-using NSApplication = MonoTouch.UIKit.UIApplication;
 
 namespace ReactiveUI.Cocoa
 {
