@@ -20,3 +20,4 @@ NuGet-Release
 *.nupkg
 
 **/AppPackages
+version-bump.patch
