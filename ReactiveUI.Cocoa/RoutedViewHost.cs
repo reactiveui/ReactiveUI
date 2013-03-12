@@ -32,7 +32,14 @@ namespace ReactiveUI.Cocoa
                     var view = RxRouting.ResolveView(vm);
                     view.ViewModel = vm;
 
-                    viewLastAdded = ((NSViewController)view).View;
+                    if (view is NSViewController) {
+                        viewLastAdded = ((NSViewController)view).View;
+                    } else if (view is NSView) { 
+                        viewLastAdded = (NSView)view;
+                    } else {
+                        throw new Exception(String.Format("'{0}' must be an NSViewController or NSView", view.GetType().FullName));
+                    }
+
                     targetView.AddSubview(viewLastAdded);           
                 }, ex => RxApp.DefaultExceptionHandler.OnNext(ex));
         }
