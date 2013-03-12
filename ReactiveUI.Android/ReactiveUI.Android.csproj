@@ -60,6 +60,7 @@
   <ItemGroup>
     <Compile Include="AndroidUIScheduler.cs" />
     <Compile Include="ServiceLocationRegistration.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Novell\Novell.MonoDroid.CSharp.targets" />
   <ItemGroup>

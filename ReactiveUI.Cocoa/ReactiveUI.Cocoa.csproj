@@ -93,6 +93,7 @@
     <Compile Include="TargetActionCommandBinder.cs" />
     <Compile Include="ViewModelViewHost.cs" />
     <Compile Include="RoutedViewHost.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ReactiveUI\ReactiveUI_Mono.csproj">
