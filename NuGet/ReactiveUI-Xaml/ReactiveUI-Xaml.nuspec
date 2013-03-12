@@ -2,7 +2,7 @@
 <package xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
 	<metadata xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
 		<id>reactiveui-xaml</id>
-		<version>4.4.3</version>
+		<version>4.5.0</version>
 		<description>WPF and Silverlight specific extensions to ReactiveUI</description>
 		<authors>Paul Betts</authors>
 		<projectUrl>http://www.reactiveui.net</projectUrl>
@@ -11,7 +11,7 @@
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 
 		<dependencies>
-			<dependency id="reactiveui-core" version="[4.4.3]" />
+			<dependency id="reactiveui-core" version="[4.5.0]" />
 			<dependency id="Rx-Xaml" version="2.1.30214.0" />
 		</dependencies>
 	</metadata>
