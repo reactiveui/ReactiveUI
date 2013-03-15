@@ -9,6 +9,9 @@ using ReactiveUI.Testing;
 using Xunit;
 
 using Microsoft.Reactive.Testing;
+using System.Collections.Specialized;
+using System.Reactive.Subjects;
+using System.Reactive;
 
 namespace ReactiveUI.Tests
 {
@@ -340,6 +343,31 @@ namespace ReactiveUI.Tests
             fixture.Add("Bar");
             Assert.Equal(7, output.Count);
             Assert.True(new[] { "Bamf", "Bar", "Bar", "Baz", "Eoo", "Foo", "Roo" }.Zip(output, (expected, actual) => expected == actual).All(x => x));
+        }
+
+        [Fact]
+        public void DerivedCollectionSignalledToResetShouldFireExactlyOnce()
+        {
+            var input = new List<string> { "Foo" };
+            var resetSubject = new Subject<Unit>();
+            var derived = input.CreateDerivedCollection(x => x, signalReset: resetSubject);
+            
+            var changeNotifications = new List<NotifyCollectionChangedEventArgs>();
+            derived.Changed.Subscribe(changeNotifications.Add);
+
+            Assert.Equal(0, changeNotifications.Count);
+            Assert.Equal(1, derived.Count);
+
+            input.Add("Bar");
+
+            // Shouldn't have picked anything up since the input isn't reactive
+            Assert.Equal(0, changeNotifications.Count);
+            Assert.Equal(1, derived.Count);
+
+            resetSubject.OnNext(Unit.Default);
+
+            Assert.Equal(1, changeNotifications.Count);
+            Assert.Equal(2, derived.Count);
         }
 
         [Fact]
