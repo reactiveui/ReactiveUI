@@ -188,7 +188,6 @@ namespace ReactiveUI
                         enumerable.ForEach(ret.Add);
                     }
 
-                    ret.Reset();
                     return;
                 }
 
