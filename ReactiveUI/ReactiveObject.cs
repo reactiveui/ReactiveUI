@@ -157,7 +157,7 @@ namespace ReactiveUI
             if (String.IsNullOrEmpty(propertyName))
                 return;
 
-#if !SILVERLIGHT && !WINRT
+#if !SILVERLIGHT && !WINRT && !PORTABLE
             // Verify that the property name matches a real,
             // public, instance property on this object.
             if (TypeDescriptor.GetProperties(this)[propertyName] == null) {

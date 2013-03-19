@@ -17,7 +17,7 @@ namespace System.Diagnostics.Contracts
 
 #endif
 
-#if IOS || WINRT
+#if IOS || WINRT || PORTABLE
 
 namespace System.ComponentModel
 {
@@ -43,7 +43,7 @@ namespace System.ComponentModel
 }
 #endif
 
-#if SILVERLIGHT || WINRT
+#if SILVERLIGHT || WINRT || PORTABLE
 namespace System
 {
     [AttributeUsage(AttributeTargets.All, Inherited = false, AllowMultiple = true)]
