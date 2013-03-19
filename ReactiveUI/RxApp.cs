@@ -94,18 +94,19 @@ namespace ReactiveUI
             RxApp.Register(typeof(EqualityTypeConverter), typeof(IBindingTypeConverter));
             RxApp.Register(typeof(StringConverter), typeof(IBindingTypeConverter));
 
-#if !SILVERLIGHT && !WINRT
+#if !SILVERLIGHT && !WINRT && !PORTABLE
             RxApp.Register(typeof(ComponentModelTypeConverter), typeof(IBindingTypeConverter));
 #endif
 
             var namespaces = attemptToEarlyLoadReactiveUIDLLs();
 
-            namespaces.ForEach(ns => {
-#if WINRT
-                var assm = typeof (RxApp).GetTypeInfo().Assembly;
+#if WINRT || PORTABLE
+            var assm = typeof (RxApp).GetTypeInfo().Assembly;
 #else
-                var assm = Assembly.GetExecutingAssembly();
+            var assm = Assembly.GetExecutingAssembly();
 #endif
+
+            namespaces.ForEach(ns => {
                 var fullName = typeof (RxApp).AssemblyQualifiedName;
                 var targetType = ns + ".ServiceLocationRegistration";
                 fullName = fullName.Replace("ReactiveUI.RxApp", targetType);
@@ -121,16 +122,16 @@ namespace ReactiveUI
             if (InUnitTestRunner()) {
                 LogHost.Default.Warn("*** Detected Unit Test Runner, setting Scheduler to Immediate ***");
                 LogHost.Default.Warn("If we are not actually in a test runner, please file a bug\n");
-                DeferredScheduler = Scheduler.Immediate;
+                RxApp.DeferredScheduler = ImmediateScheduler.Instance;
             } else {
                 LogHost.Default.Info("Initializing to normal mode");
             }
 
             if (DeferredScheduler == null) {
-                LogHost.Default.Error("*** ReactiveUI.Xaml DLL reference not added - using Event Loop *** ");
+                LogHost.Default.Error("*** ReactiveUI.Xaml DLL reference not added - using Default scheduler *** ");
                 LogHost.Default.Error("Add a reference to ReactiveUI.Xaml if you're using WPF / SL5 / WP7 / WinRT");
                 LogHost.Default.Error("or consider explicitly setting RxApp.DeferredScheduler if not");
-                RxApp.DeferredScheduler = new EventLoopScheduler();
+                RxApp.DeferredScheduler = DefaultScheduler.Instance;
             }
         }
 
@@ -382,7 +383,7 @@ namespace ReactiveUI
                 "ReactiveUI.Mobile",
             };
 
-#if WINRT || WP8
+#if WINRT || WP8 || PORTABLE
             // NB: WinRT hates your Freedom
             return new[] {"ReactiveUI.Xaml", "ReactiveUI.Routing", "ReactiveUI.Mobile", };
 #elif SILVERLIGHT

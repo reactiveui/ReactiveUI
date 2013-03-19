@@ -317,7 +317,7 @@ namespace ReactiveUI
         }
 
         static readonly MemoizingMRUCache<string, Type> typeCache = new MemoizingMRUCache<string, Type>((type,_) => {
-    #if WINRT
+    #if WINRT || PORTABLE
             // WinRT hates your favorite band too.
             return Type.GetType(type, false);
     #else
