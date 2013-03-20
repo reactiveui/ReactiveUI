@@ -106,10 +106,13 @@ namespace ReactiveUI.Mobile
 
             var window = new UIWindow(UIScreen.MainScreen.Bounds);
             _viewModelChanged.Subscribe(vm => {
-                var frame = RxApp.GetService<IViewFor>("InitialPage");
-                frame.ViewModel = vm;
+                var frame = RxApp.GetService<UIViewController>("InitialPage");
+                var viewFor = frame as IViewFor;
+                if (viewFor != null) {
+                    viewFor.ViewModel = vm;
+                }
 
-                window.RootViewController = (UIViewController)frame;
+                window.RootViewController = frame;
                 window.MakeKeyAndVisible();
             });
 
