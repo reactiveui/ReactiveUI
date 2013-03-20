@@ -104,22 +104,23 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Microsoft.Bcl.1.0.16-rc\lib\sl4-windowsphone71\System.Threading.Tasks.dll</HintPath>
     </Reference>
-    <Reference Include="System.Windows" />
     <Reference Include="system" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Windows.Interactivity, Version=3.8.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="System.Windows" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Net" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BindingTypeConverters.cs" />
     <Compile Include="CollectionDebugView.cs" />
+    <Compile Include="CommandInterfaces.cs" />
     <Compile Include="CompatMixins.cs" />
     <Compile Include="ContractStubs.cs" />
     <Compile Include="DefaultPropertyBinding.cs" />
     <Compile Include="INPCObservableForProperty.cs" />
     <Compile Include="Interfaces.cs" />
     <Compile Include="IRNPCObservableForProperty.cs" />
+    <Compile Include="Lazy.cs" />
     <Compile Include="Logging.cs" />
     <Compile Include="MakeObjectReactiveHelper.cs" />
     <Compile Include="MemoizingMRUCache.cs" />

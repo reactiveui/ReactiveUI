@@ -5,13 +5,22 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{67038157-092E-4D72-BAF4-049EB1532264}</ProjectGuid>
+    <ProjectGuid>{3870EA63-AFDF-4D49-B4D6-8299506E67B4}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ReactiveUI.Routing</RootNamespace>
-    <AssemblyName>ReactiveUI.Routing</AssemblyName>
+    <RootNamespace>ReactiveUI.Blend</RootNamespace>
+    <AssemblyName>ReactiveUI.Blend_Net40</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <SccProjectName>
+    </SccProjectName>
+    <SccLocalPath>
+    </SccLocalPath>
+    <SccAuxPath>
+    </SccAuxPath>
+    <SccProvider>
+    </SccProvider>
+    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
   </PropertyGroup>
@@ -19,7 +28,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\Net40\</OutputPath>
+    <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -31,9 +40,10 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Release\Net40\ReactiveUI.Routing.XML</DocumentationFile>
+    <DocumentationFile>bin\Release\Net40\ReactiveUI.Blend_Net40.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.Expression.Interactions, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
@@ -58,36 +68,27 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\ext\System.Reactive.Windows.Threading.dll</HintPath>
     </Reference>
-    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Windows.Interactivity, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AutoDataTemplateBindingHook.cs" />
-    <Compile Include="Interfaces.cs" />
+    <Compile Include="AsyncCommandVisualStateBehavior.cs" />
+    <Compile Include="FollowObservableStateBehavior.cs" />
+    <Compile Include="ObservableTrigger.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RoutingState.cs" />
-    <Compile Include="RxRouting.cs" />
-    <Compile Include="RoutedViewHost.cs" />
-    <Compile Include="ServiceLocationRegistration.cs" />
-    <Compile Include="ViewModelViewHost.cs" />
   </ItemGroup>
   <ItemGroup>
-    <WCFMetadata Include="Service References\" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\ReactiveUI.Xaml\ReactiveUI.Xaml.csproj">
+    <ProjectReference Include="..\ReactiveUI.Xaml\ReactiveUI.Xaml_Net40.csproj">
       <Project>{761AC9BA-4A9C-440C-9B6C-2569978F0610}</Project>
-      <Name>ReactiveUI.Xaml</Name>
+      <Name>ReactiveUI.Xaml_Net40</Name>
     </ProjectReference>
-    <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj">
+    <ProjectReference Include="..\ReactiveUI\ReactiveUI_Net40.csproj">
       <Project>{292A477B-BB94-43C1-984E-E177EF9FEDB7}</Project>
-      <Name>ReactiveUI</Name>
+      <Name>ReactiveUI_Net40</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
