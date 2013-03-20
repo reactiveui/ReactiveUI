@@ -476,7 +476,7 @@ namespace ReactiveUI
             // without access to any WPF references :-/
             var entry = Assembly.GetEntryAssembly();
             if (entry != null) {
-                var exeName = entry.Location.ToUpperInvariant(); 
+                var exeName = (new FileInfo(entry.Location)).Name.ToUpperInvariant(); 
 
                 if (designEnvironments.Any(x => x.Contains(exeName))) {
                     return true;
@@ -510,6 +510,7 @@ namespace ReactiveUI
                 "BLEND.EXE",
                 "MONODEVELOP",
                 "SHARPDEVELOP.EXE",
+                "XDESPROC.EXE",
             };
 
             return InUnitTestRunner(testAssemblies, designEnvironments);
