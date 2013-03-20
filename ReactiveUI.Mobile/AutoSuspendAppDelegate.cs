@@ -30,6 +30,7 @@ namespace ReactiveUI.Mobile
     {
         readonly Subject<UIApplication> _finishedLaunching = new Subject<UIApplication>();
         readonly Subject<UIApplication> _activated = new Subject<UIApplication>();
+        readonly Subject<UIApplication> _backgrounded = new Subject<UIApplication>();
         readonly Subject<UIApplication> _willTerminate = new Subject<UIApplication>();
 
         internal SuspensionHost SuspensionHost;
@@ -59,7 +60,7 @@ namespace ReactiveUI.Mobile
             AppDomain.CurrentDomain.UnhandledException += (o,e) => untimelyDeath.OnNext(Unit.Default);
 
             host.ShouldInvalidateState = untimelyDeath;
-            host.ShouldPersistState = _willTerminate.SelectMany(app => {
+            host.ShouldPersistState = _willTerminate.Merge(_backgrounded).SelectMany(app => {
                 var taskId = app.BeginBackgroundTask(new NSAction(() => {}));
 
                 // NB: We're being force-killed, signal invalidate instead
@@ -93,6 +94,11 @@ namespace ReactiveUI.Mobile
         public override void OnActivated(UIApplication application)
         {
             _activated.OnNext(application);
+        }
+
+        public override void DidEnterBackground(UIApplication application)
+        {
+            _backgrounded.OnNext(application);
         }
 
         public override void WillTerminate(UIApplication application)
