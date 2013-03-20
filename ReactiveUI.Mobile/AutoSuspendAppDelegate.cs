@@ -59,9 +59,17 @@ namespace ReactiveUI.Mobile
             AppDomain.CurrentDomain.UnhandledException += (o,e) => untimelyDeath.OnNext(Unit.Default);
 
             host.ShouldInvalidateState = untimelyDeath;
-            host.ShouldPersistState = _willTerminate.Select(app => {
+            host.ShouldPersistState = _willTerminate.SelectMany(app => {
                 var taskId = app.BeginBackgroundTask(new NSAction(() => {}));
-                return Disposable.Create(() => app.EndBackgroundTask(taskId));
+
+                // NB: We're being force-killed, signal invalidate instead
+                if (taskId == UIApplication.BackgroundTaskInvalid) {
+                    untimelyDeath.OnNext(Unit.Default);
+                    return Observable.Empty<IDisposable>();
+                }
+
+                return Observable.Return(
+                    Disposable.Create(() => app.EndBackgroundTask(taskId)));
             });
 
             SuspensionHost = host;
