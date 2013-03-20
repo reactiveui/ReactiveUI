@@ -52,6 +52,8 @@ namespace ReactiveUI.Routing
             HorizontalContentAlignment = HorizontalAlignment.Stretch;
             VerticalContentAlignment = VerticalAlignment.Stretch;
 
+            if (RxApp.InUnitTestRunner()) return;
+
             this.WhenAny(x => x.Router.NavigationStack, x => x.Value)
                 .SelectMany(x => x.CollectionCountChanged.StartWith(x.Count).Select(_ => x.LastOrDefault()))
                 .Subscribe(vm => {
