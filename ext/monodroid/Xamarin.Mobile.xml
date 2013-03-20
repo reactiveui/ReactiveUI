@@ -1,0 +1,1455 @@
+<doc>
+    <assembly>
+        <name>Xamarin.Mobile</name>
+    </assembly>
+    <members>
+        <member name="T:Xamarin.Contacts.Address">
+            <summary>Represents an address related to a <see cref="T:Xamarin.Contacts.Contact" />.</summary>
+            <remarks>To be added.</remarks>
+        </member>
+        <member name="C:Xamarin.Contacts.Address">
+            <summary>Constructs and initializes a new instance of the <see cref="T:Xamarin.Contacts.Address" /> class.</summary>
+            <remarks>To be added.</remarks>
+        </member>
+        <member name="P:Xamarin.Contacts.Address.City">
+            <summary>Gets or sets the city for this address.</summary>
+            <value>The city of the address, or <c>null</c> if not set.</value>
+            <remarks>To be added.</remarks>
+        </member>
+        <member name="P:Xamarin.Contacts.Address.Country">
+            <summary>Gets or sets the country of this address.</summary>
+            <value>The country of the address, or <c>null</c> if not set.</value>
+            <remarks>To be added.</remarks>
+        </member>
+        <member name="P:Xamarin.Contacts.Address.Label">
+            <summary>Gets or sets the label for this address.</summary>
+            <value>The user's label for this address, or <c>null</c> if not set.</value>
+            <remarks>
+                <para>
+				For address types built into the underlying OS, this contains a localized version of the label. If the type is custom, it will contain
+				the custom label. In situations where types/labels are not supported, it will be <c>null</c>.
+		  </para>
+            </remarks>
+        </member>
+        <member name="P:Xamarin.Contacts.Address.PostalCode">
+            <summary>Gets or sets the postal code for this address.</summary>
+            <value>The postal code of the address, or <c>null</c> if not set.</value>
+            <remarks>To be added.</remarks>
+        </member>
+        <member name="P:Xamarin.Contacts.Address.Region">
+            <summary>Gets or sets the state/province/region for this address.</summary>
+            <value>The state, province or region for this address or <c>null</c> if not set.</value>
+            <remarks>To be added.</remarks>
+        </member>
+        <member name="P:Xamarin.Contacts.Address.StreetAddress">
+            <summary>Gets or sets the street and house number for this address.</summary>
+            <value>The street and house number for the address, or <c>null</c> if not set.</value>
+            <remarks>
+                <para>
+				Some platforms multiple lines for the street address, or a non-mutually exclusive PO Box.
+				If either of these are present, this property will contain all of the values, each separated by a new line.
+			</para>
+            </remarks>
+        </member>
+        <member name="P:Xamarin.Contacts.Address.Type">
+            <summary>Gets or sets the type of this address.</summary>
+            <value>The type of address.</value>
+            <remarks>To be added.</remarks>
+        </member>
+        <member name="T:Xamarin.Contacts.AddressBook">
+            <summary>Represents the address book of the user.</summary>
+            <remarks>
+                <para>
+				For storing and retrieving contacts, use the most uniquely identifying information for a contact
+				that is available, such as mobile phone numbers or personal email addresses. Even for platforms
+				that provide <see cref="P:Xamarin.Contacts.Contact.Id" />, it is not neccessarily stable long term,
+				as records can be removed and readded or merged.
+			</para>
+            </remarks>
+            <example>
+                <para>
+			This example shows how you can retrieve all contacts with the first name of
+			"Eric" and has a phone listed. Then it iterates through the contacts, making
+			a list of each person and their phones.
+		</para>
+                <code language="C#"><![CDATA[
+var abook = new AddressBook();
+abook.RequestPermissions().ContinueWith (t =>
+{
+	if (!t.Result)
+		return; // Permission denied
+
+	var builder = new StringBuilder();
+	
+	// Full LINQ support
+	foreach (Contact c in abook.Where (c => c.FirstName == "Eric" && c.Phones.Any()))
+	{
+		builder.AppendLine (c.DisplayName);
+		foreach (Phone p in c.Phones)
+			builder.AppendLine (String.Format ("{0}: {1}", p.Label, p.Number));
+
+		builder.AppendLine();
+	}
+	
+	contacts.Text = builder.ToString(); // Update UI
+	
+}, TaskScheduler.FromCurrentSynchronizationContext()); // Ensure we're on the UI Thread
+			]]></code>
+            </example>
+        </member>
+        <member name="C:Xamarin.Contacts.AddressBook">
+            <summary>
+				Constructs and initializes a new instance of the <see cref="T:Xamarin.Contacts.AddressBook" /> class.
+			</summary>
+            <remarks>Available only on iOS.</remarks>
+        </member>
+        <member name="C:Xamarin.Contacts.AddressBook(Android.Content.Context)">
+            <param name="context">The <see cref="T:Android.Content.Context" /> to use to retrieve contacts.</param>
+            <summary>Constructs and initializes a new instance of the <see cref="T:Xamarin.Contacts.AddressBook" /> class.</summary>
+            <remarks>Available only on Android.</remarks>
+        </member>
+        <member name="P:Xamarin.Contacts.AddressBook.AggregateContactsSupported">
+            <summary>Gets whether aggregated contacts are supported.</summary>
+            <value>
+                <c>true</c> if aggregated contacts are supported, <c>false</c> otherwise.
+			</value>
+            <remarks>
+                <para>This will return <c>true</c> on Android and Windows Phone, <c>false</c> on iOS.</para>
+            </remarks>
+        </member>
+        <member name="M:Xamarin.Contacts.AddressBook.GetEnumerator">
+            <summary>Returns an enumerator that iterates through the <see href="T:Xamarin.Contacts.AddressBook" />.</summary>
+            <returns>An enumerator for the <see href="T:Xamarin.Contacts.AddressBook" />.</returns>
+            <remarks>To be added.</remarks>
+        </member>
+        <member name="P:Xamarin.Contacts.AddressBook.IsReadOnly">
+            <summary>Gets whether this address book is read-only.</summary>
+            <value>
+                <c>true</c> if this address book is read-only, <c>false</c> otherwise.</value>
+            <remarks>Currently this will always return <c>true</c>.</remarks>
+        </member>
+        <member name="M:Xamarin.Contacts.AddressBook.Load(System.String)">
+            <param name="id">The <see href="P:Xamarin.Contacts.Contact.Id" /> of the contact to load.</param>
+            <summary>Attempts to load a contact for the specified <paramref name="id" />.</summary>
+            <returns>The <see cref="T:Xamarin.Contacts.Contact" /> if found, <c>null</c> otherwise.</returns>
+            <remarks>
+                <para>
+				If <see cref="P:Xamarin.Contacts.AddressBook.PreferContactAggregation" /> and
+				<see cref="P:Xamarin.Contacts.AddressBook.AggregateContactsSupported" /> are <c>true</c>,
+				this will attempt to load the contact using <paramref name="id" /> as an aggregate ID.
+				You can use <see cref="P:Xamarin.Contacts.Contact.IsAggregate" /> to determine whether the
+				<see cref="P:Xamarin.Contacts.Contact.Id" /> is an aggregate ID or not when you originally
+				obtained the contact.
+			</para>
+                <para>
+				On Android, with <see cref="P:Xamarin.Contacts.AddressBook.PreferContactAggregation" /> enabled,
+				this can be used to retrieve <see cref="T:Xamarin.Contacts.Contact" /> instances from an Android
+				contact lookup key.
+			</para>
+            </remarks>
+            <altmember cref="P:Xamarin.Contacts.Contact.Id" />
+            <altmember cref="P:Xamarin.Contacts.Contact.IsAggregate" />
+            <altmember cref="P:Xamarin.Contacts.AddressBook.PreferContactAggregation" />
+            <exception cref="T:System.NotSupportedException">
+                <see cref="P:Xamarin.Contacts.AddressBook.LoadSupported" /> is <c>false</c>.
+        </exception>
+            <exception cref="T:System.ArgumentNullException">
+                <paramref name="id" /> is <c>null</c>.
+        </exception>
+            <exception cref="T:System.ArgumentException">
+                <para>
+                    <paramref name="id" /> is empty.</para>
+            </exception>
+        </member>
+        <member name="P:Xamarin.Contacts.AddressBook.LoadSupported">
+            <summary>Gets whether <see cref="M:Xamarin.Contacts.AddressBook.Load" /> is supported or not.</summary>
+            <value>
+                <c>true</c> on iOS and Android, <c>false</c> on Windows Phone.</value>
+            <remarks>To be added.</remarks>
+        </member>
+        <member name="P:Xamarin.Contacts.AddressBook.PreferContactAggregation">
+            <summary>Gets or sets whether to prefer contact aggregation.</summary>
+            <value>Whether or not to prefer contact aggregation, <c>false</c> by default.</value>
+            <remarks>
+                <para>
+				Currently, only Android and Windows Phone support contact aggregation.
+				As this may change in the future, you can use <see cref="P:Xamarin.Contacts.AddressBook.AggregateContactsSupported" />
+				to determine whether this will actually enable contact aggregation or not.
+			</para>
+            </remarks>
+            <altmember cref="P:Xamarin.Contacts.AddressBook.AggregateContactsSupported" />
+            <altmember cref="P:Xamarin.Contacts.AddressBook.SingleContactsSupported" />
+        </member>
+        <member name="M:Xamarin.Contacts.AddressBook.RequestPermission">
+            <summary>Requests permission to access the user's contacts.</summary>
+            <returns>A task who's result will be <c>true</c> if given access to the user's contacts, <c>false</c> otherwise.</returns>
+            <remarks>
+                <para>
+                On iOS, calling this method is required before using the <see cref="T:Xamarin.Contacts.AddressBook" /> instance.
+                For it's first call the user will be prompted for permission to access their contacts. On Android and Windows Phone, calling this method will check the manifest based permissions for contacts
+                access on those platforms.
+            </para>
+                <para>
+                It's recommend that you call this method before accessing contacts regardless of platform.
+            </para>
+            </remarks>
+        </member>
+        <member name="P:Xamarin.Contacts.AddressBook.SingleContactsSupported">
+            <summary>Gets whether individual, non-aggregated contacts are supported.</summary>
+            <value>
+                <c>true</c> if non-aggregated contacts are supported, <c>false</c> otherwise.</value>
+            <remarks>
+                <para>This will return <c>true</c> on iOS and Android, <c>false</c> on Windows Phone.</para>
+            </remarks>
+        </member>
+        <member name="M:Xamarin.Contacts.AddressBook.System#Collections#IEnumerable#GetEnumerator">
+            <summary>To be added.</summary>
+            <returns>To be added.</returns>
+            <remarks>To be added.</remarks>
+        </member>
+        <member name="P:Xamarin.Contacts.AddressBook.System#Linq#IQueryable#ElementType">
+            <summary>To be added.</summary>
+            <value>To be added.</value>
+            <remarks>To be added.</remarks>
+        </member>
+        <member name="P:Xamarin.Contacts.AddressBook.System#Linq#IQueryable#Expression">
+            <summary>To be added.</summary>
+            <value>To be added.</value>
+            <remarks>To be added.</remarks>
+        </member>
+        <member name="P:Xamarin.Contacts.AddressBook.System#Linq#IQueryable#Provider">
+            <summary>To be added.</summary>
+            <value>To be added.</value>
+            <remarks>To be added.</remarks>
+        </member>
+        <member name="T:Xamarin.Contacts.AddressType">
+            <summary>Represents a type of <see cref="T:Xamarin.Contacts.Address" />.</summary>
+            <remarks>
+                <para>
+			Only the address types supported by both iOS and Android are present. The types that are not present on all platforms
+			are represented by <see cref="F:Xamarin.Contacts.AddressType.Other" />.
+		</para>
+            </remarks>
+        </member>
+        <member name="F:Xamarin.Contacts.AddressType.Home">
+            <summary>A home address.</summary>
+        </member>
+        <member name="F:Xamarin.Contacts.AddressType.Other">
+            <summary>An other/unknown type of address.</summary>
+        </member>
+        <member name="F:Xamarin.Contacts.AddressType.Work">
+            <summary>A work address.</summary>
+        </member>
+        <member name="T:Xamarin.Contacts.Contact">
+            <summary>Represents an individual or aggregate contact in the user's address book.</summary>
+            <remarks>To be added.</remarks>
+            <altmember cref="T:Xamarin.Contacts.Contact" />
+        </member>
+        <member name="C:Xamarin.Contacts.Contact">
+            <summary>
+			Constructs and initializes a new instance of the <see cref="T:Xamarin.Contacts.Contact" /> class.
+		</summary>
+            <remarks>To be added.</remarks>
+        </member>
+        <member name="P:Xamarin.Contacts.Contact.Addresses">
+            <summary>Gets or sets an enumeration of addresses belonging to this contact.</summary>
+            <value>An enumeration of addresses, empty if there are no addresses.</value>
+            <remarks>To be added.</remarks>
+            <exception cref="T:System.ArgumentNullException">
+                <paramref name="value" /> is <c>null</c>.</exception>
+        </member>
+        <member name="P:Xamarin.Contacts.Contact.DisplayName">
+            <summary>Gets or sets the display name for the contact.</summary>
+            <value>The display name for the contact.</value>
+            <remarks>
+                <para>
+			When retrieved from an address book, this is the OS-assembled name from the individual
+			parts of the name, fit to display to the user.
+		  </para>
+                <para>
+			Currently, setting this will manually not affect the other name properties,
+			nor will setting them affect this value.
+		  </para>
+            </remarks>
+        </member>
+        <member name="P:Xamarin.Contacts.Contact.Emails">
+            <summary>Gets or sets an enumeration of email addresses belonging to this contact.</summary>
+            <value>An enumeration of emails, empty if there are no emails.</value>
+            <remarks>To be added.</remarks>
+            <exception cref="T:System.ArgumentNullException">
+                <paramref name="value" /> is <c>null</c>.</exception>
+        </member>
+        <member name="P:Xamarin.Contacts.Contact.FirstName">
+            <summary>Gets or sets the first (given) name of the contact.</summary>
+            <value>The first or given name of the contact, or <c>null</c> if not set.</value>
+            <remarks>To be added.</remarks>
+        </member>
+        <member name="M:Xamarin.Contacts.Contact.GetThumbnail">
+            <summary>Gets a thumbnail of the Contact's photo.</summary>
+            <returns>A thumbnail of the Contact's photo, <c>null</c> if there isn't one.</returns>
+            <remarks>This is a <see cref="T:Android.Graphics.Bitmap" /> on Android and a <see cref="T:MonoTouch.UIKit.UIImage" /> on iOS.</remarks>
+        </member>
+        <member name="P:Xamarin.Contacts.Contact.Id">
+            <summary>Gets the unique identifier for this contact.</summary>
+            <value>The identifier for the contact on iOS and Android, <c>null</c> on Windows Phone.</value>
+            <remarks>
+                <para>
+				It is not recommended to use this for storing references to contacts in long-term storage such
+				as a file or database. Even for the platforms that support this property (iOS, Android), it is not
+				neccessarily gauranteed to be stable long-term. Instead, use uniquely identifiable contact information
+				such as a mobile phone number or personal email address.
+			</para>
+                <para>
+				Use <see cref="P:Xamarin.Contacts.Contact.IsAggregate" /> to determine
+				whether this is an aggregate identifier or not.
+			</para>
+            </remarks>
+            <altmember cref="P:Xamarin.Contacts.Contact.IsAggregate" />
+            <altmember cref="M:Xamarin.Contacts.AddressBook.Load" />
+        </member>
+        <member name="P:Xamarin.Contacts.Contact.InstantMessagingAccounts">
+            <summary>Gets or sets an enumeration of instant messaging accounts belonging to this contact.</summary>
+            <value>An enumeration of instant messaging accounts, empty if there are no accounts.</value>
+            <remarks>To be added.</remarks>
+            <exception cref="T:System.ArgumentNullException">
+                <paramref name="value" /> is <c>null</c>.</exception>
+        </member>
+        <member name="P:Xamarin.Contacts.Contact.IsAggregate">
+            <summary>Gets whether this contact was retrieved with aggregation prefered and supported or not.</summary>
+            <value>
+                <c>true</c> if the contact was retrieved with <see cref="P:Xamarin.Contacts.AddressBook.PreferContactAggregation" />
+			and <see cref="P:Xamarin.Contacts.AddressBook.AggregateContactsSupported" /> being <c>true</c>,
+			<c>false</c> otherwise.
+		</value>
+            <remarks>
+                <para>
+				If <c>true</c>, it does not neccessarily mean that there are multiple contacts
+				represented, but simply that it would if there were more than one contact. This
+				allows you determine whether <see cref="P:Xamarin.Contacts.Contact.Id" /> is an aggregate ID
+				or a singular one.
+			</para>
+            </remarks>
+            <altmember cref="T:Xamarin.Contacts.AddressBook.PreferContactAggregation" />
+            <altmember cref="T:Xamarin.Contacts.AddressBook.AggregateContactsSupported" />
+        </member>
+        <member name="P:Xamarin.Contacts.Contact.LastName">
+            <summary>Gets or sets the last (family) name of the contact.</summary>
+            <value>The last or family name of the contact, or <c>null</c> if not set.</value>
+            <remarks>To be added.</remarks>
+        </member>
+        <member name="P:Xamarin.Contacts.Contact.MiddleName">
+            <summary>Gets or sets the middle name of the contact.</summary>
+            <value>The middle name of the contact, or <c>null</c> if not set.</value>
+            <remarks>To be added.</remarks>
+        </member>
+        <member name="P:Xamarin.Contacts.Contact.Nickname">
+            <summary>Gets or sets the nickname of the contact.</summary>
+            <value>The nickname of the contact, or <c>null</c> if not set.</value>
+            <remarks>To be added.</remarks>
+        </member>
+        <member name="P:Xamarin.Contacts.Contact.Notes">
+            <summary>Gets or sets an enumeration of notes for the contact.</summary>
+            <value>An enumeration of notes for the contact, empty if there are no notes.</value>
+            <remarks>To be added.</remarks>
+            <exception cref="T:System.ArgumentNullException">
+                <paramref name="value" /> is <c>null</c>.</exception>
+        </member>
+        <member name="P:Xamarin.Contacts.Contact.Organizations">
+            <summary>Gets or sets an enumeration of organizations the contact is a part of.</summary>
+            <value>An enumeration of organizations the contact is a part of, empty if none.</value>
+            <remarks>To be added.</remarks>
+            <exception cref="T:System.ArgumentNullException">
+                <paramref name="value" /> is <c>null</c>.</exception>
+        </member>
+        <member name="P:Xamarin.Contacts.Contact.Phones">
+            <summary>Gets or sets an enumeration of phones belonging to the contact.</summary>
+            <value>An enumeration of phones belonging to the contact, empty if none.</value>
+            <remarks>To be added.</remarks>
+            <exception cref="T:System.ArgumentNullException">
+                <paramref name="value" /> is <c>null</c>.</exception>
+        </member>
+        <member name="P:Xamarin.Contacts.Contact.Prefix">
+            <summary>Gets or sets the name prefix for the contact.</summary>
+            <value>The name prefix for the contact, <c>null</c> if not set.</value>
+            <remarks>
+                <para>This contains name prefixes such as "Dr.", "Sir", etc.</para>
+            </remarks>
+        </member>
+        <member name="P:Xamarin.Contacts.Contact.Relationships">
+            <summary>Gets or sets the relationships belonging to the contact.</summary>
+            <value>An enumeration of relationships belonging to the contact, empty if none.</value>
+            <remarks>To be added.</remarks>
+            <exception cref="T:System.ArgumentNullException">
+                <paramref name="value" /> is <c>null</c>.
+		</exception>
+        </member>
+        <member name="M:Xamarin.Contacts.Contact.SaveThumbnailAsync(System.String)">
+            <param name="path">The complete file path to save the thumbnail to.</param>
+            <summary>Saves the contact's thumnail to a specified <paramref name="path" />.</summary>
+            <returns>
+			A <see cref="T:System.Threading.Tasks.Task{T}" /> of <see cref="T:Xamarin.Media.MediaFile" />.
+		</returns>
+            <remarks>To be added.</remarks>
+            <exception cref="T:System.ArgumentNullException">
+                <paramref name="path" /> is <c>null</c>.
+		</exception>
+        </member>
+        <member name="P:Xamarin.Contacts.Contact.Suffix">
+            <summary>Gets or sets the name suffix for the contact.</summary>
+            <value>The name suffix for the contact, <c>null</c> if not set.</value>
+            <remarks>
+                <para>This contains name suffixes such as "Sr.", "Jr.", etc.</para>
+            </remarks>
+        </member>
+        <member name="P:Xamarin.Contacts.Contact.Websites">
+            <summary>Gets or sets an enumeration of websites for the contact.</summary>
+            <value>An enumeration of websites belonging to the contact, empty if none.</value>
+            <remarks>To be added.</remarks>
+            <exception cref="T:System.ArgumentNullException">
+                <paramref name="value" /> is <c>null</c>.</exception>
+        </member>
+        <member name="T:Xamarin.Contacts.Email">
+            <summary>Represents an email address belonging to a <see cref="T:Xamarin.Contacts.Contact" />. </summary>
+            <remarks>To be added.</remarks>
+        </member>
+        <member name="C:Xamarin.Contacts.Email">
+            <summary>Constructs and initializes a new instance of the <see cref="T:Xamarin.Contacts.Email" /> class.</summary>
+            <remarks>To be added.</remarks>
+        </member>
+        <member name="P:Xamarin.Contacts.Email.Address">
+            <summary>Gets or sets the e-mail address.</summary>
+            <value>The email address.</value>
+            <remarks>To be added.</remarks>
+        </member>
+        <member name="P:Xamarin.Contacts.Email.Label">
+            <summary>Gets or sets the label for this email address.</summary>
+            <value>The label of this email address, or <c>null</c> if not set.</value>
+            <remarks>
+                <para>
+				For email types built into the underlying OS, this contains a localized version of the label. If the type is custom, it will contain
+				the custom label. In situations where types/labels are not supported, it will be <c>null</c>.
+			</para>
+            </remarks>
+        </member>
+        <member name="P:Xamarin.Contacts.Email.Type">
+            <summary>Gets or sets the type of this email address.</summary>
+            <value>The type of this email address.</value>
+            <remarks>To be added.</remarks>
+        </member>
+        <member name="T:Xamarin.Contacts.EmailType">
+            <summary>Represents a type of <see cref="T:Xamarin.Contacts.Email" />.</summary>
+            <remarks>
+                <para>
+			Only the email types supported by both iOS and Android are present. The types that are not present on all platforms
+			are represented by <see cref="F:Xamarin.Contacts.EmailType.Other" />.
+		</para>
+            </remarks>
+        </member>
+        <member name="F:Xamarin.Contacts.EmailType.Home">
+            <summary>A home email address.</summary>
+        </member>
+        <member name="F:Xamarin.Contacts.EmailType.Other">
+            <summary>An other/unknown email address.</summary>
+        </member>
+        <member name="F:Xamarin.Contacts.EmailType.Work">
+            <summary>A work email address.</summary>
+        </member>
+        <member name="T:Xamarin.Contacts.InstantMessagingAccount">
+            <summary>Represents an instant messaging account belonging to a <see cref="T:Xamarin.Contacts.Contact" />.</summary>
+            <remarks>To be added.</remarks>
+        </member>
+        <member name="C:Xamarin.Contacts.InstantMessagingAccount">
+            <summary>Constructs and initializes a new instance of the <see cref="T:Xamarin.Contacts.InstantMessagingAccount" /> class.</summary>
+            <remarks>To be added.</remarks>
+        </member>
+        <member name="P:Xamarin.Contacts.InstantMessagingAccount.Account">
+            <summary>Gets or sets the account name.</summary>
+            <value>The account name.</value>
+            <remarks>To be added.</remarks>
+        </member>
+        <member name="P:Xamarin.Contacts.InstantMessagingAccount.Service">
+            <summary>Gets or sets the instant messaging service the account is with.</summary>
+            <value>The instant messaging service the account is with.</value>
+            <remarks>To be added.</remarks>
+        </member>
+        <member name="P:Xamarin.Contacts.InstantMessagingAccount.ServiceLabel">
+            <summary>Gets or sets the label for the service.</summary>
+            <value>The label of the service, or <c>null</c> if not set.</value>
+            <remarks>
+                <para>
+				For service types built into the underlying OS, this contains a localized version of the label. If the label is custom, it will contain
+				the custom label. In situations where types/labels are not supported, it will be <c>null</c>.
+			</para>
+            </remarks>
+        </member>
+        <member name="T:Xamarin.Contacts.InstantMessagingService">
+            <summary>Represents the service that an <see href="T:Xamarin.Contacts.InstantMessagingAccount" /> is with.</summary>
+            <remarks>
+                <para>
+			Only the services supported by both iOS and Android are present. The services that are not present on all platforms
+			are represented by <see cref="F:Xamarin.Contacts.InstantMessagingService.Other" />.
+		</para>
+            </remarks>
+        </member>
+        <member name="F:Xamarin.Contacts.InstantMessagingService.Aim">
+            <summary>AOL Instant Messanger</summary>
+        </member>
+        <member name="F:Xamarin.Contacts.InstantMessagingService.Icq">
+            <summary>ICQ</summary>
+        </member>
+        <member name="F:Xamarin.Contacts.InstantMessagingService.Jabber">
+            <summary>Jabber</summary>
+        </member>
+        <member name="F:Xamarin.Contacts.InstantMessagingService.Msn">
+            <summary>MSN</summary>
+        </member>
+        <member name="F:Xamarin.Contacts.InstantMessagingService.Other">
+            <summary>An other/unknown instant messaing service.</summary>
+        </member>
+        <member name="F:Xamarin.Contacts.InstantMessagingService.Yahoo">
+            <summary>Yahoo Instant Messanger</summary>
+        </member>
+        <member name="T:Xamarin.Contacts.Note">
+            <summary>Represents a note made on a <see cref="T:Xamarin.Contacts.Contact" />.</summary>
+            <remarks>To be added.</remarks>
+        </member>
+        <member name="C:Xamarin.Contacts.Note">
+            <summary>
+			Constructs and initializes a new instance of the <see cref="T:Xamarin.Contacts.Note" /> class.
+		</summary>
+            <remarks>To be added.</remarks>
+        </member>
+        <member name="P:Xamarin.Contacts.Note.Contents">
+            <summary>Gets the contents of the note.</summary>
+            <value>The content of the note.</value>
+            <remarks>To be added.</remarks>
+        </member>
+        <member name="T:Xamarin.Contacts.Organization">
+            <summary>
+		Represents an organization that a <see cref="T:Xamarin.Contacts.Contact" /> belongs to.
+	</summary>
+            <remarks>To be added.</remarks>
+        </member>
+        <member name="C:Xamarin.Contacts.Organization">
+            <summary>
+			Constructs and initializes a new instance of the <see cref="T:Xamarin.Contacts.Organization" /> class.
+		</summary>
+            <remarks>To be added.</remarks>
+        </member>
+        <member name="P:Xamarin.Contacts.Organization.ContactTitle">
+            <summary>Gets or sets the contact's title at this organization.</summary>
+            <value>The contact's title at this organization, or <c>null</c> if not set.</value>
+            <remarks>To be added.</remarks>
+        </member>
+        <member name="P:Xamarin.Contacts.Organization.Label">
+            <summary>Gets or sets the label for this organization.</summary>
+            <value>The label for this organization, or <c>null</c> if not set.</value>
+            <remarks>
+                <para>
+				For organization types built into the underlying OS, this contains a localized version of the label. If the type is custom, it will contain
+				the custom label. In situations where types/labels are not supported, it will be <c>null</c>.
+			</para>
+            </remarks>
+        </member>
+        <member name="P:Xamarin.Contacts.Organization.Name">
+            <summary>Gets or sets the name of the organization.</summary>
+            <value>The name of the organization.</value>
+            <remarks>To be added.</remarks>
+        </member>
+        <member name="P:Xamarin.Contacts.Organization.Type">
+            <summary>Gets or sets the type of relationship the contact has with this organization.</summary>
+            <value>The type of relationship the contact has with this organization.</value>
+            <remarks>To be added.</remarks>
+        </member>
+        <member name="T:Xamarin.Contacts.OrganizationType">
+            <summary>Specifies the relationship between a <see cref="T:Xamarin.Contacts.Contact" /> and an <see cref="T:Xamarin.Contacts.Organization" />.</summary>
+            <remarks>To be added.</remarks>
+        </member>
+        <member name="F:Xamarin.Contacts.OrganizationType.Other">
+            <summary>The contact has some other relationship with this organization.</summary>
+        </member>
+        <member name="F:Xamarin.Contacts.OrganizationType.Work">
+            <summary>The contact works for this organization.</summary>
+        </member>
+        <member name="T:Xamarin.Contacts.Phone">
+            <summary>Represents a phone belonging to a <see cref="T:Xamarin.Contacts.Contact" />.</summary>
+            <remarks>To be added.</remarks>
+        </member>
+        <member name="C:Xamarin.Contacts.Phone">
+            <summary>Constructs and initializes a new instance of the <see cref="T:Xamarin.Contacts.Phone" /> class.</summary>
+            <remarks>To be added.</remarks>
+        </member>
+        <member name="P:Xamarin.Contacts.Phone.Label">
+            <summary>Gets or sets the label for this phone.</summary>
+            <value>The phone's label.</value>
+            <remarks>
+                <para>
+				For phone types built into the underlying OS, this contains a localized version of the label. If the type is custom, it will contain
+				the custom label. In situations where types/labels are not supported, it will be <c>null</c>.
+			</para>
+            </remarks>
+        </member>
+        <member name="P:Xamarin.Contacts.Phone.Number">
+            <summary>Gets or sets the number for this phone.</summary>
+            <value>The phone's number.</value>
+            <remarks>To be added.</remarks>
+        </member>
+        <member name="P:Xamarin.Contacts.Phone.Type">
+            <summary>Gets or sets the phone's type.</summary>
+            <value>The type of phone.</value>
+            <remarks>To be added.</remarks>
+        </member>
+        <member name="T:Xamarin.Contacts.PhoneType">
+            <summary>Specifies a type of <see cref="T:Xamarin.Contacts.Phone" />.</summary>
+            <remarks>
+                <para>
+			Only the phone types supported by both iOS and Android are present. The types that are not present on all platforms
+			are represented by <see cref="F:Xamarin.Contacts.PhoneType.Other" />.
+		</para>
+            </remarks>
+        </member>
+        <member name="F:Xamarin.Contacts.PhoneType.Home">
+            <summary>A home phone number.</summary>
+        </member>
+        <member name="F:Xamarin.Contacts.PhoneType.HomeFax">
+            <summary>A home fax number.</summary>
+        </member>
+        <member name="F:Xamarin.Contacts.PhoneType.Mobile">
+            <summary>A mobile phone number.</summary>
+        </member>
+        <member name="F:Xamarin.Contacts.PhoneType.Other">
+            <summary>An other/unknown type of number.</summary>
+        </member>
+        <member name="F:Xamarin.Contacts.PhoneType.Pager">
+            <summary>A pager number.</summary>
+        </member>
+        <member name="F:Xamarin.Contacts.PhoneType.Work">
+            <summary>A work number.</summary>
+        </member>
+        <member name="F:Xamarin.Contacts.PhoneType.WorkFax">
+            <summary>A work fax number.</summary>
+        </member>
+        <member name="T:Xamarin.Contacts.Relationship">
+            <summary>Represents a defined relationship of a <see cref="T:Xamarin.Contacts.Contact" />.</summary>
+            <remarks>To be added.</remarks>
+        </member>
+        <member name="C:Xamarin.Contacts.Relationship">
+            <summary>Constructs and initializes a new instance of the <see cref="T:Xamarin.Contacts.Relationship" /> class.</summary>
+            <remarks>To be added.</remarks>
+        </member>
+        <member name="P:Xamarin.Contacts.Relationship.Name">
+            <summary>Gets or sets the name of the person being related to the contact.</summary>
+            <value>The name of the person being related to the contact.</value>
+            <remarks>To be added.</remarks>
+        </member>
+        <member name="P:Xamarin.Contacts.Relationship.Type">
+            <summary>Gets or sets the relationship type.</summary>
+            <value>The relationship type.</value>
+            <remarks>To be added.</remarks>
+        </member>
+        <member name="T:Xamarin.Contacts.RelationshipType">
+            <summary>Represents the type of a relationship.</summary>
+            <remarks>
+                <para>
+			Only the common subset of relationships across all three platforms (iOS, Android and Windows Phone) is present.
+			Any relationship types that do not fall under specific categorizations will be defined as
+			<see cref="F:Xamarin.Contacts.RelationshipType.Other" /></para>
+            </remarks>
+        </member>
+        <member name="F:Xamarin.Contacts.RelationshipType.Child">
+            <summary>A child of the contact.</summary>
+        </member>
+        <member name="F:Xamarin.Contacts.RelationshipType.Other">
+            <summary>An other type of relationship with the contact.</summary>
+        </member>
+        <member name="F:Xamarin.Contacts.RelationshipType.SignificantOther">
+            <summary>A spouse, partner, friends or anyone else significant to the contact.</summary>
+        </member>
+        <member name="T:Xamarin.Contacts.Website">
+            <summary>Represents a website belonging to a <see cref="T:Xamarin.Contacts.Contact" />.</summary>
+            <remarks>To be added.</remarks>
+        </member>
+        <member name="C:Xamarin.Contacts.Website">
+            <summary>Constructs and initializes a new instance of the <see cref="T:Xamarin.Contacts.Website" /> class.</summary>
+            <remarks>To be added.</remarks>
+        </member>
+        <member name="P:Xamarin.Contacts.Website.Address">
+            <summary>Gets or sets the website's address.</summary>
+            <value>The website address.</value>
+            <remarks>To be added.</remarks>
+        </member>
+        <member name="T:Xamarin.Geolocation.GeolocationError">
+            <summary>Specifies what type of error occured.</summary>
+            <remarks>To be added.</remarks>
+        </member>
+        <member name="F:Xamarin.Geolocation.GeolocationError.PositionUnavailable">
+            <summary>The provider was unable to retrieve any position data.</summary>
+        </member>
+        <member name="F:Xamarin.Geolocation.GeolocationError.Unauthorized">
+            <summary>The app is not, or no longer, authorized to receive location data.</summary>
+        </member>
+        <member name="T:Xamarin.Geolocation.GeolocationException">
+            <summary>Represents a geolocation error.</summary>
+            <remarks>To be added.</remarks>
+        </member>
+        <member name="C:Xamarin.Geolocation.GeolocationException(Xamarin.Geolocation.GeolocationError)">
+            <param name="error">The type of error that occured.</param>
+            <summary>Constructs and initializes a new instance of the <see cref="T:Xamarin.Geolocation.GeolocationException" /> class.</summary>
+            <remarks>To be added.</remarks>
+        </member>
+        <member name="C:Xamarin.Geolocation.GeolocationException(Xamarin.Geolocation.GeolocationError,System.Exception)">
+            <param name="error">The type of error that occured.</param>
+            <param name="innerException">The original exception causing this error.</param>
+            <summary>Constructs and initializes a new instance of the <see cref="T:Xamarin.Geolocation.GeolocationException" /> class.</summary>
+            <remarks>To be added.</remarks>
+        </member>
+        <member name="P:Xamarin.Geolocation.GeolocationException.Error">
+            <summary>Gets the type of error that occured.</summary>
+            <value>The type of error that occred.</value>
+            <remarks>To be added.</remarks>
+        </member>
+        <member name="T:Xamarin.Geolocation.Geolocator">
+            <summary>A class providing the ability to get or listen to the device's current geo-location.</summary>
+            <remarks>To be added.</remarks>
+        </member>
+        <member name="C:Xamarin.Geolocation.Geolocator">
+            <param name="context">The context from which to get the location service.</param>
+            <summary>Creates and initializes a new instance of the <see cref="T:Xamarin.Geolocation.Geolocator" /> class (iOS only).</summary>
+            <remarks>iOS and Windows Phone only.</remarks>
+        </member>
+        <member name="C:Xamarin.Geolocation.Geolocator(Android.Content.Context)">
+            <param name="context">The context from which to get the location service.</param>
+            <summary>Creates and initializes a new instance of the <see cref="T:Xamarin.Geolocation.Geolocator" /> class with a <see cref="T:Android.Content.Context" /> (Android only).</summary>
+            <remarks>Android only.</remarks>
+        </member>
+        <member name="P:Xamarin.Geolocation.Geolocator.DesiredAccuracy">
+            <summary>Gets or sets the desired accuracy in meters.</summary>
+            <value>Desired accuracy in meters.</value>
+            <remarks>
+                <para>This is only a hint to the underlying platform, you may receive location updates with higher or lower accuracy.</para>
+                <para>
+				Changes to this while the geolocator <see cref="P:Xamarin.Geolocation.Geolocator.IsListening" /> will have no effect until the next time
+				<see cref="M:Xamarin.Geolocation.Geolocator.StartListening" /> is called.
+			</para>
+            </remarks>
+        </member>
+        <member name="M:Xamarin.Geolocation.Geolocator.GetPositionAsync(System.Int32)">
+            <param name="timeout">The amount of time in milliseconds to wait for <see cref="P:Xamarin.Geolocation.Geolocator.DesiredAccuracy" /> before returning a best guess or cancelling.</param>
+            <summary>Requests the device's current location and returns a future to it.</summary>
+            <returns>A <see cref="T:System.Threading.Tasks.Task{TResult}" /> for the current <see cref="T:Xamarin.Geolocation.Position" />.</returns>
+            <remarks>
+                <para>
+				The task will be set with the first <see cref="T:Xamarin.Geolocation.Position" /> with a <see cref="P:Xamarin.Geolocation.Position.Accuracy" />
+				greater than or equal to <see cref="P:Xamarin.Geolocation.Geolocator.DesiredAccuracy" />. If a position with the desired accuracy can not be
+				obtained within <paramref name="timeout" />, the most accurate position found will be used. If no position could be found at all within
+				<paramref name="timeout" />, the task will be canceled.
+		  </para>
+                <para>
+				If the underlying platform needs to request location access permissions, it will be performed automatically.
+				If all location services are disabled or a fatal error occurs, the future will contain <see cref="T:Xamarin.Geolocation.GeolocationException" />
+				with <see cref="P:Xamarin.Geolocation.GeolocationException.Error" /> of <see cref="F:Xamarin.Geolocation.GeolocationError.PositionUnavailable" />.
+			    If the user has denied location access to the app (iOS), or the app didn't specify location acccess in its manifest (Android), the error will be
+				<see cref="F:Xamarin.Geolocation.GelocationError.Unauthorized" />.
+		  </para>
+            </remarks>
+        </member>
+        <member name="M:Xamarin.Geolocation.Geolocator.GetPositionAsync(System.Threading.CancellationToken)">
+            <param name="cancelToken">A <see cref="T:System.Threading.CancellationToken" /> to cancel the position request.</param>
+            <summary>Requests the device's current location and returns a future to it.</summary>
+            <returns>A <see cref="T:System.Threading.Tasks.Task{TResult}" /> for the current <see cref="T:Xamarin.Geolocation.Position" />.</returns>
+            <remarks>
+                <para>
+				The task will be set with the first <see cref="T:Xamarin.Geolocation.Position" /> with a <see cref="P:Xamarin.Geolocation.Position.Accuracy" />
+				greater than or equal to <see cref="P:Xamarin.Geolocation.Geolocator.DesiredAccuracy" />.
+		  </para>
+                <para>
+			  If the underlying platform needs to request location access permissions, it will be performed automatically.
+			  If all location services are disabled or a fatal error occurs, the future will contain <see cref="T:Xamarin.Geolocation.GeolocationException" />
+			  with <see cref="P:Xamarin.Geolocation.GeolocationException.Error" /> of <see cref="F:Xamarin.Geolocation.GeolocationError.PositionUnavailable." />
+			  If the user has denied location access to the app (iOS), or the app didn't specify location acccess in its manifest (Android), the error will be
+			  <see cref="F:Xamarin.Geolocation.GelocationError.Unauthorized" />.
+		  </para>
+            </remarks>
+        </member>
+        <member name="M:Xamarin.Geolocation.Geolocator.GetPositionAsync(System.Int32,System.Boolean)">
+            <param name="timeout">The amount of time in milliseconds to wait for <see cref="P:Xamarin.Geolocation.Geolocator.DesiredAccuracy" /> before returning a best guess or cancelling.</param>
+            <param name="includeHeading">Whether or not to also listen for heading changes.</param>
+            <summary>Requests the device's current location and returns a future to it.</summary>
+            <returns>A <see cref="T:System.Threading.Tasks.Task{TResult}" /> for the current <see cref="T:Xamarin.Geolocation.Position" />.</returns>
+            <remarks>
+                <para>
+				The task will be set with the first <see cref="T:Xamarin.Geolocation.Position" /> with a <see cref="P:Xamarin.Geolocation.Position.Accuracy" />
+				greater than or equal to <see cref="P:Xamarin.Geolocation.Geolocator.DesiredAccuracy" />. If a position with the desired accuracy can not be
+				obtained within <paramref name="timeout" />, the most accurate position found will be used. If no position could be found at all within
+				<paramref name="timeout" />, the task will be canceled.
+		  </para>
+                <para>
+				If the underlying platform needs to request location access permissions, it will be performed automatically.
+				If all location services are disabled or a fatal error occurs, the future will contain <see cref="T:Xamarin.Geolocation.GeolocationException" />
+				with <see cref="P:Xamarin.Geolocation.GeolocationException.Error" /> of GeolocationError.PositionUnavailable. If the user has denied location
+				access to the app (iOS), or the app didn't specify location acccess in its manifest (Android), the error will be GelocationError.Unauthorized.
+		  </para>
+            </remarks>
+        </member>
+        <member name="M:Xamarin.Geolocation.Geolocator.GetPositionAsync(System.Int32,System.Threading.CancellationToken)">
+            <param name="timeout">The amount of time in milliseconds to wait for <see cref="P:Xamarin.Geolocation.Geolocator.DesiredAccuracy" /> before returning a best guess or cancelling.</param>
+            <param name="cancelToken">A <see cref="T:System.Threading.CancellationToken" /> to cancel the position request.</param>
+            <summary>Requests the device's current location and returns a future to it.</summary>
+            <returns>A <see cref="T:System.Threading.Tasks.Task{TResult}" /> for the current <see cref="T:Xamarin.Geolocation.Position" />.</returns>
+            <remarks>
+                <para>
+				The task will be set with the first <see cref="T:Xamarin.Geolocation.Position" /> with a <see cref="P:Xamarin.Geolocation.Position.Accuracy" />
+				greater than or equal to <see cref="P:Xamarin.Geolocation.Geolocator.DesiredAccuracy" />. If a position with the desired accuracy can not be
+				obtained within <paramref name="timeout" />, the most accurate position found will be used. If no position could be found at all within
+				<paramref name="timeout" />, the task will be canceled.
+		  </para>
+                <para>
+				If the underlying platform needs to request location access permissions, it will be performed automatically.
+				If all location services are disabled or a fatal error occurs, the future will contain <see cref="T:Xamarin.Geolocation.GeolocationException" />
+				with <see cref="P:Xamarin.Geolocation.GeolocationException.Error" /> of GeolocationError.PositionUnavailable. If the user has denied location
+				access to the app (iOS), or the app didn't specify location acccess in its manifest (Android), the error will be GelocationError.Unauthorized.
+		  </para>
+            </remarks>
+        </member>
+        <member name="M:Xamarin.Geolocation.Geolocator.GetPositionAsync(System.Threading.CancellationToken,System.Boolean)">
+            <param name="cancelToken">A <see cref="T:System.Threading.CancellationToken" /> to cancel the position request.</param>
+            <param name="includeHeading">Whether or not to also listen for heading changes.</param>
+            <summary>Requests the device's current location and returns a future to it.</summary>
+            <returns>A <see cref="T:System.Threading.Tasks.Task{TResult}" /> for the current <see cref="T:Xamarin.Geolocation.Position" />.</returns>
+            <remarks>
+                <para>
+				The task will be set with the first <see cref="T:Xamarin.Geolocation.Position" /> with a <see cref="P:Xamarin.Geolocation.Position.Accuracy" />
+				greater than or equal to <see cref="P:Xamarin.Geolocation.Geolocator.DesiredAccuracy" />.
+		  </para>
+                <para>
+			  If the underlying platform needs to request location access permissions, it will be performed automatically.
+			  If all location services are disabled or a fatal error occurs, the future will contain <see cref="T:Xamarin.Geolocation.GeolocationException" />
+			  with <see cref="P:Xamarin.Geolocation.GeolocationException.Error" /> of <see cref="F:Xamarin.Geolocation.GeolocationError.PositionUnavailable." />
+			  If the user has denied location access to the app (iOS), or the app didn't specify location acccess in its manifest (Android), the error will be
+			  <see cref="F:Xamarin.Geolocation.GelocationError.Unauthorized" />.
+		  </para>
+            </remarks>
+        </member>
+        <member name="M:Xamarin.Geolocation.Geolocator.GetPositionAsync(System.Int32,System.Threading.CancellationToken,System.Boolean)">
+            <param name="timeout">The amount of time in milliseconds to wait for <see cref="P:Xamarin.Geolocation.Geolocator.DesiredAccuracy" /> before returning a best guess or cancelling.</param>
+            <param name="cancelToken">A <see cref="T:System.Threading.CancellationToken" /> to cancel the position request.</param>
+            <param name="includeHeading">Whether or not to also listen for heading changes.</param>
+            <summary>Requests the device's current location and returns a future to it.</summary>
+            <returns>A <see cref="T:System.Threading.Tasks.Task{TResult}" /> for the current <see cref="T:Xamarin.Geolocation.Position" />.</returns>
+            <remarks>
+                <para>
+				The task will be set with the first <see cref="T:Xamarin.Geolocation.Position" /> with a <see cref="P:Xamarin.Geolocation.Position.Accuracy" />
+				greater than or equal to <see cref="P:Xamarin.Geolocation.Geolocator.DesiredAccuracy" />. If a position with the desired accuracy can not be
+				obtained within <paramref name="timeout" />, the most accurate position found will be used. If no position could be found at all within
+				<paramref name="timeout" />, the task will be canceled.
+		  </para>
+                <para>
+				If the underlying platform needs to request location access permissions, it will be performed automatically.
+				If all location services are disabled or a fatal error occurs, the future will contain <see cref="T:Xamarin.Geolocation.GeolocationException" />
+				with <see cref="P:Xamarin.Geolocation.GeolocationException.Error" /> of GeolocationError.PositionUnavailable. If the user has denied location
+				access to the app (iOS), or the app didn't specify location acccess in its manifest (Android), the error will be GelocationError.Unauthorized.
+		  </para>
+            </remarks>
+        </member>
+        <member name="P:Xamarin.Geolocation.Geolocator.IsGeolocationAvailable">
+            <summary>
+            Gets a value indicating whether geolocation services are available on the device.
+        </summary>
+            <value>
+                <c>true</c> if geolocation services are available; otherwise, <c>false</c>.
+        </value>
+            <remarks>
+                <para>
+				Use this to determine whether the device supports geolocation. On Android, this will also
+				be false if the manifest has not requested any location permissions.
+			</para>
+            </remarks>
+            <altmember cref="P:Xamarin.Geolocation.Geolocator.IsGeolocationEnabled" />
+        </member>
+        <member name="P:Xamarin.Geolocation.Geolocator.IsGeolocationEnabled">
+            <summary>
+            Gets a value indicating whether geolocation is available and enabled.
+        </summary>
+            <value>
+                <c>true</c> if geolocation is available and enabled; otherwise, <c>false</c>.
+        </value>
+            <remarks>
+                <para>
+				Use this to determine whether geolocation is enabled by the user or not. It will also
+				return false if geolocation is unavailable, so use it conjunction with <see cref="P:Xamarin.Geolocation.Geolocator.IsGeolocationAvailable" />
+				if you wish to prompt the user about enabling geolocation services.
+			</para>
+                <para>
+				On iOS, this will be false if location services are disabled or explicitly turned off for this app.
+				On Android, this will be false if both wifi and gps location services are disabled (and passive is unavailable).
+			</para>
+            </remarks>
+            <altmember cref="P:Xamarin.Geolocation.Geolocator.IsGeolocationAvailable" />
+        </member>
+        <member name="P:Xamarin.Geolocation.Geolocator.IsListening">
+            <summary>Gets whether the position is currently being listened to.</summary>
+            <value>
+                <c>true</c> if this geolocator is currently listening to position updates; otherwise, <c>false</c>.</value>
+            <remarks>To be added.</remarks>
+        </member>
+        <member name="E:Xamarin.Geolocation.Geolocator.PositionChanged">
+            <summary>Raised when position information is updated.</summary>
+            <remarks>
+                <para>
+				This event will fire even when the contained <see cref="T:Xamarin.Geolocation.Position" /> is below <see cref="P:Xamarin.Geolocation.Geolocator.DesiredAccuracy" />.
+			</para>
+                <para>
+				The various implementations will do their best to provide the most accurate <see cref="T:Xamarin.Geolocation.Position" /> up to <see cref="P:Xamarin.Geolocation.Geolocator.DesiredAccuracy" />.
+				In order to receive initial updates more quickly, you may receive less accurate updates to begin with. You may also begin receiving more accurate updates than you require,
+				as <see cref="P:Xamarin.Geolocation.Geolocator.DesiredAccuracy" /> is only a hint and can not definitively set what accuracy level you receive.
+			</para>
+            </remarks>
+            <altmember cref="T:Xamarin.Geolocation.Position" />
+        </member>
+        <member name="E:Xamarin.Geolocation.Geolocator.PositionError">
+            <summary>Raised when there is an error retrieving position information while listening.</summary>
+            <remarks>
+                <para>
+			  Errors are raised only when listening (<see cref="M:Xamarin.Geolocation.Geolocator.StartListening" />). If the app was suspended, there is
+			  no guarantee that this event will be raised upon resume if the user has disabled location services inbetween suspending and resuming. It's
+			  recommended that you stop listening on suspension and start again when the app is resumed.
+		  </para>
+                <para>If an error occurs, listening will be stopped automatically. Temporary errors will not be reported.</para>
+            </remarks>
+            <altmember cref="T:Xamarin.Geolocation.GeolocationError" />
+        </member>
+        <member name="M:Xamarin.Geolocation.Geolocator.StartListening(System.Int32,System.Double)">
+            <param name="minTime">A hint for the minimum time between position updates in milliseconds.</param>
+            <param name="minDistance">A hint for the minimum distance between position updates in meters.</param>
+            <summary>Starts listening to position changes with specified thresholds.</summary>
+            <remarks>
+                <para>
+            If the underlying OS needs to request location access permissions, it will occur automatically.
+          </para>
+                <para>
+            If a <see cref="E:Xamarin.Geolocation.Geolocator.PositionError" /> occurs, listening will be halted automatically.
+          </para>
+                <para>
+			The various implementations will do their best to provide the most accurate <see cref="T:Xamarin.Geolocation.Position" /> up to <see cref="P:Xamarin.Geolocation.Geolocator.DesiredAccuracy" />.
+			In order to receive initial updates more quickly, you may receive less accurate updates to begin with. You may also begin receiving more accurate updates than you require,
+			as <see cref="P:Xamarin.Geolocation.Geolocator.DesiredAccuracy" /> is only a hint and can not definitively set what accuracy level you receive.
+		  </para>
+            </remarks>
+            <exception cref="T:System.ArgumentOutOfRangeException">
+                <para>
+                    <paramref name="minTime" /> is &lt; 0.
+          </para>
+                <para>or</para>
+                <para>
+                    <paramref name="minDistance" /> is &lt; 0.
+          </para>
+            </exception>
+            <exception cref="T:System.InvalidOperationException">This geolocator already <see cref="P:Xamarin.Geolocation.Geolocator.IsListening" />.</exception>
+            <altmember cref="M:Xamarin.Geolocation.Geolocator.StopListening" />
+            <altmember cref="P:Xamarin.Geolocation.Geolocator.IsListening" />
+        </member>
+        <member name="M:Xamarin.Geolocation.Geolocator.StartListening(System.Int32,System.Double,System.Boolean)">
+            <param name="minTime">A hint for the minimum time between position updates in milliseconds.</param>
+            <param name="minDistance">A hint for the minimum distance between position updates in meters.</param>
+            <param name="includeHeading">Whether or not to also listen for heading.</param>
+            <summary>Starts listening to position changes with specified thresholds.</summary>
+            <remarks>
+                <para>
+            If the underlying OS needs to request location access permissions, it will occur automatically.
+          </para>
+                <para>
+            If a <see cref="E:Xamarin.Geolocation.Geolocator.PositionError" /> occurs, listening will be halted automatically.
+          </para>
+                <para>
+			The various implementations will do their best to provide the most accurate <see cref="T:Xamarin.Geolocation.Position" /> up to <see cref="P:Xamarin.Geolocation.Geolocator.DesiredAccuracy" />.
+			In order to receive initial updates more quickly, you may receive less accurate updates to begin with. You may also begin receiving more accurate updates than you require,
+			as <see cref="P:Xamarin.Geolocation.Geolocator.DesiredAccuracy" /> is only a hint and can not definitively set what accuracy level you receive.
+		  </para>
+            </remarks>
+            <exception cref="T:System.ArgumentOutOfRangeException">
+                <para>
+                    <paramref name="minTime" /> is &lt; 0.
+          </para>
+                <para>or</para>
+                <para>
+                    <paramref name="minDistance" /> is &lt; 0.
+          </para>
+            </exception>
+            <exception cref="T:System.InvalidOperationException">This geolocator already <see cref="P:Xamarin.Geolocation.Geolocator.IsListening" />.</exception>
+            <altmember cref="M:Xamarin.Geolocation.Geolocator.StopListening" />
+            <altmember cref="P:Xamarin.Geolocation.Geolocator.IsListening" />
+        </member>
+        <member name="M:Xamarin.Geolocation.Geolocator.StopListening">
+            <summary>Stops listening to position changes.</summary>
+            <remarks>To be added.</remarks>
+            <altmember cref="M:Xamarin.Geolocation.Geolocator.StartListening(System.Int32,System.Double)" />
+        </member>
+        <member name="P:Xamarin.Geolocation.Geolocator.SupportsHeading">
+            <summary>Gets a value indicating whether this <see cref="T:Xamarin.Geolocation.Geolocator" /> supports heading.</summary>
+            <value>
+                <c>true</c> if supports heading; otherwise, <c>false</c>.
+        </value>
+            <remarks>To be added.</remarks>
+        </member>
+        <member name="T:Xamarin.Geolocation.Position">
+            <summary>Represents an obtained location at a specific time.</summary>
+            <remarks>To be added.</remarks>
+        </member>
+        <member name="C:Xamarin.Geolocation.Position">
+            <summary>Constructs and initializes a new instance of the <see cref="T:Xamarin.Geolocation.Position" /> class.</summary>
+            <remarks>To be added.</remarks>
+        </member>
+        <member name="C:Xamarin.Geolocation.Position(Xamarin.Geolocation.Position)">
+            <param name="position">The position to copy from.</param>
+            <summary>Constructs and copies a new instance of the <see cref="T:Xamarin.Geolocation.Position" /> class from the given <paramref name="position" />.</summary>
+            <remarks>To be added.</remarks>
+        </member>
+        <member name="P:Xamarin.Geolocation.Position.Accuracy">
+            <summary>Gets or sets the potential position error radius in meters.</summary>
+            <value>The potential position error radius in meters of the <see cref="M:Xamarin.Geolocation.Position.Longitude" /> and <see cref="M:Xamarin.Geolocation.Position.Latitude" /> members.</value>
+            <remarks>This may be higher or lower than the <see cref="M:Xamarin.Geolocation.Geolocator.DesiredAccuracy" />.</remarks>
+        </member>
+        <member name="P:Xamarin.Geolocation.Position.Altitude">
+            <summary>Gets or sets the altitude in meters relative to sea level.</summary>
+            <value>The altitude in meters, relative to seal level.</value>
+            <remarks>To be added.</remarks>
+        </member>
+        <member name="P:Xamarin.Geolocation.Position.AltitudeAccuracy">
+            <summary>Gets or sets the potential altitude error range in meters.</summary>
+            <value>The potential error, in meters, of the <see cref="M:Xamarin.Geolocation.Position.Altitude" /> member.</value>
+            <remarks>Not currently supported on Android, will always read 0.</remarks>
+        </member>
+        <member name="P:Xamarin.Geolocation.Position.Heading">
+            <summary>Gets or sets the heading in degrees relative to true North.</summary>
+            <value>To be added.</value>
+            <remarks>Use <see cref="M:Xamarin.Geolocation.Geolocator.SupportsHeading" /> to determine whether this property will contain a value.</remarks>
+        </member>
+        <member name="P:Xamarin.Geolocation.Position.Latitude">
+            <summary>Gets or sets the latitude.</summary>
+            <value>The latitude.</value>
+            <remarks>To be added.</remarks>
+        </member>
+        <member name="P:Xamarin.Geolocation.Position.Longitude">
+            <summary>Gets or sets the longitude.</summary>
+            <value>The longitude.</value>
+            <remarks>To be added.</remarks>
+        </member>
+        <member name="P:Xamarin.Geolocation.Position.Speed">
+            <summary>Gets or sets the speed in meters per second.</summary>
+            <value>The speed of the device, in meters per second, when the position was recorded.</value>
+            <remarks>This value is only for the speed at the instant the position was recorded, as such it may vary wildly.</remarks>
+        </member>
+        <member name="P:Xamarin.Geolocation.Position.Timestamp">
+            <summary>Gets or sets the timestamp of the position.</summary>
+            <value>A <see cref="T:System.DateTimeOffset" /> representing the timestmap of the position.</value>
+            <remarks>To be added.</remarks>
+        </member>
+        <member name="T:Xamarin.Geolocation.PositionErrorEventArgs">
+            <summary>Provides data for <see cref="M:Xamarin.Geolocation.Geolocator.PositionError" /> events.</summary>
+            <remarks>To be added.</remarks>
+        </member>
+        <member name="C:Xamarin.Geolocation.PositionErrorEventArgs(Xamarin.Geolocation.GeolocationError)">
+            <param name="error">The type of error that occured.</param>
+            <summary>Constructs and initializes a new instance of the <see cref="T:Xamarin.Geolocation.PositionErrorEventArgs" /> class.</summary>
+            <remarks>To be added.</remarks>
+        </member>
+        <member name="P:Xamarin.Geolocation.PositionErrorEventArgs.Error">
+            <summary>Gets the type of error that occured.</summary>
+            <value>The type of error that occured.</value>
+            <remarks>To be added.</remarks>
+        </member>
+        <member name="T:Xamarin.Geolocation.PositionEventArgs">
+            <summary>Provides data for <see cref="M:Xamarin.Geolocation.Geolocator.PositionChanged" /> events.</summary>
+            <remarks>To be added.</remarks>
+        </member>
+        <member name="C:Xamarin.Geolocation.PositionEventArgs(Xamarin.Geolocation.Position)">
+            <param name="position">A <see cref="T:Xamarin.Geolocation.Position" /></param>
+            <summary>Constructs and initializes a new instance of the <see cref="T:Xamarin.Geolocation.PositionEventArgs" /> class by specifying the <see cref="T:Xamarin.Geolocation.Position" />.</summary>
+            <remarks>To be added.</remarks>
+        </member>
+        <member name="P:Xamarin.Geolocation.PositionEventArgs.Position">
+            <summary>Gets the <see cref="T:Xamarin.Geolocation.Position" /> for the event.</summary>
+            <value>The position for the event.</value>
+            <remarks>To be added.</remarks>
+        </member>
+        <member name="T:Xamarin.Media.CameraDevice">
+            <summary>Represents the various types of cameras available.</summary>
+            <remarks>To be added.</remarks>
+        </member>
+        <member name="F:Xamarin.Media.CameraDevice.Front">
+            <summary>The front facing camera.</summary>
+        </member>
+        <member name="F:Xamarin.Media.CameraDevice.Rear">
+            <summary>The rear facing camera.</summary>
+        </member>
+        <member name="T:Xamarin.Media.MediaFile">
+            <summary>Represents a media file newly taken or picked from the gallery.</summary>
+            <remarks>
+                <para>
+			It's important to <see cref="M:Xamarin.Media.MediaFile.Dispose" /> this <see cref="T:Xamarin.Media.MediaFile" /> when
+			you're done with it to release any memory and temporary file resources being used for it.
+		</para>
+                <para>
+			On Windows Phone, file paths returned from the photo picker can not be easily reused. As such, they are
+			copied locally under a "temp" directory in isolated storage for use with <see cref="T:Xamarin.Media.MediaFile" />.
+			Call <see cref="M:Xamarin.Media.MediaFile.Dispose" /> to remove this file, but keep in mind that if your app crashes before
+			you have a chance to dispose, this file will not be automatically reclaimed.
+		</para>
+            </remarks>
+            <altmember cref="T:Xamarin.Media.MediaPicker" />
+            <altmember cref="M:Xamarin.Contacts.Contact.SaveThumbnail" />
+        </member>
+        <member name="M:Xamarin.Media.MediaFile.Dispose">
+            <summary>Releases all resources used by the <see cref="T:Xamarin.Media.MediaFile" />.</summary>
+            <remarks>To be added.</remarks>
+        </member>
+        <member name="M:Xamarin.Media.MediaFile.Finalize">
+            <summary>Deconstructs the MediaFile releasing all resources.</summary>
+            <remarks>To be added.</remarks>
+        </member>
+        <member name="M:Xamarin.Media.MediaFile.GetStream">
+            <summary>Gets a stream to the media file.</summary>
+            <returns>A <see cref="T:System.IO.Stream" /> for reading the file.</returns>
+            <remarks>
+                <para>
+				Disposing the returned stream is separate from disposing the containing <see cref="T:Xamarin.Media.MediaFile" />,
+				ensure that you dispose both.
+			</para>
+                <para>
+				Where possible, this method will return a stream from memory instead of reading from storage.
+			</para>
+            </remarks>
+        </member>
+        <member name="P:Xamarin.Media.MediaFile.Path">
+            <summary>Gets the path to the file.</summary>
+            <value>The path to the file.</value>
+            <remarks>
+                <para>
+				On iOS and Android, this is the full path to the file. On Windows Phone, it's a relative path
+				under isolated storage.
+			</para>
+            </remarks>
+            <altmember cref="M:Xamarin.Media.MediaFile.GetStream" />
+        </member>
+        <member name="T:Xamarin.Media.MediaPicker">
+            <summary>Contains methods allowing the asynchronous picking and taking of media.</summary>
+            <remarks>
+                <para>
+			Only one async operation can be active at a time for a single instance of <see cref="T:Xamarin.Media.MediaPicker" />.
+		</para>
+                <para>
+			Avoid blocking on the resulting task (by using <see cref="P:System.Threading.Tasks.Task{T}.Result" />
+			or <see cref="M:System.Threading.Tasks.Task.Wait" />) from the pick and take operations. As these operations
+			invoke the system UI for picking or taking media the operation occurs on the current UI thread and may deadlock
+			the application. Instead, use <see cref="M:System.Threading.Tasks.Tasks.ContinueWith" /> to handle the result of the operation.
+		</para>
+                <para>
+			If the user cancels a pick or take operation, the returned task will continue with <see cref="P:System.Threading.Tasks.Task.IsCanceled" />
+			as <c>true</c>. If an error occured during the operation, <see cref="P:System.Threading.Tasks.Task.IsFaulted" /> will
+			be <c>true</c> and <see cref="P:System.Threading.Tasks.Task.Exception" /> will contain the errors. It's important to check
+			for any exceptions as otherwise the exception will be rethrown when the task's finalizer runs.
+		</para>
+                <para>
+			On Windows Phone, your application may be deactivated while a pick or take operation UI is presented. To ensure that
+			<see cref="T:Xamarin.Media.MediaPicker" /> receives the result of the operation, the <see cref="T:Xamarin.Media.MediaPicker" />
+			must be in class scope of your PhoneApplicationPage and it must be initialized in the page's constructor. This is an unavoidable
+			limitation of the Windows Phone platform.
+		</para>
+            </remarks>
+        </member>
+        <member name="C:Xamarin.Media.MediaPicker">
+            <summary>Constructs and initializes a new instance of the <see cref="T:Xamarin.Media.MediaPicker" /> class.</summary>
+            <remarks>This constructor is available on iOS and Windows Phone.</remarks>
+        </member>
+        <member name="C:Xamarin.Media.MediaPicker(Android.Content.Context)">
+            <param name="context">The context to use for operations.</param>
+            <summary>Constructs and initializes a new instance of the <see cref="T:Xamarin.Media.MediaPicker" /> class.</summary>
+            <remarks>This constructor is only available on Android.</remarks>
+        </member>
+        <member name="P:Xamarin.Media.MediaPicker.IsCameraAvailable">
+            <summary>Gets whether a camera is available on the device.</summary>
+            <value>
+                <c>true</c> if a camera is present and available, <c>false</c> otherwise.</value>
+            <remarks>
+                <para>
+				Check this property before using <see cref="M:Xamarin.Media.MediaPicker.TakeVideoAsync" /> or 
+				<see cref="M:Xamarin.Media.MediaPicker.TakePhotoAsync" />, as they will throw <see cref="T:System.NotSupportedException" />
+				if it is <c>false</c>.
+			</para>
+            </remarks>
+            <altmember cref="M:Xamarin.Media.MediaPicker.TakePhotoAsync" />
+            <altmember cref="M:Xamarin.Media.MediaPicker.TakeVideoAsync" />
+        </member>
+        <member name="P:Xamarin.Media.MediaPicker.PhotosSupported">
+            <summary>Gets whether picking or taking photos is supported.</summary>
+            <value>
+                <c>true</c> if photos are supported, <c>false</c> otherwise.</value>
+            <remarks>
+                <para>
+				Check this property before using <see cref="M:Xamarin.Media.MediaPicker.PickPhotoAsync" /> or
+				<see cref="M:Xamarin.Media.MediaPicker.TakePhotoAsync" />, as they will throw <see cref="T:System.NotSupportedException" />
+				if it is <c>false</c>.
+			</para>
+            </remarks>
+            <altmember cref="M:Xamarin.Media.MediaPicker.TakePhotoAsync" />
+            <altmember cref="M:Xamarin.Media.MediaPicker.PickPhotoAsync" />
+        </member>
+        <member name="M:Xamarin.Media.MediaPicker.PickPhotoAsync">
+            <summary>Begins an asynchronous operation to pick a photo from the device's gallery by launching the system UI for this.</summary>
+            <returns>A <see cref="T:System.Threading.Tasks.Task{T}" /> of <see cref="T:Xamarin.Media.MediaFile" />.</returns>
+            <remarks>
+                <para>
+				Avoid blocking on the resulting task (by using <see cref="P:System.Threading.Tasks.Task{T}.Result" />
+				or <see cref="M:System.Threading.Tasks.Task.Wait" />). As this operation invokes the system UI for picking a photo,
+				the operation occurs on the current UI thread and may deadlock the application. Instead, use
+				<see cref="M:System.Threading.Tasks.Tasks.ContinueWith" /> to handle the result of the operation.
+			</para>
+                <para>
+				If the user cancels the operation, the returned task will continue with <see cref="P:System.Threading.Tasks.Task.IsCanceled" />
+				as <c>true</c>. If an error occured during the operation, <see cref="P:System.Threading.Tasks.Task.IsFaulted" /> will
+				be <c>true</c> and <see cref="P:System.Threading.Tasks.Task.Exception" /> will contain the errors. It's important to check
+				for any exceptions as otherwise the exception will be rethrown when the task's finalizer runs.
+			</para>
+                <para>
+				It's important to <see cref="M:Xamarin.Media.MediaFile.Dispose" /> the returned <see cref="T:Xamarin.Media.MediaFile" /> when
+				you're done with it to release any memory and temporary file resources being used for it.
+			</para>
+                <para>
+				On Windows Phone, file paths returned from the photo picker can not be easily reused. As such, they are
+				copied locally under a "temp" directory in isolated storage for use with <see cref="T:Xamarin.Media.MediaFile" />.
+				Call <see cref="M:Xamarin.Media.MediaFile.Dispose" /> to remove this file, but keep in mind that if your app crashes before
+				you have a chance to dispose, this file will not be automatically reclaimed.
+			</para>
+            </remarks>
+            <exception cref="T:System.NotSupportedException">
+                <see cref="P:Xamarin.Media.MediaPicker.PhotosAvailable" /> is <c>false</c>.
+		  </exception>
+            <exception cref="T:System.InvalidOperationException">
+			  Another async operation is pending on this <see cref="T:Xamarin.Media.MediaPicker" /></exception>
+        </member>
+        <member name="M:Xamarin.Media.MediaPicker.PickVideoAsync">
+            <summary>Begins an asynchronous operation to pick a video from the device's gallery by launching the system UI for this.</summary>
+            <returns>
+				A <see cref="T:System.Threading.Tasks.Task{T}" /> of <see cref="T:Xamarin.Media.MediaFile" />.
+			</returns>
+            <remarks>
+                <para>
+					Avoid blocking on the resulting task (by using <see cref="P:System.Threading.Tasks.Task{T}.Result" />
+					or <see cref="M:System.Threading.Tasks.Task.Wait" />). As this operation invokes the system UI for picking a video,
+					the operation occurs on the current UI thread and may deadlock the application. Instead, use
+					<see cref="M:System.Threading.Tasks.Tasks.ContinueWith" /> to handle the result of the operation.
+				</para>
+                <para>
+					If the user cancels the operation, the returned task will continue with <see cref="P:System.Threading.Tasks.Task.IsCanceled" />
+					as <c>true</c>. If an error occured during the operation, <see cref="P:System.Threading.Tasks.Task.IsFaulted" /> will
+					be <c>true</c> and <see cref="P:System.Threading.Tasks.Task.Exception" /> will contain the errors. It's important to check
+					for any exceptions as otherwise the exception will be rethrown when the task's finalizer runs.
+				</para>
+                <para>
+					It's important to <see cref="M:Xamarin.Media.MediaFile.Dispose" /> the returned <see cref="T:Xamarin.Media.MediaFile" /> when
+					you're done with it to release any memory and temporary file resources being used for it.
+				</para>
+            </remarks>
+            <exception cref="T:System.NotSupportedException">
+                <see cref="P:Xamarin.Media.MediaPicker.PhotosAvailable" /> is <c>false</c>.
+			</exception>
+            <exception cref="T:System.InvalidOperationException">
+				Another async operation is pending on this <see cref="T:Xamarin.Media.MediaPicker" /></exception>
+        </member>
+        <member name="M:Xamarin.Media.MediaPicker.TakePhotoAsync(Xamarin.Media.StoreCameraMediaOptions)">
+            <param name="options">To be added.</param>
+            <summary>Begins an asynchronous operation to take a new photo and store it in a file by launching the system UI for this.</summary>
+            <returns>
+				A <see cref="T:System.Threading.Tasks.Task{T}" /> of <see cref="T:Xamarin.Media.MediaFile" />.
+			</returns>
+            <remarks>
+                <para>
+					Avoid blocking on the resulting task (by using <see cref="P:System.Threading.Tasks.Task{T}.Result" />
+					or <see cref="M:System.Threading.Tasks.Task.Wait" />). As this operation invokes the system UI for taking photos,
+					the operation occurs on the current UI thread and may deadlock the application. Instead, use
+					<see cref="M:System.Threading.Tasks.Tasks.ContinueWith" /> to handle the result of the operation.
+				</para>
+                <para>
+					If the user cancels the operation, the returned task will continue with <see cref="P:System.Threading.Tasks.Task.IsCanceled" />
+					as <c>true</c>. If an error occured during the operation, <see cref="P:System.Threading.Tasks.Task.IsFaulted" /> will
+					be <c>true</c> and <see cref="P:System.Threading.Tasks.Task.Exception" /> will contain the errors. It's important to check
+					for any exceptions as otherwise the exception will be rethrown when the task's finalizer runs.
+				</para>
+                <para>
+					It's important to <see cref="M:Xamarin.Media.MediaFile.Dispose" /> the returned <see cref="T:Xamarin.Media.MediaFile" /> when
+					you're done with it to release any memory and temporary file resources being used for it.
+				</para>
+            </remarks>
+            <exception cref="T:System.ArgumentNullException">
+                <paramref name="options" /> is <c>null</c>.
+			</exception>
+            <exception cref="T:System.ArgumentException">
+				One of the members of <paramref name="options" /> has an invalid value.
+			</exception>
+            <exception cref="T:System.NotSupportedException">
+                <see cref="P:Xamarin.Media.MediaPicker.IsCameraAvailable" /> or <see cref="P:Xamarin.Media.MediaPicker.PhotosAvailable" />
+				is <c>false</c>.
+			</exception>
+            <exception cref="T:System.InvalidOperationException">
+				Another async operation is pending on this <see cref="T:Xamarin.Media.MediaPicker" /></exception>
+            <altmember cref="T:Xamarin.Media.StoreCameraMediaOptions" />
+        </member>
+        <member name="M:Xamarin.Media.MediaPicker.TakeVideoAsync(Xamarin.Media.StoreVideoOptions)">
+            <param name="options">To be added.</param>
+            <summary>Begins an asynchronous operation to record a new video and store it to a file by launching the system UI for this.</summary>
+            <returns>
+				A <see cref="T:System.Threading.Tasks.Task{T}" /> of <see cref="T:Xamarin.Media.MediaFile" />.
+			</returns>
+            <remarks>
+                <para>
+					Avoid blocking on the resulting task (by using <see cref="P:System.Threading.Tasks.Task{T}.Result" />
+					or <see cref="M:System.Threading.Tasks.Task.Wait" />). As this operation invokes the system UI for recording video,
+					the operation occurs on the current UI thread and may deadlock the application. Instead, use
+					<see cref="M:System.Threading.Tasks.Tasks.ContinueWith" /> to handle the result of the operation.
+				</para>
+                <para>
+					If the user cancels the operation, the returned task will continue with <see cref="P:System.Threading.Tasks.Task.IsCanceled" />
+					as <c>true</c>. If an error occured during the operation, <see cref="P:System.Threading.Tasks.Task.IsFaulted" /> will
+					be <c>true</c> and <see cref="P:System.Threading.Tasks.Task.Exception" /> will contain the errors. It's important to check
+					for any exceptions as otherwise the exception will be rethrown when the task's finalizer runs.
+				</para>
+                <para>
+					It's important to <see cref="M:Xamarin.Media.MediaFile.Dispose" /> the returned <see cref="T:Xamarin.Media.MediaFile" /> when
+					you're done with it to release any memory and temporary file resources being used for it.
+				</para>
+            </remarks>
+            <exception cref="T:System.ArgumentNullException">
+                <paramref name="options" /> is <c>null</c>.
+			</exception>
+            <exception cref="T:System.ArgumentException">
+				One of the members of <paramref name="options" /> has an invalid value.
+			</exception>
+            <exception cref="T:System.NotSupportedException">
+                <see cref="P:Xamarin.Media.MediaPicker.IsCameraAvailable" /> or <see cref="P:Xamarin.Media.MediaPicker.VideosAvailable" />
+				is <c>false</c>.
+			</exception>
+            <exception cref="T:System.InvalidOperationException">
+				Another async operation is pending on this <see cref="T:Xamarin.Media.MediaPicker" /></exception>
+        </member>
+        <member name="P:Xamarin.Media.MediaPicker.VideosSupported">
+            <summary>Gets whether picking or taking videos is supported.</summary>
+            <value>
+                <c>true</c> if videos are supported, <c>false</c> otherwise.
+			</value>
+            <remarks>
+                <para>
+					Check this property before using <see cref="M:Xamarin.Media.MediaPicker.PickVideoAsync" /> or
+					<see cref="M:Xamarin.Media.MediaPicker.TakeVideoAsync" />, as they will throw <see cref="T:System.NotSupportedException" />
+					if it is <c>false</c>.
+				</para>
+                <para>
+					This currently always returns <c>false</c> on Windows Phone.
+				</para>
+            </remarks>
+            <altmember cref="M:Xamarin.Media.MediaPicker.TakeVideoAsync" />
+            <altmember cref="M:Xamarin.Media.MediaPicker.PickVideoAsync" />
+        </member>
+        <member name="T:Xamarin.Media.StoreCameraMediaOptions">
+            <summary>Holds options for camera-based capturing operations.</summary>
+            <remarks />
+            <altmember cref="M:Xamarin.Media.MediaPicker.TakeVideoAsync" />
+            <altmember cref="M:Xamarin.Media.MediaPicker.TakePhotoAsync" />
+        </member>
+        <member name="C:Xamarin.Media.StoreCameraMediaOptions">
+            <summary>Constructs and initializes a new instance of the <see cref="T:Xamarin.Media.StoreCameraMediaOptions" /> class.</summary>
+            <remarks />
+        </member>
+        <member name="P:Xamarin.Media.StoreCameraMediaOptions.DefaultCamera">
+            <summary>Gets or sets the default camera to use for the operation.</summary>
+            <value>The default camera to use for the operation.</value>
+            <remarks>
+                <para>
+				This only serves as a hint to the host system to use the specified camera. If setting the default
+				camera - or the camera selected - is unsupported, this property will be ignored.
+			</para>
+            </remarks>
+        </member>
+        <member name="T:Xamarin.Media.StoreMediaOptions">
+            <summary>Base class for media storing operations.</summary>
+            <remarks />
+            <altmember cref="T:Xamarin.Media.StoreVideoOptions" />
+            <altmember cref="T:Xamarin.Media.StoreCameraMediaOptions" />
+        </member>
+        <member name="C:Xamarin.Media.StoreMediaOptions">
+            <summary>Constructs and intializes a new instance of the <see cref="T:Xamarin.Media.StoreMediaOptions" /> class.</summary>
+            <remarks />
+        </member>
+        <member name="P:Xamarin.Media.StoreMediaOptions.Directory">
+            <summary>Gets or sets the directory to store the media in.</summary>
+            <value>The directory to store the media in.</value>
+            <remarks>
+                <para>
+				The media store operations have specific root folders they will store media in. This property
+				acts as a sub-directory to those directories. If <c>null</c>, the operation will just use
+				the root of it's specific directory.
+			</para>
+                <para>
+				On iOS and Windows Phone, the root directory is just the root of the application-specific storage
+				area. On Android, the external storage folder most relevant to the operation will be used.
+			</para>
+            </remarks>
+        </member>
+        <member name="P:Xamarin.Media.StoreMediaOptions.Name">
+            <summary>Gets or sets the name of the file.</summary>
+            <value>The name of the file to store the media as.</value>
+            <remarks>
+                <para>
+				If this is <c>null</c>, the operation will generate a unique filename automatically. If
+				a name without an extension is specified, an appropriate one will be added by the operation.
+			</para>
+            </remarks>
+        </member>
+        <member name="T:Xamarin.Media.StoreVideoOptions">
+            <summary>Holds options for storing videos.</summary>
+            <remarks />
+            <altmember cref="M:Xamarin.Media.MediaPicker.TakeVideoAsync" />
+        </member>
+        <member name="C:Xamarin.Media.StoreVideoOptions">
+            <summary>Constructs and initializes a new instance of the <see cref="T:Xamarin.Media.StoreVideoOptions" /> class.</summary>
+            <remarks />
+        </member>
+        <member name="P:Xamarin.Media.StoreVideoOptions.DesiredLength">
+            <summary>Gets or sets the desired length of the video recording.</summary>
+            <value>A <see cref="T:System.TimeSpan" /> representing the desired elngth of the recording.</value>
+            <remarks>
+                <para>
+				Not all camera implementations on Android respect this property, as such it should
+				be considered only a hint and not a guarantee of result length.
+			</para>
+            </remarks>
+        </member>
+        <member name="P:Xamarin.Media.StoreVideoOptions.Quality">
+            <summary>Gets or sets the quality level for the video.</summary>
+            <value>Video quality level.</value>
+            <remarks>
+                <para>
+				Not all host systems support three settings. On Android, <see cref="F:Xamarin.Media.VideoQuality.Medium" /> is
+				interpreted as <see cref="F:Xamarin.Media.VideoQuality.High" />.
+			</para>
+            </remarks>
+        </member>
+        <member name="T:Xamarin.Media.VideoQuality">
+            <summary>Represents a video quality setting.</summary>
+            <remarks>
+                <para>
+			Not all host systems support three settings. On Android, <see cref="F:Xamarin.Media.VideoQuality.Medium" /> is
+			interpreted as <see cref="F:Xamarin.Media.VideoQuality.High" />.
+		</para>
+            </remarks>
+        </member>
+        <member name="F:Xamarin.Media.VideoQuality.High">
+            <summary>High quality recording.</summary>
+        </member>
+        <member name="F:Xamarin.Media.VideoQuality.Low">
+            <summary>Low quality recording.</summary>
+        </member>
+        <member name="F:Xamarin.Media.VideoQuality.Medium">
+            <summary>Medium quality recording.</summary>
+        </member>
+    </members>
+</doc>
