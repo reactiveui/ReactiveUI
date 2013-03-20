@@ -19,7 +19,7 @@ namespace System.Diagnostics.Contracts
 
 #if IOS || WINRT || PORTABLE
 
-namespace System.ComponentModel
+namespace ReactiveUI
 {
     public class PropertyChangingEventArgs : EventArgs
     {
@@ -44,7 +44,7 @@ namespace System.ComponentModel
 #endif
 
 #if SILVERLIGHT || WINRT || PORTABLE
-namespace System
+namespace ReactiveUI
 {
     [AttributeUsage(AttributeTargets.All, Inherited = false, AllowMultiple = true)]
     public sealed class LocalizableAttribute : Attribute

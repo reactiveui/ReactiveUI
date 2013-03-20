@@ -177,6 +177,10 @@
       <Project>{F9459904-F785-4255-866A-A619787CB895}</Project>
       <Name>ReactiveUI.Xaml_WP8</Name>
     </ProjectReference>
+    <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj">
+      <Project>{464CB812-F99F-401B-BE4C-E8F0515CD19D}</Project>
+      <Name>ReactiveUI</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Threading.Tasks">
