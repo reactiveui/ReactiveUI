@@ -472,6 +472,9 @@ namespace ReactiveUI
             }, TaskCreationOptions.HideScheduler).Unwrap();
 
             return fileTask.Result.Any(x => testAssemblies.Any(name => x.ToUpperInvariant().Contains(name)));
+#elif PORTABLE
+            //Figure out portable way to do this.
+            return false;
 #else
             // Try to detect whether we're in design mode - bonus points, 
             // without access to any WPF references :-/
