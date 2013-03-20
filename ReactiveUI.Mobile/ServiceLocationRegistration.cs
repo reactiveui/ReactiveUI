@@ -16,6 +16,8 @@ namespace ReactiveUI.Mobile
 #elif WINRT
             RxApp.Register(typeof(WinRTSuspensionHost), typeof (ISuspensionHost));
             RxApp.Register(typeof(WinRTAppDataDriver), typeof (ISuspensionDriver));
+#elif UIKIT
+            RxApp.Register(typeof(CocoaSuspensionHost), typeof(ISuspensionHost));
 #endif
         }
     }
