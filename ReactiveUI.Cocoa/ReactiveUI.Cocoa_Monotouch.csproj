@@ -66,6 +66,7 @@
     <Compile Include="RoutedViewHost.cs" />
     <Compile Include="TargetActionCommandBinder.cs" />
     <Compile Include="ViewModelViewHost.cs" />
+    <Compile Include="RouterUINavigationController.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ReactiveUI.Xaml\ReactiveUI.Xaml_Monotouch.csproj">
