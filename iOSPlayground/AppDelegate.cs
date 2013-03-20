@@ -4,6 +4,10 @@ using System.Linq;
 
 using MonoTouch.Foundation;
 using MonoTouch.UIKit;
+using ReactiveUI.Mobile;
+using ReactiveUI;
+using System.Reactive.Linq;
+using System.Reactive;
 
 namespace iOSPlayground
 {
@@ -11,32 +15,41 @@ namespace iOSPlayground
     // User Interface of the application, as well as listening (and optionally responding) to 
     // application events from iOS.
     [Register ("AppDelegate")]
-    public partial class AppDelegate : UIApplicationDelegate
+    public partial class AppDelegate : AutoSuspendAppDelegate
     {
-        // class-level declarations
-        UIWindow window;
-        iOSPlaygroundViewController viewController;
-
-        //
-        // This method is invoked when the application has loaded and is ready to run. In this 
-        // method you should instantiate the window, load the UI into it and then make the window
-        // visible.
-        //
-        // You have 17 seconds to return from this method, or iOS will terminate your application.
-        //
-        public override bool FinishedLaunching(UIApplication app, NSDictionary options)
+        public override bool WillFinishLaunching(UIApplication application, NSDictionary launchOptions)
         {
+            // NB: Hax
             (new ReactiveUI.Xaml.ServiceLocationRegistration()).Register();
             (new ReactiveUI.Routing.ServiceLocationRegistration()).Register();
             (new ReactiveUI.Cocoa.ServiceLocationRegistration()).Register();
+            (new ReactiveUI.Mobile.ServiceLocationRegistration()).Register();
 
-            window = new UIWindow(UIScreen.MainScreen.Bounds);
-            
-            viewController = new iOSPlaygroundViewController();
-            window.RootViewController = viewController;
-            window.MakeKeyAndVisible();
-            
+            RxApp.Register(typeof(AppBootstrapper), typeof(IApplicationRootState));
+            RxApp.Register(typeof(DummySuspensionDriver), typeof(ISuspensionDriver));
+
+            var host = RxApp.GetService<ISuspensionHost>();
+            host.SetupDefaultSuspendResume();
+
             return true;
+        }
+    }
+
+    public class DummySuspensionDriver : ISuspensionDriver
+    {
+        public IObservable<T> LoadState<T>() where T : class, IApplicationRootState
+        {
+            return Observable.Throw<T>(new Exception("Didn't work lol"));
+        }
+
+        public IObservable<Unit> SaveState<T>(T state) where T : class, IApplicationRootState
+        {
+            return Observable.Return(Unit.Default);
+        }
+
+        public IObservable<Unit> InvalidateState()
+        {
+            return Observable.Return(Unit.Default);
         }
     }
 }
