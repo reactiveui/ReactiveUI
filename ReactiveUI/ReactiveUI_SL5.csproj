@@ -95,16 +95,16 @@
     <Reference Include="System.Threading.Tasks">
       <HintPath>..\packages\Microsoft.Bcl.1.0.16-rc\lib\sl5\System.Threading.Tasks.dll</HintPath>
     </Reference>
-    <Reference Include="System.Windows" />
     <Reference Include="system" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Windows" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Net" />
-    <Reference Include="System.Windows.Browser" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BindingTypeConverters.cs" />
     <Compile Include="CollectionDebugView.cs" />
+    <Compile Include="CommandInterfaces.cs" />
     <Compile Include="CompatMixins.cs" />
     <Compile Include="ContractStubs.cs" />
     <Compile Include="DefaultPropertyBinding.cs" />
@@ -135,7 +135,6 @@
     <Compile Include="RxApp.cs" />
     <Compile Include="ScheduledSubject.cs" />
     <Compile Include="ThreadLocal.cs" />
-    <Compile Include="Validation.cs" />
     <Compile Include="VariadicTemplates.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

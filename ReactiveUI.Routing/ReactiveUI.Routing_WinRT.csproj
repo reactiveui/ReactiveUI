@@ -52,9 +52,9 @@
       <Project>{689ec7c5-2d81-4124-929e-397b330cc358}</Project>
       <Name>ReactiveUI.Xaml_WinRT</Name>
     </ProjectReference>
-    <ProjectReference Include="..\ReactiveUI\ReactiveUI_WinRT.csproj">
-      <Project>{3db4ef6f-ccbc-4115-9c33-20e52a024534}</Project>
-      <Name>ReactiveUI_WinRT</Name>
+    <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj">
+      <Project>{464cb812-f99f-401b-be4c-e8f0515cd19d}</Project>
+      <Name>ReactiveUI</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
