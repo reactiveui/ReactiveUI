@@ -47,6 +47,7 @@
     <IpaPackageName />
     <MtouchI18n />
     <MtouchArch>ARMv7</MtouchArch>
+    <MtouchLink>None</MtouchLink>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|iPhone' ">
     <DebugType>none</DebugType>

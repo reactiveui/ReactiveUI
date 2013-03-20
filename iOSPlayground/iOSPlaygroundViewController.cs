@@ -6,6 +6,7 @@ using MonoTouch.UIKit;
 using ReactiveUI;
 using ReactiveUI.Routing;
 using System.ComponentModel;
+using System.Runtime.Serialization;
 
 namespace iOSPlayground
 {
@@ -45,7 +46,8 @@ namespace iOSPlayground
         public override void ViewDidLoad()
         {
             base.ViewDidLoad();
-            RxApp.DeferredScheduler.Schedule(() => Console.WriteLine("Bar"));
+
+            this.OneWayBind(ViewModel, x => x.TheGuid, x => x.TheGuid.Text);
         }
         
         public override bool ShouldAutorotateToInterfaceOrientation(UIInterfaceOrientation toInterfaceOrientation)
@@ -57,15 +59,24 @@ namespace iOSPlayground
 
     public class iOSPlaygroundViewModel : ReactiveObject, IRoutableViewModel
     {
+        [IgnoreDataMember]
         public string UrlPathSegment {
             get { return "Initial View"; }
         }
 
+        [IgnoreDataMember]
         public IScreen HostScreen { get; protected set; }
+
+        [DataMember] string _TheGuid;
+        public string TheGuid { 
+            get { return _TheGuid; }
+            set { this.RaiseAndSetIfChanged(x => x.TheGuid, value); }
+        }
 
         public iOSPlaygroundViewModel(IScreen hostScreen)
         {
             HostScreen = hostScreen ?? RxApp.GetService<IScreen>();
+            TheGuid = Guid.NewGuid().ToString();
         }
     }
 }
