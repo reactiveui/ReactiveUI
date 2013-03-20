@@ -81,5 +81,16 @@ namespace ReactiveUI.Tests
             items.Sort(comparer.ThenByDescending(x => x, StringComparer.Ordinal));
             Assert.True(items.SequenceEqual(new[] { "aaa", "AAA", "aaaa", "abb" }, StringComparer.Ordinal));
         }
+
+        [Fact]
+        public void WorksWithAnonymousTypes()
+        {
+            var source = new List<string> { "abc", "bcd", "cde" };
+            var items = source.Select(x => new { FirstLetter = x[0], AllOfIt = x }).ToList();
+
+            items.Sort(OrderedComparer.For(items).OrderBy(x => x.FirstLetter));
+            Assert.True(items.Select(x => x.FirstLetter).SequenceEqual("abc"));
+
+        }
     }
 }
