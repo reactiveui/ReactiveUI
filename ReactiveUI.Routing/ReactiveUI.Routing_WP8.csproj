@@ -128,6 +128,9 @@
     <ProjectReference Include="..\ReactiveUI\ReactiveUI_WP8.csproj">
       <Project>{FAEA4F2E-017C-47AF-B467-4D2C7210CDEF}</Project>
       <Name>ReactiveUI_WP8</Name>
+    <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj">
+      <Project>{464CB812-F99F-401B-BE4C-E8F0515CD19D}</Project>
+      <Name>ReactiveUI</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\$(TargetFrameworkIdentifier)\$(TargetFrameworkVersion)\Microsoft.$(TargetFrameworkIdentifier).$(TargetFrameworkVersion).Overrides.targets" />
