@@ -125,7 +125,7 @@ namespace ReactiveUI.Routing
             IDisposable inner = null;
 
             var router = This.HostScreen.Router;
-            return router.NavigationStack.CollectionCountChanged.Subscribe(_ => {
+            return router.NavigationStack.CountChanged.Subscribe(_ => {
                 if (router.GetCurrentViewModel() == This) {
                     if (inner != null)  inner.Dispose();
                     inner = onNavigatedTo();
