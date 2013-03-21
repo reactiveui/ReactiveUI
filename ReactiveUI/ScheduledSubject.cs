@@ -9,26 +9,31 @@ namespace ReactiveUI
 {
     public class ScheduledSubject<T> : ISubject<T>
     {
-        public ScheduledSubject(IScheduler scheduler, IObserver<T> defaultObserver = null)
+        public ScheduledSubject(IScheduler scheduler, IObserver<T> defaultObserver = null, ISubject<T> defaultSubject = null)
         {
             _scheduler = scheduler;
             _defaultObserver = defaultObserver;
+            _subject = defaultSubject ?? new Subject<T>();
 
-            if (defaultObserver != null) {
+            if (defaultObserver != null)
+            {
                 _defaultObserverSub = _subject.ObserveOn(_scheduler).Subscribe(_defaultObserver);
             }
         }
 
         readonly IObserver<T> _defaultObserver;
         readonly IScheduler _scheduler;
-        readonly Subject<T> _subject = new Subject<T>();
+        readonly ISubject<T> _subject;
 
         int _observerRefCount = 0;
         IDisposable _defaultObserverSub;
 
         public void Dispose()
         {
-            _subject.Dispose();
+            if (_subject is IDisposable)
+            {
+                ((IDisposable)_subject).Dispose();
+            }
         }
 
         public void OnCompleted()
