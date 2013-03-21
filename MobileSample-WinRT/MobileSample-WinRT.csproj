@@ -180,10 +180,6 @@
       <Project>{30540f2b-0f4c-40a0-b3b6-ffddfa09d8fd}</Project>
       <Name>ReactiveUI.Mobile_WinRT</Name>
     </ProjectReference>
-    <ProjectReference Include="..\ReactiveUI.Routing\ReactiveUI.Routing_WinRT.csproj">
-      <Project>{b73da536-0ad8-40a1-a2a7-f8491ce584f6}</Project>
-      <Name>ReactiveUI.Routing_WinRT</Name>
-    </ProjectReference>
     <ProjectReference Include="..\ReactiveUI.Xaml\ReactiveUI.Xaml_WinRT.csproj">
       <Project>{689ec7c5-2d81-4124-929e-397b330cc358}</Project>
       <Name>ReactiveUI.Xaml_WinRT</Name>

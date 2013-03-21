@@ -169,10 +169,6 @@
       <Project>{B90F3D02-1E3A-4DD7-8E00-30F28B6DCC1E}</Project>
       <Name>ReactiveUI.Mobile_WP8</Name>
     </ProjectReference>
-    <ProjectReference Include="..\ReactiveUI.Routing\ReactiveUI.Routing_WP8.csproj">
-      <Project>{9F70B056-893E-487D-8DD1-C012C4440618}</Project>
-      <Name>ReactiveUI.Routing_WP8</Name>
-    </ProjectReference>
     <ProjectReference Include="..\ReactiveUI.Xaml\ReactiveUI.Xaml_WP8.csproj">
       <Project>{F9459904-F785-4255-866A-A619787CB895}</Project>
       <Name>ReactiveUI.Xaml_WP8</Name>

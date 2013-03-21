@@ -83,14 +83,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ReactiveUI.Xaml\ReactiveUI.Xaml_Net45.csproj">
-      <Project>{761ac9ba-4a9c-440c-9b6c-2569978f0610}</Project>
-      <Name>ReactiveUI.Xaml_Net45</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\ReactiveUI\ReactiveUI_Net45.csproj">
-      <Project>{292a477b-bb94-43c1-984e-e177ef9fedb7}</Project>
-      <Name>ReactiveUI_Net45</Name>
-    </ProjectReference>
     <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj">
       <Project>{464cb812-f99f-401b-be4c-e8f0515cd19d}</Project>
       <Name>ReactiveUI</Name>

@@ -137,10 +137,6 @@
       <Project>{08d3606b-ee79-43ee-8382-72a1091f1f30}</Project>
       <Name>ReactiveUI.NLog_Net45</Name>
     </ProjectReference>
-    <ProjectReference Include="..\ReactiveUI.Routing\ReactiveUI.Routing_Net45.csproj">
-      <Project>{1b7576e0-f1b6-41a7-b607-b521dea1daa9}</Project>
-      <Name>ReactiveUI.Routing_Net45</Name>
-    </ProjectReference>
     <ProjectReference Include="..\ReactiveUI.Testing\ReactiveUI.Testing_Net45.csproj">
       <Project>{dd99fd0f-82f6-4c30-930e-4a1d0df01d65}</Project>
       <Name>ReactiveUI.Testing_Net45</Name>

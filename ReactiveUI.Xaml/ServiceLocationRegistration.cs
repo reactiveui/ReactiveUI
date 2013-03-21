@@ -26,7 +26,8 @@ namespace ReactiveUI.Xaml
             RxApp.Register(typeof (XamlDefaultPropertyBinding), typeof (IDefaultPropertyBindingProvider));
             RxApp.Register(typeof (CreatesCommandBindingViaCommandParameter), typeof(ICreatesCommandBinding));
             RxApp.Register(typeof (CreatesCommandBindingViaEvent), typeof(ICreatesCommandBinding));
-            RxApp.Register(typeof (BooleanToVisibilityTypeConverter), typeof (IBindingTypeConverter));
+            RxApp.Register(typeof(BooleanToVisibilityTypeConverter), typeof(IBindingTypeConverter));
+            RxApp.Register(typeof(AutoDataTemplateBindingHook), typeof(IPropertyBindingHook));
 #endif
 
 #if WINRT
