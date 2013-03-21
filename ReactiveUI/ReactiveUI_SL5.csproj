@@ -130,12 +130,15 @@
     <Compile Include="ReactiveObject.cs" />
     <Compile Include="RefcountDisposeWrapper.cs" />
     <Compile Include="Reflection.cs" />
+    <Compile Include="RoutingState.cs" />
     <Compile Include="Rx-Shim\AwaitableAsyncSubject.cs" />
     <Compile Include="Rx-Shim\GetAwaiter.cs" />
     <Compile Include="Rx-Shim\ImmutableList.cs" />
     <Compile Include="RxApp.cs" />
+    <Compile Include="RxRouting.cs" />
     <Compile Include="ScheduledSubject.cs" />
     <Compile Include="ThreadLocal.cs" />
+    <Compile Include="Validation.cs" />
     <Compile Include="VariadicTemplates.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

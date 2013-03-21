@@ -135,10 +135,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ReactiveUI.Routing\ReactiveUI.Routing_WinRT.csproj">
-      <Project>{B73DA536-0AD8-40A1-A2A7-F8491CE584F6}</Project>
-      <Name>ReactiveUI.Routing_WinRT</Name>
-    </ProjectReference>
     <ProjectReference Include="..\ReactiveUI.Xaml\ReactiveUI.Xaml_WinRT.csproj">
       <Project>{689ec7c5-2d81-4124-929e-397b330cc358}</Project>
       <Name>ReactiveUI.Xaml_WinRT</Name>
