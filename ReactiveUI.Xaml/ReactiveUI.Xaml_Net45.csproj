@@ -155,6 +155,7 @@
       <Name>ReactiveUI_Net45</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

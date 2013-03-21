@@ -202,6 +202,5 @@
     </VisualStudio>
   </ProjectExtensions>
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
-</Project>
   <Import Project="..\packages\Microsoft.Bcl.Build.1.0.0-rc\tools\Microsoft.Bcl.Build.targets" />
 </Project>
