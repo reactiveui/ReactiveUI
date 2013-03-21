@@ -134,12 +134,6 @@
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ReactiveUI\ReactiveUI_Net45.csproj">
-      <Project>{292a477b-bb94-43c1-984e-e177ef9fedb7}</Project>
-      <Name>ReactiveUI_Net45</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

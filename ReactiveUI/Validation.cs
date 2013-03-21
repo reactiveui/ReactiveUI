@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
 using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
 using System.Reactive.Subjects;
 using System.Reflection;
 using System.Runtime.Serialization;
+using System.Collections;
 
 namespace ReactiveUI
 {
@@ -14,10 +14,11 @@ namespace ReactiveUI
     /// 
     /// </summary>
     [DataContract]
-    public class ReactiveValidatedObject : ReactiveObject, IDataErrorInfo
+    public class ReactiveValidatedObject : ReactiveObject, INotifyDataErrorInfo
     {
         /// <summary>
-        ///
+        /// Initializes a new instance of the <see cref="ReactiveValidatedObject" /> class.
+        /// THis class hook up to the Changing observable to receive property changing notifications.
         /// </summary>
         public ReactiveValidatedObject()
         {
@@ -36,58 +37,6 @@ namespace ReactiveUI
                     return allValidatedProperties.Get(this.GetType()).Count;
                 }
             });
-        }
-
-        [IgnoreDataMember]
-        public string Error {
-            get { return null; }
-        }
-
-        [IgnoreDataMember]
-        public string this[string columnName] {
-            get {
-                string ret;
-                if (_validationCache.TryGetValue(columnName, out ret)) {
-                    return ret;
-                }
-
-                this.Log().Debug("Checking {0:X}.{1}...", this.GetHashCode(), columnName);
-                ret = getPropertyValidationError(columnName);
-                this.Log().Debug("Validation result: {0}", ret);
-
-                _validationCache[columnName] = ret;
-
-                _ValidationObservable.OnNext(new ObservedChange<object, bool>() {
-                    Sender = this, PropertyName = columnName, Value = (ret != null)
-                });
-                return ret;
-            }
-        }
-
-        public bool IsObjectValid()
-        {
-            if (_validationCache.Count == _validatedPropertyCount.Value) {
-                //return _validationCache.Values.All(x => x == null);
-                foreach(var v in _validationCache.Values) {
-                    if (v != null) {
-                        return false;
-                    }
-                }
-                return true;
-            }
-
-            IEnumerable<string> allProps;
-            lock (allValidatedProperties) {
-                allProps = allValidatedProperties.Get(GetType()).Keys;
-            };
-
-            //return allProps.All(x => this[x] == null);
-            foreach(var v in allProps) {
-                if (this[v] != null) {
-                    return false;
-                }
-            }
-            return true;
         }
 
         protected void InvalidateValidationCache()
@@ -137,6 +86,66 @@ namespace ReactiveUI
             }
             
             return null;
+        }
+
+        public event EventHandler<DataErrorsChangedEventArgs> ErrorsChanged;
+
+        public IEnumerable GetErrors(string propertyName)
+        {
+            string ret;
+            if (_validationCache.TryGetValue(propertyName, out ret))
+            {
+                return ret;
+            }
+
+            this.Log().Debug("Checking {0:X}.{1}...", this.GetHashCode(), propertyName);
+            ret = getPropertyValidationError(propertyName);
+            this.Log().Debug("Validation result: {0}", ret);
+
+            _validationCache[propertyName] = ret;
+
+            _ValidationObservable.OnNext(new ObservedChange<object, bool>()
+            {
+                Sender = this,
+                PropertyName = propertyName,
+                Value = (ret != null)
+            });
+            return ret;
+        }
+
+        public bool HasErrors
+        {
+            get 
+            {
+                if (_validationCache.Count == _validatedPropertyCount.Value)
+                {
+                    //return _validationCache.Values.All(x => x == null);
+                    foreach (var v in _validationCache.Values)
+                    {
+                        if (v != null)
+                        {
+                            return true;
+                        }
+                    }
+                    return false;
+                }
+
+                IEnumerable<string> allProps;
+                lock (allValidatedProperties)
+                {
+                    allProps = allValidatedProperties.Get(GetType()).Keys;
+                };
+
+                //return allProps.All(x => this[x] == null);
+                foreach (var v in allProps)
+                {
+                    if (this.GetErrors(v) != null)
+                    {
+                        return true;
+                    }
+                }
+                return false;
+            }
         }
     }
 

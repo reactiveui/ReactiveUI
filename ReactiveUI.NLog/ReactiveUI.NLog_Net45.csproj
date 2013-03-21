@@ -132,9 +132,9 @@
     <Compile Include="ServiceLocationRegistration.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ReactiveUI\ReactiveUI_Net40.csproj">
-      <Project>{292a477b-bb94-43c1-984e-e177ef9fedb7}</Project>
-      <Name>ReactiveUI_Net40</Name>
+    <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj">
+      <Project>{464cb812-f99f-401b-be4c-e8f0515cd19d}</Project>
+      <Name>ReactiveUI</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
