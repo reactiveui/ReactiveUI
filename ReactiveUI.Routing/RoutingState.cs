@@ -69,7 +69,7 @@ namespace ReactiveUI.Routing
             if (rxObjectsSetup) return;
 
             NavigateBack = new ReactiveCommand(
-                NavigationStack.CollectionCountChanged.StartWith(_NavigationStack.Count).Select(x => x > 1));
+                NavigationStack.CountChanged.StartWith(_NavigationStack.Count).Select(x => x > 1));
             NavigateBack.Subscribe(_ =>
                 NavigationStack.RemoveAt(NavigationStack.Count - 1));
 
@@ -129,7 +129,7 @@ namespace ReactiveUI.Routing
         /// </summary>
         public static IObservable<IRoutableViewModel> ViewModelObservable(this IRoutingState This)
         {
-            return This.NavigationStack.CollectionCountChanged
+            return This.NavigationStack.CountChanged
                 .Select(_ => This.GetCurrentViewModel())
                 .StartWith(This.GetCurrentViewModel());
         }
