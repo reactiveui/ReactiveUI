@@ -67,6 +67,7 @@
     <Compile Include="ObservableAsPropertyHelperTest.cs" />
     <Compile Include="ObservableAsyncMRUCacheTest.cs" />
     <Compile Include="ObservedChangedMixinTest.cs" />
+    <Compile Include="OrderedComparerTests.cs" />
     <Compile Include="ReactiveCollectionTest.cs" />
     <Compile Include="ReactiveCommandTest.cs" />
     <Compile Include="ReactiveNotifyPropertyChangedMixinTest.cs" />
