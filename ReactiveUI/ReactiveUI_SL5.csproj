@@ -118,6 +118,7 @@
     <Compile Include="ObservableAsPropertyHelper.cs" />
     <Compile Include="ObservableAsyncMRUCache.cs" />
     <Compile Include="ObservedChangedMixin.cs" />
+    <Compile Include="OrderedComparer.cs" />
     <Compile Include="POCOObservableForProperty.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PropertyBinding.cs" />
