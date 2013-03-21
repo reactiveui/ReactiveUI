@@ -119,6 +119,7 @@
     <Compile Include="MessageBusTest.cs" />
     <Compile Include="ObservableAsPropertyHelperTest.cs" />
     <Compile Include="ObservedChangedMixinTest.cs" />
+    <Compile Include="OrderedComparerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PropertyBindingTest.cs" />
     <Compile Include="ReactiveCollectionTest.cs" />
