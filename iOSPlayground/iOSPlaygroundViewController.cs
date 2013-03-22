@@ -70,7 +70,7 @@ namespace iOSPlayground
         [DataMember] string _TheGuid;
         public string TheGuid { 
             get { return _TheGuid; }
-            set { this.RaiseAndSetIfChanged(x => x.TheGuid, value); }
+            set { this.RaiseAndSetIfChanged(ref _TheGuid, value); }
         }
 
         public iOSPlaygroundViewModel(IScreen hostScreen)
