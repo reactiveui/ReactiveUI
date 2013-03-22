@@ -80,7 +80,6 @@
     <Compile Include="VariadicTemplates.cs" />
     <Compile Include="RxApp.cs" />
     <Compile Include="CollectionDebugView.cs" />
-    <Compile Include="CallerMemberNameAttribute.cs" />
     <Compile Include="PropertyBinding.cs" />
   </ItemGroup>
 </Project>
