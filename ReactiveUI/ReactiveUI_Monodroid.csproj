@@ -146,6 +146,9 @@
     <Compile Include="CallerMemberNameAttribute.cs" />
     <Compile Include="CollectionDebugView.cs" />
     <Compile Include="VariadicTemplates.cs" />
+    <Compile Include="Rx-Shim\AwaitableAsyncSubject.cs" />
+    <Compile Include="Rx-Shim\GetAwaiter.cs" />
+    <Compile Include="Rx-Shim\ImmutableList.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -162,4 +165,7 @@
   </Target>
   -->
   <Import Project="$(MSBuildExtensionsPath)\Novell\Novell.MonoDroid.CSharp.targets" />
+  <ItemGroup>
+    <Folder Include="Rx-Shim\" />
+  </ItemGroup>
 </Project>
