@@ -53,19 +53,19 @@ namespace ReactiveUI.Tests
             var fixture = new ValidatedTestFixture();
             //fixture.IsValidObservable.Subscribe(output.Add);
 
-            Assert.False(fixture.IsObjectValid());
+            Assert.True(fixture.HasErrors);
 
             fixture.IsNotNullString = "foo";
-            Assert.False(fixture.IsObjectValid());
+            Assert.True(fixture.HasErrors);
 
             fixture.IsOnlyOneWord = "Foo Bar";
-            Assert.False(fixture.IsObjectValid());
+            Assert.True(fixture.HasErrors);
 
             fixture.IsOnlyOneWord = "Foo";
-            Assert.True(fixture.IsObjectValid());
+            Assert.False(fixture.HasErrors);
 
             fixture.IsOnlyOneWord = "";
-            Assert.False(fixture.IsObjectValid());
+            Assert.True(fixture.HasErrors);
 
             /*
             new[] { false, false, false, true, false }.Zip(output, (expected, actual) => new { expected, actual })
@@ -81,7 +81,7 @@ namespace ReactiveUI.Tests
 
             Assert.DoesNotThrow(delegate
             {
-                var error = fixture["NonStaticProperty"];
+                var error = fixture.GetErrors("NonStaticProperty");
             });
         }
     }
