@@ -58,14 +58,20 @@ namespace ReactiveUI.Cocoa
             });
 
             var sel = new Selector("theAction:");
+#if UIKIT
+            var ctl = (UIControl)target;
+            ctl.AddTarget(ctlDelegate, sel, UIControlEvent.TouchUpInside);
+            var actionDisp = Disposable.Create(() => ctl.RemoveTarget(ctlDelegate, sel, UIControlEvent.TouchUpInside));
+#else
             Reflection.GetValueSetterOrThrow(target.GetType(), "Action")(target, sel);
-
             var targetSetter = Reflection.GetValueSetterOrThrow(target.GetType(), "Target");
             targetSetter(target, ctlDelegate);
+            var actionDisp = Disposable.Create(() => targetSetter(target, null));
+#endif
 
             var enabledSetter = Reflection.GetValueSetterForProperty(target.GetType(), "Enabled");
             var disp = new CompositeDisposable(
-                Disposable.Create(() => targetSetter(target, null)),
+                actionDisp,
                 commandParameter.Subscribe(x => latestParam = x),
                 Observable.FromEventPattern<EventHandler, EventArgs>(x => command.CanExecuteChanged += x, x => command.CanExecuteChanged -= x)
                     .Select(_ => command.CanExecute(latestParam))
