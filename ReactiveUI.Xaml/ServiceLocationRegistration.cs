@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Windows;
+using ReactiveUI.Routing;
 
 #if WINRT
 using Windows.ApplicationModel;

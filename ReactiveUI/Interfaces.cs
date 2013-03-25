@@ -523,15 +523,6 @@ namespace ReactiveUI
         /// </summary>
         public string Contract { get; set; }
     }
-
-    public static class ObservableUtils
-    {
-        public static IConnectableObservable<T> PermaRef<T>(this IConnectableObservable<T> This)
-        {
-            This.Connect();
-            return This;
-        }
-    }
 }
 
 // vim: tw=120 ts=4 sw=4 et :
