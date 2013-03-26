@@ -85,5 +85,6 @@
     <Compile Include="Rx-Shim\AwaitableAsyncSubject.cs" />
     <Compile Include="Rx-Shim\GetAwaiter.cs" />
     <Compile Include="Rx-Shim\ImmutableList.cs" />
+    <Compile Include="ReactiveCollectionMixins.cs" />
   </ItemGroup>
 </Project>
