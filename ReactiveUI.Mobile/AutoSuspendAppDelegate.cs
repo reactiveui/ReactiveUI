@@ -61,7 +61,7 @@ namespace ReactiveUI.Mobile
 
             host.ShouldInvalidateState = untimelyDeath;
             host.ShouldPersistState = _willTerminate.Merge(_backgrounded).SelectMany(app => {
-                var taskId = app.BeginBackgroundTask(new NSAction(() => {}));
+                var taskId = app.BeginBackgroundTask(new NSAction(() => untimelyDeath.OnNext(Unit.Default)));
 
                 // NB: We're being force-killed, signal invalidate instead
                 if (taskId == UIApplication.BackgroundTaskInvalid) {
