@@ -130,6 +130,7 @@
     <Compile Include="OrderedComparer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReactiveCollection.cs" />
+    <Compile Include="ReactiveCollectionMixins.cs" />
     <Compile Include="ReactiveNotifyPropertyChangedMixin.cs" />
     <Compile Include="ReactiveObject.cs" />
     <Compile Include="MakeObjectReactiveHelper.cs" />
