@@ -824,7 +824,7 @@ namespace ReactiveUI
         /// <returns>
         /// An instance of <see cref="IDisposable"/> that, when disposed,
         /// disconnects the binding.
-        /// </returns
+        /// </returns>
         public IDisposable Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(
                 TViewModel viewModel,
                 TView view,

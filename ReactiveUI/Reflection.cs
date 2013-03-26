@@ -262,6 +262,15 @@ namespace ReactiveUI
             return true;
         }
 
+        /// <summary>
+        /// Gets a list of all the values set along a property chain. 
+        /// For example, given a property chain <c>current.Foo.Bar.Baz</c>
+        /// it attempts to get the value of <c>Foo</c>, <c>Foo.Bar</c> and <c>Foo.Bar.Baz</c>.
+        /// </summary>
+        /// <param name="changeValues">The values of the properties in the property chain.</param>
+        /// <param name="current">The root of the property chain.</param>
+        /// <param name="propNames">An array of <see cref="System.String"/> describing the property chain.</param>
+        /// <returns>True if all the property were successfully accessed; otherwise false (e.g. one property was null).</returns>
         public static bool TryGetAllValuesForPropertyChain(out IObservedChange<object, object>[] changeValues, object current, string[] propNames)
         {
             int currentIndex = 0;
