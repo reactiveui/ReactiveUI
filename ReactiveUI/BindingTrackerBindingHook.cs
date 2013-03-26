@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reactive.Subjects;
 using System.Reflection;
 using System.Text;
 
@@ -11,16 +12,16 @@ namespace ReactiveUI
     {
         readonly ReadOnlyCollection<string> sourcePath;
         readonly ReadOnlyCollection<string> targetPath;
-        readonly WeakReference source;
-        readonly WeakReference target;
+        readonly object source;
+        readonly object target;
 
         public BindingInfo(object source, object target, IEnumerable<string> sourcePath, IEnumerable<string> targetPath)
         {
             this.sourcePath = sourcePath.ToList().AsReadOnly();
             this.targetPath = targetPath.ToList().AsReadOnly();
 
-            this.source = new WeakReference(source);
-            this.target = new WeakReference(target);
+            this.source = source;
+            this.target = target;
         }
 
         public IEnumerable<string> SourcePath
@@ -33,12 +34,12 @@ namespace ReactiveUI
             get { return targetPath; }
         }
 
-        public WeakReference Source
+        public object Source
         {
             get { return source; }
         }
 
-        public WeakReference Target
+        public object Target
         {
             get { return target; }
         }
@@ -49,7 +50,7 @@ namespace ReactiveUI
     /// </summary>
     internal class BindingTrackerBindingHook : IPropertyBindingHook, IBindingRegistry, IEnableLogger
     {
-        readonly Dictionary<object, List<BindingInfo>> allBindings = new Dictionary<object, List<BindingInfo>>(); 
+        readonly Dictionary<object, ReplaySubject<BindingInfo>> allBindings = new Dictionary<object, ReplaySubject<BindingInfo>>(); 
 
         public bool ExecuteHook(object source, object target, 
             Func<IObservedChange<object, object>[]> getCurrentViewModelProperties, 
@@ -67,13 +68,13 @@ namespace ReactiveUI
             var bindingInfo = new BindingInfo(source, target, sourcePath, targetPath);
 
             lock (allBindings) {
-                List<BindingInfo> bindings;
+                ReplaySubject<BindingInfo> bindings;
 
                 if (!allBindings.TryGetValue(target, out bindings)) {
-                    bindings = new List<BindingInfo>();
+                    bindings = new ReplaySubject<BindingInfo>();
                 }
 
-                bindings.Add(bindingInfo);
+                bindings.OnNext(bindingInfo);
 
                 allBindings[source] = bindings;
             }
@@ -81,7 +82,7 @@ namespace ReactiveUI
             return true;
         }
 
-        public IEnumerable<BindingInfo> GetBindingForView(object view)
+        public IObservable<BindingInfo> GetBindingForView(object view)
         {
             if (!Monitor) {
                 this.Log().Warn("You are tryong to get bindings for a view object, " +
@@ -89,15 +90,15 @@ namespace ReactiveUI
             }
 
             lock (allBindings) {
-                List<BindingInfo> bindings;
+                ReplaySubject<BindingInfo> bindings;
 
                 if (!allBindings.TryGetValue(view, out bindings)) {
-                    return Enumerable.Empty<BindingInfo>();
+                    bindings = new ReplaySubject<BindingInfo>();
+
+                    allBindings.Add(view, bindings);
                 }
 
-                var copyOfBindings = new BindingInfo[bindings.Count];
-                bindings.CopyTo(copyOfBindings);
-                return copyOfBindings;
+                return bindings;
             }
         }
 
@@ -111,7 +112,7 @@ namespace ReactiveUI
         /// </summary>
         /// <param name="view">The target object for which to get all the bindings for.</param>
         /// <returns>An enumerable containing all the bindings applied to the <paramref name="view"/>.</returns>
-        IEnumerable<BindingInfo> GetBindingForView(object view);
+        IObservable<BindingInfo> GetBindingForView(object view);
 
         /// <summary>
         /// Sets a value indicating whether this instance of <see cref="IBindingRegistry"/>
