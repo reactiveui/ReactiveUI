@@ -28,7 +28,6 @@ namespace ReactiveUI.Xaml
             RxApp.Register(typeof (CreatesCommandBindingViaEvent), typeof(ICreatesCommandBinding));
             RxApp.Register(typeof (BooleanToVisibilityTypeConverter), typeof (IBindingTypeConverter));
 
-            RxApp.Register(typeof (NotifyDataErrorInfoBindingProvider), typeof (IBindingErrorProvider));
             RxApp.Register(typeof (XamlValidationDisplayProvider), typeof (IBindingDisplayProvider));
 #endif
 

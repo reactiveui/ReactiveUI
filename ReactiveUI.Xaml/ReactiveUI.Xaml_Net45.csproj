@@ -134,7 +134,7 @@
     <Compile Include="CommandBinding.cs" />
     <Compile Include="CreatesCommandBinding.cs" />
     <Compile Include="DependencyObjectObservableForProperty.cs" />
-    <Compile Include="DisplayValidationMixin.cs" />
+    <Compile Include="XamlValidationDisplayProvider.cs" />
     <Compile Include="Errors.cs" />
     <Compile Include="Interfaces.cs" />
     <Compile Include="ManualValidationHelper.cs" />

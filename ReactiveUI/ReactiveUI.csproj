@@ -128,6 +128,7 @@
     <Compile Include="BindingTypeConverters.cs" />
     <Compile Include="CompatMixins.cs" />
     <Compile Include="DefaultPropertyBinding.cs" />
+    <Compile Include="DisplayValidationMixin.cs" />
     <Compile Include="INPCObservableForProperty.cs" />
     <Compile Include="Interfaces.cs">
       <SubType>Code</SubType>
