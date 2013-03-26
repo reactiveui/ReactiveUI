@@ -50,7 +50,8 @@ namespace ReactiveUI
     /// </summary>
     internal class BindingTrackerBindingHook : IPropertyBindingHook, IBindingRegistry, IEnableLogger
     {
-        readonly Dictionary<object, ReplaySubject<BindingInfo>> allBindings = new Dictionary<object, ReplaySubject<BindingInfo>>(); 
+        static readonly Dictionary<object, ReplaySubject<BindingInfo>> allBindings = new Dictionary<object, ReplaySubject<BindingInfo>>();
+        static bool monitor = true;
 
         public bool ExecuteHook(object source, object target, 
             Func<IObservedChange<object, object>[]> getCurrentViewModelProperties, 
@@ -76,7 +77,7 @@ namespace ReactiveUI
 
                 bindings.OnNext(bindingInfo);
 
-                allBindings[source] = bindings;
+                allBindings[target] = bindings;
             }
 
             return true;
@@ -102,7 +103,11 @@ namespace ReactiveUI
             }
         }
 
-        public bool Monitor { get; set; }
+        public bool Monitor
+        {
+            get { return monitor; }
+            set { monitor = value; }
+        }
     }
 
     public interface IBindingRegistry
