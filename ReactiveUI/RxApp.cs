@@ -94,6 +94,9 @@ namespace ReactiveUI
             RxApp.Register(typeof(EqualityTypeConverter), typeof(IBindingTypeConverter));
             RxApp.Register(typeof(StringConverter), typeof(IBindingTypeConverter));
 
+            RxApp.Register(typeof(BindingTrackerBindingHook), typeof(IPropertyBindingHook));
+            RxApp.Register(typeof(BindingTrackerBindingHook), typeof(IBindingRegistry));
+
 #if !SILVERLIGHT && !WINRT
             RxApp.Register(typeof(ComponentModelTypeConverter), typeof(IBindingTypeConverter));
 #endif
