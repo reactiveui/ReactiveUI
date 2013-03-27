@@ -124,6 +124,7 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BindingErrorProviders.cs" />
     <Compile Include="BindingTrackerBindingHook.cs" />
     <Compile Include="BindingTypeConverters.cs" />
     <Compile Include="CompatMixins.cs" />

@@ -101,6 +101,10 @@ namespace ReactiveUI
             RxApp.Register(typeof(NotifyDataErrorInfoBindingProvider), typeof(IBindingErrorProvider));
 #endif
 
+#if !WINRT
+            RxApp.Register(typeof(DataErrorInfoBindingProvider), typeof(IBindingErrorProvider));
+#endif
+
 #if !SILVERLIGHT && !WINRT
             RxApp.Register(typeof(ComponentModelTypeConverter), typeof(IBindingTypeConverter));
 #endif

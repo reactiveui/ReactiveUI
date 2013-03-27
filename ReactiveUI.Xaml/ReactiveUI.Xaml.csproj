@@ -135,7 +135,6 @@
     <Compile Include="CommandBinding.cs" />
     <Compile Include="CreatesCommandBinding.cs" />
     <Compile Include="DependencyObjectObservableForProperty.cs" />
-    <Compile Include="DisplayValidationMixin.cs" />
     <Compile Include="Errors.cs" />
     <Compile Include="Interfaces.cs" />
     <Compile Include="ManualValidationHelper.cs" />
@@ -147,6 +146,7 @@
     <Compile Include="TransitioningContentControl.cs" />
     <Compile Include="WaitForDispatcherScheduler.cs" />
     <Compile Include="XamlDefaultPropertyBinding.cs" />
+    <Compile Include="XamlValidationDisplayProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <Page Include="Themes\Generic.xaml">
