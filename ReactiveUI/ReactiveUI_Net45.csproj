@@ -133,6 +133,7 @@
     </Compile>
     <Compile Include="MemoizingMRUCache.cs" />
     <Compile Include="MessageBus.cs" />
+    <Compile Include="NameVariants.cs" />
     <Compile Include="ObservableAsPropertyHelper.cs" />
     <Compile Include="ObservableAsyncMRUCache.cs" />
     <Compile Include="ObservedChangedMixin.cs" />
