@@ -13,17 +13,15 @@ namespace ReactiveUI
     {
     #if SILVERLIGHT || WINRT
         static MemoizingMRUCache<Tuple<Type, string>, FieldInfo> backingFieldInfoTypeCache = 
-            new MemoizingMRUCache<Tuple<Type,string>, FieldInfo>(
-                (x, _) =>
-                {
+            new MemoizingMRUCache<Tuple<Type,string>, FieldInfo>((x, _) => {
 					FieldInfo ret = null;
-					foreach ( var nameVariant in RxApp.GetFieldNameForProperty(x.Item2) )
-					{
+					foreach ( var nameVariant in RxApp.GetFieldNameForProperty(x.Item2) ) {
 						ret = (x.Item1).GetField( nameVariant );
 
 						if ( ret != null )
 							break;
 					}
+
 					return ret;
                 }, 
                 15 /*items*/);
@@ -59,9 +57,7 @@ namespace ReactiveUI
             }, 15);
     #else
         static readonly MemoizingMRUCache<Tuple<Type, string>, FieldInfo> backingFieldInfoTypeCache = 
-            new MemoizingMRUCache<Tuple<Type, string>, FieldInfo>((x, _) =>
-            {
-
+            new MemoizingMRUCache<Tuple<Type, string>, FieldInfo>((x, _) => {
 				FieldInfo ret = null;
 				foreach(var nameVariant in RxApp.GetFieldNameForProperty(x.Item2)) {
 					ret = (x.Item1).GetField( nameVariant, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance );
@@ -69,6 +65,7 @@ namespace ReactiveUI
 					if (ret != null)
 						break;
 				}
+
                 return ret;
             }, 50/*items*/);
 
