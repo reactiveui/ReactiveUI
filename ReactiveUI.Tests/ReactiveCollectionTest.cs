@@ -24,8 +24,8 @@ namespace ReactiveUI.Tests
             var before_output = new List<int>();
             var output = new List<int>();
 
-            fixture.CollectionCountChanging.Subscribe(before_output.Add);
-            fixture.CollectionCountChanged.Subscribe(output.Add);
+            fixture.CountChanging.Subscribe(before_output.Add);
+            fixture.CountChanged.Subscribe(output.Add);
 
             fixture.Add(10);
             fixture.Add(20);
@@ -47,7 +47,7 @@ namespace ReactiveUI.Tests
         {
             var items = new ReactiveCollection<object>(new []{new object()});
             bool countChanged = false;
-            items.CollectionCountChanged.Subscribe(_ => {countChanged = true;});
+            items.CountChanged.Subscribe(_ => {countChanged = true;});
 
             items.Clear();
 
