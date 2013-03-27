@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ReactiveUI
 {
@@ -22,7 +19,7 @@ namespace ReactiveUI
 
             Reflection.TryGetAllValuesForPropertyChain(out values, binding.Source, propNames);
 
-            var maxNotifyDataErrorInfo = 0;
+            var maxNotifyDataErrorInfo = -1;
 
             for (int i = 0; i < values.Length; i++) {
                 if (values[i] == null || values[i].Value == null) {
@@ -41,35 +38,44 @@ namespace ReactiveUI
             var propNames = binding.SourcePath.ToArray();
             var maxNotifyDataErrorInfo = maxNotifyDataErrorInfoIndex(binding, propNames);
 
-            if (maxNotifyDataErrorInfo == propNames.Length -1) {
+            if (maxNotifyDataErrorInfo == -1) {
+                // no NotifyDataErrorInfo, we cannot bind.
+                return 0;
+            }
+
+            if (maxNotifyDataErrorInfo == propNames.Length - 1) {
                 // bind more tightly if it is the one before last;
                 return 25;
             }
             else {
-                return maxNotifyDataErrorInfo > 0 ? 20 : 0;
+                return 20;
             }
         }
 
-        
         public IObservable<IDataError> GetErrorsForBinding(BindingInfo binding)
         {
             var propNames = binding.SourcePath.ToArray();
             var index = maxNotifyDataErrorInfoIndex(binding, propNames);
 
-            var validationPropertyName = propNames.Skip(index).FirstOrDefault();
+            var validationPropertyName = propNames.Skip(index + 1).FirstOrDefault();
 
-            //var source =
-            //    binding.Source.SubscribeToExpressionChain<object, INotifyDataErrorInfo>(propNames.Take(index),
-            //        skipInitial: false).Value();
+            IObservable<INotifyDataErrorInfo> source;
 
-
-            var source = Observable.Return(binding.Source as INotifyDataErrorInfo);
+            if (propNames.Length > 1) {
+                source =
+                    binding.Source.SubscribeToExpressionChain<object, INotifyDataErrorInfo>(propNames.Take(index + 1),
+                        skipInitial: false).Value();
+            }
+            else {
+                source = Observable.Return(binding.Source as INotifyDataErrorInfo);
+            }
 
             return
                 source
                     .SelectMany(x =>
                         Observable.Return( // return one initial value to reset the errors
-                            new EventPattern<DataErrorsChangedEventArgs>(x, new DataErrorsChangedEventArgs(null)))
+                            new EventPattern<DataErrorsChangedEventArgs>(x,
+                                new DataErrorsChangedEventArgs(x.HasErrors ? validationPropertyName : null)))
                                   .Concat(x == null // no errors on a null object
                                       ? Observable.Empty<EventPattern<DataErrorsChangedEventArgs>>()
                                       : Observable.FromEventPattern<DataErrorsChangedEventArgs>(
