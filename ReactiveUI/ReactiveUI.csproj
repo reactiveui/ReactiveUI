@@ -45,6 +45,7 @@
   <ItemGroup>
     <Compile Include="BindingTypeConverters.cs" />
     <Compile Include="CollectionDebugView.cs" />
+    <Compile Include="CommandBinding.cs" />
     <Compile Include="CommandInterfaces.cs" />
     <Compile Include="CompatMixins.cs" />
     <Compile Include="ContractStubs.cs" />
@@ -82,6 +83,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>VariadicTemplates.tt</DependentUpon>
     </Compile>
+    <Compile Include="WaitForDispatcherScheduler.cs" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
