@@ -436,8 +436,29 @@ namespace ReactiveUI
         AsyncOneWay,
     }
 
+    /// <summary>
+    /// This interface allows objects to hook into the binding system,
+    /// and take action before the binding between a source and a target is established.
+    /// 
+    /// It can optionally prevent the binding from actually enabling itself.
+    /// </summary>
     public interface IPropertyBindingHook
     {
+        /// <summary>
+        /// Executes the hook when the binding is being set up.
+        /// </summary>
+        /// <param name="source">The source object, usually the view model.</param>
+        /// <param name="target">The target object, usually the view.</param>
+        /// <param name="getCurrentViewModelProperties">
+        /// A function, that when invoked, returns the current values of the property chain
+        /// bound to on the <paramref name="source"/> object.
+        /// </param>
+        /// <param name="getCurrentViewProperties">
+        /// A function, that when invoked, returns the current values of the property chain
+        /// bound to on the <paramref name="target"/> object.
+        /// </param>
+        /// <param name="direction">An enumeration indicating the direction of the binding.</param>
+        /// <returns>True if the binding is allowed to succeed; otherwise false to prevent the binding from activating.</returns>
         bool ExecuteHook(object source, object target, Func<IObservedChange<object, object>[]> getCurrentViewModelProperties, Func<IObservedChange<object, object>[]> getCurrentViewProperties, BindingDirection direction);
     }
 

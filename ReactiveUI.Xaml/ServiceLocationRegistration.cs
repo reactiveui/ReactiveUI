@@ -27,6 +27,10 @@ namespace ReactiveUI.Xaml
             RxApp.Register(typeof (CreatesCommandBindingViaCommandParameter), typeof(ICreatesCommandBinding));
             RxApp.Register(typeof (CreatesCommandBindingViaEvent), typeof(ICreatesCommandBinding));
             RxApp.Register(typeof (BooleanToVisibilityTypeConverter), typeof (IBindingTypeConverter));
+
+#if !WINRT && !SILVERLIGHT
+            RxApp.Register(typeof (XamlValidationDisplayProvider), typeof (IBindingDisplayProvider));
+#endif
 #endif
 
 #if WINRT

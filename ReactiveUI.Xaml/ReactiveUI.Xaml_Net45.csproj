@@ -134,8 +134,10 @@
     <Compile Include="CommandBinding.cs" />
     <Compile Include="CreatesCommandBinding.cs" />
     <Compile Include="DependencyObjectObservableForProperty.cs" />
+    <Compile Include="XamlValidationDisplayProvider.cs" />
     <Compile Include="Errors.cs" />
     <Compile Include="Interfaces.cs" />
+    <Compile Include="ManualValidationHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReactiveAsyncCommand.cs" />
     <Compile Include="ReactiveCommand.cs" />
