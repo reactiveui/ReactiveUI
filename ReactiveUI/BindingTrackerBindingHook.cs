@@ -17,8 +17,8 @@ namespace ReactiveUI
 
         public BindingInfo(object source, object target, IEnumerable<string> sourcePath, IEnumerable<string> targetPath)
         {
-            this.sourcePath = sourcePath.ToList().AsReadOnly();
-            this.targetPath = targetPath.ToList().AsReadOnly();
+            this.sourcePath = new ReadOnlyCollection<string>(sourcePath.ToList());
+            this.targetPath = new ReadOnlyCollection<string>(targetPath.ToList());
 
             this.source = source;
             this.target = target;

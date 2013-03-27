@@ -157,8 +157,16 @@ namespace ReactiveUI
             // filter the bindings.
             var elementBindings = bindings
                 .Where(x =>
+#if WP7
+                    {
+                        int index = 0;
+                        return x.TargetPath.All(pathSegment => propertyNames[index++] == pathSegment);
+                    }
+#else
                     Enumerable.Zip(x.TargetPath, propertyNames, EqualityComparer<string>.Default.Equals)
-                              .All(_ => _));
+                              .All(_ => _)
+#endif
+                );
 
             elementBindings
                 .Subscribe(b =>

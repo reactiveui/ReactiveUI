@@ -170,10 +170,10 @@ namespace ReactiveUI
                         var instanceError = x.Sender[property];
 
                         var errors = string.IsNullOrEmpty(instanceError)
-                            ? Enumerable.Empty<string>()
-                            : new[] {instanceError};
+                            ? Enumerable.Empty<object>()
+                            : new object[] {instanceError};
 
-                        return new DataError {Errors = errors, PropertyName = property, Sender = x.Sender};
+                        return (IDataError)new DataError {Errors = errors, PropertyName = property, Sender = x.Sender};
                     });
         }
     }
