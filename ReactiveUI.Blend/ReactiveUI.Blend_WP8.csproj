@@ -92,12 +92,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ReactiveUI.Xaml\ReactiveUI.Xaml_WP8.csproj">
-      <Project>{06C34984-B706-49BF-85BB-9282DD6238D1}</Project>
-      <Name>ReactiveUI.Xaml_WP8</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="app.config" />
     <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj">
       <Project>{464CB812-F99F-401B-BE4C-E8F0515CD19D}</Project>
