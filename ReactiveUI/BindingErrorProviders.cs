@@ -21,13 +21,17 @@ namespace ReactiveUI
 
             var maxNotifyDataErrorInfo = -1;
 
+            if (binding.Source is INotifyDataErrorInfo) {
+                maxNotifyDataErrorInfo = 0;
+            }
+
             for (int i = 0; i < values.Length; i++) {
                 if (values[i] == null || values[i].Value == null) {
                     break;
                 }
 
                 if (values[i].Value is INotifyDataErrorInfo) {
-                    maxNotifyDataErrorInfo = i;
+                    maxNotifyDataErrorInfo = i + 1;
                 }
             }
             return maxNotifyDataErrorInfo;
@@ -57,13 +61,13 @@ namespace ReactiveUI
             var propNames = binding.SourcePath.ToArray();
             var index = maxNotifyDataErrorInfoIndex(binding, propNames);
 
-            var validationPropertyName = propNames.Skip(index + 1).FirstOrDefault();
+            var validationPropertyName = propNames.Skip(index).FirstOrDefault();
 
             IObservable<INotifyDataErrorInfo> source;
 
             if (propNames.Length > 1) {
                 source =
-                    binding.Source.SubscribeToExpressionChain<object, INotifyDataErrorInfo>(propNames.Take(index + 1),
+                    binding.Source.SubscribeToExpressionChain<object, INotifyDataErrorInfo>(propNames.Take(index),
                         skipInitial: false).Value();
             }
             else {
@@ -107,13 +111,17 @@ namespace ReactiveUI
 
             var maxDataErrorInfoIndex = -1;
 
+            if (binding.Source is IDataErrorInfo) {
+                maxDataErrorInfoIndex = 0;
+            }
+
             for (int i = 0; i < values.Length; i++) {
                 if (values[i] == null || values[i].Value == null) {
                     break;
                 }
 
                 if (values[i].Value is IDataErrorInfo) {
-                    maxDataErrorInfoIndex = i;
+                    maxDataErrorInfoIndex = i + 1;
                 }
             }
             return maxDataErrorInfoIndex;
@@ -143,13 +151,13 @@ namespace ReactiveUI
             var propNames = binding.SourcePath.ToArray();
             var index = maxDataErrorInfoIndex(binding, propNames);
 
-            var validationPropertyName = propNames.Skip(index + 1).FirstOrDefault();
+            var validationPropertyName = propNames.Skip(index).FirstOrDefault();
 
             IObservable<IDataErrorInfo> source;
 
             if (propNames.Length > 1) {
                 source =
-                    binding.Source.SubscribeToExpressionChain<object, IDataErrorInfo>(propNames.Take(index + 1),
+                    binding.Source.SubscribeToExpressionChain<object, IDataErrorInfo>(propNames.Take(index),
                         skipInitial: false).Value();
             }
             else {
