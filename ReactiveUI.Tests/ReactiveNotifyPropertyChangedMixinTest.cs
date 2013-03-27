@@ -17,6 +17,62 @@ using Microsoft.Reactive.Testing;
 
 namespace ReactiveUI.Tests
 {
+    public class TestBackingFieldNameVariantsViewModel : ReactiveObject
+    {
+		public int _UnderscorePrefixParam;
+		public int UnderscorePrefixParam
+		{
+			get { return _UnderscorePrefixParam; }
+			set { this.RaiseAndSetIfChanged( x => x.UnderscorePrefixParam, value ); }
+		}
+
+		public int _lowercaseUnderscorePrefixParam;
+		public int LowercaseUnderscorePrefixParam
+		{
+			get { return _lowercaseUnderscorePrefixParam; }
+			set { this.RaiseAndSetIfChanged( x => x.LowercaseUnderscorePrefixParam, value ); }
+		}
+
+		public int PascalCasedIsoNetAscii;
+		public int PascalCased_ISO_NET_ASCII
+		{
+			get { return PascalCasedIsoNetAscii; }
+			set { this.RaiseAndSetIfChanged( x => x.PascalCased_ISO_NET_ASCII, value ); }
+		}
+
+		public int camelCased;
+		public int CamelCased
+		{
+			get { return camelCased; }
+			set { this.RaiseAndSetIfChanged( x => x.CamelCased, value ); }
+		}
+
+
+		public int lowercasedprop;
+		public int LowerCasedProp
+		{
+			get { return lowercasedprop; }
+			set { this.RaiseAndSetIfChanged( x => x.LowerCasedProp, value ); }
+		}
+
+
+		public int With_Underscores;
+		public int WithUnderscores
+		{
+			get { return With_Underscores; }
+			set { this.RaiseAndSetIfChanged( x => x.WithUnderscores, value ); }
+		}
+
+
+		public int lowercase_with_underscores_prop;
+		public int LowercaseWithUnderscoresProp
+		{
+			get { return lowercase_with_underscores_prop; }
+			set { this.RaiseAndSetIfChanged( x => x.LowercaseWithUnderscoresProp, value ); }
+		}
+
+	}
+
     public class TestWhenAnyObsViewModel : ReactiveObject
     {
         public ReactiveCommand Command1 { get; protected set; }
@@ -461,6 +517,106 @@ namespace ReactiveUI.Tests
         }
     }
 
+	public class BackingFieldNameVariantsTests
+	{
+		[Fact]
+		public void UnderscorePrefixIsDetected()
+		{
+			var list = new List<int>();
+			TestBackingFieldNameVariantsViewModel model = new TestBackingFieldNameVariantsViewModel();
+			model.WhenAny(x => x.UnderscorePrefixParam, x => x.Value).Subscribe(x => list.Add(x));
+
+			Assert.Equal( 0, model.UnderscorePrefixParam );
+
+			model.UnderscorePrefixParam = 42;
+			Assert.Equal( 42, model.UnderscorePrefixParam );
+
+		}
+
+		[Fact]
+		public void UnderscorePrefixCamelCaseIsDetected()
+		{
+			var list = new List<int>();
+			TestBackingFieldNameVariantsViewModel model = new TestBackingFieldNameVariantsViewModel();
+			model.WhenAny(x => x.LowercaseUnderscorePrefixParam, x => x.Value).Subscribe(x => list.Add(x));
+
+			Assert.Equal( 0, model.LowercaseUnderscorePrefixParam );
+
+			model.LowercaseUnderscorePrefixParam = 42;
+			Assert.Equal( 42, model.LowercaseUnderscorePrefixParam );
+
+		}
+
+		[Fact]
+		public void PascalCaseIsDetected()
+		{
+			var list = new List<int>();
+			TestBackingFieldNameVariantsViewModel model = new TestBackingFieldNameVariantsViewModel();
+			model.WhenAny(x => x.PascalCased_ISO_NET_ASCII, x => x.Value).Subscribe(x => list.Add(x));
+
+			Assert.Equal( 0, model.PascalCased_ISO_NET_ASCII );
+
+			model.PascalCased_ISO_NET_ASCII = 42;
+			Assert.Equal( 42, model.PascalCased_ISO_NET_ASCII );
+
+		}
+
+		[Fact]
+		public void CamelCaseIsDetected()
+		{
+			var list = new List<int>();
+			TestBackingFieldNameVariantsViewModel model = new TestBackingFieldNameVariantsViewModel();
+			model.WhenAny(x => x.CamelCased, x => x.Value).Subscribe(x => list.Add(x));
+
+			Assert.Equal( 0, model.CamelCased );
+
+			model.CamelCased = 42;
+			Assert.Equal( 42, model.CamelCased );
+
+		}
+
+		[Fact]
+		public void LowercaseIsDetected()
+		{
+			var list = new List<int>();
+			TestBackingFieldNameVariantsViewModel model = new TestBackingFieldNameVariantsViewModel();
+			model.WhenAny(x => x.LowerCasedProp, x => x.Value).Subscribe(x => list.Add(x));
+
+			Assert.Equal( 0, model.LowerCasedProp );
+
+			model.LowerCasedProp = 42;
+			Assert.Equal( 42, model.LowerCasedProp );
+
+		}
+
+		[Fact]
+		public void WithUnderscoresIsDetected()
+		{
+			var list = new List<int>();
+			TestBackingFieldNameVariantsViewModel model = new TestBackingFieldNameVariantsViewModel();
+			model.WhenAny(x => x.WithUnderscores, x => x.Value).Subscribe(x => list.Add(x));
+
+			Assert.Equal( 0, model.WithUnderscores );
+
+			model.WithUnderscores = 42;
+			Assert.Equal( 42, model.WithUnderscores );
+
+		}
+
+		[Fact]
+		public void WithUnderscoresLowercaseIsDetected()
+		{
+			var list = new List<int>();
+			TestBackingFieldNameVariantsViewModel model = new TestBackingFieldNameVariantsViewModel();
+			model.WhenAny(x => x.LowercaseWithUnderscoresProp, x => x.Value).Subscribe(x => list.Add(x));
+
+			Assert.Equal( 0, model.LowercaseWithUnderscoresProp );
+
+			model.LowercaseWithUnderscoresProp = 42;
+			Assert.Equal( 42, model.LowercaseWithUnderscoresProp );
+
+		}
+	}
     public class WhenAnyObservableTests
     {
         [Fact]

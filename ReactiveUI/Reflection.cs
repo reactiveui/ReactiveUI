@@ -207,7 +207,7 @@ namespace ReactiveUI
             }
 
             if (field == null && !dontThrow) {
-	            String variantsString = "ttt";//String.Join(", or ", RxApp.GetFieldNameForProperty(propName));
+	            String variantsString = String.Join(", or ", RxApp.GetFieldNameForProperty(propName));
                 throw new ArgumentException("You must declare a backing field for this property named as one of: " + variantsString);
             }
 
