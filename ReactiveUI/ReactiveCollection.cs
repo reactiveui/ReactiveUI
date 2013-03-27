@@ -97,12 +97,17 @@ namespace ReactiveUI
             // NB: ObservableCollection has a Secret Handshake with WPF where 
             // they fire an INPC notification with the token "Item[]". Emulate 
             // it here
-            CollectionCountChanging.Subscribe(_ => {
+            CountChanging.Subscribe(_ => {
                 if (PropertyChanging != null) PropertyChanging(this, new PropertyChangingEventArgs("Count"));
             });
 
-            CollectionCountChanged.Subscribe(_ => {
+            CountChanged.Subscribe(_ => {
                 if (PropertyChanged != null) PropertyChanged(this, new PropertyChangedEventArgs("Count"));
+            });
+
+            IsEmptyChanged.Subscribe(_ =>
+            {
+                if (PropertyChanged != null) PropertyChanged(this, new PropertyChangedEventArgs("IsEmpty"));
             });
 
             Changing.Subscribe(_ => {
@@ -114,6 +119,11 @@ namespace ReactiveUI
             });
 
             rxObjectsSetup = true;
+        }
+
+        public bool IsEmpty
+        {
+            get { return this.Count == 0; }
         }
 
 
@@ -374,15 +384,15 @@ namespace ReactiveUI
             }
         }
 
-        public IObservable<int> CollectionCountChanging {
+        public IObservable<int> CountChanging {
             get { return _changing.Select(_ => _inner.Count).DistinctUntilChanged(); }
         }
 
-        public IObservable<int> CollectionCountChanged {
+        public IObservable<int> CountChanged {
             get { return _changed.Select(_ => _inner.Count).DistinctUntilChanged(); }
         }
 
-        public IObservable<bool> IsEmpty {
+        public IObservable<bool> IsEmptyChanged {
             get { return _changed.Select(_ => _inner.Count == 0).DistinctUntilChanged(); }
         }
 

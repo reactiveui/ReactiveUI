@@ -149,18 +149,18 @@ namespace ReactiveUI
         /// Fires whenever the number of items in a collection has changed,
         /// providing the new Count.
         /// </summary>
-        IObservable<int> CollectionCountChanged { get; }
+        IObservable<int> CountChanged { get; }
 
         /// <summary>
         /// Fires before a collection is about to change, providing the previous
         /// Count.
         /// </summary>
-        IObservable<int> CollectionCountChanging { get; }
+        IObservable<int> CountChanging { get; }
 
         /// <summary>
         /// Fires when a collection becomes or stops being empty.
         /// </summary>
-        IObservable<bool> IsEmpty { get; }
+        IObservable<bool> IsEmptyChanged { get; }
 
         //
         // Change Tracking
@@ -294,6 +294,19 @@ namespace ReactiveUI
         /// only used for one purpose, leave this as null.</param>
         /// <returns></returns>
         IObservable<T> Listen<T>(string contract = null);
+
+        /// <summary>
+        /// ListenIncludeLatest provides an Observable that will fire whenever a Message is
+        /// provided for this object via RegisterMessageSource or SendMessage and fire the 
+        /// last provided Message immediately if applicable, or null.
+        /// </summary>
+        /// <typeparam name="T">The type of the message to listen to.</typeparam>
+        /// <param name="contract">A unique string to distinguish messages with
+        /// identical types (i.e. "MyCoolViewModel") - if the message type is
+        /// only used for one purpose, leave this as null.</param>
+        /// <returns>An Observable representing the notifications posted to the
+        /// message bus.</returns>
+        IObservable<T> ListenIncludeLatest<T>(string contract = null);
 
         /// <summary>
         /// Determines if a particular message Type is registered.
