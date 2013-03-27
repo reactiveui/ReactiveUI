@@ -4,7 +4,7 @@ using System.Linq;
 using System.Reactive.Concurrency;
 using System.Text;
 
-namespace ReactiveUI.Xaml
+namespace ReactiveUI
 {
     public class WaitForDispatcherScheduler : IScheduler
     {

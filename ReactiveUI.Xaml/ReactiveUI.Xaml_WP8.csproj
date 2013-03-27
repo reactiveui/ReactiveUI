@@ -110,7 +110,6 @@
   <ItemGroup>
     <Compile Include="AutoDataTemplateBindingHook.cs" />
     <Compile Include="BindingTypeConverters.cs" />
-    <Compile Include="CommandBinding.cs" />
     <Compile Include="CreatesCommandBinding.cs" />
     <Compile Include="DependencyObjectObservableForProperty.cs" />
     <Compile Include="Errors.cs" />
@@ -122,7 +121,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="ViewModelViewHost.cs" />
-    <Compile Include="WaitForDispatcherScheduler.cs" />
     <Compile Include="XamlDefaultPropertyBinding.cs" />
   </ItemGroup>
   <ItemGroup>
