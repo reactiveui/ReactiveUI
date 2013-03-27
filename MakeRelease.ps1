@@ -1,4 +1,4 @@
-﻿$Archs = {"Net40", "Net45", "SL5", "SL4-WindowsPhone71", "WP8", "WinRT45", "Mono", "Monodroid", "Monotouch"}
+﻿$Archs = {"Net40", "Net45", "WP8", "WinRT45", "Mono", "Monodroid", "Monotouch"}
 $Projects = {"ReactiveUI", "ReactiveUI.Testing", "ReactiveUI.Xaml", "ReactiveUI.Routing", "ReactiveUI.Blend", "ReactiveUI.Cocoa", "ReactiveUI.Gtk", "ReactiveUI.Android", "ReactiveUI.NLog", "ReactiveUI.Mobile"}
 
 $SlnFileExists = Test-Path ".\ReactiveUI.sln"
