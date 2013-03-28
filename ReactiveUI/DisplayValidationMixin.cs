@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -87,20 +88,24 @@ namespace ReactiveUI
 
     public static class DisplayValidationMixin
     {
-        class ValidationObserver : IObserver<IDataError>, IEnableLogger
+        /// <summary>
+        /// This class encapsulates the behaviour to
+        /// set the validation error on a given binding.
+        /// </summary>
+        class ValidationSetter : IEnableLogger
         {
             readonly BindingInfo binding;
             readonly List<IBindingDisplayProvider> displayProviders;
 
             IBindingDisplayProvider lastProvider;
 
-            public ValidationObserver(BindingInfo binding, List<IBindingDisplayProvider> displayProviders)
+            public ValidationSetter(BindingInfo binding, List<IBindingDisplayProvider> displayProviders)
             {
                 this.binding = binding;
                 this.displayProviders = displayProviders;
             }
 
-            public void OnNext(IDataError value)
+            public void SetValidationError(IDataError value)
             {
                 var provider =
                     displayProviders.OrderByDescending(p => p.GetAffinityForBinding(binding)).FirstOrDefault();
@@ -118,20 +123,6 @@ namespace ReactiveUI
 
                 provider.SetBindingError(binding, value.Errors);
             }
-
-            public void OnError(Exception error)
-            {
-                throw error;
-            }
-
-            public void OnCompleted()
-            {
-                if (lastProvider != null) {
-                    lastProvider.SetBindingError(binding, Enumerable.Empty<object>());
-                }
-
-                lastProvider = null;
-            }
         }
 
         static readonly IBindingRegistry registry;
@@ -147,7 +138,15 @@ namespace ReactiveUI
             bindingDisplayProviders = RxApp.GetAllServices<IBindingDisplayProvider>().ToList();
         }
 
-        public static void DisplayValidationFor<TViewModel, TProp>(
+        /// <summary>
+        /// Causes validation information to be displayed for the given view model property.
+        /// </summary>
+        /// <typeparam name="TViewModel">The type of the view model.</typeparam>
+        /// <typeparam name="TProp">The type of the property to displya validation for.</typeparam>
+        /// <param name="view">The instance of <see cref="IViewFor{T}"/> on which the binding target is situated.</param>
+        /// <param name="property">An expression indicating the property to display binding information for.</param>
+        /// <returns>An instnace of <see cref="IDisposable"/>, that, when disposed, disconnects the display of the validation information.</returns>
+        public static IDisposable DisplayValidationFor<TViewModel, TProp>(
             this IViewFor<TViewModel> view,
             Expression<Func<TViewModel, TProp>> property)
             where TViewModel : class
@@ -170,10 +169,18 @@ namespace ReactiveUI
                               );
 
 
-            displayValidationForBindings(elementBindings);
+            return displayValidationForBindings(elementBindings);
         }
 
-        public static void DisplayValidationForView<TView, TProp>(this TView view,
+        /// <summary>
+        /// Causes validation information to be displayed for the given view property.
+        /// </summary>
+        /// <typeparam name="TView">The type of the view.</typeparam>
+        /// <typeparam name="TProp">The type of the view property.</typeparam>
+        /// <param name="view">The view instance on which the binding target is situated.</param>
+        /// <param name="property">An expression indicating the target property of the binding.</param>
+        /// <returns>An instance of <see cref="IDisposable"/>, that, when disposed, disconnects the display of the validation information.</returns>
+        public static IDisposable DisplayValidationForView<TView, TProp>(this TView view,
             Expression<Func<TView, TProp>> property)
             where TView : IViewFor
         {
@@ -195,16 +202,16 @@ namespace ReactiveUI
 #endif
                 );
 
-            displayValidationForBindings(elementBindings);
+            return displayValidationForBindings(elementBindings);
         }
 
         /// <summary>
         /// Displays the validation for the given bindings.
         /// </summary>
-        static void displayValidationForBindings(IObservable<BindingInfo> elementBindings)
+        static IDisposable displayValidationForBindings(IObservable<BindingInfo> elementBindings)
         {
-            elementBindings
-                .Subscribe(b =>
+            return elementBindings
+                .SelectMany(b =>
                     {
                         var errorProvider = bindingErrorProviders
                             .OrderByDescending(x => x.GetAffinityForBinding(b))
@@ -212,12 +219,17 @@ namespace ReactiveUI
 
                         if (errorProvider == null) {
                             LogHost.Default.Info("No BindingErrorProvider for binding {0}", b);
-                            return;
+                            return
+                                Observable.Empty(
+                                    new {Error = default(IDataError), ValidationObserver = default(ValidationSetter)});
                         }
 
-                        errorProvider.GetErrorsForBinding(b)
-                                     .Subscribe(new ValidationObserver(b, bindingDisplayProviders));
-                    });
+                        var validationObserver = new ValidationSetter(b, bindingDisplayProviders);
+
+                        return errorProvider.GetErrorsForBinding(b)
+                                            .Select(e => new {Error = e, ValidationObserver = validationObserver});
+                    })
+                .Subscribe(x => x.ValidationObserver.SetValidationError(x.Error));
         }
     }
 }
