@@ -147,7 +147,34 @@ namespace ReactiveUI
             bindingDisplayProviders = RxApp.GetAllServices<IBindingDisplayProvider>().ToList();
         }
 
-        public static void DisplayValidationFor<TView, TProp>(this TView view, Expression<Func<TView, TProp>> property)
+        public static void DisplayValidationFor<TViewModel, TProp>(
+            this IViewFor<TViewModel> view,
+            Expression<Func<TViewModel, TProp>> property)
+            where TViewModel : class
+        {
+            var bindings = registry.GetBindingForView(view);
+
+            var propertyNames = Reflection.ExpressionToPropertyNames(property);
+
+            var elementBindings = bindings
+                .Where(x =>
+#if WP7
+                    {
+                        int index = 0;
+                        return x.SourcePath.All(pathSegment => propertyNames[index++] == pathSegment);
+                    }
+#else
+                    Enumerable.Zip(x.SourcePath, propertyNames, EqualityComparer<string>.Default.Equals)
+                              .All(_ => _)
+#endif
+                              );
+
+
+            displayValidationForBindings(elementBindings);
+        }
+
+        public static void DisplayValidationForView<TView, TProp>(this TView view,
+            Expression<Func<TView, TProp>> property)
             where TView : IViewFor
         {
             var bindings = registry.GetBindingForView(view);
@@ -168,6 +195,14 @@ namespace ReactiveUI
 #endif
                 );
 
+            displayValidationForBindings(elementBindings);
+        }
+
+        /// <summary>
+        /// Displays the validation for the given bindings.
+        /// </summary>
+        static void displayValidationForBindings(IObservable<BindingInfo> elementBindings)
+        {
             elementBindings
                 .Subscribe(b =>
                     {

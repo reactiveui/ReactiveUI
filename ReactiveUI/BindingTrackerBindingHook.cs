@@ -113,10 +113,11 @@ namespace ReactiveUI
     public interface IBindingRegistry
     {
         /// <summary>
-        /// Gets a collection of all the bindings applied to a given <see cref="view"/>.
+        /// Gets an observable that notifies of all the current and future bindings applied to a given <see cref="view"/>.
+        /// Note that the observable will notify of all the current bindings on subscription.
         /// </summary>
         /// <param name="view">The target object for which to get all the bindings for.</param>
-        /// <returns>An enumerable containing all the bindings applied to the <paramref name="view"/>.</returns>
+        /// <returns>An observable notifying of all the bindings applied to the <paramref name="view"/>.</returns>
         IObservable<BindingInfo> GetBindingForView(object view);
 
         /// <summary>
