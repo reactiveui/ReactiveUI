@@ -19,10 +19,11 @@ namespace ReactiveUI
     public class ReactiveValidatedObject : ReactiveObject, INotifyDataErrorInfo
     {
         [IgnoreDataMember]
-        readonly Dictionary<string, object> _validatedProperties = new Dictionary<string, object>();
+        private readonly Dictionary<string, IList<Func<IObservedChange<object, object>, string>>> _validatedProperties = 
+            new Dictionary<string, IList<Func<IObservedChange<object, object>, string>>>();
 
         [IgnoreDataMember]
-        readonly Dictionary<string, string> _validationErrors = new Dictionary<string, string>();
+        private readonly Dictionary<string, string> _validationErrors = new Dictionary<string, string>();
 
         #region Events
 
@@ -48,7 +49,7 @@ namespace ReactiveUI
             {
                 PropertyName = e.PropertyName,
                 Sender = this,
-                Value = _validationErrors[e.PropertyName] != null
+                Value = _validationErrors.ContainsKey(e.PropertyName)
             }, this._validationObservable);
         }
 
@@ -68,20 +69,7 @@ namespace ReactiveUI
                 {
                     return;
                 }
-
-                string prevResult;
-                _validationErrors.TryGetValue(x.PropertyName, out prevResult);
-
-                this.Log().Debug("Checking {0:X}.{1}...", this.GetHashCode(), x.PropertyName);
-                string result = getPropertyValidationError(x);
-                this.Log().Debug("Validation result: {0}", result);
-
-                _validationErrors[x.PropertyName] = result;
-
-                if (result != prevResult)
-                {
-                    this.OnErrorsChanged(new DataErrorsChangedEventArgs(x.PropertyName));
-                }                
+                this.CheckPropertyForValidationErrors(x);
             });
         }
 
@@ -131,23 +119,51 @@ namespace ReactiveUI
         }
 
         /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="change"></param>
+        private void CheckPropertyForValidationErrors(IObservedChange<object, object> change)
+        {
+            string prevResult;
+            _validationErrors.TryGetValue(change.PropertyName, out prevResult);
+
+            this.Log().Debug("Checking {0:X}.{1}...", this.GetHashCode(), change.PropertyName);
+            string result = getPropertyValidationError(change);
+            this.Log().Debug("Validation result: {0}", result);
+
+            if (result == null)
+            {
+                _validationErrors.Remove(change.PropertyName);
+            }
+            else
+            {
+                _validationErrors[change.PropertyName] = result;
+            }
+
+            if (result != prevResult)
+            {
+                this.OnErrorsChanged(new DataErrorsChangedEventArgs(change.PropertyName));
+            }
+        }
+
+        /// <summary>
         /// Gets the property validation error.
         /// </summary>
         /// <typeparam name="TSender">The type of the sender.</typeparam>
         /// <typeparam name="TValue">The type of the value.</typeparam>
         /// <param name="change">The property change.</param>
         /// <returns>An error message or null.</returns>
-        string getPropertyValidationError<TSender, TValue>(IObservedChange<TSender, TValue> change)
+        private string getPropertyValidationError<TSender, TValue>(IObservedChange<TSender, TValue> change)
         {
-            object obj;
+            IList<Func<IObservedChange<object, object>, string>> list;
 
             lock (_validatedProperties) {
-                if (!_validatedProperties.TryGetValue(change.PropertyName, out obj)) {
+                if (!_validatedProperties.TryGetValue(change.PropertyName, out list)) {
                     return null;
                 }
             }
 
-            IList<Func<IObservedChange<TSender, TValue>, string>> validationFunctions = obj as IList<Func<IObservedChange<TSender, TValue>, string>>;
+            IList<Func<IObservedChange<TSender, TValue>, string>> validationFunctions = list as IList<Func<IObservedChange<TSender, TValue>, string>>;
 
             //make sure we have a value
             change.fillInValue();
@@ -172,28 +188,48 @@ namespace ReactiveUI
         /// <typeparam name="TProperty">The type of the property.</typeparam>
         /// <param name="property">The expression containing the property name.</param>
         /// <param name="result">The function to be called when a change occurs.</param>
-        public void Validate<TSender, TProperty>(Expression<Func<TSender, TProperty>> property, Func<IObservedChange<TSender, TProperty>,string> result)
+        public void Validate<TSender, TProperty>(string propertyName, Func<IObservedChange<TSender, TProperty>,string> result)
         {
-            Contract.Requires(property != null);
+            Contract.Requires(propertyName != null);
             Contract.Requires(result != null);
 
-            string propertyName = Reflection.SimpleExpressionToPropertyName(property);
-            
-            object obj;
-            if (_validatedProperties.TryGetValue(propertyName, out obj))
+            IList<Func<IObservedChange<object, object>, string>> validationFunctions;
+            if (_validatedProperties.TryGetValue(propertyName, out validationFunctions))
             {
-                IList<Func<IObservedChange<TSender, TProperty>, string>> validationFunctions = obj as IList<Func<IObservedChange<TSender, TProperty>, string>>;
-                if (validationFunctions != null)
-                {
-                    validationFunctions.Add(result);
-                }
+                validationFunctions.Add((Func<IObservedChange<object, object>,string>)result);
             }
             else
             {
-                IList<Func<IObservedChange<TSender, TProperty>, string>> validationFunctions = new List<Func<IObservedChange<TSender, TProperty>, string>>();
-                validationFunctions.Add(result);
+                validationFunctions = new List<Func<IObservedChange<object, object>, string>>();
+                validationFunctions.Add((Func<IObservedChange<object, object>, string>)result);
                 _validatedProperties[propertyName] = validationFunctions;
             }
+
+            //initial check
+            this.CheckPropertyForValidationErrors(new ObservedChange<object, object>()
+            {
+                PropertyName = propertyName,
+                Sender = this,
+                // value will be filled in later
+                Value = null,
+            });
+        }        
+    }
+  
+    public static class ReactiveValidatedObjectMixins
+    {
+        /// <summary>
+        /// Adds a validation rule for the specified property.
+        /// </summary>
+        /// <typeparam name="TSender">The type of the sender.</typeparam>
+        /// <typeparam name="TProperty">The type of the property.</typeparam>
+        /// <param name="property">The expression containing the property name.</param>
+        /// <param name="result">The function to be called when a change occurs.</param>
+        public static void Validate<TSender, TProperty>(this ReactiveValidatedObject This, 
+            Expression<Func<TSender, TProperty>> property, 
+            Func<IObservedChange<TSender, TProperty>, string> result)
+        {
+            This.Validate<TSender, TProperty>(Reflection.SimpleExpressionToPropertyName(property), result);
         }
 
         /// <summary>
@@ -204,13 +240,30 @@ namespace ReactiveUI
         /// <param name="property">The expression containing the property name.</param>
         /// <param name="result">The function to be called when a change occurs returning a bool.</param>
         /// <param name="errorMessage">The error message returned in case <paramref name="result"/> returns false.</param>
-        public void Validate<TSender, TProperty>(Expression<Func<TSender, TProperty>> property, Func<IObservedChange<TSender, TProperty>, bool> result, string errorMessage)
+        public static void Validate<TSender, TProperty>(this ReactiveValidatedObject This, 
+            Expression<Func<TSender, TProperty>> property, 
+            Func<IObservedChange<TSender, TProperty>, bool> result, 
+            string errorMessage)
         {
-            Contract.Requires(result != null);
-
-            this.Validate(property, ioc => result(ioc) ? null : errorMessage);
+            This.Validate<TSender,TProperty>(Reflection.SimpleExpressionToPropertyName(property), ioc => result(ioc) ? null : errorMessage);
         }
-    }   
+
+        /// <summary>
+        /// Adds a validation rule for the specified property.
+        /// </summary>
+        /// <typeparam name="TSender">The type of the sender.</typeparam>
+        /// <typeparam name="TProperty">The type of the property.</typeparam>
+        /// <param name="property">The property name.</param>
+        /// <param name="result">The function to be called when a change occurs returning a bool.</param>
+        /// <param name="errorMessage">The error message returned in case <paramref name="result"/> returns false.</param>
+        public static void Validate<TSender, TProperty>(this ReactiveValidatedObject This,
+            string propertyName, 
+            Func<IObservedChange<TSender, TProperty>, bool> result, 
+            string errorMessage)
+        {
+            This.Validate<TSender, TProperty>(propertyName, ioc => result(ioc) ? null : errorMessage);
+        }
+    }
 }
 
 // vim: tw=120 ts=4 sw=4 et :
