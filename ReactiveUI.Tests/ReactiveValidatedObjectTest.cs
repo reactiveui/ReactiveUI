@@ -1,4 +1,5 @@
 ﻿using ReactiveUI;
+using ReactiveUI.Xaml;
 using Xunit;
 using System;
 using System.Linq;
@@ -9,6 +10,11 @@ namespace ReactiveUI.Tests
 {
     public class ValidatedTestFixture : ReactiveValidatedObject
     {
+        public ValidatedTestFixture()
+        {
+            this.ValidateViaAttributes();
+        }
+
         public string _IsNotNullString;
         [Required]
         public string IsNotNullString {
