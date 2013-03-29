@@ -179,7 +179,7 @@ namespace ReactiveUI
             }
         }
 
-        void notifyObservable<T>(T item, Subject<T> subject)
+        internal void notifyObservable<T>(T item, Subject<T> subject)
         {
 #if DEBUG
             this.Log().Debug("Firing observable to subject 0x{0:X}", subject.GetHashCode());
