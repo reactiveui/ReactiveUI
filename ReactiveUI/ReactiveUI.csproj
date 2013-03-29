@@ -77,7 +77,7 @@
     <Compile Include="RxApp.cs" />
     <Compile Include="RxRouting.cs" />
     <Compile Include="ScheduledSubject.cs" />
-    <Compile Include="Validation.cs" />
+    <Compile Include="ReactiveValidatedObject.cs" />
     <Compile Include="VariadicTemplates.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

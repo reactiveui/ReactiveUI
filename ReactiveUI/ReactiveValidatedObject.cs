@@ -43,6 +43,13 @@ namespace ReactiveUI
             {
                 handler(this, e);
             }
+
+            notifyObservable(new ObservedChange<object, bool>() 
+            {
+                PropertyName = e.PropertyName,
+                Sender = this,
+                Value = _validationErrors[e.PropertyName] != null
+            }, this._validationObservable);
         }
 
         #endregion
@@ -53,6 +60,8 @@ namespace ReactiveUI
         /// </summary>
         public ReactiveValidatedObject()
         {
+            _validationObservable = new Subject<IObservedChange<object, bool>>();
+
             this.Changed.Subscribe(x =>
             {
                 if (x.Sender != this)
@@ -72,7 +81,7 @@ namespace ReactiveUI
                 if (result != prevResult)
                 {
                     this.OnErrorsChanged(new DataErrorsChangedEventArgs(x.PropertyName));
-                }
+                }                
             });
         }
 
@@ -114,11 +123,11 @@ namespace ReactiveUI
         }
 
         [IgnoreDataMember]
-        readonly Subject<IObservedChange<object, bool>> _ValidationObservable = new Subject<IObservedChange<object, bool>>();
+        readonly Subject<IObservedChange<object, bool>> _validationObservable;
 
         [IgnoreDataMember]
         public IObservable<IObservedChange<object, bool>> ValidationObservable {
-            get { return _ValidationObservable;  }
+            get { return _validationObservable;  }
         }
 
         /// <summary>
