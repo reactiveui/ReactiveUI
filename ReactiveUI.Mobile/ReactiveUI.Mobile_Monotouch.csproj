@@ -52,6 +52,9 @@
     <Reference Include="Xamarin.Mobile">
       <HintPath>..\ext\ios\Xamarin.Mobile.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\ext\Newtonsoft.Json.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Resources\" />
@@ -67,6 +70,7 @@
     <Compile Include="Interfaces.cs" />
     <Compile Include="SuspensionHost.cs" />
     <Compile Include="AutoSuspendAppDelegate.cs" />
+    <Compile Include="JsonSuspensionDriver.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ReactiveUI\ReactiveUI_Monotouch.csproj">
