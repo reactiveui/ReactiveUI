@@ -118,6 +118,9 @@
     </Reference>
     <Reference Include="Mono.Android" />
     <Reference Include="Mono.Android.Support.v4" />
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\ext\Newtonsoft.Json.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -126,6 +129,7 @@
     <Compile Include="SuspensionHost.cs" />
     <Compile Include="AutoSuspendActivityHelper.cs" />
     <Compile Include="Geolocation.cs" />
+    <Compile Include="BundleSuspensionDriver.cs" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
