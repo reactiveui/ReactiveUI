@@ -10,5 +10,5 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyProduct("ReactiveUI.Routing")]
 
 [assembly: AssemblyVersion("4.5.0")]
-[assembly: InternalsVisibleTo("ReactiveUI.Routing.Tests")]
-[assembly: InternalsVisibleTo("ReactiveUI.Routing.Explorables")]
+//[assembly: InternalsVisibleTo("ReactiveUI.Routing.Tests")]
+//[assembly: InternalsVisibleTo("ReactiveUI.Routing.Explorables")]
