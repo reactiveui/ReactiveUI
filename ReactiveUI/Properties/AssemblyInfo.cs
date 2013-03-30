@@ -42,3 +42,4 @@ using System.Runtime.CompilerServices;
 [assembly: InternalsVisibleTo("ReactiveUI.Mobile_WinRT")]
 [assembly: InternalsVisibleTo("ReactiveUI.Mobile_WP8")]
 [assembly: InternalsVisibleTo("ReactiveUI.Mobile_Monotouch")]
+[assembly: InternalsVisibleTo("ReactiveUI.Mobile_Monodroid")]
