@@ -1,32 +1,424 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reactive;
-using System.Reactive.Linq;
-using System.Diagnostics.Contracts;
 using System.Collections.Specialized;
-using System.Reactive.Subjects;
-using System.Globalization;
-using System.Threading;
+using System.Diagnostics.Contracts;
+using System.Reactive;
 using System.Reactive.Disposables;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
+using System.Runtime.CompilerServices;
+using System.Threading;
 
 namespace ReactiveUI
 {
-    public sealed class ReactiveDerivedCollection<T> : ReactiveCollection<T>, IDisposable
+    public abstract class ReactiveDerivedCollection<TValue> : ReactiveCollection<TValue>, IDisposable
     {
-        IDisposable inner = null;
+        public abstract void Dispose();
+    }
 
-        public ReactiveDerivedCollection(IDisposable disposable) : base()
+    public sealed class ReactiveDerivedCollection<TSource, TValue> : ReactiveDerivedCollection<TValue>, IDisposable
+    {
+        const string readonlyExceptionMessage = "Derived collections cannot be modified.";
+
+        IEnumerable<TSource> source;
+        Func<TSource, TValue> selector;
+        Func<TSource, bool> filter;
+        Func<TValue, TValue, int> orderer;
+        IObservable<Unit> signalReset;
+
+        // This list maps indices in this collection to their corresponding indices in the source collection.
+        List<int> indexToSourceIndexMap;
+        CompositeDisposable inner;
+
+        public override bool IsReadOnly { get { return true; } }
+
+        public ReactiveDerivedCollection(
+            IEnumerable<TSource> source,
+            Func<TSource, TValue> selector,
+            Func<TSource, bool> filter,
+            Func<TValue, TValue, int> orderer,
+            IObservable<Unit> signalReset)
         {
-            inner = disposable ?? Disposable.Empty;
+            Contract.Requires(source != null);
+            Contract.Requires(selector != null);
+
+            if (filter == null)
+                filter = x => true;
+
+            this.source = source;
+            this.selector = selector;
+            this.filter = filter;
+            this.orderer = orderer;
+            this.signalReset = signalReset;
+
+            this.inner = new CompositeDisposable();
+            this.indexToSourceIndexMap = new List<int>();
+
+            this.Reset();
+            this.wireUpChangeNotifications();
         }
 
-        public ReactiveDerivedCollection(IEnumerable<T> items, IDisposable disposable) : base(items)
+        private void wireUpChangeNotifications()
         {
-            inner = disposable;
+            var incc = source as INotifyCollectionChanged;
+
+            var collChanged = new Subject<NotifyCollectionChangedEventArgs>();
+
+            var connObs = Observable
+                .FromEventPattern<NotifyCollectionChangedEventHandler, NotifyCollectionChangedEventArgs>(
+                    x => incc.CollectionChanged += x,
+                    x => incc.CollectionChanged -= x
+                )
+                .Select(x => x.EventArgs)
+                .Multicast(collChanged);
+
+            inner.Add(collChanged.Subscribe(onSourceCollectionChanged));
+            inner.Add(connObs.Connect());
+
+            var irc = source as IReactiveCollection;
+
+            if (irc != null) {
+                inner.Add(irc.ItemChanged.Select(x => (TSource)x.Sender).Subscribe(onItemChanged));
+            }
+
+            if (signalReset != null) {
+                inner.Add(signalReset.Subscribe(x => this.Reset()));
+            }
         }
 
-        public void Dispose()
+        private void onItemChanged(TSource changedItem)
+        {
+            // If you've implemented INotifyPropertyChanged on a struct then you're doint it wrong(TM) and change
+            // tracking won't work in derived collections (change tracking for value types makes no sense any way)
+            // NB: It's possible the sender exists in multiple places in the source collection.
+            var sourceIndices = indexOfAll(source, changedItem, ReferenceEqualityComparer<TSource>.Default);
+
+            var shouldBeIncluded = filter(changedItem);
+
+            foreach (int sourceIndex in sourceIndices) {
+
+                int destinationIndex = getIndexFromSourceIndex(sourceIndex);
+                bool isIncluded = destinationIndex >= 0;
+
+                if (isIncluded && !shouldBeIncluded) {
+                    internalRemoveAt(sourceIndex, destinationIndex);
+                } else if (!isIncluded && shouldBeIncluded) {
+                    internalInsert(sourceIndex, selector(changedItem));
+                }
+                else if (isIncluded && shouldBeIncluded) {
+                    // The item is already included and it should stay there but it's possible that the change that
+                    // caused this event affects the ordering. This gets a little tricky so let's be verbose.
+
+                    TValue newItem = selector(changedItem);
+
+                    if (orderer == null) {
+                        // We don't have an orderer so we're currently using the source collection index for sorting
+                        // meaning that no item change will affect ordering. Look at our current item and see if it's
+                        // the exact (reference-wise) same object. If it is then we're done, if it's not (for example if
+                        // it's an integer) we'll issue a replace event so that subscribers get the new value.
+                        if (!object.ReferenceEquals(newItem, this[destinationIndex])) {
+                            internalReplace(destinationIndex, newItem);
+                        }
+                    } else {
+                        // Don't be tempted to just use the orderer to compare the new item with the previous since
+                        // they'll almost certainly be equal (for reference types). We need to test whether or not the
+                        // new item can stay in the same position that the current item is in without comparing them.
+                        if (canItemStayAtPosition(newItem, destinationIndex)) {
+                            // The new item should be in the same position as the current but there's no need to signal
+                            // that in case they are the same object.
+                            if (!object.ReferenceEquals(newItem, this[destinationIndex])) {
+                                internalReplace(destinationIndex, newItem);
+                            }
+                        } else {
+                            // The change is forcing us to reorder, implemented as a remove and insert.
+                            internalRemoveAt(sourceIndex, destinationIndex);
+                            internalInsert(sourceIndex, newItem);
+                        }
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether or not the item fits (sort-wise) at the provided index. The determination
+        /// is made by checking whether or not it's considered larger than or equal to the preceeding item and if
+        /// it's less than or equal to the succeeding item.
+        /// </summary>
+        private bool canItemStayAtPosition(TValue item, int currentIndex)
+        {
+            bool hasPreceedingItem = currentIndex > 0;
+            bool hasSucceedingItem = currentIndex < this.Count - 1;
+
+            bool isGreaterThanOrEqualToPreceedingItem = hasPreceedingItem
+                ? (orderer(item, this[currentIndex - 1]) >= 0)
+                : true;
+
+            bool isLessThanOrEqualToSucceedingItem = hasSucceedingItem
+                ? (orderer(item, this[currentIndex + 1]) <= 0)
+                : true;
+
+            return isGreaterThanOrEqualToPreceedingItem && isLessThanOrEqualToSucceedingItem;
+        }
+
+        private void internalReplace(int destinationIndex, TValue newItem)
+        {
+            base[destinationIndex] = newItem;
+        }
+
+        /// <summary>
+        /// Gets the index of the dervived item based on it's originating element index in the source collection.
+        /// </summary>
+        private int getIndexFromSourceIndex(int sourceIndex)
+        {
+            return this.indexToSourceIndexMap.IndexOf(sourceIndex);
+        }
+
+        /// <summary>
+        /// Returns one or more positions in the source collection where the given item is found based on the
+        /// provided equality comparer.
+        /// </summary>
+        private IEnumerable<int> indexOfAll(IEnumerable<TSource> source, TSource item,
+            IEqualityComparer<TSource> equalityComparer)
+        {
+            int sourceIndex = 0;
+            foreach (var x in source) {
+
+                if (equalityComparer.Equals(x, item)) {
+                    yield return sourceIndex;
+                }
+
+                sourceIndex++;
+            }
+        }
+
+        private void onSourceCollectionChanged(NotifyCollectionChangedEventArgs args)
+        {
+            if (args.Action == NotifyCollectionChangedAction.Reset) {
+                this.Reset();
+                return;
+            }
+
+            if (args.OldItems != null) {
+                int removedCount = args.OldItems.Count;
+                shiftIndicesAtOrOverThreshold(args.OldStartingIndex + removedCount, -removedCount);
+
+                for (int i = 0; i < args.OldItems.Count; i++) {
+                    if (filter((TSource)args.OldItems[i])) {
+                        internalRemoveAt(args.OldStartingIndex + i);
+                    }
+                }
+            }
+
+            if (args.NewItems != null) {
+                shiftIndicesAtOrOverThreshold(args.NewStartingIndex, args.NewItems.Count);
+
+                for (int i = 0; i < args.NewItems.Count; i++) {
+                    var sourceItem = (TSource)args.NewItems[i];
+
+                    if (!filter(sourceItem)) {
+                        continue;
+                    }
+
+                    var destinationItem = selector(sourceItem);
+                    internalInsert(args.NewStartingIndex + i, destinationItem);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Increases (or decreases) all source indices equal to or higher than the threshold. Represents an
+        /// insert or remove of one or more items in the source list thus causing all subsequent items to shift
+        /// up or down.
+        /// </summary>
+        private void shiftIndicesAtOrOverThreshold(int threshold, int value)
+        {
+            for (int i = 0; i < indexToSourceIndexMap.Count; i++) {
+                if (indexToSourceIndexMap[i] >= threshold) {
+                    indexToSourceIndexMap[i] += value;
+                }
+            }
+        }
+
+        public override void Reset()
+        {
+            using (base.SuppressChangeNotifications())
+            {
+                if (this.Count > 0)
+                    internalClear();
+
+                int sourceIndex = 0;
+
+                foreach (TSource sourceItem in source) {
+                    if (filter(sourceItem)) {
+                        var destinationItem = selector(sourceItem);
+                        internalInsert(sourceIndex, destinationItem);
+                    }
+
+                    sourceIndex++;
+                }
+            }
+        }
+
+        private void internalClear()
+        {
+            indexToSourceIndexMap.Clear();
+            base.Clear();
+        }
+
+        private void internalInsert(int sourceIndex, TValue value)
+        {
+            int destinationIndex = positionForNewItem(sourceIndex, value);
+
+            internalInsert(sourceIndex, destinationIndex, value);
+        }
+
+        private void internalInsert(int sourceIndex, int destinationIndex, TValue value)
+        {
+            indexToSourceIndexMap.Insert(destinationIndex, sourceIndex);
+            base.Insert(destinationIndex, value);
+        }
+
+        private void internalRemoveAt(int sourceIndex)
+        {
+            int destinationIndex = indexToSourceIndexMap.IndexOf(sourceIndex);
+            internalRemoveAt(sourceIndex, destinationIndex);
+        }
+
+        private void internalRemoveAt(int sourceIndex, int destinationIndex)
+        {
+            indexToSourceIndexMap.RemoveAt(destinationIndex);
+            base.RemoveAt(destinationIndex);
+        }
+
+        public override int Add(object value)
+        {
+            throw new InvalidOperationException(readonlyExceptionMessage);
+        }
+
+        public override void AddRange(IEnumerable<TValue> collection)
+        {
+            throw new InvalidOperationException(readonlyExceptionMessage);
+        }
+
+        public override void Clear()
+        {
+            throw new InvalidOperationException(readonlyExceptionMessage);
+        }
+
+        public override void Insert(int index, TValue item)
+        {
+            throw new InvalidOperationException(readonlyExceptionMessage);
+        }
+
+        public override void InsertRange(int index, IEnumerable<TValue> collection)
+        {
+            throw new InvalidOperationException(readonlyExceptionMessage);
+        }
+
+        public override bool Remove(TValue item)
+        {
+            throw new InvalidOperationException(readonlyExceptionMessage);
+        }
+
+        public override void RemoveAll(IEnumerable<TValue> items)
+        {
+            throw new InvalidOperationException(readonlyExceptionMessage);
+        }
+
+        public override void RemoveAt(int index)
+        {
+            throw new InvalidOperationException(readonlyExceptionMessage);
+        }
+
+        public override void RemoveRange(int index, int count)
+        {
+            throw new InvalidOperationException(readonlyExceptionMessage);
+        }
+
+        public override void Sort(Comparison<TValue> comparison)
+        {
+            throw new InvalidOperationException(readonlyExceptionMessage);
+        }
+
+        public override void Sort(IComparer<TValue> comparer = null)
+        {
+            throw new InvalidOperationException(readonlyExceptionMessage);
+        }
+
+        public override void Sort(int index, int count, IComparer<TValue> comparer)
+        {
+            throw new InvalidOperationException(readonlyExceptionMessage);
+        }
+
+        public override TValue this[int index]
+        {
+            get { return base[index]; }
+            set { throw new InvalidOperationException(readonlyExceptionMessage); }
+        }
+
+        /// <summary>
+        /// Internal equality comparer used for looking up the source object of a property change notification in
+        /// the source list.
+        /// </summary>
+        class ReferenceEqualityComparer<T> : IEqualityComparer<T>
+        {
+            public static readonly ReferenceEqualityComparer<T> Default = new ReferenceEqualityComparer<T>();
+
+            public bool Equals(T x, T y)
+            {
+                return object.ReferenceEquals(x, y);
+            }
+
+            public int GetHashCode(T obj)
+            {
+                return RuntimeHelpers.GetHashCode(obj);
+            }
+        }
+
+        private int positionForNewItem(int sourceIndex, TValue value)
+        {
+            // If we haven't got an orderer we'll simply match our items to that of the source collection.
+            int destinationIndex = orderer == null
+                ? positionForNewItem(this.indexToSourceIndexMap, sourceIndex, (x, y) => x.CompareTo(y))
+                : positionForNewItem(this, value, orderer);
+
+            return destinationIndex;
+        }
+
+        static int positionForNewItem<T>(IList<T> list, T item, Func<T, T, int> orderer)
+        {
+            if (list.Count == 0) {
+                return 0;
+            }
+
+            if (list.Count == 1) {
+                return orderer(list[0], item) >= 0 ? 0 : 1;
+            }
+
+            if (orderer(list[0], item) >= 1) return 0;
+
+            // NB: This is the most tart way to do this possible
+            int? prevCmp = null;
+            int cmp;
+
+            for (int i = 0; i < list.Count; i++) {
+                cmp = sign(orderer(list[i], item));
+                if (prevCmp.HasValue && cmp != prevCmp) {
+                    return i;
+                }
+
+                prevCmp = cmp;
+            }
+
+            return list.Count;
+        }
+
+        static int sign(int i)
+        {
+            return (i == 0 ? 0 : i / Math.Abs(i));
+        }
+
+        public override void Dispose()
         {
             var disp = Interlocked.Exchange(ref inner, null);
             if (disp == null) return;
@@ -57,6 +449,8 @@ namespace ReactiveUI
             TimeSpan? withDelay = null,
             Action<Exception> onError = null)
         {
+            throw new NotImplementedException();
+            /*
             var disp = new SingleAssignmentDisposable();
             var ret = new ReactiveDerivedCollection<T>(disp);
 
@@ -90,6 +484,7 @@ namespace ReactiveUI
                 (l,r) => (l == r)).Where(x => x).Subscribe(_ => disconnect.Dispose());
 
             return ret;
+            */
         }
 
         /// <summary>
@@ -108,8 +503,8 @@ namespace ReactiveUI
         /// <returns>A new collection which will be populated with the
         /// Observable.</returns>
         public static ReactiveDerivedCollection<TRet> CreateCollection<T, TRet>(
-            this IObservable<T> fromObservable, 
-            Func<T, TRet> selector, 
+            this IObservable<T> fromObservable,
+            Func<T, TRet> selector,
             TimeSpan? withDelay = null)
         {
             Contract.Requires(selector != null);
@@ -152,85 +547,12 @@ namespace ReactiveUI
         {
             Contract.Requires(selector != null);
 
-            var disp = new CompositeDisposable();
-            var collChanged = new Subject<NotifyCollectionChangedEventArgs>();
+            IObservable<Unit> reset = null;
 
-            if (selector == null) {
-                selector = (x => (TNew)Convert.ChangeType(x, typeof(TNew), CultureInfo.CurrentCulture));
-            }
+            if (signalReset != null)
+                reset = signalReset.Select(_ => Unit.Default);
 
-            var origEnum = This;
-            origEnum = (filter != null ? origEnum.Where(filter) : origEnum);
-            var enumerable = origEnum.Select(selector);
-            enumerable = (orderer != null ? enumerable.OrderBy(x => x, new FuncComparator<TNew>(orderer)) : enumerable);
-
-            var ret = new ReactiveDerivedCollection<TNew>(enumerable, disp);
-
-            var incc = This as INotifyCollectionChanged;
-            if (incc != null) {
-                var connObs = Observable.FromEventPattern<NotifyCollectionChangedEventHandler, NotifyCollectionChangedEventArgs>(x => incc.CollectionChanged += x, x => incc.CollectionChanged -= x)
-                    .Select(x => x.EventArgs)
-                    .Multicast(collChanged);
-
-                disp.Add(connObs.Connect());
-            }
-
-            if (filter != null && orderer == null) {
-                throw new Exception("If you specify a filter, you must also specify an ordering function");
-            }
-
-            disp.Add(signalReset.Subscribe(_ => collChanged.OnNext(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset))));
-
-            disp.Add(collChanged.Subscribe(args => {
-                if (args.Action == NotifyCollectionChangedAction.Reset) {
-                    using(ret.SuppressChangeNotifications()) {
-                        ret.Clear();
-                        enumerable.ForEach(ret.Add);
-                    }
-
-                    return;
-                }
-
-                int oldIndex = (args.Action == NotifyCollectionChangedAction.Replace ?
-                    args.NewStartingIndex : args.OldStartingIndex);
-
-                if (args.OldItems != null) {
-                    // NB: Tracking removes gets hard, because unless the items
-                    // are objects, we have trouble telling them apart. This code
-                    // is also tart, but it works.
-                    foreach(T x in args.OldItems) {
-                        if (filter != null && !filter(x)) {
-                            continue;
-                        }
-                        if (orderer == null) {
-                            ret.RemoveAt(oldIndex);
-                            continue;
-                        }
-                        for(int i = 0; i < ret.Count; i++) {
-                            if (orderer(ret[i], selector(x)) == 0) {
-                                ret.RemoveAt(i);
-                            }
-                        }
-                    }
-                }
-
-                if (args.NewItems != null) {
-                    foreach(T x in args.NewItems) {
-                        if (filter != null && !filter(x)) {
-                            continue;
-                        }
-                        if (orderer == null) {
-                            ret.Insert(args.NewStartingIndex, selector(x));
-                            continue;
-                        }
-
-                        var toAdd = selector(x);
-                        ret.Insert(positionForNewItem(ret, toAdd, orderer), toAdd);
-                    }
-                }
-            }));
-
-            return ret;
+            return new ReactiveDerivedCollection<T, TNew>(This, selector, filter, orderer, reset);
         }
 
         /// <summary>
@@ -259,55 +581,7 @@ namespace ReactiveUI
             Func<T, bool> filter = null,
             Func<TNew, TNew, int> orderer = null)
         {
-            return This.CreateDerivedCollection(selector, filter, orderer, Observable.Empty<Unit>());
-        }
-
-        static int positionForNewItem<T>(IList<T> list, T item, Func<T, T, int> orderer)
-        {
-            if (list.Count == 0) {
-                return 0;
-            }
-
-            if (list.Count == 1) {
-                return orderer(list[0], item) >= 0 ? 0 : 1;
-            }
-
-            if (orderer(list[0], item) >= 1) return 0;
-
-            // NB: This is the most tart way to do this possible
-            int? prevCmp = null;
-            int cmp;
-
-            for (int i = 0; i < list.Count; i++) {
-                cmp = sign(orderer(list[i], item));
-                if (prevCmp.HasValue && cmp != prevCmp) {
-                    return i;
-                }
-
-                prevCmp = cmp;
-            }
-
-            return list.Count;
-        }
-
-        static int sign(int i)
-        {
-            return (i == 0 ? 0 : i / Math.Abs(i));
-        }
-        
-        class FuncComparator<T> : IComparer<T>
-        {
-            Func<T, T, int> _inner;
-
-            public FuncComparator(Func<T, T, int> comparer)
-            {
-                _inner = comparer;
-            }
-
-            public int Compare(T x, T y)
-            {
-                return _inner(x, y);
-            }
+            return This.CreateDerivedCollection(selector, filter, orderer, (IObservable<Unit>)null);
         }
     }
 }
