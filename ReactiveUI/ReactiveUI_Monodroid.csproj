@@ -150,6 +150,7 @@
     <Compile Include="Rx-Shim\AwaitableAsyncSubject.cs" />
     <Compile Include="Rx-Shim\GetAwaiter.cs" />
     <Compile Include="Rx-Shim\ImmutableList.cs" />
+    <Compile Include="PropertyBinding.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
