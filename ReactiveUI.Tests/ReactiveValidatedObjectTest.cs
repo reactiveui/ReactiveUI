@@ -19,7 +19,7 @@ namespace ReactiveUI.Tests
         [Required]
         public string IsNotNullString {
             get { return _IsNotNullString; }
-            set { this.RaiseAndSetIfChanged(x => x.IsNotNullString, value); }
+            set { this.RaiseAndSetIfChanged(ref _IsNotNullString, value); }
         }
         
         public string _IsOnlyOneWord;
@@ -27,13 +27,13 @@ namespace ReactiveUI.Tests
         [RegularExpression(@"^[a-zA-Z]+$")]
         public string IsOnlyOneWord {
             get { return _IsOnlyOneWord; }
-            set { this.RaiseAndSetIfChanged(x => x.IsOnlyOneWord, value); }
+            set { this.RaiseAndSetIfChanged(ref _IsOnlyOneWord, value); }
         }
 
         public string _UsesExprRaiseSet;
         public string UsesExprRaiseSet {
             get { return _UsesExprRaiseSet; }
-            set { _UsesExprRaiseSet = this.RaiseAndSetIfChanged(x => x.UsesExprRaiseSet, value); }
+            set { _UsesExprRaiseSet = this.RaiseAndSetIfChanged(ref _UsesExprRaiseSet, value); }
         }
     }
 
