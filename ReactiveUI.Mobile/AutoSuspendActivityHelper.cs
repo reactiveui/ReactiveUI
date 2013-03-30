@@ -71,7 +71,7 @@ namespace ReactiveUI.Mobile
                 .FirstOrDefault(x => x.Item2 == null);
 
             if (missingMethod != null) {
-                throw new Exception(String.Format("Your activity must implement {0} and call AutoSuspendActivityHelper.{0}", missingMethod.Item2));
+                throw new Exception(String.Format("Your activity must implement {0} and call AutoSuspendActivityHelper.{0}", missingMethod.Item1));
             }
 
             Observable.Merge(onCreate, onSaveInstanceState)
