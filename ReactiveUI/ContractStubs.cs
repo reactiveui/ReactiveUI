@@ -1,23 +1,6 @@
 ﻿using System;
 
-#if DOTNETISOLDANDSAD || WP7
-
-namespace System.Diagnostics.Contracts
-{
-    internal class ContractInvariantMethodAttribute : Attribute {}
-    
-    internal class Contract
-    {
-        public static void Requires(bool b, string s = null) {}
-        public static void Ensures(bool b, string s = null) {}
-        public static void Invariant(bool b, string s = null) {}
-        public static T Result<T>() { return default(T); }
-    }
-}
-
-#endif
-
-#if IOS || WINRT || PORTABLE
+#if IOS || PORTABLE
 
 namespace ReactiveUI
 {
@@ -43,7 +26,7 @@ namespace ReactiveUI
 }
 #endif
 
-#if SILVERLIGHT || WINRT || PORTABLE
+#if PORTABLE
 namespace ReactiveUI
 {
     [AttributeUsage(AttributeTargets.All, Inherited = false, AllowMultiple = true)]
