@@ -30,7 +30,7 @@ namespace ReactiveUI.Mobile
 
         public void SetupDefaultSuspendResume(ISuspensionDriver driver = null)
         {
-            SetupDefaultSuspendResume(driver);
+            SetupDefaultSuspendResumeFunc(driver);
         }
     }
 }
