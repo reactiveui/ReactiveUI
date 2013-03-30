@@ -50,10 +50,6 @@ namespace ReactiveUI
     {
         static RxApp()
         {
-            // Default name for the field backing the "Foo" property => "_Foo"
-            // This is used for ReactiveObject's RaiseAndSetIfChanged mixin
-            GetFieldNameForPropertyNameFunc = new Func<string,string>(x => "_" + x);
-
 #if WP7
             TaskpoolScheduler = new EventLoopScheduler();
 #elif WP8
@@ -214,12 +210,6 @@ namespace ReactiveUI
         }
 
         /// <summary>
-        /// Set this property to override the default field naming convention
-        /// of "_PropertyName" with a custom one.
-        /// </summary>
-        public static Func<string, string> GetFieldNameForPropertyNameFunc { get; set; }
-
-        /// <summary>
         /// This method allows you to override the return value of 
         /// RxApp.InUnitTestRunner - a null value means that InUnitTestRunner
         /// will determine this using its normal logic.
@@ -254,20 +244,6 @@ namespace ReactiveUI
             // the static ctor lock when blocking on async methods 
             _inUnitTestRunner = RealUnitTestDetector.InUnitTestRunner();
             return _inUnitTestRunner.Value;
-        }
-
-
-        /// <summary>
-        /// GetFieldNameForProperty returns the corresponding backing field name
-        /// for a given property name, using the convention specified in
-        /// GetFieldNameForPropertyNameFunc.
-        /// </summary>
-        /// <param name="propertyName">The name of the property whose backing
-        /// field needs to be found.</param>
-        /// <returns>The backing field name.</returns>
-        public static string GetFieldNameForProperty(string propertyName)
-        {
-            return GetFieldNameForPropertyNameFunc(propertyName);
         }
 
 
