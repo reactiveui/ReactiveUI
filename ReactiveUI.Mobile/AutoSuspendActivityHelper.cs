@@ -66,8 +66,10 @@ namespace ReactiveUI.Mobile
             };
 
             var missingMethod = methodsToCheck
-                .Select(x => 
-                    Tuple.Create(x, hostActivity.GetType().GetMethods(BindingFlags.Public | BindingFlags.Instance).FirstOrDefault(y => y.Name == x)))
+                .Select(x => {
+                    var methods = hostActivity.GetType().GetMethods(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
+                    return Tuple.Create(x, methods.FirstOrDefault(y => y.Name == x));
+                })
                 .FirstOrDefault(x => x.Item2 == null);
 
             if (missingMethod != null) {
