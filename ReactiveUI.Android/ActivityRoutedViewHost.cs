@@ -23,9 +23,10 @@ namespace ReactiveUI.Android
 
         public ActivityRoutedViewHost(Activity hostActivity)
         {
-            _hostScreen = RxApp.GetService<IScreen>();
+            var keyUp = hostActivity.GetType()
+                .GetMethods(BindingFlags.Public | BindingFlags.DeclaredOnly | BindingFlags.NonPublic | BindingFlags.Instance)
+                .FirstOrDefault(x => x.Name == "OnKeyUp");
 
-            var keyUp = hostActivity.GetType().GetMethods(BindingFlags.Public).First(x => x.Name == "OnKeyUp");
             if (keyUp == null) {
                 throw new Exception("You must override OnKeyUp and call theRoutedViewHost.OnKeyUp");
             }
