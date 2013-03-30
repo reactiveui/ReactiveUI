@@ -20,23 +20,17 @@ namespace ReactiveUI.Xaml
                 .Select(p => Tuple.Create(p, p.GetCustomAttributes(typeof(ValidationAttribute), true).Cast<ValidationAttribute>() ?? new ValidationAttribute[0]))
                 .Where(x => x.Item2.Any());
 
-            //
-            foreach (var property in properties)
-            {
+            //for each property add validation for every attribute
+            foreach (var property in properties) {
                 var propertyName = property.Item1.Name;
                 var validationAttributes = property.Item2;
 
-                This.Validate<object,object>(propertyName, ioc =>
-                {
-                    foreach (var v in validationAttributes)
-                    {
-                        try
-                        {
+                This.Validate<object,object>(propertyName, ioc => {
+                    foreach (var v in validationAttributes) {
+                        try {
                             var ctx = new ValidationContext(This, null, null) { MemberName = propertyName };
                             v.Validate(ioc.Value, ctx);
-                        }
-                        catch (Exception ex)
-                        {
+                        } catch (Exception ex) {
                             This.Log().Info("{0:X}.{1} failed validation: {2}", This.GetHashCode(), propertyName, ex.Message);
                             return ex.Message;
                         }

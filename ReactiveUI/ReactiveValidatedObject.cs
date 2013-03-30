@@ -63,13 +63,12 @@ namespace ReactiveUI
         {
             _validationObservable = new Subject<IObservedChange<object, bool>>();
 
-            this.Changed.Subscribe(x =>
-            {
+            this.Changed.Subscribe(x => {
                 if (x.Sender != this)
                 {
                     return;
                 }
-                this.CheckPropertyForValidationErrors(x);
+                this.checkPropertyForValidationErrors(x);
             });
         }
 
@@ -77,13 +76,7 @@ namespace ReactiveUI
         /// Gets a value that indicates whether the entity has validation errors.
         /// </summary>
         /// <returns>true if the entity currently has validation errors; otherwise, false.</returns>
-        public bool HasErrors
-        {
-            get
-            {
-                return this._validationErrors.Any();
-            }
-        }
+        public bool HasErrors { get { return this._validationErrors.Any(); } }
 
         /// <summary>
         /// Gets the validation errors for a specified property or for the entire entity.
@@ -93,17 +86,13 @@ namespace ReactiveUI
         /// <returns>
         /// The validation errors for the property or entity.
         /// </returns>
-        public IEnumerable GetErrors(string propertyName)
+        public IEnumerable GetErrors(string propertyName) 
         {
-            if (string.IsNullOrEmpty(propertyName))
-            {
+            if (string.IsNullOrEmpty(propertyName)) {
                 return _validationErrors.Values;
-            }
-            else
-            {
+            } else {
                 string error;
-                if (_validationErrors.TryGetValue(propertyName, out error))
-                {
+                if (_validationErrors.TryGetValue(propertyName, out error)) {
                     return new string[] { error };
                 }
                 return Enumerable.Empty<string>();
@@ -122,7 +111,7 @@ namespace ReactiveUI
         /// 
         /// </summary>
         /// <param name="change"></param>
-        private void CheckPropertyForValidationErrors(IObservedChange<object, object> change)
+        private void checkPropertyForValidationErrors(IObservedChange<object, object> change) 
         {
             string prevResult;
             _validationErrors.TryGetValue(change.PropertyName, out prevResult);
@@ -131,17 +120,13 @@ namespace ReactiveUI
             string result = getPropertyValidationError(change);
             this.Log().Debug("Validation result: {0}", result);
 
-            if (result == null)
-            {
+            if (result == null) {
                 _validationErrors.Remove(change.PropertyName);
-            }
-            else
-            {
+            } else {
                 _validationErrors[change.PropertyName] = result;
             }
 
-            if (result != prevResult)
-            {
+            if (result != prevResult) {
                 this.OnErrorsChanged(new DataErrorsChangedEventArgs(change.PropertyName));
             }
         }
@@ -153,26 +138,21 @@ namespace ReactiveUI
         /// <typeparam name="TValue">The type of the value.</typeparam>
         /// <param name="change">The property change.</param>
         /// <returns>An error message or null.</returns>
-        private string getPropertyValidationError<TSender, TValue>(IObservedChange<TSender, TValue> change)
+        private string getPropertyValidationError(IObservedChange<object, object> change) 
         {
-            IList<Func<IObservedChange<object, object>, string>> list;
+            IList<Func<IObservedChange<object, object>, string>> validationFunctions;
 
             lock (_validatedProperties) {
-                if (!_validatedProperties.TryGetValue(change.PropertyName, out list)) {
+                if (!_validatedProperties.TryGetValue(change.PropertyName, out validationFunctions)) {
                     return null;
                 }
             }
-
-            IList<Func<IObservedChange<TSender, TValue>, string>> validationFunctions = list as IList<Func<IObservedChange<TSender, TValue>, string>>;
-
             //make sure we have a value
             change.fillInValue();
 
-            foreach (var v in validationFunctions)
-            {
+            foreach (var v in validationFunctions) {
                 string result = v(change);
-                if (result != null)
-                {
+                if (result != null) {
                     this.Log().Info("{0:X}.{1} failed validation: {2}", this.GetHashCode(), change.PropertyName, result);
                     return result;
                 }
@@ -188,26 +168,22 @@ namespace ReactiveUI
         /// <typeparam name="TProperty">The type of the property.</typeparam>
         /// <param name="property">The expression containing the property name.</param>
         /// <param name="result">The function to be called when a change occurs.</param>
-        public void Validate<TSender, TProperty>(string propertyName, Func<IObservedChange<TSender, TProperty>,string> result)
+        public void Validate<TSender, TProperty>(string propertyName, Func<IObservedChange<TSender, TProperty>,string> result) 
         {
             Contract.Requires(propertyName != null);
             Contract.Requires(result != null);
 
             IList<Func<IObservedChange<object, object>, string>> validationFunctions;
-            if (_validatedProperties.TryGetValue(propertyName, out validationFunctions))
-            {
+            if (_validatedProperties.TryGetValue(propertyName, out validationFunctions)) {
                 validationFunctions.Add((Func<IObservedChange<object, object>,string>)result);
-            }
-            else
-            {
+            } else {
                 validationFunctions = new List<Func<IObservedChange<object, object>, string>>();
                 validationFunctions.Add((Func<IObservedChange<object, object>, string>)result);
                 _validatedProperties[propertyName] = validationFunctions;
             }
 
             //initial check
-            this.CheckPropertyForValidationErrors(new ObservedChange<object, object>()
-            {
+            this.checkPropertyForValidationErrors(new ObservedChange<object, object>() {
                 PropertyName = propertyName,
                 Sender = this,
                 // value will be filled in later
