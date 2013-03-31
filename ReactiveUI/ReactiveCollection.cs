@@ -500,7 +500,7 @@ namespace ReactiveUI
             return GetEnumerator();
         }
 
-        public void Add(T item)
+        public virtual void Add(T item)
         {
             InsertItem(_inner.Count, item);
         }
@@ -553,7 +553,7 @@ namespace ReactiveUI
             set { SetItem(index, value); }
         }
 
-        public virtual int Add(object value)
+        public int Add(object value)
         {
             Add((T)value);
             return Count - 1;
