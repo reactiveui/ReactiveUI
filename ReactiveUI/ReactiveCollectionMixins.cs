@@ -483,6 +483,59 @@ namespace ReactiveUI
         }
     }
 
+    internal class ReactiveDerivedCollectionFromObservable<T>: ReactiveDerivedCollection<T>
+    {
+        SingleAssignmentDisposable inner;
+
+        public ReactiveDerivedCollectionFromObservable(
+            IObservable<T> observable,
+            TimeSpan? withDelay = null,
+            Action<Exception> onError = null)
+        {
+            this.inner = new SingleAssignmentDisposable();
+
+            onError = onError ?? (ex => RxApp.DefaultExceptionHandler.OnNext(ex));
+            if (withDelay == null) {
+                inner.Disposable = observable.ObserveOn(RxApp.DeferredScheduler).Subscribe(internalAdd, onError);
+                return;
+            }
+
+            // On a timer, dequeue items from queue if they are available
+            var queue = new Queue<T>();
+            var disconnect = Observable.Timer(withDelay.Value, withDelay.Value, RxApp.DeferredScheduler)
+                .Subscribe(_ => {
+                    if (queue.Count > 0) { 
+                        this.internalAdd(queue.Dequeue());
+                    }
+                });
+
+            inner.Disposable = disconnect;
+
+            // When new items come in from the observable, stuff them in the queue.
+            // Using the DeferredScheduler guarantees we'll always access the queue
+            // from the same thread.
+            observable.ObserveOn(RxApp.DeferredScheduler).Subscribe(queue.Enqueue, onError);
+
+            // This is a bit clever - keep a running count of the items actually 
+            // added and compare them to the final count of items provided by the
+            // Observable. Combine the two values, and when they're equal, 
+            // disconnect the timer
+            this.ItemsAdded.Scan(0, ((acc, _) => acc + 1)).Zip(observable.Aggregate(0, (acc, _) => acc + 1), 
+                (l,r) => (l == r)).Where(x => x).Subscribe(_ => disconnect.Dispose());
+        }
+
+        public override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                var disp = Interlocked.Exchange(ref inner, null);
+                if (disp == null) return;
+
+                disp.Dispose();
+            }
+        }
+    }
+
     public static class ReactiveCollectionMixins
     {
         /// <summary>
@@ -505,42 +558,7 @@ namespace ReactiveUI
             TimeSpan? withDelay = null,
             Action<Exception> onError = null)
         {
-            throw new NotImplementedException();
-            /*
-            var disp = new SingleAssignmentDisposable();
-            var ret = new ReactiveDerivedCollection<T>(disp);
-
-            onError = onError ?? (ex => RxApp.DefaultExceptionHandler.OnNext(ex));
-            if (withDelay == null) {
-                disp.Disposable = fromObservable.ObserveOn(RxApp.DeferredScheduler).Subscribe(ret.Add, onError);
-                return ret;
-            }
-
-            // On a timer, dequeue items from queue if they are available
-            var queue = new Queue<T>();
-            var disconnect = Observable.Timer(withDelay.Value, withDelay.Value, RxApp.DeferredScheduler)
-                .Subscribe(_ => {
-                    if (queue.Count > 0) { 
-                        ret.Add(queue.Dequeue());
-                    }
-                });
-
-            disp.Disposable = disconnect;
-
-            // When new items come in from the observable, stuff them in the queue.
-            // Using the DeferredScheduler guarantees we'll always access the queue
-            // from the same thread.
-            fromObservable.ObserveOn(RxApp.DeferredScheduler).Subscribe(queue.Enqueue, onError);
-
-            // This is a bit clever - keep a running count of the items actually 
-            // added and compare them to the final count of items provided by the
-            // Observable. Combine the two values, and when they're equal, 
-            // disconnect the timer
-            ret.ItemsAdded.Scan(0, ((acc, _) => acc+1)).Zip(fromObservable.Aggregate(0, (acc,_) => acc+1), 
-                (l,r) => (l == r)).Where(x => x).Subscribe(_ => disconnect.Dispose());
-
-            return ret;
-            */
+            return new ReactiveDerivedCollectionFromObservable<T>(fromObservable, withDelay, onError);
         }
 
         /// <summary>
