@@ -13,7 +13,12 @@ namespace ReactiveUI
 {
     public abstract class ReactiveDerivedCollection<TValue> : ReactiveCollection<TValue>, IDisposable
     {
-        public abstract void Dispose();
+        public void Dispose()
+        {
+            this.Dispose(true);
+        }
+
+        public virtual void Dispose(bool disposing) { }
     }
 
     public sealed class ReactiveDerivedCollection<TSource, TValue> : ReactiveDerivedCollection<TValue>, IDisposable
@@ -418,12 +423,14 @@ namespace ReactiveUI
             return (i == 0 ? 0 : i / Math.Abs(i));
         }
 
-        public override void Dispose()
+        public override void Dispose(bool disposing)
         {
-            var disp = Interlocked.Exchange(ref inner, null);
-            if (disp == null) return;
+            if (disposing) {
+                var disp = Interlocked.Exchange(ref inner, null);
+                if (disp == null) return;
 
-            disp.Dispose();
+                disp.Dispose();
+            }
         }
     }
 
