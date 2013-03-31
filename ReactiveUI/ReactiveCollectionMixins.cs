@@ -106,7 +106,7 @@ namespace ReactiveUI
                 bool isIncluded = destinationIndex >= 0;
 
                 if (isIncluded && !shouldBeIncluded) {
-                    internalRemoveAt(sourceIndex, destinationIndex);
+                    internalRemoveAt(destinationIndex);
                 } else if (!isIncluded && shouldBeIncluded) {
                     internalInsert(sourceIndex, selector(changedItem));
                 }
@@ -136,7 +136,7 @@ namespace ReactiveUI
                             }
                         } else {
                             // The change is forcing us to reorder, implemented as a remove and insert.
-                            internalRemoveAt(sourceIndex, destinationIndex);
+                            internalRemoveAt(destinationIndex);
                             internalInsert(sourceIndex, newItem);
                         }
                     }
@@ -283,13 +283,7 @@ namespace ReactiveUI
             base.Insert(destinationIndex, value);
         }
 
-        private void internalRemoveAt(int sourceIndex)
-        {
-            int destinationIndex = indexToSourceIndexMap.IndexOf(sourceIndex);
-            internalRemoveAt(sourceIndex, destinationIndex);
-        }
-
-        private void internalRemoveAt(int sourceIndex, int destinationIndex)
+        private void internalRemoveAt(int destinationIndex)
         {
             indexToSourceIndexMap.RemoveAt(destinationIndex);
             base.RemoveAt(destinationIndex);
