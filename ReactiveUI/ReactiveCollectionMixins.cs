@@ -13,6 +13,136 @@ namespace ReactiveUI
 {
     public abstract class ReactiveDerivedCollection<TValue> : ReactiveCollection<TValue>, IDisposable
     {
+        const string readonlyExceptionMessage = "Derived collections cannot be modified.";
+
+        public override bool IsReadOnly { get { return true; } }
+
+        public override TValue this[int index]
+        {
+            get { return base[index]; }
+            set { throw new InvalidOperationException(readonlyExceptionMessage); }
+        }
+
+        public override void Add(TValue item)
+        {
+            throw new InvalidOperationException(readonlyExceptionMessage);
+        }
+
+        protected virtual void internalAdd(TValue item) 
+        { 
+            base.Add(item); 
+        }
+
+        public override void AddRange(IEnumerable<TValue> collection)
+        {
+            throw new InvalidOperationException(readonlyExceptionMessage);
+        }
+
+        protected virtual void internalAddRange(IEnumerable<TValue> collection) 
+        { 
+            base.AddRange(collection); 
+        }
+
+        public override void Clear()
+        {
+            throw new InvalidOperationException(readonlyExceptionMessage);
+        }
+
+        protected virtual void internalClear()
+        {
+            base.Clear();
+        }
+
+        public override void Insert(int index, TValue item)
+        {
+            throw new InvalidOperationException(readonlyExceptionMessage);
+        }
+
+        protected virtual void internalInsert(int index, TValue item)
+        {
+            base.Insert(index, item);
+        }
+
+        public override void InsertRange(int index, IEnumerable<TValue> collection)
+        {
+            throw new InvalidOperationException(readonlyExceptionMessage);
+        }
+
+        protected virtual void internalInsertRange(int index, IEnumerable<TValue> collection)
+        {
+            base.InsertRange(index, collection);
+        }
+
+        public override bool Remove(TValue item)
+        {
+            throw new InvalidOperationException(readonlyExceptionMessage);
+        }
+
+        protected virtual bool internalRemove(TValue item)
+        {
+            return base.Remove(item);
+        }
+
+        public override void RemoveAll(IEnumerable<TValue> items)
+        {
+            throw new InvalidOperationException(readonlyExceptionMessage);
+        }
+
+        protected virtual void internalRemoveAll(IEnumerable<TValue> items)
+        {
+            base.RemoveAll(items);
+        }
+
+        public override void RemoveAt(int index)
+        {
+            throw new InvalidOperationException(readonlyExceptionMessage);
+        }
+
+        protected virtual void internalRemoveAt(int index)
+        {
+            base.RemoveAt(index);
+        }
+
+        public override void RemoveRange(int index, int count)
+        {
+            throw new InvalidOperationException(readonlyExceptionMessage);
+        }
+
+        protected virtual void internalRemoveRange(int index, int count)
+        {
+            base.RemoveRange(index, count);
+        }
+
+        public override void Sort(Comparison<TValue> comparison)
+        {
+            throw new InvalidOperationException(readonlyExceptionMessage);
+        }
+
+        protected virtual void internalSort(Comparison<TValue> comparison)
+        {
+            base.Sort(comparison);
+        }
+
+        public override void Sort(IComparer<TValue> comparer = null)
+        {
+            throw new InvalidOperationException(readonlyExceptionMessage);
+        }
+
+        protected virtual void internalSort(IComparer<TValue> comparer = null)
+        {
+            base.Sort(comparer);
+        }
+
+        public override void Sort(int index, int count, IComparer<TValue> comparer)
+        {
+            throw new InvalidOperationException(readonlyExceptionMessage);
+        }
+
+        protected virtual void internalSort(int index, int count, IComparer<TValue> comparer)
+        {
+            base.Sort(index, count, comparer);
+        }
+
         public void Dispose()
         {
             this.Dispose(true);
@@ -23,8 +153,6 @@ namespace ReactiveUI
 
     public sealed class ReactiveDerivedCollection<TSource, TValue> : ReactiveDerivedCollection<TValue>, IDisposable
     {
-        const string readonlyExceptionMessage = "Derived collections cannot be modified.";
-
         IEnumerable<TSource> source;
         Func<TSource, TValue> selector;
         Func<TSource, bool> filter;
@@ -34,8 +162,6 @@ namespace ReactiveUI
         // This list maps indices in this collection to their corresponding indices in the source collection.
         List<int> indexToSourceIndexMap;
         CompositeDisposable inner;
-
-        public override bool IsReadOnly { get { return true; } }
 
         public ReactiveDerivedCollection(
             IEnumerable<TSource> source,
@@ -167,7 +293,7 @@ namespace ReactiveUI
 
         private void internalReplace(int destinationIndex, TValue newItem)
         {
-            base[destinationIndex] = newItem;
+            base.SetItem(destinationIndex, newItem);
         }
 
         /// <summary>
@@ -264,10 +390,10 @@ namespace ReactiveUI
             }
         }
 
-        private void internalClear()
+        protected override void internalClear()
         {
             indexToSourceIndexMap.Clear();
-            base.Clear();
+            base.internalClear();
         }
 
         private void internalInsertAndMap(int sourceIndex, TValue value)
@@ -275,79 +401,13 @@ namespace ReactiveUI
             int destinationIndex = positionForNewItem(sourceIndex, value);
 
             indexToSourceIndexMap.Insert(destinationIndex, sourceIndex);
-            base.Insert(destinationIndex, value);
+            base.internalInsert(destinationIndex, value);
         }
 
-        private void internalRemoveAt(int destinationIndex)
+        protected override void internalRemoveAt(int destinationIndex)
         {
             indexToSourceIndexMap.RemoveAt(destinationIndex);
-            base.RemoveAt(destinationIndex);
-        }
-
-        public override int Add(object value)
-        {
-            throw new InvalidOperationException(readonlyExceptionMessage);
-        }
-
-        public override void AddRange(IEnumerable<TValue> collection)
-        {
-            throw new InvalidOperationException(readonlyExceptionMessage);
-        }
-
-        public override void Clear()
-        {
-            throw new InvalidOperationException(readonlyExceptionMessage);
-        }
-
-        public override void Insert(int index, TValue item)
-        {
-            throw new InvalidOperationException(readonlyExceptionMessage);
-        }
-
-        public override void InsertRange(int index, IEnumerable<TValue> collection)
-        {
-            throw new InvalidOperationException(readonlyExceptionMessage);
-        }
-
-        public override bool Remove(TValue item)
-        {
-            throw new InvalidOperationException(readonlyExceptionMessage);
-        }
-
-        public override void RemoveAll(IEnumerable<TValue> items)
-        {
-            throw new InvalidOperationException(readonlyExceptionMessage);
-        }
-
-        public override void RemoveAt(int index)
-        {
-            throw new InvalidOperationException(readonlyExceptionMessage);
-        }
-
-        public override void RemoveRange(int index, int count)
-        {
-            throw new InvalidOperationException(readonlyExceptionMessage);
-        }
-
-        public override void Sort(Comparison<TValue> comparison)
-        {
-            throw new InvalidOperationException(readonlyExceptionMessage);
-        }
-
-        public override void Sort(IComparer<TValue> comparer = null)
-        {
-            throw new InvalidOperationException(readonlyExceptionMessage);
-        }
-
-        public override void Sort(int index, int count, IComparer<TValue> comparer)
-        {
-            throw new InvalidOperationException(readonlyExceptionMessage);
-        }
-
-        public override TValue this[int index]
-        {
-            get { return base[index]; }
-            set { throw new InvalidOperationException(readonlyExceptionMessage); }
+            base.internalRemoveAt(destinationIndex);
         }
 
         /// <summary>
