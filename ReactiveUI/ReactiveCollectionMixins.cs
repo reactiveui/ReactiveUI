@@ -108,7 +108,7 @@ namespace ReactiveUI
                 if (isIncluded && !shouldBeIncluded) {
                     internalRemoveAt(destinationIndex);
                 } else if (!isIncluded && shouldBeIncluded) {
-                    internalInsert(sourceIndex, selector(changedItem));
+                    internalInsertAndMap(sourceIndex, selector(changedItem));
                 }
                 else if (isIncluded && shouldBeIncluded) {
                     // The item is already included and it should stay there but it's possible that the change that
@@ -137,7 +137,7 @@ namespace ReactiveUI
                         } else {
                             // The change is forcing us to reorder, implemented as a remove and insert.
                             internalRemoveAt(destinationIndex);
-                            internalInsert(sourceIndex, newItem);
+                            internalInsertAndMap(sourceIndex, newItem);
                         }
                     }
                 }
@@ -225,7 +225,7 @@ namespace ReactiveUI
                     }
 
                     var destinationItem = selector(sourceItem);
-                    internalInsert(args.NewStartingIndex + i, destinationItem);
+                    internalInsertAndMap(args.NewStartingIndex + i, destinationItem);
                 }
             }
         }
@@ -256,7 +256,7 @@ namespace ReactiveUI
                 foreach (TSource sourceItem in source) {
                     if (filter(sourceItem)) {
                         var destinationItem = selector(sourceItem);
-                        internalInsert(sourceIndex, destinationItem);
+                        internalInsertAndMap(sourceIndex, destinationItem);
                     }
 
                     sourceIndex++;
@@ -270,15 +270,10 @@ namespace ReactiveUI
             base.Clear();
         }
 
-        private void internalInsert(int sourceIndex, TValue value)
+        private void internalInsertAndMap(int sourceIndex, TValue value)
         {
             int destinationIndex = positionForNewItem(sourceIndex, value);
 
-            internalInsert(sourceIndex, destinationIndex, value);
-        }
-
-        private void internalInsert(int sourceIndex, int destinationIndex, TValue value)
-        {
             indexToSourceIndexMap.Insert(destinationIndex, sourceIndex);
             base.Insert(destinationIndex, value);
         }
