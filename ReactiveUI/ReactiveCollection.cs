@@ -282,27 +282,28 @@ namespace ReactiveUI
         public virtual void Sort(int index, int count, IComparer<T> comparer)
         {
             _inner.Sort(index, count, comparer);
-            Reset(true);
+            Reset();
         }
 
         public virtual void Sort(Comparison<T> comparison)
         {
             _inner.Sort(comparison);
-            Reset(true);
+            Reset();
         }
 
         public virtual void Sort(IComparer<T> comparer = null)
         {
             _inner.Sort(comparer ?? Comparer<T>.Default);
-            Reset(true);
+            Reset();
         }
 
         public virtual void Reset()
         {
-            Reset(true);
+            publishResetNotification();
         }
 
-        protected virtual void Reset(bool resetting)
+
+        protected virtual void publishResetNotification()
         {
             var ea = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset);
             _changing.OnNext(ea);
@@ -349,7 +350,7 @@ namespace ReactiveUI
 
             return Disposable.Create(() => {
                 if (Interlocked.Decrement(ref _suppressionRefCount) == 0) {
-                    Reset(true);
+                    publishResetNotification();
                 }
             });
         }
