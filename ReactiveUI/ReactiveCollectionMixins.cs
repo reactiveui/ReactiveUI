@@ -245,8 +245,8 @@ namespace ReactiveUI
                     if (orderer == null) {
                         // We don't have an orderer so we're currently using the source collection index for sorting 
                         // meaning that no item change will affect ordering. Look at our current item and see if it's
-                        // the exact (reference-wise) same object. If it is then we're done, if it's not (for example if
-                        // it's an integer) we'll issue a replace event so that subscribers get the new value.
+                        // the exact (reference-wise) same object. If it is then we're done, if it's not (for example 
+                        // if it's an integer) we'll issue a replace event so that subscribers get the new value.
                         if (!object.ReferenceEquals(newItem, this[destinationIndex])) {
                             internalReplace(destinationIndex, newItem);
                         }
