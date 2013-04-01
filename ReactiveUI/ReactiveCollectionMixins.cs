@@ -219,7 +219,7 @@ namespace ReactiveUI
 
         private void onItemChanged(TSource changedItem)
         {
-            // If you've implemented INotifyPropertyChanged on a struct then you're doint it wrong(TM) and change
+            // If you've implemented INotifyPropertyChanged on a struct then you're doing it wrong(TM) and change
             // tracking won't work in derived collections (change tracking for value types makes no sense any way)
             // NB: It's possible the sender exists in multiple places in the source collection.
             var sourceIndices = indexOfAll(source, changedItem, ReferenceEqualityComparer<TSource>.Default);
