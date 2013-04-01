@@ -277,18 +277,25 @@ namespace ReactiveUI
         /// </summary>
         private bool canItemStayAtPosition(TValue item, int currentIndex)
         {
-            bool hasPreceedingItem = currentIndex > 0;
+            bool hasPrecedingItem = currentIndex > 0;
+
+            if (hasPrecedingItem) {
+                bool isGreaterThanOrEqualToPrecedingItem = orderer(item, this[currentIndex - 1]) >= 0;
+                if (!isGreaterThanOrEqualToPrecedingItem) {
+                    return false;
+                }
+            }
+
             bool hasSucceedingItem = currentIndex < this.Count - 1;
 
-            bool isGreaterThanOrEqualToPreceedingItem = hasPreceedingItem 
-                ? (orderer(item, this[currentIndex - 1]) >= 0) 
-                : true;
+            if (hasSucceedingItem) {
+                bool isLessThanOrEqualToSucceedingItem = orderer(item, this[currentIndex + 1]) <= 0;
+                if (!isLessThanOrEqualToSucceedingItem) {
+                    return false;
+                }
+            }
 
-            bool isLessThanOrEqualToSucceedingItem = hasSucceedingItem 
-                ? (orderer(item, this[currentIndex + 1]) <= 0) 
-                : true;
-
-            return isGreaterThanOrEqualToPreceedingItem && isLessThanOrEqualToSucceedingItem;
+            return true;
         }
 
         private void internalReplace(int destinationIndex, TValue newItem)
