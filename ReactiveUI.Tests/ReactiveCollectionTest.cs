@@ -431,7 +431,8 @@ namespace ReactiveUI.Tests
                     Func<TSource, bool> filter = null,
                     IComparer<TValue> orderer = null)
                 {
-                    var derived = source.CreateDerivedCollection(selector, filter, orderer == null ? (Func<TValue, TValue, int>)null : orderer.Compare);
+                    var comparison = orderer == null ? (Func<TValue, TValue, int>)null : orderer.Compare;
+                    var derived = source.CreateDerivedCollection(selector, filter, comparison);
 
                     return new DerivedCollectionTestContainer<TSource, TValue>
                     {
@@ -569,10 +570,23 @@ namespace ReactiveUI.Tests
                     ChangeTrackingEnabled = true
                 };
 
-                var onlyVisible = items.CreateDerivedCollection(x => x.Value, x => x.IsVisible, StringComparer.Ordinal.Compare);
-                var onlyNonVisible = items.CreateDerivedCollection(x => x.Value, x => !x.IsVisible, StringComparer.Ordinal.Compare);
+                var onlyVisible = items.CreateDerivedCollection(
+                    x => x.Value, 
+                    x => x.IsVisible, 
+                    StringComparer.Ordinal.Compare
+                );
+                
+                var onlyNonVisible = items.CreateDerivedCollection(
+                    x => x.Value, 
+                    x => !x.IsVisible, 
+                    StringComparer.Ordinal.Compare
+                );
 
-                var onlVisibleStartingWithB = items.CreateDerivedCollection(x => x.Value, x => x.IsVisible && x.Value.StartsWith("b"), StringComparer.Ordinal.Compare);
+                var onlVisibleStartingWithB = items.CreateDerivedCollection(
+                    x => x.Value, 
+                    x => x.IsVisible && x.Value.StartsWith("b"), 
+                    StringComparer.Ordinal.Compare
+                );
 
                 Assert.Equal(3, onlyVisible.Count);
                 Assert.Equal(0, onlyNonVisible.Count);
@@ -735,7 +749,12 @@ namespace ReactiveUI.Tests
         public void DerivedCollectionShouldStopFollowingAfterDisposal()
         {
             var collection = new ReactiveCollection<int>();
-            var orderedCollection = collection.CreateDerivedCollection(x => x.ToString(), null, (x, y) => x.CompareTo(y));
+
+            var orderedCollection = collection.CreateDerivedCollection(
+                x => x.ToString(), 
+                null, 
+                (x, y) => x.CompareTo(y)
+            );
 
             collection.Add(1);
             collection.Add(2);
