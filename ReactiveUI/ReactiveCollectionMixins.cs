@@ -153,11 +153,11 @@ namespace ReactiveUI
 
     public sealed class ReactiveDerivedCollection<TSource, TValue> : ReactiveDerivedCollection<TValue>, IDisposable
     {
-        IEnumerable<TSource> source;
-        Func<TSource, TValue> selector;
-        Func<TSource, bool> filter;
-        Func<TValue, TValue, int> orderer;
-        IObservable<Unit> signalReset;
+        readonly IEnumerable<TSource> source;
+        readonly Func<TSource, TValue> selector;
+        readonly Func<TSource, bool> filter;
+        readonly Func<TValue, TValue, int> orderer;
+        readonly IObservable<Unit> signalReset;
 
         // This list maps indices in this collection to their corresponding indices in the source collection.
         List<int> indexToSourceIndexMap;
