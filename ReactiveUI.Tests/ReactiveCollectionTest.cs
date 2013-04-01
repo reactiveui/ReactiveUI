@@ -380,14 +380,14 @@ namespace ReactiveUI.Tests
                 public T Value
                 {
                     get { return _Value; }
-                    set { this.RaiseAndSetIfChanged(value); }
+                    set { this.RaiseAndSetIfChanged(ref _Value, value); }
                 }
 
                 private bool _IsVisible;
                 public bool IsVisible
                 {
                     get { return _IsVisible; }
-                    set { this.RaiseAndSetIfChanged(value); }
+                    set { this.RaiseAndSetIfChanged(ref _IsVisible, value); }
                 }
 
                 public ReactiveVisibilityItem(T item1, bool isVisible)
