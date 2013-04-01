@@ -198,8 +198,7 @@ namespace ReactiveUI
             var connObs = Observable
                 .FromEventPattern<NotifyCollectionChangedEventHandler, NotifyCollectionChangedEventArgs>(
                     x => incc.CollectionChanged += x,
-                    x => incc.CollectionChanged -= x
-                )
+                    x => incc.CollectionChanged -= x)
                 .Select(x => x.EventArgs)
                 .Multicast(collChanged);
 
@@ -235,8 +234,7 @@ namespace ReactiveUI
                     internalRemoveAt(destinationIndex);
                 } else if (!isIncluded && shouldBeIncluded) {
                     internalInsertAndMap(sourceIndex, selector(changedItem));
-                }
-                else if (isIncluded && shouldBeIncluded) {
+                } else if (isIncluded && shouldBeIncluded) {
                     // The item is already included and it should stay there but it's possible that the change that
                     // caused this event affects the ordering. This gets a little tricky so let's be verbose.
 
@@ -379,8 +377,7 @@ namespace ReactiveUI
 
         public override void Reset()
         {
-            using (base.SuppressChangeNotifications())
-            {
+            using (base.SuppressChangeNotifications()) {
                 if (this.Count > 0)
                     internalClear();
 
@@ -533,8 +530,7 @@ namespace ReactiveUI
 
         public override void Dispose(bool disposing)
         {
-            if (disposing)
-            {
+            if (disposing) {
                 var disp = Interlocked.Exchange(ref inner, null);
                 if (disp == null) return;
 
@@ -630,8 +626,9 @@ namespace ReactiveUI
 
             IObservable<Unit> reset = null;
 
-            if (signalReset != null)
+            if (signalReset != null) {
                 reset = signalReset.Select(_ => Unit.Default);
+            }
 
             return new ReactiveDerivedCollection<T, TNew>(This, selector, filter, orderer, reset);
         }
