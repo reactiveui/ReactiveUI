@@ -12,6 +12,7 @@ using Microsoft.Reactive.Testing;
 using System.Collections.Specialized;
 using System.Reactive.Subjects;
 using System.Reactive;
+using System.Diagnostics;
 
 namespace ReactiveUI.Tests
 {
@@ -370,6 +371,299 @@ namespace ReactiveUI.Tests
             Assert.Equal(2, derived.Count);
         }
 
+        public class DerivedPropertyChanges
+        {
+            private class ReactiveVisibilityItem<T> : ReactiveObject
+            {
+                private T _Value;
+
+                public T Value
+                {
+                    get { return _Value; }
+                    set { this.RaiseAndSetIfChanged(value); }
+                }
+
+                private bool _IsVisible;
+                public bool IsVisible
+                {
+                    get { return _IsVisible; }
+                    set { this.RaiseAndSetIfChanged(value); }
+                }
+
+                public ReactiveVisibilityItem(T item1, bool isVisible)
+                {
+                    this._Value = item1;
+                    this._IsVisible = isVisible;
+                }
+
+            }
+
+            [DebuggerDisplay("{Name} is {Age} years old and makes ${Salary}")]
+            private class ReactiveEmployee : ReactiveObject
+            {
+                string _Name;
+                public string Name
+                {
+                    get { return _Name; }
+                    set { this.RaiseAndSetIfChanged(ref _Name, value); }
+                }
+
+                int _Age;
+                public int Age
+                {
+                    get { return _Age; }
+                    set { this.RaiseAndSetIfChanged(ref _Age, value); }
+                }
+
+                int _Salary;
+                public int Salary
+                {
+                    get { return _Salary; }
+                    set { this.RaiseAndSetIfChanged(ref _Salary, value); }
+                }
+            }
+
+            public class DerivedCollectionTestContainer
+            {
+                public static DerivedCollectionTestContainer<TSource, TValue> Create<TSource, TValue>(
+                    IEnumerable<TSource> source,
+                    Func<TSource, TValue> selector,
+                    Func<TSource, bool> filter = null,
+                    IComparer<TValue> orderer = null)
+                {
+                    var comparison = orderer == null ? (Func<TValue, TValue, int>)null : orderer.Compare;
+                    var derived = source.CreateDerivedCollection(selector, filter, comparison);
+
+                    return new DerivedCollectionTestContainer<TSource, TValue>
+                    {
+                        Source = source,
+                        Selector = selector,
+                        Derived = derived,
+                        Filter = filter,
+                        Orderer = orderer
+                    };
+                }
+
+                public virtual void Test() { }
+            }
+
+            public class DerivedCollectionTestContainer<TSource, TValue> : DerivedCollectionTestContainer
+            {
+                public IEnumerable<TSource> Source { get; set; }
+                public ReactiveDerivedCollection<TValue> Derived { get; set; }
+                public Func<TSource, TValue> Selector { get; set; }
+                public Func<TSource, bool> Filter { get; set; }
+                public IComparer<TValue> Orderer { get; set; }
+
+                public override void Test()
+                {
+                    var filtered = Source;
+
+                    if (Filter != null)
+                        filtered = filtered.Where(Filter);
+
+                    var projected = filtered.Select(Selector);
+
+                    var ordered = projected;
+
+                    if (Orderer != null)
+                        ordered = ordered.OrderBy(x => x, Orderer);
+
+                    var shouldBe = ordered;
+                    var isEqual = Derived.SequenceEqual(shouldBe);
+
+                    Assert.True(isEqual);
+                }
+            }
+
+            [Fact]
+            public void DerivedCollectionsSmokeTest()
+            {
+                var adam = new ReactiveEmployee { Name = "Adam", Age = 20, Salary = 100 };
+                var bob = new ReactiveEmployee { Name = "Bob", Age = 30, Salary = 150 };
+                var carol = new ReactiveEmployee { Name = "Carol", Age = 40, Salary = 200 };
+                var dan = new ReactiveEmployee { Name = "Dan", Age = 50, Salary = 250 };
+                var eve = new ReactiveEmployee { Name = "Eve", Age = 60, Salary = 300 };
+
+                var start = new[] { adam, bob, carol, dan, eve };
+
+                var employees = new ReactiveCollection<ReactiveEmployee>(start)
+                {
+                    ChangeTrackingEnabled = true
+                };
+
+                var employeesByName = DerivedCollectionTestContainer.Create(
+                    employees,
+                    selector: x => x,
+                    orderer: OrderedComparer<ReactiveEmployee>.OrderBy(x => x.Name)
+                );
+
+                var employeesByAge = DerivedCollectionTestContainer.Create(
+                    employees,
+                    selector: x => x,
+                    orderer: OrderedComparer<ReactiveEmployee>.OrderBy(x => x.Age)
+                );
+
+                var employeesBySalary = DerivedCollectionTestContainer.Create(
+                    employees,
+                    selector: x => x,
+                    orderer: OrderedComparer<ReactiveEmployee>.OrderBy(x => x.Salary)
+                );
+
+                // special
+
+                // filtered, ordered, reference
+                var oldEmployeesByAge = DerivedCollectionTestContainer.Create(
+                    employees,
+                    selector: x => x,
+                    filter: x => x.Age >= 50,
+                    orderer: OrderedComparer<ReactiveEmployee>.OrderBy(x => x.Age)
+                );
+
+                // ordered, not reference
+                var employeeSalaries = DerivedCollectionTestContainer.Create(
+                    employees,
+                    selector: x => x.Salary,
+                    orderer: Comparer<int>.Default
+                );
+
+                // not filtered (derived filter), not reference, not ordered (derived order)
+                oldEmployeesByAge.Derived.ChangeTrackingEnabled = true;
+                var oldEmployeesSalariesByAge = DerivedCollectionTestContainer.Create(
+                    oldEmployeesByAge.Derived,
+                    selector: x => x.Salary
+                );
+
+                var containers = new List<DerivedCollectionTestContainer> {
+                    employeesByName, employeesByAge, employeesBySalary, oldEmployeesByAge, 
+                    employeeSalaries, oldEmployeesSalariesByAge
+                };
+
+                Action<Action> testAll = a => { a(); containers.ForEach(x => x.Test()); };
+
+                containers.ForEach(x => x.Test());
+
+                // if (isIncluded && !shouldBeIncluded)
+                testAll(() => { dan.Age = 49; });
+
+                // else if (!isIncluded && shouldBeIncluded)
+                testAll(() => { dan.Age = eve.Age + 1; });
+
+                // else if (isIncluded && shouldBeIncluded)
+                testAll(() => { adam.Salary = 350; });
+                
+                testAll(() => { dan.Age = 50; });
+                testAll(() => { dan.Age = 51; });
+            }
+
+            [Fact]
+            public void FilteredDerivedCollectionsShouldReactToPropertyChanges()
+            {
+                // Naturally this isn't done by magic, it only works if the source implements IReactiveCollection.
+
+                var a = new ReactiveVisibilityItem<string>("a", true);
+                var b = new ReactiveVisibilityItem<string>("b", true);
+                var c = new ReactiveVisibilityItem<string>("c", true);
+
+                var items = new ReactiveCollection<ReactiveVisibilityItem<string>>(new[] { a, b, c })
+                {
+                    ChangeTrackingEnabled = true
+                };
+
+                var onlyVisible = items.CreateDerivedCollection(
+                    x => x.Value, 
+                    x => x.IsVisible, 
+                    StringComparer.Ordinal.Compare
+                );
+                
+                var onlyNonVisible = items.CreateDerivedCollection(
+                    x => x.Value, 
+                    x => !x.IsVisible, 
+                    StringComparer.Ordinal.Compare
+                );
+
+                var onlVisibleStartingWithB = items.CreateDerivedCollection(
+                    x => x.Value, 
+                    x => x.IsVisible && x.Value.StartsWith("b"), 
+                    StringComparer.Ordinal.Compare
+                );
+
+                Assert.Equal(3, onlyVisible.Count);
+                Assert.Equal(0, onlyNonVisible.Count);
+                Assert.Equal(1, onlVisibleStartingWithB.Count);
+
+                a.IsVisible = false;
+
+                Assert.Equal(2, onlyVisible.Count);
+                Assert.Equal(1, onlyNonVisible.Count);
+                Assert.Equal(1, onlVisibleStartingWithB.Count);
+
+                b.Value = "D";
+
+                Assert.Equal(0, onlVisibleStartingWithB.Count);
+            }
+
+            [Fact]
+            public void FilteredProjectedDerivedCollectionsShouldReactToPropertyChanges()
+            {
+                // This differs from the FilteredDerivedCollectionsShouldReactToPropertyChanges as it tests providing a 
+                // non-identity selector (ie x=>x.Value).
+
+                var a = new ReactiveVisibilityItem<string>("a", true);
+                var b = new ReactiveVisibilityItem<string>("b", true);
+                var c = new ReactiveVisibilityItem<string>("c", true);
+
+                var items = new ReactiveCollection<ReactiveVisibilityItem<string>>(new[] { a, b, c })
+                {
+                    ChangeTrackingEnabled = true
+                };
+
+                var onlyVisible = items.CreateDerivedCollection(
+                    x => x.Value.ToUpper(), // Note, not an identity function.
+                    x => x.IsVisible,
+                    StringComparer.Ordinal.Compare
+                );
+
+                Assert.Equal(3, onlyVisible.Count);
+                Assert.True(onlyVisible.SequenceEqual(new[] { "A", "B", "C" }));
+
+                a.IsVisible = false;
+
+                Assert.Equal(2, onlyVisible.Count);
+                Assert.True(onlyVisible.SequenceEqual(new[] { "B", "C" }));
+            }
+
+            [Fact]
+            public void DerivedCollectionsShouldReactToPropertyChanges()
+            {
+                // This differs from the FilteredDerivedCollectionsShouldReactToPropertyChanges as it tests providing a 
+                // non-identity selector (ie x=>x.Value).
+
+                var foo = new ReactiveVisibilityItem<string>("Foo", true);
+                var bar = new ReactiveVisibilityItem<string>("Bar", true);
+                var baz = new ReactiveVisibilityItem<string>("Baz", true);
+
+                var items = new ReactiveCollection<ReactiveVisibilityItem<string>>(new[] { foo, bar, baz })
+                {
+                    ChangeTrackingEnabled = true
+                };
+
+                var onlyVisible = items.CreateDerivedCollection(
+                    x => new string('*', x.Value.Length), // Note, not an identity function.
+                    x => x.IsVisible,
+                    StringComparer.Ordinal.Compare
+                );
+
+                Assert.Equal(3, onlyVisible.Count);
+                Assert.True(onlyVisible.SequenceEqual(new[] { "***", "***", "***" }));
+
+                foo.IsVisible = false;
+
+                Assert.Equal(2, onlyVisible.Count);
+                Assert.True(onlyVisible.SequenceEqual(new[] { "***", "***" }));
+            }
+        }
+
         [Fact]
         public void AddRangeSmokeTest()
         {
@@ -455,7 +749,12 @@ namespace ReactiveUI.Tests
         public void DerivedCollectionShouldStopFollowingAfterDisposal()
         {
             var collection = new ReactiveCollection<int>();
-            var orderedCollection = collection.CreateDerivedCollection(x => x.ToString(), null, (x, y) => x.CompareTo(y));
+
+            var orderedCollection = collection.CreateDerivedCollection(
+                x => x.ToString(), 
+                null, 
+                (x, y) => x.CompareTo(y)
+            );
 
             collection.Add(1);
             collection.Add(2);
