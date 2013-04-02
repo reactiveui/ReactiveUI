@@ -60,10 +60,8 @@ namespace ReactiveUI.Routing
         }
 
         [OnDeserialized]
-#if WP7
-        public
-#endif
         void setupRx(StreamingContext sc) { setupRx();  }
+
         void setupRx()
         {
             if (rxObjectsSetup) return;

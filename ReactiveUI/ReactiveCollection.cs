@@ -63,9 +63,6 @@ namespace ReactiveUI
         }
 
         [OnDeserialized]
-#if WP7
-		public
-#endif
         void setupRx(StreamingContext _) { setupRx(); }
 
         void setupRx(IEnumerable<T> initialContents = null, IScheduler scheduler = null, double resetChangeThreshold = 0.3)
