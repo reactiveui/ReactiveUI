@@ -73,9 +73,6 @@ namespace ReactiveUI
         }
 
         [OnDeserialized]
-#if WP7
-        public
-#endif
         void setupRxObj(StreamingContext sc) { setupRxObj(); }
 
         void setupRxObj()
@@ -168,14 +165,8 @@ namespace ReactiveUI
         }
 
         protected bool areChangeNotificationsEnabled {
-            get { 
-#if SILVERLIGHT
-                // N.B. On most architectures, machine word aligned reads are 
-                // guaranteed to be atomic - sorry WP7, you're out of luck
-                return changeNotificationsSuppressed == 0;
-#else
-                return (Interlocked.Read(ref changeNotificationsSuppressed) == 0); 
-#endif
+            get {
+                return (Interlocked.Read(ref changeNotificationsSuppressed) == 0);
             }
         }
 
