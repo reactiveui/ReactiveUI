@@ -84,9 +84,6 @@
     <Reference Include="System.Reactive.Runtime.Remoting">
       <HintPath>..\ext\net45\System.Reactive.Runtime.Remoting.dll</HintPath>
     </Reference>
-    <Reference Include="System.Reactive.Windows.Forms">
-      <HintPath>..\ext\net45\System.Reactive.Windows.Forms.dll</HintPath>
-    </Reference>
     <Reference Include="System.Reactive.Windows.Threading, Version=2.1.30204.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\ext\net45\System.Reactive.Windows.Threading.dll</HintPath>

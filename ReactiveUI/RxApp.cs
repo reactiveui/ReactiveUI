@@ -16,10 +16,6 @@ using System.Threading;
 
 using System.Threading.Tasks;
 
-#if SILVERLIGHT
-using System.Windows;
-#endif
-
 #if WINRT
 using Windows.ApplicationModel;
 using System.Reactive.Windows.Foundation;
@@ -242,7 +238,7 @@ namespace ReactiveUI
 
             // NB: This is in a separate static ctor to avoid a deadlock on 
             // the static ctor lock when blocking on async methods 
-            _inUnitTestRunner = RealUnitTestDetector.InUnitTestRunner();
+            _inUnitTestRunner = UnitTestDetector.IsInUnitTestRunner() || DesignModeDetector.IsInDesignMode();
             return _inUnitTestRunner.Value;
         }
 
@@ -351,7 +347,6 @@ namespace ReactiveUI
         {
             var guiLibs = new[] {
                 "ReactiveUI.Xaml",
-                "ReactiveUI.Routing",
                 "ReactiveUI.Gtk",
                 "ReactiveUI.Cocoa",
                 "ReactiveUI.Android",
@@ -359,36 +354,9 @@ namespace ReactiveUI
                 "ReactiveUI.Mobile",
             };
 
-#if WINRT || WP8 || PORTABLE
+#if PORTABLE
             // NB: WinRT hates your Freedom
-            return new[] {"ReactiveUI.Xaml", "ReactiveUI.Routing", "ReactiveUI.Mobile", };
-#elif SILVERLIGHT
-            return new[] {"ReactiveUI.Xaml", "ReactiveUI.Routing"};
-#else
-            var name = Assembly.GetExecutingAssembly().GetName();
-            var suffix = getArchSuffixForPath(Assembly.GetExecutingAssembly().Location);
-
-            return guiLibs.SelectMany(x => {
-                var fullName = String.Format("{0}{1}, Version={2}, Culture=neutral, PublicKeyToken=null", x, suffix, name.Version.ToString());
-
-                var assemblyLocation = Assembly.GetExecutingAssembly().Location;
-                if (String.IsNullOrEmpty(assemblyLocation))
-                    return Enumerable.Empty<string>();
-
-                var path = Path.Combine(Path.GetDirectoryName(assemblyLocation), x + suffix + ".dll");
-                if (!File.Exists(path) && !RxApp.InUnitTestRunner()) {
-                    LogHost.Default.Debug("Couldn't find {0}", path);
-                    return Enumerable.Empty<string>();
-                }
-
-                try {
-                    Assembly.Load(fullName);
-                    return new[] {x};
-                } catch (Exception ex) {
-                    LogHost.Default.DebugException("Couldn't load " + x, ex);
-                    return Enumerable.Empty<string>();
-                }
-            });
+            return new[] { "ReactiveUI.Xaml", "ReactiveUI.Mobile", "ReactiveUI.NLog", };
 #endif
         }
 
@@ -400,103 +368,7 @@ namespace ReactiveUI
         }
     }
 
-    public class NullDefaultPropertyBindingProvider : IDefaultPropertyBindingProvider
-    {
-        public Tuple<string, int> GetPropertyForControl(object control)
-        {
-            return null;
-        }
-    }
-
-    internal static class RealUnitTestDetector
-    {
-        public static bool InUnitTestRunner(string[] testAssemblies, string[] designEnvironments)
-        {
-#if SILVERLIGHT
-            // NB: Deployment.Current.Parts throws an exception when accessed in Blend
-            try {
-                var ret = Deployment.Current.Parts.Any(x =>
-                    testAssemblies.Any(name => x.Source.ToUpperInvariant().Contains(name)));
-
-                if (ret) {
-                    return ret;
-                }
-            } catch(Exception) {
-                return true;
-            }
-
-            try {
-                if (Application.Current.RootVisual != null && System.ComponentModel.DesignerProperties.GetIsInDesignMode(Application.Current.RootVisual)) {
-                    return false;
-                }
-            } catch {
-                return true;
-            }
-
-            return false;
-#elif WINRT
-            if (DesignMode.DesignModeEnabled) return true;
-
-            var depPackages = Package.Current.Dependencies.Select(x => x.Id.FullName);
-            if (depPackages.Any(x => testAssemblies.Any(name => x.ToUpperInvariant().Contains(name)))) return true;
-
-
-            var fileTask = Task.Factory.StartNew(async () =>
-            {
-                var files = await Package.Current.InstalledLocation.GetFilesAsync();
-                return files.Select(x => x.Path).ToArray();
-            }, TaskCreationOptions.HideScheduler).Unwrap();
-
-            return fileTask.Result.Any(x => testAssemblies.Any(name => x.ToUpperInvariant().Contains(name)));
-#elif PORTABLE
-            //Figure out portable way to do this.
-            return false;
-#else
-            // Try to detect whether we're in design mode - bonus points, 
-            // without access to any WPF references :-/
-            var entry = Assembly.GetEntryAssembly();
-            if (entry != null) {
-                var exeName = (new FileInfo(entry.Location)).Name.ToUpperInvariant(); 
-
-                if (designEnvironments.Any(x => x.Contains(exeName))) {
-                    return true;
-                }
-            }
-
-            return AppDomain.CurrentDomain.GetAssemblies().Any(x =>
-                testAssemblies.Any(name => x.FullName.ToUpperInvariant().Contains(name)));
-#endif
-        }
-
-        public static bool InUnitTestRunner()
-        {
-            // XXX: This is hacky and evil, but I can't think of any better way
-            // to do this
-            string[] testAssemblies = new[] {
-                "CSUNIT",
-                "NUNIT",
-                "XUNIT",
-                "MBUNIT",
-                "TESTDRIVEN",
-                "QUALITYTOOLS.TIPS.UNITTEST.ADAPTER",
-                "QUALITYTOOLS.UNITTESTING.SILVERLIGHT",
-                "PEX",
-                "MSBUILD",
-                "NBEHAVE",
-                "TESTPLATFORM",
-            };
-
-            string[] designEnvironments = new[] {
-                "BLEND.EXE",
-                "MONODEVELOP",
-                "SHARPDEVELOP.EXE",
-                "XDESPROC.EXE",
-            };
-
-            return InUnitTestRunner(testAssemblies, designEnvironments);
-        }
-
-    }
+    
 }
 
 // vim: tw=120 ts=4 sw=4 et :
