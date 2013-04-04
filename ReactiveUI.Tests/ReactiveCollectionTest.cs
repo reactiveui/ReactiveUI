@@ -551,7 +551,6 @@ namespace ReactiveUI.Tests
 
                 // else if (isIncluded && shouldBeIncluded)
                 testAll(() => { adam.Salary = 350; });
-
                 testAll(() => { dan.Age = 50; });
                 testAll(() => { dan.Age = 51; });
             }
