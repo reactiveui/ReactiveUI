@@ -73,9 +73,6 @@ namespace ReactiveUI
         }
 
         [OnDeserialized]
-#if WP7
-        public
-#endif
         void setupRxObj(StreamingContext sc) { setupRxObj(); }
 
         void setupRxObj()
@@ -157,7 +154,7 @@ namespace ReactiveUI
             if (String.IsNullOrEmpty(propertyName))
                 return;
 
-#if !SILVERLIGHT && !WINRT
+#if !SILVERLIGHT && !WINRT && !PORTABLE
             // Verify that the property name matches a real,
             // public, instance property on this object.
             if (TypeDescriptor.GetProperties(this)[propertyName] == null) {
@@ -168,18 +165,12 @@ namespace ReactiveUI
         }
 
         protected bool areChangeNotificationsEnabled {
-            get { 
-#if SILVERLIGHT
-                // N.B. On most architectures, machine word aligned reads are 
-                // guaranteed to be atomic - sorry WP7, you're out of luck
-                return changeNotificationsSuppressed == 0;
-#else
-                return (Interlocked.Read(ref changeNotificationsSuppressed) == 0); 
-#endif
+            get {
+                return (Interlocked.Read(ref changeNotificationsSuppressed) == 0);
             }
         }
 
-        void notifyObservable<T>(T item, Subject<T> subject)
+        internal void notifyObservable<T>(T item, Subject<T> subject)
         {
 #if DEBUG
             this.Log().Debug("Firing observable to subject 0x{0:X}", subject.GetHashCode());
@@ -197,161 +188,17 @@ namespace ReactiveUI
     {
         /// <summary>
         /// RaiseAndSetIfChanged fully implements a Setter for a read-write
-        /// property on a ReactiveObject, making the assumption that the
-        /// property has a backing field named "_NameOfProperty". To change this
-        /// assumption, set RxApp.GetFieldNameForPropertyNameFunc.
+        /// property on a ReactiveObject, using CallerMemberName to raise the notification
+        /// and the ref to the backing field to set the property.
         /// </summary>
-        /// <param name="property">An Expression representing the property (i.e.
-        /// 'x => x.SomeProperty'</param>
-        /// <param name="newValue">The new value to set the property to, almost
-        /// always the 'value' keyword.</param>
-        /// <returns>The newly set value, normally discarded.</returns>
-        public static TRet RaiseAndSetIfChanged<TObj, TRet>(
-                this TObj This, 
-                Expression<Func<TObj, TRet>> property, 
-                TRet newValue)
-            where TObj : ReactiveObject
-        {
-            Contract.Requires(This != null);
-            Contract.Requires(property != null);
-
-            FieldInfo field;
-            string prop_name = Reflection.SimpleExpressionToPropertyName(property);
-
-            field = Reflection.GetBackingFieldInfoForProperty<TObj>(prop_name);
-
-            var field_val = field.GetValue(This);
-
-            if (EqualityComparer<TRet>.Default.Equals((TRet)field_val, (TRet)newValue)) {
-                return newValue;
-            }
-
-            This.raisePropertyChanging(prop_name);
-            field.SetValue(This, newValue);
-            This.raisePropertyChanged(prop_name);
-
-            return newValue;
-        }
-        
-
-        /// <summary>
-        /// RaiseAndSetIfChanged fully implements a Setter for a read-write
-        /// property on a ReactiveObject, making the assumption that the
-        /// property has a backing field named "_NameOfProperty". To change this
-        /// assumption, set RxApp.GetFieldNameForPropertyNameFunc.  This
-        /// overload is intended for Silverlight and WP7 where reflection
-        /// cannot access the private backing field.
-        /// </summary>
-        /// <param name="property">An Expression representing the property (i.e.
-        /// 'x => x.SomeProperty'</param>
+        /// <typeparam name="TObj">The type of the This.</typeparam>
+        /// <typeparam name="TRet">The type of the return value.</typeparam>
+        /// <param name="This">The <see cref="ReactiveObject"/> raising the notification.</param>
         /// <param name="backingField">A Reference to the backing field for this
         /// property.</param>
-        /// <param name="newValue">The new value to set the property to, almost
-        /// always the 'value' keyword.</param>
-        /// <returns>The newly set value, normally discarded.</returns>
-        public static TRet RaiseAndSetIfChanged<TObj, TRet>(
-                this TObj This,
-                Expression<Func<TObj, TRet>> property,
-                ref TRet backingField,
-                TRet newValue)
-            where TObj : ReactiveObject
-        {
-            Contract.Requires(This != null);
-            Contract.Requires(property != null);
-
-            if (EqualityComparer<TRet>.Default.Equals(backingField, newValue)) {
-                return newValue;
-            }
-
-            string prop_name = Reflection.SimpleExpressionToPropertyName(property);
-
-            This.raisePropertyChanging(prop_name);
-            backingField = newValue;
-            This.raisePropertyChanged(prop_name);
-            return newValue;
-        }
-
-        /// <summary>
-        /// Use this method in your ReactiveObject classes when creating custom
-        /// properties where raiseAndSetIfChanged doesn't suffice.
-        /// </summary>
-        /// <param name="property">An Expression representing the property (i.e.
-        /// 'x => x.SomeProperty'</param>
-        public static void RaisePropertyChanging<TObj, TRet>(
-                this TObj This,
-                Expression<Func<TObj, TRet>> property)
-            where TObj : ReactiveObject
-        {
-            var propName = Reflection.SimpleExpressionToPropertyName(property);
-            This.raisePropertyChanging(propName);
-        }
-
-        /// <summary>
-        /// Use this method in your ReactiveObject classes when creating custom
-        /// properties where raiseAndSetIfChanged doesn't suffice.
-        /// </summary>
-        /// <param name="property">An Expression representing the property (i.e.
-        /// 'x => x.SomeProperty'</param>
-        public static void RaisePropertyChanged<TObj, TRet>(
-                this TObj This,
-                Expression<Func<TObj, TRet>> property)
-            where TObj : ReactiveObject
-        {
-            var propName = Reflection.SimpleExpressionToPropertyName(property);
-            This.raisePropertyChanged(propName);
-        }
-
-        /// <summary>
-        /// RaiseAndSetIfChanged fully implements a Setter for a read-write
-        /// property on a ReactiveObject, making the assumption that the
-        /// property has a backing field named "_NameOfProperty". To change this
-        /// assumption, set RxApp.GetFieldNameForPropertyNameFunc.
-        /// </summary>
-        /// <param name="property">An Expression representing the property (i.e.
-        /// 'x => x.SomeProperty'</param>
-        /// <param name="newValue">The new value to set the property to, almost
-        /// always the 'value' keyword.</param>
-        /// <returns>The newly set value, normally discarded.</returns>
-        public static TRet RaiseAndSetIfChanged<TObj, TRet>(
-                this TObj This,
-                TRet newValue,
-                [CallerMemberName] string propertyName = null
-            )
-            where TObj : ReactiveObject
-        {
-            Contract.Requires(This != null);
-            Contract.Requires(propertyName != null);
-
-            var fi = Reflection.GetBackingFieldInfoForProperty<TObj>(propertyName);
-
-            var field_val = fi.GetValue(This);
-
-            if (EqualityComparer<TRet>.Default.Equals((TRet)field_val, (TRet)newValue)) {
-                return newValue;
-            }
-
-            This.raisePropertyChanging(propertyName);
-            fi.SetValue(This, newValue);
-            This.raisePropertyChanged(propertyName);
-
-            return newValue;
-        }
-
-
-        /// <summary>
-        /// RaiseAndSetIfChanged fully implements a Setter for a read-write
-        /// property on a ReactiveObject, making the assumption that the
-        /// property has a backing field named "_NameOfProperty". To change this
-        /// assumption, set RxApp.GetFieldNameForPropertyNameFunc.  This
-        /// overload is intended for Silverlight and WP7 where reflection
-        /// cannot access the private backing field.
-        /// </summary>
-        /// <param name="property">An Expression representing the property (i.e.
-        /// 'x => x.SomeProperty'</param>
-        /// <param name="backingField">A Reference to the backing field for this
-        /// property.</param>
-        /// <param name="newValue">The new value to set the property to, almost
-        /// always the 'value' keyword.</param>
+        /// <param name="newValue">The new value.</param>
+        /// <param name="propertyName">The name of the property, usually 
+        /// automatically provided through the CallerMemberName attribute.</param>
         /// <returns>The newly set value, normally discarded.</returns>
         public static TRet RaiseAndSetIfChanged<TObj, TRet>(
                 this TObj This,

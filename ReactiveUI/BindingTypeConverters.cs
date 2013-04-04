@@ -96,7 +96,7 @@ namespace ReactiveUI
         }
     }
 
-#if !SILVERLIGHT && !WINRT
+#if !SILVERLIGHT && !WINRT && !PORTABLE
     public class ComponentModelTypeConverter : IBindingTypeConverter
     {
         readonly MemoizingMRUCache<Tuple<Type, Type>, TypeConverter> typeConverterCache = new MemoizingMRUCache<Tuple<Type, Type>, TypeConverter>((types, _) => {

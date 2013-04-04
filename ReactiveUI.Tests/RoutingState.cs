@@ -11,7 +11,7 @@ namespace ReactiveUI.Routing.Tests
         string _SomeProp;
         public string SomeProp {
             get { return _SomeProp; }
-            set { this.RaiseAndSetIfChanged(x => x.SomeProp, value); }
+            set { this.RaiseAndSetIfChanged(ref _SomeProp, value); }
         }
 
         public string UrlPathSegment {

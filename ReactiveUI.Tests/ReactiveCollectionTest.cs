@@ -380,14 +380,14 @@ namespace ReactiveUI.Tests
                 public T Value
                 {
                     get { return _Value; }
-                    set { this.RaiseAndSetIfChanged(value); }
+                    set { this.RaiseAndSetIfChanged(ref _Value, value); }
                 }
 
                 private bool _IsVisible;
                 public bool IsVisible
                 {
                     get { return _IsVisible; }
-                    set { this.RaiseAndSetIfChanged(value); }
+                    set { this.RaiseAndSetIfChanged(ref _IsVisible, value); }
                 }
 
                 public ReactiveVisibilityItem(T item1, bool isVisible)
@@ -535,7 +535,7 @@ namespace ReactiveUI.Tests
                 );
 
                 var containers = new List<DerivedCollectionTestContainer> {
-                    employeesByName, employeesByAge, employeesBySalary, oldEmployeesByAge, 
+                    employeesByName, employeesByAge, employeesBySalary, oldEmployeesByAge,
                     employeeSalaries, oldEmployeesSalariesByAge
                 };
 
@@ -551,7 +551,6 @@ namespace ReactiveUI.Tests
 
                 // else if (isIncluded && shouldBeIncluded)
                 testAll(() => { adam.Salary = 350; });
-                
                 testAll(() => { dan.Age = 50; });
                 testAll(() => { dan.Age = 51; });
             }
@@ -571,20 +570,20 @@ namespace ReactiveUI.Tests
                 };
 
                 var onlyVisible = items.CreateDerivedCollection(
-                    x => x.Value, 
-                    x => x.IsVisible, 
+                    x => x.Value,
+                    x => x.IsVisible,
                     StringComparer.Ordinal.Compare
                 );
-                
+
                 var onlyNonVisible = items.CreateDerivedCollection(
-                    x => x.Value, 
-                    x => !x.IsVisible, 
+                    x => x.Value,
+                    x => !x.IsVisible,
                     StringComparer.Ordinal.Compare
                 );
 
                 var onlVisibleStartingWithB = items.CreateDerivedCollection(
-                    x => x.Value, 
-                    x => x.IsVisible && x.Value.StartsWith("b"), 
+                    x => x.Value,
+                    x => x.IsVisible && x.Value.StartsWith("b"),
                     StringComparer.Ordinal.Compare
                 );
 
@@ -606,7 +605,7 @@ namespace ReactiveUI.Tests
             [Fact]
             public void FilteredProjectedDerivedCollectionsShouldReactToPropertyChanges()
             {
-                // This differs from the FilteredDerivedCollectionsShouldReactToPropertyChanges as it tests providing a 
+                // This differs from the FilteredDerivedCollectionsShouldReactToPropertyChanges as it tests providing a
                 // non-identity selector (ie x=>x.Value).
 
                 var a = new ReactiveVisibilityItem<string>("a", true);
@@ -636,7 +635,7 @@ namespace ReactiveUI.Tests
             [Fact]
             public void DerivedCollectionsShouldReactToPropertyChanges()
             {
-                // This differs from the FilteredDerivedCollectionsShouldReactToPropertyChanges as it tests providing a 
+                // This differs from the FilteredDerivedCollectionsShouldReactToPropertyChanges as it tests providing a
                 // non-identity selector (ie x=>x.Value).
 
                 var foo = new ReactiveVisibilityItem<string>("Foo", true);
@@ -751,8 +750,8 @@ namespace ReactiveUI.Tests
             var collection = new ReactiveCollection<int>();
 
             var orderedCollection = collection.CreateDerivedCollection(
-                x => x.ToString(), 
-                null, 
+                x => x.ToString(),
+                null,
                 (x, y) => x.CompareTo(y)
             );
 
