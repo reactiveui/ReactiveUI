@@ -13,8 +13,17 @@ namespace ReactiveUI
     {
     #if SILVERLIGHT || WINRT
         static MemoizingMRUCache<Tuple<Type, string>, FieldInfo> backingFieldInfoTypeCache = 
-            new MemoizingMRUCache<Tuple<Type,string>, FieldInfo>(
-                (x, _) => (x.Item1).GetField(RxApp.GetFieldNameForProperty(x.Item2)), 
+            new MemoizingMRUCache<Tuple<Type,string>, FieldInfo>((x, _) => {
+					FieldInfo ret = null;
+					foreach ( var nameVariant in RxApp.GetFieldNameForProperty(x.Item2) ) {
+						ret = (x.Item1).GetField( nameVariant );
+
+						if ( ret != null )
+							break;
+					}
+
+					return ret;
+                }, 
                 15 /*items*/);
 
         static readonly MemoizingMRUCache<Tuple<Type, string>, Func<object, object>> propReaderCache = 
@@ -49,8 +58,14 @@ namespace ReactiveUI
     #else
         static readonly MemoizingMRUCache<Tuple<Type, string>, FieldInfo> backingFieldInfoTypeCache = 
             new MemoizingMRUCache<Tuple<Type, string>, FieldInfo>((x, _) => {
-                var fieldName = RxApp.GetFieldNameForProperty(x.Item2);
-                var ret = (x.Item1).GetField(fieldName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+				FieldInfo ret = null;
+				foreach(var nameVariant in RxApp.GetFieldNameForProperty(x.Item2)) {
+					ret = (x.Item1).GetField( nameVariant, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance );
+
+					if (ret != null)
+						break;
+				}
+
                 return ret;
             }, 50/*items*/);
 
@@ -189,8 +204,8 @@ namespace ReactiveUI
             }
 
             if (field == null && !dontThrow) {
-                throw new ArgumentException("You must declare a backing field for this property named: " + 
-                    RxApp.GetFieldNameForProperty(propName));
+	            String variantsString = String.Join(", or ", RxApp.GetFieldNameForProperty(propName));
+                throw new ArgumentException("You must declare a backing field for this property named as one of: " + variantsString);
             }
 
             return field;

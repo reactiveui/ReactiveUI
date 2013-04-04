@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Reactive;
 using System.Reactive.Concurrency;
@@ -50,9 +51,9 @@ namespace ReactiveUI
     {
         static RxApp()
         {
-            // Default name for the field backing the "Foo" property => "_Foo"
+            // There are several variants of the default name, and we allow any of them
             // This is used for ReactiveObject's RaiseAndSetIfChanged mixin
-            GetFieldNameForPropertyNameFunc = new Func<string,string>(x => "_" + x);
+            GetFieldNameForPropertyNameFunc = new Func<string,IEnumerable<string>>(x => x.GetNameVariants(CultureInfo.InvariantCulture, NameVariants.All));
 
 #if WP7
             TaskpoolScheduler = new EventLoopScheduler();
@@ -216,7 +217,7 @@ namespace ReactiveUI
         /// Set this property to override the default field naming convention
         /// of "_PropertyName" with a custom one.
         /// </summary>
-        public static Func<string, string> GetFieldNameForPropertyNameFunc { get; set; }
+        public static Func<string, IEnumerable<string>> GetFieldNameForPropertyNameFunc { get; set; }
 
         /// <summary>
         /// This method allows you to override the return value of 
@@ -263,14 +264,14 @@ namespace ReactiveUI
         /// </summary>
         /// <param name="propertyName">The name of the property whose backing
         /// field needs to be found.</param>
-        /// <returns>The backing field name.</returns>
-        public static string GetFieldNameForProperty(string propertyName)
+        /// <returns>The enumerable of possible backing field names.</returns>
+        public static IEnumerable<string> GetFieldNameForProperty(string propertyName)
         {
-            return GetFieldNameForPropertyNameFunc(propertyName);
+	        return GetFieldNameForPropertyNameFunc(propertyName);
         }
 
 
-        // 
+	    // 
         // Service Location
         //
 
