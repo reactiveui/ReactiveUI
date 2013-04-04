@@ -1,5 +1,5 @@
-﻿$Archs = {"Net40", "Net45", "WP8", "WinRT45", "Mono", "Monodroid", "Monotouch"}
-$Projects = {"ReactiveUI", "ReactiveUI.Testing", "ReactiveUI.Xaml", "ReactiveUI.Routing", "ReactiveUI.Blend", "ReactiveUI.Cocoa", "ReactiveUI.Gtk", "ReactiveUI.Android", "ReactiveUI.NLog", "ReactiveUI.Mobile"}
+﻿$Archs = {"Portable-Net45+WinRT45+WP8", "Net45", "WP8", "WinRT45", "Mono", "Monodroid", "Monotouch"}
+$Projects = {"ReactiveUI", "ReactiveUI.Testing", "ReactiveUI.Xaml", "ReactiveUI.Blend", "ReactiveUI.Cocoa", "ReactiveUI.Gtk", "ReactiveUI.Android", "ReactiveUI.NLog", "ReactiveUI.Mobile"}
 
 $SlnFileExists = Test-Path ".\ReactiveUI.sln"
 if ($SlnFileExists -eq $False) {
@@ -65,11 +65,11 @@ foreach ($dir in $srcDirs) {
     robocopy ".\$projFolderName\" "$($dir.FullName)" *.cs /S
 }
 
-$stubs = ls -r -file .\NuGet-Release | ?{$_.Length -eq 0}
+$stubs = ls -r -file .\NuGet-Release | ?{$_.Length -eq 0} | ?{!$_.FullName.Contains("src")}
 if ($stubs.Length -gt 0) {
     echo "*** BUILD FAILED ***"
     echo ""
-    echo "*** There are still stubs in the NuGet output, did you fully build? (Hint: Check Silverlight) ***"
+    echo "*** There are still stubs in the NuGet output, did you fully build? ***"
     #exit 1
 }
 
