@@ -17,5 +17,7 @@ _ReSharper*
 Release
 NuGet-Release
 
-packages
 *.nupkg
+
+**/AppPackages
+version-bump.patch

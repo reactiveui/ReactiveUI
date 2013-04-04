@@ -133,11 +133,30 @@ namespace ReactiveUI
 
             try {
                 // TODO: This should use conversionHint to determine whether this is locale-aware or not
-                result = converter.ConvertTo(from, toType);
+                result = (fromType == typeof(string)) ? 
+                    converter.ConvertFrom(from) : converter.ConvertTo(from, toType);
                 return true;
-            } catch (FormatException) {
+            }
+            catch (FormatException) {
                 result = null;
                 return false;
+            }
+            catch (Exception e)
+            {
+                // Errors from ConvertFrom end up here but wrapped in 
+                // outer exception. Add more types here as required.
+                // IndexOutOfRangeException is given when trying to
+                // convert empty strings with some/all? converters
+                if (e.InnerException is IndexOutOfRangeException ||
+                    e.InnerException is FormatException)
+                {
+                    result = null;
+                    return false;
+                }
+                else
+                {
+                    throw;
+                }
             }
         }
     }

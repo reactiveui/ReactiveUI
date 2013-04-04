@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive;
@@ -44,10 +44,12 @@ namespace ReactiveUI.Routing
             // IFooBarView that implements IViewFor (or custom ViewModelToViewFunc)
             var typeToFind = ViewModelToViewFunc(viewModel.GetType().AssemblyQualifiedName);
             try {
-                var type = Reflection.ReallyFindType(typeToFind, true);
+                var type = Reflection.ReallyFindType(typeToFind, false);
 
-                var ret = RxApp.GetService(type, key) as IViewFor;
-                if (ret != null) return ret;
+                if (type != null) {
+                    var ret = RxApp.GetService(type, key) as IViewFor;
+                    if (ret != null) return ret;
+                }
             } catch (Exception ex) {
                 LogHost.Default.DebugException("Couldn't instantiate " + typeToFind, ex);
             }
@@ -57,9 +59,12 @@ namespace ReactiveUI.Routing
             // IViewFor<IFooBarViewModel>
             try {
                 var ifn = interfaceifyTypeName(viewModel.GetType().AssemblyQualifiedName);
-                var type = Reflection.ReallyFindType(ifn, true);
-                var ret =  RxApp.GetService(viewType.MakeGenericType(type), key) as IViewFor;
-                if (ret != null) return ret;
+                var type = Reflection.ReallyFindType(ifn, false);
+
+                if (type != null) {
+                    var ret =  RxApp.GetService(viewType.MakeGenericType(type), key) as IViewFor;
+                    if (ret != null) return ret;
+                }
             } catch (Exception ex) {
                 LogHost.Default.DebugException("Couldn't instantiate View via pure interface type", ex);
             }
@@ -134,3 +139,4 @@ namespace ReactiveUI.Routing
         }
     }
 }
+

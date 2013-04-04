@@ -122,7 +122,7 @@ namespace ReactiveUI.Xaml
             where TProp : ICommand;
     }
 
-    class CommandBinderImplementation : ICommandBinderImplementation 
+    public class CommandBinderImplementation : ICommandBinderImplementation 
     {
         public IDisposable BindCommand<TView, TViewModel, TProp>(
                 TViewModel viewModel, 
@@ -260,12 +260,6 @@ namespace ReactiveUI.Xaml
 
     class CreatesCommandBinding
     {
-        static CreatesCommandBinding()
-        {
-            RxApp.Register(typeof(CreatesCommandBindingViaCommandParameter), typeof(ICreatesCommandBinding));
-            RxApp.Register(typeof(CreatesCommandBindingViaEvent), typeof(ICreatesCommandBinding));
-        }
-
         static readonly MemoizingMRUCache<Type, ICreatesCommandBinding> bindCommandCache = 
             new MemoizingMRUCache<Type, ICreatesCommandBinding>((t, _) => {
                 return RxApp.GetAllServices<ICreatesCommandBinding>()
