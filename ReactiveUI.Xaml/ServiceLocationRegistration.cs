@@ -22,6 +22,10 @@ namespace ReactiveUI.Xaml
     {
         public void Register()
         {
+#if !WINRT && !WP8
+            RxApp.Register(typeof(ComponentModelTypeConverter), typeof(IBindingTypeConverter));
+#endif
+
 #if !MONO
             RxApp.Register(typeof (DependencyObjectObservableForProperty), typeof (ICreatesObservableForProperty));
             RxApp.Register(typeof (XamlDefaultPropertyBinding), typeof (IDefaultPropertyBindingProvider));
