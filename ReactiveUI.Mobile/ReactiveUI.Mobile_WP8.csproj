@@ -126,23 +126,16 @@
     <Compile Include="WP8AutoSuspendApplication.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ReactiveUI.Routing\ReactiveUI.Routing_WP8.csproj">
-      <Project>{9F70B056-893E-487D-8DD1-C012C4440618}</Project>
-      <Name>ReactiveUI.Routing_WP8</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\ReactiveUI.Xaml\ReactiveUI.Xaml_WP8.csproj">
-      <Project>{06C34984-B706-49BF-85BB-9282DD6238D1}</Project>
-      <Name>ReactiveUI.Xaml_WP8</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\ReactiveUI\ReactiveUI_WP8.csproj">
-      <Project>{FAEA4F2E-017C-47AF-B467-4D2C7210CDEF}</Project>
-      <Name>ReactiveUI_WP8</Name>
+    <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj">
+      <Project>{464CB812-F99F-401B-BE4C-E8F0515CD19D}</Project>
+      <Name>ReactiveUI</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\$(TargetFrameworkIdentifier)\$(TargetFrameworkVersion)\Microsoft.$(TargetFrameworkIdentifier).$(TargetFrameworkVersion).Overrides.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\$(TargetFrameworkIdentifier)\$(TargetFrameworkVersion)\Microsoft.$(TargetFrameworkIdentifier).CSharp.targets" />
   <ProjectExtensions />
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
+  <Import Project="..\packages\Microsoft.Bcl.Build.1.0.0-rc\tools\Microsoft.Bcl.Build.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

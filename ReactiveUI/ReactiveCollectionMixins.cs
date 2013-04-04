@@ -28,9 +28,9 @@ namespace ReactiveUI
             throw new InvalidOperationException(readonlyExceptionMessage);
         }
 
-        protected virtual void internalAdd(TValue item) 
-        { 
-            base.Add(item); 
+        protected virtual void internalAdd(TValue item)
+        {
+            base.Add(item);
         }
 
         public override void AddRange(IEnumerable<TValue> collection)
@@ -38,9 +38,9 @@ namespace ReactiveUI
             throw new InvalidOperationException(readonlyExceptionMessage);
         }
 
-        protected virtual void internalAddRange(IEnumerable<TValue> collection) 
-        { 
-            base.AddRange(collection); 
+        protected virtual void internalAddRange(IEnumerable<TValue> collection)
+        {
+            base.AddRange(collection);
         }
 
         public override void Clear()
@@ -524,7 +524,7 @@ namespace ReactiveUI
             // added and compare them to the final count of items provided by the
             // Observable. Combine the two values, and when they're equal, 
             // disconnect the timer
-            this.ItemsAdded.Scan(0, ((acc, _) => acc + 1)).Zip(observable.Aggregate(0, (acc, _) => acc + 1), 
+            this.ItemsAdded.Scan(0, ((acc, _) => acc + 1)).Zip(observable.Aggregate(0, (acc, _) => acc + 1),
                 (l,r) => (l == r)).Where(x => x).Subscribe(_ => disconnect.Dispose());
         }
 

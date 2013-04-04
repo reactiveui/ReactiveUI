@@ -16,10 +16,6 @@ using System.Threading;
 
 using System.Threading.Tasks;
 
-#if SILVERLIGHT
-using System.Windows;
-#endif
-
 #if WINRT
 using Windows.ApplicationModel;
 using System.Reactive.Windows.Foundation;
@@ -50,10 +46,6 @@ namespace ReactiveUI
     {
         static RxApp()
         {
-            // Default name for the field backing the "Foo" property => "_Foo"
-            // This is used for ReactiveObject's RaiseAndSetIfChanged mixin
-            GetFieldNameForPropertyNameFunc = new Func<string,string>(x => "_" + x);
-
 #if WP7
             TaskpoolScheduler = new EventLoopScheduler();
 #elif WP8
@@ -94,18 +86,19 @@ namespace ReactiveUI
             RxApp.Register(typeof(EqualityTypeConverter), typeof(IBindingTypeConverter));
             RxApp.Register(typeof(StringConverter), typeof(IBindingTypeConverter));
 
-#if !SILVERLIGHT && !WINRT
+#if !SILVERLIGHT && !WINRT && !PORTABLE
             RxApp.Register(typeof(ComponentModelTypeConverter), typeof(IBindingTypeConverter));
 #endif
 
             var namespaces = attemptToEarlyLoadReactiveUIDLLs();
 
-            namespaces.ForEach(ns => {
-#if WINRT
-                var assm = typeof (RxApp).GetTypeInfo().Assembly;
+#if WINRT || PORTABLE
+            var assm = typeof (RxApp).GetTypeInfo().Assembly;
 #else
-                var assm = Assembly.GetExecutingAssembly();
+            var assm = Assembly.GetExecutingAssembly();
 #endif
+
+            namespaces.ForEach(ns => {
                 var fullName = typeof (RxApp).AssemblyQualifiedName;
                 var targetType = ns + ".ServiceLocationRegistration";
                 fullName = fullName.Replace("ReactiveUI.RxApp", targetType);
@@ -121,16 +114,16 @@ namespace ReactiveUI
             if (InUnitTestRunner()) {
                 LogHost.Default.Warn("*** Detected Unit Test Runner, setting Scheduler to Immediate ***");
                 LogHost.Default.Warn("If we are not actually in a test runner, please file a bug\n");
-                DeferredScheduler = Scheduler.Immediate;
+                RxApp.DeferredScheduler = ImmediateScheduler.Instance;
             } else {
                 LogHost.Default.Info("Initializing to normal mode");
             }
 
             if (DeferredScheduler == null) {
-                LogHost.Default.Error("*** ReactiveUI.Xaml DLL reference not added - using Event Loop *** ");
+                LogHost.Default.Error("*** ReactiveUI.Xaml DLL reference not added - using Default scheduler *** ");
                 LogHost.Default.Error("Add a reference to ReactiveUI.Xaml if you're using WPF / SL5 / WP7 / WinRT");
                 LogHost.Default.Error("or consider explicitly setting RxApp.DeferredScheduler if not");
-                RxApp.DeferredScheduler = new EventLoopScheduler();
+                RxApp.DeferredScheduler = DefaultScheduler.Instance;
             }
         }
 
@@ -213,12 +206,6 @@ namespace ReactiveUI
         }
 
         /// <summary>
-        /// Set this property to override the default field naming convention
-        /// of "_PropertyName" with a custom one.
-        /// </summary>
-        public static Func<string, string> GetFieldNameForPropertyNameFunc { get; set; }
-
-        /// <summary>
         /// This method allows you to override the return value of 
         /// RxApp.InUnitTestRunner - a null value means that InUnitTestRunner
         /// will determine this using its normal logic.
@@ -251,22 +238,8 @@ namespace ReactiveUI
 
             // NB: This is in a separate static ctor to avoid a deadlock on 
             // the static ctor lock when blocking on async methods 
-            _inUnitTestRunner = RealUnitTestDetector.InUnitTestRunner();
+            _inUnitTestRunner = UnitTestDetector.IsInUnitTestRunner() || DesignModeDetector.IsInDesignMode();
             return _inUnitTestRunner.Value;
-        }
-
-
-        /// <summary>
-        /// GetFieldNameForProperty returns the corresponding backing field name
-        /// for a given property name, using the convention specified in
-        /// GetFieldNameForPropertyNameFunc.
-        /// </summary>
-        /// <param name="propertyName">The name of the property whose backing
-        /// field needs to be found.</param>
-        /// <returns>The backing field name.</returns>
-        public static string GetFieldNameForProperty(string propertyName)
-        {
-            return GetFieldNameForPropertyNameFunc(propertyName);
         }
 
 
@@ -374,7 +347,6 @@ namespace ReactiveUI
         {
             var guiLibs = new[] {
                 "ReactiveUI.Xaml",
-                "ReactiveUI.Routing",
                 "ReactiveUI.Gtk",
                 "ReactiveUI.Cocoa",
                 "ReactiveUI.Android",
@@ -382,36 +354,9 @@ namespace ReactiveUI
                 "ReactiveUI.Mobile",
             };
 
-#if WINRT || WP8
+#if PORTABLE
             // NB: WinRT hates your Freedom
-            return new[] {"ReactiveUI.Xaml", "ReactiveUI.Routing", "ReactiveUI.Mobile", };
-#elif SILVERLIGHT
-            return new[] {"ReactiveUI.Xaml", "ReactiveUI.Routing"};
-#else
-            var name = Assembly.GetExecutingAssembly().GetName();
-            var suffix = getArchSuffixForPath(Assembly.GetExecutingAssembly().Location);
-
-            return guiLibs.SelectMany(x => {
-                var fullName = String.Format("{0}{1}, Version={2}, Culture=neutral, PublicKeyToken=null", x, suffix, name.Version.ToString());
-
-                var assemblyLocation = Assembly.GetExecutingAssembly().Location;
-                if (String.IsNullOrEmpty(assemblyLocation))
-                    return Enumerable.Empty<string>();
-
-                var path = Path.Combine(Path.GetDirectoryName(assemblyLocation), x + suffix + ".dll");
-                if (!File.Exists(path) && !RxApp.InUnitTestRunner()) {
-                    LogHost.Default.Debug("Couldn't find {0}", path);
-                    return Enumerable.Empty<string>();
-                }
-
-                try {
-                    Assembly.Load(fullName);
-                    return new[] {x};
-                } catch (Exception ex) {
-                    LogHost.Default.DebugException("Couldn't load " + x, ex);
-                    return Enumerable.Empty<string>();
-                }
-            });
+            return new[] { "ReactiveUI.Xaml", "ReactiveUI.Mobile", "ReactiveUI.NLog", };
 #endif
         }
 
@@ -423,100 +368,7 @@ namespace ReactiveUI
         }
     }
 
-    public class NullDefaultPropertyBindingProvider : IDefaultPropertyBindingProvider
-    {
-        public Tuple<string, int> GetPropertyForControl(object control)
-        {
-            return null;
-        }
-    }
-
-    internal static class RealUnitTestDetector
-    {
-        public static bool InUnitTestRunner(string[] testAssemblies, string[] designEnvironments)
-        {
-#if SILVERLIGHT
-            // NB: Deployment.Current.Parts throws an exception when accessed in Blend
-            try {
-                var ret = Deployment.Current.Parts.Any(x =>
-                    testAssemblies.Any(name => x.Source.ToUpperInvariant().Contains(name)));
-
-                if (ret) {
-                    return ret;
-                }
-            } catch(Exception) {
-                return true;
-            }
-
-            try {
-                if (Application.Current.RootVisual != null && System.ComponentModel.DesignerProperties.GetIsInDesignMode(Application.Current.RootVisual)) {
-                    return false;
-                }
-            } catch {
-                return true;
-            }
-
-            return false;
-#elif WINRT
-            if (DesignMode.DesignModeEnabled) return true;
-
-            var depPackages = Package.Current.Dependencies.Select(x => x.Id.FullName);
-            if (depPackages.Any(x => testAssemblies.Any(name => x.ToUpperInvariant().Contains(name)))) return true;
-
-
-            var fileTask = Task.Factory.StartNew(async () =>
-            {
-                var files = await Package.Current.InstalledLocation.GetFilesAsync();
-                return files.Select(x => x.Path).ToArray();
-            }, TaskCreationOptions.HideScheduler).Unwrap();
-
-            return fileTask.Result.Any(x => testAssemblies.Any(name => x.ToUpperInvariant().Contains(name)));
-#else
-            // Try to detect whether we're in design mode - bonus points, 
-            // without access to any WPF references :-/
-            var entry = Assembly.GetEntryAssembly();
-            if (entry != null) {
-                var exeName = (new FileInfo(entry.Location)).Name.ToUpperInvariant(); 
-
-                if (designEnvironments.Any(x => x.Contains(exeName))) {
-                    return true;
-                }
-            }
-
-            return AppDomain.CurrentDomain.GetAssemblies().Any(x =>
-                testAssemblies.Any(name => x.FullName.ToUpperInvariant().Contains(name)));
-#endif
-        }
-
-        public static bool InUnitTestRunner()
-        {
-            // XXX: This is hacky and evil, but I can't think of any better way
-            // to do this
-            string[] testAssemblies = new[] {
-                "CSUNIT",
-                "NUNIT",
-                "XUNIT",
-                "MBUNIT",
-                "TESTDRIVEN",
-                "QUALITYTOOLS.TIPS.UNITTEST.ADAPTER",
-                "QUALITYTOOLS.UNITTESTING.SILVERLIGHT",
-                "PEX",
-                "MSBUILD",
-                "NBEHAVE",
-                "TESTPLATFORM",
-            };
-
-            string[] designEnvironments = new[] {
-                "BLEND.EXE",
-                "MONODEVELOP",
-                "SHARPDEVELOP.EXE",
-                "XDESPROC.EXE",
-            };
-
-            return InUnitTestRunner(testAssemblies, designEnvironments);
-        }
-
-    }
+    
 }
 
 // vim: tw=120 ts=4 sw=4 et :

@@ -29,27 +29,7 @@ namespace ReactiveUI.Tests
         [Fact]
         public void UnitTestDetectorIdentifiesThisTestAsAnXUnitTest()
         {
-            string[] testAssemblies = new[] {
-                "CSUNIT",
-                "NUNIT",
-                "XUNIT",
-                "MBUNIT",
-                "TESTDRIVEN",
-                "QUALITYTOOLS.TIPS.UNITTEST.ADAPTER",
-                "QUALITYTOOLS.UNITTESTING.SILVERLIGHT",
-                "PEX",
-                "MSBUILD",
-                "NBEHAVE",
-                "TESTPLATFORM",
-            };
-
-            string[] designEnvironments = new[] {
-                "BLEND.EXE",
-                "MONODEVELOP",
-                "SHARPDEVELOP.EXE",
-            };
-
-            var isInUnitTestRunner = RealUnitTestDetector.InUnitTestRunner(testAssemblies, designEnvironments);
+            var isInUnitTestRunner = UnitTestDetector.IsInUnitTestRunner();
 
             Assert.True(isInUnitTestRunner);
         }
@@ -57,27 +37,9 @@ namespace ReactiveUI.Tests
         [Fact]
         public void UnitTestDetectorDoesNotIdentifyThisTestWhenXUnitAssemblyNotChecked()
         {
-            // XUnit assembly name removed
-            string[] testAssembliesWithoutNunit = new[] {
-                "CSUNIT",
-                "NUNIT",
-                "MBUNIT",
-                "TESTDRIVEN",
-                "QUALITYTOOLS.TIPS.UNITTEST.ADAPTER",
-                "QUALITYTOOLS.UNITTESTING.SILVERLIGHT",
-                "PEX",
-                "MSBUILD",
-                "NBEHAVE",
-                "TESTPLATFORM",
-            };
+            string vsUnitTest = "Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute, Microsoft.VisualStudio.QualityTools.UnitTestFramework";
 
-            string[] designEnvironments = new[] {
-                "BLEND.EXE",
-                "MONODEVELOP",
-                "SHARPDEVELOP.EXE",
-            };
-
-            var isInUnitTestRunner = RealUnitTestDetector.InUnitTestRunner(testAssembliesWithoutNunit, designEnvironments);
+            var isInUnitTestRunner = UnitTestDetector.IsInUnitTestRunner(vsUnitTest);
 
             Assert.False(isInUnitTestRunner);
         }

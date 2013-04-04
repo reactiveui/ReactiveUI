@@ -128,13 +128,13 @@ namespace ReactiveUI.Tests
         public ReactiveCommand _Command1;
         public ReactiveCommand Command1 {
             get { return _Command1; }
-            set { this.RaiseAndSetIfChanged(x => x.Command1, value); }
+            set { this.RaiseAndSetIfChanged(ref _Command1, value); }
         }
 
         public ReactiveCommand _Command2;
         public ReactiveCommand Command2 {
             get { return _Command2; }
-            set { this.RaiseAndSetIfChanged(x => x.Command2, value); }
+            set { this.RaiseAndSetIfChanged(ref _Command2, value); }
         }
 
         public CommandBindViewModel()
