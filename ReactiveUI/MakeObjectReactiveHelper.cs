@@ -45,22 +45,14 @@ namespace ReactiveUI
             new ScheduledSubject<IObservedChange<object, object>>(RxApp.DeferredScheduler);
 
         public IObservable<IObservedChange<object, object>> Changing {
-#if SILVERLIGHT
-            get { return _Changing.Where(_ => _changeCountSuppressed == 0); }
-#else 
             get { return _Changing.Where(_ => Interlocked.Read(ref _changeCountSuppressed) == 0); }
-#endif
         }
 
         ISubject<IObservedChange<object, object>> _Changed = 
             new ScheduledSubject<IObservedChange<object, object>>(RxApp.DeferredScheduler);
 
         public IObservable<IObservedChange<object, object>> Changed {
-#if SILVERLIGHT
-            get { return _Changed.Where(_ => _changeCountSuppressed == 0); }
-#else 
             get { return _Changed.Where(_ => Interlocked.Read(ref _changeCountSuppressed) == 0); }
-#endif
         }
     }
 }

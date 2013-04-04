@@ -171,20 +171,10 @@ namespace ReactiveUI
             TObj source,
             Expression<Func<TObj, TRet>> property,
             TRet initialValue = default(TRet),
-            IScheduler scheduler = null,
-            bool setViaReflection = true)
+            IScheduler scheduler = null)
             where TObj : ReactiveObject
         {
-            var ret = source.ObservableToProperty(This, property, initialValue, scheduler);
-
-            string propName = Reflection.SimpleExpressionToPropertyName(property);
-
-            if (setViaReflection) {
-                var fi = Reflection.GetBackingFieldInfoForProperty<TObj>(propName, true);
-                if (fi != null) fi.SetValue(source, ret);
-            }
-
-            return ret;
+            return source.ObservableToProperty(This, property, initialValue, scheduler);
         }
     }
 }

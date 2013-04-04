@@ -13,6 +13,8 @@
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{BC8A1FFA-BEE3-4634-8014-F334798102B3};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <PackageCertificateKeyFile>MobileSample-WinRT_TemporaryKey.pfx</PackageCertificateKeyFile>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -136,6 +138,7 @@
     </AppxManifest>
     <None Include="Common\ReadMe.txt" />
     <None Include="MobileSample-WinRT_TemporaryKey.pfx" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Assets\Logo.png" />
@@ -177,17 +180,13 @@
       <Project>{30540f2b-0f4c-40a0-b3b6-ffddfa09d8fd}</Project>
       <Name>ReactiveUI.Mobile_WinRT</Name>
     </ProjectReference>
-    <ProjectReference Include="..\ReactiveUI.Routing\ReactiveUI.Routing_WinRT.csproj">
-      <Project>{b73da536-0ad8-40a1-a2a7-f8491ce584f6}</Project>
-      <Name>ReactiveUI.Routing_WinRT</Name>
-    </ProjectReference>
     <ProjectReference Include="..\ReactiveUI.Xaml\ReactiveUI.Xaml_WinRT.csproj">
       <Project>{689ec7c5-2d81-4124-929e-397b330cc358}</Project>
       <Name>ReactiveUI.Xaml_WinRT</Name>
     </ProjectReference>
-    <ProjectReference Include="..\ReactiveUI\ReactiveUI_WinRT.csproj">
-      <Project>{3db4ef6f-ccbc-4115-9c33-20e52a024534}</Project>
-      <Name>ReactiveUI_WinRT</Name>
+    <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj">
+      <Project>{464cb812-f99f-401b-be4c-e8f0515cd19d}</Project>
+      <Name>ReactiveUI</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -226,6 +225,8 @@
     <VisualStudioVersion>11.0</VisualStudioVersion>
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v$(VisualStudioVersion)\Microsoft.Windows.UI.Xaml.CSharp.targets" />
+  <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
+  <Import Project="..\packages\Microsoft.Bcl.Build.1.0.0-rc\tools\Microsoft.Bcl.Build.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
