@@ -11,7 +11,9 @@ if ($SlnFileExists -eq $False) {
 ### Build the Release directory
 ###
 
-rmdir -r --force .\Release
+if (Test-Path .\Release) {
+    rmdir -r -force .\Release
+}
 
 foreach-object $Archs | %{mkdir -p ".\Release\$_"}
 
@@ -30,12 +32,17 @@ ls -r .\Release | ?{$_.FullName.Contains("Clousot")} | %{rm $_.FullName}
 ### Build NuGet Packages
 ###
 
-rm -r -fo .\NuGet-Release. .
+if (Test-Path .\NuGet-Release) {
+    rm -r -fo .\NuGet-Release
+}
+
 cp -r .\NuGet .\NuGet-Release
 
 $libDirs = ls -r .\NuGet-Release | ?{$_.Name -eq "lib"}
+$srcDirs = ls -r .\NuGet-Release | ?{$_.Name -eq "src"} | %{ls $_.FullName}
 $nugetReleaseDir = Resolve-Path ".\NuGet-Release"
 
+# copy binaries
 foreach ($dir in $libDirs) {
     $projName = $dir.FullName.Split("\\")[-2]
     $arches = ls $dir.FullName
@@ -50,6 +57,14 @@ foreach ($dir in $libDirs) {
     }
 }
 
+# copy source
+foreach ($dir in $srcDirs) {
+    $projName = $dir.Name
+    $projFolderName = $projName.Replace("-", ".")
+
+    robocopy ".\$projFolderName\" "$($dir.FullName)" *.cs /S
+}
+
 $stubs = ls -r -file .\NuGet-Release | ?{$_.Length -eq 0}
 if ($stubs.Length -gt 0) {
     echo "*** BUILD FAILED ***"
@@ -59,4 +74,4 @@ if ($stubs.Length -gt 0) {
 }
 
 $specFiles = ls -r .\NuGet-Release | ?{$_.Name.EndsWith(".nuspec")}
-$specFiles | %{.\.nuget\NuGet.exe pack $_.FullName}
+$specFiles | %{.\.nuget\NuGet.exe pack -symbols $_.FullName}
