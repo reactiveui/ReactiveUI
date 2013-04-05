@@ -75,29 +75,6 @@ namespace ReactiveUI.Tests
         }
 
         [Fact]
-        public void ValueTest() 
-        {
-            var input = new[] {"Foo", "Bar", "Baz"};
-            IEnumerable<string> output = null;
-            IEnumerable<string> output2 = null;
-
-            (new TestScheduler()).With(sched => {
-                var fixture = new TestFixture();
-
-                // Same deal as above
-                output = fixture.Changed.Value<object, object, string>().CreateCollection();
-                output2 = fixture.ObservableForProperty(x => x.IsOnlyOneWord).Value().CreateCollection();
-
-                foreach (var v in input) { fixture.IsOnlyOneWord = v; }
-
-                sched.AdvanceToMs(1000);
-
-                input.AssertAreEqual(output);
-                input.AssertAreEqual(output2);
-            });
-        }
-
-        [Fact]
         public void BindToSmokeTest()
         {
             (new TestScheduler()).With(sched => {

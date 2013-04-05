@@ -6,7 +6,6 @@ using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Runtime.Serialization;
 using System.Windows.Input;
-using ReactiveUI.Xaml;
 
 namespace ReactiveUI.Routing
 {
@@ -96,15 +95,6 @@ namespace ReactiveUI.Routing
     public static class RoutingStateMixins
     {
         /// <summary>
-        /// Generates a routing Uri based on the current route state
-        /// </summary>
-        /// <returns></returns>
-        public static string GetUrlForCurrentRoute(this IRoutingState This)
-        {
-            return "app://" + String.Join("/", This.NavigationStack.Select(x => x.UrlPathSegment));
-        }
-
-        /// <summary>
         /// Locate the first ViewModel in the stack that matches a certain Type.
         /// </summary>
         /// <returns>The matching ViewModel or null if none exists.</returns>
@@ -130,12 +120,6 @@ namespace ReactiveUI.Routing
             return This.NavigationStack.CountChanged
                 .Select(_ => This.GetCurrentViewModel())
                 .StartWith(This.GetCurrentViewModel());
-        }
-
-        public static void Go<T>(this INavigateCommand This, string key = null)
-            where T : IRoutableViewModel
-        {
-            This.Execute(RxApp.GetService<T>(key));
         }
 
         public static IReactiveCommand NavigateCommandFor<T>(this IRoutingState This)

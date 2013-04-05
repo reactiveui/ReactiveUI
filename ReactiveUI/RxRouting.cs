@@ -56,19 +56,6 @@ namespace ReactiveUI.Routing
 
             var viewType = typeof (IViewFor<>);
 
-            // IViewFor<IFooBarViewModel>
-            try {
-                var ifn = interfaceifyTypeName(viewModel.GetType().AssemblyQualifiedName);
-                var type = Reflection.ReallyFindType(ifn, false);
-
-                if (type != null) {
-                    var ret =  RxApp.GetService(viewType.MakeGenericType(type), key) as IViewFor;
-                    if (ret != null) return ret;
-                }
-            } catch (Exception ex) {
-                LogHost.Default.DebugException("Couldn't instantiate View via pure interface type", ex);
-            }
-
             // IViewFor<FooBarViewModel> (the original behavior in RxUI 3.1)
             return (IViewFor) RxApp.GetService(viewType.MakeGenericType(viewModel.GetType()), key);
         }
@@ -86,30 +73,6 @@ namespace ReactiveUI.Routing
 
     public static class RoutableViewModelMixin
     {
-        /// <summary>
-        /// This Observable fires whenever the current ViewModel is navigated to.
-        /// Note that this method is difficult to use directly without leaking
-        /// memory, you most likely want to use WhenNavigatedTo.
-        /// </summary>
-        public static IObservable<Unit> NavigatedToMe(this IRoutableViewModel This)
-        {
-            return This.HostScreen.Router.ViewModelObservable()
-                .Where(x => x == This)
-                .Select(_ => Unit.Default);
-        }
-
-        /// <summary>
-        /// This Observable fires whenever the current ViewModel is navigated
-        /// away from.  Note that this method is difficult to use directly
-        /// without leaking memory, you most likely want to use WhenNavigatedTo.
-        /// </summary>
-        public static IObservable<Unit> NavigatedFromMe(this IRoutableViewModel This)
-        {
-            return This.HostScreen.Router.ViewModelObservable()
-                .Where(x => x != This)
-                .Select(_ => Unit.Default);
-        }
-
         /// <summary>
         /// This method allows you to set up connections that only operate
         /// while the ViewModel has focus, and cleans up when the ViewModel

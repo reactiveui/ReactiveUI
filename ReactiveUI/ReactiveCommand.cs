@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using ReactiveUI;
 
-namespace ReactiveUI.Xaml
+namespace ReactiveUI
 {
     /// <summary>
     /// IReactiveCommand is an Rx-enabled version of ICommand that is also an
