@@ -10,7 +10,7 @@ using System.Reactive.Threading.Tasks;
 using ReactiveUI;
 using System.Threading.Tasks;
 
-namespace ReactiveUI.Xaml
+namespace ReactiveUI
 {
     /// <summary>
     /// ReactiveAsyncCommand represents commands that run an asynchronous
