@@ -203,11 +203,7 @@ namespace ReactiveUI
         public SemaphoreSubject(int maxCount, IScheduler sched = null)
         {
             this.Log().Debug("maxCount is '{0}'", maxCount);
-#if WP7
-            _inner = new Subject<T>();
-#else
             _inner = (sched != null ? (ISubject<T>)new ScheduledSubject<T>(sched) : new Subject<T>());
-#endif
             _maxCount = maxCount;
         }
 

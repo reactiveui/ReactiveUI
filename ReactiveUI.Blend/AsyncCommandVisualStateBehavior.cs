@@ -12,7 +12,6 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.Windows.Interactivity;
 using System.Linq;
-using ReactiveUI.Xaml;
 
 namespace ReactiveUI.Blend
 {

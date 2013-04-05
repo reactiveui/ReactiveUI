@@ -15,7 +15,7 @@ namespace ReactiveUI.Tests
         [IgnoreDataMember]
         public string IsNotNullString {
             get { return _IsNotNullString; }
-            set { this.RaiseAndSetIfChanged(x => x.IsNotNullString, ref _IsNotNullString, value); }
+            set { this.RaiseAndSetIfChanged(ref _IsNotNullString, value); }
         }
 
         [DataMember]
@@ -23,7 +23,7 @@ namespace ReactiveUI.Tests
         [IgnoreDataMember]
         public string IsOnlyOneWord {
             get { return _IsOnlyOneWord; }
-            set { this.RaiseAndSetIfChanged(x => x.IsOnlyOneWord, ref _IsOnlyOneWord, value); }
+            set { this.RaiseAndSetIfChanged(ref _IsOnlyOneWord, value); }
         }
 
         [DataMember]
@@ -31,7 +31,7 @@ namespace ReactiveUI.Tests
         [IgnoreDataMember]
         public List<string> StackOverflowTrigger {
             get { return _StackOverflowTrigger; }
-            set { this.RaiseAndSetIfChanged(value.ToList()); }
+            set { this.RaiseAndSetIfChanged(ref _StackOverflowTrigger, value.ToList()); }
         }
 
         [DataMember]
@@ -39,7 +39,7 @@ namespace ReactiveUI.Tests
         [IgnoreDataMember]
         public string UsesExprRaiseSet {
             get { return _UsesExprRaiseSet; }
-            set { this.RaiseAndSetIfChanged(x => x.UsesExprRaiseSet, ref _UsesExprRaiseSet, value); }
+            set { this.RaiseAndSetIfChanged(ref _UsesExprRaiseSet, value); }
         }
 
         [DataMember]

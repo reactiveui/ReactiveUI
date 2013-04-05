@@ -11,7 +11,7 @@ namespace ReactiveUI.Routing.Tests
         string _SomeProp;
         public string SomeProp {
             get { return _SomeProp; }
-            set { this.RaiseAndSetIfChanged(x => x.SomeProp, value); }
+            set { this.RaiseAndSetIfChanged(ref _SomeProp, value); }
         }
 
         public string UrlPathSegment {
@@ -38,12 +38,12 @@ namespace ReactiveUI.Routing.Tests
                 (c, t, s) => { });
 
             Assert.False(fixture.NavigateBack.CanExecute(input));
-            fixture.Navigate.Go<TestViewModel>();
+            fixture.Navigate.Execute(new TestViewModel());
 
             Assert.Equal(1, fixture.NavigationStack.Count);
             Assert.False(fixture.NavigateBack.CanExecute(null));
 
-            fixture.Navigate.Go<TestViewModel>();
+            fixture.Navigate.Execute(new TestViewModel());
 
             Assert.Equal(2, fixture.NavigationStack.Count);
             Assert.True(fixture.NavigateBack.CanExecute(null));
