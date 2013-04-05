@@ -46,12 +46,7 @@ namespace ReactiveUI
         /// </summary>
         [IgnoreDataMember]
         public IObservable<IObservedChange<object, object>> Changed {
-            get {
-#if DEBUG
-                this.Log().Debug("Changed Subject 0x{0:X}", changedSubject.GetHashCode());
-#endif
-                return changedSubject;
-            }
+            get { return changedSubject; }
         }
 
         [IgnoreDataMember]
@@ -105,7 +100,6 @@ namespace ReactiveUI
         {
             Contract.Requires(propertyName != null);
 
-            verifyPropertyName(propertyName);
             if (!areChangeNotificationsEnabled || changingSubject == null)
                 return;
 
@@ -124,7 +118,6 @@ namespace ReactiveUI
         {
             Contract.Requires(propertyName != null);
 
-            verifyPropertyName(propertyName);
             this.Log().Debug("{0:X}.{1} changed", this.GetHashCode(), propertyName);
 
             if (!areChangeNotificationsEnabled || changedSubject == null) {
@@ -143,27 +136,6 @@ namespace ReactiveUI
             }, changedSubject);
         }
 
-        [Conditional("DEBUG")]
-        [DebuggerStepThrough]
-        void verifyPropertyName(string propertyName)
-        {
-            Contract.Requires(propertyName != null);
-
-            // If you raise PropertyChanged and do not specify a property name,
-            // all properties on the object are considered to be changed by the binding system.
-            if (String.IsNullOrEmpty(propertyName))
-                return;
-
-#if !SILVERLIGHT && !WINRT && !PORTABLE
-            // Verify that the property name matches a real,
-            // public, instance property on this object.
-            if (TypeDescriptor.GetProperties(this)[propertyName] == null) {
-                string msg = "Invalid property name: " + propertyName;
-                this.Log().Error(msg);
-            }
-#endif
-        }
-
         protected bool areChangeNotificationsEnabled {
             get {
                 return (Interlocked.Read(ref changeNotificationsSuppressed) == 0);
@@ -172,9 +144,6 @@ namespace ReactiveUI
 
         internal void notifyObservable<T>(T item, Subject<T> subject)
         {
-#if DEBUG
-            this.Log().Debug("Firing observable to subject 0x{0:X}", subject.GetHashCode());
-#endif
             try {
                 subject.OnNext(item);
             } catch (Exception ex) {
@@ -218,23 +187,6 @@ namespace ReactiveUI
             backingField = newValue;
             This.raisePropertyChanged(propertyName);
             return newValue;
-        }
-
-        /// <summary>
-        /// Use this method in your ReactiveObject classes when creating custom
-        /// properties where raiseAndSetIfChanged doesn't suffice.
-        /// </summary>
-        /// <param name="This">The instance of ReactiveObject on which the property is changing.</param>
-        /// <param name="propertyName">
-        /// A string representing the name of the property that will be changing.
-        /// Leave <c>null</c> to let the runtime set to caller member name.
-        /// </param>
-        public static void RaisePropertyChanging<TObj>(
-                this TObj This,
-                [CallerMemberName] string propertyName = null)
-            where TObj : ReactiveObject
-        {
-            This.raisePropertyChanging(propertyName);
         }
 
         /// <summary>

@@ -9,6 +9,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using System.Reactive.Threading.Tasks;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
@@ -19,9 +20,7 @@ using System.Threading.Tasks;
 #if WINRT
 using Windows.ApplicationModel;
 using System.Reactive.Windows.Foundation;
-using System.Reactive.Threading.Tasks;
 using Windows.ApplicationModel.Store;
-
 #endif
 
 namespace ReactiveUI
