@@ -439,7 +439,11 @@ namespace ReactiveUI
 
     public interface IPropertyBindingHook
     {
-        bool ExecuteHook(object source, object target, Func<IObservedChange<object, object>[]> getCurrentViewModelProperties, Func<IObservedChange<object, object>[]> getCurrentViewProperties, BindingDirection direction);
+        bool ExecuteHook(
+            object source, object target, 
+            Func<IObservedChange<object, object>[]> getCurrentViewModelProperties, 
+            Func<IObservedChange<object, object>[]> getCurrentViewProperties, 
+            BindingDirection direction);
     }
 
     public interface IViewFor
