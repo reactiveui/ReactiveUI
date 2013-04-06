@@ -49,7 +49,7 @@ namespace ReactiveUI
             scheduler = scheduler ?? RxApp.DeferredScheduler;
             _lastValue = initialValue;
 
-            var subj = new ScheduledSubject<T>(scheduler);
+            var subj = new ReplaySubject<T>(1, scheduler);
             var exSubject = new ScheduledSubject<Exception>(scheduler, RxApp.DefaultExceptionHandler);
 
             bool firedInitial = false;
