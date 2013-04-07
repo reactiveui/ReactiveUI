@@ -13,6 +13,8 @@ namespace ReactiveUI
         /// Private constructor to prevent instantiation.
         /// </summary>
         private UnitTestDetector() { }
+
+        static bool? isInUnitTestRunner;
         
         /// <summary>
         /// Detects if the app is running in a Unit Test runner by trying to load
@@ -22,9 +24,12 @@ namespace ReactiveUI
         /// <returns></returns>
         public static bool IsInUnitTestRunner(string testType = null)
         {
-            // assuming Microsoft.Reactive.Testing is always used
-            string testSchedulerAQN = testType ?? "Microsoft.Reactive.Testing.TestScheduler, Microsoft.Reactive.Testing";
-            return Type.GetType(testSchedulerAQN, false) != null;
+            if (!isInUnitTestRunner.HasValue) {
+                // assuming Microsoft.Reactive.Testing is always used
+                string testSchedulerAQN = testType ?? "Microsoft.Reactive.Testing.TestScheduler, Microsoft.Reactive.Testing";
+                isInUnitTestRunner = Type.GetType(testSchedulerAQN, false) != null;
+            }
+            return isInUnitTestRunner.GetValueOrDefault(false);
         }
     }
 }
