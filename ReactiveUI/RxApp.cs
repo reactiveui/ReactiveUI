@@ -13,16 +13,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using System.Threading;
-
 using System.Threading.Tasks;
-
-#if WINRT
-using Windows.ApplicationModel;
-using System.Reactive.Windows.Foundation;
-using System.Reactive.Threading.Tasks;
-using Windows.ApplicationModel.Store;
-
-#endif
 
 namespace ReactiveUI
 {
@@ -92,11 +83,7 @@ namespace ReactiveUI
 
             var namespaces = attemptToEarlyLoadReactiveUIDLLs();
 
-#if WINRT || PORTABLE
             var assm = typeof (RxApp).GetTypeInfo().Assembly;
-#else
-            var assm = Assembly.GetExecutingAssembly();
-#endif
 
             namespaces.ForEach(ns => {
                 var fullName = typeof (RxApp).AssemblyQualifiedName;
