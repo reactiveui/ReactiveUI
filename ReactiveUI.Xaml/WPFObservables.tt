@@ -1,0 +1,114 @@
+﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ assembly name="PresentationCore" #>
+<#@ assembly name="PresentationFramework" #>
+<#@ assembly name="System.Xaml" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Diagnostics"#>
+<#@ import namespace="System.IO"#>
+<#@ import namespace="System.Linq"#>
+<#@ import namespace="System.Reflection"#>
+<#@ import namespace="System.Text"#>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="System.Threading.Tasks"#>
+<#@ import namespace="System.Windows"#>
+<#@ import namespace="System.Windows.Controls"#>
+<#@ import namespace="System.Windows.Input"#>
+<#@ import namespace="System.Windows.Threading"#>
+<#@ output extension=".cs" #>
+<#
+        //////////////////////////////////// 
+        // Add your favorite types here.
+        //////////////////////////////////// 
+        var typelist = new [] 
+        { typeof(UIElement)
+        , typeof(FrameworkElement)
+        , typeof(Dispatcher) 
+        };
+
+        /////////////////////////////////////
+        // We then grab the assemblies for
+        // all those types and pull all other
+        // types from those assemblies
+        /////////////////////////////////////
+        var typesToDo = typelist.SelectMany(type=>{
+            return from t in Assembly.GetAssembly(type).GetTypes()
+                            where t.IsPublic 
+                            select t;
+        }).Distinct();
+
+        /////////////////////////////////////
+        // We will need these namespaces in
+        // our generated code at minimum
+        /////////////////////////////////////
+        var usingNamespace = new SortedSet<string>()
+            {
+                "System.Reactive",
+                "System.Reactive.Linq",
+                "System.Reactive",
+                "System.Reactive.Linq",
+                "System.Windows",
+                "System.Windows.Controls",
+                "System.Windows.Input"
+            };
+
+        /////////////////////////////////////
+        // Add in all other namespaces that 
+        // our types require.
+        /////////////////////////////////////
+        foreach(var type in typesToDo)
+        {
+            usingNamespace.Add(type.Namespace);
+            foreach(var e in type.GetEvents())
+            {
+                usingNamespace.Add(e.EventHandlerType.Namespace);
+                usingNamespace.Add(e.EventHandlerType.GetMethod("Invoke").GetParameters()[1].ParameterType.Namespace); 
+            }
+        }
+
+#>
+<# foreach(var ns in usingNamespace){#>
+using <#=ns#>;
+<#}#>
+
+namespace System.Windows.Controls {
+    public static class ObservableEventsMixin {
+
+<#foreach (var type in typesToDo) {
+ var events=type.GetEvents(
+    BindingFlags.DeclaredOnly 
+    | BindingFlags.Instance 
+    | BindingFlags.Public).ToList(); 
+ if(events.Count==0){continue;}
+#> 
+////////////////////////////////////////////
+////////////////////////////////////////////
+////   <#= type.Name #>
+////////////////////////////////////////////
+////////////////////////////////////////////
+<#foreach (var eventInfo in events) { #>
+<#
+var eventType = eventInfo.EventHandlerType.Name; // e.g. MouseEventHandler
+var eventName = eventInfo.Name; // e.g. MouseMove
+var eventArgs = eventInfo.EventHandlerType.GetMethod("Invoke").GetParameters()[1].ParameterType; // e.g. MouseEventArgs
+if (type.IsGenericType){
+    continue;
+}
+if (eventArgs.IsGenericType){
+    continue;
+}
+if (eventInfo.EventHandlerType.IsGenericType)
+{
+    continue;
+}
+#>
+
+        public static IObservable<EventPattern<<#=eventArgs.Name#>>> <#=eventName#>Observer(this <#=type.Name#> This){
+            return Observable.FromEventPattern<<#=eventType#>, <#=eventArgs.Name#>>(h => This.<#=eventName#> += h, h => This.<#=eventName#> -= h);
+        }
+<#}#>
+<#}#>
+
+    }
+}
