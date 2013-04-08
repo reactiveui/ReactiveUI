@@ -46,9 +46,10 @@ namespace MobileSample_WP8
                 PhoneApplicationService.Current.UserIdleDetectionMode = IdleDetectionMode.Disabled;
             }
 
-            RxApp.Register(typeof (AppBootstrapper), typeof (IApplicationRootState));
+            //TODo get rid of ugly casting
+            ((FuncDependencyResolver)RxApp.DependencyResolver).Register(() => new AppBootstrapper(), typeof(IApplicationRootState));
 
-            var host = RxApp.GetService<ISuspensionHost>();
+            var host = RxApp.DependencyResolver.GetService<ISuspensionHost>();
             host.SetupDefaultSuspendResume();
         }
 

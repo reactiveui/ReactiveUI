@@ -25,7 +25,7 @@ namespace MobileSample_WinRT.ViewModels
 
         public TestPage1ViewModel(IScreen screen = null)
         {
-            HostScreen = screen ?? RxApp.GetService<IScreen>();
+            HostScreen = screen ?? RxApp.DependencyResolver.GetService<IScreen>();
             RandomGuid = Guid.NewGuid();
 
             NavPage2 = HostScreen.Router.NavigateCommandFor<TestPage2ViewModel>();

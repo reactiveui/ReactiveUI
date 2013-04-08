@@ -6,9 +6,9 @@ using NLog;
 
 namespace ReactiveUI.NLog
 {
-    public class ServiceLocationRegistration : IWantsToRegisterStuff
+    public class Registrations : IWantsToRegisterStuff
     {
-        public void Register()
+        public void Register(Action<Func<object>, Type> registerFunction)
         {
             RxApp.LoggerFactory = type => new NLogLogger(global::NLog.LogManager.GetLogger(type.Name));
         }

@@ -8,7 +8,7 @@ namespace ReactiveUI
 {
     public class Registrations : IWantsToRegisterStuff
     {
-        public static void Register(Action<Func<object>, Type> registerFunction)
+        public void Register(Action<Func<object>, Type> registerFunction)
         {            
             registerFunction(() => new INPCObservableForProperty(), typeof(ICreatesObservableForProperty));
             registerFunction(() => new IRNPCObservableForProperty(), typeof(ICreatesObservableForProperty));
