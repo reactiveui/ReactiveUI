@@ -10,7 +10,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ReactiveUI</RootNamespace>
-    <AssemblyName>ReactiveUI.Testing_WP8</AssemblyName>
+    <AssemblyName>ReactiveUI.Testing</AssemblyName>
     <TargetFrameworkVersion>v8.0</TargetFrameworkVersion>
     <TargetFrameworkIdentifier>WindowsPhone</TargetFrameworkIdentifier>
     <SilverlightVersion>$(TargetFrameworkVersion)</SilverlightVersion>
@@ -63,7 +63,7 @@
     <NoConfig>true</NoConfig>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>Bin\Release\WP8\ReactiveUI.Testing_WP8.xml</DocumentationFile>
+    <DocumentationFile>Bin\Release\WP8\ReactiveUI.Testing.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Reactive.Testing, Version=2.0.20823.0, Culture=neutral, PublicKeyToken=f300afd708cefcd3, processorArchitecture=MSIL">

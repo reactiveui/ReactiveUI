@@ -10,7 +10,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ReactiveUI.Blend</RootNamespace>
-    <AssemblyName>ReactiveUI.Blend_WP8</AssemblyName>
+    <AssemblyName>ReactiveUI.Blend</AssemblyName>
     <ValidateXaml>true</ValidateXaml>
     <ThrowErrorsInValidation>true</ThrowErrorsInValidation>
     <TargetFrameworkVersion>v8.0</TargetFrameworkVersion>
@@ -39,7 +39,7 @@
     <NoConfig>true</NoConfig>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>Bin\Release\WP8\ReactiveUI.Blend_WP8.xml</DocumentationFile>
+    <DocumentationFile>Bin\Release\WP8\ReactiveUI.Blend.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="mscorlib.Extensions" />
