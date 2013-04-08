@@ -9,7 +9,7 @@ using System.Reflection;
 using System.Text;
 using System.Windows.Input;
 
-namespace ReactiveUI.Xaml
+namespace ReactiveUI
 {
     public static class CommandBinder
     {
