@@ -58,7 +58,9 @@ namespace ReactiveUI.Xaml
         }
 
         public IDisposable BindCommandToObject<TEventArgs>(ICommand command, object target, IObservable<object> commandParameter, string eventName)
-            where TEventArgs : EventArgs
+#if !WINRT
+            where TEventArgs : EventArgs            
+#endif
         {
             var ret = new CompositeDisposable();
 
