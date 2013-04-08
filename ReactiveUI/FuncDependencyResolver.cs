@@ -16,7 +16,7 @@ namespace ReactiveUI
         /// </summary>
         public FuncDependencyResolver()
         {
-            Registrations.Register((f,t) => Register(f,t));
+            new Registrations().Register((f,t) => Register(f,t));
 
             var namespaces = 
 #if PORTABLE
@@ -66,5 +66,5 @@ namespace ReactiveUI
         {
             _registry = null;
         }
-    }
+    }    
 }
