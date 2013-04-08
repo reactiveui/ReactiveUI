@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ReactiveUI.Xaml
 {
@@ -48,7 +44,8 @@ namespace ReactiveUI.Xaml
             try
             {
                 // TODO: This should use conversionHint to determine whether this is locale-aware or not
-                result = (fromType == typeof(string)) ? converter.ConvertFrom(from) : converter.ConvertTo(from, toType);
+                result = (fromType == typeof(string)) ?
+                    converter.ConvertFrom(from) : converter.ConvertTo(from, toType);
                 return true;
             }
             catch (FormatException)

@@ -18,6 +18,10 @@ namespace ReactiveUI.Xaml
     {
         public void Register(Action<Func<object>, Type> registerFunction)
         {
+#if !WINRT && !WP8
+            registerFunction(() => new ComponentModelTypeConverter(), typeof(IBindingTypeConverter));
+#endif
+
 #if !MONO
             registerFunction(() => new DependencyObjectObservableForProperty(), typeof(ICreatesObservableForProperty));
             registerFunction(() => new XamlDefaultPropertyBinding(), typeof(IDefaultPropertyBindingProvider));
@@ -25,9 +29,6 @@ namespace ReactiveUI.Xaml
             registerFunction(() => new CreatesCommandBindingViaEvent(), typeof(ICreatesCommandBinding));
             registerFunction(() => new BooleanToVisibilityTypeConverter(), typeof(IBindingTypeConverter));
             registerFunction(() => new AutoDataTemplateBindingHook(), typeof(IPropertyBindingHook));
-#if NET45
-            registerFunction(typeof(ComponentModelTypeConverter), typeof(IBindingTypeConverter));
-#endif
 #endif
         }
     }

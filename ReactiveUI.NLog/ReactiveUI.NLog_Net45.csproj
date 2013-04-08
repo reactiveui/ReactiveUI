@@ -9,7 +9,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ReactiveUI.NLog</RootNamespace>
-    <AssemblyName>ReactiveUI.NLog_Net45</AssemblyName>
+    <AssemblyName>ReactiveUI.NLog</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>
@@ -91,7 +91,7 @@
     <CodeContractsCacheAnalysisResults>True</CodeContractsCacheAnalysisResults>
     <CodeContractsRuntimeCheckingLevel>Full</CodeContractsRuntimeCheckingLevel>
     <CodeContractsReferenceAssembly>%28none%29</CodeContractsReferenceAssembly>
-    <DocumentationFile>bin\Release\Net45\ReactiveUI.NLog_Net45.xml</DocumentationFile>
+    <DocumentationFile>bin\Release\Net45\ReactiveUI.NLog.xml</DocumentationFile>
     <NoWarn>1591, 1573, 1711, 1587, 1570, 1572</NoWarn>
   </PropertyGroup>
   <ItemGroup>

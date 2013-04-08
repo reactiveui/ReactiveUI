@@ -123,7 +123,6 @@
     <Compile Include="ReactiveCommandTest.cs" />
     <Compile Include="ReactiveNotifyPropertyChangedMixinTest.cs" />
     <Compile Include="ReactiveObjectTest.cs" />
-    <Compile Include="ReactiveValidatedObjectTest.cs" />
     <Compile Include="RoutingState.cs" />
     <Compile Include="RxAppTest.cs" />
     <Compile Include="RxRouting.cs" />
