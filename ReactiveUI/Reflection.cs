@@ -255,24 +255,7 @@ namespace ReactiveUI
         }
 
         static readonly MemoizingMRUCache<string, Type> typeCache = new MemoizingMRUCache<string, Type>((type,_) => {
-    #if WINRT || PORTABLE
-            // WinRT hates your favorite band too.
             return Type.GetType(type, false);
-    #else
-            var ret = Type.GetType(type, false);
-            if (ret != null) return ret;
-            return AppDomain.CurrentDomain.GetAssemblies()
-                .SelectMany(x => {
-                    try {
-                        return x.GetTypes();
-                    } catch (Exception ex) {
-                        LogHost.Default.WarnException("Couldn't load types for " + x.FullName, ex);
-                        return Enumerable.Empty<Type>();
-                    }
-                })
-                .Where(x => x.FullName.Equals(type, StringComparison.InvariantCulture))
-                .FirstOrDefault();
-    #endif
         }, 20);
 
         public static Type ReallyFindType(string type, bool throwOnFailure) 

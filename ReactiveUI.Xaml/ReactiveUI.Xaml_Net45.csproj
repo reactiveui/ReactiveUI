@@ -9,7 +9,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ReactiveUI.Xaml</RootNamespace>
-    <AssemblyName>ReactiveUI.Xaml_Net45</AssemblyName>
+    <AssemblyName>ReactiveUI.Xaml</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>
@@ -23,6 +23,8 @@
     <CodeContractsAssemblyMode>1</CodeContractsAssemblyMode>
     <Utf8Output>true</Utf8Output>
     <ExpressionBlendVersion>4.0.30816.0</ExpressionBlendVersion>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -89,7 +91,7 @@
     <CodeContractsCacheAnalysisResults>True</CodeContractsCacheAnalysisResults>
     <CodeContractsRuntimeCheckingLevel>Full</CodeContractsRuntimeCheckingLevel>
     <CodeContractsReferenceAssembly>%28none%29</CodeContractsReferenceAssembly>
-    <DocumentationFile>bin\Release\Net45\ReactiveUI.Xaml_Net45.xml</DocumentationFile>
+    <DocumentationFile>bin\Release\Net45\ReactiveUI.Xaml.xml</DocumentationFile>
     <NoWarn>1591, 1573, 1711, 1587, 1570, 1572</NoWarn>
   </PropertyGroup>
   <ItemGroup>
@@ -136,7 +138,6 @@
     <Compile Include="CreatesCommandBinding.cs" />
     <Compile Include="DependencyObjectObservableForProperty.cs" />
     <Compile Include="Errors.cs" />
-    <Compile Include="Extensions\ReactiveValidatedObjectExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RoutedViewHost.cs" />
     <Compile Include="SampleDataBinder.cs" />
