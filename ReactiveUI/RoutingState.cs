@@ -135,14 +135,14 @@ namespace ReactiveUI.Routing
         public static void Go<T>(this INavigateCommand This, string key = null)
             where T : IRoutableViewModel
         {
-            This.Execute(RxApp.GetService<T>(key));
+            This.Execute(RxApp.DependencyResolver.GetService<T>(key));
         }
 
         public static IReactiveCommand NavigateCommandFor<T>(this IRoutingState This)
             where T : IRoutableViewModel
         {
-	    var ret = new ReactiveCommand(This.Navigate.CanExecuteObservable);
-            ret.Select(_ => (IRoutableViewModel) RxApp.GetService<T>()).InvokeCommand(This.Navigate);
+	        var ret = new ReactiveCommand(This.Navigate.CanExecuteObservable);
+            ret.Select(_ => (IRoutableViewModel)RxApp.DependencyResolver.GetService<T>()).InvokeCommand(This.Navigate);
             return ret;
         }
     }

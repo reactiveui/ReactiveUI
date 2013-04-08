@@ -6,16 +6,16 @@ using System.Threading.Tasks;
 
 namespace ReactiveUI.Mobile
 {
-    public class ServiceLocationRegistration : IWantsToRegisterStuff
+    public class Registrations : IWantsToRegisterStuff
     {
-        public void Register()
+        public void Register(Action<Func<object>, Type> registerFunction)
         {
 #if WP8
-            RxApp.Register(typeof(WP8SuspensionHost), typeof (ISuspensionHost));
-            RxApp.Register(typeof(PhoneServiceStateDriver), typeof (ISuspensionDriver));
+            registerFunction(() => new WP8SuspensionHost(), typeof (ISuspensionHost));
+            registerFunction(() => new PhoneServiceStateDriver(), typeof (ISuspensionDriver));
 #elif WINRT
-            RxApp.Register(typeof(WinRTSuspensionHost), typeof (ISuspensionHost));
-            RxApp.Register(typeof(WinRTAppDataDriver), typeof (ISuspensionDriver));
+            registerFunction(() => new WinRTSuspensionHost(), typeof(ISuspensionHost));
+            registerFunction(() => new WinRTAppDataDriver(), typeof(ISuspensionDriver));
 #endif
         }
     }

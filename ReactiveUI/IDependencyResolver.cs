@@ -26,4 +26,17 @@ namespace ReactiveUI
         /// should be empty (not <c>null</c>) if no objects of the given type are available.</returns>
         IEnumerable<object> GetServices(Type serviceType, string contract = null);
     }
+
+    public static class DependencyResolverMixins
+    {
+        public static T GetService<T>(this IDependencyResolver This, string contract = null)
+        {
+            return (T)This.GetService(typeof(T), contract);
+        }
+
+        public static IEnumerable<T> GetServices<T>(this IDependencyResolver This, string contract = null)
+        {
+            return This.GetServices(typeof(T), contract).Cast<T>();
+        }
+    }
 }
