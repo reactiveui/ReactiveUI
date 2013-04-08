@@ -89,7 +89,14 @@ namespace ReactiveUI
             RxApp.Register(typeof(ComponentModelTypeConverter), typeof(IBindingTypeConverter));
 #endif
 
-            var namespaces = attemptToEarlyLoadReactiveUIDLLs();
+            var namespaces = new[] {
+                "ReactiveUI.Xaml",
+                "ReactiveUI.Gtk",
+                "ReactiveUI.Cocoa",
+                "ReactiveUI.Android",
+                "ReactiveUI.NLog",
+                "ReactiveUI.Mobile",
+            };
 
 #if WINRT || PORTABLE
             var assm = typeof (RxApp).GetTypeInfo().Assembly;
@@ -286,10 +293,13 @@ namespace ReactiveUI
                 if (_preregisteredTypes.Count == 0) goto callSl;
 
                 var k = Tuple.Create(type, key);
-                if (!_preregisteredTypes.ContainsKey(k)) goto callSl;
-                return _preregisteredTypes[k].Select(Activator.CreateInstance).ToArray();
+                if (_preregisteredTypes.ContainsKey(k)) {
+                    return _preregisteredTypes[k].Select(Activator.CreateInstance).ToArray();
+                }
             }
-            
+                
+            return Enumerable.Empty<object>().ToArray();
+
         callSl:
             var getAllServices = _getAllServices ??
                 ((_,__) => { throw new Exception("You need to call RxApp.ConfigureServiceLocator to set up service location"); });
@@ -344,15 +354,7 @@ namespace ReactiveUI
 
         static IEnumerable<string> attemptToEarlyLoadReactiveUIDLLs()
         {
-            var guiLibs = new[] {
-                "ReactiveUI.Xaml",
-                "ReactiveUI.Gtk",
-                "ReactiveUI.Cocoa",
-                "ReactiveUI.Android",
-                "ReactiveUI.NLog",
-                "ReactiveUI.Mobile",
-            };
-
+            
 #if PORTABLE
             // NB: WinRT hates your Freedom
             return new[] { "ReactiveUI.Xaml", "ReactiveUI.Mobile", "ReactiveUI.NLog", };
