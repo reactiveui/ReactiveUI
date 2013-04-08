@@ -57,7 +57,7 @@ namespace ReactiveUI.Routing
             var viewType = typeof (IViewFor<>);
 
             // IViewFor<FooBarViewModel> (the original behavior in RxUI 3.1)
-            return (IViewFor) RxApp.GetService(viewType.MakeGenericType(viewModel.GetType()), key);
+            return (IViewFor) RxApp.DependencyResolver.GetService(viewType.MakeGenericType(viewModel.GetType()), key);
         }
 
         static string interfaceifyTypeName(string typeName)
