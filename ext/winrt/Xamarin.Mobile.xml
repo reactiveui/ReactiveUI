@@ -80,7 +80,7 @@ abook.RequestPermissions().ContinueWith (t =>
 		return; // Permission denied
 
 	var builder = new StringBuilder();
-
+	
 	// Full LINQ support
 	foreach (Contact c in abook.Where (c => c.FirstName == "Eric" && c.Phones.Any()))
 	{
@@ -90,18 +90,17 @@ abook.RequestPermissions().ContinueWith (t =>
 
 		builder.AppendLine();
 	}
-
+	
 	contacts.Text = builder.ToString(); // Update UI
-
+	
 }, TaskScheduler.FromCurrentSynchronizationContext()); // Ensure we're on the UI Thread
 			]]></code>
             </example>
         </member>
         <member name="C:Xamarin.Contacts.AddressBook">
             <summary>
-				Constructs and initializes a new instance of the <see cref="T:Xamarin.Contacts.AddressBook" /> class.
-			</summary>
-            <remarks>Available only on iOS.</remarks>
+          Constructs and initializes a new instance of the <see cref="T:Xamarin.Contacts.AddressBook" /> class.
+        </summary>
         </member>
         <member name="C:Xamarin.Contacts.AddressBook(Android.Content.Context)">
             <param name="context">The <see cref="T:Android.Content.Context" /> to use to retrieve contacts.</param>
@@ -1086,14 +1085,10 @@ abook.RequestPermissions().ContinueWith (t =>
             <summary>Represents a media file newly taken or picked from the gallery.</summary>
             <remarks>
                 <para>
-			It's important to <see cref="M:Xamarin.Media.MediaFile.Dispose" /> this <see cref="T:Xamarin.Media.MediaFile" /> when
-			you're done with it to release any memory and temporary file resources being used for it.
-		</para>
-                <para>
-			On Windows Phone, file paths returned from the photo picker can not be easily reused. As such, they are
-			copied locally under a "temp" directory in isolated storage for use with <see cref="T:Xamarin.Media.MediaFile" />.
-			Call <see cref="M:Xamarin.Media.MediaFile.Dispose" /> to remove this file, but keep in mind that if your app crashes before
-			you have a chance to dispose, this file will not be automatically reclaimed.
+			When picking media, the returned file should be considered temporary. If you wish to persist this file, you should copy
+			the file before calling <see cref="M:Xamarin.Media.MediaFile.Dispose" />. Once you've persisted the file, or finished
+			viewing it, calling <see cref="M:Xamarin.Media.MediaFile.Dispose" /> will cleanup any temporary files that may have been
+			created.
 		</para>
             </remarks>
             <altmember cref="T:Xamarin.Media.MediaPicker" />
@@ -1130,6 +1125,26 @@ abook.RequestPermissions().ContinueWith (t =>
 			</para>
             </remarks>
             <altmember cref="M:Xamarin.Media.MediaFile.GetStream" />
+        </member>
+        <member name="T:Xamarin.Media.MediaFileNotFoundException">
+            <summary>Represents an error raised when media supplied by the system could not be found.</summary>
+            <remarks />
+        </member>
+        <member name="C:Xamarin.Media.MediaFileNotFoundException(System.String)">
+            <param name="path">The original path of the media.</param>
+            <summary>Constructs and initializles a new instance of the <see cref="T:Xamarin.Media.MediaFileNotFoundException" /> class.</summary>
+            <remarks>To be added.</remarks>
+        </member>
+        <member name="C:Xamarin.Media.MediaFileNotFoundException(System.String,System.Exception)">
+            <param name="path">The original path of the media.</param>
+            <param name="innerException">An exception that was raised trying to locate the media.</param>
+            <summary>Constructs and initializles a new instance of the <see cref="T:Xamarin.Media.MediaFileNotFoundException" /> class.</summary>
+            <remarks>To be added.</remarks>
+        </member>
+        <member name="P:Xamarin.Media.MediaFileNotFoundException.Path">
+            <summary>The original path of the media that could not be located.</summary>
+            <value>A <see cref="T:System.String" /> containing the original path of the media.</value>
+            <remarks>To be added.</remarks>
         </member>
         <member name="T:Xamarin.Media.MediaPicker">
             <summary>Contains methods allowing the asynchronous picking and taking of media.</summary>
@@ -1172,7 +1187,7 @@ abook.RequestPermissions().ContinueWith (t =>
                 <c>true</c> if a camera is present and available, <c>false</c> otherwise.</value>
             <remarks>
                 <para>
-				Check this property before using <see cref="M:Xamarin.Media.MediaPicker.TakeVideoAsync" /> or
+				Check this property before using <see cref="M:Xamarin.Media.MediaPicker.TakeVideoAsync" /> or 
 				<see cref="M:Xamarin.Media.MediaPicker.TakePhotoAsync" />, as they will throw <see cref="T:System.NotSupportedException" />
 				if it is <c>false</c>.
 			</para>
@@ -1199,6 +1214,12 @@ abook.RequestPermissions().ContinueWith (t =>
             <returns>A <see cref="T:System.Threading.Tasks.Task{T}" /> of <see cref="T:Xamarin.Media.MediaFile" />.</returns>
             <remarks>
                 <para>
+				When picking media, the returned file should be considered temporary. If you wish to persist this file, you should copy
+				the file before calling <see cref="M:Xamarin.Media.MediaFile.Dispose" />. Once you've persisted the file, or finished
+				viewing it, calling <see cref="M:Xamarin.Media.MediaFile.Dispose" /> will cleanup any temporary files that may have been
+				created.
+			</para>
+                <para>
 				Avoid blocking on the resulting task (by using <see cref="P:System.Threading.Tasks.Task{T}.Result" />
 				or <see cref="M:System.Threading.Tasks.Task.Wait" />). As this operation invokes the system UI for picking a photo,
 				the operation occurs on the current UI thread and may deadlock the application. Instead, use
@@ -1211,14 +1232,9 @@ abook.RequestPermissions().ContinueWith (t =>
 				for any exceptions as otherwise the exception will be rethrown when the task's finalizer runs.
 			</para>
                 <para>
-				It's important to <see cref="M:Xamarin.Media.MediaFile.Dispose" /> the returned <see cref="T:Xamarin.Media.MediaFile" /> when
-				you're done with it to release any memory and temporary file resources being used for it.
-			</para>
-                <para>
-				On Windows Phone, file paths returned from the photo picker can not be easily reused. As such, they are
-				copied locally under a "temp" directory in isolated storage for use with <see cref="T:Xamarin.Media.MediaFile" />.
-				Call <see cref="M:Xamarin.Media.MediaFile.Dispose" /> to remove this file, but keep in mind that if your app crashes before
-				you have a chance to dispose, this file will not be automatically reclaimed.
+				In the event that the system provides media that MediaPicker can not find or understand, a <see cref="T:Xamarin.Media.MediaFileNotFoundException" />
+				will be raised with the original path to the media supplied by the system. This is only a concern on Android where any camera or gallery app can
+				be used to retrieve media.
 			</para>
             </remarks>
             <exception cref="T:System.NotSupportedException">
@@ -1234,6 +1250,12 @@ abook.RequestPermissions().ContinueWith (t =>
 			</returns>
             <remarks>
                 <para>
+					When picking media, the returned file should be considered temporary. If you wish to persist this file, you should copy
+					the file before calling <see cref="M:Xamarin.Media.MediaFile.Dispose" />. Once you've persisted the file, or finished
+					viewing it, calling <see cref="M:Xamarin.Media.MediaFile.Dispose" /> will cleanup any temporary files that may have been
+					created.
+				</para>
+                <para>
 					Avoid blocking on the resulting task (by using <see cref="P:System.Threading.Tasks.Task{T}.Result" />
 					or <see cref="M:System.Threading.Tasks.Task.Wait" />). As this operation invokes the system UI for picking a video,
 					the operation occurs on the current UI thread and may deadlock the application. Instead, use
@@ -1246,8 +1268,9 @@ abook.RequestPermissions().ContinueWith (t =>
 					for any exceptions as otherwise the exception will be rethrown when the task's finalizer runs.
 				</para>
                 <para>
-					It's important to <see cref="M:Xamarin.Media.MediaFile.Dispose" /> the returned <see cref="T:Xamarin.Media.MediaFile" /> when
-					you're done with it to release any memory and temporary file resources being used for it.
+					In the event that the system provides media that MediaPicker can not find or understand, a <see cref="T:Xamarin.Media.MediaFileNotFoundException" />
+					will be raised with the original path to the media supplied by the system. This is only a concern on Android where any camera or gallery app can
+					be used to retrieve media.
 				</para>
             </remarks>
             <exception cref="T:System.NotSupportedException">
@@ -1276,8 +1299,9 @@ abook.RequestPermissions().ContinueWith (t =>
 					for any exceptions as otherwise the exception will be rethrown when the task's finalizer runs.
 				</para>
                 <para>
-					It's important to <see cref="M:Xamarin.Media.MediaFile.Dispose" /> the returned <see cref="T:Xamarin.Media.MediaFile" /> when
-					you're done with it to release any memory and temporary file resources being used for it.
+					In the event that the system provides media that MediaPicker can not find or understand, a <see cref="T:Xamarin.Media.MediaFileNotFoundException" />
+					will be raised with the original path to the media supplied by the system. This is only a concern on Android where any camera or gallery app can
+					be used to retrieve media.
 				</para>
             </remarks>
             <exception cref="T:System.ArgumentNullException">
@@ -1314,8 +1338,9 @@ abook.RequestPermissions().ContinueWith (t =>
 					for any exceptions as otherwise the exception will be rethrown when the task's finalizer runs.
 				</para>
                 <para>
-					It's important to <see cref="M:Xamarin.Media.MediaFile.Dispose" /> the returned <see cref="T:Xamarin.Media.MediaFile" /> when
-					you're done with it to release any memory and temporary file resources being used for it.
+					In the event that the system provides media that MediaPicker can not find or understand, a <see cref="T:Xamarin.Media.MediaFileNotFoundException" />
+					will be raised with the original path to the media supplied by the system. This is only a concern on Android where any camera or gallery app can
+					be used to retrieve media.
 				</para>
             </remarks>
             <exception cref="T:System.ArgumentNullException">
