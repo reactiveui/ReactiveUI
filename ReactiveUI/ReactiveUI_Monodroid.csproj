@@ -144,7 +144,6 @@
     <Compile Include="Reflection.cs" />
     <Compile Include="ScheduledSubject.cs" />
     <Compile Include="BindingTypeConverters.cs" />
-    <Compile Include="CallerMemberNameAttribute.cs" />
     <Compile Include="CollectionDebugView.cs" />
     <Compile Include="VariadicTemplates.cs" />
     <Compile Include="Rx-Shim\AwaitableAsyncSubject.cs" />
