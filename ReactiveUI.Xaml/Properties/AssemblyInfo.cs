@@ -18,7 +18,7 @@ using System.Windows;
 )]
 #endif
 
-//[assembly: InternalsVisibleTo("ReactiveUI.Tests")]
-//[assembly: InternalsVisibleTo("ReactiveUI.Tests_SL4")]
-//[assembly: InternalsVisibleTo("ReactiveUI.Tests_SL5")]
-//[assembly: InternalsVisibleTo("ReactiveUI.Tests_WinRT")]
+[assembly: InternalsVisibleTo("ReactiveUI.Tests")]
+[assembly: InternalsVisibleTo("ReactiveUI.Tests_SL4")]
+[assembly: InternalsVisibleTo("ReactiveUI.Tests_SL5")]
+[assembly: InternalsVisibleTo("ReactiveUI.Tests_WinRT")]

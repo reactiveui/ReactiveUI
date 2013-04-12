@@ -93,12 +93,6 @@
     <DocumentationFile>bin\Release\Net40\ReactiveUI.xml</DocumentationFile>
     <NoWarn>1591, 1573, 1711, 1587, 1570, 1572</NoWarn>
   </PropertyGroup>
-  <PropertyGroup>
-    <SignAssembly>true</SignAssembly>
-  </PropertyGroup>
-  <PropertyGroup>
-    <AssemblyOriginatorKeyFile>ReactiveUI.pfx</AssemblyOriginatorKeyFile>
-  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
@@ -171,7 +165,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="ReactiveUI.pfx" />
     <None Include="VariadicTemplates.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>VariadicTemplates.cs</LastGenOutput>
