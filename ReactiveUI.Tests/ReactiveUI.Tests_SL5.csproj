@@ -74,6 +74,12 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>ReactiveUIKey.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Reactive.Testing, Version=2.0.20823.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -124,15 +130,6 @@
     <Reference Include="System.Net" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Windows.Browser" />
-    <Reference Include="xunit-silverlight4">
-      <HintPath>..\ext\xunit\xunit-silverlight4.dll</HintPath>
-    </Reference>
-    <Reference Include="xunit.extensions-silverlight4">
-      <HintPath>..\ext\xunit\xunit.extensions-silverlight4.dll</HintPath>
-    </Reference>
-    <Reference Include="xunitcontrib.runner.silverlight.toolkit-silverlight4">
-      <HintPath>..\ext\xunit\xunitcontrib.runner.silverlight.toolkit-silverlight4.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App.xaml.cs">
@@ -168,6 +165,7 @@
     <None Include="Properties\AppManifest.xml">
       <SubType>Designer</SubType>
     </None>
+    <None Include="ReactiveUIKey.snk" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ReactiveUI.Blend\ReactiveUI.Blend_SL5.csproj">

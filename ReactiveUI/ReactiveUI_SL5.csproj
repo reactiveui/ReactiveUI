@@ -56,6 +56,12 @@
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>Bin\Release\SL5\ReactiveUI_SL5.xml</DocumentationFile>
   </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>ReactiveUIKey.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Threading.Tasks">
       <HintPath>..\packages\Microsoft.Bcl.Async.1.0.14-rc\lib\sl5\Microsoft.Threading.Tasks.dll</HintPath>
@@ -142,6 +148,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <None Include="ReactiveUIKey.snk" />
     <None Include="Rx-Shim\LICENSE" />
     <None Include="VariadicTemplates.tt">
       <Generator>TextTemplatingFileGenerator</Generator>

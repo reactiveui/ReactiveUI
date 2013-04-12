@@ -1,0 +1,1139 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>xunit.extensions-silverlight4.1.6.1.0.Fakes</name>
+    </assembly>
+    <members>
+        <member name="T:Xunit.Extensions.Fakes.ShimAssertions">
+            <summary>Shim type of Xunit.Extensions.Assertions</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.ShimAssertions.#ctor">
+            <summary>Initializes a new shim instance</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.ShimAssertions.#ctor(Xunit.Extensions.Assertions)">
+            <summary>Initializes a new shim for the given instance</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.ShimAssertions.BehaveAsCurrent">
+            <summary>Assigns the &apos;Current&apos; behavior for all methods of the shimmed type</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.ShimAssertions.BehaveAsNotImplemented">
+            <summary>Assigns the &apos;NotImplemented&apos; behavior for all methods of the shimmed type</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.ShimAssertions.ContainsOf1M0IEnumerableOfM0``1(Microsoft.QualityTools.Testing.Fakes.FakesDelegates.Action{``0,System.Collections.Generic.IEnumerable{``0}})">
+            <summary>Sets the shim of Assertions.Contains(!!0 expected, IEnumerable`1&lt;!!0&gt; collection)</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.ShimAssertions.ContainsOf1M0IEnumerableOfM0IEqualityComparerOfM0``1(Microsoft.QualityTools.Testing.Fakes.FakesDelegates.Action{``0,System.Collections.Generic.IEnumerable{``0},System.Collections.Generic.IEqualityComparer{``0}})">
+            <summary>Sets the shim of Assertions.Contains(!!0 expected, IEnumerable`1&lt;!!0&gt; collection, IEqualityComparer`1&lt;!!0&gt; comparer)</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.ShimAssertions.DoesNotContainOf1M0IEnumerableOfM0``1(Microsoft.QualityTools.Testing.Fakes.FakesDelegates.Action{``0,System.Collections.Generic.IEnumerable{``0}})">
+            <summary>Sets the shim of Assertions.DoesNotContain(!!0 expected, IEnumerable`1&lt;!!0&gt; collection)</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.ShimAssertions.DoesNotContainOf1M0IEnumerableOfM0IEqualityComparerOfM0``1(Microsoft.QualityTools.Testing.Fakes.FakesDelegates.Action{``0,System.Collections.Generic.IEnumerable{``0},System.Collections.Generic.IEqualityComparer{``0}})">
+            <summary>Sets the shim of Assertions.DoesNotContain(!!0 expected, IEnumerable`1&lt;!!0&gt; collection, IEqualityComparer`1&lt;!!0&gt; comparer)</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.ShimAssertions.EqualOf1M0M0``1(Microsoft.QualityTools.Testing.Fakes.FakesDelegates.Action{``0,``0})">
+            <summary>Sets the shim of Assertions.Equal(!!0 expected, !!0 actual)</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.ShimAssertions.EqualOf1M0M0IEqualityComparerOfM0``1(Microsoft.QualityTools.Testing.Fakes.FakesDelegates.Action{``0,``0,System.Collections.Generic.IEqualityComparer{``0}})">
+            <summary>Sets the shim of Assertions.Equal(!!0 expected, !!0 actual, IEqualityComparer`1&lt;!!0&gt; comparer)</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.ShimAssertions.InRangeOf1M0M0M0``1(Microsoft.QualityTools.Testing.Fakes.FakesDelegates.Action{``0,``0,``0})">
+            <summary>Sets the shim of Assertions.InRange(!!0 actual, !!0 low, !!0 high)</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.ShimAssertions.InRangeOf1M0M0M0IComparerOfM0``1(Microsoft.QualityTools.Testing.Fakes.FakesDelegates.Action{``0,``0,``0,System.Collections.Generic.IComparer{``0}})">
+            <summary>Sets the shim of Assertions.InRange(!!0 actual, !!0 low, !!0 high, IComparer`1&lt;!!0&gt; comparer)</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.ShimAssertions.IsAssignableFromOf1Object``1(Microsoft.QualityTools.Testing.Fakes.FakesDelegates.Func{System.Object,``0})">
+            <summary>Sets the shim of Assertions.IsAssignableFrom(Object object)</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.ShimAssertions.IsNotTypeOf1Object``1(Microsoft.QualityTools.Testing.Fakes.FakesDelegates.Action{System.Object})">
+            <summary>Sets the shim of Assertions.IsNotType(Object object)</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.ShimAssertions.IsTypeOf1Object``1(Microsoft.QualityTools.Testing.Fakes.FakesDelegates.Func{System.Object,``0})">
+            <summary>Sets the shim of Assertions.IsType(Object object)</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.ShimAssertions.NotEqualOf1M0M0``1(Microsoft.QualityTools.Testing.Fakes.FakesDelegates.Action{``0,``0})">
+            <summary>Sets the shim of Assertions.NotEqual(!!0 expected, !!0 actual)</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.ShimAssertions.NotEqualOf1M0M0IEqualityComparerOfM0``1(Microsoft.QualityTools.Testing.Fakes.FakesDelegates.Action{``0,``0,System.Collections.Generic.IEqualityComparer{``0}})">
+            <summary>Sets the shim of Assertions.NotEqual(!!0 expected, !!0 actual, IEqualityComparer`1&lt;!!0&gt; comparer)</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.ShimAssertions.NotInRangeOf1M0M0M0``1(Microsoft.QualityTools.Testing.Fakes.FakesDelegates.Action{``0,``0,``0})">
+            <summary>Sets the shim of Assertions.NotInRange(!!0 actual, !!0 low, !!0 high)</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.ShimAssertions.NotInRangeOf1M0M0M0IComparerOfM0``1(Microsoft.QualityTools.Testing.Fakes.FakesDelegates.Action{``0,``0,``0,System.Collections.Generic.IComparer{``0}})">
+            <summary>Sets the shim of Assertions.NotInRange(!!0 actual, !!0 low, !!0 high, IComparer`1&lt;!!0&gt; comparer)</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.ShimAssertions.SingleOf1IEnumerableOfM0``1(Microsoft.QualityTools.Testing.Fakes.FakesDelegates.Func{System.Collections.Generic.IEnumerable{``0},``0})">
+            <summary>Sets the shim of Assertions.Single(IEnumerable`1&lt;!!0&gt; collection)</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.ShimAssertions.ThrowsOf1AssertThrowsDelegate``1(Microsoft.QualityTools.Testing.Fakes.FakesDelegates.Func{Xunit.Assert.ThrowsDelegate,``0})">
+            <summary>Sets the shim of Assertions.Throws(ThrowsDelegate testCode)</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.ShimAssertions.ThrowsOf1AssertThrowsDelegateWithReturn``1(Microsoft.QualityTools.Testing.Fakes.FakesDelegates.Func{Xunit.Assert.ThrowsDelegateWithReturn,``0})">
+            <summary>Sets the shim of Assertions.Throws(ThrowsDelegateWithReturn testCode)</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.ShimAssertions.Behavior">
+            <summary>Assigns the behavior for all methods of the shimmed type</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.ShimAssertions.Constructor">
+            <summary>Sets the shim of Assertions.Assertions()</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.ShimAssertions.ContainsStringString">
+            <summary>Sets the shim of Assertions.Contains(String expectedSubString, String actualString)</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.ShimAssertions.ContainsStringStringStringComparison">
+            <summary>Sets the shim of Assertions.Contains(String expectedSubString, String actualString, StringComparison comparisonType)</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.ShimAssertions.DoesNotContainStringString">
+            <summary>Sets the shim of Assertions.DoesNotContain(String expectedSubString, String actualString)</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.ShimAssertions.DoesNotContainStringStringStringComparison">
+            <summary>Sets the shim of Assertions.DoesNotContain(String expectedSubString, String actualString, StringComparison comparisonType)</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.ShimAssertions.DoesNotThrowAssertThrowsDelegate">
+            <summary>Sets the shim of Assertions.DoesNotThrow(ThrowsDelegate testCode)</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.ShimAssertions.EmptyIEnumerable">
+            <summary>Sets the shim of Assertions.Empty(IEnumerable collection)</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.ShimAssertions.FalseBoolean">
+            <summary>Sets the shim of Assertions.False(Boolean condition)</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.ShimAssertions.FalseBooleanString">
+            <summary>Sets the shim of Assertions.False(Boolean condition, String userMessage)</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.ShimAssertions.IsAssignableFromTypeObject">
+            <summary>Sets the shim of Assertions.IsAssignableFrom(Type expectedType, Object object)</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.ShimAssertions.IsNotTypeTypeObject">
+            <summary>Sets the shim of Assertions.IsNotType(Type expectedType, Object object)</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.ShimAssertions.IsTypeTypeObject">
+            <summary>Sets the shim of Assertions.IsType(Type expectedType, Object object)</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.ShimAssertions.NotEmptyIEnumerable">
+            <summary>Sets the shim of Assertions.NotEmpty(IEnumerable collection)</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.ShimAssertions.NotNullObject">
+            <summary>Sets the shim of Assertions.NotNull(Object object)</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.ShimAssertions.NotSameObjectObject">
+            <summary>Sets the shim of Assertions.NotSame(Object expected, Object actual)</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.ShimAssertions.NullObject">
+            <summary>Sets the shim of Assertions.Null(Object object)</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.ShimAssertions.SameObjectObject">
+            <summary>Sets the shim of Assertions.Same(Object expected, Object actual)</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.ShimAssertions.SingleIEnumerable">
+            <summary>Sets the shim of Assertions.Single(IEnumerable collection)</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.ShimAssertions.ThrowsTypeAssertThrowsDelegate">
+            <summary>Sets the shim of Assertions.Throws(Type exceptionType, ThrowsDelegate testCode)</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.ShimAssertions.ThrowsTypeAssertThrowsDelegateWithReturn">
+            <summary>Sets the shim of Assertions.Throws(Type exceptionType, ThrowsDelegateWithReturn testCode)</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.ShimAssertions.TrueBoolean">
+            <summary>Sets the shim of Assertions.True(Boolean condition)</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.ShimAssertions.TrueBooleanString">
+            <summary>Sets the shim of Assertions.True(Boolean condition, String userMessage)</summary>
+        </member>
+        <member name="T:Xunit.Extensions.Fakes.ShimAssertions.AllInstances">
+            <summary>Define shims for all instances members</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.ShimAssertions.AllInstances.ContainsOf1M0IEnumerableOfM0``1(Microsoft.QualityTools.Testing.Fakes.FakesDelegates.Action{Xunit.Extensions.Assertions,``0,System.Collections.Generic.IEnumerable{``0}})">
+            <summary>Sets the shim of Assertions.Contains(!!0 expected, IEnumerable`1&lt;!!0&gt; collection)</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.ShimAssertions.AllInstances.ContainsOf1M0IEnumerableOfM0IEqualityComparerOfM0``1(Microsoft.QualityTools.Testing.Fakes.FakesDelegates.Action{Xunit.Extensions.Assertions,``0,System.Collections.Generic.IEnumerable{``0},System.Collections.Generic.IEqualityComparer{``0}})">
+            <summary>Sets the shim of Assertions.Contains(!!0 expected, IEnumerable`1&lt;!!0&gt; collection, IEqualityComparer`1&lt;!!0&gt; comparer)</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.ShimAssertions.AllInstances.DoesNotContainOf1M0IEnumerableOfM0``1(Microsoft.QualityTools.Testing.Fakes.FakesDelegates.Action{Xunit.Extensions.Assertions,``0,System.Collections.Generic.IEnumerable{``0}})">
+            <summary>Sets the shim of Assertions.DoesNotContain(!!0 expected, IEnumerable`1&lt;!!0&gt; collection)</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.ShimAssertions.AllInstances.DoesNotContainOf1M0IEnumerableOfM0IEqualityComparerOfM0``1(Microsoft.QualityTools.Testing.Fakes.FakesDelegates.Action{Xunit.Extensions.Assertions,``0,System.Collections.Generic.IEnumerable{``0},System.Collections.Generic.IEqualityComparer{``0}})">
+            <summary>Sets the shim of Assertions.DoesNotContain(!!0 expected, IEnumerable`1&lt;!!0&gt; collection, IEqualityComparer`1&lt;!!0&gt; comparer)</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.ShimAssertions.AllInstances.EqualOf1M0M0``1(Microsoft.QualityTools.Testing.Fakes.FakesDelegates.Action{Xunit.Extensions.Assertions,``0,``0})">
+            <summary>Sets the shim of Assertions.Equal(!!0 expected, !!0 actual)</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.ShimAssertions.AllInstances.EqualOf1M0M0IEqualityComparerOfM0``1(Microsoft.QualityTools.Testing.Fakes.FakesDelegates.Action{Xunit.Extensions.Assertions,``0,``0,System.Collections.Generic.IEqualityComparer{``0}})">
+            <summary>Sets the shim of Assertions.Equal(!!0 expected, !!0 actual, IEqualityComparer`1&lt;!!0&gt; comparer)</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.ShimAssertions.AllInstances.InRangeOf1M0M0M0``1(Microsoft.QualityTools.Testing.Fakes.FakesDelegates.Action{Xunit.Extensions.Assertions,``0,``0,``0})">
+            <summary>Sets the shim of Assertions.InRange(!!0 actual, !!0 low, !!0 high)</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.ShimAssertions.AllInstances.InRangeOf1M0M0M0IComparerOfM0``1(Microsoft.QualityTools.Testing.Fakes.FakesDelegates.Action{Xunit.Extensions.Assertions,``0,``0,``0,System.Collections.Generic.IComparer{``0}})">
+            <summary>Sets the shim of Assertions.InRange(!!0 actual, !!0 low, !!0 high, IComparer`1&lt;!!0&gt; comparer)</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.ShimAssertions.AllInstances.IsAssignableFromOf1Object``1(Microsoft.QualityTools.Testing.Fakes.FakesDelegates.Func{Xunit.Extensions.Assertions,System.Object,``0})">
+            <summary>Sets the shim of Assertions.IsAssignableFrom(Object object)</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.ShimAssertions.AllInstances.IsNotTypeOf1Object``1(Microsoft.QualityTools.Testing.Fakes.FakesDelegates.Action{Xunit.Extensions.Assertions,System.Object})">
+            <summary>Sets the shim of Assertions.IsNotType(Object object)</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.ShimAssertions.AllInstances.IsTypeOf1Object``1(Microsoft.QualityTools.Testing.Fakes.FakesDelegates.Func{Xunit.Extensions.Assertions,System.Object,``0})">
+            <summary>Sets the shim of Assertions.IsType(Object object)</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.ShimAssertions.AllInstances.NotEqualOf1M0M0``1(Microsoft.QualityTools.Testing.Fakes.FakesDelegates.Action{Xunit.Extensions.Assertions,``0,``0})">
+            <summary>Sets the shim of Assertions.NotEqual(!!0 expected, !!0 actual)</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.ShimAssertions.AllInstances.NotEqualOf1M0M0IEqualityComparerOfM0``1(Microsoft.QualityTools.Testing.Fakes.FakesDelegates.Action{Xunit.Extensions.Assertions,``0,``0,System.Collections.Generic.IEqualityComparer{``0}})">
+            <summary>Sets the shim of Assertions.NotEqual(!!0 expected, !!0 actual, IEqualityComparer`1&lt;!!0&gt; comparer)</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.ShimAssertions.AllInstances.NotInRangeOf1M0M0M0``1(Microsoft.QualityTools.Testing.Fakes.FakesDelegates.Action{Xunit.Extensions.Assertions,``0,``0,``0})">
+            <summary>Sets the shim of Assertions.NotInRange(!!0 actual, !!0 low, !!0 high)</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.ShimAssertions.AllInstances.NotInRangeOf1M0M0M0IComparerOfM0``1(Microsoft.QualityTools.Testing.Fakes.FakesDelegates.Action{Xunit.Extensions.Assertions,``0,``0,``0,System.Collections.Generic.IComparer{``0}})">
+            <summary>Sets the shim of Assertions.NotInRange(!!0 actual, !!0 low, !!0 high, IComparer`1&lt;!!0&gt; comparer)</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.ShimAssertions.AllInstances.SingleOf1IEnumerableOfM0``1(Microsoft.QualityTools.Testing.Fakes.FakesDelegates.Func{Xunit.Extensions.Assertions,System.Collections.Generic.IEnumerable{``0},``0})">
+            <summary>Sets the shim of Assertions.Single(IEnumerable`1&lt;!!0&gt; collection)</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.ShimAssertions.AllInstances.ThrowsOf1AssertThrowsDelegate``1(Microsoft.QualityTools.Testing.Fakes.FakesDelegates.Func{Xunit.Extensions.Assertions,Xunit.Assert.ThrowsDelegate,``0})">
+            <summary>Sets the shim of Assertions.Throws(ThrowsDelegate testCode)</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.ShimAssertions.AllInstances.ThrowsOf1AssertThrowsDelegateWithReturn``1(Microsoft.QualityTools.Testing.Fakes.FakesDelegates.Func{Xunit.Extensions.Assertions,Xunit.Assert.ThrowsDelegateWithReturn,``0})">
+            <summary>Sets the shim of Assertions.Throws(ThrowsDelegateWithReturn testCode)</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.ShimAssertions.AllInstances.ContainsStringString">
+            <summary>Sets the shim of Assertions.Contains(String expectedSubString, String actualString)</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.ShimAssertions.AllInstances.ContainsStringStringStringComparison">
+            <summary>Sets the shim of Assertions.Contains(String expectedSubString, String actualString, StringComparison comparisonType)</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.ShimAssertions.AllInstances.DoesNotContainStringString">
+            <summary>Sets the shim of Assertions.DoesNotContain(String expectedSubString, String actualString)</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.ShimAssertions.AllInstances.DoesNotContainStringStringStringComparison">
+            <summary>Sets the shim of Assertions.DoesNotContain(String expectedSubString, String actualString, StringComparison comparisonType)</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.ShimAssertions.AllInstances.DoesNotThrowAssertThrowsDelegate">
+            <summary>Sets the shim of Assertions.DoesNotThrow(ThrowsDelegate testCode)</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.ShimAssertions.AllInstances.EmptyIEnumerable">
+            <summary>Sets the shim of Assertions.Empty(IEnumerable collection)</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.ShimAssertions.AllInstances.FalseBoolean">
+            <summary>Sets the shim of Assertions.False(Boolean condition)</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.ShimAssertions.AllInstances.FalseBooleanString">
+            <summary>Sets the shim of Assertions.False(Boolean condition, String userMessage)</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.ShimAssertions.AllInstances.IsAssignableFromTypeObject">
+            <summary>Sets the shim of Assertions.IsAssignableFrom(Type expectedType, Object object)</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.ShimAssertions.AllInstances.IsNotTypeTypeObject">
+            <summary>Sets the shim of Assertions.IsNotType(Type expectedType, Object object)</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.ShimAssertions.AllInstances.IsTypeTypeObject">
+            <summary>Sets the shim of Assertions.IsType(Type expectedType, Object object)</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.ShimAssertions.AllInstances.NotEmptyIEnumerable">
+            <summary>Sets the shim of Assertions.NotEmpty(IEnumerable collection)</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.ShimAssertions.AllInstances.NotNullObject">
+            <summary>Sets the shim of Assertions.NotNull(Object object)</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.ShimAssertions.AllInstances.NotSameObjectObject">
+            <summary>Sets the shim of Assertions.NotSame(Object expected, Object actual)</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.ShimAssertions.AllInstances.NullObject">
+            <summary>Sets the shim of Assertions.Null(Object object)</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.ShimAssertions.AllInstances.SameObjectObject">
+            <summary>Sets the shim of Assertions.Same(Object expected, Object actual)</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.ShimAssertions.AllInstances.SingleIEnumerable">
+            <summary>Sets the shim of Assertions.Single(IEnumerable collection)</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.ShimAssertions.AllInstances.ThrowsTypeAssertThrowsDelegate">
+            <summary>Sets the shim of Assertions.Throws(Type exceptionType, ThrowsDelegate testCode)</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.ShimAssertions.AllInstances.ThrowsTypeAssertThrowsDelegateWithReturn">
+            <summary>Sets the shim of Assertions.Throws(Type exceptionType, ThrowsDelegateWithReturn testCode)</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.ShimAssertions.AllInstances.TrueBoolean">
+            <summary>Sets the shim of Assertions.True(Boolean condition)</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.ShimAssertions.AllInstances.TrueBooleanString">
+            <summary>Sets the shim of Assertions.True(Boolean condition, String userMessage)</summary>
+        </member>
+        <member name="T:Xunit.Extensions.Fakes.ShimClassDataAttribute">
+            <summary>Shim type of Xunit.Extensions.ClassDataAttribute</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.ShimClassDataAttribute.#ctor">
+            <summary>Initializes a new shim instance</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.ShimClassDataAttribute.#ctor(Xunit.Extensions.ClassDataAttribute)">
+            <summary>Initializes a new shim for the given instance</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.ShimClassDataAttribute.BehaveAsCurrent">
+            <summary>Assigns the &apos;Current&apos; behavior for all methods of the shimmed type</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.ShimClassDataAttribute.BehaveAsNotImplemented">
+            <summary>Assigns the &apos;NotImplemented&apos; behavior for all methods of the shimmed type</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.ShimClassDataAttribute.Behavior">
+            <summary>Assigns the behavior for all methods of the shimmed type</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.ShimClassDataAttribute.ConstructorType">
+            <summary>Sets the shim of ClassDataAttribute.ClassDataAttribute(Type class)</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.ShimClassDataAttribute.GetDataMethodInfoTypeArray">
+            <summary>Sets the shim of ClassDataAttribute.GetData(MethodInfo methodUnderTest, Type[] parameterTypes)</summary>
+        </member>
+        <member name="T:Xunit.Extensions.Fakes.ShimClassDataAttribute.AllInstances">
+            <summary>Define shims for all instances members</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.ShimClassDataAttribute.AllInstances.GetDataMethodInfoTypeArray">
+            <summary>Sets the shim of ClassDataAttribute.GetData(MethodInfo methodUnderTest, Type[] parameterTypes)</summary>
+        </member>
+        <member name="T:Xunit.Extensions.Fakes.ShimClock">
+            <summary>Shim type of Xunit.Extensions.Clock</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.ShimClock.#ctor">
+            <summary>Initializes a new shim instance</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.ShimClock.BehaveAsCurrent">
+            <summary>Assigns the &apos;Current&apos; behavior for all methods of the shimmed type</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.ShimClock.BehaveAsNotImplemented">
+            <summary>Assigns the &apos;NotImplemented&apos; behavior for all methods of the shimmed type</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.ShimClock.Behavior">
+            <summary>Assigns the behavior for all methods of the shimmed type</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.ShimClock.Freeze">
+            <summary>Sets the shim of Clock.Freeze()</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.ShimClock.FreezeLocalDateTime">
+            <summary>Sets the shim of Clock.FreezeLocal(DateTime localDateTime)</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.ShimClock.FreezeUtcDateTime">
+            <summary>Sets the shim of Clock.FreezeUtc(DateTime utcDateTime)</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.ShimClock.NowGet">
+            <summary>Sets the shim of Clock.get_Now()</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.ShimClock.StaticConstructor">
+            <summary>Sets the shim of Clock.Clock()</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.ShimClock.Thaw">
+            <summary>Sets the shim of Clock.Thaw()</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.ShimClock.TodayGet">
+            <summary>Sets the shim of Clock.get_Today()</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.ShimClock.UtcNowGet">
+            <summary>Sets the shim of Clock.get_UtcNow()</summary>
+        </member>
+        <member name="T:Xunit.Extensions.Fakes.ShimDataAttribute">
+            <summary>Shim type of Xunit.Extensions.DataAttribute</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.ShimDataAttribute.#ctor(Xunit.Extensions.DataAttribute)">
+            <summary>Initializes a new shim for the given instance</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.ShimDataAttribute.BehaveAsCurrent">
+            <summary>Assigns the &apos;Current&apos; behavior for all methods of the shimmed type</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.ShimDataAttribute.BehaveAsNotImplemented">
+            <summary>Assigns the &apos;NotImplemented&apos; behavior for all methods of the shimmed type</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.ShimDataAttribute.Behavior">
+            <summary>Assigns the behavior for all methods of the shimmed type</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.ShimDataAttribute.Constructor">
+            <summary>Sets the shim of DataAttribute.DataAttribute()</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.ShimDataAttribute.TypeIdGet">
+            <summary>Sets the shim of DataAttribute.get_TypeId()</summary>
+        </member>
+        <member name="T:Xunit.Extensions.Fakes.ShimDataAttribute.AllInstances">
+            <summary>Define shims for all instances members</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.ShimDataAttribute.AllInstances.TypeIdGet">
+            <summary>Sets the shim of DataAttribute.get_TypeId()</summary>
+        </member>
+        <member name="T:Xunit.Extensions.Fakes.ShimFreezeClockAttribute">
+            <summary>Shim type of Xunit.Extensions.FreezeClockAttribute</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.ShimFreezeClockAttribute.#ctor">
+            <summary>Initializes a new shim instance</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.ShimFreezeClockAttribute.#ctor(Xunit.Extensions.FreezeClockAttribute)">
+            <summary>Initializes a new shim for the given instance</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.ShimFreezeClockAttribute.BehaveAsCurrent">
+            <summary>Assigns the &apos;Current&apos; behavior for all methods of the shimmed type</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.ShimFreezeClockAttribute.BehaveAsNotImplemented">
+            <summary>Assigns the &apos;NotImplemented&apos; behavior for all methods of the shimmed type</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.ShimFreezeClockAttribute.AfterMethodInfo">
+            <summary>Sets the shim of FreezeClockAttribute.After(MethodInfo methodUnderTest)</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.ShimFreezeClockAttribute.BeforeMethodInfo">
+            <summary>Sets the shim of FreezeClockAttribute.Before(MethodInfo methodUnderTest)</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.ShimFreezeClockAttribute.Behavior">
+            <summary>Assigns the behavior for all methods of the shimmed type</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.ShimFreezeClockAttribute.Constructor">
+            <summary>Sets the shim of FreezeClockAttribute.FreezeClockAttribute()</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.ShimFreezeClockAttribute.ConstructorInt32Int32Int32">
+            <summary>Sets the shim of FreezeClockAttribute.FreezeClockAttribute(Int32 year, Int32 month, Int32 day)</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.ShimFreezeClockAttribute.ConstructorInt32Int32Int32Int32Int32Int32">
+            <summary>Sets the shim of FreezeClockAttribute.FreezeClockAttribute(Int32 year, Int32 month, Int32 day, Int32 hour, Int32 minute, Int32 second)</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.ShimFreezeClockAttribute.ConstructorInt32Int32Int32Int32Int32Int32DateTimeKind">
+            <summary>Sets the shim of FreezeClockAttribute.FreezeClockAttribute(Int32 year, Int32 month, Int32 day, Int32 hour, Int32 minute, Int32 second, DateTimeKind kind)</summary>
+        </member>
+        <member name="T:Xunit.Extensions.Fakes.ShimFreezeClockAttribute.AllInstances">
+            <summary>Define shims for all instances members</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.ShimFreezeClockAttribute.AllInstances.AfterMethodInfo">
+            <summary>Sets the shim of FreezeClockAttribute.After(MethodInfo methodUnderTest)</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.ShimFreezeClockAttribute.AllInstances.BeforeMethodInfo">
+            <summary>Sets the shim of FreezeClockAttribute.Before(MethodInfo methodUnderTest)</summary>
+        </member>
+        <member name="T:Xunit.Extensions.Fakes.ShimInlineDataAttribute">
+            <summary>Shim type of Xunit.Extensions.InlineDataAttribute</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.ShimInlineDataAttribute.#ctor">
+            <summary>Initializes a new shim instance</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.ShimInlineDataAttribute.#ctor(Xunit.Extensions.InlineDataAttribute)">
+            <summary>Initializes a new shim for the given instance</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.ShimInlineDataAttribute.BehaveAsCurrent">
+            <summary>Assigns the &apos;Current&apos; behavior for all methods of the shimmed type</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.ShimInlineDataAttribute.BehaveAsNotImplemented">
+            <summary>Assigns the &apos;NotImplemented&apos; behavior for all methods of the shimmed type</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.ShimInlineDataAttribute.Behavior">
+            <summary>Assigns the behavior for all methods of the shimmed type</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.ShimInlineDataAttribute.ConstructorObjectArray">
+            <summary>Sets the shim of InlineDataAttribute.InlineDataAttribute(Object[] dataValues)</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.ShimInlineDataAttribute.GetDataMethodInfoTypeArray">
+            <summary>Sets the shim of InlineDataAttribute.GetData(MethodInfo methodUnderTest, Type[] parameterTypes)</summary>
+        </member>
+        <member name="T:Xunit.Extensions.Fakes.ShimInlineDataAttribute.AllInstances">
+            <summary>Define shims for all instances members</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.ShimInlineDataAttribute.AllInstances.GetDataMethodInfoTypeArray">
+            <summary>Sets the shim of InlineDataAttribute.GetData(MethodInfo methodUnderTest, Type[] parameterTypes)</summary>
+        </member>
+        <member name="T:Xunit.Extensions.Fakes.ShimPropertyDataAttribute">
+            <summary>Shim type of Xunit.Extensions.PropertyDataAttribute</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.ShimPropertyDataAttribute.#ctor">
+            <summary>Initializes a new shim instance</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.ShimPropertyDataAttribute.#ctor(Xunit.Extensions.PropertyDataAttribute)">
+            <summary>Initializes a new shim for the given instance</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.ShimPropertyDataAttribute.BehaveAsCurrent">
+            <summary>Assigns the &apos;Current&apos; behavior for all methods of the shimmed type</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.ShimPropertyDataAttribute.BehaveAsNotImplemented">
+            <summary>Assigns the &apos;NotImplemented&apos; behavior for all methods of the shimmed type</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.ShimPropertyDataAttribute.Behavior">
+            <summary>Assigns the behavior for all methods of the shimmed type</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.ShimPropertyDataAttribute.ConstructorString">
+            <summary>Sets the shim of PropertyDataAttribute.PropertyDataAttribute(String propertyName)</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.ShimPropertyDataAttribute.GetDataMethodInfoTypeArray">
+            <summary>Sets the shim of PropertyDataAttribute.GetData(MethodInfo methodUnderTest, Type[] parameterTypes)</summary>
+        </member>
+        <member name="T:Xunit.Extensions.Fakes.ShimPropertyDataAttribute.AllInstances">
+            <summary>Define shims for all instances members</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.ShimPropertyDataAttribute.AllInstances.GetDataMethodInfoTypeArray">
+            <summary>Sets the shim of PropertyDataAttribute.GetData(MethodInfo methodUnderTest, Type[] parameterTypes)</summary>
+        </member>
+        <member name="T:Xunit.Extensions.Fakes.ShimTestClass">
+            <summary>Shim type of Xunit.Extensions.TestClass</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.ShimTestClass.#ctor">
+            <summary>Initializes a new shim instance</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.ShimTestClass.#ctor(Xunit.Extensions.TestClass)">
+            <summary>Initializes a new shim for the given instance</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.ShimTestClass.BehaveAsCurrent">
+            <summary>Assigns the &apos;Current&apos; behavior for all methods of the shimmed type</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.ShimTestClass.BehaveAsNotImplemented">
+            <summary>Assigns the &apos;NotImplemented&apos; behavior for all methods of the shimmed type</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.ShimTestClass.AssertGet">
+            <summary>Sets the shim of TestClass.get_Assert()</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.ShimTestClass.Behavior">
+            <summary>Assigns the behavior for all methods of the shimmed type</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.ShimTestClass.Constructor">
+            <summary>Sets the shim of TestClass.TestClass()</summary>
+        </member>
+        <member name="T:Xunit.Extensions.Fakes.ShimTestClass.AllInstances">
+            <summary>Define shims for all instances members</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.ShimTestClass.AllInstances.AssertGet">
+            <summary>Sets the shim of TestClass.get_Assert()</summary>
+        </member>
+        <member name="T:Xunit.Extensions.Fakes.ShimTheoryAttribute">
+            <summary>Shim type of Xunit.Extensions.TheoryAttribute</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.ShimTheoryAttribute.#ctor">
+            <summary>Initializes a new shim instance</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.ShimTheoryAttribute.#ctor(Xunit.Extensions.TheoryAttribute)">
+            <summary>Initializes a new shim for the given instance</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.ShimTheoryAttribute.BehaveAsCurrent">
+            <summary>Assigns the &apos;Current&apos; behavior for all methods of the shimmed type</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.ShimTheoryAttribute.BehaveAsNotImplemented">
+            <summary>Assigns the &apos;NotImplemented&apos; behavior for all methods of the shimmed type</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.ShimTheoryAttribute.Behavior">
+            <summary>Assigns the behavior for all methods of the shimmed type</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.ShimTheoryAttribute.Constructor">
+            <summary>Sets the shim of TheoryAttribute.TheoryAttribute()</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.ShimTheoryAttribute.EnumerateTestCommandsIMethodInfo">
+            <summary>Sets the shim of TheoryAttribute.EnumerateTestCommands(IMethodInfo method)</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.ShimTheoryAttribute.GetDataMethodInfo">
+            <summary>Sets the shim of TheoryAttribute.GetData(MethodInfo method)</summary>
+        </member>
+        <member name="T:Xunit.Extensions.Fakes.ShimTheoryAttribute.AllInstances">
+            <summary>Define shims for all instances members</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.ShimTheoryAttribute.AllInstances.EnumerateTestCommandsIMethodInfo">
+            <summary>Sets the shim of TheoryAttribute.EnumerateTestCommands(IMethodInfo method)</summary>
+        </member>
+        <member name="T:Xunit.Extensions.Fakes.ShimTheoryCommand">
+            <summary>Shim type of Xunit.Extensions.TheoryCommand</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.ShimTheoryCommand.#ctor">
+            <summary>Initializes a new shim instance</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.ShimTheoryCommand.#ctor(Xunit.Extensions.TheoryCommand)">
+            <summary>Initializes a new shim for the given instance</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.ShimTheoryCommand.BehaveAsCurrent">
+            <summary>Assigns the &apos;Current&apos; behavior for all methods of the shimmed type</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.ShimTheoryCommand.BehaveAsNotImplemented">
+            <summary>Assigns the &apos;NotImplemented&apos; behavior for all methods of the shimmed type</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.ShimTheoryCommand.Bind(Xunit.Sdk.ITestCommand)">
+            <summary>Binds the members of the interface to the shim.</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.ShimTheoryCommand.Behavior">
+            <summary>Assigns the behavior for all methods of the shimmed type</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.ShimTheoryCommand.ConstructorIMethodInfoObjectArray">
+            <summary>Sets the shim of TheoryCommand.TheoryCommand(IMethodInfo testMethod, Object[] parameters)</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.ShimTheoryCommand.ExecuteObject">
+            <summary>Sets the shim of TheoryCommand.Execute(Object testClass)</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.ShimTheoryCommand.ParameterToDisplayValueObject">
+            <summary>Sets the shim of TheoryCommand.ParameterToDisplayValue(Object parameter)</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.ShimTheoryCommand.ParametersGet">
+            <summary>Sets the shim of TheoryCommand.get_Parameters()</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.ShimTheoryCommand.ParametersSetObjectArray">
+            <summary>Sets the shim of TheoryCommand.set_Parameters(Object[] value)</summary>
+        </member>
+        <member name="T:Xunit.Extensions.Fakes.ShimTheoryCommand.AllInstances">
+            <summary>Define shims for all instances members</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.ShimTheoryCommand.AllInstances.ExecuteObject">
+            <summary>Sets the shim of TheoryCommand.Execute(Object testClass)</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.ShimTheoryCommand.AllInstances.ParametersGet">
+            <summary>Sets the shim of TheoryCommand.get_Parameters()</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.ShimTheoryCommand.AllInstances.ParametersSetObjectArray">
+            <summary>Sets the shim of TheoryCommand.set_Parameters(Object[] value)</summary>
+        </member>
+        <member name="T:Xunit.Extensions.Fakes.ShimTraceAttribute">
+            <summary>Shim type of Xunit.Extensions.TraceAttribute</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.ShimTraceAttribute.#ctor">
+            <summary>Initializes a new shim instance</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.ShimTraceAttribute.#ctor(Xunit.Extensions.TraceAttribute)">
+            <summary>Initializes a new shim for the given instance</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.ShimTraceAttribute.BehaveAsCurrent">
+            <summary>Assigns the &apos;Current&apos; behavior for all methods of the shimmed type</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.ShimTraceAttribute.BehaveAsNotImplemented">
+            <summary>Assigns the &apos;NotImplemented&apos; behavior for all methods of the shimmed type</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.ShimTraceAttribute.AfterMethodInfo">
+            <summary>Sets the shim of TraceAttribute.After(MethodInfo methodUnderTest)</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.ShimTraceAttribute.BeforeMethodInfo">
+            <summary>Sets the shim of TraceAttribute.Before(MethodInfo methodUnderTest)</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.ShimTraceAttribute.Behavior">
+            <summary>Assigns the behavior for all methods of the shimmed type</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.ShimTraceAttribute.Constructor">
+            <summary>Sets the shim of TraceAttribute.TraceAttribute()</summary>
+        </member>
+        <member name="T:Xunit.Extensions.Fakes.ShimTraceAttribute.AllInstances">
+            <summary>Define shims for all instances members</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.ShimTraceAttribute.AllInstances.AfterMethodInfo">
+            <summary>Sets the shim of TraceAttribute.After(MethodInfo methodUnderTest)</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.ShimTraceAttribute.AllInstances.BeforeMethodInfo">
+            <summary>Sets the shim of TraceAttribute.Before(MethodInfo methodUnderTest)</summary>
+        </member>
+        <member name="T:Xunit.Extensions.Fakes.StubAssertions">
+            <summary>Stub type of Xunit.Extensions.Assertions</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.StubAssertions.#ctor">
+            <summary>Initializes a new instance</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.StubAssertions.InitializeStub">
+            <summary>Initializes a new instance of type StubAssertions</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.StubAssertions.CallBase">
+            <summary>Gets or sets a value that indicates if the base method should be called instead of the fallback behavior</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.StubAssertions.InstanceBehavior">
+            <summary>Gets or sets the instance behavior.</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.StubAssertions.InstanceObserver">
+            <summary>Gets or sets the instance observer.</summary>
+        </member>
+        <member name="T:Xunit.Extensions.Fakes.StubClassDataAttribute">
+            <summary>Stub type of Xunit.Extensions.ClassDataAttribute</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.StubClassDataAttribute.#ctor(System.Type)">
+            <summary>Initializes a new instance</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.StubClassDataAttribute.Equals(System.Object)">
+            <summary>Sets the stub of Attribute.Equals(Object obj)</summary>
+        </member>
+        <member name="F:Xunit.Extensions.Fakes.StubClassDataAttribute.EqualsObject">
+            <summary>Sets the stub of Attribute.Equals(Object obj)</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.StubClassDataAttribute.GetData(System.Reflection.MethodInfo,System.Type[])">
+            <summary>Sets the stub of ClassDataAttribute.GetData(MethodInfo methodUnderTest, Type[] parameterTypes)</summary>
+        </member>
+        <member name="F:Xunit.Extensions.Fakes.StubClassDataAttribute.GetDataMethodInfoTypeArray">
+            <summary>Sets the stub of ClassDataAttribute.GetData(MethodInfo methodUnderTest, Type[] parameterTypes)</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.StubClassDataAttribute.GetHashCode">
+            <summary>Sets the stub of Attribute.GetHashCode()</summary>
+        </member>
+        <member name="F:Xunit.Extensions.Fakes.StubClassDataAttribute.GetHashCode01">
+            <summary>Sets the stub of Attribute.GetHashCode()</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.StubClassDataAttribute.InitializeStub">
+            <summary>Initializes a new instance of type StubClassDataAttribute</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.StubClassDataAttribute.IsDefaultAttribute">
+            <summary>Sets the stub of Attribute.IsDefaultAttribute()</summary>
+        </member>
+        <member name="F:Xunit.Extensions.Fakes.StubClassDataAttribute.IsDefaultAttribute01">
+            <summary>Sets the stub of Attribute.IsDefaultAttribute()</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.StubClassDataAttribute.Match(System.Object)">
+            <summary>Sets the stub of Attribute.Match(Object obj)</summary>
+        </member>
+        <member name="F:Xunit.Extensions.Fakes.StubClassDataAttribute.MatchObject">
+            <summary>Sets the stub of Attribute.Match(Object obj)</summary>
+        </member>
+        <member name="F:Xunit.Extensions.Fakes.StubClassDataAttribute.TypeIdGet">
+            <summary>Sets the stub of DataAttribute.get_TypeId()</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.StubClassDataAttribute.CallBase">
+            <summary>Gets or sets a value that indicates if the base method should be called instead of the fallback behavior</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.StubClassDataAttribute.InstanceBehavior">
+            <summary>Gets or sets the instance behavior.</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.StubClassDataAttribute.InstanceObserver">
+            <summary>Gets or sets the instance observer.</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.StubClassDataAttribute.TypeId">
+            <summary>Sets the stub of DataAttribute.get_TypeId()</summary>
+        </member>
+        <member name="T:Xunit.Extensions.Fakes.StubDataAttribute">
+            <summary>Stub type of Xunit.Extensions.DataAttribute</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.StubDataAttribute.#ctor">
+            <summary>Initializes a new instance</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.StubDataAttribute.Equals(System.Object)">
+            <summary>Sets the stub of Attribute.Equals(Object obj)</summary>
+        </member>
+        <member name="F:Xunit.Extensions.Fakes.StubDataAttribute.EqualsObject">
+            <summary>Sets the stub of Attribute.Equals(Object obj)</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.StubDataAttribute.GetData(System.Reflection.MethodInfo,System.Type[])">
+            <summary>Sets the stub of DataAttribute.GetData(MethodInfo methodUnderTest, Type[] parameterTypes)</summary>
+        </member>
+        <member name="F:Xunit.Extensions.Fakes.StubDataAttribute.GetDataMethodInfoTypeArray">
+            <summary>Sets the stub of DataAttribute.GetData(MethodInfo methodUnderTest, Type[] parameterTypes)</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.StubDataAttribute.GetHashCode">
+            <summary>Sets the stub of Attribute.GetHashCode()</summary>
+        </member>
+        <member name="F:Xunit.Extensions.Fakes.StubDataAttribute.GetHashCode01">
+            <summary>Sets the stub of Attribute.GetHashCode()</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.StubDataAttribute.InitializeStub">
+            <summary>Initializes a new instance of type StubDataAttribute</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.StubDataAttribute.IsDefaultAttribute">
+            <summary>Sets the stub of Attribute.IsDefaultAttribute()</summary>
+        </member>
+        <member name="F:Xunit.Extensions.Fakes.StubDataAttribute.IsDefaultAttribute01">
+            <summary>Sets the stub of Attribute.IsDefaultAttribute()</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.StubDataAttribute.Match(System.Object)">
+            <summary>Sets the stub of Attribute.Match(Object obj)</summary>
+        </member>
+        <member name="F:Xunit.Extensions.Fakes.StubDataAttribute.MatchObject">
+            <summary>Sets the stub of Attribute.Match(Object obj)</summary>
+        </member>
+        <member name="F:Xunit.Extensions.Fakes.StubDataAttribute.TypeIdGet">
+            <summary>Sets the stub of DataAttribute.get_TypeId()</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.StubDataAttribute.CallBase">
+            <summary>Gets or sets a value that indicates if the base method should be called instead of the fallback behavior</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.StubDataAttribute.InstanceBehavior">
+            <summary>Gets or sets the instance behavior.</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.StubDataAttribute.InstanceObserver">
+            <summary>Gets or sets the instance observer.</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.StubDataAttribute.TypeId">
+            <summary>Sets the stub of DataAttribute.get_TypeId()</summary>
+        </member>
+        <member name="T:Xunit.Extensions.Fakes.StubFreezeClockAttribute">
+            <summary>Stub type of Xunit.Extensions.FreezeClockAttribute</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.StubFreezeClockAttribute.#ctor">
+            <summary>Initializes a new instance</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.StubFreezeClockAttribute.#ctor(System.Int32,System.Int32,System.Int32)">
+            <summary>Initializes a new instance</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.StubFreezeClockAttribute.#ctor(System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32)">
+            <summary>Initializes a new instance</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.StubFreezeClockAttribute.#ctor(System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.DateTimeKind)">
+            <summary>Initializes a new instance</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.StubFreezeClockAttribute.After(System.Reflection.MethodInfo)">
+            <summary>Sets the stub of FreezeClockAttribute.After(MethodInfo methodUnderTest)</summary>
+        </member>
+        <member name="F:Xunit.Extensions.Fakes.StubFreezeClockAttribute.AfterMethodInfo">
+            <summary>Sets the stub of FreezeClockAttribute.After(MethodInfo methodUnderTest)</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.StubFreezeClockAttribute.Before(System.Reflection.MethodInfo)">
+            <summary>Sets the stub of FreezeClockAttribute.Before(MethodInfo methodUnderTest)</summary>
+        </member>
+        <member name="F:Xunit.Extensions.Fakes.StubFreezeClockAttribute.BeforeMethodInfo">
+            <summary>Sets the stub of FreezeClockAttribute.Before(MethodInfo methodUnderTest)</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.StubFreezeClockAttribute.Equals(System.Object)">
+            <summary>Sets the stub of Attribute.Equals(Object obj)</summary>
+        </member>
+        <member name="F:Xunit.Extensions.Fakes.StubFreezeClockAttribute.EqualsObject">
+            <summary>Sets the stub of Attribute.Equals(Object obj)</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.StubFreezeClockAttribute.GetHashCode">
+            <summary>Sets the stub of Attribute.GetHashCode()</summary>
+        </member>
+        <member name="F:Xunit.Extensions.Fakes.StubFreezeClockAttribute.GetHashCode01">
+            <summary>Sets the stub of Attribute.GetHashCode()</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.StubFreezeClockAttribute.InitializeStub">
+            <summary>Initializes a new instance of type StubFreezeClockAttribute</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.StubFreezeClockAttribute.IsDefaultAttribute">
+            <summary>Sets the stub of Attribute.IsDefaultAttribute()</summary>
+        </member>
+        <member name="F:Xunit.Extensions.Fakes.StubFreezeClockAttribute.IsDefaultAttribute01">
+            <summary>Sets the stub of Attribute.IsDefaultAttribute()</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.StubFreezeClockAttribute.Match(System.Object)">
+            <summary>Sets the stub of Attribute.Match(Object obj)</summary>
+        </member>
+        <member name="F:Xunit.Extensions.Fakes.StubFreezeClockAttribute.MatchObject">
+            <summary>Sets the stub of Attribute.Match(Object obj)</summary>
+        </member>
+        <member name="F:Xunit.Extensions.Fakes.StubFreezeClockAttribute.TypeIdGet">
+            <summary>Sets the stub of BeforeAfterTestAttribute.get_TypeId()</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.StubFreezeClockAttribute.CallBase">
+            <summary>Gets or sets a value that indicates if the base method should be called instead of the fallback behavior</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.StubFreezeClockAttribute.InstanceBehavior">
+            <summary>Gets or sets the instance behavior.</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.StubFreezeClockAttribute.InstanceObserver">
+            <summary>Gets or sets the instance observer.</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.StubFreezeClockAttribute.TypeId">
+            <summary>Sets the stub of BeforeAfterTestAttribute.get_TypeId()</summary>
+        </member>
+        <member name="T:Xunit.Extensions.Fakes.StubInlineDataAttribute">
+            <summary>Stub type of Xunit.Extensions.InlineDataAttribute</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.StubInlineDataAttribute.#ctor(System.Object[])">
+            <summary>Initializes a new instance</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.StubInlineDataAttribute.Equals(System.Object)">
+            <summary>Sets the stub of Attribute.Equals(Object obj)</summary>
+        </member>
+        <member name="F:Xunit.Extensions.Fakes.StubInlineDataAttribute.EqualsObject">
+            <summary>Sets the stub of Attribute.Equals(Object obj)</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.StubInlineDataAttribute.GetData(System.Reflection.MethodInfo,System.Type[])">
+            <summary>Sets the stub of InlineDataAttribute.GetData(MethodInfo methodUnderTest, Type[] parameterTypes)</summary>
+        </member>
+        <member name="F:Xunit.Extensions.Fakes.StubInlineDataAttribute.GetDataMethodInfoTypeArray">
+            <summary>Sets the stub of InlineDataAttribute.GetData(MethodInfo methodUnderTest, Type[] parameterTypes)</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.StubInlineDataAttribute.GetHashCode">
+            <summary>Sets the stub of Attribute.GetHashCode()</summary>
+        </member>
+        <member name="F:Xunit.Extensions.Fakes.StubInlineDataAttribute.GetHashCode01">
+            <summary>Sets the stub of Attribute.GetHashCode()</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.StubInlineDataAttribute.InitializeStub">
+            <summary>Initializes a new instance of type StubInlineDataAttribute</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.StubInlineDataAttribute.IsDefaultAttribute">
+            <summary>Sets the stub of Attribute.IsDefaultAttribute()</summary>
+        </member>
+        <member name="F:Xunit.Extensions.Fakes.StubInlineDataAttribute.IsDefaultAttribute01">
+            <summary>Sets the stub of Attribute.IsDefaultAttribute()</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.StubInlineDataAttribute.Match(System.Object)">
+            <summary>Sets the stub of Attribute.Match(Object obj)</summary>
+        </member>
+        <member name="F:Xunit.Extensions.Fakes.StubInlineDataAttribute.MatchObject">
+            <summary>Sets the stub of Attribute.Match(Object obj)</summary>
+        </member>
+        <member name="F:Xunit.Extensions.Fakes.StubInlineDataAttribute.TypeIdGet">
+            <summary>Sets the stub of DataAttribute.get_TypeId()</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.StubInlineDataAttribute.CallBase">
+            <summary>Gets or sets a value that indicates if the base method should be called instead of the fallback behavior</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.StubInlineDataAttribute.InstanceBehavior">
+            <summary>Gets or sets the instance behavior.</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.StubInlineDataAttribute.InstanceObserver">
+            <summary>Gets or sets the instance observer.</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.StubInlineDataAttribute.TypeId">
+            <summary>Sets the stub of DataAttribute.get_TypeId()</summary>
+        </member>
+        <member name="T:Xunit.Extensions.Fakes.StubPropertyDataAttribute">
+            <summary>Stub type of Xunit.Extensions.PropertyDataAttribute</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.StubPropertyDataAttribute.#ctor(System.String)">
+            <summary>Initializes a new instance</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.StubPropertyDataAttribute.Equals(System.Object)">
+            <summary>Sets the stub of Attribute.Equals(Object obj)</summary>
+        </member>
+        <member name="F:Xunit.Extensions.Fakes.StubPropertyDataAttribute.EqualsObject">
+            <summary>Sets the stub of Attribute.Equals(Object obj)</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.StubPropertyDataAttribute.GetData(System.Reflection.MethodInfo,System.Type[])">
+            <summary>Sets the stub of PropertyDataAttribute.GetData(MethodInfo methodUnderTest, Type[] parameterTypes)</summary>
+        </member>
+        <member name="F:Xunit.Extensions.Fakes.StubPropertyDataAttribute.GetDataMethodInfoTypeArray">
+            <summary>Sets the stub of PropertyDataAttribute.GetData(MethodInfo methodUnderTest, Type[] parameterTypes)</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.StubPropertyDataAttribute.GetHashCode">
+            <summary>Sets the stub of Attribute.GetHashCode()</summary>
+        </member>
+        <member name="F:Xunit.Extensions.Fakes.StubPropertyDataAttribute.GetHashCode01">
+            <summary>Sets the stub of Attribute.GetHashCode()</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.StubPropertyDataAttribute.InitializeStub">
+            <summary>Initializes a new instance of type StubPropertyDataAttribute</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.StubPropertyDataAttribute.IsDefaultAttribute">
+            <summary>Sets the stub of Attribute.IsDefaultAttribute()</summary>
+        </member>
+        <member name="F:Xunit.Extensions.Fakes.StubPropertyDataAttribute.IsDefaultAttribute01">
+            <summary>Sets the stub of Attribute.IsDefaultAttribute()</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.StubPropertyDataAttribute.Match(System.Object)">
+            <summary>Sets the stub of Attribute.Match(Object obj)</summary>
+        </member>
+        <member name="F:Xunit.Extensions.Fakes.StubPropertyDataAttribute.MatchObject">
+            <summary>Sets the stub of Attribute.Match(Object obj)</summary>
+        </member>
+        <member name="F:Xunit.Extensions.Fakes.StubPropertyDataAttribute.TypeIdGet">
+            <summary>Sets the stub of DataAttribute.get_TypeId()</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.StubPropertyDataAttribute.CallBase">
+            <summary>Gets or sets a value that indicates if the base method should be called instead of the fallback behavior</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.StubPropertyDataAttribute.InstanceBehavior">
+            <summary>Gets or sets the instance behavior.</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.StubPropertyDataAttribute.InstanceObserver">
+            <summary>Gets or sets the instance observer.</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.StubPropertyDataAttribute.TypeId">
+            <summary>Sets the stub of DataAttribute.get_TypeId()</summary>
+        </member>
+        <member name="T:Xunit.Extensions.Fakes.StubTestClass">
+            <summary>Stub type of Xunit.Extensions.TestClass</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.StubTestClass.#ctor">
+            <summary>Initializes a new instance</summary>
+        </member>
+        <member name="F:Xunit.Extensions.Fakes.StubTestClass.AssertGet">
+            <summary>Sets the stub of TestClass.get_Assert()</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.StubTestClass.InitializeStub">
+            <summary>Initializes a new instance of type StubTestClass</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.StubTestClass.Assert">
+            <summary>Sets the stub of TestClass.get_Assert()</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.StubTestClass.CallBase">
+            <summary>Gets or sets a value that indicates if the base method should be called instead of the fallback behavior</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.StubTestClass.InstanceBehavior">
+            <summary>Gets or sets the instance behavior.</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.StubTestClass.InstanceObserver">
+            <summary>Gets or sets the instance observer.</summary>
+        </member>
+        <member name="T:Xunit.Extensions.Fakes.StubTheoryAttribute">
+            <summary>Stub type of Xunit.Extensions.TheoryAttribute</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.StubTheoryAttribute.#ctor">
+            <summary>Initializes a new instance</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.StubTheoryAttribute.AttachBackingFieldToDisplayName">
+            <summary>Attaches delegates to emulate StubTheoryAttribute.DisplayName as a property with a backing field.</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.StubTheoryAttribute.AttachBackingFieldToName">
+            <summary>Attaches delegates to emulate StubTheoryAttribute.Name as a property with a backing field.</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.StubTheoryAttribute.AttachBackingFieldToSkip">
+            <summary>Attaches delegates to emulate StubTheoryAttribute.Skip as a property with a backing field.</summary>
+        </member>
+        <member name="F:Xunit.Extensions.Fakes.StubTheoryAttribute.DisplayNameGet">
+            <summary>Sets the stub of FactAttribute.get_DisplayName()</summary>
+        </member>
+        <member name="F:Xunit.Extensions.Fakes.StubTheoryAttribute.DisplayNameSetString">
+            <summary>Sets the stub of FactAttribute.set_DisplayName(String value)</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.StubTheoryAttribute.EnumerateTestCommands(Xunit.Sdk.IMethodInfo)">
+            <summary>Sets the stub of TheoryAttribute.EnumerateTestCommands(IMethodInfo method)</summary>
+        </member>
+        <member name="F:Xunit.Extensions.Fakes.StubTheoryAttribute.EnumerateTestCommandsIMethodInfo">
+            <summary>Sets the stub of TheoryAttribute.EnumerateTestCommands(IMethodInfo method)</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.StubTheoryAttribute.Equals(System.Object)">
+            <summary>Sets the stub of Attribute.Equals(Object obj)</summary>
+        </member>
+        <member name="F:Xunit.Extensions.Fakes.StubTheoryAttribute.EqualsObject">
+            <summary>Sets the stub of Attribute.Equals(Object obj)</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.StubTheoryAttribute.GetHashCode">
+            <summary>Sets the stub of Attribute.GetHashCode()</summary>
+        </member>
+        <member name="F:Xunit.Extensions.Fakes.StubTheoryAttribute.GetHashCode01">
+            <summary>Sets the stub of Attribute.GetHashCode()</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.StubTheoryAttribute.InitializeStub">
+            <summary>Initializes a new instance of type StubTheoryAttribute</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.StubTheoryAttribute.IsDefaultAttribute">
+            <summary>Sets the stub of Attribute.IsDefaultAttribute()</summary>
+        </member>
+        <member name="F:Xunit.Extensions.Fakes.StubTheoryAttribute.IsDefaultAttribute01">
+            <summary>Sets the stub of Attribute.IsDefaultAttribute()</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.StubTheoryAttribute.Match(System.Object)">
+            <summary>Sets the stub of Attribute.Match(Object obj)</summary>
+        </member>
+        <member name="F:Xunit.Extensions.Fakes.StubTheoryAttribute.MatchObject">
+            <summary>Sets the stub of Attribute.Match(Object obj)</summary>
+        </member>
+        <member name="F:Xunit.Extensions.Fakes.StubTheoryAttribute.NameGet">
+            <summary>Sets the stub of FactAttribute.get_Name()</summary>
+        </member>
+        <member name="F:Xunit.Extensions.Fakes.StubTheoryAttribute.NameSetString">
+            <summary>Sets the stub of FactAttribute.set_Name(String value)</summary>
+        </member>
+        <member name="F:Xunit.Extensions.Fakes.StubTheoryAttribute.SkipGet">
+            <summary>Sets the stub of FactAttribute.get_Skip()</summary>
+        </member>
+        <member name="F:Xunit.Extensions.Fakes.StubTheoryAttribute.SkipSetString">
+            <summary>Sets the stub of FactAttribute.set_Skip(String value)</summary>
+        </member>
+        <member name="F:Xunit.Extensions.Fakes.StubTheoryAttribute.TypeIdGet">
+            <summary>Sets the stub of Attribute.get_TypeId()</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.StubTheoryAttribute.CallBase">
+            <summary>Gets or sets a value that indicates if the base method should be called instead of the fallback behavior</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.StubTheoryAttribute.DisplayName">
+            <summary>Sets the stub of FactAttribute.get_DisplayName()</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.StubTheoryAttribute.InstanceBehavior">
+            <summary>Gets or sets the instance behavior.</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.StubTheoryAttribute.InstanceObserver">
+            <summary>Gets or sets the instance observer.</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.StubTheoryAttribute.Name">
+            <summary>Sets the stub of FactAttribute.get_Name()</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.StubTheoryAttribute.Skip">
+            <summary>Sets the stub of FactAttribute.get_Skip()</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.StubTheoryAttribute.TypeId">
+            <summary>Sets the stub of Attribute.get_TypeId()</summary>
+        </member>
+        <member name="T:Xunit.Extensions.Fakes.StubTheoryCommand">
+            <summary>Stub type of Xunit.Extensions.TheoryCommand</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.StubTheoryCommand.#ctor(Xunit.Sdk.IMethodInfo,System.Object[])">
+            <summary>Initializes a new instance</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.StubTheoryCommand.AttachBackingFieldToTimeout">
+            <summary>Attaches delegates to emulate StubTheoryCommand.Timeout as a property with a backing field.</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.StubTheoryCommand.Execute(System.Object)">
+            <summary>Sets the stub of TheoryCommand.Execute(Object testClass)</summary>
+        </member>
+        <member name="F:Xunit.Extensions.Fakes.StubTheoryCommand.ExecuteObject">
+            <summary>Sets the stub of TheoryCommand.Execute(Object testClass)</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.StubTheoryCommand.InitializeStub">
+            <summary>Initializes a new instance of type StubTheoryCommand</summary>
+        </member>
+        <member name="F:Xunit.Extensions.Fakes.StubTheoryCommand.ShouldCreateInstanceGet">
+            <summary>Sets the stub of TestCommand.get_ShouldCreateInstance()</summary>
+        </member>
+        <member name="F:Xunit.Extensions.Fakes.StubTheoryCommand.TimeoutGet">
+            <summary>Sets the stub of TestCommand.get_Timeout()</summary>
+        </member>
+        <member name="F:Xunit.Extensions.Fakes.StubTheoryCommand.TimeoutSetInt32">
+            <summary>Sets the stub of TestCommand.set_Timeout(Int32 value)</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.StubTheoryCommand.ToStartXml">
+            <summary>Sets the stub of TestCommand.ToStartXml()</summary>
+        </member>
+        <member name="F:Xunit.Extensions.Fakes.StubTheoryCommand.ToStartXml01">
+            <summary>Sets the stub of TestCommand.ToStartXml()</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.StubTheoryCommand.CallBase">
+            <summary>Gets or sets a value that indicates if the base method should be called instead of the fallback behavior</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.StubTheoryCommand.InstanceBehavior">
+            <summary>Gets or sets the instance behavior.</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.StubTheoryCommand.InstanceObserver">
+            <summary>Gets or sets the instance observer.</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.StubTheoryCommand.ShouldCreateInstance">
+            <summary>Sets the stub of TestCommand.get_ShouldCreateInstance()</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.StubTheoryCommand.Timeout">
+            <summary>Sets the stub of TestCommand.get_Timeout()</summary>
+        </member>
+        <member name="T:Xunit.Extensions.Fakes.StubTraceAttribute">
+            <summary>Stub type of Xunit.Extensions.TraceAttribute</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.StubTraceAttribute.#ctor">
+            <summary>Initializes a new instance</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.StubTraceAttribute.After(System.Reflection.MethodInfo)">
+            <summary>Sets the stub of TraceAttribute.After(MethodInfo methodUnderTest)</summary>
+        </member>
+        <member name="F:Xunit.Extensions.Fakes.StubTraceAttribute.AfterMethodInfo">
+            <summary>Sets the stub of TraceAttribute.After(MethodInfo methodUnderTest)</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.StubTraceAttribute.Before(System.Reflection.MethodInfo)">
+            <summary>Sets the stub of TraceAttribute.Before(MethodInfo methodUnderTest)</summary>
+        </member>
+        <member name="F:Xunit.Extensions.Fakes.StubTraceAttribute.BeforeMethodInfo">
+            <summary>Sets the stub of TraceAttribute.Before(MethodInfo methodUnderTest)</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.StubTraceAttribute.Equals(System.Object)">
+            <summary>Sets the stub of Attribute.Equals(Object obj)</summary>
+        </member>
+        <member name="F:Xunit.Extensions.Fakes.StubTraceAttribute.EqualsObject">
+            <summary>Sets the stub of Attribute.Equals(Object obj)</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.StubTraceAttribute.GetHashCode">
+            <summary>Sets the stub of Attribute.GetHashCode()</summary>
+        </member>
+        <member name="F:Xunit.Extensions.Fakes.StubTraceAttribute.GetHashCode01">
+            <summary>Sets the stub of Attribute.GetHashCode()</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.StubTraceAttribute.InitializeStub">
+            <summary>Initializes a new instance of type StubTraceAttribute</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.StubTraceAttribute.IsDefaultAttribute">
+            <summary>Sets the stub of Attribute.IsDefaultAttribute()</summary>
+        </member>
+        <member name="F:Xunit.Extensions.Fakes.StubTraceAttribute.IsDefaultAttribute01">
+            <summary>Sets the stub of Attribute.IsDefaultAttribute()</summary>
+        </member>
+        <member name="M:Xunit.Extensions.Fakes.StubTraceAttribute.Match(System.Object)">
+            <summary>Sets the stub of Attribute.Match(Object obj)</summary>
+        </member>
+        <member name="F:Xunit.Extensions.Fakes.StubTraceAttribute.MatchObject">
+            <summary>Sets the stub of Attribute.Match(Object obj)</summary>
+        </member>
+        <member name="F:Xunit.Extensions.Fakes.StubTraceAttribute.TypeIdGet">
+            <summary>Sets the stub of BeforeAfterTestAttribute.get_TypeId()</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.StubTraceAttribute.CallBase">
+            <summary>Gets or sets a value that indicates if the base method should be called instead of the fallback behavior</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.StubTraceAttribute.InstanceBehavior">
+            <summary>Gets or sets the instance behavior.</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.StubTraceAttribute.InstanceObserver">
+            <summary>Gets or sets the instance observer.</summary>
+        </member>
+        <member name="P:Xunit.Extensions.Fakes.StubTraceAttribute.TypeId">
+            <summary>Sets the stub of BeforeAfterTestAttribute.get_TypeId()</summary>
+        </member>
+    </members>
+</doc>

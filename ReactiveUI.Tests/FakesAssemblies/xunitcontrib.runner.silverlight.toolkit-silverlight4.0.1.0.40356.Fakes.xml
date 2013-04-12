@@ -1,0 +1,665 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>xunitcontrib.runner.silverlight.toolkit-silverlight4.0.1.0.40356.Fakes</name>
+    </assembly>
+    <members>
+        <member name="T:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimExceptionInterceptingCommand">
+            <summary>Shim type of XunitContrib.Runner.Silverlight.Toolkit.ExceptionInterceptingCommand</summary>
+        </member>
+        <member name="M:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimExceptionInterceptingCommand.#ctor">
+            <summary>Initializes a new shim instance</summary>
+        </member>
+        <member name="M:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimExceptionInterceptingCommand.#ctor(XunitContrib.Runner.Silverlight.Toolkit.ExceptionInterceptingCommand)">
+            <summary>Initializes a new shim for the given instance</summary>
+        </member>
+        <member name="M:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimExceptionInterceptingCommand.BehaveAsCurrent">
+            <summary>Assigns the &apos;Current&apos; behavior for all methods of the shimmed type</summary>
+        </member>
+        <member name="M:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimExceptionInterceptingCommand.BehaveAsNotImplemented">
+            <summary>Assigns the &apos;NotImplemented&apos; behavior for all methods of the shimmed type</summary>
+        </member>
+        <member name="M:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimExceptionInterceptingCommand.Bind(Xunit.Sdk.ITestCommand)">
+            <summary>Binds the members of the interface to the shim.</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimExceptionInterceptingCommand.Behavior">
+            <summary>Assigns the behavior for all methods of the shimmed type</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimExceptionInterceptingCommand.ConstructorITestCommandIMethodInfo">
+            <summary>Sets the shim of ExceptionInterceptingCommand.ExceptionInterceptingCommand(ITestCommand wrappedCommand, IMethodInfo method)</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimExceptionInterceptingCommand.ExecuteObject">
+            <summary>Sets the shim of ExceptionInterceptingCommand.Execute(Object testClass)</summary>
+        </member>
+        <member name="T:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimExceptionInterceptingCommand.AllInstances">
+            <summary>Define shims for all instances members</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimExceptionInterceptingCommand.AllInstances.ExecuteObject">
+            <summary>Sets the shim of ExceptionInterceptingCommand.Execute(Object testClass)</summary>
+        </member>
+        <member name="T:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimExceptionResult">
+            <summary>Shim type of XunitContrib.Runner.Silverlight.Toolkit.ExceptionResult</summary>
+        </member>
+        <member name="M:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimExceptionResult.#ctor">
+            <summary>Initializes a new shim instance</summary>
+        </member>
+        <member name="M:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimExceptionResult.#ctor(XunitContrib.Runner.Silverlight.Toolkit.ExceptionResult)">
+            <summary>Initializes a new shim for the given instance</summary>
+        </member>
+        <member name="M:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimExceptionResult.BehaveAsCurrent">
+            <summary>Assigns the &apos;Current&apos; behavior for all methods of the shimmed type</summary>
+        </member>
+        <member name="M:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimExceptionResult.BehaveAsNotImplemented">
+            <summary>Assigns the &apos;NotImplemented&apos; behavior for all methods of the shimmed type</summary>
+        </member>
+        <member name="M:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimExceptionResult.Bind(Xunit.Sdk.ITestResult)">
+            <summary>Binds the members of the interface to the shim.</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimExceptionResult.Behavior">
+            <summary>Assigns the behavior for all methods of the shimmed type</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimExceptionResult.ConstructorIMethodInfoExceptionString">
+            <summary>Sets the shim of ExceptionResult.ExceptionResult(IMethodInfo method, Exception exception, String displayName)</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimExceptionResult.ExceptionGet">
+            <summary>Sets the shim of ExceptionResult.get_Exception()</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimExceptionResult.ExceptionSetException">
+            <summary>Sets the shim of ExceptionResult.set_Exception(Exception value)</summary>
+        </member>
+        <member name="T:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimExceptionResult.AllInstances">
+            <summary>Define shims for all instances members</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimExceptionResult.AllInstances.ExceptionGet">
+            <summary>Sets the shim of ExceptionResult.get_Exception()</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimExceptionResult.AllInstances.ExceptionSetException">
+            <summary>Sets the shim of ExceptionResult.set_Exception(Exception value)</summary>
+        </member>
+        <member name="T:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestAssembly">
+            <summary>Shim type of XunitContrib.Runner.Silverlight.Toolkit.TestAssembly</summary>
+        </member>
+        <member name="M:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestAssembly.#ctor">
+            <summary>Initializes a new shim instance</summary>
+        </member>
+        <member name="M:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestAssembly.#ctor(XunitContrib.Runner.Silverlight.Toolkit.TestAssembly)">
+            <summary>Initializes a new shim for the given instance</summary>
+        </member>
+        <member name="M:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestAssembly.BehaveAsCurrent">
+            <summary>Assigns the &apos;Current&apos; behavior for all methods of the shimmed type</summary>
+        </member>
+        <member name="M:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestAssembly.BehaveAsNotImplemented">
+            <summary>Assigns the &apos;NotImplemented&apos; behavior for all methods of the shimmed type</summary>
+        </member>
+        <member name="M:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestAssembly.Bind(Microsoft.Silverlight.Testing.UnitTesting.Metadata.IAssembly)">
+            <summary>Binds the members of the interface to the shim.</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestAssembly.AssemblyCleanupMethodGet">
+            <summary>Sets the shim of TestAssembly.get_AssemblyCleanupMethod()</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestAssembly.AssemblyInitializeMethodGet">
+            <summary>Sets the shim of TestAssembly.get_AssemblyInitializeMethod()</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestAssembly.Behavior">
+            <summary>Assigns the behavior for all methods of the shimmed type</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestAssembly.ConstructorUnitTestHarnessAssemblyIUnitTestProvider">
+            <summary>Sets the shim of TestAssembly.TestAssembly(UnitTestHarness testHarness, Assembly assembly, IUnitTestProvider provider)</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestAssembly.GetTestClasses">
+            <summary>Sets the shim of TestAssembly.GetTestClasses()</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestAssembly.NameGet">
+            <summary>Sets the shim of TestAssembly.get_Name()</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestAssembly.ProviderGet">
+            <summary>Sets the shim of TestAssembly.get_Provider()</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestAssembly.TestHarnessGet">
+            <summary>Sets the shim of TestAssembly.get_TestHarness()</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestAssembly._GetTestClassesb__0Type">
+            <summary>Sets the shim of TestAssembly.&lt;GetTestClasses&gt;b__0(Type type)</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestAssembly._GetTestClassesb__1Type">
+            <summary>Sets the shim of TestAssembly.&lt;GetTestClasses&gt;b__1(Type type)</summary>
+        </member>
+        <member name="T:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestAssembly.AllInstances">
+            <summary>Define shims for all instances members</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestAssembly.AllInstances.AssemblyCleanupMethodGet">
+            <summary>Sets the shim of TestAssembly.get_AssemblyCleanupMethod()</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestAssembly.AllInstances.AssemblyInitializeMethodGet">
+            <summary>Sets the shim of TestAssembly.get_AssemblyInitializeMethod()</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestAssembly.AllInstances.GetTestClasses">
+            <summary>Sets the shim of TestAssembly.GetTestClasses()</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestAssembly.AllInstances.NameGet">
+            <summary>Sets the shim of TestAssembly.get_Name()</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestAssembly.AllInstances.ProviderGet">
+            <summary>Sets the shim of TestAssembly.get_Provider()</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestAssembly.AllInstances.TestHarnessGet">
+            <summary>Sets the shim of TestAssembly.get_TestHarness()</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestAssembly.AllInstances._GetTestClassesb__1Type">
+            <summary>Sets the shim of TestAssembly.&lt;GetTestClasses&gt;b__1(Type type)</summary>
+        </member>
+        <member name="T:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestClass">
+            <summary>Shim type of XunitContrib.Runner.Silverlight.Toolkit.TestClass</summary>
+        </member>
+        <member name="M:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestClass.#ctor">
+            <summary>Initializes a new shim instance</summary>
+        </member>
+        <member name="M:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestClass.#ctor(XunitContrib.Runner.Silverlight.Toolkit.TestClass)">
+            <summary>Initializes a new shim for the given instance</summary>
+        </member>
+        <member name="M:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestClass.BehaveAsCurrent">
+            <summary>Assigns the &apos;Current&apos; behavior for all methods of the shimmed type</summary>
+        </member>
+        <member name="M:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestClass.BehaveAsNotImplemented">
+            <summary>Assigns the &apos;NotImplemented&apos; behavior for all methods of the shimmed type</summary>
+        </member>
+        <member name="M:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestClass.Bind(Microsoft.Silverlight.Testing.UnitTesting.Metadata.ITestClass)">
+            <summary>Binds the members of the interface to the shim.</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestClass.AssemblyGet">
+            <summary>Sets the shim of TestClass.get_Assembly()</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestClass.Behavior">
+            <summary>Assigns the behavior for all methods of the shimmed type</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestClass.ClassCleanupMethodGet">
+            <summary>Sets the shim of TestClass.get_ClassCleanupMethod()</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestClass.ClassInitializeMethodGet">
+            <summary>Sets the shim of TestClass.get_ClassInitializeMethod()</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestClass.ConstructorTypeIAssembly">
+            <summary>Sets the shim of TestClass.TestClass(Type type, IAssembly assembly)</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestClass.GetTestMethods">
+            <summary>Sets the shim of TestClass.GetTestMethods()</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestClass.IgnoreGet">
+            <summary>Sets the shim of TestClass.get_Ignore()</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestClass.NameGet">
+            <summary>Sets the shim of TestClass.get_Name()</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestClass.TestCleanupMethodGet">
+            <summary>Sets the shim of TestClass.get_TestCleanupMethod()</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestClass.TestInitializeMethodGet">
+            <summary>Sets the shim of TestClass.get_TestInitializeMethod()</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestClass.TypeGet">
+            <summary>Sets the shim of TestClass.get_Type()</summary>
+        </member>
+        <member name="T:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestClass.AllInstances">
+            <summary>Define shims for all instances members</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestClass.AllInstances.AssemblyGet">
+            <summary>Sets the shim of TestClass.get_Assembly()</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestClass.AllInstances.ClassCleanupMethodGet">
+            <summary>Sets the shim of TestClass.get_ClassCleanupMethod()</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestClass.AllInstances.ClassInitializeMethodGet">
+            <summary>Sets the shim of TestClass.get_ClassInitializeMethod()</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestClass.AllInstances.GetTestMethods">
+            <summary>Sets the shim of TestClass.GetTestMethods()</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestClass.AllInstances.IgnoreGet">
+            <summary>Sets the shim of TestClass.get_Ignore()</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestClass.AllInstances.NameGet">
+            <summary>Sets the shim of TestClass.get_Name()</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestClass.AllInstances.TestCleanupMethodGet">
+            <summary>Sets the shim of TestClass.get_TestCleanupMethod()</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestClass.AllInstances.TestInitializeMethodGet">
+            <summary>Sets the shim of TestClass.get_TestInitializeMethod()</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestClass.AllInstances.TypeGet">
+            <summary>Sets the shim of TestClass.get_Type()</summary>
+        </member>
+        <member name="T:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestClassCommandTypeAdapter`1">
+            <summary>Shim type of XunitContrib.Runner.Silverlight.Toolkit.TestClassCommandTypeAdapter`1</summary>
+        </member>
+        <member name="M:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestClassCommandTypeAdapter`1.#ctor">
+            <summary>Initializes a new shim instance</summary>
+        </member>
+        <member name="M:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestClassCommandTypeAdapter`1.#ctor(XunitContrib.Runner.Silverlight.Toolkit.TestClassCommandTypeAdapter{`0})">
+            <summary>Initializes a new shim for the given instance</summary>
+        </member>
+        <member name="M:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestClassCommandTypeAdapter`1.BehaveAsCurrent">
+            <summary>Assigns the &apos;Current&apos; behavior for all methods of the shimmed type</summary>
+        </member>
+        <member name="M:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestClassCommandTypeAdapter`1.BehaveAsNotImplemented">
+            <summary>Assigns the &apos;NotImplemented&apos; behavior for all methods of the shimmed type</summary>
+        </member>
+        <member name="M:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestClassCommandTypeAdapter`1.Bind(Microsoft.Silverlight.Testing.Harness.IProvideDynamicTestMethods)">
+            <summary>Binds the members of the interface to the shim.</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestClassCommandTypeAdapter`1.Behavior">
+            <summary>Assigns the behavior for all methods of the shimmed type</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestClassCommandTypeAdapter`1.ClassFinish">
+            <summary>Sets the shim of TestClassCommandTypeAdapter`1.ClassFinish()</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestClassCommandTypeAdapter`1.ClassStart">
+            <summary>Sets the shim of TestClassCommandTypeAdapter`1.ClassStart()</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestClassCommandTypeAdapter`1.Constructor">
+            <summary>Sets the shim of TestClassCommandTypeAdapter`1.TestClassCommandTypeAdapter`1()</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestClassCommandTypeAdapter`1.GetDynamicTestMethods">
+            <summary>Sets the shim of TestClassCommandTypeAdapter`1.GetDynamicTestMethods()</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestClassCommandTypeAdapter`1.TestClassCommandGet">
+            <summary>Sets the shim of TestClassCommandTypeAdapter`1.get_TestClassCommand()</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestClassCommandTypeAdapter`1._GetDynamicTestMethodsb__1IMethodInfo">
+            <summary>Sets the shim of TestClassCommandTypeAdapter`1.&lt;GetDynamicTestMethods&gt;b__1(IMethodInfo methodInfo)</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestClassCommandTypeAdapter`1._GetDynamicTestMethodsb__2IMethodInfoITestCommand">
+            <summary>Sets the shim of TestClassCommandTypeAdapter`1.&lt;GetDynamicTestMethods&gt;b__2(IMethodInfo methodInfo, ITestCommand testCommand)</summary>
+        </member>
+        <member name="T:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestClassCommandTypeAdapter`1.AllInstances">
+            <summary>Define shims for all instances members</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestClassCommandTypeAdapter`1.AllInstances.ClassFinish">
+            <summary>Sets the shim of TestClassCommandTypeAdapter`1.ClassFinish()</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestClassCommandTypeAdapter`1.AllInstances.ClassStart">
+            <summary>Sets the shim of TestClassCommandTypeAdapter`1.ClassStart()</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestClassCommandTypeAdapter`1.AllInstances.GetDynamicTestMethods">
+            <summary>Sets the shim of TestClassCommandTypeAdapter`1.GetDynamicTestMethods()</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestClassCommandTypeAdapter`1.AllInstances.TestClassCommandGet">
+            <summary>Sets the shim of TestClassCommandTypeAdapter`1.get_TestClassCommand()</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestClassCommandTypeAdapter`1.AllInstances._GetDynamicTestMethodsb__1IMethodInfo">
+            <summary>Sets the shim of TestClassCommandTypeAdapter`1.&lt;GetDynamicTestMethods&gt;b__1(IMethodInfo methodInfo)</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestClassCommandTypeAdapter`1.AllInstances._GetDynamicTestMethodsb__2IMethodInfoITestCommand">
+            <summary>Sets the shim of TestClassCommandTypeAdapter`1.&lt;GetDynamicTestMethods&gt;b__2(IMethodInfo methodInfo, ITestCommand testCommand)</summary>
+        </member>
+        <member name="T:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestClassCommandTypeAdapterBuilder">
+            <summary>Shim type of XunitContrib.Runner.Silverlight.Toolkit.TestClassCommandTypeAdapterBuilder</summary>
+        </member>
+        <member name="M:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestClassCommandTypeAdapterBuilder.#ctor">
+            <summary>Initializes a new shim instance</summary>
+        </member>
+        <member name="M:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestClassCommandTypeAdapterBuilder.BehaveAsCurrent">
+            <summary>Assigns the &apos;Current&apos; behavior for all methods of the shimmed type</summary>
+        </member>
+        <member name="M:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestClassCommandTypeAdapterBuilder.BehaveAsNotImplemented">
+            <summary>Assigns the &apos;NotImplemented&apos; behavior for all methods of the shimmed type</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestClassCommandTypeAdapterBuilder.AddExclusiveAttributeTypeTypeBuilder">
+            <summary>Sets the shim of TestClassCommandTypeAdapterBuilder.AddExclusiveAttribute(Type testClass, TypeBuilder typeBuilder)</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestClassCommandTypeAdapterBuilder.Behavior">
+            <summary>Assigns the behavior for all methods of the shimmed type</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestClassCommandTypeAdapterBuilder.GetAdapterTypeType">
+            <summary>Sets the shim of TestClassCommandTypeAdapterBuilder.GetAdapterType(Type testClass)</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestClassCommandTypeAdapterBuilder.ModuleBuilderGet">
+            <summary>Sets the shim of TestClassCommandTypeAdapterBuilder.get_ModuleBuilder()</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestClassCommandTypeAdapterBuilder.StaticConstructor">
+            <summary>Sets the shim of TestClassCommandTypeAdapterBuilder.TestClassCommandTypeAdapterBuilder()</summary>
+        </member>
+        <member name="T:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestMethod">
+            <summary>Shim type of XunitContrib.Runner.Silverlight.Toolkit.TestMethod</summary>
+        </member>
+        <member name="M:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestMethod.#ctor">
+            <summary>Initializes a new shim instance</summary>
+        </member>
+        <member name="M:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestMethod.#ctor(XunitContrib.Runner.Silverlight.Toolkit.TestMethod)">
+            <summary>Initializes a new shim for the given instance</summary>
+        </member>
+        <member name="M:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestMethod.BehaveAsCurrent">
+            <summary>Assigns the &apos;Current&apos; behavior for all methods of the shimmed type</summary>
+        </member>
+        <member name="M:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestMethod.BehaveAsNotImplemented">
+            <summary>Assigns the &apos;NotImplemented&apos; behavior for all methods of the shimmed type</summary>
+        </member>
+        <member name="M:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestMethod.Bind(Microsoft.Silverlight.Testing.UnitTesting.Metadata.ITestMethod)">
+            <summary>Binds the members of the interface to the shim.</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestMethod.Behavior">
+            <summary>Assigns the behavior for all methods of the shimmed type</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestMethod.CategoryGet">
+            <summary>Sets the shim of TestMethod.get_Category()</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestMethod.ConstructorITestClassCommandITestCommandIMethodInfo">
+            <summary>Sets the shim of TestMethod.TestMethod(ITestClassCommand testClassCommand, ITestCommand testCommand, IMethodInfo methodInfo)</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestMethod.ConvertToTestPropetiesMultiValueDictionaryOfStringString">
+            <summary>Sets the shim of TestMethod.ConvertToTestPropeties(MultiValueDictionary`2&lt;String,String&gt; traits)</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestMethod.DecorateInstanceObject">
+            <summary>Sets the shim of TestMethod.DecorateInstance(Object instance)</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestMethod.DescriptionGet">
+            <summary>Sets the shim of TestMethod.get_Description()</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestMethod.ExpectedExceptionGet">
+            <summary>Sets the shim of TestMethod.get_ExpectedException()</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestMethod.ExtractTraitValuesMultiValueDictionaryOfStringStringString">
+            <summary>Sets the shim of TestMethod.ExtractTraitValues(MultiValueDictionary`2&lt;String,String&gt; traits, String traitName)</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestMethod.GetDynamicAttributes">
+            <summary>Sets the shim of TestMethod.GetDynamicAttributes()</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestMethod.HandleTraits">
+            <summary>Sets the shim of TestMethod.HandleTraits()</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestMethod.IgnoreGet">
+            <summary>Sets the shim of TestMethod.get_Ignore()</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestMethod.InvokeObject">
+            <summary>Sets the shim of TestMethod.Invoke(Object instance)</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestMethod.MethodGet">
+            <summary>Sets the shim of TestMethod.get_Method()</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestMethod.NameGet">
+            <summary>Sets the shim of TestMethod.get_Name()</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestMethod.OwnerGet">
+            <summary>Sets the shim of TestMethod.get_Owner()</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestMethod.PriorityGet">
+            <summary>Sets the shim of TestMethod.get_Priority()</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestMethod.PropertiesGet">
+            <summary>Sets the shim of TestMethod.get_Properties()</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestMethod.TimeoutGet">
+            <summary>Sets the shim of TestMethod.get_Timeout()</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestMethod.WorkItemsGet">
+            <summary>Sets the shim of TestMethod.get_WorkItems()</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestMethod.WriteLineAddEventHandlerOfStringEventArgs">
+            <summary>Sets the shim of TestMethod.add_WriteLine(EventHandler`1&lt;StringEventArgs&gt; value)</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestMethod.WriteLineRemoveEventHandlerOfStringEventArgs">
+            <summary>Sets the shim of TestMethod.remove_WriteLine(EventHandler`1&lt;StringEventArgs&gt; value)</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestMethod._ExtractTraitValuesb__6StringString">
+            <summary>Sets the shim of TestMethod.&lt;ExtractTraitValues&gt;b__6(String key, String value)</summary>
+        </member>
+        <member name="T:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestMethod.AllInstances">
+            <summary>Define shims for all instances members</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestMethod.AllInstances.CategoryGet">
+            <summary>Sets the shim of TestMethod.get_Category()</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestMethod.AllInstances.DecorateInstanceObject">
+            <summary>Sets the shim of TestMethod.DecorateInstance(Object instance)</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestMethod.AllInstances.DescriptionGet">
+            <summary>Sets the shim of TestMethod.get_Description()</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestMethod.AllInstances.ExpectedExceptionGet">
+            <summary>Sets the shim of TestMethod.get_ExpectedException()</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestMethod.AllInstances.GetDynamicAttributes">
+            <summary>Sets the shim of TestMethod.GetDynamicAttributes()</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestMethod.AllInstances.HandleTraits">
+            <summary>Sets the shim of TestMethod.HandleTraits()</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestMethod.AllInstances.IgnoreGet">
+            <summary>Sets the shim of TestMethod.get_Ignore()</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestMethod.AllInstances.InvokeObject">
+            <summary>Sets the shim of TestMethod.Invoke(Object instance)</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestMethod.AllInstances.MethodGet">
+            <summary>Sets the shim of TestMethod.get_Method()</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestMethod.AllInstances.NameGet">
+            <summary>Sets the shim of TestMethod.get_Name()</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestMethod.AllInstances.OwnerGet">
+            <summary>Sets the shim of TestMethod.get_Owner()</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestMethod.AllInstances.PriorityGet">
+            <summary>Sets the shim of TestMethod.get_Priority()</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestMethod.AllInstances.PropertiesGet">
+            <summary>Sets the shim of TestMethod.get_Properties()</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestMethod.AllInstances.TimeoutGet">
+            <summary>Sets the shim of TestMethod.get_Timeout()</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestMethod.AllInstances.WorkItemsGet">
+            <summary>Sets the shim of TestMethod.get_WorkItems()</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestMethod.AllInstances.WriteLineAddEventHandlerOfStringEventArgs">
+            <summary>Sets the shim of TestMethod.add_WriteLine(EventHandler`1&lt;StringEventArgs&gt; value)</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimTestMethod.AllInstances.WriteLineRemoveEventHandlerOfStringEventArgs">
+            <summary>Sets the shim of TestMethod.remove_WriteLine(EventHandler`1&lt;StringEventArgs&gt; value)</summary>
+        </member>
+        <member name="T:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimUnitTestProvider">
+            <summary>Shim type of XunitContrib.Runner.Silverlight.Toolkit.UnitTestProvider</summary>
+        </member>
+        <member name="M:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimUnitTestProvider.#ctor">
+            <summary>Initializes a new shim instance</summary>
+        </member>
+        <member name="M:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimUnitTestProvider.#ctor(XunitContrib.Runner.Silverlight.Toolkit.UnitTestProvider)">
+            <summary>Initializes a new shim for the given instance</summary>
+        </member>
+        <member name="M:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimUnitTestProvider.BehaveAsCurrent">
+            <summary>Assigns the &apos;Current&apos; behavior for all methods of the shimmed type</summary>
+        </member>
+        <member name="M:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimUnitTestProvider.BehaveAsNotImplemented">
+            <summary>Assigns the &apos;NotImplemented&apos; behavior for all methods of the shimmed type</summary>
+        </member>
+        <member name="M:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimUnitTestProvider.Bind(Microsoft.Silverlight.Testing.UnitTesting.Metadata.IUnitTestProvider)">
+            <summary>Binds the members of the interface to the shim.</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimUnitTestProvider.Behavior">
+            <summary>Assigns the behavior for all methods of the shimmed type</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimUnitTestProvider.CapabilitiesGet">
+            <summary>Sets the shim of UnitTestProvider.get_Capabilities()</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimUnitTestProvider.Constructor">
+            <summary>Sets the shim of UnitTestProvider.UnitTestProvider()</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimUnitTestProvider.GetUnitTestAssemblyUnitTestHarnessAssembly">
+            <summary>Sets the shim of UnitTestProvider.GetUnitTestAssembly(UnitTestHarness testHarness, Assembly assemblyReference)</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimUnitTestProvider.HasCapabilityUnitTestProviderCapabilities">
+            <summary>Sets the shim of UnitTestProvider.HasCapability(UnitTestProviderCapabilities capability)</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimUnitTestProvider.IsFailedAssertException">
+            <summary>Sets the shim of UnitTestProvider.IsFailedAssert(Exception exception)</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimUnitTestProvider.NameGet">
+            <summary>Sets the shim of UnitTestProvider.get_Name()</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimUnitTestProvider.Register">
+            <summary>Sets the shim of UnitTestProvider.Register()</summary>
+        </member>
+        <member name="T:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimUnitTestProvider.AllInstances">
+            <summary>Define shims for all instances members</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimUnitTestProvider.AllInstances.CapabilitiesGet">
+            <summary>Sets the shim of UnitTestProvider.get_Capabilities()</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimUnitTestProvider.AllInstances.GetUnitTestAssemblyUnitTestHarnessAssembly">
+            <summary>Sets the shim of UnitTestProvider.GetUnitTestAssembly(UnitTestHarness testHarness, Assembly assemblyReference)</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimUnitTestProvider.AllInstances.HasCapabilityUnitTestProviderCapabilities">
+            <summary>Sets the shim of UnitTestProvider.HasCapability(UnitTestProviderCapabilities capability)</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimUnitTestProvider.AllInstances.IsFailedAssertException">
+            <summary>Sets the shim of UnitTestProvider.IsFailedAssert(Exception exception)</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.ShimUnitTestProvider.AllInstances.NameGet">
+            <summary>Sets the shim of UnitTestProvider.get_Name()</summary>
+        </member>
+        <member name="T:XunitContrib.Runner.Silverlight.Toolkit.Fakes.StubExceptionInterceptingCommand">
+            <summary>Stub type of XunitContrib.Runner.Silverlight.Toolkit.ExceptionInterceptingCommand</summary>
+        </member>
+        <member name="M:XunitContrib.Runner.Silverlight.Toolkit.Fakes.StubExceptionInterceptingCommand.#ctor(Xunit.Sdk.ITestCommand,Xunit.Sdk.IMethodInfo)">
+            <summary>Initializes a new instance</summary>
+        </member>
+        <member name="M:XunitContrib.Runner.Silverlight.Toolkit.Fakes.StubExceptionInterceptingCommand.Execute(System.Object)">
+            <summary>Sets the stub of ExceptionInterceptingCommand.Execute(Object testClass)</summary>
+        </member>
+        <member name="F:XunitContrib.Runner.Silverlight.Toolkit.Fakes.StubExceptionInterceptingCommand.ExecuteObject">
+            <summary>Sets the stub of ExceptionInterceptingCommand.Execute(Object testClass)</summary>
+        </member>
+        <member name="M:XunitContrib.Runner.Silverlight.Toolkit.Fakes.StubExceptionInterceptingCommand.InitializeStub">
+            <summary>Initializes a new instance of type StubExceptionInterceptingCommand</summary>
+        </member>
+        <member name="F:XunitContrib.Runner.Silverlight.Toolkit.Fakes.StubExceptionInterceptingCommand.TimeoutGet">
+            <summary>Sets the stub of DelegatingTestCommand.get_Timeout()</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.StubExceptionInterceptingCommand.CallBase">
+            <summary>Gets or sets a value that indicates if the base method should be called instead of the fallback behavior</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.StubExceptionInterceptingCommand.InstanceBehavior">
+            <summary>Gets or sets the instance behavior.</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.StubExceptionInterceptingCommand.InstanceObserver">
+            <summary>Gets or sets the instance observer.</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.StubExceptionInterceptingCommand.Timeout">
+            <summary>Sets the stub of DelegatingTestCommand.get_Timeout()</summary>
+        </member>
+        <member name="T:XunitContrib.Runner.Silverlight.Toolkit.Fakes.StubExceptionResult">
+            <summary>Stub type of XunitContrib.Runner.Silverlight.Toolkit.ExceptionResult</summary>
+        </member>
+        <member name="M:XunitContrib.Runner.Silverlight.Toolkit.Fakes.StubExceptionResult.#ctor(Xunit.Sdk.IMethodInfo,System.Exception,System.String)">
+            <summary>Initializes a new instance</summary>
+        </member>
+        <member name="M:XunitContrib.Runner.Silverlight.Toolkit.Fakes.StubExceptionResult.InitializeStub">
+            <summary>Initializes a new instance of type StubExceptionResult</summary>
+        </member>
+        <member name="M:XunitContrib.Runner.Silverlight.Toolkit.Fakes.StubExceptionResult.ToXml(Xunit.XmlNode)">
+            <summary>Sets the stub of FailedResult.ToXml(XmlNode parentNode)</summary>
+        </member>
+        <member name="F:XunitContrib.Runner.Silverlight.Toolkit.Fakes.StubExceptionResult.ToXmlXmlNode">
+            <summary>Sets the stub of FailedResult.ToXml(XmlNode parentNode)</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.StubExceptionResult.CallBase">
+            <summary>Gets or sets a value that indicates if the base method should be called instead of the fallback behavior</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.StubExceptionResult.InstanceBehavior">
+            <summary>Gets or sets the instance behavior.</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.StubExceptionResult.InstanceObserver">
+            <summary>Gets or sets the instance observer.</summary>
+        </member>
+        <member name="T:XunitContrib.Runner.Silverlight.Toolkit.Fakes.StubTestAssembly">
+            <summary>Stub type of XunitContrib.Runner.Silverlight.Toolkit.TestAssembly</summary>
+        </member>
+        <member name="M:XunitContrib.Runner.Silverlight.Toolkit.Fakes.StubTestAssembly.#ctor(Microsoft.Silverlight.Testing.Harness.UnitTestHarness,System.Reflection.Assembly,Microsoft.Silverlight.Testing.UnitTesting.Metadata.IUnitTestProvider)">
+            <summary>Initializes a new instance</summary>
+        </member>
+        <member name="M:XunitContrib.Runner.Silverlight.Toolkit.Fakes.StubTestAssembly.InitializeStub">
+            <summary>Initializes a new instance of type StubTestAssembly</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.StubTestAssembly.CallBase">
+            <summary>Gets or sets a value that indicates if the base method should be called instead of the fallback behavior</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.StubTestAssembly.InstanceBehavior">
+            <summary>Gets or sets the instance behavior.</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.StubTestAssembly.InstanceObserver">
+            <summary>Gets or sets the instance observer.</summary>
+        </member>
+        <member name="T:XunitContrib.Runner.Silverlight.Toolkit.Fakes.StubTestClass">
+            <summary>Stub type of XunitContrib.Runner.Silverlight.Toolkit.TestClass</summary>
+        </member>
+        <member name="M:XunitContrib.Runner.Silverlight.Toolkit.Fakes.StubTestClass.#ctor(System.Type,Microsoft.Silverlight.Testing.UnitTesting.Metadata.IAssembly)">
+            <summary>Initializes a new instance</summary>
+        </member>
+        <member name="M:XunitContrib.Runner.Silverlight.Toolkit.Fakes.StubTestClass.InitializeStub">
+            <summary>Initializes a new instance of type StubTestClass</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.StubTestClass.CallBase">
+            <summary>Gets or sets a value that indicates if the base method should be called instead of the fallback behavior</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.StubTestClass.InstanceBehavior">
+            <summary>Gets or sets the instance behavior.</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.StubTestClass.InstanceObserver">
+            <summary>Gets or sets the instance observer.</summary>
+        </member>
+        <member name="T:XunitContrib.Runner.Silverlight.Toolkit.Fakes.StubTestClassCommandTypeAdapter`1">
+            <summary>Stub type of XunitContrib.Runner.Silverlight.Toolkit.TestClassCommandTypeAdapter`1</summary>
+        </member>
+        <member name="M:XunitContrib.Runner.Silverlight.Toolkit.Fakes.StubTestClassCommandTypeAdapter`1.#ctor">
+            <summary>Initializes a new instance</summary>
+        </member>
+        <member name="M:XunitContrib.Runner.Silverlight.Toolkit.Fakes.StubTestClassCommandTypeAdapter`1.InitializeStub">
+            <summary>Initializes a new instance of type StubTestClassCommandTypeAdapter</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.StubTestClassCommandTypeAdapter`1.CallBase">
+            <summary>Gets or sets a value that indicates if the base method should be called instead of the fallback behavior</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.StubTestClassCommandTypeAdapter`1.InstanceBehavior">
+            <summary>Gets or sets the instance behavior.</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.StubTestClassCommandTypeAdapter`1.InstanceObserver">
+            <summary>Gets or sets the instance observer.</summary>
+        </member>
+        <member name="T:XunitContrib.Runner.Silverlight.Toolkit.Fakes.StubTestMethod">
+            <summary>Stub type of XunitContrib.Runner.Silverlight.Toolkit.TestMethod</summary>
+        </member>
+        <member name="M:XunitContrib.Runner.Silverlight.Toolkit.Fakes.StubTestMethod.#ctor(Xunit.Sdk.ITestClassCommand,Xunit.Sdk.ITestCommand,Xunit.Sdk.IMethodInfo)">
+            <summary>Initializes a new instance</summary>
+        </member>
+        <member name="M:XunitContrib.Runner.Silverlight.Toolkit.Fakes.StubTestMethod.InitializeStub">
+            <summary>Initializes a new instance of type StubTestMethod</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.StubTestMethod.CallBase">
+            <summary>Gets or sets a value that indicates if the base method should be called instead of the fallback behavior</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.StubTestMethod.InstanceBehavior">
+            <summary>Gets or sets the instance behavior.</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.StubTestMethod.InstanceObserver">
+            <summary>Gets or sets the instance observer.</summary>
+        </member>
+        <member name="T:XunitContrib.Runner.Silverlight.Toolkit.Fakes.StubUnitTestProvider">
+            <summary>Stub type of XunitContrib.Runner.Silverlight.Toolkit.UnitTestProvider</summary>
+        </member>
+        <member name="M:XunitContrib.Runner.Silverlight.Toolkit.Fakes.StubUnitTestProvider.#ctor">
+            <summary>Initializes a new instance</summary>
+        </member>
+        <member name="M:XunitContrib.Runner.Silverlight.Toolkit.Fakes.StubUnitTestProvider.InitializeStub">
+            <summary>Initializes a new instance of type StubUnitTestProvider</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.StubUnitTestProvider.CallBase">
+            <summary>Gets or sets a value that indicates if the base method should be called instead of the fallback behavior</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.StubUnitTestProvider.InstanceBehavior">
+            <summary>Gets or sets the instance behavior.</summary>
+        </member>
+        <member name="P:XunitContrib.Runner.Silverlight.Toolkit.Fakes.StubUnitTestProvider.InstanceObserver">
+            <summary>Gets or sets the instance observer.</summary>
+        </member>
+    </members>
+</doc>
