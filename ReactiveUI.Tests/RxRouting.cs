@@ -64,10 +64,9 @@ namespace ReactiveUI.Routing.Tests
         [Fact]
         public void ResolveExplicitViewType()
         {
-            RxApp.ConfigureServiceLocator(
-                (x, _) => (x.Name == "IBazView" ? new BazView() : null), 
-                (x, _) => null,
-                (c, t, k) => { });
+            var resolver = new FuncDependencyResolver();
+            resolver.Register(() => new BazView(), typeof(IBazView));
+            RxApp.DependencyResolver = resolver; 
 
             var vm = new BazViewModel(null);
 
