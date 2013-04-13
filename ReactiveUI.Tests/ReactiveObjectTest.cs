@@ -64,9 +64,6 @@ namespace ReactiveUI.Tests
         [Fact]        
         public void ReactiveObjectSmokeTest()
         {
-#if IOS
-            Assert.Fail("This crashes Mono in a quite spectacular way");
-#endif
             var output_changing = new List<string>();
             var output = new List<string>();
             var fixture = new TestFixture();
@@ -104,10 +101,6 @@ namespace ReactiveUI.Tests
         [Fact]
         public void RaiseAndSetUsingExpression()
         {
-#if IOS
-            Assert.Fail("This crashes Mono in a quite spectacular way");
-#endif
-            
             var fixture = new TestFixture() { IsNotNullString = "Foo", IsOnlyOneWord = "Baz" };
             var output = new List<string>();
             fixture.Changed.Subscribe(x => output.Add(x.PropertyName));
@@ -153,10 +146,6 @@ namespace ReactiveUI.Tests
             string before_set = "Foo";
             string after_set = "Bar"; 
             
-#if IOS
-        Assert.Fail("This crashes Mono in a quite spectacular way");
-#endif
-            
             var fixture = new TestFixture() { IsOnlyOneWord = before_set };
 
             bool before_fired = false;
@@ -181,6 +170,18 @@ namespace ReactiveUI.Tests
 
             Assert.True(before_fired);
             Assert.True(after_fired);
+        }
+
+        [Fact]
+        public void ExceptionsThrownInSubscribersShouldMarshalToThrownExceptions()
+        {
+            var fixture = new TestFixture() { IsOnlyOneWord = "Foo" };
+
+            fixture.Changed.Subscribe(x => { throw new Exception("Die!"); });
+            var exceptionList = fixture.ThrownExceptions.CreateCollection();
+
+            fixture.IsOnlyOneWord = "Bar";
+            Assert.Equal(1, exceptionList.Count);
         }
     }
 }
