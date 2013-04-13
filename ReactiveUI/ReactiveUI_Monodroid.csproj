@@ -130,6 +130,7 @@
     <Compile Include="OrderedComparer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReactiveCollection.cs" />
+    <Compile Include="ReactiveCollectionMixins.cs" />
     <Compile Include="ReactiveNotifyPropertyChangedMixin.cs" />
     <Compile Include="ReactiveObject.cs" />
     <Compile Include="MakeObjectReactiveHelper.cs" />
@@ -143,9 +144,12 @@
     <Compile Include="Reflection.cs" />
     <Compile Include="ScheduledSubject.cs" />
     <Compile Include="BindingTypeConverters.cs" />
-    <Compile Include="CallerMemberNameAttribute.cs" />
     <Compile Include="CollectionDebugView.cs" />
     <Compile Include="VariadicTemplates.cs" />
+    <Compile Include="Rx-Shim\AwaitableAsyncSubject.cs" />
+    <Compile Include="Rx-Shim\GetAwaiter.cs" />
+    <Compile Include="Rx-Shim\ImmutableList.cs" />
+    <Compile Include="PropertyBinding.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -162,4 +166,7 @@
   </Target>
   -->
   <Import Project="$(MSBuildExtensionsPath)\Novell\Novell.MonoDroid.CSharp.targets" />
+  <ItemGroup>
+    <Folder Include="Rx-Shim\" />
+  </ItemGroup>
 </Project>
