@@ -40,12 +40,14 @@ namespace ReactiveUI
             TaskpoolScheduler = Scheduler.TaskPool;
 
             DeferredScheduler = new WaitForDispatcherScheduler(() => {
-                Type dispatcherType = Type.GetType("System.Reactive.Windows.Threading.DispatcherScheduler, System.Reactive.Windows.Threading", false)
-                    ?? Type.GetType("System.Reactive.Windows.Threading.CoreDispatcherScheduler, System.Reactive.Windows.Threading", false);
-                if (dispatcherType != null)
-                {
+                Type dispatcherType = 
+                    Type.GetType("System.Reactive.Windows.Threading.DispatcherScheduler, System.Reactive.Windows.Threading", false) ?? 
+                    Type.GetType("System.Reactive.Windows.Threading.CoreDispatcherScheduler, System.Reactive.Windows.Threading", false);
+
+                if (dispatcherType != null) {
                     return (IScheduler)dispatcherType.GetProperty("Current").GetMethod.Invoke(null, null);
                 }
+
                 return null;
             });
 
@@ -67,19 +69,15 @@ namespace ReactiveUI
 
             LoggerFactory = t => new DebugLogger();
 
-            if (InUnitTestRunner())
-            {
+            if (InUnitTestRunner()) {
                 LogHost.Default.Warn("*** Detected Unit Test Runner, setting DeferredScheduler to Immediate ***");
                 LogHost.Default.Warn("If we are not actually in a test runner, please file a bug\n");
                 RxApp.DeferredScheduler = ImmediateScheduler.Instance;
-            }
-            else
-            {
+            } else {
                 LogHost.Default.Info("Initializing to normal mode");
             }
 
-            if (DeferredScheduler == null)
-            {
+            if (DeferredScheduler == null) {
                 LogHost.Default.Error("*** ReactiveUI.Xaml DLL reference not added - using Default scheduler *** ");
                 LogHost.Default.Error("Add a reference to ReactiveUI.Xaml if you're using WPF / SL5 / WP7 / WinRT");
                 LogHost.Default.Error("or consider explicitly setting RxApp.DeferredScheduler if not");
@@ -87,17 +85,29 @@ namespace ReactiveUI
             }
         }
 
+        [ThreadStatic] static IDependencyResolver _UnitTestDependencyResolver;
         static IDependencyResolver _DependencyResolver;
 
-        public static IDependencyResolver DependencyResolver
-        {
+        public static IDependencyResolver DependencyResolver {
             get {
+                if (_UnitTestDeferredScheduler != null) return _UnitTestDependencyResolver;
+
                 if (_DependencyResolver == null) {
-                    _DependencyResolver = new FuncDependencyResolver();
+                    var resolver = new FuncDependencyResolver();
+                    resolver.InitializeResolver();
+                    _DependencyResolver = resolver; 
                 }
+
                 return _DependencyResolver;
             }
-            set { _DependencyResolver = value; }
+            set {
+                if (InUnitTestRunner()) {
+                    _UnitTestDependencyResolver = value;
+                    _DependencyResolver = _DependencyResolver ?? value;
+                } else {
+                    _DependencyResolver = value;
+                }
+            }
         }
 
         [ThreadStatic] static IScheduler _UnitTestDeferredScheduler;
@@ -188,12 +198,12 @@ namespace ReactiveUI
                 return InUnitTestRunnerOverride.Value;
             }
 
-            if (!_inUnitTestRunner.HasValue)
-            {
+            if (!_inUnitTestRunner.HasValue) {
                 // NB: This is in a separate static ctor to avoid a deadlock on 
                 // the static ctor lock when blocking on async methods 
                 _inUnitTestRunner = UnitTestDetector.IsInUnitTestRunner() || DesignModeDetector.IsInDesignMode();
             }
+
             return _inUnitTestRunner.Value;
         }
     }    
