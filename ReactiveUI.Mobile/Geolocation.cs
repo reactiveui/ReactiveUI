@@ -37,7 +37,12 @@ namespace ReactiveUI.Mobile
             }
 
             var ret = Observable.Create<Position>(subj => {
+#if ANDROID
+                var geo = new Geolocator(Android.App.Application.Context);
+#else
                 var geo = new Geolocator();
+#endif
+
                 var disp = new CompositeDisposable();
                 bool isDead = false;
 
@@ -72,7 +77,11 @@ namespace ReactiveUI.Mobile
 
 #if !WP7 && !WP8
             var ret = Observable.Create<Position>(subj => {
+#if ANDROID
+                var geo = new Geolocator(Android.App.Application.Context);
+#else
                 var geo = new Geolocator();
+#endif
                 var cts = new CancellationTokenSource();
                 var disp = new CompositeDisposable();
 
