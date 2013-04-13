@@ -47,6 +47,7 @@
     <IpaPackageName />
     <MtouchI18n />
     <MtouchArch>ARMv7</MtouchArch>
+    <MtouchLink>None</MtouchLink>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|iPhone' ">
     <DebugType>none</DebugType>
@@ -101,6 +102,7 @@
     <Reference Include="System.Reactive.PlatformServices">
       <HintPath>..\ext\ios\System.Reactive.PlatformServices.dll</HintPath>
     </Reference>
+    <Reference Include="System.Runtime.Serialization" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Resources\" />
@@ -115,6 +117,8 @@
     <Compile Include="iOSPlaygroundViewController.designer.cs">
       <DependentUpon>iOSPlaygroundViewController.cs</DependentUpon>
     </Compile>
+    <Compile Include="AppBootstrapper.cs" />
+    <Compile Include="TinyIoC.cs" />
   </ItemGroup>
   <ItemGroup>
     <InterfaceDefinition Include="iOSPlaygroundViewController.xib" />
@@ -136,6 +140,10 @@
     <ProjectReference Include="..\ReactiveUI\ReactiveUI_Monotouch.csproj">
       <Project>{9091337A-9E94-4DBD-801E-05E1FDA78FFC}</Project>
       <Name>ReactiveUI_Monotouch</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ReactiveUI.Mobile\ReactiveUI.Mobile_Monotouch.csproj">
+      <Project>{9091337A-9E94-4DBD-801E-15E10DB72FFC}</Project>
+      <Name>ReactiveUI.Mobile_Monotouch</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>

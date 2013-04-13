@@ -16,6 +16,12 @@ namespace ReactiveUI.Mobile
 #elif WINRT
             registerFunction(() => new WinRTSuspensionHost(), typeof(ISuspensionHost));
             registerFunction(() => new WinRTAppDataDriver(), typeof(ISuspensionDriver));
+#elif UIKIT
+            registerFunction(() => new CocoaSuspensionHost(), typeof(ISuspensionHost));
+            registerFunction(() => new AppSupportJsonSuspensionDriver(), typeof(ISuspensionDriver));
+#elif ANDROID
+            registerFunction(() => new AndroidSuspensionHost(), typeof(ISuspensionHost));
+            registerFunction(() => new BundleSuspensionDriver(), typeof(ISuspensionDriver));
 #endif
         }
     }

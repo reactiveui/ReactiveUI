@@ -58,7 +58,6 @@ namespace ReactiveUI.Xaml
         }
 
         public IDisposable BindCommandToObject<TEventArgs>(ICommand command, object target, IObservable<object> commandParameter, string eventName)
-            where TEventArgs : EventArgs
         {
             var ret = new CompositeDisposable();
 
@@ -122,7 +121,6 @@ namespace ReactiveUI.Xaml
         }
 
         public IDisposable BindCommandToObject<TEventArgs>(ICommand command, object target, IObservable<object> commandParameter, string eventName)
-            where TEventArgs : EventArgs
         {
             // NB: We should fall back to the generic Event-based handler if
             // an event target is specified
