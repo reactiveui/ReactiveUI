@@ -7,36 +7,17 @@ using System.Threading.Tasks;
 
 namespace ReactiveUI
 {
-    public class FuncDependencyResolver : IDependencyResolver
+    public class FuncDependencyResolver : IMutableDependencyResolver
     {
         private Dictionary<Tuple<Type, string>, List<Func<object>>> _registry;
 
-        /// <summary>
-        /// Default dependency resolver when no other one is registered.
-        /// </summary>
-        public FuncDependencyResolver()
+        public FuncDependencyResolver() : this(null) { }
+
+        protected FuncDependencyResolver(Dictionary<Tuple<Type, string>, List<Func<object>>> registry)
         {
-            new Registrations().Register((f,t) => Register(f,t));
-
-            var namespaces = 
-#if PORTABLE
-            new[] { "ReactiveUI.Xaml", "ReactiveUI.Mobile", "ReactiveUI.NLog", };
-#else
-            new[] { "ReactiveUI.Xaml", "ReactiveUI.Mobile", "ReactiveUI.NLog", "ReactiveUI.Gtk", "ReactiveUI.Cocoa", "ReactiveUI.Android" };
-#endif
-            var assmName = new AssemblyName(typeof(FuncDependencyResolver).AssemblyQualifiedName);
-            namespaces.ForEach(ns =>
-            {
-                var targetType = ns + ".Registrations";
-                string fullName = targetType + ", " + assmName.FullName.Replace(assmName.Name, ns);
-
-                var registerTypeClass = Reflection.ReallyFindType(fullName, false);
-                if (registerTypeClass != null)
-                {
-                    var registerer = (IWantsToRegisterStuff)Activator.CreateInstance(registerTypeClass);
-                    registerer.Register((f, t) => Register(f, t));
-                }
-            });
+            _registry = registry != null ? 
+                registry.ToDictionary(k => k.Key, v => v.Value.ToList()) :
+                new Dictionary<Tuple<Type, string>, List<Func<object>>>();
         }
 
         public void Register(Func<object> factory, Type serviceType, string contract = null)
@@ -60,6 +41,11 @@ namespace ReactiveUI
             if (!_registry.ContainsKey(pair)) return Enumerable.Empty<object>();
  
             return _registry[pair].Select(x => x());
+        }
+
+        public FuncDependencyResolver Duplicate()
+        {
+            return new FuncDependencyResolver(_registry);
         }
 
         public void Dispose()
