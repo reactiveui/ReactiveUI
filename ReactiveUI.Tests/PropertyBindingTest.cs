@@ -315,12 +315,10 @@ namespace ReactiveUI.Tests
             var vm = new PropertyBindViewModel();
             var view = new PropertyBindView() {ViewModel = vm};
 
-            using (new FuncDependencyResolver().WithResolver()) {
-                Assert.Null(view.FakeItemsControl.ItemTemplate);
-                view.OneWayBind(vm, x => x.SomeCollectionOfStrings, x => x.FakeItemsControl.ItemsSource);
+            Assert.Null(view.FakeItemsControl.ItemTemplate);
+            view.OneWayBind(vm, x => x.SomeCollectionOfStrings, x => x.FakeItemsControl.ItemsSource);
 
-                Assert.NotNull(view.FakeItemsControl.ItemTemplate);
-            }
+            Assert.NotNull(view.FakeItemsControl.ItemTemplate);
         }
 
         [Fact]
@@ -329,16 +327,14 @@ namespace ReactiveUI.Tests
             var vm = new PropertyBindViewModel();
             var view = new PropertyBindView() {ViewModel = vm};
 
-            using (new FuncDependencyResolver().WithResolver()) {
-                Assert.Null(view.FakeItemsControl.ItemTemplate);
-                vm.WhenAny(x => x.SomeCollectionOfStrings, x => x.Value)
-                    .BindTo(view, v => v.FakeItemsControl.ItemsSource);
+            Assert.Null(view.FakeItemsControl.ItemTemplate);
+            vm.WhenAny(x => x.SomeCollectionOfStrings, x => x.Value)
+                .BindTo(view, v => v.FakeItemsControl.ItemsSource);
 
-                Assert.NotNull(view.FakeItemsControl.ItemTemplate);
+            Assert.NotNull(view.FakeItemsControl.ItemTemplate);
 
-                view.WhenAny(x => x.FakeItemsControl.SelectedItem, x => x.Value)
-                    .BindTo(vm, x => x.Property1);
-            }
+            view.WhenAny(x => x.FakeItemsControl.SelectedItem, x => x.Value)
+                .BindTo(vm, x => x.Property1);
         }
 
         [Fact]
