@@ -83,4 +83,28 @@ namespace ReactiveUI
             return Disposable.Create(() => RxApp.DependencyResolver = origResolver);
         }
     }
+
+    public class FuncServiceResolver : IDependencyResolver
+    {
+        readonly Func<Type, string, IEnumerable<object>> inner;
+
+        public FuncServiceResolver(Func<Type, string, IEnumerable<object>> getAllServices)
+        {
+            inner = getAllServices;
+        }
+
+        public object GetService(Type serviceType, string contract = null)
+        {
+            return (GetServices(serviceType, contract) ?? Enumerable.Empty<object>()).FirstOrDefault();
+        }
+
+        public IEnumerable<object> GetServices(Type serviceType, string contract = null)
+        {
+            return inner(serviceType, contract);
+        }
+
+        public void Dispose()
+        {
+        }
+    }
 }
