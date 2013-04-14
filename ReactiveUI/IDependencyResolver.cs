@@ -58,7 +58,7 @@ namespace ReactiveUI
                 "ReactiveUI.Android",
             };
 
-            var fdr = typeof(FuncDependencyResolver);
+            var fdr = typeof(ModernDependencyResolver);
 
             var assmName = new AssemblyName(
                 fdr.AssemblyQualifiedName.Replace(fdr.FullName + ", ", ""));

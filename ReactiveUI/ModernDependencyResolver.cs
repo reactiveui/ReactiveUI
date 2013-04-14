@@ -7,13 +7,13 @@ using System.Threading.Tasks;
 
 namespace ReactiveUI
 {
-    public class FuncDependencyResolver : IMutableDependencyResolver
+    public class ModernDependencyResolver : IMutableDependencyResolver
     {
         private Dictionary<Tuple<Type, string>, List<Func<object>>> _registry;
 
-        public FuncDependencyResolver() : this(null) { }
+        public ModernDependencyResolver() : this(null) { }
 
-        protected FuncDependencyResolver(Dictionary<Tuple<Type, string>, List<Func<object>>> registry)
+        protected ModernDependencyResolver(Dictionary<Tuple<Type, string>, List<Func<object>>> registry)
         {
             _registry = registry != null ? 
                 registry.ToDictionary(k => k.Key, v => v.Value.ToList()) :
@@ -43,9 +43,9 @@ namespace ReactiveUI
             return _registry[pair].Select(x => x());
         }
 
-        public FuncDependencyResolver Duplicate()
+        public ModernDependencyResolver Duplicate()
         {
-            return new FuncDependencyResolver(_registry);
+            return new ModernDependencyResolver(_registry);
         }
 
         public void Dispose()
