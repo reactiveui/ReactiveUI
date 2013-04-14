@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive.Disposables;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
@@ -57,7 +58,11 @@ namespace ReactiveUI
                 "ReactiveUI.Android",
             };
 
-            var assmName = new AssemblyName(typeof(FuncDependencyResolver).AssemblyQualifiedName);
+            var fdr = typeof(FuncDependencyResolver);
+
+            var assmName = new AssemblyName(
+                fdr.AssemblyQualifiedName.Replace(fdr.FullName + ", ", ""));
+
             namespaces.ForEach(ns => {
                 var targetType = ns + ".Registrations";
                 string fullName = targetType + ", " + assmName.FullName.Replace(assmName.Name, ns);
@@ -68,6 +73,14 @@ namespace ReactiveUI
                 var registerer = (IWantsToRegisterStuff)Activator.CreateInstance(registerTypeClass);
                 registerer.Register((f, t) => resolver.Register(f, t));
             });
+        }
+
+        public static IDisposable WithResolver(this IDependencyResolver resolver)
+        {
+            var origResolver = RxApp.DependencyResolver;
+            RxApp.DependencyResolver = resolver;
+
+            return Disposable.Create(() => RxApp.DependencyResolver = origResolver);
         }
     }
 }
