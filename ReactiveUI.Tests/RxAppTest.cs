@@ -25,23 +25,5 @@ namespace ReactiveUI.Tests
             Console.WriteLine(RxApp.DeferredScheduler.GetType().FullName);
             Assert.Equal(Scheduler.Immediate, RxApp.DeferredScheduler);
         }
-
-        [Fact]
-        public void UnitTestDetectorIdentifiesThisTestAsAnXUnitTest()
-        {
-            var isInUnitTestRunner = UnitTestDetector.IsInUnitTestRunner();
-
-            Assert.True(isInUnitTestRunner);
-        }
-
-        [Fact]
-        public void UnitTestDetectorDoesNotIdentifyThisTestWhenXUnitAssemblyNotChecked()
-        {
-            string vsUnitTest = "Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute, Microsoft.VisualStudio.QualityTools.UnitTestFramework";
-
-            var isInUnitTestRunner = UnitTestDetector.IsInUnitTestRunner(vsUnitTest);
-
-            Assert.False(isInUnitTestRunner);
-        }
     }
 }
