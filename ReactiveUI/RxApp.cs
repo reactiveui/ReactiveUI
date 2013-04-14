@@ -72,7 +72,7 @@ namespace ReactiveUI
             if (InUnitTestRunner()) {
                 LogHost.Default.Warn("*** Detected Unit Test Runner, setting DeferredScheduler to Immediate ***");
                 LogHost.Default.Warn("If we are not actually in a test runner, please file a bug\n");
-                RxApp.DeferredScheduler = ImmediateScheduler.Instance;
+                _DeferredScheduler = ImmediateScheduler.Instance;
             } else {
                 LogHost.Default.Info("Initializing to normal mode");
             }
@@ -81,7 +81,7 @@ namespace ReactiveUI
                 LogHost.Default.Error("*** ReactiveUI.Xaml DLL reference not added - using Default scheduler *** ");
                 LogHost.Default.Error("Add a reference to ReactiveUI.Xaml if you're using WPF / SL5 / WP7 / WinRT");
                 LogHost.Default.Error("or consider explicitly setting RxApp.DeferredScheduler if not");
-                RxApp.DeferredScheduler = DefaultScheduler.Instance;
+                _DeferredScheduler = DefaultScheduler.Instance;
             }
         }
 
@@ -90,7 +90,7 @@ namespace ReactiveUI
 
         public static IDependencyResolver DependencyResolver {
             get {
-                if (_UnitTestDeferredScheduler != null) return _UnitTestDependencyResolver;
+                if (_UnitTestDependencyResolver != null) return _UnitTestDependencyResolver;
 
                 if (_DependencyResolver == null) {
                     var resolver = new FuncDependencyResolver();
