@@ -145,7 +145,7 @@ namespace ReactiveUI
         /// Task Pool (or the normal Threadpool on Silverlight).
         /// </summary>
         public static IScheduler TaskpoolScheduler {
-            get { return _TaskpoolScheduler; }
+            get { return _UnitTestTaskpoolScheduler ?? _TaskpoolScheduler; }
             set {
                 if (InUnitTestRunner()) {
                     _UnitTestTaskpoolScheduler = value;
