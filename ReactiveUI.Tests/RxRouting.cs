@@ -64,7 +64,7 @@ namespace ReactiveUI.Routing.Tests
         [Fact]
         public void ResolveExplicitViewType()
         {
-            var resolver = new FuncDependencyResolver();
+            var resolver = new ModernDependencyResolver();
             resolver.Register(() => new BazView(), typeof(IBazView));
 
             using (resolver.WithResolver()) {

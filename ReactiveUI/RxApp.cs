@@ -93,7 +93,7 @@ namespace ReactiveUI
                 if (_UnitTestDependencyResolver != null) return _UnitTestDependencyResolver;
 
                 if (_DependencyResolver == null) {
-                    var resolver = new FuncDependencyResolver();
+                    var resolver = new ModernDependencyResolver();
                     resolver.InitializeResolver();
                     _DependencyResolver = resolver; 
                 }
