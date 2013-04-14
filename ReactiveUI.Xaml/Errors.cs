@@ -126,7 +126,7 @@ namespace ReactiveUI.Xaml
         /// </summary>
         public ReactiveCollection<IRecoveryCommand> RecoveryOptions {
             get { return _RecoveryOptions; }
-            protected set { this.RaiseAndSetIfChanged(x => x.RecoveryOptions, ref _RecoveryOptions, value); }
+            protected set { this.RaiseAndSetIfChanged(ref _RecoveryOptions, value); }
         }
 
         /// <summary>

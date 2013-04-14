@@ -6,7 +6,6 @@ using System.Reactive.Linq;
 
 namespace ReactiveUI
 {
-#if NET_45 || SILVERLIGHT5
     /// <summary>
     /// This class provides an implementation of <see cref="IBindingErrorProvider"/>
     /// for view models implementing the <see cref="INotifyDataErrorInfo"/> interface.
@@ -98,9 +97,7 @@ namespace ReactiveUI
                             });
         }
     }
-#endif
 
-#if !WINRT
     class DataErrorInfoBindingProvider : IBindingErrorProvider
     {
         static int maxDataErrorInfoIndex(BindingInfo binding, string[] propNames)
@@ -185,5 +182,4 @@ namespace ReactiveUI
                     });
         }
     }
-#endif
 }

@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Windows;
+using ReactiveUI.Routing;
 
 #if WINRT
 using Windows.ApplicationModel;
@@ -21,15 +22,20 @@ namespace ReactiveUI.Xaml
     {
         public void Register()
         {
-#if !MONO
-            RxApp.Register(typeof (DependencyObjectObservableForProperty), typeof (ICreatesObservableForProperty));
-            RxApp.Register(typeof (XamlDefaultPropertyBinding), typeof (IDefaultPropertyBindingProvider));
-            RxApp.Register(typeof (CreatesCommandBindingViaCommandParameter), typeof(ICreatesCommandBinding));
-            RxApp.Register(typeof (CreatesCommandBindingViaEvent), typeof(ICreatesCommandBinding));
-            RxApp.Register(typeof (BooleanToVisibilityTypeConverter), typeof (IBindingTypeConverter));
+#if !WINRT && !WP8
+            RxApp.Register(typeof(ComponentModelTypeConverter), typeof(IBindingTypeConverter));
+#endif
 
-#if !WINRT && !SILVERLIGHT
-            RxApp.Register(typeof (XamlValidationDisplayProvider), typeof (IBindingDisplayProvider));
+#if !MONO
+
+            RxApp.Register(typeof(DependencyObjectObservableForProperty), typeof (ICreatesObservableForProperty));
+            RxApp.Register(typeof(XamlDefaultPropertyBinding), typeof (IDefaultPropertyBindingProvider));
+            RxApp.Register(typeof(CreatesCommandBindingViaCommandParameter), typeof(ICreatesCommandBinding));
+            RxApp.Register(typeof(CreatesCommandBindingViaEvent), typeof(ICreatesCommandBinding));
+            RxApp.Register(typeof(BooleanToVisibilityTypeConverter), typeof(IBindingTypeConverter));
+            RxApp.Register(typeof(AutoDataTemplateBindingHook), typeof(IPropertyBindingHook));
+#if !WINRT 
+            RxApp.Register(typeof(XamlValidationDisplayProvider), typeof(IBindingDisplayProvider));
 #endif
 #endif
 

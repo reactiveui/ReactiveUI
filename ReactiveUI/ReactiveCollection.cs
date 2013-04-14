@@ -63,9 +63,6 @@ namespace ReactiveUI
         }
 
         [OnDeserialized]
-#if WP7
-		public
-#endif
         void setupRx(StreamingContext _) { setupRx(); }
 
         void setupRx(IEnumerable<T> initialContents = null, IScheduler scheduler = null, double resetChangeThreshold = 0.3)
@@ -229,12 +226,12 @@ namespace ReactiveUI
 
         public double ResetChangeThreshold { get; set; }
 
-        public void AddRange(IEnumerable<T> collection)
+        public virtual void AddRange(IEnumerable<T> collection)
         {
             InsertRange(_inner.Count, collection);
         }
 
-        public void InsertRange(int index, IEnumerable<T> collection)
+        public virtual void InsertRange(int index, IEnumerable<T> collection)
         {
             var arr = collection.ToArray();
             var disp = isLengthAboveResetThreshold(arr.Length) ?
@@ -249,7 +246,7 @@ namespace ReactiveUI
             }
         }
 
-        public void RemoveRange(int index, int count)
+        public virtual void RemoveRange(int index, int count)
         {
             var disp = isLengthAboveResetThreshold(count) ?
                 SuppressChangeNotifications() : Disposable.Empty;
@@ -263,7 +260,7 @@ namespace ReactiveUI
             }
         }
 
-        public void RemoveAll(IEnumerable<T> items)
+        public virtual void RemoveAll(IEnumerable<T> items)
         {
             Contract.Requires(items != null);
 
@@ -279,25 +276,31 @@ namespace ReactiveUI
             }
         }
 
-        public void Sort(int index, int count, IComparer<T> comparer)
+        public virtual void Sort(int index, int count, IComparer<T> comparer)
         {
             _inner.Sort(index, count, comparer);
             Reset();
         }
 
-        public void Sort(Comparison<T> comparison)
+        public virtual void Sort(Comparison<T> comparison)
         {
             _inner.Sort(comparison);
             Reset();
         }
 
-        public void Sort(IComparer<T> comparer = null)
+        public virtual void Sort(IComparer<T> comparer = null)
         {
             _inner.Sort(comparer ?? Comparer<T>.Default);
             Reset();
         }
 
-        public void Reset()
+        public virtual void Reset()
+        {
+            publishResetNotification();
+        }
+
+
+        protected virtual void publishResetNotification()
         {
             var ea = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset);
             _changing.OnNext(ea);
@@ -344,7 +347,7 @@ namespace ReactiveUI
 
             return Disposable.Create(() => {
                 if (Interlocked.Decrement(ref _suppressionRefCount) == 0) {
-                    Reset();
+                    publishResetNotification();
                 }
             });
         }
@@ -494,12 +497,12 @@ namespace ReactiveUI
             return GetEnumerator();
         }
 
-        public void Add(T item)
+        public virtual void Add(T item)
         {
             InsertItem(_inner.Count, item);
         }
 
-        public void Clear()
+        public virtual void Clear()
         {
             ClearItems();
         }
@@ -514,7 +517,7 @@ namespace ReactiveUI
             _inner.CopyTo(array, arrayIndex);
         }
 
-        public bool Remove(T item)
+        public virtual bool Remove(T item)
         {
             int index = _inner.IndexOf(item);
             if (index < 0) return false;
@@ -525,24 +528,24 @@ namespace ReactiveUI
 
         public int Count { get { return _inner.Count; } }
 
-        public bool IsReadOnly { get { return false; } }
+        public virtual bool IsReadOnly { get { return false; } }
 
         public int IndexOf(T item)
         {
             return _inner.IndexOf(item);
         }
 
-        public void Insert(int index, T item)
+        public virtual void Insert(int index, T item)
         {
             InsertItem(index, item);
         }
 
-        public void RemoveAt(int index)
+        public virtual void RemoveAt(int index)
         {
             RemoveItem(index);
         }
 
-        public T this[int index] {
+        public virtual T this[int index] {
             get { return _inner[index]; }
             set { SetItem(index, value); }
         }
