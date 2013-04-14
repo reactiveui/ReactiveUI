@@ -30,6 +30,8 @@ namespace ReactiveUI.Xaml
             registerFunction(() => new BooleanToVisibilityTypeConverter(), typeof(IBindingTypeConverter));
             registerFunction(() => new AutoDataTemplateBindingHook(), typeof(IPropertyBindingHook));
 #endif
+
+            RxApp.InUnitTestRunnerOverride = RealUnitTestDetector.InUnitTestRunner();
         }
     }
 }
