@@ -45,7 +45,8 @@ namespace ReactiveUI.Routing
         {
             // NB: If ReactiveUI.Routing is registered but they're not actually 
             // using it, we don't want to help them out here.
-            if (!RxApp.IsServiceLocationConfigured()) return true;
+            //TODO: figure out if this is still needed
+            //if (!RxApp.IsServiceLocationConfigured()) return true;
 
             var viewProperties = getCurrentViewProperties();
             var lastViewProperty = viewProperties.LastOrDefault();
