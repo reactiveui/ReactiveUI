@@ -89,10 +89,6 @@ namespace ReactiveUI
             RxApp.Register(typeof(BindingTrackerBindingHook), typeof(IBindingRegistry));
             RxApp.Register(typeof(NotifyDataErrorInfoBindingProvider), typeof(IBindingErrorProvider));
 
-#if !WINRT
-            RxApp.Register(typeof(DataErrorInfoBindingProvider), typeof(IBindingErrorProvider));
-#endif
-
             var namespaces = new[] {
                 "ReactiveUI.Xaml",
                 "ReactiveUI.Gtk",

@@ -136,6 +136,7 @@
     <Compile Include="BindingTypeConverters.cs" />
     <Compile Include="ComponentModelTypeConverter.cs" />
     <Compile Include="CreatesCommandBinding.cs" />
+    <Compile Include="DataErrorInfoBindingProvider.cs" />
     <Compile Include="DependencyObjectObservableForProperty.cs" />
     <Compile Include="XamlValidationDisplayProvider.cs" />
     <Compile Include="Errors.cs" />

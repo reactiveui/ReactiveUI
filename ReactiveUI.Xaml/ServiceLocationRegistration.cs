@@ -24,9 +24,9 @@ namespace ReactiveUI.Xaml
         {
 #if !WINRT && !WP8
             RxApp.Register(typeof(ComponentModelTypeConverter), typeof(IBindingTypeConverter));
+            RxApp.Register(typeof(DataErrorInfoBindingProvider), typeof(IBindingErrorProvider));
+            RxApp.Register(typeof(XamlValidationDisplayProvider), typeof(IBindingDisplayProvider));
 #endif
-
-#if !MONO
 
             RxApp.Register(typeof(DependencyObjectObservableForProperty), typeof (ICreatesObservableForProperty));
             RxApp.Register(typeof(XamlDefaultPropertyBinding), typeof (IDefaultPropertyBindingProvider));
@@ -34,10 +34,6 @@ namespace ReactiveUI.Xaml
             RxApp.Register(typeof(CreatesCommandBindingViaEvent), typeof(ICreatesCommandBinding));
             RxApp.Register(typeof(BooleanToVisibilityTypeConverter), typeof(IBindingTypeConverter));
             RxApp.Register(typeof(AutoDataTemplateBindingHook), typeof(IPropertyBindingHook));
-#if !WINRT 
-            RxApp.Register(typeof(XamlValidationDisplayProvider), typeof(IBindingDisplayProvider));
-#endif
-#endif
 
 #if WINRT
             if (!RxApp.InUnitTestRunner()) {
@@ -48,8 +44,6 @@ namespace ReactiveUI.Xaml
                     throw new Exception("Core Dispatcher is null - this means you've accessed ReactiveUI too early in WinRT initialization", ex);
                 }
             }
-#elif MONO
-            // NB: Mono has like 37 UI Frameworks :)
 #else
             if (!RxApp.InUnitTestRunner()) {
                 RxApp.DeferredScheduler = new WaitForDispatcherScheduler(() => 
