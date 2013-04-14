@@ -66,13 +66,14 @@ namespace ReactiveUI.Routing.Tests
         {
             var resolver = new FuncDependencyResolver();
             resolver.Register(() => new BazView(), typeof(IBazView));
-            RxApp.DependencyResolver = resolver; 
 
-            var vm = new BazViewModel(null);
+            using (resolver.WithResolver()) {
+                var vm = new BazViewModel(null);
 
-            var result = RxRouting.ResolveView(vm);
-            this.Log().Info(result.GetType().FullName);
-            Assert.True(result is BazView);
+                var result = RxRouting.ResolveView(vm);
+                this.Log().Info(result.GetType().FullName);
+                Assert.True(result is BazView);
+            }
         }
     }
 }
