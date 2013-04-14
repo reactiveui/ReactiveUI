@@ -34,9 +34,7 @@ namespace ReactiveUI
                     {
                         isInDesignMode = (bool)mInfo.Invoke(null, new object[] { Activator.CreateInstance(dependencyObject) });
                     }
-                }
-                else if((type = Type.GetType("System.ComponentModel.DesignerProperties, PresentationFramework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35", false)) != null)
-                {
+                } else if((type = Type.GetType("System.ComponentModel.DesignerProperties, PresentationFramework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35", false)) != null) {
                     // loaded the assembly, could be .net 
                     MethodInfo mInfo = type.GetMethod("GetIsInDesignMode");
                     Type dependencyObject = Type.GetType("System.Windows.DependencyObject, WindowsBase, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35", false);
@@ -44,14 +42,10 @@ namespace ReactiveUI
                     {
                         isInDesignMode = (bool)mInfo.Invoke(null, new object[] { Activator.CreateInstance(dependencyObject) });
                     }
-                }
-                else if ((type = Type.GetType("Windows.ApplicationModel.DesignMode, Windows, ContentType=WindowsRuntime", false)) != null)
-                {
+                } else if ((type = Type.GetType("Windows.ApplicationModel.DesignMode, Windows, ContentType=WindowsRuntime", false)) != null) {
                     // check WinRT next
                     isInDesignMode = (bool)type.GetProperty("IsDesignModeEnabled").GetMethod.Invoke(null, null);
-                }
-                else
-                {
+                } else {
                     isInDesignMode = false;
                 }
             }

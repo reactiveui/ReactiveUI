@@ -116,6 +116,7 @@
     <Compile Include="DependencyObjectObservableForProperty.cs" />
     <Compile Include="Errors.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RealUnitTestDetector.cs" />
     <Compile Include="Registrations.cs" />
     <Compile Include="RoutedViewHost.cs" />
     <Compile Include="SampleDataBinder.cs" />
