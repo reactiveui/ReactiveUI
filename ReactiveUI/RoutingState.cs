@@ -126,7 +126,7 @@ namespace ReactiveUI.Routing
             where T : IRoutableViewModel
         {
 	    var ret = new ReactiveCommand(This.Navigate.CanExecuteObservable);
-            ret.Select(_ => (IRoutableViewModel) RxApp.GetService<T>()).InvokeCommand(This.Navigate);
+            ret.Select(_ => (IRoutableViewModel)RxApp.DependencyResolver.GetService<T>()).InvokeCommand(This.Navigate);
             return ret;
         }
     }

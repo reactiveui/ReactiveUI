@@ -262,7 +262,7 @@ namespace ReactiveUI
     {
         static readonly MemoizingMRUCache<Type, ICreatesCommandBinding> bindCommandCache = 
             new MemoizingMRUCache<Type, ICreatesCommandBinding>((t, _) => {
-                return RxApp.GetAllServices<ICreatesCommandBinding>()
+                return RxApp.DependencyResolver.GetServices<ICreatesCommandBinding>()
                     .Aggregate(Tuple.Create(0, (ICreatesCommandBinding)null), (acc, x) => {
                         int score = x.GetAffinityForObject(t, false);
                         return (score > acc.Item1) ? Tuple.Create(score, x) : acc;
@@ -271,7 +271,7 @@ namespace ReactiveUI
 
         static readonly MemoizingMRUCache<Type, ICreatesCommandBinding> bindCommandEventCache = 
             new MemoizingMRUCache<Type, ICreatesCommandBinding>((t, _) => {
-                return RxApp.GetAllServices<ICreatesCommandBinding>()
+                return RxApp.DependencyResolver.GetServices<ICreatesCommandBinding>()
                     .Aggregate(Tuple.Create(0, (ICreatesCommandBinding)null), (acc, x) => {
                         int score = x.GetAffinityForObject(t, true);
                         return (score > acc.Item1) ? Tuple.Create(score, x) : acc;

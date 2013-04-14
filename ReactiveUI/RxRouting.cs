@@ -47,7 +47,7 @@ namespace ReactiveUI.Routing
                 var type = Reflection.ReallyFindType(typeToFind, false);
 
                 if (type != null) {
-                    var ret = RxApp.GetService(type, key) as IViewFor;
+                    var ret = RxApp.DependencyResolver.GetService(type, key) as IViewFor;
                     if (ret != null) return ret;
                 }
             } catch (Exception ex) {
@@ -57,7 +57,7 @@ namespace ReactiveUI.Routing
             var viewType = typeof (IViewFor<>);
 
             // IViewFor<FooBarViewModel> (the original behavior in RxUI 3.1)
-            return (IViewFor) RxApp.GetService(viewType.MakeGenericType(viewModel.GetType()), key);
+            return (IViewFor) RxApp.DependencyResolver.GetService(viewType.MakeGenericType(viewModel.GetType()), key);
         }
 
         static string interfaceifyTypeName(string typeName)
