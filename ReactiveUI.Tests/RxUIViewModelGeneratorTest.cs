@@ -1,0 +1,53 @@
+﻿using RxUIViewModelGenerator;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Globalization;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Resources;
+using System.Text;
+using System.Threading.Tasks;
+using Xunit;
+
+namespace ReactiveUI.Tests
+{
+    public class ViewModelRendererTests : IEnableLogger
+    {
+        const string testTemplate = "";
+
+        [Fact]
+        public void ShouldThrowOnEmptyStringOrGarbage()
+        {
+            var inputs = new[] {
+                "###woefowaefjawioefj",
+                "",
+            };
+
+            inputs.ForEach(x => {
+                Assert.Throws<ArgumentException>(() => {
+                    var fixture = new ScaffoldRenderer();
+                    fixture.RenderGeneratedViewModel(x);
+                });
+            });
+        }
+
+        [Fact]
+        public void ParseInterfacesSmokeTest()
+        {
+            var fixture = new ScaffoldRenderer();
+
+            var f = new StackTrace(true).GetFrame(0);
+            var dir = Path.GetDirectoryName(f.GetFileName());
+            string result = fixture.RenderUserViewModel(File.ReadAllText(Path.Combine(dir, "TestInterface.cs.txt")));
+            this.Log().Info(result);
+
+            Assert.Contains("ReactiveObject", result);
+            Assert.Contains("ObservableAsPropertyHelper", result);
+            Assert.Contains("HostScreen", result);
+        }
+    }
+
+
+}
