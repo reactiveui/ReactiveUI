@@ -1,4 +1,4 @@
-﻿interface ILoginDialog : IRoutableViewModel 
+﻿interface ILoginDialogViewModel : IRoutableViewModel 
 {
 	[Once]
 	IAppState AppState { get; }
@@ -10,7 +10,7 @@
 	ReactiveCommand Ok { get; }
 }
 
-interface IColorPicker : IRoutableViewModel 
+interface IColorPickerViewModel : IRoutableViewModel 
 {
 	int Red { get; set; }
 	int Green { get; set; }

@@ -59,5 +59,17 @@ namespace ReactiveUI.Tests
 
             Assert.Equal(2, results.Count());
         }
+
+        [Fact]
+        public void RenderXamlCodebehindSmokeTest()
+        {
+            var fixture = new ScaffoldRenderer();
+
+            var f = new StackTrace(true).GetFrame(0);
+            var dir = Path.GetDirectoryName(f.GetFileName());
+            var results = fixture.RenderUserControlCodeBehind(File.ReadAllText(Path.Combine(dir, "TestInterface.cs.txt")));
+
+            Assert.Equal(2, results.Count());
+        }
     }
 }
