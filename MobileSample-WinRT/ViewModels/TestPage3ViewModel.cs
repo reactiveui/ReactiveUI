@@ -20,7 +20,7 @@ namespace MobileSample_WinRT.ViewModels
 
         public TestPage3ViewModel(IScreen screen = null)
         {
-            HostScreen = screen ?? RxApp.GetService<IScreen>();
+            HostScreen = screen ?? RxApp.DependencyResolver.GetService<IScreen>();
             RandomGuid = Guid.NewGuid();
         }
     }

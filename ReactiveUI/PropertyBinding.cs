@@ -1249,7 +1249,7 @@ namespace ReactiveUI
         IDisposable evalBindingHooks<TViewModel, TView>(TViewModel viewModel, TView view, string[] vmPropChain, string[] viewPropChain, BindingDirection direction)
             where TViewModel : class
         {
-            var hooks = RxApp.GetAllServices<IPropertyBindingHook>();
+            var hooks = RxApp.DependencyResolver.GetServices<IPropertyBindingHook>();
 
             var vmFetcher = default(Func<IObservedChange<object, object>[]>);
             if (vmPropChain != null) {
@@ -1289,7 +1289,7 @@ namespace ReactiveUI
 
         MemoizingMRUCache<Tuple<Type, Type>, IBindingTypeConverter> typeConverterCache = new MemoizingMRUCache<Tuple<Type, Type>, IBindingTypeConverter>(
             (types, _) => {
-                return RxApp.GetAllServices<IBindingTypeConverter>()
+                return RxApp.DependencyResolver.GetServices<IBindingTypeConverter>()
                     .Aggregate(Tuple.Create(-1, default(IBindingTypeConverter)), (acc, x) =>
                     {
                         var score = x.GetAffinityForObjects(types.Item1, types.Item2);

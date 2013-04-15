@@ -24,6 +24,16 @@ namespace ReactiveUI
         readonly IDictionary<Tuple<Type, string>, IScheduler> schedulerMappings =
             new Dictionary<Tuple<Type, string>, IScheduler>();
 
+        static IMessageBus current;
+
+        /// <summary>
+        /// Gets or sets the Current MessageBus.
+        /// </summary>
+        public static IMessageBus Current
+        {
+            get { return current; }
+            set { current = value; }
+        }
 
         /// <summary>
         /// Registers a scheduler for the type, which may be specified at runtime, and the contract.
@@ -53,6 +63,23 @@ namespace ReactiveUI
         public IObservable<T> Listen<T>(string contract = null)
         {
             this.Log().Info("Listening to {0}:{1}", typeof (T), contract);
+
+            return SetupSubjectIfNecessary<T>(contract).Skip(1);
+        }
+
+        /// <summary>
+        /// Listen provides an Observable that will fire whenever a Message is
+        /// provided for this object via RegisterMessageSource or SendMessage.
+        /// </summary>
+        /// <typeparam name="T">The type of the message to listen to.</typeparam>
+        /// <param name="contract">A unique string to distinguish messages with
+        /// identical types (i.e. "MyCoolViewModel") - if the message type is
+        /// only used for one purpose, leave this as null.</param>
+        /// <returns>An Observable representing the notifications posted to the
+        /// message bus.</returns>
+        public IObservable<T> ListenIncludeLatest<T>(string contract = null)
+        {
+            this.Log().Info("Listening to {0}:{1}", typeof(T), contract);
 
             return SetupSubjectIfNecessary<T>(contract);
         }
@@ -107,14 +134,6 @@ namespace ReactiveUI
             SetupSubjectIfNecessary<T>(contract).OnNext(message);
         }
 
-        /// <summary>
-        /// Returns the Current MessageBus from the RxApp global object.
-        /// </summary>
-        public static IMessageBus Current
-        {
-            get { return RxApp.MessageBus; }
-        }
-
         ISubject<T> SetupSubjectIfNecessary<T>(string contract)
         {
             ISubject<T> ret = null;
@@ -126,7 +145,7 @@ namespace ReactiveUI
                     return;
                 }
 
-                ret = new ScheduledSubject<T>(GetScheduler(tuple));
+                ret = new ScheduledSubject<T>(GetScheduler(tuple), null, new BehaviorSubject<T>(default(T)));
                 mb[tuple] = new NotAWeakReference(ret);
             });
 

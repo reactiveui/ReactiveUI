@@ -22,37 +22,37 @@ namespace ReactiveUI.Tests
         public string _Property1;
         public string Property1 {
             get { return _Property1; }
-            set { this.RaiseAndSetIfChanged(x => x.Property1, value); }
+            set { this.RaiseAndSetIfChanged(ref _Property1, value); }
         }
 
         public int _Property2;
         public int Property2 {
             get { return _Property2; }
-            set { this.RaiseAndSetIfChanged(x => x.Property2, value); }
+            set { this.RaiseAndSetIfChanged(ref _Property2, value); }
         }
 
         public double _JustADouble;
         public double JustADouble {
             get { return _JustADouble; }
-            set { this.RaiseAndSetIfChanged(x => x.JustADouble, value); }
+            set { this.RaiseAndSetIfChanged(ref _JustADouble, value); }
         }
 
         public decimal _JustADecimal;
         public decimal JustADecimal {
             get { return _JustADecimal; }
-            set { this.RaiseAndSetIfChanged(x => x.JustADecimal, value); }
+            set { this.RaiseAndSetIfChanged(ref _JustADecimal, value); }
         }
 
         public int _JustAInt32;
         public int JustAInt32 {
             get { return _JustAInt32; }
-            set { this.RaiseAndSetIfChanged(x => x.JustAInt32, value); }
+            set { this.RaiseAndSetIfChanged(ref _JustAInt32, value); }
         }
 
         public double? _NullableDouble;
         public double? NullableDouble {
             get { return _NullableDouble; }
-            set { this.RaiseAndSetIfChanged(x => x.NullableDouble, value); }
+            set { this.RaiseAndSetIfChanged(ref _NullableDouble, value); }
         }
 
         public ReactiveCollection<string> SomeCollectionOfStrings { get; protected set; }
@@ -60,7 +60,7 @@ namespace ReactiveUI.Tests
         public PropertyBindModel _Model;
         public PropertyBindModel Model {
             get { return _Model; }
-            set { this.RaiseAndSetIfChanged(x => x.Model, value); }
+            set { this.RaiseAndSetIfChanged(ref _Model, value); }
         }
 
         public PropertyBindViewModel(PropertyBindModel model = null)
@@ -315,8 +315,6 @@ namespace ReactiveUI.Tests
             var vm = new PropertyBindViewModel();
             var view = new PropertyBindView() {ViewModel = vm};
 
-            configureDummyServiceLocator();
-
             Assert.Null(view.FakeItemsControl.ItemTemplate);
             view.OneWayBind(vm, x => x.SomeCollectionOfStrings, x => x.FakeItemsControl.ItemsSource);
 
@@ -328,8 +326,6 @@ namespace ReactiveUI.Tests
         {
             var vm = new PropertyBindViewModel();
             var view = new PropertyBindView() {ViewModel = vm};
-
-            configureDummyServiceLocator();
 
             Assert.Null(view.FakeItemsControl.ItemTemplate);
             vm.WhenAny(x => x.SomeCollectionOfStrings, x => x.Value)
@@ -367,19 +363,6 @@ namespace ReactiveUI.Tests
 
             view.ViewModel = vm;
             Assert.Equal(vm.JustADouble.ToString(), view.FakeControl.NullHatingString);
-        }
-
-        void configureDummyServiceLocator()
-        {
-            var types = new Dictionary<Tuple<Type, string>, List<Type>>();
-            RxApp.ConfigureServiceLocator(
-                (t, s) => Activator.CreateInstance(types[Tuple.Create(t, s)].First()),
-                (t, s) => types[Tuple.Create(t, s)].Select(Activator.CreateInstance).ToArray(),
-                (c, t, s) => {
-                    var tuple = Tuple.Create(t, s);
-                    if (!types.ContainsKey(tuple)) types[tuple] = new List<Type>();
-                    types[tuple].Add(c);
-                });
         }
     }
 }
