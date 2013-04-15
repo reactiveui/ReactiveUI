@@ -84,13 +84,15 @@ namespace ReactiveUI
         }
     }
 
-    public class FuncServiceResolver : IDependencyResolver
+    public class FuncServiceResolver : IMutableDependencyResolver
     {
-        readonly Func<Type, string, IEnumerable<object>> inner;
+        readonly Func<Type, string, IEnumerable<object>> innerGetServices;
+        readonly Action<Func<object>, Type, string> innerRegister;
 
-        public FuncServiceResolver(Func<Type, string, IEnumerable<object>> getAllServices)
+        public FuncServiceResolver(Func<Type, string, IEnumerable<object>> getAllServices, Action<Func<object>, Type, string> register = null)
         {
-            inner = getAllServices;
+            innerGetServices = getAllServices;
+            innerRegister = register;
         }
 
         public object GetService(Type serviceType, string contract = null)
@@ -100,11 +102,17 @@ namespace ReactiveUI
 
         public IEnumerable<object> GetServices(Type serviceType, string contract = null)
         {
-            return inner(serviceType, contract);
+            return innerGetServices(serviceType, contract);
         }
 
         public void Dispose()
         {
+        }
+
+        public void Register(Func<object> factory, Type serviceType, string contract = null)
+        {
+            if (innerRegister == null) throw new NotImplementedException();
+            innerRegister(factory, serviceType, contract);
         }
     }
 }
