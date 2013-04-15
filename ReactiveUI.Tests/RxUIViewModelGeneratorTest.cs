@@ -47,7 +47,17 @@ namespace ReactiveUI.Tests
             Assert.Contains("ObservableAsPropertyHelper", result);
             Assert.Contains("HostScreen", result);
         }
+
+        [Fact]
+        public void RenderXamlControlsSmokeTest()
+        {
+            var fixture = new ScaffoldRenderer();
+
+            var f = new StackTrace(true).GetFrame(0);
+            var dir = Path.GetDirectoryName(f.GetFileName());
+            var results = fixture.RenderUserControlXaml(File.ReadAllText(Path.Combine(dir, "TestInterface.cs.txt")));
+
+            Assert.Equal(2, results.Count());
+        }
     }
-
-
 }
