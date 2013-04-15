@@ -106,6 +106,8 @@
 //      p.Parse (new string[]{"-a-"});  // sets v == null
 //
 
+#define LINQ
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -123,7 +125,7 @@ using System.Text.RegularExpressions;
 using System.Linq;
 #endif
 
-namespace GitHub.Helpers
+namespace RxUIViewModelGenerator
 {
     public class OptionValueCollection : IList, IList<string>
     {
