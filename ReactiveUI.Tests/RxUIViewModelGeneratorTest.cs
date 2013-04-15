@@ -40,10 +40,10 @@ namespace ReactiveUI.Tests
 
             var f = new StackTrace(true).GetFrame(0);
             var dir = Path.GetDirectoryName(f.GetFileName());
-            string result = fixture.RenderUserViewModel(File.ReadAllText(Path.Combine(dir, "TestInterface.cs.txt")));
+            string result = fixture.RenderGeneratedViewModel(File.ReadAllText(Path.Combine(dir, "TestInterface.cs.txt")));
             this.Log().Info(result);
 
-            Assert.Contains("ReactiveObject", result);
+            Assert.Contains("IRoutableViewModel", result);
             Assert.Contains("ObservableAsPropertyHelper", result);
             Assert.Contains("HostScreen", result);
         }
