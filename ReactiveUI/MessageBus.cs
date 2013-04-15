@@ -24,6 +24,16 @@ namespace ReactiveUI
         readonly IDictionary<Tuple<Type, string>, IScheduler> schedulerMappings =
             new Dictionary<Tuple<Type, string>, IScheduler>();
 
+        static IMessageBus current;
+
+        /// <summary>
+        /// Gets or sets the Current MessageBus.
+        /// </summary>
+        public static IMessageBus Current
+        {
+            get { return current; }
+            set { current = value; }
+        }
 
         /// <summary>
         /// Registers a scheduler for the type, which may be specified at runtime, and the contract.
@@ -122,14 +132,6 @@ namespace ReactiveUI
         public void SendMessage<T>(T message, string contract = null)
         {
             SetupSubjectIfNecessary<T>(contract).OnNext(message);
-        }
-
-        /// <summary>
-        /// Returns the Current MessageBus from the RxApp global object.
-        /// </summary>
-        public static IMessageBus Current
-        {
-            get { return RxApp.MessageBus; }
         }
 
         ISubject<T> SetupSubjectIfNecessary<T>(string contract)

@@ -9,19 +9,11 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
-using System.Reactive.Threading.Tasks;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using System.Threading;
-
 using System.Threading.Tasks;
-
-#if WINRT
-using Windows.ApplicationModel;
-using System.Reactive.Windows.Foundation;
-using Windows.ApplicationModel.Store;
-#endif
 
 namespace ReactiveUI
 {
@@ -45,18 +37,19 @@ namespace ReactiveUI
     {
         static RxApp()
         {
-#if WP7
-            TaskpoolScheduler = new EventLoopScheduler();
-#elif WP8
-            //TaskpoolScheduler = Scheduler.TaskPool;
-            TaskpoolScheduler = Scheduler.ThreadPool;
-#elif SILVERLIGHT || DOTNETISOLDANDSAD
-            TaskpoolScheduler = Scheduler.ThreadPool;
-#elif WINRT            
-            TaskpoolScheduler = System.Reactive.Concurrency.ThreadPoolScheduler.Default;
-#else
             TaskpoolScheduler = Scheduler.TaskPool;
-#endif
+
+            DeferredScheduler = new WaitForDispatcherScheduler(() => {
+                Type dispatcherType = 
+                    Type.GetType("System.Reactive.Windows.Threading.DispatcherScheduler, System.Reactive.Windows.Threading", false) ?? 
+                    Type.GetType("System.Reactive.Windows.Threading.CoreDispatcherScheduler, System.Reactive.Windows.Threading", false);
+
+                if (dispatcherType != null) {
+                    return (IScheduler)dispatcherType.GetProperty("Current").GetMethod.Invoke(null, null);
+                }
+
+                return null;
+            });
 
             DefaultExceptionHandler = Observer.Create<Exception>(ex => {
                 // NB: If you're seeing this, it means that an 
@@ -74,53 +67,12 @@ namespace ReactiveUI
                 });
             });
 
-            MessageBus = new MessageBus();
-
             LoggerFactory = t => new DebugLogger();
 
-            RxApp.Register(typeof(INPCObservableForProperty), typeof(ICreatesObservableForProperty));
-            RxApp.Register(typeof(IRNPCObservableForProperty), typeof(ICreatesObservableForProperty));
-            RxApp.Register(typeof(POCOObservableForProperty), typeof(ICreatesObservableForProperty));
-            RxApp.Register(typeof(NullDefaultPropertyBindingProvider), typeof(IDefaultPropertyBindingProvider));
-            RxApp.Register(typeof(EqualityTypeConverter), typeof(IBindingTypeConverter));
-            RxApp.Register(typeof(StringConverter), typeof(IBindingTypeConverter));
-
-#if !SILVERLIGHT && !WINRT && !PORTABLE
-            RxApp.Register(typeof(ComponentModelTypeConverter), typeof(IBindingTypeConverter));
-#endif
-
-            var namespaces = new[] {
-                "ReactiveUI.Xaml",
-                "ReactiveUI.Gtk",
-                "ReactiveUI.Cocoa",
-                "ReactiveUI.Android",
-                "ReactiveUI.NLog",
-                "ReactiveUI.Mobile",
-            };
-
-#if WINRT || PORTABLE
-            var assm = typeof (RxApp).GetTypeInfo().Assembly;
-#else
-            var assm = Assembly.GetExecutingAssembly();
-#endif
-
-            namespaces.ForEach(ns => {
-                var fullName = typeof (RxApp).AssemblyQualifiedName;
-                var targetType = ns + ".ServiceLocationRegistration";
-                fullName = fullName.Replace("ReactiveUI.RxApp", targetType);
-                fullName = fullName.Replace(assm.FullName, assm.FullName.Replace("ReactiveUI", ns));
-
-                var registerTypeClass = Reflection.ReallyFindType(fullName, false);
-                if (registerTypeClass != null) {
-                    var registerer = (IWantsToRegisterStuff) Activator.CreateInstance(registerTypeClass);
-                    registerer.Register();
-                }
-            });
-
             if (InUnitTestRunner()) {
-                LogHost.Default.Warn("*** Detected Unit Test Runner, setting Scheduler to Immediate ***");
+                LogHost.Default.Warn("*** Detected Unit Test Runner, setting DeferredScheduler to Immediate ***");
                 LogHost.Default.Warn("If we are not actually in a test runner, please file a bug\n");
-                RxApp.DeferredScheduler = ImmediateScheduler.Instance;
+                _DeferredScheduler = ImmediateScheduler.Instance;
             } else {
                 LogHost.Default.Info("Initializing to normal mode");
             }
@@ -129,7 +81,32 @@ namespace ReactiveUI
                 LogHost.Default.Error("*** ReactiveUI.Xaml DLL reference not added - using Default scheduler *** ");
                 LogHost.Default.Error("Add a reference to ReactiveUI.Xaml if you're using WPF / SL5 / WP7 / WinRT");
                 LogHost.Default.Error("or consider explicitly setting RxApp.DeferredScheduler if not");
-                RxApp.DeferredScheduler = DefaultScheduler.Instance;
+                _DeferredScheduler = DefaultScheduler.Instance;
+            }
+        }
+
+        [ThreadStatic] static IDependencyResolver _UnitTestDependencyResolver;
+        static IDependencyResolver _DependencyResolver;
+
+        public static IDependencyResolver DependencyResolver {
+            get {
+                if (_UnitTestDependencyResolver != null) return _UnitTestDependencyResolver;
+
+                if (_DependencyResolver == null) {
+                    var resolver = new ModernDependencyResolver();
+                    resolver.InitializeResolver();
+                    _DependencyResolver = resolver; 
+                }
+
+                return _DependencyResolver;
+            }
+            set {
+                if (InUnitTestRunner()) {
+                    _UnitTestDependencyResolver = value;
+                    _DependencyResolver = _DependencyResolver ?? value;
+                } else {
+                    _DependencyResolver = value;
+                }
             }
         }
 
@@ -192,25 +169,6 @@ namespace ReactiveUI
             set { _LoggerFactory = value; _LoggerFactoryChanged.OnNext(Unit.Default); }
         }
 
-        [ThreadStatic] static IMessageBus _UnitTestMessageBus;
-        static IMessageBus _MessageBus;
-
-        /// <summary>
-        /// Set this property to implement a custom MessageBus for
-        /// MessageBus.Current.
-        /// </summary>
-        public static IMessageBus MessageBus {
-            get { return _UnitTestMessageBus ?? _MessageBus; }
-            set {
-                if (InUnitTestRunner()) {
-                    _UnitTestMessageBus = value;
-                    _MessageBus = _MessageBus ?? value;
-                } else {
-                    _MessageBus = value;
-                }
-            }
-        }
-
         /// <summary>
         /// This method allows you to override the return value of 
         /// RxApp.InUnitTestRunner - a null value means that InUnitTestRunner
@@ -229,6 +187,23 @@ namespace ReactiveUI
         static bool? _inUnitTestRunner;
 
         /// <summary>
+        /// This method will initialize your custom service locator with the 
+        /// built-in RxUI types.
+        /// </summary>
+        /// <param name="registerMethod">Create a method here that will 
+        /// register a constant. For example, the NInject version of
+        /// this method might look like:
+        /// 
+        /// (obj, type) => kernel.Bind(type).ToConstant(obj)
+        /// </param>
+        public static void InitializeCustomResolver(Action<object, Type> registerMethod)
+        {
+            var fakeResolver = new FuncDependencyResolver(null, 
+                (fac, type, str) => registerMethod(fac(), type));
+            fakeResolver.InitializeResolver();
+        }
+
+        /// <summary>
         /// InUnitTestRunner attempts to determine heuristically if the current
         /// application is running in a unit test framework.
         /// </summary>
@@ -240,136 +215,15 @@ namespace ReactiveUI
                 return InUnitTestRunnerOverride.Value;
             }
 
-            if (_inUnitTestRunner.HasValue) return _inUnitTestRunner.Value;
+            if (!_inUnitTestRunner.HasValue) {
+                // NB: This is in a separate static ctor to avoid a deadlock on 
+                // the static ctor lock when blocking on async methods 
+                _inUnitTestRunner = UnitTestDetector.IsInUnitTestRunner() || DesignModeDetector.IsInDesignMode();
+            }
 
-            // NB: This is in a separate static ctor to avoid a deadlock on 
-            // the static ctor lock when blocking on async methods 
-            _inUnitTestRunner = UnitTestDetector.IsInUnitTestRunner() || DesignModeDetector.IsInDesignMode();
             return _inUnitTestRunner.Value;
         }
-
-
-        // 
-        // Service Location
-        //
-
-        static Func<Type, string, object> _getService;
-        static Func<Type, string, IEnumerable<object>> _getAllServices;
-        static Action<Type, Type, string> _register;
-
-        public static T GetService<T>(string key = null)
-        {
-            return (T)GetService(typeof(T), key);
-        }
-
-        public static object GetService(Type type, string key = null)
-        {
-            if (_getService != null) goto callSl;
-
-            lock (_preregisteredTypes) {
-                if (_preregisteredTypes.Count == 0) goto callSl;
-
-                var k = Tuple.Create(type, key);
-                if (!_preregisteredTypes.ContainsKey(k)) goto callSl;
-                return Activator.CreateInstance(_preregisteredTypes[k].First());
-            }
-            
-        callSl:
-            var getService = _getService ??
-                ((_, __) => { throw new Exception("You need to call RxApp.ConfigureServiceLocator to set up service location"); });
-            return getService(type, key);
-        }
-
-        public static IEnumerable<T> GetAllServices<T>(string key = null)
-        {
-            return GetAllServices(typeof(T), key).Cast<T>().ToArray();
-        }
-
-        public static IEnumerable<object> GetAllServices(Type type, string key = null)
-        {
-            if (_getAllServices != null) goto callSl;
-
-            lock (_preregisteredTypes) {
-                if (_preregisteredTypes.Count == 0) goto callSl;
-
-                var k = Tuple.Create(type, key);
-                if (_preregisteredTypes.ContainsKey(k)) {
-                    return _preregisteredTypes[k].Select(Activator.CreateInstance).ToArray();
-                }
-            }
-                
-            return Enumerable.Empty<object>().ToArray();
-
-        callSl:
-            var getAllServices = _getAllServices ??
-                ((_,__) => { throw new Exception("You need to call RxApp.ConfigureServiceLocator to set up service location"); });
-            return (getAllServices(type, key) ?? Enumerable.Empty<object>()).ToArray();
-        }
-
-        static readonly Dictionary<Tuple<Type, string>, List<Type>> _preregisteredTypes = new Dictionary<Tuple<Type, string>, List<Type>>();
-        public static void Register(Type concreteType, Type interfaceType, string key = null)
-        {
-            // NB: This allows ReactiveUI itself (as well as other libraries) 
-            // to register types before the actual service locator is set up,
-            // or to serve as an ultra-crappy service locator if the app doesn't
-            // use service location
-            lock (_preregisteredTypes) {
-                if (_register == null) {
-                    var k = Tuple.Create(interfaceType, key);
-                    if (!_preregisteredTypes.ContainsKey(k)) _preregisteredTypes[k] = new List<Type>();
-                    _preregisteredTypes[k].Add(concreteType);
-                } else {
-                    _register(concreteType, interfaceType, key);
-                }
-            }
-        }
-
-        public static void ConfigureServiceLocator(
-            Func<Type, string, object> getService, 
-            Func<Type, string, IEnumerable<object>> getAllServices,
-            Action<Type, Type, string> register)
-        {
-            if (getService == null || getAllServices == null || register == null) {
-                throw new ArgumentException("Both getService and getAllServices must be implemented");
-            }
-
-            _getService = getService;
-            _getAllServices = getAllServices;
-            _register = register;
-
-            // Empty out the types that were registered before service location
-            // was set up.
-            lock (_preregisteredTypes) {
-                _preregisteredTypes.Keys
-                    .SelectMany(x => _preregisteredTypes[x]
-                        .Select(v => Tuple.Create(v, x.Item1, x.Item2)))
-                    .ForEach(x => _register(x.Item1, x.Item2, x.Item3));
-            }
-        }
-
-        public static bool IsServiceLocationConfigured()
-        {
-            return _getService != null && _getAllServices != null;
-        }
-
-        static IEnumerable<string> attemptToEarlyLoadReactiveUIDLLs()
-        {
-            
-#if PORTABLE
-            // NB: WinRT hates your Freedom
-            return new[] { "ReactiveUI.Xaml", "ReactiveUI.Mobile", "ReactiveUI.NLog", };
-#endif
-        }
-
-        static string getArchSuffixForPath(string path)
-        {
-            var re = new Regex(@"(_[A-Za-z0-9]+)\.");
-            var m = re.Match(Path.GetFileName(path));
-            return m.Success ? m.Groups[1].Value : "";
-        }
-    }
-
-    
+    }    
 }
 
 // vim: tw=120 ts=4 sw=4 et :
