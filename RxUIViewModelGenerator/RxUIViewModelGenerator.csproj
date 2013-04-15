@@ -75,6 +75,7 @@
     <EmbeddedResource Include="Resources\ViewModelGeneratedTemplate.mustache" />
     <EmbeddedResource Include="Resources\ViewModelTemplate.mustache" />
     <EmbeddedResource Include="Resources\XamlViewTemplate.mustache" />
+    <EmbeddedResource Include="Resources\XamlViewCodebehindTemplate.mustache" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj">
