@@ -84,12 +84,12 @@ namespace ReactiveUI
         }
     }
 
-    public class FuncServiceResolver : IMutableDependencyResolver
+    public class FuncDependencyResolver : IMutableDependencyResolver
     {
         readonly Func<Type, string, IEnumerable<object>> innerGetServices;
         readonly Action<Func<object>, Type, string> innerRegister;
 
-        public FuncServiceResolver(Func<Type, string, IEnumerable<object>> getAllServices, Action<Func<object>, Type, string> register = null)
+        public FuncDependencyResolver(Func<Type, string, IEnumerable<object>> getAllServices, Action<Func<object>, Type, string> register = null)
         {
             innerGetServices = getAllServices;
             innerRegister = register;
