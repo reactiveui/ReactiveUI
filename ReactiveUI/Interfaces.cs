@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.Linq.Expressions;
 using System.Reactive;
 using System.Reactive.Concurrency;
+using System.Reactive.Subjects;
 
 namespace ReactiveUI
 {
@@ -148,18 +149,18 @@ namespace ReactiveUI
         /// Fires whenever the number of items in a collection has changed,
         /// providing the new Count.
         /// </summary>
-        IObservable<int> CollectionCountChanged { get; }
+        IObservable<int> CountChanged { get; }
 
         /// <summary>
         /// Fires before a collection is about to change, providing the previous
         /// Count.
         /// </summary>
-        IObservable<int> CollectionCountChanging { get; }
+        IObservable<int> CountChanging { get; }
 
         /// <summary>
         /// Fires when a collection becomes or stops being empty.
         /// </summary>
-        IObservable<bool> IsEmpty { get; }
+        IObservable<bool> IsEmptyChanged { get; }
 
         //
         // Change Tracking
@@ -253,7 +254,7 @@ namespace ReactiveUI
         /// ChangeTrackingEnabled is set to True.
         /// </summary>
         IObservable<IObservedChange<T, object>> ItemChanged { get; }
-    }
+    }    
 
     /// <summary>
     /// IMessageBus represents an object that can act as a "Message Bus", a
@@ -293,6 +294,19 @@ namespace ReactiveUI
         /// only used for one purpose, leave this as null.</param>
         /// <returns></returns>
         IObservable<T> Listen<T>(string contract = null);
+
+        /// <summary>
+        /// ListenIncludeLatest provides an Observable that will fire whenever a Message is
+        /// provided for this object via RegisterMessageSource or SendMessage and fire the 
+        /// last provided Message immediately if applicable, or null.
+        /// </summary>
+        /// <typeparam name="T">The type of the message to listen to.</typeparam>
+        /// <param name="contract">A unique string to distinguish messages with
+        /// identical types (i.e. "MyCoolViewModel") - if the message type is
+        /// only used for one purpose, leave this as null.</param>
+        /// <returns>An Observable representing the notifications posted to the
+        /// message bus.</returns>
+        IObservable<T> ListenIncludeLatest<T>(string contract = null);
 
         /// <summary>
         /// Determines if a particular message Type is registered.
@@ -425,7 +439,11 @@ namespace ReactiveUI
 
     public interface IPropertyBindingHook
     {
-        bool ExecuteHook(object source, object target, Func<IObservedChange<object, object>[]> getCurrentViewModelProperties, Func<IObservedChange<object, object>[]> getCurrentViewProperties, BindingDirection direction);
+        bool ExecuteHook(
+            object source, object target, 
+            Func<IObservedChange<object, object>[]> getCurrentViewModelProperties, 
+            Func<IObservedChange<object, object>[]> getCurrentViewProperties, 
+            BindingDirection direction);
     }
 
     public interface IViewFor
@@ -449,6 +467,78 @@ namespace ReactiveUI
     internal interface IWantsToRegisterStuff
     {                       
         void Register();
+    }
+
+    // NB: This is just a name we can bolt extension methods to
+    public interface INavigateCommand : IReactiveCommand { }
+
+    public interface IRoutingState : IReactiveNotifyPropertyChanged
+    {
+        /// <summary>
+        /// Represents the current navigation stack, the last element in the
+        /// collection being the currently visible ViewModel.
+        /// </summary>
+        ReactiveCollection<IRoutableViewModel> NavigationStack { get; }
+
+        /// <summary>
+        /// Navigates back to the previous element in the stack.
+        /// </summary>
+        IReactiveCommand NavigateBack { get; }
+
+        /// <summary>
+        /// Navigates to the a new element in the stack - the Execute parameter
+        /// must be a ViewModel that implements IRoutableViewModel.
+        /// </summary>
+        INavigateCommand Navigate { get; }
+
+        /// <summary>
+        /// Navigates to a new element and resets the navigation stack (i.e. the
+        /// new ViewModel will now be the only element in the stack) - the
+        /// Execute parameter must be a ViewModel that implements
+        /// IRoutableViewModel.
+        /// </summary>
+        INavigateCommand NavigateAndReset { get; }
+    }
+
+    /// <summary>
+    /// Implement this interface for ViewModels that can be navigated to.
+    /// </summary>
+    public interface IRoutableViewModel : IReactiveNotifyPropertyChanged
+    {
+        /// <summary>
+        /// A string token representing the current ViewModel, such as 'login' or 'user'
+        /// </summary>
+        string UrlPathSegment { get; }
+
+        /// <summary>
+        /// The IScreen that this ViewModel is currently being shown in. This
+        /// is usually passed into the ViewModel in the Constructor and saved
+        /// as a ReadOnly Property.
+        /// </summary>
+        IScreen HostScreen { get; }
+    }
+
+    /// <summary>
+    /// IScreen represents any object that is hosting its own routing -
+    /// usually this object is your AppViewModel or MainWindow object.
+    /// </summary>
+    public interface IScreen
+    {
+        /// <summary>
+        /// The Router associated with this Screen.
+        /// </summary>
+        IRoutingState Router { get; }
+    }
+
+    /// <summary>
+    /// Allows an additional string to make view resolution more specific than just a type.
+    /// </summary>
+    public class ViewContractAttribute : Attribute
+    {
+        /// <summary>
+        /// A unique string that will be used along with the type to resolve a View
+        /// </summary>
+        public string Contract { get; set; }
     }
 }
 

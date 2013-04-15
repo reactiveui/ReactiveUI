@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Windows;
+using ReactiveUI.Routing;
 
 #if WINRT
 using Windows.ApplicationModel;
@@ -21,12 +22,17 @@ namespace ReactiveUI.Xaml
     {
         public void Register()
         {
+#if !WINRT && !WP8
+            RxApp.Register(typeof(ComponentModelTypeConverter), typeof(IBindingTypeConverter));
+#endif
+
 #if !MONO
-            RxApp.Register(typeof (DependencyObjectObservableForProperty), typeof (ICreatesObservableForProperty));
-            RxApp.Register(typeof (XamlDefaultPropertyBinding), typeof (IDefaultPropertyBindingProvider));
-            RxApp.Register(typeof (CreatesCommandBindingViaCommandParameter), typeof(ICreatesCommandBinding));
-            RxApp.Register(typeof (CreatesCommandBindingViaEvent), typeof(ICreatesCommandBinding));
-            RxApp.Register(typeof (BooleanToVisibilityTypeConverter), typeof (IBindingTypeConverter));
+            RxApp.Register(typeof(DependencyObjectObservableForProperty), typeof (ICreatesObservableForProperty));
+            RxApp.Register(typeof(XamlDefaultPropertyBinding), typeof (IDefaultPropertyBindingProvider));
+            RxApp.Register(typeof(CreatesCommandBindingViaCommandParameter), typeof(ICreatesCommandBinding));
+            RxApp.Register(typeof(CreatesCommandBindingViaEvent), typeof(ICreatesCommandBinding));
+            RxApp.Register(typeof(BooleanToVisibilityTypeConverter), typeof(IBindingTypeConverter));
+            RxApp.Register(typeof(AutoDataTemplateBindingHook), typeof(IPropertyBindingHook));
 #endif
 
 #if WINRT
