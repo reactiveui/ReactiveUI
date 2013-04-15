@@ -13,26 +13,34 @@ namespace RxUIViewModelGenerator
 {
     public class ScaffoldRenderer : IEnableLogger
     {
-        public string RenderGeneratedViewModel(string interfaceCode, Dictionary<string, object> options = null)
+        public Tuple<string, string> RenderGeneratedViewModel(string interfaceCode, Dictionary<string, object> options = null, string templateOverride = null)
         {
             var res = this.GetType().Assembly.GetManifestResourceStream("RxUIViewModelGenerator.Resources.ViewModelGeneratedTemplate.mustache");
-            return Render(interfaceCode, new StreamReader(res).ReadToEnd(), options);
+            var dict = createRenderInfo(interfaceCode, options);
+
+            return Tuple.Create(
+                ((string)dict["filename"]).Replace(".cs", ".generated.cs"), 
+                renderTemplate(templateOverride ?? new StreamReader(res).ReadToEnd(), dict));
         }
 
-        public string RenderUserViewModel(string interfaceCode, Dictionary<string, object> options = null)
+        public Tuple<string, string> RenderUserViewModel(string interfaceCode, Dictionary<string, object> options = null, string templateOverride = null)
         {
             var res = this.GetType().Assembly.GetManifestResourceStream("RxUIViewModelGenerator.Resources.ViewModelTemplate.mustache");
-            return Render(interfaceCode, new StreamReader(res).ReadToEnd(), options);
+
+            var dict = createRenderInfo(interfaceCode, options);
+            return Tuple.Create(
+                (string)dict["filename"], 
+                renderTemplate(templateOverride ?? new StreamReader(res).ReadToEnd(), dict));
         }
 
-        public IEnumerable<string> RenderUserControlXaml(string interfaceCode, Dictionary<string, object> options = null)
+        public IEnumerable<Tuple<string, string>> RenderUserControlXaml(string interfaceCode, Dictionary<string, object> options = null, string templateOverride = null)
         {
             var ri = createRenderInfo(interfaceCode, options);
 
             var renderInfos = (IEnumerable<InterfaceRenderInformation>)ri["interfaces"];
 
             var res = this.GetType().Assembly.GetManifestResourceStream("RxUIViewModelGenerator.Resources.XamlViewTemplate.mustache");
-            var templ = new StreamReader(res).ReadToEnd();
+            var templ = templateOverride ?? new StreamReader(res).ReadToEnd();
 
             return renderInfos.Select(renderInfo => {
                 var dict = ri
@@ -41,18 +49,21 @@ namespace RxUIViewModelGenerator
 
                 if (!dict.ContainsKey("control")) dict["control"] = "UserControl";
                 dict["implClassName"] = renderInfo.implClassName.Replace("ViewModel", "View");
-                return Nustache.Core.Render.StringToString(templ, dict);
+
+                return Tuple.Create(
+                    renderInfo.implClassName.Replace("ViewModel", "View") + ".xaml",
+                    Nustache.Core.Render.StringToString(templ, dict));
             }).ToArray();
         }
 
-        public IEnumerable<string> RenderUserControlCodeBehind(string interfaceCode, Dictionary<string, object> options = null)
+        public IEnumerable<Tuple<string, string>> RenderUserControlCodeBehind(string interfaceCode, Dictionary<string, object> options = null, string templateOverride = null)
         {
             var ri = createRenderInfo(interfaceCode, options);
 
             var renderInfos = (IEnumerable<InterfaceRenderInformation>)ri["interfaces"];
 
             var res = this.GetType().Assembly.GetManifestResourceStream("RxUIViewModelGenerator.Resources.XamlViewCodebehindTemplate.mustache");
-            var templ = new StreamReader(res).ReadToEnd();
+            var templ = templateOverride ?? new StreamReader(res).ReadToEnd();
 
             return renderInfos.Select(renderInfo => {
                 var dict = ri
@@ -61,14 +72,11 @@ namespace RxUIViewModelGenerator
 
                 if (!dict.ContainsKey("control")) dict["control"] = "UserControl";
                 dict["implClassName"] = renderInfo.implClassName.Replace("ViewModel", "View");
-                return renderTemplate(templ, dict);
-            }).ToArray();
-        }
 
-        public string Render(string interfaceCode, string template, Dictionary<string, object> options = null)
-        {
-            var dict = createRenderInfo(interfaceCode, options);
-            return renderTemplate(template, dict);
+                return Tuple.Create(
+                    renderInfo.implClassName.Replace("ViewModel", "View") + ".xaml.cs",
+                    renderTemplate(templ, dict));
+            }).ToArray();
         }
 
         private string renderTemplate(string template, Dictionary<string, object> dict)
@@ -101,15 +109,17 @@ namespace RxUIViewModelGenerator
 
             var renderInfo = typeDecls.Select(renderInterface).ToArray();
 
+            var filename = renderInfo.Length == 1 ? renderInfo[0].implClassName + ".cs" : "ViewModels.cs";
             var dict = new Dictionary<string, object> {
                 { "interfaces", renderInfo },
+                { "filename", filename },
             };
 
             if (options != null) {
                 foreach (var kvp in options) dict.Add(kvp.Key, kvp.Value);
             }
 
-            if (dict.ContainsKey("namespace")) dict["namespace"] = "TODO";
+            if (!dict.ContainsKey("namespace")) dict["namespace"] = "TODO";
 
             return dict;
         }
