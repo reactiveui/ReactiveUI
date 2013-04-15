@@ -1,0 +1,48 @@
+﻿using System;
+using System.Reactive;
+using System.Reactive.Linq;
+
+{{#Namespaces}}
+using {{Name}};
+{{/Namespaces}}
+
+{{#Namespaces}}
+namespace {{Name}}
+{
+	public static class EventsMixin
+	{
+{{#Types}}
+		public static {{Name}}Events Events(this {{Name}} This)
+		{
+			return new {{Name}}Events(This);
+		}
+{{/Types}}
+	}
+
+{{#Types}}
+	public class {{Name}}Events
+{{#Parent}}
+		: {{Name}}Events
+{{/Parent}}
+	{
+		{{Name}} This;
+
+        public {{Name}}Events({{Name}} This)
+{{#Parent}}
+			: base(This)
+{{/Parent}}
+        {
+            this.This = This;
+        }
+
+{{#Events}}
+        public IObservable<{{EventArgsType}}> {{Name}} {
+            get { return Observable.FromEventPattern<{{EventHandlerType}}, {{EventArgsType}}>(x => This.{{Name}} += x, x => This.{{Name}} -= x).Select(x => x.EventArgs); }
+        }
+{{/Events}}
+	}
+{{/Types}}
+
+}
+
+{{/Namespaces}}
