@@ -38,6 +38,7 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI", "ReactiveUI\ReactiveUI.csproj", "{464CB812-F99F-401B-BE4C-E8F0515CD19D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Events", "ReactiveUI.WPFEvents\ReactiveUI.Events.csproj", "{600998C4-54DD-4755-BFA8-6F44544D8E2E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RxUIViewModelGenerator", "RxUIViewModelGenerator\RxUIViewModelGenerator.csproj", "{EE7D7FD6-4475-4D1F-A000-9D684F8EC3C7}"
 EndProject
 Global
 	GlobalSection(TestCaseManagementSettings) = postSolution
@@ -332,6 +333,20 @@ Global
 		{600998C4-54DD-4755-BFA8-6F44544D8E2E}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{600998C4-54DD-4755-BFA8-6F44544D8E2E}.Release|x64.ActiveCfg = Release|Any CPU
 		{600998C4-54DD-4755-BFA8-6F44544D8E2E}.Release|x86.ActiveCfg = Release|Any CPU
+		{EE7D7FD6-4475-4D1F-A000-9D684F8EC3C7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EE7D7FD6-4475-4D1F-A000-9D684F8EC3C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EE7D7FD6-4475-4D1F-A000-9D684F8EC3C7}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{EE7D7FD6-4475-4D1F-A000-9D684F8EC3C7}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{EE7D7FD6-4475-4D1F-A000-9D684F8EC3C7}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{EE7D7FD6-4475-4D1F-A000-9D684F8EC3C7}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{EE7D7FD6-4475-4D1F-A000-9D684F8EC3C7}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{EE7D7FD6-4475-4D1F-A000-9D684F8EC3C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EE7D7FD6-4475-4D1F-A000-9D684F8EC3C7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EE7D7FD6-4475-4D1F-A000-9D684F8EC3C7}.Release|ARM.ActiveCfg = Release|Any CPU
+		{EE7D7FD6-4475-4D1F-A000-9D684F8EC3C7}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{EE7D7FD6-4475-4D1F-A000-9D684F8EC3C7}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{EE7D7FD6-4475-4D1F-A000-9D684F8EC3C7}.Release|x64.ActiveCfg = Release|Any CPU
+		{EE7D7FD6-4475-4D1F-A000-9D684F8EC3C7}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
