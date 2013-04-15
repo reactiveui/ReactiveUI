@@ -13,19 +13,77 @@ namespace RxUIViewModelGenerator
 {
     public class ScaffoldRenderer : IEnableLogger
     {
-        public string RenderGeneratedViewModel(string interfaceCode, string targetNamespace = null)
+        public string RenderGeneratedViewModel(string interfaceCode, Dictionary<string, object> options = null)
         {
             var res = this.GetType().Assembly.GetManifestResourceStream("RxUIViewModelGenerator.Resources.ViewModelGeneratedTemplate.mustache");
-            return Render(interfaceCode, new StreamReader(res).ReadToEnd(), targetNamespace);
+            return Render(interfaceCode, new StreamReader(res).ReadToEnd(), options);
         }
 
-        public string RenderUserViewModel(string interfaceCode, string targetNamespace = null)
+        public string RenderUserViewModel(string interfaceCode, Dictionary<string, object> options = null)
         {
             var res = this.GetType().Assembly.GetManifestResourceStream("RxUIViewModelGenerator.Resources.ViewModelTemplate.mustache");
-            return Render(interfaceCode, new StreamReader(res).ReadToEnd(), targetNamespace);
+            return Render(interfaceCode, new StreamReader(res).ReadToEnd(), options);
         }
 
-        public string Render(string interfaceCode, string template, string targetNamespace = null)
+        public IEnumerable<string> RenderUserControlXaml(string interfaceCode, Dictionary<string, object> options = null)
+        {
+            var ri = createRenderInfo(interfaceCode, options);
+
+            var renderInfos = (IEnumerable<InterfaceRenderInformation>)ri["interfaces"];
+
+            var res = this.GetType().Assembly.GetManifestResourceStream("RxUIViewModelGenerator.Resources.XamlViewTemplate.mustache");
+            var templ = new StreamReader(res).ReadToEnd();
+
+            return renderInfos.Select(renderInfo => {
+                var dict = ri
+                    .Where(x => x.Key != "interfaces")
+                    .ToDictionary(k => k.Key, v => v.Value);
+
+                if (!dict.ContainsKey("control")) dict["control"] = "UserControl";
+                dict["implClassName"] = renderInfo.implClassName.Replace("ViewModel", "View");
+                return Nustache.Core.Render.StringToString(templ, dict);
+            }).ToArray();
+        }
+
+        /*
+        public IEnumerable<string> RenderUserControlCodeBehind(string interfaceCode, Dictionary<string, object> options = null)
+        {
+            var ri = createRenderInfo(interfaceCode, options);
+
+            var renderInfos = (IEnumerable<InterfaceRenderInformation>)ri["interfaces"];
+
+            var res = this.GetType().Assembly.GetManifestResourceStream("RxUIViewModelGenerator.Resources.ViewModelTemplate.mustache");
+            var templ = new StreamReader(res).ReadToEnd();
+
+            return renderInfos.Select(renderInfo => {
+                var dict = ri
+                    .Where(x => x.Key != "interfaces")
+                    .ToDictionary(k => k.Key, v => v.Value);
+
+                if (dict.ContainsKey("control")) dict["control"] = "UserControl";
+                dict["implClassName"] = renderInfo.implClassName.Replace("ViewModel", "View");
+                return renderTemplate(templ, dict);
+            }).ToArray();
+        }
+        */
+
+        public string Render(string interfaceCode, string template, Dictionary<string, object> options = null)
+        {
+            var dict = createRenderInfo(interfaceCode, options);
+            return renderTemplate(template, dict);
+        }
+
+        private string renderTemplate(string template, Dictionary<string, object> dict)
+        {
+            var ret = Nustache.Core.Render.StringToString(template, dict);
+
+            var root = (new CSharpParser()).Parse(ret);
+            var style = FormattingOptionsFactory.CreateKRStyle();
+
+            return cleanUpSpacing(root.ToString());
+        }
+
+        Dictionary<string, object> createRenderInfo(string interfaceCode, Dictionary<string, object> options)
         {
             var parser = new CSharpParser();
             var root = parser.Parse(interfaceCode);
@@ -45,14 +103,17 @@ namespace RxUIViewModelGenerator
 
             var renderInfo = typeDecls.Select(renderInterface).ToArray();
 
-            var ret = Nustache.Core.Render.StringToString(template, new { 
-                interfaces = renderInfo,
-                @namespace = targetNamespace ?? "TODO",
-            });
+            var dict = new Dictionary<string, object> {
+                { "interfaces", renderInfo },
+            };
 
-            root = parser.Parse(ret);
-            var style = FormattingOptionsFactory.CreateKRStyle();
-            return cleanUpSpacing(root.ToString());
+            if (options != null) {
+                foreach (var kvp in options) dict.Add(kvp.Key, kvp.Value);
+            }
+
+            if (dict.ContainsKey("namespace")) dict["namespace"] = "TODO";
+
+            return dict;
         }
 
         InterfaceRenderInformation renderInterface(TypeDeclaration interfaceDecl)
@@ -144,12 +205,12 @@ namespace RxUIViewModelGenerator
 
     public class InterfaceRenderInformation
     {
-        public IEnumerable<PropertyRenderInformation> properties { get; set; }
         public string definition { get; set; }
         public string implClassName { get; set; }
         public string interfaceName { get; set; }
         public object isRoutableViewModel { get; set; } // 'this' if true, null if false, Mustacheism
 
+        public IEnumerable<PropertyRenderInformation> properties { get; set; }
         public IEnumerable<NameAndTypeRenderInformation> onceProperties { get; set; }
     }
 
