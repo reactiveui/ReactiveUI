@@ -126,6 +126,7 @@
     <Compile Include="RoutingState.cs" />
     <Compile Include="RxAppTest.cs" />
     <Compile Include="RxRouting.cs" />
+    <Compile Include="RxUIViewModelGeneratorTest.cs" />
     <Compile Include="Utility.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -145,6 +146,13 @@
       <Project>{464cb812-f99f-401b-be4c-e8f0515cd19d}</Project>
       <Name>ReactiveUI</Name>
     </ProjectReference>
+    <ProjectReference Include="..\RxUIViewModelGenerator\RxUIViewModelGenerator.csproj">
+      <Project>{ee7d7fd6-4475-4d1f-a000-9d684f8ec3c7}</Project>
+      <Name>RxUIViewModelGenerator</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="TestInterface.cs.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
