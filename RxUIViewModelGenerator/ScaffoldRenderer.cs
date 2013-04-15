@@ -39,7 +39,7 @@ namespace RxUIViewModelGenerator
             }
 
             var typeDecls = root.Children.OfType<TypeDeclaration>().ToArray();
-            if (typeDecls.Any(x => x.FirstChild.ToString() != "interface")) {
+            if (typeDecls.Any(x => x.FirstChild.ToString() != "interface") || !typeDecls.Any()) {
                 throw new ArgumentException("Code must be one ore more interfaces");
             }
 
