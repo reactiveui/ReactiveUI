@@ -43,6 +43,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Events_WinRT", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Events_WP8", "ReactiveUI.Events\ReactiveUI.Events_WP8.csproj", "{A9459904-F785-4255-866A-A619787CB895}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RxUIViewModelGenerator", "RxUIViewModelGenerator\RxUIViewModelGenerator.csproj", "{EE7D7FD6-4475-4D1F-A000-9D684F8EC3C7}"
+EndProject
 Global
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = ReactiveUI.vsmdi
@@ -368,6 +370,20 @@ Global
 		{A9459904-F785-4255-866A-A619787CB895}.Release|x64.ActiveCfg = Release|Any CPU
 		{A9459904-F785-4255-866A-A619787CB895}.Release|x86.ActiveCfg = Release|x86
 		{A9459904-F785-4255-866A-A619787CB895}.Release|x86.Build.0 = Release|x86
+		{EE7D7FD6-4475-4D1F-A000-9D684F8EC3C7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EE7D7FD6-4475-4D1F-A000-9D684F8EC3C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EE7D7FD6-4475-4D1F-A000-9D684F8EC3C7}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{EE7D7FD6-4475-4D1F-A000-9D684F8EC3C7}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{EE7D7FD6-4475-4D1F-A000-9D684F8EC3C7}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{EE7D7FD6-4475-4D1F-A000-9D684F8EC3C7}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{EE7D7FD6-4475-4D1F-A000-9D684F8EC3C7}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{EE7D7FD6-4475-4D1F-A000-9D684F8EC3C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EE7D7FD6-4475-4D1F-A000-9D684F8EC3C7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EE7D7FD6-4475-4D1F-A000-9D684F8EC3C7}.Release|ARM.ActiveCfg = Release|Any CPU
+		{EE7D7FD6-4475-4D1F-A000-9D684F8EC3C7}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{EE7D7FD6-4475-4D1F-A000-9D684F8EC3C7}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{EE7D7FD6-4475-4D1F-A000-9D684F8EC3C7}.Release|x64.ActiveCfg = Release|Any CPU
+		{EE7D7FD6-4475-4D1F-A000-9D684F8EC3C7}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
