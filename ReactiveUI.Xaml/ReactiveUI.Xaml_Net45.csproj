@@ -145,11 +145,6 @@
     <Compile Include="Registrations.cs" />
     <Compile Include="TransitioningContentControl.cs" />
     <Compile Include="ViewModelViewHost.cs" />
-    <Compile Include="WPFObservables.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>WPFObservables.tt</DependentUpon>
-    </Compile>
     <Compile Include="XamlDefaultPropertyBinding.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -160,10 +155,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-    <None Include="WPFObservables.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>WPFObservables.cs</LastGenOutput>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj">

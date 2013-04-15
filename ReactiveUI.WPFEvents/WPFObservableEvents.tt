@@ -18,31 +18,21 @@
 <#@ import namespace="System.Windows.Threading"#>
 <#@ output extension=".cs" #>
 <#
-        //////////////////////////////////// 
-        // Add your favorite types here.
-        //////////////////////////////////// 
-        var typelist = new [] 
-        { typeof(UIElement)
-        , typeof(FrameworkElement)
-        , typeof(Dispatcher) 
-        };
+        var UIElementTypes = from t in Assembly.GetAssembly(typeof(UIElement)).GetTypes()
+                        where t.IsPublic 
+                        select t;
 
-        /////////////////////////////////////
-        // We then grab the assemblies for
-        // all those types and pull all other
-        // types from those assemblies
-        /////////////////////////////////////
-        var typesToDo = typelist.SelectMany(type=>{
-            return from t in Assembly.GetAssembly(type).GetTypes()
-                            where t.IsPublic 
-                            select t;
-        }).Distinct();
+        var FrameworkElementTypes = from t in Assembly.GetAssembly(typeof(FrameworkElement)).GetTypes()
+                        where t.IsPublic 
+                        select t;
 
-        /////////////////////////////////////
-        // We will need these namespaces in
-        // our generated code at minimum
-        /////////////////////////////////////
-        var usingNamespace = new SortedSet<string>()
+        var WindowsBaseTypes = from t in Assembly.GetAssembly(typeof(Dispatcher)).GetTypes()
+                        where t.IsPublic 
+                        select t;
+
+        var typesToDo = UIElementTypes.Concat(FrameworkElementTypes).Concat(WindowsBaseTypes).Distinct();
+
+         var usingNamespace = new SortedSet<string>()
             {
                 "System.Reactive",
                 "System.Reactive.Linq",
@@ -53,10 +43,7 @@
                 "System.Windows.Input"
             };
 
-        /////////////////////////////////////
-        // Add in all other namespaces that 
-        // our types require.
-        /////////////////////////////////////
+
         foreach(var type in typesToDo)
         {
             usingNamespace.Add(type.Namespace);
@@ -79,7 +66,13 @@ namespace System.Windows.Controls {
  var events=type.GetEvents(
     BindingFlags.DeclaredOnly 
     | BindingFlags.Instance 
-    | BindingFlags.Public).ToList(); 
+    | BindingFlags.Public)
+    .Where(x =>{ 
+       var addMethod = x.GetAddMethod();
+       var basetype = addMethod.GetBaseDefinition().DeclaringType;
+       return basetype == type && (!addMethod.IsFinal || basetype.IsInterface);
+    }) 
+  .ToList(); 
  if(events.Count==0){continue;}
 #> 
 ////////////////////////////////////////////
@@ -101,6 +94,20 @@ if (eventArgs.IsGenericType){
 if (eventInfo.EventHandlerType.IsGenericType)
 {
     continue;
+    switch (eventInfo.EventHandlerType.Name)
+    {
+        case "ReturnEventHandler`1":
+            eventType = string.Format("ReturnEventHandler<{0}>", eventArgs.Name);
+            break;
+        case "RoutedPropertyChangedEventHandler`1":
+            eventType = string.Format("RoutedPropertyChangedEventHandler<{0}>", eventArgs.Name);
+            break;
+        case "EventHandler`1":
+            eventType = string.Format("EventHandler<{0}>", eventArgs.Name);
+            break;
+        default:
+            throw new Exception("Can't cope with other generic types");
+    }
 }
 #>
 
