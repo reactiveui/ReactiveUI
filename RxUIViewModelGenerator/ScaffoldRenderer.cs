@@ -3,15 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using ReactiveUI;
-using ICSharpCode.NRefactory.CSharp;
 using System.IO;
 using System.Resources;
 using System.Text.RegularExpressions;
+using ICSharpCode.NRefactory.CSharp;
 
 namespace RxUIViewModelGenerator
 {
-    public class ScaffoldRenderer : IEnableLogger
+    public class ScaffoldRenderer
     {
         public Tuple<string, string> RenderGeneratedViewModel(string interfaceCode, Dictionary<string, object> options = null, string templateOverride = null)
         {
