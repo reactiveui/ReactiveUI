@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace ReactiveUI
@@ -52,5 +53,19 @@ namespace ReactiveUI
         {
             _registry = null;
         }
-    }    
+    }
+
+    public static class MutableDependencyResolverMixins
+    {
+        public static void RegisterConstant(this IMutableDependencyResolver This, object value, Type serviceType, string contract = null)
+        {
+            This.Register(() => value, serviceType, contract);
+        }
+
+        public static void RegisterLazySingleton(this IMutableDependencyResolver This, Func<object> valueFactory, Type serviceType, string contract = null)
+        {
+            var val = new Lazy<object>(valueFactory, LazyThreadSafetyMode.ExecutionAndPublication);
+            This.Register(() => val.Value, serviceType, contract);
+        }
+    }
 }
