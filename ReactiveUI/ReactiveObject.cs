@@ -21,7 +21,7 @@ namespace ReactiveUI
     /// Changing and Changed Observables to monitor object changes.
     /// </summary>
     [DataContract]
-    public class ReactiveObject : IReactiveNotifyPropertyChanged
+    public class ReactiveObject : IReactiveNotifyPropertyChanged, IHandleObservableErrors
     {
         [field: IgnoreDataMember]
         bool rxObjectsSetup = false;
@@ -60,8 +60,13 @@ namespace ReactiveUI
 
         [IgnoreDataMember]
         long changeNotificationsSuppressed = 0;
+
+        [IgnoreDataMember] 
+        readonly ScheduledSubject<Exception> thrownExceptions = new ScheduledSubject<Exception>(Scheduler.Immediate, RxApp.DefaultExceptionHandler);
+
+        [IgnoreDataMember]
+        public IObservable<Exception> ThrownExceptions { get { return thrownExceptions; } }
         
-        // Constructor
         protected ReactiveObject()
         {
             setupRxObj();
@@ -147,10 +152,11 @@ namespace ReactiveUI
             try {
                 subject.OnNext(item);
             } catch (Exception ex) {
-                this.Log().Error(ex);
-                subject.OnError(ex);
+                this.Log().ErrorException("ReactiveObject Subscriber threw exception", ex);
+                thrownExceptions.OnNext(ex);
             }
         }
+
     } 
 
     public static class ReactiveObjectExpressionMixin
