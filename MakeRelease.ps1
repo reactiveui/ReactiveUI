@@ -1,5 +1,5 @@
 ﻿$Archs = {"Portable-Net45+WinRT45+WP8", "Net45", "WP8", "WinRT45", "Mono", "Monodroid", "Monotouch"}
-$Projects = {"ReactiveUI", "ReactiveUI.Testing", "ReactiveUI.Xaml", "ReactiveUI.Blend", "ReactiveUI.Cocoa", "ReactiveUI.Gtk", "ReactiveUI.Android", "ReactiveUI.NLog", "ReactiveUI.Mobile"}
+$Projects = {"ReactiveUI", "ReactiveUI.Testing", "ReactiveUI.Xaml", "ReactiveUI.Blend", "ReactiveUI.Cocoa", "ReactiveUI.Gtk", "ReactiveUI.Android", "ReactiveUI.NLog", "ReactiveUI.Mobile", "ReactiveUI.WPFEvents"}
 
 $SlnFileExists = Test-Path ".\ReactiveUI.sln"
 if ($SlnFileExists -eq $False) {

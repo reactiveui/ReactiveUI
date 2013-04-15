@@ -37,6 +37,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MobileSample-WinRT", "Mobil
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI", "ReactiveUI\ReactiveUI.csproj", "{464CB812-F99F-401B-BE4C-E8F0515CD19D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.WPFEvents", "ReactiveUI.WPFEvents\ReactiveUI.WPFEvents.csproj", "{600998C4-54DD-4755-BFA8-6F44544D8E2E}"
+EndProject
 Global
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = ReactiveUI.vsmdi
