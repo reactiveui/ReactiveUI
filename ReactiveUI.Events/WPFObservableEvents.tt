@@ -111,7 +111,7 @@ if (eventInfo.EventHandlerType.IsGenericType)
 }
 #>
 
-        public static IObservable<EventPattern<<#=eventArgs.Name#>>> <#=eventName#>Observer(this <#=type.Name#> This){
+        public static IObservable<EventPattern<<#=eventArgs.Name#>>> <#=eventName#>Observable(this <#=type.Name#> This){
             return Observable.FromEventPattern<<#=eventType#>, <#=eventArgs.Name#>>(h => This.<#=eventName#> += h, h => This.<#=eventName#> -= h);
         }
 <#}#>
