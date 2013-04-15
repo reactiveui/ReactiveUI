@@ -39,6 +39,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI", "ReactiveUI\Re
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Events_Net45", "ReactiveUI.Events\ReactiveUI.Events_Net45.csproj", "{600998C4-54DD-4755-BFA8-6F44544D8E2E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Events_WinRT", "ReactiveUI.Events\ReactiveUI.Events_WinRT.csproj", "{689EC7CA-2D81-4124-929E-397B330CC358}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Events_WP8", "ReactiveUI.Events\ReactiveUI.Events_WP8.csproj", "{A9459904-F785-4255-866A-A619787CB895}"
+EndProject
 Global
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = ReactiveUI.vsmdi
@@ -332,6 +336,38 @@ Global
 		{600998C4-54DD-4755-BFA8-6F44544D8E2E}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{600998C4-54DD-4755-BFA8-6F44544D8E2E}.Release|x64.ActiveCfg = Release|Any CPU
 		{600998C4-54DD-4755-BFA8-6F44544D8E2E}.Release|x86.ActiveCfg = Release|Any CPU
+		{689EC7CA-2D81-4124-929E-397B330CC358}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{689EC7CA-2D81-4124-929E-397B330CC358}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{689EC7CA-2D81-4124-929E-397B330CC358}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{689EC7CA-2D81-4124-929E-397B330CC358}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{689EC7CA-2D81-4124-929E-397B330CC358}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{689EC7CA-2D81-4124-929E-397B330CC358}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{689EC7CA-2D81-4124-929E-397B330CC358}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{689EC7CA-2D81-4124-929E-397B330CC358}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{689EC7CA-2D81-4124-929E-397B330CC358}.Release|Any CPU.Build.0 = Release|Any CPU
+		{689EC7CA-2D81-4124-929E-397B330CC358}.Release|ARM.ActiveCfg = Release|Any CPU
+		{689EC7CA-2D81-4124-929E-397B330CC358}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{689EC7CA-2D81-4124-929E-397B330CC358}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{689EC7CA-2D81-4124-929E-397B330CC358}.Release|x64.ActiveCfg = Release|Any CPU
+		{689EC7CA-2D81-4124-929E-397B330CC358}.Release|x86.ActiveCfg = Release|Any CPU
+		{A9459904-F785-4255-866A-A619787CB895}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A9459904-F785-4255-866A-A619787CB895}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A9459904-F785-4255-866A-A619787CB895}.Debug|ARM.ActiveCfg = Debug|ARM
+		{A9459904-F785-4255-866A-A619787CB895}.Debug|ARM.Build.0 = Debug|ARM
+		{A9459904-F785-4255-866A-A619787CB895}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
+		{A9459904-F785-4255-866A-A619787CB895}.Debug|Mixed Platforms.Build.0 = Debug|x86
+		{A9459904-F785-4255-866A-A619787CB895}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{A9459904-F785-4255-866A-A619787CB895}.Debug|x86.ActiveCfg = Debug|x86
+		{A9459904-F785-4255-866A-A619787CB895}.Debug|x86.Build.0 = Debug|x86
+		{A9459904-F785-4255-866A-A619787CB895}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A9459904-F785-4255-866A-A619787CB895}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A9459904-F785-4255-866A-A619787CB895}.Release|ARM.ActiveCfg = Release|ARM
+		{A9459904-F785-4255-866A-A619787CB895}.Release|ARM.Build.0 = Release|ARM
+		{A9459904-F785-4255-866A-A619787CB895}.Release|Mixed Platforms.ActiveCfg = Release|x86
+		{A9459904-F785-4255-866A-A619787CB895}.Release|Mixed Platforms.Build.0 = Release|x86
+		{A9459904-F785-4255-866A-A619787CB895}.Release|x64.ActiveCfg = Release|Any CPU
+		{A9459904-F785-4255-866A-A619787CB895}.Release|x86.ActiveCfg = Release|x86
+		{A9459904-F785-4255-866A-A619787CB895}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
