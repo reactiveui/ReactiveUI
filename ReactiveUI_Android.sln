@@ -9,12 +9,18 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Xaml_Monodroid",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Routing_Monodroid", "ReactiveUI.Routing\ReactiveUI.Routing_Monodroid.csproj", "{E92E477B-BB94-43C1-984E-E177EF9FEDB7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AndroidPlayground", "AndroidPlayground\AndroidPlayground.csproj", "{D444AA58-1C6B-4CEE-B5F5-76145E0B86E5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D444AA58-1C6B-4CEE-B5F5-76145E0B86E5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D444AA58-1C6B-4CEE-B5F5-76145E0B86E5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D444AA58-1C6B-4CEE-B5F5-76145E0B86E5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D444AA58-1C6B-4CEE-B5F5-76145E0B86E5}.Release|Any CPU.Build.0 = Release|Any CPU
 		{E92A477B-BB94-43C1-984E-E177EF9FEDB7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{E92A477B-BB94-43C1-984E-E177EF9FEDB7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E92A477B-BB94-43C1-984E-E177EF9FEDB7}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -33,6 +39,6 @@ Global
 		{F92A477B-BB94-43C1-984E-E177EF9FEDB7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
-		StartupItem = ReactiveUI\ReactiveUI_Monodroid.csproj
+		StartupItem = AndroidPlayground\AndroidPlayground.csproj
 	EndGlobalSection
 EndGlobal

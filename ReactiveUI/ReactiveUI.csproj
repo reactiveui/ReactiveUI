@@ -51,6 +51,8 @@
     <Compile Include="ContractStubs.cs" />
     <Compile Include="DefaultPropertyBinding.cs" />
     <Compile Include="DesignModeDetector.cs" />
+    <Compile Include="ModernDependencyResolver.cs" />
+    <Compile Include="IDependencyResolver.cs" />
     <Compile Include="INPCObservableForProperty.cs" />
     <Compile Include="Interfaces.cs" />
     <Compile Include="IRNPCObservableForProperty.cs" />
@@ -75,6 +77,7 @@
     <Compile Include="RefcountDisposeWrapper.cs" />
     <Compile Include="Reflection.cs" />
     <Compile Include="ReflectionStubs.cs" />
+    <Compile Include="Registrations.cs" />
     <Compile Include="RoutingState.cs" />
     <Compile Include="RxApp.cs" />
     <Compile Include="RxRouting.cs" />

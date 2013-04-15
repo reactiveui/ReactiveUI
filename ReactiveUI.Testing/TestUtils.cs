@@ -50,13 +50,13 @@ namespace ReactiveUI.Testing
         /// message bus.</returns>
         public static IDisposable WithMessageBus(this IMessageBus messageBus)
         {
-            var origMessageBus = RxApp.MessageBus;
+            var origMessageBus = MessageBus.Current;
 
             Monitor.Enter(mbGate);
-            RxApp.MessageBus = messageBus ?? new MessageBus();
+            MessageBus.Current = messageBus ?? new MessageBus();
             return Disposable.Create(() =>
             {
-                RxApp.MessageBus = origMessageBus;
+                MessageBus.Current = origMessageBus;
                 Monitor.Exit(mbGate);
             });
         }

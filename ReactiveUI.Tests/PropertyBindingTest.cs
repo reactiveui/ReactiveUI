@@ -315,8 +315,6 @@ namespace ReactiveUI.Tests
             var vm = new PropertyBindViewModel();
             var view = new PropertyBindView() {ViewModel = vm};
 
-            configureDummyServiceLocator();
-
             Assert.Null(view.FakeItemsControl.ItemTemplate);
             view.OneWayBind(vm, x => x.SomeCollectionOfStrings, x => x.FakeItemsControl.ItemsSource);
 
@@ -328,8 +326,6 @@ namespace ReactiveUI.Tests
         {
             var vm = new PropertyBindViewModel();
             var view = new PropertyBindView() {ViewModel = vm};
-
-            configureDummyServiceLocator();
 
             Assert.Null(view.FakeItemsControl.ItemTemplate);
             vm.WhenAny(x => x.SomeCollectionOfStrings, x => x.Value)
@@ -367,28 +363,6 @@ namespace ReactiveUI.Tests
 
             view.ViewModel = vm;
             Assert.Equal(vm.JustADouble.ToString(), view.FakeControl.NullHatingString);
-        }
-
-        void configureDummyServiceLocator()
-        {
-            var types = new Dictionary<Tuple<Type, string>, List<Type>>();
-
-            RxApp.ConfigureServiceLocator(
-                (t, s) => {
-                    var pair = Tuple.Create(t, s);
-                    if (!types.ContainsKey(pair)) return null;
-                    return Activator.CreateInstance(types[pair].First());
-                },
-                (t, s) => {
-                    var pair = Tuple.Create(t, s);
-                    if (!types.ContainsKey(pair)) return new object[0];
-                    return types[pair].Select(Activator.CreateInstance).ToArray();
-                },
-                (c, t, s) => {
-                    var tuple = Tuple.Create(t, s);
-                    if (!types.ContainsKey(tuple)) types[tuple] = new List<Type>();
-                    types[tuple].Add(c);
-                });
         }
     }
 }

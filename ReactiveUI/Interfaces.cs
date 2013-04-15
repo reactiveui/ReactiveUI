@@ -465,8 +465,8 @@ namespace ReactiveUI
     }
 
     internal interface IWantsToRegisterStuff
-    {                       
-        void Register();
+    {
+        void Register(Action<Func<object>, Type> registerFunction);
     }
 
     // NB: This is just a name we can bolt extension methods to

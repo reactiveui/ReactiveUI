@@ -29,10 +29,10 @@ namespace MobileSample_WinRT
 
         protected override void OnLaunched(LaunchActivatedEventArgs args)
         {
-            RxApp.Register(typeof(AppBootstrapper), typeof(IApplicationRootState));
+            ((ModernDependencyResolver)RxApp.DependencyResolver).Register(() => new AppBootstrapper(), typeof(IApplicationRootState));
 
             base.OnLaunched(args);
-            var host = RxApp.GetService<ISuspensionHost>();
+            var host = RxApp.DependencyResolver.GetService<ISuspensionHost>();
             host.SetupDefaultSuspendResume();
         }
     }
