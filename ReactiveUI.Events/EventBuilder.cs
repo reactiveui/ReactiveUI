@@ -47,7 +47,7 @@ namespace EventBuilder
                             .Select(z => new PublicEventInfo() { 
                                 Name = z.Name,
                                 EventHandlerType = GetRealTypeName(z.EventType),
-                                EventArgsType = GetRealTypeName(GetEventArgsTypeForEvent(z)),
+                                EventArgsType = GetEventArgsTypeForEvent(z),
                             }).ToArray(),
                     }).ToArray()
                 }).ToArray();
@@ -80,7 +80,7 @@ namespace EventBuilder
 
         public static string GetRealTypeName(TypeDefinition t)
         {
-            if (t.GenericParameters == null || !t.GenericParameters.Any()) return t.Namespace + "." + t.Name;
+            if (t.GenericParameters.Count == 0) return t.FullName;
 
             return String.Format("{0}.{1}<{2}>",
                 t.Namespace, t.Name,
@@ -89,21 +89,32 @@ namespace EventBuilder
 
         public static string GetRealTypeName(TypeReference t)
         {
-            if (t.GenericParameters == null || !t.GenericParameters.Any()) return t.Namespace + "." + t.Name;
+            var generic = t as GenericInstanceType;
+            if (generic == null) return t.FullName;
 
-            return String.Format("{0}.{1}<{2}>",
-                t.Namespace, t.Name,
-                String.Join(",", t.GenericParameters.Select(x => GetRealTypeName(x.Resolve()))));
+            var ret = String.Format("{0}.{1}<{2}>",
+                generic.Namespace, generic.Name,
+                String.Join(",", generic.GenericArguments.Select(x => GetRealTypeName(x))));
+            return "global::" + ret;
         }
 
-
-        public static TypeReference GetEventArgsTypeForEvent(EventDefinition ei)
+        public static string GetEventArgsTypeForEvent(EventDefinition ei)
         {
             // Find the EventArgs type parameter of the event via digging around via reflection
-            var invoke = ei.EventType.Resolve().Methods.First(x => x.Name == "Invoke");
+            var type = ei.EventType.Resolve();
+            var invoke = type.Methods.First(x => x.Name == "Invoke");
             if (invoke.Parameters.Count < 2) return null;
 
-            var ret = invoke.Parameters[1].ParameterType;
+            var param = invoke.Parameters[1];
+            var ret = param.ParameterType.FullName;
+
+            var generic = ei.EventType as GenericInstanceType;
+            if (generic != null) {
+                foreach(var kvp in type.GenericParameters.Zip(generic.GenericArguments, (name, actual) => new { name, actual })) {
+                    ret = ret.Replace(kvp.name.FullName, GetRealTypeName(kvp.actual));
+                }
+            }
+
             return ret;
         }
 
