@@ -53,16 +53,27 @@ namespace RxUIViewModelGenerator
             var content = input.ReadToEnd();
 
             var renderer = new ScaffoldRenderer();
+            var toWrite = default(IEnumerable<Tuple<string, string>>);
             switch (type) {
             case TemplateType.GeneratedViewModel:
-                Console.WriteLine(renderer.RenderGeneratedViewModel(content, dict, template));
+                toWrite = new[] { renderer.RenderGeneratedViewModel(content, dict, template) };
                 break;
             case TemplateType.ViewModel:
-                Console.WriteLine(renderer.RenderUserViewModel(content, dict, template));
+                toWrite = new[] { renderer.RenderUserViewModel(content, dict, template) };
+                break;
+            case TemplateType.XamlControl:
+                toWrite = renderer.RenderUserControlXaml(content, dict, template);
                 break;
             case TemplateType.XamlCodeBehind:
-                Console.WriteLine(renderer.RenderUserViewModel(content, dict, template));
+                toWrite = renderer.RenderUserControlCodeBehind(content, dict, template);
                 break;
+            }
+
+            foreach (var v in toWrite) {
+                using (var sw = new StreamWriter(File.OpenWrite(v.Item1))) {
+                    Console.WriteLine("Writing {0}", v.Item1);
+                    sw.Write(v.Item2);
+                }
             }
 
             return 0;
