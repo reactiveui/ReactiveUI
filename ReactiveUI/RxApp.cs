@@ -187,6 +187,23 @@ namespace ReactiveUI
         static bool? _inUnitTestRunner;
 
         /// <summary>
+        /// This method will initialize your custom service locator with the 
+        /// built-in RxUI types.
+        /// </summary>
+        /// <param name="registerMethod">Create a method here that will 
+        /// register a constant. For example, the NInject version of
+        /// this method might look like:
+        /// 
+        /// (obj, type) => kernel.Bind(type).ToConstant(obj)
+        /// </param>
+        public static void InitializeCustomServiceLocator(Action<object, Type> registerMethod)
+        {
+            var fakeResolver = new FuncServiceResolver(null, 
+                (fac, type, str) => registerMethod(fac(), type));
+            fakeResolver.InitializeResolver();
+        }
+
+        /// <summary>
         /// InUnitTestRunner attempts to determine heuristically if the current
         /// application is running in a unit test framework.
         /// </summary>
