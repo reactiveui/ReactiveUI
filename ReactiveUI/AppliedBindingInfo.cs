@@ -60,8 +60,7 @@ namespace ReactiveUI
         /// </value>
         public IObservedChange<object, object>[] ViewModelPathProperties
         {
-            get
-            {
+            get {
                 IObservedChange<object, object>[] fetchedValues;
                 Reflection.TryGetAllValuesForPropertyChain(out fetchedValues, ViewModel, ViewModelPath);
                 return fetchedValues;
@@ -96,8 +95,7 @@ namespace ReactiveUI
         /// </value>
         public IObservedChange<object, object>[] ViewPathProperties
         {
-            get
-            {
+            get {
                 IObservedChange<object, object>[] fetchedValues;
                 Reflection.TryGetAllValuesForPropertyChain(out fetchedValues, View, ViewPath);
                 return fetchedValues;
@@ -117,8 +115,7 @@ namespace ReactiveUI
         /// </summary>
         public void Dispose()
         {
-            if (bindingDisposable != null)
-            {
+            if (bindingDisposable != null) {
                 bindingDisposable.Dispose();
                 bindingDisposable = null;
             }
