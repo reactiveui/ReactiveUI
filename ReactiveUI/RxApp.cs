@@ -198,7 +198,7 @@ namespace ReactiveUI
         /// </param>
         public static void InitializeCustomServiceLocator(Action<object, Type> registerMethod)
         {
-            var fakeResolver = new FuncServiceResolver(null, 
+            var fakeResolver = new FuncDependencyResolver(null, 
                 (fac, type, str) => registerMethod(fac(), type));
             fakeResolver.InitializeResolver();
         }
