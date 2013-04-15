@@ -45,14 +45,13 @@ namespace RxUIViewModelGenerator
             }).ToArray();
         }
 
-        /*
         public IEnumerable<string> RenderUserControlCodeBehind(string interfaceCode, Dictionary<string, object> options = null)
         {
             var ri = createRenderInfo(interfaceCode, options);
 
             var renderInfos = (IEnumerable<InterfaceRenderInformation>)ri["interfaces"];
 
-            var res = this.GetType().Assembly.GetManifestResourceStream("RxUIViewModelGenerator.Resources.ViewModelTemplate.mustache");
+            var res = this.GetType().Assembly.GetManifestResourceStream("RxUIViewModelGenerator.Resources.XamlViewCodebehindTemplate.mustache");
             var templ = new StreamReader(res).ReadToEnd();
 
             return renderInfos.Select(renderInfo => {
@@ -60,12 +59,11 @@ namespace RxUIViewModelGenerator
                     .Where(x => x.Key != "interfaces")
                     .ToDictionary(k => k.Key, v => v.Value);
 
-                if (dict.ContainsKey("control")) dict["control"] = "UserControl";
+                if (!dict.ContainsKey("control")) dict["control"] = "UserControl";
                 dict["implClassName"] = renderInfo.implClassName.Replace("ViewModel", "View");
                 return renderTemplate(templ, dict);
             }).ToArray();
         }
-        */
 
         public string Render(string interfaceCode, string template, Dictionary<string, object> options = null)
         {
