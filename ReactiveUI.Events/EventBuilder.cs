@@ -16,13 +16,6 @@ namespace EventBuilder
             var targetAssemblyNames = args.TakeWhile(x => !x.EndsWith(".mustache"));
             var targetAssemblyDirs = targetAssemblyNames.Select(x => Path.GetDirectoryName(x)).Distinct().ToArray();
 
-            /*
-            AppDomain.CurrentDomain.ReflectionOnlyAssemblyResolve += (o, e) => {
-
-                return Assembly.ReflectionOnlyLoadFrom(fullPath);
-            };
-            */
-
             var rp = new ReaderParameters() { AssemblyResolver = new PathSearchAssemblyResolver(targetAssemblyDirs) };
             var targetAssemblies = targetAssemblyNames
                 .Select(x => AssemblyDefinition.ReadAssembly(x, rp)).ToArray();
@@ -36,8 +29,15 @@ namespace EventBuilder
                 .Where(x => x.Events.Length > 0)
                 .ToArray();
 
+            var garbageNamespaceList = new[] {
+                "Windows.UI.Xaml.Data",
+                "Windows.UI.Xaml.Interop",
+                "Windows.UI.Xaml.Input",
+            };
+
             var namespaceData = publicTypesWithEvents
                 .GroupBy(x => x.Type.Namespace)
+                .Where(x => !garbageNamespaceList.Contains(x.Key))
                 .Select(x => new NamespaceInfo() { 
                     Name = x.Key, 
                     Types = x.Select(y => new PublicTypeInfo() {
@@ -60,6 +60,8 @@ namespace EventBuilder
             }
 
             var result = Render.StringToString(template, new { Namespaces = namespaceData })
+                .Replace("System.String", "string")
+                .Replace("System.Object", "object")
                 .Replace("&lt;", "<")
                 .Replace("&gt;", ">")
                 .Replace("`1", "")
@@ -80,22 +82,36 @@ namespace EventBuilder
 
         public static string GetRealTypeName(TypeDefinition t)
         {
-            if (t.GenericParameters.Count == 0) return t.FullName;
+            if (t.GenericParameters.Count == 0) return RenameBogusWinRTTypes(t.FullName);
 
-            return String.Format("{0}.{1}<{2}>",
-                t.Namespace, t.Name,
+            return String.Format("{0}<{1}>",
+                RenameBogusWinRTTypes(t.Namespace + "." + t.Name),
                 String.Join(",", t.GenericParameters.Select(x => GetRealTypeName(x.Resolve()))));
         }
 
         public static string GetRealTypeName(TypeReference t)
         {
             var generic = t as GenericInstanceType;
-            if (generic == null) return t.FullName;
+            if (generic == null) return RenameBogusWinRTTypes(t.FullName);
 
-            var ret = String.Format("{0}.{1}<{2}>",
-                generic.Namespace, generic.Name,
+            var ret = String.Format("{0}<{1}>",
+                RenameBogusWinRTTypes(generic.Namespace + "." + generic.Name),
                 String.Join(",", generic.GenericArguments.Select(x => GetRealTypeName(x))));
-            return "global::" + ret;
+            return ret;
+        }
+
+        static Dictionary<string, string> substitutionList = new Dictionary<string, string> {
+            { "Windows.UI.Xaml.Data.PropertyChangedEventArgs", "global::System.ComponentModel.PropertyChangedEventArgs" },
+            { "Windows.UI.Xaml.Data.PropertyChangedEventHandler", "global::System.ComponentModel.PropertyChangedEventHandler" },
+            { "Windows.Foundation.EventHandler", "EventHandler" },
+            { "Windows.Foundation.EventHandler`1", "EventHandler" },
+            { "Windows.Foundation.EventHandler`2", "EventHandler" },
+        };
+
+        public static string RenameBogusWinRTTypes(string typeName)
+        {
+            if (substitutionList.ContainsKey(typeName)) return substitutionList[typeName];
+            return typeName;
         }
 
         public static string GetEventArgsTypeForEvent(EventDefinition ei)
@@ -106,12 +122,14 @@ namespace EventBuilder
             if (invoke.Parameters.Count < 2) return null;
 
             var param = invoke.Parameters[1];
-            var ret = param.ParameterType.FullName;
+            var ret = RenameBogusWinRTTypes(param.ParameterType.FullName);
 
             var generic = ei.EventType as GenericInstanceType;
             if (generic != null) {
                 foreach(var kvp in type.GenericParameters.Zip(generic.GenericArguments, (name, actual) => new { name, actual })) {
-                    ret = ret.Replace(kvp.name.FullName, GetRealTypeName(kvp.actual));
+                    var realType = GetRealTypeName(kvp.actual);
+
+                    ret = ret.Replace(kvp.name.FullName, realType);
                 }
             }
 
