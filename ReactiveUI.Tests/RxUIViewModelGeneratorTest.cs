@@ -40,7 +40,7 @@ namespace ReactiveUI.Tests
 
             var f = new StackTrace(true).GetFrame(0);
             var dir = Path.GetDirectoryName(f.GetFileName());
-            string result = fixture.RenderGeneratedViewModel(File.ReadAllText(Path.Combine(dir, "TestInterface.cs.txt")));
+            string result = fixture.RenderGeneratedViewModel(File.ReadAllText(Path.Combine(dir, "TestInterface.cs.txt"))).Item2;
             this.Log().Info(result);
 
             Assert.Contains("IRoutableViewModel", result);
