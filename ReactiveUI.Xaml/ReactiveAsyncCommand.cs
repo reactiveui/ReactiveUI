@@ -249,12 +249,12 @@ namespace ReactiveUI.Xaml
         /// </summary>
         /// <param name="calculationFunc">The function to be run in the
         /// background.</param>
-        public static void RegisterAsyncAction(this IReactiveAsyncCommand This, 
+        public static IObservable<Unit> RegisterAsyncAction(this IReactiveAsyncCommand This, 
             Action<object> calculationFunc,
             IScheduler scheduler = null)
         {
             Contract.Requires(calculationFunc != null);
-            This.RegisterAsyncFunction(x => { calculationFunc(x); return new Unit(); }, scheduler);
+            return This.RegisterAsyncFunction(x => { calculationFunc(x); return new Unit(); }, scheduler);
         }
 
         /// <summary>
