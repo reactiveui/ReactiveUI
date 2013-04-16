@@ -52,6 +52,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Resources\" />
+    <Folder Include="Rx-Shim\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -80,6 +81,10 @@
     <Compile Include="VariadicTemplates.cs" />
     <Compile Include="RxApp.cs" />
     <Compile Include="CollectionDebugView.cs" />
-    <Compile Include="CallerMemberNameAttribute.cs" />
+    <Compile Include="PropertyBinding.cs" />
+    <Compile Include="Rx-Shim\AwaitableAsyncSubject.cs" />
+    <Compile Include="Rx-Shim\GetAwaiter.cs" />
+    <Compile Include="Rx-Shim\ImmutableList.cs" />
+    <Compile Include="ReactiveCollectionMixins.cs" />
   </ItemGroup>
 </Project>
