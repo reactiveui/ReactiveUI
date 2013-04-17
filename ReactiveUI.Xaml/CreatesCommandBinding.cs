@@ -64,7 +64,11 @@ namespace ReactiveUI.Xaml
         /// <returns></returns>
         /// <returns>An IDisposable which will disconnect the binding when 
         /// disposed.</returns>
-        IDisposable BindCommandToObject<TEventArgs>(ICommand command, object target, IObservable<object> commandParameter, string eventName) where TEventArgs : EventArgs;
+        IDisposable BindCommandToObject<TEventArgs>(ICommand command, object target, IObservable<object> commandParameter, string eventName)
+#if !WINRT
+        where TEventArgs : EventArgs
+#endif
+        ; // Lol.
     }
 
     public class CreatesCommandBindingViaEvent : ICreatesCommandBinding
@@ -177,7 +181,9 @@ namespace ReactiveUI.Xaml
         }
 
         public IDisposable BindCommandToObject<TEventArgs>(ICommand command, object target, IObservable<object> commandParameter, string eventName)
+#if !WINRT
             where TEventArgs : EventArgs
+#endif
         {
             // NB: We should fall back to the generic Event-based handler if
             // an event target is specified
