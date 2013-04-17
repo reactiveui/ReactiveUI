@@ -122,11 +122,11 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ReactiveUI.Xaml\ReactiveUI.Xaml_WP8.csproj">
-      <Project>{06C34984-B706-49BF-85BB-9282DD6238D1}</Project>
+      <Project>{F9459904-F785-4255-866A-A619787CB895}</Project>
       <Name>ReactiveUI.Xaml_WP8</Name>
     </ProjectReference>
     <ProjectReference Include="..\ReactiveUI\ReactiveUI_WP8.csproj">
-      <Project>{FAEA4F2E-017C-47AF-B467-4D2C7210CDEF}</Project>
+      <Project>{884D2D0B-65CE-40CB-AE45-B1F45C4ECE76}</Project>
       <Name>ReactiveUI_WP8</Name>
     </ProjectReference>
   </ItemGroup>
