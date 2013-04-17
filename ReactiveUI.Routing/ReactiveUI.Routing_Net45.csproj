@@ -82,11 +82,11 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ReactiveUI.Xaml\ReactiveUI.Xaml_Net45.csproj">
-      <Project>{761ac9ba-4a9c-440c-9b6c-2569978f0610}</Project>
+      <Project>{1ce2d235-8072-4649-ba5a-cfb1af8776e0}</Project>
       <Name>ReactiveUI.Xaml_Net45</Name>
     </ProjectReference>
     <ProjectReference Include="..\ReactiveUI\ReactiveUI_Net45.csproj">
-      <Project>{292a477b-bb94-43c1-984e-e177ef9fedb7}</Project>
+      <Project>{b2c721d6-bf0c-410a-b374-1df417b34b30}</Project>
       <Name>ReactiveUI_Net45</Name>
     </ProjectReference>
   </ItemGroup>

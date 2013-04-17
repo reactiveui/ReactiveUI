@@ -100,7 +100,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ReactiveUI\ReactiveUI_SL5.csproj">
-      <Project>{B3381C78-C099-4902-89D4-B879AA83BFC9}</Project>
+      <Project>{b3381c78-c099-4902-89d4-b879aa83bfc9}</Project>
       <Name>ReactiveUI_SL5</Name>
     </ProjectReference>
   </ItemGroup>
