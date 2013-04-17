@@ -44,6 +44,10 @@ namespace ReactiveUI
         /// This can be a chain of properties of the form <code>view => view.Foo.Bar.Baz</code>
         /// and the binder will attempt to set the last one each time the view model property is updated.
         /// </param>
+        /// <param name="conversionHint">
+        /// An object that can provide a hint for the converter.
+        /// The semantics of this object is defined by the converter used.
+        /// </param>
         /// <returns>
         /// An instance of <see cref="IDisposable"/> that, when disposed,
         /// disconnects the binding.
@@ -76,6 +80,12 @@ namespace ReactiveUI
         /// This can be a chain of properties of the form <code>vm =&gt; vm.Foo.Bar.Baz</code>
         /// and the binder will attempt to subscribe to changes on each recursively.
         /// </param>
+
+        /// <param name="conversionHint">
+        /// An object that can provide a hint for the converter.
+        /// The semantics of this object is defined by the converter used.
+        /// </param>
+
         /// <returns>
         /// An instance of <see cref="IDisposable"/> that, when disposed,
         /// disconnects the binding.
@@ -160,6 +170,10 @@ namespace ReactiveUI
         /// has been changed, and that the binding should update the view model
         /// property accordingly.
         /// </param>
+        /// <param name="conversionHint">
+        /// An object that can provide a hint for the converter.
+        /// The semantics of this object is defined by the converter used.
+        /// </param>
         /// <returns>
         /// An instance of <see cref="IDisposable"/> that, when disposed,
         /// disconnects the binding.
@@ -202,12 +216,10 @@ namespace ReactiveUI
         /// </param>
         /// <param name="fallbackValue">
         /// A function providing a fallback value. 
-        /// The parameter is currently IGNORED.
         /// </param>
         /// <param name="conversionHint">
         /// An object that can provide a hint for the converter.
         /// The semantics of this object is defined by the converter used.
-        /// This parameter is currently IGNORED.
         /// </param>
         /// <returns>
         /// An instance of <see cref="IDisposable"/> that, when disposed,
@@ -243,12 +255,10 @@ namespace ReactiveUI
         /// </param>
         /// <param name="fallbackValue">
         /// A function providing a fallback value. 
-        /// The parameter is currently IGNORED.
         /// </param>
         /// <param name="conversionHint">
         /// An object that can provide a hint for the converter.
         /// The semantics of this object is defined by the converter used.
-        /// This parameter is currently IGNORED.
         /// </param>
         /// <returns>
         /// An instance of <see cref="IDisposable"/> that, when disposed,
@@ -334,7 +344,7 @@ namespace ReactiveUI
         /// before being bound to the view property.
         /// </param>
         /// <param name="fallbackValue">
-        /// A function that provides a fallback value. Note that this property is IGNORED in this implementation.
+        /// A function that provides a fallback value.
         /// </param>
         /// <returns>
         /// An instance of <see cref="IDisposable"/> that, when disposed,
@@ -388,8 +398,8 @@ namespace ReactiveUI
         /// value of the view model property.
         /// </param>
         /// <param name="fallbackValue">
-        /// A function that provides a fallback value. Note that this property is IGNORED in this implementation.
-        /// </param>>
+        /// A function that provides a fallback value.
+        /// </param>
         /// <returns>
         /// An instance of <see cref="IDisposable"/> that, when disposed,
         /// disconnects the binding.
@@ -440,8 +450,8 @@ namespace ReactiveUI
         /// a task. The view property is updated when the task completes.
         /// </param>
         /// <param name="fallbackValue">
-        /// A function that provides a fallback value. Note that this property is IGNORED in this implementation.
-        /// </param>>
+        /// A function that provides a fallback value.
+        /// </param>
         /// <returns>
         /// An instance of <see cref="IDisposable"/> that, when disposed,
         /// disconnects the binding.
@@ -486,7 +496,7 @@ namespace ReactiveUI
         /// </param>
         /// <param name="fallbackValue">
         /// A function that provides a fallback value. Note that this property is IGNORED in this implementation.
-        /// </param>>
+        /// </param>
         /// <returns>
         /// An instance of <see cref="IDisposable"/> that, when disposed,
         /// disconnects the binding.
@@ -526,8 +536,8 @@ namespace ReactiveUI
         /// a task. The view property is updated when the task completes.
         /// </param>
         /// <param name="fallbackValue">
-        /// A function that provides a fallback value. Note that this property is IGNORED in this implementation.
-        /// </param>>
+        /// A function that provides a fallback value.
+        /// </param>
         /// <returns>
         /// An instance of <see cref="IDisposable"/> that, when disposed,
         /// disconnects the binding.
@@ -553,6 +563,13 @@ namespace ReactiveUI
         /// <param name="target">The target object whose property will be set.</param>
         /// <param name="property">An expression representing the target
         /// property to set. This can be a child property (i.e. x.Foo.Bar.Baz).</param>
+        /// <param name="fallbackValue">
+        /// A function that provides a fallback value.
+        /// </param>
+        /// <param name="conversionHint">
+        /// An object that can provide a hint for the converter.
+        /// The semantics of this object is defined by the converter used.
+        /// </param>
         /// <returns>An object that when disposed, disconnects the binding.</returns>
         public static IDisposable BindTo<TValue, TTarget, TTValue>(
             this IObservable<TValue> This,
@@ -828,7 +845,7 @@ namespace ReactiveUI
         /// <returns>
         /// An instance of <see cref="IDisposable"/> that, when disposed,
         /// disconnects the binding.
-        /// </returns
+        /// </returns>
         public IDisposable Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(
                 TViewModel viewModel,
                 TView view,
