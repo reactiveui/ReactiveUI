@@ -139,6 +139,10 @@
     <Compile Include="Utility.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ReactiveUI.Blend\ReactiveUI.Blend_Net45.csproj">
+      <Project>{7866b5b1-5457-43a2-976a-e784eb10f2da}</Project>
+      <Name>ReactiveUI.Blend_Net45</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ReactiveUI.NLog\ReactiveUI.NLog_Net45.csproj">
       <Project>{08d3606b-ee79-43ee-8382-72a1091f1f30}</Project>
       <Name>ReactiveUI.NLog_Net45</Name>
