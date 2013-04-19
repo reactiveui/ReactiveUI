@@ -203,7 +203,7 @@ namespace ReactiveUI
         /// </param>
         /// <param name="viewModelSelector">
         /// The view model that is bound. 
-        /// It is usually set to the <see cref="IViewFor.Model"/> propertySelector of the <paramref name="view"/>.</param>
+        /// It is usually set to the <see cref="IViewFor.ViewModel"/> propertySelector of the <paramref name="view"/>.</param>
         /// <param name="vmProperty">
         /// An expression indicating the propertySelector that is bound on the view model.
         /// This can be a chain of properties of the form <code>vm => vm.Foo.Bar.Baz</code>
@@ -896,7 +896,7 @@ namespace ReactiveUI
 
             var changeWithValues = somethingChanged.Select(isVm => {
                 TVMProp vmValue; TVProp vValue;
-                if (!Reflection.TryGetValueForPropertyChain(out vmValue, view.Model, vmPropChain) ||
+                if (!Reflection.TryGetValueForPropertyChain(out vmValue, view.ViewModel, vmPropChain) ||
                     !Reflection.TryGetValueForPropertyChain(out vValue, view, viewPropChain)) {
                     return null;
                 }
@@ -937,12 +937,12 @@ namespace ReactiveUI
                 if (isVmWithLatestValue.Item2) {
                     Reflection.SetValueToPropertyChain(view, viewPropChain, isVmWithLatestValue.Item1, false);
                 } else {
-                    Reflection.SetValueToPropertyChain(view.Model, vmPropChain, isVmWithLatestValue.Item1, false);
+                    Reflection.SetValueToPropertyChain(view.ViewModel, vmPropChain, isVmWithLatestValue.Item1, false);
                 }
             });
 
             // NB: Even though it's technically a two-way bind, most people 
-            // want the Model to win at first.
+            // want the ViewModel to win at first.
             signalInitialUpdate.OnNext(true);
 
             return ret;
@@ -1213,29 +1213,25 @@ namespace ReactiveUI
             Func<TValue> fallbackValue = null,
             object conversionHint = null)
         {
-            return Disposable.Empty;
-            // TODO Fix this BPH
-            //var viewPropChain = Reflection.ExpressionToPropertyNames(property);
-            //var ret = evalBindingHooks(This, target, null, viewPropChain, BindingDirection.OneWay);
-            //if (ret != null) return ret;
+            var viewPropChain = Reflection.ExpressionToPropertyNames(property);
                 
-            //var converter = getConverterForTypes(typeof (TValue), typeof(TTValue));
+            var converter = getConverterForTypes(typeof (TValue), typeof(TTValue));
 
-            //if (converter == null) {
-            //    throw new ArgumentException(String.Format("Can't convert {0} to {1}. To fix this, register a IBindingTypeConverter", typeof (TValue), typeof(TTValue)));
-            //}
+            if (converter == null) {
+                throw new ArgumentException(String.Format("Can't convert {0} to {1}. To fix this, register a IBindingTypeConverter", typeof (TValue), typeof(TTValue)));
+            }
 
-            //var source = This.SelectMany(x => {
-            //    object tmp;
-            //    if (!converter.TryConvert(x, typeof(TTValue), conversionHint, out tmp)) return Observable.Empty<TTValue>();
-            //    return Observable.Return(tmp == null ? default(TTValue) : (TTValue)tmp);
-            //});
+            var source = This.SelectMany(x => {
+                object tmp;
+                if (!converter.TryConvert(x, typeof(TTValue), conversionHint, out tmp)) return Observable.Empty<TTValue>();
+                return Observable.Return(tmp == null ? default(TTValue) : (TTValue)tmp);
+            });
 
-            //return bindToDirect(source, target, property, fallbackValue == null ? default(Func<TTValue>) : new Func<TTValue>(() => {
-            //    object tmp;
-            //    if (!converter.TryConvert(fallbackValue(), typeof(TTValue), conversionHint, out tmp)) return default(TTValue);
-            //    return tmp == null ? default(TTValue) : (TTValue)tmp;
-            //}));
+            return bindToDirect(source, target, property, fallbackValue == null ? default(Func<TTValue>) : new Func<TTValue>(() => {
+                object tmp;
+                if (!converter.TryConvert(fallbackValue(), typeof(TTValue), conversionHint, out tmp)) return default(TTValue);
+                return tmp == null ? default(TTValue) : (TTValue)tmp;
+            }));
         }
 
         IDisposable bindToDirect<TTarget, TValue>(

@@ -16,7 +16,7 @@ using System.Runtime.CompilerServices;
 namespace ReactiveUI
 {
     /// <summary>
-    /// ReactiveObject is the base object for Model classes, and it
+    /// ReactiveObject is the base object for ViewModel classes, and it
     /// implements INotifyPropertyChanged. In addition, ReactiveObject provides
     /// Changing and Changed Observables to monitor object changes.
     /// </summary>

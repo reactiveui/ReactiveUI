@@ -31,7 +31,7 @@ namespace ReactiveUI
         /// </summary>
         /// <param name="observable">The Observable to base the propertySelector on.</param>
         /// <param name="onChanged">The action to take when the propertySelector
-        /// changes, typically this will call the Model's
+        /// changes, typically this will call the ViewModel's
         /// RaisePropertyChanged method.</param>
         /// <param name="initialValue">The initial value of the propertySelector.</param>
         /// <param name="scheduler">The scheduler that the notifications will be

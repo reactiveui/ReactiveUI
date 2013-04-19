@@ -10,7 +10,7 @@ using System.Windows.Input;
 namespace ReactiveUI.Routing
 {
     /// <summary>
-    /// RoutingState manages the Model Stack and allows ViewModels to
+    /// RoutingState manages the ViewModel Stack and allows ViewModels to
     /// navigate to other ViewModels.
     /// </summary>
     [DataContract]
@@ -22,7 +22,7 @@ namespace ReactiveUI.Routing
 
         /// <summary>
         /// Represents the current navigation stack, the last element in the
-        /// collection being the currently visible Model.
+        /// collection being the currently visible ViewModel.
         /// </summary>
         [DataMember]
         public ReactiveCollection<IRoutableViewModel> NavigationStack {
@@ -38,15 +38,15 @@ namespace ReactiveUI.Routing
 
         /// <summary>
         /// Navigates to the a new element in the stack - the Execute parameter
-        /// must be a Model that implements IRoutableViewModel.
+        /// must be a ViewModel that implements IRoutableViewModel.
         /// </summary>
         [IgnoreDataMember]
         public INavigateCommand Navigate { get; protected set; }
 
         /// <summary>
         /// Navigates to a new element and resets the navigation stack (i.e. the
-        /// new Model will now be the only element in the stack) - the
-        /// Execute parameter must be a Model that implements
+        /// new ViewModel will now be the only element in the stack) - the
+        /// Execute parameter must be a ViewModel that implements
         /// IRoutableViewModel.
         /// </summary>
         [IgnoreDataMember]
@@ -95,9 +95,9 @@ namespace ReactiveUI.Routing
     public static class RoutingStateMixins
     {
         /// <summary>
-        /// Locate the first Model in the stack that matches a certain Type.
+        /// Locate the first ViewModel in the stack that matches a certain Type.
         /// </summary>
-        /// <returns>The matching Model or null if none exists.</returns>
+        /// <returns>The matching ViewModel or null if none exists.</returns>
         public static T FindViewModelInStack<T>(this IRoutingState This)
             where T : IRoutableViewModel
         {
@@ -105,7 +105,7 @@ namespace ReactiveUI.Routing
         }
 
         /// <summary>
-        /// Returns the currently visible Model
+        /// Returns the currently visible ViewModel
         /// </summary>
         public static IRoutableViewModel GetCurrentViewModel(this IRoutingState This)
         {
@@ -113,7 +113,7 @@ namespace ReactiveUI.Routing
         }
 
         /// <summary>
-        /// Returns an Observable that signals Model changes.
+        /// Returns an Observable that signals ViewModel changes.
         /// </summary>
         public static IObservable<IRoutableViewModel> ViewModelObservable(this IRoutingState This)
         {

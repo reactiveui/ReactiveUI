@@ -14,17 +14,17 @@ namespace ReactiveUI.Routing
 
         static RxRouting()
         {
-            ViewModelToViewFunc = (vm) => interfaceifyTypeName(vm.Replace("Model", "View"));
+            ViewModelToViewFunc = (vm) => interfaceifyTypeName(vm.Replace("ViewModel", "View"));
         }
 
         /// <summary>
-        /// Returns the View associated with a Model, deriving the name of
+        /// Returns the View associated with a ViewModel, deriving the name of
         /// the Type via ViewModelToViewFunc, then discovering it via
         /// ServiceLocator.
         /// </summary>
-        /// <param name="viewModel">The Model for which to find the
+        /// <param name="viewModel">The ViewModel for which to find the
         /// associated View.</param>
-        /// <returns>The View for the Model.</returns>
+        /// <returns>The View for the ViewModel.</returns>
         public static IViewFor ResolveView<T>(T viewModel)
             where T : class
         {
@@ -75,10 +75,10 @@ namespace ReactiveUI.Routing
     {
         /// <summary>
         /// This method allows you to set up connections that only operate
-        /// while the Model has focus, and cleans up when the Model
+        /// while the ViewModel has focus, and cleans up when the ViewModel
         /// loses focus.
         /// </summary>
-        /// <param name="onNavigatedTo">Called when the Model is navigated
+        /// <param name="onNavigatedTo">Called when the ViewModel is navigated
         /// to - return an IDisposable that cleans up all of the things that are
         /// configured in the method.</param>
         /// <returns>An IDisposable that lets you disconnect the entire process

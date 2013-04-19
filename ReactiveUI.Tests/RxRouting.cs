@@ -41,16 +41,16 @@ namespace Foobar.Views
 
     public class FooBarView : IViewFor<IFooBarViewModel> 
     {
-        object IViewFor.Model { get { return Model; } set { Model = (IFooBarViewModel) value; } }
-        public IFooBarViewModel Model { get; set; }
+        object IViewFor.ViewModel { get { return ViewModel; } set { ViewModel = (IFooBarViewModel) value; } }
+        public IFooBarViewModel ViewModel { get; set; }
     }
 
     public interface IBazView : IViewFor<IBazViewModel> {}
 
     public class BazView : IBazView 
     {
-        object IViewFor.Model { get { return Model; } set { Model = (IBazViewModel)value; } }
-        public IBazViewModel Model { get; set; }
+        object IViewFor.ViewModel { get { return ViewModel; } set { ViewModel = (IBazViewModel)value; } }
+        public IBazViewModel ViewModel { get; set; }
     }
 }
 

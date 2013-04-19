@@ -593,8 +593,8 @@ namespace ReactiveUI
     {
         /// <summary>
         /// Creates a collection whose contents will "follow" another
-        /// collection; this method is useful for creating Model collections
-        /// that are automatically updated when the respective Model collection
+        /// collection; this method is useful for creating ViewModel collections
+        /// that are automatically updated when the respective ViewModel collection
         /// is updated.
         ///
         /// Note that even though this method attaches itself to any 
@@ -635,8 +635,8 @@ namespace ReactiveUI
 
         /// <summary>
         /// Creates a collection whose contents will "follow" another
-        /// collection; this method is useful for creating Model collections
-        /// that are automatically updated when the respective Model collection
+        /// collection; this method is useful for creating ViewModel collections
+        /// that are automatically updated when the respective ViewModel collection
         /// is updated.
         /// 
         /// Be aware that this overload will result in a collection that *only* 

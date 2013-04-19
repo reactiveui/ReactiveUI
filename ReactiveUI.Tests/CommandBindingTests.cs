@@ -10,6 +10,8 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using ReactiveUI.Xaml;
 using Xunit;
+using Microsoft.Reactive.Testing;
+using ReactiveUI.Testing;
 
 namespace ReactiveUI.Tests
 {
@@ -30,15 +32,15 @@ namespace ReactiveUI.Tests
         public FakeView()
         {
             TheTextBox = new TextBox();
-            Model = new FakeViewModel();
+            ViewModel = new FakeViewModel();
         }
 
-        object IViewFor.Model {
-            get { return Model; }
-            set { Model = (FakeViewModel)value; }
+        object IViewFor.ViewModel {
+            get { return ViewModel; }
+            set { ViewModel = (FakeViewModel)value; }
         }
 
-        public FakeViewModel Model { get; set; }
+        public FakeViewModel ViewModel { get; set; }
     }
 
     public class CreatesCommandBindingTests
@@ -92,7 +94,7 @@ namespace ReactiveUI.Tests
         public void EventBinderBindsToExplicitInheritedEvent()
         {
             var fixture = new FakeView();
-            fixture.BindCommand(y=>y.Model, x => x.Cmd, x => x.TheTextBox, "MouseDown");
+            fixture.BindCommand(y=>y.ViewModel, x => x.Cmd, x => x.TheTextBox, "MouseDown");
         }
 
 
@@ -166,29 +168,23 @@ namespace ReactiveUI.Tests
 
     // Make this subclass ReactiveObject but for WPF it
     // would be DependencyObject
-    public class CommandBindView : ReactiveObject, IViewFor<CommandBindModel>
+    public class CommandBindView : ReactiveObject, IViewFor<CommandBindViewModel>
     {
 
         #region IViewFor
-        object IViewFor.Model
+        object IViewFor.ViewModel
         {
-            get { return _Model; }
-            set { this.RaiseAndSetIfChanged(ref _Model, (CommandBindModel)value); }
+            get { return _ViewModel; }
+            set { this.RaiseAndSetIfChanged(ref _ViewModel, (CommandBindViewModel)value); }
         }
-        CommandBindModel _Model;
-        public CommandBindModel Model
+        CommandBindViewModel _ViewModel;
+        public CommandBindViewModel ViewModel
         {
-            get { return _Model; }
-            set { this.RaiseAndSetIfChanged(ref _Model, value); }
+            get { return _ViewModel; }
+            set { this.RaiseAndSetIfChanged(ref _ViewModel, (CommandBindViewModel)value); }
         }
         #endregion
 
-        CommandBindViewModel _DataContext;
-        public CommandBindViewModel DataContext
-        {
-            get { return _DataContext; }
-            set { this.RaiseAndSetIfChanged(ref _DataContext, value); }
-        }
 
         public Button Command1 { get; protected set; }
 
@@ -208,16 +204,17 @@ namespace ReactiveUI.Tests
         public void CommandBindConventionWireup()
         {
             var model = new CommandBindModel();
-            var view = new CommandBindView() {Model = model};
+            var viewmodel = new CommandBindViewModel() { CommandBindModel = model };
+            var view = new CommandBindView() {ViewModel = viewmodel};
             var fixture = new CommandBinderImplementation();
 
             Assert.Null(view.Command1.Command);
 
-            var disp = fixture.BindCommand(x=>x.DataContext, view, x => x.Command1);
-            Assert.Equal(view.DataContext.Command1, view.Command1.Command);
+            var disp = fixture.BindCommand(x=>x.ViewModel, view, x => x.Command1);
+            Assert.Equal(view.ViewModel.Command1, view.Command1.Command);
 
             var newCmd = new ReactiveCommand();
-            view.DataContext.Command1 = newCmd;
+            view.ViewModel.Command1 = newCmd;
             Assert.Equal(newCmd, view.Command1.Command);
 
             disp.Dispose();
@@ -227,21 +224,25 @@ namespace ReactiveUI.Tests
         [Fact]
         public void CommandBindByNameWireup()
         {
-            var model = new CommandBindModel();
-            var view = new CommandBindView() {Model = model};
-            var fixture = new CommandBinderImplementation();
+            (new TestScheduler()).With(sched =>
+            {
+                var model = new CommandBindModel();
+                var viewmodel = new CommandBindViewModel() { CommandBindModel = model };
+                var view = new CommandBindView() { ViewModel = viewmodel };
+                var fixture = new CommandBinderImplementation();
 
-            Assert.Null(view.Command1.Command);
+                Assert.Null(view.Command1.Command);
 
-            var disp = fixture.BindCommand(x=>x.DataContext, view, x => x.Command1, x => x.Command1);
-            Assert.Equal(view.DataContext.Command1, view.Command1.Command);
+                var disp = fixture.BindCommand(x => x.ViewModel, view, x => x.Command1, x => x.Command1);
+                Assert.Equal(view.ViewModel.Command1, view.Command1.Command);
 
-            var newCmd = new ReactiveCommand();
-            view.DataContext.Command1 = newCmd;
-            Assert.Equal(newCmd, view.Command1.Command);
+                var newCmd = new ReactiveCommand();
+                view.ViewModel.Command1 = newCmd;
+                Assert.Equal(newCmd, view.Command1.Command);
 
-            disp.Dispose();
-            Assert.Null(view.Command1.Command);
+                disp.Dispose();
+                Assert.Null(view.Command1.Command);
+            });
         }
 
 #if !SILVERLIGHT
@@ -249,13 +250,14 @@ namespace ReactiveUI.Tests
         public void CommandBindToExplicitEventWireup()
         {
             var model = new CommandBindModel();
-            var view = new CommandBindView() {Model = model};
+            var viewmodel = new CommandBindViewModel() { CommandBindModel = model };
+            var view = new CommandBindView() {ViewModel = viewmodel};
             var fixture = new CommandBinderImplementation();
 
             int invokeCount = 0;
-            view.DataContext.Command2.Subscribe(_ => invokeCount += 1);
+            view.ViewModel.Command2.Subscribe(_ => invokeCount += 1);
 
-            var disp = fixture.BindCommand(x=>x.DataContext, view, x => x.Command2, x => x.Command2, "MouseUp");
+            var disp = fixture.BindCommand(x=>x.ViewModel, view, x => x.Command2, x => x.Command2, "MouseUp");
 
             view.Command2.RaiseEvent(new MouseButtonEventArgs(Mouse.PrimaryDevice, 0, MouseButton.Left) { RoutedEvent = Image.MouseUpEvent });
 

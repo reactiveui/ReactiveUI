@@ -19,7 +19,7 @@ namespace ReactiveUI.Routing
 {
     /// <summary>
     /// This control hosts the View associated with a Router, and will display
-    /// the View and wire up the Model whenever a new Model is
+    /// the View and wire up the ViewModel whenever a new ViewModel is
     /// navigated to. Put this control as the only control in your Window.
     /// </summary>
     public class RoutedViewHost : TransitioningContentControl
@@ -63,7 +63,7 @@ namespace ReactiveUI.Routing
                     }
 
                     var view = RxRouting.ResolveView(vm);
-                    view.Model = vm;
+                    view.ViewModel = vm;
                     Content = view;
                 }, ex => RxApp.DefaultExceptionHandler.OnNext(ex));
         }

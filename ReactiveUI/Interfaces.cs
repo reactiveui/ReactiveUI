@@ -448,7 +448,7 @@ namespace ReactiveUI
 
     public interface IViewFor
     {
-        object Model { get; set; }
+        object ViewModel { get; set; }
     }
 
     /// <summary>
@@ -458,10 +458,10 @@ namespace ReactiveUI
         where T : class
     {
         /// <summary>
-        /// The Model corresponding to this specific View. This should be
+        /// The ViewModel corresponding to this specific View. This should be
         /// a DependencyProperty if you're using XAML.
         /// </summary>
-        T Model { get; set; }
+        T ViewModel { get; set; }
     }
 
     internal interface IWantsToRegisterStuff
@@ -476,7 +476,7 @@ namespace ReactiveUI
     {
         /// <summary>
         /// Represents the current navigation stack, the last element in the
-        /// collection being the currently visible Model.
+        /// collection being the currently visible ViewModel.
         /// </summary>
         ReactiveCollection<IRoutableViewModel> NavigationStack { get; }
 
@@ -487,14 +487,14 @@ namespace ReactiveUI
 
         /// <summary>
         /// Navigates to the a new element in the stack - the Execute parameter
-        /// must be a Model that implements IRoutableViewModel.
+        /// must be a ViewModel that implements IRoutableViewModel.
         /// </summary>
         INavigateCommand Navigate { get; }
 
         /// <summary>
         /// Navigates to a new element and resets the navigation stack (i.e. the
-        /// new Model will now be the only element in the stack) - the
-        /// Execute parameter must be a Model that implements
+        /// new ViewModel will now be the only element in the stack) - the
+        /// Execute parameter must be a ViewModel that implements
         /// IRoutableViewModel.
         /// </summary>
         INavigateCommand NavigateAndReset { get; }
@@ -506,13 +506,13 @@ namespace ReactiveUI
     public interface IRoutableViewModel : IReactiveNotifyPropertyChanged
     {
         /// <summary>
-        /// A string token representing the current Model, such as 'login' or 'user'
+        /// A string token representing the current ViewModel, such as 'login' or 'user'
         /// </summary>
         string UrlPathSegment { get; }
 
         /// <summary>
-        /// The IScreen that this Model is currently being shown in. This
-        /// is usually passed into the Model in the Constructor and saved
+        /// The IScreen that this ViewModel is currently being shown in. This
+        /// is usually passed into the ViewModel in the Constructor and saved
         /// as a ReadOnly Property.
         /// </summary>
         IScreen HostScreen { get; }
