@@ -13,9 +13,11 @@
 		<dependencies>
 			<group>
 				<dependency id="Rx-Main" version="2.1.30214.0" />
+				<dependency id="Microsoft.Bcl.Async" version="[1.0.16]" />
 			</group>
 			<group targetFramework="winrt45">
 				<dependency id="Rx-WindowStoreApps" version="2.1.30214.0" />
+				<dependency id="Microsoft.Bcl.Async" version="[1.0.16]" />
 			</group>
 		</dependencies>
 	</metadata>
