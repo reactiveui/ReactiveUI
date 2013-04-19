@@ -25,15 +25,15 @@ namespace ReactiveUI
         TSender Sender { get; }
 
         /// <summary>
-        /// The name of the property that has changed on Sender.
+        /// The name of the propertySelector that has changed on Sender.
         /// </summary>
         string PropertyName { get; }
 
         /// <summary>
-        /// The value of the property that has changed. IMPORTANT NOTE: This
-        /// property is often not set for performance reasons, unless you have
-        /// explicitly requested an Observable for a property via a method such
-        /// as ObservableForProperty. To retrieve the value for the property,
+        /// The value of the propertySelector that has changed. IMPORTANT NOTE: This
+        /// propertySelector is often not set for performance reasons, unless you have
+        /// explicitly requested an Observable for a propertySelector via a method such
+        /// as ObservableForProperty. To retrieve the value for the propertySelector,
         /// use the Value() extension method.
         /// </summary>
         TValue Value { get; }
@@ -53,16 +53,16 @@ namespace ReactiveUI
     public interface IReactiveNotifyPropertyChanged : INotifyPropertyChanged, INotifyPropertyChanging, IEnableLogger
     {
         /// <summary>
-        /// Represents an Observable that fires *before* a property is about to
+        /// Represents an Observable that fires *before* a propertySelector is about to
         /// be changed. Note that this should not fire duplicate change notifications if a
-        /// property is set to the same value multiple times.
+        /// propertySelector is set to the same value multiple times.
         /// </summary>
         IObservable<IObservedChange<object, object>> Changing { get; }
 
         /// <summary>
-        /// Represents an Observable that fires *after* a property has changed.
+        /// Represents an Observable that fires *after* a propertySelector has changed.
         /// Note that this should not fire duplicate change notifications if a
-        /// property is set to the same value multiple times.
+        /// propertySelector is set to the same value multiple times.
         /// </summary>
         IObservable<IObservedChange<object, object>> Changed { get; }
 
@@ -90,7 +90,7 @@ namespace ReactiveUI
     /// This interface is implemented by RxUI objects which are given 
     /// IObservables as input - when the input IObservables OnError, instead of 
     /// disabling the RxUI object, we catch the IObservable and pipe it into
-    /// this property.
+    /// this propertySelector.
     /// 
     /// Normally this IObservable is implemented with a ScheduledSubject whose 
     /// default Observer is RxApp.DefaultExceptionHandler - this means, that if
@@ -182,7 +182,7 @@ namespace ReactiveUI
 
         /// <summary>
         /// Enables the ItemChanging and ItemChanged properties; when this is
-        /// enabled, whenever a property on any object implementing
+        /// enabled, whenever a propertySelector on any object implementing
         /// IReactiveNotifyPropertyChanged changes, the change will be
         /// rebroadcast through ItemChanging/ItemChanged.
         /// </summary>
@@ -334,7 +334,7 @@ namespace ReactiveUI
         /// <summary>
         /// Sends a single message using the specified Type and contract.
         /// Consider using RegisterMessageSource instead if you will be sending
-        /// messages in response to other changes such as property changes
+        /// messages in response to other changes such as propertySelector changes
         /// or events.
         /// </summary>
         /// <typeparam name="T">The type of the message to send.</typeparam>
@@ -366,18 +366,18 @@ namespace ReactiveUI
         int GetAffinityForObject(Type type, bool beforeChanged = false);
 
         /// <summary>
-        /// Subscribe to notifications on the specified property, given an 
-        /// object and a property name.
+        /// Subscribe to notifications on the specified propertySelector, given an 
+        /// object and a propertySelector name.
         /// </summary>
         /// <param name="sender">The object to observe.</param>
-        /// <param name="propertyName">The property on the object to observe. 
-        /// This property will not be a dotted property, only a simple name.
+        /// <param name="propertyName">The propertySelector on the object to observe. 
+        /// This propertySelector will not be a dotted propertySelector, only a simple name.
         /// </param>
         /// <param name="beforeChanged">If true, signal just before the 
-        /// property value actually changes. If false, signal after the 
-        /// property changes.</param>
+        /// propertySelector value actually changes. If false, signal after the 
+        /// propertySelector changes.</param>
         /// <returns>An IObservable which is signalled whenever the specified
-        /// property on the object changes. If this cannot be done for a 
+        /// propertySelector on the object changes. If this cannot be done for a 
         /// specified value of beforeChanged, return Observable.Never</returns>
         IObservable<IObservedChange<object, object>> GetNotificationForProperty(object sender, string propertyName, bool beforeChanged = false);
     }
@@ -415,18 +415,18 @@ namespace ReactiveUI
 
     /// <summary>
     /// Implement this to teach Bind and OneWayBind how to guess the most 
-    /// "common" property on a given control, so if the caller doesn't specify it,
+    /// "common" propertySelector on a given control, so if the caller doesn't specify it,
     /// it'll pick the right control
     /// </summary>
     public interface IDefaultPropertyBindingProvider
     {
         /// <summary>
-        /// Given a certain control, figure out the default property to bind to
+        /// Given a certain control, figure out the default propertySelector to bind to
         /// </summary>
         /// <param name="control">The control to look at.</param>
-        /// <returns>A tuple of PropertyName and Affinity for that property.
+        /// <returns>A tuple of PropertyName and Affinity for that propertySelector.
         /// Use the same rules about affinity as others, but return null if
-        /// the property can't be determined.</returns>
+        /// the propertySelector can't be determined.</returns>
         Tuple<string, int> GetPropertyForControl(object control);
     }
 
@@ -448,7 +448,7 @@ namespace ReactiveUI
 
     public interface IViewFor
     {
-        object ViewModel { get; set; }
+        object Model { get; set; }
     }
 
     /// <summary>
@@ -458,10 +458,10 @@ namespace ReactiveUI
         where T : class
     {
         /// <summary>
-        /// The ViewModel corresponding to this specific View. This should be
+        /// The Model corresponding to this specific View. This should be
         /// a DependencyProperty if you're using XAML.
         /// </summary>
-        T ViewModel { get; set; }
+        T Model { get; set; }
     }
 
     internal interface IWantsToRegisterStuff
@@ -476,7 +476,7 @@ namespace ReactiveUI
     {
         /// <summary>
         /// Represents the current navigation stack, the last element in the
-        /// collection being the currently visible ViewModel.
+        /// collection being the currently visible Model.
         /// </summary>
         ReactiveCollection<IRoutableViewModel> NavigationStack { get; }
 
@@ -487,14 +487,14 @@ namespace ReactiveUI
 
         /// <summary>
         /// Navigates to the a new element in the stack - the Execute parameter
-        /// must be a ViewModel that implements IRoutableViewModel.
+        /// must be a Model that implements IRoutableViewModel.
         /// </summary>
         INavigateCommand Navigate { get; }
 
         /// <summary>
         /// Navigates to a new element and resets the navigation stack (i.e. the
-        /// new ViewModel will now be the only element in the stack) - the
-        /// Execute parameter must be a ViewModel that implements
+        /// new Model will now be the only element in the stack) - the
+        /// Execute parameter must be a Model that implements
         /// IRoutableViewModel.
         /// </summary>
         INavigateCommand NavigateAndReset { get; }
@@ -506,13 +506,13 @@ namespace ReactiveUI
     public interface IRoutableViewModel : IReactiveNotifyPropertyChanged
     {
         /// <summary>
-        /// A string token representing the current ViewModel, such as 'login' or 'user'
+        /// A string token representing the current Model, such as 'login' or 'user'
         /// </summary>
         string UrlPathSegment { get; }
 
         /// <summary>
-        /// The IScreen that this ViewModel is currently being shown in. This
-        /// is usually passed into the ViewModel in the Constructor and saved
+        /// The IScreen that this Model is currently being shown in. This
+        /// is usually passed into the Model in the Constructor and saved
         /// as a ReadOnly Property.
         /// </summary>
         IScreen HostScreen { get; }

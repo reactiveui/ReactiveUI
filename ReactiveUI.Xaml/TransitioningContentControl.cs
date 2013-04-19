@@ -21,14 +21,14 @@ namespace ReactiveUI.Xaml
     public class TransitioningContentControl : ContentControl
     {
         /// <summary>
-        /// <see cref="DependencyProperty"/> for the <see cref="Transition"/> property.
+        /// <see cref="DependencyProperty"/> for the <see cref="Transition"/> propertySelector.
         /// </summary>
         public static readonly DependencyProperty TransitionProperty = DependencyProperty.RegisterAttached(
             "Transition", typeof (TransitionType), typeof (TransitioningContentControl),
             new PropertyMetadata(TransitionType.Fade, OnTransitionChanged));
 
         /// <summary>
-        /// <see cref="DependencyProperty"/> for the <see cref="TransitionPart"/> property.
+        /// <see cref="DependencyProperty"/> for the <see cref="TransitionPart"/> propertySelector.
         /// </summary>
         public static readonly DependencyProperty TransitionPartProperty =
             DependencyProperty.RegisterAttached("TransitionPart", typeof (TransitionPartType),
@@ -154,10 +154,10 @@ namespace ReactiveUI.Xaml
         }
 
         /// <summary>
-        /// Called when the value of the <see cref="P:System.Windows.Controls.ContentControl.Content"/> property changes.
+        /// Called when the value of the <see cref="P:System.Windows.Controls.ContentControl.Content"/> propertySelector changes.
         /// </summary>
-        /// <param name="oldContent">The old value of the <see cref="P:System.Windows.Controls.ContentControl.Content"/> property.</param>
-        /// <param name="newContent">The new value of the <see cref="P:System.Windows.Controls.ContentControl.Content"/> property.</param>
+        /// <param name="oldContent">The old value of the <see cref="P:System.Windows.Controls.ContentControl.Content"/> propertySelector.</param>
+        /// <param name="newContent">The new value of the <see cref="P:System.Windows.Controls.ContentControl.Content"/> propertySelector.</param>
         protected override void OnContentChanged(object oldContent, object newContent)
         {
             this.QueueTransition(oldContent, newContent);

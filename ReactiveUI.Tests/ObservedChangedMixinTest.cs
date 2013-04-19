@@ -149,7 +149,7 @@ namespace ReactiveUI.Tests
             // Before the code changes packed in the same commit
             // as this test the test would go into an infinite 
             // event storm. The critical issue is that the
-            // property StackOverflowTrigger will clone the
+            // propertySelector StackOverflowTrigger will clone the
             // value before setting it.
             //
             // If this test executes through without hanging then

@@ -155,7 +155,7 @@ namespace ReactiveUI
             var ret = GetValueFetcherForProperty(type, propName);
 
             if (ret == null) {
-                throw new ArgumentException(String.Format("Type '{0}' must have a property '{1}'", type, propName));
+                throw new ArgumentException(String.Format("Type '{0}' must have a propertySelector '{1}'", type, propName));
             }
             return ret;
         }
@@ -175,7 +175,7 @@ namespace ReactiveUI
             var ret = GetValueSetterForProperty(type, propName);
 
             if (ret == null) {
-                throw new ArgumentException(String.Format("Type '{0}' must have a property '{1}'", type, propName));
+                throw new ArgumentException(String.Format("Type '{0}' must have a propertySelector '{1}'", type, propName));
             }
             return ret;
         }
@@ -279,13 +279,15 @@ namespace ReactiveUI
             return eventArgsType;
         }
 
-        internal static IObservable<TProp> ViewModelWhenAnyValue<TView, TViewModel, TProp>(TViewModel viewModel, TView view, Expression<Func<TViewModel, TProp>> property)
-            where TView : IViewFor
+        internal static IObservable<TProp> ViewModelWhenAnyValue<TView, TViewModel, TProp>
+            ( Expression<Func<TView, TViewModel>> viewModelSelector
+            , TView view
+            , Expression<Func<TViewModel, TProp>> propertySelector)
             where TViewModel : class
         {
-            return view.WhenAny(x => x.ViewModel, x => x.Value)
+            return view.WhenAny(viewModelSelector, x => x.Value)
                 .Where(x => x != null)
-                .SelectMany(x => ((TViewModel)x).WhenAny(property, y => y.Value));
+                .SelectMany(x => ((TViewModel)x).WhenAny(propertySelector, y => y.Value));
         }
 
         internal static FieldInfo GetSafeField(Type type, string propertyName, BindingFlags flags)
@@ -326,7 +328,7 @@ namespace ReactiveUI
 
             var defaultProperty = DefaultPropertyBinding.GetPropertyForControl(control);
             if (defaultProperty == null) {
-                throw new Exception(String.Format("Couldn't find a default property for type {0}", control.GetType()));
+                throw new Exception(String.Format("Couldn't find a default propertySelector for type {0}", control.GetType()));
             }
             return new[] {vmPropertyName, defaultProperty};
         }

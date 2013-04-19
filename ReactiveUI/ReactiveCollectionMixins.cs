@@ -415,7 +415,7 @@ namespace ReactiveUI
         }
 
         /// <summary>
-        /// Internal equality comparer used for looking up the source object of a property change notification in
+        /// Internal equality comparer used for looking up the source object of a propertySelector change notification in
         /// the source list.
         /// </summary>
         class ReferenceEqualityComparer<T> : IEqualityComparer<T>
@@ -593,7 +593,7 @@ namespace ReactiveUI
     {
         /// <summary>
         /// Creates a collection whose contents will "follow" another
-        /// collection; this method is useful for creating ViewModel collections
+        /// collection; this method is useful for creating Model collections
         /// that are automatically updated when the respective Model collection
         /// is updated.
         ///
@@ -635,7 +635,7 @@ namespace ReactiveUI
 
         /// <summary>
         /// Creates a collection whose contents will "follow" another
-        /// collection; this method is useful for creating ViewModel collections
+        /// collection; this method is useful for creating Model collections
         /// that are automatically updated when the respective Model collection
         /// is updated.
         /// 

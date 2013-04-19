@@ -22,138 +22,133 @@ namespace ReactiveUI
 
         public static IDisposable BindCommand<TView, TViewModel, TProp>(
                 this TView view, 
-                TViewModel viewModel, 
+                Expression<Func<TView, TViewModel>> viewModelSelector,
                 Expression<Func<TViewModel, TProp>> propertyName,
                 string toEvent = null)
             where TViewModel : class
-            where TView : class, IViewFor<TViewModel>
+            where TView : class
             where TProp : ICommand
         {
-            return binderImplementation.BindCommand(viewModel, view, propertyName, toEvent);
+            return binderImplementation.BindCommand(viewModelSelector, view, propertyName, toEvent);
         }
 
         public static IDisposable BindCommand<TView, TViewModel, TProp, TControl, TParam>(
                 this TView view, 
-                TViewModel viewModel, 
+                Expression<Func<TView, TViewModel>> viewModelSelector,
                 Expression<Func<TViewModel, TProp>> propertyName, 
                 Expression<Func<TView, TControl>> controlName,
                 Func<TParam> withParameter,
                 string toEvent = null)
             where TViewModel : class
-            where TView : class, IViewFor<TViewModel>
+            where TView : class
             where TProp : ICommand
         {
-            return binderImplementation.BindCommand(viewModel, view, propertyName, controlName, withParameter, toEvent);
+            return binderImplementation.BindCommand(viewModelSelector, view, propertyName, controlName, withParameter, toEvent);
         }
 
         public static IDisposable BindCommand<TView, TViewModel, TProp, TControl, TParam>(
                 this TView view, 
-                TViewModel viewModel, 
+                Expression<Func<TView, TViewModel>> viewModelSelector,
                 Expression<Func<TViewModel, TProp>> propertyName, 
                 Expression<Func<TView, TControl>> controlName,
                 IObservable<TParam> withParameter,
                 string toEvent = null)
             where TViewModel : class
-            where TView : class, IViewFor<TViewModel>
+            where TView : class
             where TProp : ICommand
         {
-            return binderImplementation.BindCommand(viewModel, view, propertyName, controlName, withParameter, toEvent);
+            return binderImplementation.BindCommand(viewModelSelector, view, propertyName, controlName, withParameter, toEvent);
         }
 
         public static IDisposable BindCommand<TView, TViewModel, TProp, TControl>(
                 this TView view, 
-                TViewModel viewModel, 
+                Expression<Func<TView, TViewModel>> viewModelSelector,
                 Expression<Func<TViewModel, TProp>> propertyName, 
                 Expression<Func<TView, TControl>> controlName,
                 string toEvent = null)
             where TViewModel : class
-            where TView : class, IViewFor<TViewModel>
+            where TView : class
             where TProp : ICommand
         {
-            return binderImplementation.BindCommand(viewModel, view, propertyName, controlName, toEvent);
+            return binderImplementation.BindCommand(viewModelSelector, view, propertyName, controlName, toEvent);
         }
 
         public static IDisposable BindCommand<TView, TViewModel, TProp, TControl, TParam>(
                 this TView view, 
-                TViewModel viewModel, 
+                Expression<Func<TView, TViewModel>> viewModelSelector,
                 Expression<Func<TViewModel, TProp>> propertyName, 
                 Expression<Func<TView, TControl>> controlName,
                 Expression<Func<TViewModel, TParam>> withParameter,
                 string toEvent = null)
             where TViewModel : class
-            where TView : class, IViewFor<TViewModel>
+            where TView : class
             where TProp : ICommand
         {
-            return binderImplementation.BindCommand(viewModel, view, propertyName, controlName, withParameter, toEvent);
+            return binderImplementation.BindCommand(viewModelSelector, view, propertyName, controlName, withParameter, toEvent);
         }
     }
 
     interface ICommandBinderImplementation : IEnableLogger
     {
         IDisposable BindCommand<TView, TViewModel, TProp>(
-                TViewModel viewModel, 
+                Expression<Func<TView, TViewModel>> viewModelSelector,
                 TView view, 
                 Expression<Func<TViewModel, TProp>> propertyName,
                 string toEvent = null)
             where TViewModel : class
-            where TView : class, IViewFor<TViewModel>
             where TProp : ICommand;
 
         IDisposable BindCommand<TView, TViewModel, TProp, TControl, TParam>(
-                TViewModel viewModel, 
+                Expression<Func<TView, TViewModel>> viewModelSelector,
                 TView view, 
                 Expression<Func<TViewModel, TProp>> propertyName, 
                 Expression<Func<TView, TControl>> controlName,
                 Func<TParam> withParameter,
                 string toEvent = null)
             where TViewModel : class
-            where TView : class, IViewFor<TViewModel>
             where TProp : ICommand;
 
         IDisposable BindCommand<TView, TViewModel, TProp, TControl, TParam>(
-                TViewModel viewModel, 
+                Expression<Func<TView, TViewModel>> viewModelSelector,
                 TView view, 
                 Expression<Func<TViewModel, TProp>> propertyName, 
                 Expression<Func<TView, TControl>> controlName,
                 IObservable<TParam> withParameter,
                 string toEvent = null)
             where TViewModel : class
-            where TView : class, IViewFor<TViewModel>
             where TProp : ICommand;
     }
 
     public class CommandBinderImplementation : ICommandBinderImplementation 
     {
         public IDisposable BindCommand<TView, TViewModel, TProp>(
-                TViewModel viewModel, 
+                Expression<Func<TView, TViewModel>> viewModelSelector,
                 TView view, 
                 Expression<Func<TViewModel, TProp>> propertyName,
                 string toEvent = null)
             where TViewModel : class
-            where TView : class, IViewFor<TViewModel>
             where TProp : ICommand
         {
             var ctlName = Reflection.SimpleExpressionToPropertyName(propertyName);
             var viewPropGetter = Reflection.GetValueFetcherForProperty(typeof (TView), ctlName);
 
-            return bindCommandInternal(viewModel, view, propertyName, viewPropGetter, Observable.Empty<object>(), toEvent);
+            return bindCommandInternal(viewModelSelector, view, propertyName, viewPropGetter, Observable.Empty<object>(), toEvent);
         }
 
         public IDisposable BindCommand<TView, TViewModel, TProp, TControl, TParam>(
-                TViewModel viewModel, 
+                Expression<Func<TView, TViewModel>> viewModelSelector,
                 TView view, 
                 Expression<Func<TViewModel, TProp>> propertyName, 
                 Expression<Func<TView, TControl>> controlName,
                 Func<TParam> withParameter,
                 string toEvent = null)
             where TViewModel : class
-            where TView : class, IViewFor<TViewModel>
             where TProp : ICommand
         {
             var ctlName = Reflection.SimpleExpressionToPropertyName(controlName);
             var viewPropGetter = Reflection.GetValueFetcherForProperty(typeof (TView), ctlName);
 
-            return bindCommandInternal(viewModel, view, propertyName, viewPropGetter, Observable.Empty<object>(), toEvent, cmd => {
+            return bindCommandInternal(viewModelSelector, view, propertyName, viewPropGetter, Observable.Empty<object>(), toEvent, cmd => {
                 var rc = cmd as IReactiveCommand;
                 if (rc == null) {
                     return ReactiveCommand.Create(x => cmd.CanExecute(x), _ => cmd.Execute(withParameter()));
@@ -166,23 +161,22 @@ namespace ReactiveUI
         }
 
         public IDisposable BindCommand<TView, TViewModel, TProp, TControl, TParam>(
-                TViewModel viewModel, 
+                Expression<Func<TView, TViewModel>> viewModelSelector,
                 TView view, 
                 Expression<Func<TViewModel, TProp>> propertyName, 
                 Expression<Func<TView, TControl>> controlName,
                 IObservable<TParam> withParameter,
                 string toEvent = null)
             where TViewModel : class
-            where TView : class, IViewFor<TViewModel>
             where TProp : ICommand
         {
             var ctlName = Reflection.SimpleExpressionToPropertyName(controlName);
             var viewPropGetter = Reflection.GetValueFetcherForProperty(typeof (TView), ctlName);
-            return bindCommandInternal(viewModel, view, propertyName, viewPropGetter, withParameter, toEvent);
+            return bindCommandInternal(viewModelSelector, view, propertyName, viewPropGetter, withParameter, toEvent);
         }
 
         IDisposable bindCommandInternal<TView, TViewModel, TProp, TParam>(
-                TViewModel viewModel, 
+                Expression<Func<TView, TViewModel>> viewModelSelector,
                 TView view, 
                 Expression<Func<TViewModel, TProp>> propertyName, 
                 Func<object, object> viewPropGetter,
@@ -190,14 +184,13 @@ namespace ReactiveUI
                 string toEvent,
                 Func<ICommand, ICommand> commandFixuper = null)
             where TViewModel : class
-            where TView : class, IViewFor<TViewModel>
             where TProp : ICommand
         {
             var propName = Reflection.SimpleExpressionToPropertyName(propertyName);
 
             IDisposable disp = Disposable.Empty;
 
-            var propSub = Reflection.ViewModelWhenAnyValue(viewModel, view, propertyName).Subscribe(x => {
+            var propSub = Reflection.ViewModelWhenAnyValue(viewModelSelector, view, propertyName).Subscribe(x => {
                 disp.Dispose();
                 if (x == null) {
                     disp = Disposable.Empty;
@@ -230,31 +223,31 @@ namespace ReactiveUI
     {
         public static IDisposable BindCommand<TView, TViewModel, TProp, TControl>(
                 this ICommandBinderImplementation This,
-                TViewModel viewModel, 
+                Expression<Func<TView, TViewModel>> viewModelSelector,
                 TView view, 
                 Expression<Func<TViewModel, TProp>> propertyName, 
                 Expression<Func<TView, TControl>> controlName,
                 string toEvent = null)
             where TViewModel : class
-            where TView : class, IViewFor<TViewModel>
             where TProp : ICommand
         {
-            return This.BindCommand(viewModel, view, propertyName, controlName, Observable.Empty<object>(), toEvent);
+            return This.BindCommand(viewModelSelector, view, propertyName, controlName, Observable.Empty<object>(), toEvent);
         }
 
         public static IDisposable BindCommand<TView, TViewModel, TProp, TControl, TParam>(
                 this ICommandBinderImplementation This,
-                TViewModel viewModel, 
+                Expression<Func<TView, TViewModel>> viewModelSelector,
                 TView view, 
                 Expression<Func<TViewModel, TProp>> propertyName, 
                 Expression<Func<TView, TControl>> controlName,
                 Expression<Func<TViewModel, TParam>> withParameter,
                 string toEvent = null)
             where TViewModel : class
-            where TView : class, IViewFor<TViewModel>
+            where TView : class
             where TProp : ICommand
         {
-            return This.BindCommand(viewModel, view, propertyName, controlName, view.ViewModel.WhenAny(withParameter, x => x.Value), toEvent);
+            var selector = view.WhenAny(viewModelSelector, x => x.Value).Select(x => x.WhenAny(withParameter, v => v.Value)).Switch();
+            return This.BindCommand(viewModelSelector, view, propertyName, controlName, selector, toEvent);
         }
     }
 

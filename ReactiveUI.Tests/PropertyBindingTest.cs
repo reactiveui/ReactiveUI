@@ -72,16 +72,16 @@ namespace ReactiveUI.Tests
 
     public class PropertyBindView : Control, IViewFor<PropertyBindViewModel>
     {
-        public PropertyBindViewModel ViewModel {
+        public PropertyBindViewModel Model {
             get { return (PropertyBindViewModel)GetValue(ViewModelProperty); }
             set { SetValue(ViewModelProperty, value); }
         }
         public static readonly DependencyProperty ViewModelProperty =
-            DependencyProperty.Register("ViewModel", typeof(PropertyBindViewModel), typeof(PropertyBindView), new PropertyMetadata(null));
+            DependencyProperty.Register("Model", typeof(PropertyBindViewModel), typeof(PropertyBindView), new PropertyMetadata(null));
 
-        object IViewFor.ViewModel { 
-            get { return ViewModel; }
-            set { ViewModel = (PropertyBindViewModel)value; } 
+        object IViewFor.Model { 
+            get { return Model; }
+            set { Model = (PropertyBindViewModel)value; } 
         }
         
         public TextBox SomeTextBox;
@@ -133,13 +133,13 @@ namespace ReactiveUI.Tests
         public void TwoWayBindSmokeTest()
         {
             var vm = new PropertyBindViewModel();
-            var view = new PropertyBindView() {ViewModel = vm};
+            var view = new PropertyBindView() {Model = vm};
             var fixture = new PropertyBinderImplementation();
 
             vm.Property1 = "Foo";
             Assert.NotEqual(vm.Property1, view.SomeTextBox.Text);
 
-            var disp = fixture.Bind(vm, view, x => x.Property1, x => x.SomeTextBox.Text, (IObservable<Unit>)null, null);
+            var disp = fixture.Bind(v=>(PropertyBindViewModel)v.DataContext, view, x => x.Property1, x => x.SomeTextBox.Text, (IObservable<Unit>)null, null);
 
             Assert.Equal(vm.Property1, view.SomeTextBox.Text);
             Assert.Equal("Foo", vm.Property1);
@@ -158,13 +158,13 @@ namespace ReactiveUI.Tests
         public void TypeConvertedTwoWayBindSmokeTest()
         {
             var vm = new PropertyBindViewModel();
-            var view = new PropertyBindView() { ViewModel = vm };
+            var view = new PropertyBindView() { Model = vm };
             var fixture = new PropertyBinderImplementation();
 
             vm.Property2 = 17;
             Assert.NotEqual(vm.Property2.ToString(), view.SomeTextBox.Text);
 
-            var disp = fixture.Bind(vm, view, x => x.Property2, x => x.SomeTextBox.Text, (IObservable<Unit>)null, null);
+            var disp = fixture.Bind(v=>(PropertyBindViewModel)v.DataContext, view, x => x.Property2, x => x.SomeTextBox.Text, (IObservable<Unit>)null, null);
 
             Assert.Equal(vm.Property2.ToString(), view.SomeTextBox.Text);
             Assert.Equal(17, vm.Property2);
@@ -183,7 +183,7 @@ namespace ReactiveUI.Tests
             Assert.NotEqual("0", view.SomeTextBox.Text);
 
             vm.JustADecimal = 17.2m;
-            var disp1 = fixture.Bind(vm, view, x => x.JustADecimal, x => x.SomeTextBox.Text, (IObservable<Unit>)null, null);
+            var disp1 = fixture.Bind(v=>(PropertyBindViewModel)v.DataContext, view, x => x.JustADecimal, x => x.SomeTextBox.Text, (IObservable<Unit>)null, null);
 
             Assert.Equal(vm.JustADecimal.ToString(), view.SomeTextBox.Text);
             Assert.Equal(17.2m, vm.JustADecimal );
@@ -204,7 +204,7 @@ namespace ReactiveUI.Tests
 
             // Empty test
             vm.JustAInt32 = 12;
-            var disp2 = fixture.Bind(vm, view, x => x.JustAInt32, x => x.SomeTextBox.Text, (IObservable<Unit>)null, null);
+            var disp2 = fixture.Bind(v=>(PropertyBindViewModel)v.DataContext, view, x => x.JustAInt32, x => x.SomeTextBox.Text, (IObservable<Unit>)null, null);
 
             view.SomeTextBox.Text = "";
             Assert.Equal(12, vm.JustAInt32);
@@ -221,9 +221,9 @@ namespace ReactiveUI.Tests
         public void BindingToItemsControl()
         {
             var vm = new PropertyBindViewModel();
-            var view = new PropertyBindView() {ViewModel = vm};
+            var view = new PropertyBindView() {Model = vm};
 
-            view.OneWayBind(view.ViewModel, x => x.SomeCollectionOfStrings, x => x.SomeListBox.ItemsSource);
+            view.OneWayBind(v=>v.Model, x => x.SomeCollectionOfStrings, x => x.SomeListBox.ItemsSource);
             Assert.True(view.SomeListBox.ItemsSource.OfType<string>().Count() > 1);
         }
 
@@ -231,9 +231,9 @@ namespace ReactiveUI.Tests
         public void BindingIntoModelObjects()
         {
             var vm = new PropertyBindViewModel();
-            var view = new PropertyBindView() {ViewModel = vm};
+            var view = new PropertyBindView() {Model = vm};
 
-            view.OneWayBind(view.ViewModel, x => x.Model.AnotherThing, x => x.SomeTextBox.Text);
+            view.OneWayBind(v=>v.Model, x => x.Model.AnotherThing, x => x.SomeTextBox.Text);
             Assert.Equal("Baz", view.SomeTextBox.Text);
         }
 
@@ -241,9 +241,9 @@ namespace ReactiveUI.Tests
         public void ImplicitBindPlusTypeConversion() 
         {
             var vm = new PropertyBindViewModel();
-            var view = new PropertyBindView() {ViewModel = vm};
+            var view = new PropertyBindView() {Model = vm};
 
-            view.Bind(view.ViewModel, x => x.Property2);
+            view.Bind(v=>v.Model, x => x.Property2);
 
             vm.Property2 = 42;
             Assert.Equal("42", view.Property2.Text);
@@ -256,9 +256,9 @@ namespace ReactiveUI.Tests
         public void ViewModelNullableToViewNonNullable()
         {
             var vm = new PropertyBindViewModel();
-            var view = new PropertyBindView() {ViewModel = vm};
+            var view = new PropertyBindView() {Model = vm};
 
-            view.Bind(view.ViewModel, x => x.NullableDouble, x => x.FakeControl.JustADouble);
+            view.Bind(v=>v.Model, x => x.NullableDouble, x => x.FakeControl.JustADouble);
             Assert.Equal(0.0, view.FakeControl.JustADouble);
 
             vm.NullableDouble = 4.0;
@@ -275,9 +275,9 @@ namespace ReactiveUI.Tests
         public void ViewModelNonNullableToViewNullable()
         {
             var vm = new PropertyBindViewModel();
-            var view = new PropertyBindView() {ViewModel = vm};
+            var view = new PropertyBindView() {Model = vm};
 
-            view.Bind(view.ViewModel, x => x.JustADouble, x => x.FakeControl.NullableDouble);
+            view.Bind(v=>v.Model, x => x.JustADouble, x => x.FakeControl.NullableDouble);
             Assert.Equal(0.0, vm.JustADouble);
 
             view.FakeControl.NullableDouble = 4.0;
@@ -294,9 +294,9 @@ namespace ReactiveUI.Tests
         public void ViewModelNullableToViewNullable()
         {
             var vm = new PropertyBindViewModel();
-            var view = new PropertyBindView() {ViewModel = vm};
+            var view = new PropertyBindView() {Model = vm};
 
-            view.Bind(view.ViewModel, x => x.NullableDouble, x => x.FakeControl.NullableDouble);
+            view.Bind(v=>v.Model, x => x.NullableDouble, x => x.FakeControl.NullableDouble);
             Assert.Equal(null, vm.NullableDouble);
 
             view.FakeControl.NullableDouble = 4.0;
@@ -313,10 +313,10 @@ namespace ReactiveUI.Tests
         public void ItemsControlShouldGetADataTemplate()
         {
             var vm = new PropertyBindViewModel();
-            var view = new PropertyBindView() {ViewModel = vm};
+            var view = new PropertyBindView() {Model = vm};
 
             Assert.Null(view.FakeItemsControl.ItemTemplate);
-            view.OneWayBind(vm, x => x.SomeCollectionOfStrings, x => x.FakeItemsControl.ItemsSource);
+            view.OneWayBind(v=>(PropertyBindViewModel)v.DataContext, x => x.SomeCollectionOfStrings, x => x.FakeItemsControl.ItemsSource);
 
             Assert.NotNull(view.FakeItemsControl.ItemTemplate);
         }
@@ -325,7 +325,7 @@ namespace ReactiveUI.Tests
         public void ItemsControlShouldGetADataTemplateInBindTo()
         {
             var vm = new PropertyBindViewModel();
-            var view = new PropertyBindView() {ViewModel = vm};
+            var view = new PropertyBindView() {Model = vm};
 
             Assert.Null(view.FakeItemsControl.ItemTemplate);
             vm.WhenAny(x => x.SomeCollectionOfStrings, x => x.Value)
@@ -341,12 +341,12 @@ namespace ReactiveUI.Tests
         public void BindToShouldntInitiallySetToNull()
         {
             var vm = new PropertyBindViewModel();
-            var view = new PropertyBindView() {ViewModel = null};
+            var view = new PropertyBindView() {Model = null};
 
-            view.OneWayBind(vm, x => x.Model.AnotherThing, x => x.FakeControl.NullHatingString);
+            view.OneWayBind(v=>(PropertyBindViewModel)v.DataContext, x => x.Model.AnotherThing, x => x.FakeControl.NullHatingString);
             Assert.Equal("", view.FakeControl.NullHatingString);
 
-            view.ViewModel = vm;
+            view.Model = vm;
             Assert.Equal(vm.Model.AnotherThing, view.FakeControl.NullHatingString);
         }
 
@@ -354,14 +354,14 @@ namespace ReactiveUI.Tests
         public void BindToTypeConversionSmokeTest()
         {
             var vm = new PropertyBindViewModel();
-            var view = new PropertyBindView() {ViewModel = null};
+            var view = new PropertyBindView() {Model = null};
 
-            view.WhenAny(x => x.ViewModel.JustADouble, x => x.Value)
+            view.WhenAny(x => x.Model.JustADouble, x => x.Value)
                 .BindTo(view, x => x.FakeControl.NullHatingString);
 
             Assert.Equal("", view.FakeControl.NullHatingString);
 
-            view.ViewModel = vm;
+            view.Model = vm;
             Assert.Equal(vm.JustADouble.ToString(), view.FakeControl.NullHatingString);
         }
     }

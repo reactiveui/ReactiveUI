@@ -10,10 +10,10 @@ namespace ReactiveUI
     public static class ObservedChangedMixin
     {
         /// <summary>
-        /// Returns the current value of a property given a notification that
+        /// Returns the current value of a propertySelector given a notification that
         /// it has changed.
         /// </summary>
-        /// <returns>The current value of the property</returns>
+        /// <returns>The current value of the propertySelector</returns>
         public static TValue GetValue<TSender, TValue>(this IObservedChange<TSender, TValue> This)
         {
             TValue ret;
@@ -24,11 +24,11 @@ namespace ReactiveUI
         }
 
         /// <summary>
-        /// Attempts to return the current value of a property given a 
-        /// notification that it has changed. If any property in the
-        /// property expression is null, false is returned.
+        /// Attempts to return the current value of a propertySelector given a 
+        /// notification that it has changed. If any propertySelector in the
+        /// propertySelector expression is null, false is returned.
         /// </summary>
-        /// <param name="changeValue">The value of the property
+        /// <param name="changeValue">The value of the propertySelector
         /// expression.</param>
         /// <returns>True if the entire expression was able to be followed,
         /// false otherwise</returns>
@@ -59,11 +59,11 @@ namespace ReactiveUI
         /// <summary>
         /// Given a fully filled-out IObservedChange object, SetValueToProperty
         /// will apply it to the specified object (i.e. it will ensure that
-        /// target.property == This.GetValue() and "replay" the observed change
+        /// target.propertySelector == This.GetValue() and "replay" the observed change
         /// onto another object)
         /// </summary>
         /// <param name="target">The target object to apply the change to.</param>
-        /// <param name="property">The target property to apply the change to.</param>
+        /// <param name="propertySelector">The target propertySelector to apply the change to.</param>
         internal static void SetValueToProperty<TSender, TValue, TTarget>(
             this IObservedChange<TSender, TValue> This, 
             TTarget target,
@@ -74,7 +74,7 @@ namespace ReactiveUI
 
         /// <summary>
         /// Given a stream of notification changes, this method will convert 
-        /// the property changes to the current value of the property.
+        /// the propertySelector changes to the current value of the propertySelector.
         /// </summary>
         /// <returns>An Observable representing the stream of current values of
         /// the given change notification stream.</returns>

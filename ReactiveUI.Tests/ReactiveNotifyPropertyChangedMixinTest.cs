@@ -77,16 +77,16 @@ namespace ReactiveUI.Tests
 
     public class HostTestView : Control, IViewFor<HostTestFixture>
     {
-        public HostTestFixture ViewModel {
+        public HostTestFixture Model {
             get { return (HostTestFixture)GetValue(ViewModelProperty); }
             set { SetValue(ViewModelProperty, value); }
         }
         public static readonly DependencyProperty ViewModelProperty =
-            DependencyProperty.Register("ViewModel", typeof(HostTestFixture), typeof(HostTestView), new PropertyMetadata(null));
+            DependencyProperty.Register("Model", typeof(HostTestFixture), typeof(HostTestView), new PropertyMetadata(null));
 
-        object IViewFor.ViewModel {
-            get { return ViewModel; }
-            set { ViewModel = (HostTestFixture) value; }
+        object IViewFor.Model {
+            get { return Model; }
+            set { Model = (HostTestFixture) value; }
         }
     }
 
@@ -448,14 +448,14 @@ namespace ReactiveUI.Tests
             var output = new List<string>();
 
             Assert.Equal(0, output.Count);
-            Assert.Null(fixture.ViewModel);
+            Assert.Null(fixture.Model);
 
-            fixture.WhenAny(x => x.ViewModel.Child.IsNotNullString, x => x.Value).Subscribe(output.Add);
+            fixture.WhenAny(x => x.Model.Child.IsNotNullString, x => x.Value).Subscribe(output.Add);
 
-            fixture.ViewModel = vm;
+            fixture.Model = vm;
             Assert.Equal(1, output.Count);
 
-            fixture.ViewModel.Child.IsNotNullString = "Bar";
+            fixture.Model.Child.IsNotNullString = "Bar";
             Assert.Equal(2, output.Count);
             new[] { "Foo", "Bar" }.AssertAreEqual(output);
         }

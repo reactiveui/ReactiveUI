@@ -16,25 +16,25 @@ namespace ReactiveUI.Routing
 {
     /// <summary>
     /// This content control will automatically load the View associated with
-    /// the ViewModel property and display it. This control is very useful
-    /// inside a DataTemplate to display the View associated with a ViewModel.
+    /// the Model propertySelector and display it. This control is very useful
+    /// inside a DataTemplate to display the View associated with a Model.
     /// </summary>
     public class ViewModelViewHost : TransitioningContentControl
     {
         /// <summary>
-        /// The ViewModel to display
+        /// The Model to display
         /// </summary>
         public IReactiveNotifyPropertyChanged ViewModel {
             get { return (IReactiveNotifyPropertyChanged)GetValue(ViewModelProperty); }
             set { SetValue(ViewModelProperty, value); }
         }
         public static readonly DependencyProperty ViewModelProperty = 
-            DependencyProperty.Register("ViewModel", typeof(IReactiveNotifyPropertyChanged), typeof(ViewModelViewHost), new PropertyMetadata(null, somethingChanged));
+            DependencyProperty.Register("Model", typeof(IReactiveNotifyPropertyChanged), typeof(ViewModelViewHost), new PropertyMetadata(null, somethingChanged));
 
         readonly Subject<Unit> updateViewModel = new Subject<Unit>();
 
         /// <summary>
-        /// If no ViewModel is displayed, this content (i.e. a control) will be displayed.
+        /// If no Model is displayed, this content (i.e. a control) will be displayed.
         /// </summary>
         public object DefaultContent {
             get { return (object)GetValue(DefaultContentProperty); }
@@ -56,7 +56,7 @@ namespace ReactiveUI.Routing
                 }
 
                 var view = RxRouting.ResolveView(vm);
-                view.ViewModel = vm;
+                view.Model = vm;
                 Content = view;
             });
         }
