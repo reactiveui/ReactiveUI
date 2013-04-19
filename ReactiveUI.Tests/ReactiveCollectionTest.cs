@@ -487,8 +487,7 @@ namespace ReactiveUI.Tests
 
                 var start = new[] { adam, bob, carol, dan, eve };
 
-                var employees = new ReactiveCollection<ReactiveEmployee>(start)
-                {
+                var employees = new ReactiveCollection<ReactiveEmployee>(start) {
                     ChangeTrackingEnabled = true
                 };
 
@@ -643,8 +642,7 @@ namespace ReactiveUI.Tests
                 var bar = new ReactiveVisibilityItem<string>("Bar", true);
                 var baz = new ReactiveVisibilityItem<string>("Baz", true);
 
-                var items = new ReactiveCollection<ReactiveVisibilityItem<string>>(new[] { foo, bar, baz })
-                {
+                var items = new ReactiveCollection<ReactiveVisibilityItem<string>>(new[] { foo, bar, baz }) {
                     ChangeTrackingEnabled = true
                 };
 
@@ -661,6 +659,39 @@ namespace ReactiveUI.Tests
 
                 Assert.Equal(2, onlyVisible.Count);
                 Assert.True(onlyVisible.SequenceEqual(new[] { "***", "***" }));
+            }
+
+            [Fact]
+            public void DerivedCollectionShouldHandleRemovesOfFilteredItems()
+            {
+                var a = new ReactiveVisibilityItem<string>("A", true);
+                var b = new ReactiveVisibilityItem<string>("B", true);
+                var c = new ReactiveVisibilityItem<string>("C", true);
+
+                var items = new ReactiveCollection<ReactiveVisibilityItem<string>>(new[] { a, b, c }) {
+                    ChangeTrackingEnabled = true
+                };
+
+                var onlyVisible = items.CreateDerivedCollection(
+                    x => x.Value,
+                    x => x.IsVisible,
+                    OrderedComparer<string>.OrderByDescending(x => x).Compare
+                );
+
+                Assert.True(onlyVisible.SequenceEqual(new[] { "C", "B", "A" }, StringComparer.Ordinal));
+                Assert.Equal(3, onlyVisible.Count);
+
+                c.IsVisible = false;
+                Assert.Equal(2, onlyVisible.Count);
+                Assert.True(onlyVisible.SequenceEqual(new[] { "B", "A" }, StringComparer.Ordinal));
+
+                items.Remove(c);
+                Assert.Equal(2, onlyVisible.Count);
+                Assert.True(onlyVisible.SequenceEqual(new[] { "B", "A" }, StringComparer.Ordinal));
+
+                items.Remove(b);
+                Assert.Equal(1, onlyVisible.Count);
+                Assert.True(onlyVisible.SequenceEqual(new[] { "A" }, StringComparer.Ordinal));
             }
         }
 
@@ -766,7 +797,6 @@ namespace ReactiveUI.Tests
             collection.Add(3);
             Assert.Equal(2, orderedCollection.Count);
         }
-
 
         [Fact]
         public void IListTSmokeTest() {
