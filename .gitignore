@@ -21,3 +21,6 @@ NuGet-Release
 
 **/AppPackages
 version-bump.patch
+
+ReactiveUI.Events/Events.cs
+ReactiveUI.Events/Events_*.cs
