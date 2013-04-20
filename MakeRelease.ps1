@@ -2,7 +2,7 @@
 $Projects = {"ReactiveUI", "ReactiveUI.Testing", "ReactiveUI.Xaml",
     "ReactiveUI.Blend", "ReactiveUI.Cocoa", "ReactiveUI.Gtk",
     "ReactiveUI.Android", "ReactiveUI.NLog", "ReactiveUI.Mobile",
-    "RxUIViewModelGenerator"}
+    "RxUIViewModelGenerator", "ReactiveUI.Events"}
 
 $SlnFileExists = Test-Path ".\ReactiveUI.sln"
 if ($SlnFileExists -eq $False) {
