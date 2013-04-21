@@ -1061,6 +1061,8 @@ namespace RxUIViewModelGenerator
                     o.WriteLine(lines[i]);
                 }
             }
+
+            Environment.Exit(-1);
         }
 
         bool WriteOptionPrototype(TextWriter o, Option p, ref int written)

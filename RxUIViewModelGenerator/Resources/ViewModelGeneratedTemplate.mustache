@@ -16,7 +16,7 @@ namespace {{namespace}}.ViewModels
 
     {{#interfaces}}
 	[DataContract]
-    public partial class {{implClassName}} : {{interfaceName}}, IEnableLogger
+    public partial class {{implClassName}} : ReactiveObject, {{interfaceName}}
     {
         {{#properties}}
         {{#outputProp}}
