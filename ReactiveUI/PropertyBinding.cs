@@ -59,7 +59,7 @@ namespace ReactiveUI
                 Expression<Func<TView, TVProp>> viewProperty,
                 object conversionHint = null)
             where TViewModel : class
-            where TView : IViewFor
+            where TView : IViewFor<TViewModel>
         {
             return binderImplementation.Bind(viewModelSelector, view, vmProperty, viewProperty, (IObservable<Unit>)null, conversionHint);
         }
@@ -96,7 +96,7 @@ namespace ReactiveUI
                 Expression<Func<TViewModel, TProp>> vmProperty,
                 object conversionHint = null)
             where TViewModel : class
-            where TView : IViewFor
+            where TView : IViewFor<TViewModel>
         {
             return binderImplementation.Bind<TViewModel, TView, TProp, TProp, Unit>(viewModelSelector, view, vmProperty, null, null, conversionHint);
         }
@@ -142,7 +142,7 @@ namespace ReactiveUI
                 IObservable<TDontCare> signalViewUpdate,
                 object conversionHint = null)
             where TViewModel : class
-            where TView : IViewFor
+            where TView : IViewFor<TViewModel>
         {
             return binderImplementation.Bind(viewModelSelector, view, vmProperty, viewProperty, signalViewUpdate, conversionHint);
         }
@@ -185,7 +185,7 @@ namespace ReactiveUI
                 IObservable<TDontCare> signalViewUpdate,
                 object conversionHint = null)
             where TViewModel : class
-            where TView : IViewFor
+            where TView : IViewFor<TViewModel>
         {
             return binderImplementation.Bind<TViewModel, TView, TProp, TDontCare, TDontCare>(viewModelSelector, view, vmProperty, null, signalViewUpdate, conversionHint);
         }
@@ -233,7 +233,7 @@ namespace ReactiveUI
                 Func<TVMProp> fallbackValue = null,
                 object conversionHint = null)
             where TViewModel : class
-            where TView : IViewFor
+            where TView : IViewFor<TViewModel>
         {
             return binderImplementation.OneWayBind(viewModelSelector, view, vmProperty, viewProperty, fallbackValue, conversionHint);
         }
@@ -271,7 +271,7 @@ namespace ReactiveUI
                 Func<TProp> fallbackValue = null,
                 object conversionHint = null)
             where TViewModel : class
-            where TView : IViewFor
+            where TView : IViewFor<TViewModel>
         {
             return binderImplementation.OneWayBind<TViewModel, TView, TProp, Unit>(viewModelSelector, view, vmProperty, null, fallbackValue, conversionHint);
         }
@@ -317,7 +317,7 @@ namespace ReactiveUI
                 Func<TProp, TOut> selector,
                 Func<TOut> fallbackValue = null)
             where TViewModel : class
-            where TView : IViewFor
+            where TView : IViewFor<TViewModel>
         {
             return binderImplementation.OneWayBind(viewModelSelector, view, vmProperty, viewProperty, selector, fallbackValue);
         }
@@ -357,7 +357,7 @@ namespace ReactiveUI
                 Func<TProp, TOut> selector,
                 Func<TOut> fallbackValue = null)
             where TViewModel : class
-            where TView : IViewFor
+            where TView : IViewFor<TViewModel>
         {
             return binderImplementation.OneWayBind(viewModelSelector, view, vmProperty, null, selector, fallbackValue);
         }
@@ -412,7 +412,7 @@ namespace ReactiveUI
                 Func<TProp, IObservable<TOut>> selector,
                 Func<TOut> fallbackValue = null)
             where TViewModel : class
-            where TView : IViewFor
+            where TView : IViewFor<TViewModel>
         {
             return binderImplementation.AsyncOneWayBind(viewModelSelector, view, vmProperty, viewProperty, selector, fallbackValue);
         }
@@ -464,7 +464,7 @@ namespace ReactiveUI
                 Func<TProp, Task<TOut>> selector,
                 Func<TOut> fallbackValue = null)
             where TViewModel : class
-            where TView : IViewFor
+            where TView : IViewFor<TViewModel>
         {
             return binderImplementation.AsyncOneWayBind(viewModelSelector, view, vmProperty, viewProperty, x => selector(x).ToObservable(), fallbackValue);
         }
@@ -508,7 +508,7 @@ namespace ReactiveUI
                 Func<TProp, IObservable<TOut>> selector,
                 Func<TOut> fallbackValue = null)
             where TViewModel : class
-            where TView : IViewFor
+            where TView : IViewFor<TViewModel>
         {
             return binderImplementation.AsyncOneWayBind(viewModelSelector, view, vmProperty, null, selector, fallbackValue);
         }
@@ -549,7 +549,7 @@ namespace ReactiveUI
                 Func<TProp, Task<TOut>> selector,
                 Func<TOut> fallbackValue = null)
             where TViewModel : class
-            where TView : IViewFor
+            where TView : IViewFor<TViewModel>
         {
             return binderImplementation.AsyncOneWayBind(viewModelSelector, view, vmProperty, null, x => selector(x).ToObservable(), fallbackValue);
         }
@@ -637,7 +637,7 @@ namespace ReactiveUI
                 IObservable<TDontCare> signalViewUpdate,
                 object conversionHint)
             where TViewModel : class
-            where TView : IViewFor;
+            where TView : IViewFor<TViewModel>;
 
         /// <summary>
         /// Creates a one-way binding, i.e. a binding that flows from the
@@ -685,7 +685,7 @@ namespace ReactiveUI
                 Func<TVMProp> fallbackValue,
                 object conversionHint)
             where TViewModel : class
-            where TView : IViewFor;
+            where TView : IViewFor<TViewModel>;
 
         /// <summary>
         /// Creates a one way binding with a selector, i.e. a binding that flows from the
@@ -729,7 +729,7 @@ namespace ReactiveUI
                 Func<TProp, TOut> selector,
                 Func<TOut> fallbackValue)
             where TViewModel : class
-            where TView : IViewFor;
+            where TView : IViewFor<TViewModel>;
 
         /// <summary>
         /// Creates a one way binding with a selector, i.e. a binding that flows from the
@@ -779,7 +779,7 @@ namespace ReactiveUI
                 Func<TProp, IObservable<TOut>> selector,
                 Func<TOut> fallbackValue)
             where TViewModel : class
-            where TView : IViewFor;
+            where TView : IViewFor<TViewModel>;
 
         /// <summary>
         /// BindTo takes an Observable stream and applies it to a target
@@ -854,7 +854,7 @@ namespace ReactiveUI
                 IObservable<TDontCare> signalViewUpdate,
                 object conversionHint)
             where TViewModel : class
-            where TView : IViewFor
+            where TView : IViewFor<TViewModel>
         {
             var signalInitialUpdate = new Subject<bool>();
             var vmPropChain = Reflection.ExpressionToPropertyNames(vmProperty);
@@ -998,7 +998,7 @@ namespace ReactiveUI
                 Func<TVMProp> fallbackValue = null,
                 object conversionHint = null)
             where TViewModel : class
-            where TView : IViewFor
+            where TView : IViewFor<TViewModel>
         {
             var vmPropChain = Reflection.ExpressionToPropertyNames(vmProperty);
             var vmString = String.Format("{0}.{1}", typeof (TViewModel).Name, String.Join(".", vmPropChain));
@@ -1103,7 +1103,7 @@ namespace ReactiveUI
                 Func<TProp, TOut> selector,
                 Func<TOut> fallbackValue = null)
             where TViewModel : class
-            where TView : IViewFor
+            where TView : IViewFor<TViewModel>
         {
             var vmPropChain = Reflection.ExpressionToPropertyNames(vmProperty);
             var vmString = String.Format("{0}.{1}", typeof (TViewModel).Name, String.Join(".", vmPropChain));
@@ -1179,7 +1179,7 @@ namespace ReactiveUI
                 Func<TProp, IObservable<TOut>> selector,
                 Func<TOut> fallbackValue = null)
             where TViewModel : class
-            where TView : IViewFor
+            where TView : IViewFor<TViewModel>
         {
             var vmPropChain = Reflection.ExpressionToPropertyNames(vmProperty);
             var vmString = String.Format("{0}.{1}", typeof (TViewModel).Name, String.Join(".", vmPropChain));

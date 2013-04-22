@@ -81,11 +81,6 @@ namespace ReactiveUI.Tests
         public static readonly DependencyProperty ViewModelProperty =
             DependencyProperty.Register("ViewModel", typeof(PropertyBindViewModel), typeof(PropertyBindView), new PropertyMetadata(null));
 
-        object IViewFor.ViewModel { 
-            get { return ViewModel; }
-            set { ViewModel = (PropertyBindViewModel)value; } 
-        }
-        
         public TextBox SomeTextBox;
         public ListBox SomeListBox;
         public TextBox Property2;

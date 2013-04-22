@@ -41,7 +41,6 @@ namespace Foobar.Views
 
     public class FooBarView : IViewFor<IFooBarViewModel> 
     {
-        object IViewFor.ViewModel { get { return ViewModel; } set { ViewModel = (IFooBarViewModel) value; } }
         public IFooBarViewModel ViewModel { get; set; }
     }
 
@@ -49,7 +48,6 @@ namespace Foobar.Views
 
     public class BazView : IBazView 
     {
-        object IViewFor.ViewModel { get { return ViewModel; } set { ViewModel = (IBazViewModel)value; } }
         public IBazViewModel ViewModel { get; set; }
     }
 }
@@ -70,7 +68,7 @@ namespace ReactiveUI.Routing.Tests
             using (resolver.WithResolver()) {
                 var vm = new BazViewModel(null);
 
-                var result = RxRouting.ResolveView(vm);
+                var result = RxRouting.ResolveView<IBazViewModel>(vm);
                 this.Log().Info(result.GetType().FullName);
                 Assert.True(result is BazView);
             }

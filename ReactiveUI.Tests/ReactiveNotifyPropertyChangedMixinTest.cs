@@ -84,10 +84,6 @@ namespace ReactiveUI.Tests
         public static readonly DependencyProperty ViewModelProperty =
             DependencyProperty.Register("ViewModel", typeof(HostTestFixture), typeof(HostTestView), new PropertyMetadata(null));
 
-        object IViewFor.ViewModel {
-            get { return ViewModel; }
-            set { ViewModel = (HostTestFixture) value; }
-        }
     }
 
     public class ObjChain1 : ReactiveObject

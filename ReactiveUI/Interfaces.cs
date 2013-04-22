@@ -446,15 +446,10 @@ namespace ReactiveUI
             BindingDirection direction);
     }
 
-    public interface IViewFor
-    {
-        object ViewModel { get; set; }
-    }
-
     /// <summary>
     /// Implement this interface on your Views to support Routing and Binding.
     /// </summary>
-    public interface IViewFor<T> : IViewFor
+    public interface IViewFor<T>
         where T : class
     {
         /// <summary>

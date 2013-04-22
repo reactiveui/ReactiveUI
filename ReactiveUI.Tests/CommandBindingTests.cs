@@ -35,11 +35,6 @@ namespace ReactiveUI.Tests
             ViewModel = new FakeViewModel();
         }
 
-        object IViewFor.ViewModel {
-            get { return ViewModel; }
-            set { ViewModel = (FakeViewModel)value; }
-        }
-
         public FakeViewModel ViewModel { get; set; }
     }
 
@@ -172,11 +167,6 @@ namespace ReactiveUI.Tests
     {
 
         #region IViewFor
-        object IViewFor.ViewModel
-        {
-            get { return _ViewModel; }
-            set { this.RaiseAndSetIfChanged(ref _ViewModel, (CommandBindViewModel)value); }
-        }
         CommandBindViewModel _ViewModel;
         public CommandBindViewModel ViewModel
         {
