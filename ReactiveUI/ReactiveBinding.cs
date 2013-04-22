@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ReactiveUI
 {
-    internal class AppliedBindingInfo<TView, TViewModel> : IAppliedBindingInfo<TView, TViewModel>
+    internal class ReactiveBinding<TView, TViewModel> : IReactiveBinding<TView, TViewModel>
         where TViewModel : class
         where TView : IViewFor
     {
@@ -21,7 +21,7 @@ namespace ReactiveUI
         /// <param name="viewModelPath">The view model path.</param>
         /// <param name="direction">The direction.</param>
         /// <param name="bindingDisposable">The binding disposable.</param>
-        public AppliedBindingInfo(TView view, TViewModel viewModel, string[] viewPath, string[] viewModelPath, BindingDirection direction, IDisposable bindingDisposable)
+        public ReactiveBinding(TView view, TViewModel viewModel, string[] viewPath, string[] viewModelPath, BindingDirection direction, IDisposable bindingDisposable)
         {
             this.View = view;
             this.ViewModel = viewModel;
