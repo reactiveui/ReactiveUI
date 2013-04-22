@@ -43,7 +43,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AppliedBindingInfo.cs" />
+    <Compile Include="ReactiveBinding.cs" />
     <Compile Include="BindingTypeConverters.cs" />
     <Compile Include="CollectionDebugView.cs" />
     <Compile Include="CommandBinding.cs" />
@@ -52,7 +52,7 @@
     <Compile Include="ContractStubs.cs" />
     <Compile Include="DefaultPropertyBinding.cs" />
     <Compile Include="DesignModeDetector.cs" />
-    <Compile Include="IAppliedBindingInfo.cs" />
+    <Compile Include="IReactiveBinding.cs" />
     <Compile Include="ModernDependencyResolver.cs" />
     <Compile Include="IDependencyResolver.cs" />
     <Compile Include="INPCObservableForProperty.cs" />
