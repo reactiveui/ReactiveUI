@@ -73,5 +73,26 @@ namespace ReactiveUI.Routing.Tests
                 Assert.True(result is BazView);
             }
         }
+
+        class FooViewModel { };
+        class FooView : IViewFor<FooViewModel>
+        {
+            public FooViewModel ViewModel { get; set; }
+        };
+
+        [Fact]
+        public void ResolveExplicitViewType2()
+        {
+            var resolver = new ModernDependencyResolver();
+            resolver.Register(() => new FooView(), typeof(IViewFor<FooViewModel>));
+
+            using (resolver.WithResolver()) {
+                var vm = new FooViewModel();
+
+                var result = RxRouting.ResolveView(vm);
+                this.Log().Info(result.GetType().FullName);
+                Assert.True(result is FooView);
+            }
+        }
     }
 }
