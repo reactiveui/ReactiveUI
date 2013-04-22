@@ -24,12 +24,12 @@ namespace ReactiveUI.Routing
         /// <summary>
         /// The ViewModel to display
         /// </summary>
-        public IReactiveNotifyPropertyChanged ViewModel {
-            get { return (IReactiveNotifyPropertyChanged)GetValue(ViewModelProperty); }
+        public object ViewModel {
+            get { return GetValue(ViewModelProperty); }
             set { SetValue(ViewModelProperty, value); }
         }
         public static readonly DependencyProperty ViewModelProperty = 
-            DependencyProperty.Register("ViewModel", typeof(IReactiveNotifyPropertyChanged), typeof(ViewModelViewHost), new PropertyMetadata(null, somethingChanged));
+            DependencyProperty.Register("ViewModel", typeof(object), typeof(ViewModelViewHost), new PropertyMetadata(null, somethingChanged));
 
         readonly Subject<Unit> updateViewModel = new Subject<Unit>();
 
@@ -46,8 +46,8 @@ namespace ReactiveUI.Routing
         public ViewModelViewHost()
         {
             var latestViewModel = updateViewModel
-                .Select(_ => (IReactiveNotifyPropertyChanged)(ViewModel ?? DataContext))
-                .StartWith((IReactiveNotifyPropertyChanged) null);
+                .Select(_ => (ViewModel ?? DataContext))
+                .StartWith((object)null);
 
             latestViewModel.Subscribe(vm => {
                 if (vm == null) {
