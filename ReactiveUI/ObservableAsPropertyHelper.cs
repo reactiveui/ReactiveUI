@@ -11,14 +11,14 @@ namespace ReactiveUI
 {
     /// <summary>
     /// ObservableAsPropertyHelper is a class to help ViewModels implement
-    /// "output properties", that is, a property that is backed by an
-    /// Observable. The property will be read-only, but will still fire change
+    /// "output properties", that is, a propertySelector that is backed by an
+    /// Observable. The propertySelector will be read-only, but will still fire change
     /// notifications. This class can be created directly, but is more often created via the
     /// ToProperty and ObservableToProperty extension methods.
     ///
     /// This class is also an Observable itself, so that output properties can
-    /// be chained - for example a "Path" property and a chained
-    /// "PathFileNameOnly" property.
+    /// be chained - for example a "Path" propertySelector and a chained
+    /// "PathFileNameOnly" propertySelector.
     /// </summary>
     public sealed class ObservableAsPropertyHelper<T> : IObservable<T>, IHandleObservableErrors, IDisposable, IEnableLogger
     {
@@ -29,11 +29,11 @@ namespace ReactiveUI
         /// <summary>
         /// Constructs an ObservableAsPropertyHelper object.
         /// </summary>
-        /// <param name="observable">The Observable to base the property on.</param>
-        /// <param name="onChanged">The action to take when the property
+        /// <param name="observable">The Observable to base the propertySelector on.</param>
+        /// <param name="onChanged">The action to take when the propertySelector
         /// changes, typically this will call the ViewModel's
         /// RaisePropertyChanged method.</param>
-        /// <param name="initialValue">The initial value of the property.</param>
+        /// <param name="initialValue">The initial value of the propertySelector.</param>
         /// <param name="scheduler">The scheduler that the notifications will be
         /// provided on - this should normally be a Dispatcher-based scheduler
         /// (and is by default)</param>
@@ -104,7 +104,7 @@ namespace ReactiveUI
         /// useful for when you will initialize the OAPH later, but don't want
         /// bindings to access a null OAPH at startup.
         /// </summary>
-        /// <param name="initialValue">The initial (and only) value of the property.</param>
+        /// <param name="initialValue">The initial (and only) value of the propertySelector.</param>
         /// <param name="scheduler">The scheduler that the notifications will be
         /// provided on - this should normally be a Dispatcher-based scheduler
         /// (and is by default)</param>
@@ -139,18 +139,18 @@ namespace ReactiveUI
 
         /// <summary>
         /// Converts an Observable to an ObservableAsPropertyHelper and
-        /// automatically provides the onChanged method to raise the property
+        /// automatically provides the onChanged method to raise the propertySelector
         /// changed notification.         
         /// </summary>
-        /// <param name="source">The ReactiveObject that has the property</param>
-        /// <param name="property">An Expression representing the property (i.e.
+        /// <param name="source">The ReactiveObject that has the propertySelector</param>
+        /// <param name="propertySelector">An Expression representing the propertySelector (i.e.
         /// 'x => x.SomeProperty'</param>
-        /// <param name="initialValue">The initial value of the property.</param>
+        /// <param name="initialValue">The initial value of the propertySelector.</param>
         /// <param name="scheduler">The scheduler that the notifications will be
         /// provided on - this should normally be a Dispatcher-based scheduler
         /// (and is by default)</param>
         /// <returns>An initialized ObservableAsPropertyHelper; use this as the
-        /// backing field for your property.</returns>
+        /// backing field for your propertySelector.</returns>
         public static ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(
             this IObservable<TRet> This,
             TObj source,
@@ -164,18 +164,18 @@ namespace ReactiveUI
 
         /// <summary>
         /// Converts an Observable to an ObservableAsPropertyHelper and
-        /// automatically provides the onChanged method to raise the property
+        /// automatically provides the onChanged method to raise the propertySelector
         /// changed notification.         
         /// </summary>
-        /// <param name="source">The ReactiveObject that has the property</param>
-        /// <param name="property">An Expression representing the property (i.e.
+        /// <param name="source">The ReactiveObject that has the propertySelector</param>
+        /// <param name="propertySelector">An Expression representing the propertySelector (i.e.
         /// 'x => x.SomeProperty'</param>
-        /// <param name="initialValue">The initial value of the property.</param>
+        /// <param name="initialValue">The initial value of the propertySelector.</param>
         /// <param name="scheduler">The scheduler that the notifications will be
         /// provided on - this should normally be a Dispatcher-based scheduler
         /// (and is by default)</param>
         /// <returns>An initialized ObservableAsPropertyHelper; use this as the
-        /// backing field for your property.</returns>
+        /// backing field for your propertySelector.</returns>
         public static ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(
             this IObservable<TRet> This,
             TObj source,

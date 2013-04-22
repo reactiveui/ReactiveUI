@@ -121,7 +121,7 @@ namespace ReactiveUI
         /// <summary>
         /// Sends a single message using the specified Type and contract.
         /// Consider using RegisterMessageSource instead if you will be sending
-        /// messages in response to other changes such as property changes
+        /// messages in response to other changes such as propertySelector changes
         /// or events.
         /// </summary>
         /// <typeparam name="T">The type of the message to send.</typeparam>

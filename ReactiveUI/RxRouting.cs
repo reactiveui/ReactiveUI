@@ -25,7 +25,7 @@ namespace ReactiveUI.Routing
         /// <param name="viewModel">The ViewModel for which to find the
         /// associated View.</param>
         /// <returns>The View for the ViewModel.</returns>
-        public static IViewFor ResolveView<T>(T viewModel)
+        public static IViewFor<T> ResolveView<T>(T viewModel)
             where T : class
         {
             // Given IFooBarViewModel (whose name we derive from T), we'll look 
@@ -47,7 +47,7 @@ namespace ReactiveUI.Routing
                 var type = Reflection.ReallyFindType(typeToFind, false);
 
                 if (type != null) {
-                    var ret = RxApp.DependencyResolver.GetService(type, key) as IViewFor;
+                    var ret = RxApp.DependencyResolver.GetService(type, key) as IViewFor<T>;
                     if (ret != null) return ret;
                 }
             } catch (Exception ex) {
@@ -57,7 +57,7 @@ namespace ReactiveUI.Routing
             var viewType = typeof (IViewFor<>);
 
             // IViewFor<FooBarViewModel> (the original behavior in RxUI 3.1)
-            return (IViewFor) RxApp.DependencyResolver.GetService(viewType.MakeGenericType(viewModel.GetType()), key);
+            return (IViewFor<T>) RxApp.DependencyResolver.GetService(viewType.MakeGenericType(viewModel.GetType()), key);
         }
 
         static string interfaceifyTypeName(string typeName)

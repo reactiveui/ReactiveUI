@@ -33,7 +33,7 @@ namespace ReactiveUI
         public event PropertyChangedEventHandler PropertyChanged;
 
         /// <summary>
-        /// Represents an Observable that fires *before* a property is about to
+        /// Represents an Observable that fires *before* a propertySelector is about to
         /// be changed.         
         /// </summary>
         [IgnoreDataMember]
@@ -42,7 +42,7 @@ namespace ReactiveUI
         }
 
         /// <summary>
-        /// Represents an Observable that fires *after* a property has changed.
+        /// Represents an Observable that fires *after* a propertySelector has changed.
         /// </summary>
         [IgnoreDataMember]
         public IObservable<IObservedChange<object, object>> Changed {
@@ -163,16 +163,16 @@ namespace ReactiveUI
     {
         /// <summary>
         /// RaiseAndSetIfChanged fully implements a Setter for a read-write
-        /// property on a ReactiveObject, using CallerMemberName to raise the notification
-        /// and the ref to the backing field to set the property.
+        /// propertySelector on a ReactiveObject, using CallerMemberName to raise the notification
+        /// and the ref to the backing field to set the propertySelector.
         /// </summary>
         /// <typeparam name="TObj">The type of the This.</typeparam>
         /// <typeparam name="TRet">The type of the return value.</typeparam>
         /// <param name="This">The <see cref="ReactiveObject"/> raising the notification.</param>
         /// <param name="backingField">A Reference to the backing field for this
-        /// property.</param>
+        /// propertySelector.</param>
         /// <param name="newValue">The new value.</param>
-        /// <param name="propertyName">The name of the property, usually 
+        /// <param name="propertyName">The name of the propertySelector, usually 
         /// automatically provided through the CallerMemberName attribute.</param>
         /// <returns>The newly set value, normally discarded.</returns>
         public static TRet RaiseAndSetIfChanged<TObj, TRet>(
@@ -199,9 +199,9 @@ namespace ReactiveUI
         /// Use this method in your ReactiveObject classes when creating custom
         /// properties where raiseAndSetIfChanged doesn't suffice.
         /// </summary>
-        /// <param name="This">The instance of ReactiveObject on which the property has changed.</param>
+        /// <param name="This">The instance of ReactiveObject on which the propertySelector has changed.</param>
         /// <param name="propertyName">
-        /// A string representing the name of the property that has been changed.
+        /// A string representing the name of the propertySelector that has been changed.
         /// Leave <c>null</c> to let the runtime set to caller member name.
         /// </param>
         public static void RaisePropertyChanged<TObj>(
@@ -217,11 +217,11 @@ namespace ReactiveUI
     {
         /// <summary>
         /// RaisePropertyChanging is a helper method intended for test / mock
-        /// scenarios to manually fake a property change. 
+        /// scenarios to manually fake a propertySelector change. 
         /// </summary>
         /// <param name="target">The ReactiveObject to invoke
         /// raisePropertyChanging on.</param>
-        /// <param name="property">The property that will be faking a change.</param>
+        /// <param name="propertySelector">The propertySelector that will be faking a change.</param>
         public static void RaisePropertyChanging(ReactiveObject target, string property)
         {
             target.raisePropertyChanging(property);
@@ -229,11 +229,11 @@ namespace ReactiveUI
 
         /// <summary>
         /// RaisePropertyChanging is a helper method intended for test / mock
-        /// scenarios to manually fake a property change. 
+        /// scenarios to manually fake a propertySelector change. 
         /// </summary>
         /// <param name="target">The ReactiveObject to invoke
         /// raisePropertyChanging on.</param>
-        /// <param name="property">The property that will be faking a change.</param>
+        /// <param name="propertySelector">The propertySelector that will be faking a change.</param>
         public static void RaisePropertyChanging<TSender, TValue>(TSender target, Expression<Func<TSender, TValue>> property)
             where TSender : ReactiveObject
         {
@@ -242,11 +242,11 @@ namespace ReactiveUI
 
         /// <summary>
         /// RaisePropertyChanged is a helper method intended for test / mock
-        /// scenarios to manually fake a property change. 
+        /// scenarios to manually fake a propertySelector change. 
         /// </summary>
         /// <param name="target">The ReactiveObject to invoke
         /// raisePropertyChanging on.</param>
-        /// <param name="property">The property that will be faking a change.</param>
+        /// <param name="propertySelector">The propertySelector that will be faking a change.</param>
         public static void RaisePropertyChanged(ReactiveObject target, string property)
         {
             target.raisePropertyChanged(property);
@@ -254,11 +254,11 @@ namespace ReactiveUI
 
         /// <summary>
         /// RaisePropertyChanged is a helper method intended for test / mock
-        /// scenarios to manually fake a property change. 
+        /// scenarios to manually fake a propertySelector change. 
         /// </summary>
         /// <param name="target">The ReactiveObject to invoke
         /// raisePropertyChanging on.</param>
-        /// <param name="property">The property that will be faking a change.</param>
+        /// <param name="propertySelector">The propertySelector that will be faking a change.</param>
         public static void RaisePropertyChanged<TSender, TValue>(TSender target, Expression<Func<TSender, TValue>> property)
             where TSender : ReactiveObject
         {

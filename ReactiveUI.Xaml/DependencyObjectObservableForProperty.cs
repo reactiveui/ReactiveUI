@@ -39,7 +39,7 @@ namespace ReactiveUI.Xaml
             var dobj = sender as DependencyObject;
             var type = dobj.GetType();
 
-            // Look for the DependencyProperty attached to this property name
+            // Look for the DependencyProperty attached to this propertySelector name
 #if WINRT
             var pi = type.GetProperty(propertyName + "Property", BindingFlags.Static | BindingFlags.Public | BindingFlags.FlattenHierarchy);
             if (pi != null) {

@@ -30,7 +30,7 @@ namespace ReactiveUI
      * 
      * Initially, I tried to plumb the ability to set the scheduler throughout the
      * classes, but when you start building applications on top of that, having to
-     * have *every single* class have a default Scheduler property is really 
+     * have *every single* class have a default Scheduler propertySelector is really 
      * irritating, with either default making life difficult.
      */
     public static class RxApp
@@ -62,7 +62,7 @@ namespace ReactiveUI
 
                 RxApp.DeferredScheduler.Schedule(() => {
                     throw new Exception(
-                        "An OnError occurred on an object (usually ObservableAsPropertyHelper) that would break a binding or command. To prevent this, Subscribe to the ThrownExceptions property of your objects",
+                        "An OnError occurred on an object (usually ObservableAsPropertyHelper) that would break a binding or command. To prevent this, Subscribe to the ThrownExceptions propertySelector of your objects",
                         ex);
                 });
             });
@@ -160,7 +160,7 @@ namespace ReactiveUI
         static internal readonly Subject<Unit> _LoggerFactoryChanged = new Subject<Unit>();
 
         /// <summary>
-        /// Set this property to implement a custom logger provider - the
+        /// Set this propertySelector to implement a custom logger provider - the
         /// string parameter is the 'prefix' (usually the class name of the log
         /// entry)
         /// </summary>
@@ -178,7 +178,7 @@ namespace ReactiveUI
 
         /// <summary>
         /// This Observer is signalled whenever an object that has a 
-        /// ThrownExceptions property doesn't Subscribe to that Observable. Use
+        /// ThrownExceptions propertySelector doesn't Subscribe to that Observable. Use
         /// Observer.Create to set up what will happen - the default is to crash
         /// the application with an error message.
         /// </summary>

@@ -16,7 +16,7 @@ namespace ReactiveUI.Routing
 {
     /// <summary>
     /// This content control will automatically load the View associated with
-    /// the ViewModel property and display it. This control is very useful
+    /// the ViewModel propertySelector and display it. This control is very useful
     /// inside a DataTemplate to display the View associated with a ViewModel.
     /// </summary>
     public class ViewModelViewHost : TransitioningContentControl

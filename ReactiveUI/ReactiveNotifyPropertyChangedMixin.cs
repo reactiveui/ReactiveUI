@@ -16,17 +16,17 @@ namespace ReactiveUI
     {
         /// <summary>
         /// ObservableForProperty returns an Observable representing the
-        /// property change notifications for a specific property on a
+        /// propertySelector change notifications for a specific propertySelector on a
         /// ReactiveObject. This method (unlike other Observables that return
-        /// IObservedChange) guarantees that the Value property of
+        /// IObservedChange) guarantees that the Value propertySelector of
         /// the IObservedChange is set.
         /// </summary>
-        /// <param name="property">An Expression representing the property (i.e.
+        /// <param name="propertySelector">An Expression representing the propertySelector (i.e.
         /// 'x => x.SomeProperty.SomeOtherProperty'</param>
         /// <param name="beforeChange">If True, the Observable will notify
-        /// immediately before a property is going to change.</param>
-        /// <returns>An Observable representing the property change
-        /// notifications for the given property.</returns>
+        /// immediately before a propertySelector is going to change.</param>
+        /// <returns>An Observable representing the propertySelector change
+        /// notifications for the given propertySelector.</returns>
         public static IObservable<IObservedChange<TSender, TValue>> ObservableForProperty<TSender, TValue>(
                 this TSender This,
                 Expression<Func<TSender, TValue>> property,
@@ -63,17 +63,17 @@ namespace ReactiveUI
 
         /// <summary>
         /// ObservableForPropertyDynamic returns an Observable representing the
-        /// property change notifications for a specific property on a
+        /// propertySelector change notifications for a specific propertySelector on a
         /// ReactiveObject. This method (unlike other Observables that return
-        /// IObservedChange) guarantees that the Value property of
+        /// IObservedChange) guarantees that the Value propertySelector of
         /// the IObservedChange is set.
         /// </summary>
-        /// <param name="property">An Expression representing the property (i.e.
+        /// <param name="propertySelector">An Expression representing the propertySelector (i.e.
         /// 'x => x.SomeProperty.SomeOtherProperty'</param>
         /// <param name="beforeChange">If True, the Observable will notify
-        /// immediately before a property is going to change.</param>
-        /// <returns>An Observable representing the property change
-        /// notifications for the given property.</returns>
+        /// immediately before a propertySelector is going to change.</param>
+        /// <returns>An Observable representing the propertySelector change
+        /// notifications for the given propertySelector.</returns>
         public static IObservable<IObservedChange<TSender, object>> ObservableForProperty<TSender>(
                 this TSender This,
                 string[] property,
@@ -199,18 +199,18 @@ namespace ReactiveUI
 
         /// <summary>
         /// ObservableForProperty returns an Observable representing the
-        /// property change notifications for a specific property on a
+        /// propertySelector change notifications for a specific propertySelector on a
         /// ReactiveObject, running the IObservedChange through a Selector
         /// function.
         /// </summary>
-        /// <param name="property">An Expression representing the property (i.e.
+        /// <param name="propertySelector">An Expression representing the propertySelector (i.e.
         /// 'x => x.SomeProperty'</param>
         /// <param name="selector">A Select function that will be run on each
         /// item.</param>
         /// <param name="beforeChange">If True, the Observable will notify
-        /// immediately before a property is going to change.</param>
-        /// <returns>An Observable representing the property change
-        /// notifications for the given property.</returns>
+        /// immediately before a propertySelector is going to change.</param>
+        /// <returns>An Observable representing the propertySelector change
+        /// notifications for the given propertySelector.</returns>
         public static IObservable<TRet> ObservableForProperty<TSender, TValue, TRet>(
                 this TSender This, 
                 Expression<Func<TSender, TValue>> property, 
