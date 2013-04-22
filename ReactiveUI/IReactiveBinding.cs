@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ReactiveUI
 {
-    public interface IAppliedBindingInfo<TView, TViewModel> : IDisposable
+    public interface IReactiveBinding<TView, TViewModel> : IDisposable
         where TViewModel : class
         where TView : IViewFor
     {
