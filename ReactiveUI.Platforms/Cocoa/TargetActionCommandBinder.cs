@@ -99,7 +99,6 @@ namespace ReactiveUI.Cocoa
         }
 
         public IDisposable BindCommandToObject<TEventArgs>(ICommand command, object target, IObservable<object> commandParameter, string eventName) 
-            where TEventArgs : EventArgs
         {
             throw new NotImplementedException();
         }

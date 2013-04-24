@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -17,7 +17,7 @@
     <DebugType>full</DebugType>
     <Optimize>False</Optimize>
     <OutputPath>bin\Debug\Monotouch</OutputPath>
-    <DefineConstants>DEBUG; MONO; UIKIT</DefineConstants>
+    <DefineConstants>DEBUG;MONO; UIKIT; COCOA</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>False</ConsolePause>
@@ -29,7 +29,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>False</ConsolePause>
-    <DefineConstants>MONO; UIKIT</DefineConstants>
+    <DefineConstants>MONO; UIKIT; COCOA</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -51,35 +51,27 @@
     <Reference Include="System.Runtime.Serialization" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Resources\" />
     <Folder Include="Properties\" />
-  </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <ItemGroup>
+    <Folder Include="Resources\" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ServiceLocationRegistration.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="CocoaDefaultPropertyBinding.cs" />
-    <Compile Include="KVOObservableForProperty.cs" />
-    <Compile Include="NSRunloopScheduler.cs" />
-    <Compile Include="RoutedViewHost.cs" />
-    <Compile Include="TargetActionCommandBinder.cs" />
-    <Compile Include="ViewModelViewHost.cs" />
-    <Compile Include="RouterUINavigationController.cs" />
+    <Compile Include="Cocoa\CocoaDefaultPropertyBinding.cs" />
+    <Compile Include="Cocoa\KVOObservableForProperty.cs" />
+    <Compile Include="Cocoa\NSRunloopScheduler.cs" />
+    <Compile Include="Cocoa\Properties\AssemblyInfo.cs" />
+    <Compile Include="Cocoa\RoutedViewHost.cs" />
+    <Compile Include="Cocoa\RouterUINavigationController.cs" />
+    <Compile Include="Cocoa\TargetActionCommandBinder.cs" />
+    <Compile Include="Cocoa\ViewModelViewHost.cs" />
+    <Compile Include="ComponentModelTypeConverter.cs" />
+    <Compile Include="RealUnitTestDetector.cs" />
+    <Compile Include="Registrations.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ReactiveUI.Xaml\ReactiveUI.Xaml_Monotouch.csproj">
-      <Project>{9891337A-9E94-4DBD-801E-05E1FDA78FFC}</Project>
-      <Name>ReactiveUI.Xaml_Monotouch</Name>
-    </ProjectReference>
     <ProjectReference Include="..\ReactiveUI\ReactiveUI_Monotouch.csproj">
-      <Project>{9091337A-9E94-4DBD-801E-05E1FDA78FFC}</Project>
+      <Project>{9091337a-9e94-4dbd-801e-05e1fda78ffc}</Project>
       <Name>ReactiveUI_Monotouch</Name>
     </ProjectReference>
-    <ProjectReference Include="..\ReactiveUI.Routing\ReactiveUI.Routing_Monotouch.csproj">
-      <Project>{9091337B-9E94-4DBD-801E-05E1FDA78FFC}</Project>
-      <Name>ReactiveUI.Routing_Monotouch</Name>
-    </ProjectReference>
   </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.MonoTouch.CSharp.targets" />
 </Project>
