@@ -8,11 +8,9 @@ using System.Runtime.CompilerServices;
 
 [assembly: InternalsVisibleTo("ReactiveUI.Xaml")]
 [assembly: InternalsVisibleTo("ReactiveUI.Tests_Net45")]
-[assembly: InternalsVisibleTo("ReactiveUI.Tests_SL5")]
 [assembly: InternalsVisibleTo("ReactiveUI.Tests_WinRT")]
 [assembly: InternalsVisibleTo("ReactiveUI.NLog")]
 [assembly: InternalsVisibleTo("ReactiveUI.Gtk")]
 [assembly: InternalsVisibleTo("ReactiveUI.Cocoa")]
-[assembly: InternalsVisibleTo("ReactiveUI.Cocoa_Monotouch")]
 [assembly: InternalsVisibleTo("ReactiveUI.Android")]
 [assembly: InternalsVisibleTo("ReactiveUI.Mobile")]
