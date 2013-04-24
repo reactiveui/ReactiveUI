@@ -38,19 +38,8 @@ namespace ReactiveUI
         static RxApp()
         {
             TaskpoolScheduler = Scheduler.TaskPool;
-
-            DeferredScheduler = new WaitForDispatcherScheduler(() => {
-                Type dispatcherType = 
-                    Type.GetType("System.Reactive.Windows.Threading.DispatcherScheduler, System.Reactive.Windows.Threading", false) ?? 
-                    Type.GetType("System.Reactive.Windows.Threading.CoreDispatcherScheduler, System.Reactive.Windows.Threading", false);
-
-                if (dispatcherType != null) {
-                    return (IScheduler)dispatcherType.GetProperty("Current").GetMethod.Invoke(null, null);
-                }
-
-                return null;
-            });
-
+            DeferredScheduler = Scheduler.Default;
+                
             DefaultExceptionHandler = Observer.Create<Exception>(ex => {
                 // NB: If you're seeing this, it means that an 
                 // ObservableAsPropertyHelper or the CanExecute of a 
