@@ -10,7 +10,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>ReactiveUI</RootNamespace>
     <IPhoneResourcePrefix>Resources</IPhoneResourcePrefix>
-    <AssemblyName>ReactiveUI_Monotouch</AssemblyName>
+    <AssemblyName>ReactiveUI</AssemblyName>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
   </PropertyGroup>
