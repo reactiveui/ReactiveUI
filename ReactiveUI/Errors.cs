@@ -96,13 +96,10 @@ namespace ReactiveUI.Xaml
             InnerException = innerException;
             ErrorMessage = errorMessage;
 
-#if WINRT
             // NB: I want to do something with CallerMemberNameAttribute here
             // eventually
             Domain = "";
-#else
-            Domain = Assembly.GetCallingAssembly().FullName;
-#endif
+            //Domain = Assembly.GetCallingAssembly().FullName;
         }
 
         /// <summary>
