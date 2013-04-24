@@ -180,7 +180,7 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Newtonsoft.Json">
-      <HintPath>..\ext\WP80\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\ext\Portable-Net45+WinRT45+WP8\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="Ninject.Common">
       <HintPath>.\Ninject.Common.dll</HintPath>
