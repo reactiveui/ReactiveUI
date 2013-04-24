@@ -11,7 +11,7 @@
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 
 		<dependencies>
-			<dependency id="reactiveui-xaml" version="[5.0.0.20130413-alpha]" />
+			<dependency id="reactiveui-platforms" version="[5.0.0.20130413-alpha]" />
 		</dependencies>
 	</metadata>
 </package>
