@@ -70,6 +70,7 @@
     <Compile Include="ContractStubs.cs" />
     <Compile Include="DefaultPropertyBinding.cs" />
     <Compile Include="DesignModeDetector.cs" />
+    <Compile Include="Errors.cs" />
     <Compile Include="ModernDependencyResolver.cs" />
     <Compile Include="IDependencyResolver.cs" />
     <Compile Include="INPCObservableForProperty.cs" />
