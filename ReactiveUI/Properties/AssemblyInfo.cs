@@ -8,7 +8,6 @@ using System.Runtime.CompilerServices;
 
 [assembly: InternalsVisibleTo("ReactiveUI.Xaml")]
 [assembly: InternalsVisibleTo("ReactiveUI.Tests_Net45")]
-[assembly: InternalsVisibleTo("ReactiveUI.Tests_SL5")]
 [assembly: InternalsVisibleTo("ReactiveUI.Tests_WinRT")]
 [assembly: InternalsVisibleTo("ReactiveUI.NLog")]
 [assembly: InternalsVisibleTo("ReactiveUI.Gtk")]

@@ -11,6 +11,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xamarin.Geolocation;
 
+#if ANDROID
+using AndroidApp = Android.App.Application;
+#endif
+
 namespace ReactiveUI.Mobile
 {
     public static class ReactiveGeolocator
@@ -38,7 +42,7 @@ namespace ReactiveUI.Mobile
 
             var ret = Observable.Create<Position>(subj => {
 #if ANDROID
-                var geo = new Geolocator(Android.App.Application.Context);
+                var geo = new Geolocator(AndroidApp.Context);
 #else
                 var geo = new Geolocator();
 #endif
@@ -78,7 +82,7 @@ namespace ReactiveUI.Mobile
 #if !WP7 && !WP8
             var ret = Observable.Create<Position>(subj => {
 #if ANDROID
-                var geo = new Geolocator(Android.App.Application.Context);
+                var geo = new Geolocator(AndroidApp.Context);
 #else
                 var geo = new Geolocator();
 #endif
