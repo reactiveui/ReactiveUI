@@ -150,7 +150,7 @@
       <Project>{dd99fd0f-82f6-4c30-930e-4a1d0df01d65}</Project>
       <Name>ReactiveUI.Testing_Net45</Name>
     </ProjectReference>
-    <ProjectReference Include="..\ReactiveUI.Xaml\ReactiveUI.Xaml_Net45.csproj">
+    <ProjectReference Include="..\ReactiveUI.Platforms\ReactiveUI.Xaml_Net45.csproj">
       <Project>{1ce2d235-8072-4649-ba5a-cfb1af8776e0}</Project>
       <Name>ReactiveUI.Xaml_Net45</Name>
     </ProjectReference>
