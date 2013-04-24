@@ -27,7 +27,7 @@
     <DebugSymbols>True</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>False</Optimize>
-    <OutputPath>bin\Debug\Monodroid</OutputPath>
+    <OutputPath>bin\Debug\Monoandroid\</OutputPath>
     <DefineConstants>DEBUG;TRACE; MONO; ANDROID</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -62,7 +62,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>True</Optimize>
-    <OutputPath>bin\Release\Monodroid</OutputPath>
+    <OutputPath>bin\Release\Monoandroid\</OutputPath>
     <DefineConstants>TRACE; MONO; ANDROID</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -92,7 +92,6 @@
     <AndroidLinkMode>SdkOnly</AndroidLinkMode>
     <AndroidUseSharedRuntime>False</AndroidUseSharedRuntime>
   </PropertyGroup>
-  <Import Project="$(MSBuildExtensionsPath)\Novell\Novell.MonoDroid.CSharp.targets" />
   <ItemGroup>
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\ext\monodroid\Newtonsoft.Json.dll</HintPath>
@@ -151,4 +150,5 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <Import Project="$(MSBuildExtensionsPath)\Novell\Novell.MonoDroid.CSharp.targets" />
 </Project>
