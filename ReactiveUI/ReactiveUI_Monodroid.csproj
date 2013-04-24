@@ -94,6 +94,7 @@
     <AndroidLinkMode>SdkOnly</AndroidLinkMode>
     <AndroidUseSharedRuntime>False</AndroidUseSharedRuntime>
     <GenerateDocumentation>True</GenerateDocumentation>
+    <DocumentationFile>bin\Release\Monoandroid\ReactiveUI.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System.Runtime.Serialization" />

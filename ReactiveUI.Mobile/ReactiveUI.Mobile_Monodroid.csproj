@@ -58,6 +58,7 @@
     <RunCodeAnalysis>false</RunCodeAnalysis>
     <CodeContractsPointerObligations>False</CodeContractsPointerObligations>
     <AndroidLinkMode>None</AndroidLinkMode>
+    <DocumentationFile>bin\Debug\Monoandroid\ReactiveUI.Mobile.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
