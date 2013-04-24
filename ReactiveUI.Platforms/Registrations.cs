@@ -6,6 +6,16 @@ using System.Linq;
 using System.Text;
 using System.Windows;
 using ReactiveUI.Routing;
+using System.Reactive.Concurrency;
+
+#if COCOA
+using MonoTouch.UIKit;
+using ReactiveUI.Cocoa;
+#endif
+
+#if UIKIT
+using NSApplication = MonoTouch.UIKit.UIApplication;
+#endif
 
 namespace ReactiveUI.Xaml
 {
@@ -29,6 +39,16 @@ namespace ReactiveUI.Xaml
             registerFunction(() => new CreatesCommandBindingViaEvent(), typeof(ICreatesCommandBinding));
             registerFunction(() => new BooleanToVisibilityTypeConverter(), typeof(IBindingTypeConverter));
             registerFunction(() => new AutoDataTemplateBindingHook(), typeof(IPropertyBindingHook));
+
+            RxApp.DeferredScheduler = new WaitForDispatcherScheduler(() => DispatcherScheduler.Current);
+#endif
+
+#if COCOA
+            registerFunction(() => new KVOObservableForProperty(), typeof(ICreatesObservableForProperty));
+            registerFunction(() => new CocoaDefaultPropertyBinding(), typeof(IDefaultPropertyBindingProvider));
+            registerFunction(() => new TargetActionCommandBinder(), typeof(ICreatesCommandBinding));
+
+            RxApp.DeferredScheduler = new WaitForDispatcherScheduler(() => new NSRunloopScheduler(NSApplication.SharedApplication));
 #endif
 
             RxApp.InUnitTestRunnerOverride = RealUnitTestDetector.InUnitTestRunner();

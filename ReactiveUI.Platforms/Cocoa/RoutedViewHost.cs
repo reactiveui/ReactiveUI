@@ -20,7 +20,7 @@ namespace ReactiveUI.Cocoa
         {
             NSView viewLastAdded = null;
             this.WhenAny(x => x.Router.NavigationStack, x => x.Value)
-                .SelectMany(x => x.CollectionCountChanged.StartWith(x.Count).Select(_ => x.LastOrDefault()))
+                .SelectMany(x => x.CountChanged.StartWith(x.Count).Select(_ => x.LastOrDefault()))
                 .Subscribe(vm => {
                     if (viewLastAdded != null) viewLastAdded.RemoveFromSuperview();
 
@@ -47,13 +47,13 @@ namespace ReactiveUI.Cocoa
         IRoutingState _Router;
         public IRoutingState Router {
             get { return _Router; }
-            set { this.RaiseAndSetIfChanged(x => x.Router, value); }
+            set { this.RaiseAndSetIfChanged(ref _Router, value); }
         }
         
         NSViewController _DefaultContent;
         public NSViewController DefaultContent {
             get { return _DefaultContent; }
-            set { this.RaiseAndSetIfChanged(x => x.DefaultContent, value); }
+            set { this.RaiseAndSetIfChanged(ref _DefaultContent, value); }
         }
     }
 }

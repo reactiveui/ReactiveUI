@@ -39,13 +39,13 @@ namespace ReactiveUI.Cocoa
         NSViewController _DefaultContent;
         public NSViewController DefaultContent {
             get { return _DefaultContent; }
-            set { this.RaiseAndSetIfChanged(x => x.DefaultContent, value); }
+            set { this.RaiseAndSetIfChanged(ref _DefaultContent, value); }
         }
 
         IReactiveNotifyPropertyChanged _ViewModel;
         public IReactiveNotifyPropertyChanged ViewModel {
             get { return _ViewModel; }
-            set { this.RaiseAndSetIfChanged(x => x.ViewModel, value); }
+            set { this.RaiseAndSetIfChanged(ref _ViewModel, value); }
         }
     }
 }

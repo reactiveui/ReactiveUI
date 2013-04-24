@@ -13,5 +13,6 @@ using System.Runtime.CompilerServices;
 [assembly: InternalsVisibleTo("ReactiveUI.NLog")]
 [assembly: InternalsVisibleTo("ReactiveUI.Gtk")]
 [assembly: InternalsVisibleTo("ReactiveUI.Cocoa")]
+[assembly: InternalsVisibleTo("ReactiveUI.Cocoa_Monotouch")]
 [assembly: InternalsVisibleTo("ReactiveUI.Android")]
 [assembly: InternalsVisibleTo("ReactiveUI.Mobile")]
