@@ -3,7 +3,7 @@
 	<metadata xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
 		<id>reactiveui-platforms</id>
 		<version>5.0.0.20130413-alpha</version>
-		<description>WPF and Silverlight specific extensions to ReactiveUI</description>
+		<description>Platform specific extensions to ReactiveUI</description>
 		<authors>Paul Betts</authors>
 		<projectUrl>http://www.reactiveui.net</projectUrl>
 		<licenseUrl>http://opensource.org/licenses/ms-pl.html</licenseUrl>
