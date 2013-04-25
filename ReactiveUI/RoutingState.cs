@@ -7,7 +7,7 @@ using System.Reactive.Subjects;
 using System.Runtime.Serialization;
 using System.Windows.Input;
 
-namespace ReactiveUI.Routing
+namespace ReactiveUI
 {
     /// <summary>
     /// RoutingState manages the ViewModel Stack and allows ViewModels to
