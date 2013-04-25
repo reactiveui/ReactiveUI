@@ -15,7 +15,7 @@ using Windows.UI.Xaml.Controls;
 using System.Windows.Controls;
 #endif
 
-namespace ReactiveUI.Routing
+namespace ReactiveUI.Xaml
 {
     /// <summary>
     /// This control hosts the View associated with a Router, and will display

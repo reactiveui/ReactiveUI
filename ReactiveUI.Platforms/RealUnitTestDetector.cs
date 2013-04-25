@@ -10,7 +10,7 @@ using System.Windows;
 using Windows.ApplicationModel;
 #endif
 
-namespace ReactiveUI.Xaml
+namespace ReactiveUI
 {
     internal static class RealUnitTestDetector
     {

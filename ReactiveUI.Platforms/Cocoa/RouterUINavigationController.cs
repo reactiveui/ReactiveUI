@@ -1,5 +1,4 @@
 using System;
-using ReactiveUI.Routing;
 using MonoTouch.UIKit;
 using ReactiveUI;
 using ReactiveUI.Cocoa;
@@ -9,7 +8,7 @@ using System.Reactive.Disposables;
 using MonoTouch.Foundation;
 using System.ComponentModel;
 
-namespace ReactiveUI.Routing
+namespace ReactiveUI.Cocoa
 {
     public class RouterUINavigationController : UINavigationController
     {

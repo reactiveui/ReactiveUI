@@ -2,7 +2,6 @@
 using System.Reactive.Linq;
 using System.Runtime.Serialization;
 using ReactiveUI;
-using ReactiveUI.Routing;
 using ReactiveUI.Xaml;
 
 namespace MobileSample_WinRT.ViewModels

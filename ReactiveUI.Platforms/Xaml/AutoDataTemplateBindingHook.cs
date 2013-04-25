@@ -14,7 +14,7 @@ using System.Windows.Controls;
 using System.Windows.Markup;
 #endif
 
-namespace ReactiveUI.Routing
+namespace ReactiveUI.Xaml
 {
     public class AutoDataTemplateBindingHook : IPropertyBindingHook
     {
