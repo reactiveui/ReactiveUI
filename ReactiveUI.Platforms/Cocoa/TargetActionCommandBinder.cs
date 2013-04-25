@@ -2,7 +2,6 @@ using System;
 using System.Linq;
 using System.Windows.Input;
 using ReactiveUI;
-using ReactiveUI.Xaml;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 

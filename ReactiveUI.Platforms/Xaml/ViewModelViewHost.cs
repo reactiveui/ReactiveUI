@@ -12,7 +12,7 @@ using Windows.UI.Xaml.Controls;
 using System.Windows.Controls;
 #endif
 
-namespace ReactiveUI.Routing
+namespace ReactiveUI.Xaml
 {
     /// <summary>
     /// This content control will automatically load the View associated with

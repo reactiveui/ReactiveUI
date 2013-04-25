@@ -3,15 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Text;
+using System.Reflection;
+using System.Threading;
 using Android.App;
 using Android.Content;
 using Android.OS;
 using Android.Runtime;
 using Android.Views;
 using Android.Widget;
-using System.Reflection;
-using ReactiveUI.Routing;
-using System.Threading;
 using ActionbarSherlock.App;
 
 namespace ReactiveUI.Android
