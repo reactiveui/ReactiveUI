@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 
-namespace ReactiveUI.Xaml
+namespace ReactiveUI
 {
     public class ComponentModelTypeConverter : IBindingTypeConverter
     {

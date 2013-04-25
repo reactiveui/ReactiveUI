@@ -1,5 +1,4 @@
 using System;
-using ReactiveUI.Routing;
 using System.Reactive;
 
 #if UIKIT

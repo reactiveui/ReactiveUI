@@ -7,7 +7,7 @@ using MonoTouch.UIKit;
 using System.Reactive.Subjects;
 using System.Collections.Generic;
 using System.Reactive.Disposables;
-using ReactiveUI.Routing;
+using ReactiveUI;
 
 namespace ReactiveUI.Mobile
 {

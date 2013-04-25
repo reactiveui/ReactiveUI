@@ -5,7 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Windows;
-using ReactiveUI.Routing;
+using ReactiveUI;
 using System.Reactive.Concurrency;
 
 #if COCOA
@@ -17,7 +17,13 @@ using ReactiveUI.Cocoa;
 using NSApplication = MonoTouch.UIKit.UIApplication;
 #endif
 
+#if ANDROID
+namespace ReactiveUI.Android
+#elif COCOA
+namespace ReactiveUI.Cocoa
+#else
 namespace ReactiveUI.Xaml
+#endif
 {
     /// <summary>
     /// Ignore me. This class is a secret handshake between RxUI and RxUI.Xaml
