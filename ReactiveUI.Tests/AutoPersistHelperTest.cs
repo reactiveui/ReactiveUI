@@ -82,5 +82,148 @@ namespace ReactiveUI.Tests
                 Assert.Equal(3, timesSaved);
             });
         }
+
+        [Fact]
+        public void AutoPersistHelperDisconnects()
+        {
+            (new TestScheduler()).With(sched => {
+                var fixture = new TestFixture();
+                var manualSave = new Subject<Unit>();
+
+                int timesSaved = 0;
+                var disp = fixture.AutoPersist(x => { timesSaved++; return Observable.Return(Unit.Default); }, manualSave, TimeSpan.FromMilliseconds(100));
+
+                // No changes = no saving
+                sched.AdvanceByMs(2 * 100);
+                Assert.Equal(0, timesSaved);
+
+                // Change = one save
+                fixture.IsNotNullString = "Foo";
+                sched.AdvanceByMs(2 * 100);
+                Assert.Equal(1, timesSaved);
+
+                // Two changes after dispose = no save
+                disp.Dispose();
+                fixture.IsNotNullString = "Foo";
+                fixture.IsNotNullString = "Bar";
+                sched.AdvanceByMs(2 * 100);
+                Assert.Equal(1, timesSaved);
+
+                // Trigger save after dispose = no save
+                manualSave.OnNext(Unit.Default);
+                sched.AdvanceByMs(2 * 100);
+                Assert.Equal(1, timesSaved);
+            });
+        }
+    }
+
+    public class AutoPersistCollectionTests
+    {
+        [Fact]
+        public void AutoPersistCollectionSmokeTest()
+        {
+            (new TestScheduler()).With(sched => {
+                var manualSave = new Subject<Unit>();
+
+                var item = new TestFixture();
+                var fixture = new ReactiveCollection<TestFixture> { item };
+
+                int timesSaved = 0;
+                fixture.AutoPersistCollection(x => { timesSaved++; return Observable.Return(Unit.Default); }, manualSave, TimeSpan.FromMilliseconds(100));
+
+                sched.AdvanceByMs(2 * 100);
+                Assert.Equal(0, timesSaved);
+
+                // By being added to collection, AutoPersist is enabled for item
+                item.IsNotNullString = "Foo";
+                sched.AdvanceByMs(2 * 100);
+                Assert.Equal(1, timesSaved);
+
+                // Removed from collection = no save
+                fixture.Clear();
+                sched.AdvanceByMs(2 * 100);
+                Assert.Equal(1, timesSaved);
+
+                // Item isn't in the collection, it doesn't get persisted anymore
+                item.IsNotNullString = "Bar";
+                sched.AdvanceByMs(2 * 100);
+                Assert.Equal(1, timesSaved);
+
+                // Added back item gets saved
+                fixture.Add(item);
+                sched.AdvanceByMs(100);  // Compensate for scheduling
+                item.IsNotNullString = "Baz";
+                sched.AdvanceByMs(2 * 100);
+                Assert.Equal(2, timesSaved);
+
+                // Even if we issue a reset
+                fixture.Reset();
+                sched.AdvanceByMs(100);  // Compensate for scheduling
+                item.IsNotNullString = "Bamf";
+                sched.AdvanceByMs(2 * 100);
+                Assert.Equal(3, timesSaved);
+
+                // Remove by hand = no save
+                fixture.RemoveAt(0);
+                item.IsNotNullString = "Blomf";
+                sched.AdvanceByMs(2 * 100);
+                Assert.Equal(3, timesSaved);
+            });
+        }
+
+        [Fact]
+        public void AutoPersistCollectionDisconnectsOnDispose()
+        {
+            (new TestScheduler()).With(sched => {
+                var manualSave = new Subject<Unit>();
+
+                var item = new TestFixture();
+                var fixture = new ReactiveCollection<TestFixture> { item };
+
+                int timesSaved = 0;
+                var disp = fixture.AutoPersistCollection(x => { timesSaved++; return Observable.Return(Unit.Default); }, manualSave, TimeSpan.FromMilliseconds(100));
+
+                sched.AdvanceByMs(2 * 100);
+                Assert.Equal(0, timesSaved);
+
+                // By being added to collection, AutoPersist is enabled for item
+                item.IsNotNullString = "Foo";
+                sched.AdvanceByMs(2 * 100);
+                Assert.Equal(1, timesSaved);
+
+                // Dispose = no save
+                disp.Dispose();
+
+                // Removed from collection = no save
+                fixture.Clear();
+                sched.AdvanceByMs(2 * 100);
+                Assert.Equal(1, timesSaved);
+
+                // Item isn't in the collection, it doesn't get persisted anymore
+                item.IsNotNullString = "Bar";
+                sched.AdvanceByMs(2 * 100);
+                Assert.Equal(1, timesSaved);
+
+                // Added back item + dispose = no save
+                fixture.Add(item);
+                sched.AdvanceByMs(100);  // Compensate for scheduling
+                item.IsNotNullString = "Baz";
+                sched.AdvanceByMs(2 * 100);
+                Assert.Equal(1, timesSaved);
+
+                // Even if we issue a reset, no save
+                fixture.Reset();
+                sched.AdvanceByMs(100);  // Compensate for scheduling
+                item.IsNotNullString = "Bamf";
+                sched.AdvanceByMs(2 * 100);
+                Assert.Equal(1, timesSaved);
+
+                // Remove by hand = no save
+                fixture.RemoveAt(0);
+                item.IsNotNullString = "Blomf";
+                sched.AdvanceByMs(2 * 100);
+                Assert.Equal(1, timesSaved);
+            });
+        }
     }
 }
