@@ -114,6 +114,7 @@
     </CodeAnalysisDependentAssemblyPaths>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AutoPersistHelperTest.cs" />
     <Compile Include="AwaiterTest.cs" />
     <Compile Include="BindingTypeConvertersTest.cs" />
     <Compile Include="CommandBindingTests.cs" />
