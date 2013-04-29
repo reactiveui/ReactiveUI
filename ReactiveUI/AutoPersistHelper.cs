@@ -66,7 +66,13 @@ namespace ReactiveUI
             return ret;
         }
 
-        public static IDisposable AutoPersistCollection<T, TDontCare>(this ReactiveCollection<T> This, Func<T, IObservable<Unit>> doPersist, IObservable<TDontCare> manualSaveSignal)
+        public static IDisposable AutoPersistCollection<T>(this ReactiveCollection<T> This, Func<T, IObservable<Unit>> doPersist, TimeSpan? interval = null)
+            where T : IReactiveNotifyPropertyChanged
+        {
+            return AutoPersistCollection(This, doPersist, Observable.Never<Unit>(), interval);
+        }
+
+        public static IDisposable AutoPersistCollection<T, TDontCare>(this ReactiveCollection<T> This, Func<T, IObservable<Unit>> doPersist, IObservable<TDontCare> manualSaveSignal, TimeSpan? interval = null)
             where T : IReactiveNotifyPropertyChanged
         {
             var disposerList = new Dictionary<T, IDisposable>();
@@ -74,7 +80,7 @@ namespace ReactiveUI
             var disp = This.ActOnEveryObject(
                 x => {
                     if (disposerList.ContainsKey(x)) return;
-                    disposerList[x] = x.AutoPersist(doPersist, manualSaveSignal);
+                    disposerList[x] = x.AutoPersist(doPersist, manualSaveSignal, interval);
                 },
                 x => {
                     disposerList[x].Dispose();
