@@ -10,41 +10,41 @@ namespace ReactiveUI.Tests
     [DataContract]
     public class TestFixture : ReactiveObject
     {
-        [DataMember]
-        public string _IsNotNullString;
         [IgnoreDataMember]
+        string _IsNotNullString;
+        [DataMember]
         public string IsNotNullString {
             get { return _IsNotNullString; }
             set { this.RaiseAndSetIfChanged(ref _IsNotNullString, value); }
         }
 
-        [DataMember]
-        public string _IsOnlyOneWord;
         [IgnoreDataMember]
+        string _IsOnlyOneWord;
+        [DataMember]
         public string IsOnlyOneWord {
             get { return _IsOnlyOneWord; }
             set { this.RaiseAndSetIfChanged(ref _IsOnlyOneWord, value); }
         }
 
-        [DataMember]
-        public List<string> _StackOverflowTrigger;
         [IgnoreDataMember]
+        List<string> _StackOverflowTrigger;
+        [DataMember]
         public List<string> StackOverflowTrigger {
             get { return _StackOverflowTrigger; }
             set { this.RaiseAndSetIfChanged(ref _StackOverflowTrigger, value.ToList()); }
         }
 
-        [DataMember]
-        public string _UsesExprRaiseSet;
         [IgnoreDataMember]
+        string _UsesExprRaiseSet;
+        [DataMember]
         public string UsesExprRaiseSet {
             get { return _UsesExprRaiseSet; }
             set { this.RaiseAndSetIfChanged(ref _UsesExprRaiseSet, value); }
         }
 
-        [DataMember]
-        public string _PocoProperty;
         [IgnoreDataMember]
+        string _PocoProperty;
+        [DataMember]
         public string PocoProperty {
             get { return _PocoProperty; }
             set { _PocoProperty = value; }
@@ -52,6 +52,12 @@ namespace ReactiveUI.Tests
 
         [DataMember]
         public ReactiveCollection<int> TestCollection { get; protected set; }
+
+        string _NotSerialized;
+        public string NotSerialized {
+            get { return _NotSerialized; }
+            set { this.RaiseAndSetIfChanged(ref _NotSerialized, value); }
+        }
 
         public TestFixture()
         {
