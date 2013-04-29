@@ -62,6 +62,7 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AutoPersistHelper.cs" />
     <Compile Include="BindingTypeConverters.cs" />
     <Compile Include="CollectionDebugView.cs" />
     <Compile Include="CommandBinding.cs" />
