@@ -8,20 +8,20 @@ namespace ReactiveUI.Mobile
 {
     public class Registrations : IWantsToRegisterStuff
     {
-        public void Register(Action<Func<object>, Type> registerFunction)
+        public void Register(IMutableDependencyResolver resolver)
         {
 #if WP8
-            registerFunction(() => new WP8SuspensionHost(), typeof (ISuspensionHost));
-            registerFunction(() => new PhoneServiceStateDriver(), typeof (ISuspensionDriver));
+            resolver.Register<ISuspensionHost>(() => new WP8SuspensionHost());
+            resolver.Register<ISuspensionDriver>(() => new PhoneServiceStateDriver());
 #elif WINRT
-            registerFunction(() => new WinRTSuspensionHost(), typeof(ISuspensionHost));
-            registerFunction(() => new WinRTAppDataDriver(), typeof(ISuspensionDriver));
+            resolver.Register<ISuspensionHost>(() => new WinRTSuspensionHost());
+            resolver.Register<ISuspensionDriver>(() => new WinRTAppDataDriver());
 #elif UIKIT
-            registerFunction(() => new CocoaSuspensionHost(), typeof(ISuspensionHost));
-            registerFunction(() => new AppSupportJsonSuspensionDriver(), typeof(ISuspensionDriver));
+            resolver.Register<ISuspensionHost>(() => new CocoaSuspensionHost());
+            resolver.Register<ISuspensionDriver>(() => new AppSupportJsonSuspensionDriver());
 #elif ANDROID
-            registerFunction(() => new AndroidSuspensionHost(), typeof(ISuspensionHost));
-            registerFunction(() => new BundleSuspensionDriver(), typeof(ISuspensionDriver));
+            resolver.Register<ISuspensionHost>(() => new AndroidSuspensionHost());
+            resolver.Register<ISuspensionDriver>(() => new BundleSuspensionDriver());
 #endif
         }
     }

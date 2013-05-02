@@ -466,7 +466,7 @@ namespace ReactiveUI
 
     internal interface IWantsToRegisterStuff
     {
-        void Register(Action<Func<object>, Type> registerFunction);
+        void Register(IMutableDependencyResolver resolver);
     }
 
     // NB: This is just a name we can bolt extension methods to

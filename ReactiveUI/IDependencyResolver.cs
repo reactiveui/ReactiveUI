@@ -16,7 +16,7 @@ namespace ReactiveUI
         /// </summary>
         /// <param name="serviceType">The object type.</param>
         /// <returns>The requested object, if found; <c>null</c> otherwise.</returns>
-        object GetService(Type serviceType, string contract = null);
+        ServiceType GetService<ServiceType>(string contract = null);
 
         /// <summary>
         /// Gets all instances of the given <paramref name="serviceType"/>. Must return an empty
@@ -25,29 +25,19 @@ namespace ReactiveUI
         /// <param name="serviceType">The object type.</param>
         /// <returns>A sequence of instances of the requested <paramref name="serviceType"/>. The sequence
         /// should be empty (not <c>null</c>) if no objects of the given type are available.</returns>
-        IEnumerable<object> GetServices(Type serviceType, string contract = null);
+        IEnumerable<ServiceType> GetServices<ServiceType>(string contract = null);
     }
 
     public interface IMutableDependencyResolver : IDependencyResolver
     {
-        void Register(Func<object> factory, Type serviceType, string contract = null);
+        void Register<ServiceType>(Func<ServiceType> factory, string contract = null);
     }
 
     public static class DependencyResolverMixins
     {
-        public static T GetService<T>(this IDependencyResolver This, string contract = null)
-        {
-            return (T)This.GetService(typeof(T), contract);
-        }
-
-        public static IEnumerable<T> GetServices<T>(this IDependencyResolver This, string contract = null)
-        {
-            return This.GetServices(typeof(T), contract).Cast<T>();
-        }
-
         public static void InitializeResolver(this IMutableDependencyResolver resolver)
         {
-            new Registrations().Register((f,t) => resolver.Register(f,t));
+            new Registrations().Register(resolver);
 
             var namespaces = new[] { 
                 "ReactiveUI.Xaml", 
@@ -71,7 +61,7 @@ namespace ReactiveUI
                 if (registerTypeClass == null) return;
 
                 var registerer = (IWantsToRegisterStuff)Activator.CreateInstance(registerTypeClass);
-                registerer.Register((f, t) => resolver.Register(f, t));
+                registerer.Register(resolver);
             });
         }
 
@@ -95,24 +85,26 @@ namespace ReactiveUI
             innerRegister = register;
         }
 
-        public object GetService(Type serviceType, string contract = null)
+        public ServiceType GetService<ServiceType>(string contract = null)
         {
-            return (GetServices(serviceType, contract) ?? Enumerable.Empty<object>()).FirstOrDefault();
+            return (GetServices<ServiceType>(contract) ?? Enumerable.Empty<ServiceType>()).FirstOrDefault();
         }
 
-        public IEnumerable<object> GetServices(Type serviceType, string contract = null)
+        public IEnumerable<ServiceType> GetServices<ServiceType>(string contract = null)
         {
-            return innerGetServices(serviceType, contract);
+            Type serviceType = typeof(ServiceType);
+            return innerGetServices(serviceType, contract).Cast<ServiceType>();
         }
 
         public void Dispose()
         {
         }
 
-        public void Register(Func<object> factory, Type serviceType, string contract = null)
+        public void Register<ServiceType>(Func<ServiceType> factory, string contract = null)
         {
             if (innerRegister == null) throw new NotImplementedException();
-            innerRegister(factory, serviceType, contract);
+            Type serviceType = typeof(ServiceType);
+            innerRegister(() => factory(), serviceType, contract);
         }
     }
 }

@@ -32,26 +32,26 @@ namespace ReactiveUI.Xaml
     /// </summary>
     public class Registrations : IWantsToRegisterStuff
     {
-        public void Register(Action<Func<object>, Type> registerFunction)
+        public void Register(IMutableDependencyResolver resolver)
         {
 #if !WINRT && !WP8
-            registerFunction(() => new ComponentModelTypeConverter(), typeof(IBindingTypeConverter));
+            resolver.Register<IBindingTypeConverter>(() => new ComponentModelTypeConverter());
 #endif
 
 #if !MONO
-            registerFunction(() => new DependencyObjectObservableForProperty(), typeof(ICreatesObservableForProperty));
-            registerFunction(() => new XamlDefaultPropertyBinding(), typeof(IDefaultPropertyBindingProvider));
-            registerFunction(() => new CreatesCommandBindingViaCommandParameter(), typeof(ICreatesCommandBinding));
-            registerFunction(() => new CreatesCommandBindingViaEvent(), typeof(ICreatesCommandBinding));
-            registerFunction(() => new BooleanToVisibilityTypeConverter(), typeof(IBindingTypeConverter));
-            registerFunction(() => new AutoDataTemplateBindingHook(), typeof(IPropertyBindingHook));
+            resolver.Register<ICreatesObservableForProperty>(() => new DependencyObjectObservableForProperty());
+            resolver.Register<IDefaultPropertyBindingProvider>(() => new XamlDefaultPropertyBinding());
+            resolver.Register<ICreatesCommandBinding>(() => new CreatesCommandBindingViaCommandParameter());
+            resolver.Register<ICreatesCommandBinding>(() => new CreatesCommandBindingViaEvent());
+            resolver.Register<IBindingTypeConverter>(() => new BooleanToVisibilityTypeConverter());
+            resolver.Register<IPropertyBindingHook>(() => new AutoDataTemplateBindingHook());
 
 #endif
 
 #if COCOA
-            registerFunction(() => new KVOObservableForProperty(), typeof(ICreatesObservableForProperty));
-            registerFunction(() => new CocoaDefaultPropertyBinding(), typeof(IDefaultPropertyBindingProvider));
-            registerFunction(() => new TargetActionCommandBinder(), typeof(ICreatesCommandBinding));
+            resolver.Register<ICreatesObservableForProperty>(() => new KVOObservableForProperty());
+            resolver.Register<IDefaultPropertyBindingProvider>(() => new CocoaDefaultPropertyBinding());
+            resolver.Register<ICreatesCommandBinding>(() => new TargetActionCommandBinder());
 
             RxApp.DeferredScheduler = new WaitForDispatcherScheduler(() => new NSRunloopScheduler(NSApplication.SharedApplication));
 #endif

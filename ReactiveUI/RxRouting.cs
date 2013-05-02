@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
+using System.Reflection;
 using System.Text;
 using ReactiveUI;
 
@@ -12,9 +13,12 @@ namespace ReactiveUI
     {
         public static Func<string, string> ViewModelToViewFunc { get; set; }
 
+        private static MethodInfo getServiceMethod;
+
         static RxRouting()
         {
             ViewModelToViewFunc = (vm) => interfaceifyTypeName(vm.Replace("ViewModel", "View"));
+            getServiceMethod = typeof(IDependencyResolver).GetMethod("GetService");
         }
 
         /// <summary>
@@ -47,7 +51,7 @@ namespace ReactiveUI
                 var type = Reflection.ReallyFindType(typeToFind, false);
 
                 if (type != null) {
-                    var ret = RxApp.DependencyResolver.GetService(type, key) as IViewFor;
+                    var ret = getServiceMethod.MakeGenericMethod(type).Invoke(RxApp.DependencyResolver, new [] { key }) as IViewFor;
                     if (ret != null) return ret;
                 }
             } catch (Exception ex) {
@@ -57,7 +61,7 @@ namespace ReactiveUI
             var viewType = typeof (IViewFor<>);
 
             // IViewFor<FooBarViewModel> (the original behavior in RxUI 3.1)
-            return (IViewFor) RxApp.DependencyResolver.GetService(viewType.MakeGenericType(viewModel.GetType()), key);
+            return (IViewFor)getServiceMethod.MakeGenericMethod(viewType.MakeGenericType(viewModel.GetType())).Invoke(RxApp.DependencyResolver, new[] { key });
         }
 
         static string interfaceifyTypeName(string typeName)

@@ -21,27 +21,29 @@ namespace ReactiveUI
                 new Dictionary<Tuple<Type, string>, List<Func<object>>>();
         }
 
-        public void Register(Func<object> factory, Type serviceType, string contract = null)
+        public void Register<ServiceType>(Func<ServiceType> factory, string contract = null)
         {
+            Type serviceType = typeof(ServiceType);
             var pair = Tuple.Create(serviceType, contract ?? string.Empty);
             if (!_registry.ContainsKey(pair)) {
                 _registry[pair] = new List<Func<object>>();
             }
  
-            _registry[pair].Add(factory);
+            _registry[pair].Add(() => factory());
         }
-        
-        public object GetService(Type serviceType, string contract = null)
+
+        public ServiceType GetService<ServiceType>(string contract = null)
         {
-            return this.GetServices(serviceType, contract).FirstOrDefault();
+            return this.GetServices<ServiceType>(contract).FirstOrDefault();
         }
- 
-        public IEnumerable<object> GetServices(Type serviceType, string contract = null)
+
+        public IEnumerable<ServiceType> GetServices<ServiceType>(string contract = null)
         {
+            Type serviceType = typeof(ServiceType);
             var pair = Tuple.Create(serviceType, contract ?? string.Empty);
-            if (!_registry.ContainsKey(pair)) return Enumerable.Empty<object>();
+            if (!_registry.ContainsKey(pair)) return Enumerable.Empty<ServiceType>();
  
-            return _registry[pair].Select(x => x());
+            return _registry[pair].Select(x => (ServiceType)x());
         }
 
         public ModernDependencyResolver Duplicate()
@@ -57,15 +59,15 @@ namespace ReactiveUI
 
     public static class MutableDependencyResolverMixins
     {
-        public static void RegisterConstant(this IMutableDependencyResolver This, object value, Type serviceType, string contract = null)
+        public static void RegisterConstant<ServiceType>(this IMutableDependencyResolver This, ServiceType value, string contract = null)
         {
-            This.Register(() => value, serviceType, contract);
+            This.Register<ServiceType>(() => value, contract);
         }
 
-        public static void RegisterLazySingleton(this IMutableDependencyResolver This, Func<object> valueFactory, Type serviceType, string contract = null)
+        public static void RegisterLazySingleton<ServiceType>(this IMutableDependencyResolver This, Func<ServiceType> valueFactory, string contract = null)       
         {
-            var val = new Lazy<object>(valueFactory, LazyThreadSafetyMode.ExecutionAndPublication);
-            This.Register(() => val.Value, serviceType, contract);
+            var val = new Lazy<ServiceType>(valueFactory, LazyThreadSafetyMode.ExecutionAndPublication);
+            This.Register<ServiceType>(() => val.Value, contract);
         }
     }
 }
