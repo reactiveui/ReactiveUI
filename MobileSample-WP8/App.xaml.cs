@@ -47,7 +47,7 @@ namespace MobileSample_WP8
             }
 
             //TODo get rid of ugly casting
-            ((ModernDependencyResolver)RxApp.DependencyResolver).Register(() => new AppBootstrapper(), typeof(IApplicationRootState));
+            ((IMutableDependencyResolver)RxApp.DependencyResolver).Register<IApplicationRootState>(() => new AppBootstrapper());
 
             var host = RxApp.DependencyResolver.GetService<ISuspensionHost>();
             host.SetupDefaultSuspendResume();

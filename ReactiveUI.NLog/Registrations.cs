@@ -8,7 +8,7 @@ namespace ReactiveUI.NLog
 {
     public class Registrations : IWantsToRegisterStuff
     {
-        public void Register(Action<Func<object>, Type> registerFunction)
+        public void Register(IMutableDependencyResolver resolver)
         {
             RxApp.LoggerFactory = type => new NLogLogger(global::NLog.LogManager.GetLogger(type.Name));
         }

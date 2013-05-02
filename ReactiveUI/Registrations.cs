@@ -8,14 +8,14 @@ namespace ReactiveUI
 {
     public class Registrations : IWantsToRegisterStuff
     {
-        public void Register(Action<Func<object>, Type> registerFunction)
-        {            
-            registerFunction(() => new INPCObservableForProperty(), typeof(ICreatesObservableForProperty));
-            registerFunction(() => new IRNPCObservableForProperty(), typeof(ICreatesObservableForProperty));
-            registerFunction(() => new POCOObservableForProperty(), typeof(ICreatesObservableForProperty));
-            registerFunction(() => new NullDefaultPropertyBindingProvider(), typeof(IDefaultPropertyBindingProvider));
-            registerFunction(() => new EqualityTypeConverter(), typeof(IBindingTypeConverter));
-            registerFunction(() => new StringConverter(), typeof(IBindingTypeConverter));
+        public void Register(IMutableDependencyResolver resolver)
+        {
+            resolver.Register<ICreatesObservableForProperty>(() => new INPCObservableForProperty());
+            resolver.Register<ICreatesObservableForProperty>(() => new IRNPCObservableForProperty());
+            resolver.Register<ICreatesObservableForProperty>(() => new POCOObservableForProperty());
+            resolver.Register<IDefaultPropertyBindingProvider>(() => new NullDefaultPropertyBindingProvider());
+            resolver.Register<IBindingTypeConverter>(() => new EqualityTypeConverter());
+            resolver.Register<IBindingTypeConverter>(() => new StringConverter());
         }
     }
 }
