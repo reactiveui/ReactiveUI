@@ -11,44 +11,6 @@ namespace ReactiveUI.Tests
 {
     public class ObservableAsyncMRUCacheTest
     {
-        [Fact(Skip="This test is badly written")]
-        public void GetTest()
-        {
-            (new TestScheduler()).With(sched => {
-                var input = new[] {1, 1, 1, 1, 1};
-                var delay = TimeSpan.FromSeconds(1.0);
-                var fixture = new ObservableAsyncMRUCache<int, int>(x => Observable.Return(x*5).Delay(delay, sched), 5, 2);
-
-                int result = 0;
-                var t = new Thread(() => {
-                    // We use this side thread because there's no way to tell 
-                    // the cache to Run the Test Scheduler. So the side thread
-                    // will do the waiting while the main thread advances the
-                    // Scheduler
-                    foreach (int x in input.Select(x => fixture.Get(x))) {
-                        result += x;
-                    }
-                });
-                t.Start();
-
-                sched.Start();
-                sched.AdvanceToMs(500);
-
-                // NB: The Thread.Sleep is to let our other thread catch up
-                Thread.Sleep(100);
-                Assert.Equal(0, result);
-
-                sched.AdvanceToMs(1200);
-
-                Thread.Sleep(100);
-                Assert.Equal(25, result);
-
-                sched.Start();
-                t.Join();
-                Assert.Equal(25, result);
-            });
-        }
-
         [Fact]
         public void AsyncGetTest()
         {

@@ -8,12 +8,18 @@ using System.Reactive.Linq;
 using System.Text;
 using System.Threading;
 using System.Windows;
-using System.Windows.Controls;
 using ReactiveUI.Testing;
 using ReactiveUI.Xaml;
 using Xunit;
 
 using Microsoft.Reactive.Testing;
+
+#if WINRT
+using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
+#else
+using System.Windows.Controls;
+#endif
 
 namespace ReactiveUI.Tests
 {
@@ -415,6 +421,7 @@ namespace ReactiveUI.Tests
             Assert.Equal("Bamf", output[0].Value);
         }
 
+#if !WINRT
         [Fact]
         public void WhenAnyShouldRunInContext()
         {
@@ -435,6 +442,7 @@ namespace ReactiveUI.Tests
                 Assert.Equal(tid, whenAnyTid);
             });
         }
+#endif
 
         [Fact]
         public void WhenAnyThroughAViewShouldntGiveNullValues()

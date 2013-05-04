@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Reactive.Concurrency;
 using System.Linq;
 using Xunit;
+using System.Collections;
 
 namespace ReactiveUI.Tests
 {
@@ -19,10 +20,12 @@ namespace ReactiveUI.Tests
                     Assert.Equal(left[i], right[i]);
                 }
             } catch {
+#if !WINRT
                 Console.Error.WriteLine("lhs: [{0}]",
                     String.Join(",", lhs.ToArray()));
                 Console.Error.WriteLine("rhs: [{0}]",
                     String.Join(",", rhs.ToArray()));
+#endif
                 throw;
             }
         }
@@ -46,6 +49,15 @@ namespace ReactiveUI.Tests
                 lastValue = v;
             }
         }
+
+#if WINRT
+        public static IEnumerable<T> OfType<T>(this IEnumerable This)
+        {
+            foreach (T item in This) {
+                yield return item;
+            }
+        }
+#endif
     }
 
     public class CountingTestScheduler : IScheduler

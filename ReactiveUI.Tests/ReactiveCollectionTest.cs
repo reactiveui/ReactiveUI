@@ -922,7 +922,7 @@ namespace ReactiveUI.Tests
             var serializer = new System.Runtime.Serialization.Json.DataContractJsonSerializer(obj.GetType());
             var ms = new MemoryStream();
             serializer.WriteObject(ms, obj);
-            string retVal = Encoding.Default.GetString(ms.ToArray());
+            string retVal = Encoding.UTF8.GetString(ms.ToArray(), 0, (int)ms.Length);
             return retVal;
         }
 
@@ -932,7 +932,7 @@ namespace ReactiveUI.Tests
             var ms = new MemoryStream(Encoding.Unicode.GetBytes(json));
             var serializer = new System.Runtime.Serialization.Json.DataContractJsonSerializer(obj.GetType());
             obj = (T)serializer.ReadObject(ms);
-            ms.Close();
+            ms.Dispose();
             return obj;
         }
     }

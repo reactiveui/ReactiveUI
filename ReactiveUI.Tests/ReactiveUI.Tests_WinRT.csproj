@@ -112,14 +112,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AutoPersistHelperTest.cs" />
-    <Compile Include="AwaiterTest.cs" />
     <Compile Include="BindingTypeConvertersTest.cs" />
     <Compile Include="CommandBindingTests.cs" />
     <Compile Include="DependencyObjectObservableForPropertyTest.cs" />
     <Compile Include="ErrorsTest.cs" />
     <Compile Include="MakeObjectReactiveHelperTest.cs" />
     <Compile Include="MessageBusTest.cs" />
-    <Compile Include="MSTestFake.cs" />
     <Compile Include="ObservableAsPropertyHelperTest.cs" />
     <Compile Include="ObservableAsyncMRUCacheTest.cs" />
     <Compile Include="ObservedChangedMixinTest.cs" />
@@ -133,9 +131,6 @@
     <Compile Include="RoutingState.cs" />
     <Compile Include="RxAppTest.cs" />
     <Compile Include="RxRouting.cs" />
-    <Compile Include="RxUIViewModelGeneratorTest.cs" />
-    <Compile Include="StopwatchTestSchedulerTest.cs" />
-    <Compile Include="UserExceptionTest.cs" />
     <Compile Include="Utility.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -166,6 +161,10 @@
     <ProjectReference Include="..\ReactiveUI.Platforms\ReactiveUI.Xaml_WinRT.csproj">
       <Project>{689ec7c5-2d81-4124-929e-397b330cc358}</Project>
       <Name>ReactiveUI.Xaml_WinRT</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ReactiveUI.Testing\ReactiveUI.Testing_WinRT.csproj">
+      <Project>{689ec7c5-fd81-412f-929e-397b330cc358}</Project>
+      <Name>ReactiveUI.Testing_WinRT</Name>
     </ProjectReference>
     <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj">
       <Project>{464cb812-f99f-401b-be4c-e8f0515cd19d}</Project>

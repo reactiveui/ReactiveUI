@@ -5,9 +5,16 @@ using System.Linq;
 using System.Reactive;
 using System.Text;
 using System.Windows;
-using System.Windows.Controls;
 using ReactiveUI.Xaml;
 using Xunit;
+
+#if WINRT
+using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
+using System.Collections;
+#else
+using System.Windows.Controls;
+#endif
 
 namespace ReactiveUI.Tests
 {
@@ -224,7 +231,8 @@ namespace ReactiveUI.Tests
             var view = new PropertyBindView() {ViewModel = vm};
 
             view.OneWayBind(view.ViewModel, x => x.SomeCollectionOfStrings, x => x.SomeListBox.ItemsSource);
-            Assert.True(view.SomeListBox.ItemsSource.OfType<string>().Count() > 1);
+
+            Assert.True(((System.Collections.IEnumerable)view.SomeListBox.ItemsSource).OfType<string>().Count() > 1);
         }
 
         [Fact]
