@@ -72,7 +72,6 @@
     <Compile Include="ContractStubs.cs" />
     <Compile Include="DefaultPropertyBinding.cs" />
     <Compile Include="DesignModeDetector.cs" />
-    <Compile Include="IReactiveBinding.cs" />
     <Compile Include="Errors.cs" />
     <Compile Include="ModernDependencyResolver.cs" />
     <Compile Include="IDependencyResolver.cs" />
