@@ -128,7 +128,6 @@
     <Compile Include="Interfaces.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="IReactiveBinding.cs" />
     <Compile Include="Logging.cs">
       <SubType>Code</SubType>
     </Compile>
