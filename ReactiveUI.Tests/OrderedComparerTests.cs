@@ -89,7 +89,7 @@ namespace ReactiveUI.Tests
             var items = source.Select(x => new { FirstLetter = x[0], AllOfIt = x }).ToList();
 
             items.Sort(OrderedComparer.For(items).OrderBy(x => x.FirstLetter));
-            Assert.True(items.Select(x => x.FirstLetter).SequenceEqual("abc"));
+            Assert.True(items.Select(x => x.FirstLetter).SequenceEqual(new[] { 'a', 'b', 'c', }));
 
         }
     }

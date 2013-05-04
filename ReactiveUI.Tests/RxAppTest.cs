@@ -22,7 +22,6 @@ namespace ReactiveUI.Tests
         [Fact]
         public void SchedulerShouldBeImmediateInTestRunner()
         {
-            Console.WriteLine(RxApp.DeferredScheduler.GetType().FullName);
             Assert.Equal(Scheduler.Immediate, RxApp.DeferredScheduler);
         }
     }

@@ -6,6 +6,14 @@ using System.Windows;
 using ReactiveUI.Xaml;
 using Xunit;
 
+#if WINRT
+using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
+#else
+using System.Windows.Controls;
+#endif
+
+
 namespace ReactiveUI.Tests
 {
     public class DepObjFixture : FrameworkElement

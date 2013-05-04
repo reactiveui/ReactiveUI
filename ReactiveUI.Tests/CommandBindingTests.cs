@@ -6,10 +6,16 @@ using System.Reactive.Linq;
 using System.Reflection;
 using System.Text;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
 using ReactiveUI.Xaml;
 using Xunit;
+
+#if WINRT
+using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
+#else
+using System.Windows.Controls;
+#endif
 
 namespace ReactiveUI.Tests
 {
@@ -96,7 +102,7 @@ namespace ReactiveUI.Tests
         }
 
 
-#if !SILVERLIGHT
+#if !SILVERLIGHT && !WINRT
         [Fact]
         public void EventBinderBindsToImplicitEvent()
         {
@@ -206,7 +212,7 @@ namespace ReactiveUI.Tests
             Assert.Null(view.Command1.Command);
         }
 
-#if !SILVERLIGHT
+#if !SILVERLIGHT && !WINRT
         [Fact]
         public void CommandBindToExplicitEventWireup()
         {

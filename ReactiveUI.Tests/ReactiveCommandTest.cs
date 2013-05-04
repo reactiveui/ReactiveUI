@@ -106,7 +106,6 @@ namespace ReactiveUI.Tests
 
             range.ToObservable()
                 .Zip(observed_params, (expected, actual) => new {expected, actual})
-                .Do(Console.WriteLine)
                 .Subscribe(x => Assert.Equal(x.expected, x.actual));
         }
 
@@ -265,7 +264,7 @@ namespace ReactiveUI.Tests
                 var fixture = new ReactiveAsyncCommand(null, 5, sched);
 
                 fixture.RegisterMemoizedFunction(x => {
-                    Thread.Sleep(1000);
+                    Observable.Timer(TimeSpan.FromSeconds(1.0), RxApp.TaskpoolScheduler).Wait();
                     return ((int)x)*5;
                 }, 50, null, sched)
                     .Timestamp()
@@ -278,7 +277,7 @@ namespace ReactiveUI.Tests
                     fixture.Execute(i);
                 }
 
-                Thread.Sleep(2500);
+                Observable.Timer(TimeSpan.FromSeconds(2.5), RxApp.TaskpoolScheduler).Wait();
             });
 
             Assert.Equal(10, results.Count);
@@ -355,7 +354,7 @@ namespace ReactiveUI.Tests
 
                 var fixture = new ReactiveAsyncCommand();
                 var result = fixture.RegisterAsyncFunction(x => {
-                    Thread.Sleep(1000);
+                    Observable.Timer(TimeSpan.FromSeconds(1.0), RxApp.TaskpoolScheduler).Wait();
                     return (int)x*5;
                 });
 
