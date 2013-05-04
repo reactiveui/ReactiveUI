@@ -10,7 +10,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ReactiveUI</RootNamespace>
-    <AssemblyName>ReactiveUI_Monodroid</AssemblyName>
+    <AssemblyName>ReactiveUI</AssemblyName>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>
     </SccProjectName>
@@ -22,12 +22,14 @@
     </SccProvider>
     <CodeContractsAssemblyMode>1</CodeContractsAssemblyMode>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>False</Optimize>
-    <OutputPath>bin\Debug\Monodroid</OutputPath>
+    <OutputPath>bin\Debug\Monoandroid\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -62,7 +64,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>True</Optimize>
-    <OutputPath>bin\Release\Monodroid</OutputPath>
+    <OutputPath>bin\Release\Monoandroid\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -92,10 +94,9 @@
     <AndroidLinkMode>SdkOnly</AndroidLinkMode>
     <AndroidUseSharedRuntime>False</AndroidUseSharedRuntime>
     <GenerateDocumentation>True</GenerateDocumentation>
+    <DocumentationFile>bin\Release\Monoandroid\ReactiveUI.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="Microsoft.CSharp" />
@@ -114,26 +115,42 @@
     <Reference Include="System.Reactive.Providers">
       <HintPath>..\ext\monodroid\System.Reactive.Providers.dll</HintPath>
     </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="Mono.Android" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CommandBinding.cs" />
+    <Compile Include="CommandInterfaces.cs" />
+    <Compile Include="DesignModeDetector.cs" />
+    <Compile Include="Errors.cs" />
+    <Compile Include="IDependencyResolver.cs" />
     <Compile Include="Interfaces.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="IReactiveBinding.cs" />
     <Compile Include="Logging.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="MemoizingMRUCache.cs" />
     <Compile Include="MessageBus.cs" />
+    <Compile Include="ModernDependencyResolver.cs" />
+    <Compile Include="NullDefaultPropertyBindingProvider.cs" />
     <Compile Include="ObservableAsPropertyHelper.cs" />
     <Compile Include="ObservableAsyncMRUCache.cs" />
     <Compile Include="ObservedChangedMixin.cs" />
     <Compile Include="OrderedComparer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ReactiveAsyncCommand.cs" />
+    <Compile Include="ReactiveBinding.cs" />
     <Compile Include="ReactiveCollection.cs" />
     <Compile Include="ReactiveCollectionMixins.cs" />
+    <Compile Include="ReactiveCommand.cs" />
     <Compile Include="ReactiveNotifyPropertyChangedMixin.cs" />
     <Compile Include="ReactiveObject.cs" />
     <Compile Include="MakeObjectReactiveHelper.cs" />
+    <Compile Include="Registrations.cs" />
+    <Compile Include="RoutingState.cs" />
     <Compile Include="RxApp.cs" />
     <Compile Include="CompatMixins.cs" />
     <Compile Include="DefaultPropertyBinding.cs" />
@@ -142,14 +159,17 @@
     <Compile Include="POCOObservableForProperty.cs" />
     <Compile Include="RefcountDisposeWrapper.cs" />
     <Compile Include="Reflection.cs" />
+    <Compile Include="RxRouting.cs" />
     <Compile Include="ScheduledSubject.cs" />
     <Compile Include="BindingTypeConverters.cs" />
     <Compile Include="CollectionDebugView.cs" />
+    <Compile Include="UnitTestDetector.cs" />
     <Compile Include="VariadicTemplates.cs" />
     <Compile Include="Rx-Shim\AwaitableAsyncSubject.cs" />
     <Compile Include="Rx-Shim\GetAwaiter.cs" />
     <Compile Include="Rx-Shim\ImmutableList.cs" />
     <Compile Include="PropertyBinding.cs" />
+    <Compile Include="WaitForDispatcherScheduler.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -157,7 +177,6 @@
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
@@ -166,7 +185,6 @@
   </Target>
   -->
   <Import Project="$(MSBuildExtensionsPath)\Novell\Novell.MonoDroid.CSharp.targets" />
-  <ItemGroup>
-    <Folder Include="Rx-Shim\" />
-  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
 </Project>

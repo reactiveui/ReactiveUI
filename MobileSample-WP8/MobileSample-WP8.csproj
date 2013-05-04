@@ -169,7 +169,7 @@
       <Project>{B90F3D02-1E3A-4DD7-8E00-30F28B6DCC1E}</Project>
       <Name>ReactiveUI.Mobile_WP8</Name>
     </ProjectReference>
-    <ProjectReference Include="..\ReactiveUI.Xaml\ReactiveUI.Xaml_WP8.csproj">
+    <ProjectReference Include="..\ReactiveUI.Platforms\ReactiveUI.Xaml_WP8.csproj">
       <Project>{F9459904-F785-4255-866A-A619787CB895}</Project>
       <Name>ReactiveUI.Xaml_WP8</Name>
     </ProjectReference>
@@ -179,17 +179,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.Threading.Tasks">
-      <HintPath>..\packages\Microsoft.Bcl.Async.1.0.14-rc\lib\wp8\Microsoft.Threading.Tasks.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Threading.Tasks.Extensions">
-      <HintPath>..\packages\Microsoft.Bcl.Async.1.0.14-rc\lib\wp8\Microsoft.Threading.Tasks.Extensions.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Threading.Tasks.Extensions.Phone">
-      <HintPath>..\packages\Microsoft.Bcl.Async.1.0.14-rc\lib\wp8\Microsoft.Threading.Tasks.Extensions.Phone.dll</HintPath>
-    </Reference>
     <Reference Include="Newtonsoft.Json">
-      <HintPath>..\ext\WP80\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\ext\Portable-Net45+WinRT45+WP8\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="Ninject.Common">
       <HintPath>.\Ninject.Common.dll</HintPath>
@@ -227,5 +218,5 @@
   -->
   <ProjectExtensions />
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
-  <Import Project="..\packages\Microsoft.Bcl.Build.1.0.0-rc\tools\Microsoft.Bcl.Build.targets" />
+  <Import Project="..\packages\Microsoft.Bcl.Build.1.0.4\tools\Microsoft.Bcl.Build.targets" />
 </Project>
