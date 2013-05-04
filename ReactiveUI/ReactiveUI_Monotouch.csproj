@@ -68,7 +68,6 @@
     <Compile Include="IDependencyResolver.cs" />
     <Compile Include="INPCObservableForProperty.cs" />
     <Compile Include="Interfaces.cs" />
-    <Compile Include="IReactiveBinding.cs" />
     <Compile Include="IRNPCObservableForProperty.cs" />
     <Compile Include="Logging.cs" />
     <Compile Include="MakeObjectReactiveHelper.cs" />
