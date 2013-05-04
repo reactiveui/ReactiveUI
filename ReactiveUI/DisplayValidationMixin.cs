@@ -131,11 +131,11 @@ namespace ReactiveUI
 
         static DisplayValidationMixin()
         {
-            registry = RxApp.GetService<IBindingRegistry>();
+            registry = RxApp.DependencyResolver.GetService<IBindingRegistry>();
             registry.Monitor = true;
 
-            bindingErrorProviders = RxApp.GetAllServices<IBindingErrorProvider>().ToList();
-            bindingDisplayProviders = RxApp.GetAllServices<IBindingDisplayProvider>().ToList();
+            bindingErrorProviders = RxApp.DependencyResolver.GetServices<IBindingErrorProvider>().ToList();
+            bindingDisplayProviders = RxApp.DependencyResolver.GetServices<IBindingDisplayProvider>().ToList();
         }
 
         /// <summary>

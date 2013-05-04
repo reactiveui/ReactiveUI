@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Reactive;
-using ReactiveUI.Routing;
+using ReactiveUI;
 using Xamarin.Geolocation;
 
 namespace ReactiveUI.Mobile

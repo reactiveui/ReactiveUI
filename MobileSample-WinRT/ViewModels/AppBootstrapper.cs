@@ -10,7 +10,6 @@ using Newtonsoft.Json;
 using Ninject;
 using ReactiveUI;
 using ReactiveUI.Mobile;
-using ReactiveUI.Routing;
 using MobileSample_WinRT.Views;
 
 namespace MobileSample_WinRT.ViewModels
@@ -79,10 +78,10 @@ namespace MobileSample_WinRT.ViewModels
 
             Kernel.Bind<IScreen>().ToConstant(this);
 
-            RxApp.ConfigureServiceLocator(
-                (t, s) => Kernel.Get(t, s),
-                (t, s) => Kernel.GetAll(t, s),
-                (c, t, s) => { var r = Kernel.Bind(t).To(c); if (s != null) r.Named(s); });
+            //RxApp.ConfigureServiceLocator(
+            //    (t, s) => Kernel.Get(t, s),
+            //    (t, s) => Kernel.GetAll(t, s),
+            //    (c, t, s) => { var r = Kernel.Bind(t).To(c); if (s != null) r.Named(s); });
 
             Router.Navigate.Execute(new TestPage1ViewModel(this));
         }

@@ -1,5 +1,8 @@
-﻿$Archs = {"Portable-Net45+WinRT45+WP8", "Net45", "WP8", "WinRT45", "Mono", "Monodroid", "Monotouch"}
-$Projects = {"ReactiveUI", "ReactiveUI.Testing", "ReactiveUI.Xaml", "ReactiveUI.Blend", "ReactiveUI.Cocoa", "ReactiveUI.Gtk", "ReactiveUI.Android", "ReactiveUI.NLog", "ReactiveUI.Mobile"}
+﻿$Archs = {"Portable-Net45+WinRT45+WP8", "Net45", "WP8", "WinRT45", "Mono", "Monoandroid", "Monotouch"}
+$Projects = {
+    "ReactiveUI", "ReactiveUI.Testing", "ReactiveUI.Platforms", "ReactiveUI.Blend", 
+    "ReactiveUI.NLog", "ReactiveUI.Mobile", "RxUIViewModelGenerator", "ReactiveUI.Events"
+}
 
 $SlnFileExists = Test-Path ".\ReactiveUI.sln"
 if ($SlnFileExists -eq $False) {
@@ -40,11 +43,11 @@ cp -r .\NuGet .\NuGet-Release
 
 $libDirs = ls -r .\NuGet-Release | ?{$_.Name -eq "lib"}
 $srcDirs = ls -r .\NuGet-Release | ?{$_.Name -eq "src"} | %{ls $_.FullName}
+$toolsDirs = ls -r .\NuGet-Release | ?{$_.Name -eq "tools"}
 $nugetReleaseDir = Resolve-Path ".\NuGet-Release"
 
 # copy binaries
 foreach ($dir in $libDirs) {
-    $projName = $dir.FullName.Split("\\")[-2]
     $arches = ls $dir.FullName
     
     foreach ($arch in $arches) {
@@ -55,6 +58,20 @@ foreach ($dir in $libDirs) {
             cp -fo $src $file.FullName
         }        
     }
+}
+
+# copy tools
+foreach ($dir in $toolsDirs) {
+    echo "foo"
+    echo $dir.FullName
+    $files = ls $dir.FullName
+
+    foreach ($file in $files) {
+        echo "bar" 
+        echo $file.FullName
+        $src = ".\Release\Net45\" + $file.Name
+        cp -fo "$src" $file.FullName
+    }        
 }
 
 # copy source

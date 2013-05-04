@@ -7,7 +7,7 @@ using MonoTouch.UIKit;
 using System.Reactive.Subjects;
 using System.Collections.Generic;
 using System.Reactive.Disposables;
-using ReactiveUI.Routing;
+using ReactiveUI;
 
 namespace ReactiveUI.Mobile
 {
@@ -108,11 +108,11 @@ namespace ReactiveUI.Mobile
 
         internal void setupDefaultSuspendResume(ISuspensionDriver driver)
         {
-            driver = driver ?? RxApp.GetService<ISuspensionDriver>();
+            driver = driver ?? RxApp.DependencyResolver.GetService<ISuspensionDriver>();
 
             var window = new UIWindow(UIScreen.MainScreen.Bounds);
             _viewModelChanged.Subscribe(vm => {
-                var frame = RxApp.GetService<UIViewController>("InitialPage");
+                var frame = RxApp.DependencyResolver.GetService<UIViewController>("InitialPage");
                 var viewFor = frame as IViewFor;
                 if (viewFor != null) {
                     viewFor.ViewModel = vm;
@@ -132,16 +132,17 @@ namespace ReactiveUI.Mobile
                 .LoggedCatch(this, Observable.Return(Unit.Default), "Tried to persist app state")
                 .Subscribe(_ => this.Log().Info("Persisted application state"));
 
+
             SuspensionHost.IsResuming
                 .SelectMany(x => driver.LoadState<IApplicationRootState>())
                 .LoggedCatch(this,
-                    Observable.Defer(() => Observable.Return(RxApp.GetService<IApplicationRootState>())),
+                    Observable.Defer(() => Observable.Return(RxApp.DependencyResolver.GetService<IApplicationRootState>())),
                     "Failed to restore app state from storage, creating from scratch")
                 .ObserveOn(RxApp.DeferredScheduler)
                 .Subscribe(x => ViewModel = x);
 
             SuspensionHost.IsLaunchingNew.Subscribe(_ => {
-                ViewModel = RxApp.GetService<IApplicationRootState>();
+                ViewModel = RxApp.DependencyResolver.GetService<IApplicationRootState>();
             });
         }
     }
