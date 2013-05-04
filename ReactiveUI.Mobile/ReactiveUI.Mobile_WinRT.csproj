@@ -137,7 +137,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ReactiveUI.Xaml\ReactiveUI.Xaml_WinRT.csproj">
+    <ProjectReference Include="..\ReactiveUI.Platforms\ReactiveUI.Xaml_WinRT.csproj">
       <Project>{689ec7c5-2d81-4124-929e-397b330cc358}</Project>
       <Name>ReactiveUI.Xaml_WinRT</Name>
     </ProjectReference>

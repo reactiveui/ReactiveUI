@@ -28,7 +28,7 @@ namespace ReactiveUI.Mobile
         }
     }
 
-    public abstract class AutoSuspendApplication : Application, IEnableLogger
+    public class AutoSuspendApplication : Application, IEnableLogger
     {
         internal static SuspensionHost SuspensionHost;
 
