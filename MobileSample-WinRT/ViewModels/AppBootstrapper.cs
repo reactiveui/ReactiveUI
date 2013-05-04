@@ -10,7 +10,6 @@ using Newtonsoft.Json;
 using Ninject;
 using ReactiveUI;
 using ReactiveUI.Mobile;
-using ReactiveUI.Routing;
 using MobileSample_WinRT.Views;
 
 namespace MobileSample_WinRT.ViewModels

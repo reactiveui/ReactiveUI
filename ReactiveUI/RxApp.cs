@@ -38,19 +38,8 @@ namespace ReactiveUI
         static RxApp()
         {
             TaskpoolScheduler = Scheduler.TaskPool;
-
-            DeferredScheduler = new WaitForDispatcherScheduler(() => {
-                Type dispatcherType = 
-                    Type.GetType("System.Reactive.Windows.Threading.DispatcherScheduler, System.Reactive.Windows.Threading", false) ?? 
-                    Type.GetType("System.Reactive.Windows.Threading.CoreDispatcherScheduler, System.Reactive.Windows.Threading", false);
-
-                if (dispatcherType != null) {
-                    return (IScheduler)dispatcherType.GetProperty("Current").GetMethod.Invoke(null, null);
-                }
-
-                return null;
-            });
-
+            DeferredScheduler = Scheduler.Default;
+                
             DefaultExceptionHandler = Observer.Create<Exception>(ex => {
                 // NB: If you're seeing this, it means that an 
                 // ObservableAsPropertyHelper or the CanExecute of a 
@@ -185,6 +174,23 @@ namespace ReactiveUI
         public static IObserver<Exception> DefaultExceptionHandler { get; set; }
 
         static bool? _inUnitTestRunner;
+
+        /// <summary>
+        /// This method will initialize your custom service locator with the 
+        /// built-in RxUI types.
+        /// </summary>
+        /// <param name="registerMethod">Create a method here that will 
+        /// register a constant. For example, the NInject version of
+        /// this method might look like:
+        /// 
+        /// (obj, type) => kernel.Bind(type).ToConstant(obj)
+        /// </param>
+        public static void InitializeCustomResolver(Action<object, Type> registerMethod)
+        {
+            var fakeResolver = new FuncDependencyResolver(null, 
+                (fac, type, str) => registerMethod(fac(), type));
+            fakeResolver.InitializeResolver();
+        }
 
         /// <summary>
         /// InUnitTestRunner attempts to determine heuristically if the current

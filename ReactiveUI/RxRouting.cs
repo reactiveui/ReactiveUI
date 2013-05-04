@@ -6,7 +6,7 @@ using System.Reactive.Linq;
 using System.Text;
 using ReactiveUI;
 
-namespace ReactiveUI.Routing
+namespace ReactiveUI
 {
     public static class RxRouting
     {

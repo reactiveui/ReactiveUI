@@ -11,7 +11,6 @@ using Newtonsoft.Json;
 using Ninject;
 using ReactiveUI;
 using ReactiveUI.Mobile;
-using ReactiveUI.Routing;
 using MobileSample_WP8.Views;
 
 namespace MobileSample_WP8.ViewModels

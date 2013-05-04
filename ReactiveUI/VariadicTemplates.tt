@@ -2,7 +2,6 @@
 <#@ assembly name="System.Core.dll" #>
 <#@ import namespace="System.Linq" #>
 <#@ output extension=".cs" #>
-
 using System;
 using System.Collections.Generic;
 using System.Reactive.Disposables;
