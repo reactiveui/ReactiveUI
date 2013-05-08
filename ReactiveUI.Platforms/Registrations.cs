@@ -52,7 +52,16 @@ namespace ReactiveUI.Xaml
             registerFunction(() => new KVOObservableForProperty(), typeof(ICreatesObservableForProperty));
             registerFunction(() => new CocoaDefaultPropertyBinding(), typeof(IDefaultPropertyBindingProvider));
             registerFunction(() => new TargetActionCommandBinder(), typeof(ICreatesCommandBinding));
+#endif
 
+            RxApp.InUnitTestRunnerOverride = RealUnitTestDetector.InUnitTestRunner();
+
+            if (RxApp.InUnitTestRunner()) {
+                RxApp.DeferredScheduler = ImmediateScheduler.Instance;
+                return;
+            }
+
+#if COCOA
             RxApp.DeferredScheduler = new WaitForDispatcherScheduler(() => new NSRunloopScheduler(NSApplication.SharedApplication));
 #endif
 
@@ -64,7 +73,6 @@ namespace ReactiveUI.Xaml
             RxApp.DeferredScheduler = new WaitForDispatcherScheduler(() => CoreDispatcherScheduler.Current);
 #endif
 
-            RxApp.InUnitTestRunnerOverride = RealUnitTestDetector.InUnitTestRunner();
         }
     }
 }
