@@ -45,7 +45,6 @@ namespace ReactiveUI.Xaml
             registerFunction(() => new CreatesCommandBindingViaEvent(), typeof(ICreatesCommandBinding));
             registerFunction(() => new BooleanToVisibilityTypeConverter(), typeof(IBindingTypeConverter));
             registerFunction(() => new AutoDataTemplateBindingHook(), typeof(IPropertyBindingHook));
-
 #endif
 
 #if COCOA
@@ -55,9 +54,7 @@ namespace ReactiveUI.Xaml
 #endif
 
             RxApp.InUnitTestRunnerOverride = RealUnitTestDetector.InUnitTestRunner();
-
             if (RxApp.InUnitTestRunner()) {
-                RxApp.DeferredScheduler = ImmediateScheduler.Instance;
                 return;
             }
 
@@ -72,7 +69,6 @@ namespace ReactiveUI.Xaml
 #if WINRT
             RxApp.DeferredScheduler = new WaitForDispatcherScheduler(() => CoreDispatcherScheduler.Current);
 #endif
-
         }
     }
 }

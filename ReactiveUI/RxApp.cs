@@ -37,8 +37,7 @@ namespace ReactiveUI
     {
         static RxApp()
         {
-            TaskpoolScheduler = Scheduler.TaskPool;
-            DeferredScheduler = Scheduler.Default;
+            _TaskpoolScheduler = Scheduler.TaskPool;
                 
             DefaultExceptionHandler = Observer.Create<Exception>(ex => {
                 // NB: If you're seeing this, it means that an 
@@ -58,18 +57,25 @@ namespace ReactiveUI
 
             LoggerFactory = t => new DebugLogger();
 
+            initializeDependencyResolver();
+
             if (InUnitTestRunner()) {
                 LogHost.Default.Warn("*** Detected Unit Test Runner, setting DeferredScheduler to Immediate ***");
                 LogHost.Default.Warn("If we are not actually in a test runner, please file a bug\n");
-                _DeferredScheduler = ImmediateScheduler.Instance;
+                _DeferredScheduler = CurrentThreadScheduler.Instance;
             } else {
                 LogHost.Default.Info("Initializing to normal mode");
             }
 
             if (DeferredScheduler == null) {
-                LogHost.Default.Error("*** ReactiveUI.Xaml DLL reference not added - using Default scheduler *** ");
-                LogHost.Default.Error("Add a reference to ReactiveUI.Xaml if you're using WPF / SL5 / WP7 / WinRT");
+#if !ANDROID
+                // NB: We can't initialize a scheduler automatically on Android
+                // because it is intrinsically tied to the current Activity, 
+                // so devs have to set it up by hand :-/
+                LogHost.Default.Error("*** ReactiveUI Platform DLL reference not added - using Default scheduler *** ");
+                LogHost.Default.Error("Add a reference to ReactiveUI.{Xaml / Cocoa / etc}.");
                 LogHost.Default.Error("or consider explicitly setting RxApp.DeferredScheduler if not");
+#endif
                 _DeferredScheduler = DefaultScheduler.Instance;
             }
         }
@@ -82,9 +88,9 @@ namespace ReactiveUI
                 if (_UnitTestDependencyResolver != null) return _UnitTestDependencyResolver;
 
                 if (_DependencyResolver == null) {
-                    var resolver = new ModernDependencyResolver();
-                    resolver.InitializeResolver();
-                    _DependencyResolver = resolver; 
+                    // NB: This shouldn't normally happen, only if someone 
+                    // explictly nulls out DependencyResolver for some reason.
+                    initializeDependencyResolver();
                 }
 
                 return _DependencyResolver;
@@ -211,6 +217,13 @@ namespace ReactiveUI
             }
 
             return _inUnitTestRunner.Value;
+        }
+
+        static void initializeDependencyResolver()
+        {
+            var resolver = new ModernDependencyResolver();
+            resolver.InitializeResolver();
+            _DependencyResolver = resolver;
         }
     }    
 }
