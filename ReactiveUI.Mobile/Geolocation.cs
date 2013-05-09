@@ -139,7 +139,7 @@ namespace ReactiveUI.Mobile
         public TestGeolocator(IObservable<Position> positionStream, IScheduler scheduler = null)
         {
             positionStream.Multicast(_latestPosition).Connect();
-            _scheduler = scheduler ?? RxApp.DeferredScheduler;
+            _scheduler = scheduler ?? RxApp.MainThreadScheduler;
         }
 
         public IObservable<Position> Listen(int minUpdateTime, double minUpdateDist, bool includeHeading = false)

@@ -79,13 +79,13 @@ namespace ReactiveUI
 
         void commonCtor(int maximumConcurrent, IScheduler scheduler, IObservable<bool> canExecute = null, bool initialCondition = true)
         {
-            _normalSched = scheduler ?? RxApp.DeferredScheduler;
+            _normalSched = scheduler ?? RxApp.MainThreadScheduler;
             _canExecuteSubject = new ScheduledSubject<bool>(_normalSched);
             _executeSubject = new ScheduledSubject<object>(Scheduler.Immediate);
             _exSubject = new ScheduledSubject<Exception>(_normalSched, RxApp.DefaultExceptionHandler);
 
-            AsyncStartedNotification = new ScheduledSubject<Unit>(RxApp.DeferredScheduler);
-            AsyncCompletedNotification = new ScheduledSubject<Unit>(RxApp.DeferredScheduler);
+            AsyncStartedNotification = new ScheduledSubject<Unit>(RxApp.MainThreadScheduler);
+            AsyncCompletedNotification = new ScheduledSubject<Unit>(RxApp.MainThreadScheduler);
 
             ItemsInflight = Observable.Merge(
                 AsyncStartedNotification.Select(_ => 1),
@@ -96,7 +96,7 @@ namespace ReactiveUI
                     this.Log().Fatal("Reference count dropped below zero");
                 }
                 return ret;
-            }).Multicast(new BehaviorSubject<int>(0)).PermaRef().ObserveOn(RxApp.DeferredScheduler);
+            }).Multicast(new BehaviorSubject<int>(0)).PermaRef().ObserveOn(RxApp.MainThreadScheduler);
 
             bool startCE = (_canExecuteExplicitFunc != null ? _canExecuteExplicitFunc(null) : initialCondition);
 
@@ -194,7 +194,7 @@ namespace ReactiveUI
                         .Finally(() => AsyncCompletedNotification.OnNext(Unit.Default));
                 });
 
-            return ret.Merge().Multicast(new ScheduledSubject<TResult>(RxApp.DeferredScheduler)).PermaRef();
+            return ret.Merge().Multicast(new ScheduledSubject<TResult>(RxApp.MainThreadScheduler)).PermaRef();
         }
 
         void marshalFailures<T>(Action<T> block, T param)

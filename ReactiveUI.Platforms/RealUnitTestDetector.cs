@@ -82,7 +82,7 @@ namespace ReactiveUI
                 "TESTDRIVEN",
                 "QUALITYTOOLS.TIPS.UNITTEST.ADAPTER",
                 "QUALITYTOOLS.UNITTESTING.SILVERLIGHT",
-                "PEX",
+                "PEX.",
                 "MSBUILD",
                 "NBEHAVE",
                 "TESTPLATFORM",

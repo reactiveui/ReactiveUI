@@ -32,7 +32,7 @@ namespace ReactiveUI
         public ReactiveCommand(IObservable<bool> canExecute = null, IScheduler scheduler = null, bool initialCondition = true)
         {
             canExecute = canExecute ?? Observable.Return(true).Concat(Observable.Never<bool>());
-            canExecute = canExecute.ObserveOn(scheduler ?? RxApp.DeferredScheduler);
+            canExecute = canExecute.ObserveOn(scheduler ?? RxApp.MainThreadScheduler);
             commonCtor(scheduler, initialCondition);
 
             _inner = canExecute.Subscribe(
@@ -112,9 +112,9 @@ namespace ReactiveUI
 
         void commonCtor(IScheduler scheduler, bool initialCondition = true)
         {
-            this.scheduler = scheduler ?? RxApp.DeferredScheduler;
+            this.scheduler = scheduler ?? RxApp.MainThreadScheduler;
 
-            _canExecuteSubject = new ScheduledSubject<bool>(RxApp.DeferredScheduler);
+            _canExecuteSubject = new ScheduledSubject<bool>(RxApp.MainThreadScheduler);
             canExecuteLatest = new ObservableAsPropertyHelper<bool>(_canExecuteSubject,
                 b => { if (CanExecuteChanged != null) CanExecuteChanged(this, EventArgs.Empty); },
                 initialCondition, scheduler);
@@ -122,7 +122,7 @@ namespace ReactiveUI
             _canExecuteProbed = new Subject<object>();
             executeSubject = new Subject<object>();
 
-            _exSubject = new ScheduledSubject<Exception>(RxApp.DeferredScheduler, RxApp.DefaultExceptionHandler);
+            _exSubject = new ScheduledSubject<Exception>(RxApp.MainThreadScheduler, RxApp.DefaultExceptionHandler);
             ThrownExceptions = _exSubject;
         }
 
@@ -219,7 +219,7 @@ namespace ReactiveUI
         /// from the command.</returns>
         public static IDisposable InvokeCommand<T>(this IObservable<T> This, ICommand command)
         {
-            return This.ObserveOn(RxApp.DeferredScheduler).Subscribe(x => {
+            return This.ObserveOn(RxApp.MainThreadScheduler).Subscribe(x => {
                 if (!command.CanExecute(x)) {
                     return;
                 }

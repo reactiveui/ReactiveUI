@@ -26,14 +26,14 @@ namespace ReactiveUI.Testing
         public static IDisposable WithScheduler(IScheduler sched)
         {
             Monitor.Enter(schedGate);
-            var prevDef = RxApp.DeferredScheduler;
+            var prevDef = RxApp.MainThreadScheduler;
             var prevTask = RxApp.TaskpoolScheduler;
 
-            RxApp.DeferredScheduler = sched;
+            RxApp.MainThreadScheduler = sched;
             RxApp.TaskpoolScheduler = sched;
 
             return Disposable.Create(() => {
-                RxApp.DeferredScheduler = prevDef;
+                RxApp.MainThreadScheduler = prevDef;
                 RxApp.TaskpoolScheduler = prevTask;
                 Monitor.Exit(schedGate);
             });

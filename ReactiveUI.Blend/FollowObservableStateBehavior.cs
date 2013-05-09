@@ -66,7 +66,7 @@ namespace ReactiveUI.Blend
                 This.watcher = null;
             }
 
-            This.watcher = ((IObservable<string>)e.NewValue).ObserveOn(RxApp.DeferredScheduler).Subscribe(
+            This.watcher = ((IObservable<string>)e.NewValue).ObserveOn(RxApp.MainThreadScheduler).Subscribe(
                 x => {
                     var target = This.TargetObject ?? This.AssociatedObject;
 #if SILVERLIGHT
