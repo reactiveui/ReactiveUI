@@ -45,26 +45,30 @@ namespace ReactiveUI.Xaml
             registerFunction(() => new CreatesCommandBindingViaEvent(), typeof(ICreatesCommandBinding));
             registerFunction(() => new BooleanToVisibilityTypeConverter(), typeof(IBindingTypeConverter));
             registerFunction(() => new AutoDataTemplateBindingHook(), typeof(IPropertyBindingHook));
-
 #endif
 
 #if COCOA
             registerFunction(() => new KVOObservableForProperty(), typeof(ICreatesObservableForProperty));
             registerFunction(() => new CocoaDefaultPropertyBinding(), typeof(IDefaultPropertyBindingProvider));
             registerFunction(() => new TargetActionCommandBinder(), typeof(ICreatesCommandBinding));
+#endif
 
+            RxApp.InUnitTestRunnerOverride = RealUnitTestDetector.InUnitTestRunner();
+            if (RxApp.InUnitTestRunner()) {
+                return;
+            }
+
+#if COCOA
             RxApp.DeferredScheduler = new WaitForDispatcherScheduler(() => new NSRunloopScheduler(NSApplication.SharedApplication));
 #endif
 
 #if !MONO && !WINRT
-            RxApp.DeferredScheduler = new WaitForDispatcherScheduler(() => DispatcherScheduler.Current);
+            RxApp.MainThreadScheduler = new WaitForDispatcherScheduler(() => DispatcherScheduler.Current);
 #endif
 
 #if WINRT
-            RxApp.DeferredScheduler = new WaitForDispatcherScheduler(() => CoreDispatcherScheduler.Current);
+            RxApp.MainThreadScheduler = new WaitForDispatcherScheduler(() => CoreDispatcherScheduler.Current);
 #endif
-
-            RxApp.InUnitTestRunnerOverride = RealUnitTestDetector.InUnitTestRunner();
         }
     }
 }

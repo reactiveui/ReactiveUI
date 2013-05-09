@@ -42,14 +42,14 @@ namespace ReactiveUI
         public event PropertyChangingEventHandler PropertyChanging;
 
         readonly ISubject<IObservedChange<object, object>> _Changing = 
-            new ScheduledSubject<IObservedChange<object, object>>(RxApp.DeferredScheduler);
+            new ScheduledSubject<IObservedChange<object, object>>(RxApp.MainThreadScheduler);
 
         public IObservable<IObservedChange<object, object>> Changing {
             get { return _Changing.Where(_ => Interlocked.Read(ref _changeCountSuppressed) == 0); }
         }
 
         ISubject<IObservedChange<object, object>> _Changed = 
-            new ScheduledSubject<IObservedChange<object, object>>(RxApp.DeferredScheduler);
+            new ScheduledSubject<IObservedChange<object, object>>(RxApp.MainThreadScheduler);
 
         public IObservable<IObservedChange<object, object>> Changed {
             get { return _Changed.Where(_ => Interlocked.Read(ref _changeCountSuppressed) == 0); }
