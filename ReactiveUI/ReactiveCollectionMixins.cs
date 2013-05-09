@@ -517,7 +517,7 @@ namespace ReactiveUI
             inner.Disposable = disconnect;
 
             // When new items come in from the observable, stuff them in the queue.
-            // Using the DeferredScheduler guarantees we'll always access the queue
+            // Using the MainThreadScheduler guarantees we'll always access the queue
             // from the same thread.
             observable.ObserveOn(RxApp.MainThreadScheduler).Subscribe(queue.Enqueue, onError);
 
