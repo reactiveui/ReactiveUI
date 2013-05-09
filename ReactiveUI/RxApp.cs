@@ -60,7 +60,7 @@ namespace ReactiveUI
             initializeDependencyResolver();
 
             if (InUnitTestRunner()) {
-                LogHost.Default.Warn("*** Detected Unit Test Runner, setting DeferredScheduler to Immediate ***");
+                LogHost.Default.Warn("*** Detected Unit Test Runner, setting MainThreadScheduler to Immediate ***");
                 LogHost.Default.Warn("If we are not actually in a test runner, please file a bug\n");
                 _MainThreadScheduler = CurrentThreadScheduler.Instance;
             } else {
@@ -74,7 +74,7 @@ namespace ReactiveUI
                 // so devs have to set it up by hand :-/
                 LogHost.Default.Error("*** ReactiveUI Platform DLL reference not added - using Default scheduler *** ");
                 LogHost.Default.Error("Add a reference to ReactiveUI.{Xaml / Cocoa / etc}.");
-                LogHost.Default.Error("or consider explicitly setting RxApp.DeferredScheduler if not");
+                LogHost.Default.Error("or consider explicitly setting RxApp.MainThreadScheduler if not");
 #endif
                 _MainThreadScheduler = DefaultScheduler.Instance;
             }
@@ -109,7 +109,7 @@ namespace ReactiveUI
         static IScheduler _MainThreadScheduler;
 
         /// <summary>
-        /// DeferredScheduler is the scheduler used to schedule work items that
+        /// MainThreadScheduler is the scheduler used to schedule work items that
         /// should be run "on the UI thread". In normal mode, this will be
         /// DispatcherScheduler, and in Unit Test mode this will be Immediate,
         /// to simplify writing common unit tests.
@@ -118,7 +118,7 @@ namespace ReactiveUI
             get { return _UnitTestMainThreadScheduler ?? _MainThreadScheduler; }
             set {
                 // N.B. The ThreadStatic dance here is for the unit test case -
-                // often, each test will override DeferredScheduler with their
+                // often, each test will override MainThreadScheduler with their
                 // own TestScheduler, and if this wasn't ThreadStatic, they would
                 // stomp on each other, causing test cases to randomly fail,
                 // then pass when you rerun them.
