@@ -501,13 +501,13 @@ namespace ReactiveUI
 
             onError = onError ?? (ex => RxApp.DefaultExceptionHandler.OnNext(ex));
             if (withDelay == null) {
-                inner.Disposable = observable.ObserveOn(RxApp.DeferredScheduler).Subscribe(internalAdd, onError);
+                inner.Disposable = observable.ObserveOn(RxApp.MainThreadScheduler).Subscribe(internalAdd, onError);
                 return;
             }
 
             // On a timer, dequeue items from queue if they are available
             var queue = new Queue<T>();
-            var disconnect = Observable.Timer(withDelay.Value, withDelay.Value, RxApp.DeferredScheduler)
+            var disconnect = Observable.Timer(withDelay.Value, withDelay.Value, RxApp.MainThreadScheduler)
                 .Subscribe(_ => {
                     if (queue.Count > 0) { 
                         this.internalAdd(queue.Dequeue());
@@ -519,7 +519,7 @@ namespace ReactiveUI
             // When new items come in from the observable, stuff them in the queue.
             // Using the DeferredScheduler guarantees we'll always access the queue
             // from the same thread.
-            observable.ObserveOn(RxApp.DeferredScheduler).Subscribe(queue.Enqueue, onError);
+            observable.ObserveOn(RxApp.MainThreadScheduler).Subscribe(queue.Enqueue, onError);
 
             // This is a bit clever - keep a running count of the items actually 
             // added and compare them to the final count of items provided by the

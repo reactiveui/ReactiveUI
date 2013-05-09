@@ -48,7 +48,7 @@ namespace ReactiveUI
                     Debugger.Break();
                 }
 
-                RxApp.DeferredScheduler.Schedule(() => {
+                RxApp.MainThreadScheduler.Schedule(() => {
                     throw new Exception(
                         "An OnError occurred on an object (usually ObservableAsPropertyHelper) that would break a binding or command. To prevent this, Subscribe to the ThrownExceptions property of your objects",
                         ex);
@@ -62,12 +62,12 @@ namespace ReactiveUI
             if (InUnitTestRunner()) {
                 LogHost.Default.Warn("*** Detected Unit Test Runner, setting DeferredScheduler to Immediate ***");
                 LogHost.Default.Warn("If we are not actually in a test runner, please file a bug\n");
-                _DeferredScheduler = CurrentThreadScheduler.Instance;
+                _MainThreadScheduler = CurrentThreadScheduler.Instance;
             } else {
                 LogHost.Default.Info("Initializing to normal mode");
             }
 
-            if (DeferredScheduler == null) {
+            if (MainThreadScheduler == null) {
 #if !ANDROID
                 // NB: We can't initialize a scheduler automatically on Android
                 // because it is intrinsically tied to the current Activity, 
@@ -76,7 +76,7 @@ namespace ReactiveUI
                 LogHost.Default.Error("Add a reference to ReactiveUI.{Xaml / Cocoa / etc}.");
                 LogHost.Default.Error("or consider explicitly setting RxApp.DeferredScheduler if not");
 #endif
-                _DeferredScheduler = DefaultScheduler.Instance;
+                _MainThreadScheduler = DefaultScheduler.Instance;
             }
         }
 
@@ -105,8 +105,8 @@ namespace ReactiveUI
             }
         }
 
-        [ThreadStatic] static IScheduler _UnitTestDeferredScheduler;
-        static IScheduler _DeferredScheduler;
+        [ThreadStatic] static IScheduler _UnitTestMainThreadScheduler;
+        static IScheduler _MainThreadScheduler;
 
         /// <summary>
         /// DeferredScheduler is the scheduler used to schedule work items that
@@ -114,8 +114,8 @@ namespace ReactiveUI
         /// DispatcherScheduler, and in Unit Test mode this will be Immediate,
         /// to simplify writing common unit tests.
         /// </summary>
-        public static IScheduler DeferredScheduler {
-            get { return _UnitTestDeferredScheduler ?? _DeferredScheduler; }
+        public static IScheduler MainThreadScheduler {
+            get { return _UnitTestMainThreadScheduler ?? _MainThreadScheduler; }
             set {
                 // N.B. The ThreadStatic dance here is for the unit test case -
                 // often, each test will override DeferredScheduler with their
@@ -123,10 +123,10 @@ namespace ReactiveUI
                 // stomp on each other, causing test cases to randomly fail,
                 // then pass when you rerun them.
                 if (InUnitTestRunner()) {
-                    _UnitTestDeferredScheduler = value;
-                    _DeferredScheduler = _DeferredScheduler ?? value;
+                    _UnitTestMainThreadScheduler = value;
+                    _MainThreadScheduler = _MainThreadScheduler ?? value;
                 } else {
-                    _DeferredScheduler = value;
+                    _MainThreadScheduler = value;
                 }
             }
         }
