@@ -46,7 +46,7 @@ namespace ReactiveUI
             Contract.Requires(observable != null);
             Contract.Requires(onChanged != null);
 
-            scheduler = scheduler ?? RxApp.DeferredScheduler;
+            scheduler = scheduler ?? RxApp.MainThreadScheduler;
             _lastValue = initialValue;
 
             var subj = new ScheduledSubject<T>(scheduler);
