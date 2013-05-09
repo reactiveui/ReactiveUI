@@ -22,8 +22,8 @@ namespace ReactiveUI.Tests
         [Fact]
         public void SchedulerShouldBeCurrentThreadInTestRunner()
         {
-            Console.WriteLine(RxApp.DeferredScheduler.GetType().FullName);
-            Assert.Equal(CurrentThreadScheduler.Instance, RxApp.DeferredScheduler);
+            Console.WriteLine(RxApp.MainThreadScheduler.GetType().FullName);
+            Assert.Equal(CurrentThreadScheduler.Instance, RxApp.MainThreadScheduler);
         }
     }
 }

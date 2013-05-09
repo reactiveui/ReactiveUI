@@ -63,11 +63,11 @@ namespace ReactiveUI.Xaml
 #endif
 
 #if !MONO && !WINRT
-            RxApp.DeferredScheduler = new WaitForDispatcherScheduler(() => DispatcherScheduler.Current);
+            RxApp.MainThreadScheduler = new WaitForDispatcherScheduler(() => DispatcherScheduler.Current);
 #endif
 
 #if WINRT
-            RxApp.DeferredScheduler = new WaitForDispatcherScheduler(() => CoreDispatcherScheduler.Current);
+            RxApp.MainThreadScheduler = new WaitForDispatcherScheduler(() => CoreDispatcherScheduler.Current);
 #endif
         }
     }
