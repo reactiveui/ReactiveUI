@@ -41,7 +41,7 @@ namespace ReactiveUI.Cocoa
         {
             if (dontPopWhileYouPop) return true;
 
-            RxApp.DeferredScheduler.Schedule (() => {
+            RxApp.MainThreadScheduler.Schedule (() => {
                 if (!router.NavigateBack.CanExecute(null) || dontPopWhileYouPop) return;
                 dontPopWhileYouPop = true;
                 router.NavigateBack.Execute(null);

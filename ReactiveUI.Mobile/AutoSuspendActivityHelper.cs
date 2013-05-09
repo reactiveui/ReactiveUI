@@ -105,7 +105,7 @@ namespace ReactiveUI.Mobile
                     .LoggedCatch(this,
                         Observable.Defer(() => Observable.Return(RxApp.DependencyResolver.GetService<IApplicationRootState>())),
                         "Failed to restore app state from storage, creating from scratch")
-                    .ObserveOn(RxApp.DeferredScheduler)
+                    .ObserveOn(RxApp.MainThreadScheduler)
                     .Subscribe(x => RootState.Current.ViewModel = x);
 
                 host.IsLaunchingNew.Subscribe(_ => {
