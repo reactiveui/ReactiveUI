@@ -50,6 +50,7 @@ namespace ReactiveUI
             new Registrations().Register((f,t) => resolver.Register(f,t));
 
             var namespaces = new[] { 
+                "ReactiveUI",
                 "ReactiveUI.Xaml", 
                 "ReactiveUI.Mobile", 
                 "ReactiveUI.NLog", 
