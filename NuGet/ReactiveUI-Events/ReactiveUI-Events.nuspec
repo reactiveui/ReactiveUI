@@ -2,7 +2,7 @@
 <package xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
     <metadata xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
         <id>reactiveui-events</id>
-        <version>5.0.0.20130509-alpha</version>
+        <version>5.0.0.20130512-alpha</version>
         <description>ReactiveUI.Events adds Observable-based events to UI controls and other appropriate places.</description>
         <authors>Paul Betts</authors>
         <projectUrl>http://www.reactiveui.net</projectUrl>
