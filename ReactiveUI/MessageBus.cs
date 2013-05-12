@@ -24,13 +24,12 @@ namespace ReactiveUI
         readonly IDictionary<Tuple<Type, string>, IScheduler> schedulerMappings =
             new Dictionary<Tuple<Type, string>, IScheduler>();
 
-        static IMessageBus current;
+        static IMessageBus current = new MessageBus();
 
         /// <summary>
         /// Gets or sets the Current MessageBus.
         /// </summary>
-        public static IMessageBus Current
-        {
+        public static IMessageBus Current {
             get { return current; }
             set { current = value; }
         }
