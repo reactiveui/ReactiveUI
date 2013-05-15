@@ -335,15 +335,15 @@ namespace ReactiveUI
             }
 
             if (args.OldItems != null) {
-                int removedCount = args.OldItems.Count;
-                shiftIndicesAtOrOverThreshold(args.OldStartingIndex + removedCount, -removedCount);
-                
                 for (int i = 0; i < args.OldItems.Count; i++) {
                     int destinationIndex = getIndexFromSourceIndex(args.OldStartingIndex + i);
                     if (destinationIndex != -1) {
                         internalRemoveAt(destinationIndex);
                     }
                 }
+
+                int removedCount = args.OldItems.Count;
+                shiftIndicesAtOrOverThreshold(args.OldStartingIndex + removedCount, -removedCount);
             }
 
             if (args.NewItems != null) {
