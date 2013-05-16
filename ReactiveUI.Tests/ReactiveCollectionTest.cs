@@ -401,6 +401,45 @@ namespace ReactiveUI.Tests
             Assert.True(derived.SequenceEqual(new[] { 'D' }));
         }
 
+        public class DerivedCollectionLogging
+        {
+            // We need a sentinel class to make sure no test has triggered the warnings before
+            private class NoOneHasEverSeenThisClassBefore
+            {
+            }
+
+            [Fact]
+            public void DerivedCollectionsShouldWarnWhenSourceIsNotINotifyCollectionChanged()
+            {
+                (new TestLogger()).With(l =>
+                {
+                    var incc = new ReactiveCollection<NoOneHasEverSeenThisClassBefore>();
+
+                    Assert.True(incc is INotifyCollectionChanged);
+                    var inccDerived = incc.CreateDerivedCollection(x => x);
+
+                    Assert.False(l.Messages.Any(x => x.Item1.Contains("INotifyCollectionChanged")));
+
+                    // Reset
+                    l.Messages.Clear();
+
+                    var nonIncc = new List<NoOneHasEverSeenThisClassBefore>();
+
+                    Assert.False(nonIncc is INotifyCollectionChanged);
+                    var nonInccderived = nonIncc.CreateDerivedCollection(x => x);
+
+                    Assert.Equal(1, l.Messages.Count);
+
+                    var m = l.Messages.Last();
+                    var message = m.Item1;
+                    var level = m.Item2;
+
+                    Assert.Contains("INotifyCollectionChanged", message);
+                    Assert.Equal(LogLevel.Warn, level);
+                });
+            }
+        }
+
         public class DerivedPropertyChanges
         {
             private class ReactiveVisibilityItem<T> : ReactiveObject
