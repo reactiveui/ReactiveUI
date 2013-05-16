@@ -133,6 +133,7 @@
     <Compile Include="RoutingState.cs" />
     <Compile Include="RxAppTest.cs" />
     <Compile Include="RxRouting.cs" />
+    <Compile Include="TestLogger.cs" />
     <Compile Include="Utility.cs" />
   </ItemGroup>
   <ItemGroup>
