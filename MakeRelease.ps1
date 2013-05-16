@@ -7,6 +7,8 @@ if ($SlnFileExists -eq $False) {
     exit -1
 }
 
+C:\Windows\Microsoft.NET\Framework\v4.0.30319\MSBuild.exe /t:Rebuild /p:Configuration=Release /p:Platform="Any CPU" /maxcpucount:1 .\ReactiveUI.sln
+
 ###
 ### Build the Release directory
 ###
