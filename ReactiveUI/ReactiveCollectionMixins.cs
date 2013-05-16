@@ -189,21 +189,33 @@ namespace ReactiveUI
             this.wireUpChangeNotifications();
         }
 
+        static readonly Dictionary<Type, bool> hasWarned = new Dictionary<Type, bool>();
+
         private void wireUpChangeNotifications()
         {
             var incc = source as INotifyCollectionChanged;
 
-            var collChanged = new Subject<NotifyCollectionChangedEventArgs>();
+            if (incc == null) {
+                var type = source.GetType();
+                if (!hasWarned.ContainsKey(type)) {
+                    this.Log().Warn(
+                        "{0} doesn't implement INotifyCollectionChanged, derived collection will only update on reset",
+                        type.FullName);
+                    hasWarned.Add(type, true);
+                }
+            } else {
+                var collChanged = new Subject<NotifyCollectionChangedEventArgs>();
 
-            var connObs = Observable
-                .FromEventPattern<NotifyCollectionChangedEventHandler, NotifyCollectionChangedEventArgs>(
-                    x => incc.CollectionChanged += x,
-                    x => incc.CollectionChanged -= x)
-                .Select(x => x.EventArgs)
-                .Multicast(collChanged);
+                var connObs = Observable
+                    .FromEventPattern<NotifyCollectionChangedEventHandler, NotifyCollectionChangedEventArgs>(
+                        x => incc.CollectionChanged += x,
+                        x => incc.CollectionChanged -= x)
+                    .Select(x => x.EventArgs)
+                    .Multicast(collChanged);
 
-            inner.Add(collChanged.Subscribe(onSourceCollectionChanged));
-            inner.Add(connObs.Connect());
+                inner.Add(collChanged.Subscribe(onSourceCollectionChanged));
+                inner.Add(connObs.Connect());
+            }
 
             var irc = source as IReactiveCollection;
 
