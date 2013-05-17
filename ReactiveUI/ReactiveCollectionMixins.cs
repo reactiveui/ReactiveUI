@@ -189,21 +189,37 @@ namespace ReactiveUI
             this.wireUpChangeNotifications();
         }
 
+        static readonly Dictionary<Type, bool> hasWarned = new Dictionary<Type, bool>();
+
         private void wireUpChangeNotifications()
         {
             var incc = source as INotifyCollectionChanged;
 
-            var collChanged = new Subject<NotifyCollectionChangedEventArgs>();
+            if (incc == null) {
+                var type = source.GetType();
 
-            var connObs = Observable
-                .FromEventPattern<NotifyCollectionChangedEventHandler, NotifyCollectionChangedEventArgs>(
-                    x => incc.CollectionChanged += x,
-                    x => incc.CollectionChanged -= x)
-                .Select(x => x.EventArgs)
-                .Multicast(collChanged);
+                lock (hasWarned) {
+                    if (!hasWarned.ContainsKey(type)) {
+                        this.Log().Warn(
+                            "{0} doesn't implement INotifyCollectionChanged, derived collection will only update " +
+                            "when the Reset() method is invoked manually or the reset observable is signalled.",
+                            type.FullName);
+                        hasWarned.Add(type, true);
+                    }
+                }
+            } else {
+                var collChanged = new Subject<NotifyCollectionChangedEventArgs>();
 
-            inner.Add(collChanged.Subscribe(onSourceCollectionChanged));
-            inner.Add(connObs.Connect());
+                var connObs = Observable
+                    .FromEventPattern<NotifyCollectionChangedEventHandler, NotifyCollectionChangedEventArgs>(
+                        x => incc.CollectionChanged += x,
+                        x => incc.CollectionChanged -= x)
+                    .Select(x => x.EventArgs)
+                    .Multicast(collChanged);
+
+                inner.Add(collChanged.Subscribe(onSourceCollectionChanged));
+                inner.Add(connObs.Connect());
+            }
 
             var irc = source as IReactiveCollection;
 
@@ -335,15 +351,15 @@ namespace ReactiveUI
             }
 
             if (args.OldItems != null) {
-                int removedCount = args.OldItems.Count;
-                shiftIndicesAtOrOverThreshold(args.OldStartingIndex + removedCount, -removedCount);
-                
                 for (int i = 0; i < args.OldItems.Count; i++) {
                     int destinationIndex = getIndexFromSourceIndex(args.OldStartingIndex + i);
                     if (destinationIndex != -1) {
                         internalRemoveAt(destinationIndex);
                     }
                 }
+
+                int removedCount = args.OldItems.Count;
+                shiftIndicesAtOrOverThreshold(args.OldStartingIndex + removedCount, -removedCount);
             }
 
             if (args.NewItems != null) {
