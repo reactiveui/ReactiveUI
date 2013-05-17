@@ -9,9 +9,9 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-[assembly: global::Android.Runtime.ResourceDesignerAttribute("ReactiveUI.Events_Monodroid.Resource", IsApplication=false)]
+[assembly: global::Android.Runtime.ResourceDesignerAttribute("ReactiveUI.Events.Resource", IsApplication=false)]
 
-namespace ReactiveUI.Events_Monodroid
+namespace ReactiveUI.Events
 {
 	
 	
