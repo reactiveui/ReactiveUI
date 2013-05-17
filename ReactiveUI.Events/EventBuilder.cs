@@ -39,6 +39,8 @@ namespace EventBuilder
                 "Windows.UI.Xaml.Data",
                 "Windows.UI.Xaml.Interop",
                 "Windows.UI.Xaml.Input",
+                "MonoTouch.AudioToolbox",
+                "ReactiveUI.Events",
             };
 
             var namespaceData = publicTypesWithEvents
