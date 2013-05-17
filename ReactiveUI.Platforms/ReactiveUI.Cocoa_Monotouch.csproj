@@ -71,7 +71,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ReactiveUI\ReactiveUI_Monotouch.csproj">
-      <Project>{9091337a-9e94-4dbd-801e-05e1fda78ffc}</Project>
+      <Project>{9091337A-9E94-4DBD-801E-05E1FDA78FFC}</Project>
       <Name>ReactiveUI_Monotouch</Name>
     </ProjectReference>
   </ItemGroup>
