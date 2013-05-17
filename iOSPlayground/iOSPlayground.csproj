@@ -125,18 +125,6 @@
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
-    <ProjectReference Include="..\ReactiveUI.Cocoa\ReactiveUI.Cocoa_Monotouch.csproj">
-      <Project>{9091337A-9E94-4DBD-801E-15E1FDA78FFC}</Project>
-      <Name>ReactiveUI.Cocoa_Monotouch</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\ReactiveUI.Routing\ReactiveUI.Routing_Monotouch.csproj">
-      <Project>{9091337B-9E94-4DBD-801E-05E1FDA78FFC}</Project>
-      <Name>ReactiveUI.Routing_Monotouch</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\ReactiveUI.Xaml\ReactiveUI.Xaml_Monotouch.csproj">
-      <Project>{9891337A-9E94-4DBD-801E-05E1FDA78FFC}</Project>
-      <Name>ReactiveUI.Xaml_Monotouch</Name>
-    </ProjectReference>
     <ProjectReference Include="..\ReactiveUI\ReactiveUI_Monotouch.csproj">
       <Project>{9091337A-9E94-4DBD-801E-05E1FDA78FFC}</Project>
       <Name>ReactiveUI_Monotouch</Name>
@@ -144,6 +132,10 @@
     <ProjectReference Include="..\ReactiveUI.Mobile\ReactiveUI.Mobile_Monotouch.csproj">
       <Project>{9091337A-9E94-4DBD-801E-15E10DB72FFC}</Project>
       <Name>ReactiveUI.Mobile_Monotouch</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ReactiveUI.Platforms\ReactiveUI.Cocoa_Monotouch.csproj">
+      <Project>{9091337A-9E94-4DBD-801E-15E1FDA78FFC}</Project>
+      <Name>ReactiveUI.Cocoa_Monotouch</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>
