@@ -4,11 +4,13 @@ $Projects = {
     "ReactiveUI.NLog", "ReactiveUI.Mobile", "RxUIViewModelGenerator", "ReactiveUI.Events"
 }
 
-$SlnFileExists = Test-Path ".\ReactiveUI.sln"
+$SlnFileExists = Test-Path ".\ReactiveUI_VSAll.sln"
 if ($SlnFileExists -eq $False) {
     echo "*** ERROR: Run this in the project root ***"
     exit -1
 }
+
+C:\Windows\Microsoft.NET\Framework\v4.0.30319\MSBuild.exe /t:Rebuild /p:Configuration=Release /p:Platform="Any CPU" /maxcpucount:1 .\ReactiveUI_VSAll.sln
 
 ###
 ### Build the Release directory
