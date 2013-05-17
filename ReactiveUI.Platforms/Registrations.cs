@@ -9,12 +9,14 @@ using ReactiveUI;
 using System.Reactive.Concurrency;
 
 #if COCOA
-using MonoTouch.UIKit;
 using ReactiveUI.Cocoa;
 #endif
 
 #if UIKIT
+using MonoTouch.UIKit;
 using NSApplication = MonoTouch.UIKit.UIApplication;
+#elif COCOA && !UIKIT
+using MonoMac.AppKit;
 #endif
 
 #if ANDROID
