@@ -197,11 +197,15 @@ namespace ReactiveUI
 
             if (incc == null) {
                 var type = source.GetType();
-                if (!hasWarned.ContainsKey(type)) {
-                    this.Log().Warn(
-                        "{0} doesn't implement INotifyCollectionChanged, derived collection will only update on reset",
-                        type.FullName);
-                    hasWarned.Add(type, true);
+
+                lock (hasWarned) {
+                    if (!hasWarned.ContainsKey(type)) {
+                        this.Log().Warn(
+                            "{0} doesn't implement INotifyCollectionChanged, derived collection will only update " +
+                            "when the Reset() method is invoked manually or the reset observable is signalled.",
+                            type.FullName);
+                        hasWarned.Add(type, true);
+                    }
                 }
             } else {
                 var collChanged = new Subject<NotifyCollectionChangedEventArgs>();
