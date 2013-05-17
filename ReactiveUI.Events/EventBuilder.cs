@@ -14,9 +14,15 @@ namespace EventBuilder
         static void Main(string[] args)
         {
             var targetAssemblyNames = args.TakeWhile(x => !x.EndsWith(".mustache"));
-            var targetAssemblyDirs = targetAssemblyNames.Select(x => Path.GetDirectoryName(x)).Distinct().ToArray();
+            var targetAssemblyDirs = targetAssemblyNames.Select(x => Path.GetDirectoryName(x)).Distinct().ToList();
 
-            var rp = new ReaderParameters() { AssemblyResolver = new PathSearchAssemblyResolver(targetAssemblyDirs) };
+            // NB: I'm too lazy to fix this properly
+            var monoDroidDir = targetAssemblyDirs.FirstOrDefault(x => x.ToLowerInvariant().Contains("monoandroid"));
+            if (monoDroidDir != null) {
+                targetAssemblyDirs.Add(monoDroidDir.Replace("v4.0", "v1.0"));
+            }
+
+            var rp = new ReaderParameters() { AssemblyResolver = new PathSearchAssemblyResolver(targetAssemblyDirs.ToArray()) };
             var targetAssemblies = targetAssemblyNames
                 .Select(x => AssemblyDefinition.ReadAssembly(x, rp)).ToArray();
 
