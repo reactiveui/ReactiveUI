@@ -20,10 +20,10 @@ namespace ReactiveUI.Tests
 #endif
 
         [Fact]
-        public void SchedulerShouldBeImmediateInTestRunner()
+        public void SchedulerShouldBeCurrentThreadInTestRunner()
         {
-            Console.WriteLine(RxApp.DeferredScheduler.GetType().FullName);
-            Assert.Equal(Scheduler.Immediate, RxApp.DeferredScheduler);
+            Console.WriteLine(RxApp.MainThreadScheduler.GetType().FullName);
+            Assert.Equal(CurrentThreadScheduler.Instance, RxApp.MainThreadScheduler);
         }
     }
 }

@@ -47,9 +47,8 @@ namespace ReactiveUI
 
         public static void InitializeResolver(this IMutableDependencyResolver resolver)
         {
-            new Registrations().Register((f,t) => resolver.Register(f,t));
-
             var namespaces = new[] { 
+                "ReactiveUI",
                 "ReactiveUI.Xaml", 
                 "ReactiveUI.Mobile", 
                 "ReactiveUI.NLog", 

@@ -69,7 +69,7 @@ namespace ReactiveUI
         {
             if (rxObjectsSetup) return; 
 
-            scheduler = scheduler ?? RxApp.DeferredScheduler;
+            scheduler = scheduler ?? RxApp.MainThreadScheduler;
             _inner = _inner ?? new List<T>();
 
             _changing = new Subject<NotifyCollectionChangedEventArgs>();

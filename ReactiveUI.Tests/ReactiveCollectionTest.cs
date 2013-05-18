@@ -187,6 +187,46 @@ namespace ReactiveUI.Tests
         }
 
         [Fact]
+        public void ChangeTrackingItemsShouldBeTrackedEvenWhenSuppressed()
+        {
+            var input = new TestFixture();
+            var fixture = new ReactiveCollection<TestFixture>() { ChangeTrackingEnabled = true };
+
+            var changes = fixture.ItemChanged.CreateCollection();
+            Assert.Equal(0, changes.Count);
+
+            input.IsOnlyOneWord = "foo";
+            Assert.Equal(0, changes.Count);
+
+            using (fixture.SuppressChangeNotifications()) {
+                fixture.Add(input);
+
+                input.IsOnlyOneWord = "bar";
+                Assert.Equal(0, changes.Count);
+            }
+
+            // Even though we added it during a suppression, we should still
+            // get notifications now that the suppression is over
+            input.IsOnlyOneWord = "baz";
+            Assert.Equal(1, changes.Count);
+
+            fixture.RemoveAt(0);
+            input.IsOnlyOneWord = "bamf";
+            Assert.Equal(1, changes.Count);
+        }
+
+        [Fact]
+        public void GetAResetWhenWeAddALotOfItems()
+        {
+            var fixture = new ReactiveCollection<int> { 1, };
+            var reset = fixture.ShouldReset.CreateCollection();
+            Assert.Equal(0, reset.Count);
+
+            fixture.AddRange(new[] { 2,3,4,5,6,7,8,9,10,11,12,13, });
+            Assert.Equal(1, reset.Count);
+        }
+
+        [Fact]
         public void CollectionsShouldntShareSubscriptions()
         {
             var fixture1 = new ReactiveCollection<TestFixture>() { ChangeTrackingEnabled = true };
@@ -369,6 +409,75 @@ namespace ReactiveUI.Tests
 
             Assert.Equal(1, changeNotifications.Count);
             Assert.Equal(2, derived.Count);
+        }
+
+        /// <summary>
+        /// This test is a bit contrived and only exists to verify that a particularly gnarly bug doesn't get 
+        /// reintroduced because it's hard to reason about the removal logic in derived collections and it might
+        /// be tempting to try and reorder the shiftIndices operation in there.
+        /// </summary>
+        [Fact]
+        public void DerivedCollectionRemovalRegressionTest()
+        {
+            var input = new[] { 'A', 'B', 'C', 'D' };
+            var source = new ReactiveCollection<char>(input);
+
+            // A derived collection that filters away 'A' and 'B'
+            var derived = source.CreateDerivedCollection(x => x, x=> x >= 'C');
+
+            var changeNotifications = new List<NotifyCollectionChangedEventArgs>();
+            derived.Changed.Subscribe(changeNotifications.Add);
+
+            Assert.Equal(0, changeNotifications.Count);
+            Assert.Equal(2, derived.Count);
+            Assert.True(derived.SequenceEqual(new [] { 'C', 'D' }));
+
+            // The tricky part here is that 'B' isn't in the derived collection, only 'C' is and this test
+            // will detect if the dervied collection gets tripped up and removes 'C' instead
+            source.RemoveAll(new[] { 'B', 'C' });
+
+            Assert.Equal(1, changeNotifications.Count);
+            Assert.Equal(1, derived.Count);
+            Assert.True(derived.SequenceEqual(new[] { 'D' }));
+        }
+
+        public class DerivedCollectionLogging
+        {
+            // We need a sentinel class to make sure no test has triggered the warnings before
+            private class NoOneHasEverSeenThisClassBefore
+            {
+            }
+
+            [Fact]
+            public void DerivedCollectionsShouldWarnWhenSourceIsNotINotifyCollectionChanged()
+            {
+                (new TestLogger()).With(l =>
+                {
+                    var incc = new ReactiveCollection<NoOneHasEverSeenThisClassBefore>();
+
+                    Assert.True(incc is INotifyCollectionChanged);
+                    var inccDerived = incc.CreateDerivedCollection(x => x);
+
+                    Assert.False(l.Messages.Any(x => x.Item1.Contains("INotifyCollectionChanged")));
+
+                    // Reset
+                    l.Messages.Clear();
+
+                    var nonIncc = new List<NoOneHasEverSeenThisClassBefore>();
+
+                    Assert.False(nonIncc is INotifyCollectionChanged);
+                    var nonInccderived = nonIncc.CreateDerivedCollection(x => x);
+
+                    Assert.Equal(1, l.Messages.Count);
+
+                    var m = l.Messages.Last();
+                    var message = m.Item1;
+                    var level = m.Item2;
+
+                    Assert.Contains("INotifyCollectionChanged", message);
+                    Assert.Equal(LogLevel.Warn, level);
+                });
+            }
         }
 
         public class DerivedPropertyChanges
@@ -666,8 +775,10 @@ namespace ReactiveUI.Tests
                 var a = new ReactiveVisibilityItem<string>("A", true);
                 var b = new ReactiveVisibilityItem<string>("B", true);
                 var c = new ReactiveVisibilityItem<string>("C", true);
+                var d = new ReactiveVisibilityItem<string>("D", false);
+                var e = new ReactiveVisibilityItem<string>("E", true);
 
-                var items = new ReactiveCollection<ReactiveVisibilityItem<string>>(new[] { a, b, c }) {
+                var items = new ReactiveCollection<ReactiveVisibilityItem<string>>(new[] { a, b, c, d, e }) {
                     ChangeTrackingEnabled = true
                 };
 
@@ -677,20 +788,27 @@ namespace ReactiveUI.Tests
                     OrderedComparer<string>.OrderByDescending(x => x).Compare
                 );
 
-                Assert.True(onlyVisible.SequenceEqual(new[] { "C", "B", "A" }, StringComparer.Ordinal));
-                Assert.Equal(3, onlyVisible.Count);
+                Assert.True(onlyVisible.SequenceEqual(new[] { "E", "C", "B", "A" }, StringComparer.Ordinal));
+                Assert.Equal(4, onlyVisible.Count);
+
+                // Removal of an item from the source collection that's filtered in the derived collection should
+                // have no effect on the derived.
+                items.Remove(d);
+
+                Assert.True(onlyVisible.SequenceEqual(new[] { "E", "C", "B", "A" }, StringComparer.Ordinal));
+                Assert.Equal(4, onlyVisible.Count);
 
                 c.IsVisible = false;
-                Assert.Equal(2, onlyVisible.Count);
-                Assert.True(onlyVisible.SequenceEqual(new[] { "B", "A" }, StringComparer.Ordinal));
+                Assert.Equal(3, onlyVisible.Count);
+                Assert.True(onlyVisible.SequenceEqual(new[] { "E", "B", "A" }, StringComparer.Ordinal));
 
                 items.Remove(c);
-                Assert.Equal(2, onlyVisible.Count);
-                Assert.True(onlyVisible.SequenceEqual(new[] { "B", "A" }, StringComparer.Ordinal));
+                Assert.Equal(3, onlyVisible.Count);
+                Assert.True(onlyVisible.SequenceEqual(new[] { "E", "B", "A" }, StringComparer.Ordinal));
 
                 items.Remove(b);
-                Assert.Equal(1, onlyVisible.Count);
-                Assert.True(onlyVisible.SequenceEqual(new[] { "A" }, StringComparer.Ordinal));
+                Assert.Equal(2, onlyVisible.Count);
+                Assert.True(onlyVisible.SequenceEqual(new[] { "E", "A" }, StringComparer.Ordinal));
             }
         }
 

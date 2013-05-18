@@ -79,13 +79,8 @@ namespace ReactiveUI
                 "NUNIT",
                 "XUNIT",
                 "MBUNIT",
-                "TESTDRIVEN",
-                "QUALITYTOOLS.TIPS.UNITTEST.ADAPTER",
-                "QUALITYTOOLS.UNITTESTING.SILVERLIGHT",
-                "PEX",
-                "MSBUILD",
+                "PEX.",
                 "NBEHAVE",
-                "TESTPLATFORM",
             };
 
             string[] designEnvironments = new[] {
