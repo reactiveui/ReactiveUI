@@ -86,7 +86,6 @@
     <Reference Include="System.Net" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AsyncCommandVisualStateBehavior.cs" />
     <Compile Include="FollowObservableStateBehavior.cs" />
     <Compile Include="ObservableTrigger.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
