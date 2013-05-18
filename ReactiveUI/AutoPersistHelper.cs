@@ -58,7 +58,7 @@ namespace ReactiveUI
             // NB: This rigamarole is to prevent the initialization of a class 
             // from triggering a save
             var ret = new SingleAssignmentDisposable();
-            RxApp.DeferredScheduler.Schedule(() => {
+            RxApp.MainThreadScheduler.Schedule(() => {
                 if (ret.IsDisposed) return;
                 ret.Disposable = autoSaver.Connect();
             });

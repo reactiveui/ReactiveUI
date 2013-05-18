@@ -72,6 +72,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="NLogLogger.cs" />
-    <Compile Include="ServiceLocationRegistration.cs" />
+    <Compile Include="Registrations.cs" />
   </ItemGroup>
 </Project>
