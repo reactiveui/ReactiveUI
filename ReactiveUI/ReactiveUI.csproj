@@ -67,7 +67,7 @@
     <Compile Include="BindingTypeConverters.cs" />
     <Compile Include="CollectionDebugView.cs" />
     <Compile Include="CommandBinding.cs" />
-    <Compile Include="CommandInterfaces.cs" />
+    <Compile Include="Legacy\CommandInterfaces.cs" />
     <Compile Include="CompatMixins.cs" />
     <Compile Include="ContractStubs.cs" />
     <Compile Include="DefaultPropertyBinding.cs" />
@@ -90,10 +90,13 @@
     <Compile Include="POCOObservableForProperty.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PropertyBinding.cs" />
-    <Compile Include="ReactiveAsyncCommand.cs" />
+    <Compile Include="Legacy\ReactiveAsyncCommand.cs" />
     <Compile Include="ReactiveCollection.cs" />
     <Compile Include="ReactiveCollectionMixins.cs" />
-    <Compile Include="ReactiveCommand.cs" />
+    <Compile Include="Legacy\ReactiveCommand.cs" />
+    <Compile Include="ReactiveCommand.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="ReactiveNotifyPropertyChangedMixin.cs" />
     <Compile Include="ReactiveObject.cs" />
     <Compile Include="RefcountDisposeWrapper.cs" />
