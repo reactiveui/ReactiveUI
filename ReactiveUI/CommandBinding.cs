@@ -156,7 +156,7 @@ namespace ReactiveUI
             return bindCommandInternal(viewModel, view, propertyName, viewPropGetter, Observable.Empty<object>(), toEvent, cmd => {
                 var rc = cmd as IReactiveCommand;
                 if (rc == null) {
-                    return ReactiveCommand.Create(x => cmd.CanExecute(x), _ => cmd.Execute(withParameter()));
+                    return Legacy.ReactiveCommand.Create(x => cmd.CanExecute(x), _ => cmd.Execute(withParameter()));
                 } 
 
                 var ret = new ReactiveCommand(rc.CanExecuteObservable);
