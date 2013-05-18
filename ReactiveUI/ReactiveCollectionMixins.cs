@@ -11,7 +11,7 @@ using System.Threading;
 
 namespace ReactiveUI
 {
-    public abstract class ReactiveDerivedCollection<TValue> : ReactiveCollection<TValue>, IDisposable
+    public abstract class ReactiveDerivedCollection<TValue> : ReactiveList<TValue>, IDisposable
     {
         const string readonlyExceptionMessage = "Derived collections cannot be modified.";
 
@@ -616,7 +616,7 @@ namespace ReactiveUI
         ///
         /// Note that even though this method attaches itself to any 
         /// IEnumerable, it will only detect changes from objects implementing
-        /// INotifyCollectionChanged (like ReactiveCollection). If your source
+        /// INotifyCollectionChanged (like ReactiveList). If your source
         /// collection doesn't implement this, signalReset is the way to signal
         /// the derived collection to reorder/refilter itself.
         /// </summary>
@@ -658,7 +658,7 @@ namespace ReactiveUI
         /// 
         /// Be aware that this overload will result in a collection that *only* 
         /// updates if the source implements INotifyCollectionChanged. If your
-        /// list changes but isn't a ReactiveCollection/ObservableCollection,
+        /// list changes but isn't a ReactiveList/ObservableCollection,
         /// you probably want to use the other overload.
         /// </summary>
         /// <param name="selector">A Select function that will be run on each

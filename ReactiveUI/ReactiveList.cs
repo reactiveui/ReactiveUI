@@ -20,7 +20,7 @@ namespace ReactiveUI
 {
     [DebuggerDisplay("Count = {Count}")]
     [DebuggerTypeProxy(typeof(CollectionDebugView<>))]
-    public class ReactiveCollection<T> : IList<T>, IList, IReactiveCollection<T>, INotifyPropertyChanging, INotifyPropertyChanged, IEnableLogger
+    public class ReactiveList<T> : IReactiveList<T>
     {
         public event NotifyCollectionChangedEventHandler CollectionChanging;
         public event NotifyCollectionChangedEventHandler CollectionChanged;
@@ -54,10 +54,10 @@ namespace ReactiveUI
         // 2nd NB: VB.NET doesn't deal well with default parameters, create 
         // some overloads so people can continue to make bad life choices instead
         // of using C#
-        public ReactiveCollection() { setupRx(); }
-        public ReactiveCollection(IEnumerable<T> initialContents) { setupRx(initialContents); }
+        public ReactiveList() { setupRx(); }
+        public ReactiveList(IEnumerable<T> initialContents) { setupRx(initialContents); }
 
-        public ReactiveCollection(IEnumerable<T> initialContents = null, IScheduler scheduler = null, double resetChangeThreshold = 0.3)
+        public ReactiveList(IEnumerable<T> initialContents = null, IScheduler scheduler = null, double resetChangeThreshold = 0.3)
         {
             setupRx(initialContents, scheduler, resetChangeThreshold);
         }
@@ -599,8 +599,6 @@ namespace ReactiveUI
         }
         #endregion
     }
-
-
 }
 
 // vim: tw=120 ts=4 sw=4 et :

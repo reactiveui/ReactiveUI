@@ -126,7 +126,7 @@ namespace ReactiveUI.Tests
                 var manualSave = new Subject<Unit>();
 
                 var item = new TestFixture();
-                var fixture = new ReactiveCollection<TestFixture> { item };
+                var fixture = new ReactiveList<TestFixture> { item };
 
                 int timesSaved = 0;
                 fixture.AutoPersistCollection(x => { timesSaved++; return Observable.Return(Unit.Default); }, manualSave, TimeSpan.FromMilliseconds(100));
@@ -178,7 +178,7 @@ namespace ReactiveUI.Tests
                 var manualSave = new Subject<Unit>();
 
                 var item = new TestFixture();
-                var fixture = new ReactiveCollection<TestFixture> { item };
+                var fixture = new ReactiveList<TestFixture> { item };
 
                 int timesSaved = 0;
                 var disp = fixture.AutoPersistCollection(x => { timesSaved++; return Observable.Return(Unit.Default); }, manualSave, TimeSpan.FromMilliseconds(100));

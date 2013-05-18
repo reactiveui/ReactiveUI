@@ -18,14 +18,14 @@ namespace ReactiveUI
     {
         [field: IgnoreDataMember]
         bool rxObjectsSetup = false;
-        [IgnoreDataMember] ReactiveCollection<IRoutableViewModel> _NavigationStack;
+        [IgnoreDataMember] ReactiveList<IRoutableViewModel> _NavigationStack;
 
         /// <summary>
         /// Represents the current navigation stack, the last element in the
         /// collection being the currently visible ViewModel.
         /// </summary>
         [DataMember]
-        public ReactiveCollection<IRoutableViewModel> NavigationStack {
+        public ReactiveList<IRoutableViewModel> NavigationStack {
             get { return _NavigationStack; }
             protected set { _NavigationStack = value; }
         }
@@ -54,7 +54,7 @@ namespace ReactiveUI
 
         public RoutingState()
         {
-            _NavigationStack = new ReactiveCollection<IRoutableViewModel>();
+            _NavigationStack = new ReactiveList<IRoutableViewModel>();
             setupRx();
         }
 
