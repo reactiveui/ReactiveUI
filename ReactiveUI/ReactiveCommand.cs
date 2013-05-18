@@ -41,20 +41,31 @@ namespace ReactiveUI
             defaultScheduler = scheduler ?? RxApp.MainThreadScheduler;
             AllowsConcurrentExecution = allowsConcurrentExecution;
 
-            ThrownExceptions = exceptions = new ScheduledSubject<Exception>(defaultScheduler, RxApp.DefaultExceptionHandler);
+            canExecute = canExecute.Catch<bool, Exception>(ex => {
+                exceptions.OnNext(ex);
+                return Observable.Empty<bool>();
+            });
 
-            innerDisp = CanExecuteObservable.Subscribe(x => {
-                if (CanExecuteChanged != null) CanExecuteChanged(this, EventArgs.Empty);
-            }, exceptions.OnNext);
+            ThrownExceptions = exceptions = new ScheduledSubject<Exception>(defaultScheduler, RxApp.DefaultExceptionHandler);
 
             IsExecuting = inflight
                 .Scan(0, (acc, x) => acc + (x ? 1 : -1))
-                .Select(x => x > 0);
+                .Select(x => x > 0)
+                .Publish(false)
+                .PermaRef()
+                .DistinctUntilChanged();
 
             var isBusy = allowsConcurrentExecution ? Observable.Return(false) : IsExecuting;
             var canExecuteAndNotBusy = Observable.CombineLatest(canExecute, isBusy, (ce, b) => ce && !b);
 
-            CanExecuteObservable = canExecuteAndNotBusy.Publish(true).RefCount();
+            CanExecuteObservable = canExecuteAndNotBusy
+                .Publish(true)
+                .RefCount()
+                .DistinctUntilChanged();
+
+            innerDisp = CanExecuteObservable.Subscribe(x => {
+                if (CanExecuteChanged != null) CanExecuteChanged(this, EventArgs.Empty);
+            }, exceptions.OnNext);
         }
 
         public IObservable<T> RegisterAsync<T>(Func<object, IObservable<T>> asyncBlock)
@@ -65,15 +76,14 @@ namespace ReactiveUI
                         exceptions.OnNext(ex);
                         return Observable.Empty<T>();
                     })
-                    .Multicast(new ReplaySubject<T>())
-                    .RefCount();
+                    .Finally(() => { lock (inflight) { inflight.OnNext(false); } });
             });
 
             return ret
-                .Do(_ => { lock(inflight) { inflight.OnNext(true); } })
+                .Do(_ => { lock (inflight) { inflight.OnNext(true); } })
                 .Merge()
-                .Finally(() => { lock(inflight) { inflight.OnNext(true); } })
-                .ObserveOn(defaultScheduler);
+                .ObserveOn(defaultScheduler)
+                .Publish().PermaRef();
         }
 
         public IObservable<bool> IsExecuting { get; protected set; }
