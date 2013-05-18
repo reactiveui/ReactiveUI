@@ -51,7 +51,7 @@ namespace ReactiveUI.Tests
         }
 
         [DataMember]
-        public ReactiveCollection<int> TestCollection { get; protected set; }
+        public ReactiveList<int> TestCollection { get; protected set; }
 
         string _NotSerialized;
         public string NotSerialized {
@@ -61,7 +61,7 @@ namespace ReactiveUI.Tests
 
         public TestFixture()
         {
-            TestCollection = new ReactiveCollection<int>() {ChangeTrackingEnabled = true};
+            TestCollection = new ReactiveList<int>() {ChangeTrackingEnabled = true};
         }
     }
 

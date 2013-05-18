@@ -485,7 +485,7 @@ namespace ReactiveUI
         /// Represents the current navigation stack, the last element in the
         /// collection being the currently visible ViewModel.
         /// </summary>
-        ReactiveCollection<IRoutableViewModel> NavigationStack { get; }
+        ReactiveList<IRoutableViewModel> NavigationStack { get; }
 
         /// <summary>
         /// Navigates back to the previous element in the stack.
