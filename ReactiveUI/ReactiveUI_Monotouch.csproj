@@ -60,7 +60,6 @@
   <ItemGroup>
     <Compile Include="BindingTypeConverters.cs" />
     <Compile Include="CommandBinding.cs" />
-    <Compile Include="CommandInterfaces.cs" />
     <Compile Include="CompatMixins.cs" />
     <Compile Include="DefaultPropertyBinding.cs" />
     <Compile Include="DesignModeDetector.cs" />
@@ -69,6 +68,9 @@
     <Compile Include="INPCObservableForProperty.cs" />
     <Compile Include="Interfaces.cs" />
     <Compile Include="IRNPCObservableForProperty.cs" />
+    <Compile Include="Legacy\CommandInterfaces.cs" />
+    <Compile Include="Legacy\ReactiveAsyncCommand.cs" />
+    <Compile Include="Legacy\ReactiveCommand.cs" />
     <Compile Include="Logging.cs" />
     <Compile Include="MakeObjectReactiveHelper.cs" />
     <Compile Include="MemoizingMRUCache.cs" />
