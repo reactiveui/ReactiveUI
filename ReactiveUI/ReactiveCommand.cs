@@ -1,182 +1,131 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Concurrency;
+using System.Reactive.Threading.Tasks;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
-using System.Reactive.Threading.Tasks;
+using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using ReactiveUI;
 
 namespace ReactiveUI
 {
-    /// <summary>
-    /// IReactiveCommand is an Rx-enabled version of ICommand that is also an
-    /// Observable. Its Observable fires once for each invocation of
-    /// ICommand.Execute and its value is the CommandParameter that was
-    /// provided.
-    /// </summary>
-    public class ReactiveCommand : IReactiveCommand, IDisposable, IEnableLogger
+    public interface IReactiveCommand : IHandleObservableErrors, IObservable<object>, ICommand, IDisposable, IEnableLogger
     {
-        /// <summary>
-        /// Creates a new ReactiveCommand object.
-        /// </summary>
-        /// <param name="canExecute">An Observable, often obtained via
-        /// ObservableFromProperty, that defines when the Command can
-        /// execute.</param>
-        /// <param name="scheduler">The scheduler to publish events on - default
-        /// is RxApp.MainThreadScheduler.</param>
-        /// <param name="initialCondition">Initial CanExecute state</param>
-        public ReactiveCommand(IObservable<bool> canExecute = null, IScheduler scheduler = null, bool initialCondition = true)
+        IObservable<T> RegisterAsync<T>(Func<object, IObservable<T>> asyncBlock);
+
+        IObservable<bool> CanExecuteObservable { get; }
+        IObservable<bool> IsExecuting { get; }
+        bool AllowsConcurrentExecution { get; }
+    }
+
+    public class ReactiveCommand : IReactiveCommand
+    {
+        IDisposable innerDisp;
+
+        readonly Subject<bool> inflight = new Subject<bool>();
+        readonly ScheduledSubject<Exception> exceptions;
+        readonly Subject<object> executed = new Subject<object>();
+        readonly IScheduler defaultScheduler;
+
+        public ReactiveCommand() : this(null, false, null) { }
+        public ReactiveCommand(IObservable<bool> canExecute) : this(canExecute, false, null) { }
+
+        public ReactiveCommand(IObservable<bool> canExecute, bool allowsConcurrentExecution, IScheduler scheduler)
         {
-            canExecute = canExecute ?? Observable.Return(true).Concat(Observable.Never<bool>());
-            canExecute = canExecute.ObserveOn(scheduler ?? RxApp.MainThreadScheduler);
-            commonCtor(scheduler, initialCondition);
+            canExecute = canExecute ?? Observable.Return(true);
+            defaultScheduler = scheduler ?? RxApp.MainThreadScheduler;
+            AllowsConcurrentExecution = allowsConcurrentExecution;
 
-            _inner = canExecute.Subscribe(
-                _canExecuteSubject.OnNext, 
-                _exSubject.OnNext);
+            canExecute = canExecute.Catch<bool, Exception>(ex => {
+                exceptions.OnNext(ex);
+                return Observable.Empty<bool>();
+            });
 
-            ThrownExceptions = _exSubject;
+            ThrownExceptions = exceptions = new ScheduledSubject<Exception>(defaultScheduler, RxApp.DefaultExceptionHandler);
+
+            IsExecuting = inflight
+                .Scan(0, (acc, x) => acc + (x ? 1 : -1))
+                .Select(x => x > 0)
+                .Publish(false)
+                .PermaRef()
+                .DistinctUntilChanged();
+
+            var isBusy = allowsConcurrentExecution ? Observable.Return(false) : IsExecuting;
+            var canExecuteAndNotBusy = Observable.CombineLatest(canExecute, isBusy, (ce, b) => ce && !b);
+
+            var canExecuteObs = canExecuteAndNotBusy
+                .Publish(true)
+                .RefCount();
+
+            CanExecuteObservable = canExecuteObs.DistinctUntilChanged();
+
+            innerDisp = canExecuteObs.Subscribe(x => {
+                if (canExecuteLatest == x) return;
+
+                canExecuteLatest = x;
+                if (CanExecuteChanged != null) CanExecuteChanged(this, EventArgs.Empty);
+            }, exceptions.OnNext);
         }
 
-        protected ReactiveCommand(Func<object, Task<bool>> canExecuteFunc, IScheduler scheduler = null)
+        public IObservable<T> RegisterAsync<T>(Func<object, IObservable<T>> asyncBlock)
         {
-            var canExecute = _canExecuteProbed.SelectMany(x => canExecuteFunc(x).ToObservable());
+            var ret = executed.Select(x => {
+                return asyncBlock(x)
+                    .Catch<T, Exception>(ex => {
+                        exceptions.OnNext(ex);
+                        return Observable.Empty<T>();
+                    })
+                    .Finally(() => { lock (inflight) { inflight.OnNext(false); } });
+            });
 
-            commonCtor(scheduler);
-
-            _inner = canExecute.Subscribe(
-                _canExecuteSubject.OnNext, 
-                _exSubject.OnNext);
+            return ret
+                .Do(_ => { lock (inflight) { inflight.OnNext(true); } })
+                .Merge()
+                .ObserveOn(defaultScheduler)
+                .Publish().PermaRef();
         }
 
-        protected ReactiveCommand(Func<object, bool> canExecute, IScheduler scheduler = null)
-        {
-            _canExecuteExplicitFunc = canExecute;
-            commonCtor(scheduler);
-        }
+        public IObservable<bool> IsExecuting { get; protected set; }
 
-
-        /// <summary>
-        /// Creates a new ReactiveCommand object in an imperative, non-Rx way,
-        /// similar to RelayCommand.
-        /// </summary>
-        /// <param name="canExecute">A function that determines when the Command
-        /// can execute.</param>
-        /// <param name="executed">A method that will be invoked when the
-        /// Execute method is invoked.</param>
-        /// <param name="scheduler">The scheduler to publish events on - default
-        /// is RxApp.MainThreadScheduler.</param>
-        /// <returns>A new ReactiveCommand object.</returns>
-        public static ReactiveCommand Create(
-            Func<object, bool> canExecute, 
-            Action<object> executed = null, 
-            IScheduler scheduler = null)
-        {
-            var ret = new ReactiveCommand(canExecute, scheduler);
-            if (executed != null) {
-                ret.Subscribe(executed);
-            }
-
-            return ret;
-        }
-
-        /// <summary>
-        /// Creates a new ReactiveCommand object in an imperative, non-Rx way,
-        /// similar to RelayCommand, only via a TPL Async method
-        /// </summary>
-        /// <param name="canExecute">A function that determines when the Command
-        /// can execute.</param>
-        /// <param name="executed">A method that will be invoked when the
-        /// Execute method is invoked.</param>
-        /// <param name="scheduler">The scheduler to publish events on - default
-        /// is RxApp.MainThreadScheduler.</param>
-        /// <returns>A new ReactiveCommand object.</returns>
-        public static ReactiveCommand Create(
-            Func<object, Task<bool>> canExecute, 
-            Action<object> executed = null, 
-            IScheduler scheduler = null)
-        {
-            var ret = new ReactiveCommand(canExecute, scheduler);
-            if (executed != null) {
-                ret.Subscribe(executed);
-            }
-
-            return ret;
-        }
+        public bool AllowsConcurrentExecution { get; protected set; }
 
         public IObservable<Exception> ThrownExceptions { get; protected set; }
 
-        void commonCtor(IScheduler scheduler, bool initialCondition = true)
-        {
-            this.scheduler = scheduler ?? RxApp.MainThreadScheduler;
-
-            _canExecuteSubject = new ScheduledSubject<bool>(RxApp.MainThreadScheduler);
-            canExecuteLatest = new ObservableAsPropertyHelper<bool>(_canExecuteSubject,
-                b => { if (CanExecuteChanged != null) CanExecuteChanged(this, EventArgs.Empty); },
-                initialCondition, scheduler);
-
-            _canExecuteProbed = new Subject<object>();
-            executeSubject = new Subject<object>();
-
-            _exSubject = new ScheduledSubject<Exception>(RxApp.MainThreadScheduler, RxApp.DefaultExceptionHandler);
-            ThrownExceptions = _exSubject;
-        }
-
-        Func<object, bool> _canExecuteExplicitFunc;
-        protected ISubject<bool> _canExecuteSubject;
-        protected Subject<object> _canExecuteProbed;
-        IDisposable _inner = null;
-        ScheduledSubject<Exception> _exSubject;
-    
-        /// <summary>
-        /// Fires whenever the CanExecute of the ICommand changes. 
-        /// </summary>
-        public IObservable<bool> CanExecuteObservable {
-            get { return _canExecuteSubject.DistinctUntilChanged(); }
-        }
-
-        ObservableAsPropertyHelper<bool> canExecuteLatest;
-        public virtual bool CanExecute(object parameter)
-        {
-            _canExecuteProbed.OnNext(parameter);
-            if (_canExecuteExplicitFunc != null) {
-                bool ret = _canExecuteExplicitFunc(parameter);
-                _canExecuteSubject.OnNext(ret);
-                return ret;
-            }
-
-            return canExecuteLatest.Value;
-        }
-
-        public event EventHandler CanExecuteChanged;
-
-        IScheduler scheduler;
-        Subject<object> executeSubject;
-
-        public void Execute(object parameter)
-        {
-            this.Log().Debug("{0:X}: Executed", this.GetHashCode());
-            executeSubject.OnNext(parameter);
-        }
-
         public IDisposable Subscribe(IObserver<object> observer)
         {
-            return executeSubject.ObserveOn(scheduler).Subscribe(
+            return executed.Subscribe(
                 Observer.Create<object>(
                     x => marshalFailures(observer.OnNext, x),
                     ex => marshalFailures(observer.OnError, ex),
                     () => marshalFailures(observer.OnCompleted)));
         }
 
+        bool canExecuteLatest;
+        public bool CanExecute(object parameter)
+        {
+            return canExecuteLatest;
+        }
+
+        public event EventHandler CanExecuteChanged;
+
+        public void Execute(object parameter)
+        {
+            lock(inflight) { inflight.OnNext(true); }
+            executed.OnNext(parameter);
+            lock(inflight) { inflight.OnNext(false); }
+        }
+
+        public IObservable<bool> CanExecuteObservable { get; protected set; }
+    
         public void Dispose()
         {
-            if (_inner != null) {
-                _inner.Dispose();
-            }
+            var disp = Interlocked.Exchange(ref innerDisp, null);
+            if (disp != null) disp.Dispose();
         }
 
         void marshalFailures<T>(Action<T> block, T param)
@@ -184,7 +133,7 @@ namespace ReactiveUI
             try {
                 block(param);
             } catch (Exception ex) {
-                _exSubject.OnNext(ex);
+                exceptions.OnNext(ex);
             }
         }
 
@@ -204,9 +153,9 @@ namespace ReactiveUI
         /// is RxApp.MainThreadScheduler.</param>
         /// <returns>A new ReactiveCommand whose CanExecute Observable is the
         /// current object.</returns>
-        public static ReactiveCommand ToCommand(this IObservable<bool> This, IScheduler scheduler = null)
+        public static ReactiveCommand ToCommand(this IObservable<bool> This, bool allowsConcurrentExecution = false, IScheduler scheduler = null)
         {
-            return new ReactiveCommand(This, scheduler);
+            return new ReactiveCommand(This, allowsConcurrentExecution, scheduler);
         }
 
         /// <summary>
@@ -226,7 +175,67 @@ namespace ReactiveUI
                 command.Execute(x);
             });
         }
+
+        /// <summary>
+        /// RegisterAsyncFunction registers an asynchronous method that returns a result
+        /// to be called whenever the Command's Execute method is called.
+        /// </summary>
+        /// <param name="calculationFunc">The function to be run in the
+        /// background.</param>
+        /// <param name="scheduler"></param>
+        /// <returns>An Observable that will fire on the UI thread once per
+        /// invoecation of Execute, once the async method completes. Subscribe to
+        /// this to retrieve the result of the calculationFunc.</returns>
+        public static IObservable<TResult> RegisterAsyncFunction<TResult>(this IReactiveCommand This,
+            Func<object, TResult> calculationFunc,
+            IScheduler scheduler = null)
+        {
+            Contract.Requires(calculationFunc != null);
+
+            var asyncFunc = calculationFunc.ToAsync(scheduler ?? RxApp.TaskpoolScheduler);
+            return This.RegisterAsync(asyncFunc);
+        }
+
+        /// <summary>
+        /// RegisterAsyncAction registers an asynchronous method that runs
+        /// whenever the Command's Execute method is called and doesn't return a
+        /// result.
+        /// </summary>
+        /// <param name="calculationFunc">The function to be run in the
+        /// background.</param>
+        public static IObservable<Unit> RegisterAsyncAction(this IReactiveCommand This, 
+            Action<object> calculationFunc,
+            IScheduler scheduler = null)
+        {
+            Contract.Requires(calculationFunc != null);
+            return This.RegisterAsyncFunction(x => { calculationFunc(x); return new Unit(); }, scheduler);
+        }
+
+        /// <summary>
+        /// RegisterAsyncTask registers an TPL/Async method that runs when a 
+        /// Command gets executed and returns the result
+        /// </summary>
+        /// <returns>An Observable that will fire on the UI thread once per
+        /// invoecation of Execute, once the async method completes. Subscribe to
+        /// this to retrieve the result of the calculationFunc.</returns>
+        public static IObservable<TResult> RegisterAsyncTask<TResult>(this IReactiveCommand This, Func<object, Task<TResult>> calculationFunc)
+        {
+            Contract.Requires(calculationFunc != null);
+            return This.RegisterAsync(x => calculationFunc(x).ToObservable());
+        }
+
+        /// <summary>
+        /// RegisterAsyncTask registers an TPL/Async method that runs when a 
+        /// Command gets executed and returns no result. 
+        /// </summary>
+        /// <param name="calculationFunc">The function to be run in the
+        /// background.</param>
+        /// <returns>An Observable that signals when the Task completes, on
+        /// the UI thread.</returns>
+        public static IObservable<Unit> RegisterAsyncTask(this IReactiveCommand This, Func<object, Task> calculationFunc)
+        {
+            Contract.Requires(calculationFunc != null);
+            return This.RegisterAsync(x => calculationFunc(x).ToObservable());
+        }
     }
 }
-
-// vim: tw=120 ts=4 sw=4 et :
