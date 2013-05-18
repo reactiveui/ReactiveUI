@@ -14,9 +14,15 @@ namespace EventBuilder
         static void Main(string[] args)
         {
             var targetAssemblyNames = args.TakeWhile(x => !x.EndsWith(".mustache"));
-            var targetAssemblyDirs = targetAssemblyNames.Select(x => Path.GetDirectoryName(x)).Distinct().ToArray();
+            var targetAssemblyDirs = targetAssemblyNames.Select(x => Path.GetDirectoryName(x)).Distinct().ToList();
 
-            var rp = new ReaderParameters() { AssemblyResolver = new PathSearchAssemblyResolver(targetAssemblyDirs) };
+            // NB: I'm too lazy to fix this properly
+            var monoDroidDir = targetAssemblyDirs.FirstOrDefault(x => x.ToLowerInvariant().Contains("monoandroid"));
+            if (monoDroidDir != null) {
+                targetAssemblyDirs.Add(monoDroidDir.Replace("v4.0", "v1.0"));
+            }
+
+            var rp = new ReaderParameters() { AssemblyResolver = new PathSearchAssemblyResolver(targetAssemblyDirs.ToArray()) };
             var targetAssemblies = targetAssemblyNames
                 .Select(x => AssemblyDefinition.ReadAssembly(x, rp)).ToArray();
 
@@ -33,6 +39,8 @@ namespace EventBuilder
                 "Windows.UI.Xaml.Data",
                 "Windows.UI.Xaml.Interop",
                 "Windows.UI.Xaml.Input",
+                "MonoTouch.AudioToolbox",
+                "ReactiveUI.Events",
             };
 
             var namespaceData = publicTypesWithEvents
@@ -84,9 +92,12 @@ namespace EventBuilder
         {
             if (t.GenericParameters.Count == 0) return RenameBogusWinRTTypes(t.FullName);
 
-            return String.Format("{0}<{1}>",
+            var ret = String.Format("{0}<{1}>",
                 RenameBogusWinRTTypes(t.Namespace + "." + t.Name),
                 String.Join(",", t.GenericParameters.Select(x => GetRealTypeName(x.Resolve()))));
+
+            // NB: Inner types in Mono.Cecil get reported as 'Foo/Bar'
+            return ret.Replace('/', '.');
         }
 
         public static string GetRealTypeName(TypeReference t)
@@ -97,7 +108,9 @@ namespace EventBuilder
             var ret = String.Format("{0}<{1}>",
                 RenameBogusWinRTTypes(generic.Namespace + "." + generic.Name),
                 String.Join(",", generic.GenericArguments.Select(x => GetRealTypeName(x))));
-            return ret;
+
+            // NB: Inner types in Mono.Cecil get reported as 'Foo/Bar'
+            return ret.Replace('/', '.');
         }
 
         static Dictionary<string, string> substitutionList = new Dictionary<string, string> {
@@ -133,7 +146,8 @@ namespace EventBuilder
                 }
             }
 
-            return ret;
+            // NB: Inner types in Mono.Cecil get reported as 'Foo/Bar'
+            return ret.Replace('/', '.');
         }
 
         public static IEnumerable<TypeDefinition> GetParents(TypeDefinition type)
