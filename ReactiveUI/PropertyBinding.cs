@@ -687,7 +687,6 @@ namespace ReactiveUI
             });
 
             var ret = evalBindingHooks(viewModel, view, vmPropChain, viewPropChain, BindingDirection.TwoWay);
-            //TODO: return something other than null
             if (!ret) return null;
 
             IObservable<Tuple<object, bool>> changes = changeWithValues.Where(tuple => tuple != null).Publish().RefCount();
@@ -777,7 +776,6 @@ namespace ReactiveUI
                 }
 
                 var ret = evalBindingHooks(viewModel, view, vmPropChain, viewPropChain, BindingDirection.OneWay);
-                //TODO: return something other than null
                 if (!ret) return null;
 
                 source = Reflection.ViewModelWhenAnyValue(viewModel, view, vmProperty)
@@ -801,7 +799,6 @@ namespace ReactiveUI
                 viewPropChain = Reflection.ExpressionToPropertyNames(viewProperty);
 
                 var ret = evalBindingHooks(viewModel, view, vmPropChain, viewPropChain, BindingDirection.OneWay);
-                //TODO: return something other than null
                 if (!ret) return null;
 
                 source = Reflection.ViewModelWhenAnyValue(viewModel, view, vmProperty)
@@ -879,14 +876,12 @@ namespace ReactiveUI
                 viewPropChain = Reflection.getDefaultViewPropChain(view, Reflection.ExpressionToPropertyNames(vmProperty));
 
                 var ret = evalBindingHooks(viewModel, view, vmPropChain, viewPropChain, BindingDirection.OneWay);
-                //TODO: return something other than null
                 if (!ret) return null;
 
                 source = Reflection.ViewModelWhenAnyValue(viewModel, view, vmProperty).Select(selector);
             } else {
                 viewPropChain = Reflection.ExpressionToPropertyNames(viewProperty);
                 var ret = evalBindingHooks(viewModel, view, vmPropChain, viewPropChain, BindingDirection.OneWay);
-                //TODO: return something other than null
                 if (!ret) return null;
 
                 source = Reflection.ViewModelWhenAnyValue(viewModel, view, vmProperty).Select(selector);
