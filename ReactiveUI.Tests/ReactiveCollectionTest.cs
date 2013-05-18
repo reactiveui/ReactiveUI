@@ -187,6 +187,46 @@ namespace ReactiveUI.Tests
         }
 
         [Fact]
+        public void ChangeTrackingItemsShouldBeTrackedEvenWhenSuppressed()
+        {
+            var input = new TestFixture();
+            var fixture = new ReactiveCollection<TestFixture>() { ChangeTrackingEnabled = true };
+
+            var changes = fixture.ItemChanged.CreateCollection();
+            Assert.Equal(0, changes.Count);
+
+            input.IsOnlyOneWord = "foo";
+            Assert.Equal(0, changes.Count);
+
+            using (fixture.SuppressChangeNotifications()) {
+                fixture.Add(input);
+
+                input.IsOnlyOneWord = "bar";
+                Assert.Equal(0, changes.Count);
+            }
+
+            // Even though we added it during a suppression, we should still
+            // get notifications now that the suppression is over
+            input.IsOnlyOneWord = "baz";
+            Assert.Equal(1, changes.Count);
+
+            fixture.RemoveAt(0);
+            input.IsOnlyOneWord = "bamf";
+            Assert.Equal(1, changes.Count);
+        }
+
+        [Fact]
+        public void GetAResetWhenWeAddALotOfItems()
+        {
+            var fixture = new ReactiveCollection<int> { 1, };
+            var reset = fixture.ShouldReset.CreateCollection();
+            Assert.Equal(0, reset.Count);
+
+            fixture.AddRange(new[] { 2,3,4,5,6,7,8,9,10,11,12,13, });
+            Assert.Equal(1, reset.Count);
+        }
+
+        [Fact]
         public void CollectionsShouldntShareSubscriptions()
         {
             var fixture1 = new ReactiveCollection<TestFixture>() { ChangeTrackingEnabled = true };
