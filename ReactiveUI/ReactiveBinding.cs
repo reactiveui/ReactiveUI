@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ReactiveUI
 {
-    public interface IReactiveBinding<TView, TViewModel> : IDisposable
+    public interface IReactiveBinding<TView, TViewModel, TValue> : IDisposable
         where TViewModel : class
         where TView : IViewFor
     {
@@ -67,6 +67,14 @@ namespace ReactiveUI
         IObservedChange<object, object>[] ViewPathProperties { get; }
 
         /// <summary>
+        /// An observable representing changed values for the binding.
+        /// </summary>
+        /// <value>
+        /// The changed.
+        /// </value>
+        IObservable<TValue> Changed { get; }
+
+        /// <summary>
         /// Gets the direction of the binding.
         /// </summary>
         /// <value>
@@ -75,7 +83,7 @@ namespace ReactiveUI
         BindingDirection Direction { get; }
     }
 
-    internal class ReactiveBinding<TView, TViewModel> : IReactiveBinding<TView, TViewModel>
+    internal class ReactiveBinding<TView, TViewModel, TValue> : IReactiveBinding<TView, TViewModel, TValue>
         where TViewModel : class
         where TView : IViewFor
     {
@@ -90,13 +98,15 @@ namespace ReactiveUI
         /// <param name="viewModelPath">The view model path.</param>
         /// <param name="direction">The direction.</param>
         /// <param name="bindingDisposable">The binding disposable.</param>
-        public ReactiveBinding(TView view, TViewModel viewModel, string[] viewPath, string[] viewModelPath, BindingDirection direction, IDisposable bindingDisposable)
+        public ReactiveBinding(TView view, TViewModel viewModel, string[] viewPath, string[] viewModelPath, 
+            IObservable<TValue> changed, BindingDirection direction, IDisposable bindingDisposable)
         {
             this.View = view;
             this.ViewModel = viewModel;
             this.ViewPath = viewPath;
             this.ViewModelPath = viewModelPath;
             this.Direction = direction;
+            this.Changed = changed;
 
             this.bindingDisposable = bindingDisposable;
         }
@@ -170,6 +180,14 @@ namespace ReactiveUI
                 return fetchedValues;
             }
         }
+
+        /// <summary>
+        /// An observable representing changed values for the binding.
+        /// </summary>
+        /// <value>
+        /// The changed.
+        /// </value>
+        public IObservable<TValue> Changed { get; private set; }
 
         /// <summary>
         /// Gets the direction of the binding.

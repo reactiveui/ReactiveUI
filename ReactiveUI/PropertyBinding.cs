@@ -52,7 +52,7 @@ namespace ReactiveUI
         /// An instance of <see cref="IDisposable"/> that, when disposed,
         /// disconnects the binding.
         /// </returns>
-        public static IReactiveBinding<TView, TViewModel> Bind<TViewModel, TView, TVMProp, TVProp>(
+        public static IReactiveBinding<TView, TViewModel, Tuple<object,bool>> Bind<TViewModel, TView, TVMProp, TVProp>(
                 this TView view,
                 TViewModel viewModel,
                 Expression<Func<TViewModel, TVMProp>> vmProperty,
@@ -90,7 +90,7 @@ namespace ReactiveUI
         /// An instance of <see cref="IDisposable"/> that, when disposed,
         /// disconnects the binding.
         /// </returns>
-        public static IReactiveBinding<TView, TViewModel> Bind<TViewModel, TView, TProp>(
+        public static IReactiveBinding<TView, TViewModel, Tuple<object, bool>> Bind<TViewModel, TView, TProp>(
                 this TView view,
                 TViewModel viewModel,
                 Expression<Func<TViewModel, TProp>> vmProperty,
@@ -134,7 +134,7 @@ namespace ReactiveUI
         /// An instance of <see cref="IDisposable"/> that, when disposed,
         /// disconnects the binding.
         /// </returns>
-        public static IReactiveBinding<TView, TViewModel> Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(
+        public static IReactiveBinding<TView, TViewModel, Tuple<object, bool>> Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(
                 this TView view,
                 TViewModel viewModel,
                 Expression<Func<TViewModel, TVMProp>> vmProperty,
@@ -178,7 +178,7 @@ namespace ReactiveUI
         /// An instance of <see cref="IDisposable"/> that, when disposed,
         /// disconnects the binding.
         /// </returns>
-        public static IReactiveBinding<TView, TViewModel> Bind<TViewModel, TView, TProp, TDontCare>(
+        public static IReactiveBinding<TView, TViewModel, Tuple<object, bool>> Bind<TViewModel, TView, TProp, TDontCare>(
                 this TView view,
                 TViewModel viewModel,
                 Expression<Func<TViewModel, TProp>> vmProperty,
@@ -225,7 +225,7 @@ namespace ReactiveUI
         /// An instance of <see cref="IDisposable"/> that, when disposed,
         /// disconnects the binding.
         /// </returns>
-        public static IReactiveBinding<TView, TViewModel> OneWayBind<TViewModel, TView, TVMProp, TVProp>(
+        public static IReactiveBinding<TView, TViewModel, TVProp> OneWayBind<TViewModel, TView, TVMProp, TVProp>(
                 this TView view,
                 TViewModel viewModel,
                 Expression<Func<TViewModel, TVMProp>> vmProperty,
@@ -264,7 +264,7 @@ namespace ReactiveUI
         /// An instance of <see cref="IDisposable"/> that, when disposed,
         /// disconnects the binding.
         /// </returns>
-        public static IReactiveBinding<TView, TViewModel> OneWayBind<TViewModel, TView, TProp>(
+        public static IReactiveBinding<TView, TViewModel, Unit> OneWayBind<TViewModel, TView, TProp>(
                 this TView view,
                 TViewModel viewModel,
                 Expression<Func<TViewModel, TProp>> vmProperty,
@@ -309,7 +309,7 @@ namespace ReactiveUI
         /// An instance of <see cref="IDisposable"/> that, when disposed,
         /// disconnects the binding.
         /// </returns>
-        public static IReactiveBinding<TView, TViewModel> OneWayBind<TViewModel, TView, TProp, TOut>(
+        public static IReactiveBinding<TView, TViewModel, TOut> OneWayBind<TViewModel, TView, TProp, TOut>(
                 this TView view,
                 TViewModel viewModel,
                 Expression<Func<TViewModel, TProp>> vmProperty,
@@ -350,7 +350,7 @@ namespace ReactiveUI
         /// An instance of <see cref="IDisposable"/> that, when disposed,
         /// disconnects the binding.
         /// </returns>
-        public static IReactiveBinding<TView, TViewModel> OneWayBind<TViewModel, TView, TProp, TOut>(
+        public static IReactiveBinding<TView, TViewModel, TOut> OneWayBind<TViewModel, TView, TProp, TOut>(
                 this TView view,
                 TViewModel viewModel,
                 Expression<Func<TViewModel, TProp>> vmProperty,
@@ -437,7 +437,7 @@ namespace ReactiveUI
         /// An instance of <see cref="IDisposable"/> that, when disposed,
         /// disconnects the binding.
         /// </returns>
-        IReactiveBinding<TView, TViewModel> Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(
+        IReactiveBinding<TView, TViewModel, Tuple<object, bool>> Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(
                 TViewModel viewModel,
                 TView view,
                 Expression<Func<TViewModel, TVMProp>> vmProperty,
@@ -485,7 +485,7 @@ namespace ReactiveUI
         /// <exception cref="System.ArgumentException">
         /// There is no registered converter from <typeparamref name="TVMProp"/> to <typeparamref name="TVProp"/>.
         /// </exception>
-        IReactiveBinding<TView, TViewModel> OneWayBind<TViewModel, TView, TVMProp, TVProp>(
+        IReactiveBinding<TView, TViewModel, TVProp> OneWayBind<TViewModel, TView, TVMProp, TVProp>(
                 TViewModel viewModel,
                 TView view,
                 Expression<Func<TViewModel, TVMProp>> vmProperty,
@@ -529,7 +529,7 @@ namespace ReactiveUI
         /// An instance of <see cref="IDisposable"/> that, when disposed,
         /// disconnects the binding.
         /// </returns>
-        IReactiveBinding<TView, TViewModel> OneWayBind<TViewModel, TView, TProp, TOut>(
+        IReactiveBinding<TView, TViewModel, TOut> OneWayBind<TViewModel, TView, TProp, TOut>(
                 TViewModel viewModel,
                 TView view,
                 Expression<Func<TViewModel, TProp>> vmProperty,
@@ -604,7 +604,7 @@ namespace ReactiveUI
         /// An instance of <see cref="IDisposable"/> that, when disposed,
         /// disconnects the binding.
         /// </returns>
-        public IReactiveBinding<TView, TViewModel> Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(
+        public IReactiveBinding<TView, TViewModel, Tuple<object, bool>> Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(
                 TViewModel viewModel,
                 TView view,
                 Expression<Func<TViewModel, TVMProp>> vmProperty,
@@ -626,7 +626,7 @@ namespace ReactiveUI
                 var tvProp = Reflection.GetTypesForPropChain(typeof (TView), viewPropChain).Last();
                 if (tvProp != typeof (TVProp)) {
                     var mi = this.GetType().GetMethod("Bind").MakeGenericMethod(typeof (TViewModel), typeof (TView), typeof (TVMProp), tvProp, typeof (TDontCare));
-                    return (IReactiveBinding<TView, TViewModel>)mi.Invoke(this, new[] { viewModel, view, vmProperty, null, signalViewUpdate, conversionHint });
+                    return (IReactiveBinding<TView, TViewModel, Tuple<object, bool>>)mi.Invoke(this, new[] { viewModel, view, vmProperty, null, signalViewUpdate, conversionHint });
                 }
             } else {
                 viewPropChain = Reflection.ExpressionToPropertyNames(viewProperty);
@@ -690,9 +690,9 @@ namespace ReactiveUI
             //TODO: return something other than null
             if (!ret) return null;
 
-            IDisposable disp = changeWithValues.Subscribe(isVmWithLatestValue => {
-                if (isVmWithLatestValue == null) return;
+            IObservable<Tuple<object, bool>> changes = changeWithValues.Where(tuple => tuple != null).Publish().RefCount();
 
+            IDisposable disp = changes.Subscribe(isVmWithLatestValue => {
                 if (isVmWithLatestValue.Item2) {
                     Reflection.SetValueToPropertyChain(view, viewPropChain, isVmWithLatestValue.Item1, false);
                 } else {
@@ -704,7 +704,8 @@ namespace ReactiveUI
             // want the ViewModel to win at first.
             signalInitialUpdate.OnNext(true);
 
-            return new ReactiveBinding<TView, TViewModel>(view, viewModel, viewPropChain, vmPropChain, BindingDirection.TwoWay, disp);
+            return new ReactiveBinding<TView, TViewModel, Tuple<object, bool>>(view, viewModel, viewPropChain, vmPropChain, 
+                changes, BindingDirection.TwoWay, disp);
         }
 
         /// <summary>
@@ -749,7 +750,7 @@ namespace ReactiveUI
         /// <exception cref="System.ArgumentException">
         /// There is no registered converter from <typeparamref name="TVMProp"/> to <typeparamref name="TVProp"/>.
         /// </exception>
-        public IReactiveBinding<TView, TViewModel> OneWayBind<TViewModel, TView, TVMProp, TVProp>(
+        public IReactiveBinding<TView, TViewModel, TVProp> OneWayBind<TViewModel, TView, TVMProp, TVProp>(
                 TViewModel viewModel,
                 TView view,
                 Expression<Func<TViewModel, TVMProp>> vmProperty,
@@ -818,7 +819,7 @@ namespace ReactiveUI
 
             IDisposable disp = bindToDirect(source, view, viewProperty, fallbackWrapper);
 
-            return new ReactiveBinding<TView, TViewModel>(view, viewModel, viewPropChain, vmPropChain, BindingDirection.OneWay, disp);
+            return new ReactiveBinding<TView, TViewModel, TVProp>(view, viewModel, viewPropChain, vmPropChain, source, BindingDirection.OneWay, disp);
         }
 
         /// <summary>
@@ -859,7 +860,7 @@ namespace ReactiveUI
         /// An instance of <see cref="IDisposable"/> that, when disposed,
         /// disconnects the binding.
         /// </returns>
-        public IReactiveBinding<TView, TViewModel> OneWayBind<TViewModel, TView, TProp, TOut>(
+        public IReactiveBinding<TView, TViewModel, TOut> OneWayBind<TViewModel, TView, TProp, TOut>(
                 TViewModel viewModel,
                 TView view,
                 Expression<Func<TViewModel, TProp>> vmProperty,
@@ -891,9 +892,9 @@ namespace ReactiveUI
                 source = Reflection.ViewModelWhenAnyValue(viewModel, view, vmProperty).Select(selector);
             }
 
-            IDisposable disp =  bindToDirect(source, view, viewProperty, fallbackValue);
+            IDisposable disp = bindToDirect(source, view, viewProperty, fallbackValue);
 
-            return new ReactiveBinding<TView, TViewModel>(view, viewModel, viewPropChain, vmPropChain, BindingDirection.OneWay, disp);
+            return new ReactiveBinding<TView, TViewModel, TOut>(view, viewModel, viewPropChain, vmPropChain, source, BindingDirection.OneWay, disp);
         }
 
         public IDisposable BindTo<TValue, TTarget, TTValue>(
