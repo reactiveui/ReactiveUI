@@ -58,12 +58,16 @@ namespace ReactiveUI
             var isBusy = allowsConcurrentExecution ? Observable.Return(false) : IsExecuting;
             var canExecuteAndNotBusy = Observable.CombineLatest(canExecute, isBusy, (ce, b) => ce && !b);
 
-            CanExecuteObservable = canExecuteAndNotBusy
+            var canExecuteObs = canExecuteAndNotBusy
                 .Publish(true)
-                .RefCount()
-                .DistinctUntilChanged();
+                .RefCount();
 
-            innerDisp = CanExecuteObservable.Subscribe(x => {
+            CanExecuteObservable = canExecuteObs.DistinctUntilChanged();
+
+            innerDisp = canExecuteObs.Subscribe(x => {
+                if (canExecuteLatest == x) return;
+
+                canExecuteLatest = x;
                 if (CanExecuteChanged != null) CanExecuteChanged(this, EventArgs.Empty);
             }, exceptions.OnNext);
         }
@@ -101,9 +105,10 @@ namespace ReactiveUI
                     () => marshalFailures(observer.OnCompleted)));
         }
 
+        bool canExecuteLatest;
         public bool CanExecute(object parameter)
         {
-            return CanExecuteObservable.First();
+            return canExecuteLatest;
         }
 
         public event EventHandler CanExecuteChanged;
