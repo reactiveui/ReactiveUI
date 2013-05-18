@@ -24,7 +24,7 @@ namespace ReactiveUI
 
             return Observable.Return((IObservedChange<object, object>) new ObservedChange<object, object>() {
                 Sender = sender, PropertyName = propertyName
-            }, RxApp.DeferredScheduler)
+            }, RxApp.MainThreadScheduler)
                 .Concat(Observable.Never<IObservedChange<object, object>>());
         }
     }

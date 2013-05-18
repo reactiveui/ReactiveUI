@@ -344,13 +344,13 @@ namespace ReactiveUI.Tests
         [Fact]
         public void RAFShouldActuallyRunOnTheTaskpool()
         {
-            var deferred = RxApp.DeferredScheduler;
+            var deferred = RxApp.MainThreadScheduler;
             var taskpool = RxApp.TaskpoolScheduler;
 
             try {
                 var testDeferred = new CountingTestScheduler(Scheduler.Immediate);
                 var testTaskpool = new CountingTestScheduler(Scheduler.NewThread);
-                RxApp.DeferredScheduler = testDeferred;
+                RxApp.MainThreadScheduler = testDeferred;
                 RxApp.TaskpoolScheduler = testTaskpool;
 
                 var fixture = new ReactiveAsyncCommand();
@@ -365,7 +365,7 @@ namespace ReactiveUI.Tests
                 Assert.True(testDeferred.ScheduledItems.Count >= 1);
                 Assert.True(testTaskpool.ScheduledItems.Count >= 1);
             } finally {
-                RxApp.DeferredScheduler = deferred;
+                RxApp.MainThreadScheduler = deferred;
                 RxApp.TaskpoolScheduler = taskpool;
             }
         }
@@ -373,13 +373,13 @@ namespace ReactiveUI.Tests
         [Fact]
         public void RAOShouldActuallyRunOnTheTaskpool()
         {
-            var deferred = RxApp.DeferredScheduler;
+            var deferred = RxApp.MainThreadScheduler;
             var taskpool = RxApp.TaskpoolScheduler;
 
             try {
                 var testDeferred = new CountingTestScheduler(Scheduler.Immediate);
                 var testTaskpool = new CountingTestScheduler(Scheduler.NewThread);
-                RxApp.DeferredScheduler = testDeferred;
+                RxApp.MainThreadScheduler = testDeferred;
                 RxApp.TaskpoolScheduler = testTaskpool;
 
                 var fixture = new ReactiveAsyncCommand();
@@ -392,7 +392,7 @@ namespace ReactiveUI.Tests
                 Assert.True(testDeferred.ScheduledItems.Count >= 1);
                 Assert.True(testTaskpool.ScheduledItems.Count >= 1);
             } finally {
-                RxApp.DeferredScheduler = deferred;
+                RxApp.MainThreadScheduler = deferred;
                 RxApp.TaskpoolScheduler = taskpool;
             }
         }
@@ -415,7 +415,7 @@ namespace ReactiveUI.Tests
                 bool latestCanExecute = false;
 
                 fixture.RegisterAsyncObservable(x =>
-                    Observable.Return((int)x*5).Delay(TimeSpan.FromMilliseconds(900), RxApp.DeferredScheduler))
+                    Observable.Return((int)x*5).Delay(TimeSpan.FromMilliseconds(900), RxApp.MainThreadScheduler))
                     .Subscribe(x => calculatedResult = x);
 
                 fixture.CanExecuteObservable.Subscribe(x => latestCanExecute = x);
