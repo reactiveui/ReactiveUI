@@ -121,13 +121,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CommandBinding.cs" />
-    <Compile Include="CommandInterfaces.cs" />
     <Compile Include="DesignModeDetector.cs" />
     <Compile Include="Errors.cs" />
     <Compile Include="IDependencyResolver.cs" />
     <Compile Include="Interfaces.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Legacy\CommandInterfaces.cs" />
+    <Compile Include="Legacy\ReactiveAsyncCommand.cs" />
+    <Compile Include="Legacy\ReactiveCommand.cs" />
     <Compile Include="Logging.cs">
       <SubType>Code</SubType>
     </Compile>
