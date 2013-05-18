@@ -357,5 +357,63 @@ namespace ReactiveUI.Tests
                 Assert.False(latestCanExecute);
             });
         }
+
+        [Fact]
+        public void AllowConcurrentExecutionTest()
+        {
+            (new TestScheduler()).With(sched => {
+                var fixture = new ReactiveCommand(null, true, sched);
+
+                Assert.True(fixture.CanExecute(null));
+
+                var result = fixture.RegisterAsync(_ => Observable.Return(4).Delay(TimeSpan.FromSeconds(5), sched))
+                    .CreateCollection();
+                Assert.Equal(0, result.Count);
+
+                sched.AdvanceToMs(25);
+                Assert.Equal(0, result.Count);
+
+                fixture.Execute(null);
+                Assert.True(fixture.CanExecute(null));
+                Assert.Equal(0, result.Count);
+
+                sched.AdvanceToMs(2500);
+                Assert.True(fixture.CanExecute(null));
+                Assert.Equal(0, result.Count);
+
+                sched.AdvanceToMs(5500);
+                Assert.True(fixture.CanExecute(null));
+                Assert.Equal(1, result.Count);
+            });
+        }
+
+        [Fact]
+        public void DisallowConcurrentExecutionTest()
+        {
+            (new TestScheduler()).With(sched => {
+                var fixture = new ReactiveCommand(null, false, sched);
+
+                Assert.True(fixture.CanExecute(null));
+
+                var result = fixture.RegisterAsync(_ => Observable.Return(4).Delay(TimeSpan.FromSeconds(5), sched))
+                    .CreateCollection();
+                Assert.Equal(0, result.Count);
+
+                sched.AdvanceToMs(25);
+                Assert.Equal(0, result.Count);
+
+                fixture.Execute(null);
+                Assert.False(fixture.CanExecute(null));
+                Assert.Equal(0, result.Count);
+
+                sched.AdvanceToMs(2500);
+                Assert.False(fixture.CanExecute(null));
+                Assert.Equal(0, result.Count);
+
+                sched.AdvanceToMs(5500);
+                Assert.True(fixture.CanExecute(null));
+                Assert.Equal(1, result.Count);
+            });
+        }
     }
 }
