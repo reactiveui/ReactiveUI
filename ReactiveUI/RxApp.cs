@@ -14,6 +14,7 @@ using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Runtime.CompilerServices;
 
 namespace ReactiveUI
 {
@@ -88,15 +89,12 @@ namespace ReactiveUI
 
         public static IDependencyResolver DependencyResolver {
             get {
-                if (_UnitTestDependencyResolver != null) return _UnitTestDependencyResolver;
-
-                if (_DependencyResolver == null) {
-                    // NB: This shouldn't normally happen, only if someone 
-                    // explictly nulls out DependencyResolver for some reason.
-                    initializeDependencyResolver();
+                IDependencyResolver resolver = _UnitTestDependencyResolver ?? _DependencyResolver;
+                if (resolver == null)
+                {
+                    ThrowUninitializedException();
                 }
-
-                return _DependencyResolver;
+                return resolver;
             }
             set {
                 if (InUnitTestRunner()) {
@@ -118,7 +116,14 @@ namespace ReactiveUI
         /// to simplify writing common unit tests.
         /// </summary>
         public static IScheduler MainThreadScheduler {
-            get { return _UnitTestMainThreadScheduler ?? _MainThreadScheduler; }
+            get {
+                IScheduler scheduler = _UnitTestMainThreadScheduler ?? _MainThreadScheduler;
+                if (scheduler == null)
+                {
+                    ThrowUninitializedException();
+                }
+                return scheduler;
+            }
             set {
                 // N.B. The ThreadStatic dance here is for the unit test case -
                 // often, each test will override MainThreadScheduler with their
@@ -143,7 +148,14 @@ namespace ReactiveUI
         /// Task Pool (or the normal Threadpool on Silverlight).
         /// </summary>
         public static IScheduler TaskpoolScheduler {
-            get { return _UnitTestTaskpoolScheduler ?? _TaskpoolScheduler; }
+            get { 
+                IScheduler scheduler = _UnitTestTaskpoolScheduler ?? _TaskpoolScheduler;
+                if (scheduler == null)
+                {
+                    ThrowUninitializedException();
+                }
+                return scheduler;
+            }
             set {
                 if (InUnitTestRunner()) {
                     _UnitTestTaskpoolScheduler = value;
@@ -163,8 +175,35 @@ namespace ReactiveUI
         /// entry)
         /// </summary>
         public static Func<Type, IRxUILogger> LoggerFactory {
-            get { return _LoggerFactory; }
+            get {
+                if (_LoggerFactory == null)
+                {
+                    ThrowUninitializedException();
+                }
+                return _LoggerFactory; 
+            }
             set { _LoggerFactory = value; _LoggerFactoryChanged.OnNext(Unit.Default); }
+        }
+
+        static IObserver<Exception> _DefaultExceptionHandler;
+
+        /// <summary>
+        /// This Observer is signalled whenever an object that has a 
+        /// ThrownExceptions property doesn't Subscribe to that Observable. Use
+        /// Observer.Create to set up what will happen - the default is to crash
+        /// the application with an error message.
+        /// </summary>
+        public static IObserver<Exception> DefaultExceptionHandler {
+            get {
+                if (_DefaultExceptionHandler == null)
+                {
+                    ThrowUninitializedException();
+                }
+                return _DefaultExceptionHandler;
+            }
+            set {
+                _DefaultExceptionHandler = value;
+            }
         }
 
         /// <summary>
@@ -174,15 +213,7 @@ namespace ReactiveUI
         /// </summary>
         public static bool? InUnitTestRunnerOverride { get; set; }
 
-        /// <summary>
-        /// This Observer is signalled whenever an object that has a 
-        /// ThrownExceptions property doesn't Subscribe to that Observable. Use
-        /// Observer.Create to set up what will happen - the default is to crash
-        /// the application with an error message.
-        /// </summary>
-        public static IObserver<Exception> DefaultExceptionHandler { get; set; }
-
-        static bool? _inUnitTestRunner;
+        static bool? _InUnitTestRunner;
 
         /// <summary>
         /// InUnitTestRunner attempts to determine heuristically if the current
@@ -197,13 +228,13 @@ namespace ReactiveUI
                 return InUnitTestRunnerOverride.Value;
             }
 
-            if (!_inUnitTestRunner.HasValue) {
+            if (!_InUnitTestRunner.HasValue) {
                 // NB: This is in a separate static ctor to avoid a deadlock on 
                 // the static ctor lock when blocking on async methods 
-                _inUnitTestRunner = UnitTestDetector.IsInUnitTestRunner() || DesignModeDetector.IsInDesignMode();
+                _InUnitTestRunner = UnitTestDetector.IsInUnitTestRunner() || DesignModeDetector.IsInDesignMode();
             }
 
-            return _inUnitTestRunner.Value;
+            return _InUnitTestRunner.Value;
         }
 
         /// <summary>
@@ -228,6 +259,11 @@ namespace ReactiveUI
             var resolver = new ModernDependencyResolver();
             resolver.InitializeResolver();
             _DependencyResolver = resolver;
+        }
+
+        static void ThrowUninitializedException([CallerMemberName]string property = null)
+        {
+            throw new InvalidOperationException(string.Format("RxApp.{0} was called without proper initializing ReactiveUI first. Make sure you either include a call to RxApp.Initialize() during app startup or set the required properties by hand to a value not equal to <null>.", property));
         }
     }    
 }
