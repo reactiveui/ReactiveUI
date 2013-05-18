@@ -58,11 +58,14 @@
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.MonoTouch.CSharp.targets" />
   <ItemGroup>
+    <Compile Include="BindingErrorProviders.cs" />
+    <Compile Include="BindingTrackerBindingHook.cs" />
     <Compile Include="BindingTypeConverters.cs" />
     <Compile Include="CommandBinding.cs" />
     <Compile Include="CompatMixins.cs" />
     <Compile Include="DefaultPropertyBinding.cs" />
     <Compile Include="DesignModeDetector.cs" />
+    <Compile Include="DisplayValidationMixin.cs" />
     <Compile Include="Errors.cs" />
     <Compile Include="IDependencyResolver.cs" />
     <Compile Include="INPCObservableForProperty.cs" />

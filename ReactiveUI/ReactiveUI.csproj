@@ -62,6 +62,8 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BindingErrorProviders.cs" />
+    <Compile Include="BindingTrackerBindingHook.cs" />
     <Compile Include="AutoPersistHelper.cs" />
     <Compile Include="BindingTypeConverters.cs" />
     <Compile Include="CollectionDebugView.cs" />
@@ -70,6 +72,7 @@
     <Compile Include="CompatMixins.cs" />
     <Compile Include="ContractStubs.cs" />
     <Compile Include="DefaultPropertyBinding.cs" />
+    <Compile Include="DisplayValidationMixin.cs" />
     <Compile Include="DesignModeDetector.cs" />
     <Compile Include="Errors.cs" />
     <Compile Include="ModernDependencyResolver.cs" />

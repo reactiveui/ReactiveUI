@@ -49,6 +49,11 @@ namespace ReactiveUI.Xaml
             registerFunction(() => new AutoDataTemplateBindingHook(), typeof(IPropertyBindingHook));
 #endif
 
+#if !MONO && !WINRT && !WP8
+            registerFunction(() => new XamlValidationDisplayProvider(), typeof(IBindingDisplayProvider));
+            registerFunction(() => new DataErrorInfoBindingProvider(), typeof(IBindingErrorProvider));
+#endif
+
 #if COCOA
             registerFunction(() => new KVOObservableForProperty(), typeof(ICreatesObservableForProperty));
             registerFunction(() => new CocoaDefaultPropertyBinding(), typeof(IDefaultPropertyBindingProvider));
