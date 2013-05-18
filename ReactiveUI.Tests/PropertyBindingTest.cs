@@ -55,7 +55,7 @@ namespace ReactiveUI.Tests
             set { this.RaiseAndSetIfChanged(ref _NullableDouble, value); }
         }
 
-        public ReactiveCollection<string> SomeCollectionOfStrings { get; protected set; }
+        public ReactiveList<string> SomeCollectionOfStrings { get; protected set; }
 
         public PropertyBindModel _Model;
         public PropertyBindModel Model {
@@ -66,7 +66,7 @@ namespace ReactiveUI.Tests
         public PropertyBindViewModel(PropertyBindModel model = null)
         {
             Model = model ?? new PropertyBindModel() {AThing = 42, AnotherThing = "Baz"};
-            SomeCollectionOfStrings = new ReactiveCollection<string>(new[] { "Foo", "Bar" });
+            SomeCollectionOfStrings = new ReactiveList<string>(new[] { "Foo", "Bar" });
         }
     }
 

@@ -21,7 +21,7 @@ namespace ReactiveUI.Tests
         [Fact]
         public void CollectionCountChangedTest()
         {
-            var fixture = new ReactiveCollection<int>();
+            var fixture = new ReactiveList<int>();
             var before_output = new List<int>();
             var output = new List<int>();
 
@@ -46,7 +46,7 @@ namespace ReactiveUI.Tests
         [Fact]           
         public void CollectionCountChangedFiresWhenClearing()
         {
-            var items = new ReactiveCollection<object>(new []{new object()});
+            var items = new ReactiveList<object>(new []{new object()});
             bool countChanged = false;
             items.CountChanged.Subscribe(_ => {countChanged = true;});
 
@@ -58,7 +58,7 @@ namespace ReactiveUI.Tests
         [Fact]
         public void ItemsAddedAndRemovedTest()
         {
-            var fixture = new ReactiveCollection<int>();
+            var fixture = new ReactiveList<int>();
             var before_added = new List<int>();
             var before_removed = new List<int>();
             var added = new List<int>();
@@ -94,10 +94,10 @@ namespace ReactiveUI.Tests
         public void ReactiveCollectionIsRoundTrippable()
         {
             var output = new[] {"Foo", "Bar", "Baz", "Bamf"};
-            var fixture = new ReactiveCollection<string>(output);
+            var fixture = new ReactiveList<string>(output);
 
             string json = JSONHelper.Serialize(fixture);
-            var results = JSONHelper.Deserialize<ReactiveCollection<string>>(json);
+            var results = JSONHelper.Deserialize<ReactiveList<string>>(json);
 
             output.AssertAreEqual(results);
 
@@ -110,7 +110,7 @@ namespace ReactiveUI.Tests
         [Fact]
         public void ChangeTrackingShouldFireNotifications()
         {
-            var fixture = new ReactiveCollection<TestFixture>() { ChangeTrackingEnabled = true };
+            var fixture = new ReactiveList<TestFixture>() { ChangeTrackingEnabled = true };
             var before_output = new List<Tuple<TestFixture, string>>();
             var output = new List<Tuple<TestFixture, string>>();
             var item1 = new TestFixture() { IsOnlyOneWord = "Foo" };
@@ -148,7 +148,7 @@ namespace ReactiveUI.Tests
         [Fact]
         public void ChangeTrackingShouldWorkWhenAddingTheSameThingMoreThanOnce()
         {
-            var fixture = new ReactiveCollection<TestFixture>() { ChangeTrackingEnabled = true };
+            var fixture = new ReactiveList<TestFixture>() { ChangeTrackingEnabled = true };
             var output = new List<Tuple<TestFixture, string>>();
             var item1 = new TestFixture() { IsOnlyOneWord = "Foo" };
 
@@ -190,7 +190,7 @@ namespace ReactiveUI.Tests
         public void ChangeTrackingItemsShouldBeTrackedEvenWhenSuppressed()
         {
             var input = new TestFixture();
-            var fixture = new ReactiveCollection<TestFixture>() { ChangeTrackingEnabled = true };
+            var fixture = new ReactiveList<TestFixture>() { ChangeTrackingEnabled = true };
 
             var changes = fixture.ItemChanged.CreateCollection();
             Assert.Equal(0, changes.Count);
@@ -218,7 +218,7 @@ namespace ReactiveUI.Tests
         [Fact]
         public void GetAResetWhenWeAddALotOfItems()
         {
-            var fixture = new ReactiveCollection<int> { 1, };
+            var fixture = new ReactiveList<int> { 1, };
             var reset = fixture.ShouldReset.CreateCollection();
             Assert.Equal(0, reset.Count);
 
@@ -229,8 +229,8 @@ namespace ReactiveUI.Tests
         [Fact]
         public void CollectionsShouldntShareSubscriptions()
         {
-            var fixture1 = new ReactiveCollection<TestFixture>() { ChangeTrackingEnabled = true };
-            var fixture2 = new ReactiveCollection<TestFixture>() { ChangeTrackingEnabled = true };
+            var fixture1 = new ReactiveList<TestFixture>() { ChangeTrackingEnabled = true };
+            var fixture2 = new ReactiveList<TestFixture>() { ChangeTrackingEnabled = true };
             var item1 = new TestFixture() { IsOnlyOneWord = "Foo" };
             var output1 = new List<Tuple<TestFixture, string>>();
             var output2 = new List<Tuple<TestFixture, string>>();
@@ -280,7 +280,7 @@ namespace ReactiveUI.Tests
             var sched = new TestScheduler();
 
             using (TestUtils.WithScheduler(sched)) {
-                ReactiveCollection<string> fixture;
+                ReactiveList<string> fixture;
 
                 fixture = input.ToObservable(sched).CreateCollection(TimeSpan.FromSeconds(0.5));
                 sched.AdvanceToMs(1005);
@@ -298,7 +298,7 @@ namespace ReactiveUI.Tests
         public void DerivedCollectionsShouldFollowBaseCollection()
         {
             var input = new[] {"Foo", "Bar", "Baz", "Bamf"};
-            var fixture = new ReactiveCollection<TestFixture>(
+            var fixture = new ReactiveList<TestFixture>(
                 input.Select(x => new TestFixture() { IsOnlyOneWord = x }));
 
             var output = fixture.CreateDerivedCollection(new Func<TestFixture, string>(x => x.IsOnlyOneWord));
@@ -324,7 +324,7 @@ namespace ReactiveUI.Tests
         public void DerivedCollectionsShouldBeFiltered()
         {
             var input = new[] {"Foo", "Bar", "Baz", "Bamf"};
-            var fixture = new ReactiveCollection<TestFixture>(
+            var fixture = new ReactiveList<TestFixture>(
                 input.Select(x => new TestFixture() { IsOnlyOneWord = x }));
             var itemsAdded = new List<TestFixture>();
             var itemsRemoved = new List<TestFixture>();
@@ -362,7 +362,7 @@ namespace ReactiveUI.Tests
         public void DerivedCollectionShouldBeSorted()
         {
             var input = new[] { "Foo", "Bar", "Baz" };
-            var fixture = new ReactiveCollection<string>(input);
+            var fixture = new ReactiveList<string>(input);
 
             var output = fixture.CreateDerivedCollection(x => x, orderer: String.CompareOrdinal);
 
@@ -420,7 +420,7 @@ namespace ReactiveUI.Tests
         public void DerivedCollectionRemovalRegressionTest()
         {
             var input = new[] { 'A', 'B', 'C', 'D' };
-            var source = new ReactiveCollection<char>(input);
+            var source = new ReactiveList<char>(input);
 
             // A derived collection that filters away 'A' and 'B'
             var derived = source.CreateDerivedCollection(x => x, x=> x >= 'C');
@@ -453,7 +453,7 @@ namespace ReactiveUI.Tests
             {
                 (new TestLogger()).With(l =>
                 {
-                    var incc = new ReactiveCollection<NoOneHasEverSeenThisClassBefore>();
+                    var incc = new ReactiveList<NoOneHasEverSeenThisClassBefore>();
 
                     Assert.True(incc is INotifyCollectionChanged);
                     var inccDerived = incc.CreateDerivedCollection(x => x);
@@ -596,7 +596,7 @@ namespace ReactiveUI.Tests
 
                 var start = new[] { adam, bob, carol, dan, eve };
 
-                var employees = new ReactiveCollection<ReactiveEmployee>(start) {
+                var employees = new ReactiveList<ReactiveEmployee>(start) {
                     ChangeTrackingEnabled = true
                 };
 
@@ -672,7 +672,7 @@ namespace ReactiveUI.Tests
                 var b = new ReactiveVisibilityItem<string>("b", true);
                 var c = new ReactiveVisibilityItem<string>("c", true);
 
-                var items = new ReactiveCollection<ReactiveVisibilityItem<string>>(new[] { a, b, c })
+                var items = new ReactiveList<ReactiveVisibilityItem<string>>(new[] { a, b, c })
                 {
                     ChangeTrackingEnabled = true
                 };
@@ -720,7 +720,7 @@ namespace ReactiveUI.Tests
                 var b = new ReactiveVisibilityItem<string>("b", true);
                 var c = new ReactiveVisibilityItem<string>("c", true);
 
-                var items = new ReactiveCollection<ReactiveVisibilityItem<string>>(new[] { a, b, c })
+                var items = new ReactiveList<ReactiveVisibilityItem<string>>(new[] { a, b, c })
                 {
                     ChangeTrackingEnabled = true
                 };
@@ -750,7 +750,7 @@ namespace ReactiveUI.Tests
                 var bar = new ReactiveVisibilityItem<string>("Bar", true);
                 var baz = new ReactiveVisibilityItem<string>("Baz", true);
 
-                var items = new ReactiveCollection<ReactiveVisibilityItem<string>>(new[] { foo, bar, baz }) {
+                var items = new ReactiveList<ReactiveVisibilityItem<string>>(new[] { foo, bar, baz }) {
                     ChangeTrackingEnabled = true
                 };
 
@@ -778,7 +778,7 @@ namespace ReactiveUI.Tests
                 var d = new ReactiveVisibilityItem<string>("D", false);
                 var e = new ReactiveVisibilityItem<string>("E", true);
 
-                var items = new ReactiveCollection<ReactiveVisibilityItem<string>>(new[] { a, b, c, d, e }) {
+                var items = new ReactiveList<ReactiveVisibilityItem<string>>(new[] { a, b, c, d, e }) {
                     ChangeTrackingEnabled = true
                 };
 
@@ -815,7 +815,7 @@ namespace ReactiveUI.Tests
         [Fact]
         public void AddRangeSmokeTest()
         {
-            var fixture = new ReactiveCollection<string>();
+            var fixture = new ReactiveList<string>();
             var output = fixture.CreateDerivedCollection(x => "Prefix" + x);
 
             fixture.Add("Bamf");
@@ -844,7 +844,7 @@ namespace ReactiveUI.Tests
         [Fact]
         public void InsertRangeSmokeTest()
         {
-            var fixture = new ReactiveCollection<string>();
+            var fixture = new ReactiveList<string>();
             var output = fixture.CreateDerivedCollection(x => "Prefix" + x);
 
             fixture.Add("Bamf");
@@ -873,7 +873,7 @@ namespace ReactiveUI.Tests
         [Fact]
         public void SortShouldActuallySort()
         {
-            var fixture = new ReactiveCollection<int>(new[] {5, 1, 3, 2, 4,});
+            var fixture = new ReactiveList<int>(new[] {5, 1, 3, 2, 4,});
             fixture.Sort();
 
             Assert.True(new[] {1, 2, 3, 4, 5,}.Zip(fixture, (expected, actual) => expected == actual).All(x => x));
@@ -882,7 +882,7 @@ namespace ReactiveUI.Tests
         [Fact]
         public void DerivedCollectionShouldOrderCorrectly()
         {
-            var collection = new ReactiveCollection<int>();
+            var collection = new ReactiveList<int>();
             var orderedCollection = collection.CreateDerivedCollection(x => x, null, (x, y) => x.CompareTo(y));
 
             collection.Add(1);
@@ -896,7 +896,7 @@ namespace ReactiveUI.Tests
         [Fact]
         public void DerivedCollectionShouldStopFollowingAfterDisposal()
         {
-            var collection = new ReactiveCollection<int>();
+            var collection = new ReactiveList<int>();
 
             var orderedCollection = collection.CreateDerivedCollection(
                 x => x.ToString(),
@@ -917,7 +917,7 @@ namespace ReactiveUI.Tests
 
         [Fact]
         public void IListTSmokeTest() {
-            var fixture = new ReactiveCollection<string>() as IList<string>;
+            var fixture = new ReactiveList<string>() as IList<string>;
             Assert.NotNull(fixture);
 
             fixture.Add("foo");
@@ -976,7 +976,7 @@ namespace ReactiveUI.Tests
         [Fact]
         public void IListSmokeTest()
         {
-            var fixture = new ReactiveCollection<string>() as IList;
+            var fixture = new ReactiveList<string>() as IList;
             Assert.NotNull(fixture);
 
             var pos = fixture.Add("foo");
