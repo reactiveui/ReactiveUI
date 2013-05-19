@@ -8,11 +8,16 @@ using ReactiveUI;
 
 namespace ReactiveUI
 {
-    public static class RxRouting
+    public interface IViewLocator
+    {
+        IViewFor ResolveView<T>(T viewModel) where T : class;
+    }
+
+    public class DefaultViewLocator
     {
         public static Func<string, string> ViewModelToViewFunc { get; set; }
 
-        static RxRouting()
+        public DefaultViewLocator()
         {
             ViewModelToViewFunc = (vm) => interfaceifyTypeName(vm.Replace("ViewModel", "View"));
         }
@@ -25,7 +30,7 @@ namespace ReactiveUI
         /// <param name="viewModel">The ViewModel for which to find the
         /// associated View.</param>
         /// <returns>The View for the ViewModel.</returns>
-        public static IViewFor ResolveView<T>(T viewModel)
+        public IViewFor ResolveView<T>(T viewModel)
             where T : class
         {
             // Given IFooBarViewModel (whose name we derive from T), we'll look 
@@ -68,37 +73,6 @@ namespace ReactiveUI
 
             var newType = String.Join(".", parts, 0, parts.Length);
             return newType + "," + String.Join(",", typeVsAssembly.Skip(1));
-        }
-    }
-
-    public static class RoutableViewModelMixin
-    {
-        /// <summary>
-        /// This method allows you to set up connections that only operate
-        /// while the ViewModel has focus, and cleans up when the ViewModel
-        /// loses focus.
-        /// </summary>
-        /// <param name="onNavigatedTo">Called when the ViewModel is navigated
-        /// to - return an IDisposable that cleans up all of the things that are
-        /// configured in the method.</param>
-        /// <returns>An IDisposable that lets you disconnect the entire process
-        /// earlier than normal.</returns>
-        public static IDisposable WhenNavigatedTo(this IRoutableViewModel This, Func<IDisposable> onNavigatedTo)
-        {
-            IDisposable inner = null;
-
-            var router = This.HostScreen.Router;
-            return router.NavigationStack.CountChanged.Subscribe(_ => {
-                if (router.GetCurrentViewModel() == This) {
-                    if (inner != null)  inner.Dispose();
-                    inner = onNavigatedTo();
-                } else {
-                    if (inner != null) {
-                        inner.Dispose();
-                        inner = null;
-                    }
-                }
-            });
         }
     }
 }
