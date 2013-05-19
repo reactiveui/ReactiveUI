@@ -10,7 +10,7 @@ namespace ReactiveUI
 {
     public interface IViewLocator : IEnableLogger
     {
-        IViewFor ResolveView<T>(T viewModel) where T : class;
+        IViewFor ResolveView<T>(T viewModel, string contract = null) where T : class;
     }
 
     public static class ViewLocator
@@ -44,7 +44,7 @@ namespace ReactiveUI
         /// <param name="viewModel">The ViewModel for which to find the
         /// associated View.</param>
         /// <returns>The View for the ViewModel.</returns>
-        public IViewFor ResolveView<T>(T viewModel)
+        public IViewFor ResolveView<T>(T viewModel, string contract = null)
             where T : class
         {
             // Given IFooBarViewModel (whose name we derive from T), we'll look 
@@ -54,10 +54,9 @@ namespace ReactiveUI
             // * IViewFor<FooBarViewModel> (the original behavior in RxUI 3.1)
 
             var attrs = viewModel.GetType().GetCustomAttributes(typeof (ViewContractAttribute), true);
-            string key = null;
 
             if (attrs.Any()) {
-                key = ((ViewContractAttribute) attrs.First()).Contract;
+                contract = contract ?? ((ViewContractAttribute) attrs.First()).Contract;
             }
 
             // IFooBarView that implements IViewFor (or custom ViewModelToViewFunc)
@@ -66,7 +65,7 @@ namespace ReactiveUI
                 var type = Reflection.ReallyFindType(typeToFind, false);
 
                 if (type != null) {
-                    var ret = RxApp.DependencyResolver.GetService(type, key) as IViewFor;
+                    var ret = RxApp.DependencyResolver.GetService(type, contract) as IViewFor;
                     if (ret != null) return ret;
                 }
             } catch (Exception ex) {
@@ -76,7 +75,7 @@ namespace ReactiveUI
             var viewType = typeof (IViewFor<>);
 
             // IViewFor<FooBarViewModel> (the original behavior in RxUI 3.1)
-            return (IViewFor) RxApp.DependencyResolver.GetService(viewType.MakeGenericType(viewModel.GetType()), key);
+            return (IViewFor) RxApp.DependencyResolver.GetService(viewType.MakeGenericType(viewModel.GetType()), contract);
         }
 
         static string interfaceifyTypeName(string typeName)
