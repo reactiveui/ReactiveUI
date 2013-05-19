@@ -59,6 +59,14 @@ namespace ReactiveUI.Xaml
                 this.WhenAnyObservable(x => x.ViewContractObservable),
                 (vm, contract) => new { ViewModel = vm, Contract = contract, });
 
+#if WINRT
+            ViewContractObservable = Observable.FromEventPattern<SizeChangedEventHandler, SizeChangedEventArgs>(x => SizeChanged += x, x => SizeChanged -= x)
+                .Select(_ => Windows.UI.ViewManagement.ApplicationView.Value)
+                .DistinctUntilChanged()
+                .StartWith(Windows.UI.ViewManagement.ApplicationView.Value))
+                .Select(x => x.ToString());
+#endif
+ 
             vmAndContract.Subscribe(x => {
                 if (x.ViewModel == null) {
                     Content = DefaultContent;
