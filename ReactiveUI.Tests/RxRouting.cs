@@ -68,9 +68,10 @@ namespace ReactiveUI.Routing.Tests
             resolver.Register(() => new BazView(), typeof(IBazView));
 
             using (resolver.WithResolver()) {
+                var fixture = new DefaultViewLocator();
                 var vm = new BazViewModel(null);
 
-                var result = RxRouting.ResolveView(vm);
+                var result = fixture.ResolveView(vm);
                 this.Log().Info(result.GetType().FullName);
                 Assert.True(result is BazView);
             }

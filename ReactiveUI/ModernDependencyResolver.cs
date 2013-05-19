@@ -33,7 +33,7 @@ namespace ReactiveUI
         
         public object GetService(Type serviceType, string contract = null)
         {
-            return this.GetServices(serviceType, contract).FirstOrDefault();
+            return this.GetServices(serviceType, contract).LastOrDefault();
         }
  
         public IEnumerable<object> GetServices(Type serviceType, string contract = null)

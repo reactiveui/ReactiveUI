@@ -47,6 +47,15 @@ namespace ReactiveUI.Xaml
         public static readonly DependencyProperty DefaultContentProperty =
             DependencyProperty.Register("DefaultContent", typeof(object), typeof(RoutedViewHost), new PropertyMetadata(null));
 
+        public IObservable<string> ViewContractObservable {
+            get { return (IObservable<string>)GetValue(ViewContractObservableProperty); }
+            set { SetValue(ViewContractObservableProperty, value); }
+        }
+        public static readonly DependencyProperty ViewContractObservableProperty =
+            DependencyProperty.Register("ViewContractObservable", typeof(IObservable<string>), typeof(RoutedViewHost), new PropertyMetadata(Observable.Return(default(string))));
+
+        public IViewLocator ViewLocator { get; set; }
+
         public RoutedViewHost()
         {
             HorizontalContentAlignment = HorizontalAlignment.Stretch;
@@ -54,18 +63,31 @@ namespace ReactiveUI.Xaml
 
             if (RxApp.InUnitTestRunner()) return;
 
-            this.WhenAny(x => x.Router.NavigationStack, x => x.Value)
-                .SelectMany(x => x.CountChanged.StartWith(x.Count).Select(_ => x.LastOrDefault()))
-                .Subscribe(vm => {
-                    if (vm == null) {
-                        Content = DefaultContent;
-                        return;
-                    }
+#if WINRT
+            ViewContractObservable = Observable.FromEventPattern<SizeChangedEventHandler, SizeChangedEventArgs>(x => SizeChanged += x, x => SizeChanged -= x)
+                .Select(_ => Windows.UI.ViewManagement.ApplicationView.Value)
+                .DistinctUntilChanged()
+                .StartWith(Windows.UI.ViewManagement.ApplicationView.Value))
+                .Select(x => x.ToString());
+#endif
 
-                    var view = RxRouting.ResolveView(vm);
-                    view.ViewModel = vm;
-                    Content = view;
-                }, ex => RxApp.DefaultExceptionHandler.OnNext(ex));
+            var vmAndContract = Observable.CombineLatest(
+                this.WhenAny(x => x.Router, x => x.Value)
+                    .Select(x => x.ViewModelObservable()).Switch(),
+                this.WhenAnyObservable(x => x.ViewContractObservable),
+                (vm, contract) => new { ViewModel = vm, Contract = contract, });
+
+            vmAndContract.Subscribe(x => {
+                if (x.ViewModel == null) {
+                    Content = DefaultContent;
+                    return;
+                }
+
+                var viewLocator = ViewLocator ?? ReactiveUI.ViewLocator.Current;
+                var view = viewLocator.ResolveView(x.ViewModel, x.Contract);
+                view.ViewModel = x.ViewModel;
+                Content = view;
+            }, ex => RxApp.DefaultExceptionHandler.OnNext(ex));
         }
     }
 }
