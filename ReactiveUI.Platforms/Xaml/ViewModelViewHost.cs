@@ -37,29 +37,38 @@ namespace ReactiveUI.Xaml
         /// If no ViewModel is displayed, this content (i.e. a control) will be displayed.
         /// </summary>
         public object DefaultContent {
-            get { return (object)GetValue(DefaultContentProperty); }
+            get { return GetValue(DefaultContentProperty); }
             set { SetValue(DefaultContentProperty, value); }
         }
         public static readonly DependencyProperty DefaultContentProperty =
             DependencyProperty.Register("DefaultContent", typeof(object), typeof(ViewModelViewHost), new PropertyMetadata(null, somethingChanged));
 
+        public IObservable<string> ViewContractObservable {
+            get { return (IObservable<string>)GetValue(ViewContractObservableProperty); }
+            set { SetValue(ViewContractObservableProperty, value); }
+        }
+        public static readonly DependencyProperty ViewContractObservableProperty =
+            DependencyProperty.Register("ViewContractObservable", typeof(IObservable<string>), typeof(ViewModelViewHost), new PropertyMetadata(Observable.Return(default(string))));
+
         public IViewLocator ViewLocator { get; set; }
 
         public ViewModelViewHost()
         {
-            var latestViewModel = updateViewModel
-                .Select(_ => (ViewModel ?? DataContext))
-                .StartWith((object)null);
+            var vmAndContract = Observable.CombineLatest(
+                this.WhenAny(x => x.ViewModel, x => x.Value),
+                this.WhenAnyObservable(x => x.ViewContractObservable),
+                (vm, contract) => new { ViewModel = vm, Contract = contract, });
 
-            latestViewModel.Subscribe(vm => {
-                if (vm == null) {
+            vmAndContract.Subscribe(x => {
+                if (x.ViewModel == null) {
                     Content = DefaultContent;
                     return;
                 }
 
                 var viewLocator = ViewLocator ?? ReactiveUI.ViewLocator.Current;
-                var view = viewLocator.ResolveView(vm);
-                view.ViewModel = vm;
+                var view = viewLocator.ResolveView(x.ViewModel, x.Contract);
+
+                view.ViewModel = x.ViewModel;
                 Content = view;
             });
         }
