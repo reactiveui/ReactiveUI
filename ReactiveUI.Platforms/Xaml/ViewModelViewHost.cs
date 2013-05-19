@@ -43,6 +43,8 @@ namespace ReactiveUI.Xaml
         public static readonly DependencyProperty DefaultContentProperty =
             DependencyProperty.Register("DefaultContent", typeof(object), typeof(ViewModelViewHost), new PropertyMetadata(null, somethingChanged));
 
+        public IViewLocator ViewLocator { get; set; }
+
         public ViewModelViewHost()
         {
             var latestViewModel = updateViewModel
@@ -55,7 +57,8 @@ namespace ReactiveUI.Xaml
                     return;
                 }
 
-                var view = RxRouting.ResolveView(vm);
+                var viewLocator = ViewLocator ?? ReactiveUI.ViewLocator.Current;
+                var view = viewLocator.ResolveView(vm);
                 view.ViewModel = vm;
                 Content = view;
             });
