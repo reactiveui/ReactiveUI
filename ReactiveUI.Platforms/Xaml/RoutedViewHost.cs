@@ -47,6 +47,8 @@ namespace ReactiveUI.Xaml
         public static readonly DependencyProperty DefaultContentProperty =
             DependencyProperty.Register("DefaultContent", typeof(object), typeof(RoutedViewHost), new PropertyMetadata(null));
 
+        public IViewLocator ViewLocator { get; set; }
+
         public RoutedViewHost()
         {
             HorizontalContentAlignment = HorizontalAlignment.Stretch;
@@ -62,7 +64,8 @@ namespace ReactiveUI.Xaml
                         return;
                     }
 
-                    var view = RxRouting.ResolveView(vm);
+                    var viewLocator = ViewLocator ?? ReactiveUI.ViewLocator.Current;
+                    var view = viewLocator.ResolveView(vm);
                     view.ViewModel = vm;
                     Content = view;
                 }, ex => RxApp.DefaultExceptionHandler.OnNext(ex));
