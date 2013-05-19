@@ -102,6 +102,7 @@
     <Compile Include="Reflection.cs" />
     <Compile Include="ReflectionStubs.cs" />
     <Compile Include="Registrations.cs" />
+    <Compile Include="RoutableViewModelMixin.cs" />
     <Compile Include="RoutingState.cs" />
     <Compile Include="RxApp.cs" />
     <Compile Include="RxRouting.cs" />
