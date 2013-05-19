@@ -8,12 +8,19 @@ using ReactiveUI;
 
 namespace ReactiveUI
 {
-    public interface IViewLocator
+    public interface IViewLocator : IEnableLogger
     {
         IViewFor ResolveView<T>(T viewModel) where T : class;
     }
 
-    public class DefaultViewLocator
+    public static class ViewLocator
+    {
+        public static IViewLocator Current {
+            get { return RxApp.DependencyResolver.GetService<IViewLocator>() ?? new DefaultViewLocator(); }
+        }
+    }
+
+    public class DefaultViewLocator : IViewLocator
     {
         public static Func<string, string> ViewModelToViewFunc { get; set; }
 
