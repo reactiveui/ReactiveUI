@@ -16,7 +16,13 @@ namespace ReactiveUI
     public static class ViewLocator
     {
         public static IViewLocator Current {
-            get { return RxApp.DependencyResolver.GetService<IViewLocator>() ?? new DefaultViewLocator(); }
+            get {
+                var ret = RxApp.DependencyResolver.GetService<IViewLocator>();
+                if (ret == null) {
+                    throw new Exception("Could not find a default ViewLocator. This should never happen, your dependency resolver is broken");
+                }
+                return ret;
+            }
         }
     }
 
