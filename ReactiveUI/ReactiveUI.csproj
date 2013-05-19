@@ -105,7 +105,7 @@
     <Compile Include="RoutableViewModelMixin.cs" />
     <Compile Include="RoutingState.cs" />
     <Compile Include="RxApp.cs" />
-    <Compile Include="RxRouting.cs" />
+    <Compile Include="ViewLocator.cs" />
     <Compile Include="ScheduledSubject.cs" />
     <Compile Include="UnitTestDetector.cs" />
     <Compile Include="VariadicTemplates.cs">
