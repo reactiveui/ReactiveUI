@@ -16,6 +16,7 @@ namespace ReactiveUI
             registerFunction(() => new NullDefaultPropertyBindingProvider(), typeof(IDefaultPropertyBindingProvider));
             registerFunction(() => new EqualityTypeConverter(), typeof(IBindingTypeConverter));
             registerFunction(() => new StringConverter(), typeof(IBindingTypeConverter));
+            registerFunction(() => new DefaultViewLocator(), typeof(IViewLocator));
         }
     }
 }

@@ -28,11 +28,12 @@ namespace ReactiveUI
 
     public class DefaultViewLocator : IViewLocator
     {
-        public static Func<string, string> ViewModelToViewFunc { get; set; }
+        public Func<string, string> ViewModelToViewFunc { get; set; }
 
-        public DefaultViewLocator()
+        public DefaultViewLocator(Func<string, string> viewModelToViewFunc = null)
         {
-            ViewModelToViewFunc = (vm) => interfaceifyTypeName(vm.Replace("ViewModel", "View"));
+            ViewModelToViewFunc = viewModelToViewFunc ?? 
+                (vm => interfaceifyTypeName(vm.Replace("ViewModel", "View")));
         }
 
         /// <summary>
