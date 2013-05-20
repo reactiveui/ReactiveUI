@@ -92,6 +92,7 @@ namespace ReactiveUI
                 IDependencyResolver resolver = _UnitTestDependencyResolver ?? _DependencyResolver;
                 if (resolver == null)
                 {
+                    //if we haven't initialized yet, do this once
                     Initialize();
                 }
                 return resolver;
@@ -120,6 +121,7 @@ namespace ReactiveUI
                 IScheduler scheduler = _UnitTestMainThreadScheduler ?? _MainThreadScheduler;
                 if (scheduler == null)
                 {
+                    //if we haven't initialized yet, do this once
                     Initialize();
                 }
                 return scheduler;
@@ -152,6 +154,7 @@ namespace ReactiveUI
                 IScheduler scheduler = _UnitTestTaskpoolScheduler ?? _TaskpoolScheduler;
                 if (scheduler == null)
                 {
+                    //if we haven't initialized yet, do this once
                     Initialize();
                 }
                 return scheduler;
@@ -178,6 +181,7 @@ namespace ReactiveUI
             get {
                 if (_LoggerFactory == null)
                 {
+                    //if we haven't initialized yet, do this once
                     Initialize();
                 }
                 return _LoggerFactory; 
@@ -197,6 +201,7 @@ namespace ReactiveUI
             get {
                 if (_DefaultExceptionHandler == null)
                 {
+                    //if we haven't initialized yet, do this once
                     Initialize();
                 }
                 return _DefaultExceptionHandler;
