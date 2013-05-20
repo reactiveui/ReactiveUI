@@ -91,8 +91,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PropertyBinding.cs" />
     <Compile Include="Legacy\ReactiveAsyncCommand.cs" />
-    <Compile Include="ReactiveCollection.cs" />
-    <Compile Include="ReactiveAsyncCommand.cs" />
     <Compile Include="ReactiveList.cs" />
     <Compile Include="ReactiveCollectionMixins.cs" />
     <Compile Include="Legacy\ReactiveCommand.cs" />
