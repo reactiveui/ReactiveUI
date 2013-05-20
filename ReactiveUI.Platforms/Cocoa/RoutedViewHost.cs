@@ -16,44 +16,58 @@ namespace ReactiveUI.Cocoa
 {
     public class RoutedViewHost : ReactiveObject
     {
-        public RoutedViewHost(NSView targetView)
-        {
-            NSView viewLastAdded = null;
-            this.WhenAny(x => x.Router.NavigationStack, x => x.Value)
-                .SelectMany(x => x.CountChanged.StartWith(x.Count).Select(_ => x.LastOrDefault()))
-                .Subscribe(vm => {
-                    if (viewLastAdded != null) viewLastAdded.RemoveFromSuperview();
-
-                    if (vm == null) {
-                        if (DefaultContent != null) targetView.AddSubview(DefaultContent.View);
-                        return;
-                    }
-                    
-                    var view = RxRouting.ResolveView(vm);
-                    view.ViewModel = vm;
-
-                    if (view is NSViewController) {
-                        viewLastAdded = ((NSViewController)view).View;
-                    } else if (view is NSView) { 
-                        viewLastAdded = (NSView)view;
-                    } else {
-                        throw new Exception(String.Format("'{0}' must be an NSViewController or NSView", view.GetType().FullName));
-                    }
-
-                    targetView.AddSubview(viewLastAdded);           
-                }, ex => RxApp.DefaultExceptionHandler.OnNext(ex));
-        }
-
         IRoutingState _Router;
         public IRoutingState Router {
             get { return _Router; }
             set { this.RaiseAndSetIfChanged(ref _Router, value); }
+        }
+
+        IObservable<string> _ViewContractObservable;
+        public IObservable<string> ViewContractObservable {
+            get { return _ViewContractObservable; }
+            set { this.RaiseAndSetIfChanged(ref _ViewContractObservable, value); }
         }
         
         NSViewController _DefaultContent;
         public NSViewController DefaultContent {
             get { return _DefaultContent; }
             set { this.RaiseAndSetIfChanged(ref _DefaultContent, value); }
+        }
+        
+        public IViewLocator ViewLocator { get; set; }
+
+        public RoutedViewHost(NSView targetView)
+        {
+            NSView viewLastAdded = null;
+                        
+            var vmAndContract = Observable.CombineLatest(
+                this.WhenAny(x => x.Router, x => x.Value)
+                    .Select(x => x.ViewModelObservable()).Switch(),
+                this.WhenAnyObservable(x => x.ViewContractObservable),
+                (vm, contract) => new { ViewModel = vm, Contract = contract, });
+
+            vmAndContract.Subscribe(x => {
+                if (viewLastAdded != null) viewLastAdded.RemoveFromSuperview();
+
+                if (x.ViewModel == null) {
+                    if (DefaultContent != null) targetView.AddSubview(DefaultContent.View);
+                    return;
+                }
+
+                var viewLocator = ViewLocator ?? ReactiveUI.ViewLocator.Current;
+                var view = viewLocator.ResolveView(x.ViewModel, x.Contract);
+                view.ViewModel = x.ViewModel;
+
+                if (view is NSViewController) {
+                    viewLastAdded = ((NSViewController)view).View;
+                } else if (view is NSView) { 
+                    viewLastAdded = (NSView)view;
+                } else {
+                    throw new Exception(String.Format("'{0}' must be an NSViewController or NSView", view.GetType().FullName));
+                }
+
+                targetView.AddSubview(viewLastAdded);           
+            }, ex => RxApp.DefaultExceptionHandler.OnNext(ex));
         }
     }
 }

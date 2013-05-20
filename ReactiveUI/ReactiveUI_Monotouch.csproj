@@ -92,7 +92,6 @@
     <Compile Include="Reflection.cs" />
     <Compile Include="Registrations.cs" />
     <Compile Include="RoutingState.cs" />
-    <Compile Include="RxRouting.cs" />
     <Compile Include="ScheduledSubject.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UnitTestDetector.cs" />
@@ -105,6 +104,9 @@
     <Compile Include="Rx-Shim\ImmutableList.cs" />
     <Compile Include="ReactiveCollectionMixins.cs" />
     <Compile Include="WaitForDispatcherScheduler.cs" />
+    <Compile Include="RegisterableInterfaces.cs" />
+    <Compile Include="RoutableViewModelMixin.cs" />
+    <Compile Include="ViewLocator.cs" />
   </ItemGroup>
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
 </Project>
