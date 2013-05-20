@@ -82,10 +82,7 @@
     <Compile Include="ObservedChangedMixin.cs" />
     <Compile Include="OrderedComparer.cs" />
     <Compile Include="POCOObservableForProperty.cs" />
-    <Compile Include="ReactiveAsyncCommand.cs" />
     <Compile Include="ReactiveBinding.cs" />
-    <Compile Include="ReactiveCollection.cs" />
-    <Compile Include="ReactiveAsyncCommand.cs" />
     <Compile Include="ReactiveCommand.cs" />
     <Compile Include="ReactiveList.cs" />
     <Compile Include="ReactiveNotifyPropertyChangedMixin.cs" />
