@@ -3,11 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
-using System.Linq.Expressions;
 using System.Reactive;
-using System.Reactive.Concurrency;
-using System.Reactive.Subjects;
-using System.Windows.Input;
 
 namespace ReactiveUI
 {
@@ -247,14 +243,14 @@ namespace ReactiveUI
         /// implements IReactiveNotifyPropertyChanged. This is only enabled when
         /// ChangeTrackingEnabled is set to True.
         /// </summary>
-        IObservable<IObservedChange<T, object>> ItemChanging { get; }
+        new IObservable<IObservedChange<T, object>> ItemChanging { get; }
 
         /// <summary>
         /// Provides Item Changed notifications for any item in collection that
         /// implements IReactiveNotifyPropertyChanged. This is only enabled when
         /// ChangeTrackingEnabled is set to True.
         /// </summary>
-        IObservable<IObservedChange<T, object>> ItemChanged { get; }
+        new IObservable<IObservedChange<T, object>> ItemChanged { get; }
     }
 
     /// <summary>
