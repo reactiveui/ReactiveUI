@@ -88,7 +88,7 @@ namespace ReactiveUI
                 Dictionary<string, object> contextInfo = null,
                 Exception innerException = null)
         {
-            RecoveryOptions = new ReactiveCollection<IRecoveryCommand>(recoveryOptions ?? Enumerable.Empty<IRecoveryCommand>());
+            RecoveryOptions = new ReactiveList<IRecoveryCommand>(recoveryOptions ?? Enumerable.Empty<IRecoveryCommand>());
 
             ErrorCauseOrResolution = errorCauseOrResolution;
             ContextInfo = contextInfo ?? new Dictionary<string, object>();
@@ -114,14 +114,14 @@ namespace ReactiveUI
         /// </summary>
         public Dictionary<string, object> ContextInfo { get; protected set; }
 
-        ReactiveCollection<IRecoveryCommand> _RecoveryOptions;
+        ReactiveList<IRecoveryCommand> _RecoveryOptions;
 
         /// <summary>
         /// The list of available Recovery Options that will be presented to
         /// the user to resolve the issue - these usually correspond to
         /// buttons in the dialog.
         /// </summary>
-        public ReactiveCollection<IRecoveryCommand> RecoveryOptions {
+        public ReactiveList<IRecoveryCommand> RecoveryOptions {
             get { return _RecoveryOptions; }
             protected set { this.RaiseAndSetIfChanged(ref _RecoveryOptions, value); }
         }
