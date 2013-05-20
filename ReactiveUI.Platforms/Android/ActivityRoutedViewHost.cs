@@ -20,8 +20,11 @@ namespace ReactiveUI.Android
         IDisposable _inner;
         IScreen _hostScreen;
 
-        public ActivityRoutedViewHost(Activity hostActivity)
+        public ActivityRoutedViewHost(Activity hostActivity, IViewLocator viewLocator = null)
         {
+            viewLocator = viewLocator ?? ViewLocator.Current;
+            var platform = RxApp.DependencyResolver.GetService<IPlatformOperations>();
+
             var keyUp = hostActivity.GetType()
                 .GetMethods(BindingFlags.Public | BindingFlags.DeclaredOnly | BindingFlags.NonPublic | BindingFlags.Instance)
                 .FirstOrDefault(x => x.Name == "OnKeyUp");
@@ -45,7 +48,7 @@ namespace ReactiveUI.Android
                         return;
                     }
 
-                    var view = RxRouting.ResolveView(vm);
+                    var view = viewLocator.ResolveView(vm, platform.GetOrientation());
                     if (view.GetType() != typeof(Type)) {
                         throw new Exception("Views in Android must be the Type of an Activity");
                     }
