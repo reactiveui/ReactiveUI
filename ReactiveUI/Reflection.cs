@@ -293,7 +293,7 @@ namespace ReactiveUI
             try {
                 return type.GetField(propertyName, flags);
             } 
-            catch (AmbiguousMatchException _) {
+            catch (AmbiguousMatchException) {
                 return type.GetFields(flags).First(pi => pi.Name == propertyName);
             }
         }
@@ -303,7 +303,7 @@ namespace ReactiveUI
             try {
                 return type.GetProperty(propertyName, flags);
             } 
-            catch (AmbiguousMatchException _) {
+            catch (AmbiguousMatchException) {
                 return type.GetProperties(flags).First(pi => pi.Name == propertyName);
             }
         }
