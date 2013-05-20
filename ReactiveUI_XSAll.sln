@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI_Mono", "ReactiveUI\ReactiveUI_Mono.csproj", "{292A477B-BB94-43C1-984E-E177EF9FEDB7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI_MonoMac", "ReactiveUI\ReactiveUI_MonoMac.csproj", "{292A477B-BB94-43C1-984E-E177EF9FEDB7}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{BD9762CF-E104-481C-96A6-26E624B86283}"
 	ProjectSection(SolutionItems) = preProject
