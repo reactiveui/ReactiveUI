@@ -11,7 +11,7 @@ using System.Threading;
 
 namespace ReactiveUI
 {
-    public abstract class ReactiveDerivedCollection<TValue> : ReactiveCollection<TValue>, IDisposable
+    public abstract class ReactiveDerivedCollection<TValue> : ReactiveList<TValue>, IReactiveDerivedList<TValue>
     {
         const string readonlyExceptionMessage = "Derived collections cannot be modified.";
 
@@ -151,7 +151,7 @@ namespace ReactiveUI
         public virtual void Dispose(bool disposing) { }
     }
 
-    public sealed class ReactiveDerivedCollection<TSource, TValue> : ReactiveDerivedCollection<TValue>, IDisposable
+    public sealed class ReactiveDerivedCollection<TSource, TValue> : ReactiveDerivedCollection<TValue>
     {
         readonly IEnumerable<TSource> source;
         readonly Func<TSource, TValue> selector;
@@ -504,7 +504,7 @@ namespace ReactiveUI
         }
     }
 
-    internal class ReactiveDerivedCollectionFromObservable<T>: ReactiveDerivedCollection<T>
+    internal class ReactiveDerivedCollectionFromObservable<T> : ReactiveDerivedCollection<T>
     {
         SingleAssignmentDisposable inner;
 
@@ -573,7 +573,7 @@ namespace ReactiveUI
         /// collection no faster than the delay provided.</param>
         /// <returns>A new collection which will be populated with the
         /// Observable.</returns>
-        public static ReactiveDerivedCollection<T> CreateCollection<T>(
+        public static IReactiveDerivedList<T> CreateCollection<T>(
             this IObservable<T> fromObservable, 
             TimeSpan? withDelay = null,
             Action<Exception> onError = null)
@@ -596,7 +596,7 @@ namespace ReactiveUI
         /// collection no faster than the delay provided.</param>
         /// <returns>A new collection which will be populated with the
         /// Observable.</returns>
-        public static ReactiveDerivedCollection<TRet> CreateCollection<T, TRet>(
+        public static IReactiveDerivedList<TRet> CreateCollection<T, TRet>(
             this IObservable<T> fromObservable,
             Func<T, TRet> selector,
             TimeSpan? withDelay = null)
@@ -616,7 +616,7 @@ namespace ReactiveUI
         ///
         /// Note that even though this method attaches itself to any 
         /// IEnumerable, it will only detect changes from objects implementing
-        /// INotifyCollectionChanged (like ReactiveCollection). If your source
+        /// INotifyCollectionChanged (like ReactiveList). If your source
         /// collection doesn't implement this, signalReset is the way to signal
         /// the derived collection to reorder/refilter itself.
         /// </summary>
@@ -632,7 +632,7 @@ namespace ReactiveUI
         /// <returns>A new collection whose items are equivalent to
         /// Collection.Select().Where().OrderBy() and will mirror changes 
         /// in the initial collection.</returns>
-        public static ReactiveDerivedCollection<TNew> CreateDerivedCollection<T, TNew, TDontCare>(
+        public static IReactiveDerivedList<TNew> CreateDerivedCollection<T, TNew, TDontCare>(
             this IEnumerable<T> This,
             Func<T, TNew> selector,
             Func<T, bool> filter = null,
@@ -658,7 +658,7 @@ namespace ReactiveUI
         /// 
         /// Be aware that this overload will result in a collection that *only* 
         /// updates if the source implements INotifyCollectionChanged. If your
-        /// list changes but isn't a ReactiveCollection/ObservableCollection,
+        /// list changes but isn't a ReactiveList/ObservableCollection,
         /// you probably want to use the other overload.
         /// </summary>
         /// <param name="selector">A Select function that will be run on each
@@ -670,7 +670,7 @@ namespace ReactiveUI
         /// <returns>A new collection whose items are equivalent to
         /// Collection.Select().Where().OrderBy() and will mirror changes 
         /// in the initial collection.</returns>
-        public static ReactiveDerivedCollection<TNew> CreateDerivedCollection<T, TNew>(
+        public static IReactiveDerivedList<TNew> CreateDerivedCollection<T, TNew>(
             this IEnumerable<T> This,
             Func<T, TNew> selector,
             Func<T, bool> filter = null,
