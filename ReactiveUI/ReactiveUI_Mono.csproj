@@ -136,7 +136,6 @@
     <Compile Include="POCOObservableForProperty.cs" />
     <Compile Include="PropertyBinding.cs" />
     <Compile Include="ReactiveAsyncCommand.cs" />
-    <Compile Include="ReactiveCollection.cs" />
     <Compile Include="ReactiveCollectionMixins.cs" />
     <Compile Include="ReactiveCommand.cs" />
     <Compile Include="ReactiveNotifyPropertyChangedMixin.cs" />
@@ -152,6 +151,7 @@
     <Compile Include="VariadicTemplates.cs" />
     <Compile Include="WaitForDispatcherScheduler.cs" />
     <Compile Include="CompatMixins.cs" />
+    <Compile Include="ReactiveList.cs" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />

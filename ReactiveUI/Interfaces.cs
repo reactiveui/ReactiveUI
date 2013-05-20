@@ -116,7 +116,7 @@ namespace ReactiveUI
     /// IReactiveNotifyPropertyChanged semantically as "Fire when *anything* in
     /// the collection or any of its items have changed, in any way".
     /// </summary>
-    public interface IReactiveCollection : IEnumerable, INotifyCollectionChanged
+    public interface IReactiveCollection : ICollection, INotifyCollectionChanged, INotifyPropertyChanging, INotifyPropertyChanged, IEnableLogger
     {
         //
         // Collection Tracking
@@ -212,11 +212,23 @@ namespace ReactiveUI
         IObservable<Unit> ShouldReset { get; }
     }
 
+    public interface IReadOnlyReactiveCollection<T> : IReadOnlyCollection<T>, IReactiveCollection
+    {
+    }
+
+    public interface IReadOnlyReactiveList<T> : IReadOnlyList<T>, IReadOnlyReactiveCollection<T>
+    {
+    }
+
+    public interface IReactiveDerivedList<T> : IReadOnlyReactiveList<T>, IDisposable
+    {
+    }
+
     /// <summary>
     /// IReactiveCollection of T is the typed version of IReactiveCollection and
     /// adds type-specified versions of Observables
     /// </summary>
-    public interface IReactiveCollection<T> : IEnumerable<T>, IReactiveCollection
+    public interface IReactiveCollection<T> : ICollection<T>, IReactiveCollection
     {
         /// <summary>
         /// Fires when items are added to the collection, once per item added.
@@ -255,7 +267,15 @@ namespace ReactiveUI
         /// ChangeTrackingEnabled is set to True.
         /// </summary>
         IObservable<IObservedChange<T, object>> ItemChanged { get; }
-    }    
+
+    }
+
+    /// <summary>
+    /// An IList that reports change notifications
+    /// </summary>
+    public interface IReactiveList<T> : IReactiveCollection<T>, IList<T>, IList
+    {
+    }
 
     // NB: This is just a name we can bolt extension methods to
     public interface INavigateCommand : IReactiveCommand { }
@@ -266,7 +286,7 @@ namespace ReactiveUI
         /// Represents the current navigation stack, the last element in the
         /// collection being the currently visible ViewModel.
         /// </summary>
-        ReactiveCollection<IRoutableViewModel> NavigationStack { get; }
+        ReactiveList<IRoutableViewModel> NavigationStack { get; }
 
         /// <summary>
         /// Navigates back to the previous element in the stack.

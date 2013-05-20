@@ -172,7 +172,7 @@ namespace ReactiveUI.Tests
         {
             (new TestScheduler()).With(sched => {
                 var fixture = new ReactiveCommand();
-                ReactiveCollection<int> results;
+                ReactiveList<int> results;
 
                 results = fixture.RegisterAsync(_ =>
                     Observable.Return(5).Delay(TimeSpan.FromSeconds(5), sched)).CreateCollection();
