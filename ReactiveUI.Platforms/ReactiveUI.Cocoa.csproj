@@ -17,7 +17,7 @@
     <DebugSymbols>True</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>False</Optimize>
-    <OutputPath>bin\Debug\Mono</OutputPath>
+    <OutputPath>bin\Debug\MonoMac</OutputPath>
     <DefineConstants>DEBUG; MONO; COCOA</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -32,7 +32,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
     <Optimize>True</Optimize>
-    <OutputPath>bin\Release\Mono</OutputPath>
+    <OutputPath>bin\Release\MonoMac</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <EnablePackageSigning>False</EnablePackageSigning>
@@ -48,7 +48,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'AppStore|AnyCPU' ">
     <DebugType>none</DebugType>
     <Optimize>True</Optimize>
-    <OutputPath>bin\AppStore\Mono</OutputPath>
+    <OutputPath>bin\AppStore\MonoMac</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <PackageSigningKey>3rd Party Mac Developer Installer</PackageSigningKey>
@@ -100,9 +100,9 @@
     <Compile Include="Cocoa\PlatformOperations.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ReactiveUI\ReactiveUI_Mono.csproj">
+    <ProjectReference Include="..\ReactiveUI\ReactiveUI_MonoMac.csproj">
       <Project>{292A477B-BB94-43C1-984E-E177EF9FEDB7}</Project>
-      <Name>ReactiveUI_Mono</Name>
+      <Name>ReactiveUI_MonoMac</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
