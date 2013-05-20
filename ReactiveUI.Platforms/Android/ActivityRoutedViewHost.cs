@@ -39,7 +39,8 @@ namespace ReactiveUI.Android
             }
 
             bool firstSet = false;
-            _inner = _hostScreen.Router.ViewModelObservable()
+
+            _inner = _hostScreen.Router.CurrentViewModel
                 .Where(x => x != null)
                 .Subscribe(vm => {
                     if (!firstSet) {
