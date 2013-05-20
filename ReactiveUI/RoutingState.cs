@@ -52,6 +52,8 @@ namespace ReactiveUI
         [IgnoreDataMember]
         public INavigateCommand NavigateAndReset { get; protected set; }
 
+        public IObservable<IRoutableViewModel> CurrentViewModel { get; protected set; }
+
         public RoutingState()
         {
             _NavigationStack = new ReactiveList<IRoutableViewModel>();
@@ -86,6 +88,11 @@ namespace ReactiveUI
                 Navigate.Execute(x);
             });
 
+            CurrentViewModel = NavigationStack.Changed
+                .Select(_ => NavigationStack.LastOrDefault())
+                .DistinctUntilChanged()
+                .StartWith(NavigationStack.LastOrDefault());
+
             rxObjectsSetup = true;
         }
     }
@@ -112,22 +119,12 @@ namespace ReactiveUI
             return This.NavigationStack.LastOrDefault();
         }
 
-        /// <summary>
-        /// Returns an Observable that signals ViewModel changes.
-        /// </summary>
-        public static IObservable<IRoutableViewModel> ViewModelObservable(this IRoutingState This)
-        {
-            return This.NavigationStack.CountChanged
-                .Select(_ => This.GetCurrentViewModel())
-                .StartWith(This.GetCurrentViewModel());
-        }
-
         public static IReactiveCommand NavigateCommandFor<T>(this IRoutingState This)
             where T : IRoutableViewModel
         {
-	    var ret = new ReactiveCommand(This.Navigate.CanExecuteObservable);
-            ret.Select(_ => (IRoutableViewModel)RxApp.DependencyResolver.GetService<T>()).InvokeCommand(This.Navigate);
-            return ret;
+            var ret = new ReactiveCommand(This.Navigate.CanExecuteObservable);
+                ret.Select(_ => (IRoutableViewModel)RxApp.DependencyResolver.GetService<T>()).InvokeCommand(This.Navigate);
+                return ret;
         }
     }
 }

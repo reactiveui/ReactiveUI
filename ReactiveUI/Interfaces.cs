@@ -293,6 +293,8 @@ namespace ReactiveUI
         /// IRoutableViewModel.
         /// </summary>
         INavigateCommand NavigateAndReset { get; }
+
+        IObservable<IRoutableViewModel> CurrentViewModel { get; }
     }
 
     /// <summary>
