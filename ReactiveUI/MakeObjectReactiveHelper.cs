@@ -14,7 +14,7 @@ namespace ReactiveUI
     /// derive from IReactiveNotifyPropertyChanged, then implement all of the
     /// properties/methods using MakeObjectReactiveHelper.
     /// </summary>
-    public class MakeObjectReactiveHelper  : IReactiveNotifyPropertyChanged
+    public class MakeObjectReactiveHelper : IReactiveNotifyPropertyChanged
     {
         public MakeObjectReactiveHelper(INotifyPropertyChanged hostObject)
         {
@@ -38,9 +38,6 @@ namespace ReactiveUI
             return Disposable.Create(() => Interlocked.Decrement(ref _changeCountSuppressed));
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
-        public event PropertyChangingEventHandler PropertyChanging;
-
         readonly ISubject<IObservedChange<object, object>> _Changing = 
             new ScheduledSubject<IObservedChange<object, object>>(RxApp.MainThreadScheduler);
 
@@ -48,11 +45,23 @@ namespace ReactiveUI
             get { return _Changing.Where(_ => Interlocked.Read(ref _changeCountSuppressed) == 0); }
         }
 
-        ISubject<IObservedChange<object, object>> _Changed = 
+        readonly ISubject<IObservedChange<object, object>> _Changed = 
             new ScheduledSubject<IObservedChange<object, object>>(RxApp.MainThreadScheduler);
 
         public IObservable<IObservedChange<object, object>> Changed {
             get { return _Changed.Where(_ => Interlocked.Read(ref _changeCountSuppressed) == 0); }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged 
+        {
+            add { throw new NotImplementedException(); }
+            remove { throw new NotImplementedException(); }
+        }
+
+        public event PropertyChangingEventHandler PropertyChanging
+        {
+            add { throw new NotImplementedException(); }
+            remove { throw new NotImplementedException(); }
         }
     }
 }
