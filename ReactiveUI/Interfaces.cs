@@ -212,18 +212,6 @@ namespace ReactiveUI
         IObservable<Unit> ShouldReset { get; }
     }
 
-    public interface IReadOnlyReactiveCollection<T> : IReadOnlyCollection<T>, IReactiveCollection
-    {
-    }
-
-    public interface IReadOnlyReactiveList<T> : IReadOnlyList<T>, IReadOnlyReactiveCollection<T>
-    {
-    }
-
-    public interface IReactiveDerivedList<T> : IReadOnlyReactiveList<T>, IDisposable
-    {
-    }
-
     /// <summary>
     /// IReactiveCollection of T is the typed version of IReactiveCollection and
     /// adds type-specified versions of Observables
@@ -267,7 +255,6 @@ namespace ReactiveUI
         /// ChangeTrackingEnabled is set to True.
         /// </summary>
         IObservable<IObservedChange<T, object>> ItemChanged { get; }
-
     }
 
     /// <summary>
