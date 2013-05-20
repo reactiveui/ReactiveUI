@@ -1,5 +1,6 @@
 using System;
 using System.Reactive;
+using System.Reactive.Linq;
 
 #if UIKIT
 using MonoTouch.UIKit;
@@ -18,21 +19,27 @@ namespace ReactiveUI.Cocoa
         public ViewModelViewHost(NSView targetView)
         {
             NSView viewLastAdded = null;
-            this.WhenAny(x => x.DefaultContent, x => x.ViewModel, (c,v) => Unit.Default)
-                .Subscribe(_ => {
-                    if (viewLastAdded != null) viewLastAdded.RemoveFromSuperview();
 
-                    if (ViewModel == null) {
-                        if (DefaultContent != null) targetView.AddSubview(DefaultContent.View);
-                        return;
-                    }
+            var vmAndContract = Observable.CombineLatest(
+                this.WhenAny(x => x.ViewModel, x => x.Value),
+                this.WhenAnyObservable(x => x.ViewContractObservable),
+                (vm, contract) => new { ViewModel = vm, Contract = contract, });
 
-                    var view = RxRouting.ResolveView(ViewModel);
-                    view.ViewModel = ViewModel;
+            vmAndContract.Subscribe(x => {
+                if (viewLastAdded != null) viewLastAdded.RemoveFromSuperview();
 
-                    viewLastAdded = ((NSViewController)view).View;
-                    targetView.AddSubview(viewLastAdded);           
-                });
+                if (ViewModel == null) {
+                    if (DefaultContent != null) targetView.AddSubview(DefaultContent.View);
+                    return;
+                }
+
+                var viewLocator = ViewLocator ?? ReactiveUI.ViewLocator.Current;
+                var view = viewLocator.ResolveView(x.ViewModel, x.Contract);
+                view.ViewModel = x.ViewModel;
+
+                viewLastAdded = ((NSViewController)view).View;
+                targetView.AddSubview(viewLastAdded);           
+            });
         }
 
         NSViewController _DefaultContent;
@@ -46,5 +53,14 @@ namespace ReactiveUI.Cocoa
             get { return _ViewModel; }
             set { this.RaiseAndSetIfChanged(ref _ViewModel, value); }
         }
+
+
+        IObservable<string> _ViewContractObservable;
+        public IObservable<string> ViewContractObservable {
+            get { return _ViewContractObservable; }
+            set { this.RaiseAndSetIfChanged(ref _ViewContractObservable, value); }
+        }
+       
+        public IViewLocator ViewLocator { get; set; }
     }
 }
