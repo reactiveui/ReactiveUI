@@ -2,9 +2,11 @@ using System;
 using MonoTouch.UIKit;
 using ReactiveUI;
 using ReactiveUI.Cocoa;
+using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
+using System.Reactive.Subjects;
 using MonoTouch.Foundation;
 using System.ComponentModel;
 
@@ -13,14 +15,23 @@ namespace ReactiveUI.Cocoa
     public class RouterUINavigationController : UINavigationController
     {
         readonly IRoutingState router;
+        readonly Subject<Unit> orientationChanged = new Subject<Unit>();
 
-        public RouterUINavigationController(IRoutingState router)
+        public RouterUINavigationController(IRoutingState router, IViewLocator viewLocator = null)
         {
             this.router = router;
+            viewLocator = viewLocator ?? ViewLocator.Current;
 
-            router.Navigate.Subscribe (x => {
-                var view = RxRouting.ResolveView(x);
-                view.ViewModel = x;
+            var platform = RxApp.DependencyResolver.GetService<IPlatformOperations>();
+
+            var vmAndContract = Observable.CombineLatest(
+                router.Navigate,
+                orientationChanged,
+                (vm, _) => new { ViewModel = vm, Contract = platform.GetOrientation() });
+
+            vmAndContract.Subscribe (x => {
+                var view = viewLocator.ResolveView(x.ViewModel, x.Contract);
+                view.ViewModel = x.ViewModel;
 
                 this.PushViewController((UIViewController)view, true);
             });
@@ -32,6 +43,12 @@ namespace ReactiveUI.Cocoa
             });
 
             this.Delegate = new RouterUINavigationControllerDelegate(this, router);
+        }
+
+        public override void DidRotate(UIInterfaceOrientation fromInterfaceOrientation)
+        {
+            base.DidRotate(fromInterfaceOrientation);
+            orientationChanged.OnNext(Unit.Default);
         }
 
         bool dontPopWhileYouPop = false;
