@@ -63,13 +63,16 @@ namespace ReactiveUI.Xaml
 
             if (RxApp.InUnitTestRunner()) return;
 
-#if WINRT
+            var platform = RxApp.DependencyResolver.GetService<IPlatformOperations>();
+            if (platform == null) {
+                throw new Exception("Couldn't find an IPlatformOperations. This should never happen, your dependency resolver is broken");
+            }
+
             ViewContractObservable = Observable.FromEventPattern<SizeChangedEventHandler, SizeChangedEventArgs>(x => SizeChanged += x, x => SizeChanged -= x)
-                .Select(_ => Windows.UI.ViewManagement.ApplicationView.Value)
+                .Select(_ => platform.GetOrientation())
                 .DistinctUntilChanged()
-                .StartWith(Windows.UI.ViewManagement.ApplicationView.Value))
+                .StartWith(platform.GetOrientation())
                 .Select(x => x.ToString());
-#endif
 
             var vmAndContract = Observable.CombineLatest(
                 this.WhenAny(x => x.Router, x => x.Value)

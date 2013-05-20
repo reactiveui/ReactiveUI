@@ -36,6 +36,8 @@ namespace ReactiveUI.Xaml
     {
         public void Register(Action<Func<object>, Type> registerFunction)
         {
+            registerFunction(() => new PlatformOperations(), typeof(IPlatformOperations));
+
 #if !WINRT && !WP8
             registerFunction(() => new ComponentModelTypeConverter(), typeof(IBindingTypeConverter));
 #endif
