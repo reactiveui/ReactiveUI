@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive.Concurrency;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Input;
 
 namespace ReactiveUI
 {
@@ -214,11 +216,6 @@ namespace ReactiveUI
         T ViewModel { get; set; }
     }
 
-    internal interface IWantsToRegisterStuff
-    {
-        void Register(Action<Func<object>, Type> registerFunction);
-    }
-
     /// <summary>
     /// IScreen represents any object that is hosting its own routing -
     /// usually this object is your AppViewModel or MainWindow object.
@@ -282,5 +279,15 @@ namespace ReactiveUI
         /// <returns>An IDisposable which will disconnect the binding when 
         /// disposed.</returns>
         IDisposable BindCommandToObject<TEventArgs>(ICommand command, object target, IObservable<object> commandParameter, string eventName);
+    }
+
+    internal interface IPlatformOperations
+    {
+        string GetOrientation();
+    }
+
+    internal interface IWantsToRegisterStuff
+    {
+        void Register(Action<Func<object>, Type> registerFunction);
     }
 }
