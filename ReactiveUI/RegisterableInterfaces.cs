@@ -213,7 +213,7 @@ namespace ReactiveUI
         /// The ViewModel corresponding to this specific View. This should be
         /// a DependencyProperty if you're using XAML.
         /// </summary>
-        T ViewModel { get; set; }
+        new T ViewModel { get; set; }
     }
 
     /// <summary>
