@@ -86,7 +86,7 @@ namespace ReactiveUI
         /// Fires whenever an exception would normally terminate ReactiveUI 
         /// internal state.
         /// </summary>
-        public IObservable<Exception> ThrownExceptions { get; protected set; }
+        public IObservable<Exception> ThrownExceptions { get; private set; }
 
         public IDisposable Subscribe(IObserver<T> observer)
         {
