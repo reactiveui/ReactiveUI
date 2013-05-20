@@ -70,6 +70,7 @@
     <Compile Include="ComponentModelTypeConverter.cs" />
     <Compile Include="RealUnitTestDetector.cs" />
     <Compile Include="Registrations.cs" />
+    <Compile Include="Cocoa\PlatformOperations.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ReactiveUI\ReactiveUI_Monotouch.csproj">

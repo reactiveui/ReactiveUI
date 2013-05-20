@@ -115,7 +115,6 @@
     <Compile Include="BindingTypeConverters.cs" />
     <Compile Include="CollectionDebugView.cs" />
     <Compile Include="CommandBinding.cs" />
-    <Compile Include="CommandInterfaces.cs" />
     <Compile Include="DefaultPropertyBinding.cs" />
     <Compile Include="DesignModeDetector.cs" />
     <Compile Include="Errors.cs" />
@@ -136,6 +135,7 @@
     <Compile Include="POCOObservableForProperty.cs" />
     <Compile Include="PropertyBinding.cs" />
     <Compile Include="ReactiveAsyncCommand.cs" />
+    <Compile Include="ReactiveCollection.cs" />
     <Compile Include="ReactiveCollectionMixins.cs" />
     <Compile Include="ReactiveCommand.cs" />
     <Compile Include="ReactiveNotifyPropertyChangedMixin.cs" />
@@ -145,13 +145,18 @@
     <Compile Include="Registrations.cs" />
     <Compile Include="RoutingState.cs" />
     <Compile Include="RxApp.cs" />
-    <Compile Include="RxRouting.cs" />
     <Compile Include="ScheduledSubject.cs" />
     <Compile Include="UnitTestDetector.cs" />
     <Compile Include="VariadicTemplates.cs" />
     <Compile Include="WaitForDispatcherScheduler.cs" />
     <Compile Include="CompatMixins.cs" />
     <Compile Include="ReactiveList.cs" />
+    <Compile Include="Legacy\CommandInterfaces.cs" />
+    <Compile Include="Legacy\ReactiveAsyncCommand.cs" />
+    <Compile Include="Legacy\ReactiveCommand.cs" />
+    <Compile Include="RegisterableInterfaces.cs" />
+    <Compile Include="RoutableViewModelMixin.cs" />
+    <Compile Include="ViewLocator.cs" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
@@ -164,4 +169,7 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <ItemGroup>
+    <Folder Include="Legacy\" />
+  </ItemGroup>
 </Project>

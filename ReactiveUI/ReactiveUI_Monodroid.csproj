@@ -160,7 +160,6 @@
     <Compile Include="POCOObservableForProperty.cs" />
     <Compile Include="RefcountDisposeWrapper.cs" />
     <Compile Include="Reflection.cs" />
-    <Compile Include="RxRouting.cs" />
     <Compile Include="ScheduledSubject.cs" />
     <Compile Include="BindingTypeConverters.cs" />
     <Compile Include="CollectionDebugView.cs" />
@@ -171,6 +170,9 @@
     <Compile Include="Rx-Shim\ImmutableList.cs" />
     <Compile Include="PropertyBinding.cs" />
     <Compile Include="WaitForDispatcherScheduler.cs" />
+    <Compile Include="RegisterableInterfaces.cs" />
+    <Compile Include="RoutableViewModelMixin.cs" />
+    <Compile Include="ViewLocator.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
