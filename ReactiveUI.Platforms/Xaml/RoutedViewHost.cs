@@ -75,8 +75,7 @@ namespace ReactiveUI.Xaml
                 .Select(x => x.ToString());
 
             var vmAndContract = Observable.CombineLatest(
-                this.WhenAny(x => x.Router, x => x.Value)
-                    .Select(x => x.ViewModelObservable()).Switch(),
+                this.WhenAnyObservable(x => x.Router.CurrentViewModel),
                 this.WhenAnyObservable(x => x.ViewContractObservable),
                 (vm, contract) => new { ViewModel = vm, Contract = contract, });
 
