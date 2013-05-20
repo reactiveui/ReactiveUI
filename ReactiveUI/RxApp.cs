@@ -92,7 +92,7 @@ namespace ReactiveUI
                 IDependencyResolver resolver = _UnitTestDependencyResolver ?? _DependencyResolver;
                 if (resolver == null)
                 {
-                    ThrowUninitializedException();
+                    Initialize();
                 }
                 return resolver;
             }
@@ -120,7 +120,7 @@ namespace ReactiveUI
                 IScheduler scheduler = _UnitTestMainThreadScheduler ?? _MainThreadScheduler;
                 if (scheduler == null)
                 {
-                    ThrowUninitializedException();
+                    Initialize();
                 }
                 return scheduler;
             }
@@ -152,7 +152,7 @@ namespace ReactiveUI
                 IScheduler scheduler = _UnitTestTaskpoolScheduler ?? _TaskpoolScheduler;
                 if (scheduler == null)
                 {
-                    ThrowUninitializedException();
+                    Initialize();
                 }
                 return scheduler;
             }
@@ -178,7 +178,7 @@ namespace ReactiveUI
             get {
                 if (_LoggerFactory == null)
                 {
-                    ThrowUninitializedException();
+                    Initialize();
                 }
                 return _LoggerFactory; 
             }
@@ -197,7 +197,7 @@ namespace ReactiveUI
             get {
                 if (_DefaultExceptionHandler == null)
                 {
-                    ThrowUninitializedException();
+                    Initialize();
                 }
                 return _DefaultExceptionHandler;
             }
@@ -259,11 +259,6 @@ namespace ReactiveUI
             var resolver = new ModernDependencyResolver();
             resolver.InitializeResolver();
             _DependencyResolver = resolver;
-        }
-
-        static void ThrowUninitializedException([CallerMemberName]string property = null)
-        {
-            throw new InvalidOperationException(string.Format("RxApp.{0} was called without proper initializing ReactiveUI first. Make sure you either include a call to RxApp.Initialize() during app startup or set the required properties by hand to a value not equal to <null>.", property));
         }
     }    
 }
