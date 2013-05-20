@@ -20,7 +20,7 @@ namespace ReactiveUI
             binderImplementation = new CommandBinderImplementation();
         }
 
-        public static IDisposable BindCommand<TView, TViewModel, TProp>(
+        public static IReactiveBinding<TView, TViewModel, TProp> BindCommand<TView, TViewModel, TProp>(
                 this TView view, 
                 TViewModel viewModel, 
                 Expression<Func<TViewModel, TProp>> propertyName,
@@ -32,7 +32,7 @@ namespace ReactiveUI
             return binderImplementation.BindCommand(viewModel, view, propertyName, toEvent);
         }
 
-        public static IDisposable BindCommand<TView, TViewModel, TProp, TControl, TParam>(
+        public static IReactiveBinding<TView, TViewModel, TProp> BindCommand<TView, TViewModel, TProp, TControl, TParam>(
                 this TView view, 
                 TViewModel viewModel, 
                 Expression<Func<TViewModel, TProp>> propertyName, 
@@ -46,7 +46,7 @@ namespace ReactiveUI
             return binderImplementation.BindCommand(viewModel, view, propertyName, controlName, withParameter, toEvent);
         }
 
-        public static IDisposable BindCommand<TView, TViewModel, TProp, TControl, TParam>(
+        public static IReactiveBinding<TView, TViewModel, TProp> BindCommand<TView, TViewModel, TProp, TControl, TParam>(
                 this TView view, 
                 TViewModel viewModel, 
                 Expression<Func<TViewModel, TProp>> propertyName, 
@@ -60,7 +60,7 @@ namespace ReactiveUI
             return binderImplementation.BindCommand(viewModel, view, propertyName, controlName, withParameter, toEvent);
         }
 
-        public static IDisposable BindCommand<TView, TViewModel, TProp, TControl>(
+        public static IReactiveBinding<TView, TViewModel, TProp> BindCommand<TView, TViewModel, TProp, TControl>(
                 this TView view, 
                 TViewModel viewModel, 
                 Expression<Func<TViewModel, TProp>> propertyName, 
@@ -73,7 +73,7 @@ namespace ReactiveUI
             return binderImplementation.BindCommand(viewModel, view, propertyName, controlName, toEvent);
         }
 
-        public static IDisposable BindCommand<TView, TViewModel, TProp, TControl, TParam>(
+        public static IReactiveBinding<TView, TViewModel, TProp> BindCommand<TView, TViewModel, TProp, TControl, TParam>(
                 this TView view, 
                 TViewModel viewModel, 
                 Expression<Func<TViewModel, TProp>> propertyName, 
@@ -90,7 +90,7 @@ namespace ReactiveUI
 
     interface ICommandBinderImplementation : IEnableLogger
     {
-        IDisposable BindCommand<TView, TViewModel, TProp>(
+        IReactiveBinding<TView, TViewModel, TProp> BindCommand<TView, TViewModel, TProp>(
                 TViewModel viewModel, 
                 TView view, 
                 Expression<Func<TViewModel, TProp>> propertyName,
@@ -99,7 +99,7 @@ namespace ReactiveUI
             where TView : class, IViewFor<TViewModel>
             where TProp : ICommand;
 
-        IDisposable BindCommand<TView, TViewModel, TProp, TControl, TParam>(
+        IReactiveBinding<TView, TViewModel, TProp> BindCommand<TView, TViewModel, TProp, TControl, TParam>(
                 TViewModel viewModel, 
                 TView view, 
                 Expression<Func<TViewModel, TProp>> propertyName, 
@@ -110,7 +110,7 @@ namespace ReactiveUI
             where TView : class, IViewFor<TViewModel>
             where TProp : ICommand;
 
-        IDisposable BindCommand<TView, TViewModel, TProp, TControl, TParam>(
+        IReactiveBinding<TView, TViewModel, TProp> BindCommand<TView, TViewModel, TProp, TControl, TParam>(
                 TViewModel viewModel, 
                 TView view, 
                 Expression<Func<TViewModel, TProp>> propertyName, 
@@ -124,7 +124,7 @@ namespace ReactiveUI
 
     public class CommandBinderImplementation : ICommandBinderImplementation 
     {
-        public IDisposable BindCommand<TView, TViewModel, TProp>(
+        public IReactiveBinding<TView, TViewModel, TProp> BindCommand<TView, TViewModel, TProp>(
                 TViewModel viewModel, 
                 TView view, 
                 Expression<Func<TViewModel, TProp>> propertyName,
@@ -136,10 +136,14 @@ namespace ReactiveUI
             var ctlName = Reflection.SimpleExpressionToPropertyName(propertyName);
             var viewPropGetter = Reflection.GetValueFetcherForProperty(typeof (TView), ctlName);
 
-            return bindCommandInternal(viewModel, view, propertyName, viewPropGetter, Observable.Empty<object>(), toEvent);
+            IObservable<TProp> changed;
+            IDisposable disp = bindCommandInternal(viewModel, view, propertyName, viewPropGetter, Observable.Empty<object>(), toEvent, out changed);
+
+            return new ReactiveBinding<TView, TViewModel, TProp>(view, viewModel, new string[] { ctlName }, new string[] { ctlName },
+                changed, BindingDirection.OneWay, disp);
         }
 
-        public IDisposable BindCommand<TView, TViewModel, TProp, TControl, TParam>(
+        public IReactiveBinding<TView, TViewModel, TProp> BindCommand<TView, TViewModel, TProp, TControl, TParam>(
                 TViewModel viewModel, 
                 TView view, 
                 Expression<Func<TViewModel, TProp>> propertyName, 
@@ -153,7 +157,8 @@ namespace ReactiveUI
             var ctlName = Reflection.SimpleExpressionToPropertyName(controlName);
             var viewPropGetter = Reflection.GetValueFetcherForProperty(typeof (TView), ctlName);
 
-            return bindCommandInternal(viewModel, view, propertyName, viewPropGetter, Observable.Empty<object>(), toEvent, cmd => {
+            IObservable<TProp> changed;
+            IDisposable bindingDisposable = bindCommandInternal(viewModel, view, propertyName, viewPropGetter, Observable.Empty<object>(), toEvent, out changed, cmd => {
                 var rc = cmd as IReactiveCommand;
                 if (rc == null) {
                     return Legacy.ReactiveCommand.Create(x => cmd.CanExecute(x), _ => cmd.Execute(withParameter()));
@@ -163,9 +168,12 @@ namespace ReactiveUI
                 ret.Subscribe(_ => rc.Execute(withParameter()));
                 return ret;
             });
+
+            return new ReactiveBinding<TView, TViewModel, TProp>(view, viewModel, new string[] { ctlName }, new string[] { Reflection.SimpleExpressionToPropertyName(propertyName) },
+                changed, BindingDirection.OneWay, bindingDisposable);
         }
 
-        public IDisposable BindCommand<TView, TViewModel, TProp, TControl, TParam>(
+        public IReactiveBinding<TView, TViewModel, TProp> BindCommand<TView, TViewModel, TProp, TControl, TParam>(
                 TViewModel viewModel, 
                 TView view, 
                 Expression<Func<TViewModel, TProp>> propertyName, 
@@ -178,7 +186,12 @@ namespace ReactiveUI
         {
             var ctlName = Reflection.SimpleExpressionToPropertyName(controlName);
             var viewPropGetter = Reflection.GetValueFetcherForProperty(typeof (TView), ctlName);
-            return bindCommandInternal(viewModel, view, propertyName, viewPropGetter, withParameter, toEvent);
+
+            IObservable<TProp> changed;
+            IDisposable bindingDisposable = bindCommandInternal(viewModel, view, propertyName, viewPropGetter, withParameter, toEvent, out changed);
+
+            return new ReactiveBinding<TView, TViewModel, TProp>(view, viewModel, new string[] { ctlName }, new string[] { Reflection.SimpleExpressionToPropertyName(propertyName) }, 
+                changed, BindingDirection.OneWay, bindingDisposable);
         }
 
         IDisposable bindCommandInternal<TView, TViewModel, TProp, TParam>(
@@ -188,6 +201,7 @@ namespace ReactiveUI
                 Func<object, object> viewPropGetter,
                 IObservable<TParam> withParameter,
                 string toEvent,
+                out IObservable<TProp> changed,
                 Func<ICommand, ICommand> commandFixuper = null)
             where TViewModel : class
             where TView : class, IViewFor<TViewModel>
@@ -197,7 +211,9 @@ namespace ReactiveUI
 
             IDisposable disp = Disposable.Empty;
 
-            var propSub = Reflection.ViewModelWhenAnyValue(viewModel, view, propertyName).Subscribe(x => {
+            changed = Reflection.ViewModelWhenAnyValue(viewModel, view, propertyName).Publish().RefCount();
+
+            var propSub = changed.Subscribe(x => {
                 disp.Dispose();
                 if (x == null) {
                     disp = Disposable.Empty;
@@ -228,7 +244,7 @@ namespace ReactiveUI
 
     static class CommandBinderImplementationMixins
     {
-        public static IDisposable BindCommand<TView, TViewModel, TProp, TControl>(
+        public static IReactiveBinding<TView, TViewModel, TProp> BindCommand<TView, TViewModel, TProp, TControl>(
                 this ICommandBinderImplementation This,
                 TViewModel viewModel, 
                 TView view, 
@@ -242,7 +258,7 @@ namespace ReactiveUI
             return This.BindCommand(viewModel, view, propertyName, controlName, Observable.Empty<object>(), toEvent);
         }
 
-        public static IDisposable BindCommand<TView, TViewModel, TProp, TControl, TParam>(
+        public static IReactiveBinding<TView, TViewModel, TProp> BindCommand<TView, TViewModel, TProp, TControl, TParam>(
                 this ICommandBinderImplementation This,
                 TViewModel viewModel, 
                 TView view, 
