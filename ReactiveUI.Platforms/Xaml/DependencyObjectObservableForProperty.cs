@@ -27,38 +27,31 @@ namespace ReactiveUI.Xaml
             return typeof(DependencyObject).IsAssignableFrom(type) ? 4 : 0;
         }
 
-        static readonly Dictionary<Type, DependencyProperty> attachedProperties = new Dictionary<Type, DependencyProperty>();
-        static readonly Dictionary<object, Tuple<Subject<object>, RefcountDisposeWrapper>> subjects = new Dictionary<object, Tuple<Subject<object>, RefcountDisposeWrapper>>();
-
         public IObservable<IObservedChange<object, object>> GetNotificationForProperty(object sender, string propertyName, bool beforeChanged = false)
         {
             Contract.Requires(sender != null && sender is DependencyObject);
+            var type = sender.GetType();
 
-            if (beforeChanged == true) return null;
-
-            var dobj = sender as DependencyObject;
-            var type = dobj.GetType();
-
-            // Look for the DependencyProperty attached to this property name
-#if WINRT
-            var pi = type.GetProperty(propertyName + "Property", BindingFlags.Static | BindingFlags.Public | BindingFlags.FlattenHierarchy);
-            if (pi != null) {
-                goto itWorks;
-            }
-#endif
-
-            var fi = type.GetField(propertyName + "Property", BindingFlags.Static | BindingFlags.Public | BindingFlags.FlattenHierarchy);
-            if (fi == null) {
-                this.Log().Debug("Tried to bind DO {0}.{1}, but DP doesn't exist. Binding as POCO object",
+            if (beforeChanged == true) {
+                this.Log().Warn("Tried to bind DO {0}.{1}, but DPs can't do beforeChanged. Binding as POCO object",
                     type.FullName, propertyName);
+
+                var ret = new POCOObservableForProperty();
+                return ret.GetNotificationForProperty(sender, propertyName, beforeChanged);
+            }
+
+            var dpFetcher = getDependencyPropertyFetcher(type, propertyName);
+            if (dpFetcher == null) {
+                this.Log().Warn("Tried to bind DO {0}.{1}, but DP doesn't exist. Binding as POCO object",
+                    type.FullName, propertyName);
+
                 var ret = new POCOObservableForProperty();
                 return ret.GetNotificationForProperty(sender, propertyName, beforeChanged);
             }
 
 #if !WINRT && !SILVERLIGHT
-            return Observable.Create<IObservedChange<object, object>>(subj =>
-            {
-                var dp = (DependencyProperty) fi.GetValue(null);
+            return Observable.Create<IObservedChange<object, object>>(subj => {
+                var dp = dpFetcher();
                 var dpd = DependencyPropertyDescriptor.FromProperty(dp, type);
                 var ev = new EventHandler((o, e) => subj.OnNext(new ObservedChange<object, object>() {Sender = sender, PropertyName = propertyName,}));
                 dpd.AddValueChanged(sender, ev);
@@ -66,59 +59,56 @@ namespace ReactiveUI.Xaml
                 return Disposable.Create(() => dpd.RemoveValueChanged(sender, ev));
             });
 #else
+            var dpAndSubj = createAttachedProperty(type, propertyName);
 
-        itWorks:
-            return Observable.Create<IObservedChange<object, object>>(subj => {
-                DependencyProperty attachedProp;
+            BindingOperations.SetBinding(sender as DependencyObject, dpAndSubj.Item1,
+                new Binding() { Source = sender as DependencyObject, Path = new PropertyPath(propertyName) });
 
-                if (!attachedProperties.ContainsKey(type)) {
-                    // NB: There is no way to unregister an attached property, 
-                    // we just have to leak it. Luckily it's per-type, so it's
-                    // not *that* bad.
-                    attachedProp = DependencyProperty.RegisterAttached(
-                        "ListenAttached" + propertyName + this.GetHashCode().ToString("{0:x}"),
-                        typeof(object), type,
-                        new PropertyMetadata(null, (o,e) => subjects[o].Item1.OnNext(o)));
-                    attachedProperties[type] = attachedProp;
-                } else {
-                    attachedProp = attachedProperties[type];
-                }
-
-                // Here's the idea for this cracked-out code:
-                //
-                // The reason we're doing all of this is that we can only 
-                // create a single binding between a DependencyObject and its 
-                // attached property, yet we could have multiple people 
-                // interested in this property. We should only drop the actual
-                // Binding once nobody is listening anymore.
-                if (!subjects.ContainsKey(sender)) {
-                    var disposer = new RefcountDisposeWrapper(
-                        Disposable.Create(() => {
-#if !SILVERLIGHT && !WINRT
-                            // XXX: Apparently it's simply impossible to unset a binding in SL :-/
-                            BindingOperations.ClearBinding(dobj, attachedProp);
+            return dpAndSubj.Item2
+                .Where(x => x == sender)
+                .Select(x => (IObservedChange<object, object>) new ObservedChange<object, object>() { Sender = x, PropertyName = propertyName });
 #endif
-                            subjects.Remove(dobj);
-                        }));
+        }
 
-                    subjects[sender] = Tuple.Create(new Subject<object>(), disposer);
-
-                    var b = new Binding() { Source = dobj, Path = new PropertyPath(propertyName) };
-                    BindingOperations.SetBinding(dobj, attachedProp, b);
-                } else {
-                    subjects[sender].Item2.AddRef();
-                }
-
-                var disp = subjects[sender].Item1
-                    .Select(x => (IObservedChange<object, object>) new ObservedChange<object, object>() { Sender = x, PropertyName = propertyName })
-                    .Subscribe(subj);
-
-                return Disposable.Create(() => {
-                    disp.Dispose();
-                    subjects[sender].Item2.Release();
-                });
-            });
+        Func<DependencyProperty> getDependencyPropertyFetcher(Type type, string propertyName)
+        {
+#if WINRT
+            // Look for the DependencyProperty attached to this property name
+            var pi = type.GetProperty(propertyName + "Property", BindingFlags.Static | BindingFlags.Public | BindingFlags.FlattenHierarchy);
+            if (pi != null) {
+                return () => (DependencyProperty)pi.GetValue(null);
+            }
 #endif
+
+            var fi = type.GetField(propertyName + "Property", BindingFlags.Static | BindingFlags.Public | BindingFlags.FlattenHierarchy);
+            if (fi != null) {
+                return () => (DependencyProperty)fi.GetValue(null);
+            }
+
+            return null;
+        }
+
+        static readonly Dictionary<Tuple<Type, string>, Tuple<DependencyProperty, Subject<object>>> attachedListener =
+            new Dictionary<Tuple<Type, string>, Tuple<DependencyProperty, Subject<object>>>();
+
+        Tuple<DependencyProperty, Subject<object>> createAttachedProperty(Type type, string propertyName)
+        {
+            var pair = Tuple.Create(type, propertyName);
+            if (attachedListener.ContainsKey(pair)) return attachedListener[pair];
+
+            var subj = new Subject<object>();
+
+            // NB: There is no way to unregister an attached property, 
+            // we just have to leak it. Luckily it's per-type, so it's
+            // not *that* bad.
+            var dp = DependencyProperty.RegisterAttached(
+                "ListenAttached" + propertyName + this.GetHashCode().ToString("{0:x}"),
+                typeof(object), type,
+                new PropertyMetadata(null, (o, e) => subj.OnNext(o)));
+
+            var ret = Tuple.Create(dp, subj);
+            attachedListener[pair] = ret;
+            return ret;
         }
     }
 }
