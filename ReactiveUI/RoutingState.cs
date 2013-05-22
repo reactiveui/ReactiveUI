@@ -88,10 +88,11 @@ namespace ReactiveUI
                 Navigate.Execute(x);
             });
 
-            CurrentViewModel = NavigationStack.Changed
-                .Select(_ => NavigationStack.LastOrDefault())
-                .DistinctUntilChanged()
-                .StartWith(NavigationStack.LastOrDefault());
+
+            CurrentViewModel = Observable.Concat(
+                    Observable.Defer(() => Observable.Return(NavigationStack.LastOrDefault())),
+                    NavigationStack.Changed.Select(_ => NavigationStack.LastOrDefault()))
+                .DistinctUntilChanged();
 
             rxObjectsSetup = true;
         }
