@@ -14,6 +14,7 @@ using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Runtime.CompilerServices;
 
 namespace ReactiveUI
 {
@@ -32,10 +33,13 @@ namespace ReactiveUI
      * classes, but when you start building applications on top of that, having to
      * have *every single* class have a default Scheduler property is really 
      * irritating, with either default making life difficult.
+     * 
+     * This class also initializes a whole bunch of other stuff, including the IoC container,
+     * logging and error handling.
      */
     public static class RxApp
     {
-        static RxApp()
+        public static void Initialize()
         {
             _TaskpoolScheduler = Scheduler.TaskPool;
                 
@@ -60,7 +64,7 @@ namespace ReactiveUI
             initializeDependencyResolver();
 
             if (InUnitTestRunner()) {
-                LogHost.Default.Warn("*** Detected Unit Test Runner, setting MainThreadScheduler to Immediate ***");
+                LogHost.Default.Warn("*** Detected Unit Test Runner, setting MainThreadScheduler to CurrentThread ***");
                 LogHost.Default.Warn("If we are not actually in a test runner, please file a bug\n");
                 _MainThreadScheduler = CurrentThreadScheduler.Instance;
             } else {
@@ -85,15 +89,13 @@ namespace ReactiveUI
 
         public static IDependencyResolver DependencyResolver {
             get {
-                if (_UnitTestDependencyResolver != null) return _UnitTestDependencyResolver;
-
-                if (_DependencyResolver == null) {
-                    // NB: This shouldn't normally happen, only if someone 
-                    // explictly nulls out DependencyResolver for some reason.
-                    initializeDependencyResolver();
+                IDependencyResolver resolver = _UnitTestDependencyResolver ?? _DependencyResolver;
+                if (resolver == null)
+                {
+                    //if we haven't initialized yet, do this once
+                    Initialize();
                 }
-
-                return _DependencyResolver;
+                return resolver;
             }
             set {
                 if (InUnitTestRunner()) {
@@ -115,7 +117,15 @@ namespace ReactiveUI
         /// to simplify writing common unit tests.
         /// </summary>
         public static IScheduler MainThreadScheduler {
-            get { return _UnitTestMainThreadScheduler ?? _MainThreadScheduler; }
+            get {
+                IScheduler scheduler = _UnitTestMainThreadScheduler ?? _MainThreadScheduler;
+                if (scheduler == null)
+                {
+                    //if we haven't initialized yet, do this once
+                    Initialize();
+                }
+                return scheduler;
+            }
             set {
                 // N.B. The ThreadStatic dance here is for the unit test case -
                 // often, each test will override MainThreadScheduler with their
@@ -140,7 +150,15 @@ namespace ReactiveUI
         /// Task Pool (or the normal Threadpool on Silverlight).
         /// </summary>
         public static IScheduler TaskpoolScheduler {
-            get { return _UnitTestTaskpoolScheduler ?? _TaskpoolScheduler; }
+            get { 
+                IScheduler scheduler = _UnitTestTaskpoolScheduler ?? _TaskpoolScheduler;
+                if (scheduler == null)
+                {
+                    //if we haven't initialized yet, do this once
+                    Initialize();
+                }
+                return scheduler;
+            }
             set {
                 if (InUnitTestRunner()) {
                     _UnitTestTaskpoolScheduler = value;
@@ -160,8 +178,37 @@ namespace ReactiveUI
         /// entry)
         /// </summary>
         public static Func<Type, IRxUILogger> LoggerFactory {
-            get { return _LoggerFactory; }
+            get {
+                if (_LoggerFactory == null)
+                {
+                    //if we haven't initialized yet, do this once
+                    Initialize();
+                }
+                return _LoggerFactory; 
+            }
             set { _LoggerFactory = value; _LoggerFactoryChanged.OnNext(Unit.Default); }
+        }
+
+        static IObserver<Exception> _DefaultExceptionHandler;
+
+        /// <summary>
+        /// This Observer is signalled whenever an object that has a 
+        /// ThrownExceptions property doesn't Subscribe to that Observable. Use
+        /// Observer.Create to set up what will happen - the default is to crash
+        /// the application with an error message.
+        /// </summary>
+        public static IObserver<Exception> DefaultExceptionHandler {
+            get {
+                if (_DefaultExceptionHandler == null)
+                {
+                    //if we haven't initialized yet, do this once
+                    Initialize();
+                }
+                return _DefaultExceptionHandler;
+            }
+            set {
+                _DefaultExceptionHandler = value;
+            }
         }
 
         /// <summary>
@@ -171,15 +218,29 @@ namespace ReactiveUI
         /// </summary>
         public static bool? InUnitTestRunnerOverride { get; set; }
 
-        /// <summary>
-        /// This Observer is signalled whenever an object that has a 
-        /// ThrownExceptions property doesn't Subscribe to that Observable. Use
-        /// Observer.Create to set up what will happen - the default is to crash
-        /// the application with an error message.
-        /// </summary>
-        public static IObserver<Exception> DefaultExceptionHandler { get; set; }
+        static bool? _InUnitTestRunner;
 
-        static bool? _inUnitTestRunner;
+        /// <summary>
+        /// InUnitTestRunner attempts to determine heuristically if the current
+        /// application is running in a unit test framework by checking 
+        /// if the Rx TestScheduler is present.
+        /// </summary>
+        /// <returns>True if we have determined that a unit test framework is
+        /// currently running.</returns>
+        public static bool InUnitTestRunner()
+        {
+            if (InUnitTestRunnerOverride.HasValue) {
+                return InUnitTestRunnerOverride.Value;
+            }
+
+            if (!_InUnitTestRunner.HasValue) {
+                // NB: This is in a separate static ctor to avoid a deadlock on 
+                // the static ctor lock when blocking on async methods 
+                _InUnitTestRunner = UnitTestDetector.IsInUnitTestRunner() || DesignModeDetector.IsInDesignMode();
+            }
+
+            return _InUnitTestRunner.Value;
+        }
 
         /// <summary>
         /// This method will initialize your custom service locator with the 
@@ -193,30 +254,9 @@ namespace ReactiveUI
         /// </param>
         public static void InitializeCustomResolver(Action<object, Type> registerMethod)
         {
-            var fakeResolver = new FuncDependencyResolver(null, 
+            var fakeResolver = new FuncDependencyResolver(null,
                 (fac, type, str) => registerMethod(fac(), type));
             fakeResolver.InitializeResolver();
-        }
-
-        /// <summary>
-        /// InUnitTestRunner attempts to determine heuristically if the current
-        /// application is running in a unit test framework.
-        /// </summary>
-        /// <returns>True if we have determined that a unit test framework is
-        /// currently running.</returns>
-        public static bool InUnitTestRunner()
-        {
-            if (InUnitTestRunnerOverride.HasValue) {
-                return InUnitTestRunnerOverride.Value;
-            }
-
-            if (!_inUnitTestRunner.HasValue) {
-                // NB: This is in a separate static ctor to avoid a deadlock on 
-                // the static ctor lock when blocking on async methods 
-                _inUnitTestRunner = UnitTestDetector.IsInUnitTestRunner() || DesignModeDetector.IsInDesignMode();
-            }
-
-            return _inUnitTestRunner.Value;
         }
 
         static void initializeDependencyResolver()
