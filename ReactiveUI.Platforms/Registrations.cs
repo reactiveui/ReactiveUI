@@ -57,7 +57,7 @@ namespace ReactiveUI.Xaml
             registerFunction(() => new TargetActionCommandBinder(), typeof(ICreatesCommandBinding));
 #endif
 
-            RxApp.InUnitTestRunnerOverride = RealUnitTestDetector.InUnitTestRunner();
+            RxApp.InUnitTestRunnerOverride = PlatformUnitTestDetector.InUnitTestRunner();
             if (RxApp.InUnitTestRunner()) {
                 return;
             }

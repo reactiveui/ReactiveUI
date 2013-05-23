@@ -12,7 +12,7 @@ using Windows.ApplicationModel;
 
 namespace ReactiveUI
 {
-    internal static class RealUnitTestDetector
+    internal static class PlatformUnitTestDetector
     {
         public static bool InUnitTestRunner(string[] testAssemblies, string[] designEnvironments)
         {

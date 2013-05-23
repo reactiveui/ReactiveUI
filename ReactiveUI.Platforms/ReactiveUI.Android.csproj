@@ -69,7 +69,7 @@
     <Compile Include="Android\AndroidUIScheduler.cs" />
     <Compile Include="Android\Properties\AssemblyInfo.cs" />
     <Compile Include="ComponentModelTypeConverter.cs" />
-    <Compile Include="RealUnitTestDetector.cs" />
+    <Compile Include="PlatformUnitTestDetector.cs" />
     <Compile Include="Registrations.cs" />
     <Compile Include="Android\PlatformOperations.cs" />
   </ItemGroup>
