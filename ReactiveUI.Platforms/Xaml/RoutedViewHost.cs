@@ -77,17 +77,20 @@ namespace ReactiveUI.Xaml
             var vmAndContract = Observable.CombineLatest(
                 this.WhenAnyObservable(x => x.Router.CurrentViewModel),
                 this.WhenAnyObservable(x => x.ViewContractObservable),
-                (vm, contract) => new { ViewModel = vm, Contract = contract, });
+                (vm, contract) => Tuple.Create(vm, contract));
 
-            vmAndContract.Subscribe(x => {
-                if (x.ViewModel == null) {
+            // NB: The DistinctUntilChanged is useful because most views in 
+            // WinRT will end up getting here twice - once for configuring
+            // the RoutedViewHost's ViewModel, and once on load via SizeChanged
+            vmAndContract.DistinctUntilChanged().Subscribe(x => {
+                if (x.Item1 == null) {
                     Content = DefaultContent;
                     return;
                 }
 
                 var viewLocator = ViewLocator ?? ReactiveUI.ViewLocator.Current;
-                var view = viewLocator.ResolveView(x.ViewModel, x.Contract);
-                view.ViewModel = x.ViewModel;
+                var view = viewLocator.ResolveView(x.Item1, x.Item2);
+                view.ViewModel = x.Item1;
                 Content = view;
             }, ex => RxApp.DefaultExceptionHandler.OnNext(ex));
         }
