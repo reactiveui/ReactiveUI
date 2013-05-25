@@ -122,7 +122,7 @@ namespace ReactiveUI
         /// <param name="type">The type to query for.</param>
         /// <returns>A positive integer if GNFP is supported, zero or a negative
         /// value otherwise</returns>
-        int GetAffinityForObject(Type type, bool beforeChanged = false);
+        int GetAffinityForObject(Type type, string propertyName, bool beforeChanged = false);
 
         /// <summary>
         /// Subscribe to notifications on the specified property, given an 
