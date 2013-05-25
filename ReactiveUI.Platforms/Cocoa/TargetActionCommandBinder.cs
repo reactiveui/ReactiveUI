@@ -69,17 +69,22 @@ namespace ReactiveUI.Cocoa
 #endif
 
             var enabledSetter = Reflection.GetValueSetterForProperty(target.GetType(), "Enabled");
-            var disp = new CompositeDisposable(
+			if(enabledSetter == null)
+				return actionDisp;
+
+			// initial enabled state
+			enabledSetter(target, command.CanExecute(latestParam));
+
+            var compDisp = new CompositeDisposable(
                 actionDisp,
                 commandParameter.Subscribe(x => latestParam = x),
                 Observable.FromEventPattern<EventHandler, EventArgs>(x => command.CanExecuteChanged += x, x => command.CanExecuteChanged -= x)
                     .Select(_ => command.CanExecute(latestParam))
                     .Subscribe(x => {
-                        if (enabledSetter == null) return;
                         enabledSetter(target, x);
                     }));
 
-            return disp;
+            return compDisp;
         }
 
         class ControlDelegate : NSObject
