@@ -27,6 +27,26 @@ namespace ReactiveUI.Tests
         }
 
         [Fact]
+        public void OverridingInUnitTestRunnerShouldActuallyDoThat()
+        {
+            //Set a UnitTestScheduler
+            RxApp.InUnitTestRunnerOverride = true;
+            RxApp.DeferredScheduler = ImmediateScheduler.Instance;
+            
+            //Try to Override
+            RxApp.InUnitTestRunnerOverride = false;
+            RxApp.DeferredScheduler = ThreadPoolScheduler.Instance;
+
+
+            Assert.NotEqual(Scheduler.Immediate, RxApp.DeferredScheduler);
+
+            //Restore Schedulers
+            RxApp.InUnitTestRunnerOverride = true;
+            RxApp.DeferredScheduler = ImmediateScheduler.Instance;
+            RxApp.InUnitTestRunnerOverride = null;
+        }
+
+        [Fact]
         public void UnitTestDetectorIdentifiesThisTestAsAnXUnitTest()
         {
             string[] testAssemblies = new[] {

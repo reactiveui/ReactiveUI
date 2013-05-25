@@ -218,12 +218,27 @@ namespace ReactiveUI
         /// </summary>
         public static Func<string, string> GetFieldNameForPropertyNameFunc { get; set; }
 
+        static bool? _InUnitTestRunnerOverride = null;
+
         /// <summary>
         /// This method allows you to override the return value of 
         /// RxApp.InUnitTestRunner - a null value means that InUnitTestRunner
         /// will determine this using its normal logic.
         /// </summary>
-        public static bool? InUnitTestRunnerOverride { get; set; }
+        public static bool? InUnitTestRunnerOverride 
+        {
+            get {
+                return _InUnitTestRunnerOverride;
+            }
+            set {
+                _InUnitTestRunnerOverride = value;
+                if(_InUnitTestRunnerOverride.HasValue 
+                    && !_InUnitTestRunnerOverride.Value) {
+                        _UnitTestDeferredScheduler = null;
+                        _UnitTestTaskpoolScheduler = null;
+                }
+            }
+        }
 
         /// <summary>
         /// This Observer is signalled whenever an object that has a 
