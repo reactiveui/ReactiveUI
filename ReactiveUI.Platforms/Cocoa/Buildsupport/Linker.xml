@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<linker>
+  <assembly fullname="monotouch">
+    <type fullname="MonoTouch.UIKit.UIControl" preserve="properties"></type>
+    <type fullname="MonoTouch.UIKit.UITextField" preserve="properties"></type>
+    <type fullname="MonoTouch.UIKit.UITextView" preserve="properties"></type>
+    <type fullname="MonoTouch.UIKit.UILabel" preserve="properties"></type>
+    <type fullname="MonoTouch.UIKit.UISlider" preserve="properties"></type>
+    <type fullname="MonoTouch.UIKit.UISearchBar" preserve="properties"></type>
+    <type fullname="MonoTouch.UIKit.UIButton" preserve="properties"></type>
+    <type fullname="MonoTouch.UIKit.UITableView" preserve="properties"></type>
+    <type fullname="MonoTouch.UIKit.UIActionSheet" preserve="properties"></type>
+    <type fullname="MonoTouch.UIKit.UIDatePicker" preserve="properties"></type>
+    <type fullname="MonoTouch.UIKit.UIView" preserve="properties"></type>
+    <type fullname="MonoTouch.UIKit.UIProgressView" preserve="properties"></type>
+    <type fullname="MonoTouch.UIKit.UISwitch" preserve="properties"></type>
+    <type fullname="MonoTouch.UIKit.UIActivityIndicatorView" preserve="properties"></type>
+    <type fullname="MonoTouch.UIKit.UIAlertView" preserve="properties"></type>
+    <type fullname="MonoTouch.UIKit.UIBarButtonItem" preserve="properties"></type>
+    <type fullname="MonoTouch.UIKit.UIBarItem" preserve="properties"></type>
+    <type fullname="MonoTouch.UIKit.UICollectionView" preserve="properties"></type>
+    <type fullname="MonoTouch.UIKit.UIScrollView" preserve="properties"></type>
+    <type fullname="MonoTouch.UIKit.UIImage" preserve="properties"></type>
+    <type fullname="MonoTouch.UIKit.UIImageView" preserve="properties"></type>
+    <type fullname="MonoTouch.UIKit.UINavigationBar" preserve="properties"></type>
+    <type fullname="MonoTouch.UIKit.UINavigationItem" preserve="properties"></type>
+    <type fullname="MonoTouch.UIKit.UIPageControl" preserve="properties"></type>
+    <type fullname="MonoTouch.UIKit.UIPickerView" preserve="properties"></type>
+    <type fullname="MonoTouch.UIKit.UIRefreshControl" preserve="properties"></type>
+    <type fullname="MonoTouch.UIKit.UISegmentedControl" preserve="properties"></type>
+    <type fullname="MonoTouch.UIKit.UIStepper" preserve="properties"></type>
+    <type fullname="MonoTouch.UIKit.UITabBar" preserve="properties"></type>
+    <type fullname="MonoTouch.UIKit.UITabBarItem" preserve="properties"></type>
+    <type fullname="MonoTouch.UIKit.UITableViewCell" preserve="properties"></type>
+    <type fullname="MonoTouch.UIKit.UIToolbar" preserve="properties"></type>
+    <type fullname="MonoTouch.UIKit.UITouch" preserve="properties"></type>
+    <type fullname="MonoTouch.UIKit.UIWebView" preserve="properties"></type>
+    <type fullname="MonoTouch.UIKit.UIWindow" preserve="properties"></type>
+  </assembly>
+</linker>
