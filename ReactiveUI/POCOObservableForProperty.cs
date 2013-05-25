@@ -6,7 +6,7 @@ namespace ReactiveUI
 {
     public class POCOObservableForProperty : ICreatesObservableForProperty 
     {
-        public int GetAffinityForObject(Type type, bool beforeChanged = false)
+        public int GetAffinityForObject(Type type, string propertyName, bool beforeChanged = false)
         {
             return 1;
         }

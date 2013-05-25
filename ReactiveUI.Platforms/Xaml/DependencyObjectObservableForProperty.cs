@@ -22,9 +22,12 @@ namespace ReactiveUI.Xaml
 {
     public class DependencyObjectObservableForProperty : ICreatesObservableForProperty
     {
-        public int GetAffinityForObject(Type type, bool beforeChanged = false)
+        public int GetAffinityForObject(Type type, string propertyName, bool beforeChanged = false)
         {
-            return typeof(DependencyObject).IsAssignableFrom(type) ? 4 : 0;
+            if (!typeof(DependencyObject).IsAssignableFrom(type)) return 0;
+            if (getDependencyPropertyFetcher(type, propertyName) == null) return 0;
+
+            return 4;
         }
 
         public IObservable<IObservedChange<object, object>> GetNotificationForProperty(object sender, string propertyName, bool beforeChanged = false)
