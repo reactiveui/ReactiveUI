@@ -71,6 +71,8 @@
     <Compile Include="PlatformUnitTestDetector.cs" />
     <Compile Include="Registrations.cs" />
     <Compile Include="Cocoa\PlatformOperations.cs" />
+    <Compile Include="Cocoa\UIKitObservableForProperty.cs" />
+    <Compile Include="Cocoa\UIKitObservableForPropertyBase.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ReactiveUI\ReactiveUI_Monotouch.csproj">
