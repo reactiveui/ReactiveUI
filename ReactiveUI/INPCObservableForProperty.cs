@@ -6,7 +6,7 @@ namespace ReactiveUI
 {
     public class INPCObservableForProperty : ICreatesObservableForProperty
     {
-        public int GetAffinityForObject(Type type, bool beforeChanged)
+        public int GetAffinityForObject(Type type, string propertyName, bool beforeChanged)
         {
             var target = beforeChanged ? typeof (INotifyPropertyChanging) : typeof (INotifyPropertyChanged);
             return target.IsAssignableFrom(type) ? 5 : 0;
