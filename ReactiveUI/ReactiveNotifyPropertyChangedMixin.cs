@@ -172,11 +172,11 @@ namespace ReactiveUI
             return r.DistinctUntilChanged(x=>x.Value);
         }
 
-        static readonly MemoizingMRUCache<Tuple<Type, bool>, ICreatesObservableForProperty> notifyFactoryCache =
-            new MemoizingMRUCache<Tuple<Type, bool>, ICreatesObservableForProperty>((t, _) => {
+        static readonly MemoizingMRUCache<Tuple<Type, string, bool>, ICreatesObservableForProperty> notifyFactoryCache =
+            new MemoizingMRUCache<Tuple<Type, string, bool>, ICreatesObservableForProperty>((t, _) => {
                 return RxApp.DependencyResolver.GetServices<ICreatesObservableForProperty>()
                     .Aggregate(Tuple.Create(0, (ICreatesObservableForProperty)null), (acc, x) => {
-                        int score = x.GetAffinityForObject(t.Item1, t.Item2);
+                        int score = x.GetAffinityForObject(t.Item1, t.Item2, t.Item3);
                         return (score > acc.Item1) ? Tuple.Create(score, x) : acc;
                     }).Item2;
             }, 50);
@@ -185,7 +185,7 @@ namespace ReactiveUI
         {
             var result = default(ICreatesObservableForProperty);
             lock (notifyFactoryCache) {
-                result = notifyFactoryCache.Get(Tuple.Create(sender.GetType(), beforeChange));
+                result = notifyFactoryCache.Get(Tuple.Create(sender.GetType(), propertyName, beforeChange));
             }
 
             if (result == null) {
