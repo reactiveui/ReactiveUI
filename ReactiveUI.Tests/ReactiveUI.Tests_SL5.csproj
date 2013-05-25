@@ -164,6 +164,7 @@
     <Compile Include="ReactiveObjectTest.cs" />
     <Compile Include="ReactiveValidatedObjectTest.cs" />
     <Compile Include="RxAppTest.cs" />
+    <Compile Include="TestLogger.cs" />
     <Compile Include="Utility.cs" />
   </ItemGroup>
   <ItemGroup>
