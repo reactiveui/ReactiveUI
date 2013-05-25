@@ -5,7 +5,7 @@ namespace ReactiveUI
 {
     public class IRNPCObservableForProperty : ICreatesObservableForProperty
     {
-        public int GetAffinityForObject(Type type, bool beforeChanged = false)
+        public int GetAffinityForObject(Type type, string propertyName, bool beforeChanged = false)
         {
             // NB: Since every IRNPC is also an INPC, we need to bind more 
             // tightly than INPCObservableForProperty, so we return 10 here 

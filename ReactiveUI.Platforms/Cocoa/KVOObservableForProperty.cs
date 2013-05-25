@@ -23,8 +23,10 @@ namespace ReactiveUI.Cocoa
         {
         }
         
-        public int GetAffinityForObject(Type type, bool beforeChanged = false)
+        public int GetAffinityForObject(Type type, string propertyName, bool beforeChanged = false)
         {
+            // NB: There is no way to know up-front whether a given property is
+            // KVO-observable. This is Unfortunate™.
             return typeof (NSObject).IsAssignableFrom(type) ? 4 : 0;
         }
 
