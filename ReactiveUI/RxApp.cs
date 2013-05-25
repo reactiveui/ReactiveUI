@@ -227,15 +227,13 @@ namespace ReactiveUI
         /// </summary>
         public static bool? InUnitTestRunnerOverride 
         {
-            get {
-                return _InUnitTestRunnerOverride;
-            }
+            get { return _InUnitTestRunnerOverride; }
             set {
                 _InUnitTestRunnerOverride = value;
-                if(_InUnitTestRunnerOverride.HasValue 
-                    && !_InUnitTestRunnerOverride.Value) {
-                        _UnitTestDeferredScheduler = null;
-                        _UnitTestTaskpoolScheduler = null;
+
+                if(value.HasValue && !value.Value) {
+                    _UnitTestDeferredScheduler = null;
+                    _UnitTestTaskpoolScheduler = null;
                 }
             }
         }
@@ -515,7 +513,6 @@ namespace ReactiveUI
                 "TESTDRIVEN",
                 "QUALITYTOOLS.TIPS.UNITTEST.ADAPTER",
                 "QUALITYTOOLS.UNITTESTING.SILVERLIGHT",
-                "PEX",
                 "MSBUILD",
                 "NBEHAVE",
                 "TESTPLATFORM",
