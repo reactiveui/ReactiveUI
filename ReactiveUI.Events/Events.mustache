@@ -39,8 +39,39 @@ namespace {{Name}}
         public IObservable<{{EventArgsType}}> {{Name}} {
             get { return Observable.FromEventPattern<{{EventHandlerType}}, {{EventArgsType}}>(x => This.{{Name}} += x, x => This.{{Name}} -= x).Select(x => x.EventArgs); }
         }
+
 {{/Events}}
     }
 {{/Types}}
 }
 {{/Namespaces}}
+
+{{#DelegateNamespaces}}
+namespace {{Name}}
+{
+{{#Types}}
+    public class Rx{{Name}}
+{{#Parent}}
+    : Rx{{Name}}
+{{/Parent}}
+    {
+{{#SingleParameterMethods}}
+        readonly Subject<{{ParameterType}}> _{{Name}} = new Subject<{{ParameterType}}>();
+        public override void {{Name}}({{ParameterType}} {{ParameterName}})
+        {
+            _{{Name}}.OnNext({{ParameterName}});
+        }
+
+{{/SingleParameterMethods}}
+{{#MultiParameterMethods}}
+        readonly Subject<Tuple<{{ParameterTypeList}}>> _{{Name}} = new Subject<Tuple<{{ParameterTypeList}}>>();
+        public override void {{Name}}({{ParameterList}})
+        {
+            _{{Name}}.OnNext(Tuple.Create({{ParameterNameList}});
+        }
+
+{{/MultiParameterMethods}}
+    }
+{{/Types}}
+}
+{{/DelegateNamespaces}}
