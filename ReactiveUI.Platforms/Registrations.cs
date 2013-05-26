@@ -52,7 +52,8 @@ namespace ReactiveUI.Xaml
 #endif
 
 #if COCOA
-            registerFunction(() => new KVOObservableForProperty(), typeof(ICreatesObservableForProperty));
+			registerFunction(() => new UIKitObservableForProperty(), typeof(ICreatesObservableForProperty));
+			registerFunction(() => new KVOObservableForProperty(), typeof(ICreatesObservableForProperty));
             registerFunction(() => new CocoaDefaultPropertyBinding(), typeof(IDefaultPropertyBindingProvider));
             registerFunction(() => new TargetActionCommandBinder(), typeof(ICreatesCommandBinding));
 #endif
