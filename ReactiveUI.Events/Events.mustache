@@ -9,27 +9,27 @@ using {{Name}};
 {{#Namespaces}}
 namespace {{Name}}
 {
-	public static class EventsMixin
-	{
+    public static class EventsMixin
+    {
 {{#Types}}
-		public static {{Name}}Events Events(this {{Name}} This)
-		{
-			return new {{Name}}Events(This);
-		}
+        public static {{Name}}Events Events(this {{Name}} This)
+        {
+            return new {{Name}}Events(This);
+        }
 {{/Types}}
-	}
+    }
 
 {{#Types}}
-	public class {{Name}}Events
+    public class {{Name}}Events
 {{#Parent}}
-		: {{Name}}Events
+        : {{Name}}Events
 {{/Parent}}
-	{
-		{{Name}} This;
+    {
+        {{Name}} This;
 
         public {{Name}}Events({{Name}} This)
 {{#Parent}}
-			: base(This)
+            : base(This)
 {{/Parent}}
         {
             this.This = This;
@@ -40,9 +40,7 @@ namespace {{Name}}
             get { return Observable.FromEventPattern<{{EventHandlerType}}, {{EventArgsType}}>(x => This.{{Name}} += x, x => This.{{Name}} -= x).Select(x => x.EventArgs); }
         }
 {{/Events}}
-	}
+    }
 {{/Types}}
-
 }
-
 {{/Namespaces}}
