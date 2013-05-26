@@ -18,7 +18,7 @@ namespace ReactiveUI.Cocoa
 
 			Register(typeof(UITextField), "Text", 10, (s, p) => ObservableFromNotification(s, p, UITextField.TextFieldTextDidChangeNotification));
 
-			Register(typeof(UIDatePicker), "Date",10,  (s, p)=> ObservableFromUIControlEvent(s, p, UIControlEvent.ValueChanged));
+			Register(typeof(UIDatePicker), "Date", 10, (s, p)=> ObservableFromUIControlEvent(s, p, UIControlEvent.ValueChanged));
 
 			Register(typeof(UISegmentedControl), "SelectedSegment", 10, (s, p)=> ObservableFromUIControlEvent(s, p, UIControlEvent.ValueChanged));
 
