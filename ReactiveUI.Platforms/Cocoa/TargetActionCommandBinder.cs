@@ -69,11 +69,11 @@ namespace ReactiveUI.Cocoa
 #endif
 
             var enabledSetter = Reflection.GetValueSetterForProperty(target.GetType(), "Enabled");
-			if(enabledSetter == null)
-				return actionDisp;
+            if(enabledSetter == null)
+                return actionDisp;
 
-			// initial enabled state
-			enabledSetter(target, command.CanExecute(latestParam));
+            // initial enabled state
+            enabledSetter(target, command.CanExecute(latestParam));
 
             var compDisp = new CompositeDisposable(
                 actionDisp,
