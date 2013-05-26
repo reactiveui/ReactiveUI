@@ -14,19 +14,17 @@ namespace ReactiveUI.Cocoa
 	{
 		#region ICreatesObservableForProperty implementation
 
-		public int GetAffinityForObject(Type type, bool beforeChanged = false)
+		public int GetAffinityForObject(Type type, string propertyName, bool beforeChanged = false)
 		{
 			if(beforeChanged)
 				return 0;
 
-			var info = config.Keys
-				.Where(x=> x.IsAssignableFrom(type))
-				.Where(x=> config[x].Values.Any())
-				.Select(x=> config[x].Values.OrderByDescending(y=> y.Affinity).FirstOrDefault())
-				.OrderByDescending(x=> x.Affinity)
-				.FirstOrDefault();
+			Dictionary<string, ObservablePropertyInfo> typeProperties;
+			if(!config.TryGetValue(type, out typeProperties))
+				return 0;
 
-			if(info == null)
+			ObservablePropertyInfo info;
+			if(!typeProperties.TryGetValue(propertyName, out info))
 				return 0;
 
 			return info.Affinity;
