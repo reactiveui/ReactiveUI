@@ -28,6 +28,27 @@ namespace EventBuilder
 
             var template = File.ReadAllText(args.Last(), Encoding.UTF8);
 
+            var namespaceData = createEventTemplateInformation(targetAssemblies);
+            var delegateData = createDelegateTemplateInformation(targetAssemblies);
+
+            var result = Render.StringToString(template, new { Namespaces = namespaceData })
+                .Replace("System.String", "string")
+                .Replace("System.Object", "object")
+                .Replace("&lt;", "<")
+                .Replace("&gt;", ">")
+                .Replace("`1", "")
+                .Replace("`2", "");
+
+            Console.WriteLine(result);
+        }
+
+        static object createDelegateTemplateInformation(AssemblyDefinition[] targetAssemblies)
+        {
+            throw new NotImplementedException();
+        }
+
+        static NamespaceInfo[] createEventTemplateInformation(AssemblyDefinition[] targetAssemblies)
+        {
             var publicTypesWithEvents = targetAssemblies
                 .SelectMany(x => SafeGetTypes(x))
                 .Where(x => x.IsPublic && !x.HasGenericParameters)
@@ -46,17 +67,16 @@ namespace EventBuilder
             var namespaceData = publicTypesWithEvents
                 .GroupBy(x => x.Type.Namespace)
                 .Where(x => !garbageNamespaceList.Contains(x.Key))
-                .Select(x => new NamespaceInfo() { 
-                    Name = x.Key, 
+                .Select(x => new NamespaceInfo() {
+                    Name = x.Key,
                     Types = x.Select(y => new PublicTypeInfo() {
                         Name = y.Type.Name,
                         Type = y.Type,
-                        Events = y.Events
-                            .Select(z => new PublicEventInfo() { 
-                                Name = z.Name,
-                                EventHandlerType = GetRealTypeName(z.EventType),
-                                EventArgsType = GetEventArgsTypeForEvent(z),
-                            }).ToArray(),
+                        Events = y.Events.Select(z => new PublicEventInfo() {
+                            Name = z.Name,
+                            EventHandlerType = GetRealTypeName(z.EventType),
+                            EventArgsType = GetEventArgsTypeForEvent(z),
+                        }).ToArray(),
                     }).ToArray()
                 }).ToArray();
 
@@ -67,15 +87,7 @@ namespace EventBuilder
                 type.Parent = new ParentInfo() { Name = parentWithEvents.FullName };
             }
 
-            var result = Render.StringToString(template, new { Namespaces = namespaceData })
-                .Replace("System.String", "string")
-                .Replace("System.Object", "object")
-                .Replace("&lt;", "<")
-                .Replace("&gt;", ">")
-                .Replace("`1", "")
-                .Replace("`2", "");
-
-            Console.WriteLine(result);
+            return namespaceData;
         }
 
         public static EventDefinition[] GetPublicEvents(TypeDefinition t)
