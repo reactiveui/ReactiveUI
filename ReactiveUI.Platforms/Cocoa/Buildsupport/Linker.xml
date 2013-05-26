@@ -1,5 +1,30 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <linker>
+  <assembly fullname="System">
+    <type fullname="System.ComponentModel.NullableConverter"></type>
+    <type fullname="System.ComponentModel.BooleanConverter"></type>
+    <type fullname="System.ComponentModel.ByteConverter"></type>
+    <type fullname="System.ComponentModel.CharConverter"></type>
+    <type fullname="System.ComponentModel.CollectionConverter"></type>
+    <type fullname="System.ComponentModel.CultureInfoConverter"></type>
+    <type fullname="System.ComponentModel.DateTimeConverter"></type>
+    <type fullname="System.ComponentModel.DecimalConverter"></type>
+    <type fullname="System.ComponentModel.DoubleConverter"></type>
+    <type fullname="System.ComponentModel.EnumConverter"></type>
+    <type fullname="System.ComponentModel.GuidConverter"></type>
+    <type fullname="System.ComponentModel.Int16Converter"></type>
+    <type fullname="System.ComponentModel.Int32Converter"></type>
+    <type fullname="System.ComponentModel.Int64Converter"></type>
+    <type fullname="System.ComponentModel.MultilineStringConverter"></type>
+    <type fullname="System.ComponentModel.ReferenceConverter"></type>
+    <type fullname="System.ComponentModel.SByteConverter"></type>
+    <type fullname="System.ComponentModel.SingleConverter"></type>
+    <type fullname="System.ComponentModel.StringConverter"></type>
+    <type fullname="System.ComponentModel.TimeSpanConverter"></type>
+    <type fullname="System.ComponentModel.UInt16Converter"></type>
+    <type fullname="System.ComponentModel.UInt32Converter"></type>
+    <type fullname="System.ComponentModel.UInt64Converter"></type>
+  </assembly>
   <assembly fullname="monotouch">
     <type fullname="MonoTouch.UIKit.UIControl" preserve="properties"></type>
     <type fullname="MonoTouch.UIKit.UITextField" preserve="properties"></type>
