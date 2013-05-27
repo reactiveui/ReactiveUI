@@ -26,7 +26,8 @@ namespace ReactiveUI.Tests
         {
             var fixture = new DepObjFixture();
             var binder = new DependencyObjectObservableForProperty();
-            Assert.NotEqual(0, binder.GetAffinityForObject(typeof (DepObjFixture)));
+            Assert.NotEqual(0, binder.GetAffinityForObject(typeof (DepObjFixture), "TestString"));
+            Assert.Equal(0, binder.GetAffinityForObject(typeof (DepObjFixture), "DoesntExist"));
 
             var results = new List<IObservedChange<object, object>>();
             var disp1 = binder.GetNotificationForProperty(fixture, "TestString").Subscribe(results.Add);
