@@ -31,18 +31,18 @@ namespace ReactiveUI.Tests
         {
             //Set a UnitTestScheduler
             RxApp.InUnitTestRunnerOverride = true;
-            RxApp.DeferredScheduler = ImmediateScheduler.Instance;
+            RxApp.MainThreadScheduler = ImmediateScheduler.Instance;
             
             //Try to Override
             RxApp.InUnitTestRunnerOverride = false;
-            RxApp.DeferredScheduler = ThreadPoolScheduler.Instance;
+            RxApp.MainThreadScheduler = ThreadPoolScheduler.Instance;
 
 
-            Assert.NotEqual(Scheduler.Immediate, RxApp.DeferredScheduler);
+            Assert.NotEqual(Scheduler.Immediate, RxApp.MainThreadScheduler);
 
             //Restore Schedulers
             RxApp.InUnitTestRunnerOverride = true;
-            RxApp.DeferredScheduler = ImmediateScheduler.Instance;
+            RxApp.MainThreadScheduler = ImmediateScheduler.Instance;
             RxApp.InUnitTestRunnerOverride = null;
         }
 
@@ -69,7 +69,7 @@ namespace ReactiveUI.Tests
                 "SHARPDEVELOP.EXE",
             };
 
-            var isInUnitTestRunner = RealUnitTestDetector.InUnitTestRunner(testAssemblies, designEnvironments);
+            var isInUnitTestRunner = PlatformUnitTestDetector.InUnitTestRunner(testAssemblies, designEnvironments);
 
             Assert.True(isInUnitTestRunner);
         }
@@ -97,7 +97,7 @@ namespace ReactiveUI.Tests
                 "SHARPDEVELOP.EXE",
             };
 
-            var isInUnitTestRunner = RealUnitTestDetector.InUnitTestRunner(testAssembliesWithoutNunit, designEnvironments);
+            var isInUnitTestRunner = PlatformUnitTestDetector.InUnitTestRunner(testAssembliesWithoutNunit, designEnvironments);
 
             Assert.False(isInUnitTestRunner);
         }
