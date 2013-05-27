@@ -28,10 +28,10 @@ namespace EventBuilder
 
             var template = File.ReadAllText(args.Last(), Encoding.UTF8);
 
-            var namespaceData = createEventTemplateInformation(targetAssemblies);
-            var delegateData = createDelegateTemplateInformation(targetAssemblies);
+            var namespaceData = CreateEventTemplateInformation(targetAssemblies);
+            var delegateData = CreateDelegateTemplateInformation(targetAssemblies);
 
-            var result = Render.StringToString(template, new { Namespaces = namespaceData })
+            var result = Render.StringToString(template, new { Namespaces = namespaceData, DelegateNamespaces = delegateData })
                 .Replace("System.String", "string")
                 .Replace("System.Object", "object")
                 .Replace("&lt;", "<")
@@ -42,12 +42,7 @@ namespace EventBuilder
             Console.WriteLine(result);
         }
 
-        static object createDelegateTemplateInformation(AssemblyDefinition[] targetAssemblies)
-        {
-            throw new NotImplementedException();
-        }
-
-        static NamespaceInfo[] createEventTemplateInformation(AssemblyDefinition[] targetAssemblies)
+        public static NamespaceInfo[] CreateEventTemplateInformation(AssemblyDefinition[] targetAssemblies)
         {
             var publicTypesWithEvents = targetAssemblies
                 .SelectMany(x => SafeGetTypes(x))
@@ -90,9 +85,52 @@ namespace EventBuilder
             return namespaceData;
         }
 
+        public static NamespaceInfo[] CreateDelegateTemplateInformation(AssemblyDefinition[] targetAssemblies)
+        {
+            var publicDelegateTypes = targetAssemblies
+                .SelectMany(x => SafeGetTypes(x))
+                .Where(x => x.IsPublic && !x.HasGenericParameters && x.Name.EndsWith("Delegate", StringComparison.OrdinalIgnoreCase))
+                .Where(x => x.BaseType == null || !x.BaseType.FullName.Contains("MulticastDelegate"))
+                .Select(x => new { Type = x, Delegates = GetPublicDelegateMethods(x) })
+                .Where(x => x.Delegates.Length > 0)
+                .ToArray();
+
+            var namespaceData = publicDelegateTypes
+                .GroupBy(x => x.Type.Namespace)
+                //.Where(x => !garbageNamespaceList.Contains(x.Key))
+                .Select(x => new NamespaceInfo() {
+                    Name = x.Key,
+                    Types = x.Select(y => new PublicTypeInfo() {
+                        Name = y.Type.Name,
+                        Type = y.Type,
+                        ZeroParameterMethods = y.Delegates.Where(z => z.Parameters.Count == 0).Select(z => new ParentInfo() {
+                            Name = z.Name,
+                        }).ToArray(),
+                        SingleParameterMethods = y.Delegates.Where(z => z.Parameters.Count == 1).Select(z => new SingleParameterMethod() {
+                            Name = z.Name,
+                            ParameterType = z.Parameters[0].ParameterType.FullName,
+                            ParameterName = z.Parameters[0].Name,
+                        }).ToArray(),
+                        MultiParameterMethods = y.Delegates.Where(z => z.Parameters.Count > 1).Select(z => new MultiParameterMethod() {
+                            Name = z.Name,
+                            ParameterList = String.Join(", ", z.Parameters.Select(a => String.Format("{0} {1}", a.ParameterType.FullName, a.Name))),
+                            ParameterTypeList = String.Join(", ", z.Parameters.Select(a => a.ParameterType.FullName)),
+                            ParameterNameList = String.Join(", ", z.Parameters.Select(a => a.Name)),
+                        }).ToArray(),
+                    }).ToArray()
+                }).ToArray();
+
+            return namespaceData;
+        }
+
         public static EventDefinition[] GetPublicEvents(TypeDefinition t)
         {
             return t.Events.Where(x => x.AddMethod.IsPublic && !x.AddMethod.IsStatic && GetEventArgsTypeForEvent(x) != null).ToArray();
+        }
+
+        public static MethodDefinition[] GetPublicDelegateMethods(TypeDefinition t)
+        {
+            return t.Methods.Where(x => x.IsVirtual && !x.IsConstructor && x.ReturnType.FullName == "System.Void").ToArray();
         }
 
         public static TypeDefinition[] SafeGetTypes(AssemblyDefinition a)
@@ -190,6 +228,9 @@ namespace EventBuilder
         public TypeDefinition Type { get; set; }
         public ParentInfo Parent { get; set; }
         public IEnumerable<PublicEventInfo> Events { get; set; }
+        public IEnumerable<ParentInfo> ZeroParameterMethods { get; set; }
+        public IEnumerable<SingleParameterMethod> SingleParameterMethods { get; set; }
+        public IEnumerable<MultiParameterMethod> MultiParameterMethods { get; set; }
     }
 
     class ParentInfo
@@ -202,6 +243,21 @@ namespace EventBuilder
         public string Name { get; set; }
         public string EventHandlerType { get; set; }
         public string EventArgsType { get; set; }
+    }
+
+    class SingleParameterMethod
+    {
+        public string Name { get; set; }
+        public string ParameterType { get; set; }
+        public string ParameterName { get; set; }
+    }
+
+    class MultiParameterMethod
+    {
+        public string Name { get; set; }
+        public string ParameterList { get; set; }  // "FooType foo, BarType bar, BazType baz"
+        public string ParameterTypeList { get; set; }  // "FooType, BarType, BazType"
+        public string ParameterNameList { get; set; }  // "foo, bar, baz"
     }
 
     class PathSearchAssemblyResolver : IAssemblyResolver
