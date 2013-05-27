@@ -104,6 +104,7 @@ namespace EventBuilder
                     Types = x.Select(y => new PublicTypeInfo() {
                         Name = y.Type.Name,
                         Type = y.Type,
+                        Abstract = y.Type.IsAbstract ? "abstract" : "",
                         ZeroParameterMethods = y.Delegates.Where(z => z.Parameters.Count == 0).Select(z => new ParentInfo() {
                             Name = z.Name,
                         }).ToArray(),
@@ -135,6 +136,7 @@ namespace EventBuilder
             return t.Methods
                 .Where(x => x.IsVirtual && !x.IsConstructor && x.ReturnType.FullName == "System.Void")
                 .Where(x => !bannedMethods.Contains(x.Name))
+                .GroupBy(x => x.Name).Select(x => x.OrderByDescending(y => y.Parameters.Count).First())
                 .ToArray();
         }
 
@@ -230,6 +232,7 @@ namespace EventBuilder
     class PublicTypeInfo
     {
         public string Name { get; set; }
+        public string Abstract { get; set; } 
         public TypeDefinition Type { get; set; }
         public ParentInfo Parent { get; set; }
         public IEnumerable<PublicEventInfo> Events { get; set; }
