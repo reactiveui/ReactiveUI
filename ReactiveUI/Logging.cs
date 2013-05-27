@@ -121,6 +121,20 @@ namespace ReactiveUI
         }
     }
 
+    public class FuncLogManager : ILogManager
+    {
+        readonly Func<Type, IFullLogger> _inner;
+        public FuncLogManager(Func<Type, IFullLogger> getLogger)
+        {
+            _inner = getLogger;
+        }
+
+        public IFullLogger GetLogger(Type type)
+        {
+            return _inner(type);
+        }
+    }
+
     public static class LogManagerMixin
     {
         public static IFullLogger GetLogger<T>(this ILogManager This)
