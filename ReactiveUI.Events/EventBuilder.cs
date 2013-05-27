@@ -36,6 +36,7 @@ namespace EventBuilder
                 .Replace("System.Object", "object")
                 .Replace("&lt;", "<")
                 .Replace("&gt;", ">")
+                .Replace("&amp;", "")
                 .Replace("`1", "")
                 .Replace("`2", "");
 
