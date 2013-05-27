@@ -199,7 +199,18 @@ namespace ReactiveUI
         /// RxApp.InUnitTestRunner - a null value means that InUnitTestRunner
         /// will determine this using its normal logic.
         /// </summary>
-        public static bool? InUnitTestRunnerOverride { get; set; }
+        public static bool? InUnitTestRunnerOverride 
+        {
+            get { return _InUnitTestRunnerOverride; }
+            set {
+                _InUnitTestRunnerOverride = value;
+
+                if(value.HasValue && !value.Value) {
+                    _UnitTestDeferredScheduler = null;
+                    _UnitTestTaskpoolScheduler = null;
+                }
+            }
+        }
 
         static bool? _InUnitTestRunner;
 
@@ -239,10 +250,9 @@ namespace ReactiveUI
         {
             var fakeResolver = new FuncDependencyResolver(null,
                 (fac, type, str) => registerMethod(fac(), type));
+
             fakeResolver.InitializeResolver();
         }
-
-        static internal bool suppressLogging { get; set; }
 
         static void initializeDependencyResolver()
         {
@@ -252,9 +262,10 @@ namespace ReactiveUI
             // is set up via dependency resolution - if we try to log while
             // setting up the logger, we will end up StackOverflowException'ing
             resolver.InitializeResolver();
-
             _DependencyResolver = resolver;
         }
+
+        static internal bool suppressLogging { get; set; }
     }    
 }
 
