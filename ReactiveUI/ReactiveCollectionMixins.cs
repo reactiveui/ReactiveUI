@@ -185,7 +185,7 @@ namespace ReactiveUI
             this.inner = new CompositeDisposable();
             this.indexToSourceIndexMap = new List<int>();
 
-            this.Reset();
+            this.addAllItemsFromSourceCollection();
             this.wireUpChangeNotifications();
         }
 
@@ -394,16 +394,23 @@ namespace ReactiveUI
                 if (this.Count > 0)
                     internalClear();
 
-                int sourceIndex = 0;
+                addAllItemsFromSourceCollection();
+            }
+        }
 
-                foreach (TSource sourceItem in source) {
-                    if (filter(sourceItem)) {
-                        var destinationItem = selector(sourceItem);
-                        internalInsertAndMap(sourceIndex, destinationItem);
-                    }
+        private void addAllItemsFromSourceCollection()
+        {
+            int sourceIndex = 0;
 
-                    sourceIndex++;
+            foreach (TSource sourceItem in source)
+            {
+                if (filter(sourceItem))
+                {
+                    var destinationItem = selector(sourceItem);
+                    internalInsertAndMap(sourceIndex, destinationItem);
                 }
+
+                sourceIndex++;
             }
         }
 
