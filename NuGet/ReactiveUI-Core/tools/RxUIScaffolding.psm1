@@ -1,4 +1,4 @@
-﻿<#
+<#
 .SYNOPSIS
     Generates Reactive-UI objects from interfaces
 .DESCRIPTION
