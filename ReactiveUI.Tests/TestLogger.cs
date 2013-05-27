@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ReactiveUI.Tests
 {
-    public class TestLogger: IRxUILogger
+    public class TestLogger: ILogger
     {
         public List<Tuple<string, LogLevel>> Messages { get; private set; }
         public LogLevel Level { get; set; }
