@@ -25,5 +25,81 @@ namespace ReactiveUI.Tests
             Console.WriteLine(RxApp.MainThreadScheduler.GetType().FullName);
             Assert.Equal(CurrentThreadScheduler.Instance, RxApp.MainThreadScheduler);
         }
+
+        [Fact]
+        public void OverridingInUnitTestRunnerShouldActuallyDoThat()
+        {
+            //Set a UnitTestScheduler
+            RxApp.InUnitTestRunnerOverride = true;
+            RxApp.DeferredScheduler = ImmediateScheduler.Instance;
+            
+            //Try to Override
+            RxApp.InUnitTestRunnerOverride = false;
+            RxApp.DeferredScheduler = ThreadPoolScheduler.Instance;
+
+
+            Assert.NotEqual(Scheduler.Immediate, RxApp.DeferredScheduler);
+
+            //Restore Schedulers
+            RxApp.InUnitTestRunnerOverride = true;
+            RxApp.DeferredScheduler = ImmediateScheduler.Instance;
+            RxApp.InUnitTestRunnerOverride = null;
+        }
+
+        [Fact]
+        public void UnitTestDetectorIdentifiesThisTestAsAnXUnitTest()
+        {
+            string[] testAssemblies = new[] {
+                "CSUNIT",
+                "NUNIT",
+                "XUNIT",
+                "MBUNIT",
+                "TESTDRIVEN",
+                "QUALITYTOOLS.TIPS.UNITTEST.ADAPTER",
+                "QUALITYTOOLS.UNITTESTING.SILVERLIGHT",
+                "PEX",
+                "MSBUILD",
+                "NBEHAVE",
+                "TESTPLATFORM",
+            };
+
+            string[] designEnvironments = new[] {
+                "BLEND.EXE",
+                "MONODEVELOP",
+                "SHARPDEVELOP.EXE",
+            };
+
+            var isInUnitTestRunner = RealUnitTestDetector.InUnitTestRunner(testAssemblies, designEnvironments);
+
+            Assert.True(isInUnitTestRunner);
+        }
+
+        [Fact]
+        public void UnitTestDetectorDoesNotIdentifyThisTestWhenXUnitAssemblyNotChecked()
+        {
+            // XUnit assembly name removed
+            string[] testAssembliesWithoutNunit = new[] {
+                "CSUNIT",
+                "NUNIT",
+                "MBUNIT",
+                "TESTDRIVEN",
+                "QUALITYTOOLS.TIPS.UNITTEST.ADAPTER",
+                "QUALITYTOOLS.UNITTESTING.SILVERLIGHT",
+                "PEX",
+                "MSBUILD",
+                "NBEHAVE",
+                "TESTPLATFORM",
+            };
+
+            string[] designEnvironments = new[] {
+                "BLEND.EXE",
+                "MONODEVELOP",
+                "SHARPDEVELOP.EXE",
+            };
+
+            var isInUnitTestRunner = RealUnitTestDetector.InUnitTestRunner(testAssembliesWithoutNunit, designEnvironments);
+
+            Assert.False(isInUnitTestRunner);
+        }
     }
 }
