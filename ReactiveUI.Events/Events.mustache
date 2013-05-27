@@ -54,7 +54,7 @@ namespace {{Name}}
 namespace {{Name}}.Rx
 {
 {{#Types}}
-    public class {{Name}}Rx : {{Name}}
+    public {{Abstract}} class {{Name}}Rx : {{Name}}
     {
 {{#ZeroParameterMethods}}
         readonly Subject<Unit> _{{Name}} = new Subject<Unit>();
