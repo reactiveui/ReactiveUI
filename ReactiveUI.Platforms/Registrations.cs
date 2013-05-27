@@ -52,7 +52,7 @@ namespace ReactiveUI.Xaml
 #endif
 
 #if UIKIT
-            registerFunction(() => new UIKitObservableForProperty(), typeof(ICreatesObservableForProperty));
+			registerFunction(() => UIKitObservableForProperty.Instance.Value, typeof(ICreatesObservableForProperty));
 #endif
 
 #if COCOA
