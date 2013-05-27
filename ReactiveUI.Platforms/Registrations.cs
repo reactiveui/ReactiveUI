@@ -53,6 +53,7 @@ namespace ReactiveUI.Xaml
 
 #if UIKIT
 			registerFunction(() => UIKitObservableForProperty.Instance.Value, typeof(ICreatesObservableForProperty));
+			registerFunction(()=> DateTimeNSDateConverter.Instance.Value, typeof(IImplicitBindingTypeConverter));
 #endif
 
 #if COCOA
