@@ -2,7 +2,7 @@
 <package xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
 	<metadata xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
 		<id>reactiveui-mobile</id>
-		<version>5.0.0.20130519-alpha</version>
+		<version>5.0.0.20130527-alpha</version>
 		<description>ReactiveUI library for Xamarin.Mobile and other mobile-related helpers</description>
 		<authors>Paul Betts</authors>
 		<projectUrl>http://www.reactiveui.net</projectUrl>
@@ -11,7 +11,7 @@
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 
 		<dependencies>
-			<dependency id="reactiveui-platforms" version="[5.0.0.20130519-alpha]" />
+			<dependency id="reactiveui-platforms" version="[5.0.0.20130527-alpha]" />
 		</dependencies>
 	</metadata>
 </package>
