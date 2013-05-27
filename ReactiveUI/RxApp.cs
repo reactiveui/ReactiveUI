@@ -194,6 +194,9 @@ namespace ReactiveUI
             }
         }
 
+        static bool? _InUnitTestRunnerOverride;
+        static bool? _InUnitTestRunner;
+
         /// <summary>
         /// This method allows you to override the return value of 
         /// RxApp.InUnitTestRunner - a null value means that InUnitTestRunner
@@ -206,13 +209,11 @@ namespace ReactiveUI
                 _InUnitTestRunnerOverride = value;
 
                 if(value.HasValue && !value.Value) {
-                    _UnitTestDeferredScheduler = null;
+                    _UnitTestMainThreadScheduler = null;
                     _UnitTestTaskpoolScheduler = null;
                 }
             }
         }
-
-        static bool? _InUnitTestRunner;
 
         /// <summary>
         /// InUnitTestRunner attempts to determine heuristically if the current
