@@ -8,7 +8,7 @@ using System.Text;
 
 namespace ReactiveUI
 {
-    public class EqualityTypeConverter : IBindingTypeConverter
+    public class EqualityTypeConverter : IImplicitBindingTypeConverter
     {
         public int GetAffinityForObjects(Type lhs, Type rhs)
         {
@@ -81,7 +81,7 @@ namespace ReactiveUI
         }
     }
 
-    public class StringConverter : IBindingTypeConverter
+    public class StringConverter : IImplicitBindingTypeConverter
     {
         public int GetAffinityForObjects(Type lhs, Type rhs)
         {
