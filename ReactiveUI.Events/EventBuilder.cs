@@ -36,7 +36,6 @@ namespace EventBuilder
                 .Replace("System.Object", "object")
                 .Replace("&lt;", "<")
                 .Replace("&gt;", ">")
-                .Replace("&amp;", "")
                 .Replace("`1", "")
                 .Replace("`2", "");
 
@@ -134,7 +133,8 @@ namespace EventBuilder
         {
             var bannedMethods = new[] { "Dispose", "Finalize" };
             return t.Methods
-                .Where(x => x.IsVirtual && !x.IsConstructor && x.ReturnType.FullName == "System.Void")
+                .Where(x => x.IsVirtual && !x.IsConstructor && !x.IsSetter && x.ReturnType.FullName == "System.Void")
+                .Where(x => x.Parameters.All(y => y.ParameterType.FullName.Contains("&") == false))
                 .Where(x => !bannedMethods.Contains(x.Name))
                 .GroupBy(x => x.Name).Select(x => x.OrderByDescending(y => y.Parameters.Count).First())
                 .ToArray();
