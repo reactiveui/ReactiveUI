@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ReactiveUI.Tests
 {
-    public class TestLogger: ILogger
+    public class TestLogger : ILogger
     {
         public List<Tuple<string, LogLevel>> Messages { get; private set; }
         public LogLevel Level { get; set; }
@@ -20,21 +20,6 @@ namespace ReactiveUI.Tests
         public void Write(string message, LogLevel logLevel)
         {
             this.Messages.Add(Tuple.Create(message, logLevel));
-        }
-
-        public void With(Action<TestLogger> action)
-        {
-            var originalFactory = RxApp.LoggerFactory;
-            RxApp.LoggerFactory = x => this;
-
-            try
-            {
-                action(this);
-            }
-            finally
-            {
-                RxApp.LoggerFactory = originalFactory;
-            }
         }
     }
 }

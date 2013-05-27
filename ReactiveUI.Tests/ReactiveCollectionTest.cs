@@ -451,32 +451,37 @@ namespace ReactiveUI.Tests
             [Fact]
             public void DerivedCollectionsShouldWarnWhenSourceIsNotINotifyCollectionChanged()
             {
-                (new TestLogger()).With(l =>
-                {
+                var resolver = new ModernDependencyResolver();
+                var logger = new TestLogger();
+
+                resolver.InitializeResolver();
+                resolver.RegisterConstant(new FuncLogManager(t => new WrappingFullLogger(logger, t)), typeof(ILogManager));
+
+                using(resolver.WithResolver()) {
                     var incc = new ReactiveList<NoOneHasEverSeenThisClassBefore>();
 
                     Assert.True(incc is INotifyCollectionChanged);
                     var inccDerived = incc.CreateDerivedCollection(x => x);
 
-                    Assert.False(l.Messages.Any(x => x.Item1.Contains("INotifyCollectionChanged")));
+                    Assert.False(logger.Messages.Any(x => x.Item1.Contains("INotifyCollectionChanged")));
 
                     // Reset
-                    l.Messages.Clear();
+                    logger.Messages.Clear();
 
                     var nonIncc = new List<NoOneHasEverSeenThisClassBefore>();
 
                     Assert.False(nonIncc is INotifyCollectionChanged);
                     var nonInccderived = nonIncc.CreateDerivedCollection(x => x);
 
-                    Assert.Equal(1, l.Messages.Count);
+                    Assert.Equal(1, logger.Messages.Count);
 
-                    var m = l.Messages.Last();
+                    var m = logger.Messages.Last();
                     var message = m.Item1;
                     var level = m.Item2;
 
                     Assert.Contains("INotifyCollectionChanged", message);
                     Assert.Equal(LogLevel.Warn, level);
-                });
+                }
             }
         }
 
