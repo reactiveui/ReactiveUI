@@ -88,11 +88,11 @@ namespace ReactiveUI
         public static IDependencyResolver DependencyResolver {
             get {
                 IDependencyResolver resolver = _UnitTestDependencyResolver ?? _DependencyResolver;
-                if (resolver == null)
-                {
+                if (resolver == null) {
                     //if we haven't initialized yet, do this once
                     Initialize();
                 }
+
                 return resolver;
             }
             set {
@@ -117,11 +117,11 @@ namespace ReactiveUI
         public static IScheduler MainThreadScheduler {
             get {
                 IScheduler scheduler = _UnitTestMainThreadScheduler ?? _MainThreadScheduler;
-                if (scheduler == null)
-                {
+                if (scheduler == null) {
                     //if we haven't initialized yet, do this once
                     Initialize();
                 }
+
                 return scheduler;
             }
             set {
@@ -150,11 +150,11 @@ namespace ReactiveUI
         public static IScheduler TaskpoolScheduler {
             get { 
                 IScheduler scheduler = _UnitTestTaskpoolScheduler ?? _TaskpoolScheduler;
-                if (scheduler == null)
-                {
-                    //if we haven't initialized yet, do this once
+                if (scheduler == null) {
+                    // If we haven't initialized yet, do this once
                     Initialize();
                 }
+
                 return scheduler;
             }
             set {
@@ -177,11 +177,11 @@ namespace ReactiveUI
         /// </summary>
         public static IObserver<Exception> DefaultExceptionHandler {
             get {
-                if (_DefaultExceptionHandler == null)
-                {
-                    //if we haven't initialized yet, do this once
+                if (_DefaultExceptionHandler == null) {
+                    // If we haven't initialized yet, do this once
                     Initialize();
                 }
+
                 return _DefaultExceptionHandler;
             }
             set {
