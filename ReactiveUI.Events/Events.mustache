@@ -1,10 +1,14 @@
 ﻿using System;
 using System.Reactive;
 using System.Reactive.Linq;
+using System.Reactive.Subjects;
 
 {{#Namespaces}}
 using {{Name}};
 {{/Namespaces}}
+{{#DelegateNamespaces}}
+using {{Name}};
+{{/DelegateNamespaces}}
 
 {{#Namespaces}}
 namespace {{Name}}
@@ -47,14 +51,19 @@ namespace {{Name}}
 {{/Namespaces}}
 
 {{#DelegateNamespaces}}
-namespace {{Name}}
+namespace {{Name}}.Rx
 {
 {{#Types}}
-    public class Rx{{Name}}
-{{#Parent}}
-    : Rx{{Name}}
-{{/Parent}}
+    public class {{Name}}Rx : {{Name}}
     {
+{{#ZeroParameterMethods}}
+        readonly Subject<Unit> _{{Name}} = new Subject<Unit>();
+        public override void {{Name}}({{ParameterType}} {{ParameterName}})
+        {
+            _{{Name}}.OnNext({{ParameterName}});
+        }
+
+{{/ZeroParameterMethods}}
 {{#SingleParameterMethods}}
         readonly Subject<{{ParameterType}}> _{{Name}} = new Subject<{{ParameterType}}>();
         public override void {{Name}}({{ParameterType}} {{ParameterName}})
