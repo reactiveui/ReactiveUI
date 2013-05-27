@@ -58,7 +58,7 @@
     <CodeContractsPointerObligations>False</CodeContractsPointerObligations>
     <CustomCommands>
       <CustomCommands>
-        <Command type="BeforeBuild" command="${ProjectDir}/generate_events.rb /Library/Frameworks/Xamarin.Mac.framework/Versions/Current/lib/mono/XamMac.dll" />
+        <Command type="BeforeBuild" command="/usr/bin/env ruby ${ProjectDir}/generate_events.rb /Library/Frameworks/Xamarin.Mac.framework/Versions/Current/lib/mono/XamMac.dll" />
       </CustomCommands>
     </CustomCommands>
   </PropertyGroup>
@@ -95,7 +95,7 @@
     <DocumentationFile>bin\Release\Mono\ReactiveUI.xml</DocumentationFile>
     <CustomCommands>
       <CustomCommands>
-        <Command type="BeforeBuild" command="${ProjectDir}/generate_events.rb /Library/Frameworks/Xamarin.Mac.framework/Versions/Current/lib/mono/XamMac.dll" />
+        <Command type="BeforeBuild" command="/usr/bin/env ruby ${ProjectDir}/generate_events.rb /Library/Frameworks/Xamarin.Mac.framework/Versions/Current/lib/mono/XamMac.dll" />
       </CustomCommands>
     </CustomCommands>
   </PropertyGroup>
