@@ -131,7 +131,11 @@ namespace EventBuilder
 
         public static MethodDefinition[] GetPublicDelegateMethods(TypeDefinition t)
         {
-            return t.Methods.Where(x => x.IsVirtual && !x.IsConstructor && x.ReturnType.FullName == "System.Void").ToArray();
+            var bannedMethods = new[] { "Dispose", "Finalize" };
+            return t.Methods
+                .Where(x => x.IsVirtual && !x.IsConstructor && x.ReturnType.FullName == "System.Void")
+                .Where(x => !bannedMethods.Contains(x.Name))
+                .ToArray();
         }
 
         public static TypeDefinition[] SafeGetTypes(AssemblyDefinition a)
