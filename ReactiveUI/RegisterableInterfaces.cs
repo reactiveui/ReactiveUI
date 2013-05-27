@@ -142,25 +142,12 @@ namespace ReactiveUI
     }
 
     /// <summary>
-    /// This class is the extensible implementation of IValueConverters for 
+    /// This interface is the extensible implementation of IValueConverters for 
     /// Bind and OneWayBind. Implement this to teach Bind and OneWayBind how to
     /// convert between types.
     /// </summary>
     public interface IBindingTypeConverter : IEnableLogger
     {
-        /// <summary>
-        /// Returns a positive integer when this class supports 
-        /// TryConvert for this particular Type. If the method isn't supported at 
-        /// all, return a non-positive integer. When multiple implementations 
-        /// return a positive value, the host will use the one which returns 
-        /// the highest value. When in doubt, return '2' or '0'.
-        /// </summary>
-        /// <param name="lhs">The left-hand object to compare (i.e. 'from')</param>
-        /// <param name="rhs">The right-hand object to compare (i.e. 'to')</param>
-        /// <returns>A positive integer if TryConvert is supported, 
-        /// zero or a negative value otherwise</returns>
-        int GetAffinityForObjects(Type lhs, Type rhs);
-
         /// <summary>
         /// Convert a given object to the specified type.
         /// </summary>
@@ -171,6 +158,27 @@ namespace ReactiveUI
         /// <returns>An object that is of the type 'to'</returns>
         bool TryConvert(object from, Type toType, object conversionHint, out object result);
     }
+
+	/// <summary>
+	/// This interface is the extensible implementation of IValueConverters for 
+	/// Bind and OneWayBind. Implement this to teach Bind and OneWayBind how to
+	/// convert between types without explicitely specifing converters for bindings
+	/// </summary>
+	public interface IImplicitBindingTypeConverter : IBindingTypeConverter
+	{
+		/// <summary>
+		/// Returns a positive integer when this class supports 
+		/// TryConvert for this particular Type. If the method isn't supported at 
+		/// all, return a non-positive integer. When multiple implementations 
+		/// return a positive value, the host will use the one which returns 
+		/// the highest value. When in doubt, return '2' or '0'.
+		/// </summary>
+		/// <param name="lhs">The left-hand object to compare (i.e. 'from')</param>
+		/// <param name="rhs">The right-hand object to compare (i.e. 'to')</param>
+		/// <returns>A positive integer if TryConvert is supported, 
+		/// zero or a negative value otherwise</returns>
+		int GetAffinityForObjects(Type lhs, Type rhs);
+	}
 
     /// <summary>
     /// Implement this to teach Bind and OneWayBind how to guess the most 
