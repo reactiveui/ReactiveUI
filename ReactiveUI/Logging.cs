@@ -107,9 +107,6 @@ namespace ReactiveUI
 
             loggerCache = new MemoizingMRUCache<Type, IFullLogger>((type, _) => {
                 var ret = dependencyResolver.GetService<ILogger>();
-                var fullRet = ret as IFullLogger;
-
-                if (fullRet != null) return fullRet;
                 return new WrappingFullLogger(ret, type);
             }, 30);
         }
