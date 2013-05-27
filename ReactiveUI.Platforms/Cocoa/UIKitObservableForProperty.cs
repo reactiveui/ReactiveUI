@@ -12,6 +12,8 @@ namespace ReactiveUI.Cocoa
 {
     public class UIKitObservableForProperty : UIKitObservableForPropertyBase
     {
+		public static Lazy<UIKitObservableForProperty> Instance = new Lazy<UIKitObservableForProperty>();
+
         public UIKitObservableForProperty ()
         {
             Register(typeof(UIControl), "Value", 9, (s, p)=> ObservableFromUIControlEvent(s, p, UIControlEvent.ValueChanged));
