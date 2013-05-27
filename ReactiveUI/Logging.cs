@@ -10,17 +10,21 @@ using System.Diagnostics.Contracts;
 
 namespace ReactiveUI
 {
+    /*
+     * Interfaces
+     */
+
     public enum LogLevel {
         Debug = 1, Info, Warn, Error, Fatal,
     }
 
-    public interface IRxUILogger
+    public interface ILogger
     {
         void Write([Localizable(false)] string message, LogLevel logLevel);
         LogLevel Level { get; set; }
     }
 
-    public interface IRxUIFullLogger : IRxUILogger
+    public interface IFullLogger : ILogger
     {
         void Debug<T>(T value);
         void Debug<T>(IFormatProvider formatProvider, T value);
@@ -88,43 +92,53 @@ namespace ReactiveUI
         void Fatal<TArgument1, TArgument2, TArgument3>([Localizable(false)] string message, TArgument1 argument1, TArgument2 argument2, TArgument3 argument3);
     }
 
-    public static class LogManager
+    public interface ILogManager
     {
-        static LogManager()
+        IFullLogger GetLogger(Type type);
+    }
+
+    class DefaultLogManager : ILogManager
+    {
+        readonly MemoizingMRUCache<Type, IFullLogger> loggerCache;
+
+        public DefaultLogManager(IDependencyResolver dependencyResolver = null)
         {
-            RxApp._LoggerFactoryChanged.Subscribe(_ => loggerCache.InvalidateAll());
+            dependencyResolver = dependencyResolver ?? RxApp.DependencyResolver;
+
+            loggerCache = new MemoizingMRUCache<Type, IFullLogger>((type, _) => {
+                var ret = dependencyResolver.GetService<ILogger>();
+                var fullRet = ret as IFullLogger;
+
+                if (fullRet != null) return fullRet;
+                return new WrappingFullLogger(ret, type);
+            }, 30);
         }
 
-        static MemoizingMRUCache<Type, IRxUIFullLogger> loggerCache = new MemoizingMRUCache<Type, IRxUIFullLogger>((type, _) => {
-            var ret = RxApp.LoggerFactory(type);
-            var fullRet = ret as IRxUIFullLogger;
-
-            if (fullRet != null) return fullRet;
-            return new WrappingFullLogger(ret, type);
-        }, 30);
-
-        static readonly IRxUIFullLogger nullLogger = new WrappingFullLogger(new NullLogger(), typeof(MemoizingMRUCache<Type, IRxUIFullLogger>));
-        public static IRxUIFullLogger GetLogger(Type type)
+        static readonly IFullLogger nullLogger = new WrappingFullLogger(new NullLogger(), typeof(MemoizingMRUCache<Type, IFullLogger>));
+        public IFullLogger GetLogger(Type type)
         {
-            if (type == typeof(MemoizingMRUCache<Type, IRxUIFullLogger>)) return nullLogger;
+            if (type == typeof(MemoizingMRUCache<Type, IFullLogger>)) return nullLogger;
             lock (loggerCache) {
                 return loggerCache.Get(type);
             }
         }
+    }
 
-        public static IRxUIFullLogger GetLogger<T>()
+    public static class LogManagerMixin
+    {
+        public static IFullLogger GetLogger<T>(this ILogManager This)
         {
-            return GetLogger(typeof(T));
+            return This.GetLogger(typeof(T));
         }
     }
 
-    public class NullLogger : IRxUILogger
+    public class NullLogger : ILogger
     {
         public void Write(string message, LogLevel logLevel) {}
         public LogLevel Level { get; set; }
     }
 
-    public class DebugLogger : IRxUILogger
+    public class DebugLogger : ILogger
     {
         public void Write(string message, LogLevel logLevel)
         {
@@ -135,6 +149,10 @@ namespace ReactiveUI
         public LogLevel Level { get; set; }
     }
 
+
+    /*
+     * LogHost / Logging Mixin
+     */
 
     /// <summary>
     /// "Implement" this interface in your class to get access to the Log() 
@@ -149,17 +167,29 @@ namespace ReactiveUI
         /// Use this logger inside miscellaneous static methods where creating
         /// a class-specific logger isn't really worth it.
         /// </summary>
-        public static IRxUIFullLogger Default {
-            get { return LogManager.GetLogger(typeof(LogHost)); }
+        public static IFullLogger Default {
+            get {
+
+                var factory = RxApp.DependencyResolver.GetService<ILogManager>();
+                if (factory == null) {
+                    throw new Exception("ILogManager is null. This should never happen, your dependency resolver is broken");
+                }
+                return factory.GetLogger(typeof(LogHost));
+            }
         }
 
         /// <summary>
         /// Call this method to write log entries on behalf of the current 
         /// class.
         /// </summary>
-        public static IRxUIFullLogger Log<T>(this T This) where T : IEnableLogger
+        public static IFullLogger Log<T>(this T This) where T : IEnableLogger
         {
-            return LogManager.GetLogger(typeof(T));
+            var factory = RxApp.DependencyResolver.GetService<ILogManager>();
+            if (factory == null) {
+                throw new Exception("ILogManager is null. This should never happen, your dependency resolver is broken");
+            }
+
+            return factory.GetLogger<T>();
         }
     }
 
@@ -208,13 +238,13 @@ namespace ReactiveUI
     }
 
     #region Extremely Dull Code Ahead
-    internal class WrappingFullLogger : IRxUIFullLogger
+    internal class WrappingFullLogger : IFullLogger
     {
-        readonly IRxUILogger _inner;
+        readonly ILogger _inner;
         readonly string prefix;
         readonly MethodInfo stringFormat;
 
-        public WrappingFullLogger(IRxUILogger inner, Type callingType)
+        public WrappingFullLogger(ILogger inner, Type callingType)
         {
             _inner = inner;
             prefix = String.Format(CultureInfo.InvariantCulture, "{0}: ", callingType.Name);

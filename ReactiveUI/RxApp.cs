@@ -59,8 +59,6 @@ namespace ReactiveUI
                 });
             });
 
-            LoggerFactory = t => new DebugLogger();
-
             initializeDependencyResolver();
 
             if (InUnitTestRunner()) {
@@ -167,26 +165,6 @@ namespace ReactiveUI
                     _TaskpoolScheduler = value;
                 }
             }
-        }
-
-        static Func<Type, IRxUILogger> _LoggerFactory;
-        static internal readonly Subject<Unit> _LoggerFactoryChanged = new Subject<Unit>();
-
-        /// <summary>
-        /// Set this property to implement a custom logger provider - the
-        /// string parameter is the 'prefix' (usually the class name of the log
-        /// entry)
-        /// </summary>
-        public static Func<Type, IRxUILogger> LoggerFactory {
-            get {
-                if (_LoggerFactory == null)
-                {
-                    //if we haven't initialized yet, do this once
-                    Initialize();
-                }
-                return _LoggerFactory; 
-            }
-            set { _LoggerFactory = value; _LoggerFactoryChanged.OnNext(Unit.Default); }
         }
 
         static IObserver<Exception> _DefaultExceptionHandler;
