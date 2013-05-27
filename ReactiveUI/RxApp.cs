@@ -107,6 +107,11 @@ namespace ReactiveUI
             }
         }
 
+        public static IMutableDependencyResolver MutableResolver {
+            get { return DependencyResolver as IMutableDependencyResolver; }
+            set { DependencyResolver = value; }
+        }
+
         [ThreadStatic] static IScheduler _UnitTestMainThreadScheduler;
         static IScheduler _MainThreadScheduler;
 
