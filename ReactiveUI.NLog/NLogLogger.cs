@@ -7,7 +7,7 @@ using NLog;
 
 namespace ReactiveUI.NLog
 {
-    public class NLogLogger : IRxUIFullLogger
+    public class NLogLogger : IFullLogger
     {
         readonly Logger _inner;
 
