@@ -28,7 +28,7 @@ namespace RxUIViewModelGenerator
                     (string x) => Enum.TryParse<TemplateType>(x, out type) },
                 { "i=|input=", "The input interface file, defaults to stdin", 
                     (string x) => input = new StreamReader(File.OpenRead(x), Encoding.UTF8) },
-                { "template-override=", "The input interface file, defaults to stdin", 
+                { "template-override=", "The input template file (ignores built-in one if specified)", 
                     (string x) => template = File.ReadAllText(x, Encoding.UTF8) },
                 { "h|help", "Displays Help", 
                     _ => opts.WriteOptionDescriptions(Console.Out) },
