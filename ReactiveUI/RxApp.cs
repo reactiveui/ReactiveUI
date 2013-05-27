@@ -237,10 +237,17 @@ namespace ReactiveUI
             fakeResolver.InitializeResolver();
         }
 
+        static internal bool suppressLogging { get; set; }
+
         static void initializeDependencyResolver()
         {
             var resolver = new ModernDependencyResolver();
+
+            // NB: The reason that we need to do this is that logging itself
+            // is set up via dependency resolution - if we try to log while
+            // setting up the logger, we will end up StackOverflowException'ing
             resolver.InitializeResolver();
+
             _DependencyResolver = resolver;
         }
     }    

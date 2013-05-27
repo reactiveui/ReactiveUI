@@ -114,7 +114,9 @@ namespace ReactiveUI
         static readonly IFullLogger nullLogger = new WrappingFullLogger(new NullLogger(), typeof(MemoizingMRUCache<Type, IFullLogger>));
         public IFullLogger GetLogger(Type type)
         {
+            if (RxApp.suppressLogging) return nullLogger;
             if (type == typeof(MemoizingMRUCache<Type, IFullLogger>)) return nullLogger;
+
             lock (loggerCache) {
                 return loggerCache.Get(type);
             }
@@ -174,12 +176,15 @@ namespace ReactiveUI
 
     public static class LogHost
     {
+        static readonly IFullLogger nullLogger = new WrappingFullLogger(new NullLogger(), typeof(string));
+
         /// <summary>
         /// Use this logger inside miscellaneous static methods where creating
         /// a class-specific logger isn't really worth it.
         /// </summary>
         public static IFullLogger Default {
             get {
+                if (RxApp.suppressLogging) return nullLogger;
 
                 var factory = RxApp.DependencyResolver.GetService<ILogManager>();
                 if (factory == null) {
@@ -195,6 +200,8 @@ namespace ReactiveUI
         /// </summary>
         public static IFullLogger Log<T>(this T This) where T : IEnableLogger
         {
+            if (RxApp.suppressLogging) return nullLogger;
+
             var factory = RxApp.DependencyResolver.GetService<ILogManager>();
             if (factory == null) {
                 throw new Exception("ILogManager is null. This should never happen, your dependency resolver is broken");

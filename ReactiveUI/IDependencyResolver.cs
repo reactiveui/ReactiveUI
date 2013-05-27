@@ -62,6 +62,8 @@ namespace ReactiveUI
             var assmName = new AssemblyName(
                 fdr.AssemblyQualifiedName.Replace(fdr.FullName + ", ", ""));
 
+            RxApp.suppressLogging = true;
+
             namespaces.ForEach(ns => {
                 var targetType = ns + ".Registrations";
                 string fullName = targetType + ", " + assmName.FullName.Replace(assmName.Name, ns);
@@ -72,6 +74,8 @@ namespace ReactiveUI
                 var registerer = (IWantsToRegisterStuff)Activator.CreateInstance(registerTypeClass);
                 registerer.Register((f, t) => resolver.Register(f, t));
             });
+
+            RxApp.suppressLogging = false;
         }
 
         public static IDisposable WithResolver(this IDependencyResolver resolver)
