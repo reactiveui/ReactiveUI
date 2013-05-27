@@ -59,8 +59,6 @@ namespace ReactiveUI
                 });
             });
 
-            LoggerFactory = t => new DebugLogger();
-
             initializeDependencyResolver();
 
             if (InUnitTestRunner()) {
@@ -90,11 +88,11 @@ namespace ReactiveUI
         public static IDependencyResolver DependencyResolver {
             get {
                 IDependencyResolver resolver = _UnitTestDependencyResolver ?? _DependencyResolver;
-                if (resolver == null)
-                {
+                if (resolver == null) {
                     //if we haven't initialized yet, do this once
                     Initialize();
                 }
+
                 return resolver;
             }
             set {
@@ -124,11 +122,11 @@ namespace ReactiveUI
         public static IScheduler MainThreadScheduler {
             get {
                 IScheduler scheduler = _UnitTestMainThreadScheduler ?? _MainThreadScheduler;
-                if (scheduler == null)
-                {
+                if (scheduler == null) {
                     //if we haven't initialized yet, do this once
                     Initialize();
                 }
+
                 return scheduler;
             }
             set {
@@ -157,11 +155,11 @@ namespace ReactiveUI
         public static IScheduler TaskpoolScheduler {
             get { 
                 IScheduler scheduler = _UnitTestTaskpoolScheduler ?? _TaskpoolScheduler;
-                if (scheduler == null)
-                {
-                    //if we haven't initialized yet, do this once
+                if (scheduler == null) {
+                    // If we haven't initialized yet, do this once
                     Initialize();
                 }
+
                 return scheduler;
             }
             set {
@@ -174,26 +172,6 @@ namespace ReactiveUI
             }
         }
 
-        static Func<Type, IRxUILogger> _LoggerFactory;
-        static internal readonly Subject<Unit> _LoggerFactoryChanged = new Subject<Unit>();
-
-        /// <summary>
-        /// Set this property to implement a custom logger provider - the
-        /// string parameter is the 'prefix' (usually the class name of the log
-        /// entry)
-        /// </summary>
-        public static Func<Type, IRxUILogger> LoggerFactory {
-            get {
-                if (_LoggerFactory == null)
-                {
-                    //if we haven't initialized yet, do this once
-                    Initialize();
-                }
-                return _LoggerFactory; 
-            }
-            set { _LoggerFactory = value; _LoggerFactoryChanged.OnNext(Unit.Default); }
-        }
-
         static IObserver<Exception> _DefaultExceptionHandler;
 
         /// <summary>
@@ -204,11 +182,11 @@ namespace ReactiveUI
         /// </summary>
         public static IObserver<Exception> DefaultExceptionHandler {
             get {
-                if (_DefaultExceptionHandler == null)
-                {
-                    //if we haven't initialized yet, do this once
+                if (_DefaultExceptionHandler == null) {
+                    // If we haven't initialized yet, do this once
                     Initialize();
                 }
+
                 return _DefaultExceptionHandler;
             }
             set {
@@ -264,10 +242,17 @@ namespace ReactiveUI
             fakeResolver.InitializeResolver();
         }
 
+        static internal bool suppressLogging { get; set; }
+
         static void initializeDependencyResolver()
         {
             var resolver = new ModernDependencyResolver();
+
+            // NB: The reason that we need to do this is that logging itself
+            // is set up via dependency resolution - if we try to log while
+            // setting up the logger, we will end up StackOverflowException'ing
             resolver.InitializeResolver();
+
             _DependencyResolver = resolver;
         }
     }    
