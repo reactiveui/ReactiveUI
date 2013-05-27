@@ -22,6 +22,12 @@ namespace EventBuilder
                 targetAssemblyDirs.Add(monoDroidDir.Replace("v4.0", "v1.0"));
             }
 
+            // NB: Double down on Laziness
+            var xamMacDir = targetAssemblyDirs.FirstOrDefault(x => x.ToLowerInvariant().Contains("xamarin.mac"));
+            if (xamMacDir != null) {
+                targetAssemblyDirs.Add("/Library/Frameworks/Mono.framework/Versions/Current/lib/mono/4.5");
+            }
+
             var rp = new ReaderParameters() { AssemblyResolver = new PathSearchAssemblyResolver(targetAssemblyDirs.ToArray()) };
             var targetAssemblies = targetAssemblyNames
                 .Select(x => AssemblyDefinition.ReadAssembly(x, rp)).ToArray();
