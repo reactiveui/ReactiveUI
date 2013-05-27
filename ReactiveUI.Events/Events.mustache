@@ -58,14 +58,16 @@ namespace {{Name}}.Rx
     {
 {{#ZeroParameterMethods}}
         readonly Subject<Unit> _{{Name}} = new Subject<Unit>();
-        public override void {{Name}}({{ParameterType}} {{ParameterName}})
+        public IObservable<Unit> {{Name}}Obs { get { return _{{Name}}; } }
+        public override void {{Name}}()
         {
-            _{{Name}}.OnNext({{ParameterName}});
+            _{{Name}}.OnNext(Unit.Default);
         }
 
 {{/ZeroParameterMethods}}
 {{#SingleParameterMethods}}
         readonly Subject<{{ParameterType}}> _{{Name}} = new Subject<{{ParameterType}}>();
+        public IObservable<{{ParameterType}}> {{Name}}Obs { get { return _{{Name}}; } }
         public override void {{Name}}({{ParameterType}} {{ParameterName}})
         {
             _{{Name}}.OnNext({{ParameterName}});
@@ -74,9 +76,10 @@ namespace {{Name}}.Rx
 {{/SingleParameterMethods}}
 {{#MultiParameterMethods}}
         readonly Subject<Tuple<{{ParameterTypeList}}>> _{{Name}} = new Subject<Tuple<{{ParameterTypeList}}>>();
+        public IObservable<Tuple<{{ParameterTypeList}}>> {{Name}}Obs { get { return _{{Name}}; } }
         public override void {{Name}}({{ParameterList}})
         {
-            _{{Name}}.OnNext(Tuple.Create({{ParameterNameList}});
+            _{{Name}}.OnNext(Tuple.Create({{ParameterNameList}}));
         }
 
 {{/MultiParameterMethods}}
