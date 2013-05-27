@@ -54,10 +54,10 @@ namespace {{Name}}
 namespace {{Name}}.Rx
 {
 {{#Types}}
-    public {{Abstract}} class {{Name}}Rx : {{Name}}
+    public {{Abstract}} partial class {{Name}}Rx : {{Name}}
     {
 {{#ZeroParameterMethods}}
-        readonly Subject<Unit> _{{Name}} = new Subject<Unit>();
+        protected readonly Subject<Unit> _{{Name}} = new Subject<Unit>();
         public IObservable<Unit> {{Name}}Obs { get { return _{{Name}}; } }
         public override void {{Name}}()
         {
@@ -66,7 +66,7 @@ namespace {{Name}}.Rx
 
 {{/ZeroParameterMethods}}
 {{#SingleParameterMethods}}
-        readonly Subject<{{ParameterType}}> _{{Name}} = new Subject<{{ParameterType}}>();
+        protected readonly Subject<{{ParameterType}}> _{{Name}} = new Subject<{{ParameterType}}>();
         public IObservable<{{ParameterType}}> {{Name}}Obs { get { return _{{Name}}; } }
         public override void {{Name}}({{ParameterType}} {{ParameterName}})
         {
@@ -75,7 +75,7 @@ namespace {{Name}}.Rx
 
 {{/SingleParameterMethods}}
 {{#MultiParameterMethods}}
-        readonly Subject<Tuple<{{ParameterTypeList}}>> _{{Name}} = new Subject<Tuple<{{ParameterTypeList}}>>();
+        protected readonly Subject<Tuple<{{ParameterTypeList}}>> _{{Name}} = new Subject<Tuple<{{ParameterTypeList}}>>();
         public IObservable<Tuple<{{ParameterTypeList}}>> {{Name}}Obs { get { return _{{Name}}; } }
         public override void {{Name}}({{ParameterList}})
         {
