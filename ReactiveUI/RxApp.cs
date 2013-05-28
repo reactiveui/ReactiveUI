@@ -68,11 +68,12 @@ namespace ReactiveUI
                 LogHost.Default.Warn("*** Detected Unit Test Runner, setting MainThreadScheduler to CurrentThread ***");
                 LogHost.Default.Warn("If we are not actually in a test runner, please file a bug\n");
                 _MainThreadScheduler = CurrentThreadScheduler.Instance;
+                return;
             } else {
                 LogHost.Default.Info("Initializing to normal mode");
             }
 
-            if (MainThreadScheduler == null) {
+            if (_MainThreadScheduler == null) {
 #if !ANDROID
                 // NB: We can't initialize a scheduler automatically on Android
                 // because it is intrinsically tied to the current Activity, 
@@ -124,13 +125,13 @@ namespace ReactiveUI
         /// </summary>
         public static IScheduler MainThreadScheduler {
             get {
-                IScheduler scheduler = _UnitTestMainThreadScheduler ?? _MainThreadScheduler;
+                var scheduler = _UnitTestMainThreadScheduler ?? _MainThreadScheduler;
                 if (scheduler == null) {
                     //if we haven't initialized yet, do this once
                     Initialize();
                 }
 
-                return scheduler;
+                return _UnitTestMainThreadScheduler ?? _MainThreadScheduler;
             }
             set {
                 // N.B. The ThreadStatic dance here is for the unit test case -
@@ -157,13 +158,13 @@ namespace ReactiveUI
         /// </summary>
         public static IScheduler TaskpoolScheduler {
             get { 
-                IScheduler scheduler = _UnitTestTaskpoolScheduler ?? _TaskpoolScheduler;
+                var scheduler = _UnitTestTaskpoolScheduler ?? _TaskpoolScheduler;
                 if (scheduler == null) {
                     // If we haven't initialized yet, do this once
                     Initialize();
                 }
 
-                return scheduler;
+                return _UnitTestTaskpoolScheduler ?? _TaskpoolScheduler;
             }
             set {
                 if (InUnitTestRunner()) {
