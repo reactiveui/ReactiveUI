@@ -142,7 +142,7 @@ namespace ReactiveUI
     }
 
     /// <summary>
-    /// This class is the extensible implementation of IValueConverters for 
+    /// This interface is the extensible implementation of IValueConverters for 
     /// Bind and OneWayBind. Implement this to teach Bind and OneWayBind how to
     /// convert between types.
     /// </summary>
