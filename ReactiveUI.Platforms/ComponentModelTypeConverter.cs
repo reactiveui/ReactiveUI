@@ -3,7 +3,7 @@ using System.ComponentModel;
 
 namespace ReactiveUI
 {
-    public class ComponentModelTypeConverter : IImplicitBindingTypeConverter
+    public class ComponentModelTypeConverter : IBindingTypeConverter
     {
         readonly MemoizingMRUCache<Tuple<Type, Type>, TypeConverter> typeConverterCache = new MemoizingMRUCache<Tuple<Type, Type>, TypeConverter>((types, _) =>
         {
