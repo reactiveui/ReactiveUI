@@ -404,11 +404,11 @@ namespace ReactiveUI.Tests
         public class DerivedCollectionLogging
         {
             // We need a sentinel class to make sure no test has triggered the warnings before
-            private class NoOneHasEverSeenThisClassBefore
+            class NoOneHasEverSeenThisClassBefore
             {
             }
 
-            private class NoOneHasEverSeenThisClassBeforeEither
+            class NoOneHasEverSeenThisClassBeforeEither
             {
             }
 
