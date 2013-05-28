@@ -41,8 +41,11 @@ namespace ReactiveUI
     {
         public static void Initialize()
         {
+#if PORTABLE
             _TaskpoolScheduler = Scheduler.TaskPool;
-                
+#else
+            _TaskpoolScheduler = TaskPoolScheduler.Default;
+#endif
             DefaultExceptionHandler = Observer.Create<Exception>(ex => {
                 // NB: If you're seeing this, it means that an 
                 // ObservableAsPropertyHelper or the CanExecute of a 
