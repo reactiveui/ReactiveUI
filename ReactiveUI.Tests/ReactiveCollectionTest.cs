@@ -444,7 +444,11 @@ namespace ReactiveUI.Tests
         public class DerivedCollectionLogging
         {
             // We need a sentinel class to make sure no test has triggered the warnings before
-            private class NoOneHasEverSeenThisClassBefore
+            class NoOneHasEverSeenThisClassBefore
+            {
+            }
+
+            class NoOneHasEverSeenThisClassBeforeEither
             {
             }
 
@@ -459,7 +463,6 @@ namespace ReactiveUI.Tests
 
                 using(resolver.WithResolver()) {
                     var incc = new ReactiveList<NoOneHasEverSeenThisClassBefore>();
-
                     Assert.True(incc is INotifyCollectionChanged);
                     var inccDerived = incc.CreateDerivedCollection(x => x);
 
@@ -482,6 +485,28 @@ namespace ReactiveUI.Tests
                     Assert.Contains("INotifyCollectionChanged", message);
                     Assert.Equal(LogLevel.Warn, level);
                 }
+            }
+
+            [Fact]
+            public void DerivedCollectionsShouldNotTriggerSupressNotificationWarning()
+            {
+                var resolver = new ModernDependencyResolver();
+                var logger = new TestLogger();
+
+                resolver.InitializeResolver();
+                resolver.RegisterConstant(new FuncLogManager(t => new WrappingFullLogger(logger, t)), typeof(ILogManager));
+
+                using(resolver.WithResolver()) {
+                    var incc = new ReactiveList<NoOneHasEverSeenThisClassBeforeEither>();
+                    var inccDerived = incc.CreateDerivedCollection(x => x);
+
+                    Assert.False(logger.Messages.Any(x => x.Item1.Contains("SuppressChangeNotifications")));
+
+                    // Derived collections should only suppress warnings for internal behavior.
+                    inccDerived.ItemsAdded.Subscribe();
+                    incc.Reset();
+                    Assert.True(logger.Messages.Any(x => x.Item1.Contains("SuppressChangeNotifications")));
+                };
             }
         }
 
