@@ -148,24 +148,6 @@ namespace ReactiveUI
     /// </summary>
     public interface IBindingTypeConverter : IEnableLogger
     {
-        /// <summary>
-        /// Convert a given object to the specified type.
-        /// </summary>
-        /// <param name="from">The object to convert.</param>
-        /// <param name="toType">The type to coerce the object to.</param>
-        /// <param name="conversionHint">An implementation-defined value, 
-        /// usually to specify things like locale awareness.</param>
-        /// <returns>An object that is of the type 'to'</returns>
-        bool TryConvert(object from, Type toType, object conversionHint, out object result);
-    }
-
-	/// <summary>
-	/// This interface is the extensible implementation of IValueConverters for 
-	/// Bind and OneWayBind. Implement this to teach Bind and OneWayBind how to
-	/// convert between types without explicitely specifing converters for bindings
-	/// </summary>
-	public interface IImplicitBindingTypeConverter : IBindingTypeConverter
-	{
 		/// <summary>
 		/// Returns a positive integer when this class supports 
 		/// TryConvert for this particular Type. If the method isn't supported at 
@@ -178,7 +160,17 @@ namespace ReactiveUI
 		/// <returns>A positive integer if TryConvert is supported, 
 		/// zero or a negative value otherwise</returns>
 		int GetAffinityForObjects(Type lhs, Type rhs);
-	}
+
+		/// <summary>
+        /// Convert a given object to the specified type.
+        /// </summary>
+        /// <param name="from">The object to convert.</param>
+        /// <param name="toType">The type to coerce the object to.</param>
+        /// <param name="conversionHint">An implementation-defined value, 
+        /// usually to specify things like locale awareness.</param>
+        /// <returns>An object that is of the type 'to'</returns>
+        bool TryConvert(object from, Type toType, object conversionHint, out object result);
+    }
 
     /// <summary>
     /// Implement this to teach Bind and OneWayBind how to guess the most 

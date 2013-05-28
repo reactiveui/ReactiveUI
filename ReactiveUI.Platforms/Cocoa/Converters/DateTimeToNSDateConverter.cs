@@ -7,7 +7,7 @@ using ReactiveUI;
 namespace ReactiveUI.Cocoa
 {
 	public class DateTimeNSDateConverter :
-		IImplicitBindingTypeConverter
+		IBindingTypeConverter
     {
 		public static Lazy<DateTimeNSDateConverter> Instance = new Lazy<DateTimeNSDateConverter>();
 
