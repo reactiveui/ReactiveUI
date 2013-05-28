@@ -26,6 +26,7 @@ namespace ReactiveUI.Cocoa
             validTypes = new[]
             {
                 typeof(UIControl),
+				typeof(UIBarButtonItem),
             };
 #else
             validTypes = new[]
@@ -58,9 +59,25 @@ namespace ReactiveUI.Cocoa
 
             var sel = new Selector("theAction:");
 #if UIKIT
-            var ctl = (UIControl)target;
-            ctl.AddTarget(ctlDelegate, sel, UIControlEvent.TouchUpInside);
-            var actionDisp = Disposable.Create(() => ctl.RemoveTarget(ctlDelegate, sel, UIControlEvent.TouchUpInside));
+			IDisposable actionDisp = null;
+
+			if(target is UIControl)
+			{
+				var ctl = (UIControl)target;
+				ctl.AddTarget(ctlDelegate, sel, UIControlEvent.TouchUpInside);
+				actionDisp = Disposable.Create(() => ctl.RemoveTarget(ctlDelegate, sel, UIControlEvent.TouchUpInside));
+			}
+
+			else if(target is UIBarButtonItem)
+			{
+				var ctl = (UIBarButtonItem)target;
+
+				actionDisp = Observable.FromEventPattern(ctl, "Clicked").Subscribe((e) =>
+				{
+					if (command.CanExecute(latestParam))
+						command.Execute(latestParam);
+				});
+			}
 #else
             Reflection.GetValueSetterOrThrow(target.GetType(), "Action")(target, sel);
             var targetSetter = Reflection.GetValueSetterOrThrow(target.GetType(), "Target");
