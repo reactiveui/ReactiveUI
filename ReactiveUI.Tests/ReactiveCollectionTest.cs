@@ -404,15 +404,18 @@ namespace ReactiveUI.Tests
         public class DerivedCollectionLogging
         {
             // We need a sentinel class to make sure no test has triggered the warnings before
-            private class NoOneHasEverSeenThisClassBefore
+            class NoOneHasEverSeenThisClassBefore
+            {
+            }
+
+            class NoOneHasEverSeenThisClassBeforeEither
             {
             }
 
             [Fact]
             public void DerivedCollectionsShouldWarnWhenSourceIsNotINotifyCollectionChanged()
             {
-                (new TestLogger()).With(l =>
-                {
+                (new TestLogger()).With(l => {
                     var incc = new ReactiveCollection<NoOneHasEverSeenThisClassBefore>();
 
                     Assert.True(incc is INotifyCollectionChanged);
@@ -436,6 +439,22 @@ namespace ReactiveUI.Tests
 
                     Assert.Contains("INotifyCollectionChanged", message);
                     Assert.Equal(LogLevel.Warn, level);
+                });
+            }
+
+            [Fact]
+            public void DerivedCollectionsShouldNotTriggerSupressNotificationWarning()
+            {
+                (new TestLogger()).With(l => {
+                    var incc = new ReactiveCollection<NoOneHasEverSeenThisClassBeforeEither>();
+                    var inccDerived = incc.CreateDerivedCollection(x => x);
+
+                    Assert.False(l.Messages.Any(x => x.Item1.Contains("SuppressChangeNotifications")));
+
+                    // Derived collections should only suppress warnings for internal behavior.
+                    inccDerived.ItemsAdded.Subscribe();
+                    incc.Reset();
+                    Assert.True(l.Messages.Any(x => x.Item1.Contains("SuppressChangeNotifications")));
                 });
             }
         }
