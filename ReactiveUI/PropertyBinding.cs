@@ -1012,10 +1012,10 @@ namespace ReactiveUI
             return shouldBind;
         }
 
-        MemoizingMRUCache<Tuple<Type, Type>, IImplicitBindingTypeConverter> typeConverterCache = new MemoizingMRUCache<Tuple<Type, Type>, IImplicitBindingTypeConverter>(
+        MemoizingMRUCache<Tuple<Type, Type>, IBindingTypeConverter> typeConverterCache = new MemoizingMRUCache<Tuple<Type, Type>, IBindingTypeConverter>(
             (types, _) => {
-                return RxApp.DependencyResolver.GetServices<IImplicitBindingTypeConverter>()
-                    .Aggregate(Tuple.Create(-1, default(IImplicitBindingTypeConverter)), (acc, x) =>
+                return RxApp.DependencyResolver.GetServices<IBindingTypeConverter>()
+                    .Aggregate(Tuple.Create(-1, default(IBindingTypeConverter)), (acc, x) =>
                     {
                         var score = x.GetAffinityForObjects(types.Item1, types.Item2);
                         return score > acc.Item1 && score > 0 ?
@@ -1023,7 +1023,7 @@ namespace ReactiveUI
                     }).Item2;
             }, 25);
 
-        internal IImplicitBindingTypeConverter getConverterForTypes(Type lhs, Type rhs)
+        internal IBindingTypeConverter getConverterForTypes(Type lhs, Type rhs)
         {
             lock (typeConverterCache) {
                 return typeConverterCache.Get(Tuple.Create(lhs, rhs));
