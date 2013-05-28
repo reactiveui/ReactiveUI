@@ -26,7 +26,7 @@ namespace ReactiveUI.Cocoa
             validTypes = new[]
             {
                 typeof(UIControl),
-				typeof(UIBarButtonItem),
+                typeof(UIBarButtonItem),
             };
 #else
             validTypes = new[]
@@ -68,16 +68,16 @@ namespace ReactiveUI.Cocoa
 				actionDisp = Disposable.Create(() => ctl.RemoveTarget(ctlDelegate, sel, UIControlEvent.TouchUpInside));
 			}
 
-			else if(target is UIBarButtonItem)
-			{
-				var ctl = (UIBarButtonItem)target;
+            else if(target is UIBarButtonItem)
+            {
+                var ctl = (UIBarButtonItem)target;
 
-				actionDisp = Observable.FromEventPattern(ctl, "Clicked").Subscribe((e) =>
-				{
-					if (command.CanExecute(latestParam))
-						command.Execute(latestParam);
-				});
-			}
+                actionDisp = Observable.FromEventPattern(ctl, "Clicked").Subscribe((e) =>
+                {
+                    if (command.CanExecute(latestParam))
+                        command.Execute(latestParam);
+                });
+            }
 #else
             Reflection.GetValueSetterOrThrow(target.GetType(), "Action")(target, sel);
             var targetSetter = Reflection.GetValueSetterOrThrow(target.GetType(), "Target");
