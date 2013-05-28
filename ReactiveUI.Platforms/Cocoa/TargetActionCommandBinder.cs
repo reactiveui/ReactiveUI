@@ -19,17 +19,16 @@ namespace ReactiveUI.Cocoa
 {
     public class TargetActionCommandBinder : ICreatesCommandBinding
     {
-        Type[] validTypes;
+        readonly Type[] validTypes;
         public TargetActionCommandBinder() 
         {
 #if UIKIT
-            validTypes = new[]
-            {
+            validTypes = new[] {
                 typeof(UIControl),
+                typeof(UIBarButtonItem),
             };
 #else
-            validTypes = new[]
-            {
+            validTypes = new[] {
                 typeof(NSControl),
                 typeof(NSCell),
                 typeof(NSMenu),
@@ -40,9 +39,7 @@ namespace ReactiveUI.Cocoa
 
         public int GetAffinityForObject(Type type, bool hasEventTarget)
         {
-            if (!validTypes.Any(x => x.IsAssignableFrom(type)))
-                return 0;
-
+            if (!validTypes.Any(x => x.IsAssignableFrom(type))) return 0;
             return !hasEventTarget ? 4 : 0;
         }
 
@@ -58,19 +55,30 @@ namespace ReactiveUI.Cocoa
 
             var sel = new Selector("theAction:");
 #if UIKIT
-            var ctl = (UIControl)target;
-            ctl.AddTarget(ctlDelegate, sel, UIControlEvent.TouchUpInside);
-            var actionDisp = Disposable.Create(() => ctl.RemoveTarget(ctlDelegate, sel, UIControlEvent.TouchUpInside));
+            IDisposable actionDisp = null;
+
+            if(target is UIControl) {
+                var ctl = (UIControl)target;
+                ctl.AddTarget(ctlDelegate, sel, UIControlEvent.TouchUpInside);
+                actionDisp = Disposable.Create(() => ctl.RemoveTarget(ctlDelegate, sel, UIControlEvent.TouchUpInside));
+            } else if(target is UIBarButtonItem) {
+                var ctl = (UIBarButtonItem)target;
+
+                actionDisp = Observable.FromEventPattern(ctl, "Clicked").Subscribe((e) => {
+                    if (command.CanExecute(latestParam))
+                        command.Execute(latestParam);
+                });
+            }
 #else
             Reflection.GetValueSetterOrThrow(target.GetType(), "Action")(target, sel);
+
             var targetSetter = Reflection.GetValueSetterOrThrow(target.GetType(), "Target");
             targetSetter(target, ctlDelegate);
             var actionDisp = Disposable.Create(() => targetSetter(target, null));
 #endif
 
             var enabledSetter = Reflection.GetValueSetterForProperty(target.GetType(), "Enabled");
-            if(enabledSetter == null)
-                return actionDisp;
+            if(enabledSetter == null) return actionDisp;
 
             // initial enabled state
             enabledSetter(target, command.CanExecute(latestParam));
