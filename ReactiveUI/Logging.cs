@@ -268,7 +268,8 @@ namespace ReactiveUI
             prefix = String.Format(CultureInfo.InvariantCulture, "{0}: ", callingType.Name);
 
             stringFormat = typeof (String).GetMethod("Format", new[] {typeof (IFormatProvider), typeof (string), typeof (object[])});
-            Contract.Requires(stringFormat != null);
+            Contract.Requires(inner != null);
+			Contract.Requires(stringFormat != null);
         }
 
         public void Debug<T>(T value)
