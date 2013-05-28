@@ -191,7 +191,7 @@ namespace ReactiveUI
 
         static readonly Dictionary<Type, bool> hasWarned = new Dictionary<Type, bool>();
 
-        private void wireUpChangeNotifications()
+        void wireUpChangeNotifications()
         {
             var incc = source as INotifyCollectionChanged;
 
@@ -228,7 +228,7 @@ namespace ReactiveUI
             }
         }
 
-        private void onItemChanged(TSource changedItem)
+        void onItemChanged(TSource changedItem)
         {
             // If you've implemented INotifyPropertyChanged on a struct then you're doing it wrong(TM) and change
             // tracking won't work in derived collections (change tracking for value types makes no sense any way)
@@ -285,7 +285,7 @@ namespace ReactiveUI
         /// is made by checking whether or not it's considered larger than or equal to the preceeding item and if
         /// it's less than or equal to the succeeding item.
         /// </summary>
-        private bool canItemStayAtPosition(TValue item, int currentIndex)
+        bool canItemStayAtPosition(TValue item, int currentIndex)
         {
             bool hasPrecedingItem = currentIndex > 0;
 
@@ -308,7 +308,7 @@ namespace ReactiveUI
             return true;
         }
 
-        private void internalReplace(int destinationIndex, TValue newItem)
+        void internalReplace(int destinationIndex, TValue newItem)
         {
             base.SetItem(destinationIndex, newItem);
         }
@@ -316,7 +316,7 @@ namespace ReactiveUI
         /// <summary>
         /// Gets the index of the dervived item based on it's originating element index in the source collection.
         /// </summary>
-        private int getIndexFromSourceIndex(int sourceIndex)
+        int getIndexFromSourceIndex(int sourceIndex)
         {
             return this.indexToSourceIndexMap.IndexOf(sourceIndex);
         }
@@ -325,7 +325,7 @@ namespace ReactiveUI
         /// Returns one or more positions in the source collection where the given item is found based on the
         /// provided equality comparer.
         /// </summary>
-        private IEnumerable<int> indexOfAll(IEnumerable<TSource> source, TSource item,
+        IEnumerable<int> indexOfAll(IEnumerable<TSource> source, TSource item,
             IEqualityComparer<TSource> equalityComparer)
         {
             int sourceIndex = 0;
@@ -339,7 +339,7 @@ namespace ReactiveUI
             }
         }
 
-        private void onSourceCollectionChanged(NotifyCollectionChangedEventArgs args)
+        void onSourceCollectionChanged(NotifyCollectionChangedEventArgs args)
         {
             if (args.Action == NotifyCollectionChangedAction.Reset) {
                 this.Reset();
@@ -379,7 +379,7 @@ namespace ReactiveUI
         /// insert or remove of one or more items in the source list thus causing all subsequent items to shift
         /// up or down.
         /// </summary>
-        private void shiftIndicesAtOrOverThreshold(int threshold, int value)
+        void shiftIndicesAtOrOverThreshold(int threshold, int value)
         {
             for (int i = 0; i < indexToSourceIndexMap.Count; i++) {
                 if (indexToSourceIndexMap[i] >= threshold) {
@@ -398,14 +398,12 @@ namespace ReactiveUI
             }
         }
 
-        private void addAllItemsFromSourceCollection()
+        void addAllItemsFromSourceCollection()
         {
             int sourceIndex = 0;
 
-            foreach (TSource sourceItem in source)
-            {
-                if (filter(sourceItem))
-                {
+            foreach (TSource sourceItem in source) {
+                if (filter(sourceItem)) {
                     var destinationItem = selector(sourceItem);
                     internalInsertAndMap(sourceIndex, destinationItem);
                 }
@@ -420,7 +418,7 @@ namespace ReactiveUI
             base.internalClear();
         }
 
-        private void internalInsertAndMap(int sourceIndex, TValue value)
+        void internalInsertAndMap(int sourceIndex, TValue value)
         {
             int destinationIndex = positionForNewItem(sourceIndex, value);
 
@@ -453,7 +451,7 @@ namespace ReactiveUI
             }
         }
 
-        private int positionForNewItem(int sourceIndex, TValue value)
+        int positionForNewItem(int sourceIndex, TValue value)
         {
             // If we haven't got an orderer we'll simply match our items to that of the source collection.
             int destinationIndex = orderer == null
