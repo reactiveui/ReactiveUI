@@ -106,7 +106,8 @@ namespace ReactiveUI
             dependencyResolver = dependencyResolver ?? RxApp.DependencyResolver;
 
             loggerCache = new MemoizingMRUCache<Type, IFullLogger>((type, _) => {
-                var ret = dependencyResolver.GetService<ILogger>();
+                var ret = dependencyResolver.GetService<ILogger>() ??
+                    (Debugger.IsAttached ? (ILogger) new DebugLogger() : (ILogger) nullLogger);
                 return new WrappingFullLogger(ret, type);
             }, 30);
         }
