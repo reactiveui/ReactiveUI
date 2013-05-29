@@ -107,6 +107,10 @@ namespace ReactiveUI
 
             loggerCache = new MemoizingMRUCache<Type, IFullLogger>((type, _) => {
                 var ret = dependencyResolver.GetService<ILogger>();
+                if (ret == null) {
+                    throw new Exception("Couldn't find an ILogger. This should never happen, your dependency resolver is probably broken.");
+                }
+
                 return new WrappingFullLogger(ret, type);
             }, 30);
         }
