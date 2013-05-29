@@ -18,6 +18,7 @@ namespace ReactiveUI
             registerFunction(() => new StringConverter(), typeof(IBindingTypeConverter));
             registerFunction(() => new DefaultViewLocator(), typeof(IViewLocator));
             registerFunction(() => new DefaultLogManager(), typeof(ILogManager));
+            registerFunction(() => new DebugLogger(), typeof(ILogger));
         }
     }
 }
