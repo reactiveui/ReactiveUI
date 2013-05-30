@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -42,10 +44,13 @@ namespace RxUIViewModelGenerator
                 opts.WriteOptionDescriptions(Console.Error);
             }
 
+            removeExtraneousPowerShellParameter(rest);
+
             var dict = default(Dictionary<string, object>);
             try {
-                dict = rest.Select(x => x.Split('=')).ToDictionary(k => k[0], v => (object)v[1]);
-            } catch {
+                dict = rest.Select(x => x.Split('=')).ToDictionary(k => k[0], v => (object) v[1]);
+            }
+            catch {
                 Console.Error.WriteLine("Extra parameters are specified as theKey=theValue");
                 return -1;
             }
@@ -77,6 +82,16 @@ namespace RxUIViewModelGenerator
             }
 
             return 0;
+        }
+
+        static void removeExtraneousPowerShellParameter(List<string> rest)
+        {
+            if (rest == null || !rest.Any()) return;
+            var currentExe = new FileInfo(Assembly.GetExecutingAssembly().Location).FullName;
+
+            if(rest.RemoveAll(r => r.ToLowerInvariant() == currentExe.ToLowerInvariant()) > 0)
+                Debug.WriteLine("The name of the invoked executable was pass as the first argument; " +
+                    "Powershell's call operator (&) does this.");
         }
     }
 }
