@@ -16,7 +16,7 @@
 .NOTES
     
 #>
-function Generate-RxUIObjects {
+function Invoke-Scaffolder {
   [CmdletBinding()]
   param (
     [Parameter(Mandatory=$true, Position=0)]
@@ -47,6 +47,8 @@ function Generate-RxUIObjects {
   end {}
 }
 
+Set-Alias rxui Invoke-Scaffolder
+
 Register-TabExpansion 'Generate-RxUIObjects' @{
     'TemplateType' = {
         "ViewModel", 
@@ -56,4 +58,4 @@ Register-TabExpansion 'Generate-RxUIObjects' @{
     }
 }
 
-Export-ModuleMember Generate-RxUIObjects
+Export-ModuleMember -Function * -Alias *
