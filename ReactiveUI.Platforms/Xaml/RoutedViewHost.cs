@@ -72,7 +72,7 @@ namespace ReactiveUI.Xaml
                 .Select(_ => platform.GetOrientation())
                 .DistinctUntilChanged()
                 .StartWith(platform.GetOrientation())
-                .Select(x => x.ToString());
+                .Select(x => x != null ? x.ToString() : default(string));
 
             var vmAndContract = Observable.CombineLatest(
                 this.WhenAnyObservable(x => x.Router.CurrentViewModel),
