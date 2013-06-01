@@ -68,7 +68,7 @@ namespace ReactiveUI.Xaml
                 .Select(_ => platform.GetOrientation())
                 .DistinctUntilChanged()
                 .StartWith(platform.GetOrientation())
-                .Select(x => x.ToString());
+                .Select(x => x != null ? x.ToString() : default(string));
 
             vmAndContract.Subscribe(x => {
                 if (x.ViewModel == null) {
