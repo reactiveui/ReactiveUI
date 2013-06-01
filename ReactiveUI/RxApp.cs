@@ -97,7 +97,7 @@ namespace ReactiveUI
                     Initialize();
                 }
 
-                return resolver;
+                return _UnitTestDependencyResolver ?? _DependencyResolver;
             }
             set {
                 if (InUnitTestRunner()) {
