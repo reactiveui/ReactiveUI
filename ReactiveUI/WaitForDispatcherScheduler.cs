@@ -6,6 +6,12 @@ using System.Text;
 
 namespace ReactiveUI
 {
+    /// <summary>
+    /// This scheduler attempts to deal with some of the brain-dead defaults
+    /// on certain Microsoft platforms that make it difficult to access the
+    /// Dispatcher during startup. This class wraps a scheduler and if it
+    /// isn't available yet, it simply runs the scheduled item immediately.
+    /// </summary>
     public class WaitForDispatcherScheduler : IScheduler
     {
         IScheduler _innerScheduler;
