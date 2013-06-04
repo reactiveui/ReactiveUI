@@ -3,6 +3,9 @@ using System.Reactive.Linq;
 
 namespace ReactiveUI
 {
+    /// <summary>
+    /// Generates Observables based on observing Reactive objects
+    /// </summary>
     public class IRNPCObservableForProperty : ICreatesObservableForProperty
     {
         public int GetAffinityForObject(Type type, string propertyName, bool beforeChanged = false)

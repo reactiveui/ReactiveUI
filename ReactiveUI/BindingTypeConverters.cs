@@ -8,6 +8,10 @@ using System.Text;
 
 namespace ReactiveUI
 {
+    /// <summary>
+    /// The default converter, simply converts between types that are equal or
+    /// can be converted (i.e. Button => UIControl)
+    /// </summary>
     public class EqualityTypeConverter : IBindingTypeConverter
     {
         public int GetAffinityForObjects(Type lhs, Type rhs)
@@ -81,6 +85,10 @@ namespace ReactiveUI
         }
     }
 
+    /// <summary>
+    /// Calls ToString on types. In WPF, ComponentTypeConverter should win
+    /// instead of this, since It's Better™.
+    /// </summary>
     public class StringConverter : IBindingTypeConverter
     {
         public int GetAffinityForObjects(Type lhs, Type rhs)

@@ -95,18 +95,7 @@ namespace ReactiveUI
             UserErrorIcon = StockUserErrorIcon.Warning;
             InnerException = innerException;
             ErrorMessage = errorMessage;
-
-            // NB: I want to do something with CallerMemberNameAttribute here
-            // eventually
-            Domain = "";
-            //Domain = Assembly.GetCallingAssembly().FullName;
         }
-
-        /// <summary>
-        /// The component that originally threw the error - if this is not
-        /// supplied, it defaults to the assembly name.
-        /// </summary>
-        public string Domain { get; protected set; }
 
         /// <summary>
         /// A Dictionary that allows UserErrors to contain arbitrary
@@ -386,18 +375,34 @@ namespace ReactiveUI
             }
         }
 
+        /// <summary>
+        /// A default command whose caption is "Ok"
+        /// </summary>
+        /// <value>RetryOperation</value>
         public static IRecoveryCommand Ok {
             get { var ret = new RecoveryCommand("Ok") { IsDefault = true }; ret.Subscribe(_ => ret.RecoveryResult = RecoveryOptionResult.RetryOperation); return ret; }
         }
 
+        /// <summary>
+        /// A default command whose caption is "Cancel"
+        /// </summary>
+        /// <value>FailOperation</value>
         public static IRecoveryCommand Cancel {
             get { var ret = new RecoveryCommand("Cancel") { IsCancel = true }; ret.Subscribe(_ => ret.RecoveryResult = RecoveryOptionResult.FailOperation); return ret; }
         }
-
+                 
+        /// <summary>
+        /// A default command whose caption is "Yes"
+        /// </summary>
+        /// <value>RetryOperation</value>
         public static IRecoveryCommand Yes {
             get { var ret = new RecoveryCommand("Yes") { IsDefault = true }; ret.Subscribe(_ => ret.RecoveryResult = RecoveryOptionResult.RetryOperation); return ret; }
         }
 
+        /// <summary>
+        /// A default command whose caption is "No"
+        /// </summary>
+        /// <value>FailOperation</value>
         public static IRecoveryCommand No {
             get { var ret = new RecoveryCommand("No") { IsCancel = true }; ret.Subscribe(_ => ret.RecoveryResult = RecoveryOptionResult.FailOperation); return ret; }
         }

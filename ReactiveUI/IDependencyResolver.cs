@@ -8,6 +8,10 @@ using System.Threading.Tasks;
 
 namespace ReactiveUI
 {
+    /// <summary>
+    /// Represents a dependency resolver, a service to look up global class 
+    /// instances or types.
+    /// </summary>
     public interface IDependencyResolver : IDisposable
     {
         /// <summary>
@@ -28,6 +32,10 @@ namespace ReactiveUI
         IEnumerable<object> GetServices(Type serviceType, string contract = null);
     }
 
+    /// <summary>
+    /// Represents a dependency resolver where types can be registered after 
+    /// setup.
+    /// </summary>
     public interface IMutableDependencyResolver : IDependencyResolver
     {
         void Register(Func<object> factory, Type serviceType, string contract = null);
@@ -35,16 +43,35 @@ namespace ReactiveUI
 
     public static class DependencyResolverMixins
     {
+        /// <summary>
+        /// Gets an instance of the given <paramref name="serviceType"/>. Must return <c>null</c>
+        /// if the service is not available (must not throw).
+        /// </summary>
+        /// <param name="serviceType">The object type.</param>
+        /// <returns>The requested object, if found; <c>null</c> otherwise.</returns>
         public static T GetService<T>(this IDependencyResolver This, string contract = null)
         {
             return (T)This.GetService(typeof(T), contract);
         }
 
+        /// <summary>
+        /// Gets all instances of the given <paramref name="serviceType"/>. Must return an empty
+        /// collection if the service is not available (must not return <c>null</c> or throw).
+        /// </summary>
+        /// <param name="serviceType">The object type.</param>
+        /// <returns>A sequence of instances of the requested <paramref name="serviceType"/>. The sequence
+        /// should be empty (not <c>null</c>) if no objects of the given type are available.</returns>
         public static IEnumerable<T> GetServices<T>(this IDependencyResolver This, string contract = null)
         {
             return This.GetServices(typeof(T), contract).Cast<T>();
         }
 
+        /// <summary>
+        /// This method allows you to initialize resolvers with the default 
+        /// ReactiveUI types. All resolvers used as the default 
+        /// RxApp.DependencyResolver
+        /// </summary>
+        /// <param name="resolver">The resolver to initialize.</param>
         public static void InitializeResolver(this IMutableDependencyResolver resolver)
         {
             var namespaces = new[] { 
@@ -78,6 +105,11 @@ namespace ReactiveUI
             RxApp.suppressLogging = false;
         }
 
+        /// <summary>
+        /// Override the default Dependency Resolver until the object returned 
+        /// is disposed.
+        /// </summary>
+        /// <param name="resolver">The test resolver to use.</param>
         public static IDisposable WithResolver(this IDependencyResolver resolver)
         {
             var origResolver = RxApp.DependencyResolver;
@@ -87,6 +119,10 @@ namespace ReactiveUI
         }
     }
 
+    /// <summary>
+    /// A simple dependency resolver which takes Funcs for all its actions.
+    /// GetService is always implemented via GetServices().LastOrDefault()
+    /// </summary>
     public class FuncDependencyResolver : IMutableDependencyResolver
     {
         readonly Func<Type, string, IEnumerable<object>> innerGetServices;
