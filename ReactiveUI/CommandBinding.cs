@@ -17,9 +17,21 @@ namespace ReactiveUI
 
         static CommandBinder()
         {
-            binderImplementation = new CommandBinderImplementation();
+            binderImplementation = RxApp.DependencyResolver.GetService<ICommandBinderImplementation>() ?? 
+                new CommandBinderImplementation();
         }
 
+        /// <summary>
+        /// Bind a command from the ViewModel to the control on the View of the
+        /// same name.
+        /// </summary>
+        /// <returns>A class representing the binding. Dispose it to disconnect
+        /// the binding</returns>
+        /// <param name="view">The View</param>
+        /// <param name="viewModel">The View model</param>
+        /// <param name="propertyName">The ViewModel command to Bind.</param>
+        /// <param name="toEvent">If specified, bind to the specific event 
+        /// instead of the default.</param>
         public static IReactiveBinding<TView, TViewModel, TProp> BindCommand<TView, TViewModel, TProp>(
                 this TView view, 
                 TViewModel viewModel, 
@@ -31,7 +43,21 @@ namespace ReactiveUI
         {
             return binderImplementation.BindCommand(viewModel, view, propertyName, toEvent);
         }
-
+                
+        /// <summary>
+        /// Bind a command from the ViewModel to an explicitly specified control
+        /// on the View.
+        /// </summary>
+        /// <returns>A class representing the binding. Dispose it to disconnect
+        /// the binding</returns>
+        /// <param name="view">The View</param>
+        /// <param name="viewModel">The View model</param>
+        /// <param name="controlName">The name of the control on the view</param>
+        /// <param name="propertyName">The ViewModel command to Bind.</param>
+        /// <param name="withParameter">The ViewModel property to pass as the 
+        /// param of the ICommand</param>
+        /// <param name="toEvent">If specified, bind to the specific event 
+        /// instead of the default.</param>
         public static IReactiveBinding<TView, TViewModel, TProp> BindCommand<TView, TViewModel, TProp, TControl, TParam>(
                 this TView view, 
                 TViewModel viewModel, 
@@ -46,6 +72,20 @@ namespace ReactiveUI
             return binderImplementation.BindCommand(viewModel, view, propertyName, controlName, withParameter, toEvent);
         }
 
+        /// <summary>
+        /// Bind a command from the ViewModel to an explicitly specified control
+        /// on the View.
+        /// </summary>
+        /// <returns>A class representing the binding. Dispose it to disconnect
+        /// the binding</returns>
+        /// <param name="view">The View</param>
+        /// <param name="viewModel">The View model</param>
+        /// <param name="controlName">The name of the control on the view</param>
+        /// <param name="propertyName">The ViewModel command to Bind.</param>
+        /// <param name="withParameter">The ViewModel property to pass as the 
+        /// param of the ICommand</param>
+        /// <param name="toEvent">If specified, bind to the specific event 
+        /// instead of the default.</param>
         public static IReactiveBinding<TView, TViewModel, TProp> BindCommand<TView, TViewModel, TProp, TControl, TParam>(
                 this TView view, 
                 TViewModel viewModel, 
@@ -60,6 +100,17 @@ namespace ReactiveUI
             return binderImplementation.BindCommand(viewModel, view, propertyName, controlName, withParameter, toEvent);
         }
 
+        /// <summary>
+        /// Bind a command from the ViewModel to an explicitly specified control
+        /// on the View.
+        /// </summary>
+        /// <returns>A class representing the binding. Dispose it to disconnect
+        /// the binding</returns>
+        /// <param name="view">The View</param>
+        /// <param name="viewModel">The View model</param>
+        /// <param name="controlName">The name of the control on the view</param>
+        /// <param name="toEvent">If specified, bind to the specific event 
+        /// instead of the default.</param>
         public static IReactiveBinding<TView, TViewModel, TProp> BindCommand<TView, TViewModel, TProp, TControl>(
                 this TView view, 
                 TViewModel viewModel, 
@@ -72,7 +123,20 @@ namespace ReactiveUI
         {
             return binderImplementation.BindCommand(viewModel, view, propertyName, controlName, toEvent);
         }
-
+                
+        /// <summary>
+        /// Bind a command from the ViewModel to an explicitly specified control
+        /// on the View.
+        /// </summary>
+        /// <returns>A class representing the binding. Dispose it to disconnect
+        /// the binding</returns>
+        /// <param name="view">The View</param>
+        /// <param name="viewModel">The View model</param>
+        /// <param name="controlName">The name of the control on the view</param>
+        /// <param name="withParameter">The ViewModel property to pass as the 
+        /// param of the ICommand</param>
+        /// <param name="toEvent">If specified, bind to the specific event 
+        /// instead of the default.</param>
         public static IReactiveBinding<TView, TViewModel, TProp> BindCommand<TView, TViewModel, TProp, TControl, TParam>(
                 this TView view, 
                 TViewModel viewModel, 

@@ -89,6 +89,19 @@ namespace ReactiveUI
         [ThreadStatic] static IDependencyResolver _UnitTestDependencyResolver;
         static IDependencyResolver _DependencyResolver;
 
+        /// <summary>
+        /// Gets or sets the dependency resolver. This class is used throughout
+        /// ReactiveUI for many internal operations as well as for general use
+        /// by applications. If this isn't assigned on startup, a default, highly
+        /// capable implementation will be used, and it is advised for most people
+        /// to simply use the default implementation.
+        /// 
+        /// Note that to create your own and assign it to the global dependency
+        /// resolver, you must initialize it via calling InitializeResolver(), or
+        /// else ReactiveUI internal classes will not be registered and Bad Things™
+        /// will happen.
+        /// </summary>
+        /// <value>The dependency resolver.</value>
         public static IDependencyResolver DependencyResolver {
             get {
                 IDependencyResolver resolver = _UnitTestDependencyResolver ?? _DependencyResolver;
@@ -109,6 +122,12 @@ namespace ReactiveUI
             }
         }
 
+        /// <summary>
+        /// Convenience property to return the DependencyResolver cast to a
+        /// MutableDependencyResolver. The default resolver is also a mutable
+        /// resolver, so this will be non-null. Use this to register new types
+        /// on startup if you are using the default resolver
+        /// </summary>
         public static IMutableDependencyResolver MutableResolver {
             get { return DependencyResolver as IMutableDependencyResolver; }
             set { DependencyResolver = value; }
@@ -221,8 +240,7 @@ namespace ReactiveUI
 
         /// <summary>
         /// InUnitTestRunner attempts to determine heuristically if the current
-        /// application is running in a unit test framework by checking 
-        /// if the Rx TestScheduler is present.
+        /// application is running in a unit test framework
         /// </summary>
         /// <returns>True if we have determined that a unit test framework is
         /// currently running.</returns>
@@ -243,7 +261,8 @@ namespace ReactiveUI
 
         /// <summary>
         /// This method will initialize your custom service locator with the 
-        /// built-in RxUI types.
+        /// built-in RxUI types. Use this to help initialize containers that
+        /// don't conform easily to IMutableDependencyResolver.
         /// </summary>
         /// <param name="registerMethod">Create a method here that will 
         /// register a constant. For example, the NInject version of
