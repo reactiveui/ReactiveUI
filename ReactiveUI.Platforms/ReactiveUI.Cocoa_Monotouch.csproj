@@ -75,6 +75,8 @@
     <Compile Include="Cocoa\UIKitObservableForProperty.cs" />
     <Compile Include="Cocoa\UIKitObservableForPropertyBase.cs" />
     <Compile Include="Cocoa\Converters\DateTimeToNSDateConverter.cs" />
+    <Compile Include="Cocoa\EventBasedCommandBinder.cs" />
+    <Compile Include="Cocoa\UIKitEventBasedCommandBinders.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ReactiveUI\ReactiveUI_Monotouch.csproj">
