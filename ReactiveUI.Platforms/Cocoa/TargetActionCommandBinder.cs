@@ -25,9 +25,7 @@ namespace ReactiveUI.Cocoa
 #if UIKIT
             validTypes = new[] {
                 typeof(UIControl),
-                typeof(UIBarButtonItem),
-                typeof(UIRefreshControl),
-            };
+             };
 #else
             validTypes = new[] {
                 typeof(NSControl),
@@ -58,25 +56,11 @@ namespace ReactiveUI.Cocoa
 #if UIKIT
             IDisposable actionDisp = null;
 
-            if(target is UIRefreshControl) {
-                var ctl = (UIRefreshControl)target;
-
-                actionDisp = Observable.FromEventPattern(ctl, "ValueChanged").Subscribe((e) => {
-                    if (command.CanExecute(latestParam))
-                        command.Execute(latestParam);
-                });
-            } else if(target is UIControl) {
+            if(target is UIControl) {
                 var ctl = (UIControl)target;
                 ctl.AddTarget(ctlDelegate, sel, UIControlEvent.TouchUpInside);
                 actionDisp = Disposable.Create(() => ctl.RemoveTarget(ctlDelegate, sel, UIControlEvent.TouchUpInside));
-            } else if(target is UIBarButtonItem) {
-                var ctl = (UIBarButtonItem)target;
-
-                actionDisp = Observable.FromEventPattern(ctl, "Clicked").Subscribe((e) => {
-                    if (command.CanExecute(latestParam))
-                        command.Execute(latestParam);
-                });
-            }
+            } 
 #else
             Reflection.GetValueSetterOrThrow(target.GetType(), "Action")(target, sel);
 
