@@ -17,7 +17,11 @@ namespace ReactiveUI.Cocoa
 
         public int GetAffinityForObject(Type type, bool hasEventTarget)
         {
-            var match = config.Keys.FirstOrDefault(x=> x.IsAssignableFrom(type));
+            var match = config.Keys
+                .Where(x=> x.IsAssignableFrom(type))
+                .OrderByDescending(x=> config[x].Affinity)
+                .FirstOrDefault();
+
             if(match == null)
                 return 0;
 
@@ -29,7 +33,11 @@ namespace ReactiveUI.Cocoa
         {
             var type = target.GetType();
 
-            var match = config.Keys.FirstOrDefault(x=> x.IsAssignableFrom(type));
+            var match = config.Keys
+                .Where(x=> x.IsAssignableFrom(type))
+                .OrderByDescending(x=> config[x].Affinity)
+                .FirstOrDefault();
+
             if(match == null)
                 throw new NotSupportedException(string.Format("CommandBinding for {0} is not supported", type.Name));
 
