@@ -53,21 +53,11 @@ namespace ReactiveUI.Cocoa
             });
 
             var sel = new Selector("theAction:");
-#if UIKIT
-            IDisposable actionDisp = null;
-
-            if(target is UIControl) {
-                var ctl = (UIControl)target;
-                ctl.AddTarget(ctlDelegate, sel, UIControlEvent.TouchUpInside);
-                actionDisp = Disposable.Create(() => ctl.RemoveTarget(ctlDelegate, sel, UIControlEvent.TouchUpInside));
-            } 
-#else
             Reflection.GetValueSetterOrThrow(target.GetType(), "Action")(target, sel);
 
             var targetSetter = Reflection.GetValueSetterOrThrow(target.GetType(), "Target");
             targetSetter(target, ctlDelegate);
             var actionDisp = Disposable.Create(() => targetSetter(target, null));
-#endif
 
             var enabledSetter = Reflection.GetValueSetterForProperty(target.GetType(), "Enabled");
             if(enabledSetter == null) return actionDisp;
