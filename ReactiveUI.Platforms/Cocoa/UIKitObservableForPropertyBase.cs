@@ -19,9 +19,11 @@ namespace ReactiveUI.Cocoa
             if(beforeChanged)
                 return 0;
 
-            Dictionary<string, ObservablePropertyInfo> typeProperties;
-            if(!config.TryGetValue(type, out typeProperties))
+            var match = config.Keys.FirstOrDefault(x=> x.IsAssignableFrom(type));
+            if(match == null)
                 return 0;
+
+            var typeProperties = config[match];
 
             ObservablePropertyInfo info;
             if(!typeProperties.TryGetValue(propertyName, out info))
@@ -32,14 +34,16 @@ namespace ReactiveUI.Cocoa
 
         public IObservable<IObservedChange<object, object>> GetNotificationForProperty(object sender, string propertyName, bool beforeChanged = false)
         {
-            var type = sender.GetType();
-
             if(beforeChanged)
                 return Observable.Never<IObservedChange<object, object>>();
 
-            Dictionary<string, ObservablePropertyInfo> typeProperties;
-            if(!config.TryGetValue(type, out typeProperties))
+            var type = sender.GetType();
+
+            var match = config.Keys.FirstOrDefault(x=> x.IsAssignableFrom(type));
+            if(match == null)
                 throw new NotSupportedException(string.Format("Notifications for {0} are not supported", type.Name));
+
+            var typeProperties = config[match];
 
             ObservablePropertyInfo info;
             if(!typeProperties.TryGetValue(propertyName, out info))
