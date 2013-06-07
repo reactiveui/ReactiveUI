@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Linq;
 using System.Reactive.Linq;
 using System.Reflection;
 using System.Globalization;
@@ -190,7 +191,7 @@ namespace ReactiveUI
             get {
                 if (RxApp.suppressLogging) return nullLogger;
 
-                var factory = RxApp.DependencyResolver.GetService<ILogManager>();
+                var factory = RxApp.DependencyResolver.GetServices<ILogManager>().LastOrDefault();
                 if (factory == null) {
                     throw new Exception("ILogManager is null. This should never happen, your dependency resolver is broken");
                 }
@@ -206,7 +207,7 @@ namespace ReactiveUI
         {
             if (RxApp.suppressLogging) return nullLogger;
 
-            var factory = RxApp.DependencyResolver.GetService<ILogManager>();
+            var factory = RxApp.DependencyResolver.GetServices<ILogManager>().LastOrDefault();
             if (factory == null) {
                 throw new Exception("ILogManager is null. This should never happen, your dependency resolver is broken");
             }

@@ -459,7 +459,9 @@ namespace ReactiveUI.Tests
                 var logger = new TestLogger();
 
                 resolver.InitializeResolver();
-                resolver.RegisterConstant(new FuncLogManager(t => new WrappingFullLogger(logger, t)), typeof(ILogManager));
+
+                var lm = new FuncLogManager(t => new WrappingFullLogger(logger, t));
+                resolver.RegisterMultiple(() => lm, typeof(ILogManager));
 
                 using(resolver.WithResolver()) {
                     var incc = new ReactiveList<NoOneHasEverSeenThisClassBefore>();
@@ -494,7 +496,9 @@ namespace ReactiveUI.Tests
                 var logger = new TestLogger();
 
                 resolver.InitializeResolver();
-                resolver.RegisterConstant(new FuncLogManager(t => new WrappingFullLogger(logger, t)), typeof(ILogManager));
+
+                var lm = new FuncLogManager(t => new WrappingFullLogger(logger, t));
+                resolver.RegisterMultiple(() => lm, typeof(ILogManager));
 
                 using(resolver.WithResolver()) {
                     var incc = new ReactiveList<NoOneHasEverSeenThisClassBeforeEither>();
