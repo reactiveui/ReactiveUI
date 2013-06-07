@@ -91,7 +91,7 @@ namespace ReactiveUI.Cocoa
             commandParameter = commandParameter ?? Observable.Return(target);
 
             object latestParam = null;
-            var ctl = (UIRefreshControl)target;
+            var ctl = target;
 
             var actionDisp = Observable.FromEventPattern(ctl, eventName).Subscribe((e) => {
                 if (command.CanExecute(latestParam))
