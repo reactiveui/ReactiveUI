@@ -29,7 +29,7 @@ namespace ReactiveUI
                 if (type != null)
                 {
                     MethodInfo mInfo = type.GetMethod("GetIsInDesignMode");
-                    Type dependencyObject = Type.GetType("System.Windows.DependencyObject, System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e", false);
+                    Type dependencyObject = Type.GetType("System.Windows.Controls.Border, System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e", false);
                     if (dependencyObject != null)
                     {
                         isInDesignMode = (bool)mInfo.Invoke(null, new object[] { Activator.CreateInstance(dependencyObject) });
