@@ -17,15 +17,6 @@ namespace ReactiveUI
         /// <param name="serviceType">The object type.</param>
         /// <returns>The requested object, if found; <c>null</c> otherwise.</returns>
         object GetService(Type serviceType, string contract = null);
-
-        /// <summary>
-        /// Gets all instances of the given <paramref name="serviceType"/>. Must return an empty
-        /// collection if the service is not available (must not return <c>null</c> or throw).
-        /// </summary>
-        /// <param name="serviceType">The object type.</param>
-        /// <returns>A sequence of instances of the requested <paramref name="serviceType"/>. The sequence
-        /// should be empty (not <c>null</c>) if no objects of the given type are available.</returns>
-        IEnumerable<object> GetServices(Type serviceType, string contract = null);
     }
 
     public interface IMutableDependencyResolver : IDependencyResolver
@@ -35,6 +26,18 @@ namespace ReactiveUI
 
     public static class DependencyResolverMixins
     {
+        public static IEnumerable<object> GetServices(this IDependencyResolver This, Type serviceType, string contract)
+        {
+            var list = This.GetService<List<Func<object>>>(serviceListToken(serviceType, contract));
+
+            if (list != null) {
+                return list.Select(x => x()).ToArray();
+            }
+
+            var item = This.GetService(serviceType, contract);
+            return item != null ? new[] { item } : Enumerable.Empty<object>();
+        }
+
         public static T GetService<T>(this IDependencyResolver This, string contract = null)
         {
             return (T)This.GetService(typeof(T), contract);
@@ -43,6 +46,19 @@ namespace ReactiveUI
         public static IEnumerable<T> GetServices<T>(this IDependencyResolver This, string contract = null)
         {
             return This.GetServices(typeof(T), contract).Cast<T>();
+        }
+
+        public static void RegisterMultiple(this IMutableDependencyResolver This, Func<object> factory, Type serviceType, string contract = null)
+        {
+            var list = This.GetService<List<Func<object>>>(serviceListToken(serviceType, contract));
+
+            if (list == null) {
+                This.RegisterConstant(new List<Func<object>>(), typeof(List<Func<object>>), serviceListToken(serviceType, contract));
+                This.RegisterMultiple(factory, serviceType, contract);
+                return;
+            }
+
+            list.Add(factory);
         }
 
         public static void InitializeResolver(this IMutableDependencyResolver resolver)
@@ -72,7 +88,7 @@ namespace ReactiveUI
                 if (registerTypeClass == null) return;
 
                 var registerer = (IWantsToRegisterStuff)Activator.CreateInstance(registerTypeClass);
-                registerer.Register((f, t) => resolver.Register(f, t));
+                registerer.Register((f, t) => resolver.RegisterMultiple(f, t));
             });
 
             RxApp.suppressLogging = false;
@@ -84,6 +100,11 @@ namespace ReactiveUI
             RxApp.DependencyResolver = resolver;
 
             return Disposable.Create(() => RxApp.DependencyResolver = origResolver);
+        }
+
+        static string serviceListToken(Type serviceType, string contract)
+        {
+            return String.Format("___DONTUSETHIS_ASA_CONTRACT__{0}__{1}", serviceType.FullName, contract ?? "(None)");
         }
     }
 
