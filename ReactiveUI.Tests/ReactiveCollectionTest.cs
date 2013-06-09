@@ -1039,6 +1039,276 @@ namespace ReactiveUI.Tests
         }
     }
 
+    public class ReactiveCollectionLinqTests
+    {
+        [Fact]
+        public void ReactiveCollectionAsReactiveShouldHonourShouldResetSignal()
+        {
+            var fixture = new List<int>();
+
+            var shouldReset = new Subject<Unit>();
+
+            var target = fixture.AsReactive(shouldReset).ToDerivedCollection();
+
+            Assert.Equal(0, target.Count);
+
+            fixture.Add(1);
+
+            Assert.Equal(0, target.Count);
+
+            shouldReset.OnNext(Unit.Default);
+
+            Assert.Equal(1, target.Count);
+        }
+
+        [Fact]
+        public void ReactiveCollectionWhereShouldFilter()
+        {
+            var fixture = new ReactiveList<int>();
+
+            var target = fixture
+                .AsReactive()
+                .Where(x => x%2 == 0)
+                .ToDerivedCollection();
+
+            Assert.Equal(0, target.Count);
+
+            fixture.Add(1);
+
+            Assert.Equal(0, target.Count);
+
+            fixture.Add(2);
+
+            Assert.Equal(1, target.Count);
+            Assert.Equal(2, target[0]);
+        }
+
+
+        [Fact]
+        public void ReactiveCollectinWhereCompatibleWithRemove()
+        {
+            var fixture = new ReactiveList<int>();
+
+            var target = fixture
+                .AsReactive()
+                .Where(x => x%2 == 0)
+                .ToDerivedCollection();
+
+            fixture.Add(1);
+            fixture.Add(2);
+            fixture.Add(3);
+            fixture.Add(4);
+
+            Assert.Equal(2, target.Count);
+
+            fixture.Remove(1);
+
+            Assert.Equal(2, target.Count);
+
+            fixture.Remove(4);
+
+            Assert.Equal(1, target.Count);
+        }
+
+        [Fact]
+        public void ReactiveCollectionSelectSmokeTest()
+        {
+            var fixture = new ReactiveList<int>();
+
+            var target = fixture
+                .AsReactive()
+                .Select(x => (long) x)
+                .ToDerivedCollection();
+
+            Assert.Equal(0, target.Count);
+
+            fixture.Add(2);
+
+            Assert.Equal(1, target.Count);
+            Assert.Equal(2L, target[0]);
+
+        }
+
+        [Fact]
+        public void ReactiveCollectionSelectCompatibleWithAddRange()
+        {
+            var fixture = new ReactiveList<int>();
+
+            var target = fixture
+                .AsReactive()
+                .Select(x => (long) x)
+                .ToDerivedCollection();
+
+            fixture.AddRange(new[] {4, 5, 6});
+
+            Assert.Equal(3, target.Count);
+        }
+
+        [Fact]
+        public void ReactiveCollectionSelectCompatibleWithRemove()
+        {
+            var fixture = new ReactiveList<int>();
+
+            var target = fixture
+                .AsReactive()
+                .Select(x => (long) x)
+                .ToDerivedCollection();
+
+
+            fixture.Add(1);
+            fixture.Add(2);
+            fixture.Add(3);
+
+            Assert.Equal(3, target.Count);
+
+            fixture.RemoveAt(2);
+
+            Assert.Equal(2, target.Count);
+        }
+
+        [Fact]
+        public void ReactiveCollectionOrderBySmokeTest()
+        {
+            var fixture = new ReactiveList<int>();
+
+            var target = fixture
+                .AsReactive()
+                .OrderBy(x => x)
+                .ToDerivedCollection();
+
+            Assert.Equal(0, target.Count);
+
+            fixture.AddRange(new[] {2, 5, 4, 3});
+
+            Assert.Equal(4, target.Count);
+
+            Assert.Equal(2, target[0]);
+            Assert.Equal(3, target[1]);
+
+            fixture.Add(1);
+
+            Assert.Equal(5, target.Count);
+            Assert.Equal(1, target[0]);
+        }
+
+        [Fact]
+        public void ReactiveCollectionOrderByCanRemove()
+        {
+            var fixture = new ReactiveList<int>();
+
+            var target = fixture
+                .AsReactive()
+                .OrderBy(x => x)
+                .ToDerivedCollection();
+
+            Assert.Equal(0, target.Count);
+
+            fixture.AddRange(new[] {2, 5, 4, 3});
+
+            Assert.Equal(4, target.Count);
+
+            fixture.Remove(5);
+
+            Assert.Equal(3, target.Count);
+            Assert.Equal(4, target[2]);
+        }
+
+        [Fact]
+        public void ReactiveCollectionSelectWhereCompose()
+        {
+            var fixture = new ReactiveList<int>();
+
+            var target = fixture
+                .AsReactive()
+                .Select(x => (long) x)
+                .Where(x => x%2 == 0)
+                .ToDerivedCollection();
+
+            Assert.Equal(0, target.Count);
+
+            fixture.AddRange(new[] {1, 2, 3});
+
+            Assert.Equal(1, target.Count);
+            Assert.Equal(2L, target[0]);
+        }
+
+        [Fact]
+        public void ReactiveCollectionWhereSelectCompose()
+        {
+            var fixture = new ReactiveList<int>();
+
+            var target = fixture
+                .AsReactive()
+                .Where(x => x%2 == 0)
+                .Select(x => (long) x)
+                .ToDerivedCollection();
+
+            Assert.Equal(0, target.Count);
+
+            fixture.AddRange(new[] {1, 2, 3});
+
+            Assert.Equal(1, target.Count);
+            Assert.Equal(2L, target[0]);
+        }
+
+        [Fact]
+        public void ReactiveCollectionWhereOrderByCompose()
+        {
+            var fixture = new ReactiveList<int>();
+
+            var target = fixture
+                .AsReactive()
+                .Where(x => x%2 == 0)
+                .OrderBy(x => x)
+                .ToDerivedCollection();
+
+            Assert.Equal(0, target.Count);
+
+            fixture.AddRange(new[] {1, 4, 3, 2, 5, 6});
+
+            Assert.Equal(3, target.Count);
+            Assert.Equal(2, target[0]);
+
+            fixture.Remove(3);
+
+            Assert.Equal(3, target.Count);
+
+            fixture.Remove(2);
+
+            Assert.Equal(2, target.Count);
+            Assert.Equal(4, target[0]);
+        }
+
+        [Fact]
+        public void ReactiveCollectionWhereSelectOrderByCompose()
+        {
+            var fixture = new ReactiveList<int>();
+
+            var target = fixture
+                .AsReactive()
+                .Where(x => x%2 == 0)
+                .Select(x => (long)x)
+                .OrderBy(x => x)
+                .ToDerivedCollection();
+
+            Assert.Equal(0, target.Count);
+
+            fixture.AddRange(new[] {1, 4, 3, 2, 5, 6});
+
+            Assert.Equal(3, target.Count);
+            Assert.Equal(2, target[0]);
+
+            fixture.Remove(3);
+
+            Assert.Equal(3, target.Count);
+
+            fixture.Remove(2);
+
+            Assert.Equal(2, target.Count);
+            Assert.Equal(4, target[0]);
+        }
+    }
+
 #if SILVERLIGHT
     public class JSONHelper
     {
