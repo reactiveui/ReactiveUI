@@ -19,33 +19,35 @@ namespace ReactiveUI.Cocoa
             if(beforeChanged)
                 return 0;
 
-            Dictionary<string, ObservablePropertyInfo> typeProperties;
-            if(!config.TryGetValue(type, out typeProperties))
+            var match = config.Keys
+                .Where(x=> x.IsAssignableFrom(type) && config[x].Keys.Contains(propertyName))
+                .Select(x=> config[x][propertyName])
+                .OrderByDescending(x=> x.Affinity)
+                .FirstOrDefault();
+
+            if(match == null)
                 return 0;
 
-            ObservablePropertyInfo info;
-            if(!typeProperties.TryGetValue(propertyName, out info))
-                return 0;
-
-            return info.Affinity;
+            return match.Affinity;
         }
 
         public IObservable<IObservedChange<object, object>> GetNotificationForProperty(object sender, string propertyName, bool beforeChanged = false)
         {
-            var type = sender.GetType();
-
             if(beforeChanged)
                 return Observable.Never<IObservedChange<object, object>>();
 
-            Dictionary<string, ObservablePropertyInfo> typeProperties;
-            if(!config.TryGetValue(type, out typeProperties))
-                throw new NotSupportedException(string.Format("Notifications for {0} are not supported", type.Name));
+            var type = sender.GetType();
 
-            ObservablePropertyInfo info;
-            if(!typeProperties.TryGetValue(propertyName, out info))
+            var match = config.Keys
+                .Where(x=> x.IsAssignableFrom(type) && config[x].Keys.Contains(propertyName))
+                .Select(x=> config[x][propertyName])
+                .OrderByDescending(x=> x.Affinity)
+                .FirstOrDefault();
+
+            if(match == null)
                 throw new NotSupportedException(string.Format("Notifications for {0}.{1} are not supported", type.Name, propertyName));
 
-            return info.CreateObservable((NSObject) sender, propertyName);
+            return match.CreateObservable((NSObject) sender, propertyName);
         }
 
         #endregion

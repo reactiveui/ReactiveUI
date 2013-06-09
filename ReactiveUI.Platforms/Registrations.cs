@@ -53,12 +53,16 @@ namespace ReactiveUI.Xaml
 
 #if UIKIT
             registerFunction(() => UIKitObservableForProperty.Instance.Value, typeof(ICreatesObservableForProperty));
-            registerFunction(()=> DateTimeNSDateConverter.Instance.Value, typeof(IBindingTypeConverter));
+            registerFunction(() => UIKitCommandBinders.Instance.Value, typeof(ICreatesCommandBinding));
+            registerFunction(() => DateTimeNSDateConverter.Instance.Value, typeof(IBindingTypeConverter));
 #endif
 
 #if COCOA
             registerFunction(() => new KVOObservableForProperty(), typeof(ICreatesObservableForProperty));
             registerFunction(() => new CocoaDefaultPropertyBinding(), typeof(IDefaultPropertyBindingProvider));
+#endif
+
+#if COCOA && !UIKIT
             registerFunction(() => new TargetActionCommandBinder(), typeof(ICreatesCommandBinding));
 #endif
 
