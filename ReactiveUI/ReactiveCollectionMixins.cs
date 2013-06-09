@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Diagnostics.Contracts;
+using System.Linq;
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
@@ -11,6 +13,23 @@ using System.Threading;
 
 namespace ReactiveUI
 {
+    /// <summary>
+    /// This is a helper interface that aggregates information
+    /// on how to create a derived collection.
+    /// </summary>
+    /// <typeparam name="TSource">The type of the elements in the source collection.</typeparam>
+    /// <typeparam name="TTarget">The type of the elements exposed in this collection.</typeparam>
+    /// <typeparam name="TComparer">The input type of the comparer.</typeparam>
+    public interface IReactiveDerivedCollectionAggregator<TSource, out TTarget, TComparer> : IEnumerable<TTarget>
+    {
+        IEnumerable<TSource> BaseCollection { get; }
+        Func<TSource, bool> Filter { get; }
+        Func<TSource, TTarget> Selector { get; }
+        Func<TSource, TComparer> ComparerSelector { get; }
+        Func<TComparer, TComparer, int> Orderer { get; }
+        IObservable<Unit> SignalReset { get; } 
+    }
+
     public abstract class ReactiveDerivedCollection<TValue> : ReactiveList<TValue>, IDisposable
     {
         const string readonlyExceptionMessage = "Derived collections cannot be modified.";
@@ -151,7 +170,7 @@ namespace ReactiveUI
         public virtual void Dispose(bool disposing) { }
     }
 
-    public sealed class ReactiveDerivedCollection<TSource, TValue> : ReactiveDerivedCollection<TValue>, IDisposable
+    public sealed class ReactiveDerivedCollection<TSource, TValue> : ReactiveDerivedCollection<TValue>, IDisposable, IReactiveDerivedCollectionAggregator<TSource, TValue, TValue>
     {
         readonly IEnumerable<TSource> source;
         readonly Func<TSource, TValue> selector;
@@ -507,6 +526,36 @@ namespace ReactiveUI
                 disp.Dispose();
             }
         }
+
+        IEnumerable<TSource> IReactiveDerivedCollectionAggregator<TSource, TValue, TValue>.BaseCollection
+        {
+            get { return source; }
+        }
+
+        Func<TSource, bool> IReactiveDerivedCollectionAggregator<TSource, TValue, TValue>.Filter
+        {
+            get { return filter; }
+        }
+
+        Func<TSource, TValue> IReactiveDerivedCollectionAggregator<TSource, TValue, TValue>.Selector
+        {
+            get { return selector; }
+        }
+
+        Func<TSource, TValue> IReactiveDerivedCollectionAggregator<TSource, TValue, TValue>.ComparerSelector
+        {
+            get { return selector; }
+        }
+
+        Func<TValue, TValue, int> IReactiveDerivedCollectionAggregator<TSource, TValue, TValue>.Orderer
+        {
+            get { return orderer; }
+        }
+
+        IObservable<Unit> IReactiveDerivedCollectionAggregator<TSource, TValue, TValue>.SignalReset
+        {
+            get { return signalReset; }
+        }
     }
 
     internal class ReactiveDerivedCollectionFromObservable<T>: ReactiveDerivedCollection<T>
@@ -611,8 +660,133 @@ namespace ReactiveUI
         }
     }
 
+    class ReactiveDerivedCollectionAggregator<TSource, TTarget, TComparer> : IReactiveDerivedCollectionAggregator<TSource, TTarget, TComparer>
+    {
+        readonly IEnumerable<TTarget> _collection; 
+        readonly IEnumerable<TSource> _baseCollection;
+        readonly Func<TSource, bool> _filter;
+        readonly Func<TSource, TTarget> _selector;
+        readonly Func<TComparer, TComparer, int> _orderer;
+        readonly IObservable<Unit> _signalReset;
+        readonly Func<TSource, TComparer> _comparerSelector;
+
+        public ReactiveDerivedCollectionAggregator(
+            IEnumerable<TSource> baseCollection,
+            Func<TSource, bool> filter,
+            Func<TSource, TTarget> selector,
+            Func<TComparer, TComparer, int> orderer,
+            Func<TSource, TComparer> comparerSelector,
+            IObservable<Unit> signalReset,
+            IEnumerable<TTarget> collection)
+        {
+            if (baseCollection == null) {
+                throw new ArgumentNullException("baseCollection");
+            }
+            if (selector == null) throw new ArgumentNullException("selector");
+            if (orderer != null && comparerSelector == null) throw new ArgumentNullException("comparerSelector");
+
+            if (collection == null) {
+                throw new ArgumentNullException("collection");
+            }
+
+            _baseCollection = baseCollection;
+            _filter = filter;
+            _selector = selector;
+            _orderer = orderer;
+            _signalReset = signalReset;
+            _collection = collection;
+            _comparerSelector = comparerSelector;
+        }
+
+        public IEnumerable<TSource> BaseCollection
+        {
+            get { return _baseCollection; }
+        }
+
+        public Func<TSource, bool> Filter
+        {
+            get { return _filter; }
+        }
+
+        public Func<TSource, TTarget> Selector
+        {
+            get { return _selector; }
+        }
+
+        public Func<TSource, TComparer> ComparerSelector
+        {
+            get { return _comparerSelector; }
+        }
+
+        public Func<TComparer, TComparer, int> Orderer
+        {
+            get { return _orderer; }
+        }
+
+        public IObservable<Unit> SignalReset
+        {
+            get { return _signalReset; }
+        }
+
+        public IEnumerator<TTarget> GetEnumerator()
+        {
+            return _collection.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+    }
+
     public static class ObservableCollectionMixin
     {
+        /// <summary>
+        /// Interprets a given sequence as a reactive sequence, which enables LinQ operations with change notification.
+        /// </summary>
+        /// <typeparam name="T">The type of the elements in the sequence.</typeparam>
+        /// <param name="sequence">A sequence containing the elements.</param>
+        /// <param name="signalReset">An observable that, when signaled, indicates that the whole sequence should be queried again.</param>
+        /// <returns>An instance of <see cref="IReactiveDerivedCollectionAggregator{T, T, T}"/> representing the given <paramref name="sequence"/>.</returns>
+        public static IReactiveDerivedCollectionAggregator<T, T, T> AsReactive<T>(this IEnumerable<T> sequence, IObservable<Unit> signalReset = null)
+        {
+            if (sequence == null) throw new ArgumentNullException("sequence");
+
+            return new ReactiveDerivedCollectionAggregator<T, T, T>(sequence, null, x => x, null, null, signalReset, sequence);
+        }
+
+        /// <summary>
+        /// Materializes the given instance of <see cref="IReactiveDerivedCollectionAggregator{TSource, T, TComparer}"/> into an instance
+        /// of <see cref="ReactiveDerivedCollection{TSource, T}"/>.
+        /// </summary>
+        /// <typeparam name="TSource">The type of the elements in the source sequence.</typeparam>
+        /// <typeparam name="T">The type of the elements in the sequence.</typeparam>
+        /// <typeparam name="TComparer">The input type of the comparer used for ordering the sequence.</typeparam>
+        /// <param name="This">An instance of <see cref="IReactiveDerivedCollectionAggregator{TSource, T, TComparer}"/> to materialize.</param>
+        /// <returns>
+        /// A new instance of <see cref="IReactiveDerivedCollectionAggregator{TSource, T, TComparer}"/> which contains the elements
+        /// appropriately filtered, transformed and ordered.
+        /// </returns>
+        public static ReactiveDerivedCollection<TSource, T> ToDerivedCollection<TSource, T, TComparer>(
+            this IReactiveDerivedCollectionAggregator<TSource, T, TComparer> This)
+        {
+            if (This == null) throw new ArgumentNullException("This");
+
+            Func<T, T, int> comparer;
+
+            if (This.Orderer == null) {
+                comparer = null;
+            }
+            else if(typeof(T) == typeof(TComparer)) {
+                comparer = (Func<T, T, int>) (object) This.Orderer;
+            }
+            else {
+                throw new NotSupportedException("If the sequence is ordered, it needs to be the last operation on the sequence.");
+            }
+
+            return CreateDerivedCollection(This.BaseCollection, This.Selector, This.Filter, comparer, This.SignalReset);
+        }
+
         /// <summary>
         /// Creates a collection whose contents will "follow" another
         /// collection; this method is useful for creating ViewModel collections
@@ -637,7 +811,7 @@ namespace ReactiveUI
         /// <returns>A new collection whose items are equivalent to
         /// Collection.Select().Where().OrderBy() and will mirror changes 
         /// in the initial collection.</returns>
-        public static ReactiveDerivedCollection<TNew> CreateDerivedCollection<T, TNew, TDontCare>(
+        public static ReactiveDerivedCollection<T, TNew> CreateDerivedCollection<T, TNew, TDontCare>(
             this IEnumerable<T> This,
             Func<T, TNew> selector,
             Func<T, bool> filter = null,
@@ -675,13 +849,75 @@ namespace ReactiveUI
         /// <returns>A new collection whose items are equivalent to
         /// Collection.Select().Where().OrderBy() and will mirror changes 
         /// in the initial collection.</returns>
-        public static ReactiveDerivedCollection<TNew> CreateDerivedCollection<T, TNew>(
+        public static ReactiveDerivedCollection<T, TNew> CreateDerivedCollection<T, TNew>(
             this IEnumerable<T> This,
             Func<T, TNew> selector,
             Func<T, bool> filter = null,
             Func<TNew, TNew, int> orderer = null)
         {
-            return This.CreateDerivedCollection(selector, filter, orderer, (IObservable<Unit>)null);
+            return This.CreateDerivedCollection(selector, filter, orderer, (IObservable<Unit>) null);
+        }
+
+        public static IReactiveDerivedCollectionAggregator<TSource, T, TComparer> Where<T, TSource, TComparer>(
+            this IReactiveDerivedCollectionAggregator<TSource, T, TComparer> This,
+            Func<T, bool> predicate)
+        {
+            if (This == null) throw new ArgumentNullException("This");
+            if (predicate == null) throw new ArgumentNullException("predicate");
+
+            return new ReactiveDerivedCollectionAggregator<TSource, T, TComparer>(
+                This.BaseCollection,
+                x => (This.Filter == null || This.Filter(x)) && predicate(This.Selector(x)),
+                This.Selector,
+                This.Orderer,
+                This.ComparerSelector,
+                This.SignalReset,
+                Enumerable.Where(This, predicate));
+        }
+
+        public static IReactiveDerivedCollectionAggregator<TSource, TTarget, TComparer> Select
+            <TSource, T, TTarget, TComparer>(
+            this IReactiveDerivedCollectionAggregator<TSource, T, TComparer> This,
+            Func<T, TTarget> selector)
+        {
+            if (This == null) throw new ArgumentNullException("This");
+            if (selector == null) throw new ArgumentNullException("selector");
+
+            return new ReactiveDerivedCollectionAggregator<TSource, TTarget, TComparer>(
+                This.BaseCollection,
+                This.Filter,
+                x => selector(This.Selector(x)),
+                This.Orderer,
+                This.ComparerSelector,
+                This.SignalReset,
+                Enumerable.Select(This, selector));
+        }
+
+        public static IReactiveDerivedCollectionAggregator<TSource, T, TKey> OrderBy<TSource, T, TKey, TDontCare>(
+            this IReactiveDerivedCollectionAggregator<TSource, T, TDontCare> This,
+            Func<T, TKey> keySelector)
+        {
+            return OrderBy(This, keySelector, Comparer<TKey>.Default);
+        }
+
+        public static IReactiveDerivedCollectionAggregator<TSource, T, TKey> OrderBy<TSource, T, TKey, TDontCare>(
+            this IReactiveDerivedCollectionAggregator<TSource, T, TDontCare> This,
+            Func<T, TKey> keySelector,
+            IComparer<TKey> comparer)
+        {
+            if (This == null) throw new ArgumentNullException("This");
+            if (keySelector == null) throw new ArgumentNullException("keySelector");
+            if (comparer == null) throw new ArgumentNullException("comparer");
+
+
+            return new ReactiveDerivedCollectionAggregator<TSource, T, TKey>(
+                This.BaseCollection,
+                This.Filter,
+                This.Selector,
+                comparer.Compare,
+                x => keySelector(This.Selector(x)),
+                This.SignalReset,
+                Enumerable.OrderBy(This, keySelector, comparer));
         }
     }
 }
