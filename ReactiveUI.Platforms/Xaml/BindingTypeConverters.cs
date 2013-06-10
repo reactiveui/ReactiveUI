@@ -17,6 +17,10 @@ namespace ReactiveUI.Xaml
 #endif
     }
 
+    /// <summary>
+    /// This type convert converts between Boolean and XAML Visibility - the 
+    /// conversionHint is a BooleanToVisibilityHint
+    /// </summary>
     public class BooleanToVisibilityTypeConverter : IBindingTypeConverter
     {
         public int GetAffinityForObjects(Type lhs, Type rhs)
