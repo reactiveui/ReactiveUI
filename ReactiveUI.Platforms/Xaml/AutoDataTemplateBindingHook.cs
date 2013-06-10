@@ -16,6 +16,11 @@ using System.Windows.Markup;
 
 namespace ReactiveUI.Xaml
 {
+    /// <summary>
+    /// AutoDataTemplateBindingHook is a binding hook that checks ItemsControls
+    /// that don't have DataTemplates, and assigns a default DataTemplate that
+    /// loads the View associated with each ViewModel.
+    /// </summary>
     public class AutoDataTemplateBindingHook : IPropertyBindingHook
     {
         public static Lazy<DataTemplate> DefaultItemTemplate = new Lazy<DataTemplate>(() => {
@@ -43,11 +48,6 @@ namespace ReactiveUI.Xaml
 
         public bool ExecuteHook(object source, object target, Func<IObservedChange<object, object>[]> getCurrentViewModelProperties, Func<IObservedChange<object, object>[]> getCurrentViewProperties, BindingDirection direction)
         {
-            // NB: If ReactiveUI.Routing is registered but they're not actually 
-            // using it, we don't want to help them out here.
-            //TODO: figure out if this is still needed
-            //if (!RxApp.IsServiceLocationConfigured()) return true;
-
             var viewProperties = getCurrentViewProperties();
             var lastViewProperty = viewProperties.LastOrDefault();
             if (lastViewProperty == null) return true;

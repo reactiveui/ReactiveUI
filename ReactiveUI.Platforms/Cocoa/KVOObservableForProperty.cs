@@ -17,12 +17,15 @@ using MonoMac.Foundation;
 
 namespace ReactiveUI.Cocoa
 {
+    /// <summary>
+    /// This class provides notifications for Cocoa Framework objects based on
+    /// Key-Value Observing. Unfortunately, this class is a bit Tricky™, because
+    /// of the caveat mentioned below - there is no way up-front to be able to
+    /// tell whether a given property on an object is Key-Value Observable, we 
+    /// only have to hope for the best :-/
+    /// </summary>
     public class KVOObservableForProperty : ICreatesObservableForProperty
     {
-        public KVOObservableForProperty ()
-        {
-        }
-        
         public int GetAffinityForObject(Type type, string propertyName, bool beforeChanged = false)
         {
             // NB: There is no way to know up-front whether a given property is
@@ -46,6 +49,7 @@ namespace ReactiveUI.Cocoa
                 var keyPath = (NSString)findCocoaNameFromNetName(sender.GetType(), propertyName);
 
                 obj.AddObserver(bobs, keyPath, beforeChanged ? NSKeyValueObservingOptions.Old : NSKeyValueObservingOptions.New, IntPtr.Zero);
+
                 return Disposable.Create(() => {
                     obj.RemoveObserver(bobs, keyPath);
                     pin.Free();
@@ -57,7 +61,7 @@ namespace ReactiveUI.Cocoa
         {
             bool propIsBoolean = false;
 
-            var pi = Reflection.GetSafeProperty (senderType, propertyName, BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
+            var pi = Reflection.GetSafeProperty(senderType, propertyName, BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
             if (pi == null) goto attemptGuess;
 
             if (pi.DeclaringType == typeof(bool)) propIsBoolean = true;
@@ -75,7 +79,7 @@ namespace ReactiveUI.Cocoa
         }
     }
     
-    internal class BlockObserveValueDelegate : NSObject
+    class BlockObserveValueDelegate : NSObject
     {
         Action<string, NSObject, NSDictionary> _block;
         public BlockObserveValueDelegate(Action<string, NSObject, NSDictionary> block)

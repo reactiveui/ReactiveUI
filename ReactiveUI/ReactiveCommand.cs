@@ -14,15 +14,10 @@ using System.Windows.Input;
 
 namespace ReactiveUI
 {
-    public interface IReactiveCommand : IHandleObservableErrors, IObservable<object>, ICommand, IDisposable, IEnableLogger
-    {
-        IObservable<T> RegisterAsync<T>(Func<object, IObservable<T>> asyncBlock);
-
-        IObservable<bool> CanExecuteObservable { get; }
-        IObservable<bool> IsExecuting { get; }
-        bool AllowsConcurrentExecution { get; }
-    }
-
+    /// <summary>
+    /// ReactiveCommand is the default Command implementation in ReactiveUI, which
+    /// conforms to the spec described in IReactiveCommand. 
+    /// </summary>
     public class ReactiveCommand : IReactiveCommand
     {
         IDisposable innerDisp;
@@ -72,6 +67,16 @@ namespace ReactiveUI
             }, exceptions.OnNext);
         }
 
+        /// <summary>
+        /// Registers an asynchronous method to be called whenever the command
+        /// is Executed. This method returns an IObservable representing the
+        /// asynchronous operation, and is allowed to OnError / should OnComplete.
+        /// </summary>
+        /// <returns>A filtered version of the Observable which is marshaled 
+        /// to the UI thread. This Observable should only report successes and
+        /// instead send OnError messages to the ThrownExceptions property.</returns>
+        /// <param name="asyncBlock">The asynchronous method to call.</param>
+        /// <typeparam name="T">The 1st type parameter.</typeparam>
         public IObservable<T> RegisterAsync<T>(Func<object, IObservable<T>> asyncBlock)
         {
             var ret = executed.Select(x => {
@@ -90,10 +95,23 @@ namespace ReactiveUI
                 .Publish().PermaRef();
         }
 
+        /// <summary>
+        /// Gets a value indicating whether this instance is executing. This 
+        /// Observable is guaranteed to always return a value immediately (i.e.
+        /// it is backed by a BehaviorSubject), meaning it is safe to determine
+        /// the current state of the command via IsExecuting.First()
+        /// </summary>
+        /// <value>true</value>
+        /// <c>false</c>
         public IObservable<bool> IsExecuting { get; protected set; }
 
         public bool AllowsConcurrentExecution { get; protected set; }
 
+        /// <summary>
+        /// Fires whenever an exception would normally terminate ReactiveUI 
+        /// internal state.
+        /// </summary>
+        /// <value>The thrown exceptions.</value>
         public IObservable<Exception> ThrownExceptions { get; protected set; }
 
         public IDisposable Subscribe(IObserver<object> observer)

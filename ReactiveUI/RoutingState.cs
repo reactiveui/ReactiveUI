@@ -120,6 +120,11 @@ namespace ReactiveUI
             return This.NavigationStack.LastOrDefault();
         }
 
+        /// <summary>
+        /// Creates a ReactiveCommand which will, when invoked, navigate to the 
+        /// type specified by the type parameter via looking it up in the
+        /// Dependency Resolver.
+        /// </summary>
         public static IReactiveCommand NavigateCommandFor<T>(this IRoutingState This)
             where T : IRoutableViewModel
         {

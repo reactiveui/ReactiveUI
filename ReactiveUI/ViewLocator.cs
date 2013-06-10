@@ -8,11 +8,6 @@ using ReactiveUI;
 
 namespace ReactiveUI
 {
-    public interface IViewLocator : IEnableLogger
-    {
-        IViewFor ResolveView<T>(T viewModel, string contract = null) where T : class;
-    }
-
     public static class ViewLocator
     {
         public static IViewLocator Current {
@@ -26,7 +21,7 @@ namespace ReactiveUI
         }
     }
 
-    public class DefaultViewLocator : IViewLocator
+    class DefaultViewLocator : IViewLocator
     {
         public Func<string, string> ViewModelToViewFunc { get; set; }
 

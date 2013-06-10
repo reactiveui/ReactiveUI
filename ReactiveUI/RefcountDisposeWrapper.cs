@@ -3,7 +3,7 @@ using System.Threading;
 
 namespace ReactiveUI
 {
-    public sealed class RefcountDisposeWrapper
+    sealed class RefcountDisposeWrapper
     {
         IDisposable _inner;
         int refCount = 1;

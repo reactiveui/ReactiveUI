@@ -6,6 +6,12 @@ using System.Threading.Tasks;
 
 namespace ReactiveUI
 {
+    /// <summary>
+    /// This interface represents the result of a Bind/OneWayBind and gives
+    /// information about the binding. When this object is disposed, it will
+    /// destroy the binding it is describing (i.e. most of the time you won't
+    /// actually care about this object, just that it is disposable)
+    /// </summary>
     public interface IReactiveBinding<TView, TViewModel, TValue> : IDisposable
         where TViewModel : class
         where TView : IViewFor
