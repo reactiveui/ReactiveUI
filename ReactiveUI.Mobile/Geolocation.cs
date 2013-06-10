@@ -17,6 +17,10 @@ using AndroidApp = Android.App.Application;
 
 namespace ReactiveUI.Mobile
 {
+    /// <summary>
+    /// ReactiveGeolocator is an API to convert Xamarin Geolocation into 
+    /// something Rx-friendly.
+    /// </summary>
     public static class ReactiveGeolocator
     {
         [ThreadStatic] static IReactiveGeolocator _UnitTestImplementation;
@@ -34,6 +38,14 @@ namespace ReactiveUI.Mobile
             }
         }
 
+        /// <summary>
+        /// Returns an IObservable that continuously updates as the user's
+        /// physical location changes. It is super important to make sure to
+        /// dispose all subscriptions to this IObservable.
+        /// </summary>
+        /// <param name="minUpdateTime">Minimum update time.</param>
+        /// <param name="minUpdateDist">Minimum update dist.</param>
+        /// <param name="includeHeading">If set to <c>true</c> include heading.</param>
         public static IObservable<Position> Listen(int minUpdateTime, double minUpdateDist, bool includeHeading = false)
         {
             if (Implementation != null) {
@@ -73,6 +85,11 @@ namespace ReactiveUI.Mobile
             return ret.Multicast(new Subject<Position>()).RefCount();
         }
 
+        /// <summary>
+        /// Returns a single lookup of the user's current physical position
+        /// </summary>
+        /// <returns>The current physical location.</returns>
+        /// <param name="includeHeading">If set to <c>true</c> include heading.</param>
         public static IObservable<Position> GetPosition(bool includeHeading = false)
         {
             if (Implementation != null) {
@@ -113,7 +130,6 @@ namespace ReactiveUI.Mobile
                 return disp;
             }).Multicast(new AsyncSubject<Position>());
 #endif
-
 
             return ret.RefCount();
         }

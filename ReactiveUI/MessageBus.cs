@@ -63,7 +63,7 @@ namespace ReactiveUI
         {
             this.Log().Info("Listening to {0}:{1}", typeof (T), contract);
 
-            return SetupSubjectIfNecessary<T>(contract).Skip(1);
+            return setupSubjectIfNecessary<T>(contract).Skip(1);
         }
 
         /// <summary>
@@ -80,7 +80,7 @@ namespace ReactiveUI
         {
             this.Log().Info("Listening to {0}:{1}", typeof(T), contract);
 
-            return SetupSubjectIfNecessary<T>(contract);
+            return setupSubjectIfNecessary<T>(contract);
         }
 
         /// <summary>
@@ -94,7 +94,7 @@ namespace ReactiveUI
         public bool IsRegistered(Type type, string contract = null)
         {
             bool ret = false;
-            WithMessageBus(type, contract, (mb, tuple) => { ret = mb.ContainsKey(tuple) && mb[tuple].IsAlive; });
+            withMessageBus(type, contract, (mb, tuple) => { ret = mb.ContainsKey(tuple) && mb[tuple].IsAlive; });
 
             return ret;
         }
@@ -114,7 +114,7 @@ namespace ReactiveUI
             IObservable<T> source,
             string contract = null)
         {
-            return source.Subscribe(SetupSubjectIfNecessary<T>(contract));
+            return source.Subscribe(setupSubjectIfNecessary<T>(contract));
         }
 
         /// <summary>
@@ -130,28 +130,28 @@ namespace ReactiveUI
         /// only used for one purpose, leave this as null.</param>
         public void SendMessage<T>(T message, string contract = null)
         {
-            SetupSubjectIfNecessary<T>(contract).OnNext(message);
+            setupSubjectIfNecessary<T>(contract).OnNext(message);
         }
 
-        ISubject<T> SetupSubjectIfNecessary<T>(string contract)
+        ISubject<T> setupSubjectIfNecessary<T>(string contract)
         {
             ISubject<T> ret = null;
 
-            WithMessageBus(typeof (T), contract, (mb, tuple) => {
+            withMessageBus(typeof (T), contract, (mb, tuple) => {
                 NotAWeakReference subjRef;
                 if (mb.TryGetValue(tuple, out subjRef) && subjRef.IsAlive) {
                     ret = (ISubject<T>)subjRef.Target;
                     return;
                 }
 
-                ret = new ScheduledSubject<T>(GetScheduler(tuple), null, new BehaviorSubject<T>(default(T)));
+                ret = new ScheduledSubject<T>(getScheduler(tuple), null, new BehaviorSubject<T>(default(T)));
                 mb[tuple] = new NotAWeakReference(ret);
             });
 
             return ret;
         }
 
-        void WithMessageBus(
+        void withMessageBus(
             Type type, string contract,
             Action<Dictionary<Tuple<Type, string>, NotAWeakReference>, 
             Tuple<Type, string>> block)
@@ -165,7 +165,7 @@ namespace ReactiveUI
             }
         }
 
-        IScheduler GetScheduler(Tuple<Type, string> tuple)
+        IScheduler getScheduler(Tuple<Type, string> tuple)
         {
             IScheduler scheduler;
             schedulerMappings.TryGetValue(tuple, out scheduler);

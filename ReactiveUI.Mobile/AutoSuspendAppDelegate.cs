@@ -26,6 +26,12 @@ namespace ReactiveUI.Mobile
         }
     }
 
+    /// <summary>
+    /// AutoSuspend-based App Delegate. To use AutoSuspend with iOS, change your
+    /// AppDelegate to inherit from this class, then call:
+    /// 
+    /// RxApp.DependencyResolver.GetService<ISuspensionHost>().SetupDefaultSuspendResume();
+    /// </summary>
     public abstract class AutoSuspendAppDelegate : UIApplicationDelegate, IEnableLogger
     {
         readonly Subject<UIApplication> _finishedLaunching = new Subject<UIApplication>();
@@ -131,7 +137,6 @@ namespace ReactiveUI.Mobile
                 .SelectMany(x => driver.SaveState(ViewModel).Finally(x.Dispose))
                 .LoggedCatch(this, Observable.Return(Unit.Default), "Tried to persist app state")
                 .Subscribe(_ => this.Log().Info("Persisted application state"));
-
 
             SuspensionHost.IsResuming
                 .SelectMany(x => driver.LoadState<IApplicationRootState>())
