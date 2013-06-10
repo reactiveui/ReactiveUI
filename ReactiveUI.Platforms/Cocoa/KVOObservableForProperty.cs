@@ -42,10 +42,12 @@ namespace ReactiveUI.Cocoa
                     subj.OnNext(new ObservedChange<object, object>() { Sender = s, PropertyName = propertyName });
                 });
                 var pin = GCHandle.Alloc(bobs);
-                
-                obj.AddObserver(bobs, (NSString)findCocoaNameFromNetName(sender.GetType(), propertyName), beforeChanged ? NSKeyValueObservingOptions.Old : NSKeyValueObservingOptions.New, IntPtr.Zero);
+
+                var keyPath = (NSString)findCocoaNameFromNetName(sender.GetType(), propertyName);
+
+                obj.AddObserver(bobs, keyPath, beforeChanged ? NSKeyValueObservingOptions.Old : NSKeyValueObservingOptions.New, IntPtr.Zero);
                 return Disposable.Create(() => {
-                    obj.RemoveObserver(bobs, (NSString) propertyName);
+                    obj.RemoveObserver(bobs, keyPath);
                     pin.Free();
                 });
             });
