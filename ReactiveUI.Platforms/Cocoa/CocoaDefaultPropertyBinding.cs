@@ -9,6 +9,9 @@ using MonoMac.AppKit;
 
 namespace ReactiveUI.Cocoa
 {
+    /// <summary>
+    /// Provides default property bindings for a number of common Cocoa controls.
+    /// </summary>
     public class CocoaDefaultPropertyBinding : IDefaultPropertyBindingProvider
     {
         public Tuple<string, int> GetPropertyForControl(object control)

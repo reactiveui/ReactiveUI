@@ -17,6 +17,12 @@ using MonoMac.ObjCRuntime;
 
 namespace ReactiveUI.Cocoa
 {
+    /// <summary>
+    /// TargetActionCommandBinder is an implementation of command binding that
+    /// understands Cocoa's Target / Action Framework. Many controls in Cocoa 
+    /// that are effectively command sources (i.e. Buttons, Menus, etc), 
+    /// participate in this framework.
+    /// </summary>
     public class TargetActionCommandBinder : ICreatesCommandBinding
     {
         readonly Type[] validTypes;
