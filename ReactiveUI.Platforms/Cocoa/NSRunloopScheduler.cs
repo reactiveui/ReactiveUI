@@ -15,6 +15,10 @@ using MonoMac.Foundation;
 
 namespace ReactiveUI.Cocoa
 {
+    /// <summary>
+    /// Provides a scheduler which will use the Cocoa main loop to schedule
+    /// work on. This is the Cocoa equivalent of DispatcherScheduler.
+    /// </summary>
 	public class NSRunloopScheduler : IScheduler
 	{
 		NSObject theApp;

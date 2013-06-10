@@ -2,6 +2,9 @@ using System;
 
 namespace ReactiveUI.Cocoa
 {
+    /// <summary>
+    /// Returns the current orientation of the device on iOS.
+    /// </summary>
     public class PlatformOperations : IPlatformOperations
     {
         public string GetOrientation()

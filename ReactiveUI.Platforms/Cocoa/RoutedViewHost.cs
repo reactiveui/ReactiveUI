@@ -14,6 +14,15 @@ using MonoMac.AppKit;
 
 namespace ReactiveUI.Cocoa
 {
+    /// <summary>
+    /// RoutedViewHost is a helper class that will connect a RoutingState
+    /// to an arbitrary NSView and attempt to load the View for the latest
+    /// ViewModel as a child view of the target. Usually the target view will
+    /// be the NSWindow.
+    /// 
+    /// This is a bit different than the XAML's RoutedViewHost in the sense
+    /// that this isn't a Control itself, it only manipulates other Views.
+    /// </summary>
     public class RoutedViewHost : ReactiveObject
     {
         IRoutingState _Router;
@@ -46,10 +55,12 @@ namespace ReactiveUI.Cocoa
                 (vm, contract) => new { ViewModel = vm, Contract = contract, });
 
             vmAndContract.Subscribe(x => {
-                if (viewLastAdded != null) viewLastAdded.RemoveFromSuperview();
+                if (viewLastAdded != null)
+                    viewLastAdded.RemoveFromSuperview();
 
                 if (x.ViewModel == null) {
-                    if (DefaultContent != null) targetView.AddSubview(DefaultContent.View);
+                    if (DefaultContent != null)
+                        targetView.AddSubview(DefaultContent.View);
                     return;
                 }
 
@@ -59,14 +70,14 @@ namespace ReactiveUI.Cocoa
 
                 if (view is NSViewController) {
                     viewLastAdded = ((NSViewController)view).View;
-                } else if (view is NSView) { 
+                } else if (view is NSView) {
                     viewLastAdded = (NSView)view;
                 } else {
                     throw new Exception(String.Format("'{0}' must be an NSViewController or NSView", view.GetType().FullName));
                 }
 
                 targetView.AddSubview(viewLastAdded);           
-            }, ex => RxApp.DefaultExceptionHandler.OnNext(ex));
+            }, RxApp.DefaultExceptionHandler.OnNext);
         }
     }
 }
