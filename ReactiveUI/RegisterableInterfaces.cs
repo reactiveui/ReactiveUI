@@ -189,8 +189,21 @@ namespace ReactiveUI
         Tuple<string, int> GetPropertyForControl(object control);
     }
 
+    /// <summary>
+    /// Implement this as a way to intercept bindings at the time that they are
+    /// created and execute an additional action (or to cancel the binding)
+    /// </summary>
     public interface IPropertyBindingHook
     {
+        /// <summary>
+        /// Called when any binding is set up.
+        /// </summary>
+        /// <returns>If false, the binding is cancelled</returns>
+        /// <param name="source">The source ViewModel</param>
+        /// <param name="target">The target View (not the actual control)</param>
+        /// <param name="getCurrentViewModelProperties">Get current view model properties.</param>
+        /// <param name="getCurrentViewProperties">Get current view properties.</param>
+        /// <param name="direction">The Binding direction.</param>
         bool ExecuteHook(
             object source, object target, 
             Func<IObservedChange<object, object>[]> getCurrentViewModelProperties, 
@@ -279,6 +292,22 @@ namespace ReactiveUI
         /// <returns>An IDisposable which will disconnect the binding when 
         /// disposed.</returns>
         IDisposable BindCommandToObject<TEventArgs>(ICommand command, object target, IObservable<object> commandParameter, string eventName);
+    }
+
+    /// <summary>
+    /// Implement this to override how RoutedViewHost and ViewModelViewHost
+    /// map ViewModels to Views.
+    /// </summary>
+    public interface IViewLocator : IEnableLogger
+    {
+        /// <summary>
+        /// Determines the view for an associated ViewModel
+        /// </summary>
+        /// <returns>The view, with the ViewModel property assigned to 
+        /// viewModel.</returns>
+        /// <param name="viewModel">View model.</param>
+        /// <param name="contract">Contract.</param>
+        IViewFor ResolveView<T>(T viewModel, string contract = null) where T : class;
     }
 
     internal interface IPlatformOperations

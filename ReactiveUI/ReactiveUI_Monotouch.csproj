@@ -72,7 +72,6 @@
     <Compile Include="Legacy\ReactiveAsyncCommand.cs" />
     <Compile Include="Legacy\ReactiveCommand.cs" />
     <Compile Include="Logging.cs" />
-    <Compile Include="MakeObjectReactiveHelper.cs" />
     <Compile Include="MemoizingMRUCache.cs" />
     <Compile Include="MessageBus.cs" />
     <Compile Include="ModernDependencyResolver.cs" />

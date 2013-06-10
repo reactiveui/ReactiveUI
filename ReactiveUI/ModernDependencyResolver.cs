@@ -8,6 +8,16 @@ using System.Threading.Tasks;
 
 namespace ReactiveUI
 {
+    /// <summary>
+    /// This class is a dependency resolver written for modern C# 5.0 times. 
+    /// It implements all registrations via a Factory method. With the power
+    /// of Closures, you can actually implement most lifetime styles (i.e.
+    /// construct per call, lazy construct, singleton) using this.
+    ///
+    /// Unless you have a very compelling reason not to, this is the only class
+    /// you need in order to do dependency resolution, don't bother with using
+    /// a full IoC container.
+    /// </summary>
     public class ModernDependencyResolver : IMutableDependencyResolver
     {
         private Dictionary<Tuple<Type, string>, List<Func<object>>> _registry;

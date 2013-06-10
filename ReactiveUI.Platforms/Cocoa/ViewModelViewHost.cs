@@ -14,6 +14,14 @@ using MonoMac.Foundation;
 
 namespace ReactiveUI.Cocoa
 {
+    /// <summary>
+    /// ViewModelViewHost is a helper class that will connect a ViewModel
+    /// to an arbitrary NSView and attempt to load the View for the current
+    /// ViewModel as a child view of the target. 
+    /// 
+    /// This is a bit different than the XAML's ViewModelViewHost in the sense
+    /// that this isn't a Control itself, it only manipulates other Views.
+    /// </summary>
     public class ViewModelViewHost : ReactiveObject 
     {
         public ViewModelViewHost(NSView targetView)
