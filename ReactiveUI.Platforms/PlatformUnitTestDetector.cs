@@ -12,7 +12,12 @@ using Windows.ApplicationModel;
 
 namespace ReactiveUI
 {
-    internal static class PlatformUnitTestDetector
+    /// <summary>
+    /// Because RxUI.dll is in a PLib, it doesn't have the SuperPowers it needs
+    /// to be able to really detect whether it's in a unit test runner. This class
+    /// is much better at it.
+    /// </summary>
+    static class PlatformUnitTestDetector
     {
         public static bool InUnitTestRunner(string[] testAssemblies, string[] designEnvironments)
         {

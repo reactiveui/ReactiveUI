@@ -11,6 +11,12 @@ using System.Threading;
 
 namespace ReactiveUI
 {
+    /// <summary>
+    /// This class represents a change-notifying Collection which is derived from
+    /// a source collection, via CreateDerivedCollection or via another method. 
+    /// It is read-only, and any attempts to change items in the collection will
+    /// fail.
+    /// </summary>
     public abstract class ReactiveDerivedCollection<TValue> : ReactiveList<TValue>, IDisposable
     {
         const string readonlyExceptionMessage = "Derived collections cannot be modified.";
@@ -151,6 +157,12 @@ namespace ReactiveUI
         public virtual void Dispose(bool disposing) { }
     }
 
+    /// <summary>
+    /// This class represents a change-notifying Collection which is derived from
+    /// a source collection, via CreateDerivedCollection or via another method. 
+    /// It is read-only, and any attempts to change items in the collection will
+    /// fail.
+    /// </summary>
     public sealed class ReactiveDerivedCollection<TSource, TValue> : ReactiveDerivedCollection<TValue>, IDisposable
     {
         readonly IEnumerable<TSource> source;

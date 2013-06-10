@@ -908,6 +908,23 @@ namespace ReactiveUI
             return new ReactiveBinding<TView, TViewModel, TOut>(view, viewModel, viewPropChain, vmPropChain, source, BindingDirection.OneWay, disp);
         }
 
+        /// <summary>
+        /// BindTo takes an Observable stream and applies it to a target
+        /// property. Conceptually it is similar to "Subscribe(x =>
+        /// target.property = x)", but allows you to use child properties
+        /// without the null checks.
+        /// </summary>
+        /// <param name="target">The target object whose property will be set.</param>
+        /// <param name="property">An expression representing the target
+        /// property to set. This can be a child property (i.e. x.Foo.Bar.Baz).</param>
+        /// <returns>An object that when disposed, disconnects the binding.</returns>
+        /// <param name="This">This.</param>
+        /// <param name="fallbackValue">Fallback value.</param>
+        /// <param name="conversionHint">Conversion hint.</param>
+        /// <param name="vmToViewConverterOverride">Vm to view converter override.</param>
+        /// <typeparam name="TValue">The 1st type parameter.</typeparam>
+        /// <typeparam name="TTarget">The 2nd type parameter.</typeparam>
+        /// <typeparam name="TTValue">The 3rd type parameter.</typeparam>
         public IDisposable BindTo<TValue, TTarget, TTValue>(
             IObservable<TValue> This,
             TTarget target,

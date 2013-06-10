@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ReactiveUI
 {
-    public class UnitTestDetector
+    internal class UnitTestDetector
     {
         /// <summary>
         /// Private constructor to prevent instantiation.

@@ -14,6 +14,9 @@ using Windows.UI.Xaml.Input;
 
 namespace ReactiveUI.Xaml
 {
+    /// <summary>
+    /// This binder is the default binder for connecting to arbitrary events
+    /// </summary>
     public class CreatesCommandBindingViaEvent : ICreatesCommandBinding
     {
         // NB: These are in priority order
