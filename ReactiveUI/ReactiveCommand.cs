@@ -55,7 +55,8 @@ namespace ReactiveUI
 
             var canExecuteObs = canExecuteAndNotBusy
                 .Publish(true)
-                .RefCount();
+                .RefCount()
+                .ObserveOn(defaultScheduler);
 
             CanExecuteObservable = canExecuteObs.DistinctUntilChanged();
 
