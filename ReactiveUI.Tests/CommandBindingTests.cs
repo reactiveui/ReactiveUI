@@ -68,7 +68,7 @@ namespace ReactiveUI.Tests
         [Fact]
         public void EventBinderBindsToExplicitEvent()
         {
-            var input = new NonReactiveINPCObjectMadeReactive();
+            var input = new TestFixture();
             var fixture = new CreatesCommandBindingViaEvent();
             var cmd = new ReactiveCommand();
 
@@ -79,12 +79,12 @@ namespace ReactiveUI.Tests
             cmd.Subscribe(_ => wasCalled = true);
 
             var disp = fixture.BindCommandToObject<PropertyChangedEventArgs>(cmd, input, Observable.Return((object) 5), "PropertyChanged");
-            input.InpcProperty = new TestFixture();
+            input.IsNotNullString = "Foo";
             Assert.True(wasCalled);
 
             wasCalled = false;
             disp.Dispose();
-            input.InpcProperty = new TestFixture();
+            input.IsNotNullString = "Bar";
             Assert.False(wasCalled);
         }
 
