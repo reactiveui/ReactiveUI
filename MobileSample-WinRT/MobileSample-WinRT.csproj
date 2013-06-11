@@ -193,12 +193,6 @@
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\ext\winrt\Newtonsoft.Json.dll</HintPath>
     </Reference>
-    <Reference Include="Ninject.Common">
-      <HintPath>.\Ninject.Common.dll</HintPath>
-    </Reference>
-    <Reference Include="Ninject.WinRT">
-      <HintPath>.\Ninject.WinRT.dll</HintPath>
-    </Reference>
     <Reference Include="System.Reactive.Core">
       <HintPath>..\ext\winrt\System.Reactive.Core.dll</HintPath>
     </Reference>
