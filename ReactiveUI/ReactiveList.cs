@@ -47,6 +47,9 @@ namespace ReactiveUI
         [IgnoreDataMember] int _resetSubCount = 0;
         static bool _hasWhinedAboutNoResetSub = false;
 
+        [IgnoreDataMember]
+        public double ResetChangeThreshold { get; set; }
+
         // NB: This exists so the serializer doesn't whine
         //
         // 2nd NB: VB.NET doesn't deal well with default parameters, create 
@@ -55,17 +58,16 @@ namespace ReactiveUI
         public ReactiveList() { setupRx(); }
         public ReactiveList(IEnumerable<T> initialContents) { setupRx(initialContents); }
 
-        public ReactiveList(IEnumerable<T> initialContents = null, IScheduler scheduler = null, double resetChangeThreshold = 0.3)
+        public ReactiveList(IEnumerable<T> initialContents = null, double resetChangeThreshold = 0.3)
         {
-            setupRx(initialContents, scheduler, resetChangeThreshold);
+            setupRx(initialContents, resetChangeThreshold);
         }
 
         [OnDeserialized]
         void setupRx(StreamingContext _) { setupRx(); }
 
-        void setupRx(IEnumerable<T> initialContents = null, IScheduler scheduler = null, double resetChangeThreshold = 0.3)
+        void setupRx(IEnumerable<T> initialContents = null, double resetChangeThreshold = 0.3)
         {
-            scheduler = scheduler ?? RxApp.MainThreadScheduler;
             _inner = _inner ?? new List<T>();
 
             _changing = new Subject<NotifyCollectionChangedEventArgs>();
@@ -216,8 +218,6 @@ namespace ReactiveUI
          * notifications instead of thrashing the UI by readding items
          * one at a time
          */
-
-        public double ResetChangeThreshold { get; set; }
 
         public virtual void AddRange(IEnumerable<T> collection)
         {
