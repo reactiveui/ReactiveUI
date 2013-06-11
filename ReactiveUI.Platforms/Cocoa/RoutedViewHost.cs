@@ -48,6 +48,8 @@ namespace ReactiveUI.Cocoa
         public RoutedViewHost(NSView targetView)
         {
             NSView viewLastAdded = null;
+
+            ViewContractObservable = Observable.Return(default(string));
                         
             var vmAndContract = Observable.CombineLatest(
                 this.WhenAnyObservable(x => x.Router.CurrentViewModel),

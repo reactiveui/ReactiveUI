@@ -28,6 +28,8 @@ namespace ReactiveUI.Cocoa
         {
             NSView viewLastAdded = null;
 
+            ViewContractObservable = Observable.Return(default(string));
+
             var vmAndContract = Observable.CombineLatest(
                 this.WhenAny(x => x.ViewModel, x => x.Value),
                 this.WhenAnyObservable(x => x.ViewContractObservable),
