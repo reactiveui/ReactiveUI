@@ -45,7 +45,6 @@
     <Compile Include="Xaml\PlatformOperations.cs" />
     <Compile Include="Xaml\Properties\AssemblyInfo.cs" />
     <Compile Include="Xaml\RoutedViewHost.cs" />
-    <Compile Include="Xaml\SampleDataBinder.cs" />
     <Compile Include="Xaml\TransitioningContentControl.WinRT.cs" />
     <Compile Include="Xaml\ViewModelViewHost.cs" />
     <Compile Include="Xaml\XamlDefaultPropertyBinding.cs" />
