@@ -112,7 +112,6 @@
     <Compile Include="CommandBindingTests.cs" />
     <Compile Include="DependencyObjectObservableForPropertyTest.cs" />
     <Compile Include="ErrorsTest.cs" />
-    <Compile Include="MakeObjectReactiveHelperTest.cs" />
     <Compile Include="ObservableAsyncMRUCacheTest.cs" />
     <Compile Include="MessageBusTest.cs" />
     <Compile Include="ObservableAsPropertyHelperTest.cs" />
