@@ -51,7 +51,7 @@ namespace ReactiveUI
             var pair = Tuple.Create(serviceType, contract ?? string.Empty);
             if (!_registry.ContainsKey(pair)) return Enumerable.Empty<object>();
  
-            return _registry[pair].Select(x => x());
+            return _registry[pair].ToArray().Select(x => x());
         }
 
         public ModernDependencyResolver Duplicate()
