@@ -86,13 +86,14 @@ namespace ReactiveUI.Mobile
                 var frame = Window.Current.Content as Frame;
 
                 if (frame == null) {
-                    page = RxApp.DependencyResolver.GetService<IViewFor>("InitialPage");
-
-                    frame = new Frame() {
-                        Content = page,
-                    };
-
+                    frame = new Frame();
                     Window.Current.Content = frame;
+                }
+
+                page = Window.Current.Content as IViewFor;
+                if (page == null) {
+                    page = RxApp.DependencyResolver.GetService<IViewFor>("InitialPage");
+                    frame.Content = (UIElement)page;
                 }
 
                 page.ViewModel = vm;
