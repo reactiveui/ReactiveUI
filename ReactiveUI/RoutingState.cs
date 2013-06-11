@@ -16,15 +16,13 @@ namespace ReactiveUI
     [DataContract]
     public class RoutingState : ReactiveObject, IRoutingState
     {
-        [field: IgnoreDataMember]
-        bool rxObjectsSetup = false;
-        [IgnoreDataMember] ReactiveList<IRoutableViewModel> _NavigationStack;
+        [DataMember] ReactiveList<IRoutableViewModel> _NavigationStack;
 
         /// <summary>
         /// Represents the current navigation stack, the last element in the
         /// collection being the currently visible ViewModel.
         /// </summary>
-        [DataMember]
+        [IgnoreDataMember]
         public ReactiveList<IRoutableViewModel> NavigationStack {
             get { return _NavigationStack; }
             protected set { _NavigationStack = value; }
@@ -52,6 +50,7 @@ namespace ReactiveUI
         [IgnoreDataMember]
         public INavigateCommand NavigateAndReset { get; protected set; }
 
+        [IgnoreDataMember]
         public IObservable<IRoutableViewModel> CurrentViewModel { get; protected set; }
 
         public RoutingState()
@@ -65,8 +64,6 @@ namespace ReactiveUI
 
         void setupRx()
         {
-            if (rxObjectsSetup) return;
-
             NavigateBack = new ReactiveCommand(
                 NavigationStack.CountChanged.StartWith(_NavigationStack.Count).Select(x => x > 1));
             NavigateBack.Subscribe(_ =>
@@ -88,13 +85,9 @@ namespace ReactiveUI
                 Navigate.Execute(x);
             });
 
-
             CurrentViewModel = Observable.Concat(
-                    Observable.Defer(() => Observable.Return(NavigationStack.LastOrDefault())),
-                    NavigationStack.Changed.Select(_ => NavigationStack.LastOrDefault()))
-                .DistinctUntilChanged();
-
-            rxObjectsSetup = true;
+                Observable.Defer(() => Observable.Return(NavigationStack.LastOrDefault())),
+                NavigationStack.Changed.Select(_ => NavigationStack.LastOrDefault()));
         }
     }
 
