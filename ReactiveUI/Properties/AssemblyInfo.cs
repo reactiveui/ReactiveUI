@@ -9,6 +9,8 @@ using System.Runtime.CompilerServices;
 [assembly: InternalsVisibleTo("ReactiveUI.Xaml")]
 [assembly: InternalsVisibleTo("ReactiveUI.Tests_Net45")]
 [assembly: InternalsVisibleTo("ReactiveUI.Tests_WinRT")]
+[assembly: InternalsVisibleTo("ReactiveUI_Tests_Monotouch")] // NB: iOS apps can't have '.' in the name
+[assembly: InternalsVisibleTo("ReactiveUI.Tests_Monodroid")]
 [assembly: InternalsVisibleTo("ReactiveUI.NLog")]
 [assembly: InternalsVisibleTo("ReactiveUI.Gtk")]
 [assembly: InternalsVisibleTo("ReactiveUI.Cocoa")]

@@ -1,28 +1,58 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Diagnostics.Contracts;
-using System.Reactive.Disposables;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Reactive.Subjects;
-using System.Reflection;
+using System.Text;
+using Android.App;
+using Android.Content;
+using Android.OS;
+using Android.Runtime;
+using Android.Views;
+using Android.Widget;
 using System.Runtime.Serialization;
-using System.Threading;
+using System.ComponentModel;
+using System.Reflection;
+using System.Reactive.Subjects;
 using System.Reactive.Concurrency;
+using System.Threading;
+using System.Reactive.Disposables;
+using System.Diagnostics.Contracts;
 using System.Runtime.CompilerServices;
 
-namespace ReactiveUI
+namespace ReactiveUI.Android
 {
     /// <summary>
-    /// ReactiveObject is the base object for ViewModel classes, and it
-    /// implements INotifyPropertyChanged. In addition, ReactiveObject provides
-    /// Changing and Changed Observables to monitor object changes.
+    /// This is an Activity that is both an Activity and has ReactiveObject powers 
+    /// (i.e. you can call RaiseAndSetIfChanged)
     /// </summary>
-    [DataContract]
-    public class ReactiveObject : IReactiveNotifyPropertyChanged, IHandleObservableErrors
+    public class ReactiveActivity<TViewModel> : ReactiveActivity, IViewFor<TViewModel>, IReactiveNotifyPropertyChanged, IHandleObservableErrors
+        where TViewModel : class, IReactiveNotifyPropertyChanged
     {
+        protected ReactiveActivity() { }
+
+        TViewModel _ViewModel;
+        public TViewModel ViewModel {
+            get { return _ViewModel; }
+            set { this.RaiseAndSetIfChanged(ref _ViewModel, value); }
+        }
+
+        object IViewFor.ViewModel {
+            get { return _ViewModel; }
+            set { _ViewModel = (TViewModel)value; }
+        }
+    }
+
+    /// <summary>
+    /// This is an Activity that is both an Activity and has ReactiveObject powers 
+    /// (i.e. you can call RaiseAndSetIfChanged)
+    /// </summary>
+    public class ReactiveActivity : Activity, IReactiveNotifyPropertyChanged, IHandleObservableErrors
+    {
+        protected ReactiveActivity() 
+        {
+            RxApp.MainThreadScheduler = new WaitForDispatcherScheduler(() => new AndroidUIScheduler(this));
+            setupRxObj();
+        }
+
         [field:IgnoreDataMember]
         public event PropertyChangingEventHandler PropertyChanging;
 
@@ -63,11 +93,6 @@ namespace ReactiveUI
 
         [IgnoreDataMember]
         public IObservable<Exception> ThrownExceptions { get { return thrownExceptions; } }
-        
-        protected ReactiveObject()
-        {
-            setupRxObj();
-        }
 
         [OnDeserialized]
         void setupRxObj(StreamingContext sc) { setupRxObj(); }
@@ -150,10 +175,7 @@ namespace ReactiveUI
                 thrownExceptions.OnNext(ex);
             }
         }
-    } 
-
-    public static class ReactiveObjectExpressionMixin
-    {
+                
         /// <summary>
         /// RaiseAndSetIfChanged fully implements a Setter for a read-write
         /// property on a ReactiveObject, using CallerMemberName to raise the notification
@@ -168,23 +190,20 @@ namespace ReactiveUI
         /// <param name="propertyName">The name of the property, usually 
         /// automatically provided through the CallerMemberName attribute.</param>
         /// <returns>The newly set value, normally discarded.</returns>
-        public static TRet RaiseAndSetIfChanged<TObj, TRet>(
-                this TObj This,
+        public TRet RaiseAndSetIfChanged<TRet>(
                 ref TRet backingField,
                 TRet newValue,
                 [CallerMemberName] string propertyName = null)
-            where TObj : ReactiveObject
         {
-            Contract.Requires(This != null);
             Contract.Requires(propertyName != null);
 
             if (EqualityComparer<TRet>.Default.Equals(backingField, newValue)) {
                 return newValue;
             }
 
-            This.raisePropertyChanging(propertyName);
+            raisePropertyChanging(propertyName);
             backingField = newValue;
-            This.raisePropertyChanged(propertyName);
+            raisePropertyChanged(propertyName);
             return newValue;
         }
 
@@ -197,12 +216,9 @@ namespace ReactiveUI
         /// A string representing the name of the property that has been changed.
         /// Leave <c>null</c> to let the runtime set to caller member name.
         /// </param>
-        public static void RaisePropertyChanged<TObj>(
-                this TObj This,
-                [CallerMemberName] string propertyName = null)
-            where TObj : ReactiveObject
+        public void RaisePropertyChanged([CallerMemberName] string propertyName = null)
         {
-            This.raisePropertyChanged(propertyName);
+            raisePropertyChanged(propertyName);
         }
                 
         /// <summary>
@@ -214,70 +230,10 @@ namespace ReactiveUI
         /// A string representing the name of the property that has been changed.
         /// Leave <c>null</c> to let the runtime set to caller member name.
         /// </param>
-        public static void RaisePropertyChanging<TObj>(
-                this TObj This,
-                [CallerMemberName] string propertyName = null)
-            where TObj : ReactiveObject
+        public void RaisePropertyChanging([CallerMemberName] string propertyName = null)
         {
-            This.raisePropertyChanging(propertyName);
+            raisePropertyChanging(propertyName);
         }
     }
 }
 
-namespace ReactiveUI.Testing
-{
-    public static class ReactiveObjectTestMixin
-    {
-        /// <summary>
-        /// RaisePropertyChanging is a helper method intended for test / mock
-        /// scenarios to manually fake a property change. 
-        /// </summary>
-        /// <param name="target">The ReactiveObject to invoke
-        /// raisePropertyChanging on.</param>
-        /// <param name="property">The property that will be faking a change.</param>
-        public static void RaisePropertyChanging(ReactiveObject target, string property)
-        {
-            target.raisePropertyChanging(property);
-        }
-
-        /// <summary>
-        /// RaisePropertyChanging is a helper method intended for test / mock
-        /// scenarios to manually fake a property change. 
-        /// </summary>
-        /// <param name="target">The ReactiveObject to invoke
-        /// raisePropertyChanging on.</param>
-        /// <param name="property">The property that will be faking a change.</param>
-        public static void RaisePropertyChanging<TSender, TValue>(TSender target, Expression<Func<TSender, TValue>> property)
-            where TSender : ReactiveObject
-        {
-            RaisePropertyChanging(target, Reflection.SimpleExpressionToPropertyName(property));
-        }
-
-        /// <summary>
-        /// RaisePropertyChanged is a helper method intended for test / mock
-        /// scenarios to manually fake a property change. 
-        /// </summary>
-        /// <param name="target">The ReactiveObject to invoke
-        /// raisePropertyChanging on.</param>
-        /// <param name="property">The property that will be faking a change.</param>
-        public static void RaisePropertyChanged(ReactiveObject target, string property)
-        {
-            target.raisePropertyChanged(property);
-        }
-
-        /// <summary>
-        /// RaisePropertyChanged is a helper method intended for test / mock
-        /// scenarios to manually fake a property change. 
-        /// </summary>
-        /// <param name="target">The ReactiveObject to invoke
-        /// raisePropertyChanging on.</param>
-        /// <param name="property">The property that will be faking a change.</param>
-        public static void RaisePropertyChanged<TSender, TValue>(TSender target, Expression<Func<TSender, TValue>> property)
-            where TSender : ReactiveObject
-        {
-            RaisePropertyChanged(target, Reflection.SimpleExpressionToPropertyName(property));
-        }
-    }
-}
-
-// vim: tw=120 ts=4 sw=4 et :
