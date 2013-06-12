@@ -53,6 +53,7 @@ namespace ReactiveUI.Xaml
 
 #if ANDROID
             registerFunction(() => new AndroidDefaultPropertyBinding(), typeof(IDefaultPropertyBindingProvider));
+            registerFunction(() => new AndroidObservableForWidgets(), typeof(ICreatesObservableForProperty));
 #endif
 
 #if UIKIT
