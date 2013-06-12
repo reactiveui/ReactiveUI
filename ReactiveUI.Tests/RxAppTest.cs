@@ -60,10 +60,9 @@ namespace ReactiveUI.Tests
         [Fact]
         public void UnitTestDetectorDoesNotIdentifyThisTestWhenXUnitAssemblyNotChecked()
         {
-            // XUnit assembly name removed
+            // XUnit and NUnit assembly names removed
             string[] testAssembliesWithoutNunit = new[] {
                 "CSUNIT",
-                "NUNIT",
                 "MBUNIT",
                 "TESTDRIVEN",
                 "QUALITYTOOLS.TIPS.UNITTEST.ADAPTER",
