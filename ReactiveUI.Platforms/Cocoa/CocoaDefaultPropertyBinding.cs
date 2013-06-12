@@ -43,6 +43,5 @@ namespace ReactiveUI.Cocoa
 
             return kvp != null ? Tuple.Create(kvp.Property, 5) : null;
         }
-
     }
 }

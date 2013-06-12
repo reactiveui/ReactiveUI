@@ -51,6 +51,10 @@ namespace ReactiveUI.Xaml
             registerFunction(() => new AutoDataTemplateBindingHook(), typeof(IPropertyBindingHook));
 #endif
 
+#if ANDROID
+            registerFunction(() => new AndroidDefaultPropertyBinding(), typeof(IDefaultPropertyBindingProvider));
+#endif
+
 #if UIKIT
             registerFunction(() => UIKitObservableForProperty.Instance.Value, typeof(ICreatesObservableForProperty));
             registerFunction(() => UIKitCommandBinders.Instance.Value, typeof(ICreatesCommandBinding));
