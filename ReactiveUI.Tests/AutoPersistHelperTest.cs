@@ -17,7 +17,7 @@ namespace ReactiveUI.Tests
         [Fact]
         public void AutoPersistDoesntWorkOnNonDataContractClasses()
         {
-            var fixture = new FakeViewModel();
+            var fixture = new HostTestFixture();
 
             bool shouldDie = true;
             try {

@@ -8,12 +8,15 @@ using System.Reactive.Linq;
 using System.Text;
 using System.Threading;
 using System.Windows;
-using System.Windows.Controls;
 using ReactiveUI.Testing;
-using ReactiveUI.Xaml;
 using Xunit;
 
 using Microsoft.Reactive.Testing;
+
+#if !MONO
+using System.Windows.Controls;
+using ReactiveUI.Xaml;
+#endif
 
 namespace ReactiveUI.Tests
 {
@@ -72,21 +75,6 @@ namespace ReactiveUI.Tests
                 if (PropertyChanged == null) return;
                 PropertyChanged(this, new PropertyChangedEventArgs("InpcProperty"));
             }
-        }
-    }
-
-    public class HostTestView : Control, IViewFor<HostTestFixture>
-    {
-        public HostTestFixture ViewModel {
-            get { return (HostTestFixture)GetValue(ViewModelProperty); }
-            set { SetValue(ViewModelProperty, value); }
-        }
-        public static readonly DependencyProperty ViewModelProperty =
-            DependencyProperty.Register("ViewModel", typeof(HostTestFixture), typeof(HostTestView), new PropertyMetadata(null));
-
-        object IViewFor.ViewModel {
-            get { return ViewModel; }
-            set { ViewModel = (HostTestFixture) value; }
         }
     }
 
@@ -436,29 +424,7 @@ namespace ReactiveUI.Tests
             });
         }
 
-        [Fact]
-        public void WhenAnyThroughAViewShouldntGiveNullValues()
-        {
-            var vm = new HostTestFixture() {
-                Child = new TestFixture() {IsNotNullString = "Foo", IsOnlyOneWord = "Baz", PocoProperty = "Bamf"},
-            };
 
-            var fixture = new HostTestView();
-
-            var output = new List<string>();
-
-            Assert.Equal(0, output.Count);
-            Assert.Null(fixture.ViewModel);
-
-            fixture.WhenAny(x => x.ViewModel.Child.IsNotNullString, x => x.Value).Subscribe(output.Add);
-
-            fixture.ViewModel = vm;
-            Assert.Equal(1, output.Count);
-
-            fixture.ViewModel.Child.IsNotNullString = "Bar";
-            Assert.Equal(2, output.Count);
-            new[] { "Foo", "Bar" }.AssertAreEqual(output);
-        }
     }
 
     public class WhenAnyObservableTests
@@ -489,4 +455,47 @@ namespace ReactiveUI.Tests
         }
     }
 
+#if !MONO
+    public class HostTestView : Control, IViewFor<HostTestFixture>
+    {
+        public HostTestFixture ViewModel {
+            get { return (HostTestFixture)GetValue(ViewModelProperty); }
+            set { SetValue(ViewModelProperty, value); }
+        }
+        public static readonly DependencyProperty ViewModelProperty =
+            DependencyProperty.Register("ViewModel", typeof(HostTestFixture), typeof(HostTestView), new PropertyMetadata(null));
+
+        object IViewFor.ViewModel {
+            get { return ViewModel; }
+            set { ViewModel = (HostTestFixture) value; }
+        }
+    }
+
+    public class WhenAnyThroughDependencyObjectTests
+    {
+        [Fact]
+        public void WhenAnyThroughAViewShouldntGiveNullValues()
+        {
+            var vm = new HostTestFixture() {
+                Child = new TestFixture() {IsNotNullString = "Foo", IsOnlyOneWord = "Baz", PocoProperty = "Bamf"},
+            };
+
+            var fixture = new HostTestView();
+
+            var output = new List<string>();
+
+            Assert.Equal(0, output.Count);
+            Assert.Null(fixture.ViewModel);
+
+            fixture.WhenAny(x => x.ViewModel.Child.IsNotNullString, x => x.Value).Subscribe(output.Add);
+
+            fixture.ViewModel = vm;
+            Assert.Equal(1, output.Count);
+
+            fixture.ViewModel.Child.IsNotNullString = "Bar";
+            Assert.Equal(2, output.Count);
+            new[] { "Foo", "Bar" }.AssertAreEqual(output);
+        }
+    }
+#endif
 }
