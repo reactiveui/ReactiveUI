@@ -9,3 +9,6 @@ puts dlls
 to_execute = "mono #{proj_dir}/EventBuilder.exe #{dlls} #{proj_dir}/Events.mustache > Events.cs"
 #puts to_execute
 `#{to_execute}`
+
+to_delete = ["EventBuilder.exe", "EventBuilder.exe.mdb", "Mono.Cecil.dll", "Nustache.Core.dll"].map {|x| "\"#{File.join(proj_dir, x)}\"" }
+`rm #{to_delete.join " "}`
