@@ -105,6 +105,7 @@
     <Compile Include="RegisterableInterfaces.cs" />
     <Compile Include="RoutableViewModelMixin.cs" />
     <Compile Include="ViewLocator.cs" />
+    <Compile Include="AutoPersistHelper.cs" />
   </ItemGroup>
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
 </Project>

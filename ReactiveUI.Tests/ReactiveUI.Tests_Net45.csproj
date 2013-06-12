@@ -110,7 +110,7 @@
     <Compile Include="AwaiterTest.cs" />
     <Compile Include="BindingTypeConvertersTest.cs" />
     <Compile Include="CommandBindingTests.cs" />
-    <Compile Include="DependencyObjectObservableForPropertyTest.cs" />
+    <Compile Include="Xaml\DependencyObjectObservableForPropertyTest.cs" />
     <Compile Include="ErrorsTest.cs" />
     <Compile Include="ObservableAsyncMRUCacheTest.cs" />
     <Compile Include="MessageBusTest.cs" />
@@ -126,7 +126,8 @@
     <Compile Include="RoutingState.cs" />
     <Compile Include="RxAppTest.cs" />
     <Compile Include="RxRouting.cs" />
-    <Compile Include="RxUIViewModelGeneratorTest.cs" />
+    <Compile Include="Xaml\PropertyBindingTestViews.cs" />
+    <Compile Include="Xaml\RxUIViewModelGeneratorTest.cs" />
     <Compile Include="TestLogger.cs" />
     <Compile Include="Utility.cs" />
   </ItemGroup>
@@ -157,7 +158,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="TestInterface.cs.txt" />
+    <Content Include="Xaml\TestInterface.cs.txt" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

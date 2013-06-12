@@ -20,9 +20,9 @@ namespace ReactiveUI.Cocoa
             // specific to least specific.
 #if UIKIT
 			var items = new[] {
-                new { Type = typeof(UISlider), Property = "DoubleValue" },
-                new { Type = typeof(UITextView), Property = "Value" },
-                new { Type = typeof(UITextField), Property = "StringValue" },
+                new { Type = typeof(UISlider), Property = "Value" },
+                new { Type = typeof(UITextView), Property = "Text" },
+                new { Type = typeof(UITextField), Property = "Text" },
                 new { Type = typeof(UIButton), Property = "Title" },
                 new { Type = typeof(UIImageView), Property = "Image" },
             };
@@ -43,6 +43,5 @@ namespace ReactiveUI.Cocoa
 
             return kvp != null ? Tuple.Create(kvp.Property, 5) : null;
         }
-
     }
 }
