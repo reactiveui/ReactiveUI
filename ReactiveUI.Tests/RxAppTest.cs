@@ -3,8 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Concurrency;
 using System.Text;
-using ReactiveUI.Xaml;
 using Xunit;
+
+#if !MONO
+using ReactiveUI.Xaml;
+#endif
 
 namespace ReactiveUI.Tests
 {
@@ -57,10 +60,9 @@ namespace ReactiveUI.Tests
         [Fact]
         public void UnitTestDetectorDoesNotIdentifyThisTestWhenXUnitAssemblyNotChecked()
         {
-            // XUnit assembly name removed
+            // XUnit and NUnit assembly names removed
             string[] testAssembliesWithoutNunit = new[] {
                 "CSUNIT",
-                "NUNIT",
                 "MBUNIT",
                 "TESTDRIVEN",
                 "QUALITYTOOLS.TIPS.UNITTEST.ADAPTER",
