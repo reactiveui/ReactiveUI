@@ -32,7 +32,15 @@ namespace Xunit
 
         public static void Throws<T>(Action block) where T : Exception
         {
-            N.Assert.Throws<T>(() => block());
+            bool didntThrow = true;
+
+            try {
+                block();
+            } catch (T ex) {
+                didntThrow = false;
+            }
+
+            Assert.False(didntThrow);
         }
 
         public static void Null(object o)
