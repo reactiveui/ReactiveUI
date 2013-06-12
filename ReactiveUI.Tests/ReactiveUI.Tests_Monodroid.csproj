@@ -93,6 +93,8 @@
     <Compile Include="TestLogger.cs" />
     <Compile Include="Utility.cs" />
     <Compile Include="Android\MainActivity.cs" />
+    <Compile Include="PropertyBindingTest.cs" />
+    <Compile Include="Android\PropertyBindingTestViews.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />

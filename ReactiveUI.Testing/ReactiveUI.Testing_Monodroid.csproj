@@ -122,6 +122,7 @@
     <Reference Include="Mono.Reactive.Testing">
       <HintPath>..\ext\monodroid\Mono.Reactive.Testing.dll</HintPath>
     </Reference>
+    <Reference Include="Xamarin.Android.NUnitLite" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
