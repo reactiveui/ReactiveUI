@@ -7,17 +7,9 @@ using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Reactive.Testing;
 using ReactiveUI.Testing;
-
 using Microsoft.Reactive.Testing;
-using ReactiveUI.Xaml;
 using Xunit;
-#if MONO
-using Mono.Reactive.Testing;
-#else
-
-#endif
 
 namespace ReactiveUI.Tests
 {
