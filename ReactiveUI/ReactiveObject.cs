@@ -150,7 +150,6 @@ namespace ReactiveUI
                 thrownExceptions.OnNext(ex);
             }
         }
-
     } 
 
     public static class ReactiveObjectExpressionMixin
@@ -205,8 +204,28 @@ namespace ReactiveUI
         {
             This.raisePropertyChanged(propertyName);
         }
+                
+        /// <summary>
+        /// Use this method in your ReactiveObject classes when creating custom
+        /// properties where raiseAndSetIfChanged doesn't suffice.
+        /// </summary>
+        /// <param name="This">The instance of ReactiveObject on which the property has changed.</param>
+        /// <param name="propertyName">
+        /// A string representing the name of the property that has been changed.
+        /// Leave <c>null</c> to let the runtime set to caller member name.
+        /// </param>
+        public static void RaisePropertyChanging<TObj>(
+                this TObj This,
+                [CallerMemberName] string propertyName = null)
+            where TObj : ReactiveObject
+        {
+            This.raisePropertyChanging(propertyName);
+        }
     }
+}
 
+namespace ReactiveUI.Testing
+{
     public static class ReactiveObjectTestMixin
     {
         /// <summary>
