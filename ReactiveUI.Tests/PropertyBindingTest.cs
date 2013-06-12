@@ -85,7 +85,6 @@ namespace ReactiveUI.Tests
         }
         
         public TextBox SomeTextBox;
-        public ListBox SomeListBox;
         public TextBox Property2;
         public PropertyBindFakeControl FakeControl;
         public ListBox FakeItemsControl;
@@ -93,7 +92,6 @@ namespace ReactiveUI.Tests
         public PropertyBindView()
         {
             SomeTextBox = new TextBox();
-            SomeListBox = new ListBox();
             Property2 = new TextBox();
             FakeControl = new PropertyBindFakeControl();
             FakeItemsControl = new ListBox();
@@ -223,8 +221,8 @@ namespace ReactiveUI.Tests
             var vm = new PropertyBindViewModel();
             var view = new PropertyBindView() {ViewModel = vm};
 
-            view.OneWayBind(view.ViewModel, x => x.SomeCollectionOfStrings, x => x.SomeListBox.ItemsSource);
-            Assert.True(view.SomeListBox.ItemsSource.OfType<string>().Count() > 1);
+            view.OneWayBind(view.ViewModel, x => x.SomeCollectionOfStrings, x => x.FakeItemsControl.ItemsSource);
+            Assert.True(view.FakeItemsControl.ItemsSource.OfType<string>().Count() > 1);
         }
 
         [Fact]
