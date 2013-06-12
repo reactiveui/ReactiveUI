@@ -74,6 +74,7 @@
     <Compile Include="Android\PlatformOperations.cs" />
     <Compile Include="Android\ReactiveActivity.cs" />
     <Compile Include="Android\ReactiveFragment.cs" />
+    <Compile Include="Android\AndroidDefaultPropertyBinding.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ReactiveUI\ReactiveUI_Monodroid.csproj">
