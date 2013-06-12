@@ -56,10 +56,10 @@
   <ItemGroup>
     <Folder Include="Properties\" />
     <Folder Include="Resources\" />
-    <Folder Include="Cocoa\Converters\" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.MonoTouch.CSharp.targets" />
   <ItemGroup>
+    <Compile Include="Cocoa\Bitmap.cs" />
     <Compile Include="Cocoa\CocoaDefaultPropertyBinding.cs" />
     <Compile Include="Cocoa\KVOObservableForProperty.cs" />
     <Compile Include="Cocoa\NSRunloopScheduler.cs" />

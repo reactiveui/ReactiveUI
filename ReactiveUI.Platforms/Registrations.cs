@@ -54,6 +54,7 @@ namespace ReactiveUI.Xaml
 #if ANDROID
             registerFunction(() => new AndroidDefaultPropertyBinding(), typeof(IDefaultPropertyBindingProvider));
             registerFunction(() => new AndroidObservableForWidgets(), typeof(ICreatesObservableForProperty));
+            registerFunction(() => new BitmapLoader(), typeof(IBitmapLoader));
 #endif
 
 #if UIKIT
@@ -65,6 +66,7 @@ namespace ReactiveUI.Xaml
 #if COCOA
             registerFunction(() => new KVOObservableForProperty(), typeof(ICreatesObservableForProperty));
             registerFunction(() => new CocoaDefaultPropertyBinding(), typeof(IDefaultPropertyBindingProvider));
+            registerFunction(() => new BitmapLoader(), typeof(IBitmapLoader));
 #endif
 
 #if COCOA && !UIKIT
