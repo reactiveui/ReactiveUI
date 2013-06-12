@@ -25,6 +25,11 @@ namespace Xunit
             N.Assert.AreEqual(lhs, rhs);
         }
 
+        public static void NotEqual<T>(T lhs, T rhs)
+        {
+            N.Assert.AreNotEqual(lhs, rhs);
+        }
+
         public static void Throws<T>(Action block) where T : Exception
         {
             N.Assert.Throws<T>(() => block());
