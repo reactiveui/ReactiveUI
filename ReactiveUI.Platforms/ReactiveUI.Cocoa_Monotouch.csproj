@@ -77,6 +77,8 @@
     <Compile Include="Cocoa\Converters\DateTimeToNSDateConverter.cs" />
     <Compile Include="Cocoa\FlexibleCommandBinder.cs" />
     <Compile Include="Cocoa\UIKitCommandBinders.cs" />
+    <Compile Include="Cocoa\ReactiveNSView.cs" />
+    <Compile Include="Cocoa\ReactiveNSViewController.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ReactiveUI\ReactiveUI_Monotouch.csproj">
