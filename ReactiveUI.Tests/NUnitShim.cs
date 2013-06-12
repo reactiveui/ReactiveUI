@@ -44,12 +44,5 @@ namespace Xunit
         {
             N.Assert.IsTrue(haystack.Contains(needle));
         }
-       
-        /*
-        public static void Contains<T>(IEnumerable<T> list, T item)
-        {
-            N.Assert.True(list.Any(x => x.Equals(item)));
-        }
-         */
     }
 }
