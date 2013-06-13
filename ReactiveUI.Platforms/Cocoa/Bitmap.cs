@@ -1,11 +1,19 @@
 using System;
-using System.Threading.Tasks;
 using System.IO;
-using MonoTouch.UIKit;
 using System.Threading;
-using MonoTouch.Foundation;
 using System.Reactive.Linq;
 using System.Reactive;
+
+
+#if UIKIT
+using MonoTouch.UIKit;
+using MonoTouch.Foundation;
+#else
+using MonoMac.AppKit;
+using MonoMac.Foundation;
+
+using UIImage = MonoMac.AppKit.NSImage;
+#endif
 
 namespace ReactiveUI.Cocoa
 {
@@ -15,7 +23,12 @@ namespace ReactiveUI.Cocoa
         {
             return Observable.Start(() => {
                 var data = NSData.FromStream(sourceStream);
+
+#if UIKIT
                 return (IBitmap) new CocoaBitmap(UIImage.LoadFromData(data));
+#else
+                return (IBitmap) new CocoaBitmap(new UIImage(data));
+#endif
             }, RxApp.TaskpoolScheduler);
         }
         
@@ -44,8 +57,19 @@ namespace ReactiveUI.Cocoa
         public IObservable<Unit> Save(CompressedBitmapFormat format, float quality, Stream target)
         {
             return Observable.Start(() => {
+#if UIKIT
                 var data = format == CompressedBitmapFormat.Jpeg ? inner.AsJPEG((float)quality) : inner.AsPNG();
                 data.AsStream().CopyTo(target);
+#else
+                var imageRep = (NSBitmapImageRep)NSBitmapImageRep.ImageRepFromData(inner.AsTiff());
+                var props = format == CompressedBitmapFormat.Png ? 
+                    new NSDictionary() : 
+                    new NSDictionary(new NSNumber(quality), new NSString("NSImageCompressionFactor"));
+                var type = format == CompressedBitmapFormat.Png ? NSBitmapImageFileType.Png : NSBitmapImageFileType.Jpeg;
+
+                var outData = imageRep.RepresentationUsingTypeProperties(type, props);
+                outData.AsStream().CopyTo(target);
+#endif
             }, RxApp.TaskpoolScheduler);
         }
         
