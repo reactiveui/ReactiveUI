@@ -12,8 +12,18 @@ namespace ReactiveUI.Android
     {
         public IObservable<IBitmap> Load(Stream sourceStream, float? desiredWidth, float? desiredHeight)
         {
+            if (desiredWidth == null) {
+                return Observable.Start(() => 
+                    BitmapFactory.DecodeStream(sourceStream).FromNative(), RxApp.TaskpoolScheduler);
+            }
+
+            var opts = new BitmapFactory.Options() {
+                OutWidth = (int)desiredWidth.Value,
+                OutHeight = (int)desiredHeight.Value,
+            };
+            var noPadding = new Rect(0, 0, 0, 0);
             return Observable.Start(() => 
-                BitmapFactory.DecodeStream(sourceStream).FromNative(), RxApp.TaskpoolScheduler);
+                BitmapFactory.DecodeStream(sourceStream, noPadding, opts).FromNative(), RxApp.TaskpoolScheduler);
         }
 
         public IBitmap Create(float width, float height)
