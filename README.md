@@ -3,7 +3,7 @@
 Use the Reactive Extensions for .NET along with Silverlight, WPF, or 
 Windows Phone to create elegant, testable User Interfaces.
 
-This library is organized into several high-level assembly:
+This library is organized into several high-level assemblies:
 
 - **ReactiveUI** - Core library that doesn't rely on any particular UI
   framework. `ReactiveObject`, the base ViewModel object, as well as
