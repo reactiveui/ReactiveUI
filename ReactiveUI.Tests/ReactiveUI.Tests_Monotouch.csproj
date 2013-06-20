@@ -34,7 +34,7 @@
     <MtouchLink>None</MtouchLink>
     <ConsolePause>false</ConsolePause>
     <DefineConstants>MONO</DefineConstants>
-    <AssemblyName>ReactiveUITests_Monotouch</AssemblyName>
+    <AssemblyName>ReactiveUI_Tests_Monotouch</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|iPhone' ">
     <DebugSymbols>true</DebugSymbols>
