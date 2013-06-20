@@ -27,7 +27,7 @@
     <MtouchDebug>true</MtouchDebug>
     <CustomCommands>
       <CustomCommands>
-        <Command type="BeforeBuild" command="${ProjectDir}/generate_events.rb /Developer/MonoTouch/usr/lib/mono/2.1/monotouch.dll" workingdir="${ProjectDir}" />
+        <Command type="BeforeBuild" command="/usr/bin/env ruby ${ProjectDir}/generate_events.rb /Developer/MonoTouch/usr/lib/mono/2.1/monotouch.dll" workingdir="${ProjectDir}" />
       </CustomCommands>
     </CustomCommands>
   </PropertyGroup>
@@ -41,7 +41,7 @@
     <MtouchLink>None</MtouchLink>
     <CustomCommands>
       <CustomCommands>
-        <Command type="BeforeBuild" command="${ProjectDir}/generate_events.rb /Developer/MonoTouch/usr/lib/mono/2.1/monotouch.dll" />
+        <Command type="BeforeBuild" command="/usr/bin/env ruby ${ProjectDir}/generate_events.rb /Developer/MonoTouch/usr/lib/mono/2.1/monotouch.dll" />
       </CustomCommands>
     </CustomCommands>
   </PropertyGroup>
