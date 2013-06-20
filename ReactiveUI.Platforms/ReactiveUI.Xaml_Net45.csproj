@@ -123,6 +123,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ComponentModelTypeConverter.cs" />
+    <Compile Include="Xaml\Bitmap.cs" />
     <Compile Include="Xaml\PlatformOperations.cs" />
     <Compile Include="PlatformUnitTestDetector.cs" />
     <Compile Include="Registrations.cs" />
