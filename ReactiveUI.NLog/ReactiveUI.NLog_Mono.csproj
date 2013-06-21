@@ -23,13 +23,14 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
     <Optimize>True</Optimize>
     <OutputPath>bin\Release\MonoMac\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>bin\Release\Mono\ReactiveUI.NLog.XML</DocumentationFile>
+    <DebugSymbols>true</DebugSymbols>
+    <GenerateDocumentation>true</GenerateDocumentation>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
