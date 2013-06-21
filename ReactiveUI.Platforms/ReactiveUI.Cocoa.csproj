@@ -30,7 +30,6 @@
     <UseSGen>False</UseSGen>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>none</DebugType>
     <Optimize>True</Optimize>
     <OutputPath>bin\Release\MonoMac</OutputPath>
     <ErrorReport>prompt</ErrorReport>
@@ -44,6 +43,8 @@
     <CodeSigningKey>Mac Developer</CodeSigningKey>
     <UseSGen>False</UseSGen>
     <DefineConstants>MONO; COCOA</DefineConstants>
+    <DebugSymbols>true</DebugSymbols>
+    <GenerateDocumentation>true</GenerateDocumentation>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'AppStore|AnyCPU' ">
     <DebugType>none</DebugType>

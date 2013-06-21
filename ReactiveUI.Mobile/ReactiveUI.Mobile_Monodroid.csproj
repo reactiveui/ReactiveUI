@@ -93,6 +93,7 @@
     <CodeContractsRuntimeCheckingLevel>Full</CodeContractsRuntimeCheckingLevel>
     <CodeContractsReferenceAssembly>%28none%29</CodeContractsReferenceAssembly>
     <AndroidUseSharedRuntime>False</AndroidUseSharedRuntime>
+    <DocumentationFile>bin\Release\Monoandroid\ReactiveUI.Mobile.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Newtonsoft.Json">
