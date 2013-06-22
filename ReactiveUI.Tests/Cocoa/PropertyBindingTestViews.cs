@@ -11,7 +11,7 @@ using Xunit;
 
 namespace ReactiveUI.Tests
 {
-    public class PropertyBindView : ReactiveNSViewController, IViewFor<PropertyBindViewModel>
+    public class PropertyBindView : ReactiveViewController, IViewFor<PropertyBindViewModel>
     {
         PropertyBindViewModel _ViewModel;
         public PropertyBindViewModel ViewModel {
@@ -36,7 +36,7 @@ namespace ReactiveUI.Tests
         }
     }
 
-    public class PropertyBindFakeControl : ReactiveNSView, INotifyPropertyChanged
+    public class PropertyBindFakeControl : ReactiveView
     {
         double? _NullableDouble;
         public double? NullableDouble {

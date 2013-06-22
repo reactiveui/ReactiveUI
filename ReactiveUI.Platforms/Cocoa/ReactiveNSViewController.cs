@@ -27,29 +27,29 @@ namespace ReactiveUI.Cocoa
     /// This is an View that is both an NSViewController and has ReactiveObject powers 
     /// (i.e. you can call RaiseAndSetIfChanged)
     /// </summary>
-    public class ReactiveNSViewController : NSViewController, IReactiveNotifyPropertyChanged, IHandleObservableErrors
+    public class ReactiveViewController : NSViewController, IReactiveNotifyPropertyChanged, IHandleObservableErrors
     {
-        protected ReactiveNSViewController() : base()
+        protected ReactiveViewController() : base()
         {
             setupRxObj();
         }
 
-        protected ReactiveNSViewController(NSCoder c) : base(c)
+        protected ReactiveViewController(NSCoder c) : base(c)
         {
             setupRxObj();
         }
 
-        protected ReactiveNSViewController(NSObjectFlag f) : base(f)
+        protected ReactiveViewController(NSObjectFlag f) : base(f)
         {
             setupRxObj();
         }
 
-        protected ReactiveNSViewController(IntPtr handle) : base(handle)
+        protected ReactiveViewController(IntPtr handle) : base(handle)
         {
             setupRxObj();
         }
 
-        protected ReactiveNSViewController(string nibNameOrNull, NSBundle nibBundleOrNull) : base(nibNameOrNull, nibBundleOrNull)
+        protected ReactiveViewController(string nibNameOrNull, NSBundle nibBundleOrNull) : base(nibNameOrNull, nibBundleOrNull)
         {
             setupRxObj();
         }
