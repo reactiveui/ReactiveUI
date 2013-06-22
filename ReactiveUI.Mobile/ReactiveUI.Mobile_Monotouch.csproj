@@ -10,7 +10,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>ReactiveUI.Mobile</RootNamespace>
     <IPhoneResourcePrefix>Resources</IPhoneResourcePrefix>
-    <AssemblyName>ReactiveUIMobile</AssemblyName>
+    <AssemblyName>ReactiveUI.Mobile</AssemblyName>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
   </PropertyGroup>
@@ -34,6 +34,7 @@
     <DefineConstants>MONO; UIKIT</DefineConstants>
     <DocumentationFile>bin\Release\Monotouch\ReactiveUI.Mobile.XML</DocumentationFile>
     <DebugSymbols>true</DebugSymbols>
+    <GenerateDocumentation>true</GenerateDocumentation>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Newtonsoft.Json">
