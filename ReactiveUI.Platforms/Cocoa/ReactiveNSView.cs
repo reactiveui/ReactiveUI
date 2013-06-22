@@ -27,29 +27,29 @@ namespace ReactiveUI.Cocoa
     /// This is an View that is both an NSView and has ReactiveObject powers 
     /// (i.e. you can call RaiseAndSetIfChanged)
     /// </summary>
-    public class ReactiveNSView : NSView, IReactiveNotifyPropertyChanged, IHandleObservableErrors
+    public class ReactiveView : NSView, IReactiveNotifyPropertyChanged, IHandleObservableErrors
     {
-        protected ReactiveNSView() : base()
+        protected ReactiveView() : base()
         {
             setupRxObj();
         }
 
-        protected ReactiveNSView(NSCoder c) : base(c)
+        protected ReactiveView(NSCoder c) : base(c)
         {
             setupRxObj();
         }
 
-        protected ReactiveNSView(NSObjectFlag f) : base(f)
+        protected ReactiveView(NSObjectFlag f) : base(f)
         {
             setupRxObj();
         }
 
-        protected ReactiveNSView(IntPtr handle) : base(handle)
+        protected ReactiveView(IntPtr handle) : base(handle)
         {
             setupRxObj();
         }
 
-        protected ReactiveNSView(RectangleF size) : base(size)
+        protected ReactiveView(RectangleF size) : base(size)
         {
             setupRxObj();
         }
