@@ -34,6 +34,7 @@
     <DefineConstants>MONO; UIKIT</DefineConstants>
     <DocumentationFile>bin\Release\Monotouch\ReactiveUI.Testing.XML</DocumentationFile>
     <DebugSymbols>true</DebugSymbols>
+    <GenerateDocumentation>true</GenerateDocumentation>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Newtonsoft.Json">
