@@ -34,6 +34,7 @@
     <DefineConstants>MONO; IOS</DefineConstants>
     <DocumentationFile>bin\Release\Monotouch\ReactiveUI.XML</DocumentationFile>
     <DebugSymbols>true</DebugSymbols>
+    <GenerateDocumentation>true</GenerateDocumentation>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
