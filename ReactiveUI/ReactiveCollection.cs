@@ -166,6 +166,28 @@ namespace ReactiveUI
             if (ChangeTrackingEnabled) removeItemFromPropertyTracking(item);
         }
 
+        protected void MoveItem(int oldIndex, int newIndex)
+        {
+            var item = _inner[oldIndex];
+
+            if (_suppressionRefCount > 0)
+            {
+                _inner.RemoveAt(oldIndex);
+                _inner.Insert(newIndex, item);
+
+                return;
+            }
+
+            var ea = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Move, item, newIndex, oldIndex);
+
+            _changing.OnNext(ea);
+
+            _inner.RemoveAt(oldIndex);
+            _inner.Insert(newIndex, item);
+
+            _changed.OnNext(ea);
+        }
+
         protected void SetItem(int index, T item)
         {
             if (_suppressionRefCount > 0) {
@@ -536,6 +558,11 @@ namespace ReactiveUI
         public virtual void RemoveAt(int index)
         {
             RemoveItem(index);
+        }
+
+        public virtual void Move(int oldIndex, int newIndex)
+        {
+            MoveItem(oldIndex, newIndex);
         }
 
         public virtual T this[int index] {

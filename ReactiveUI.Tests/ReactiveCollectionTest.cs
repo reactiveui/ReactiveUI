@@ -371,6 +371,147 @@ namespace ReactiveUI.Tests
             Assert.Equal(2, derived.Count);
         }
 
+        [Fact]
+        public void DerivedCollectionShouldUnderstandMoveSignals()
+        {
+            var source = new System.Collections.ObjectModel.ObservableCollection<string> { 
+                "a", "b", "c", "d", "e", "f" 
+            };
+            var derived = source.CreateDerivedCollection(x => x);
+
+            var sourceNotifications = new List<NotifyCollectionChangedEventArgs>();
+
+            Observable.FromEventPattern<NotifyCollectionChangedEventHandler, NotifyCollectionChangedEventArgs>(
+                x => source.CollectionChanged += x,
+                x => source.CollectionChanged -= x
+            ).Subscribe(x => sourceNotifications.Add(x.EventArgs));
+
+            var derivedNotifications = new List<NotifyCollectionChangedEventArgs>();
+            derived.Changed.Subscribe(derivedNotifications.Add);
+
+            Assert.Equal(6, derived.Count);
+            Assert.True(source.SequenceEqual(derived));
+            Assert.Empty(derivedNotifications);
+
+            source.Move(1, 4);
+
+            Assert.True(source.SequenceEqual(new[] { "a", "c", "d", "e", "b", "f" }));
+            Assert.True(derived.SequenceEqual(source));
+
+            Assert.Equal(1, sourceNotifications.Count);
+            Assert.Equal(NotifyCollectionChangedAction.Move, sourceNotifications.First().Action);
+
+            Assert.Equal(1, derivedNotifications.Count);
+            Assert.Equal(NotifyCollectionChangedAction.Move, derivedNotifications.First().Action);
+
+            sourceNotifications.Clear();
+            derivedNotifications.Clear();
+
+            source.Move(4, 1);
+
+            Assert.True(source.SequenceEqual(new[] { "a", "b", "c", "d", "e", "f" }));
+            Assert.True(derived.SequenceEqual(source));
+
+            Assert.Equal(1, sourceNotifications.Count);
+            Assert.Equal(NotifyCollectionChangedAction.Move, sourceNotifications.First().Action);
+
+            Assert.Equal(1, derivedNotifications.Count);
+            Assert.Equal(NotifyCollectionChangedAction.Move, derivedNotifications.First().Action);
+
+            source.Move(0, 5);
+
+            Assert.True(source.SequenceEqual(new[] { "b", "c", "d", "e", "f", "a" }));
+            Assert.True(derived.SequenceEqual(source));
+
+            source.Move(5, 0);
+
+            Assert.True(source.SequenceEqual(new[] { "a", "b", "c", "d", "e", "f",  }));
+            Assert.True(derived.SequenceEqual(source));
+        }
+
+        [Fact]
+        public void DerivedCollectionShouldUnderstandMoveEvenWhenSorted()
+        {
+            var sanity = new List<string> { "a", "b", "c", "d", "e", "f" };
+            var source = new System.Collections.ObjectModel.ObservableCollection<string> { 
+                "a", "b", "c", "d", "e", "f" 
+            };
+
+            var derived = source.CreateDerivedCollection(
+                selector: x => x,
+                filter: x => x != "c", 
+                orderer: (x, y) => x.CompareTo(y)
+            );
+
+            var sourceNotifications = new List<NotifyCollectionChangedEventArgs>();
+
+            Observable.FromEventPattern<NotifyCollectionChangedEventHandler, NotifyCollectionChangedEventArgs>(
+                x => source.CollectionChanged += x,
+                x => source.CollectionChanged -= x
+            ).Subscribe(x => sourceNotifications.Add(x.EventArgs));
+
+            var derivedNotifications = new List<NotifyCollectionChangedEventArgs>();
+            derived.Changed.Subscribe(derivedNotifications.Add);
+
+            Assert.Equal(5, derived.Count);
+            Assert.True(derived.SequenceEqual(new[] { "a", "b" /*, "c" */, "d", "e", "f" }));
+
+            var rnd = new Random();
+
+            for (int i = 0; i < 50; i++)
+            {
+                int from = rnd.Next(0, source.Count);
+                int to;
+
+                do { to = rnd.Next(0, source.Count); } while (to == from);
+
+                source.Move(from, to);
+
+                string tmp = sanity[from];
+                sanity.RemoveAt(from);
+                sanity.Insert(to, tmp);
+
+                Assert.True(source.SequenceEqual(sanity));
+                Assert.True(derived.SequenceEqual(new[] { "a", "b" /*, "c" */, "d", "e", "f" }));
+
+                Assert.Equal(1, sourceNotifications.Count);
+                Assert.Equal(NotifyCollectionChangedAction.Move, sourceNotifications.First().Action);
+
+                Assert.Empty(derivedNotifications);
+
+                sourceNotifications.Clear();
+            }
+        }
+
+        [Fact]
+        public void DerivedCollectionShouldUnderstandDummyMoveSignal()
+        {
+            var sanity = new List<string> { "a", "b", "c", "d", "e", "f" };
+            var source = new System.Collections.ObjectModel.ObservableCollection<string> { 
+                "a", "b", "c", "d", "e", "f" 
+            };
+
+            var derived = source.CreateDerivedCollection(x => x);
+
+            var sourceNotifications = new List<NotifyCollectionChangedEventArgs>();
+
+            Observable.FromEventPattern<NotifyCollectionChangedEventHandler, NotifyCollectionChangedEventArgs>(
+                x => source.CollectionChanged += x,
+                x => source.CollectionChanged -= x
+            ).Subscribe(x => sourceNotifications.Add(x.EventArgs));
+
+            var derivedNotification = new List<NotifyCollectionChangedEventArgs>();
+            derived.Changed.Subscribe(derivedNotification.Add);
+
+            source.Move(0, 0);
+
+            Assert.Equal(1, sourceNotifications.Count);
+            Assert.Equal(NotifyCollectionChangedAction.Move, sourceNotifications.First().Action);
+
+            Assert.Equal(0, derivedNotification.Count);
+        }
+
+
         /// <summary>
         /// This test is a bit contrived and only exists to verify that a particularly gnarly bug doesn't get 
         /// reintroduced because it's hard to reason about the removal logic in derived collections and it might
