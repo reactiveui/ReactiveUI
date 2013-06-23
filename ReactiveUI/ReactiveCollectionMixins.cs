@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Reactive;
 using System.Reactive.Disposables;
@@ -101,6 +102,16 @@ namespace ReactiveUI
         protected virtual void internalRemoveAt(int index)
         {
             base.RemoveAt(index);
+        }
+
+        public override void Move(int oldIndex, int newIndex)
+        {
+            throw new InvalidOperationException(readonlyExceptionMessage);
+        }
+
+        protected virtual void internalMove(int oldIndex, int newIndex)
+        {
+            base.Move(oldIndex, newIndex);
         }
 
         public override void RemoveRange(int index, int count)
@@ -275,9 +286,31 @@ namespace ReactiveUI
                                 internalReplace(destinationIndex, newItem);
                             }
                         } else {
-                            // The change is forcing us to reorder, implemented as a remove and insert.
-                            internalRemoveAt(destinationIndex);
-                            internalInsertAndMap(sourceIndex, newItem);
+                            // The change is forcing us to reorder. We'll use a move operation if the item hasn't 
+                            // changed (ie it's the same object) and we'll implement it as a remove and add if the
+                            // object has changed (ie the selector is not an identity function).
+                            if (object.ReferenceEquals(newItem, this[destinationIndex])) {
+
+                                indexToSourceIndexMap.RemoveAt(destinationIndex);
+
+                                // TODO: This is crap and totally temporary so that I can move forward without
+                                // spending too much time fixing positionForNewItem before knowing if move
+                                // support is even a good idea.
+                                var exceptList = new List<TValue>();
+                                for (int i = 0; i < this.Count; i++)
+                                    if(i != destinationIndex)
+                                       exceptList.Add(this[i]);
+
+                                int newDestinationIndex = positionForNewItem(exceptList, newItem, orderer);
+
+                                indexToSourceIndexMap.Insert(newDestinationIndex, sourceIndex);
+
+                                base.internalMove(destinationIndex, newDestinationIndex);
+
+                            } else {
+                                internalRemoveAt(destinationIndex);
+                                internalInsertAndMap(sourceIndex, newItem);
+                            }
                         }
                     }
                 }
@@ -347,6 +380,51 @@ namespace ReactiveUI
         {
             if (args.Action == NotifyCollectionChangedAction.Reset) {
                 this.Reset();
+                return;
+            }
+
+            if (args.Action == NotifyCollectionChangedAction.Move)
+            {
+                Debug.Assert(args.OldItems.Count == 1);
+                Debug.Assert(args.NewItems.Count == 1);
+
+                if(args.OldStartingIndex == args.NewStartingIndex) {
+                    return;
+                }
+
+                int oldSourceIndex = args.OldStartingIndex;
+                int newSourceIndex = args.NewStartingIndex;
+
+                int oldDestinationIndex = getIndexFromSourceIndex(oldSourceIndex);
+
+                if (oldDestinationIndex == -1) {
+                    return;
+                }
+
+                TValue value = base[oldDestinationIndex];
+                indexToSourceIndexMap.RemoveAt(oldDestinationIndex);
+
+                for (int i = 0; i < indexToSourceIndexMap.Count; i++) {
+                    // shiftIndicesAtOrOverThreshold(oldSourceIndex + removedCount, -removedCount);
+                    // shiftIndicesAtOrOverThreshold(newSourceIndex, args.NewItems.Count);
+                    int sourceIndex = indexToSourceIndexMap[i];
+
+                    // 1) move forward, 2) move backwards
+
+                    if (sourceIndex > oldSourceIndex) {
+                        indexToSourceIndexMap[i]--;
+                    } else if (sourceIndex >= newSourceIndex) {
+                        indexToSourceIndexMap[i]++;
+                    }
+                }
+
+                int newDestinationIndex = positionForNewItem(newSourceIndex, value);
+                indexToSourceIndexMap.Insert(newDestinationIndex, newSourceIndex);
+
+                if(orderer == null) {
+                    base.internalMove(oldDestinationIndex, newDestinationIndex);
+                }
+
                 return;
             }
 
