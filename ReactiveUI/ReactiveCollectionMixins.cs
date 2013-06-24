@@ -172,6 +172,7 @@ namespace ReactiveUI
 
         // This list maps indices in this collection to their corresponding indices in the source collection.
         List<int> indexToSourceIndexMap;
+        List<TSource> sourceCopy;
         CompositeDisposable inner;
 
         public ReactiveDerivedCollection(
@@ -195,6 +196,7 @@ namespace ReactiveUI
 
             this.inner = new CompositeDisposable();
             this.indexToSourceIndexMap = new List<int>();
+            this.sourceCopy = new List<TSource>();
 
             this.addAllItemsFromSourceCollection();
             this.wireUpChangeNotifications();
@@ -248,7 +250,7 @@ namespace ReactiveUI
             // If you've implemented INotifyPropertyChanged on a struct then you're doing it wrong(TM) and change
             // tracking won't work in derived collections (change tracking for value types makes no sense any way)
             // NB: It's possible the sender exists in multiple places in the source collection.
-            var sourceIndices = indexOfAll(source, changedItem, ReferenceEqualityComparer<TSource>.Default);
+            var sourceIndices = indexOfAll(sourceCopy, changedItem, ReferenceEqualityComparer<TSource>.Default);
 
             var shouldBeIncluded = filter(changedItem);
 
@@ -395,6 +397,9 @@ namespace ReactiveUI
                 int oldSourceIndex = args.OldStartingIndex;
                 int newSourceIndex = args.NewStartingIndex;
 
+                sourceCopy.RemoveAt(oldSourceIndex);
+                sourceCopy.Insert(newSourceIndex, (TSource)args.NewItems[0]);
+
                 int oldDestinationIndex = getIndexFromSourceIndex(oldSourceIndex);
 
                 if (oldDestinationIndex == -1) {
@@ -425,6 +430,9 @@ namespace ReactiveUI
             }
 
             if (args.OldItems != null) {
+
+                sourceCopy.RemoveRange(args.OldStartingIndex, args.OldItems.Count);
+
                 for (int i = 0; i < args.OldItems.Count; i++) {
                     int destinationIndex = getIndexFromSourceIndex(args.OldStartingIndex + i);
                     if (destinationIndex != -1) {
@@ -437,10 +445,12 @@ namespace ReactiveUI
             }
 
             if (args.NewItems != null) {
+
                 shiftIndicesAtOrOverThreshold(args.NewStartingIndex, args.NewItems.Count);
 
                 for (int i = 0; i < args.NewItems.Count; i++) {
                     var sourceItem = (TSource)args.NewItems[i];
+                    sourceCopy.Insert(args.NewStartingIndex + i, sourceItem);
 
                     if (!filter(sourceItem)) {
                         continue;
@@ -478,9 +488,14 @@ namespace ReactiveUI
 
         void addAllItemsFromSourceCollection()
         {
+            Debug.Assert(sourceCopy.Count == 0);
+
             int sourceIndex = 0;
 
             foreach (TSource sourceItem in source) {
+
+                sourceCopy.Add(sourceItem);
+
                 if (filter(sourceItem)) {
                     var destinationItem = selector(sourceItem);
                     internalInsertAndMap(sourceIndex, destinationItem);
@@ -493,6 +508,8 @@ namespace ReactiveUI
         protected override void internalClear()
         {
             indexToSourceIndexMap.Clear();
+            sourceCopy.Clear();
+
             base.internalClear();
         }
 
