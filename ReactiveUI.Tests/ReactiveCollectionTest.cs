@@ -430,6 +430,33 @@ namespace ReactiveUI.Tests
         }
 
         [Fact]
+        public void DerivedCollectionShouldUnderstandNestedMoveSignals()
+        {
+            var source = new System.Collections.ObjectModel.ObservableCollection<string> { 
+                "a", "b", "c", "d", "e", "f" 
+            };
+            var derived = source.CreateDerivedCollection(x => x);
+            var nested = derived.CreateDerivedCollection(x => x);
+
+            var reverseNested = nested.CreateDerivedCollection(
+                x => x,
+                orderer: OrderedComparer<string>.OrderByDescending(x => x).Compare
+            );
+
+            var sortedNested = reverseNested.CreateDerivedCollection(
+                x => x,
+                orderer: OrderedComparer<string>.OrderBy(x => x).Compare
+            );
+
+            source.Move(1, 4);
+
+            Assert.True(source.SequenceEqual(derived));
+            Assert.True(source.SequenceEqual(nested));
+            Assert.True(source.OrderByDescending(x => x).SequenceEqual(reverseNested));
+            Assert.True(source.OrderBy(x => x).SequenceEqual(sortedNested));
+        }
+
+        [Fact]
         public void DerivedCollectionShouldUnderstandMoveEvenWhenSorted()
         {
             var sanity = new List<string> { "a", "b", "c", "d", "e", "f" };
