@@ -170,8 +170,7 @@ namespace ReactiveUI
         {
             var item = _inner[oldIndex];
 
-            if (_suppressionRefCount > 0)
-            {
+            if (_suppressionRefCount > 0) {
                 _inner.RemoveAt(oldIndex);
                 _inner.Insert(newIndex, item);
 
