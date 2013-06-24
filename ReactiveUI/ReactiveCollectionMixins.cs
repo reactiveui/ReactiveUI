@@ -404,19 +404,8 @@ namespace ReactiveUI
                 TValue value = base[oldDestinationIndex];
                 indexToSourceIndexMap.RemoveAt(oldDestinationIndex);
 
-                for (int i = 0; i < indexToSourceIndexMap.Count; i++) {
-                    // shiftIndicesAtOrOverThreshold(oldSourceIndex + removedCount, -removedCount);
-                    // shiftIndicesAtOrOverThreshold(newSourceIndex, args.NewItems.Count);
-                    int sourceIndex = indexToSourceIndexMap[i];
-
-                    // 1) move forward, 2) move backwards
-
-                    if (sourceIndex > oldSourceIndex) {
-                        indexToSourceIndexMap[i]--;
-                    } else if (sourceIndex >= newSourceIndex) {
-                        indexToSourceIndexMap[i]++;
-                    }
-                }
+                shiftIndicesAtOrOverThreshold(oldSourceIndex + 1, -1);
+                shiftIndicesAtOrOverThreshold(newSourceIndex, 1);
 
                 int newDestinationIndex = positionForNewItem(newSourceIndex, value);
                 indexToSourceIndexMap.Insert(newDestinationIndex, newSourceIndex);
