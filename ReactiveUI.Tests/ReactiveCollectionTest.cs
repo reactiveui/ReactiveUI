@@ -485,8 +485,7 @@ namespace ReactiveUI.Tests
 
             var rnd = new Random();
 
-            for (int i = 0; i < 50; i++)
-            {
+            for (int i = 0; i < 50; i++) {
                 int from = rnd.Next(0, source.Count);
                 int to;
 

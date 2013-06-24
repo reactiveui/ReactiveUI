@@ -383,8 +383,7 @@ namespace ReactiveUI
                 return;
             }
 
-            if (args.Action == NotifyCollectionChangedAction.Move)
-            {
+            if (args.Action == NotifyCollectionChangedAction.Move) {
                 Debug.Assert(args.OldItems.Count == 1);
                 Debug.Assert(args.NewItems.Count == 1);
 
