@@ -387,6 +387,7 @@ namespace ReactiveUI
                 Debug.Assert(args.OldItems.Count == 1);
                 Debug.Assert(args.NewItems.Count == 1);
 
+                // Yeah apparently this can happen. ObservableCollection triggers this notification on Move(0,0)
                 if(args.OldStartingIndex == args.NewStartingIndex) {
                     return;
                 }
