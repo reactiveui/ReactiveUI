@@ -407,11 +407,18 @@ namespace ReactiveUI
                 shiftIndicesAtOrOverThreshold(oldSourceIndex + 1, -1);
                 shiftIndicesAtOrOverThreshold(newSourceIndex, 1);
 
-                int newDestinationIndex = positionForNewItem(newSourceIndex, value);
-                indexToSourceIndexMap.Insert(newDestinationIndex, newSourceIndex);
-
                 if(orderer == null) {
+                    // We mirror the order of the source collection so we'll perform the same move operation
+                    // as the source only taking filtering into account.
+                    int newDestinationIndex = positionForNewItem(newSourceIndex, value);
+                    indexToSourceIndexMap.Insert(newDestinationIndex, newSourceIndex);
+
                     base.internalMove(oldDestinationIndex, newDestinationIndex);
+                } else {
+                    // TODO: Conceptually I feel like we shouldn't concern ourselves with ordering when we 
+                    // receive a Move notification. If it affects ordering it should be picked up by the
+                    // onItemChange and resorted there instead.
+                    indexToSourceIndexMap.Insert(oldDestinationIndex, newSourceIndex);
                 }
 
                 return;
