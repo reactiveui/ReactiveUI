@@ -961,6 +961,10 @@ namespace ReactiveUI.Tests
             [Fact]
             public void PropertyChangesShouldWorkWithChainedCollections()
             {
+                // This is a highly contrived test and I appologize for it not making much sense. I added it 
+                // specifically track down an bug I was hitting when derived collection notification triggered
+                // reentrant notifications.
+
                 var a = new ReactiveVisibilityItem<string>("A", true);
                 var b = new ReactiveVisibilityItem<string>("B", true);
                 var c = new ReactiveVisibilityItem<string>("C", true);
@@ -1014,6 +1018,7 @@ namespace ReactiveUI.Tests
                     .Where(x => x == false)
                     .Subscribe(x => d.Value = "Y");
 
+                // As soon as the "last" collection changes, remove b
                 onlyVisibleAndGreaterThanC.Changed.Subscribe(x => items.Remove(b));
 
                 e.IsVisible = false;
