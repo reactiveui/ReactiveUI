@@ -1014,11 +1014,13 @@ namespace ReactiveUI.Tests
                     .Where(x => x == false)
                     .Subscribe(x => d.Value = "Y");
 
+                onlyVisibleAndGreaterThanC.Changed.Subscribe(x => items.Remove(b));
+
                 e.IsVisible = false;
 
-                Assert.True(items.SequenceEqual(new[] { a, b, c, d, e, f }));
+                Assert.True(items.SequenceEqual(new[] { a, c, d, e, f }));
                 Assert.True(itemsByVisibility.SequenceEqual(new[] { 
-                    b, c, f,
+                    c, f,
                     d, // d is now y
                     a, // a is now z
                     e  // e is now hidden
@@ -1027,7 +1029,7 @@ namespace ReactiveUI.Tests
                 Assert.True(onlyVisibleReversed.SequenceEqual(new[] { 
                     a, // a is now z
                     d, // d is now y
-                    f, c, b
+                    f, c
                 }));
 
                 Assert.True(onlyVisibleAndGreaterThanC.SequenceEqual(new[] { 
@@ -1035,6 +1037,7 @@ namespace ReactiveUI.Tests
                     d, // d is now y
                     a, // a is now z
                 }));
+
             }
         }
 

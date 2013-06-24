@@ -364,18 +364,21 @@ namespace ReactiveUI
         /// Returns one or more positions in the source collection where the given item is found based on the
         /// provided equality comparer.
         /// </summary>
-        IEnumerable<int> indexOfAll(IEnumerable<TSource> source, TSource item,
+        List<int> indexOfAll(IEnumerable<TSource> source, TSource item,
             IEqualityComparer<TSource> equalityComparer)
         {
+            var indices = new List<int>(1);
             int sourceIndex = 0;
             foreach (var x in source) {
 
                 if (equalityComparer.Equals(x, item)) {
-                    yield return sourceIndex;
+                    indices.Add(sourceIndex);
                 }
 
                 sourceIndex++;
             }
+
+            return indices;
         }
 
         void onSourceCollectionChanged(NotifyCollectionChangedEventArgs args)
