@@ -957,6 +957,85 @@ namespace ReactiveUI.Tests
                 Assert.Equal(2, onlyVisible.Count);
                 Assert.True(onlyVisible.SequenceEqual(new[] { "E", "A" }, StringComparer.Ordinal));
             }
+
+            [Fact]
+            public void PropertyChangesShouldWorkWithChainedCollections()
+            {
+                var a = new ReactiveVisibilityItem<string>("A", true);
+                var b = new ReactiveVisibilityItem<string>("B", true);
+                var c = new ReactiveVisibilityItem<string>("C", true);
+                var d = new ReactiveVisibilityItem<string>("D", true);
+                var e = new ReactiveVisibilityItem<string>("E", true);
+                var f = new ReactiveVisibilityItem<string>("F", true);
+
+                var items = new ReactiveCollection<ReactiveVisibilityItem<string>>(new[] { a, b, c, d, e, f })
+                {
+                    ChangeTrackingEnabled = true
+                };
+
+                var itemsByVisibility = items.CreateDerivedCollection(
+                    x => x, 
+                    orderer: OrderedComparer<ReactiveVisibilityItem<string>>
+                        .OrderByDescending(x => x.IsVisible)
+                        .ThenBy(x => x.Value)
+                        .Compare
+                );
+
+                itemsByVisibility.ChangeTrackingEnabled = true;
+
+                var onlyVisibleReversed = itemsByVisibility.CreateDerivedCollection(
+                    x => x,
+                    x => x.IsVisible,
+                    OrderedComparer<ReactiveVisibilityItem<string>>.OrderByDescending(x => x.Value).Compare
+                );
+
+                onlyVisibleReversed.ChangeTrackingEnabled = true;
+
+                var onlyVisibleAndGreaterThanC = onlyVisibleReversed.CreateDerivedCollection(
+                    x => x,
+                    x => x.Value[0] > 'C',
+                    OrderedComparer<ReactiveVisibilityItem<string>>.OrderBy(x => x.Value).Compare
+                );
+
+                onlyVisibleAndGreaterThanC.ChangeTrackingEnabled = true;
+
+                Assert.True(items.SequenceEqual(new[] { a, b, c, d, e, f }));
+                Assert.True(itemsByVisibility.SequenceEqual(new[] { a, b, c, d, e, f }));
+                Assert.True(onlyVisibleReversed.SequenceEqual(new[] { f, e, d, c, b, a }));
+                Assert.True(onlyVisibleAndGreaterThanC.SequenceEqual(new[] { d, e, f }));
+
+                // When the value of d changes, update a to Y
+                d.WhenAny(x => x.Value, x => x.Value)
+                    .Where(x => x == "Y")
+                    .Subscribe(x => a.Value = "Z");
+
+                // When the visibility of e changes, update d to Z
+                e.WhenAny(x => x.IsVisible, x => x.Value)
+                    .Where(x => x == false)
+                    .Subscribe(x => d.Value = "Y");
+
+                e.IsVisible = false;
+
+                Assert.True(items.SequenceEqual(new[] { a, b, c, d, e, f }));
+                Assert.True(itemsByVisibility.SequenceEqual(new[] { 
+                    b, c, f,
+                    d, // d is now y
+                    a, // a is now z
+                    e  // e is now hidden
+                }));
+
+                Assert.True(onlyVisibleReversed.SequenceEqual(new[] { 
+                    a, // a is now z
+                    d, // d is now y
+                    f, c, b
+                }));
+
+                Assert.True(onlyVisibleAndGreaterThanC.SequenceEqual(new[] { 
+                    f,
+                    d, // d is now y
+                    a, // a is now z
+                }));
+            }
         }
 
         [Fact]
