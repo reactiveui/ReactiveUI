@@ -403,6 +403,10 @@ namespace ReactiveUI
                 int oldDestinationIndex = getIndexFromSourceIndex(oldSourceIndex);
 
                 if (oldDestinationIndex == -1) {
+
+                    shiftIndicesAtOrOverThreshold(oldSourceIndex + 1, -1);
+                    shiftIndicesAtOrOverThreshold(newSourceIndex, 1);
+
                     return;
                 }
 
