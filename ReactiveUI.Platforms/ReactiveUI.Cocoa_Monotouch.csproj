@@ -10,7 +10,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>ReactiveUI.Cocoa</RootNamespace>
     <IPhoneResourcePrefix>Resources</IPhoneResourcePrefix>
-    <AssemblyName>ReactiveUICocoa</AssemblyName>
+    <AssemblyName>ReactiveUI.Cocoa</AssemblyName>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
   </PropertyGroup>
