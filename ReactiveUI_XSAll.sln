@@ -449,7 +449,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
-		StartupItem = ReactiveUI.Tests\ReactiveUI.Tests_Monodroid.csproj
+		StartupItem = ReactiveUI.Tests\ReactiveUI.Tests_Monotouch.csproj
 		Policies = $0
 		$0.TextStylePolicy = $1
 		$1.FileWidth = 120
