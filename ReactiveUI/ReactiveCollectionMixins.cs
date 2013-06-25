@@ -104,6 +104,7 @@ namespace ReactiveUI
             base.RemoveAt(index);
         }
 
+#if !SILVERLIGHT
         public override void Move(int oldIndex, int newIndex)
         {
             throw new InvalidOperationException(readonlyExceptionMessage);
@@ -113,6 +114,7 @@ namespace ReactiveUI
         {
             base.Move(oldIndex, newIndex);
         }
+#endif
 
         public override void RemoveRange(int index, int count)
         {
@@ -288,6 +290,7 @@ namespace ReactiveUI
                                 internalReplace(destinationIndex, newItem);
                             }
                         } else {
+#if !SILVERLIGHT
                             // The change is forcing us to reorder. We'll use a move operation if the item hasn't 
                             // changed (ie it's the same object) and we'll implement it as a remove and add if the
                             // object has changed (ie the selector is not an identity function).
@@ -313,6 +316,10 @@ namespace ReactiveUI
                                 internalRemoveAt(destinationIndex);
                                 internalInsertAndMap(sourceIndex, newItem);
                             }
+#else
+                            internalRemoveAt(destinationIndex);
+                            internalInsertAndMap(sourceIndex, newItem);
+#endif
                         }
                     }
                 }
@@ -388,6 +395,7 @@ namespace ReactiveUI
                 return;
             }
 
+#if !SILVERLIGHT
             if (args.Action == NotifyCollectionChangedAction.Move) {
                 Debug.Assert(args.OldItems.Count == 1);
                 Debug.Assert(args.NewItems.Count == 1);
@@ -435,6 +443,7 @@ namespace ReactiveUI
 
                 return;
             }
+#endif
 
             if (args.OldItems != null) {
 
