@@ -416,6 +416,28 @@ namespace ReactiveUI.Tests
         }
 
         [Fact]
+        public void DerivedCollectionMoveNotificationSmokeTest()
+        {
+            var initial = new[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+
+            var source = new ReactiveCollection<int>(initial);
+
+            var derived = source.CreateDerivedCollection(x => x);
+            var nestedDerived = derived.CreateDerivedCollection(x => x);
+            var derivedSorted = source.CreateDerivedCollection(x => x, orderer: (x, y) => x.CompareTo(y));
+
+            for (int i = 0; i < initial.Length; i++) {
+                for (int j = 0; j < initial.Length; j++) {
+                    source.Move(i, j);
+
+                    Assert.True(derived.SequenceEqual(source));
+                    Assert.True(nestedDerived.SequenceEqual(source));
+                    Assert.True(derivedSorted.SequenceEqual(initial));
+                }
+            }
+        }
+
+        [Fact]
         public void DerivedCollectionShouldUnderstandMoveSignals()
         {
             var source = new System.Collections.ObjectModel.ObservableCollection<string> { 
