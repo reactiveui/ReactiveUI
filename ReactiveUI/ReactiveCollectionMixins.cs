@@ -486,16 +486,14 @@ namespace ReactiveUI
         public override void Reset()
         {
             using (base.SuppressChangeNotifications()) {
-                if (this.Count > 0)
-                    internalClear();
-
+                internalClear();
                 addAllItemsFromSourceCollection();
             }
         }
 
         void addAllItemsFromSourceCollection()
         {
-            Debug.Assert(sourceCopy.Count == 0);
+            Debug.Assert(sourceCopy.Count == 0, "Expceted source copy to be empty");
 
             int sourceIndex = 0;
 
