@@ -91,6 +91,50 @@ namespace ReactiveUI.Tests
         }
 
         [Fact]
+        public void MoveShouldBehaveAsObservableCollectionMove()
+        {
+            var items = new[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+
+            var fixture = new ReactiveCollection<int>(items);
+            var reference = new System.Collections.ObjectModel.ObservableCollection<int>(items);
+
+            Assert.True(fixture.SequenceEqual(reference));
+
+            var fixtureNotifications = new List<NotifyCollectionChangedEventArgs>();
+            var referenceNotifications = new List<NotifyCollectionChangedEventArgs>();
+
+            fixture.Changed.Subscribe(fixtureNotifications.Add);
+
+            Observable.FromEventPattern<NotifyCollectionChangedEventHandler, NotifyCollectionChangedEventArgs>(
+                x => reference.CollectionChanged += x,
+                x => reference.CollectionChanged -= x)
+            .Select(x=> x.EventArgs)
+            .Subscribe(referenceNotifications.Add);
+
+            for (int i = 0; i < items.Length; i++) {
+                for (int j = 0; j < items.Length; j++) {
+                    reference.Move(i, j);
+                    fixture.Move(i, j);
+
+                    Assert.True(fixture.SequenceEqual(reference));
+                    Assert.Equal(fixtureNotifications.Count, referenceNotifications.Count);
+
+                    var lastFixtureNotification = fixtureNotifications.Last();
+                    var lastReferenceNotification = referenceNotifications.Last();
+
+                    Assert.Equal(NotifyCollectionChangedAction.Move, lastFixtureNotification.Action);
+                    Assert.Equal(NotifyCollectionChangedAction.Move, lastReferenceNotification.Action);
+
+                    Assert.Equal(lastFixtureNotification.OldStartingIndex, lastReferenceNotification.OldStartingIndex);
+                    Assert.Equal(lastFixtureNotification.NewStartingIndex, lastReferenceNotification.NewStartingIndex);
+
+                    Assert.Equal(lastReferenceNotification.OldItems[0], lastReferenceNotification.OldItems[0]);
+                    Assert.Equal(lastReferenceNotification.NewItems[0], lastReferenceNotification.NewItems[0]);
+                }
+            }
+        }
+
+        [Fact]
         public void ReactiveCollectionIsRoundTrippable()
         {
             var output = new[] {"Foo", "Bar", "Baz", "Bamf"};
