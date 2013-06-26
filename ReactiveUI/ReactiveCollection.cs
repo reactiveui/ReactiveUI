@@ -183,13 +183,16 @@ namespace ReactiveUI
             }
 
             var ea = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Move, item, newIndex, oldIndex);
+            var mi = new MoveInfo<T>(new[] { item }, oldIndex, newIndex);
 
             _changing.OnNext(ea);
+            if (_beforeItemsMoved.IsValueCreated) _beforeItemsMoved.Value.OnNext(mi);
 
             _inner.RemoveAt(oldIndex);
             _inner.Insert(newIndex, item);
 
             _changed.OnNext(ea);
+            if (_itemsMoved.IsValueCreated) _itemsMoved.Value.OnNext(mi);
         }
 #endif
         protected void SetItem(int index, T item)
