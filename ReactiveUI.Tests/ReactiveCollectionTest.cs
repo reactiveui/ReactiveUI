@@ -91,6 +91,50 @@ namespace ReactiveUI.Tests
         }
 
         [Fact]
+        public void MoveShouldBehaveAsObservableCollectionMove()
+        {
+            var items = new[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+
+            var fixture = new ReactiveList<int>(items);
+            var reference = new System.Collections.ObjectModel.ObservableCollection<int>(items);
+
+            Assert.True(fixture.SequenceEqual(reference));
+
+            var fixtureNotifications = new List<NotifyCollectionChangedEventArgs>();
+            var referenceNotifications = new List<NotifyCollectionChangedEventArgs>();
+
+            fixture.Changed.Subscribe(fixtureNotifications.Add);
+
+            Observable.FromEventPattern<NotifyCollectionChangedEventHandler, NotifyCollectionChangedEventArgs>(
+                x => reference.CollectionChanged += x,
+                x => reference.CollectionChanged -= x)
+            .Select(x=> x.EventArgs)
+            .Subscribe(referenceNotifications.Add);
+
+            for (int i = 0; i < items.Length; i++) {
+                for (int j = 0; j < items.Length; j++) {
+                    reference.Move(i, j);
+                    fixture.Move(i, j);
+
+                    Assert.True(fixture.SequenceEqual(reference));
+                    Assert.Equal(fixtureNotifications.Count, referenceNotifications.Count);
+
+                    var lastFixtureNotification = fixtureNotifications.Last();
+                    var lastReferenceNotification = referenceNotifications.Last();
+
+                    Assert.Equal(NotifyCollectionChangedAction.Move, lastFixtureNotification.Action);
+                    Assert.Equal(NotifyCollectionChangedAction.Move, lastReferenceNotification.Action);
+
+                    Assert.Equal(lastFixtureNotification.OldStartingIndex, lastReferenceNotification.OldStartingIndex);
+                    Assert.Equal(lastFixtureNotification.NewStartingIndex, lastReferenceNotification.NewStartingIndex);
+
+                    Assert.Equal(lastReferenceNotification.OldItems[0], lastReferenceNotification.OldItems[0]);
+                    Assert.Equal(lastReferenceNotification.NewItems[0], lastReferenceNotification.NewItems[0]);
+                }
+            }
+        }
+
+        [Fact]
         public void ReactiveCollectionIsRoundTrippable()
         {
             var output = new[] {"Foo", "Bar", "Baz", "Bamf"};
@@ -410,6 +454,195 @@ namespace ReactiveUI.Tests
             Assert.Equal(1, changeNotifications.Count);
             Assert.Equal(2, derived.Count);
         }
+
+        [Fact]
+        public void DerivedCollectionMoveNotificationSmokeTest()
+        {
+            var initial = new[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+
+            var source = new ReactiveList<int>(initial);
+
+            var derived = source.CreateDerivedCollection(x => x);
+            var nestedDerived = derived.CreateDerivedCollection(x => x);
+            var derivedSorted = source.CreateDerivedCollection(x => x, orderer: (x, y) => x.CompareTo(y));
+
+            for (int i = 0; i < initial.Length; i++) {
+                for (int j = 0; j < initial.Length; j++) {
+                    source.Move(i, j);
+
+                    Assert.True(derived.SequenceEqual(source));
+                    Assert.True(nestedDerived.SequenceEqual(source));
+                    Assert.True(derivedSorted.SequenceEqual(initial));
+                }
+            }
+        }
+
+        [Fact]
+        public void DerivedCollectionShouldUnderstandMoveSignals()
+        {
+            var source = new System.Collections.ObjectModel.ObservableCollection<string> { 
+                "a", "b", "c", "d", "e", "f" 
+            };
+            var derived = source.CreateDerivedCollection(x => x);
+
+            var sourceNotifications = new List<NotifyCollectionChangedEventArgs>();
+
+            Observable.FromEventPattern<NotifyCollectionChangedEventHandler, NotifyCollectionChangedEventArgs>(
+                x => source.CollectionChanged += x,
+                x => source.CollectionChanged -= x
+            ).Subscribe(x => sourceNotifications.Add(x.EventArgs));
+
+            var derivedNotifications = new List<NotifyCollectionChangedEventArgs>();
+            derived.Changed.Subscribe(derivedNotifications.Add);
+
+            Assert.Equal(6, derived.Count);
+            Assert.True(source.SequenceEqual(derived));
+            Assert.Empty(derivedNotifications);
+
+            source.Move(1, 4);
+
+            Assert.True(source.SequenceEqual(new[] { "a", "c", "d", "e", "b", "f" }));
+            Assert.True(derived.SequenceEqual(source));
+
+            Assert.Equal(1, sourceNotifications.Count);
+            Assert.Equal(NotifyCollectionChangedAction.Move, sourceNotifications.First().Action);
+
+            Assert.Equal(1, derivedNotifications.Count);
+            Assert.Equal(NotifyCollectionChangedAction.Move, derivedNotifications.First().Action);
+
+            sourceNotifications.Clear();
+            derivedNotifications.Clear();
+
+            source.Move(4, 1);
+
+            Assert.True(source.SequenceEqual(new[] { "a", "b", "c", "d", "e", "f" }));
+            Assert.True(derived.SequenceEqual(source));
+
+            Assert.Equal(1, sourceNotifications.Count);
+            Assert.Equal(NotifyCollectionChangedAction.Move, sourceNotifications.First().Action);
+
+            Assert.Equal(1, derivedNotifications.Count);
+            Assert.Equal(NotifyCollectionChangedAction.Move, derivedNotifications.First().Action);
+
+            source.Move(0, 5);
+
+            Assert.True(source.SequenceEqual(new[] { "b", "c", "d", "e", "f", "a" }));
+            Assert.True(derived.SequenceEqual(source));
+
+            source.Move(5, 0);
+
+            Assert.True(source.SequenceEqual(new[] { "a", "b", "c", "d", "e", "f",  }));
+            Assert.True(derived.SequenceEqual(source));
+        }
+
+        [Fact]
+        public void DerivedCollectionShouldUnderstandNestedMoveSignals()
+        {
+            var source = new System.Collections.ObjectModel.ObservableCollection<string> { 
+                "a", "b", "c", "d", "e", "f" 
+            };
+            var derived = source.CreateDerivedCollection(x => x);
+            var nested = derived.CreateDerivedCollection(x => x);
+
+            var reverseNested = nested.CreateDerivedCollection(
+                x => x,
+                orderer: OrderedComparer<string>.OrderByDescending(x => x).Compare
+            );
+
+            var sortedNested = reverseNested.CreateDerivedCollection(
+                x => x,
+                orderer: OrderedComparer<string>.OrderBy(x => x).Compare
+            );
+
+            source.Move(1, 4);
+
+            Assert.True(source.SequenceEqual(derived));
+            Assert.True(source.SequenceEqual(nested));
+            Assert.True(source.OrderByDescending(x => x).SequenceEqual(reverseNested));
+            Assert.True(source.OrderBy(x => x).SequenceEqual(sortedNested));
+        }
+
+        [Fact]
+        public void DerivedCollectionShouldUnderstandMoveEvenWhenSorted()
+        {
+            var sanity = new List<string> { "a", "b", "c", "d", "e", "f" };
+            var source = new System.Collections.ObjectModel.ObservableCollection<string> { 
+                "a", "b", "c", "d", "e", "f" 
+            };
+
+            var derived = source.CreateDerivedCollection(
+                selector: x => x,
+                filter: x => x != "c", 
+                orderer: (x, y) => x.CompareTo(y)
+            );
+
+            var sourceNotifications = new List<NotifyCollectionChangedEventArgs>();
+
+            Observable.FromEventPattern<NotifyCollectionChangedEventHandler, NotifyCollectionChangedEventArgs>(
+                x => source.CollectionChanged += x,
+                x => source.CollectionChanged -= x
+            ).Subscribe(x => sourceNotifications.Add(x.EventArgs));
+
+            var derivedNotifications = new List<NotifyCollectionChangedEventArgs>();
+            derived.Changed.Subscribe(derivedNotifications.Add);
+
+            Assert.Equal(5, derived.Count);
+            Assert.True(derived.SequenceEqual(new[] { "a", "b" /*, "c" */, "d", "e", "f" }));
+
+            var rnd = new Random();
+
+            for (int i = 0; i < 50; i++) {
+                int from = rnd.Next(0, source.Count);
+                int to;
+
+                do { to = rnd.Next(0, source.Count); } while (to == from);
+
+                source.Move(from, to);
+
+                string tmp = sanity[from];
+                sanity.RemoveAt(from);
+                sanity.Insert(to, tmp);
+
+                Assert.True(source.SequenceEqual(sanity));
+                Assert.True(derived.SequenceEqual(new[] { "a", "b" /*, "c" */, "d", "e", "f" }));
+
+                Assert.Equal(1, sourceNotifications.Count);
+                Assert.Equal(NotifyCollectionChangedAction.Move, sourceNotifications.First().Action);
+
+                Assert.Empty(derivedNotifications);
+
+                sourceNotifications.Clear();
+            }
+        }
+
+        [Fact]
+        public void DerivedCollectionShouldUnderstandDummyMoveSignal()
+        {
+            var sanity = new List<string> { "a", "b", "c", "d", "e", "f" };
+            var source = new System.Collections.ObjectModel.ObservableCollection<string> { 
+                "a", "b", "c", "d", "e", "f" 
+            };
+
+            var derived = source.CreateDerivedCollection(x => x);
+
+            var sourceNotifications = new List<NotifyCollectionChangedEventArgs>();
+
+            Observable.FromEventPattern<NotifyCollectionChangedEventHandler, NotifyCollectionChangedEventArgs>(
+                x => source.CollectionChanged += x,
+                x => source.CollectionChanged -= x
+            ).Subscribe(x => sourceNotifications.Add(x.EventArgs));
+
+            var derivedNotification = new List<NotifyCollectionChangedEventArgs>();
+            derived.Changed.Subscribe(derivedNotification.Add);
+
+            source.Move(0, 0);
+
+            Assert.Equal(1, sourceNotifications.Count);
+            Assert.Equal(NotifyCollectionChangedAction.Move, sourceNotifications.First().Action);
+
+            Assert.Equal(0, derivedNotification.Count);
+        }
+
 
         /// <summary>
         /// This test is a bit contrived and only exists to verify that a particularly gnarly bug doesn't get 
@@ -839,6 +1072,185 @@ namespace ReactiveUI.Tests
                 items.Remove(b);
                 Assert.Equal(2, onlyVisible.Count);
                 Assert.True(onlyVisible.SequenceEqual(new[] { "E", "A" }, StringComparer.Ordinal));
+            }
+
+            [Fact]
+            public void PropertyChangesShouldWorkWithChainedCollections()
+            {
+                // This is a highly contrived test and I appologize for it not making much sense. I added it 
+                // specifically track down an bug I was hitting when derived collection notification triggered
+                // reentrant notifications.
+
+                var a = new ReactiveVisibilityItem<string>("A", true);
+                var b = new ReactiveVisibilityItem<string>("B", true);
+                var c = new ReactiveVisibilityItem<string>("C", true);
+                var d = new ReactiveVisibilityItem<string>("D", true);
+                var e = new ReactiveVisibilityItem<string>("E", true);
+                var f = new ReactiveVisibilityItem<string>("F", true);
+
+                var items = new ReactiveList<ReactiveVisibilityItem<string>>(new[] { a, b, c, d, e, f })
+                {
+                    ChangeTrackingEnabled = true
+                };
+
+                var itemsByVisibility = items.CreateDerivedCollection(
+                    x => x, 
+                    orderer: OrderedComparer<ReactiveVisibilityItem<string>>
+                        .OrderByDescending(x => x.IsVisible)
+                        .ThenBy(x => x.Value)
+                        .Compare
+                );
+
+                itemsByVisibility.ChangeTrackingEnabled = true;
+
+                var onlyVisibleReversed = itemsByVisibility.CreateDerivedCollection(
+                    x => x,
+                    x => x.IsVisible,
+                    OrderedComparer<ReactiveVisibilityItem<string>>.OrderByDescending(x => x.Value).Compare
+                );
+
+                onlyVisibleReversed.ChangeTrackingEnabled = true;
+
+                var onlyVisibleAndGreaterThanC = onlyVisibleReversed.CreateDerivedCollection(
+                    x => x,
+                    x => x.Value[0] > 'C',
+                    OrderedComparer<ReactiveVisibilityItem<string>>.OrderBy(x => x.Value).Compare
+                );
+
+                onlyVisibleAndGreaterThanC.ChangeTrackingEnabled = true;
+
+                Assert.True(items.SequenceEqual(new[] { a, b, c, d, e, f }));
+                Assert.True(itemsByVisibility.SequenceEqual(new[] { a, b, c, d, e, f }));
+                Assert.True(onlyVisibleReversed.SequenceEqual(new[] { f, e, d, c, b, a }));
+                Assert.True(onlyVisibleAndGreaterThanC.SequenceEqual(new[] { d, e, f }));
+
+                // When the value of d changes, update a to Y
+                d.WhenAny(x => x.Value, x => x.Value)
+                    .Where(x => x == "Y")
+                    .Subscribe(x => a.Value = "Z");
+
+                // When the visibility of e changes, update d to Z
+                e.WhenAny(x => x.IsVisible, x => x.Value)
+                    .Where(x => x == false)
+                    .Subscribe(x => d.Value = "Y");
+
+                // As soon as the "last" collection changes, remove b
+                onlyVisibleAndGreaterThanC.Changed.Subscribe(x => items.Remove(b));
+
+                e.IsVisible = false;
+
+                Assert.True(items.SequenceEqual(new[] { a, c, d, e, f }));
+                Assert.True(itemsByVisibility.SequenceEqual(new[] { 
+                    c, f,
+                    d, // d is now y
+                    a, // a is now z
+                    e  // e is now hidden
+                }));
+
+                Assert.True(onlyVisibleReversed.SequenceEqual(new[] { 
+                    a, // a is now z
+                    d, // d is now y
+                    f, c
+                }));
+
+                Assert.True(onlyVisibleAndGreaterThanC.SequenceEqual(new[] { 
+                    f,
+                    d, // d is now y
+                    a, // a is now z
+                }));
+
+            }
+        }
+
+        public static class TheDerivedSortMethods
+        {
+            public class ThePositionForNewItemMethod
+            {
+                private static void AssertNewIndex<T>(IList<T> items, T newValue, int expectedIndex, Func<T, T, int> orderer = null)
+                {
+                    if (orderer == null) {
+                        orderer = Comparer<T>.Default.Compare;
+                    }
+
+                    var newIndex = ReactiveDerivedCollection<T, T>.positionForNewItem(items, newValue, orderer);
+
+                    Assert.Equal(expectedIndex, newIndex);
+                }
+
+                [Fact]
+                public void ThePositionForNewItemMethodSmokeTest()
+                {
+                    AssertNewIndex(new int[] { }, newValue: 1, expectedIndex: 0);
+
+                    AssertNewIndex(new[] { 10 }, newValue: 9, expectedIndex: 0);
+                    AssertNewIndex(new[] { 10 }, newValue: 10, expectedIndex: 0);
+                    AssertNewIndex(new[] { 10 }, newValue: 11, expectedIndex: 1);
+
+                    AssertNewIndex(new[] { 10, 20 }, newValue: 9, expectedIndex: 0);
+                    AssertNewIndex(new[] { 10, 20 }, newValue: 15, expectedIndex: 1);
+                    AssertNewIndex(new[] { 10, 20 }, newValue: 20, expectedIndex: 1);
+                    AssertNewIndex(new[] { 10, 20 }, newValue: 21, expectedIndex: 2);
+
+                    var items = new[] { 10, 20, 30, 40, 50, 60, 70, 80, 90 };
+
+                    AssertNewIndex(items, newValue: 0, expectedIndex: 0);
+                    AssertNewIndex(items, newValue: 15, expectedIndex: 1);
+                    AssertNewIndex(items, newValue: 25, expectedIndex: 2);
+                    AssertNewIndex(items, newValue: 35, expectedIndex: 3);
+                    AssertNewIndex(items, newValue: 45, expectedIndex: 4);
+                    AssertNewIndex(items, newValue: 55, expectedIndex: 5);
+                    AssertNewIndex(items, newValue: 65, expectedIndex: 6);
+                    AssertNewIndex(items, newValue: 75, expectedIndex: 7);
+                    AssertNewIndex(items, newValue: 85, expectedIndex: 8);
+                    AssertNewIndex(items, newValue: 95, expectedIndex: 9);
+                }
+            }
+
+            public class TheNewPositionForExistingItemMethod
+            {
+                private static void AssertNewIndex<T>(IList<T> items, T newValue, int currentIndex, int expectedNewIndex)
+                {
+                    var newIndex = ReactiveDerivedCollection<T, T>
+                        .newPositionForExistingItem(items, newValue, currentIndex, Comparer<T>.Default.Compare);
+
+                    Assert.Equal(expectedNewIndex, newIndex);
+
+                    var test = new List<T>(items);
+                    test.RemoveAt(currentIndex);
+                    test.Insert(newIndex, newValue);
+
+                    Assert.True(test.SequenceEqual(test.OrderBy(x => x, Comparer<T>.Default)));
+                }
+
+                [Fact]
+                public void TheNewPositionForExistingItemMethodSmokeTest()
+                {
+                    AssertNewIndex(new[] { 10, 20 }, newValue: 15, currentIndex: 0, expectedNewIndex: 0);
+                    AssertNewIndex(new[] { 10, 20 }, newValue: 25, currentIndex: 0, expectedNewIndex: 1);
+
+                    AssertNewIndex(new[] { 10, 20 }, newValue: 15, currentIndex: 1, expectedNewIndex: 1);
+                    AssertNewIndex(new[] { 10, 20 }, newValue: 5, currentIndex: 1, expectedNewIndex: 0);
+
+                    AssertNewIndex(new[] { 10, 20, 30 }, newValue: 15, currentIndex: 2, expectedNewIndex: 1);
+                    AssertNewIndex(new[] { 10, 20, 30 }, newValue: 5, currentIndex: 2, expectedNewIndex: 0);
+
+                    var items = new[] { 10, 20, 30, 40, 50 };
+
+                    AssertNewIndex(items, newValue: 11, currentIndex: 0, expectedNewIndex: 0);
+                    AssertNewIndex(items, newValue: 10, currentIndex: 0, expectedNewIndex: 0);
+                    AssertNewIndex(items, newValue: 15, currentIndex: 0, expectedNewIndex: 0);
+                    AssertNewIndex(items, newValue: 19, currentIndex: 0, expectedNewIndex: 0);
+                    AssertNewIndex(items, newValue: 21, currentIndex: 0, expectedNewIndex: 1);
+                    AssertNewIndex(items, newValue: 60, currentIndex: 0, expectedNewIndex: 4);
+
+                    AssertNewIndex(items, newValue: 50, currentIndex: 3, expectedNewIndex: 3);
+
+                    AssertNewIndex(items, newValue: 1, currentIndex: 4, expectedNewIndex: 0);
+                    AssertNewIndex(items, newValue: 51, currentIndex: 4, expectedNewIndex: 4);
+                    AssertNewIndex(items, newValue: 39, currentIndex: 4, expectedNewIndex: 3);
+
+                    AssertNewIndex(items, newValue: 10, currentIndex: 1, expectedNewIndex: 1);
+                }
             }
         }
 
