@@ -1112,6 +1112,51 @@ namespace ReactiveUI.Tests
             }
         }
 
+        public static class TheDerivedSortMethods
+        {
+            public class ThePositionForNewItemMethod
+            {
+                private static void AssertNewIndex<T>(IList<T> items, T newValue, int expectedIndex, Func<T, T, int> orderer = null)
+                {
+                    if (orderer == null) {
+                        orderer = Comparer<T>.Default.Compare;
+                    }
+
+                    var newIndex = ReactiveDerivedCollection<T, T>.positionForNewItem(items, newValue, orderer);
+
+                    Assert.Equal(expectedIndex, newIndex);
+                }
+
+                [Fact]
+                public void ThePositionForNewItemMethodSmokeTest()
+                {
+                    AssertNewIndex(new int[] { }, newValue: 1, expectedIndex: 0);
+
+                    AssertNewIndex(new[] { 10 }, newValue: 9, expectedIndex: 0);
+                    AssertNewIndex(new[] { 10 }, newValue: 10, expectedIndex: 0);
+                    AssertNewIndex(new[] { 10 }, newValue: 11, expectedIndex: 1);
+
+                    AssertNewIndex(new[] { 10, 20 }, newValue: 9, expectedIndex: 0);
+                    AssertNewIndex(new[] { 10, 20 }, newValue: 15, expectedIndex: 1);
+                    AssertNewIndex(new[] { 10, 20 }, newValue: 20, expectedIndex: 1);
+                    AssertNewIndex(new[] { 10, 20 }, newValue: 21, expectedIndex: 2);
+
+                    var items = new[] { 10, 20, 30, 40, 50, 60, 70, 80, 90 };
+
+                    AssertNewIndex(items, newValue: 0, expectedIndex: 0);
+                    AssertNewIndex(items, newValue: 15, expectedIndex: 1);
+                    AssertNewIndex(items, newValue: 25, expectedIndex: 2);
+                    AssertNewIndex(items, newValue: 35, expectedIndex: 3);
+                    AssertNewIndex(items, newValue: 45, expectedIndex: 4);
+                    AssertNewIndex(items, newValue: 55, expectedIndex: 5);
+                    AssertNewIndex(items, newValue: 65, expectedIndex: 6);
+                    AssertNewIndex(items, newValue: 75, expectedIndex: 7);
+                    AssertNewIndex(items, newValue: 85, expectedIndex: 8);
+                    AssertNewIndex(items, newValue: 95, expectedIndex: 9);
+                }
+            }
+        }
+
         [Fact]
         public void AddRangeSmokeTest()
         {
