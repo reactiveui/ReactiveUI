@@ -403,36 +403,33 @@ namespace ReactiveUI
                 sourceCopy.RemoveAt(oldSourceIndex);
                 sourceCopy.Insert(newSourceIndex, (TSource)args.NewItems[0]);
 
-                int oldDestinationIndex = getIndexFromSourceIndex(oldSourceIndex);
+                int currentDestinationIndex = getIndexFromSourceIndex(oldSourceIndex);
 
-                if (oldDestinationIndex == -1) {
+                moveSourceIndexInMap(oldSourceIndex, newSourceIndex);
 
-                    shiftIndicesAtOrOverThreshold(oldSourceIndex + 1, -1);
-                    shiftIndicesAtOrOverThreshold(newSourceIndex, 1);
-
+                if (currentDestinationIndex == -1) {
                     return;
                 }
 
-                TValue value = base[oldDestinationIndex];
-                indexToSourceIndexMap.RemoveAt(oldDestinationIndex);
-
-                shiftIndicesAtOrOverThreshold(oldSourceIndex + 1, -1);
-                shiftIndicesAtOrOverThreshold(newSourceIndex, 1);
+                TValue value = base[currentDestinationIndex];
 
                 if(orderer == null) {
                     // We mirror the order of the source collection so we'll perform the same move operation
                     // as the source. As is the case with when we have an orderer we don't test whether or not
                     // the item should be included or not here. If it has been included at some point it'll
                     // stay included until onItemChanged picks up a change which filters it.
-                    int newDestinationIndex = positionForNewItem(newSourceIndex, value);
+                    int newDestinationIndex = newPositionForExistingItem(
+                        indexToSourceIndexMap, newSourceIndex, currentDestinationIndex);
+
+                    indexToSourceIndexMap.RemoveAt(currentDestinationIndex);
                     indexToSourceIndexMap.Insert(newDestinationIndex, newSourceIndex);
 
-                    base.internalMove(oldDestinationIndex, newDestinationIndex);
+                    base.internalMove(currentDestinationIndex, newDestinationIndex);
                 } else {
                     // TODO: Conceptually I feel like we shouldn't concern ourselves with ordering when we 
                     // receive a Move notification. If it affects ordering it should be picked up by the
                     // onItemChange and resorted there instead.
-                    indexToSourceIndexMap.Insert(oldDestinationIndex, newSourceIndex);
+                    indexToSourceIndexMap[currentDestinationIndex] = newSourceIndex;
                 }
 
                 return;
@@ -473,6 +470,23 @@ namespace ReactiveUI
         }
 
         /// <summary>
+        /// Increases (or decreases depending on move direction) all source indices between the source and destination
+        /// move indices.
+        /// </summary>
+        void moveSourceIndexInMap(int oldSourceIndex, int newSourceIndex)
+        {
+            if (newSourceIndex > oldSourceIndex) {
+                // Item is moving towards the end of the list, everything between its current position and its 
+                // new position needs to be shifted down one index
+                shiftSourceIndicesInRange(oldSourceIndex + 1, newSourceIndex + 1, -1);
+            } else {
+                // Item is moving towards the front of the list, everything between its current position and its
+                // new position needs to be shifted up one index
+                shiftSourceIndicesInRange(newSourceIndex, oldSourceIndex, 1);
+            }
+        }
+
+        /// <summary>
         /// Increases (or decreases) all source indices equal to or higher than the threshold. Represents an
         /// insert or remove of one or more items in the source list thus causing all subsequent items to shift
         /// up or down.
@@ -485,6 +499,20 @@ namespace ReactiveUI
                 }
             }
         }
+
+        /// <summary>
+        /// Increases (or decreases) all source indices within the range (lower inclusive, upper exclusive). 
+        /// </summary>
+        void shiftSourceIndicesInRange(int rangeStart, int rangeStop, int value)
+        {
+            for (int i = 0; i < indexToSourceIndexMap.Count; i++) {
+                int sourceIndex = indexToSourceIndexMap[i];
+                if (sourceIndex >= rangeStart && sourceIndex < rangeStop) {
+                    indexToSourceIndexMap[i] += value;
+                }
+            }
+        }
+
 
         public override void Reset()
         {
