@@ -43,6 +43,8 @@ namespace ReactiveUI
         [IgnoreDataMember] Lazy<Subject<T>> _itemsRemoved;
         [IgnoreDataMember] Lazy<Subject<IObservedChange<T, object>>> _itemChanging;
         [IgnoreDataMember] Lazy<Subject<IObservedChange<T, object>>> _itemChanged;
+        [IgnoreDataMember] Lazy<Subject<IMoveInfo<T>>> _beforeItemsMoved;
+        [IgnoreDataMember] Lazy<Subject<IMoveInfo<T>>> _itemsMoved;
 
         [IgnoreDataMember] Dictionary<object, RefcountDisposeWrapper> _propertyChangeWatchers = null;
 
@@ -89,6 +91,8 @@ namespace ReactiveUI
             _itemsRemoved = new Lazy<Subject<T>>(() => new Subject<T>());
             _itemChanging = new Lazy<Subject<IObservedChange<T, object>>>(() => new Subject<IObservedChange<T, object>>());
             _itemChanged = new Lazy<Subject<IObservedChange<T, object>>>(() => new Subject<IObservedChange<T, object>>());
+            _beforeItemsMoved = new Lazy<Subject<IMoveInfo<T>>>(() => new Subject<IMoveInfo<T>>());
+            _itemsMoved = new Lazy<Subject<IMoveInfo<T>>>(() => new Subject<IMoveInfo<T>>());
 
             // NB: We have to do this instead of initializing _inner so that
             // Collection<T>'s accounting is correct
@@ -373,6 +377,9 @@ namespace ReactiveUI
         public IObservable<T> BeforeItemsRemoved { get { return _beforeItemsRemoved.Value; } }
         public IObservable<T> ItemsRemoved { get { return _itemsRemoved.Value; } }
 
+        public IObservable<IMoveInfo<T>> BeforeItemsMoved { get { return _beforeItemsMoved.Value; } }
+        public IObservable<IMoveInfo<T>> ItemsMoved { get { return _itemsMoved.Value; } }
+
         public IObservable<IObservedChange<T, object>> ItemChanging { get { return _itemChanging.Value; } }
         public IObservable<IObservedChange<T, object>> ItemChanged { get { return _itemChanged.Value; } }
 
@@ -622,7 +629,26 @@ namespace ReactiveUI
         #endregion
     }
 
+    public interface IMoveInfo<out T>
+    {
+        IEnumerable<T> MovedItems { get; }
+        int From { get; }
+        int To { get; }
+    }
 
+    public class MoveInfo<T> : IMoveInfo<T>
+    {
+        public IEnumerable<T> MovedItems { get; protected set; }
+        public int From { get; protected set; }
+        public int To { get; protected set; }
+
+        public MoveInfo(IEnumerable<T> movedItems, int from, int to)
+        {
+            MovedItems = movedItems;
+            From = from;
+            To = to;
+        }
+    }
 }
 
 // vim: tw=120 ts=4 sw=4 et :
