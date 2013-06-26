@@ -89,7 +89,7 @@ namespace ReactiveUI.Tests
             Assert.Equal(before_removed.Count, removed.Count);
             removed.AssertAreEqual(before_removed);
         }
-
+#if !SILVERLIGHT
         [Fact]
         public void MoveShouldBehaveAsObservableCollectionMove()
         {
@@ -133,7 +133,7 @@ namespace ReactiveUI.Tests
                 }
             }
         }
-
+#endif
         [Fact]
         public void ReactiveCollectionIsRoundTrippable()
         {
@@ -455,6 +455,7 @@ namespace ReactiveUI.Tests
             Assert.Equal(2, derived.Count);
         }
 
+#if !SILVERLIGHT
         [Fact]
         public void DerivedCollectionMoveNotificationSmokeTest()
         {
@@ -476,7 +477,9 @@ namespace ReactiveUI.Tests
                 }
             }
         }
+#endif
 
+#if !SILVERLIGHT
         [Fact]
         public void DerivedCollectionShouldUnderstandMoveSignals()
         {
@@ -534,7 +537,9 @@ namespace ReactiveUI.Tests
             Assert.True(source.SequenceEqual(new[] { "a", "b", "c", "d", "e", "f",  }));
             Assert.True(derived.SequenceEqual(source));
         }
+#endif
 
+#if !SILVERLIGHT
         [Fact]
         public void DerivedCollectionShouldUnderstandNestedMoveSignals()
         {
@@ -561,7 +566,9 @@ namespace ReactiveUI.Tests
             Assert.True(source.OrderByDescending(x => x).SequenceEqual(reverseNested));
             Assert.True(source.OrderBy(x => x).SequenceEqual(sortedNested));
         }
+#endif
 
+#if !SILVERLIGHT
         [Fact]
         public void DerivedCollectionShouldUnderstandMoveEvenWhenSorted()
         {
@@ -614,7 +621,9 @@ namespace ReactiveUI.Tests
                 sourceNotifications.Clear();
             }
         }
+#endif
 
+#if !SILVERLIGHT
         [Fact]
         public void DerivedCollectionShouldUnderstandDummyMoveSignal()
         {
@@ -642,7 +651,7 @@ namespace ReactiveUI.Tests
 
             Assert.Equal(0, derivedNotification.Count);
         }
-
+#endif
 
         /// <summary>
         /// This test is a bit contrived and only exists to verify that a particularly gnarly bug doesn't get 
