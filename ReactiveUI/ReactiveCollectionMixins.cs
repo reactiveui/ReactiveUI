@@ -563,30 +563,38 @@ namespace ReactiveUI
         int positionForNewItem(int sourceIndex, TValue value)
         {
             // If we haven't got an orderer we'll simply match our items to that of the source collection.
-            int destinationIndex = orderer == null
-                ? positionForNewItem(this.indexToSourceIndexMap, sourceIndex, (x, y) => x.CompareTo(y))
-                : positionForNewItem(this, value, orderer);
-
-            return destinationIndex;
+            return orderer == null
+                ? positionForNewItem(indexToSourceIndexMap, sourceIndex, Comparer<int>.Default.Compare)
+                : positionForNewItem(this, 0, this.Count, value, orderer);
         }
 
-        static int positionForNewItem<T>(IList<T> list, T item, Func<T, T, int> orderer)
+        internal static int positionForNewItem<T>(IList<T> list, T item, Func<T, T, int> orderer)
         {
-            if (list.Count == 0) {
-                return 0;
+            return positionForNewItem(list, 0, list.Count, item, orderer);
+        }
+
+        internal static int positionForNewItem<T>(
+            IList<T> list, int index, int count, T item, Func<T, T, int> orderer)
+        {
+            Debug.Assert(index >= 0);
+            Debug.Assert(count >= 0);
+            Debug.Assert((list.Count - index) >= count);
+
+            if (count == 0) {
+                return index;
             }
 
-            if (list.Count == 1) {
-                return orderer(list[0], item) >= 0 ? 0 : 1;
+            if (count == 1) {
+                return orderer(list[index], item) >= 0 ? index : index + 1;
             }
 
-            if (orderer(list[0], item) >= 1) return 0;
+            if (orderer(list[index], item) >= 1) return index;
 
             // NB: This is the most tart way to do this possible
             int? prevCmp = null;
             int cmp;
 
-            for (int i = 0; i < list.Count; i++) {
+            for (int i = index; i < index + count; i++) {
                 cmp = sign(orderer(list[i], item));
                 if (prevCmp.HasValue && cmp != prevCmp) {
                     return i;
@@ -595,7 +603,7 @@ namespace ReactiveUI
                 prevCmp = cmp;
             }
 
-            return list.Count;
+            return index + count;
         }
 
         static int sign(int i)
