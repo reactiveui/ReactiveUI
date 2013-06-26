@@ -258,11 +258,11 @@ namespace ReactiveUI
 
             foreach (int sourceIndex in sourceIndices) {
 
-                int destinationIndex = getIndexFromSourceIndex(sourceIndex);
-                bool isIncluded = destinationIndex >= 0;
+                int currentDestinationIndex = getIndexFromSourceIndex(sourceIndex);
+                bool isIncluded = currentDestinationIndex >= 0;
 
                 if (isIncluded && !shouldBeIncluded) {
-                    internalRemoveAt(destinationIndex);
+                    internalRemoveAt(currentDestinationIndex);
                 } else if (!isIncluded && shouldBeIncluded) {
                     internalInsertAndMap(sourceIndex, selector(changedItem));
                 } else if (isIncluded && shouldBeIncluded) {
@@ -276,40 +276,40 @@ namespace ReactiveUI
                         // meaning that no item change will affect ordering. Look at our current item and see if it's
                         // the exact (reference-wise) same object. If it is then we're done, if it's not (for example 
                         // if it's an integer) we'll issue a replace event so that subscribers get the new value.
-                        if (!object.ReferenceEquals(newItem, this[destinationIndex])) {
-                            internalReplace(destinationIndex, newItem);
+                        if (!object.ReferenceEquals(newItem, this[currentDestinationIndex])) {
+                            internalReplace(currentDestinationIndex, newItem);
                         }
                     } else {
                         // Don't be tempted to just use the orderer to compare the new item with the previous since
                         // they'll almost certainly be equal (for reference types). We need to test whether or not the
                         // new item can stay in the same position that the current item is in without comparing them.
-                        if (canItemStayAtPosition(newItem, destinationIndex)) {
+                        if (canItemStayAtPosition(newItem, currentDestinationIndex)) {
                             // The new item should be in the same position as the current but there's no need to signal
                             // that in case they are the same object.
-                            if (!object.ReferenceEquals(newItem, this[destinationIndex])) {
-                                internalReplace(destinationIndex, newItem);
+                            if (!object.ReferenceEquals(newItem, this[currentDestinationIndex])) {
+                                internalReplace(currentDestinationIndex, newItem);
                             }
                         } else {
 #if !SILVERLIGHT
                             // The change is forcing us to reorder. We'll use a move operation if the item hasn't 
                             // changed (ie it's the same object) and we'll implement it as a remove and add if the
                             // object has changed (ie the selector is not an identity function).
-                            if (object.ReferenceEquals(newItem, this[destinationIndex])) {
+                            if (object.ReferenceEquals(newItem, this[currentDestinationIndex])) {
 
                                 int newDestinationIndex = newPositionForExistingItem(
-                                    sourceIndex, destinationIndex, newItem);
+                                    sourceIndex, currentDestinationIndex, newItem);
 
-                                indexToSourceIndexMap.RemoveAt(destinationIndex);
+                                indexToSourceIndexMap.RemoveAt(currentDestinationIndex);
                                 indexToSourceIndexMap.Insert(newDestinationIndex, sourceIndex);
 
-                                base.internalMove(destinationIndex, newDestinationIndex);
+                                base.internalMove(currentDestinationIndex, newDestinationIndex);
 
                             } else {
-                                internalRemoveAt(destinationIndex);
+                                internalRemoveAt(currentDestinationIndex);
                                 internalInsertAndMap(sourceIndex, newItem);
                             }
 #else
-                            internalRemoveAt(destinationIndex);
+                            internalRemoveAt(currentDestinationIndex);
                             internalInsertAndMap(sourceIndex, newItem);
 #endif
                         }
