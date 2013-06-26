@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Reactive;
 using System.Reactive.Disposables;
@@ -109,6 +110,18 @@ namespace ReactiveUI
             base.RemoveAt(index);
         }
 
+#if !SILVERLIGHT
+        public override void Move(int oldIndex, int newIndex)
+        {
+            throw new InvalidOperationException(readonlyExceptionMessage);
+        }
+
+        protected virtual void internalMove(int oldIndex, int newIndex)
+        {
+            base.Move(oldIndex, newIndex);
+        }
+#endif
+
         public override void RemoveRange(int index, int count)
         {
             throw new InvalidOperationException(readonlyExceptionMessage);
@@ -173,6 +186,7 @@ namespace ReactiveUI
 
         // This list maps indices in this collection to their corresponding indices in the source collection.
         List<int> indexToSourceIndexMap;
+        List<TSource> sourceCopy;
         CompositeDisposable inner;
 
         public ReactiveDerivedCollection(
@@ -196,6 +210,7 @@ namespace ReactiveUI
 
             this.inner = new CompositeDisposable();
             this.indexToSourceIndexMap = new List<int>();
+            this.sourceCopy = new List<TSource>();
 
             this.addAllItemsFromSourceCollection();
             this.wireUpChangeNotifications();
@@ -249,17 +264,17 @@ namespace ReactiveUI
             // If you've implemented INotifyPropertyChanged on a struct then you're doing it wrong(TM) and change
             // tracking won't work in derived collections (change tracking for value types makes no sense any way)
             // NB: It's possible the sender exists in multiple places in the source collection.
-            var sourceIndices = indexOfAll(source, changedItem, ReferenceEqualityComparer<TSource>.Default);
+            var sourceIndices = indexOfAll(sourceCopy, changedItem, ReferenceEqualityComparer<TSource>.Default);
 
             var shouldBeIncluded = filter(changedItem);
 
             foreach (int sourceIndex in sourceIndices) {
 
-                int destinationIndex = getIndexFromSourceIndex(sourceIndex);
-                bool isIncluded = destinationIndex >= 0;
+                int currentDestinationIndex = getIndexFromSourceIndex(sourceIndex);
+                bool isIncluded = currentDestinationIndex >= 0;
 
                 if (isIncluded && !shouldBeIncluded) {
-                    internalRemoveAt(destinationIndex);
+                    internalRemoveAt(currentDestinationIndex);
                 } else if (!isIncluded && shouldBeIncluded) {
                     internalInsertAndMap(sourceIndex, selector(changedItem));
                 } else if (isIncluded && shouldBeIncluded) {
@@ -273,23 +288,42 @@ namespace ReactiveUI
                         // meaning that no item change will affect ordering. Look at our current item and see if it's
                         // the exact (reference-wise) same object. If it is then we're done, if it's not (for example 
                         // if it's an integer) we'll issue a replace event so that subscribers get the new value.
-                        if (!object.ReferenceEquals(newItem, this[destinationIndex])) {
-                            internalReplace(destinationIndex, newItem);
+                        if (!object.ReferenceEquals(newItem, this[currentDestinationIndex])) {
+                            internalReplace(currentDestinationIndex, newItem);
                         }
                     } else {
                         // Don't be tempted to just use the orderer to compare the new item with the previous since
                         // they'll almost certainly be equal (for reference types). We need to test whether or not the
                         // new item can stay in the same position that the current item is in without comparing them.
-                        if (canItemStayAtPosition(newItem, destinationIndex)) {
+                        if (canItemStayAtPosition(newItem, currentDestinationIndex)) {
                             // The new item should be in the same position as the current but there's no need to signal
                             // that in case they are the same object.
-                            if (!object.ReferenceEquals(newItem, this[destinationIndex])) {
-                                internalReplace(destinationIndex, newItem);
+                            if (!object.ReferenceEquals(newItem, this[currentDestinationIndex])) {
+                                internalReplace(currentDestinationIndex, newItem);
                             }
                         } else {
-                            // The change is forcing us to reorder, implemented as a remove and insert.
-                            internalRemoveAt(destinationIndex);
+#if !SILVERLIGHT
+                            // The change is forcing us to reorder. We'll use a move operation if the item hasn't 
+                            // changed (ie it's the same object) and we'll implement it as a remove and add if the
+                            // object has changed (ie the selector is not an identity function).
+                            if (object.ReferenceEquals(newItem, this[currentDestinationIndex])) {
+
+                                int newDestinationIndex = newPositionForExistingItem(
+                                    sourceIndex, currentDestinationIndex, newItem);
+
+                                indexToSourceIndexMap.RemoveAt(currentDestinationIndex);
+                                indexToSourceIndexMap.Insert(newDestinationIndex, sourceIndex);
+
+                                base.internalMove(currentDestinationIndex, newDestinationIndex);
+
+                            } else {
+                                internalRemoveAt(currentDestinationIndex);
+                                internalInsertAndMap(sourceIndex, newItem);
+                            }
+#else
+                            internalRemoveAt(currentDestinationIndex);
                             internalInsertAndMap(sourceIndex, newItem);
+#endif
                         }
                     }
                 }
@@ -341,18 +375,21 @@ namespace ReactiveUI
         /// Returns one or more positions in the source collection where the given item is found based on the
         /// provided equality comparer.
         /// </summary>
-        IEnumerable<int> indexOfAll(IEnumerable<TSource> source, TSource item,
+        List<int> indexOfAll(IEnumerable<TSource> source, TSource item,
             IEqualityComparer<TSource> equalityComparer)
         {
+            var indices = new List<int>(1);
             int sourceIndex = 0;
             foreach (var x in source) {
 
                 if (equalityComparer.Equals(x, item)) {
-                    yield return sourceIndex;
+                    indices.Add(sourceIndex);
                 }
 
                 sourceIndex++;
             }
+
+            return indices;
         }
 
         void onSourceCollectionChanged(NotifyCollectionChangedEventArgs args)
@@ -362,7 +399,63 @@ namespace ReactiveUI
                 return;
             }
 
+#if !SILVERLIGHT
+            if (args.Action == NotifyCollectionChangedAction.Move) {
+
+                Debug.Assert(args.OldItems.Count == args.NewItems.Count);
+
+                if (args.OldItems.Count > 1 || args.NewItems.Count > 1) {
+                    throw new NotSupportedException("Derived collections doesn't support multi-item moves");
+                }
+
+                // Yeah apparently this can happen. ObservableCollection triggers this notification on Move(0,0)
+                if(args.OldStartingIndex == args.NewStartingIndex) {
+                    return;
+                }
+
+                int oldSourceIndex = args.OldStartingIndex;
+                int newSourceIndex = args.NewStartingIndex;
+
+                sourceCopy.RemoveAt(oldSourceIndex);
+                sourceCopy.Insert(newSourceIndex, (TSource)args.NewItems[0]);
+
+                int currentDestinationIndex = getIndexFromSourceIndex(oldSourceIndex);
+
+                moveSourceIndexInMap(oldSourceIndex, newSourceIndex);
+
+                if (currentDestinationIndex == -1) {
+                    return;
+                }
+
+                TValue value = base[currentDestinationIndex];
+
+                if(orderer == null) {
+                    // We mirror the order of the source collection so we'll perform the same move operation
+                    // as the source. As is the case with when we have an orderer we don't test whether or not
+                    // the item should be included or not here. If it has been included at some point it'll
+                    // stay included until onItemChanged picks up a change which filters it.
+                    int newDestinationIndex = newPositionForExistingItem(
+                        indexToSourceIndexMap, newSourceIndex, currentDestinationIndex);
+
+                    indexToSourceIndexMap.RemoveAt(currentDestinationIndex);
+                    indexToSourceIndexMap.Insert(newDestinationIndex, newSourceIndex);
+
+                    base.internalMove(currentDestinationIndex, newDestinationIndex);
+                } else {
+                    // TODO: Conceptually I feel like we shouldn't concern ourselves with ordering when we 
+                    // receive a Move notification. If it affects ordering it should be picked up by the
+                    // onItemChange and resorted there instead.
+                    indexToSourceIndexMap[currentDestinationIndex] = newSourceIndex;
+                }
+
+                return;
+            }
+#endif
+
             if (args.OldItems != null) {
+
+                sourceCopy.RemoveRange(args.OldStartingIndex, args.OldItems.Count);
+
                 for (int i = 0; i < args.OldItems.Count; i++) {
                     int destinationIndex = getIndexFromSourceIndex(args.OldStartingIndex + i);
                     if (destinationIndex != -1) {
@@ -375,10 +468,12 @@ namespace ReactiveUI
             }
 
             if (args.NewItems != null) {
+
                 shiftIndicesAtOrOverThreshold(args.NewStartingIndex, args.NewItems.Count);
 
                 for (int i = 0; i < args.NewItems.Count; i++) {
                     var sourceItem = (TSource)args.NewItems[i];
+                    sourceCopy.Insert(args.NewStartingIndex + i, sourceItem);
 
                     if (!filter(sourceItem)) {
                         continue;
@@ -387,6 +482,23 @@ namespace ReactiveUI
                     var destinationItem = selector(sourceItem);
                     internalInsertAndMap(args.NewStartingIndex + i, destinationItem);
                 }
+            }
+        }
+
+        /// <summary>
+        /// Increases (or decreases depending on move direction) all source indices between the source and destination
+        /// move indices.
+        /// </summary>
+        void moveSourceIndexInMap(int oldSourceIndex, int newSourceIndex)
+        {
+            if (newSourceIndex > oldSourceIndex) {
+                // Item is moving towards the end of the list, everything between its current position and its 
+                // new position needs to be shifted down one index
+                shiftSourceIndicesInRange(oldSourceIndex + 1, newSourceIndex + 1, -1);
+            } else {
+                // Item is moving towards the front of the list, everything between its current position and its
+                // new position needs to be shifted up one index
+                shiftSourceIndicesInRange(newSourceIndex, oldSourceIndex, 1);
             }
         }
 
@@ -404,21 +516,38 @@ namespace ReactiveUI
             }
         }
 
+        /// <summary>
+        /// Increases (or decreases) all source indices within the range (lower inclusive, upper exclusive). 
+        /// </summary>
+        void shiftSourceIndicesInRange(int rangeStart, int rangeStop, int value)
+        {
+            for (int i = 0; i < indexToSourceIndexMap.Count; i++) {
+                int sourceIndex = indexToSourceIndexMap[i];
+                if (sourceIndex >= rangeStart && sourceIndex < rangeStop) {
+                    indexToSourceIndexMap[i] += value;
+                }
+            }
+        }
+
+
         public override void Reset()
         {
             using (base.SuppressChangeNotifications()) {
-                if (this.Count > 0)
-                    internalClear();
-
+                internalClear();
                 addAllItemsFromSourceCollection();
             }
         }
 
         void addAllItemsFromSourceCollection()
         {
+            Debug.Assert(sourceCopy.Count == 0, "Expceted source copy to be empty");
+
             int sourceIndex = 0;
 
             foreach (TSource sourceItem in source) {
+
+                sourceCopy.Add(sourceItem);
+
                 if (filter(sourceItem)) {
                     var destinationItem = selector(sourceItem);
                     internalInsertAndMap(sourceIndex, destinationItem);
@@ -431,6 +560,8 @@ namespace ReactiveUI
         protected override void internalClear()
         {
             indexToSourceIndexMap.Clear();
+            sourceCopy.Clear();
+
             base.internalClear();
         }
 
@@ -470,44 +601,121 @@ namespace ReactiveUI
         int positionForNewItem(int sourceIndex, TValue value)
         {
             // If we haven't got an orderer we'll simply match our items to that of the source collection.
-            int destinationIndex = orderer == null
-                ? positionForNewItem(this.indexToSourceIndexMap, sourceIndex, (x, y) => x.CompareTo(y))
-                : positionForNewItem(this, value, orderer);
-
-            return destinationIndex;
+            return orderer == null
+                ? positionForNewItem(indexToSourceIndexMap, sourceIndex, Comparer<int>.Default.Compare)
+                : positionForNewItem(this, 0, this.Count, value, orderer);
         }
 
-        static int positionForNewItem<T>(IList<T> list, T item, Func<T, T, int> orderer)
+        internal static int positionForNewItem<T>(IList<T> list, T item, Func<T, T, int> orderer)
         {
-            if (list.Count == 0) {
-                return 0;
+            return positionForNewItem(list, 0, list.Count, item, orderer);
+        }
+
+        internal static int positionForNewItem<T>(
+            IList<T> list, int index, int count, T item, Func<T, T, int> orderer)
+        {
+            Debug.Assert(index >= 0);
+            Debug.Assert(count >= 0);
+            Debug.Assert((list.Count - index) >= count);
+
+            if (count == 0) {
+                return index;
             }
 
-            if (list.Count == 1) {
-                return orderer(list[0], item) >= 0 ? 0 : 1;
+            if (count == 1) {
+                return orderer(list[index], item) >= 0 ? index : index + 1;
             }
 
-            if (orderer(list[0], item) >= 1) return 0;
+            if (orderer(list[index], item) >= 1) return index;
 
-            // NB: This is the most tart way to do this possible
-            int? prevCmp = null;
-            int cmp;
+            int low = index, hi = index + count - 1;
+            int mid, cmp;
 
-            for (int i = 0; i < list.Count; i++) {
-                cmp = sign(orderer(list[i], item));
-                if (prevCmp.HasValue && cmp != prevCmp) {
-                    return i;
+            while (low <= hi) {
+                mid = low + (hi - low) / 2;
+                cmp = orderer(list[mid], item);
+
+                if (cmp == 0) {
+                    return mid;
                 }
 
-                prevCmp = cmp;
+                if (cmp < 0) {
+                    low = mid + 1;
+                } else {
+                    hi = mid - 1;
+                }
             }
 
-            return list.Count;
+            return low;
         }
 
-        static int sign(int i)
+        /// <summary>
+        /// Calculates a new destination for an updated item that's already in the list.
+        /// </summary>
+        int newPositionForExistingItem(int sourceIndex, int currentIndex, TValue item)
         {
-            return (i == 0 ? 0 : i / Math.Abs(i));
+            // If we haven't got an orderer we'll simply match our items to that of the source collection.
+            return orderer == null
+                ? newPositionForExistingItem(indexToSourceIndexMap, sourceIndex, currentIndex)
+                : newPositionForExistingItem(this, item, currentIndex, orderer);
+        }
+
+        /// <summary>
+        /// Calculates a new destination for an updated item that's already in the list.
+        /// </summary>
+        internal static int newPositionForExistingItem<T>(
+            IList<T> list, T item, int currentIndex, Func<T, T, int> orderer = null)
+        {
+            // Since the item changed is most likely a value type we must refrain from ever comparing it to itself.
+            // We do this by figuring out how the updated item compares to its neighbors. By knowing if it's
+            // less than or greater than either one of its neighbors we can limit the search range to a range exlusive
+            // of the current index.
+
+            Debug.Assert(list.Count > 0);
+
+            if(list.Count == 1) {
+                return 1;
+            }
+
+            int precedingIndex = currentIndex - 1;
+            int succeedingIndex = currentIndex + 1;
+
+            // The item on the preceding or succeeding index relative to currentIndex.
+            T comparand = list[precedingIndex >= 0 ? precedingIndex : succeedingIndex];
+
+            if(orderer == null) {
+                orderer = Comparer<T>.Default.Compare;
+            }
+
+            // Compare that to the (potentially) new value.
+            int cmp = orderer(item, comparand);
+
+            int min = 0;
+            int max = list.Count;
+
+            if(cmp == 0) {
+                // The new value is equal to the preceding or succeeding item, it may stay at the current position
+                return currentIndex;
+            } else if(cmp > 0) {
+                // The new value is greater than the preceding or succeeding item, limit the search to indices after
+                // the succeeding item.
+                min = succeedingIndex;
+            } else {
+                // The new value is less than the preceding or succeeding item, limit the search to indices before
+                // the preceding item.
+                max = precedingIndex;
+            }
+
+            // Bail if the search range is invalid.
+            if (min == list.Count || max < 0) {
+                return currentIndex;
+            }
+
+            int ix = positionForNewItem(list, min, max - min, item, orderer);
+
+            // If the item moves 'forward' in the collection we have to account for the index where
+            // the item currently resides getting removed first.
+            return ix >= currentIndex ? ix - 1 : ix;
         }
 
         public override void Dispose(bool disposing)
