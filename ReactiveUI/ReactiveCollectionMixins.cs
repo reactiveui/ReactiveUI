@@ -421,7 +421,9 @@ namespace ReactiveUI
 
                 if(orderer == null) {
                     // We mirror the order of the source collection so we'll perform the same move operation
-                    // as the source only taking filtering into account.
+                    // as the source. As is the case with when we have an orderer we don't test whether or not
+                    // the item should be included or not here. If it has been included at some point it'll
+                    // stay included until onItemChanged picks up a change which filters it.
                     int newDestinationIndex = positionForNewItem(newSourceIndex, value);
                     indexToSourceIndexMap.Insert(newDestinationIndex, newSourceIndex);
 
