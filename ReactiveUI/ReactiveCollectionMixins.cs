@@ -590,25 +590,25 @@ namespace ReactiveUI
 
             if (orderer(list[index], item) >= 1) return index;
 
-            // NB: This is the most tart way to do this possible
-            int? prevCmp = null;
-            int cmp;
+            int low = index, hi = index + count - 1;
+            int mid, cmp;
 
-            for (int i = index; i < index + count; i++) {
-                cmp = sign(orderer(list[i], item));
-                if (prevCmp.HasValue && cmp != prevCmp) {
-                    return i;
+            while (low <= hi) {
+                mid = low + (hi - low) / 2;
+                cmp = orderer(list[mid], item);
+
+                if (cmp == 0) {
+                    return mid;
                 }
 
-                prevCmp = cmp;
+                if (cmp < 0) {
+                    low = mid + 1;
+                } else {
+                    hi = mid - 1;
+                }
             }
 
-            return index + count;
-        }
-
-        static int sign(int i)
-        {
-            return (i == 0 ? 0 : i / Math.Abs(i));
+            return low;
         }
 
         public override void Dispose(bool disposing)
