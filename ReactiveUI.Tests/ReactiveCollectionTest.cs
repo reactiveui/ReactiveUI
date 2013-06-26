@@ -1155,6 +1155,53 @@ namespace ReactiveUI.Tests
                     AssertNewIndex(items, newValue: 95, expectedIndex: 9);
                 }
             }
+
+            public class TheNewPositionForExistingItemMethod
+            {
+                private static void AssertNewIndex<T>(IList<T> items, T newValue, int currentIndex, int expectedNewIndex)
+                {
+                    var newIndex = ReactiveDerivedCollection<T, T>
+                        .newPositionForExistingItem(items, newValue, currentIndex, Comparer<T>.Default.Compare);
+
+                    Assert.Equal(expectedNewIndex, newIndex);
+
+                    var test = new List<T>(items);
+                    test.RemoveAt(currentIndex);
+                    test.Insert(newIndex, newValue);
+
+                    Assert.True(test.SequenceEqual(test.OrderBy(x => x, Comparer<T>.Default)));
+                }
+
+                [Fact]
+                public void TheNewPositionForExistingItemMethodSmokeTest()
+                {
+                    AssertNewIndex(new[] { 10, 20 }, newValue: 15, currentIndex: 0, expectedNewIndex: 0);
+                    AssertNewIndex(new[] { 10, 20 }, newValue: 25, currentIndex: 0, expectedNewIndex: 1);
+
+                    AssertNewIndex(new[] { 10, 20 }, newValue: 15, currentIndex: 1, expectedNewIndex: 1);
+                    AssertNewIndex(new[] { 10, 20 }, newValue: 5, currentIndex: 1, expectedNewIndex: 0);
+
+                    AssertNewIndex(new[] { 10, 20, 30 }, newValue: 15, currentIndex: 2, expectedNewIndex: 1);
+                    AssertNewIndex(new[] { 10, 20, 30 }, newValue: 5, currentIndex: 2, expectedNewIndex: 0);
+
+                    var items = new[] { 10, 20, 30, 40, 50 };
+
+                    AssertNewIndex(items, newValue: 11, currentIndex: 0, expectedNewIndex: 0);
+                    AssertNewIndex(items, newValue: 10, currentIndex: 0, expectedNewIndex: 0);
+                    AssertNewIndex(items, newValue: 15, currentIndex: 0, expectedNewIndex: 0);
+                    AssertNewIndex(items, newValue: 19, currentIndex: 0, expectedNewIndex: 0);
+                    AssertNewIndex(items, newValue: 21, currentIndex: 0, expectedNewIndex: 1);
+                    AssertNewIndex(items, newValue: 60, currentIndex: 0, expectedNewIndex: 4);
+
+                    AssertNewIndex(items, newValue: 50, currentIndex: 3, expectedNewIndex: 3);
+
+                    AssertNewIndex(items, newValue: 1, currentIndex: 4, expectedNewIndex: 0);
+                    AssertNewIndex(items, newValue: 51, currentIndex: 4, expectedNewIndex: 4);
+                    AssertNewIndex(items, newValue: 39, currentIndex: 4, expectedNewIndex: 3);
+
+                    AssertNewIndex(items, newValue: 10, currentIndex: 1, expectedNewIndex: 1);
+                }
+            }
         }
 
         [Fact]
