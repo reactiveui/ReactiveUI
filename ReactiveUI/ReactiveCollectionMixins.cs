@@ -296,18 +296,10 @@ namespace ReactiveUI
                             // object has changed (ie the selector is not an identity function).
                             if (object.ReferenceEquals(newItem, this[destinationIndex])) {
 
+                                int newDestinationIndex = newPositionForExistingItem(
+                                    sourceIndex, destinationIndex, newItem);
+
                                 indexToSourceIndexMap.RemoveAt(destinationIndex);
-
-                                // TODO: This is crap and totally temporary so that I can move forward without
-                                // spending too much time fixing positionForNewItem before knowing if move
-                                // support is even a good idea.
-                                var exceptList = new List<TValue>();
-                                for (int i = 0; i < this.Count; i++)
-                                    if(i != destinationIndex)
-                                       exceptList.Add(this[i]);
-
-                                int newDestinationIndex = positionForNewItem(exceptList, newItem, orderer);
-
                                 indexToSourceIndexMap.Insert(newDestinationIndex, sourceIndex);
 
                                 base.internalMove(destinationIndex, newDestinationIndex);
@@ -609,6 +601,75 @@ namespace ReactiveUI
             }
 
             return low;
+        }
+
+        /// <summary>
+        /// Calculates a new destination for an updated item that's already in the list.
+        /// </summary>
+        int newPositionForExistingItem(int sourceIndex, int currentIndex, TValue item)
+        {
+            // If we haven't got an orderer we'll simply match our items to that of the source collection.
+            return orderer == null
+                ? newPositionForExistingItem(indexToSourceIndexMap, sourceIndex, currentIndex)
+                : newPositionForExistingItem(this, item, currentIndex, orderer);
+        }
+
+        /// <summary>
+        /// Calculates a new destination for an updated item that's already in the list.
+        /// </summary>
+        internal static int newPositionForExistingItem<T>(
+            IList<T> list, T item, int currentIndex, Func<T, T, int> orderer = null)
+        {
+            // Since the item changed is most likely a value type we must refrain from ever comparing it to itself.
+            // We do this by figuring out how the updated item compares to its neighbors. By knowing if it's
+            // less than or greater than either one of its neighbors we can limit the search range to a range exlusive
+            // of the current index.
+
+            Debug.Assert(list.Count > 0);
+
+            if(list.Count == 1) {
+                return 1;
+            }
+
+            int precedingIndex = currentIndex - 1;
+            int succeedingIndex = currentIndex + 1;
+
+            // The item on the preceding or succeeding index relative to currentIndex.
+            T comparand = list[precedingIndex >= 0 ? precedingIndex : succeedingIndex];
+
+            if(orderer == null) {
+                orderer = Comparer<T>.Default.Compare;
+            }
+
+            // Compare that to the (potentially) new value.
+            int cmp = orderer(item, comparand);
+
+            int min = 0;
+            int max = list.Count;
+
+            if(cmp == 0) {
+                // The new value is equal to the preceding or succeeding item, it may stay at the current position
+                return currentIndex;
+            } else if(cmp > 0) {
+                // The new value is greater than the preceding or succeeding item, limit the search to indices after
+                // the succeeding item.
+                min = succeedingIndex;
+            } else {
+                // The new value is less than the preceding or succeeding item, limit the search to indices before
+                // the preceding item.
+                max = precedingIndex;
+            }
+
+            // Bail if the search range is invalid.
+            if (min == list.Count || max < 0) {
+                return currentIndex;
+            }
+
+            int ix = positionForNewItem(list, min, max - min, item, orderer);
+
+            // If the item moves 'forward' in the collection we have to account for the index where
+            // the item currently resides getting removed first.
+            return ix >= currentIndex ? ix - 1 : ix;
         }
 
         public override void Dispose(bool disposing)
