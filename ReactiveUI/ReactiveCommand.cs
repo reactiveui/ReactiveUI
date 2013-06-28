@@ -65,9 +65,7 @@ namespace ReactiveUI
                 if (canExecuteLatest == x) return;
 
                 canExecuteLatest = x;
-                if (CanExecuteChanged != null) {
-                    defaultScheduler.Schedule(() => CanExecuteChanged(this, EventArgs.Empty));
-                } 
+                defaultScheduler.Schedule(() => this.raiseCanExecuteChanged(EventArgs.Empty));
             }, exceptions.OnNext);
         }
 
@@ -162,6 +160,15 @@ namespace ReactiveUI
         void marshalFailures(Action block)
         {
             marshalFailures(_ => block(), Unit.Default);
+        }
+
+        protected virtual void raiseCanExecuteChanged(EventArgs e)
+        {
+            EventHandler handler = this.CanExecuteChanged;
+            if (handler != null)
+            {
+                handler(this, e);
+            }
         }
     }
 
