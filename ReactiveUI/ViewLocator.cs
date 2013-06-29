@@ -21,7 +21,7 @@ namespace ReactiveUI
         }
     }
 
-    class DefaultViewLocator : IViewLocator
+    class DefaultViewLocator : IViewLocator, IEnableLogger
     {
         public Func<string, string> ViewModelToViewFunc { get; set; }
 
@@ -56,21 +56,29 @@ namespace ReactiveUI
 
             // IFooBarView that implements IViewFor (or custom ViewModelToViewFunc)
             var typeToFind = ViewModelToViewFunc(viewModel.GetType().AssemblyQualifiedName);
-            try {
-                var type = Reflection.ReallyFindType(typeToFind, false);
-
-                if (type != null) {
-                    var ret = RxApp.DependencyResolver.GetService(type, contract) as IViewFor;
-                    if (ret != null) return ret;
-                }
-            } catch (Exception ex) {
-                LogHost.Default.DebugException("Couldn't instantiate " + typeToFind, ex);
-            }
-
-            var viewType = typeof (IViewFor<>);
+                
+            var ret = attemptToResolveView(Reflection.ReallyFindType(typeToFind, false), contract);
+            if (ret != null) return ret;
 
             // IViewFor<FooBarViewModel> (the original behavior in RxUI 3.1)
-            return (IViewFor) RxApp.DependencyResolver.GetService(viewType.MakeGenericType(viewModel.GetType()), contract);
+            var viewType = typeof (IViewFor<>);
+            return attemptToResolveView(viewType.MakeGenericType(viewModel.GetType()), contract);
+        }
+
+        IViewFor attemptToResolveView(Type type, string contract)
+        {
+            if (type == null) return null;
+
+            var ret = default(IViewFor);
+
+            try {
+                ret = (IViewFor)RxApp.DependencyResolver.GetService(type, contract);
+            } catch (Exception ex) {
+                this.Log().ErrorException("Failed to instantiate view: " + type.FullName, ex);
+                throw;
+            }
+
+            return ret;
         }
 
         static string interfaceifyTypeName(string typeName)
