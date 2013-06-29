@@ -503,7 +503,8 @@ namespace ReactiveUI
 
         protected virtual void raiseCollectionChanging(NotifyCollectionChangedEventArgs e)
         {
-            NotifyCollectionChangedEventHandler handler = this.CollectionChanging;
+            var handler = this.CollectionChanging;
+
             if(handler != null && _suppressionRefCount == 0) {
                 handler(this, e);
             }
@@ -511,27 +512,27 @@ namespace ReactiveUI
 
         protected virtual void raiseCollectionChanged(NotifyCollectionChangedEventArgs e)
         {
-            NotifyCollectionChangedEventHandler handler = this.CollectionChanged;
-            if (handler != null && _suppressionRefCount == 0)
-            {
+            var handler = this.CollectionChanged;
+
+            if (handler != null && _suppressionRefCount == 0) {
                 handler(this, e);
             }
         }
 
         protected virtual void raisePropertyChanging(PropertyChangingEventArgs e)
         {
-            PropertyChangingEventHandler handler = this.PropertyChanging;
-            if (handler != null && _suppressionRefCount == 0)
-            {
+            var handler = this.PropertyChanging;
+
+            if (handler != null && _suppressionRefCount == 0) {
                 handler(this, e);
             }
         }
 
         protected virtual void raisePropertyChanged(PropertyChangedEventArgs e)
         {
-            PropertyChangedEventHandler handler = this.PropertyChanged;
-            if (handler != null && _suppressionRefCount == 0)
-            {
+            var handler = this.PropertyChanged;
+
+            if (handler != null && _suppressionRefCount == 0) {
                 handler(this, e);
             }
         }

@@ -211,9 +211,9 @@ namespace ReactiveUI.Legacy
 
         protected virtual void raiseCanExecuteChanged(EventArgs e)
         {
-            EventHandler handler = this.CanExecuteChanged;
-            if (handler != null)
-            {
+            var handler = this.CanExecuteChanged;
+
+            if (handler != null) {
                 handler(this, e);
             }
         }
