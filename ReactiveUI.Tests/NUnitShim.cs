@@ -57,5 +57,10 @@ namespace Xunit
         {
             N.Assert.IsTrue(haystack.Contains(needle));
         }
+
+        public static void Empty<T>(IEnumerable<T> coll)
+        {
+            N.Assert.False(coll.Any());
+        }
     }
 }
