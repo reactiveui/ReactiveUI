@@ -24,6 +24,8 @@ to know.
   (`IMutableDependencyResolver`) is not always straightforward to implement with
   existing IoC containers. The method `RxApp.InitializeCustomResolver` as well
   as the `FuncDependencyResolver` can be used during IoC setup to help you out.
+  If you never used a custom IoC container, then you don't have to do anything
+  here, It Just Works™.
 
 * Validation has been removed, this will be re-added in a future release. If you
   need this, grab the old version of the class [from
