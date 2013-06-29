@@ -67,7 +67,7 @@ namespace ReactiveUI.Cocoa
                 }
 
                 var viewLocator = ViewLocator ?? ReactiveUI.ViewLocator.Current;
-                var view = viewLocator.ResolveView(x.ViewModel, x.Contract);
+                var view = viewLocator.ResolveView(x.ViewModel, x.Contract) ?? viewLocator.ResolveView(x.ViewModel, null);
                 view.ViewModel = x.ViewModel;
 
                 if (view is NSViewController) {
