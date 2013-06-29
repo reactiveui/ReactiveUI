@@ -73,10 +73,10 @@ namespace ReactiveUI
             _inner = _inner ?? new List<T>();
 
             _changing = new Subject<NotifyCollectionChangedEventArgs>();
-            _changing.Where(_ => CollectionChanging != null && _suppressionRefCount == 0).Subscribe(x => CollectionChanging(this, x));
+            _changing.Subscribe(raiseCollectionChanging);
 
             _changed = new Subject<NotifyCollectionChangedEventArgs>();
-            _changed.Where(_ => CollectionChanged != null && _suppressionRefCount == 0).Subscribe(x => CollectionChanged(this, x));
+            _changed.Subscribe(raiseCollectionChanged);
 
             ResetChangeThreshold = resetChangeThreshold;
 
@@ -96,25 +96,15 @@ namespace ReactiveUI
             // NB: ObservableCollection has a Secret Handshake with WPF where 
             // they fire an INPC notification with the token "Item[]". Emulate 
             // it here
-            CountChanging.Subscribe(_ => {
-                if (PropertyChanging != null) PropertyChanging(this, new PropertyChangingEventArgs("Count"));
-            });
+            CountChanging.Select(x => new PropertyChangingEventArgs("Count")).Subscribe(this.raisePropertyChanging);
 
-            CountChanged.Subscribe(_ => {
-                if (PropertyChanged != null) PropertyChanged(this, new PropertyChangedEventArgs("Count"));
-            });
+            CountChanged.Select(x => new PropertyChangedEventArgs("Count")).Subscribe(this.raisePropertyChanged);
 
-            IsEmptyChanged.Subscribe(_ => {
-                if (PropertyChanged != null) PropertyChanged(this, new PropertyChangedEventArgs("IsEmpty"));
-            });
+            IsEmptyChanged.Select(x => new PropertyChangedEventArgs("IsEmpty")).Subscribe(this.raisePropertyChanged);
 
-            Changing.Subscribe(_ => {
-                if (PropertyChanging != null) PropertyChanging(this, new PropertyChangingEventArgs("Item[]"));
-            });
+            Changing.Select(x => new PropertyChangingEventArgs("Item[]")).Subscribe(this.raisePropertyChanging);
 
-            Changed.Subscribe(_ => {
-                if (PropertyChanged != null) PropertyChanged(this, new PropertyChangedEventArgs("Item[]"));
-            });
+            Changed.Select(x => new PropertyChangedEventArgs("Item[]")).Subscribe(this.raisePropertyChanged);
         }
 
         public bool IsEmpty
@@ -509,6 +499,42 @@ namespace ReactiveUI
                     input.Subscribe(subj),
                     Disposable.Create(() => block(-1)));
             });
+        }
+
+        protected virtual void raiseCollectionChanging(NotifyCollectionChangedEventArgs e)
+        {
+            var handler = this.CollectionChanging;
+
+            if(handler != null && _suppressionRefCount == 0) {
+                handler(this, e);
+            }
+        }
+
+        protected virtual void raiseCollectionChanged(NotifyCollectionChangedEventArgs e)
+        {
+            var handler = this.CollectionChanged;
+
+            if (handler != null && _suppressionRefCount == 0) {
+                handler(this, e);
+            }
+        }
+
+        protected virtual void raisePropertyChanging(PropertyChangingEventArgs e)
+        {
+            var handler = this.PropertyChanging;
+
+            if (handler != null && _suppressionRefCount == 0) {
+                handler(this, e);
+            }
+        }
+
+        protected virtual void raisePropertyChanged(PropertyChangedEventArgs e)
+        {
+            var handler = this.PropertyChanged;
+
+            if (handler != null && _suppressionRefCount == 0) {
+                handler(this, e);
+            }
         }
 
         #region Super Boring IList crap

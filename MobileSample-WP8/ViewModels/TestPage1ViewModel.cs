@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Runtime.Serialization;
 using ReactiveUI;
-using ReactiveUI.Routing;
 
 namespace MobileSample_WP8.ViewModels
 {
