@@ -25,6 +25,10 @@ to know.
   existing IoC containers. The method `RxApp.InitializeCustomResolver` as well
   as the `FuncDependencyResolver` can be used during IoC setup to help you out.
 
+* Validation has been removed, this will be re-added in a future release. If you
+  need this, grab the old version of the class [from
+  here](https://github.com/reactiveui/ReactiveUI/blob/4.6.4/ReactiveUI/Validation.cs)
+
 ### Changes that are pretty easy to deal with
 
 * `ReactiveCollection` is now `ReactiveList`
@@ -42,15 +46,18 @@ to know.
 * The old syntax for declaring read-write properties is now removed, the *only*
   correct way to declare properties is now:
 
-```cs
-int foo;
-public int Foo {
-    get { return foo; }
-    set { this.RaiseAndSetIfChanged(ref foo, value); }
-}
-```
+  ```cs
+  int foo;
+  public int Foo {
+      get { return foo; }
+      set { this.RaiseAndSetIfChanged(ref foo, value); }
+  }
+  ```
 
 * ToProperty no longer sets the ObservableAsPropertyHelper variable via
   reflection - instead, it is set via an `out` property.
 
 * `RxApp.DeferredScheduler` is now called `RxApp.MainThreadScheduler`
+
+* Many old "for compatibility only" methods have now been removed - there is no
+  functionality loss
