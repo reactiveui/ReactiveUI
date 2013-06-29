@@ -69,6 +69,7 @@
   <ItemGroup>
     <Compile Include="Android\ActivityRoutedViewHost.cs" />
     <Compile Include="Android\AndroidUIScheduler.cs" />
+    <Compile Include="Android\Bitmap.cs" />
     <Compile Include="Android\Properties\AssemblyInfo.cs" />
     <Compile Include="ComponentModelTypeConverter.cs" />
     <Compile Include="PlatformUnitTestDetector.cs" />
