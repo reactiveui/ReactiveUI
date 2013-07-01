@@ -3,4 +3,4 @@ using System.Runtime.InteropServices;
 
 [assembly: AssemblyDescription("Adds an easy way to get IObservables from events in the framework")]
 [assembly: AssemblyProduct("ReactiveUI")]
-[assembly: AssemblyVersion("5.0.0")]
+[assembly: AssemblyVersion("5.0.1")]
