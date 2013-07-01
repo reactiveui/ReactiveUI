@@ -324,7 +324,7 @@ namespace ReactiveUI.Tests
             var sched = new TestScheduler();
 
             using (TestUtils.WithScheduler(sched)) {
-                ReactiveList<string> fixture;
+                IReactiveDerivedList<string> fixture;
 
                 fixture = input.ToObservable(sched).CreateCollection(TimeSpan.FromSeconds(0.5));
                 sched.AdvanceToMs(1005);
