@@ -18,7 +18,7 @@ namespace ReactiveUI
     /// It is read-only, and any attempts to change items in the collection will
     /// fail.
     /// </summary>
-    public abstract class ReactiveDerivedCollection<TValue> : ReactiveList<TValue>, IDisposable
+    public abstract class ReactiveDerivedCollection<TValue> : ReactiveList<TValue>, IReactiveDerivedList<TValue>, IDisposable
     {
         const string readonlyExceptionMessage = "Derived collections cannot be modified.";
 
@@ -857,7 +857,7 @@ namespace ReactiveUI
         /// <returns>A new collection whose items are equivalent to
         /// Collection.Select().Where().OrderBy() and will mirror changes 
         /// in the initial collection.</returns>
-        public static ReactiveDerivedCollection<TNew> CreateDerivedCollection<T, TNew, TDontCare>(
+        public static IReactiveDerivedList<TNew> CreateDerivedCollection<T, TNew, TDontCare>(
             this IEnumerable<T> This,
             Func<T, TNew> selector,
             Func<T, bool> filter = null,
@@ -895,7 +895,7 @@ namespace ReactiveUI
         /// <returns>A new collection whose items are equivalent to
         /// Collection.Select().Where().OrderBy() and will mirror changes 
         /// in the initial collection.</returns>
-        public static ReactiveDerivedCollection<TNew> CreateDerivedCollection<T, TNew>(
+        public static IReactiveDerivedList<TNew> CreateDerivedCollection<T, TNew>(
             this IEnumerable<T> This,
             Func<T, TNew> selector,
             Func<T, bool> filter = null,
