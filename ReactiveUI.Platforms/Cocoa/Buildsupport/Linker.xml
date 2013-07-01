@@ -61,5 +61,6 @@
     <type fullname="MonoTouch.UIKit.UITouch"></type>
     <type fullname="MonoTouch.UIKit.UIWebView"></type>
     <type fullname="MonoTouch.UIKit.UIWindow"></type>
+    <type fullname="MonoTouch.Foundation.NSError"></type>    
   </assembly>
 </linker>
