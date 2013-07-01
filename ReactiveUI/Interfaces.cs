@@ -259,6 +259,20 @@ namespace ReactiveUI
         IObservable<object> BeforeItemsRemoved { get; }
 
         /// <summary>
+        /// Fires before an items moves from one position in the collection to
+        /// another, providing the item(s) to be moved as well as source and destination
+        /// indices.
+        /// </summary>
+        IObservable<IMoveInfo<object>> BeforeItemsMoved { get; }
+
+        /// <summary>
+        /// Fires once one or more items moves from one position in the collection to
+        /// another, providing the item(s) that was moved as well as source and destination
+        /// indices.
+        /// </summary>
+        IObservable<IMoveInfo<object>> ItemsMoved { get; }
+
+        /// <summary>
         /// This Observable is equivalent to the NotifyCollectionChanged event,
         /// but fires before the collection is changed
         /// </summary>
@@ -310,6 +324,20 @@ namespace ReactiveUI
         /// the item that will be removed. 
         /// </summary>
         new IObservable<T> BeforeItemsRemoved { get; }
+
+        /// <summary>
+        /// Fires before an items moves from one position in the collection to
+        /// another, providing the item(s) to be moved as well as source and destination
+        /// indices.
+        /// </summary>
+        new IObservable<IMoveInfo<T>> BeforeItemsMoved { get; }
+
+        /// <summary>
+        /// Fires once one or more items moves from one position in the collection to
+        /// another, providing the item(s) that was moved as well as source and destination
+        /// indices.
+        /// </summary>
+        new IObservable<IMoveInfo<T>> ItemsMoved { get; }
     }
 
     /// <summary>

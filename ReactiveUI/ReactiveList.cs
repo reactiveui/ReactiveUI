@@ -382,6 +382,9 @@ namespace ReactiveUI
         IObservable<object> IReactiveNotifyCollectionChanged.BeforeItemsRemoved { get { return BeforeItemsRemoved.Select(x => (object)x); } }
         IObservable<object> IReactiveNotifyCollectionChanged.ItemsRemoved { get { return ItemsRemoved.Select(x => (object) x); } }
 
+        IObservable<IMoveInfo<object>> IReactiveNotifyCollectionChanged.BeforeItemsMoved { get { return BeforeItemsMoved.Select(x => (IMoveInfo<object>)x); } }
+        IObservable<IMoveInfo<object>> IReactiveNotifyCollectionChanged.ItemsMoved { get { return ItemsMoved.Select(x => (IMoveInfo<object>)x); } }
+
         IObservable<IObservedChange<object, object>> IReactiveNotifyCollectionItemChanged.ItemChanging {
             get {
                 return _itemChanging.Value.Select(x => (IObservedChange<object, object>) new ObservedChange<object, object>() {
