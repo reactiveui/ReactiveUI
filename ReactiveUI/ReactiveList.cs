@@ -20,7 +20,7 @@ namespace ReactiveUI
 {
     [DebuggerDisplay("Count = {Count}")]
     [DebuggerTypeProxy(typeof(CollectionDebugView<>))]
-    public class ReactiveList<T> : IReactiveList<T>
+    public class ReactiveList<T> : IReactiveList<T>, IReadOnlyReactiveList<T>
     {
         public event NotifyCollectionChangedEventHandler CollectionChanging;
         public event NotifyCollectionChangedEventHandler CollectionChanged;
@@ -376,13 +376,13 @@ namespace ReactiveUI
         public IObservable<IObservedChange<T, object>> ItemChanging { get { return _itemChanging.Value; } }
         public IObservable<IObservedChange<T, object>> ItemChanged { get { return _itemChanged.Value; } }
 
-        IObservable<object> IReactiveCollection.BeforeItemsAdded { get { return BeforeItemsAdded.Select(x => (object) x); } }
-        IObservable<object> IReactiveCollection.ItemsAdded { get { return ItemsAdded.Select(x => (object) x); } }
+        IObservable<object> IReactiveNotifyCollectionChanged.BeforeItemsAdded { get { return BeforeItemsAdded.Select(x => (object)x); } }
+        IObservable<object> IReactiveNotifyCollectionChanged.ItemsAdded { get { return ItemsAdded.Select(x => (object)x); } }
 
-        IObservable<object> IReactiveCollection.BeforeItemsRemoved { get { return BeforeItemsRemoved.Select(x => (object) x); } }
-        IObservable<object> IReactiveCollection.ItemsRemoved { get { return ItemsRemoved.Select(x => (object) x); } }
+        IObservable<object> IReactiveNotifyCollectionChanged.BeforeItemsRemoved { get { return BeforeItemsRemoved.Select(x => (object)x); } }
+        IObservable<object> IReactiveNotifyCollectionChanged.ItemsRemoved { get { return ItemsRemoved.Select(x => (object) x); } }
 
-        IObservable<IObservedChange<object, object>> IReactiveCollection.ItemChanging {
+        IObservable<IObservedChange<object, object>> IReactiveNotifyCollectionItemChanged.ItemChanging {
             get {
                 return _itemChanging.Value.Select(x => (IObservedChange<object, object>) new ObservedChange<object, object>() {
                     Sender = x.Sender,
@@ -392,7 +392,7 @@ namespace ReactiveUI
             }
         }
 
-        IObservable<IObservedChange<object, object>> IReactiveCollection.ItemChanged {
+        IObservable<IObservedChange<object, object>> IReactiveNotifyCollectionItemChanged.ItemChanged {
             get {
                 return _itemChanged.Value.Select(x => (IObservedChange<object, object>) new ObservedChange<object, object>() {
                     Sender = x.Sender,

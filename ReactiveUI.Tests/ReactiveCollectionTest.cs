@@ -831,7 +831,7 @@ namespace ReactiveUI.Tests
             public class DerivedCollectionTestContainer<TSource, TValue> : DerivedCollectionTestContainer
             {
                 public IEnumerable<TSource> Source { get; set; }
-                public ReactiveDerivedCollection<TValue> Derived { get; set; }
+                public IReactiveDerivedList<TValue> Derived { get; set; }
                 public Func<TSource, TValue> Selector { get; set; }
                 public Func<TSource, bool> Filter { get; set; }
                 public IComparer<TValue> Orderer { get; set; }
