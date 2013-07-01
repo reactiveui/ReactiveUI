@@ -18,7 +18,7 @@ namespace ReactiveUI
     /// It is read-only, and any attempts to change items in the collection will
     /// fail.
     /// </summary>
-    public abstract class ReactiveDerivedCollection<TValue> : ReactiveList<TValue>, IDisposable
+    internal abstract class ReactiveDerivedCollection<TValue> : ReactiveList<TValue>, IReactiveDerivedList<TValue>, IDisposable
     {
         const string readonlyExceptionMessage = "Derived collections cannot be modified.";
 
@@ -176,7 +176,7 @@ namespace ReactiveUI
     /// It is read-only, and any attempts to change items in the collection will
     /// fail.
     /// </summary>
-    public sealed class ReactiveDerivedCollection<TSource, TValue> : ReactiveDerivedCollection<TValue>, IDisposable
+    internal sealed class ReactiveDerivedCollection<TSource, TValue> : ReactiveDerivedCollection<TValue>, IDisposable
     {
         readonly IEnumerable<TSource> source;
         readonly Func<TSource, TValue> selector;
@@ -798,7 +798,7 @@ namespace ReactiveUI
         /// collection no faster than the delay provided.</param>
         /// <returns>A new collection which will be populated with the
         /// Observable.</returns>
-        public static ReactiveDerivedCollection<T> CreateCollection<T>(
+        public static IReactiveDerivedList<T> CreateCollection<T>(
             this IObservable<T> fromObservable, 
             TimeSpan? withDelay = null,
             Action<Exception> onError = null)
@@ -821,7 +821,7 @@ namespace ReactiveUI
         /// collection no faster than the delay provided.</param>
         /// <returns>A new collection which will be populated with the
         /// Observable.</returns>
-        public static ReactiveDerivedCollection<TRet> CreateCollection<T, TRet>(
+        public static IReactiveDerivedList<TRet> CreateCollection<T, TRet>(
             this IObservable<T> fromObservable,
             Func<T, TRet> selector,
             TimeSpan? withDelay = null)
@@ -857,7 +857,7 @@ namespace ReactiveUI
         /// <returns>A new collection whose items are equivalent to
         /// Collection.Select().Where().OrderBy() and will mirror changes 
         /// in the initial collection.</returns>
-        public static ReactiveDerivedCollection<TNew> CreateDerivedCollection<T, TNew, TDontCare>(
+        public static IReactiveDerivedList<TNew> CreateDerivedCollection<T, TNew, TDontCare>(
             this IEnumerable<T> This,
             Func<T, TNew> selector,
             Func<T, bool> filter = null,
@@ -895,7 +895,7 @@ namespace ReactiveUI
         /// <returns>A new collection whose items are equivalent to
         /// Collection.Select().Where().OrderBy() and will mirror changes 
         /// in the initial collection.</returns>
-        public static ReactiveDerivedCollection<TNew> CreateDerivedCollection<T, TNew>(
+        public static IReactiveDerivedList<TNew> CreateDerivedCollection<T, TNew>(
             this IEnumerable<T> This,
             Func<T, TNew> selector,
             Func<T, bool> filter = null,
