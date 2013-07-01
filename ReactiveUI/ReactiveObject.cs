@@ -21,11 +21,8 @@ namespace ReactiveUI
     /// Changing and Changed Observables to monitor object changes.
     /// </summary>
     [DataContract]
-    public class ReactiveObject : IReactiveNotifyPropertyChanged
+    public class ReactiveObject : IReactiveNotifyPropertyChanged, IHandleObservableErrors
     {
-        [field: IgnoreDataMember]
-        bool rxObjectsSetup = false;
-
         [field:IgnoreDataMember]
         public event PropertyChangingEventHandler PropertyChanging;
 
@@ -46,12 +43,7 @@ namespace ReactiveUI
         /// </summary>
         [IgnoreDataMember]
         public IObservable<IObservedChange<object, object>> Changed {
-            get {
-#if DEBUG
-                this.Log().Debug("Changed Subject 0x{0:X}", changedSubject.GetHashCode());
-#endif
-                return changedSubject;
-            }
+            get { return changedSubject; }
         }
 
         [IgnoreDataMember]
@@ -65,29 +57,28 @@ namespace ReactiveUI
 
         [IgnoreDataMember]
         long changeNotificationsSuppressed = 0;
+
+        [IgnoreDataMember] 
+        readonly ScheduledSubject<Exception> thrownExceptions = new ScheduledSubject<Exception>(Scheduler.Immediate, RxApp.DefaultExceptionHandler);
+
+        [IgnoreDataMember]
+        public IObservable<Exception> ThrownExceptions { get { return thrownExceptions; } }
         
-        // Constructor
         protected ReactiveObject()
         {
             setupRxObj();
         }
 
         [OnDeserialized]
-#if WP7
-        public
-#endif
         void setupRxObj(StreamingContext sc) { setupRxObj(); }
 
         void setupRxObj()
         {
-            if (rxObjectsSetup) return;
-
             changingSubject = new Subject<IObservedChange<object, object>>();
             changedSubject = new Subject<IObservedChange<object, object>>();
+
             allPublicProperties = new Lazy<PropertyInfo[]>(() =>
                 GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance).ToArray());
-
-            rxObjectsSetup = true;
         }
 
         /// <summary>
@@ -104,11 +95,10 @@ namespace ReactiveUI
                 Interlocked.Decrement(ref changeNotificationsSuppressed));
         }
 
-        protected internal void raisePropertyChanging(string propertyName)
+        protected internal virtual void raisePropertyChanging(string propertyName)
         {
             Contract.Requires(propertyName != null);
 
-            verifyPropertyName(propertyName);
             if (!areChangeNotificationsEnabled || changingSubject == null)
                 return;
 
@@ -123,11 +113,10 @@ namespace ReactiveUI
             }, changingSubject);
         }
 
-        protected internal void raisePropertyChanged(string propertyName)
+        protected internal virtual void raisePropertyChanged(string propertyName)
         {
             Contract.Requires(propertyName != null);
 
-            verifyPropertyName(propertyName);
             this.Log().Debug("{0:X}.{1} changed", this.GetHashCode(), propertyName);
 
             if (!areChangeNotificationsEnabled || changedSubject == null) {
@@ -146,49 +135,19 @@ namespace ReactiveUI
             }, changedSubject);
         }
 
-        [Conditional("DEBUG")]
-        [DebuggerStepThrough]
-        void verifyPropertyName(string propertyName)
-        {
-            Contract.Requires(propertyName != null);
-
-            // If you raise PropertyChanged and do not specify a property name,
-            // all properties on the object are considered to be changed by the binding system.
-            if (String.IsNullOrEmpty(propertyName))
-                return;
-
-#if !SILVERLIGHT && !WINRT
-            // Verify that the property name matches a real,
-            // public, instance property on this object.
-            if (TypeDescriptor.GetProperties(this)[propertyName] == null) {
-                string msg = "Invalid property name: " + propertyName;
-                this.Log().Error(msg);
-            }
-#endif
-        }
-
         protected bool areChangeNotificationsEnabled {
-            get { 
-#if SILVERLIGHT
-                // N.B. On most architectures, machine word aligned reads are 
-                // guaranteed to be atomic - sorry WP7, you're out of luck
-                return changeNotificationsSuppressed == 0;
-#else
-                return (Interlocked.Read(ref changeNotificationsSuppressed) == 0); 
-#endif
+            get {
+                return (Interlocked.Read(ref changeNotificationsSuppressed) == 0);
             }
         }
 
-        void notifyObservable<T>(T item, Subject<T> subject)
+        internal void notifyObservable<T>(T item, Subject<T> subject)
         {
-#if DEBUG
-            this.Log().Debug("Firing observable to subject 0x{0:X}", subject.GetHashCode());
-#endif
             try {
                 subject.OnNext(item);
             } catch (Exception ex) {
-                this.Log().Error(ex);
-                subject.OnError(ex);
+                this.Log().ErrorException("ReactiveObject Subscriber threw exception", ex);
+                thrownExceptions.OnNext(ex);
             }
         }
     } 
@@ -197,161 +156,17 @@ namespace ReactiveUI
     {
         /// <summary>
         /// RaiseAndSetIfChanged fully implements a Setter for a read-write
-        /// property on a ReactiveObject, making the assumption that the
-        /// property has a backing field named "_NameOfProperty". To change this
-        /// assumption, set RxApp.GetFieldNameForPropertyNameFunc.
+        /// property on a ReactiveObject, using CallerMemberName to raise the notification
+        /// and the ref to the backing field to set the property.
         /// </summary>
-        /// <param name="property">An Expression representing the property (i.e.
-        /// 'x => x.SomeProperty'</param>
-        /// <param name="newValue">The new value to set the property to, almost
-        /// always the 'value' keyword.</param>
-        /// <returns>The newly set value, normally discarded.</returns>
-        public static TRet RaiseAndSetIfChanged<TObj, TRet>(
-                this TObj This, 
-                Expression<Func<TObj, TRet>> property, 
-                TRet newValue)
-            where TObj : ReactiveObject
-        {
-            Contract.Requires(This != null);
-            Contract.Requires(property != null);
-
-            FieldInfo field;
-            string prop_name = Reflection.SimpleExpressionToPropertyName(property);
-
-            field = Reflection.GetBackingFieldInfoForProperty<TObj>(prop_name);
-
-            var field_val = field.GetValue(This);
-
-            if (EqualityComparer<TRet>.Default.Equals((TRet)field_val, (TRet)newValue)) {
-                return newValue;
-            }
-
-            This.raisePropertyChanging(prop_name);
-            field.SetValue(This, newValue);
-            This.raisePropertyChanged(prop_name);
-
-            return newValue;
-        }
-        
-
-        /// <summary>
-        /// RaiseAndSetIfChanged fully implements a Setter for a read-write
-        /// property on a ReactiveObject, making the assumption that the
-        /// property has a backing field named "_NameOfProperty". To change this
-        /// assumption, set RxApp.GetFieldNameForPropertyNameFunc.  This
-        /// overload is intended for Silverlight and WP7 where reflection
-        /// cannot access the private backing field.
-        /// </summary>
-        /// <param name="property">An Expression representing the property (i.e.
-        /// 'x => x.SomeProperty'</param>
+        /// <typeparam name="TObj">The type of the This.</typeparam>
+        /// <typeparam name="TRet">The type of the return value.</typeparam>
+        /// <param name="This">The <see cref="ReactiveObject"/> raising the notification.</param>
         /// <param name="backingField">A Reference to the backing field for this
         /// property.</param>
-        /// <param name="newValue">The new value to set the property to, almost
-        /// always the 'value' keyword.</param>
-        /// <returns>The newly set value, normally discarded.</returns>
-        public static TRet RaiseAndSetIfChanged<TObj, TRet>(
-                this TObj This,
-                Expression<Func<TObj, TRet>> property,
-                ref TRet backingField,
-                TRet newValue)
-            where TObj : ReactiveObject
-        {
-            Contract.Requires(This != null);
-            Contract.Requires(property != null);
-
-            if (EqualityComparer<TRet>.Default.Equals(backingField, newValue)) {
-                return newValue;
-            }
-
-            string prop_name = Reflection.SimpleExpressionToPropertyName(property);
-
-            This.raisePropertyChanging(prop_name);
-            backingField = newValue;
-            This.raisePropertyChanged(prop_name);
-            return newValue;
-        }
-
-        /// <summary>
-        /// Use this method in your ReactiveObject classes when creating custom
-        /// properties where raiseAndSetIfChanged doesn't suffice.
-        /// </summary>
-        /// <param name="property">An Expression representing the property (i.e.
-        /// 'x => x.SomeProperty'</param>
-        public static void RaisePropertyChanging<TObj, TRet>(
-                this TObj This,
-                Expression<Func<TObj, TRet>> property)
-            where TObj : ReactiveObject
-        {
-            var propName = Reflection.SimpleExpressionToPropertyName(property);
-            This.raisePropertyChanging(propName);
-        }
-
-        /// <summary>
-        /// Use this method in your ReactiveObject classes when creating custom
-        /// properties where raiseAndSetIfChanged doesn't suffice.
-        /// </summary>
-        /// <param name="property">An Expression representing the property (i.e.
-        /// 'x => x.SomeProperty'</param>
-        public static void RaisePropertyChanged<TObj, TRet>(
-                this TObj This,
-                Expression<Func<TObj, TRet>> property)
-            where TObj : ReactiveObject
-        {
-            var propName = Reflection.SimpleExpressionToPropertyName(property);
-            This.raisePropertyChanged(propName);
-        }
-
-        /// <summary>
-        /// RaiseAndSetIfChanged fully implements a Setter for a read-write
-        /// property on a ReactiveObject, making the assumption that the
-        /// property has a backing field named "_NameOfProperty". To change this
-        /// assumption, set RxApp.GetFieldNameForPropertyNameFunc.
-        /// </summary>
-        /// <param name="property">An Expression representing the property (i.e.
-        /// 'x => x.SomeProperty'</param>
-        /// <param name="newValue">The new value to set the property to, almost
-        /// always the 'value' keyword.</param>
-        /// <returns>The newly set value, normally discarded.</returns>
-        public static TRet RaiseAndSetIfChanged<TObj, TRet>(
-                this TObj This,
-                TRet newValue,
-                [CallerMemberName] string propertyName = null
-            )
-            where TObj : ReactiveObject
-        {
-            Contract.Requires(This != null);
-            Contract.Requires(propertyName != null);
-
-            var fi = Reflection.GetBackingFieldInfoForProperty<TObj>(propertyName);
-
-            var field_val = fi.GetValue(This);
-
-            if (EqualityComparer<TRet>.Default.Equals((TRet)field_val, (TRet)newValue)) {
-                return newValue;
-            }
-
-            This.raisePropertyChanging(propertyName);
-            fi.SetValue(This, newValue);
-            This.raisePropertyChanged(propertyName);
-
-            return newValue;
-        }
-
-
-        /// <summary>
-        /// RaiseAndSetIfChanged fully implements a Setter for a read-write
-        /// property on a ReactiveObject, making the assumption that the
-        /// property has a backing field named "_NameOfProperty". To change this
-        /// assumption, set RxApp.GetFieldNameForPropertyNameFunc.  This
-        /// overload is intended for Silverlight and WP7 where reflection
-        /// cannot access the private backing field.
-        /// </summary>
-        /// <param name="property">An Expression representing the property (i.e.
-        /// 'x => x.SomeProperty'</param>
-        /// <param name="backingField">A Reference to the backing field for this
-        /// property.</param>
-        /// <param name="newValue">The new value to set the property to, almost
-        /// always the 'value' keyword.</param>
+        /// <param name="newValue">The new value.</param>
+        /// <param name="propertyName">The name of the property, usually 
+        /// automatically provided through the CallerMemberName attribute.</param>
         /// <returns>The newly set value, normally discarded.</returns>
         public static TRet RaiseAndSetIfChanged<TObj, TRet>(
                 this TObj This,
@@ -371,23 +186,6 @@ namespace ReactiveUI
             backingField = newValue;
             This.raisePropertyChanged(propertyName);
             return newValue;
-        }
-
-        /// <summary>
-        /// Use this method in your ReactiveObject classes when creating custom
-        /// properties where raiseAndSetIfChanged doesn't suffice.
-        /// </summary>
-        /// <param name="This">The instance of ReactiveObject on which the property is changing.</param>
-        /// <param name="propertyName">
-        /// A string representing the name of the property that will be changing.
-        /// Leave <c>null</c> to let the runtime set to caller member name.
-        /// </param>
-        public static void RaisePropertyChanging<TObj>(
-                this TObj This,
-                [CallerMemberName] string propertyName = null)
-            where TObj : ReactiveObject
-        {
-            This.raisePropertyChanging(propertyName);
         }
 
         /// <summary>
@@ -406,8 +204,28 @@ namespace ReactiveUI
         {
             This.raisePropertyChanged(propertyName);
         }
+                
+        /// <summary>
+        /// Use this method in your ReactiveObject classes when creating custom
+        /// properties where raiseAndSetIfChanged doesn't suffice.
+        /// </summary>
+        /// <param name="This">The instance of ReactiveObject on which the property has changed.</param>
+        /// <param name="propertyName">
+        /// A string representing the name of the property that has been changed.
+        /// Leave <c>null</c> to let the runtime set to caller member name.
+        /// </param>
+        public static void RaisePropertyChanging<TObj>(
+                this TObj This,
+                [CallerMemberName] string propertyName = null)
+            where TObj : ReactiveObject
+        {
+            This.raisePropertyChanging(propertyName);
+        }
     }
+}
 
+namespace ReactiveUI.Testing
+{
     public static class ReactiveObjectTestMixin
     {
         /// <summary>

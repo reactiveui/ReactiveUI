@@ -79,20 +79,21 @@ namespace ReactiveUI.Mobile
 
         internal void setupDefaultSuspendResume(ISuspensionDriver driver)
         {
-            driver = driver ?? RxApp.GetService<ISuspensionDriver>();
+            driver = driver ?? RxApp.DependencyResolver.GetService<ISuspensionDriver>();
 
             _viewModelChanged.Subscribe(vm => {
                 var page = default(IViewFor);
                 var frame = Window.Current.Content as Frame;
 
                 if (frame == null) {
-                    page = RxApp.GetService<IViewFor>("InitialPage");
-
-                    frame = new Frame() {
-                        Content = page,
-                    };
-
+                    frame = new Frame();
                     Window.Current.Content = frame;
+                }
+
+                page = Window.Current.Content as IViewFor;
+                if (page == null) {
+                    page = RxApp.DependencyResolver.GetService<IViewFor>("InitialPage");
+                    frame.Content = (UIElement)page;
                 }
 
                 page.ViewModel = vm;
@@ -112,13 +113,13 @@ namespace ReactiveUI.Mobile
             SuspensionHost.IsResuming
                 .SelectMany(x => driver.LoadState<IApplicationRootState>())
                 .LoggedCatch(this,
-                    Observable.Defer(() => Observable.Return(RxApp.GetService<IApplicationRootState>())),
+                    Observable.Defer(() => Observable.Return(RxApp.DependencyResolver.GetService<IApplicationRootState>())),
                     "Failed to restore app state from storage, creating from scratch")
-                .ObserveOn(RxApp.DeferredScheduler)
+                .ObserveOn(RxApp.MainThreadScheduler)
                 .Subscribe(x => ViewModel = x);
 
             SuspensionHost.IsLaunchingNew.Subscribe(_ => {
-                ViewModel = RxApp.GetService<IApplicationRootState>();
+                ViewModel = RxApp.DependencyResolver.GetService<IApplicationRootState>();
             });
         }
 

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Runtime.Serialization;
 using ReactiveUI;
-using ReactiveUI.Routing;
 
 namespace MobileSample_WinRT.ViewModels
 {
@@ -20,7 +19,7 @@ namespace MobileSample_WinRT.ViewModels
 
         public TestPage3ViewModel(IScreen screen = null)
         {
-            HostScreen = screen ?? RxApp.GetService<IScreen>();
+            HostScreen = screen ?? RxApp.DependencyResolver.GetService<IScreen>();
             RandomGuid = Guid.NewGuid();
         }
     }

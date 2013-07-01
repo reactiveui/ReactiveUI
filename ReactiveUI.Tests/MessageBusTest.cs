@@ -9,7 +9,6 @@ using System.IO;
 using System.Text;
 using ReactiveUI.Testing;
 using ReactiveUI.Tests;
-using System.Runtime.Serialization.Json;
 using System.Threading;
 
 using Microsoft.Reactive.Testing;
