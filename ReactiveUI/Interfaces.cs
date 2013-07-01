@@ -15,7 +15,7 @@ namespace ReactiveUI
     /// will be Covariant which will allow simpler casting between specific and
     /// generic changes.
     /// </summary>
-    public interface IObservedChange<TSender, TValue>
+    public interface IObservedChange<out TSender, out TValue>
     {
         /// <summary>
         /// The object that has raised the change.
@@ -81,7 +81,7 @@ namespace ReactiveUI
     /// IReactiveNotifyPropertyChanged of TSender is a helper interface that adds
     /// typed versions of Changing and Changed.
     /// </summary>
-    public interface IReactiveNotifyPropertyChanged<TSender> : IReactiveNotifyPropertyChanged
+    public interface IReactiveNotifyPropertyChanged<out TSender> : IReactiveNotifyPropertyChanged
     {
         new IObservable<IObservedChange<TSender, object>> Changing { get; }
         new IObservable<IObservedChange<TSender, object>> Changed { get; }
@@ -166,12 +166,74 @@ namespace ReactiveUI
     /// IReactiveNotifyPropertyChanged semantically as "Fire when *anything* in
     /// the collection or any of its items have changed, in any way".
     /// </summary>
-    public interface IReactiveCollection : ICollection, INotifyCollectionChanged, INotifyPropertyChanging, INotifyPropertyChanged, IEnableLogger
+    public interface IReactiveCollection : IReactiveNotifyCollectionChanged, IReactiveNotifyCollectionItemChanged, ICollection, INotifyPropertyChanging, INotifyPropertyChanged, IEnableLogger
     {
-        //
-        // Collection Tracking
-        //
+    }
 
+    /// <summary>
+    /// IReactiveCollection of T is the typed version of IReactiveCollection and
+    /// adds type-specified versions of Observables
+    /// </summary>
+    public interface IReactiveCollection<T> : IReactiveCollection, ICollection<T>, IReactiveNotifyCollectionChanged<T>, IReactiveNotifyCollectionItemChanged<T>
+    {
+    }
+
+    /// <summary>
+    /// IReactiveNotifyCollectionItemChanged provides notifications for collection item updates, ie when an object in
+    /// a collection changes.
+    /// </summary>
+    public interface IReactiveNotifyCollectionItemChanged
+    {
+        /// <summary>
+        /// Provides Item Changing notifications for any item in collection that
+        /// implements IReactiveNotifyPropertyChanged. This is only enabled when
+        /// ChangeTrackingEnabled is set to True.
+        /// </summary>
+        IObservable<IObservedChange<object, object>> ItemChanging { get; }
+
+        /// <summary>
+        /// Provides Item Changed notifications for any item in collection that
+        /// implements IReactiveNotifyPropertyChanged. This is only enabled when
+        /// ChangeTrackingEnabled is set to True.
+        /// </summary>
+        IObservable<IObservedChange<object, object>> ItemChanged { get; }
+
+        /// <summary>
+        /// Enables the ItemChanging and ItemChanged properties; when this is
+        /// enabled, whenever a property on any object implementing
+        /// IReactiveNotifyPropertyChanged changes, the change will be
+        /// rebroadcast through ItemChanging/ItemChanged.
+        /// </summary>
+        bool ChangeTrackingEnabled { get; set; }
+    }
+
+    /// <summary>
+    /// IReactiveNotifyCollectionItemChanged of T is the typed version of IReactiveNotifyCollectionItemChanged and
+    /// adds type-specified versions of Observables
+    /// </summary>
+    public interface IReactiveNotifyCollectionItemChanged<out T> : IReactiveNotifyCollectionItemChanged
+    {
+        /// <summary>
+        /// Provides Item Changing notifications for any item in collection that
+        /// implements IReactiveNotifyPropertyChanged. This is only enabled when
+        /// ChangeTrackingEnabled is set to True.
+        /// </summary>
+        new IObservable<IObservedChange<T, object>> ItemChanging { get; }
+
+        /// <summary>
+        /// Provides Item Changed notifications for any item in collection that
+        /// implements IReactiveNotifyPropertyChanged. This is only enabled when
+        /// ChangeTrackingEnabled is set to True.
+        /// </summary>
+        new IObservable<IObservedChange<T, object>> ItemChanged { get; }
+    }
+
+    /// <summary>
+    /// IReactiveCollection provides notifications when the contents
+    /// of collection are changed (items are added/removed/moved).
+    /// </summary>
+    public interface IReactiveNotifyCollectionChanged : INotifyCollectionChanged
+    {
         /// <summary>
         /// Fires when items are added to the collection, once per item added.
         /// Functions that add multiple items such AddRange should fire this
@@ -197,47 +259,18 @@ namespace ReactiveUI
         IObservable<object> BeforeItemsRemoved { get; }
 
         /// <summary>
-        /// Fires whenever the number of items in a collection has changed,
-        /// providing the new Count.
+        /// Fires before an items moves from one position in the collection to
+        /// another, providing the item(s) to be moved as well as source and destination
+        /// indices.
         /// </summary>
-        IObservable<int> CountChanged { get; }
+        IObservable<IMoveInfo<object>> BeforeItemsMoved { get; }
 
         /// <summary>
-        /// Fires before a collection is about to change, providing the previous
-        /// Count.
+        /// Fires once one or more items moves from one position in the collection to
+        /// another, providing the item(s) that was moved as well as source and destination
+        /// indices.
         /// </summary>
-        IObservable<int> CountChanging { get; }
-
-        /// <summary>
-        /// Fires when a collection becomes or stops being empty.
-        /// </summary>
-        IObservable<bool> IsEmptyChanged { get; }
-
-        //
-        // Change Tracking
-        //
-
-        /// <summary>
-        /// Provides Item Changing notifications for any item in collection that
-        /// implements IReactiveNotifyPropertyChanged. This is only enabled when
-        /// ChangeTrackingEnabled is set to True.
-        /// </summary>
-        IObservable<IObservedChange<object, object>> ItemChanging { get; }
-
-        /// <summary>
-        /// Provides Item Changed notifications for any item in collection that
-        /// implements IReactiveNotifyPropertyChanged. This is only enabled when
-        /// ChangeTrackingEnabled is set to True.
-        /// </summary>
-        IObservable<IObservedChange<object, object>> ItemChanged { get; }
-
-        /// <summary>
-        /// Enables the ItemChanging and ItemChanged properties; when this is
-        /// enabled, whenever a property on any object implementing
-        /// IReactiveNotifyPropertyChanged changes, the change will be
-        /// rebroadcast through ItemChanging/ItemChanged.
-        /// </summary>
-        bool ChangeTrackingEnabled { get; set; }
+        IObservable<IMoveInfo<object>> ItemsMoved { get; }
 
         /// <summary>
         /// This Observable is equivalent to the NotifyCollectionChanged event,
@@ -263,10 +296,10 @@ namespace ReactiveUI
     }
 
     /// <summary>
-    /// IReactiveCollection of T is the typed version of IReactiveCollection and
+    /// IReactiveNotifyCollectionChanged of T is the typed version of IReactiveNotifyCollectionChanged and
     /// adds type-specified versions of Observables
     /// </summary>
-    public interface IReactiveCollection<T> : ICollection<T>, IReactiveCollection
+    public interface IReactiveNotifyCollectionChanged<out T> : IReactiveNotifyCollectionChanged
     {
         /// <summary>
         /// Fires when items are added to the collection, once per item added.
@@ -293,24 +326,65 @@ namespace ReactiveUI
         new IObservable<T> BeforeItemsRemoved { get; }
 
         /// <summary>
-        /// Provides Item Changing notifications for any item in collection that
-        /// implements IReactiveNotifyPropertyChanged. This is only enabled when
-        /// ChangeTrackingEnabled is set to True.
+        /// Fires before an items moves from one position in the collection to
+        /// another, providing the item(s) to be moved as well as source and destination
+        /// indices.
         /// </summary>
-        new IObservable<IObservedChange<T, object>> ItemChanging { get; }
+        new IObservable<IMoveInfo<T>> BeforeItemsMoved { get; }
 
         /// <summary>
-        /// Provides Item Changed notifications for any item in collection that
-        /// implements IReactiveNotifyPropertyChanged. This is only enabled when
-        /// ChangeTrackingEnabled is set to True.
+        /// Fires once one or more items moves from one position in the collection to
+        /// another, providing the item(s) that was moved as well as source and destination
+        /// indices.
         /// </summary>
-        new IObservable<IObservedChange<T, object>> ItemChanged { get; }
+        new IObservable<IMoveInfo<T>> ItemsMoved { get; }
     }
 
     /// <summary>
-    /// An IList that reports change notifications
+    /// IReadOnlyReactiveCollection represents a read-only collection that can notify when its
+    /// contents are changed (either items are added/removed, or the object
+    /// itself changes).
+    ///
+    /// It is important to implement the Changing/Changed from
+    /// IReactiveNotifyPropertyChanged semantically as "Fire when *anything* in
+    /// the collection or any of its items have changed, in any way".
+    /// </summary>
+    public interface IReadOnlyReactiveCollection<out T> : IReadOnlyCollection<T>, IReactiveNotifyCollectionChanged<T>, IReactiveNotifyCollectionItemChanged<T>, INotifyPropertyChanging, INotifyPropertyChanged, IEnableLogger
+    {
+    }
+
+    /// <summary>
+    /// IReactiveList represents a list that can notify when its
+    /// contents are changed (either items are added/removed, or the object
+    /// itself changes).
+    ///
+    /// It is important to implement the Changing/Changed from
+    /// IReactiveNotifyPropertyChanged semantically as "Fire when *anything* in
+    /// the collection or any of its items have changed, in any way".
     /// </summary>
     public interface IReactiveList<T> : IReactiveCollection<T>, IList<T>, IList
+    {
+    }
+
+    /// <summary>
+    /// IReactiveList represents a read-only list that can notify when its
+    /// contents are changed (either items are added/removed, or the object
+    /// itself changes).
+    ///
+    /// It is important to implement the Changing/Changed from
+    /// IReactiveNotifyPropertyChanged semantically as "Fire when *anything* in
+    /// the collection or any of its items have changed, in any way".
+    /// </summary>
+    public interface IReadOnlyReactiveList<out T> : IReadOnlyReactiveCollection<T>, IReadOnlyList<T>
+    {
+    }
+
+    /// <summary>
+    /// IReactiveDerivedList repreents a collection whose contents will "follow" another
+    /// collection; this method is useful for creating ViewModel collections
+    /// that are automatically updated when the respective Model collection is updated.
+    /// </summary>
+    public interface IReactiveDerivedList<T> : IReadOnlyReactiveList<T>, IDisposable
     {
     }
 
