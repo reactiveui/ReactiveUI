@@ -12,7 +12,13 @@ using System.Threading;
 
 namespace ReactiveUI
 {
-    public abstract class ReactiveDerivedCollection<TValue> : ReactiveCollection<TValue>, IDisposable
+    /// <summary>
+    /// This class represents a change-notifying Collection which is derived from
+    /// a source collection, via CreateDerivedCollection or via another method. 
+    /// It is read-only, and any attempts to change items in the collection will
+    /// fail.
+    /// </summary>
+    internal abstract class ReactiveDerivedCollection<TValue> : ReactiveList<TValue>, IReactiveDerivedList<TValue>, IDisposable
     {
         const string readonlyExceptionMessage = "Derived collections cannot be modified.";
 
@@ -29,9 +35,9 @@ namespace ReactiveUI
             throw new InvalidOperationException(readonlyExceptionMessage);
         }
 
-        protected virtual void internalAdd(TValue item) 
-        { 
-            base.Add(item); 
+        protected virtual void internalAdd(TValue item)
+        {
+            base.Add(item);
         }
 
         public override void AddRange(IEnumerable<TValue> collection)
@@ -39,9 +45,9 @@ namespace ReactiveUI
             throw new InvalidOperationException(readonlyExceptionMessage);
         }
 
-        protected virtual void internalAddRange(IEnumerable<TValue> collection) 
-        { 
-            base.AddRange(collection); 
+        protected virtual void internalAddRange(IEnumerable<TValue> collection)
+        {
+            base.AddRange(collection);
         }
 
         public override void Clear()
@@ -164,7 +170,13 @@ namespace ReactiveUI
         public virtual void Dispose(bool disposing) { }
     }
 
-    public sealed class ReactiveDerivedCollection<TSource, TValue> : ReactiveDerivedCollection<TValue>, IDisposable
+    /// <summary>
+    /// This class represents a change-notifying Collection which is derived from
+    /// a source collection, via CreateDerivedCollection or via another method. 
+    /// It is read-only, and any attempts to change items in the collection will
+    /// fail.
+    /// </summary>
+    internal sealed class ReactiveDerivedCollection<TSource, TValue> : ReactiveDerivedCollection<TValue>, IDisposable
     {
         readonly IEnumerable<TSource> source;
         readonly Func<TSource, TValue> selector;
@@ -730,13 +742,13 @@ namespace ReactiveUI
 
             onError = onError ?? (ex => RxApp.DefaultExceptionHandler.OnNext(ex));
             if (withDelay == null) {
-                inner.Disposable = observable.ObserveOn(RxApp.DeferredScheduler).Subscribe(internalAdd, onError);
+                inner.Disposable = observable.ObserveOn(RxApp.MainThreadScheduler).Subscribe(internalAdd, onError);
                 return;
             }
 
             // On a timer, dequeue items from queue if they are available
             var queue = new Queue<T>();
-            var disconnect = Observable.Timer(withDelay.Value, withDelay.Value, RxApp.DeferredScheduler)
+            var disconnect = Observable.Timer(withDelay.Value, withDelay.Value, RxApp.MainThreadScheduler)
                 .Subscribe(_ => {
                     if (queue.Count > 0) { 
                         this.internalAdd(queue.Dequeue());
@@ -746,15 +758,15 @@ namespace ReactiveUI
             inner.Disposable = disconnect;
 
             // When new items come in from the observable, stuff them in the queue.
-            // Using the DeferredScheduler guarantees we'll always access the queue
+            // Using the MainThreadScheduler guarantees we'll always access the queue
             // from the same thread.
-            observable.ObserveOn(RxApp.DeferredScheduler).Subscribe(queue.Enqueue, onError);
+            observable.ObserveOn(RxApp.MainThreadScheduler).Subscribe(queue.Enqueue, onError);
 
             // This is a bit clever - keep a running count of the items actually 
             // added and compare them to the final count of items provided by the
             // Observable. Combine the two values, and when they're equal, 
             // disconnect the timer
-            this.ItemsAdded.Scan(0, ((acc, _) => acc + 1)).Zip(observable.Aggregate(0, (acc, _) => acc + 1), 
+            this.ItemsAdded.Scan(0, ((acc, _) => acc + 1)).Zip(observable.Aggregate(0, (acc, _) => acc + 1),
                 (l,r) => (l == r)).Where(x => x).Subscribe(_ => disconnect.Dispose());
         }
 
@@ -786,7 +798,7 @@ namespace ReactiveUI
         /// collection no faster than the delay provided.</param>
         /// <returns>A new collection which will be populated with the
         /// Observable.</returns>
-        public static ReactiveDerivedCollection<T> CreateCollection<T>(
+        public static IReactiveDerivedList<T> CreateCollection<T>(
             this IObservable<T> fromObservable, 
             TimeSpan? withDelay = null,
             Action<Exception> onError = null)
@@ -809,7 +821,7 @@ namespace ReactiveUI
         /// collection no faster than the delay provided.</param>
         /// <returns>A new collection which will be populated with the
         /// Observable.</returns>
-        public static ReactiveDerivedCollection<TRet> CreateCollection<T, TRet>(
+        public static IReactiveDerivedList<TRet> CreateCollection<T, TRet>(
             this IObservable<T> fromObservable,
             Func<T, TRet> selector,
             TimeSpan? withDelay = null)
@@ -829,7 +841,7 @@ namespace ReactiveUI
         ///
         /// Note that even though this method attaches itself to any 
         /// IEnumerable, it will only detect changes from objects implementing
-        /// INotifyCollectionChanged (like ReactiveCollection). If your source
+        /// INotifyCollectionChanged (like ReactiveList). If your source
         /// collection doesn't implement this, signalReset is the way to signal
         /// the derived collection to reorder/refilter itself.
         /// </summary>
@@ -845,7 +857,7 @@ namespace ReactiveUI
         /// <returns>A new collection whose items are equivalent to
         /// Collection.Select().Where().OrderBy() and will mirror changes 
         /// in the initial collection.</returns>
-        public static ReactiveDerivedCollection<TNew> CreateDerivedCollection<T, TNew, TDontCare>(
+        public static IReactiveDerivedList<TNew> CreateDerivedCollection<T, TNew, TDontCare>(
             this IEnumerable<T> This,
             Func<T, TNew> selector,
             Func<T, bool> filter = null,
@@ -871,7 +883,7 @@ namespace ReactiveUI
         /// 
         /// Be aware that this overload will result in a collection that *only* 
         /// updates if the source implements INotifyCollectionChanged. If your
-        /// list changes but isn't a ReactiveCollection/ObservableCollection,
+        /// list changes but isn't a ReactiveList/ObservableCollection,
         /// you probably want to use the other overload.
         /// </summary>
         /// <param name="selector">A Select function that will be run on each
@@ -883,7 +895,7 @@ namespace ReactiveUI
         /// <returns>A new collection whose items are equivalent to
         /// Collection.Select().Where().OrderBy() and will mirror changes 
         /// in the initial collection.</returns>
-        public static ReactiveDerivedCollection<TNew> CreateDerivedCollection<T, TNew>(
+        public static IReactiveDerivedList<TNew> CreateDerivedCollection<T, TNew>(
             this IEnumerable<T> This,
             Func<T, TNew> selector,
             Func<T, bool> filter = null,

@@ -4,9 +4,14 @@ using System.Reactive.Linq;
 
 namespace ReactiveUI
 {
+    /// <summary>
+    /// This class is the final fallback for WhenAny, and will simply immediately
+    /// return the value of the type at the time it was created. It will also 
+    /// warn the user that this is probably not what they want to do
+    /// </summary>
     public class POCOObservableForProperty : ICreatesObservableForProperty 
     {
-        public int GetAffinityForObject(Type type, bool beforeChanged = false)
+        public int GetAffinityForObject(Type type, string propertyName, bool beforeChanged = false)
         {
             return 1;
         }
@@ -24,7 +29,7 @@ namespace ReactiveUI
 
             return Observable.Return((IObservedChange<object, object>) new ObservedChange<object, object>() {
                 Sender = sender, PropertyName = propertyName
-            }, RxApp.DeferredScheduler)
+            }, RxApp.MainThreadScheduler)
                 .Concat(Observable.Never<IObservedChange<object, object>>());
         }
     }

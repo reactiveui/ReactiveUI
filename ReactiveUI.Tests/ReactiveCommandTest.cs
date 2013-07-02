@@ -7,26 +7,18 @@ using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Reactive.Testing;
 using ReactiveUI.Testing;
-
 using Microsoft.Reactive.Testing;
-using ReactiveUI.Xaml;
 using Xunit;
-#if MONO
-using Mono.Reactive.Testing;
-#else
-
-#endif
 
 namespace ReactiveUI.Tests
 {
-    public abstract class ReactiveCommandInterfaceTest
+    public class ReactiveCommandInterfaceTest
     {
-        protected abstract IReactiveCommand createCommand(IObservable<bool> canExecute, IScheduler scheduler = null);
-
-        protected abstract IReactiveCommand createRelayCommand(Func<object, bool> canExecute,
-            IScheduler scheduler = null);
+        protected IReactiveCommand createCommand(IObservable<bool> canExecute, IScheduler scheduler = null)
+        {
+            return new ReactiveCommand(canExecute, false, scheduler);
+        }
 
         [Fact]
         public void CompletelyDefaultReactiveCommandShouldFire()
@@ -70,23 +62,6 @@ namespace ReactiveUI.Tests
             });
 
             input.DistinctUntilChanged().AssertAreEqual(result.ToList());
-        }
-
-        [Fact]
-        public void ObservableCanExecuteFuncShouldShowUpInCommand()
-        {
-            int counter = 0;
-            var fixture = createRelayCommand(_ => (counter%2 == 0));
-            var changes_as_observable = fixture.CanExecuteObservable.CreateCollection();
-
-            int change_event_count = 0;
-            fixture.CanExecuteChanged += (o, e) => { change_event_count++; };
-            Enumerable.Range(0, 6).Run(x => {
-                Assert.Equal(x%2 == 0, fixture.CanExecute(null));
-                counter++;
-            });
-
-            Assert.Equal(6, changes_as_observable.Count);
         }
 
         [Fact]
@@ -182,61 +157,19 @@ namespace ReactiveUI.Tests
         }
     }
 
-    public class ReactiveCommandTest : ReactiveCommandInterfaceTest
-    {
-        protected override IReactiveCommand createCommand(IObservable<bool> canExecute, IScheduler scheduler = null)
-        {
-            return new ReactiveCommand(canExecute, scheduler);
-        }
-
-        protected override IReactiveCommand createRelayCommand(Func<object, bool> canExecute,
-            IScheduler scheduler = null)
-        {
-            return ReactiveCommand.Create(canExecute, null, scheduler);
-        }
-
-        public class TheCreateCommandMethod
-        {
-            [Fact]
-            public void CreatesCommandThatHandlesThrownExceptions()
-            {
-                var command = ReactiveCommand.Create(_ => true, _ => { throw new Exception(); });
-                Assert.NotNull(command.ThrownExceptions);
-                bool handled = false;
-                command.ThrownExceptions.Subscribe(e => handled = true);
-                command.Execute(null);
-                Assert.True(handled);
-            }
-        }
-    }
-
-    public class ReactiveAsyncCommandBaseTest : ReactiveCommandInterfaceTest
-    {
-        protected override IReactiveCommand createCommand(IObservable<bool> canExecute, IScheduler scheduler = null)
-        {
-            return new ReactiveAsyncCommand(canExecute, 1, scheduler);
-        }
-
-        protected override IReactiveCommand createRelayCommand(Func<object, bool> canExecute,
-            IScheduler scheduler = null)
-        {
-            return ReactiveAsyncCommand.Create(x => 1, x => { }, canExecute, 1, scheduler);
-        }
-    }
-
     public class ReactiveAsyncCommandTest
     {
         [Fact]
         public void RegisterAsyncFunctionSmokeTest()
         {
             (new TestScheduler()).With(sched => {
-                var fixture = new ReactiveAsyncCommand(null, 1);
-                ReactiveCollection<int> results;
+                var fixture = new ReactiveCommand();
+                IReactiveDerivedList<int> results;
 
-                results = fixture.RegisterAsyncObservable(_ =>
+                results = fixture.RegisterAsync(_ =>
                     Observable.Return(5).Delay(TimeSpan.FromSeconds(5), sched)).CreateCollection();
 
-                var inflightResults = fixture.ItemsInflight.CreateCollection();
+                var inflightResults = fixture.IsExecuting.CreateCollection();
                 sched.AdvanceToMs(10);
                 Assert.True(fixture.CanExecute(null));
 
@@ -247,59 +180,20 @@ namespace ReactiveUI.Tests
                 sched.AdvanceToMs(5100);
                 Assert.True(fixture.CanExecute(null));
 
-                new[] {0, 1, 0}.AssertAreEqual(inflightResults);
+                new[] {false, true, false}.AssertAreEqual(inflightResults);
                 new[] {5}.AssertAreEqual(results);
             });
-        }
-
-        [Fact]
-        public void RegisterMemoizedFunctionSmokeTest()
-        {
-            var input = new[] {1, 1, 1, 1, 1, 2, 2, 2, 2, 2};
-            var output = new[] {5, 5, 5, 5, 5, 10, 10, 10, 10, 10};
-            var sched = new EventLoopScheduler();
-            var results = new List<Timestamped<int>>();
-
-            var start = sched.Now;
-            sched.With(_ => {
-                var fixture = new ReactiveAsyncCommand(null, 5, sched);
-
-                fixture.RegisterMemoizedFunction(x => {
-                    Thread.Sleep(1000);
-                    return ((int)x)*5;
-                }, 50, null, sched)
-                    .Timestamp()
-                    .Subscribe(x => results.Add(x));
-
-                Assert.True(fixture.CanExecute(1));
-
-                foreach (var i in input) {
-                    Assert.True(fixture.CanExecute(i));
-                    fixture.Execute(i);
-                }
-
-                Thread.Sleep(2500);
-            });
-
-            Assert.Equal(10, results.Count);
-
-            results.Select(x => x.Timestamp - start)
-                .Run(x => { });
-
-            output.AssertAreEqual(results.Select(x => x.Value));
-
-            Assert.False(results.Any(x => x.Timestamp - start > new TimeSpan(0, 0, 3)));
         }
 
         [Fact]
         public void MultipleSubscribersShouldntDecrementRefcountBelowZero()
         {
             (new TestScheduler()).With(sched => {
-                var fixture = new ReactiveAsyncCommand();
+                var fixture = new ReactiveCommand();
                 var results = new List<int>();
                 bool[] subscribers = new[] {false, false, false, false, false};
 
-                var output = fixture.RegisterAsyncObservable(_ =>
+                var output = fixture.RegisterAsync(_ =>
                     Observable.Return(5).Delay(TimeSpan.FromMilliseconds(5000), sched));
                 output.Subscribe(x => results.Add(x));
 
@@ -324,36 +218,35 @@ namespace ReactiveUI.Tests
         public void MultipleResultsFromObservableShouldntDecrementRefcountBelowZero()
         {
             (new TestScheduler()).With(sched => {
-                int latestInFlight = 0;
-                var fixture = new ReactiveAsyncCommand(null, 1, sched);
+                bool latestExecuting = false;
+                var fixture = new ReactiveCommand(null, false, sched);
 
                 var results = fixture
-                    .RegisterAsyncObservable(_ => new[] {1, 2, 3}.ToObservable())
+                    .RegisterAsync(_ => new[] {1, 2, 3}.ToObservable())
                     .CreateCollection();
-                fixture.ItemsInflight.Subscribe(x => latestInFlight = x);
-
+                fixture.IsExecuting.Subscribe(x => latestExecuting = x);
 
                 fixture.Execute(1);
                 sched.Start();
 
                 Assert.Equal(3, results.Count);
-                Assert.Equal(0, latestInFlight);
+                Assert.Equal(false, latestExecuting);
             });
         }
 
         [Fact]
         public void RAFShouldActuallyRunOnTheTaskpool()
         {
-            var deferred = RxApp.DeferredScheduler;
+            var deferred = RxApp.MainThreadScheduler;
             var taskpool = RxApp.TaskpoolScheduler;
 
             try {
                 var testDeferred = new CountingTestScheduler(Scheduler.Immediate);
                 var testTaskpool = new CountingTestScheduler(Scheduler.NewThread);
-                RxApp.DeferredScheduler = testDeferred;
+                RxApp.MainThreadScheduler = testDeferred;
                 RxApp.TaskpoolScheduler = testTaskpool;
 
-                var fixture = new ReactiveAsyncCommand();
+                var fixture = new ReactiveCommand();
                 var result = fixture.RegisterAsyncFunction(x => {
                     Thread.Sleep(1000);
                     return (int)x*5;
@@ -365,7 +258,7 @@ namespace ReactiveUI.Tests
                 Assert.True(testDeferred.ScheduledItems.Count >= 1);
                 Assert.True(testTaskpool.ScheduledItems.Count >= 1);
             } finally {
-                RxApp.DeferredScheduler = deferred;
+                RxApp.MainThreadScheduler = deferred;
                 RxApp.TaskpoolScheduler = taskpool;
             }
         }
@@ -373,17 +266,17 @@ namespace ReactiveUI.Tests
         [Fact]
         public void RAOShouldActuallyRunOnTheTaskpool()
         {
-            var deferred = RxApp.DeferredScheduler;
+            var deferred = RxApp.MainThreadScheduler;
             var taskpool = RxApp.TaskpoolScheduler;
 
             try {
                 var testDeferred = new CountingTestScheduler(Scheduler.Immediate);
                 var testTaskpool = new CountingTestScheduler(Scheduler.NewThread);
-                RxApp.DeferredScheduler = testDeferred;
+                RxApp.MainThreadScheduler = testDeferred;
                 RxApp.TaskpoolScheduler = testTaskpool;
 
-                var fixture = new ReactiveAsyncCommand();
-                var result = fixture.RegisterAsyncObservable(x =>
+                var fixture = new ReactiveCommand();
+                var result = fixture.RegisterAsync(x =>
                     Observable.Return((int)x*5).Delay(TimeSpan.FromSeconds(1), RxApp.TaskpoolScheduler));
 
                 fixture.Execute(1);
@@ -392,7 +285,7 @@ namespace ReactiveUI.Tests
                 Assert.True(testDeferred.ScheduledItems.Count >= 1);
                 Assert.True(testTaskpool.ScheduledItems.Count >= 1);
             } finally {
-                RxApp.DeferredScheduler = deferred;
+                RxApp.MainThreadScheduler = deferred;
                 RxApp.TaskpoolScheduler = taskpool;
             }
         }
@@ -410,12 +303,12 @@ namespace ReactiveUI.Tests
                     sched.OnNextAt(1100, false)
                     );
 
-                var fixture = new ReactiveAsyncCommand(canExecute);
+                var fixture = new ReactiveCommand(canExecute);
                 int calculatedResult = -1;
                 bool latestCanExecute = false;
 
-                fixture.RegisterAsyncObservable(x =>
-                    Observable.Return((int)x*5).Delay(TimeSpan.FromMilliseconds(900), RxApp.DeferredScheduler))
+                fixture.RegisterAsync(x =>
+                    Observable.Return((int)x*5).Delay(TimeSpan.FromMilliseconds(900), RxApp.MainThreadScheduler))
                     .Subscribe(x => calculatedResult = x);
 
                 fixture.CanExecuteObservable.Subscribe(x => latestCanExecute = x);
@@ -457,103 +350,61 @@ namespace ReactiveUI.Tests
             });
         }
 
-
-
-        private Task<bool> DummyTestFunction()
-        {
-            return Task.Factory.StartNew(() => true);
-        }
-
         [Fact]
-        public void ReactiveAsyncCommandInitialConditionDefaultBehavior()
+        public void AllowConcurrentExecutionTest()
         {
             (new TestScheduler()).With(sched => {
-                var canExecute = sched.CreateHotObservable(
-                    sched.OnNextAt(0, false),
-                    sched.OnNextAt(250, true)
-                    );
-
-                var fixture = new ReactiveAsyncCommand(canExecute);
-
-                fixture.RegisterAsyncTask(_ => DummyTestFunction());
+                var fixture = new ReactiveCommand(null, true, sched);
 
                 Assert.True(fixture.CanExecute(null));
 
-                sched.AdvanceToMs(10);
-                Assert.False(fixture.CanExecute(null));
+                var result = fixture.RegisterAsync(_ => Observable.Return(4).Delay(TimeSpan.FromSeconds(5), sched))
+                    .CreateCollection();
+                Assert.Equal(0, result.Count);
 
-                sched.AdvanceToMs(255);
+                sched.AdvanceToMs(25);
+                Assert.Equal(0, result.Count);
+
+                fixture.Execute(null);
                 Assert.True(fixture.CanExecute(null));
-            });
-        }
+                Assert.Equal(0, result.Count);
 
+                sched.AdvanceToMs(2500);
+                Assert.True(fixture.CanExecute(null));
+                Assert.Equal(0, result.Count);
 
-        [Fact]
-        public void ReactiveAsyncCommandInitialConditionNewBehavior()
-        {
-            (new TestScheduler()).With(sched =>
-            {
-                var canExecute = sched.CreateHotObservable(
-                    sched.OnNextAt(0, false),
-                    sched.OnNextAt(250, true)
-                   );
-
-                var fixture = new ReactiveAsyncCommand(canExecute, initialCondition:false);
-                
-                fixture.RegisterAsyncTask(_ => DummyTestFunction());
-
-                Assert.False(fixture.CanExecute(null));
-                
-                sched.AdvanceToMs(10);
-                Assert.False(fixture.CanExecute(null));
-
-                sched.AdvanceToMs(255);
-                Assert.True(fixture.CanExecute(null));              
+                sched.AdvanceToMs(5500);
+                Assert.True(fixture.CanExecute(null));
+                Assert.Equal(1, result.Count);
             });
         }
 
         [Fact]
-        public void ReactiveCommandInitialConditionDefaultBehavior()
+        public void DisallowConcurrentExecutionTest()
         {
-            (new TestScheduler()).With(sched =>
-            {
-                var canExecute = sched.CreateHotObservable(
-                    sched.OnNextAt(0, false),
-                    sched.OnNextAt(250, true)
-                    );
-
-                var fixture = new ReactiveCommand(canExecute);
+            (new TestScheduler()).With(sched => {
+                var fixture = new ReactiveCommand(null, false, sched);
 
                 Assert.True(fixture.CanExecute(null));
 
-                sched.AdvanceToMs(10);
-                Assert.False(fixture.CanExecute(null));
+                var result = fixture.RegisterAsync(_ => Observable.Return(4).Delay(TimeSpan.FromSeconds(5), sched))
+                    .CreateCollection();
+                Assert.Equal(0, result.Count);
 
-                sched.AdvanceToMs(255);
+                sched.AdvanceToMs(25);
+                Assert.Equal(0, result.Count);
+
+                fixture.Execute(null);
+                Assert.False(fixture.CanExecute(null));
+                Assert.Equal(0, result.Count);
+
+                sched.AdvanceToMs(2500);
+                Assert.False(fixture.CanExecute(null));
+                Assert.Equal(0, result.Count);
+
+                sched.AdvanceToMs(5500);
                 Assert.True(fixture.CanExecute(null));
-            });
-        }
-
-
-        [Fact]
-        public void ReactiveCommandInitialConditionNewBehavior()
-        {
-            (new TestScheduler()).With(sched =>
-            {
-                var canExecute = sched.CreateHotObservable(
-                    sched.OnNextAt(0, false),
-                    sched.OnNextAt(250, true)
-                   );
-
-                var fixture = new ReactiveCommand(canExecute, initialCondition:false);
-
-                Assert.False(fixture.CanExecute(null));
-
-                sched.AdvanceToMs(10);
-                Assert.False(fixture.CanExecute(null));
-
-                sched.AdvanceToMs(255);
-                Assert.True(fixture.CanExecute(null));
+                Assert.Equal(1, result.Count);
             });
         }
     }

@@ -4,7 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:phone="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone"
     xmlns:shell="clr-namespace:Microsoft.Phone.Shell;assembly=Microsoft.Phone"
-    xmlns:mobile="clr-namespace:ReactiveUI.Mobile;assembly=ReactiveUI.Mobile_WP8">
+    xmlns:mobile="clr-namespace:ReactiveUI.Mobile;assembly=ReactiveUI.Mobile">
 
     <!--Application Resources-->
     <Application.Resources>

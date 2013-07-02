@@ -47,7 +47,7 @@ namespace ReactiveUI.Tests
         public void CommandBinderBindsToButton()
         {
             var fixture = new CreatesCommandBindingViaCommandParameter();
-            var origCmd = new ReactiveAsyncCommand();
+            var origCmd = new ReactiveCommand();
             var cmd = new ReactiveCommand();
             var input = new Button { Command = origCmd, CommandParameter = 42 };
 
@@ -68,7 +68,7 @@ namespace ReactiveUI.Tests
         [Fact]
         public void EventBinderBindsToExplicitEvent()
         {
-            var input = new NonReactiveINPCObjectMadeReactive();
+            var input = new TestFixture();
             var fixture = new CreatesCommandBindingViaEvent();
             var cmd = new ReactiveCommand();
 
@@ -79,12 +79,12 @@ namespace ReactiveUI.Tests
             cmd.Subscribe(_ => wasCalled = true);
 
             var disp = fixture.BindCommandToObject<PropertyChangedEventArgs>(cmd, input, Observable.Return((object) 5), "PropertyChanged");
-            input.InpcProperty = new TestFixture();
+            input.IsNotNullString = "Foo";
             Assert.True(wasCalled);
 
             wasCalled = false;
             disp.Dispose();
-            input.InpcProperty = new TestFixture();
+            input.IsNotNullString = "Bar";
             Assert.False(wasCalled);
         }
 
@@ -128,13 +128,13 @@ namespace ReactiveUI.Tests
         public ReactiveCommand _Command1;
         public ReactiveCommand Command1 {
             get { return _Command1; }
-            set { this.RaiseAndSetIfChanged(x => x.Command1, value); }
+            set { this.RaiseAndSetIfChanged(ref _Command1, value); }
         }
 
         public ReactiveCommand _Command2;
         public ReactiveCommand Command2 {
             get { return _Command2; }
-            set { this.RaiseAndSetIfChanged(x => x.Command2, value); }
+            set { this.RaiseAndSetIfChanged(ref _Command2, value); }
         }
 
         public CommandBindViewModel()
