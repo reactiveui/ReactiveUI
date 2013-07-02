@@ -3,9 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
-using System.Linq.Expressions;
 using System.Reactive;
-using System.Reactive.Concurrency;
+using System.Windows.Input;
 
 namespace ReactiveUI
 {
@@ -16,7 +15,7 @@ namespace ReactiveUI
     /// will be Covariant which will allow simpler casting between specific and
     /// generic changes.
     /// </summary>
-    public interface IObservedChange<TSender, TValue>
+    public interface IObservedChange<out TSender, out TValue>
     {
         /// <summary>
         /// The object that has raised the change.
@@ -38,6 +37,9 @@ namespace ReactiveUI
         TValue Value { get; }
     }
 
+    /// <summary>
+    /// A data-only version of IObservedChange
+    /// </summary>
     public class ObservedChange<TSender, TValue> : IObservedChange<TSender, TValue>
     {
         public TSender Sender { get; set; }
@@ -79,7 +81,7 @@ namespace ReactiveUI
     /// IReactiveNotifyPropertyChanged of TSender is a helper interface that adds
     /// typed versions of Changing and Changed.
     /// </summary>
-    public interface IReactiveNotifyPropertyChanged<TSender> : IReactiveNotifyPropertyChanged
+    public interface IReactiveNotifyPropertyChanged<out TSender> : IReactiveNotifyPropertyChanged
     {
         new IObservable<IObservedChange<TSender, object>> Changing { get; }
         new IObservable<IObservedChange<TSender, object>> Changed { get; }
@@ -106,6 +108,56 @@ namespace ReactiveUI
     }
 
     /// <summary>
+    /// IReactiveCommand represents an ICommand which also notifies when it is
+    /// executed (i.e. when Execute is called) via IObservable. Conceptually,
+    /// this represents an Event, so as a result this IObservable should never
+    /// OnComplete or OnError.
+    /// 
+    /// In previous versions of ReactiveUI, this interface was split into two
+    /// separate interfaces, one to handle async methods and one for "standard"
+    /// commands, but these have now been merged - every ReactiveCommand is now
+    /// a ReactiveAsyncCommand.
+    /// </summary>
+    public interface IReactiveCommand : IHandleObservableErrors, IObservable<object>, ICommand, IDisposable, IEnableLogger
+    {
+        /// <summary>
+        /// Registers an asynchronous method to be called whenever the command
+        /// is Executed. This method returns an IObservable representing the
+        /// asynchronous operation, and is allowed to OnError / should OnComplete.
+        /// </summary>
+        /// <returns>A filtered version of the Observable which is marshaled 
+        /// to the UI thread. This Observable should only report successes and
+        /// instead send OnError messages to the ThrownExceptions property.
+        /// </returns>
+        /// <param name="asyncBlock">The asynchronous method to call.</param>
+        IObservable<T> RegisterAsync<T>(Func<object, IObservable<T>> asyncBlock);
+
+        /// <summary>
+        /// Gets a value indicating whether this instance can execute observable.
+        /// </summary>
+        /// <value><c>true</c> if this instance can execute observable; otherwise, <c>false</c>.</value>
+        IObservable<bool> CanExecuteObservable { get; }
+
+        /// <summary>
+        /// Gets a value indicating whether this instance is executing. This 
+        /// Observable is guaranteed to always return a value immediately (i.e.
+        /// it is backed by a BehaviorSubject), meaning it is safe to determine
+        /// the current state of the command via IsExecuting.First()
+        /// </summary>
+        /// <value><c>true</c> if this instance is executing; otherwise, <c>false</c>.</value>
+        IObservable<bool> IsExecuting { get; }
+
+        /// <summary>
+        /// Gets a value indicating whether this 
+        /// <see cref="ReactiveUI.IReactiveCommand"/> allows concurrent 
+        /// execution. If false, the CanExecute of the command will be disabled
+        /// while async operations are currently in-flight.
+        /// </summary>
+        /// <value><c>true</c> if allows concurrent execution; otherwise, <c>false</c>.</value>
+        bool AllowsConcurrentExecution { get; }
+    }
+
+    /// <summary>
     /// IReactiveCollection represents a collection that can notify when its
     /// contents are changed (either items are added/removed, or the object
     /// itself changes).
@@ -114,12 +166,74 @@ namespace ReactiveUI
     /// IReactiveNotifyPropertyChanged semantically as "Fire when *anything* in
     /// the collection or any of its items have changed, in any way".
     /// </summary>
-    public interface IReactiveCollection : IEnumerable, INotifyCollectionChanged
+    public interface IReactiveCollection : IReactiveNotifyCollectionChanged, IReactiveNotifyCollectionItemChanged, ICollection, INotifyPropertyChanging, INotifyPropertyChanged, IEnableLogger
     {
-        //
-        // Collection Tracking
-        //
+    }
 
+    /// <summary>
+    /// IReactiveCollection of T is the typed version of IReactiveCollection and
+    /// adds type-specified versions of Observables
+    /// </summary>
+    public interface IReactiveCollection<T> : IReactiveCollection, ICollection<T>, IReactiveNotifyCollectionChanged<T>, IReactiveNotifyCollectionItemChanged<T>
+    {
+    }
+
+    /// <summary>
+    /// IReactiveNotifyCollectionItemChanged provides notifications for collection item updates, ie when an object in
+    /// a collection changes.
+    /// </summary>
+    public interface IReactiveNotifyCollectionItemChanged
+    {
+        /// <summary>
+        /// Provides Item Changing notifications for any item in collection that
+        /// implements IReactiveNotifyPropertyChanged. This is only enabled when
+        /// ChangeTrackingEnabled is set to True.
+        /// </summary>
+        IObservable<IObservedChange<object, object>> ItemChanging { get; }
+
+        /// <summary>
+        /// Provides Item Changed notifications for any item in collection that
+        /// implements IReactiveNotifyPropertyChanged. This is only enabled when
+        /// ChangeTrackingEnabled is set to True.
+        /// </summary>
+        IObservable<IObservedChange<object, object>> ItemChanged { get; }
+
+        /// <summary>
+        /// Enables the ItemChanging and ItemChanged properties; when this is
+        /// enabled, whenever a property on any object implementing
+        /// IReactiveNotifyPropertyChanged changes, the change will be
+        /// rebroadcast through ItemChanging/ItemChanged.
+        /// </summary>
+        bool ChangeTrackingEnabled { get; set; }
+    }
+
+    /// <summary>
+    /// IReactiveNotifyCollectionItemChanged of T is the typed version of IReactiveNotifyCollectionItemChanged and
+    /// adds type-specified versions of Observables
+    /// </summary>
+    public interface IReactiveNotifyCollectionItemChanged<out T> : IReactiveNotifyCollectionItemChanged
+    {
+        /// <summary>
+        /// Provides Item Changing notifications for any item in collection that
+        /// implements IReactiveNotifyPropertyChanged. This is only enabled when
+        /// ChangeTrackingEnabled is set to True.
+        /// </summary>
+        new IObservable<IObservedChange<T, object>> ItemChanging { get; }
+
+        /// <summary>
+        /// Provides Item Changed notifications for any item in collection that
+        /// implements IReactiveNotifyPropertyChanged. This is only enabled when
+        /// ChangeTrackingEnabled is set to True.
+        /// </summary>
+        new IObservable<IObservedChange<T, object>> ItemChanged { get; }
+    }
+
+    /// <summary>
+    /// IReactiveCollection provides notifications when the contents
+    /// of collection are changed (items are added/removed/moved).
+    /// </summary>
+    public interface IReactiveNotifyCollectionChanged : INotifyCollectionChanged
+    {
         /// <summary>
         /// Fires when items are added to the collection, once per item added.
         /// Functions that add multiple items such AddRange should fire this
@@ -145,47 +259,18 @@ namespace ReactiveUI
         IObservable<object> BeforeItemsRemoved { get; }
 
         /// <summary>
-        /// Fires whenever the number of items in a collection has changed,
-        /// providing the new Count.
+        /// Fires before an items moves from one position in the collection to
+        /// another, providing the item(s) to be moved as well as source and destination
+        /// indices.
         /// </summary>
-        IObservable<int> CollectionCountChanged { get; }
+        IObservable<IMoveInfo<object>> BeforeItemsMoved { get; }
 
         /// <summary>
-        /// Fires before a collection is about to change, providing the previous
-        /// Count.
+        /// Fires once one or more items moves from one position in the collection to
+        /// another, providing the item(s) that was moved as well as source and destination
+        /// indices.
         /// </summary>
-        IObservable<int> CollectionCountChanging { get; }
-
-        /// <summary>
-        /// Fires when a collection becomes or stops being empty.
-        /// </summary>
-        IObservable<bool> IsEmpty { get; }
-
-        //
-        // Change Tracking
-        //
-
-        /// <summary>
-        /// Provides Item Changing notifications for any item in collection that
-        /// implements IReactiveNotifyPropertyChanged. This is only enabled when
-        /// ChangeTrackingEnabled is set to True.
-        /// </summary>
-        IObservable<IObservedChange<object, object>> ItemChanging { get; }
-
-        /// <summary>
-        /// Provides Item Changed notifications for any item in collection that
-        /// implements IReactiveNotifyPropertyChanged. This is only enabled when
-        /// ChangeTrackingEnabled is set to True.
-        /// </summary>
-        IObservable<IObservedChange<object, object>> ItemChanged { get; }
-
-        /// <summary>
-        /// Enables the ItemChanging and ItemChanged properties; when this is
-        /// enabled, whenever a property on any object implementing
-        /// IReactiveNotifyPropertyChanged changes, the change will be
-        /// rebroadcast through ItemChanging/ItemChanged.
-        /// </summary>
-        bool ChangeTrackingEnabled { get; set; }
+        IObservable<IMoveInfo<object>> ItemsMoved { get; }
 
         /// <summary>
         /// This Observable is equivalent to the NotifyCollectionChanged event,
@@ -211,10 +296,10 @@ namespace ReactiveUI
     }
 
     /// <summary>
-    /// IReactiveCollection of T is the typed version of IReactiveCollection and
+    /// IReactiveNotifyCollectionChanged of T is the typed version of IReactiveNotifyCollectionChanged and
     /// adds type-specified versions of Observables
     /// </summary>
-    public interface IReactiveCollection<T> : IEnumerable<T>, IReactiveCollection
+    public interface IReactiveNotifyCollectionChanged<out T> : IReactiveNotifyCollectionChanged
     {
         /// <summary>
         /// Fires when items are added to the collection, once per item added.
@@ -241,214 +326,128 @@ namespace ReactiveUI
         new IObservable<T> BeforeItemsRemoved { get; }
 
         /// <summary>
-        /// Provides Item Changing notifications for any item in collection that
-        /// implements IReactiveNotifyPropertyChanged. This is only enabled when
-        /// ChangeTrackingEnabled is set to True.
+        /// Fires before an items moves from one position in the collection to
+        /// another, providing the item(s) to be moved as well as source and destination
+        /// indices.
         /// </summary>
-        IObservable<IObservedChange<T, object>> ItemChanging { get; }
+        new IObservable<IMoveInfo<T>> BeforeItemsMoved { get; }
 
         /// <summary>
-        /// Provides Item Changed notifications for any item in collection that
-        /// implements IReactiveNotifyPropertyChanged. This is only enabled when
-        /// ChangeTrackingEnabled is set to True.
+        /// Fires once one or more items moves from one position in the collection to
+        /// another, providing the item(s) that was moved as well as source and destination
+        /// indices.
         /// </summary>
-        IObservable<IObservedChange<T, object>> ItemChanged { get; }
+        new IObservable<IMoveInfo<T>> ItemsMoved { get; }
     }
 
     /// <summary>
-    /// IMessageBus represents an object that can act as a "Message Bus", a
-    /// simple way for ViewModels and other objects to communicate with each
-    /// other in a loosely coupled way.
+    /// IReadOnlyReactiveCollection represents a read-only collection that can notify when its
+    /// contents are changed (either items are added/removed, or the object
+    /// itself changes).
     ///
-    /// Specifying which messages go where is done via a combination of the Type
-    /// of the message as well as an additional "Contract" parameter; this is a
-    /// unique string used to distinguish between messages of the same Type, and
-    /// is arbitrarily set by the client. 
+    /// It is important to implement the Changing/Changed from
+    /// IReactiveNotifyPropertyChanged semantically as "Fire when *anything* in
+    /// the collection or any of its items have changed, in any way".
     /// </summary>
-    public interface IMessageBus : IEnableLogger
+    public interface IReadOnlyReactiveCollection<out T> : IReadOnlyCollection<T>, IReactiveNotifyCollectionChanged<T>, IReactiveNotifyCollectionItemChanged<T>, INotifyPropertyChanging, INotifyPropertyChanged, IEnableLogger
     {
-        /// <summary>
-        /// Registers a scheduler for the type, which may be specified at
-        /// runtime, and the contract.
-        /// </summary>
-        /// <remarks>If a scheduler is already registered for the specified
-        /// runtime and contract, this will overrwrite the existing
-        /// registration.</remarks>
-        /// <typeparam name="T">The type of the message to listen to.</typeparam>
-        /// <param name="scheduler">The scheduler on which to post the
-        /// notifications for the specified type and contract.
-        /// RxApp.DeferredScheduler by default.</param>
-        /// <param name="contract">A unique string to distinguish messages with
-        /// identical types (i.e. "MyCoolViewModel") - if the message type is
-        /// only used for one purpose, leave this as null.</param>
-        void RegisterScheduler<T>(IScheduler scheduler, string contract = null);
-
-        /// <summary>
-        /// Listen provides an Observable that will fire whenever a Message is
-        /// provided for this object via RegisterMessageSource or SendMessage.
-        /// </summary>
-        /// <typeparam name="T">The type of the message to listen to.</typeparam>
-        /// <param name="contract">A unique string to distinguish messages with
-        /// identical types (i.e. "MyCoolViewModel") - if the message type is
-        /// only used for one purpose, leave this as null.</param>
-        /// <returns></returns>
-        IObservable<T> Listen<T>(string contract = null);
-
-        /// <summary>
-        /// Determines if a particular message Type is registered.
-        /// </summary>
-        /// <param name="type">The type of the message.</param>
-        /// <param name="contract">A unique string to distinguish messages with
-        /// identical types (i.e. "MyCoolViewModel") - if the message type is
-        /// only used for one purpose, leave this as null.</param>
-        /// <returns>True if messages have been posted for this message Type.</returns>
-        bool IsRegistered(Type type, string contract = null);
-
-        /// <summary>
-        /// Registers an Observable representing the stream of messages to send.
-        /// Another part of the code can then call Listen to retrieve this
-        /// Observable.
-        /// </summary>
-        /// <typeparam name="T">The type of the message to listen to.</typeparam>
-        /// <param name="source">An Observable that will be subscribed to, and a
-        /// message sent out for each value provided.</param>
-        /// <param name="contract">A unique string to distinguish messages with
-        /// identical types (i.e. "MyCoolViewModel") - if the message type is
-        /// only used for one purpose, leave this as null.</param>
-        IDisposable RegisterMessageSource<T>(IObservable<T> source, string contract = null);
-
-        /// <summary>
-        /// Sends a single message using the specified Type and contract.
-        /// Consider using RegisterMessageSource instead if you will be sending
-        /// messages in response to other changes such as property changes
-        /// or events.
-        /// </summary>
-        /// <typeparam name="T">The type of the message to send.</typeparam>
-        /// <param name="message">The actual message to send</param>
-        /// <param name="contract">A unique string to distinguish messages with
-        /// identical types (i.e. "MyCoolViewModel") - if the message type is
-        /// only used for one purpose, leave this as null.</param>
-        void SendMessage<T>(T message, string contract = null);
     }
 
     /// <summary>
-    /// ICreatesObservableForProperty represents an object that knows how to
-    /// create notifications for a given type of object. Implement this if you
-    /// are porting RxUI to a new UI toolkit, or generally want to enable WhenAny
-    /// for another type of object that can be observed in a unique way.
+    /// IReactiveList represents a list that can notify when its
+    /// contents are changed (either items are added/removed, or the object
+    /// itself changes).
+    ///
+    /// It is important to implement the Changing/Changed from
+    /// IReactiveNotifyPropertyChanged semantically as "Fire when *anything* in
+    /// the collection or any of its items have changed, in any way".
     /// </summary>
-    public interface ICreatesObservableForProperty : IEnableLogger
+    public interface IReactiveList<T> : IReactiveCollection<T>, IList<T>, IList
     {
-        /// <summary>
-        /// Returns a positive integer when this class supports 
-        /// GetNotificationForProperty for this particular Type. If the method
-        /// isn't supported at all, return a non-positive integer. When multiple
-        /// implementations return a positive value, the host will use the one
-        /// which returns the highest value. When in doubt, return '2' or '0'
-        /// </summary>
-        /// <param name="type">The type to query for.</param>
-        /// <returns>A positive integer if GNFP is supported, zero or a negative
-        /// value otherwise</returns>
-        int GetAffinityForObject(Type type, bool beforeChanged = false);
-
-        /// <summary>
-        /// Subscribe to notifications on the specified property, given an 
-        /// object and a property name.
-        /// </summary>
-        /// <param name="sender">The object to observe.</param>
-        /// <param name="propertyName">The property on the object to observe. 
-        /// This property will not be a dotted property, only a simple name.
-        /// </param>
-        /// <param name="beforeChanged">If true, signal just before the 
-        /// property value actually changes. If false, signal after the 
-        /// property changes.</param>
-        /// <returns>An IObservable which is signalled whenever the specified
-        /// property on the object changes. If this cannot be done for a 
-        /// specified value of beforeChanged, return Observable.Never</returns>
-        IObservable<IObservedChange<object, object>> GetNotificationForProperty(object sender, string propertyName, bool beforeChanged = false);
     }
 
     /// <summary>
-    /// This class is the extensible implementation of IValueConverters for 
-    /// Bind and OneWayBind. Implement this to teach Bind and OneWayBind how to
-    /// convert between types.
+    /// IReactiveList represents a read-only list that can notify when its
+    /// contents are changed (either items are added/removed, or the object
+    /// itself changes).
+    ///
+    /// It is important to implement the Changing/Changed from
+    /// IReactiveNotifyPropertyChanged semantically as "Fire when *anything* in
+    /// the collection or any of its items have changed, in any way".
     /// </summary>
-    public interface IBindingTypeConverter : IEnableLogger
+    public interface IReadOnlyReactiveList<out T> : IReadOnlyReactiveCollection<T>, IReadOnlyList<T>
     {
-        /// <summary>
-        /// Returns a positive integer when this class supports 
-        /// TryConvert for this particular Type. If the method isn't supported at 
-        /// all, return a non-positive integer. When multiple implementations 
-        /// return a positive value, the host will use the one which returns 
-        /// the highest value. When in doubt, return '2' or '0'.
-        /// </summary>
-        /// <param name="lhs">The left-hand object to compare (i.e. 'from')</param>
-        /// <param name="rhs">The right-hand object to compare (i.e. 'to')</param>
-        /// <returns>A positive integer if TryConvert is supported, 
-        /// zero or a negative value otherwise</returns>
-        int GetAffinityForObjects(Type lhs, Type rhs);
-
-        /// <summary>
-        /// Convert a given object to the specified type.
-        /// </summary>
-        /// <param name="from">The object to convert.</param>
-        /// <param name="toType">The type to coerce the object to.</param>
-        /// <param name="conversionHint">An implementation-defined value, 
-        /// usually to specify things like locale awareness.</param>
-        /// <returns>An object that is of the type 'to'</returns>
-        bool TryConvert(object from, Type toType, object conversionHint, out object result);
     }
 
     /// <summary>
-    /// Implement this to teach Bind and OneWayBind how to guess the most 
-    /// "common" property on a given control, so if the caller doesn't specify it,
-    /// it'll pick the right control
+    /// IReactiveDerivedList repreents a collection whose contents will "follow" another
+    /// collection; this method is useful for creating ViewModel collections
+    /// that are automatically updated when the respective Model collection is updated.
     /// </summary>
-    public interface IDefaultPropertyBindingProvider
+    public interface IReactiveDerivedList<T> : IReadOnlyReactiveList<T>, IDisposable
+    {
+    }
+
+    // NB: This is just a name we can bolt extension methods to
+    public interface INavigateCommand : IReactiveCommand { }
+
+    public interface IRoutingState : IReactiveNotifyPropertyChanged
     {
         /// <summary>
-        /// Given a certain control, figure out the default property to bind to
+        /// Represents the current navigation stack, the last element in the
+        /// collection being the currently visible ViewModel.
         /// </summary>
-        /// <param name="control">The control to look at.</param>
-        /// <returns>A tuple of PropertyName and Affinity for that property.
-        /// Use the same rules about affinity as others, but return null if
-        /// the property can't be determined.</returns>
-        Tuple<string, int> GetPropertyForControl(object control);
-    }
+        ReactiveList<IRoutableViewModel> NavigationStack { get; }
 
-    public enum BindingDirection
-    {
-        OneWay,
-        TwoWay,
-        AsyncOneWay,
-    }
+        /// <summary>
+        /// Navigates back to the previous element in the stack.
+        /// </summary>
+        IReactiveCommand NavigateBack { get; }
 
-    public interface IPropertyBindingHook
-    {
-        bool ExecuteHook(object source, object target, Func<IObservedChange<object, object>[]> getCurrentViewModelProperties, Func<IObservedChange<object, object>[]> getCurrentViewProperties, BindingDirection direction);
-    }
+        /// <summary>
+        /// Navigates to the a new element in the stack - the Execute parameter
+        /// must be a ViewModel that implements IRoutableViewModel.
+        /// </summary>
+        INavigateCommand Navigate { get; }
 
-    public interface IViewFor
-    {
-        object ViewModel { get; set; }
+        /// <summary>
+        /// Navigates to a new element and resets the navigation stack (i.e. the
+        /// new ViewModel will now be the only element in the stack) - the
+        /// Execute parameter must be a ViewModel that implements
+        /// IRoutableViewModel.
+        /// </summary>
+        INavigateCommand NavigateAndReset { get; }
+
+        IObservable<IRoutableViewModel> CurrentViewModel { get; }
     }
 
     /// <summary>
-    /// Implement this interface on your Views to support Routing and Binding.
+    /// Implement this interface for ViewModels that can be navigated to.
     /// </summary>
-    public interface IViewFor<T> : IViewFor
-        where T : class
+    public interface IRoutableViewModel : IReactiveNotifyPropertyChanged
     {
         /// <summary>
-        /// The ViewModel corresponding to this specific View. This should be
-        /// a DependencyProperty if you're using XAML.
+        /// A string token representing the current ViewModel, such as 'login' or 'user'
         /// </summary>
-        T ViewModel { get; set; }
+        string UrlPathSegment { get; }
+
+        /// <summary>
+        /// The IScreen that this ViewModel is currently being shown in. This
+        /// is usually passed into the ViewModel in the Constructor and saved
+        /// as a ReadOnly Property.
+        /// </summary>
+        IScreen HostScreen { get; }
     }
 
-    internal interface IWantsToRegisterStuff
-    {                       
-        void Register();
+    /// <summary>
+    /// Allows an additional string to make view resolution more specific than just a type.
+    /// </summary>
+    public class ViewContractAttribute : Attribute
+    {
+        /// <summary>
+        /// A unique string that will be used along with the type to resolve a View
+        /// </summary>
+        public string Contract { get; set; }
     }
 }
 

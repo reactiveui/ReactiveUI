@@ -1,13 +1,16 @@
-﻿$Archs = {"Net40", "Net45", "SL5", "SL4-WindowsPhone71", "WP8", "WinRT45", "Mono", "Monodroid", "Monotouch"}
-$Projects = {"ReactiveUI", "ReactiveUI.Testing", "ReactiveUI.Xaml", "ReactiveUI.Routing", "ReactiveUI.Blend", "ReactiveUI.Cocoa", "ReactiveUI.Gtk", "ReactiveUI.Android", "ReactiveUI.NLog", "ReactiveUI.Mobile"}
+﻿$Archs = {"Portable-Net45+WinRT45+WP8", "Net45", "WP8", "WinRT45", "Mono", "Monoandroid", "Monotouch", "Monomac"}
+$Projects = {
+    "ReactiveUI", "ReactiveUI.Testing", "ReactiveUI.Platforms", "ReactiveUI.Blend", 
+    "ReactiveUI.NLog", "ReactiveUI.Mobile", "RxUIViewModelGenerator", "ReactiveUI.Events"
+}
 
-$SlnFileExists = Test-Path ".\ReactiveUI.sln"
+$SlnFileExists = Test-Path ".\ReactiveUI_VSAll.sln"
 if ($SlnFileExists -eq $False) {
     echo "*** ERROR: Run this in the project root ***"
     exit -1
 }
 
-C:\Windows\Microsoft.NET\Framework\v4.0.30319\MSBuild.exe /t:Rebuild /p:Configuration=Release /p:Platform="Any CPU" /maxcpucount:1 .\ReactiveUI.sln
+C:\Windows\Microsoft.NET\Framework\v4.0.30319\MSBuild.exe /t:Rebuild /p:Configuration=Release /p:Platform="Any CPU" /maxcpucount:1 .\ReactiveUI_VSAll.sln
 
 ###
 ### Build the Release directory
@@ -42,11 +45,11 @@ cp -r .\NuGet .\NuGet-Release
 
 $libDirs = ls -r .\NuGet-Release | ?{$_.Name -eq "lib"}
 $srcDirs = ls -r .\NuGet-Release | ?{$_.Name -eq "src"} | %{ls $_.FullName}
+$toolsDirs = ls -r .\NuGet-Release | ?{$_.Name -eq "tools"}
 $nugetReleaseDir = Resolve-Path ".\NuGet-Release"
 
 # copy binaries
 foreach ($dir in $libDirs) {
-    $projName = $dir.FullName.Split("\\")[-2]
     $arches = ls $dir.FullName
     
     foreach ($arch in $arches) {
@@ -59,6 +62,20 @@ foreach ($dir in $libDirs) {
     }
 }
 
+# copy tools
+foreach ($dir in $toolsDirs) {
+    echo "foo"
+    echo $dir.FullName
+    $files = ls $dir.FullName
+
+    foreach ($file in $files) {
+        echo "bar" 
+        echo $file.FullName
+        $src = ".\Release\Net45\" + $file.Name
+        cp -fo "$src" $file.FullName
+    }        
+}
+
 # copy source
 foreach ($dir in $srcDirs) {
     $projName = $dir.Name
@@ -67,11 +84,11 @@ foreach ($dir in $srcDirs) {
     robocopy ".\$projFolderName\" "$($dir.FullName)" *.cs /S
 }
 
-$stubs = ls -r -file .\NuGet-Release | ?{$_.Length -eq 0}
+$stubs = ls -r -file .\NuGet-Release | ?{$_.Length -eq 0} | ?{!$_.FullName.Contains("src")}
 if ($stubs.Length -gt 0) {
     echo "*** BUILD FAILED ***"
     echo ""
-    echo "*** There are still stubs in the NuGet output, did you fully build? (Hint: Check Silverlight) ***"
+    echo "*** There are still stubs in the NuGet output, did you fully build? ***"
     #exit 1
 }
 

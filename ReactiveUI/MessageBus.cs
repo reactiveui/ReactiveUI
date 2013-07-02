@@ -24,6 +24,15 @@ namespace ReactiveUI
         readonly IDictionary<Tuple<Type, string>, IScheduler> schedulerMappings =
             new Dictionary<Tuple<Type, string>, IScheduler>();
 
+        static IMessageBus current = new MessageBus();
+
+        /// <summary>
+        /// Gets or sets the Current MessageBus.
+        /// </summary>
+        public static IMessageBus Current {
+            get { return current; }
+            set { current = value; }
+        }
 
         /// <summary>
         /// Registers a scheduler for the type, which may be specified at runtime, and the contract.
@@ -31,7 +40,7 @@ namespace ReactiveUI
         /// <remarks>If a scheduler is already registered for the specified runtime and contract, this will overrwrite the existing registration.</remarks>
         /// <typeparam name="T">The type of the message to listen to.</typeparam>
         /// <param name="scheduler">The scheduler on which to post the
-        /// notifications for the specified type and contract. RxApp.DeferredScheduler by default.</param>
+        /// notifications for the specified type and contract. RxApp.MainThreadScheduler by default.</param>
         /// <param name="contract">A unique string to distinguish messages with
         /// identical types (i.e. "MyCoolViewModel") - if the message type is
         /// only used for one purpose, leave this as null.</param>
@@ -54,7 +63,24 @@ namespace ReactiveUI
         {
             this.Log().Info("Listening to {0}:{1}", typeof (T), contract);
 
-            return SetupSubjectIfNecessary<T>(contract);
+            return setupSubjectIfNecessary<T>(contract).Skip(1);
+        }
+
+        /// <summary>
+        /// Listen provides an Observable that will fire whenever a Message is
+        /// provided for this object via RegisterMessageSource or SendMessage.
+        /// </summary>
+        /// <typeparam name="T">The type of the message to listen to.</typeparam>
+        /// <param name="contract">A unique string to distinguish messages with
+        /// identical types (i.e. "MyCoolViewModel") - if the message type is
+        /// only used for one purpose, leave this as null.</param>
+        /// <returns>An Observable representing the notifications posted to the
+        /// message bus.</returns>
+        public IObservable<T> ListenIncludeLatest<T>(string contract = null)
+        {
+            this.Log().Info("Listening to {0}:{1}", typeof(T), contract);
+
+            return setupSubjectIfNecessary<T>(contract);
         }
 
         /// <summary>
@@ -68,7 +94,7 @@ namespace ReactiveUI
         public bool IsRegistered(Type type, string contract = null)
         {
             bool ret = false;
-            WithMessageBus(type, contract, (mb, tuple) => { ret = mb.ContainsKey(tuple) && mb[tuple].IsAlive; });
+            withMessageBus(type, contract, (mb, tuple) => { ret = mb.ContainsKey(tuple) && mb[tuple].IsAlive; });
 
             return ret;
         }
@@ -88,7 +114,7 @@ namespace ReactiveUI
             IObservable<T> source,
             string contract = null)
         {
-            return source.Subscribe(SetupSubjectIfNecessary<T>(contract));
+            return source.Subscribe(setupSubjectIfNecessary<T>(contract));
         }
 
         /// <summary>
@@ -104,36 +130,28 @@ namespace ReactiveUI
         /// only used for one purpose, leave this as null.</param>
         public void SendMessage<T>(T message, string contract = null)
         {
-            SetupSubjectIfNecessary<T>(contract).OnNext(message);
+            setupSubjectIfNecessary<T>(contract).OnNext(message);
         }
 
-        /// <summary>
-        /// Returns the Current MessageBus from the RxApp global object.
-        /// </summary>
-        public static IMessageBus Current
-        {
-            get { return RxApp.MessageBus; }
-        }
-
-        ISubject<T> SetupSubjectIfNecessary<T>(string contract)
+        ISubject<T> setupSubjectIfNecessary<T>(string contract)
         {
             ISubject<T> ret = null;
 
-            WithMessageBus(typeof (T), contract, (mb, tuple) => {
+            withMessageBus(typeof (T), contract, (mb, tuple) => {
                 NotAWeakReference subjRef;
                 if (mb.TryGetValue(tuple, out subjRef) && subjRef.IsAlive) {
                     ret = (ISubject<T>)subjRef.Target;
                     return;
                 }
 
-                ret = new ScheduledSubject<T>(GetScheduler(tuple));
+                ret = new ScheduledSubject<T>(getScheduler(tuple), null, new BehaviorSubject<T>(default(T)));
                 mb[tuple] = new NotAWeakReference(ret);
             });
 
             return ret;
         }
 
-        void WithMessageBus(
+        void withMessageBus(
             Type type, string contract,
             Action<Dictionary<Tuple<Type, string>, NotAWeakReference>, 
             Tuple<Type, string>> block)
@@ -147,11 +165,11 @@ namespace ReactiveUI
             }
         }
 
-        IScheduler GetScheduler(Tuple<Type, string> tuple)
+        IScheduler getScheduler(Tuple<Type, string> tuple)
         {
             IScheduler scheduler;
             schedulerMappings.TryGetValue(tuple, out scheduler);
-            return scheduler ?? RxApp.DeferredScheduler;
+            return scheduler ?? RxApp.MainThreadScheduler;
         }
     }
 

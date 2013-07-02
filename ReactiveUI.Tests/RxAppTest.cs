@@ -3,8 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Concurrency;
 using System.Text;
-using ReactiveUI.Xaml;
 using Xunit;
+
+#if !MONO
+using ReactiveUI.Xaml;
+#endif
 
 namespace ReactiveUI.Tests
 {
@@ -14,36 +17,16 @@ namespace ReactiveUI.Tests
         [Fact]
         public void DepPropNotifierShouldBeFound()
         {
-            Assert.True(RxApp.GetAllServices<ICreatesObservableForProperty>()
+            Assert.True(RxApp.DependencyResolver.GetServices<ICreatesObservableForProperty>()
                 .Any(x => x is DependencyObjectObservableForProperty));
         }
 #endif
 
         [Fact]
-        public void SchedulerShouldBeImmediateInTestRunner()
+        public void SchedulerShouldBeCurrentThreadInTestRunner()
         {
-            Console.WriteLine(RxApp.DeferredScheduler.GetType().FullName);
-            Assert.Equal(Scheduler.Immediate, RxApp.DeferredScheduler);
-        }
-
-        [Fact]
-        public void OverridingInUnitTestRunnerShouldActuallyDoThat()
-        {
-            //Set a UnitTestScheduler
-            RxApp.InUnitTestRunnerOverride = true;
-            RxApp.DeferredScheduler = ImmediateScheduler.Instance;
-            
-            //Try to Override
-            RxApp.InUnitTestRunnerOverride = false;
-            RxApp.DeferredScheduler = ThreadPoolScheduler.Instance;
-
-
-            Assert.NotEqual(Scheduler.Immediate, RxApp.DeferredScheduler);
-
-            //Restore Schedulers
-            RxApp.InUnitTestRunnerOverride = true;
-            RxApp.DeferredScheduler = ImmediateScheduler.Instance;
-            RxApp.InUnitTestRunnerOverride = null;
+            Console.WriteLine(RxApp.MainThreadScheduler.GetType().FullName);
+            Assert.Equal(CurrentThreadScheduler.Instance, RxApp.MainThreadScheduler);
         }
 
         [Fact]
@@ -69,7 +52,7 @@ namespace ReactiveUI.Tests
                 "SHARPDEVELOP.EXE",
             };
 
-            var isInUnitTestRunner = RealUnitTestDetector.InUnitTestRunner(testAssemblies, designEnvironments);
+            var isInUnitTestRunner = PlatformUnitTestDetector.InUnitTestRunner(testAssemblies, designEnvironments);
 
             Assert.True(isInUnitTestRunner);
         }
@@ -77,10 +60,9 @@ namespace ReactiveUI.Tests
         [Fact]
         public void UnitTestDetectorDoesNotIdentifyThisTestWhenXUnitAssemblyNotChecked()
         {
-            // XUnit assembly name removed
+            // XUnit and NUnit assembly names removed
             string[] testAssembliesWithoutNunit = new[] {
                 "CSUNIT",
-                "NUNIT",
                 "MBUNIT",
                 "TESTDRIVEN",
                 "QUALITYTOOLS.TIPS.UNITTEST.ADAPTER",
@@ -97,7 +79,7 @@ namespace ReactiveUI.Tests
                 "SHARPDEVELOP.EXE",
             };
 
-            var isInUnitTestRunner = RealUnitTestDetector.InUnitTestRunner(testAssembliesWithoutNunit, designEnvironments);
+            var isInUnitTestRunner = PlatformUnitTestDetector.InUnitTestRunner(testAssembliesWithoutNunit, designEnvironments);
 
             Assert.False(isInUnitTestRunner);
         }

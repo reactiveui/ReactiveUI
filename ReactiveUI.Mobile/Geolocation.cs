@@ -11,8 +11,16 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xamarin.Geolocation;
 
+#if ANDROID
+using AndroidApp = Android.App.Application;
+#endif
+
 namespace ReactiveUI.Mobile
 {
+    /// <summary>
+    /// ReactiveGeolocator is an API to convert Xamarin Geolocation into 
+    /// something Rx-friendly.
+    /// </summary>
     public static class ReactiveGeolocator
     {
         [ThreadStatic] static IReactiveGeolocator _UnitTestImplementation;
@@ -30,6 +38,14 @@ namespace ReactiveUI.Mobile
             }
         }
 
+        /// <summary>
+        /// Returns an IObservable that continuously updates as the user's
+        /// physical location changes. It is super important to make sure to
+        /// dispose all subscriptions to this IObservable.
+        /// </summary>
+        /// <param name="minUpdateTime">Minimum update time.</param>
+        /// <param name="minUpdateDist">Minimum update dist.</param>
+        /// <param name="includeHeading">If set to <c>true</c> include heading.</param>
         public static IObservable<Position> Listen(int minUpdateTime, double minUpdateDist, bool includeHeading = false)
         {
             if (Implementation != null) {
@@ -38,7 +54,7 @@ namespace ReactiveUI.Mobile
 
             var ret = Observable.Create<Position>(subj => {
 #if ANDROID
-                var geo = new Geolocator(Android.App.Application.Context);
+                var geo = new Geolocator(AndroidApp.Context);
 #else
                 var geo = new Geolocator();
 #endif
@@ -69,6 +85,11 @@ namespace ReactiveUI.Mobile
             return ret.Multicast(new Subject<Position>()).RefCount();
         }
 
+        /// <summary>
+        /// Returns a single lookup of the user's current physical position
+        /// </summary>
+        /// <returns>The current physical location.</returns>
+        /// <param name="includeHeading">If set to <c>true</c> include heading.</param>
         public static IObservable<Position> GetPosition(bool includeHeading = false)
         {
             if (Implementation != null) {
@@ -78,7 +99,7 @@ namespace ReactiveUI.Mobile
 #if !WP7 && !WP8
             var ret = Observable.Create<Position>(subj => {
 #if ANDROID
-                var geo = new Geolocator(Android.App.Application.Context);
+                var geo = new Geolocator(AndroidApp.Context);
 #else
                 var geo = new Geolocator();
 #endif
@@ -110,7 +131,6 @@ namespace ReactiveUI.Mobile
             }).Multicast(new AsyncSubject<Position>());
 #endif
 
-
             return ret.RefCount();
         }
 
@@ -135,7 +155,7 @@ namespace ReactiveUI.Mobile
         public TestGeolocator(IObservable<Position> positionStream, IScheduler scheduler = null)
         {
             positionStream.Multicast(_latestPosition).Connect();
-            _scheduler = scheduler ?? RxApp.DeferredScheduler;
+            _scheduler = scheduler ?? RxApp.MainThreadScheduler;
         }
 
         public IObservable<Position> Listen(int minUpdateTime, double minUpdateDist, bool includeHeading = false)

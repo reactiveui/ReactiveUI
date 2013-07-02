@@ -13,20 +13,8 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using System.Threading;
-
 using System.Threading.Tasks;
-
-#if SILVERLIGHT
-using System.Windows;
-#endif
-
-#if WINRT
-using Windows.ApplicationModel;
-using System.Reactive.Windows.Foundation;
-using System.Reactive.Threading.Tasks;
-using Windows.ApplicationModel.Store;
-
-#endif
+using System.Runtime.CompilerServices;
 
 namespace ReactiveUI
 {
@@ -45,28 +33,19 @@ namespace ReactiveUI
      * classes, but when you start building applications on top of that, having to
      * have *every single* class have a default Scheduler property is really 
      * irritating, with either default making life difficult.
+     * 
+     * This class also initializes a whole bunch of other stuff, including the IoC container,
+     * logging and error handling.
      */
     public static class RxApp
     {
-        static RxApp()
+        public static void Initialize()
         {
-            // Default name for the field backing the "Foo" property => "_Foo"
-            // This is used for ReactiveObject's RaiseAndSetIfChanged mixin
-            GetFieldNameForPropertyNameFunc = new Func<string,string>(x => "_" + x);
-
-#if WP7
-            TaskpoolScheduler = new EventLoopScheduler();
-#elif WP8
-            //TaskpoolScheduler = Scheduler.TaskPool;
-            TaskpoolScheduler = Scheduler.ThreadPool;
-#elif SILVERLIGHT || DOTNETISOLDANDSAD
-            TaskpoolScheduler = Scheduler.ThreadPool;
-#elif WINRT            
-            TaskpoolScheduler = System.Reactive.Concurrency.ThreadPoolScheduler.Default;
+#if PORTABLE
+            _TaskpoolScheduler = Scheduler.TaskPool;
 #else
-            TaskpoolScheduler = Scheduler.TaskPool;
+            _TaskpoolScheduler = TaskPoolScheduler.Default;
 #endif
-
             DefaultExceptionHandler = Observer.Create<Exception>(ex => {
                 // NB: If you're seeing this, it means that an 
                 // ObservableAsPropertyHelper or the CanExecute of a 
@@ -76,86 +55,114 @@ namespace ReactiveUI
                     Debugger.Break();
                 }
 
-                RxApp.DeferredScheduler.Schedule(() => {
+                RxApp.MainThreadScheduler.Schedule(() => {
                     throw new Exception(
                         "An OnError occurred on an object (usually ObservableAsPropertyHelper) that would break a binding or command. To prevent this, Subscribe to the ThrownExceptions property of your objects",
                         ex);
                 });
             });
 
-            MessageBus = new MessageBus();
-
-            LoggerFactory = t => new DebugLogger();
-
-            RxApp.Register(typeof(INPCObservableForProperty), typeof(ICreatesObservableForProperty));
-            RxApp.Register(typeof(IRNPCObservableForProperty), typeof(ICreatesObservableForProperty));
-            RxApp.Register(typeof(POCOObservableForProperty), typeof(ICreatesObservableForProperty));
-            RxApp.Register(typeof(NullDefaultPropertyBindingProvider), typeof(IDefaultPropertyBindingProvider));
-            RxApp.Register(typeof(EqualityTypeConverter), typeof(IBindingTypeConverter));
-            RxApp.Register(typeof(StringConverter), typeof(IBindingTypeConverter));
-
-#if !SILVERLIGHT && !WINRT
-            RxApp.Register(typeof(ComponentModelTypeConverter), typeof(IBindingTypeConverter));
-#endif
-
-            var namespaces = attemptToEarlyLoadReactiveUIDLLs();
-
-            namespaces.ForEach(ns => {
-#if WINRT
-                var assm = typeof (RxApp).GetTypeInfo().Assembly;
-#else
-                var assm = Assembly.GetExecutingAssembly();
-#endif
-                var fullName = typeof (RxApp).AssemblyQualifiedName;
-                var targetType = ns + ".ServiceLocationRegistration";
-                fullName = fullName.Replace("ReactiveUI.RxApp", targetType);
-                fullName = fullName.Replace(assm.FullName, assm.FullName.Replace("ReactiveUI", ns));
-
-                var registerTypeClass = Reflection.ReallyFindType(fullName, false);
-                if (registerTypeClass != null) {
-                    var registerer = (IWantsToRegisterStuff) Activator.CreateInstance(registerTypeClass);
-                    registerer.Register();
-                }
-            });
+            initializeDependencyResolver();
 
             if (InUnitTestRunner()) {
-                LogHost.Default.Warn("*** Detected Unit Test Runner, setting Scheduler to Immediate ***");
+                LogHost.Default.Warn("*** Detected Unit Test Runner, setting MainThreadScheduler to CurrentThread ***");
                 LogHost.Default.Warn("If we are not actually in a test runner, please file a bug\n");
-                DeferredScheduler = Scheduler.Immediate;
+                _MainThreadScheduler = CurrentThreadScheduler.Instance;
+                return;
             } else {
                 LogHost.Default.Info("Initializing to normal mode");
             }
 
-            if (DeferredScheduler == null) {
-                LogHost.Default.Error("*** ReactiveUI.Xaml DLL reference not added - using Event Loop *** ");
-                LogHost.Default.Error("Add a reference to ReactiveUI.Xaml if you're using WPF / SL5 / WP7 / WinRT");
-                LogHost.Default.Error("or consider explicitly setting RxApp.DeferredScheduler if not");
-                RxApp.DeferredScheduler = new EventLoopScheduler();
+            if (_MainThreadScheduler == null) {
+#if !ANDROID
+                // NB: We can't initialize a scheduler automatically on Android
+                // because it is intrinsically tied to the current Activity, 
+                // so devs have to set it up by hand :-/
+                LogHost.Default.Error("*** ReactiveUI Platform DLL reference not added - using Default scheduler *** ");
+                LogHost.Default.Error("Add a reference to ReactiveUI.{Xaml / Cocoa / etc}.");
+                LogHost.Default.Error("or consider explicitly setting RxApp.MainThreadScheduler if not");
+#endif
+                _MainThreadScheduler = DefaultScheduler.Instance;
             }
         }
 
-        [ThreadStatic] static IScheduler _UnitTestDeferredScheduler;
-        static IScheduler _DeferredScheduler;
+        [ThreadStatic] static IDependencyResolver _UnitTestDependencyResolver;
+        static IDependencyResolver _DependencyResolver;
 
         /// <summary>
-        /// DeferredScheduler is the scheduler used to schedule work items that
+        /// Gets or sets the dependency resolver. This class is used throughout
+        /// ReactiveUI for many internal operations as well as for general use
+        /// by applications. If this isn't assigned on startup, a default, highly
+        /// capable implementation will be used, and it is advised for most people
+        /// to simply use the default implementation.
+        /// 
+        /// Note that to create your own and assign it to the global dependency
+        /// resolver, you must initialize it via calling InitializeResolver(), or
+        /// else ReactiveUI internal classes will not be registered and Bad Things™
+        /// will happen.
+        /// </summary>
+        /// <value>The dependency resolver.</value>
+        public static IDependencyResolver DependencyResolver {
+            get {
+                IDependencyResolver resolver = _UnitTestDependencyResolver ?? _DependencyResolver;
+                if (resolver == null) {
+                    //if we haven't initialized yet, do this once
+                    Initialize();
+                }
+
+                return _UnitTestDependencyResolver ?? _DependencyResolver;
+            }
+            set {
+                if (InUnitTestRunner()) {
+                    _UnitTestDependencyResolver = value;
+                    _DependencyResolver = _DependencyResolver ?? value;
+                } else {
+                    _DependencyResolver = value;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Convenience property to return the DependencyResolver cast to a
+        /// MutableDependencyResolver. The default resolver is also a mutable
+        /// resolver, so this will be non-null. Use this to register new types
+        /// on startup if you are using the default resolver
+        /// </summary>
+        public static IMutableDependencyResolver MutableResolver {
+            get { return DependencyResolver as IMutableDependencyResolver; }
+            set { DependencyResolver = value; }
+        }
+
+        [ThreadStatic] static IScheduler _UnitTestMainThreadScheduler;
+        static IScheduler _MainThreadScheduler;
+
+        /// <summary>
+        /// MainThreadScheduler is the scheduler used to schedule work items that
         /// should be run "on the UI thread". In normal mode, this will be
         /// DispatcherScheduler, and in Unit Test mode this will be Immediate,
         /// to simplify writing common unit tests.
         /// </summary>
-        public static IScheduler DeferredScheduler {
-            get { return _UnitTestDeferredScheduler ?? _DeferredScheduler; }
+        public static IScheduler MainThreadScheduler {
+            get {
+                var scheduler = _UnitTestMainThreadScheduler ?? _MainThreadScheduler;
+                if (scheduler == null) {
+                    //if we haven't initialized yet, do this once
+                    Initialize();
+                }
+
+                return _UnitTestMainThreadScheduler ?? _MainThreadScheduler;
+            }
             set {
                 // N.B. The ThreadStatic dance here is for the unit test case -
-                // often, each test will override DeferredScheduler with their
+                // often, each test will override MainThreadScheduler with their
                 // own TestScheduler, and if this wasn't ThreadStatic, they would
                 // stomp on each other, causing test cases to randomly fail,
                 // then pass when you rerun them.
                 if (InUnitTestRunner()) {
-                    _UnitTestDeferredScheduler = value;
-                    _DeferredScheduler = _DeferredScheduler ?? value;
+                    _UnitTestMainThreadScheduler = value;
+                    _MainThreadScheduler = _MainThreadScheduler ?? value;
                 } else {
-                    _DeferredScheduler = value;
+                    _MainThreadScheduler = value;
                 }
             }
         }
@@ -169,7 +176,15 @@ namespace ReactiveUI
         /// Task Pool (or the normal Threadpool on Silverlight).
         /// </summary>
         public static IScheduler TaskpoolScheduler {
-            get { return _UnitTestTaskpoolScheduler ?? _TaskpoolScheduler; }
+            get { 
+                var scheduler = _UnitTestTaskpoolScheduler ?? _TaskpoolScheduler;
+                if (scheduler == null) {
+                    // If we haven't initialized yet, do this once
+                    Initialize();
+                }
+
+                return _UnitTestTaskpoolScheduler ?? _TaskpoolScheduler;
+            }
             set {
                 if (InUnitTestRunner()) {
                     _UnitTestTaskpoolScheduler = value;
@@ -180,45 +195,30 @@ namespace ReactiveUI
             }
         }
 
-        static Func<Type, IRxUILogger> _LoggerFactory;
-        static internal readonly Subject<Unit> _LoggerFactoryChanged = new Subject<Unit>();
+        static IObserver<Exception> _DefaultExceptionHandler;
 
         /// <summary>
-        /// Set this property to implement a custom logger provider - the
-        /// string parameter is the 'prefix' (usually the class name of the log
-        /// entry)
+        /// This Observer is signalled whenever an object that has a 
+        /// ThrownExceptions property doesn't Subscribe to that Observable. Use
+        /// Observer.Create to set up what will happen - the default is to crash
+        /// the application with an error message.
         /// </summary>
-        public static Func<Type, IRxUILogger> LoggerFactory {
-            get { return _LoggerFactory; }
-            set { _LoggerFactory = value; _LoggerFactoryChanged.OnNext(Unit.Default); }
-        }
-
-        [ThreadStatic] static IMessageBus _UnitTestMessageBus;
-        static IMessageBus _MessageBus;
-
-        /// <summary>
-        /// Set this property to implement a custom MessageBus for
-        /// MessageBus.Current.
-        /// </summary>
-        public static IMessageBus MessageBus {
-            get { return _UnitTestMessageBus ?? _MessageBus; }
-            set {
-                if (InUnitTestRunner()) {
-                    _UnitTestMessageBus = value;
-                    _MessageBus = _MessageBus ?? value;
-                } else {
-                    _MessageBus = value;
+        public static IObserver<Exception> DefaultExceptionHandler {
+            get {
+                if (_DefaultExceptionHandler == null) {
+                    // If we haven't initialized yet, do this once
+                    Initialize();
                 }
+
+                return _DefaultExceptionHandler;
+            }
+            set {
+                _DefaultExceptionHandler = value;
             }
         }
 
-        /// <summary>
-        /// Set this property to override the default field naming convention
-        /// of "_PropertyName" with a custom one.
-        /// </summary>
-        public static Func<string, string> GetFieldNameForPropertyNameFunc { get; set; }
-
-        static bool? _InUnitTestRunnerOverride = null;
+        static bool? _InUnitTestRunnerOverride;
+        static bool? _InUnitTestRunner;
 
         /// <summary>
         /// This method allows you to override the return value of 
@@ -232,25 +232,15 @@ namespace ReactiveUI
                 _InUnitTestRunnerOverride = value;
 
                 if(value.HasValue && !value.Value) {
-                    _UnitTestDeferredScheduler = null;
+                    _UnitTestMainThreadScheduler = null;
                     _UnitTestTaskpoolScheduler = null;
                 }
             }
         }
 
         /// <summary>
-        /// This Observer is signalled whenever an object that has a 
-        /// ThrownExceptions property doesn't Subscribe to that Observable. Use
-        /// Observer.Create to set up what will happen - the default is to crash
-        /// the application with an error message.
-        /// </summary>
-        public static IObserver<Exception> DefaultExceptionHandler { get; set; }
-
-        static bool? _inUnitTestRunner;
-
-        /// <summary>
         /// InUnitTestRunner attempts to determine heuristically if the current
-        /// application is running in a unit test framework.
+        /// application is running in a unit test framework
         /// </summary>
         /// <returns>True if we have determined that a unit test framework is
         /// currently running.</returns>
@@ -260,275 +250,47 @@ namespace ReactiveUI
                 return InUnitTestRunnerOverride.Value;
             }
 
-            if (_inUnitTestRunner.HasValue) return _inUnitTestRunner.Value;
+            if (!_InUnitTestRunner.HasValue) {
+                // NB: This is in a separate static ctor to avoid a deadlock on 
+                // the static ctor lock when blocking on async methods 
+                _InUnitTestRunner = UnitTestDetector.IsInUnitTestRunner() || DesignModeDetector.IsInDesignMode();
+            }
 
-            // NB: This is in a separate static ctor to avoid a deadlock on 
-            // the static ctor lock when blocking on async methods 
-            _inUnitTestRunner = RealUnitTestDetector.InUnitTestRunner();
-            return _inUnitTestRunner.Value;
+            return _InUnitTestRunner.Value;
         }
-
 
         /// <summary>
-        /// GetFieldNameForProperty returns the corresponding backing field name
-        /// for a given property name, using the convention specified in
-        /// GetFieldNameForPropertyNameFunc.
+        /// This method will initialize your custom service locator with the 
+        /// built-in RxUI types. Use this to help initialize containers that
+        /// don't conform easily to IMutableDependencyResolver.
         /// </summary>
-        /// <param name="propertyName">The name of the property whose backing
-        /// field needs to be found.</param>
-        /// <returns>The backing field name.</returns>
-        public static string GetFieldNameForProperty(string propertyName)
+        /// <param name="registerMethod">Create a method here that will 
+        /// register a constant. For example, the NInject version of
+        /// this method might look like:
+        /// 
+        /// (obj, type) => kernel.Bind(type).ToConstant(obj)
+        /// </param>
+        public static void InitializeCustomResolver(Action<object, Type> registerMethod)
         {
-            return GetFieldNameForPropertyNameFunc(propertyName);
+            var fakeResolver = new FuncDependencyResolver(null,
+                (fac, type, str) => registerMethod(fac(), type));
+
+            fakeResolver.InitializeResolver();
         }
 
-
-        // 
-        // Service Location
-        //
-
-        static Func<Type, string, object> _getService;
-        static Func<Type, string, IEnumerable<object>> _getAllServices;
-        static Action<Type, Type, string> _register;
-
-        public static T GetService<T>(string key = null)
+        static void initializeDependencyResolver()
         {
-            return (T)GetService(typeof(T), key);
+            var resolver = new ModernDependencyResolver();
+
+            // NB: The reason that we need to do this is that logging itself
+            // is set up via dependency resolution - if we try to log while
+            // setting up the logger, we will end up StackOverflowException'ing
+            resolver.InitializeResolver();
+            _DependencyResolver = resolver;
         }
 
-        public static object GetService(Type type, string key = null)
-        {
-            if (_getService != null) goto callSl;
-
-            lock (_preregisteredTypes) {
-                if (_preregisteredTypes.Count == 0) goto callSl;
-
-                var k = Tuple.Create(type, key);
-                if (!_preregisteredTypes.ContainsKey(k)) goto callSl;
-                return Activator.CreateInstance(_preregisteredTypes[k].First());
-            }
-            
-        callSl:
-            var getService = _getService ??
-                ((_, __) => { throw new Exception("You need to call RxApp.ConfigureServiceLocator to set up service location"); });
-            return getService(type, key);
-        }
-
-        public static IEnumerable<T> GetAllServices<T>(string key = null)
-        {
-            return GetAllServices(typeof(T), key).Cast<T>().ToArray();
-        }
-
-        public static IEnumerable<object> GetAllServices(Type type, string key = null)
-        {
-            if (_getAllServices != null) goto callSl;
-
-            lock (_preregisteredTypes) {
-                if (_preregisteredTypes.Count == 0) goto callSl;
-
-                var k = Tuple.Create(type, key);
-                if (!_preregisteredTypes.ContainsKey(k)) goto callSl;
-                return _preregisteredTypes[k].Select(Activator.CreateInstance).ToArray();
-            }
-            
-        callSl:
-            var getAllServices = _getAllServices ??
-                ((_,__) => { throw new Exception("You need to call RxApp.ConfigureServiceLocator to set up service location"); });
-            return (getAllServices(type, key) ?? Enumerable.Empty<object>()).ToArray();
-        }
-
-        static readonly Dictionary<Tuple<Type, string>, List<Type>> _preregisteredTypes = new Dictionary<Tuple<Type, string>, List<Type>>();
-        public static void Register(Type concreteType, Type interfaceType, string key = null)
-        {
-            // NB: This allows ReactiveUI itself (as well as other libraries) 
-            // to register types before the actual service locator is set up,
-            // or to serve as an ultra-crappy service locator if the app doesn't
-            // use service location
-            lock (_preregisteredTypes) {
-                if (_register == null) {
-                    var k = Tuple.Create(interfaceType, key);
-                    if (!_preregisteredTypes.ContainsKey(k)) _preregisteredTypes[k] = new List<Type>();
-                    _preregisteredTypes[k].Add(concreteType);
-                } else {
-                    _register(concreteType, interfaceType, key);
-                }
-            }
-        }
-
-        public static void ConfigureServiceLocator(
-            Func<Type, string, object> getService, 
-            Func<Type, string, IEnumerable<object>> getAllServices,
-            Action<Type, Type, string> register)
-        {
-            if (getService == null || getAllServices == null || register == null) {
-                throw new ArgumentException("Both getService and getAllServices must be implemented");
-            }
-
-            _getService = getService;
-            _getAllServices = getAllServices;
-            _register = register;
-
-            // Empty out the types that were registered before service location
-            // was set up.
-            lock (_preregisteredTypes) {
-                _preregisteredTypes.Keys
-                    .SelectMany(x => _preregisteredTypes[x]
-                        .Select(v => Tuple.Create(v, x.Item1, x.Item2)))
-                    .ForEach(x => _register(x.Item1, x.Item2, x.Item3));
-            }
-        }
-
-        public static bool IsServiceLocationConfigured()
-        {
-            return _getService != null && _getAllServices != null;
-        }
-
-        static IEnumerable<string> attemptToEarlyLoadReactiveUIDLLs()
-        {
-            var guiLibs = new[] {
-                "ReactiveUI.Xaml",
-                "ReactiveUI.Routing",
-                "ReactiveUI.Gtk",
-                "ReactiveUI.Cocoa",
-                "ReactiveUI.Android",
-                "ReactiveUI.NLog",
-                "ReactiveUI.Mobile",
-            };
-
-#if WINRT || WP8
-            // NB: WinRT hates your Freedom
-            return new[] {"ReactiveUI.Xaml", "ReactiveUI.Routing", "ReactiveUI.Mobile", };
-#elif SILVERLIGHT
-            return new[] {"ReactiveUI.Xaml", "ReactiveUI.Routing"};
-#else
-            var name = Assembly.GetExecutingAssembly().GetName();
-            var suffix = getArchSuffixForPath(Assembly.GetExecutingAssembly().Location);
-
-            return guiLibs.SelectMany(x => {
-                var fullName = String.Format("{0}{1}, Version={2}, Culture=neutral, PublicKeyToken=null", x, suffix, name.Version.ToString());
-
-                var assemblyLocation = Assembly.GetExecutingAssembly().Location;
-                if (String.IsNullOrEmpty(assemblyLocation))
-                    return Enumerable.Empty<string>();
-
-                var path = Path.Combine(Path.GetDirectoryName(assemblyLocation), x + suffix + ".dll");
-                if (!File.Exists(path) && !RxApp.InUnitTestRunner()) {
-                    LogHost.Default.Debug("Couldn't find {0}", path);
-                    return Enumerable.Empty<string>();
-                }
-
-                try {
-                    Assembly.Load(fullName);
-                    return new[] {x};
-                } catch (Exception ex) {
-                    LogHost.Default.DebugException("Couldn't load " + x, ex);
-                    return Enumerable.Empty<string>();
-                }
-            });
-#endif
-        }
-
-        static string getArchSuffixForPath(string path)
-        {
-            var re = new Regex(@"(_[A-Za-z0-9]+)\.");
-            var m = re.Match(Path.GetFileName(path));
-            return m.Success ? m.Groups[1].Value : "";
-        }
-    }
-
-    public class NullDefaultPropertyBindingProvider : IDefaultPropertyBindingProvider
-    {
-        public Tuple<string, int> GetPropertyForControl(object control)
-        {
-            return null;
-        }
-    }
-
-    internal static class RealUnitTestDetector
-    {
-        public static bool InUnitTestRunner(string[] testAssemblies, string[] designEnvironments)
-        {
-#if SILVERLIGHT
-            // NB: Deployment.Current.Parts throws an exception when accessed in Blend
-            try {
-                var ret = Deployment.Current.Parts.Any(x =>
-                    testAssemblies.Any(name => x.Source.ToUpperInvariant().Contains(name)));
-
-                if (ret) {
-                    return ret;
-                }
-            } catch(Exception) {
-                return true;
-            }
-
-            try {
-                if (Application.Current.RootVisual != null && System.ComponentModel.DesignerProperties.GetIsInDesignMode(Application.Current.RootVisual)) {
-                    return false;
-                }
-            } catch {
-                return true;
-            }
-
-            return false;
-#elif WINRT
-            if (DesignMode.DesignModeEnabled) return true;
-
-            var depPackages = Package.Current.Dependencies.Select(x => x.Id.FullName);
-            if (depPackages.Any(x => testAssemblies.Any(name => x.ToUpperInvariant().Contains(name)))) return true;
-
-
-            var fileTask = Task.Factory.StartNew(async () =>
-            {
-                var files = await Package.Current.InstalledLocation.GetFilesAsync();
-                return files.Select(x => x.Path).ToArray();
-            }, TaskCreationOptions.HideScheduler).Unwrap();
-
-            return fileTask.Result.Any(x => testAssemblies.Any(name => x.ToUpperInvariant().Contains(name)));
-#else
-            // Try to detect whether we're in design mode - bonus points, 
-            // without access to any WPF references :-/
-            var entry = Assembly.GetEntryAssembly();
-            if (entry != null) {
-                var exeName = (new FileInfo(entry.Location)).Name.ToUpperInvariant(); 
-
-                if (designEnvironments.Any(x => x.Contains(exeName))) {
-                    return true;
-                }
-            }
-
-            return AppDomain.CurrentDomain.GetAssemblies().Any(x =>
-                testAssemblies.Any(name => x.FullName.ToUpperInvariant().Contains(name)));
-#endif
-        }
-
-        public static bool InUnitTestRunner()
-        {
-            // XXX: This is hacky and evil, but I can't think of any better way
-            // to do this
-            string[] testAssemblies = new[] {
-                "CSUNIT",
-                "NUNIT",
-                "XUNIT",
-                "MBUNIT",
-                "TESTDRIVEN",
-                "QUALITYTOOLS.TIPS.UNITTEST.ADAPTER",
-                "QUALITYTOOLS.UNITTESTING.SILVERLIGHT",
-                "MSBUILD",
-                "NBEHAVE",
-                "TESTPLATFORM",
-            };
-
-            string[] designEnvironments = new[] {
-                "BLEND.EXE",
-                "MONODEVELOP",
-                "SHARPDEVELOP.EXE",
-                "XDESPROC.EXE",
-            };
-
-            return InUnitTestRunner(testAssemblies, designEnvironments);
-        }
-
-    }
+        static internal bool suppressLogging { get; set; }
+    }    
 }
 
 // vim: tw=120 ts=4 sw=4 et :
