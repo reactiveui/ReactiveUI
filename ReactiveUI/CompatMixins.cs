@@ -19,23 +19,10 @@ namespace ReactiveUI
             return This.Take(This.Count() - count);
         }
 
-        public static IObservable<T> PermaRef<T>(this IConnectableObservable<T> This)
+        internal static IObservable<T> PermaRef<T>(this IConnectableObservable<T> This)
         {
             This.Connect();
             return This;
         }
-
-#if WP7
-        public static bool HasFlag(this Enum This, Enum value)
-        {
-            // check if from the same type.
-            if (This.GetType() != value.GetType())
-            {
-                throw new ArgumentException("The checked flag is not from the same type as the checked variable.");
-            }
-
-            return (Convert.ToUInt64(This) & Convert.ToUInt64(value)) != 0;
-        }
-#endif
     }
 }

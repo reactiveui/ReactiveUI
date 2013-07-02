@@ -10,52 +10,58 @@ namespace ReactiveUI.Tests
     [DataContract]
     public class TestFixture : ReactiveObject
     {
-        [DataMember]
-        public string _IsNotNullString;
         [IgnoreDataMember]
+        string _IsNotNullString;
+        [DataMember]
         public string IsNotNullString {
             get { return _IsNotNullString; }
-            set { this.RaiseAndSetIfChanged(x => x.IsNotNullString, ref _IsNotNullString, value); }
+            set { this.RaiseAndSetIfChanged(ref _IsNotNullString, value); }
         }
 
-        [DataMember]
-        public string _IsOnlyOneWord;
         [IgnoreDataMember]
+        string _IsOnlyOneWord;
+        [DataMember]
         public string IsOnlyOneWord {
             get { return _IsOnlyOneWord; }
-            set { this.RaiseAndSetIfChanged(x => x.IsOnlyOneWord, ref _IsOnlyOneWord, value); }
+            set { this.RaiseAndSetIfChanged(ref _IsOnlyOneWord, value); }
         }
 
-        [DataMember]
-        public List<string> _StackOverflowTrigger;
         [IgnoreDataMember]
+        List<string> _StackOverflowTrigger;
+        [DataMember]
         public List<string> StackOverflowTrigger {
             get { return _StackOverflowTrigger; }
-            set { this.RaiseAndSetIfChanged(value.ToList()); }
+            set { this.RaiseAndSetIfChanged(ref _StackOverflowTrigger, value.ToList()); }
         }
 
-        [DataMember]
-        public string _UsesExprRaiseSet;
         [IgnoreDataMember]
+        string _UsesExprRaiseSet;
+        [DataMember]
         public string UsesExprRaiseSet {
             get { return _UsesExprRaiseSet; }
-            set { this.RaiseAndSetIfChanged(x => x.UsesExprRaiseSet, ref _UsesExprRaiseSet, value); }
+            set { this.RaiseAndSetIfChanged(ref _UsesExprRaiseSet, value); }
         }
 
-        [DataMember]
-        public string _PocoProperty;
         [IgnoreDataMember]
+        string _PocoProperty;
+        [DataMember]
         public string PocoProperty {
             get { return _PocoProperty; }
             set { _PocoProperty = value; }
         }
 
         [DataMember]
-        public ReactiveCollection<int> TestCollection { get; protected set; }
+        public ReactiveList<int> TestCollection { get; protected set; }
+
+        string _NotSerialized;
+        public string NotSerialized {
+            get { return _NotSerialized; }
+            set { this.RaiseAndSetIfChanged(ref _NotSerialized, value); }
+        }
 
         public TestFixture()
         {
-            TestCollection = new ReactiveCollection<int>() {ChangeTrackingEnabled = true};
+            TestCollection = new ReactiveList<int>() {ChangeTrackingEnabled = true};
         }
     }
 
@@ -64,9 +70,6 @@ namespace ReactiveUI.Tests
         [Fact]        
         public void ReactiveObjectSmokeTest()
         {
-#if IOS
-            Assert.Fail("This crashes Mono in a quite spectacular way");
-#endif
             var output_changing = new List<string>();
             var output = new List<string>();
             var fixture = new TestFixture();
@@ -104,10 +107,6 @@ namespace ReactiveUI.Tests
         [Fact]
         public void RaiseAndSetUsingExpression()
         {
-#if IOS
-            Assert.Fail("This crashes Mono in a quite spectacular way");
-#endif
-            
             var fixture = new TestFixture() { IsNotNullString = "Foo", IsOnlyOneWord = "Baz" };
             var output = new List<string>();
             fixture.Changed.Subscribe(x => output.Add(x.PropertyName));
@@ -153,10 +152,6 @@ namespace ReactiveUI.Tests
             string before_set = "Foo";
             string after_set = "Bar"; 
             
-#if IOS
-        Assert.Fail("This crashes Mono in a quite spectacular way");
-#endif
-            
             var fixture = new TestFixture() { IsOnlyOneWord = before_set };
 
             bool before_fired = false;
@@ -181,6 +176,18 @@ namespace ReactiveUI.Tests
 
             Assert.True(before_fired);
             Assert.True(after_fired);
+        }
+
+        [Fact]
+        public void ExceptionsThrownInSubscribersShouldMarshalToThrownExceptions()
+        {
+            var fixture = new TestFixture() { IsOnlyOneWord = "Foo" };
+
+            fixture.Changed.Subscribe(x => { throw new Exception("Die!"); });
+            var exceptionList = fixture.ThrownExceptions.CreateCollection();
+
+            fixture.IsOnlyOneWord = "Bar";
+            Assert.Equal(1, exceptionList.Count);
         }
     }
 }

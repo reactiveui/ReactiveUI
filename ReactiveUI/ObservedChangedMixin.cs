@@ -32,7 +32,7 @@ namespace ReactiveUI
         /// expression.</param>
         /// <returns>True if the entire expression was able to be followed,
         /// false otherwise</returns>
-        public static bool TryGetValue<TSender, TValue>(this IObservedChange<TSender, TValue> This, out TValue changeValue)
+        internal static bool TryGetValue<TSender, TValue>(this IObservedChange<TSender, TValue> This, out TValue changeValue)
         {
             if (!Equals(This.Value, default(TValue))) {
                 changeValue = This.Value;
@@ -64,7 +64,7 @@ namespace ReactiveUI
         /// </summary>
         /// <param name="target">The target object to apply the change to.</param>
         /// <param name="property">The target property to apply the change to.</param>
-        public static void SetValueToProperty<TSender, TValue, TTarget>(
+        internal static void SetValueToProperty<TSender, TValue, TTarget>(
             this IObservedChange<TSender, TValue> This, 
             TTarget target,
             Expression<Func<TTarget, TValue>> property)
@@ -82,29 +82,6 @@ namespace ReactiveUI
 		    this IObservable<IObservedChange<TSender, TValue>> This)
         {
             return This.Select(GetValue);
-        }
-
-        /// <summary>
-        /// ValueIfNotDefault is similar to Value(), but filters out null values
-        /// from the stream.
-        /// </summary>
-        /// <returns>An Observable representing the stream of current values of
-        /// the given change notification stream.</returns>
-        public static IObservable<TValue> ValueIfNotDefault<TSender, TValue>(
-		    this IObservable<IObservedChange<TSender, TValue>> This)
-        {
-            return This.Value().Where(x => EqualityComparer<TValue>.Default.Equals(x, default(TValue)) == false);
-        }
-
-        /// <summary>
-        /// Given a stream of notification changes, this method will convert 
-        /// the property changes to the current value of the property.
-        /// </summary>
-        public static IObservable<TRet> Value<TSender, TValue, TRet>(
-                this IObservable<IObservedChange<TSender, TValue>> This)
-        {
-            // XXX: There is almost certainly a non-retarded way to do this
-            return This.Select(x => (TRet)((object)GetValue(x)));
         }
     }
 }

@@ -1,0 +1,89 @@
+﻿using System;
+using System.Reactive;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
+
+{{#Namespaces}}
+using {{Name}};
+{{/Namespaces}}
+{{#DelegateNamespaces}}
+using {{Name}};
+{{/DelegateNamespaces}}
+
+{{#Namespaces}}
+namespace {{Name}}
+{
+    public static class EventsMixin
+    {
+{{#Types}}
+        public static {{Name}}Events Events(this {{Name}} This)
+        {
+            return new {{Name}}Events(This);
+        }
+{{/Types}}
+    }
+
+{{#Types}}
+    public class {{Name}}Events
+{{#Parent}}
+        : {{Name}}Events
+{{/Parent}}
+    {
+        {{Name}} This;
+
+        public {{Name}}Events({{Name}} This)
+{{#Parent}}
+            : base(This)
+{{/Parent}}
+        {
+            this.This = This;
+        }
+
+{{#Events}}
+        public IObservable<{{EventArgsType}}> {{Name}} {
+            get { return Observable.FromEventPattern<{{EventHandlerType}}, {{EventArgsType}}>(x => This.{{Name}} += x, x => This.{{Name}} -= x).Select(x => x.EventArgs); }
+        }
+
+{{/Events}}
+    }
+{{/Types}}
+}
+{{/Namespaces}}
+
+{{#DelegateNamespaces}}
+namespace {{Name}}.Rx
+{
+{{#Types}}
+    public {{Abstract}} partial class {{Name}}Rx : {{Name}}
+    {
+{{#ZeroParameterMethods}}
+        protected readonly Subject<Unit> _{{Name}} = new Subject<Unit>();
+        public IObservable<Unit> {{Name}}Obs { get { return _{{Name}}; } }
+        public override void {{Name}}()
+        {
+            _{{Name}}.OnNext(Unit.Default);
+        }
+
+{{/ZeroParameterMethods}}
+{{#SingleParameterMethods}}
+        protected readonly Subject<{{ParameterType}}> _{{Name}} = new Subject<{{ParameterType}}>();
+        public IObservable<{{ParameterType}}> {{Name}}Obs { get { return _{{Name}}; } }
+        public override void {{Name}}({{ParameterType}} {{ParameterName}})
+        {
+            _{{Name}}.OnNext({{ParameterName}});
+        }
+
+{{/SingleParameterMethods}}
+{{#MultiParameterMethods}}
+        protected readonly Subject<Tuple<{{ParameterTypeList}}>> _{{Name}} = new Subject<Tuple<{{ParameterTypeList}}>>();
+        public IObservable<Tuple<{{ParameterTypeList}}>> {{Name}}Obs { get { return _{{Name}}; } }
+        public override void {{Name}}({{ParameterList}})
+        {
+            _{{Name}}.OnNext(Tuple.Create({{ParameterNameList}}));
+        }
+
+{{/MultiParameterMethods}}
+    }
+{{/Types}}
+}
+{{/DelegateNamespaces}}

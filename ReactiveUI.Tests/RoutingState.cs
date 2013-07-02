@@ -11,7 +11,7 @@ namespace ReactiveUI.Routing.Tests
         string _SomeProp;
         public string SomeProp {
             get { return _SomeProp; }
-            set { this.RaiseAndSetIfChanged(x => x.SomeProp, value); }
+            set { this.RaiseAndSetIfChanged(ref _SomeProp, value); }
         }
 
         public string UrlPathSegment {
@@ -24,6 +24,15 @@ namespace ReactiveUI.Routing.Tests
         }
     }
 
+    public class TestScreen : ReactiveObject, IScreen
+    {
+        IRoutingState _Router;
+        public IRoutingState Router {
+            get { return _Router; }
+            set { this.RaiseAndSetIfChanged(ref _Router, value); }
+        }
+    }
+
     public class RoutingStateTests
     {
         [Fact]
@@ -32,18 +41,13 @@ namespace ReactiveUI.Routing.Tests
             var input = new TestViewModel() {SomeProp = "Foo"};
             var fixture = new RoutingState();
 
-            RxApp.ConfigureServiceLocator(
-                (t, s) => new TestViewModel() {SomeProp = "Foo"},
-                (t, s) => Enumerable.Empty<object>(),
-                (c, t, s) => { });
-
             Assert.False(fixture.NavigateBack.CanExecute(input));
-            fixture.Navigate.Go<TestViewModel>();
+            fixture.Navigate.Execute(new TestViewModel());
 
             Assert.Equal(1, fixture.NavigationStack.Count);
             Assert.False(fixture.NavigateBack.CanExecute(null));
 
-            fixture.Navigate.Go<TestViewModel>();
+            fixture.Navigate.Execute(new TestViewModel());
 
             Assert.Equal(2, fixture.NavigationStack.Count);
             Assert.True(fixture.NavigateBack.CanExecute(null));
@@ -51,6 +55,47 @@ namespace ReactiveUI.Routing.Tests
             fixture.NavigateBack.Execute(null);
 
             Assert.Equal(1, fixture.NavigationStack.Count);
+        }
+
+        [Fact]
+        public void CurrentViewModelObservableIsAccurate()
+        {
+            var fixture = new RoutingState();
+            var output = fixture.CurrentViewModel.CreateCollection();
+
+            Assert.Equal(1, output.Count);
+
+            fixture.Navigate.Execute(new TestViewModel() { SomeProp = "A" });
+            Assert.Equal(2, output.Count);
+
+            fixture.Navigate.Execute(new TestViewModel() { SomeProp = "B" });
+            Assert.Equal(3, output.Count);
+            Assert.Equal("B", ((TestViewModel)output.Last()).SomeProp);
+
+            fixture.NavigateBack.Execute(null);
+            Assert.Equal(4, output.Count);
+            Assert.Equal("A", ((TestViewModel)output.Last()).SomeProp);
+        }
+
+        [Fact]
+        public void CurrentViewModelObservableIsAccurateViaWhenAnyObservable()
+        {
+            var fixture = new TestScreen();
+            var output = fixture.WhenAnyObservable(x => x.Router.CurrentViewModel).CreateCollection();
+            fixture.Router = new RoutingState();
+
+            Assert.Equal(1, output.Count);
+
+            fixture.Router.Navigate.Execute(new TestViewModel() { SomeProp = "A" });
+            Assert.Equal(2, output.Count);
+
+            fixture.Router.Navigate.Execute(new TestViewModel() { SomeProp = "B" });
+            Assert.Equal(3, output.Count);
+            Assert.Equal("B", ((TestViewModel)output.Last()).SomeProp);
+
+            fixture.Router.NavigateBack.Execute(null);
+            Assert.Equal(4, output.Count);
+            Assert.Equal("A", ((TestViewModel)output.Last()).SomeProp);
         }
     }
 }

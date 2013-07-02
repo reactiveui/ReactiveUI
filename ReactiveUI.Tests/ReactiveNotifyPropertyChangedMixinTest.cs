@@ -8,12 +8,15 @@ using System.Reactive.Linq;
 using System.Text;
 using System.Threading;
 using System.Windows;
-using System.Windows.Controls;
 using ReactiveUI.Testing;
-using ReactiveUI.Xaml;
 using Xunit;
 
 using Microsoft.Reactive.Testing;
+
+#if !MONO
+using System.Windows.Controls;
+using ReactiveUI.Xaml;
+#endif
 
 namespace ReactiveUI.Tests
 {
@@ -34,19 +37,19 @@ namespace ReactiveUI.Tests
         public TestFixture _Child;
         public TestFixture Child {
             get { return _Child; }
-            set { this.RaiseAndSetIfChanged(x => x.Child, value); }
+            set { this.RaiseAndSetIfChanged(ref _Child, value); }
         }
 
         public int _SomeOtherParam;
         public int SomeOtherParam {
             get { return _SomeOtherParam; }
-            set { this.RaiseAndSetIfChanged(x => x.SomeOtherParam, value); }
+            set { this.RaiseAndSetIfChanged(ref _SomeOtherParam, value); }
         }
 
         public NonObservableTestFixture _PocoChild;
         public NonObservableTestFixture PocoChild {
             get { return _PocoChild; }
-            set { this.RaiseAndSetIfChanged(x => x.PocoChild, value); }
+            set { this.RaiseAndSetIfChanged(ref _PocoChild, value); }
         }
     }
 
@@ -75,27 +78,12 @@ namespace ReactiveUI.Tests
         }
     }
 
-    public class HostTestView : Control, IViewFor<HostTestFixture>
-    {
-        public HostTestFixture ViewModel {
-            get { return (HostTestFixture)GetValue(ViewModelProperty); }
-            set { SetValue(ViewModelProperty, value); }
-        }
-        public static readonly DependencyProperty ViewModelProperty =
-            DependencyProperty.Register("ViewModel", typeof(HostTestFixture), typeof(HostTestView), new PropertyMetadata(null));
-
-        object IViewFor.ViewModel {
-            get { return ViewModel; }
-            set { ViewModel = (HostTestFixture) value; }
-        }
-    }
-
     public class ObjChain1 : ReactiveObject
     {
         public ObjChain2 _Model = new ObjChain2();
         public ObjChain2 Model {
             get { return _Model; }
-            set { this.RaiseAndSetIfChanged(x => x.Model, value); }
+            set { this.RaiseAndSetIfChanged(ref _Model, value); }
         }
     }
 
@@ -104,7 +92,7 @@ namespace ReactiveUI.Tests
         public ObjChain3 _Model = new ObjChain3();
         public ObjChain3 Model {
             get { return _Model; }
-            set { this.RaiseAndSetIfChanged(x => x.Model, value); }
+            set { this.RaiseAndSetIfChanged(ref _Model, value); }
         }
     }
 
@@ -113,7 +101,7 @@ namespace ReactiveUI.Tests
         public HostTestFixture _Model = new HostTestFixture();
         public HostTestFixture Model {
             get { return _Model; }
-            set { this.RaiseAndSetIfChanged(x => x.Model, value); }
+            set { this.RaiseAndSetIfChanged(ref _Model, value); }
         }
     }
 
@@ -436,29 +424,7 @@ namespace ReactiveUI.Tests
             });
         }
 
-        [Fact]
-        public void WhenAnyThroughAViewShouldntGiveNullValues()
-        {
-            var vm = new HostTestFixture() {
-                Child = new TestFixture() {IsNotNullString = "Foo", IsOnlyOneWord = "Baz", PocoProperty = "Bamf"},
-            };
 
-            var fixture = new HostTestView();
-
-            var output = new List<string>();
-
-            Assert.Equal(0, output.Count);
-            Assert.Null(fixture.ViewModel);
-
-            fixture.WhenAny(x => x.ViewModel.Child.IsNotNullString, x => x.Value).Subscribe(output.Add);
-
-            fixture.ViewModel = vm;
-            Assert.Equal(1, output.Count);
-
-            fixture.ViewModel.Child.IsNotNullString = "Bar";
-            Assert.Equal(2, output.Count);
-            new[] { "Foo", "Bar" }.AssertAreEqual(output);
-        }
     }
 
     public class WhenAnyObservableTests
@@ -489,4 +455,47 @@ namespace ReactiveUI.Tests
         }
     }
 
+#if !MONO
+    public class HostTestView : Control, IViewFor<HostTestFixture>
+    {
+        public HostTestFixture ViewModel {
+            get { return (HostTestFixture)GetValue(ViewModelProperty); }
+            set { SetValue(ViewModelProperty, value); }
+        }
+        public static readonly DependencyProperty ViewModelProperty =
+            DependencyProperty.Register("ViewModel", typeof(HostTestFixture), typeof(HostTestView), new PropertyMetadata(null));
+
+        object IViewFor.ViewModel {
+            get { return ViewModel; }
+            set { ViewModel = (HostTestFixture) value; }
+        }
+    }
+
+    public class WhenAnyThroughDependencyObjectTests
+    {
+        [Fact]
+        public void WhenAnyThroughAViewShouldntGiveNullValues()
+        {
+            var vm = new HostTestFixture() {
+                Child = new TestFixture() {IsNotNullString = "Foo", IsOnlyOneWord = "Baz", PocoProperty = "Bamf"},
+            };
+
+            var fixture = new HostTestView();
+
+            var output = new List<string>();
+
+            Assert.Equal(0, output.Count);
+            Assert.Null(fixture.ViewModel);
+
+            fixture.WhenAny(x => x.ViewModel.Child.IsNotNullString, x => x.Value).Subscribe(output.Add);
+
+            fixture.ViewModel = vm;
+            Assert.Equal(1, output.Count);
+
+            fixture.ViewModel.Child.IsNotNullString = "Bar";
+            Assert.Equal(2, output.Count);
+            new[] { "Foo", "Bar" }.AssertAreEqual(output);
+        }
+    }
+#endif
 }

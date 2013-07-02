@@ -46,7 +46,7 @@ namespace ReactiveUI
             Contract.Requires(observable != null);
             Contract.Requires(onChanged != null);
 
-            scheduler = scheduler ?? RxApp.DeferredScheduler;
+            scheduler = scheduler ?? RxApp.MainThreadScheduler;
             _lastValue = initialValue;
 
             var subj = new ScheduledSubject<T>(scheduler);
@@ -86,7 +86,7 @@ namespace ReactiveUI
         /// Fires whenever an exception would normally terminate ReactiveUI 
         /// internal state.
         /// </summary>
-        public IObservable<Exception> ThrownExceptions { get; protected set; }
+        public IObservable<Exception> ThrownExceptions { get; private set; }
 
         public IDisposable Subscribe(IObserver<T> observer)
         {
@@ -116,22 +116,7 @@ namespace ReactiveUI
 
     public static class OAPHCreationHelperMixin
     {
-        /// <summary>
-        /// Converts an Observable to an ObservableAsPropertyHelper and
-        /// automatically provides the onChanged method to raise the property
-        /// changed notification. The ToProperty method is semantically
-        /// equivalent to this method and is often more convenient.
-        /// </summary>
-        /// <param name="observable">The Observable to base the property on.</param>
-        /// <param name="property">An Expression representing the property (i.e.
-        /// 'x => x.SomeProperty'</param>
-        /// <param name="initialValue">The initial value of the property.</param>
-        /// <param name="scheduler">The scheduler that the notifications will be
-        /// provided on - this should normally be a Dispatcher-based scheduler
-        /// (and is by default)</param>
-        /// <returns>An initialized ObservableAsPropertyHelper; use this as the
-        /// backing field for your property.</returns>
-        public static ObservableAsPropertyHelper<TRet> ObservableToProperty<TObj, TRet>(
+        static ObservableAsPropertyHelper<TRet> observableToProperty<TObj, TRet>(
                 this TObj This,
                 IObservable<TRet> observable,
                 Expression<Func<TObj, TRet>> property,
@@ -171,19 +156,38 @@ namespace ReactiveUI
             TObj source,
             Expression<Func<TObj, TRet>> property,
             TRet initialValue = default(TRet),
-            IScheduler scheduler = null,
-            bool setViaReflection = true)
+            IScheduler scheduler = null)
             where TObj : ReactiveObject
         {
-            var ret = source.ObservableToProperty(This, property, initialValue, scheduler);
+            return source.observableToProperty(This, property, initialValue, scheduler);
+        }
 
-            string propName = Reflection.SimpleExpressionToPropertyName(property);
+        /// <summary>
+        /// Converts an Observable to an ObservableAsPropertyHelper and
+        /// automatically provides the onChanged method to raise the property
+        /// changed notification.         
+        /// </summary>
+        /// <param name="source">The ReactiveObject that has the property</param>
+        /// <param name="property">An Expression representing the property (i.e.
+        /// 'x => x.SomeProperty'</param>
+        /// <param name="initialValue">The initial value of the property.</param>
+        /// <param name="scheduler">The scheduler that the notifications will be
+        /// provided on - this should normally be a Dispatcher-based scheduler
+        /// (and is by default)</param>
+        /// <returns>An initialized ObservableAsPropertyHelper; use this as the
+        /// backing field for your property.</returns>
+        public static ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(
+            this IObservable<TRet> This,
+            TObj source,
+            Expression<Func<TObj, TRet>> property,
+            out ObservableAsPropertyHelper<TRet> result,
+            TRet initialValue = default(TRet),
+            IScheduler scheduler = null)
+            where TObj : ReactiveObject
+        {
+            var ret = source.observableToProperty(This, property, initialValue, scheduler);
 
-            if (setViaReflection) {
-                var fi = Reflection.GetBackingFieldInfoForProperty<TObj>(propName, true);
-                if (fi != null) fi.SetValue(source, ret);
-            }
-
+            result = ret;
             return ret;
         }
     }

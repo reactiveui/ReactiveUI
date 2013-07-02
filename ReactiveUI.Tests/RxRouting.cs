@@ -64,31 +64,18 @@ namespace ReactiveUI.Routing.Tests
         [Fact]
         public void ResolveExplicitViewType()
         {
-            RxApp.ConfigureServiceLocator(
-                (x, _) => (x.Name == "IBazView" ? new BazView() : null), 
-                (x, _) => null,
-                (c, t, k) => { });
+            var resolver = new ModernDependencyResolver();
+            resolver.InitializeResolver();
+            resolver.Register(() => new BazView(), typeof(IBazView));
 
-            var vm = new BazViewModel(null);
+            using (resolver.WithResolver()) {
+                var fixture = new DefaultViewLocator();
+                var vm = new BazViewModel(null);
 
-            var result = RxRouting.ResolveView(vm);
-            this.Log().Info(result.GetType().FullName);
-            Assert.True(result is BazView);
-        }
-
-        [Fact]
-        public void ResolvePureInterfaceType() 
-        {
-            RxApp.ConfigureServiceLocator(
-                (x, _) => (x == typeof(IViewFor<IFooBarViewModel>) ? new FooBarView() : null), 
-                (x, _) => null,
-                (c, t, k) => { });
-
-            var vm = new FooBarViewModel(null);
-
-            var result = RxRouting.ResolveView(vm);
-            this.Log().Info(result.GetType().FullName);
-            Assert.True(result is FooBarView);
+                var result = fixture.ResolveView(vm);
+                this.Log().Info(result.GetType().FullName);
+                Assert.True(result is BazView);
+            }
         }
     }
 }
