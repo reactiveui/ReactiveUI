@@ -45,6 +45,10 @@ to know.
 * ReactiveAsyncCommand and ReactiveCommand are now the same class, and some of
   the async registration methods have changed.
 
+* MakeObjectReactiveHelper is removed, because you don't need it anymore, RxUI
+  will Just Work™ without it. Just remove the boilerplate code if you were using
+  it.
+
 * The old syntax for declaring read-write properties is now removed, the *only*
   correct way to declare properties is now:
 
