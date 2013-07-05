@@ -662,7 +662,7 @@ namespace ReactiveUI
             Debug.Assert(list.Count > 0);
 
             if(list.Count == 1) {
-                return 1;
+                return 0;
             }
 
             int precedingIndex = currentIndex - 1;
