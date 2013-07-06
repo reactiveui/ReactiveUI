@@ -299,6 +299,9 @@ namespace ReactiveUI
                                 int newDestinationIndex = newPositionForExistingItem(
                                     sourceIndex, currentDestinationIndex, newItem);
 
+                                Debug.Assert(newDestinationIndex != currentDestinationIndex,
+                                    "This can't be, canItemStayAtPosition said it this couldn't happen");
+
                                 indexToSourceIndexMap.RemoveAt(currentDestinationIndex);
                                 indexToSourceIndexMap.Insert(newDestinationIndex, sourceIndex);
 
@@ -425,10 +428,14 @@ namespace ReactiveUI
                     int newDestinationIndex = newPositionForExistingItem(
                         indexToSourceIndexMap, newSourceIndex, currentDestinationIndex);
 
-                    indexToSourceIndexMap.RemoveAt(currentDestinationIndex);
-                    indexToSourceIndexMap.Insert(newDestinationIndex, newSourceIndex);
+                    if (newDestinationIndex != currentDestinationIndex) {
+                        indexToSourceIndexMap.RemoveAt(currentDestinationIndex);
+                        indexToSourceIndexMap.Insert(newDestinationIndex, newSourceIndex);
 
-                    base.internalMove(currentDestinationIndex, newDestinationIndex);
+                        base.internalMove(currentDestinationIndex, newDestinationIndex);
+                    } else {
+                        indexToSourceIndexMap[currentDestinationIndex] = newSourceIndex;
+                    }
                 } else {
                     // TODO: Conceptually I feel like we shouldn't concern ourselves with ordering when we 
                     // receive a Move notification. If it affects ordering it should be picked up by the
