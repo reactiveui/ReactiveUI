@@ -440,15 +440,12 @@ namespace ReactiveUI
                     int newDestinationIndex = newPositionForExistingItem(
                         indexToSourceIndexMap, newSourceIndex, currentDestinationIndex);
 
-                    if (newDestinationIndex != currentDestinationIndex)
-                    {
+                    if (newDestinationIndex != currentDestinationIndex) {
                         indexToSourceIndexMap.RemoveAt(currentDestinationIndex);
                         indexToSourceIndexMap.Insert(newDestinationIndex, newSourceIndex);
 
                         base.internalMove(currentDestinationIndex, newDestinationIndex);
-                    }
-                    else
-                    {
+                    } else {
                         indexToSourceIndexMap[currentDestinationIndex] = newSourceIndex;
                     }
                 } else {
