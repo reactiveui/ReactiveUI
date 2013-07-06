@@ -653,6 +653,51 @@ namespace ReactiveUI.Tests
         }
 #endif
 
+#if !SILVERLIGHT
+        [Fact]
+        public void DerivedCollectionShouldNotSignalRedundantMoveSignals()
+        {
+            var sanity = new List<string> { "a", "b", "c", "d", "e", "f" };
+            var source = new System.Collections.ObjectModel.ObservableCollection<string> {
+                "a", "b", "c", "d", "e", "f"
+            };
+
+            var derived = source.CreateDerivedCollection(x => x, x => x == "d" || x == "e");
+
+            var derivedNotification = new List<NotifyCollectionChangedEventArgs>();
+            derived.Changed.Subscribe(derivedNotification.Add);
+
+            Assert.Equal("d", source[3]);
+            source.Move(3, 0);
+
+            Assert.Equal(0, derivedNotification.Count);
+        }
+#endif
+
+#if !SILVERLIGHT
+        [Fact]
+        public void DerivedCollectionShouldHandleMovesWhenOnlyContainingOneItem()
+        {
+            // This test is here to verify a bug in where newPositionForItem would return an incorrect
+            // index for lists only containing a single item (the item to find a new position for)
+
+            var sanity = new List<string> { "a", "b", "c", "d", "e", "f" };
+            var source = new System.Collections.ObjectModel.ObservableCollection<string> {
+                "a", "b", "c", "d", "e", "f"
+            };
+
+            var derived = source.CreateDerivedCollection(x => x, x => x == "d");
+
+            Assert.Equal("d", derived.Single());
+            Assert.Equal("d", source[3]);
+
+            source.Move(3, 0);
+
+            Assert.Equal("d", source[0]);
+            Assert.Equal("d", derived.Single());
+        }
+#endif
+
         /// <summary>
         /// This test is a bit contrived and only exists to verify that a particularly gnarly bug doesn't get 
         /// reintroduced because it's hard to reason about the removal logic in derived collections and it might
