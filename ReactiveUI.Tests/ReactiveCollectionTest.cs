@@ -655,6 +655,27 @@ namespace ReactiveUI.Tests
 
 #if !SILVERLIGHT
         [Fact]
+        public void DerivedCollectionShouldNotSignalRedundantMoveSignals()
+        {
+            var sanity = new List<string> { "a", "b", "c", "d", "e", "f" };
+            var source = new System.Collections.ObjectModel.ObservableCollection<string> {
+                "a", "b", "c", "d", "e", "f"
+            };
+
+            var derived = source.CreateDerivedCollection(x => x, x => x == "d" || x == "e");
+
+            var derivedNotification = new List<NotifyCollectionChangedEventArgs>();
+            derived.Changed.Subscribe(derivedNotification.Add);
+
+            Assert.Equal("d", source[3]);
+            source.Move(3, 0);
+
+            Assert.Equal(0, derivedNotification.Count);
+        }
+#endif
+
+#if !SILVERLIGHT
+        [Fact]
         public void DerivedCollectionShouldHandleMovesWhenOnlyContainingOneItem()
         {
             // This test is here to verify a bug in where newPositionForItem would return an incorrect
