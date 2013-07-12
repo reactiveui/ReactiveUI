@@ -55,7 +55,7 @@ namespace ReactiveUI.Xaml
         public ViewModelViewHost()
         {
             var vmAndContract = Observable.CombineLatest(
-                this.WhenAny(x => x.ViewModel, x => x.Value),
+                this.WhenAnyValue(x => x.ViewModel),
                 this.WhenAnyObservable(x => x.ViewContractObservable),
                 (vm, contract) => new { ViewModel = vm, Contract = contract, });
 

@@ -258,7 +258,7 @@ namespace ReactiveUI.Tests
             var vm = new PropertyBindViewModel();
             var view = new PropertyBindView() {ViewModel = null};
 
-            view.WhenAny(x => x.ViewModel.JustADouble, x => x.Value)
+            view.WhenAnyValue(x => x.ViewModel.JustADouble)
                 .BindTo(view, x => x.FakeControl.NullHatingString);
 
             Assert.Equal("", view.FakeControl.NullHatingString);
@@ -287,12 +287,12 @@ namespace ReactiveUI.Tests
             var view = new PropertyBindView() {ViewModel = vm};
 
             Assert.Null(view.FakeItemsControl.ItemTemplate);
-            vm.WhenAny(x => x.SomeCollectionOfStrings, x => x.Value)
+            vm.WhenAnyValue(x => x.SomeCollectionOfStrings)
                 .BindTo(view, v => v.FakeItemsControl.ItemsSource);
 
             Assert.NotNull(view.FakeItemsControl.ItemTemplate);
 
-            view.WhenAny(x => x.FakeItemsControl.SelectedItem, x => x.Value)
+            view.WhenAnyValue(x => x.FakeItemsControl.SelectedItem)
                 .BindTo(vm, x => x.Property1);
         }
 
