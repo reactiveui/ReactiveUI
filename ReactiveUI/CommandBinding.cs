@@ -334,7 +334,7 @@ namespace ReactiveUI
             where TView : class, IViewFor<TViewModel>
             where TProp : ICommand
         {
-            return This.BindCommand(viewModel, view, propertyName, controlName, view.ViewModel.WhenAny(withParameter, x => x.Value), toEvent);
+            return This.BindCommand(viewModel, view, propertyName, controlName, view.ViewModel.WhenAnyValue(withParameter), toEvent);
         }
     }
 
