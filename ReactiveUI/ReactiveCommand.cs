@@ -28,9 +28,9 @@ namespace ReactiveUI
         readonly IScheduler defaultScheduler;
 
         public ReactiveCommand() : this(null, false, null) { }
-        public ReactiveCommand(IObservable<bool> canExecute) : this(canExecute, false, null) { }
+        public ReactiveCommand(IObservable<bool> canExecute, bool initialCondition = true) : this(canExecute, false, null, initialCondition) { }
 
-        public ReactiveCommand(IObservable<bool> canExecute, bool allowsConcurrentExecution, IScheduler scheduler)
+        public ReactiveCommand(IObservable<bool> canExecute, bool allowsConcurrentExecution, IScheduler scheduler, bool initialCondition = true)
         {
             canExecute = canExecute ?? Observable.Return(true);
             defaultScheduler = scheduler ?? RxApp.MainThreadScheduler;
@@ -54,7 +54,7 @@ namespace ReactiveUI
             var canExecuteAndNotBusy = Observable.CombineLatest(canExecute, isBusy, (ce, b) => ce && !b);
 
             var canExecuteObs = canExecuteAndNotBusy
-                .Publish(true)
+                .Publish(initialCondition)
                 .RefCount();
 
             CanExecuteObservable = canExecuteObs
