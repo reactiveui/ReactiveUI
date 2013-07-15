@@ -24,7 +24,7 @@ namespace ReactiveUI
                 }
 
                 return null;
-            }, 15);
+            }, RxApp.BigCacheLimit);
 
         static readonly MemoizingMRUCache<Tuple<Type, string>, Action<object, object>> propWriterCache = 
             new MemoizingMRUCache<Tuple<Type, string>, Action<object, object>>((x,_) => {
@@ -39,7 +39,7 @@ namespace ReactiveUI
                 }
 
                 return null;
-            }, 15);
+            }, RxApp.BigCacheLimit);
 
         public static string SimpleExpressionToPropertyName<TObj, TRet>(Expression<Func<TObj, TRet>> property)
         {

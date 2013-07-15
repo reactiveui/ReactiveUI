@@ -18,11 +18,11 @@ namespace ReactiveUI
             return type.GetProperties()
                 .Where(x => x.CustomAttributes.Any(y => typeof(DataMemberAttribute).IsAssignableFrom(y.AttributeType)))
                 .ToDictionary(k => k.Name, v => true);
-        }, 32);
+        }, RxApp.SmallCacheLimit);
 
         static MemoizingMRUCache<Type, bool> dataContractCheckCache = new MemoizingMRUCache<Type, bool>((t, _) => {
             return t.GetCustomAttributes(typeof(DataContractAttribute), true).Any();
-        }, 64);
+        }, RxApp.SmallCacheLimit);
 
         public static IDisposable AutoPersist<T>(this T This, Func<T, IObservable<Unit>> doPersist, TimeSpan? interval = null)
             where T : IReactiveNotifyPropertyChanged

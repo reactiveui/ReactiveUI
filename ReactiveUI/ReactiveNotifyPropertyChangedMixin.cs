@@ -179,7 +179,7 @@ namespace ReactiveUI
                         int score = x.GetAffinityForObject(t.Item1, t.Item2, t.Item3);
                         return (score > acc.Item1) ? Tuple.Create(score, x) : acc;
                     }).Item2;
-            }, 50);
+            }, RxApp.BigCacheLimit);
 
         static IObservable<IObservedChange<object, object>> notifyForProperty(object sender, string propertyName, bool beforeChange)
         {
