@@ -112,7 +112,7 @@ namespace ReactiveUI
                 }
 
                 return new WrappingFullLogger(ret, type);
-            }, 30);
+            }, RxApp.BigCacheLimit);
         }
 
         static readonly IFullLogger nullLogger = new WrappingFullLogger(new NullLogger(), typeof(MemoizingMRUCache<Type, IFullLogger>));
