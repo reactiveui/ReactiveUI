@@ -21,6 +21,18 @@ namespace ReactiveUI.Tests
         }
 
         [Fact]
+        public void CommandInitialConditionShouldBeAdjustable()
+        {
+            var sub = new Subject<bool>();
+            var cmd = new ReactiveCommand(sub);
+            Assert.Equal(true, cmd.CanExecute(null));
+
+            var cmd2 = new ReactiveCommand(sub, false);
+            Assert.Equal(false, cmd2.CanExecute(null));
+
+        }
+
+        [Fact]
         public void CompletelyDefaultReactiveCommandShouldFire()
         {
             var sched = new TestScheduler();
