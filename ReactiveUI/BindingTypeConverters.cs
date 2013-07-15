@@ -43,7 +43,7 @@ namespace ReactiveUI
             genericMi = genericMi ?? 
                 typeof (EqualityTypeConverter).GetMethod("DoReferenceCast", BindingFlags.Public | BindingFlags.Static);
             return genericMi.MakeGenericMethod(new[] {t});
-        }, 25);
+        }, RxApp.SmallCacheLimit);
 
         public bool TryConvert(object from, Type toType, object conversionHint, out object result)
         {

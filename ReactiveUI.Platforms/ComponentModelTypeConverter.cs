@@ -3,6 +3,7 @@ using System.ComponentModel;
 
 namespace ReactiveUI
 {
+
     /// <summary>
     /// This binding type converter uses the built-in WPF component model 
     /// conversions to get a whole bunch of conversions for free. Unfortunately,
@@ -21,7 +22,7 @@ namespace ReactiveUI
 
             var converter = TypeDescriptor.GetConverter(types.Item1);
             return converter.CanConvertTo(types.Item2) ? converter : null;
-        }, 25);
+        }, RxApp.SmallCacheLimit);
 
         public int GetAffinityForObjects(Type lhs, Type rhs)
         {

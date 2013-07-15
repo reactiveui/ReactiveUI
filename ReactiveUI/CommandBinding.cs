@@ -347,7 +347,7 @@ namespace ReactiveUI
                         int score = x.GetAffinityForObject(t, false);
                         return (score > acc.Item1) ? Tuple.Create(score, x) : acc;
                     }).Item2;
-            }, 50);
+            }, RxApp.SmallCacheLimit);
 
         static readonly MemoizingMRUCache<Type, ICreatesCommandBinding> bindCommandEventCache = 
             new MemoizingMRUCache<Type, ICreatesCommandBinding>((t, _) => {
@@ -356,7 +356,7 @@ namespace ReactiveUI
                         int score = x.GetAffinityForObject(t, true);
                         return (score > acc.Item1) ? Tuple.Create(score, x) : acc;
                     }).Item2;
-            }, 50);
+            }, RxApp.SmallCacheLimit);
 
         public static IDisposable BindCommandToObject(ICommand command, object target, IObservable<object> commandParameter)
         {
