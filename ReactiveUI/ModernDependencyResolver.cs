@@ -43,7 +43,11 @@ namespace ReactiveUI
         
         public object GetService(Type serviceType, string contract = null)
         {
-            return this.GetServices(serviceType, contract).LastOrDefault();
+            var pair = Tuple.Create(serviceType, contract ?? string.Empty);
+            if (!_registry.ContainsKey(pair)) return default(object);
+
+            var ret = _registry[pair].Last();
+            return ret();
         }
  
         public IEnumerable<object> GetServices(Type serviceType, string contract = null)
@@ -51,7 +55,7 @@ namespace ReactiveUI
             var pair = Tuple.Create(serviceType, contract ?? string.Empty);
             if (!_registry.ContainsKey(pair)) return Enumerable.Empty<object>();
  
-            return _registry[pair].ToArray().Select(x => x());
+            return _registry[pair].Select(x => x()).ToList();
         }
 
         public ModernDependencyResolver Duplicate()
