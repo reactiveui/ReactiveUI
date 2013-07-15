@@ -1038,7 +1038,7 @@ namespace ReactiveUI
                         return score > acc.Item1 && score > 0 ?
                             Tuple.Create(score, x) : acc;
                     }).Item2;
-            }, 25);
+            }, RxApp.SmallCacheLimit);
 
         internal IBindingTypeConverter getConverterForTypes(Type lhs, Type rhs)
         {
