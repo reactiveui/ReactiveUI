@@ -123,6 +123,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ComponentModelTypeConverter.cs" />
+    <Compile Include="Winforms\ReactiveBindingList.cs" />
     <Compile Include="Winforms\CreatesCommandBinding.cs" />
     <Compile Include="Winforms\PlatformOperations.cs" />
     <Compile Include="Winforms\PlatformUnitTestDetector.cs" />
