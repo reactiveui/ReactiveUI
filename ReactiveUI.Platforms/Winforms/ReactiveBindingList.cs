@@ -1,31 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Fasterflect;
-
-namespace Transplan
+﻿namespace ReactiveUI.Winforms
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
     using System.Collections;
     using System.Collections.Specialized;
     using System.ComponentModel;
-    using System.Reactive.Linq;
-    using System.Reflection;
 
     using ReactiveUI;
 
     public class ReactiveBindingList<T> : ReactiveList<T>,  IList<T>, ICollection<T>, IEnumerable<T>, ICollection, IEnumerable, IList, IBindingList, ICancelAddNew, IRaiseItemChangedEvents
     {
-
         public ReactiveBindingList()
             : this(null)
-        {
-            
-        }
-         
-
-     
+        {}
 
         #region Implementation of ICancelAddNew
 
@@ -56,36 +44,20 @@ namespace Transplan
         /// <param name="items"></param>
         public ReactiveBindingList(IEnumerable<T> items)
             : base(items)
+        {}
+
+        protected override void raiseCollectionChanged(NotifyCollectionChangedEventArgs e)
         {
-            base.Changed.Where(_ =>
-            { return ListChanged != null && SuppressionRefCount == 0; }).Subscribe(
-                x => this.TransformAndRaise(x));
+            base.raiseCollectionChanged(e);
+            this.transformAndRaise(e);
         }
-
-        /// <summary>
-        /// Gets the SuppressionRefCount
-        /// </summary>
-        protected virtual int SuppressionRefCount
-        {
-            get
-            {
-                return (int)_refCountGetter(this);
-            }
-        }
-
-        /// <summary>
-        /// Runtime generated IL MemberGetter (makes use of <see href="http://fasterflect.codeplex.com/">FasterFlect</see>)
-        /// </summary>
-        private static readonly MemberGetter _refCountGetter = typeof(ReactiveList<T>).DelegateForGetFieldValue("_suppressionRefCount", BindingFlags.NonPublic | BindingFlags.Instance);
-
-       
        
         /// <summary>
         /// Transforms NotifyCollectionChangedEventArgs into 1 or more ListChangedEventsArgs
         /// and raises them if there are any attached handlers
         /// </summary>
         /// <param name="ea"></param>
-        private void TransformAndRaise(NotifyCollectionChangedEventArgs ea)
+        private void transformAndRaise(NotifyCollectionChangedEventArgs ea)
         {
             if (this.ListChanged == null) return;
 
@@ -110,6 +82,8 @@ namespace Transplan
                       .Select(index => new ListChangedEventArgs(ListChangedType.ItemAdded, index)));
                     break;
                 case NotifyCollectionChangedAction.Move:
+                    //this one is actually not supported by the default BindingList<T> implementation
+                    //maybe we should do a reset instead?
                     events.Add(
                         new ListChangedEventArgs(ListChangedType.ItemMoved, ea.NewStartingIndex, ea.OldStartingIndex));
                     break;
@@ -117,7 +91,7 @@ namespace Transplan
 
             foreach (var e in events)
             {
-                ListChanged(this, e);
+                this.ListChanged(this, e);
             }
             
         }
