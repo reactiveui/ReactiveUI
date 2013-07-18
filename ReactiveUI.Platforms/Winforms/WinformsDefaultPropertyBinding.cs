@@ -14,12 +14,12 @@
 
                 new { Type = typeof(RichTextBox), Property = "Text" },
                 new { Type = typeof(Label), Property = "Text" },
-                new { Type = typeof(CheckBox), Property = "IsExpanded" },
+                new { Type = typeof(Button), Property = "Text" },
+                new { Type = typeof(CheckBox), Property = "Checked" },
                 new { Type = typeof(TextBox), Property = "Text" },
-                new { Type = typeof(ProgressBar), Property = "Value" },
-           
+                new { Type = typeof(ProgressBar), Property = "Value" }
             };
-         
+           
             var type = control.GetType();
             var kvp = items.FirstOrDefault(x => x.Type.IsAssignableFrom(type));
 

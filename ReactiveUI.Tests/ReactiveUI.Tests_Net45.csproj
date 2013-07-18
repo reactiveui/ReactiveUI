@@ -114,6 +114,7 @@
     <Compile Include="Winforms\CommandBindingTests.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Winforms\DefaultPropertyBindingTests.cs" />
     <Compile Include="Winforms\ReactiveBindingListTests.cs" />
     <Compile Include="Xaml\DependencyObjectObservableForPropertyTest.cs" />
     <Compile Include="ErrorsTest.cs" />
