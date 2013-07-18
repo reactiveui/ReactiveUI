@@ -82,6 +82,7 @@ namespace ReactiveUI
                 "ReactiveUI.Gtk", 
                 "ReactiveUI.Cocoa", 
                 "ReactiveUI.Android",
+                "ReactiveUI.Winforms"
             };
 
             var fdr = typeof(ModernDependencyResolver);
