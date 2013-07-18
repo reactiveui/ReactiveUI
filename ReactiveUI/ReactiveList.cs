@@ -73,10 +73,10 @@ namespace ReactiveUI
             _inner = _inner ?? new List<T>();
 
             _changing = new Subject<NotifyCollectionChangedEventArgs>();
-            _changing.Subscribe(raiseCollectionChanging);
+            _changing.Where(_=>_suppressionRefCount == 0).Subscribe(raiseCollectionChanging);
 
             _changed = new Subject<NotifyCollectionChangedEventArgs>();
-            _changed.Subscribe(raiseCollectionChanged);
+            _changed.Where(_ => _suppressionRefCount == 0).Subscribe(raiseCollectionChanged);
 
             ResetChangeThreshold = resetChangeThreshold;
 
@@ -96,15 +96,15 @@ namespace ReactiveUI
             // NB: ObservableCollection has a Secret Handshake with WPF where 
             // they fire an INPC notification with the token "Item[]". Emulate 
             // it here
-            CountChanging.Select(x => new PropertyChangingEventArgs("Count")).Subscribe(this.raisePropertyChanging);
+            CountChanging.Where(_ => _suppressionRefCount == 0).Select(x => new PropertyChangingEventArgs("Count")).Subscribe(this.raisePropertyChanging);
 
-            CountChanged.Select(x => new PropertyChangedEventArgs("Count")).Subscribe(this.raisePropertyChanged);
+            CountChanged.Where(_ => _suppressionRefCount == 0).Select(x => new PropertyChangedEventArgs("Count")).Subscribe(this.raisePropertyChanged);
 
-            IsEmptyChanged.Select(x => new PropertyChangedEventArgs("IsEmpty")).Subscribe(this.raisePropertyChanged);
+            IsEmptyChanged.Where(_ => _suppressionRefCount == 0).Select(x => new PropertyChangedEventArgs("IsEmpty")).Subscribe(this.raisePropertyChanged);
 
-            Changing.Select(x => new PropertyChangingEventArgs("Item[]")).Subscribe(this.raisePropertyChanging);
+            Changing.Where(_ => _suppressionRefCount == 0).Select(x => new PropertyChangingEventArgs("Item[]")).Subscribe(this.raisePropertyChanging);
 
-            Changed.Select(x => new PropertyChangedEventArgs("Item[]")).Subscribe(this.raisePropertyChanged);
+            Changed.Where(_ => _suppressionRefCount == 0).Select(x => new PropertyChangedEventArgs("Item[]")).Subscribe(this.raisePropertyChanged);
         }
 
         public bool IsEmpty
@@ -508,7 +508,7 @@ namespace ReactiveUI
         {
             var handler = this.CollectionChanging;
 
-            if(handler != null && _suppressionRefCount == 0) {
+            if(handler != null) {
                 handler(this, e);
             }
         }
@@ -517,7 +517,7 @@ namespace ReactiveUI
         {
             var handler = this.CollectionChanged;
 
-            if (handler != null && _suppressionRefCount == 0) {
+            if (handler != null) {
                 handler(this, e);
             }
         }
@@ -526,7 +526,7 @@ namespace ReactiveUI
         {
             var handler = this.PropertyChanging;
 
-            if (handler != null && _suppressionRefCount == 0) {
+            if (handler != null) {
                 handler(this, e);
             }
         }
@@ -535,7 +535,7 @@ namespace ReactiveUI
         {
             var handler = this.PropertyChanged;
 
-            if (handler != null && _suppressionRefCount == 0) {
+            if (handler != null) {
                 handler(this, e);
             }
         }
