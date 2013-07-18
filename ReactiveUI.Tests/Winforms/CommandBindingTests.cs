@@ -157,7 +157,6 @@
             view.Command2.RaiseMouseUpEvent(new MouseEventArgs(MouseButtons.Left, 1, 0, 0, 0));
             Assert.Equal(1, invokeCount);
         }
-
     }
 
    
