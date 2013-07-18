@@ -286,8 +286,7 @@ namespace ReactiveUI
 
         public virtual void InsertRange(int index, IEnumerable<T> collection)
         {
-            //optimized version of AddRange method, making use of List<T> O(n) implementation of addrange
-
+            //optimized version of AddRange method, making use of List<T> O(n) implementation of InsertRange
             var list = collection.ToList();
             var disp = isLengthAboveResetThreshold(list.Count) ?
                 SuppressChangeNotifications() : Disposable.Empty;
@@ -296,7 +295,7 @@ namespace ReactiveUI
             {
                 if (_suppressionRefCount > 0)
                 {
-                    _inner.AddRange(collection);
+                    _inner.InsertRange(index,collection);
 
                     if (ChangeTrackingEnabled)
                     {
@@ -346,10 +345,41 @@ namespace ReactiveUI
                 SuppressChangeNotifications() : Disposable.Empty;
 
             using (disp) {
-                // NB: If we don't do this, we'll break Collection<T>'s 
-                // accounting of the length
-                for (int i = count; i > 0; i--) {
-                    RemoveItem(index);
+                var items = new List<T>(count);
+                foreach (var i in Enumerable.Range(index, count)) {
+                    items.Add(_inner[i]);
+                }
+
+                if (_suppressionRefCount > 0)
+                {
+                    _inner.RemoveRange(index,count);
+
+                    if (ChangeTrackingEnabled) {
+                        foreach (var item in items) {
+                            removeItemFromPropertyTracking(item);
+                        }
+                    }
+                    return;
+                }
+
+                var ea = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, items, index);
+
+                _changing.OnNext(ea);
+                if (_beforeItemsRemoved.IsValueCreated) {
+                    foreach (var item in items) {
+                        _beforeItemsRemoved.Value.OnNext(item);
+                    }
+                }
+
+                _inner.RemoveRange(index,count);
+
+                _changed.OnNext(ea);
+                
+                if (_itemsRemoved.IsValueCreated || ChangeTrackingEnabled) {
+                    foreach (var item in items) {
+                        if (_itemsRemoved.IsValueCreated) { _itemsRemoved.Value.OnNext(item); }
+                        if (ChangeTrackingEnabled) removeItemFromPropertyTracking(item);
+                    }
                 }
             }
         }
@@ -362,6 +392,7 @@ namespace ReactiveUI
                 SuppressChangeNotifications() : Disposable.Empty;
 
             using (disp) {
+               
                 // NB: If we don't do this, we'll break Collection<T>'s
                 // accounting of the length
                 foreach (var v in items) {
