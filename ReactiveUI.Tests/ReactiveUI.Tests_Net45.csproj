@@ -89,6 +89,7 @@
       <HintPath>..\ext\net45\System.Reactive.Windows.Threading.dll</HintPath>
     </Reference>
     <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
@@ -110,6 +111,9 @@
     <Compile Include="AwaiterTest.cs" />
     <Compile Include="BindingTypeConvertersTest.cs" />
     <Compile Include="CommandBindingTests.cs" />
+    <Compile Include="Winforms\CommandBindingTests.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Xaml\DependencyObjectObservableForPropertyTest.cs" />
     <Compile Include="ErrorsTest.cs" />
     <Compile Include="ObservableAsyncMRUCacheTest.cs" />
@@ -139,6 +143,10 @@
     <ProjectReference Include="..\ReactiveUI.NLog\ReactiveUI.NLog_Net45.csproj">
       <Project>{08d3606b-ee79-43ee-8382-72a1091f1f30}</Project>
       <Name>ReactiveUI.NLog_Net45</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ReactiveUI.Platforms\ReactiveUI.Winforms_Net45.csproj">
+      <Project>{F5ECBDE5-E525-4482-B568-63217BCB0A0B}</Project>
+      <Name>ReactiveUI.Winforms_Net45</Name>
     </ProjectReference>
     <ProjectReference Include="..\ReactiveUI.Testing\ReactiveUI.Testing_Net45.csproj">
       <Project>{dd99fd0f-82f6-4c30-930e-4a1d0df01d65}</Project>
