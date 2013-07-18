@@ -240,20 +240,102 @@ namespace ReactiveUI
 
         public virtual void AddRange(IEnumerable<T> collection)
         {
-            InsertRange(_inner.Count, collection);
+            //optimized version of AddRange method, making use of List<T> O(n) implementation of addrange
+
+            var list = collection.ToList();
+            var disp = isLengthAboveResetThreshold(list.Count) ?
+                SuppressChangeNotifications() : Disposable.Empty;
+
+            using (disp) {
+                if (_suppressionRefCount > 0) {
+                    _inner.AddRange(collection);
+                 
+                    if (ChangeTrackingEnabled) {
+                        foreach (var item in list) {
+                            addItemToPropertyTracking(item);
+                        }
+                    }
+                    return;
+                }
+
+                var ea = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, list, _inner.Count/*we are appending a range*/);
+
+                _changing.OnNext(ea);
+                if (_beforeItemsAdded.IsValueCreated) {
+                    foreach (var item in list) {
+                        _beforeItemsAdded.Value.OnNext(item);
+                    }
+                }
+                
+                _inner.AddRange(collection);
+
+                _changed.OnNext(ea);
+                if (_itemsAdded.IsValueCreated){
+                    foreach (var item in list) {
+                        _itemsAdded.Value.OnNext(item);
+                    }
+                }
+
+                if (ChangeTrackingEnabled) {
+                    foreach (var item in list) {
+                        addItemToPropertyTracking(item);
+                    }
+                }
+            }
         }
 
         public virtual void InsertRange(int index, IEnumerable<T> collection)
         {
-            var arr = collection.ToArray();
-            var disp = isLengthAboveResetThreshold(arr.Length) ?
+            //optimized version of AddRange method, making use of List<T> O(n) implementation of addrange
+
+            var list = collection.ToList();
+            var disp = isLengthAboveResetThreshold(list.Count) ?
                 SuppressChangeNotifications() : Disposable.Empty;
 
-            using (disp) {
-                // NB: If we don't do this, we'll break Collection<T>'s 
-                // accounting of the length
-                for (int i = arr.Length - 1; i >= 0; i--) {
-                    InsertItem(index, arr[i]);
+            using (disp)
+            {
+                if (_suppressionRefCount > 0)
+                {
+                    _inner.AddRange(collection);
+
+                    if (ChangeTrackingEnabled)
+                    {
+                        foreach (var item in list)
+                        {
+                            addItemToPropertyTracking(item);
+                        }
+                    }
+                    return;
+                }
+
+                var ea = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, list, index);
+
+                _changing.OnNext(ea);
+                if (_beforeItemsAdded.IsValueCreated)
+                {
+                    foreach (var item in list)
+                    {
+                        _beforeItemsAdded.Value.OnNext(item);
+                    }
+                }
+
+                _inner.InsertRange(index,collection);
+
+                _changed.OnNext(ea);
+                if (_itemsAdded.IsValueCreated)
+                {
+                    foreach (var item in list)
+                    {
+                        _itemsAdded.Value.OnNext(item);
+                    }
+                }
+
+                if (ChangeTrackingEnabled)
+                {
+                    foreach (var item in list)
+                    {
+                        addItemToPropertyTracking(item);
+                    }
                 }
             }
         }
