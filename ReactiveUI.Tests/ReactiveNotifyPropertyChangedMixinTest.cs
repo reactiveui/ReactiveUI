@@ -311,7 +311,7 @@ namespace ReactiveUI.Tests
         {
             var obj = new HostTestFixture();
             int observedValue = 1;
-            obj.WhenAny(x => x.SomeOtherParam, x => x.Value)
+            obj.WhenAnyValue(x => x.SomeOtherParam)
                .Subscribe(x => observedValue = x);
 
             obj.SomeOtherParam = 42;
@@ -396,11 +396,68 @@ namespace ReactiveUI.Tests
 
             var output = new List<IObservedChange<TestFixture, string>>();
             fixture.WhenAny(x => x.PocoProperty, x => x).Subscribe(output.Add);
+            var output2 = new List<string>();
+            fixture.WhenAnyValue(x => x.PocoProperty).Subscribe(output2.Add);
 
             Assert.Equal(1, output.Count);
             Assert.Equal(fixture, output[0].Sender);
             Assert.Equal("PocoProperty", output[0].PropertyName);
             Assert.Equal("Bamf", output[0].Value);
+
+            Assert.Equal(1, output2.Count);
+            Assert.Equal("Bamf", output2[0]);
+        }
+
+        [Fact]
+        public void WhenAnyValueSmokeTest()
+        {
+            (new TestScheduler()).With(sched => {
+                var fixture = new HostTestFixture() {Child = new TestFixture()};
+                fixture.SomeOtherParam = 5;
+                fixture.Child.IsNotNullString = "Foo";
+
+                var output1 = new List<int>();
+                var output2 = new List<string>();
+                fixture.WhenAnyValue(x => x.SomeOtherParam, x => x.Child.IsNotNullString, (sop, nns) => new {sop, nns}).Subscribe(x => {
+                    output1.Add(x.sop); output2.Add(x.nns);
+                });
+
+                sched.Start();
+                Assert.Equal(1, output1.Count);
+                Assert.Equal(1, output2.Count);
+                Assert.Equal(5, output1[0]);
+                Assert.Equal("Foo", output2[0]);
+
+                fixture.SomeOtherParam = 10;
+                sched.Start();
+                Assert.Equal(2, output1.Count);
+                Assert.Equal(2, output2.Count);
+                Assert.Equal(10, output1[1]);
+                Assert.Equal("Foo", output2[1]);
+
+                fixture.Child.IsNotNullString = "Bar";
+                sched.Start();
+                Assert.Equal(3, output1.Count);
+                Assert.Equal(3, output2.Count);
+                Assert.Equal(10, output1[2]);
+                Assert.Equal("Bar", output2[2]);
+            });
+        }
+
+        [Fact]
+        public void WhenAnyValueShouldWorkEvenWithNormalProperties()
+        {
+            var fixture = new TestFixture() { IsNotNullString = "Foo", IsOnlyOneWord = "Baz", PocoProperty = "Bamf" };
+
+            var output1 = new List<string>();
+            var output2 = new List<int>();
+            fixture.WhenAnyValue(x => x.PocoProperty).Subscribe(output1.Add);
+            fixture.WhenAnyValue(x => x.IsOnlyOneWord, x => x.Length).Subscribe(output2.Add);
+
+            Assert.Equal(1, output1.Count);
+            Assert.Equal("Bamf", output1[0]);
+            Assert.Equal(1, output2.Count);
+            Assert.Equal(3, output2[0]);
         }
 
         [Fact]
@@ -412,7 +469,7 @@ namespace ReactiveUI.Tests
                 int whenAnyTid = 0;
                 var fixture = new TestFixture() { IsNotNullString = "Foo", IsOnlyOneWord = "Baz", PocoProperty = "Bamf" };
 
-                fixture.WhenAny(x => x.IsNotNullString, x => x.Value).Subscribe(x => {
+                fixture.WhenAnyValue(x => x.IsNotNullString).Subscribe(x => {
                     whenAnyTid = Thread.CurrentThread.ManagedThreadId;
                 });
 
@@ -423,7 +480,6 @@ namespace ReactiveUI.Tests
                 Assert.Equal(tid, whenAnyTid);
             });
         }
-
 
     }
 
@@ -487,7 +543,7 @@ namespace ReactiveUI.Tests
             Assert.Equal(0, output.Count);
             Assert.Null(fixture.ViewModel);
 
-            fixture.WhenAny(x => x.ViewModel.Child.IsNotNullString, x => x.Value).Subscribe(output.Add);
+            fixture.WhenAnyValue(x => x.ViewModel.Child.IsNotNullString).Subscribe(output.Add);
 
             fixture.ViewModel = vm;
             Assert.Equal(1, output.Count);
