@@ -190,8 +190,47 @@ namespace ReactiveUI.Xaml
         {
             var disposer = new SerialDisposable();
             This.Subscribe(d => disposer.Disposable = d);
-            control.Unloaded += (s, e) => disposer.Dispose();
-            control.Dispatcher.ShutdownStarted += (s, e) => disposer.Dispose();
+            disposer.DisposeWith(control);
+        }
+
+        /// <summary>
+        /// Manage the lifetime of disposables relative to
+        /// a Control
+        /// </summary>
+        public class DisposableLifetimeManager
+        {
+            public EventHandler ShutdownStartedEventHandler = null;
+            public RoutedEventHandler UnloadedEventHandler = null;
+            public Control Control;
+            public IDisposable Disposable;
+
+            public static void DisposeWith(Control control, IDisposable disposer){
+                new DisposableLifetimeManager(control, disposer);
+            }
+
+            private DisposableLifetimeManager( Control control, IDisposable disposer )
+            {
+                ShutdownStartedEventHandler = ( s, e ) => DisposeAndDetachHandler();
+                UnloadedEventHandler = ( s, e ) => DisposeAndDetachHandler();
+
+                control.Unloaded += UnloadedEventHandler;
+                control.Dispatcher.ShutdownStarted += ShutdownStartedEventHandler;
+            }
+
+            private void DisposeAndDetachHandler()
+            {
+                Disposable.Dispose();
+                try
+                {
+                    Control.Unloaded -= UnloadedEventHandler;
+                    Control.Dispatcher.ShutdownStarted -= ShutdownStartedEventHandler;
+                }
+                finally
+                {
+                    // Does CLR throw exceptions if removing an allready removed
+                    // event handler?
+                }
+            }
         }
 
         /// <summary>
@@ -205,11 +244,11 @@ namespace ReactiveUI.Xaml
         /// </summary>
         /// <param name="This"></param>
         /// <param name="contrl"></param>
-        public static void DisposeWith(this IDisposable This, Control contrl)
+        public static void DisposeWith(this IDisposable This, Control control)
         {
-            contrl.Unloaded += (s, e) => This.Dispose();
-            contrl.Dispatcher.ShutdownStarted += (s, e) => This.Dispose();
+            DisposableLifetimeManager.DisposeWith(control, This);
         }
+
     }
 
     public class ReactiveWindow<ViewModelT> : Window, IViewFor<ViewModelT>
