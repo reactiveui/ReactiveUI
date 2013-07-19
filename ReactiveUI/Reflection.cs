@@ -283,9 +283,9 @@ namespace ReactiveUI
             where TView : IViewFor
             where TViewModel : class
         {
-            return view.WhenAny(x => x.ViewModel, x => x.Value)
+            return view.WhenAnyValue(x => x.ViewModel)
                 .Where(x => x != null)
-                .SelectMany(x => ((TViewModel)x).WhenAny(property, y => y.Value));
+                .SelectMany(x => ((TViewModel)x).WhenAnyValue(property));
         }
 
         internal static FieldInfo GetSafeField(Type type, string propertyName, BindingFlags flags)
