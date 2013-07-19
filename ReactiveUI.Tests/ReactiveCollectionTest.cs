@@ -1179,12 +1179,12 @@ namespace ReactiveUI.Tests
                 Assert.True(onlyVisibleAndGreaterThanC.SequenceEqual(new[] { d, e, f }));
 
                 // When the value of d changes, update a to Y
-                d.WhenAny(x => x.Value, x => x.Value)
+                d.WhenAnyValue(x => x.Value)
                     .Where(x => x == "Y")
                     .Subscribe(x => a.Value = "Z");
 
                 // When the visibility of e changes, update d to Z
-                e.WhenAny(x => x.IsVisible, x => x.Value)
+                e.WhenAnyValue(x => x.IsVisible)
                     .Where(x => x == false)
                     .Subscribe(x => d.Value = "Y");
 

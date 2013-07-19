@@ -48,7 +48,7 @@ namespace ReactiveUI.Tests
             var inputs = new[] {"Foo", "Bar", "Baz"};
             var fixture = new DepObjFixture();
 
-            var outputs = fixture.WhenAny(x => x.TestString, x => x.Value).CreateCollection();
+            var outputs = fixture.WhenAnyValue(x => x.TestString).CreateCollection();
             inputs.ForEach(x => fixture.TestString = x);
 
             Assert.Null(outputs.First());
