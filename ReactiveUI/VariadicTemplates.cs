@@ -13,7 +13,36 @@ namespace ReactiveUI
 {
     public static class WhenAnyMixin 
     {
-                                        
+        /// <summary>
+        /// WhenAnyValue allows you to observe whenever the value of a
+        /// property on an object has changed, providing an initial value when
+        /// the Observable is set up, unlike ObservableForProperty(). Use this
+        /// method in constructors to set up bindings between properties that also
+        /// need an initial setup.
+        /// </summary>
+        public static IObservable<TRet> WhenAnyValue<TSender, TRet>(this TSender This, 
+                            Expression<Func<TSender, TRet>> property1)
+        {
+            return This.WhenAny(property1, (IObservedChange<TSender, TRet> c1) => c1.Value);
+        }
+
+                                                                
+        /// <summary>
+        /// WhenAnyValue allows you to observe whenever the value of one or more
+        /// properties on an object have changed, providing an initial value when
+        /// the Observable is set up, unlike ObservableForProperty(). Use this
+        /// method in constructors to set up bindings between properties that also
+        /// need an initial setup.
+        /// </summary>
+        public static IObservable<TRet> WhenAnyValue<TSender, TRet, T1>(this TSender This, 
+                            Expression<Func<TSender, T1>> property1, 
+                            Func<T1, TRet> selector)
+        {
+            return This.WhenAny(property1,
+                                (c1) =>
+                                    selector(c1.Value));
+        }
+
         /// <summary>
         /// WhenAny allows you to observe whenever one or more properties on an
         /// object have changed, providing an initial value when the Observable
@@ -43,7 +72,24 @@ namespace ReactiveUI
                     .SubscribeToExpressionChain<TSender,object>(This, property1, false, false).Select(selector); 
                     }
 
-                                    
+                                                            
+        /// <summary>
+        /// WhenAnyValue allows you to observe whenever the value of one or more
+        /// properties on an object have changed, providing an initial value when
+        /// the Observable is set up, unlike ObservableForProperty(). Use this
+        /// method in constructors to set up bindings between properties that also
+        /// need an initial setup.
+        /// </summary>
+        public static IObservable<TRet> WhenAnyValue<TSender, TRet, T1,T2>(this TSender This, 
+                            Expression<Func<TSender, T1>> property1, 
+                            Expression<Func<TSender, T2>> property2, 
+                            Func<T1,T2, TRet> selector)
+        {
+            return This.WhenAny(property1, property2,
+                                (c1, c2) =>
+                                    selector(c1.Value, c2.Value));
+        }
+
         /// <summary>
         /// WhenAny allows you to observe whenever one or more properties on an
         /// object have changed, providing an initial value when the Observable
@@ -84,7 +130,25 @@ namespace ReactiveUI
             );
                     }
 
-                                    
+                                                            
+        /// <summary>
+        /// WhenAnyValue allows you to observe whenever the value of one or more
+        /// properties on an object have changed, providing an initial value when
+        /// the Observable is set up, unlike ObservableForProperty(). Use this
+        /// method in constructors to set up bindings between properties that also
+        /// need an initial setup.
+        /// </summary>
+        public static IObservable<TRet> WhenAnyValue<TSender, TRet, T1,T2,T3>(this TSender This, 
+                            Expression<Func<TSender, T1>> property1, 
+                            Expression<Func<TSender, T2>> property2, 
+                            Expression<Func<TSender, T3>> property3, 
+                            Func<T1,T2,T3, TRet> selector)
+        {
+            return This.WhenAny(property1, property2, property3,
+                                (c1, c2, c3) =>
+                                    selector(c1.Value, c2.Value, c3.Value));
+        }
+
         /// <summary>
         /// WhenAny allows you to observe whenever one or more properties on an
         /// object have changed, providing an initial value when the Observable
@@ -130,7 +194,26 @@ namespace ReactiveUI
             );
                     }
 
-                                    
+                                                            
+        /// <summary>
+        /// WhenAnyValue allows you to observe whenever the value of one or more
+        /// properties on an object have changed, providing an initial value when
+        /// the Observable is set up, unlike ObservableForProperty(). Use this
+        /// method in constructors to set up bindings between properties that also
+        /// need an initial setup.
+        /// </summary>
+        public static IObservable<TRet> WhenAnyValue<TSender, TRet, T1,T2,T3,T4>(this TSender This, 
+                            Expression<Func<TSender, T1>> property1, 
+                            Expression<Func<TSender, T2>> property2, 
+                            Expression<Func<TSender, T3>> property3, 
+                            Expression<Func<TSender, T4>> property4, 
+                            Func<T1,T2,T3,T4, TRet> selector)
+        {
+            return This.WhenAny(property1, property2, property3, property4,
+                                (c1, c2, c3, c4) =>
+                                    selector(c1.Value, c2.Value, c3.Value, c4.Value));
+        }
+
         /// <summary>
         /// WhenAny allows you to observe whenever one or more properties on an
         /// object have changed, providing an initial value when the Observable
@@ -181,7 +264,27 @@ namespace ReactiveUI
             );
                     }
 
-                                    
+                                                            
+        /// <summary>
+        /// WhenAnyValue allows you to observe whenever the value of one or more
+        /// properties on an object have changed, providing an initial value when
+        /// the Observable is set up, unlike ObservableForProperty(). Use this
+        /// method in constructors to set up bindings between properties that also
+        /// need an initial setup.
+        /// </summary>
+        public static IObservable<TRet> WhenAnyValue<TSender, TRet, T1,T2,T3,T4,T5>(this TSender This, 
+                            Expression<Func<TSender, T1>> property1, 
+                            Expression<Func<TSender, T2>> property2, 
+                            Expression<Func<TSender, T3>> property3, 
+                            Expression<Func<TSender, T4>> property4, 
+                            Expression<Func<TSender, T5>> property5, 
+                            Func<T1,T2,T3,T4,T5, TRet> selector)
+        {
+            return This.WhenAny(property1, property2, property3, property4, property5,
+                                (c1, c2, c3, c4, c5) =>
+                                    selector(c1.Value, c2.Value, c3.Value, c4.Value, c5.Value));
+        }
+
         /// <summary>
         /// WhenAny allows you to observe whenever one or more properties on an
         /// object have changed, providing an initial value when the Observable
@@ -237,7 +340,28 @@ namespace ReactiveUI
             );
                     }
 
-                                    
+                                                            
+        /// <summary>
+        /// WhenAnyValue allows you to observe whenever the value of one or more
+        /// properties on an object have changed, providing an initial value when
+        /// the Observable is set up, unlike ObservableForProperty(). Use this
+        /// method in constructors to set up bindings between properties that also
+        /// need an initial setup.
+        /// </summary>
+        public static IObservable<TRet> WhenAnyValue<TSender, TRet, T1,T2,T3,T4,T5,T6>(this TSender This, 
+                            Expression<Func<TSender, T1>> property1, 
+                            Expression<Func<TSender, T2>> property2, 
+                            Expression<Func<TSender, T3>> property3, 
+                            Expression<Func<TSender, T4>> property4, 
+                            Expression<Func<TSender, T5>> property5, 
+                            Expression<Func<TSender, T6>> property6, 
+                            Func<T1,T2,T3,T4,T5,T6, TRet> selector)
+        {
+            return This.WhenAny(property1, property2, property3, property4, property5, property6,
+                                (c1, c2, c3, c4, c5, c6) =>
+                                    selector(c1.Value, c2.Value, c3.Value, c4.Value, c5.Value, c6.Value));
+        }
+
         /// <summary>
         /// WhenAny allows you to observe whenever one or more properties on an
         /// object have changed, providing an initial value when the Observable
@@ -298,7 +422,29 @@ namespace ReactiveUI
             );
                     }
 
-                                    
+                                                            
+        /// <summary>
+        /// WhenAnyValue allows you to observe whenever the value of one or more
+        /// properties on an object have changed, providing an initial value when
+        /// the Observable is set up, unlike ObservableForProperty(). Use this
+        /// method in constructors to set up bindings between properties that also
+        /// need an initial setup.
+        /// </summary>
+        public static IObservable<TRet> WhenAnyValue<TSender, TRet, T1,T2,T3,T4,T5,T6,T7>(this TSender This, 
+                            Expression<Func<TSender, T1>> property1, 
+                            Expression<Func<TSender, T2>> property2, 
+                            Expression<Func<TSender, T3>> property3, 
+                            Expression<Func<TSender, T4>> property4, 
+                            Expression<Func<TSender, T5>> property5, 
+                            Expression<Func<TSender, T6>> property6, 
+                            Expression<Func<TSender, T7>> property7, 
+                            Func<T1,T2,T3,T4,T5,T6,T7, TRet> selector)
+        {
+            return This.WhenAny(property1, property2, property3, property4, property5, property6, property7,
+                                (c1, c2, c3, c4, c5, c6, c7) =>
+                                    selector(c1.Value, c2.Value, c3.Value, c4.Value, c5.Value, c6.Value, c7.Value));
+        }
+
         /// <summary>
         /// WhenAny allows you to observe whenever one or more properties on an
         /// object have changed, providing an initial value when the Observable
@@ -364,7 +510,30 @@ namespace ReactiveUI
             );
                     }
 
-                                    
+                                                            
+        /// <summary>
+        /// WhenAnyValue allows you to observe whenever the value of one or more
+        /// properties on an object have changed, providing an initial value when
+        /// the Observable is set up, unlike ObservableForProperty(). Use this
+        /// method in constructors to set up bindings between properties that also
+        /// need an initial setup.
+        /// </summary>
+        public static IObservable<TRet> WhenAnyValue<TSender, TRet, T1,T2,T3,T4,T5,T6,T7,T8>(this TSender This, 
+                            Expression<Func<TSender, T1>> property1, 
+                            Expression<Func<TSender, T2>> property2, 
+                            Expression<Func<TSender, T3>> property3, 
+                            Expression<Func<TSender, T4>> property4, 
+                            Expression<Func<TSender, T5>> property5, 
+                            Expression<Func<TSender, T6>> property6, 
+                            Expression<Func<TSender, T7>> property7, 
+                            Expression<Func<TSender, T8>> property8, 
+                            Func<T1,T2,T3,T4,T5,T6,T7,T8, TRet> selector)
+        {
+            return This.WhenAny(property1, property2, property3, property4, property5, property6, property7, property8,
+                                (c1, c2, c3, c4, c5, c6, c7, c8) =>
+                                    selector(c1.Value, c2.Value, c3.Value, c4.Value, c5.Value, c6.Value, c7.Value, c8.Value));
+        }
+
         /// <summary>
         /// WhenAny allows you to observe whenever one or more properties on an
         /// object have changed, providing an initial value when the Observable
@@ -435,7 +604,31 @@ namespace ReactiveUI
             );
                     }
 
-                                    
+                                                            
+        /// <summary>
+        /// WhenAnyValue allows you to observe whenever the value of one or more
+        /// properties on an object have changed, providing an initial value when
+        /// the Observable is set up, unlike ObservableForProperty(). Use this
+        /// method in constructors to set up bindings between properties that also
+        /// need an initial setup.
+        /// </summary>
+        public static IObservable<TRet> WhenAnyValue<TSender, TRet, T1,T2,T3,T4,T5,T6,T7,T8,T9>(this TSender This, 
+                            Expression<Func<TSender, T1>> property1, 
+                            Expression<Func<TSender, T2>> property2, 
+                            Expression<Func<TSender, T3>> property3, 
+                            Expression<Func<TSender, T4>> property4, 
+                            Expression<Func<TSender, T5>> property5, 
+                            Expression<Func<TSender, T6>> property6, 
+                            Expression<Func<TSender, T7>> property7, 
+                            Expression<Func<TSender, T8>> property8, 
+                            Expression<Func<TSender, T9>> property9, 
+                            Func<T1,T2,T3,T4,T5,T6,T7,T8,T9, TRet> selector)
+        {
+            return This.WhenAny(property1, property2, property3, property4, property5, property6, property7, property8, property9,
+                                (c1, c2, c3, c4, c5, c6, c7, c8, c9) =>
+                                    selector(c1.Value, c2.Value, c3.Value, c4.Value, c5.Value, c6.Value, c7.Value, c8.Value, c9.Value));
+        }
+
         /// <summary>
         /// WhenAny allows you to observe whenever one or more properties on an
         /// object have changed, providing an initial value when the Observable
@@ -511,7 +704,32 @@ namespace ReactiveUI
             );
                     }
 
-                                    
+                                                            
+        /// <summary>
+        /// WhenAnyValue allows you to observe whenever the value of one or more
+        /// properties on an object have changed, providing an initial value when
+        /// the Observable is set up, unlike ObservableForProperty(). Use this
+        /// method in constructors to set up bindings between properties that also
+        /// need an initial setup.
+        /// </summary>
+        public static IObservable<TRet> WhenAnyValue<TSender, TRet, T1,T2,T3,T4,T5,T6,T7,T8,T9,T10>(this TSender This, 
+                            Expression<Func<TSender, T1>> property1, 
+                            Expression<Func<TSender, T2>> property2, 
+                            Expression<Func<TSender, T3>> property3, 
+                            Expression<Func<TSender, T4>> property4, 
+                            Expression<Func<TSender, T5>> property5, 
+                            Expression<Func<TSender, T6>> property6, 
+                            Expression<Func<TSender, T7>> property7, 
+                            Expression<Func<TSender, T8>> property8, 
+                            Expression<Func<TSender, T9>> property9, 
+                            Expression<Func<TSender, T10>> property10, 
+                            Func<T1,T2,T3,T4,T5,T6,T7,T8,T9,T10, TRet> selector)
+        {
+            return This.WhenAny(property1, property2, property3, property4, property5, property6, property7, property8, property9, property10,
+                                (c1, c2, c3, c4, c5, c6, c7, c8, c9, c10) =>
+                                    selector(c1.Value, c2.Value, c3.Value, c4.Value, c5.Value, c6.Value, c7.Value, c8.Value, c9.Value, c10.Value));
+        }
+
         /// <summary>
         /// WhenAny allows you to observe whenever one or more properties on an
         /// object have changed, providing an initial value when the Observable
@@ -592,7 +810,33 @@ namespace ReactiveUI
             );
                     }
 
-                                    
+                                                            
+        /// <summary>
+        /// WhenAnyValue allows you to observe whenever the value of one or more
+        /// properties on an object have changed, providing an initial value when
+        /// the Observable is set up, unlike ObservableForProperty(). Use this
+        /// method in constructors to set up bindings between properties that also
+        /// need an initial setup.
+        /// </summary>
+        public static IObservable<TRet> WhenAnyValue<TSender, TRet, T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11>(this TSender This, 
+                            Expression<Func<TSender, T1>> property1, 
+                            Expression<Func<TSender, T2>> property2, 
+                            Expression<Func<TSender, T3>> property3, 
+                            Expression<Func<TSender, T4>> property4, 
+                            Expression<Func<TSender, T5>> property5, 
+                            Expression<Func<TSender, T6>> property6, 
+                            Expression<Func<TSender, T7>> property7, 
+                            Expression<Func<TSender, T8>> property8, 
+                            Expression<Func<TSender, T9>> property9, 
+                            Expression<Func<TSender, T10>> property10, 
+                            Expression<Func<TSender, T11>> property11, 
+                            Func<T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11, TRet> selector)
+        {
+            return This.WhenAny(property1, property2, property3, property4, property5, property6, property7, property8, property9, property10, property11,
+                                (c1, c2, c3, c4, c5, c6, c7, c8, c9, c10, c11) =>
+                                    selector(c1.Value, c2.Value, c3.Value, c4.Value, c5.Value, c6.Value, c7.Value, c8.Value, c9.Value, c10.Value, c11.Value));
+        }
+
         /// <summary>
         /// WhenAny allows you to observe whenever one or more properties on an
         /// object have changed, providing an initial value when the Observable
@@ -678,7 +922,34 @@ namespace ReactiveUI
             );
                     }
 
-                                    
+                                                            
+        /// <summary>
+        /// WhenAnyValue allows you to observe whenever the value of one or more
+        /// properties on an object have changed, providing an initial value when
+        /// the Observable is set up, unlike ObservableForProperty(). Use this
+        /// method in constructors to set up bindings between properties that also
+        /// need an initial setup.
+        /// </summary>
+        public static IObservable<TRet> WhenAnyValue<TSender, TRet, T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11,T12>(this TSender This, 
+                            Expression<Func<TSender, T1>> property1, 
+                            Expression<Func<TSender, T2>> property2, 
+                            Expression<Func<TSender, T3>> property3, 
+                            Expression<Func<TSender, T4>> property4, 
+                            Expression<Func<TSender, T5>> property5, 
+                            Expression<Func<TSender, T6>> property6, 
+                            Expression<Func<TSender, T7>> property7, 
+                            Expression<Func<TSender, T8>> property8, 
+                            Expression<Func<TSender, T9>> property9, 
+                            Expression<Func<TSender, T10>> property10, 
+                            Expression<Func<TSender, T11>> property11, 
+                            Expression<Func<TSender, T12>> property12, 
+                            Func<T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11,T12, TRet> selector)
+        {
+            return This.WhenAny(property1, property2, property3, property4, property5, property6, property7, property8, property9, property10, property11, property12,
+                                (c1, c2, c3, c4, c5, c6, c7, c8, c9, c10, c11, c12) =>
+                                    selector(c1.Value, c2.Value, c3.Value, c4.Value, c5.Value, c6.Value, c7.Value, c8.Value, c9.Value, c10.Value, c11.Value, c12.Value));
+        }
+
         /// <summary>
         /// WhenAny allows you to observe whenever one or more properties on an
         /// object have changed, providing an initial value when the Observable
