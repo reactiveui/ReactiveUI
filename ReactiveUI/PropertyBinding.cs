@@ -656,7 +656,7 @@ namespace ReactiveUI
             }
 
             var somethingChanged = Observable.Merge(
-                Reflection.ViewModelWhenAnyValue(viewModel, view, vmProperty).Select(_ => true),
+                Reflection.ViewModelWhenAnyValueDynamic(viewModel, view, vmPropChain).Select(_ => true),
                 signalInitialUpdate.Select(_ => true),
                 signalViewUpdate != null ? 
                     signalViewUpdate.Select(_ => false) : 
@@ -777,7 +777,6 @@ namespace ReactiveUI
         {
             var vmPropChain = Reflection.ExpressionToPropertyNames(vmProperty);
             var viewPropChain = default(string[]);
-            var vmString = String.Format("{0}.{1}", typeof (TViewModel).Name, String.Join(".", vmPropChain));
             var source = default(IObservable<TVProp>);
             var fallbackWrapper = default(Func<TVProp>);
 
@@ -794,7 +793,7 @@ namespace ReactiveUI
                 var ret = evalBindingHooks(viewModel, view, vmPropChain, viewPropChain, BindingDirection.OneWay);
                 if (!ret) return null;
 
-                source = Reflection.ViewModelWhenAnyValue(viewModel, view, vmProperty)
+                source = Reflection.ViewModelWhenAnyValueDynamic(viewModel, view, vmPropChain)
                     .SelectMany(x => {
                         object tmp;
                         if (!converter.TryConvert(x, viewType, conversionHint, out tmp)) return Observable.Empty<TVProp>();
@@ -817,7 +816,7 @@ namespace ReactiveUI
                 var ret = evalBindingHooks(viewModel, view, vmPropChain, viewPropChain, BindingDirection.OneWay);
                 if (!ret) return null;
 
-                source = Reflection.ViewModelWhenAnyValue(viewModel, view, vmProperty)
+                source = Reflection.ViewModelWhenAnyValueDynamic(viewModel, view, vmPropChain)
                     .SelectMany(x => {
                         object tmp;
                         if (!converter.TryConvert(x, typeof(TVProp), conversionHint, out tmp)) return Observable.Empty<TVProp>();
@@ -894,13 +893,13 @@ namespace ReactiveUI
                 var ret = evalBindingHooks(viewModel, view, vmPropChain, viewPropChain, BindingDirection.OneWay);
                 if (!ret) return null;
 
-                source = Reflection.ViewModelWhenAnyValue(viewModel, view, vmProperty).Select(selector);
+                source = Reflection.ViewModelWhenAnyValueDynamic(viewModel, view, vmPropChain).Select(x => (TProp)x).Select(selector);
             } else {
                 viewPropChain = Reflection.ExpressionToPropertyNames(viewProperty);
                 var ret = evalBindingHooks(viewModel, view, vmPropChain, viewPropChain, BindingDirection.OneWay);
                 if (!ret) return null;
 
-                source = Reflection.ViewModelWhenAnyValue(viewModel, view, vmProperty).Select(selector);
+                source = Reflection.ViewModelWhenAnyValueDynamic(viewModel, view, vmPropChain).Select(x => (TProp)x).Select(selector);
             }
 
             IDisposable disp = bindToDirect(source, view, viewProperty, fallbackValue);
