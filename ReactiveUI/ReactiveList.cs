@@ -162,7 +162,6 @@ namespace ReactiveUI
             if (ChangeTrackingEnabled) removeItemFromPropertyTracking(item);
         }
 
-#if !SILVERLIGHT
         protected void MoveItem(int oldIndex, int newIndex)
         {
             var item = _inner[oldIndex];
@@ -186,7 +185,7 @@ namespace ReactiveUI
             _changed.OnNext(ea);
             if (_itemsMoved.IsValueCreated) _itemsMoved.Value.OnNext(mi);
         }
-#endif
+
         protected void SetItem(int index, T item)
         {
             if (_suppressionRefCount > 0) {
