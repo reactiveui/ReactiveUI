@@ -204,12 +204,15 @@ namespace ReactiveUI.Xaml
             public Control Control;
             public IDisposable Disposable;
 
-            public static void DisposeWith(Control control, IDisposable disposer){
+            public static void DisposeWith( Control control, IDisposable disposer )
+            {
                 new DisposableLifetimeManager(control, disposer);
             }
 
-            private DisposableLifetimeManager( Control control, IDisposable disposer )
+            private DisposableLifetimeManager( Control control, IDisposable disposable )
             {
+                Disposable = disposable;
+                Control = control;
                 ShutdownStartedEventHandler = ( s, e ) => DisposeAndDetachHandler();
                 UnloadedEventHandler = ( s, e ) => DisposeAndDetachHandler();
 
