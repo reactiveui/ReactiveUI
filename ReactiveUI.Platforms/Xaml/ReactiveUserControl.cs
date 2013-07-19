@@ -223,17 +223,16 @@ namespace ReactiveUI.Xaml
             private void DisposeAndDetachHandler()
             {
                 Disposable.Dispose();
-                try
-                {
-                    Control.Unloaded -= UnloadedEventHandler;
-                    Control.Dispatcher.ShutdownStarted -= ShutdownStartedEventHandler;
-                }
-                finally
-                {
-                    // Does CLR throw exceptions if removing an allready removed
-                    // event handler?
-                }
+
+                // Does CLR throw exceptions if removing an allready removed
+                // event handler?
+                try { Control.Unloaded -= UnloadedEventHandler; }
+                finally { }
+
+                try { Control.Dispatcher.ShutdownStarted -= ShutdownStartedEventHandler; }
+                finally { }
             }
+
         }
 
         /// <summary>
