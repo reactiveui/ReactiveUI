@@ -7,5 +7,3 @@ using System.Windows;
 [assembly: AssemblyProduct("ReactiveUI.Winforms")]
 [assembly: AssemblyVersion("5.0.1")]
 [assembly: InternalsVisibleTo("ReactiveUI.Tests_Net45")]
-[assembly: InternalsVisibleTo("ReactiveUI.Tests_SL5")]
-[assembly: InternalsVisibleTo("ReactiveUI.Tests_WinRT")]
