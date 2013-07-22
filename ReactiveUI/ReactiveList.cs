@@ -73,10 +73,10 @@ namespace ReactiveUI
             _inner = _inner ?? new List<T>();
 
             _changing = new Subject<NotifyCollectionChangedEventArgs>();
-            _changing.Subscribe(raiseCollectionChanging);
+            _changing.Where(_=>_suppressionRefCount == 0).Subscribe(raiseCollectionChanging);
 
             _changed = new Subject<NotifyCollectionChangedEventArgs>();
-            _changed.Subscribe(raiseCollectionChanged);
+            _changed.Where(_ => _suppressionRefCount == 0).Subscribe(raiseCollectionChanged);
 
             ResetChangeThreshold = resetChangeThreshold;
 
@@ -96,15 +96,15 @@ namespace ReactiveUI
             // NB: ObservableCollection has a Secret Handshake with WPF where 
             // they fire an INPC notification with the token "Item[]". Emulate 
             // it here
-            CountChanging.Select(x => new PropertyChangingEventArgs("Count")).Subscribe(this.raisePropertyChanging);
+            CountChanging.Where(_ => _suppressionRefCount == 0).Select(x => new PropertyChangingEventArgs("Count")).Subscribe(this.raisePropertyChanging);
 
-            CountChanged.Select(x => new PropertyChangedEventArgs("Count")).Subscribe(this.raisePropertyChanged);
+            CountChanged.Where(_ => _suppressionRefCount == 0).Select(x => new PropertyChangedEventArgs("Count")).Subscribe(this.raisePropertyChanged);
 
-            IsEmptyChanged.Select(x => new PropertyChangedEventArgs("IsEmpty")).Subscribe(this.raisePropertyChanged);
+            IsEmptyChanged.Where(_ => _suppressionRefCount == 0).Select(x => new PropertyChangedEventArgs("IsEmpty")).Subscribe(this.raisePropertyChanged);
 
-            Changing.Select(x => new PropertyChangingEventArgs("Item[]")).Subscribe(this.raisePropertyChanging);
+            Changing.Where(_ => _suppressionRefCount == 0).Select(x => new PropertyChangingEventArgs("Item[]")).Subscribe(this.raisePropertyChanging);
 
-            Changed.Select(x => new PropertyChangedEventArgs("Item[]")).Subscribe(this.raisePropertyChanged);
+            Changed.Where(_ => _suppressionRefCount == 0).Select(x => new PropertyChangedEventArgs("Item[]")).Subscribe(this.raisePropertyChanged);
         }
 
         public bool IsEmpty
@@ -239,20 +239,101 @@ namespace ReactiveUI
 
         public virtual void AddRange(IEnumerable<T> collection)
         {
-            InsertRange(_inner.Count, collection);
+            //optimized version of AddRange method, making use of List<T> O(n) implementation of addrange
+
+            var list = collection.ToList();
+            var disp = isLengthAboveResetThreshold(list.Count) ?
+                SuppressChangeNotifications() : Disposable.Empty;
+
+            using (disp) {
+                if (_suppressionRefCount > 0) {
+                    _inner.AddRange(collection);
+                 
+                    if (ChangeTrackingEnabled) {
+                        foreach (var item in list) {
+                            addItemToPropertyTracking(item);
+                        }
+                    }
+                    return;
+                }
+
+                var ea = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, list, _inner.Count/*we are appending a range*/);
+
+                _changing.OnNext(ea);
+                if (_beforeItemsAdded.IsValueCreated) {
+                    foreach (var item in list) {
+                        _beforeItemsAdded.Value.OnNext(item);
+                    }
+                }
+                
+                _inner.AddRange(collection);
+
+                _changed.OnNext(ea);
+                if (_itemsAdded.IsValueCreated){
+                    foreach (var item in list) {
+                        _itemsAdded.Value.OnNext(item);
+                    }
+                }
+
+                if (ChangeTrackingEnabled) {
+                    foreach (var item in list) {
+                        addItemToPropertyTracking(item);
+                    }
+                }
+            }
         }
 
         public virtual void InsertRange(int index, IEnumerable<T> collection)
         {
-            var arr = collection.ToArray();
-            var disp = isLengthAboveResetThreshold(arr.Length) ?
+            //optimized version of AddRange method, making use of List<T> O(n) implementation of InsertRange
+            var list = collection.ToList();
+            var disp = isLengthAboveResetThreshold(list.Count) ?
                 SuppressChangeNotifications() : Disposable.Empty;
 
-            using (disp) {
-                // NB: If we don't do this, we'll break Collection<T>'s 
-                // accounting of the length
-                for (int i = arr.Length - 1; i >= 0; i--) {
-                    InsertItem(index, arr[i]);
+            using (disp)
+            {
+                if (_suppressionRefCount > 0)
+                {
+                    _inner.InsertRange(index,collection);
+
+                    if (ChangeTrackingEnabled)
+                    {
+                        foreach (var item in list)
+                        {
+                            addItemToPropertyTracking(item);
+                        }
+                    }
+                    return;
+                }
+
+                var ea = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, list, index);
+
+                _changing.OnNext(ea);
+                if (_beforeItemsAdded.IsValueCreated)
+                {
+                    foreach (var item in list)
+                    {
+                        _beforeItemsAdded.Value.OnNext(item);
+                    }
+                }
+
+                _inner.InsertRange(index,collection);
+
+                _changed.OnNext(ea);
+                if (_itemsAdded.IsValueCreated)
+                {
+                    foreach (var item in list)
+                    {
+                        _itemsAdded.Value.OnNext(item);
+                    }
+                }
+
+                if (ChangeTrackingEnabled)
+                {
+                    foreach (var item in list)
+                    {
+                        addItemToPropertyTracking(item);
+                    }
                 }
             }
         }
@@ -263,10 +344,41 @@ namespace ReactiveUI
                 SuppressChangeNotifications() : Disposable.Empty;
 
             using (disp) {
-                // NB: If we don't do this, we'll break Collection<T>'s 
-                // accounting of the length
-                for (int i = count; i > 0; i--) {
-                    RemoveItem(index);
+                var items = new List<T>(count);
+                foreach (var i in Enumerable.Range(index, count)) {
+                    items.Add(_inner[i]);
+                }
+
+                if (_suppressionRefCount > 0)
+                {
+                    _inner.RemoveRange(index,count);
+
+                    if (ChangeTrackingEnabled) {
+                        foreach (var item in items) {
+                            removeItemFromPropertyTracking(item);
+                        }
+                    }
+                    return;
+                }
+
+                var ea = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, items, index);
+
+                _changing.OnNext(ea);
+                if (_beforeItemsRemoved.IsValueCreated) {
+                    foreach (var item in items) {
+                        _beforeItemsRemoved.Value.OnNext(item);
+                    }
+                }
+
+                _inner.RemoveRange(index,count);
+
+                _changed.OnNext(ea);
+                
+                if (_itemsRemoved.IsValueCreated || ChangeTrackingEnabled) {
+                    foreach (var item in items) {
+                        if (_itemsRemoved.IsValueCreated) { _itemsRemoved.Value.OnNext(item); }
+                        if (ChangeTrackingEnabled) removeItemFromPropertyTracking(item);
+                    }
                 }
             }
         }
@@ -279,6 +391,7 @@ namespace ReactiveUI
                 SuppressChangeNotifications() : Disposable.Empty;
 
             using (disp) {
+               
                 // NB: If we don't do this, we'll break Collection<T>'s
                 // accounting of the length
                 foreach (var v in items) {
@@ -507,7 +620,7 @@ namespace ReactiveUI
         {
             var handler = this.CollectionChanging;
 
-            if(handler != null && _suppressionRefCount == 0) {
+            if(handler != null) {
                 handler(this, e);
             }
         }
@@ -516,7 +629,7 @@ namespace ReactiveUI
         {
             var handler = this.CollectionChanged;
 
-            if (handler != null && _suppressionRefCount == 0) {
+            if (handler != null) {
                 handler(this, e);
             }
         }
@@ -525,7 +638,7 @@ namespace ReactiveUI
         {
             var handler = this.PropertyChanging;
 
-            if (handler != null && _suppressionRefCount == 0) {
+            if (handler != null) {
                 handler(this, e);
             }
         }
@@ -534,7 +647,7 @@ namespace ReactiveUI
         {
             var handler = this.PropertyChanged;
 
-            if (handler != null && _suppressionRefCount == 0) {
+            if (handler != null) {
                 handler(this, e);
             }
         }
