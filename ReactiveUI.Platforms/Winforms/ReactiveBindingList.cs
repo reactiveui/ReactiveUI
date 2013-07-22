@@ -57,43 +57,38 @@
         /// and raises them if there are any attached handlers
         /// </summary>
         /// <param name="ea"></param>
-        private void transformAndRaise(NotifyCollectionChangedEventArgs ea)
+        void transformAndRaise(NotifyCollectionChangedEventArgs ea)
         {
             if (this.ListChanged == null) return;
 
             var events = new List<ListChangedEventArgs>();
 
-            switch (ea.Action)
-            {
-                case NotifyCollectionChangedAction.Reset:
-                    events.Add(new ListChangedEventArgs(ListChangedType.Reset, -1));
-                    break;
-                case NotifyCollectionChangedAction.Replace:
-                    events.Add(new ListChangedEventArgs(ListChangedType.ItemChanged, ea.NewStartingIndex));
-                    break;
-                case NotifyCollectionChangedAction.Remove:
-                    events.AddRange(
-                        Enumerable.Range(ea.OldStartingIndex, ea.OldItems.Count)
-                        .Select(index => new ListChangedEventArgs(ListChangedType.ItemDeleted, index)));
-                    break;
-                case NotifyCollectionChangedAction.Add:
-                    events.AddRange(
-                      Enumerable.Range(ea.NewStartingIndex, ea.NewItems.Count)
-                      .Select(index => new ListChangedEventArgs(ListChangedType.ItemAdded, index)));
-                    break;
-                case NotifyCollectionChangedAction.Move:
-                    //this one is actually not supported by the default BindingList<T> implementation
-                    //maybe we should do a reset instead?
-                    events.Add(
-                        new ListChangedEventArgs(ListChangedType.ItemMoved, ea.NewStartingIndex, ea.OldStartingIndex));
-                    break;
+            switch (ea.Action){
+            case NotifyCollectionChangedAction.Reset:
+                events.Add(new ListChangedEventArgs(ListChangedType.Reset, -1));
+                break;
+            case NotifyCollectionChangedAction.Replace:
+                events.Add(new ListChangedEventArgs(ListChangedType.ItemChanged, ea.NewStartingIndex));
+                break;
+            case NotifyCollectionChangedAction.Remove:
+                events.AddRange(
+                    Enumerable.Range(ea.OldStartingIndex, ea.OldItems.Count)
+                    .Select(index => new ListChangedEventArgs(ListChangedType.ItemDeleted, index)));
+                break;
+            case NotifyCollectionChangedAction.Add:
+                events.AddRange(
+                    Enumerable.Range(ea.NewStartingIndex, ea.NewItems.Count)
+                    .Select(index => new ListChangedEventArgs(ListChangedType.ItemAdded, index)));
+                break;
+            case NotifyCollectionChangedAction.Move:
+                //this one is actually not supported by the default BindingList<T> implementation
+                //maybe we should do a reset instead?
+                events.Add(
+                    new ListChangedEventArgs(ListChangedType.ItemMoved, ea.NewStartingIndex, ea.OldStartingIndex));
+                break;
             }
 
-            foreach (var e in events)
-            {
-                this.ListChanged(this, e);
-            }
-            
+            events.ForEach(x=>this.ListChanged(this, x));
         }
 
 
@@ -129,76 +124,40 @@
             throw new NotSupportedException();
         }
 
-        public bool AllowNew
-        {
-            get
-            {
-                return true;
-            }
+        public bool AllowNew {
+            get { return true; }
         }
 
-        public bool AllowEdit
-        {
-            get
-            {
-                return true;
-            }
+        public bool AllowEdit {
+            get { return true; }
         }
 
-        public bool AllowRemove
-        {
-            get
-            {
-                return true;
-            }
+        public bool AllowRemove {
+            get { return true; }
         }
 
-        public bool SupportsChangeNotification
-        {
-            get
-            {
-                return true;
-            }
+        public bool SupportsChangeNotification {
+            get { return true; }
         }
 
-        public bool SupportsSearching
-        {
-            get
-            {
-                return false;
-            }
+        public bool SupportsSearching {
+            get { return false; }
         }
 
-        public bool SupportsSorting
-        {
-            get
-            {
-                return false;
-            }
+        public bool SupportsSorting {
+            get { return false; }
         }
 
-        public bool IsSorted
-        {
-            get
-            {
-                return false;
-            }
+        public bool IsSorted {
+            get{ return false; }
         }
 
-        public PropertyDescriptor SortProperty
-        {
-            get
-            {
-                return null;
-            }
+        public PropertyDescriptor SortProperty {
+            get{ return null; }
         }
 
-        public ListSortDirection SortDirection
-        {
-            get
-            {
-                return ListSortDirection.Ascending;
-            }
+        public ListSortDirection SortDirection {
+            get { return ListSortDirection.Ascending; }
         }
 
         public event ListChangedEventHandler ListChanged;
