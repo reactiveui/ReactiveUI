@@ -10,7 +10,11 @@ using System.Windows;
 using Windows.ApplicationModel;
 #endif
 
+#if WINFORMS
+namespace ReactiveUI.Winforms
+#else
 namespace ReactiveUI
+#endif
 {
     /// <summary>
     /// Because RxUI.dll is in a PLib, it doesn't have the SuperPowers it needs
