@@ -77,12 +77,12 @@ namespace ReactiveUI
             var namespaces = new[] { 
                 "ReactiveUI",
                 "ReactiveUI.Xaml", 
+                "ReactiveUI.Winforms",
                 "ReactiveUI.Mobile", 
                 "ReactiveUI.NLog", 
                 "ReactiveUI.Gtk", 
                 "ReactiveUI.Cocoa", 
                 "ReactiveUI.Android",
-                "ReactiveUI.Winforms"
             };
 
             var fdr = typeof(ModernDependencyResolver);
