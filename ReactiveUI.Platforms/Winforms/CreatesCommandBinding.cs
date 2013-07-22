@@ -1,14 +1,15 @@
-﻿namespace ReactiveUI.Winforms
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Reactive.Disposables;
-    using System.Reactive.Linq;
-    using System.Windows.Forms;
-    using System.Windows.Input;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reactive.Disposables;
+using System.Reactive.Linq;
+using System.Windows.Forms;
+using System.Windows.Input;
+using ReactiveUI;
 
-    using ReactiveUI;
+namespace ReactiveUI.Winforms
+{
+   
 
     /// <summary>
     /// This binder is the default binder for connecting to arbitrary events
@@ -30,8 +31,7 @@
 
             if (hasEventTarget) return 5;
 
-            return defaultEventsToBind.Any(x =>
-            {
+            return defaultEventsToBind.Any(x =>{
                 var ei = type.GetEvent(x.Item1, BindingFlags.Public | BindingFlags.FlattenHierarchy | BindingFlags.Instance);
                 return ei != null;
             }) ? 3 : 0;
@@ -71,8 +71,7 @@
             var evt = Observable.FromEventPattern<TEventArgs>(target, eventName);
             ret.Add(evt.Subscribe(ea =>
             {
-                if (command.CanExecute(useEventArgsInstead ? ea : latestParameter))
-                {
+                if (command.CanExecute(useEventArgsInstead ? ea : latestParameter)){
                     command.Execute(useEventArgsInstead ? ea : latestParameter);
                 }
             }));
