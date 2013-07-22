@@ -114,7 +114,9 @@
     <Compile Include="Winforms\CommandBindingTests.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Winforms\DefaultPropertyBindingTests.cs" />
+    <Compile Include="Winforms\DefaultPropertyBindingTests.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Winforms\ReactiveBindingListTests.cs" />
     <Compile Include="Xaml\DependencyObjectObservableForPropertyTest.cs" />
     <Compile Include="ErrorsTest.cs" />
@@ -147,7 +149,7 @@
       <Name>ReactiveUI.NLog_Net45</Name>
     </ProjectReference>
     <ProjectReference Include="..\ReactiveUI.Platforms\ReactiveUI.Winforms_Net45.csproj">
-      <Project>{F5ECBDE5-E525-4482-B568-63217BCB0A0B}</Project>
+      <Project>{f5ecbde5-e525-4482-b568-63217bcb0a0b}</Project>
       <Name>ReactiveUI.Winforms_Net45</Name>
     </ProjectReference>
     <ProjectReference Include="..\ReactiveUI.Testing\ReactiveUI.Testing_Net45.csproj">

@@ -7,12 +7,10 @@ using System.Text;
 using System.Windows;
 using ReactiveUI;
 using System.Reactive.Concurrency;
-
+using System.Windows.Forms;
 
 namespace ReactiveUI.Winforms
 {
-    using System.Windows.Forms;
-
     /// <summary>
     /// Ignore me. This class is a secret handshake between RxUI and RxUI.Xaml
     /// in order to register certain classes on startup that would be difficult
@@ -28,7 +26,7 @@ namespace ReactiveUI.Winforms
           
             registerFunction(() => new WinformsDefaultPropertyBinding(), typeof(IDefaultPropertyBindingProvider));
             registerFunction(() => new CreatesWinformsCommandBinding(), typeof(ICreatesCommandBinding));
-         
+            registerFunction(() => new WinformsCreatesObservableForProperty(), typeof(ICreatesObservableForProperty));
 
             RxApp.InUnitTestRunnerOverride = PlatformUnitTestDetector.InUnitTestRunner();
             if (RxApp.InUnitTestRunner()) {
@@ -37,7 +35,6 @@ namespace ReactiveUI.Winforms
 
             WindowsFormsSynchronizationContext.AutoInstall = true;
             RxApp.MainThreadScheduler = new WaitForDispatcherScheduler(() => new SynchronizationContextScheduler(new WindowsFormsSynchronizationContext()));
-
         }
     }
 }

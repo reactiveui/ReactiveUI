@@ -31,7 +31,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\Net45\</OutputPath>
-    <DefineConstants>DEBUG;TRACE;NET_45</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;WINFORMS</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CodeContractsEnableRuntimeChecking>False</CodeContractsEnableRuntimeChecking>
@@ -65,7 +65,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\Net45\</OutputPath>
-    <DefineConstants>TRACE;NET_45</DefineConstants>
+    <DefineConstants>TRACE;WINFORMS</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CodeContractsEnableRuntimeChecking>False</CodeContractsEnableRuntimeChecking>
@@ -123,12 +123,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ComponentModelTypeConverter.cs" />
+    <Compile Include="PlatformUnitTestDetector.cs" />
     <Compile Include="Winforms\ReactiveBindingList.cs" />
     <Compile Include="Winforms\CreatesCommandBinding.cs" />
     <Compile Include="Winforms\PlatformOperations.cs" />
-    <Compile Include="Winforms\PlatformUnitTestDetector.cs" />
     <Compile Include="Winforms\Properties\AssemblyInfo.cs" />
     <Compile Include="Winforms\Registrations.cs" />
+    <Compile Include="Winforms\WinformsCreatesObservableForProperty.cs" />
     <Compile Include="Winforms\WinformsDefaultPropertyBinding.cs" />
   </ItemGroup>
   <ItemGroup>
