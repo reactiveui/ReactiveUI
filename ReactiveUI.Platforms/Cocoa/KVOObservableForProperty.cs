@@ -26,11 +26,42 @@ namespace ReactiveUI.Cocoa
     /// </summary>
     public class KVOObservableForProperty : ICreatesObservableForProperty
     {
+        static readonly MemoizingMRUCache<Tuple<Type, string>, bool> declaredInNSObject;
+
+        static KVOObservableForProperty()
+        {
+            var monotouchAssemblyName = typeof(NSObject).Assembly.FullName;
+
+            declaredInNSObject = new MemoizingMRUCache<Tuple<Type, string>, bool>((pair, _) => {
+                var thisType = pair.Item1;
+
+                // Types that aren't NSObjects at all are uninteresting to us
+                if (typeof(NSObject).IsAssignableFrom(thisType) == false) {
+                    return false;
+                }
+
+                while(thisType != null) {
+                    if (thisType.GetMembers(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly).Any(x => x.Name == pair.Item2)) {
+                        // NB: This is a not-completely correct way to detect if
+                        // an object is defined in an Obj-C class (it will fail if
+                        // you're using a binding to a 3rd-party Obj-C library).
+                        return thisType.Assembly.FullName == monotouchAssemblyName;
+                    }
+
+                    thisType = thisType.BaseType;
+                }
+
+                // The property doesn't exist at all
+                return false;
+            }, RxApp.BigCacheLimit);
+        }
+
+
         public int GetAffinityForObject(Type type, string propertyName, bool beforeChanged = false)
         {
-            // NB: There is no way to know up-front whether a given property is
-            // KVO-observable. This is Unfortunate™.
-            return typeof (NSObject).IsAssignableFrom(type) ? 4 : 0;
+            lock (declaredInNSObject) {
+                return declaredInNSObject.Get(Tuple.Create(type, propertyName)) ? 15 : 0;
+            }
         }
 
         public IObservable<IObservedChange<object, object>> GetNotificationForProperty(object sender, string propertyName, bool beforeChanged = false)
