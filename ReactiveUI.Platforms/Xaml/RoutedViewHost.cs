@@ -91,6 +91,11 @@ namespace ReactiveUI.Xaml
                 var viewLocator = ViewLocator ?? ReactiveUI.ViewLocator.Current;
                 var view = viewLocator.ResolveView(x.Item1, x.Item2) ?? viewLocator.ResolveView(x.Item1, null);
 
+                if (view == null) {
+                    Content = DefaultContent;
+                    return;
+                }
+
                 view.ViewModel = x.Item1;
                 Content = view;
             }, ex => RxApp.DefaultExceptionHandler.OnNext(ex));
