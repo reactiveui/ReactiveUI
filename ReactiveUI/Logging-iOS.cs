@@ -82,7 +82,7 @@ namespace ReactiveUI
             loggerCache = new MemoizingMRUCache<Type, IFullLogger>((type, _) => {
                 var ret = dependencyResolver.GetService<ILogger>() ?? defaultLogger;
                 if (ret == null) {
-                    throw new Exception("Couldn't find an ILogger. This should never happen, your dependency resolver is probably broken.");
+                    return new WrappingFullLogger(defaultLogger, type);
                 }
 
                 return new WrappingFullLogger(ret, type);
@@ -167,8 +167,9 @@ namespace ReactiveUI
 
                 var factory = RxApp.DependencyResolver.GetService<ILogManager>() ?? defaultManager;
                 if (factory == null) {
-                    throw new Exception("ILogManager is null. This should never happen, your dependency resolver is broken");
+                    return nullLogger;
                 }
+
                 return factory.GetLogger(typeof(LogHost));
             }
         }
@@ -183,7 +184,7 @@ namespace ReactiveUI
 
             var factory = RxApp.DependencyResolver.GetService<ILogManager>() ?? defaultManager;
             if (factory == null) {
-                throw new Exception("ILogManager is null. This should never happen, your dependency resolver is broken");
+                return nullLogger;
             }
 
             return factory.GetLogger<T>();
