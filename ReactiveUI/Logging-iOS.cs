@@ -266,9 +266,7 @@ namespace ReactiveUI
 
         public void Debug(IFormatProvider formatProvider, string message, params object[] args)
         {
-            var sfArgs = new object[args.Length + 2];
-            sfArgs[0] = formatProvider; sfArgs[1] = message;
-            Array.Copy(args, 0, sfArgs, 2, args.Length);
+            var sfArgs = new object[] { formatProvider, message, args, };
             string result = (string)stringFormat.Invoke(null, sfArgs);
 
             _inner.Write(prefix + result, LogLevel.Debug);
@@ -281,9 +279,7 @@ namespace ReactiveUI
 
         public void Debug(string message, params object[] args)
         {
-            var sfArgs = new object[args.Length + 2];
-            sfArgs[0] = CultureInfo.InvariantCulture; sfArgs[1] = message;
-            Array.Copy(args, 0, sfArgs, 2, args.Length);
+            var sfArgs = new object[] { CultureInfo.InvariantCulture, message, args, };
             string result = (string)stringFormat.Invoke(null, sfArgs);
 
             _inner.Write(prefix + result, LogLevel.Debug);
@@ -306,9 +302,7 @@ namespace ReactiveUI
 
         public void Info(IFormatProvider formatProvider, string message, params object[] args)
         {
-            var sfArgs = new object[args.Length + 2];
-            sfArgs[0] = formatProvider; sfArgs[1] = message;
-            Array.Copy(args, 0, sfArgs, 2, args.Length);
+            var sfArgs = new object[] { formatProvider, message, args, };
             string result = (string)stringFormat.Invoke(null, sfArgs);
 
             _inner.Write(prefix + result, LogLevel.Info);
@@ -321,9 +315,7 @@ namespace ReactiveUI
 
         public void Info(string message, params object[] args)
         {
-            var sfArgs = new object[args.Length + 2];
-            sfArgs[0] = CultureInfo.InvariantCulture; sfArgs[1] = message;
-            Array.Copy(args, 0, sfArgs, 2, args.Length);
+            var sfArgs = new object[] { CultureInfo.InvariantCulture, message, args, };
             string result = (string)stringFormat.Invoke(null, sfArgs);
 
             _inner.Write(prefix + result, LogLevel.Info);
@@ -346,9 +338,7 @@ namespace ReactiveUI
 
         public void Warn(IFormatProvider formatProvider, string message, params object[] args)
         {
-            var sfArgs = new object[args.Length + 2];
-            sfArgs[0] = formatProvider; sfArgs[1] = message;
-            Array.Copy(args, 0, sfArgs, 2, args.Length);
+            var sfArgs = new object[] { formatProvider, message, args, };
             string result = (string)stringFormat.Invoke(null, sfArgs);
 
             _inner.Write(prefix + result, LogLevel.Warn);
@@ -361,9 +351,7 @@ namespace ReactiveUI
 
         public void Warn(string message, params object[] args)
         {
-            var sfArgs = new object[args.Length + 2];
-            sfArgs[0] = CultureInfo.InvariantCulture; sfArgs[1] = message;
-            Array.Copy(args, 0, sfArgs, 2, args.Length);
+            var sfArgs = new object[] { CultureInfo.InvariantCulture, message, args, };
             string result = (string)stringFormat.Invoke(null, sfArgs);
 
             _inner.Write(prefix + result, LogLevel.Warn);
@@ -386,9 +374,7 @@ namespace ReactiveUI
 
         public void Error(IFormatProvider formatProvider, string message, params object[] args)
         {
-            var sfArgs = new object[args.Length + 2];
-            sfArgs[0] = formatProvider; sfArgs[1] = message;
-            Array.Copy(args, 0, sfArgs, 2, args.Length);
+            var sfArgs = new object[] { formatProvider, message, args, };
             string result = (string)stringFormat.Invoke(null, sfArgs);
 
             _inner.Write(prefix + result, LogLevel.Error);
@@ -401,9 +387,7 @@ namespace ReactiveUI
 
         public void Error(string message, params object[] args)
         {
-            var sfArgs = new object[args.Length + 2];
-            sfArgs[0] = CultureInfo.InvariantCulture; sfArgs[1] = message;
-            Array.Copy(args, 0, sfArgs, 2, args.Length);
+            var sfArgs = new object[] { CultureInfo.InvariantCulture, message, args, };
             string result = (string)stringFormat.Invoke(null, sfArgs);
 
             _inner.Write(prefix + result, LogLevel.Error);
@@ -426,9 +410,7 @@ namespace ReactiveUI
 
         public void Fatal(IFormatProvider formatProvider, string message, params object[] args)
         {
-            var sfArgs = new object[args.Length + 2];
-            sfArgs[0] = formatProvider; sfArgs[1] = message;
-            Array.Copy(args, 0, sfArgs, 2, args.Length);
+            var sfArgs = new object[] { formatProvider, message, args, };
             string result = (string)stringFormat.Invoke(null, sfArgs);
 
             _inner.Write(prefix + result, LogLevel.Fatal);
@@ -441,9 +423,7 @@ namespace ReactiveUI
 
         public void Fatal(string message, params object[] args)
         {
-            var sfArgs = new object[args.Length + 2];
-            sfArgs[0] = CultureInfo.InvariantCulture; sfArgs[1] = message;
-            Array.Copy(args, 0, sfArgs, 2, args.Length);
+            var sfArgs = new object[] { CultureInfo.InvariantCulture, message, args, };
             string result = (string)stringFormat.Invoke(null, sfArgs);
 
             _inner.Write(prefix + result, LogLevel.Fatal);
