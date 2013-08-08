@@ -74,12 +74,13 @@ namespace ReactiveUI
     {
         readonly MemoizingMRUCache<Type, IFullLogger> loggerCache;
 
+        static readonly ILogger defaultLogger = new NullLogger();
         public DefaultLogManager(IDependencyResolver dependencyResolver = null)
         {
             dependencyResolver = dependencyResolver ?? RxApp.DependencyResolver;
 
             loggerCache = new MemoizingMRUCache<Type, IFullLogger>((type, _) => {
-                var ret = dependencyResolver.GetService<ILogger>();
+                var ret = dependencyResolver.GetService<ILogger>() ?? defaultLogger;
                 if (ret == null) {
                     throw new Exception("Couldn't find an ILogger. This should never happen, your dependency resolver is probably broken.");
                 }
@@ -154,6 +155,7 @@ namespace ReactiveUI
     public static class LogHost
     {
         static readonly IFullLogger nullLogger = new WrappingFullLogger(new NullLogger(), typeof(string));
+        static readonly ILogManager defaultManager = new DefaultLogManager();
 
         /// <summary>
         /// Use this logger inside miscellaneous static methods where creating
@@ -163,7 +165,7 @@ namespace ReactiveUI
             get {
                 if (RxApp.suppressLogging) return nullLogger;
 
-                var factory = RxApp.DependencyResolver.GetService<ILogManager>();
+                var factory = RxApp.DependencyResolver.GetService<ILogManager>() ?? defaultManager;
                 if (factory == null) {
                     throw new Exception("ILogManager is null. This should never happen, your dependency resolver is broken");
                 }
@@ -179,7 +181,7 @@ namespace ReactiveUI
         {
             if (RxApp.suppressLogging) return nullLogger;
 
-            var factory = RxApp.DependencyResolver.GetService<ILogManager>();
+            var factory = RxApp.DependencyResolver.GetService<ILogManager>() ?? defaultManager;
             if (factory == null) {
                 throw new Exception("ILogManager is null. This should never happen, your dependency resolver is broken");
             }
