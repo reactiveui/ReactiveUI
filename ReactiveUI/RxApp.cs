@@ -62,7 +62,9 @@ namespace ReactiveUI
                 });
             });
 
-            initializeDependencyResolver();
+            if (DependencyResolver == null) {
+                initializeDependencyResolver();
+            }
 
             if (InUnitTestRunner()) {
                 LogHost.Default.Warn("*** Detected Unit Test Runner, setting MainThreadScheduler to CurrentThread ***");
