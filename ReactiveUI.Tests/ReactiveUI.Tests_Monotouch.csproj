@@ -10,7 +10,6 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>ReactiveUI.Tests</RootNamespace>
     <IPhoneResourcePrefix>Resources</IPhoneResourcePrefix>
-    <AssemblyName>ReactiveUI_Tests_Monotouch</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|iPhoneSimulator' ">
     <DebugSymbols>true</DebugSymbols>
@@ -147,6 +146,7 @@
     <Compile Include="ReactiveNotifyPropertyChangedMixinTest.cs" />
     <Compile Include="Cocoa\PropertyBindingTestViews.cs" />
     <Compile Include="PropertyBindingTest.cs" />
+    <Compile Include="Cocoa\KVOBindingTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ReactiveUI.Platforms\ReactiveUI.Cocoa_Monotouch.csproj">

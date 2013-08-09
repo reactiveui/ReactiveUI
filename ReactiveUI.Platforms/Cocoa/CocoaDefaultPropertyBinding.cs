@@ -19,7 +19,7 @@ namespace ReactiveUI.Cocoa
             // NB: These are intentionally arranged in priority order from most
             // specific to least specific.
 #if UIKIT
-			var items = new[] {
+            var items = new[] {
                 new { Type = typeof(UISlider), Property = "Value" },
                 new { Type = typeof(UITextView), Property = "Text" },
                 new { Type = typeof(UITextField), Property = "Text" },

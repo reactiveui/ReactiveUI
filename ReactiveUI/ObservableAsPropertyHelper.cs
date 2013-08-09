@@ -50,7 +50,7 @@ namespace ReactiveUI
             _lastValue = initialValue;
 
             var subj = new ScheduledSubject<T>(scheduler);
-            var exSubject = new ScheduledSubject<Exception>(scheduler, RxApp.DefaultExceptionHandler);
+            var exSubject = new ScheduledSubject<Exception>(Scheduler.Immediate, RxApp.DefaultExceptionHandler);
 
             bool firedInitial = false;
             subj.Subscribe(x => {
