@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <package xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
 	<metadata xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
-		<id>reactiveui-testing</id>
+		<id>reactiveui-winforms</id>
 		<version>5.1.0</version>
-		<description>A library to aid in writing unit tests for ReactiveUI projects</description>
+		<description>Windows Forms specific extensions to ReactiveUI</description>
 		<authors>Paul Betts</authors>
 		<projectUrl>http://www.reactiveui.net</projectUrl>
 		<licenseUrl>http://opensource.org/licenses/ms-pl.html</licenseUrl>
@@ -12,7 +12,6 @@
 
 		<dependencies>
 			<dependency id="reactiveui-core" version="[5.1.0]" />
-			<dependency id="Rx-Testing" version="2.1.30214.0" />
 		</dependencies>
 	</metadata>
 </package>
