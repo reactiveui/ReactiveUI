@@ -39,7 +39,7 @@ namespace ReactiveUI
      */
     public static class RxApp
     {
-        public static void Initialize()
+        static RxApp()
         {
 #if PORTABLE
             _TaskpoolScheduler = Scheduler.TaskPool;
@@ -62,9 +62,9 @@ namespace ReactiveUI
                 });
             });
 
-            if (DependencyResolver == null) {
-                initializeDependencyResolver();
-            }
+            var r = new ModernDependencyResolver();
+            r.InitializeResolver();
+            _DependencyResolver = r;
 
             if (InUnitTestRunner()) {
                 LogHost.Default.Warn("*** Detected Unit Test Runner, setting MainThreadScheduler to CurrentThread ***");
@@ -106,12 +106,7 @@ namespace ReactiveUI
         /// <value>The dependency resolver.</value>
         public static IDependencyResolver DependencyResolver {
             get {
-                IDependencyResolver resolver = _UnitTestDependencyResolver ?? _DependencyResolver;
-                if (resolver == null) {
-                    //if we haven't initialized yet, do this once
-                    Initialize();
-                }
-
+                var resolver = _UnitTestDependencyResolver ?? _DependencyResolver;
                 return _UnitTestDependencyResolver ?? _DependencyResolver;
             }
             set {
@@ -147,11 +142,6 @@ namespace ReactiveUI
         public static IScheduler MainThreadScheduler {
             get {
                 var scheduler = _UnitTestMainThreadScheduler ?? _MainThreadScheduler;
-                if (scheduler == null) {
-                    //if we haven't initialized yet, do this once
-                    Initialize();
-                }
-
                 return _UnitTestMainThreadScheduler ?? _MainThreadScheduler;
             }
             set {
@@ -180,11 +170,6 @@ namespace ReactiveUI
         public static IScheduler TaskpoolScheduler {
             get { 
                 var scheduler = _UnitTestTaskpoolScheduler ?? _TaskpoolScheduler;
-                if (scheduler == null) {
-                    // If we haven't initialized yet, do this once
-                    Initialize();
-                }
-
                 return _UnitTestTaskpoolScheduler ?? _TaskpoolScheduler;
             }
             set {
@@ -207,11 +192,6 @@ namespace ReactiveUI
         /// </summary>
         public static IObserver<Exception> DefaultExceptionHandler {
             get {
-                if (_DefaultExceptionHandler == null) {
-                    // If we haven't initialized yet, do this once
-                    Initialize();
-                }
-
                 return _DefaultExceptionHandler;
             }
             set {
@@ -278,17 +258,6 @@ namespace ReactiveUI
                 (fac, type, str) => registerMethod(fac(), type));
 
             fakeResolver.InitializeResolver();
-        }
-
-        static void initializeDependencyResolver()
-        {
-            var resolver = new ModernDependencyResolver();
-
-            // NB: The reason that we need to do this is that logging itself
-            // is set up via dependency resolution - if we try to log while
-            // setting up the logger, we will end up StackOverflowException'ing
-            resolver.InitializeResolver();
-            _DependencyResolver = resolver;
         }
 
         static internal bool suppressLogging { get; set; }
