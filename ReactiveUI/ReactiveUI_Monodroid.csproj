@@ -171,6 +171,7 @@
     <Compile Include="RoutableViewModelMixin.cs" />
     <Compile Include="ViewLocator.cs" />
     <Compile Include="AutoPersistHelper.cs" />
+    <Compile Include="DummySuspension.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
