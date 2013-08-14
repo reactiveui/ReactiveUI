@@ -71,6 +71,7 @@
     <Compile Include="CompatMixins.cs" />
     <Compile Include="ContractStubs.cs" />
     <Compile Include="DefaultPropertyBinding.cs" />
+    <Compile Include="DummySuspension.cs" />
     <Compile Include="DesignModeDetector.cs" />
     <Compile Include="Errors.cs" />
     <Compile Include="ModernDependencyResolver.cs" />

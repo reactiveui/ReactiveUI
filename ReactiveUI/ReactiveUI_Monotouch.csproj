@@ -108,6 +108,7 @@
     <Compile Include="ViewLocator.cs" />
     <Compile Include="AutoPersistHelper.cs" />
     <Compile Include="Logging-iOS.cs" />
+    <Compile Include="DummySuspension.cs" />
   </ItemGroup>
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
 </Project>
