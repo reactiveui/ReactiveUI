@@ -156,6 +156,7 @@
     <Compile Include="RoutableViewModelMixin.cs" />
     <Compile Include="ViewLocator.cs" />
     <Compile Include="ReactiveBinding.cs" />
+    <Compile Include="DummySuspension.cs" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
