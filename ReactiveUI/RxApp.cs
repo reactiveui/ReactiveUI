@@ -263,11 +263,11 @@ namespace ReactiveUI
         static internal bool suppressLogging { get; set; }
 
 #if ANDROID || SILVERLIGHT || IOS
-        public const int SmallCacheLimit = 4;
-        public const int BigCacheLimit = 8;
-#else
         public const int SmallCacheLimit = 32;
         public const int BigCacheLimit = 64;
+#else
+        public const int SmallCacheLimit = 64;
+        public const int BigCacheLimit = 256;
 #endif
     }    
 }
