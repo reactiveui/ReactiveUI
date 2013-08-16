@@ -83,12 +83,9 @@ namespace ReactiveUI
 
         static string interfaceifyTypeName(string typeName)
         {
-            var typeVsAssembly = typeName.Split(',');
-            var parts = typeVsAssembly[0].Split('.');
-            parts[parts.Length - 1] = "I" + parts[parts.Length - 1];
-
-            var newType = String.Join(".", parts, 0, parts.Length);
-            return newType + "," + String.Join(",", typeVsAssembly.Skip(1));
+            var idxComma = typeName.IndexOf( ',' );
+            var idxPeriod = typeName.LastIndexOf( '.', idxComma - 1 );
+            return typeName.Insert( idxPeriod+1, "I" );
         }
     }
 }
