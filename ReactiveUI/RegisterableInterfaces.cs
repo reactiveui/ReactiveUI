@@ -292,7 +292,11 @@ namespace ReactiveUI
         /// <returns></returns>
         /// <returns>An IDisposable which will disconnect the binding when 
         /// disposed.</returns>
-        IDisposable BindCommandToObject<TEventArgs>(ICommand command, object target, IObservable<object> commandParameter, string eventName);
+        IDisposable BindCommandToObject<TEventArgs>(ICommand command, object target, IObservable<object> commandParameter, string eventName)
+#if NET40
+ where TEventArgs : EventArgs
+#endif
+        ;
     }
 
     /// <summary>

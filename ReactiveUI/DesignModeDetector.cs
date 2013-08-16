@@ -42,7 +42,11 @@ namespace ReactiveUI
                     }
                 } else if ((type = Type.GetType("Windows.ApplicationModel.DesignMode, Windows, ContentType=WindowsRuntime", false)) != null) {
                     // check WinRT next
+#if !NET40
                     isInDesignMode = (bool)type.GetProperty("DesignModeEnabled").GetMethod.Invoke(null, null);
+#else
+                    isInDesignMode = (bool)type.GetProperty("DesignModeEnabled").GetGetMethod().Invoke(null, null);
+#endif
                 } else {
                     isInDesignMode = false;
                 }

@@ -15,9 +15,15 @@ namespace ReactiveUI
     public static class AutoPersistHelper
     {
         static MemoizingMRUCache<Type, Dictionary<string, bool>> persistablePropertiesCache = new MemoizingMRUCache<Type, Dictionary<string, bool>>((type, _) => {
+#if NET40
+            return type.GetProperties()
+                .Where(x => x.GetCustomAttributes(true).Any(y => y is DataMemberAttribute))
+                .ToDictionary(k => k.Name, v => true);
+#else
             return type.GetProperties()
                 .Where(x => x.CustomAttributes.Any(y => typeof(DataMemberAttribute).IsAssignableFrom(y.AttributeType)))
                 .ToDictionary(k => k.Name, v => true);
+#endif
         }, RxApp.SmallCacheLimit);
 
         static MemoizingMRUCache<Type, bool> dataContractCheckCache = new MemoizingMRUCache<Type, bool>((t, _) => {
