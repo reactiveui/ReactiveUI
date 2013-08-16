@@ -1,0 +1,624 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>ICSharpCode.NRefactory.Xml</name>
+    </assembly>
+    <members>
+        <member name="T:ICSharpCode.NRefactory.Xml.AXmlAttribute">
+            <summary>
+            Name-value pair in a tag
+            </summary>
+        </member>
+        <member name="T:ICSharpCode.NRefactory.Xml.AXmlObject">
+            <summary>
+            XML object. Base class for all nodes in the XML document.
+            </summary>
+        </member>
+        <member name="F:ICSharpCode.NRefactory.Xml.AXmlObject.NoNamespace">
+            <summary> Empty string.  The namespace used if there is no "xmlns" specified </summary>
+        </member>
+        <member name="F:ICSharpCode.NRefactory.Xml.AXmlObject.XmlNamespace">
+            <summary> Namespace for "xml:" prefix: "http://www.w3.org/XML/1998/namespace" </summary>
+        </member>
+        <member name="F:ICSharpCode.NRefactory.Xml.AXmlObject.XmlnsNamespace">
+            <summary> Namesapce for "xmlns:" prefix: "http://www.w3.org/2000/xmlns/" </summary>
+        </member>
+        <member name="M:ICSharpCode.NRefactory.Xml.AXmlObject.CreateReader">
+            <summary>
+            Creates an XML reader that reads from this document.
+            </summary>
+        </member>
+        <member name="M:ICSharpCode.NRefactory.Xml.AXmlObject.CreateReader(System.Func{System.Int32,ICSharpCode.NRefactory.TextLocation})">
+            <summary>
+            Creates an XML reader that reads from this document.
+            </summary>
+        </member>
+        <member name="M:ICSharpCode.NRefactory.Xml.AXmlObject.GetChildAtOffset(System.Int32)">
+            <summary>
+            Gets a child fully containg the given offset.
+            Goes recursively down the tree.
+            Specail case if at the end of attribute or text
+            </summary>
+        </member>
+        <member name="M:ICSharpCode.NRefactory.Xml.AXmlObject.GetNamespacePrefix(System.String)">
+            <summary> The part of name before ":" </summary>
+            <returns> Empty string if not found </returns>
+        </member>
+        <member name="M:ICSharpCode.NRefactory.Xml.AXmlObject.GetLocalName(System.String)">
+            <summary> The part of name after ":" </summary>
+            <returns> Whole name if ":" not found </returns>
+        </member>
+        <member name="M:ICSharpCode.NRefactory.Xml.AXmlObject.AcceptVisitor(ICSharpCode.NRefactory.Xml.AXmlVisitor)">
+            <summary> Call appropriate visit method on the given visitor </summary>
+        </member>
+        <member name="P:ICSharpCode.NRefactory.Xml.AXmlObject.Parent">
+            <summary>
+            Gets the parent node.
+            </summary>
+        </member>
+        <member name="P:ICSharpCode.NRefactory.Xml.AXmlObject.Children">
+            <summary>
+            Gets the list of child objects.
+            </summary>
+        </member>
+        <member name="P:ICSharpCode.NRefactory.Xml.AXmlObject.MySyntaxErrors">
+            <summary>
+            The error that occured in the context of this node (excluding nested nodes)
+            </summary>
+        </member>
+        <member name="P:ICSharpCode.NRefactory.Xml.AXmlObject.SyntaxErrors">
+            <summary>
+            The error that occured in the context of this node and all nested nodes.
+            It has O(n) cost.
+            </summary>
+        </member>
+        <member name="P:ICSharpCode.NRefactory.Xml.AXmlObject.Ancestors">
+            <summary> Get all ancestors of this node </summary>
+        </member>
+        <member name="P:ICSharpCode.NRefactory.Xml.AXmlObject.StartOffset">
+            <summary>
+            Gets the start offset of the segment.
+            </summary>
+        </member>
+        <member name="P:ICSharpCode.NRefactory.Xml.AXmlObject.Length">
+            <inheritdoc/>
+        </member>
+        <member name="P:ICSharpCode.NRefactory.Xml.AXmlObject.EndOffset">
+            <inheritdoc/>
+        </member>
+        <member name="M:ICSharpCode.NRefactory.Xml.AXmlAttribute.AcceptVisitor(ICSharpCode.NRefactory.Xml.AXmlVisitor)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ICSharpCode.NRefactory.Xml.AXmlAttribute.ToString">
+            <inheritdoc/>
+        </member>
+        <member name="P:ICSharpCode.NRefactory.Xml.AXmlAttribute.Name">
+            <summary> Name with namespace prefix - exactly as in source file </summary>
+        </member>
+        <member name="P:ICSharpCode.NRefactory.Xml.AXmlAttribute.Value">
+            <summary> Unquoted and dereferenced value of the attribute </summary>
+        </member>
+        <member name="P:ICSharpCode.NRefactory.Xml.AXmlAttribute.NameSegment">
+            <summary>Gets the segment for the attribute name</summary>
+        </member>
+        <member name="P:ICSharpCode.NRefactory.Xml.AXmlAttribute.ValueSegment">
+            <summary>Gets the segment for the attribute value, including the quotes</summary>
+        </member>
+        <member name="P:ICSharpCode.NRefactory.Xml.AXmlAttribute.ParentElement">
+            <summary> The element containing this attribute </summary>
+            <returns> Null if orphaned </returns>
+        </member>
+        <member name="P:ICSharpCode.NRefactory.Xml.AXmlAttribute.Prefix">
+            <summary> The part of name before ":"</summary>
+            <returns> Empty string if not found </returns>
+        </member>
+        <member name="P:ICSharpCode.NRefactory.Xml.AXmlAttribute.LocalName">
+            <summary> The part of name after ":" </summary>
+            <returns> Whole name if ":" not found </returns>
+        </member>
+        <member name="P:ICSharpCode.NRefactory.Xml.AXmlAttribute.Namespace">
+            <summary>
+            Resolved namespace of the name.  Empty string if not found
+            From the specification: "The namespace name for an unprefixed attribute name always has no value."
+            </summary>
+        </member>
+        <member name="P:ICSharpCode.NRefactory.Xml.AXmlAttribute.IsNamespaceDeclaration">
+            <summary> Attribute is declaring namespace ("xmlns" or "xmlns:*") </summary>
+        </member>
+        <member name="T:ICSharpCode.NRefactory.Xml.AXmlDocument">
+            <summary>
+            The root object of the XML document
+            </summary>
+        </member>
+        <member name="M:ICSharpCode.NRefactory.Xml.AXmlDocument.CreateReader">
+            <inheritdoc/>
+        </member>
+        <member name="M:ICSharpCode.NRefactory.Xml.AXmlDocument.CreateReader(System.Func{System.Int32,ICSharpCode.NRefactory.TextLocation})">
+            <inheritdoc/>
+        </member>
+        <member name="M:ICSharpCode.NRefactory.Xml.AXmlDocument.AcceptVisitor(ICSharpCode.NRefactory.Xml.AXmlVisitor)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ICSharpCode.NRefactory.Xml.AXmlDocument.ToString">
+            <inheritdoc/>
+        </member>
+        <member name="F:ICSharpCode.NRefactory.Xml.AXmlDocument.Empty">
+            <summary>
+            Represents an empty document.
+            </summary>
+        </member>
+        <member name="T:ICSharpCode.NRefactory.Xml.AXmlElement">
+            <summary>
+            XML element.
+            </summary>
+        </member>
+        <member name="M:ICSharpCode.NRefactory.Xml.AXmlElement.FindDefaultNamespace">
+            <summary> Find the defualt namespace for this context </summary>
+        </member>
+        <member name="M:ICSharpCode.NRefactory.Xml.AXmlElement.ResolvePrefix(System.String)">
+            <summary>
+            Recursively resolve given prefix in this context.  Prefix must have some value.
+            </summary>
+            <returns> Empty string if prefix is not found </returns>
+        </member>
+        <member name="M:ICSharpCode.NRefactory.Xml.AXmlElement.GetAttributeValue(System.String)">
+            <summary>
+            Get unquoted value of attribute.
+            It looks in the no namespace (empty string).
+            </summary>
+            <returns>Null if not found</returns>
+        </member>
+        <member name="M:ICSharpCode.NRefactory.Xml.AXmlElement.GetAttributeValue(System.String,System.String)">
+            <summary>
+            Get unquoted value of attribute
+            </summary>
+            <param name="namespace">Namespace.  Can be no namepace (empty string), which is the default for attributes.</param>
+            <param name="localName">Local name - text after ":"</param>
+            <returns>Null if not found</returns>
+        </member>
+        <member name="M:ICSharpCode.NRefactory.Xml.AXmlElement.AcceptVisitor(ICSharpCode.NRefactory.Xml.AXmlVisitor)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ICSharpCode.NRefactory.Xml.AXmlElement.ToString">
+            <inheritdoc/>
+        </member>
+        <member name="P:ICSharpCode.NRefactory.Xml.AXmlElement.IsProperlyNested">
+            <summary> No tags are missing anywhere within this element (recursive) </summary>
+        </member>
+        <member name="P:ICSharpCode.NRefactory.Xml.AXmlElement.StartTag">
+            <summary>The start or empty-element tag for this element.</summary>
+        </member>
+        <member name="P:ICSharpCode.NRefactory.Xml.AXmlElement.Name">
+            <summary>Name with namespace prefix - exactly as in source</summary>
+        </member>
+        <member name="P:ICSharpCode.NRefactory.Xml.AXmlElement.HasEndTag">
+            <summary>Gets whether an end tag exists for this node.</summary>
+        </member>
+        <member name="P:ICSharpCode.NRefactory.Xml.AXmlElement.EndTag">
+            <summary> The end tag, if there is any. Returns null for empty elements "&lt;Element/>" and missing end tags in malformed XML.</summary>
+        </member>
+        <member name="P:ICSharpCode.NRefactory.Xml.AXmlElement.Attributes">
+            <summary>
+            Gets the attributes.
+            </summary>
+        </member>
+        <member name="P:ICSharpCode.NRefactory.Xml.AXmlElement.Content">
+            <summary>
+            Gets the content (all children except for the start and end tags)
+            </summary>
+        </member>
+        <member name="P:ICSharpCode.NRefactory.Xml.AXmlElement.Prefix">
+            <summary> The part of name before ":" </summary>
+            <returns> Empty string if not found </returns>
+        </member>
+        <member name="P:ICSharpCode.NRefactory.Xml.AXmlElement.LocalName">
+            <summary> The part of name after ":" </summary>
+            <returns> Empty string if not found </returns>
+        </member>
+        <member name="P:ICSharpCode.NRefactory.Xml.AXmlElement.Namespace">
+            <summary> Resolved namespace of the name </summary>
+            <returns> Empty string if prefix is not found </returns>
+        </member>
+        <member name="T:ICSharpCode.NRefactory.Xml.AXmlReader">
+            <summary>
+            XmlReader implementation that reads from an <see cref="T:ICSharpCode.NRefactory.Xml.AXmlDocument"/>.
+            </summary>
+        </member>
+        <member name="T:ICSharpCode.NRefactory.Xml.AXmlTag">
+            <summary>
+            Represents any markup starting with "&lt;" and (hopefully) ending with ">"
+            </summary>
+        </member>
+        <member name="F:ICSharpCode.NRefactory.Xml.AXmlTag.DtdNames">
+            <summary> These identify the start of DTD elements </summary>
+        </member>
+        <member name="M:ICSharpCode.NRefactory.Xml.AXmlTag.AcceptVisitor(ICSharpCode.NRefactory.Xml.AXmlVisitor)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ICSharpCode.NRefactory.Xml.AXmlTag.ToString">
+            <inheritdoc/>
+        </member>
+        <member name="P:ICSharpCode.NRefactory.Xml.AXmlTag.OpeningBracket">
+            <summary> Opening bracket - usually "&lt;" </summary>
+        </member>
+        <member name="P:ICSharpCode.NRefactory.Xml.AXmlTag.Name">
+            <summary> Name following the opening bracket </summary>
+        </member>
+        <member name="P:ICSharpCode.NRefactory.Xml.AXmlTag.NameSegment">
+            <summary> Gets the segment containing the tag name </summary>
+        </member>
+        <member name="P:ICSharpCode.NRefactory.Xml.AXmlTag.ClosingBracket">
+            <summary> Closing bracket - usually "&gt;" </summary>
+        </member>
+        <member name="P:ICSharpCode.NRefactory.Xml.AXmlTag.IsStartOrEmptyTag">
+            <summary> True if tag starts with "&lt;" </summary>
+        </member>
+        <member name="P:ICSharpCode.NRefactory.Xml.AXmlTag.IsStartTag">
+            <summary> True if tag starts with "&lt;" and ends with "&gt;" </summary>
+        </member>
+        <member name="P:ICSharpCode.NRefactory.Xml.AXmlTag.IsEmptyTag">
+            <summary> True if tag starts with "&lt;" and does not end with "&gt;" </summary>
+        </member>
+        <member name="P:ICSharpCode.NRefactory.Xml.AXmlTag.IsEndTag">
+            <summary> True if tag starts with "&lt;/" </summary>
+        </member>
+        <member name="P:ICSharpCode.NRefactory.Xml.AXmlTag.IsProcessingInstruction">
+            <summary> True if tag starts with "&lt;?" </summary>
+        </member>
+        <member name="P:ICSharpCode.NRefactory.Xml.AXmlTag.IsComment">
+            <summary> True if tag starts with "&lt;!--" </summary>
+        </member>
+        <member name="P:ICSharpCode.NRefactory.Xml.AXmlTag.IsCData">
+            <summary> True if tag starts with "&lt;![CDATA[" </summary>
+        </member>
+        <member name="P:ICSharpCode.NRefactory.Xml.AXmlTag.IsDocumentType">
+            <summary> True if tag starts with one of the DTD starts </summary>
+        </member>
+        <member name="P:ICSharpCode.NRefactory.Xml.AXmlTag.IsUnknownBang">
+            <summary> True if tag starts with "&lt;!" </summary>
+        </member>
+        <member name="T:ICSharpCode.NRefactory.Xml.AXmlText">
+            <summary>
+            Whitespace or character data
+            </summary>
+        </member>
+        <member name="M:ICSharpCode.NRefactory.Xml.AXmlText.AcceptVisitor(ICSharpCode.NRefactory.Xml.AXmlVisitor)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ICSharpCode.NRefactory.Xml.AXmlText.ToString">
+            <inheritdoc/>
+        </member>
+        <member name="P:ICSharpCode.NRefactory.Xml.AXmlText.Value">
+            <summary> The text with all entity references resloved </summary>
+        </member>
+        <member name="P:ICSharpCode.NRefactory.Xml.AXmlText.ContainsOnlyWhitespace">
+            <summary> True if the text contains only whitespace characters </summary>
+        </member>
+        <member name="T:ICSharpCode.NRefactory.Xml.AXmlVisitor">
+            <summary>
+            Derive from this class to create visitor for the XML tree
+            </summary>
+        </member>
+        <member name="M:ICSharpCode.NRefactory.Xml.AXmlVisitor.VisitDocument(ICSharpCode.NRefactory.Xml.AXmlDocument)">
+            <summary> Visit AXmlDocument </summary>
+        </member>
+        <member name="M:ICSharpCode.NRefactory.Xml.AXmlVisitor.VisitElement(ICSharpCode.NRefactory.Xml.AXmlElement)">
+            <summary> Visit AXmlElement </summary>
+        </member>
+        <member name="M:ICSharpCode.NRefactory.Xml.AXmlVisitor.VisitTag(ICSharpCode.NRefactory.Xml.AXmlTag)">
+            <summary> Visit AXmlTag </summary>
+        </member>
+        <member name="M:ICSharpCode.NRefactory.Xml.AXmlVisitor.VisitAttribute(ICSharpCode.NRefactory.Xml.AXmlAttribute)">
+            <summary> Visit AXmlAttribute </summary>
+        </member>
+        <member name="M:ICSharpCode.NRefactory.Xml.AXmlVisitor.VisitText(ICSharpCode.NRefactory.Xml.AXmlText)">
+            <summary> Visit AXmlText </summary>
+        </member>
+        <member name="T:ICSharpCode.NRefactory.Xml.XmlDocumentationElement">
+            <summary>
+            Represents an element in the XML documentation.
+            Any occurrences of "&lt;inheritdoc/>" are replaced with the inherited documentation.
+            </summary>
+        </member>
+        <member name="M:ICSharpCode.NRefactory.Xml.XmlDocumentationElement.Get(ICSharpCode.NRefactory.TypeSystem.IEntity,System.Boolean)">
+            <summary>
+            Gets the XML documentation element for the specified entity.
+            Returns null if no documentation is found.
+            </summary>
+        </member>
+        <member name="F:ICSharpCode.NRefactory.Xml.XmlDocumentationElement.nestingLevel">
+            <summary>
+            Inheritance level; used to prevent cyclic doc inheritance.
+            </summary>
+        </member>
+        <member name="M:ICSharpCode.NRefactory.Xml.XmlDocumentationElement.#ctor(ICSharpCode.NRefactory.Xml.AXmlElement,ICSharpCode.NRefactory.TypeSystem.IEntity,System.Func{System.String,ICSharpCode.NRefactory.TypeSystem.IEntity})">
+            <summary>
+            Creates a new documentation element.
+            </summary>
+        </member>
+        <member name="M:ICSharpCode.NRefactory.Xml.XmlDocumentationElement.#ctor(ICSharpCode.NRefactory.Xml.AXmlDocument,ICSharpCode.NRefactory.TypeSystem.IEntity,System.Func{System.String,ICSharpCode.NRefactory.TypeSystem.IEntity})">
+            <summary>
+            Creates a new documentation element.
+            </summary>
+        </member>
+        <member name="M:ICSharpCode.NRefactory.Xml.XmlDocumentationElement.#ctor(System.String,ICSharpCode.NRefactory.TypeSystem.IEntity)">
+            <summary>
+            Creates a new documentation element.
+            </summary>
+        </member>
+        <member name="M:ICSharpCode.NRefactory.Xml.XmlDocumentationElement.GetAttribute(System.String)">
+            <summary>
+            Gets the attribute value.
+            </summary>
+        </member>
+        <member name="M:ICSharpCode.NRefactory.Xml.XmlDocumentationElement.ToString">
+            <inheritdoc/>
+        </member>
+        <member name="P:ICSharpCode.NRefactory.Xml.XmlDocumentationElement.DeclaringEntity">
+            <summary>
+            Gets the entity on which this documentation was originally declared.
+            May return null.
+            </summary>
+        </member>
+        <member name="P:ICSharpCode.NRefactory.Xml.XmlDocumentationElement.ReferencedEntity">
+            <summary>
+            Gets the entity referenced by the 'cref' attribute.
+            May return null.
+            </summary>
+        </member>
+        <member name="P:ICSharpCode.NRefactory.Xml.XmlDocumentationElement.Name">
+            <summary>
+            Gets the element name.
+            </summary>
+        </member>
+        <member name="P:ICSharpCode.NRefactory.Xml.XmlDocumentationElement.IsTextNode">
+            <summary>
+            Gets whether this is a pure text node.
+            </summary>
+        </member>
+        <member name="P:ICSharpCode.NRefactory.Xml.XmlDocumentationElement.TextContent">
+            <summary>
+            Gets the text content.
+            </summary>
+        </member>
+        <member name="P:ICSharpCode.NRefactory.Xml.XmlDocumentationElement.Children">
+            <summary>
+            Gets the child elements.
+            </summary>
+        </member>
+        <member name="T:ICSharpCode.NRefactory.Xml.IncrementalParserState">
+            <summary>
+            Encapsulates the state of the incremental tag soup parser.
+            </summary>
+        </member>
+        <member name="F:ICSharpCode.NRefactory.Xml.InternalObject.LengthTouched">
+            <summary>Length that was touched to parsed this object.</summary>
+        </member>
+        <member name="P:ICSharpCode.NRefactory.Xml.InternalTag.IsStartOrEmptyTag">
+            <summary> True if tag starts with "&lt;" </summary>
+        </member>
+        <member name="P:ICSharpCode.NRefactory.Xml.InternalTag.IsStartTag">
+            <summary> True if tag starts with "&lt;" and ends with "&gt;" </summary>
+        </member>
+        <member name="P:ICSharpCode.NRefactory.Xml.InternalTag.IsEmptyTag">
+            <summary> True if tag starts with "&lt;" and does not end with "&gt;" </summary>
+        </member>
+        <member name="P:ICSharpCode.NRefactory.Xml.InternalTag.IsEndTag">
+            <summary> True if tag starts with "&lt;/" </summary>
+        </member>
+        <member name="P:ICSharpCode.NRefactory.Xml.InternalTag.IsProcessingInstruction">
+            <summary> True if tag starts with "&lt;?" </summary>
+        </member>
+        <member name="P:ICSharpCode.NRefactory.Xml.InternalTag.IsComment">
+            <summary> True if tag starts with "&lt;!--" </summary>
+        </member>
+        <member name="P:ICSharpCode.NRefactory.Xml.InternalTag.IsCData">
+            <summary> True if tag starts with "&lt;![CDATA[" </summary>
+        </member>
+        <member name="P:ICSharpCode.NRefactory.Xml.InternalTag.IsDocumentType">
+            <summary> True if tag starts with one of the DTD starts </summary>
+        </member>
+        <member name="P:ICSharpCode.NRefactory.Xml.InternalTag.IsUnknownBang">
+            <summary> True if tag starts with "&lt;!" </summary>
+        </member>
+        <member name="T:ICSharpCode.NRefactory.Xml.ObjectIterator">
+            <summary>
+            Iterates through an internal object tree.
+            </summary>
+        </member>
+        <member name="M:ICSharpCode.NRefactory.Xml.ObjectIterator.SkipTo(System.Int32)">
+            <summary>
+            Skips all nodes in front of 'position'
+            </summary>
+        </member>
+        <member name="T:ICSharpCode.NRefactory.Xml.ReuseEqualityComparer">
+            <summary>
+            Determines whether two objects are identical (one is a reused version of the other).
+            </summary>
+        </member>
+        <member name="M:ICSharpCode.NRefactory.Xml.ReuseEqualityComparer.Equals(ICSharpCode.NRefactory.Xml.AXmlObject,ICSharpCode.NRefactory.Xml.AXmlObject)">
+            <summary>
+            Determines whether two objects are identical (one is a reused version of the other).
+            </summary>
+        </member>
+        <member name="M:ICSharpCode.NRefactory.Xml.ReuseEqualityComparer.GetHashCode(ICSharpCode.NRefactory.Xml.AXmlObject)">
+            <summary>
+            Gets the object's hash code so that reused versions of an object have the same hash code.
+            </summary>
+        </member>
+        <member name="T:ICSharpCode.NRefactory.Xml.SyntaxError">
+            <summary>
+            A syntax error.
+            </summary>
+        </member>
+        <member name="M:ICSharpCode.NRefactory.Xml.SyntaxError.#ctor(System.Int32,System.Int32,System.String)">
+            <summary>
+            Creates a new syntax error.
+            </summary>
+        </member>
+        <member name="P:ICSharpCode.NRefactory.Xml.SyntaxError.Description">
+            <summary>
+            Gets a description of the syntax error.
+            </summary>
+        </member>
+        <member name="P:ICSharpCode.NRefactory.Xml.SyntaxError.StartOffset">
+            <summary>
+            Gets the start offset of the segment.
+            </summary>
+        </member>
+        <member name="P:ICSharpCode.NRefactory.Xml.SyntaxError.Length">
+            <inheritdoc/>
+        </member>
+        <member name="P:ICSharpCode.NRefactory.Xml.SyntaxError.EndOffset">
+            <inheritdoc/>
+        </member>
+        <member name="T:ICSharpCode.NRefactory.Xml.TextType">
+            <summary> Identifies the context in which the text occured </summary>
+        </member>
+        <member name="F:ICSharpCode.NRefactory.Xml.TextType.WhiteSpace">
+            <summary> Ends with non-whitespace </summary>
+        </member>
+        <member name="F:ICSharpCode.NRefactory.Xml.TextType.CharacterData">
+            <summary> Ends with "&lt;";  "]]&gt;" is error </summary>
+        </member>
+        <member name="F:ICSharpCode.NRefactory.Xml.TextType.Comment">
+            <summary> Ends with "-->";  "--" is error </summary>
+        </member>
+        <member name="F:ICSharpCode.NRefactory.Xml.TextType.CData">
+            <summary> Ends with "]]&gt;" </summary>
+        </member>
+        <member name="F:ICSharpCode.NRefactory.Xml.TextType.ProcessingInstruction">
+            <summary> Ends with "?>" </summary>
+        </member>
+        <member name="F:ICSharpCode.NRefactory.Xml.TextType.UnknownBang">
+            <summary> Ends with "&lt;" or ">" </summary>
+        </member>
+        <member name="F:ICSharpCode.NRefactory.Xml.TextType.Other">
+            <summary> Unknown </summary>
+        </member>
+        <member name="M:ICSharpCode.NRefactory.Xml.Log.Assert(System.Boolean,System.String)">
+            <summary> Throws exception if condition is false </summary>
+        </member>
+        <member name="M:ICSharpCode.NRefactory.Xml.Log.DebugAssert(System.Boolean,System.String)">
+            <summary> Throws exception if condition is false </summary>
+        </member>
+        <member name="T:ICSharpCode.NRefactory.Xml.InternalException">
+            <summary>
+            Exception used for internal errors in XML parser.
+            This exception indicates a bug in NRefactory.
+            </summary>
+        </member>
+        <member name="M:ICSharpCode.NRefactory.Xml.InternalException.#ctor">
+            <summary>
+            Creates a new InternalException instance.
+            </summary>
+        </member>
+        <member name="M:ICSharpCode.NRefactory.Xml.InternalException.#ctor(System.String)">
+            <summary>
+            Creates a new InternalException instance.
+            </summary>
+        </member>
+        <member name="M:ICSharpCode.NRefactory.Xml.InternalException.#ctor(System.String,System.Exception)">
+            <summary>
+            Creates a new InternalException instance.
+            </summary>
+        </member>
+        <member name="M:ICSharpCode.NRefactory.Xml.InternalException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Creates a new InternalException instance.
+            </summary>
+        </member>
+        <member name="M:ICSharpCode.NRefactory.Xml.TokenReader.TryReadName">
+            <summary>
+            Read a name token.
+            The following characters are not allowed:
+              ""         End of file
+              " \n\r\t"  Whitesapce
+              "=\'\""    Attribute value
+              "&lt;>/?"  Tags
+            </summary>
+            <returns>Returns the length of the name</returns>
+        </member>
+        <member name="M:ICSharpCode.NRefactory.Xml.TagReader.ReadObject">
+            <summary>
+            Reads one or more objects.
+            </summary>
+        </member>
+        <member name="M:ICSharpCode.NRefactory.Xml.TagReader.ReadTag">
+            <summary>
+            Context: "&lt;"
+            </summary>
+        </member>
+        <member name="M:ICSharpCode.NRefactory.Xml.TagReader.ReadOpeningBracket">
+            <summary>
+            Reads any of the know opening brackets.  (only full bracket)
+            Context: "&lt;"
+            </summary>
+        </member>
+        <member name="M:ICSharpCode.NRefactory.Xml.TagReader.TryReadClosingBracket(System.String@)">
+            <summary>
+            Reads any of the know closing brackets.  (only full bracket)
+            Context: any
+            </summary>
+        </member>
+        <member name="M:ICSharpCode.NRefactory.Xml.TagReader.ReadAttribute">
+            <summary>
+            Context: name or "=\'\""
+            </summary>
+        </member>
+        <member name="M:ICSharpCode.NRefactory.Xml.TagReader.ReadAttributeValue(System.Nullable{System.Char})">
+            <summary>
+            Read everything up to quote (excluding), opening/closing tag or attribute signature
+            </summary>
+        </member>
+        <member name="M:ICSharpCode.NRefactory.Xml.TagReader.Unquote(System.String)">
+            <summary> Remove quoting from the given string </summary>
+        </member>
+        <member name="M:ICSharpCode.NRefactory.Xml.TagReader.ReadText(ICSharpCode.NRefactory.Xml.TextType)">
+            <summary>
+            Reads text.
+            </summary>
+        </member>
+        <member name="T:ICSharpCode.NRefactory.Xml.AXmlParser">
+            <summary>
+            XML parser that is error tolerant.
+            </summary>
+        </member>
+        <member name="M:ICSharpCode.NRefactory.Xml.AXmlParser.ParseTagSoup(ICSharpCode.NRefactory.Editor.ITextSource,System.Threading.CancellationToken)">
+            <summary>
+            Parses a document into a flat list of tags.
+            </summary>
+            <returns>Parsed tag soup.</returns>
+        </member>
+        <member name="M:ICSharpCode.NRefactory.Xml.AXmlParser.ParseTagSoupIncremental(ICSharpCode.NRefactory.Xml.IncrementalParserState,ICSharpCode.NRefactory.Editor.ITextSource,ICSharpCode.NRefactory.Xml.IncrementalParserState@,System.Threading.CancellationToken)">
+            <summary>
+            Parses a document incrementally into a flat list of tags.
+            </summary>
+            <param name="oldParserState">The parser state from a previous call to ParseIncremental(). Use null for the first call.</param>
+            <param name="newTextSource">The text source for the new document version.</param>
+            <param name="newParserState">Out: the new parser state, pass this to the next ParseIncremental() call.</param>
+            <param name="cancellationToken">Optional: cancellation token.</param>
+            <returns>Parsed tag soup.</returns>
+        </member>
+        <member name="M:ICSharpCode.NRefactory.Xml.AXmlParser.Parse(ICSharpCode.NRefactory.Editor.ITextSource,System.Threading.CancellationToken)">
+            <summary>
+            Parses a document.
+            </summary>
+        </member>
+        <member name="M:ICSharpCode.NRefactory.Xml.AXmlParser.ParseIncremental(ICSharpCode.NRefactory.Xml.IncrementalParserState,ICSharpCode.NRefactory.Editor.ITextSource,ICSharpCode.NRefactory.Xml.IncrementalParserState@,System.Threading.CancellationToken)">
+            <summary>
+            Parses a document incrementally into a flat list of tags.
+            </summary>
+            <param name="oldParserState">The parser state from a previous call to ParseIncremental(). Use null for the first call.</param>
+            <param name="newTextSource">The text source for the new document version.</param>
+            <param name="newParserState">Out: the new parser state, pass this to the next ParseIncremental() call.</param>
+            <param name="cancellationToken">Optional: cancellation token.</param>
+            <returns>Parsed tag soup.</returns>
+        </member>
+        <member name="P:ICSharpCode.NRefactory.Xml.AXmlParser.UnknownEntityReferenceIsError">
+            <summary>
+            Generate syntax error when seeing entity reference other then the built-in ones
+            </summary>
+        </member>
+    </members>
+</doc>

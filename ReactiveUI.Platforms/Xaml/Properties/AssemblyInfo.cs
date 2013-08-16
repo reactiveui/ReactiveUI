@@ -19,5 +19,6 @@ using System.Windows;
 #endif
 
 [assembly: InternalsVisibleTo("ReactiveUI.Tests_Net45")]
+[assembly: InternalsVisibleTo("ReactiveUI.Tests_Net40")]
 [assembly: InternalsVisibleTo("ReactiveUI.Tests_SL5")]
 [assembly: InternalsVisibleTo("ReactiveUI.Tests_WinRT")]
