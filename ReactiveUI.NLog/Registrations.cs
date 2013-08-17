@@ -11,7 +11,7 @@ namespace ReactiveUI.NLog
     {
         public IFullLogger GetLogger(Type type)
         {
-            return new NLogLogger(global::NLog.LogManager.GetLogger(type.Name));
+            return new NLogLogger(global::NLog.LogManager.GetLogger(type.FullName));
         }
     }
 
