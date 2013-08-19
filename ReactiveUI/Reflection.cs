@@ -285,7 +285,8 @@ namespace ReactiveUI
         {
             return view.WhenAnyValue(x => x.ViewModel)
                 .Where(x => x != null)
-                .SelectMany(x => ((TViewModel)x).WhenAnyValue(property));
+                .Select(x => ((TViewModel)x).WhenAnyValue(property))
+                .Switch();
         }
 
         internal static IObservable<object> ViewModelWhenAnyValueDynamic<TView, TViewModel>(TViewModel viewModel, TView view, string[] property)
@@ -294,7 +295,8 @@ namespace ReactiveUI
         {
             return view.WhenAny(x => x.ViewModel, x => x.Value)
                 .Where(x => x != null)
-                .SelectMany(x => property.Length == 0 ? Observable.Return(x) : ((TViewModel)x).WhenAnyDynamic(property, y => y.Value));
+                .Select(x => property.Length == 0 ? Observable.Return(x) : ((TViewModel)x).WhenAnyDynamic(property, y => y.Value))
+                .Switch();
         }
 
         internal static FieldInfo GetSafeField(Type type, string propertyName, BindingFlags flags)
