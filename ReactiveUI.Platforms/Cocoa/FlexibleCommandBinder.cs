@@ -22,7 +22,7 @@ namespace ReactiveUI.Cocoa
                 .OrderByDescending(x => config[x].Affinity)
                 .FirstOrDefault();
 
-            if(match == null) return 0;
+            if (match == null) return 0;
 
             var typeProperties = config[match];
             return typeProperties.Affinity;
@@ -33,12 +33,12 @@ namespace ReactiveUI.Cocoa
             var type = target.GetType();
 
             var match = config.Keys
-                .Where(x=> x.IsAssignableFrom(type))
-                .OrderByDescending(x=> config[x].Affinity)
+                .Where(x => x.IsAssignableFrom(type))
+                .OrderByDescending(x => config[x].Affinity)
                 .FirstOrDefault();
 
-            if(match == null) {
-                throw new NotSupportedException(string.Format("CommandBinding for {0} is not supported", type.Name));
+            if (match == null) {
+                throw new NotSupportedException(String.Format("CommandBinding for {0} is not supported", type.Name));
             }
 
             var typeProperties = config[match];
@@ -57,19 +57,12 @@ namespace ReactiveUI.Cocoa
             public Func<ICommand, object, IObservable<object>, IDisposable> CreateBinding;
         }
 
-        /// <summary>
-        /// Configuration map
-        /// </summary>
-        readonly Dictionary<Type, CommandBindingInfo> config =
-            new Dictionary<Type, CommandBindingInfo>();
+        readonly Dictionary<Type, CommandBindingInfo> config = new Dictionary<Type, CommandBindingInfo>();
 
         /// <summary>
         /// Registers an observable factory for the specified type and property.
         /// </summary>
-        /// <param name="type">Type.</param>
-        /// <param name="property">Property.</param>
-        /// <param name="createObservable">Create observable.</param>
-        protected void Register(Type type, int affinity, Func<System.Windows.Input.ICommand, object, IObservable<object>, IDisposable> createBinding)
+        protected void Register(Type type, int affinity, Func<ICommand, object, IObservable<object>, IDisposable> createBinding)
         {
             config[type] = new CommandBindingInfo { Affinity = affinity, CreateBinding = createBinding };
         }
@@ -78,16 +71,11 @@ namespace ReactiveUI.Cocoa
         /// Creates a commands binding from event and a property
         /// </summary>
         /// <returns>The binding from event.</returns>
-        /// <param name="command">Command.</param>
-        /// <param name="target">Target.</param>
-        /// <param name="commandParameter">Command parameter.</param>
-        /// <param name="eventName">Event name.</param>
-        /// <param name="enablePropertyName">Enable property name.</param>
         protected static IDisposable ForEvent(ICommand command, object target, IObservable<object> commandParameter, string eventName, string enablePropertyName)
         {
             commandParameter = commandParameter ?? Observable.Return(target);
 
-            object latestParam = null;
+            var latestParam = default(object);
             var ctl = target;
 
             var actionDisp = Observable.FromEventPattern(ctl, eventName).Subscribe((e) => {
@@ -96,7 +84,7 @@ namespace ReactiveUI.Cocoa
             });
 
             var enabledSetter = Reflection.GetValueSetterForProperty(target.GetType(), enablePropertyName);
-            if(enabledSetter == null) return actionDisp;
+            if (enabledSetter == null) return actionDisp;
 
             // initial enabled state
             enabledSetter(target, command.CanExecute(latestParam));
@@ -114,29 +102,23 @@ namespace ReactiveUI.Cocoa
         /// <summary>
         /// Creates a commands binding from event and a property
         /// </summary>
-        /// <returns>The binding from event.</returns>
-        /// <param name="command">Command.</param>
-        /// <param name="target">Target.</param>
-        /// <param name="commandParameter">Command parameter.</param>
-        /// <param name="enablePropertyName">Enable property name.</param>
         protected static IDisposable ForTargetAction(ICommand command, object target, IObservable<object> commandParameter, string enablePropertyName)
         {
             commandParameter = commandParameter ?? Observable.Return(target);
 
             object latestParam = null;
-            var ctlDelegate = new ControlDelegate(x => {
-                if (command.CanExecute(latestParam)) command.Execute(latestParam);
-            });
-
-            var sel = new Selector("theAction:");
 
 #if UIKIT
             IDisposable actionDisp = null;
 
             var ctl = target as UIControl;
             if (ctl != null) {
-                ctl.AddTarget(ctlDelegate, sel, UIControlEvent.TouchUpInside);
-                actionDisp = Disposable.Create(() => ctl.RemoveTarget(ctlDelegate, sel, UIControlEvent.TouchUpInside));
+                var eh = new EventHandler((o,e) => {
+                    if (command.CanExecute(latestParam)) command.Execute(latestParam);
+                });
+
+                ctl.AddTarget(eh, UIControlEvent.TouchUpInside);
+                actionDisp = Disposable.Create(() => ctl.RemoveTarget(eh, UIControlEvent.TouchUpInside));
             } 
 #else
             Reflection.GetValueSetterOrThrow(target.GetType(), "Action")(target, sel);
@@ -160,22 +142,6 @@ namespace ReactiveUI.Cocoa
                     .Subscribe(x => enabledSetter(target, x)));
 
             return compDisp;
-        }
-
-        class ControlDelegate : NSObject
-        {
-            readonly Action<NSObject> block;
-
-            public ControlDelegate(Action<NSObject> block)
-            {
-                this.block = block;
-            }
-
-            [Export("theAction:")]
-            public void TheAction(NSObject sender)
-            {
-                block(sender);
-            }
         }
     }
 }
