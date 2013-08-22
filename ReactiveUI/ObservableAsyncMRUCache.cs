@@ -102,7 +102,7 @@ namespace ReactiveUI
 
                 myCall = Interlocked.Increment(ref currentCall);
 
-                _callQueue.Where(x => x == myCall).Subscribe(_ => {
+                _callQueue.Where(x => x == myCall).Take(1).Subscribe(_ => {
                     this.Log().Debug("Dispatching '{0}'", key);
                     IObservable<TVal> fetched = null;
                     try {
