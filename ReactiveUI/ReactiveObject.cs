@@ -104,7 +104,7 @@ namespace ReactiveUI
                 Interlocked.Decrement(ref changeNotificationsSuppressed));
         }
 
-        protected internal void raisePropertyChanging(string propertyName)
+        protected internal virtual void raisePropertyChanging(string propertyName)
         {
             Contract.Requires(propertyName != null);
 
@@ -123,7 +123,7 @@ namespace ReactiveUI
             }, changingSubject);
         }
 
-        protected internal void raisePropertyChanged(string propertyName)
+        protected internal virtual void raisePropertyChanged(string propertyName)
         {
             Contract.Requires(propertyName != null);
 
