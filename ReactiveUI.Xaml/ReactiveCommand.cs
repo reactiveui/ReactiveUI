@@ -116,7 +116,7 @@ namespace ReactiveUI.Xaml
 
             _canExecuteSubject = new ScheduledSubject<bool>(RxApp.DeferredScheduler);
             canExecuteLatest = new ObservableAsPropertyHelper<bool>(_canExecuteSubject,
-                b => { if (CanExecuteChanged != null) CanExecuteChanged(this, EventArgs.Empty); },
+                b => { raiseCanExecuteChanged(EventArgs.Empty); },
                 initialCondition, scheduler);
 
             _canExecuteProbed = new Subject<object>();
@@ -191,6 +191,15 @@ namespace ReactiveUI.Xaml
         void marshalFailures(Action block)
         {
             marshalFailures(_ => block(), Unit.Default);
+        }
+
+        protected virtual void raiseCanExecuteChanged(EventArgs e)
+        {
+            EventHandler handler = this.CanExecuteChanged;
+            if (handler != null)
+            {
+                handler(this, e);
+            }
         }
     }
 
