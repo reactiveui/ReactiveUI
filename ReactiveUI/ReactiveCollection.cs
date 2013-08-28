@@ -632,7 +632,11 @@ namespace ReactiveUI
         #endregion
     }
 
+#if WP7
+    public interface IMoveInfo<T>
+#else
     public interface IMoveInfo<out T>
+#endif
     {
         IEnumerable<T> MovedItems { get; }
         int From { get; }
