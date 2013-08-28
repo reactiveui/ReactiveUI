@@ -928,9 +928,7 @@ namespace ReactiveUI
 
                     this.Log().Info(vmChangedString + (vmAsView != null ? vmAsView.ToString() : "(null)"));
                     return Tuple.Create((object)vmAsView, isVm);
-                }
-                else
-                {
+                } else {
                     object tmp;
                     if (!viewToVMConverter.TryConvert(vValue, typeof(TVMProp), conversionHint, out tmp)) {
                         return null;
@@ -1328,8 +1326,7 @@ namespace ReactiveUI
         }
 
         MemoizingMRUCache<Tuple<Type, Type>, IBindingTypeConverter> typeConverterCache = new MemoizingMRUCache<Tuple<Type, Type>, IBindingTypeConverter>(
-            (types, _) =>
-            {
+            (types, _) => {
                 return RxApp.GetAllServices<IBindingTypeConverter>()
                     .Aggregate(Tuple.Create(-1, default(IBindingTypeConverter)), (acc, x) =>
                     {
@@ -1341,8 +1338,7 @@ namespace ReactiveUI
 
         internal IBindingTypeConverter getConverterForTypes(Type lhs, Type rhs)
         {
-            lock (typeConverterCache)
-            {
+            lock (typeConverterCache) {
                 return typeConverterCache.Get(Tuple.Create(lhs, rhs));
             }
         }
