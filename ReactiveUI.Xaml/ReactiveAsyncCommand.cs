@@ -108,9 +108,7 @@ namespace ReactiveUI.Xaml
             CanExecuteObservable.Subscribe(x => {
                 this.Log().Debug("Setting canExecuteLatest to {0}", x);
                 _canExecuteLatest = x;
-                if (CanExecuteChanged != null) {
-                    CanExecuteChanged(this, new EventArgs());
-                }
+                raiseCanExecuteChanged(EventArgs.Empty);
             });
 
             if (canExecute != null) {
@@ -210,6 +208,15 @@ namespace ReactiveUI.Xaml
         {
             marshalFailures(_ => block(), Unit.Default);
         }
+
+        protected virtual void raiseCanExecuteChanged(EventArgs e)
+        {
+            EventHandler handler = this.CanExecuteChanged;
+            if (handler != null) {
+                handler(this, e);
+            }
+        }
+
     }
 
     public static class ReactiveAsyncCommandMixins
