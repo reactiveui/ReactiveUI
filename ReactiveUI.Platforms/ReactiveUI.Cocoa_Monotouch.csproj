@@ -84,7 +84,6 @@
     <Compile Include="Cocoa\ReactiveNSViewController.cs" />
     <Compile Include="Cocoa\UIControlCommandExtensions.cs" />
     <Compile Include="Cocoa\ReactiveTableViewCell.cs" />
-    <Compile Include="Cocoa\ReactiveTableViewSource.cs" />
     <Compile Include="Cocoa\ReactiveTableViewController.cs" />
     <Compile Include="Cocoa\ReactiveImageView.cs" />
   </ItemGroup>

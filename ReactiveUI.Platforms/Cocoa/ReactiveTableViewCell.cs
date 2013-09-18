@@ -12,23 +12,18 @@ using System.Reactive.Disposables;
 using System.Diagnostics.Contracts;
 using System.Runtime.CompilerServices;
 using System.Collections.Generic;
-
-#if UIKIT
 using MonoTouch.Foundation;
 using MonoTouch.UIKit;
-using NSTableViewCell = MonoTouch.UIKit.UITableViewCell;
-#else
-#endif
 
 namespace ReactiveUI.Cocoa
 {
-    public abstract class ReactiveTableViewCell : NSTableViewCell, IReactiveNotifyPropertyChanged, IHandleObservableErrors
+    public abstract class ReactiveTableViewCell : UITableViewCell, IReactiveNotifyPropertyChanged, IHandleObservableErrors
     {
         public ReactiveTableViewCell(IntPtr handle) : base (handle) { setupRxObj(); }
         public ReactiveTableViewCell(NSObjectFlag t) : base (t) { setupRxObj(); }
         public ReactiveTableViewCell(NSCoder coder) : base (NSObjectFlag.Empty) { setupRxObj(); }
         public ReactiveTableViewCell() : base() { setupRxObj(); }
-        public ReactiveTableViewCell (UITableViewCellStyle style, string reuseIdentifier) : base(style, reuseIdentifier) { setupRxObj(); }
+        public ReactiveTableViewCell(UITableViewCellStyle style, string reuseIdentifier) : base(style, reuseIdentifier) { setupRxObj(); }
         public ReactiveTableViewCell(UITableViewCellStyle style, NSString reuseIdentifier) : base(style, reuseIdentifier) { setupRxObj(); }
         public ReactiveTableViewCell(RectangleF frame) : base (frame) { setupRxObj(); }
 
