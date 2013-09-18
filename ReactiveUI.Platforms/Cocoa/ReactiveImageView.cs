@@ -19,6 +19,7 @@ using MonoTouch.UIKit;
 using NSImageView = MonoTouch.UIKit.UIImageView;
 using NSImage = MonoTouch.UIKit.UIImage;
 #else
+using MonoMac.AppKit;
 #endif
 
 
@@ -28,11 +29,14 @@ namespace ReactiveUI.Cocoa
     {
         public ReactiveImageView(RectangleF frame) : base(frame) { setupRxObj(); }
         public ReactiveImageView(IntPtr handle) : base(handle) { setupRxObj(); }
-        public ReactiveImageView(NSObjectFlag t) : base(t) { setupRxObj(); }
-        public ReactiveImageView(NSCoder coder) : base(coder) { setupRxObj(); }
-        public ReactiveImageView(NSImage image, NSImage highlightedImage) : base(image, highlightedImage) { setupRxObj(); }
         public ReactiveImageView() { setupRxObj(); }
-        public ReactiveImageView(UIImage image) : base(image) { setupRxObj(); }
+
+#if UIKIT
+        public ReactiveImageView(NSImage image) : base(image) { setupRxObj(); }
+        public ReactiveImageView(NSObjectFlag t) : base(t) { setupRxObj(); }
+        public ReactiveImageView(NSImage image, NSImage highlightedImage) : base(image, highlightedImage) { setupRxObj(); }
+        public ReactiveImageView(NSCoder coder) : base(coder) { setupRxObj(); }
+#endif
 
         [field:IgnoreDataMember]
         public event PropertyChangingEventHandler PropertyChanging;

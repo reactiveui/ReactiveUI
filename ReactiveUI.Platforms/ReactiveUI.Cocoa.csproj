@@ -69,19 +69,19 @@
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Drawing" />
     <Reference Include="XamMac" />
-    <Reference Include="System.Reactive.Core">
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Reactive.Core, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
       <HintPath>..\ext\mono\System.Reactive.Core.dll</HintPath>
     </Reference>
-    <Reference Include="System.Reactive.Interfaces">
+    <Reference Include="System.Reactive.Interfaces, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
       <HintPath>..\ext\mono\System.Reactive.Interfaces.dll</HintPath>
     </Reference>
-    <Reference Include="System.Reactive.Linq">
+    <Reference Include="System.Reactive.Linq, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
       <HintPath>..\ext\mono\System.Reactive.Linq.dll</HintPath>
     </Reference>
-    <Reference Include="System.Reactive.PlatformServices">
+    <Reference Include="System.Reactive.PlatformServices, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
       <HintPath>..\ext\mono\System.Reactive.PlatformServices.dll</HintPath>
     </Reference>
-    <Reference Include="System.Runtime.Serialization" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Info.plist" />
@@ -102,6 +102,7 @@
     <Compile Include="Cocoa\PlatformOperations.cs" />
     <Compile Include="Cocoa\ReactiveNSView.cs" />
     <Compile Include="Cocoa\ReactiveNSViewController.cs" />
+    <Compile Include="Cocoa\ReactiveImageView.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ReactiveUI\ReactiveUI_MonoMac.csproj">

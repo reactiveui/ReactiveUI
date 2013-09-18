@@ -26,27 +26,27 @@ namespace ReactiveUI.Tests
 		
 		public static void UpdateIdValues()
 		{
-			Xamarin.Android.NUnitLite.Resource.Id.OptionHostName = ReactiveUI.Tests.Resource.Id.OptionHostName;
-			Xamarin.Android.NUnitLite.Resource.Id.OptionPort = ReactiveUI.Tests.Resource.Id.OptionPort;
-			Xamarin.Android.NUnitLite.Resource.Id.OptionRemoteServer = ReactiveUI.Tests.Resource.Id.OptionRemoteServer;
-			Xamarin.Android.NUnitLite.Resource.Id.OptionsButton = ReactiveUI.Tests.Resource.Id.OptionsButton;
-			Xamarin.Android.NUnitLite.Resource.Id.ResultFullName = ReactiveUI.Tests.Resource.Id.ResultFullName;
-			Xamarin.Android.NUnitLite.Resource.Id.ResultMessage = ReactiveUI.Tests.Resource.Id.ResultMessage;
-			Xamarin.Android.NUnitLite.Resource.Id.ResultResultState = ReactiveUI.Tests.Resource.Id.ResultResultState;
-			Xamarin.Android.NUnitLite.Resource.Id.ResultStackTrace = ReactiveUI.Tests.Resource.Id.ResultStackTrace;
-			Xamarin.Android.NUnitLite.Resource.Id.ResultsFailed = ReactiveUI.Tests.Resource.Id.ResultsFailed;
-			Xamarin.Android.NUnitLite.Resource.Id.ResultsId = ReactiveUI.Tests.Resource.Id.ResultsId;
-			Xamarin.Android.NUnitLite.Resource.Id.ResultsIgnored = ReactiveUI.Tests.Resource.Id.ResultsIgnored;
-			Xamarin.Android.NUnitLite.Resource.Id.ResultsInconclusive = ReactiveUI.Tests.Resource.Id.ResultsInconclusive;
-			Xamarin.Android.NUnitLite.Resource.Id.ResultsMessage = ReactiveUI.Tests.Resource.Id.ResultsMessage;
-			Xamarin.Android.NUnitLite.Resource.Id.ResultsPassed = ReactiveUI.Tests.Resource.Id.ResultsPassed;
-			Xamarin.Android.NUnitLite.Resource.Id.ResultsResult = ReactiveUI.Tests.Resource.Id.ResultsResult;
-			Xamarin.Android.NUnitLite.Resource.Id.RunTestsButton = ReactiveUI.Tests.Resource.Id.RunTestsButton;
-			Xamarin.Android.NUnitLite.Resource.Id.TestSuiteListView = ReactiveUI.Tests.Resource.Id.TestSuiteListView;
-			Xamarin.Android.NUnitLite.Resource.Layout.options = ReactiveUI.Tests.Resource.Layout.options;
-			Xamarin.Android.NUnitLite.Resource.Layout.results = ReactiveUI.Tests.Resource.Layout.results;
-			Xamarin.Android.NUnitLite.Resource.Layout.test_result = ReactiveUI.Tests.Resource.Layout.test_result;
-			Xamarin.Android.NUnitLite.Resource.Layout.test_suite = ReactiveUI.Tests.Resource.Layout.test_suite;
+			global::Xamarin.Android.NUnitLite.Resource.Id.OptionHostName = global::ReactiveUI.Tests.Resource.Id.OptionHostName;
+			global::Xamarin.Android.NUnitLite.Resource.Id.OptionPort = global::ReactiveUI.Tests.Resource.Id.OptionPort;
+			global::Xamarin.Android.NUnitLite.Resource.Id.OptionRemoteServer = global::ReactiveUI.Tests.Resource.Id.OptionRemoteServer;
+			global::Xamarin.Android.NUnitLite.Resource.Id.OptionsButton = global::ReactiveUI.Tests.Resource.Id.OptionsButton;
+			global::Xamarin.Android.NUnitLite.Resource.Id.ResultFullName = global::ReactiveUI.Tests.Resource.Id.ResultFullName;
+			global::Xamarin.Android.NUnitLite.Resource.Id.ResultMessage = global::ReactiveUI.Tests.Resource.Id.ResultMessage;
+			global::Xamarin.Android.NUnitLite.Resource.Id.ResultResultState = global::ReactiveUI.Tests.Resource.Id.ResultResultState;
+			global::Xamarin.Android.NUnitLite.Resource.Id.ResultStackTrace = global::ReactiveUI.Tests.Resource.Id.ResultStackTrace;
+			global::Xamarin.Android.NUnitLite.Resource.Id.ResultsFailed = global::ReactiveUI.Tests.Resource.Id.ResultsFailed;
+			global::Xamarin.Android.NUnitLite.Resource.Id.ResultsId = global::ReactiveUI.Tests.Resource.Id.ResultsId;
+			global::Xamarin.Android.NUnitLite.Resource.Id.ResultsIgnored = global::ReactiveUI.Tests.Resource.Id.ResultsIgnored;
+			global::Xamarin.Android.NUnitLite.Resource.Id.ResultsInconclusive = global::ReactiveUI.Tests.Resource.Id.ResultsInconclusive;
+			global::Xamarin.Android.NUnitLite.Resource.Id.ResultsMessage = global::ReactiveUI.Tests.Resource.Id.ResultsMessage;
+			global::Xamarin.Android.NUnitLite.Resource.Id.ResultsPassed = global::ReactiveUI.Tests.Resource.Id.ResultsPassed;
+			global::Xamarin.Android.NUnitLite.Resource.Id.ResultsResult = global::ReactiveUI.Tests.Resource.Id.ResultsResult;
+			global::Xamarin.Android.NUnitLite.Resource.Id.RunTestsButton = global::ReactiveUI.Tests.Resource.Id.RunTestsButton;
+			global::Xamarin.Android.NUnitLite.Resource.Id.TestSuiteListView = global::ReactiveUI.Tests.Resource.Id.TestSuiteListView;
+			global::Xamarin.Android.NUnitLite.Resource.Layout.options = global::ReactiveUI.Tests.Resource.Layout.options;
+			global::Xamarin.Android.NUnitLite.Resource.Layout.results = global::ReactiveUI.Tests.Resource.Layout.results;
+			global::Xamarin.Android.NUnitLite.Resource.Layout.test_result = global::ReactiveUI.Tests.Resource.Layout.test_result;
+			global::Xamarin.Android.NUnitLite.Resource.Layout.test_suite = global::ReactiveUI.Tests.Resource.Layout.test_suite;
 		}
 		
 		public partial class Attribute
