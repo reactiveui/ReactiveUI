@@ -47,12 +47,18 @@
     <CodeContractsShowSquigglies>False</CodeContractsShowSquigglies>
     <CodeContractsUseBaseLine>False</CodeContractsUseBaseLine>
     <CodeContractsEmitXMLDocs>False</CodeContractsEmitXMLDocs>
-    <CodeContractsCustomRewriterAssembly />
-    <CodeContractsCustomRewriterClass />
-    <CodeContractsLibPaths />
-    <CodeContractsExtraRewriteOptions />
-    <CodeContractsExtraAnalysisOptions />
-    <CodeContractsBaseLineFile />
+    <CodeContractsCustomRewriterAssembly>
+    </CodeContractsCustomRewriterAssembly>
+    <CodeContractsCustomRewriterClass>
+    </CodeContractsCustomRewriterClass>
+    <CodeContractsLibPaths>
+    </CodeContractsLibPaths>
+    <CodeContractsExtraRewriteOptions>
+    </CodeContractsExtraRewriteOptions>
+    <CodeContractsExtraAnalysisOptions>
+    </CodeContractsExtraAnalysisOptions>
+    <CodeContractsBaseLineFile>
+    </CodeContractsBaseLineFile>
     <CodeContractsCacheAnalysisResults>False</CodeContractsCacheAnalysisResults>
     <CodeContractsRuntimeCheckingLevel>Full</CodeContractsRuntimeCheckingLevel>
     <CodeContractsReferenceAssembly>%28none%29</CodeContractsReferenceAssembly>
@@ -82,12 +88,18 @@
     <CodeContractsShowSquigglies>True</CodeContractsShowSquigglies>
     <CodeContractsUseBaseLine>False</CodeContractsUseBaseLine>
     <CodeContractsEmitXMLDocs>False</CodeContractsEmitXMLDocs>
-    <CodeContractsCustomRewriterAssembly />
-    <CodeContractsCustomRewriterClass />
-    <CodeContractsLibPaths />
-    <CodeContractsExtraRewriteOptions />
-    <CodeContractsExtraAnalysisOptions />
-    <CodeContractsBaseLineFile />
+    <CodeContractsCustomRewriterAssembly>
+    </CodeContractsCustomRewriterAssembly>
+    <CodeContractsCustomRewriterClass>
+    </CodeContractsCustomRewriterClass>
+    <CodeContractsLibPaths>
+    </CodeContractsLibPaths>
+    <CodeContractsExtraRewriteOptions>
+    </CodeContractsExtraRewriteOptions>
+    <CodeContractsExtraAnalysisOptions>
+    </CodeContractsExtraAnalysisOptions>
+    <CodeContractsBaseLineFile>
+    </CodeContractsBaseLineFile>
     <CodeContractsCacheAnalysisResults>True</CodeContractsCacheAnalysisResults>
     <CodeContractsRuntimeCheckingLevel>Full</CodeContractsRuntimeCheckingLevel>
     <CodeContractsReferenceAssembly>%28none%29</CodeContractsReferenceAssembly>
