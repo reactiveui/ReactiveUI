@@ -13,13 +13,10 @@ using System.Runtime.CompilerServices;
 using System.Collections.Generic;
 using System.Drawing;
 
-#if UIKIT
 using MonoTouch.Foundation;
 using MonoTouch.UIKit;
 using NSTableViewController = MonoTouch.UIKit.UITableViewController;
 using NSTableViewStyle = MonoTouch.UIKit.UITableViewStyle;
-#else
-#endif
 
 namespace ReactiveUI.Cocoa
 {
