@@ -82,6 +82,7 @@
     <Compile Include="Cocoa\UIKitCommandBinders.cs" />
     <Compile Include="Cocoa\ReactiveNSView.cs" />
     <Compile Include="Cocoa\ReactiveNSViewController.cs" />
+    <Compile Include="Cocoa\UIControlCommandExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ReactiveUI\ReactiveUI_Monotouch.csproj">
