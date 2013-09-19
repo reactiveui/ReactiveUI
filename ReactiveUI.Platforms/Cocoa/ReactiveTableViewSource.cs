@@ -48,6 +48,11 @@ namespace ReactiveUI.Cocoa
         readonly List<TableSectionInformation> sectionInformation;
         bool tableViewReloadInProgress = false;
 
+        public ReactiveTableViewSource(UITableView tableView, IReactiveNotifyCollectionChanged collection, string cellKey, float sizeHint, Action<UITableViewCell> initializeCellAction = null)
+            : this (tableView, new[] { new TableSectionInformation<UITableViewCell>(collection, cellKey, sizeHint, initializeCellAction), })
+        {
+        }
+
         public ReactiveTableViewSource(UITableView tableView, IEnumerable<TableSectionInformation> sectionInformation)
         {
             this.tableView = tableView;
