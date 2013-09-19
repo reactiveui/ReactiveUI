@@ -102,6 +102,7 @@
     <Compile Include="Cocoa\PlatformOperations.cs" />
     <Compile Include="Cocoa\ReactiveNSView.cs" />
     <Compile Include="Cocoa\ReactiveNSViewController.cs" />
+    <Compile Include="Cocoa\ReactiveImageView.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ReactiveUI\ReactiveUI_MonoMac.csproj">
