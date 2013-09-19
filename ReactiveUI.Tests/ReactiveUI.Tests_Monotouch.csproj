@@ -110,9 +110,6 @@
     <Reference Include="System.Reactive.Debugger">
       <HintPath>..\ext\ios\System.Reactive.Debugger.dll</HintPath>
     </Reference>
-    <Reference Include="Mono.Reactive.Testing">
-      <HintPath>..\ext\ios\Mono.Reactive.Testing.dll</HintPath>
-    </Reference>
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Json" />
   </ItemGroup>
@@ -169,6 +166,10 @@
     <ProjectReference Include="..\ReactiveUI.Testing\ReactiveUI.Testing_Monotouch.csproj">
       <Project>{90913370-9E94-3DBD-8F1E-15E10DB72FFC}</Project>
       <Name>ReactiveUI.Testing_Monotouch</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Microsoft.Reactive.Testing\Microsoft.Reactive.Testing_Monotouch.csproj">
+      <Project>{74BA5B4E-257A-42A7-BDAB-1FB40A903909}</Project>
+      <Name>Microsoft.Reactive.Testing_Monotouch</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>

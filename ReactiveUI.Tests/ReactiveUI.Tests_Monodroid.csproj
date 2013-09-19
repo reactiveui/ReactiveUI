@@ -50,9 +50,6 @@
     <Reference Include="Mono.Android" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="Mono.Android.Support.v4" />
-    <Reference Include="Mono.Reactive.Testing">
-      <HintPath>..\ext\monodroid\Mono.Reactive.Testing.dll</HintPath>
-    </Reference>
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\ext\monodroid\Newtonsoft.Json.dll</HintPath>
     </Reference>
@@ -125,6 +122,10 @@
     <ProjectReference Include="..\ReactiveUI\ReactiveUI_Monodroid.csproj">
       <Project>{F92A477B-BB94-43C1-984E-E177EF9FEDB7}</Project>
       <Name>ReactiveUI_Monodroid</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Microsoft.Reactive.Testing\Microsoft.Reactive.Testing_Monodroid.csproj">
+      <Project>{1131910A-9D6D-473F-9C69-3DCF6A1C81BC}</Project>
+      <Name>Microsoft.Reactive.Testing_Monodroid</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>
