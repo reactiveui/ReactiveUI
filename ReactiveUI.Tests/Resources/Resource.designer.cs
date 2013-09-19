@@ -26,27 +26,27 @@ namespace ReactiveUI.Tests
 		
 		public static void UpdateIdValues()
 		{
-			Xamarin.Android.NUnitLite.Resource.Id.OptionHostName = ReactiveUI.Tests.Resource.Id.OptionHostName;
-			Xamarin.Android.NUnitLite.Resource.Id.OptionPort = ReactiveUI.Tests.Resource.Id.OptionPort;
-			Xamarin.Android.NUnitLite.Resource.Id.OptionRemoteServer = ReactiveUI.Tests.Resource.Id.OptionRemoteServer;
-			Xamarin.Android.NUnitLite.Resource.Id.OptionsButton = ReactiveUI.Tests.Resource.Id.OptionsButton;
-			Xamarin.Android.NUnitLite.Resource.Id.ResultFullName = ReactiveUI.Tests.Resource.Id.ResultFullName;
-			Xamarin.Android.NUnitLite.Resource.Id.ResultMessage = ReactiveUI.Tests.Resource.Id.ResultMessage;
-			Xamarin.Android.NUnitLite.Resource.Id.ResultResultState = ReactiveUI.Tests.Resource.Id.ResultResultState;
-			Xamarin.Android.NUnitLite.Resource.Id.ResultStackTrace = ReactiveUI.Tests.Resource.Id.ResultStackTrace;
-			Xamarin.Android.NUnitLite.Resource.Id.ResultsFailed = ReactiveUI.Tests.Resource.Id.ResultsFailed;
-			Xamarin.Android.NUnitLite.Resource.Id.ResultsId = ReactiveUI.Tests.Resource.Id.ResultsId;
-			Xamarin.Android.NUnitLite.Resource.Id.ResultsIgnored = ReactiveUI.Tests.Resource.Id.ResultsIgnored;
-			Xamarin.Android.NUnitLite.Resource.Id.ResultsInconclusive = ReactiveUI.Tests.Resource.Id.ResultsInconclusive;
-			Xamarin.Android.NUnitLite.Resource.Id.ResultsMessage = ReactiveUI.Tests.Resource.Id.ResultsMessage;
-			Xamarin.Android.NUnitLite.Resource.Id.ResultsPassed = ReactiveUI.Tests.Resource.Id.ResultsPassed;
-			Xamarin.Android.NUnitLite.Resource.Id.ResultsResult = ReactiveUI.Tests.Resource.Id.ResultsResult;
-			Xamarin.Android.NUnitLite.Resource.Id.RunTestsButton = ReactiveUI.Tests.Resource.Id.RunTestsButton;
-			Xamarin.Android.NUnitLite.Resource.Id.TestSuiteListView = ReactiveUI.Tests.Resource.Id.TestSuiteListView;
-			Xamarin.Android.NUnitLite.Resource.Layout.options = ReactiveUI.Tests.Resource.Layout.options;
-			Xamarin.Android.NUnitLite.Resource.Layout.results = ReactiveUI.Tests.Resource.Layout.results;
-			Xamarin.Android.NUnitLite.Resource.Layout.test_result = ReactiveUI.Tests.Resource.Layout.test_result;
-			Xamarin.Android.NUnitLite.Resource.Layout.test_suite = ReactiveUI.Tests.Resource.Layout.test_suite;
+			global::Xamarin.Android.NUnitLite.Resource.Id.OptionHostName = global::ReactiveUI.Tests.Resource.Id.OptionHostName;
+			global::Xamarin.Android.NUnitLite.Resource.Id.OptionPort = global::ReactiveUI.Tests.Resource.Id.OptionPort;
+			global::Xamarin.Android.NUnitLite.Resource.Id.OptionRemoteServer = global::ReactiveUI.Tests.Resource.Id.OptionRemoteServer;
+			global::Xamarin.Android.NUnitLite.Resource.Id.OptionsButton = global::ReactiveUI.Tests.Resource.Id.OptionsButton;
+			global::Xamarin.Android.NUnitLite.Resource.Id.ResultFullName = global::ReactiveUI.Tests.Resource.Id.ResultFullName;
+			global::Xamarin.Android.NUnitLite.Resource.Id.ResultMessage = global::ReactiveUI.Tests.Resource.Id.ResultMessage;
+			global::Xamarin.Android.NUnitLite.Resource.Id.ResultResultState = global::ReactiveUI.Tests.Resource.Id.ResultResultState;
+			global::Xamarin.Android.NUnitLite.Resource.Id.ResultStackTrace = global::ReactiveUI.Tests.Resource.Id.ResultStackTrace;
+			global::Xamarin.Android.NUnitLite.Resource.Id.ResultsFailed = global::ReactiveUI.Tests.Resource.Id.ResultsFailed;
+			global::Xamarin.Android.NUnitLite.Resource.Id.ResultsId = global::ReactiveUI.Tests.Resource.Id.ResultsId;
+			global::Xamarin.Android.NUnitLite.Resource.Id.ResultsIgnored = global::ReactiveUI.Tests.Resource.Id.ResultsIgnored;
+			global::Xamarin.Android.NUnitLite.Resource.Id.ResultsInconclusive = global::ReactiveUI.Tests.Resource.Id.ResultsInconclusive;
+			global::Xamarin.Android.NUnitLite.Resource.Id.ResultsMessage = global::ReactiveUI.Tests.Resource.Id.ResultsMessage;
+			global::Xamarin.Android.NUnitLite.Resource.Id.ResultsPassed = global::ReactiveUI.Tests.Resource.Id.ResultsPassed;
+			global::Xamarin.Android.NUnitLite.Resource.Id.ResultsResult = global::ReactiveUI.Tests.Resource.Id.ResultsResult;
+			global::Xamarin.Android.NUnitLite.Resource.Id.RunTestsButton = global::ReactiveUI.Tests.Resource.Id.RunTestsButton;
+			global::Xamarin.Android.NUnitLite.Resource.Id.TestSuiteListView = global::ReactiveUI.Tests.Resource.Id.TestSuiteListView;
+			global::Xamarin.Android.NUnitLite.Resource.Layout.options = global::ReactiveUI.Tests.Resource.Layout.options;
+			global::Xamarin.Android.NUnitLite.Resource.Layout.results = global::ReactiveUI.Tests.Resource.Layout.results;
+			global::Xamarin.Android.NUnitLite.Resource.Layout.test_result = global::ReactiveUI.Tests.Resource.Layout.test_result;
+			global::Xamarin.Android.NUnitLite.Resource.Layout.test_suite = global::ReactiveUI.Tests.Resource.Layout.test_suite;
 		}
 		
 		public partial class Attribute
@@ -81,56 +81,56 @@ namespace ReactiveUI.Tests
 		public partial class Id
 		{
 			
-			// aapt resource value: 0x7f040001
-			public const int OptionHostName = 2130968577;
+			// aapt resource value: 0x7f050001
+			public const int OptionHostName = 2131034113;
 			
-			// aapt resource value: 0x7f040002
-			public const int OptionPort = 2130968578;
+			// aapt resource value: 0x7f050002
+			public const int OptionPort = 2131034114;
 			
-			// aapt resource value: 0x7f040000
-			public const int OptionRemoteServer = 2130968576;
+			// aapt resource value: 0x7f050000
+			public const int OptionRemoteServer = 2131034112;
 			
-			// aapt resource value: 0x7f040010
-			public const int OptionsButton = 2130968592;
+			// aapt resource value: 0x7f050010
+			public const int OptionsButton = 2131034128;
 			
-			// aapt resource value: 0x7f04000a
-			public const int ResultFullName = 2130968586;
+			// aapt resource value: 0x7f05000a
+			public const int ResultFullName = 2131034122;
 			
-			// aapt resource value: 0x7f04000c
-			public const int ResultMessage = 2130968588;
+			// aapt resource value: 0x7f05000c
+			public const int ResultMessage = 2131034124;
 			
-			// aapt resource value: 0x7f04000b
-			public const int ResultResultState = 2130968587;
+			// aapt resource value: 0x7f05000b
+			public const int ResultResultState = 2131034123;
 			
-			// aapt resource value: 0x7f04000d
-			public const int ResultStackTrace = 2130968589;
+			// aapt resource value: 0x7f05000d
+			public const int ResultStackTrace = 2131034125;
 			
-			// aapt resource value: 0x7f040006
-			public const int ResultsFailed = 2130968582;
+			// aapt resource value: 0x7f050006
+			public const int ResultsFailed = 2131034118;
 			
-			// aapt resource value: 0x7f040003
-			public const int ResultsId = 2130968579;
+			// aapt resource value: 0x7f050003
+			public const int ResultsId = 2131034115;
 			
-			// aapt resource value: 0x7f040007
-			public const int ResultsIgnored = 2130968583;
+			// aapt resource value: 0x7f050007
+			public const int ResultsIgnored = 2131034119;
 			
-			// aapt resource value: 0x7f040008
-			public const int ResultsInconclusive = 2130968584;
+			// aapt resource value: 0x7f050008
+			public const int ResultsInconclusive = 2131034120;
 			
-			// aapt resource value: 0x7f040009
-			public const int ResultsMessage = 2130968585;
+			// aapt resource value: 0x7f050009
+			public const int ResultsMessage = 2131034121;
 			
-			// aapt resource value: 0x7f040005
-			public const int ResultsPassed = 2130968581;
+			// aapt resource value: 0x7f050005
+			public const int ResultsPassed = 2131034117;
 			
-			// aapt resource value: 0x7f040004
-			public const int ResultsResult = 2130968580;
+			// aapt resource value: 0x7f050004
+			public const int ResultsResult = 2131034116;
 			
-			// aapt resource value: 0x7f04000f
-			public const int RunTestsButton = 2130968591;
+			// aapt resource value: 0x7f05000f
+			public const int RunTestsButton = 2131034127;
 			
-			// aapt resource value: 0x7f04000e
-			public const int TestSuiteListView = 2130968590;
+			// aapt resource value: 0x7f05000e
+			public const int TestSuiteListView = 2131034126;
 			
 			static Id()
 			{
@@ -163,6 +163,22 @@ namespace ReactiveUI.Tests
 			}
 			
 			private Layout()
+			{
+			}
+		}
+		
+		public partial class String
+		{
+			
+			// aapt resource value: 0x7f040000
+			public const int library_name = 2130968576;
+			
+			static String()
+			{
+				global::Android.Runtime.ResourceIdManager.UpdateIdValues();
+			}
+			
+			private String()
 			{
 			}
 		}
