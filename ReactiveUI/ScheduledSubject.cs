@@ -26,7 +26,7 @@ namespace ReactiveUI
         readonly ISubject<T> _subject;
 
         int _observerRefCount = 0;
-        IDisposable _defaultObserverSub;
+        IDisposable _defaultObserverSub = Disposable.Empty;
 
         public void Dispose()
         {
@@ -53,10 +53,7 @@ namespace ReactiveUI
 
         public IDisposable Subscribe(IObserver<T> observer)
         {
-            if (_defaultObserverSub != null) {
-                _defaultObserverSub.Dispose();
-                _defaultObserverSub = null;
-            }
+            Interlocked.Exchange(ref _defaultObserverSub, Disposable.Empty).Dispose();
 
             Interlocked.Increment(ref _observerRefCount);
 
