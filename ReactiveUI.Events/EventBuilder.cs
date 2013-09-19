@@ -95,7 +95,7 @@ namespace EventBuilder
         {
             var publicDelegateTypes = targetAssemblies
                 .SelectMany(x => SafeGetTypes(x))
-                .Where(x => x.IsPublic && !x.HasGenericParameters && isCocoaDelegateName(x.Name))
+                .Where(x => x.IsPublic && !x.IsInterface && !x.HasGenericParameters && isCocoaDelegateName(x.Name))
                 .Where(x => x.BaseType == null || !x.BaseType.FullName.Contains("MulticastDelegate"))
                 .Select(x => new { Type = x, Delegates = GetPublicDelegateMethods(x) })
                 .Where(x => x.Delegates.Length > 0)
