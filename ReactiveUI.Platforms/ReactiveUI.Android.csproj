@@ -45,6 +45,10 @@
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
     <Reference Include="Mono.Android" />
+    <Reference Include="ActionBarSherlock">
+      <HintPath>..\ext\monodroid\ActionBarSherlock.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Reactive.Core">
       <HintPath>..\ext\monodroid\System.Reactive.Core.dll</HintPath>
     </Reference>
@@ -57,13 +61,6 @@
     <Reference Include="System.Reactive.PlatformServices">
       <HintPath>..\ext\monodroid\System.Reactive.PlatformServices.dll</HintPath>
     </Reference>
-    <Reference Include="System.Reactive.Providers">
-      <HintPath>..\ext\monodroid\System.Reactive.Providers.dll</HintPath>
-    </Reference>
-    <Reference Include="ActionBarSherlock">
-      <HintPath>..\ext\monodroid\ActionBarSherlock.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Runtime.Serialization" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Novell\Novell.MonoDroid.CSharp.targets" />
   <ItemGroup>
