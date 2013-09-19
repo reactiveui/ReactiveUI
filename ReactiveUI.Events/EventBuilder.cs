@@ -62,6 +62,7 @@ namespace EventBuilder
                 "Windows.UI.Xaml.Interop",
                 "Windows.UI.Xaml.Input",
                 "MonoTouch.AudioToolbox",
+                "MonoMac.AudioToolbox",
                 "ReactiveUI.Events",
             };
 
