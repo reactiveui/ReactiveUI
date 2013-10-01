@@ -523,5 +523,53 @@ namespace ReactiveUI.Tests
                 Assert.Equal(1, result2.Count);
             });
         }
+                
+        [Fact]
+        public void CombinedCommandsShouldReflectParentCanExecute()
+        {
+            var subj1 = new Subject<bool>();
+            var cmd1 = new ReactiveCommand(subj1);
+            var subj2 = new Subject<bool>();
+            var cmd2 = new ReactiveCommand(subj2);
+            var cmd3 = new ReactiveCommand();
+            var parentSubj = new Subject<bool>();
+
+
+            // Initial state for ReactiveCommands is to be executable
+            var fixture = ReactiveCommand.CreateCombined(parentSubj, cmd1, cmd2, cmd3);
+            var canExecuteOutput = fixture.CanExecuteObservable.CreateCollection();
+            Assert.True(fixture.CanExecute(null));
+            Assert.Equal(1, canExecuteOutput.Count);
+
+            parentSubj.OnNext(false);
+
+            // 1 is false, 2 is true
+            subj1.OnNext(false);
+            Assert.False(fixture.CanExecute(null));
+            Assert.Equal(2, canExecuteOutput.Count);
+            Assert.Equal(false, canExecuteOutput[1]);
+
+            // 1 is false, 2 is false
+            subj2.OnNext(false);
+            Assert.False(fixture.CanExecute(null));
+            Assert.Equal(2, canExecuteOutput.Count);
+
+            // 1 is true, 2 is false
+            subj1.OnNext(true);
+            Assert.False(fixture.CanExecute(null));
+            Assert.Equal(2, canExecuteOutput.Count);
+                        
+            // 1 is true, 2 is true, but it doesn't matter because
+            // parent is still false
+            subj2.OnNext(true);
+            Assert.False(fixture.CanExecute(null));
+            Assert.Equal(2, canExecuteOutput.Count);
+
+            // Parent is finally true, mark it true
+            parentSubj.OnNext(true);
+            Assert.True(fixture.CanExecute(null));
+            Assert.Equal(3, canExecuteOutput.Count);
+            Assert.Equal(true, canExecuteOutput[2]);
+        }
     }
 }
