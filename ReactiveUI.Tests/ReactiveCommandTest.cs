@@ -475,5 +475,53 @@ namespace ReactiveUI.Tests
             Assert.Equal(3, canExecuteOutput.Count);
             Assert.Equal(true, canExecuteOutput[2]);
         }
+
+        [Fact]
+        public void CombinedCommandsShouldBeInactiveOnAsyncInflightOps()
+        {
+            (new TestScheduler()).With(sched => {
+                var cmd1 = new ReactiveCommand();
+                var cmd2 = new ReactiveCommand();
+                var cmd3 = new ReactiveCommand();
+
+                var result1 = cmd1
+                    .RegisterAsync(x => Observable.Return(x).Delay(TimeSpan.FromMilliseconds(100), sched))
+                    .CreateCollection();
+
+                var result2 = cmd2
+                    .RegisterAsync(x => Observable.Return(x).Delay(TimeSpan.FromMilliseconds(300), sched))
+                    .CreateCollection();
+
+                var fixture = ReactiveCommand.CreateCombined(cmd1, cmd2, cmd3);
+                var canExecuteOutput = fixture.CanExecuteObservable.CreateCollection();
+                Assert.True(fixture.CanExecute(null));
+                Assert.Equal(0, canExecuteOutput.Count);
+
+                fixture.Execute(42);
+
+                // NB: The first canExecuteOutput is because of the initial value
+                // that shows up because we finally ran the scheduler
+                sched.AdvanceToMs(50.0);
+                Assert.Equal(2, canExecuteOutput.Count);
+                Assert.Equal(true, canExecuteOutput[0]);
+                Assert.Equal(false, canExecuteOutput[1]);
+                Assert.Equal(false, fixture.CanExecute(null));
+                Assert.Equal(0, result1.Count);
+                Assert.Equal(0, result2.Count);
+
+                sched.AdvanceToMs(250.0);
+                Assert.Equal(2, canExecuteOutput.Count);
+                Assert.Equal(false, fixture.CanExecute(null));
+                Assert.Equal(1, result1.Count);
+                Assert.Equal(0, result2.Count);
+                                
+                sched.AdvanceToMs(500.0);
+                Assert.Equal(3, canExecuteOutput.Count);
+                Assert.Equal(true, canExecuteOutput[2]);
+                Assert.Equal(true, fixture.CanExecute(null));
+                Assert.Equal(1, result1.Count);
+                Assert.Equal(1, result2.Count);
+            });
+        }
     }
 }
