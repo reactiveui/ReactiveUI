@@ -70,6 +70,24 @@ namespace ReactiveUI
         }
 
         /// <summary>
+        /// This creates a ReactiveCommand that calls several child 
+        /// ReactiveCommands when invoked. Its CanExecute will match the
+        /// combined result of the child CanExecutes (i.e. if any child
+        /// commands cannot execute, neither can the parent)
+        /// </summary>
+        /// <param name="commands">The commands to combine.</param>
+        public static ReactiveCommand CreateCombined(params ReactiveCommand[] commands)
+        {
+            var canExecute = commands
+                .Select(x => x.CanExecuteObservable)
+                .CombineLatest(latestCanExecute => latestCanExecute.All(x => x != false));
+
+            var ret = new ReactiveCommand(canExecute);
+            ret.Subscribe(x => commands.ForEach(cmd => cmd.Execute(x)));
+            return ret;
+        }
+
+        /// <summary>
         /// Registers an asynchronous method to be called whenever the command
         /// is Executed. This method returns an IObservable representing the
         /// asynchronous operation, and is allowed to OnError / should OnComplete.
