@@ -419,5 +419,61 @@ namespace ReactiveUI.Tests
                 Assert.Equal(1, result.Count);
             });
         }
+
+        [Fact]
+        public void CombinedCommandsShouldFireChildCommands()
+        {
+            var cmd1 = new ReactiveCommand();
+            var cmd2 = new ReactiveCommand();
+            var cmd3 = new ReactiveCommand();
+
+            var output = new[] { cmd1, cmd2, cmd3, }.Merge().CreateCollection();
+
+            var fixture = ReactiveCommand.CreateCombined(cmd1, cmd2, cmd3);
+            Assert.True(fixture.CanExecute(null));
+            Assert.Equal(0, output.Count);
+
+            fixture.Execute(42);
+
+            Assert.Equal(3, output.Count);
+        }
+
+        [Fact]
+        public void CombinedCommandsShouldReflectCanExecuteOfChildren()
+        {
+            var subj1 = new Subject<bool>();
+            var cmd1 = new ReactiveCommand(subj1);
+            var subj2 = new Subject<bool>();
+            var cmd2 = new ReactiveCommand(subj2);
+            var cmd3 = new ReactiveCommand();
+
+            // Initial state for ReactiveCommands is to be executable
+            var fixture = ReactiveCommand.CreateCombined(cmd1, cmd2, cmd3);
+            var canExecuteOutput = fixture.CanExecuteObservable.CreateCollection();
+            Assert.True(fixture.CanExecute(null));
+            Assert.Equal(1, canExecuteOutput.Count);
+
+            // 1 is false, 2 is true
+            subj1.OnNext(false);
+            Assert.False(fixture.CanExecute(null));
+            Assert.Equal(2, canExecuteOutput.Count);
+            Assert.Equal(false, canExecuteOutput[1]);
+
+            // 1 is false, 2 is false
+            subj2.OnNext(false);
+            Assert.False(fixture.CanExecute(null));
+            Assert.Equal(2, canExecuteOutput.Count);
+
+            // 1 is true, 2 is false
+            subj1.OnNext(true);
+            Assert.False(fixture.CanExecute(null));
+            Assert.Equal(2, canExecuteOutput.Count);
+                        
+            // 1 is true, 2 is true
+            subj2.OnNext(true);
+            Assert.True(fixture.CanExecute(null));
+            Assert.Equal(3, canExecuteOutput.Count);
+            Assert.Equal(true, canExecuteOutput[2]);
+        }
     }
 }
