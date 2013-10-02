@@ -35,11 +35,19 @@ namespace ReactiveUI
 
                 } else if((type = Type.GetType("System.ComponentModel.DesignerProperties, System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e", false)) != null) {
                     // Check Silverlight Design Mode
-                    MethodInfo mInfo = type.GetMethod("GetIsInDesignMode");
-                    Type dependencyObject = Type.GetType("System.Windows.Controls.Border, System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e", false);
-                    if (dependencyObject != null) {
-                        isInDesignMode = (bool)mInfo.Invoke(null, new object[] { Activator.CreateInstance(dependencyObject) });
+                    try
+                    {
+                        MethodInfo mInfo = type.GetMethod("GetIsInDesignMode");
+                        Type dependencyObject = Type.GetType("System.Windows.Controls.Border, System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e", false);
+                        if (dependencyObject != null) {
+                            isInDesignMode = (bool)mInfo.Invoke(null, new object[] { Activator.CreateInstance(dependencyObject) });
+                        }
                     }
+                    catch(Exception e)
+                    {
+                        
+                    }
+                   
                 } else if ((type = Type.GetType("Windows.ApplicationModel.DesignMode, Windows, ContentType=WindowsRuntime", false)) != null) {
                     // check WinRT next
                     isInDesignMode = (bool)type.GetProperty("DesignModeEnabled").GetMethod.Invoke(null, null);
