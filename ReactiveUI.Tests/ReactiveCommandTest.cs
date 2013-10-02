@@ -419,5 +419,157 @@ namespace ReactiveUI.Tests
                 Assert.Equal(1, result.Count);
             });
         }
+
+        [Fact]
+        public void CombinedCommandsShouldFireChildCommands()
+        {
+            var cmd1 = new ReactiveCommand();
+            var cmd2 = new ReactiveCommand();
+            var cmd3 = new ReactiveCommand();
+
+            var output = new[] { cmd1, cmd2, cmd3, }.Merge().CreateCollection();
+
+            var fixture = ReactiveCommand.CreateCombined(cmd1, cmd2, cmd3);
+            Assert.True(fixture.CanExecute(null));
+            Assert.Equal(0, output.Count);
+
+            fixture.Execute(42);
+
+            Assert.Equal(3, output.Count);
+        }
+
+        [Fact]
+        public void CombinedCommandsShouldReflectCanExecuteOfChildren()
+        {
+            var subj1 = new Subject<bool>();
+            var cmd1 = new ReactiveCommand(subj1);
+            var subj2 = new Subject<bool>();
+            var cmd2 = new ReactiveCommand(subj2);
+            var cmd3 = new ReactiveCommand();
+
+            // Initial state for ReactiveCommands is to be executable
+            var fixture = ReactiveCommand.CreateCombined(cmd1, cmd2, cmd3);
+            var canExecuteOutput = fixture.CanExecuteObservable.CreateCollection();
+            Assert.True(fixture.CanExecute(null));
+            Assert.Equal(1, canExecuteOutput.Count);
+
+            // 1 is false, 2 is true
+            subj1.OnNext(false);
+            Assert.False(fixture.CanExecute(null));
+            Assert.Equal(2, canExecuteOutput.Count);
+            Assert.Equal(false, canExecuteOutput[1]);
+
+            // 1 is false, 2 is false
+            subj2.OnNext(false);
+            Assert.False(fixture.CanExecute(null));
+            Assert.Equal(2, canExecuteOutput.Count);
+
+            // 1 is true, 2 is false
+            subj1.OnNext(true);
+            Assert.False(fixture.CanExecute(null));
+            Assert.Equal(2, canExecuteOutput.Count);
+                        
+            // 1 is true, 2 is true
+            subj2.OnNext(true);
+            Assert.True(fixture.CanExecute(null));
+            Assert.Equal(3, canExecuteOutput.Count);
+            Assert.Equal(true, canExecuteOutput[2]);
+        }
+
+        [Fact]
+        public void CombinedCommandsShouldBeInactiveOnAsyncInflightOps()
+        {
+            (new TestScheduler()).With(sched => {
+                var cmd1 = new ReactiveCommand();
+                var cmd2 = new ReactiveCommand();
+                var cmd3 = new ReactiveCommand();
+
+                var result1 = cmd1
+                    .RegisterAsync(x => Observable.Return(x).Delay(TimeSpan.FromMilliseconds(100), sched))
+                    .CreateCollection();
+
+                var result2 = cmd2
+                    .RegisterAsync(x => Observable.Return(x).Delay(TimeSpan.FromMilliseconds(300), sched))
+                    .CreateCollection();
+
+                var fixture = ReactiveCommand.CreateCombined(cmd1, cmd2, cmd3);
+                var canExecuteOutput = fixture.CanExecuteObservable.CreateCollection();
+                Assert.True(fixture.CanExecute(null));
+                Assert.Equal(0, canExecuteOutput.Count);
+
+                fixture.Execute(42);
+
+                // NB: The first canExecuteOutput is because of the initial value
+                // that shows up because we finally ran the scheduler
+                sched.AdvanceToMs(50.0);
+                Assert.Equal(2, canExecuteOutput.Count);
+                Assert.Equal(true, canExecuteOutput[0]);
+                Assert.Equal(false, canExecuteOutput[1]);
+                Assert.Equal(false, fixture.CanExecute(null));
+                Assert.Equal(0, result1.Count);
+                Assert.Equal(0, result2.Count);
+
+                sched.AdvanceToMs(250.0);
+                Assert.Equal(2, canExecuteOutput.Count);
+                Assert.Equal(false, fixture.CanExecute(null));
+                Assert.Equal(1, result1.Count);
+                Assert.Equal(0, result2.Count);
+                                
+                sched.AdvanceToMs(500.0);
+                Assert.Equal(3, canExecuteOutput.Count);
+                Assert.Equal(true, canExecuteOutput[2]);
+                Assert.Equal(true, fixture.CanExecute(null));
+                Assert.Equal(1, result1.Count);
+                Assert.Equal(1, result2.Count);
+            });
+        }
+                
+        [Fact]
+        public void CombinedCommandsShouldReflectParentCanExecute()
+        {
+            var subj1 = new Subject<bool>();
+            var cmd1 = new ReactiveCommand(subj1);
+            var subj2 = new Subject<bool>();
+            var cmd2 = new ReactiveCommand(subj2);
+            var cmd3 = new ReactiveCommand();
+            var parentSubj = new Subject<bool>();
+
+
+            // Initial state for ReactiveCommands is to be executable
+            var fixture = ReactiveCommand.CreateCombined(parentSubj, cmd1, cmd2, cmd3);
+            var canExecuteOutput = fixture.CanExecuteObservable.CreateCollection();
+            Assert.True(fixture.CanExecute(null));
+            Assert.Equal(1, canExecuteOutput.Count);
+
+            parentSubj.OnNext(false);
+
+            // 1 is false, 2 is true
+            subj1.OnNext(false);
+            Assert.False(fixture.CanExecute(null));
+            Assert.Equal(2, canExecuteOutput.Count);
+            Assert.Equal(false, canExecuteOutput[1]);
+
+            // 1 is false, 2 is false
+            subj2.OnNext(false);
+            Assert.False(fixture.CanExecute(null));
+            Assert.Equal(2, canExecuteOutput.Count);
+
+            // 1 is true, 2 is false
+            subj1.OnNext(true);
+            Assert.False(fixture.CanExecute(null));
+            Assert.Equal(2, canExecuteOutput.Count);
+                        
+            // 1 is true, 2 is true, but it doesn't matter because
+            // parent is still false
+            subj2.OnNext(true);
+            Assert.False(fixture.CanExecute(null));
+            Assert.Equal(2, canExecuteOutput.Count);
+
+            // Parent is finally true, mark it true
+            parentSubj.OnNext(true);
+            Assert.True(fixture.CanExecute(null));
+            Assert.Equal(3, canExecuteOutput.Count);
+            Assert.Equal(true, canExecuteOutput[2]);
+        }
     }
 }
