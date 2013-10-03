@@ -27,7 +27,7 @@ namespace ReactiveUI
         public static IDisposable AutoPersist<T>(this T This, Func<T, IObservable<Unit>> doPersist, TimeSpan? interval = null)
             where T : IReactiveNotifyPropertyChanged
         {
-            return This.AutoPersist(doPersist, Observable.Never<Unit>());
+            return This.AutoPersist(doPersist, Observable.Never<Unit>(), interval);
         }
 
         public static IDisposable AutoPersist<T, TDontCare>(this T This, Func<T, IObservable<Unit>> doPersist, IObservable<TDontCare> manualSaveSignal, TimeSpan? interval = null)
