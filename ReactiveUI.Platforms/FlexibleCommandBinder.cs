@@ -5,7 +5,13 @@ using System.Linq;
 using System.Reactive.Linq;
 using System.Windows.Input;
 
-namespace ReactiveUI.Android.Android
+#if UIKIT
+using MonoTouch.UIKit;
+
+namespace ReactiveUI.Cocoa
+#else
+namespace ReactiveUI.Android
+#endif
 {
     public abstract class FlexibleCommandBinder : ICreatesCommandBinding
     {
@@ -106,6 +112,45 @@ namespace ReactiveUI.Android.Android
 
             return compDisp;
         }
+
+#if UIKIT
+        /// <summary>
+        /// Creates a commands binding from event and a property
+        /// </summary>
+        protected static IDisposable ForTargetAction(ICommand command, object target, IObservable<object> commandParameter, string enablePropertyName)
+        {
+            commandParameter = commandParameter ?? Observable.Return(target);
+
+            object latestParam = null;
+
+            IDisposable actionDisp = null;
+
+            var ctl = target as UIControl;
+            if (ctl != null) {
+                var eh = new EventHandler((o,e) => {
+                    if (command.CanExecute(latestParam)) command.Execute(latestParam);
+                });
+
+                ctl.AddTarget(eh, UIControlEvent.TouchUpInside);
+                actionDisp = Disposable.Create(() => ctl.RemoveTarget(eh, UIControlEvent.TouchUpInside));
+            } 
+
+            var enabledSetter = Reflection.GetValueSetterForProperty(target.GetType(), enablePropertyName);
+            if (enabledSetter == null) return actionDisp;
+
+            // Initial enabled state
+            enabledSetter(target, command.CanExecute(latestParam));
+
+            var compDisp = new CompositeDisposable(
+                actionDisp,
+                commandParameter.Subscribe(x => latestParam = x),
+                Observable.FromEventPattern<EventHandler, EventArgs>(x => command.CanExecuteChanged += x, x => command.CanExecuteChanged -= x)
+                    .Select(_ => command.CanExecute(latestParam))
+                    .Subscribe(x => enabledSetter(target, x)));
+
+            return compDisp;
+        }
+        #endif 
     }
 }
 
