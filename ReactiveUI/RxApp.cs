@@ -42,7 +42,7 @@ namespace ReactiveUI
         static RxApp()
         {
 #if PORTABLE
-            _TaskpoolScheduler = Scheduler.TaskPool;
+            _TaskpoolScheduler = Scheduler.Default;
 #else
             _TaskpoolScheduler = TaskPoolScheduler.Default;
 #endif
