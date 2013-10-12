@@ -43,14 +43,16 @@ namespace ReactiveUI
 
             ThrownExceptions = exceptions = new ScheduledSubject<Exception>(defaultScheduler, RxApp.DefaultExceptionHandler);
 
-            IsExecuting = inflight
+            var isExecuting = inflight
                 .Scan(0, (acc, x) => acc + (x ? 1 : -1))
                 .Select(x => x > 0)
                 .Publish(false)
                 .PermaRef()
                 .DistinctUntilChanged();
 
-            var isBusy = allowsConcurrentExecution ? Observable.Return(false) : IsExecuting;
+            IsExecuting = isExecuting.ObserveOn(defaultScheduler);
+
+            var isBusy = allowsConcurrentExecution ? Observable.Return(false) : isExecuting;
             var canExecuteAndNotBusy = Observable.CombineLatest(canExecute, isBusy, (ce, b) => ce && !b);
 
             var canExecuteObs = canExecuteAndNotBusy
