@@ -19,7 +19,7 @@ namespace EventBuilder
             // NB: I'm too lazy to fix this properly
             var monoDroidDir = targetAssemblyDirs.FirstOrDefault(x => x.ToLowerInvariant().Contains("monoandroid"));
             if (monoDroidDir != null) {
-                targetAssemblyDirs.Add(monoDroidDir.Replace("v4.0", "v1.0"));
+                targetAssemblyDirs.Add(Path.Combine(monoDroidDir, "..", "..", "..", "mono", "2.1"));
             }
 
             // NB: Double down on Laziness
@@ -62,6 +62,7 @@ namespace EventBuilder
                 "Windows.UI.Xaml.Interop",
                 "Windows.UI.Xaml.Input",
                 "MonoTouch.AudioToolbox",
+                "MonoMac.AudioToolbox",
                 "ReactiveUI.Events",
             };
 
@@ -93,10 +94,15 @@ namespace EventBuilder
 
         public static NamespaceInfo[] CreateDelegateTemplateInformation(AssemblyDefinition[] targetAssemblies)
         {
+            var garbageTypeList = new[] {
+                "AVPlayerItemLegibleOutputPushDelegate",  // NB: Breaks build on device because reasons.
+            };
+
             var publicDelegateTypes = targetAssemblies
                 .SelectMany(x => SafeGetTypes(x))
-                .Where(x => x.IsPublic && !x.HasGenericParameters && isCocoaDelegateName(x.Name))
+                .Where(x => x.IsPublic && !x.IsInterface && !x.HasGenericParameters && isCocoaDelegateName(x.Name))
                 .Where(x => x.BaseType == null || !x.BaseType.FullName.Contains("MulticastDelegate"))
+		.Where(x => !garbageTypeList.Any(y => x.FullName.Contains(y)))
                 .Select(x => new { Type = x, Delegates = GetPublicDelegateMethods(x) })
                 .Where(x => x.Delegates.Length > 0)
                 .ToArray();
@@ -292,7 +298,6 @@ namespace EventBuilder
 
         public AssemblyDefinition Resolve(string fullName, ReaderParameters parameters)
         {
-            return Resolve(fullName);
             var dllName = fullName.Split(',')[0] + ".dll";
 
             var fullPath = targetAssemblyDirs.Select(x => Path.Combine(x, dllName)).FirstOrDefault(x => File.Exists(x));
@@ -304,7 +309,9 @@ namespace EventBuilder
 
             if (fullPath == null)
             {
-                return null;
+                var err = String.Format("Failed to resolve!!! {0}", fullName);
+                Console.Error.WriteLine(err);
+                throw new Exception(err);
             }
 
             return AssemblyDefinition.ReadAssembly(fullPath, parameters);
@@ -323,7 +330,9 @@ namespace EventBuilder
 
             if (fullPath == null)
             {
-                return null;
+                var err = String.Format("Failed to resolve!!! {0}", fullName);
+                Console.Error.WriteLine(err);
+                throw new Exception(err);
             }
 
             return AssemblyDefinition.ReadAssembly(fullPath);

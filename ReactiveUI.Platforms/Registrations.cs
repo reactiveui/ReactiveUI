@@ -20,6 +20,8 @@ using MonoMac.AppKit;
 #endif
 
 #if ANDROID
+using ReactiveUI.Android.Android;
+
 namespace ReactiveUI.Android
 #elif COCOA
 namespace ReactiveUI.Cocoa
@@ -54,6 +56,7 @@ namespace ReactiveUI.Xaml
 #if ANDROID
             registerFunction(() => new AndroidDefaultPropertyBinding(), typeof(IDefaultPropertyBindingProvider));
             registerFunction(() => new AndroidObservableForWidgets(), typeof(ICreatesObservableForProperty));
+            registerFunction(() => AndroidCommandBinders.Instance.Value, typeof(ICreatesCommandBinding));
 #endif
 
 #if UIKIT
