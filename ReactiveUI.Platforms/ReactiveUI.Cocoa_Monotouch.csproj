@@ -71,6 +71,7 @@
     <Compile Include="Cocoa\RouterUINavigationController.cs" />
     <Compile Include="Cocoa\TargetActionCommandBinder.cs" />
     <Compile Include="Cocoa\ViewModelViewHost.cs" />
+    <Compile Include="FlexibleCommandBinder.cs" />
     <Compile Include="ComponentModelTypeConverter.cs" />
     <Compile Include="PlatformUnitTestDetector.cs" />
     <Compile Include="Registrations.cs" />
@@ -78,10 +79,14 @@
     <Compile Include="Cocoa\UIKitObservableForProperty.cs" />
     <Compile Include="Cocoa\UIKitObservableForPropertyBase.cs" />
     <Compile Include="Cocoa\Converters\DateTimeToNSDateConverter.cs" />
-    <Compile Include="Cocoa\FlexibleCommandBinder.cs" />
     <Compile Include="Cocoa\UIKitCommandBinders.cs" />
     <Compile Include="Cocoa\ReactiveNSView.cs" />
     <Compile Include="Cocoa\ReactiveNSViewController.cs" />
+    <Compile Include="Cocoa\UIControlCommandExtensions.cs" />
+    <Compile Include="Cocoa\ReactiveTableViewCell.cs" />
+    <Compile Include="Cocoa\ReactiveTableViewController.cs" />
+    <Compile Include="Cocoa\ReactiveImageView.cs" />
+    <Compile Include="Cocoa\ReactiveTableViewSource.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ReactiveUI\ReactiveUI_Monotouch.csproj">
