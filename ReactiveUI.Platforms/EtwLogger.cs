@@ -5,7 +5,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ReactiveUI
+#if WINFORMS
+namespace ReactiveUI.Winforms
+#else
+namespace ReactiveUI.Xaml
+#endif
 {
     public class EtwLogManager : ILogManager
     {
