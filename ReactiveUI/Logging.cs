@@ -266,6 +266,10 @@ namespace ReactiveUI
         readonly string prefix;
         readonly MethodInfo stringFormat;
 
+        public ILogger InnerLogger {
+            get { return _inner; }
+        }
+
         public WrappingFullLogger(ILogger inner, Type callingType)
         {
             _inner = inner;
