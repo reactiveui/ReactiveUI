@@ -246,7 +246,6 @@ namespace ReactiveUI.Cocoa
             }
         }
 
-        #region Headers and footers
         public override float GetHeightForHeader(UITableView tableView, int section)
         {
             var header = sectionInformation[section].Header;
@@ -270,6 +269,5 @@ namespace ReactiveUI.Cocoa
             var footer = sectionInformation[section].Footer;
             return footer == null ? null : footer.View.Invoke();
         }
-        #endregion
     }
 }
