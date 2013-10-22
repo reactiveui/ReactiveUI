@@ -18,6 +18,18 @@ namespace ReactiveUI.Cocoa
         public string CellKey { get; protected set; }
         public float SizeHint { get; protected set; }
 
+        /// <summary>
+        /// Gets or sets the header of this section.
+        /// </summary>
+        /// <value>The header, or null if a header shouldn't be used.</value>
+        public TableSectionHeader Header { get; set; }
+
+        /// <summary>
+        /// Gets or sets the footer of this section.
+        /// </summary>
+        /// <value>The footer, or null if a footer shouldn't be used.</value>
+        public TableSectionHeader Footer { get; set; }
+
         protected internal virtual void initializeCell(object cell) { }
     }
 
@@ -37,6 +49,35 @@ namespace ReactiveUI.Cocoa
         {
             if (InitializeCellAction == null) return;
             InitializeCellAction((TCell)cell);
+        }
+    }
+
+    /// <summary>
+    /// A header or footer of a table section.
+    /// </summary>
+    public class TableSectionHeader
+    {
+        /// <summary>
+        /// Gets the function that creates the <see cref="UIView"/>
+        /// used as header for this section.
+        /// </summary>
+        public Func<UIView> View { get; protected set; }
+
+        /// <summary>
+        /// Gets the height of the header.
+        /// </summary>
+        public float Height { get; protected set; }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TableSectionHeader"/>
+        /// struct.
+        /// </summary>
+        /// <param name="view">Function that creates header's <see cref="UIView"/>.</param>
+        /// <param name="height">Height of the header.</param>
+        public TableSectionHeader (Func<UIView> view, float height)
+        {
+            this.View = view;
+            this.Height = height;
         }
     }
 
@@ -204,5 +245,31 @@ namespace ReactiveUI.Cocoa
                 throw new ArgumentException("Don't know how to deal with " + ea.Action);
             }
         }
+
+        #region Headers and footers
+        public override float GetHeightForHeader(UITableView tableView, int section)
+        {
+            var header = sectionInformation[section].Header;
+            return header == null ? 0 : header.Height;
+        }
+
+        public override float GetHeightForFooter(UITableView tableView, int section)
+        {
+            var footer = sectionInformation[section].Footer;
+            return footer == null ? 0 : footer.Height;
+        }
+
+        public override UIView GetViewForHeader(UITableView tableView, int section)
+        {
+            var header = sectionInformation[section].Header;
+            return header == null ? null : header.View.Invoke();
+        }
+
+        public override UIView GetViewForFooter(UITableView tableView, int section)
+        {
+            var footer = sectionInformation[section].Footer;
+            return footer == null ? null : footer.View.Invoke();
+        }
+        #endregion
     }
 }
