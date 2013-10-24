@@ -9,6 +9,7 @@ using System.Collections.Specialized;
 using System.Collections.Generic;
 using System.Reactive.Disposables;
 using System.Threading;
+using System.Reactive.Subjects;
 
 namespace ReactiveUI.Cocoa
 {
@@ -89,6 +90,18 @@ namespace ReactiveUI.Cocoa
         readonly List<TableSectionInformation> sectionInformation;
         bool tableViewReloadInProgress = false;
 
+        /// <summary>
+        /// Backing field for RowSelectedObservable property.
+        /// </summary>
+        readonly ISubject<Tuple<UITableView,NSIndexPath>> rowSelectedObservable;
+        /// <summary>
+        /// Gets an IObservable that is a hook to <see cref="RowSelected"/> calls.
+        /// </summary>
+        public IObservable<Tuple<UITableView,NSIndexPath>> RowSelectedObservable
+        {
+            get {return rowSelectedObservable;}
+        }
+
         public ReactiveTableViewSource(UITableView tableView, IReactiveNotifyCollectionChanged collection, string cellKey, float sizeHint, Action<UITableViewCell> initializeCellAction = null)
             : this (tableView, new[] { new TableSectionInformation<UITableViewCell>(collection, cellKey, sizeHint, initializeCellAction), })
         {
@@ -98,6 +111,8 @@ namespace ReactiveUI.Cocoa
         {
             this.tableView = tableView;
             this.sectionInformation = sectionInformation.ToList();
+
+            rowSelectedObservable = new Subject<Tuple<UITableView,NSIndexPath>>();
 
             var compositeDisp = new CompositeDisposable();
             this.innerDisp = compositeDisp;
@@ -221,6 +236,11 @@ namespace ReactiveUI.Cocoa
         public override bool CanMoveRow(UITableView tableView, NSIndexPath indexPath)
         {
             return false;
+        }
+
+        public override void RowSelected(UITableView tableView, NSIndexPath indexPath)
+        {
+            rowSelectedObservable.OnNext(Tuple.Create(tableView, indexPath));
         }
 
         public new void Dispose()
