@@ -90,13 +90,13 @@ namespace ReactiveUI.Cocoa
         readonly List<TableSectionInformation> sectionInformation;
         bool tableViewReloadInProgress = false;
 
-        readonly ISubject<UITableViewCell> rowSelectedObservable;
+        readonly ISubject<Object> elementSelected;
         /// <summary>
         /// Gets an IObservable that is a hook to <see cref="RowSelected"/> calls.
         /// </summary>
-        public IObservable<UITableViewCell> RowSelectedObservable
+        public IObservable<Object> ElementSelected
         {
-            get {return rowSelectedObservable;}
+            get {return elementSelected;}
         }
 
         public ReactiveTableViewSource(UITableView tableView, IReactiveNotifyCollectionChanged collection, string cellKey, float sizeHint, Action<UITableViewCell> initializeCellAction = null)
@@ -109,7 +109,7 @@ namespace ReactiveUI.Cocoa
             this.tableView = tableView;
             this.sectionInformation = sectionInformation.ToList();
 
-            rowSelectedObservable = new Subject<UITableViewCell>();
+            elementSelected = new Subject<Object>();
 
             var compositeDisp = new CompositeDisposable();
             this.innerDisp = compositeDisp;
@@ -237,8 +237,9 @@ namespace ReactiveUI.Cocoa
 
         public override void RowSelected(UITableView tableView, NSIndexPath indexPath)
         {
-            var cell = GetCell(tableView, indexPath);
-            rowSelectedObservable.OnNext(cell);
+            var sectionInfo = sectionInformation[indexPath.Section];
+            var element = ((IList)sectionInfo.Collection)[indexPath.Row];
+            elementSelected.OnNext(element);
         }
 
         public new void Dispose()
