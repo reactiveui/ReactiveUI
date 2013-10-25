@@ -90,9 +90,6 @@ namespace ReactiveUI.Cocoa
         readonly List<TableSectionInformation> sectionInformation;
         bool tableViewReloadInProgress = false;
 
-        /// <summary>
-        /// Backing field for RowSelectedObservable property.
-        /// </summary>
         readonly ISubject<Tuple<UITableView,NSIndexPath>> rowSelectedObservable;
         /// <summary>
         /// Gets an IObservable that is a hook to <see cref="RowSelected"/> calls.
