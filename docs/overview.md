@@ -1,4 +1,4 @@
-# ReactiveUI
+# Overview
 
 ReactiveUI is a compelling combination of MVVM and Reactive Extensions (Rx).
 Combining these two make managing concurrency as well as expressing complicated
@@ -8,6 +8,7 @@ state ints/booleans to keep track of what’s going on, Reactive Extensions
 provides a sane alternative. 
 
 ## What’s in this library
+
 - **ReactiveObject** - a ViewModel object based on Josh Smith’s implementation,
   that also implements IObservable as a way to notify property changes. It also
   allows a straightforward way to observe the changes of a single property.
