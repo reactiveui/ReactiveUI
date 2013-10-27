@@ -102,8 +102,6 @@ namespace ReactiveUI.Cocoa
             this.tableView = tableView;
             this.sectionInformation = sectionInformation.ToList();
 
-            elementSelected = new Subject<Object>();
-
             var compositeDisp = new CompositeDisposable();
             this.innerDisp = compositeDisp;
 
