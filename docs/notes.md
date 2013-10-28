@@ -68,3 +68,6 @@
 
 ## RxUI.Testing
 * Talk about it
+
+## Misc
+* Map everything to ReactiveCocoa
