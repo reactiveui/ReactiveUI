@@ -137,7 +137,7 @@ namespace ReactiveUI
 
         public object GetService(Type serviceType, string contract = null)
         {
-            return (GetServices(serviceType, contract) ?? Enumerable.Empty<object>()).FirstOrDefault();
+            return (GetServices(serviceType, contract) ?? Enumerable.Empty<object>()).LastOrDefault();
         }
 
         public IEnumerable<object> GetServices(Type serviceType, string contract = null)
