@@ -2,7 +2,7 @@
 
 Dependency resolution is a feature built into the core framework, which allows
 libraries and ReactiveUI itself to use classes that are in other libraries
-without taking a direct reference to it. This is quite useful for
+without taking a direct reference to them. This is quite useful for
 cross-platform applications, as it allows portable code to use non-portable
 APIs, as long as they can be described via an Interface.
 
