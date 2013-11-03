@@ -260,6 +260,33 @@ namespace ReactiveUI.Tests
         }
 
         [Fact]
+        public void ChangeTrackingShouldApplyOnAddRangedItems()
+        {
+            var fixture = new ReactiveList<TestFixture>() { new TestFixture() };
+            fixture.ChangeTrackingEnabled = true;
+
+            var reset = fixture.ShouldReset.CreateCollection();
+            var itemChanged = fixture.ItemChanged.CreateCollection();
+            Assert.Equal(0, reset.Count);
+
+            fixture[0].IsNotNullString = "Foo";
+            Assert.Equal(0, reset.Count);
+            Assert.Equal(1, itemChanged.Count);
+
+            fixture.AddRange(Enumerable.Range(0, 15).Select(x => new TestFixture() { IsOnlyOneWord = x.ToString() }));
+            Assert.Equal(1, reset.Count);
+            Assert.Equal(1, itemChanged.Count);
+
+            fixture[0].IsNotNullString = "Bar";
+            Assert.Equal(1, reset.Count);
+            Assert.Equal(2, itemChanged.Count);
+
+            fixture[5].IsNotNullString = "Baz";
+            Assert.Equal(1, reset.Count);
+            Assert.Equal(3, itemChanged.Count);
+   }
+
+        [Fact]
         public void GetAResetWhenWeAddALotOfItems()
         {
             var fixture = new ReactiveList<int> { 1, };
