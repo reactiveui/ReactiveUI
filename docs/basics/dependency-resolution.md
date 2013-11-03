@@ -142,3 +142,13 @@ class called `ModernDependencyResolver`. To initialize this class or any other
 `IMutableDependencyResolver` implementation with the implementations that
 ReactiveUI requires to function, call the `InitializeResolver` extension
 method.
+
+```cs
+var r = new MutableDependencyResolver();
+r.InitializeResolver();
+```
+
+Usually this **isn't necessary**, and you should use the default resolver. The
+Advanced section of the guide describes how to connect third-party dependency
+injection frameworks. However, the reader is highly encouraged to abandon this
+idea and use the default resolver.
