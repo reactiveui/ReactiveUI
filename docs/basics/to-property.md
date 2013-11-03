@@ -1,0 +1,1 @@
+# ObservableAsPropertyHelper / Output Properties
