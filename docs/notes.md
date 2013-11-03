@@ -71,3 +71,4 @@
 
 ## Misc
 * Map everything to ReactiveCocoa
+* Serialization of ReactiveObject / other things
