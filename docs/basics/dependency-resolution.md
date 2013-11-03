@@ -22,10 +22,10 @@ services (note that this is the simplified version, not the actual definition):
 public interface IDependencyResolver
 {
     // Returns the most recent service registered to this type and contract
-    T GetService<T>(this IDependencyResolver This, string contract = null);
+    T GetService<T>(string contract = null);
 
     // Returns all of the services registerd to this type and contract
-    IEnumerable<T> GetServices<T>(this IDependencyResolver This, string contract = null)
+    IEnumerable<T> GetServices<T>(string contract = null)
 }
 ```
 
