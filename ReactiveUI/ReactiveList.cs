@@ -239,15 +239,13 @@ namespace ReactiveUI
 
         public virtual void AddRange(IEnumerable<T> collection)
         {
-            //optimized version of AddRange method, making use of List<T> O(n) implementation of addrange
-
             var list = collection.ToList();
             var disp = isLengthAboveResetThreshold(list.Count) ?
                 SuppressChangeNotifications() : Disposable.Empty;
 
             using (disp) {
                 if (_suppressionRefCount > 0) {
-                    _inner.AddRange(collection);
+                    _inner.AddRange(list);
                  
                     if (ChangeTrackingEnabled) {
                         foreach (var item in list) {
@@ -265,8 +263,8 @@ namespace ReactiveUI
                         _beforeItemsAdded.Value.OnNext(item);
                     }
                 }
-                
-                _inner.AddRange(collection);
+
+                _inner.AddRange(list);
 
                 _changed.OnNext(ea);
                 if (_itemsAdded.IsValueCreated){
@@ -285,53 +283,43 @@ namespace ReactiveUI
 
         public virtual void InsertRange(int index, IEnumerable<T> collection)
         {
-            //optimized version of AddRange method, making use of List<T> O(n) implementation of InsertRange
             var list = collection.ToList();
             var disp = isLengthAboveResetThreshold(list.Count) ?
                 SuppressChangeNotifications() : Disposable.Empty;
 
-            using (disp)
-            {
-                if (_suppressionRefCount > 0)
-                {
-                    _inner.InsertRange(index,collection);
+            using (disp) {
+                if (_suppressionRefCount > 0) {
+                    _inner.InsertRange(index, list);
 
-                    if (ChangeTrackingEnabled)
-                    {
-                        foreach (var item in list)
-                        {
+                    if (ChangeTrackingEnabled) {
+                        foreach (var item in list) {
                             addItemToPropertyTracking(item);
                         }
                     }
+
                     return;
                 }
 
                 var ea = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, list, index);
 
                 _changing.OnNext(ea);
-                if (_beforeItemsAdded.IsValueCreated)
-                {
-                    foreach (var item in list)
-                    {
+                if (_beforeItemsAdded.IsValueCreated) {
+                    foreach (var item in list) {
                         _beforeItemsAdded.Value.OnNext(item);
                     }
                 }
 
-                _inner.InsertRange(index,collection);
+                _inner.InsertRange(index, list);
 
                 _changed.OnNext(ea);
-                if (_itemsAdded.IsValueCreated)
-                {
-                    foreach (var item in list)
-                    {
+                if (_itemsAdded.IsValueCreated) {
+                    foreach (var item in list) {
                         _itemsAdded.Value.OnNext(item);
                     }
                 }
 
-                if (ChangeTrackingEnabled)
-                {
-                    foreach (var item in list)
-                    {
+                if (ChangeTrackingEnabled) {
+                    foreach (var item in list) {
                         addItemToPropertyTracking(item);
                     }
                 }
@@ -345,12 +333,12 @@ namespace ReactiveUI
 
             using (disp) {
                 var items = new List<T>(count);
+
                 foreach (var i in Enumerable.Range(index, count)) {
                     items.Add(_inner[i]);
                 }
 
-                if (_suppressionRefCount > 0)
-                {
+                if (_suppressionRefCount > 0) {
                     _inner.RemoveRange(index,count);
 
                     if (ChangeTrackingEnabled) {
@@ -371,9 +359,8 @@ namespace ReactiveUI
                 }
 
                 _inner.RemoveRange(index,count);
-
                 _changed.OnNext(ea);
-                
+
                 if (_itemsRemoved.IsValueCreated || ChangeTrackingEnabled) {
                     foreach (var item in items) {
                         if (_itemsRemoved.IsValueCreated) { _itemsRemoved.Value.OnNext(item); }
@@ -391,7 +378,6 @@ namespace ReactiveUI
                 SuppressChangeNotifications() : Disposable.Empty;
 
             using (disp) {
-               
                 // NB: If we don't do this, we'll break Collection<T>'s
                 // accounting of the length
                 foreach (var v in items) {
@@ -475,7 +461,7 @@ namespace ReactiveUI
                 }
             });
         }
- 
+
         public IObservable<T> BeforeItemsAdded { get { return _beforeItemsAdded.Value; } }
         public IObservable<T> ItemsAdded { get { return _itemsAdded.Value; } }
 
@@ -539,7 +525,7 @@ namespace ReactiveUI
 
         public IObservable<Unit> ShouldReset {
             get {
-                return refcountSubscribers(_changed.SelectMany(x => 
+                return refcountSubscribers(_changed.SelectMany(x =>
                     x.Action != NotifyCollectionChangedAction.Reset ?
                         Observable.Empty<Unit>() :
                         Observable.Return(Unit.Default)), x => _resetSubCount += x);
@@ -561,6 +547,7 @@ namespace ReactiveUI
             var changing = Observable.Never<IObservedChange<object, object>>();
             var changed = Observable.Never<IObservedChange<object, object>>();
 
+            this.Log().Info("Item hash: 0x{0:x}", toTrack.GetHashCode());
             var irnpc = toTrack as IReactiveNotifyPropertyChanged;
             if (irnpc != null) {
                 changing = irnpc.Changing;
@@ -580,12 +567,20 @@ namespace ReactiveUI
 
         isSetup:
             var toDispose = new[] {
-                changing.Where(_ => _suppressionRefCount == 0).Subscribe(beforeChange =>
-                    _itemChanging.Value.OnNext(new ObservedChange<T, object>() { 
+                changing.Where(_ => this._suppressionRefCount == 0).Subscribe(beforeChange =>
+                    _itemChanging.Value.OnNext(new ObservedChange<T, object>() {
                         Sender = toTrack, PropertyName = beforeChange.PropertyName })),
-                changed.Where(_ => _suppressionRefCount == 0).Subscribe(change => 
-                    _itemChanged.Value.OnNext(new ObservedChange<T,object>() { 
-                        Sender = toTrack, PropertyName = change.PropertyName })),
+                changed
+                    .Do(x => {
+                        Debug.WriteLine(x);
+                    })
+                    .Where(_ => this._suppressionRefCount == 0)
+                    .Do(x => {
+                        Debug.WriteLine(x);
+                    })
+                    .Subscribe(change =>
+                        _itemChanged.Value.OnNext(new ObservedChange<T,object>() {
+                            Sender = toTrack, PropertyName = change.PropertyName })),
             };
 
             _propertyChangeWatchers.Add(toTrack, 
