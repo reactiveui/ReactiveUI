@@ -91,3 +91,8 @@ public class TweetsListViewModel : ReactiveObject
     }
 }
 ```
+
+### Wrap it all up
+
+CreateDerivedCollection allows us to declare how a list should be transformed
+and keep up with the original list.
