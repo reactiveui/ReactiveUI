@@ -60,7 +60,9 @@ try {
 
 if (exception != null) {
     // Note: This isn't a very good error message
-    var userError = new UserError("The Tweets could not be loaded", "Check your Internet connection");
+    var errorMessage = "The Tweets could not be loaded";
+    var errorResolution = "Check your Internet connection";
+    var userError = new UserError(errorMessage, errorResolution);
 
     switch (await UserError.Throw(userError)) {
     case RecoveryOptionResult.RetryOperation:
@@ -77,7 +79,7 @@ clean code:
 
 ```cs
 //
-// We are in a ViewModel here
+// Note: We are in a ViewModel here
 //
 
 LoadTweetsCommand = new ReactiveCommand();
@@ -85,11 +87,14 @@ LoadTweetsCommand = new ReactiveCommand();
 LoadTweetsCommand.RegisterAsyncTask(() => LoadTweets())
     .Subscribe(x => TheTweets = x);
 
+var errorMessage = "The Tweets could not be loaded";
+var errorResolution = "Check your Internet connection";
+
 // Any exceptions thrown by LoadTweets will end up being
 // sent through ThrownExceptions
 LoadTweetsCommand.ThrownExceptions
     .Select(ex => 
-        new UserError("The Tweets could not be loaded", "Check your Internet connection"))
+        new UserError(errorMessage, errorResolution))
     .SelectMany(UserError.Throw);
     .Where(x => x == RecoveryOptionResult.RetryOperation)
     .InvokeCommand(LoadTweetsCommand);
