@@ -14,7 +14,9 @@ While this class is provided because it is sometimes necessary, the MessageBus
 should be used only as **a last resort**. The MessageBus is effectively a
 *global variable*, which means it is subject to memory and event leaks, and
 furthermore, the detached nature of MessageBus means that it's a `goto` whose
-destination is invisible.
+destination is invisible. It also encourages bad design as many people will
+directly proxy View events to the ViewModel layer, which makes them not
+particularly ViewModelly.
 
 ### The Basics
 
