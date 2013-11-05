@@ -15,24 +15,23 @@ namespace ReactiveUI.Winforms
     using System.Runtime.CompilerServices;
 
     [DefaultPropertyAttribute("ViewModel")]
-    public partial class ViewModelViewHost : UserControl, INotifyPropertyChanged, System.ComponentModel.INotifyPropertyChanging
+    public partial class RoutedViewHost : UserControl, INotifyPropertyChanged, System.ComponentModel.INotifyPropertyChanging
     {
         object viewModel;
 
         Control defaultContent;
-
-        Control currentView;
+     
 
         private readonly CompositeDisposable disposables = new CompositeDisposable();
 
-        public ViewModelViewHost()
+        public RoutedViewHost()
         {
             InitializeComponent();
             
-            disposables.Add(this.WhenAny(x => x.DefaultContent, x => x.Value).Subscribe(x =>
+            disposables.Add(
+                this.WhenAny(x => x.DefaultContent, x => x.Value).Subscribe(x =>
             {
-                if (x != null && currentView==null) {
-                    this.Controls.Clear();
+                if (x != null && this.Controls.Count==0) {
                     this.Controls.Add(InitView(x));
                     components.Add(DefaultContent);
                 }
@@ -41,22 +40,24 @@ namespace ReactiveUI.Winforms
 
             ViewContractObservable = Observable.Return(default(string));
 
-            var vmAndContract = Observable.CombineLatest(this.WhenAny(x => x.ViewModel, x => x.Value),
+            var vmAndContract = Observable.CombineLatest(
+                this.WhenAnyObservable(x => x.Router.CurrentViewModel),
                 this.WhenAnyObservable(x => x.ViewContractObservable),
                 (vm, contract) => new { ViewModel = vm, Contract = contract });
 
-
-            disposables.Add(vmAndContract.Subscribe(x =>
+            Control viewLastAdded = null;
+            disposables.Add(
+                vmAndContract.Subscribe(x =>
             {
                 //clear all hosted controls (view or default content)
                 this.Controls.Clear();
 
-                if (currentView != null)
+                if (viewLastAdded != null)
                 {
-                    currentView.Dispose();
+                    viewLastAdded.Dispose();
                 }
 
-                if (ViewModel == null)
+                if (x.ViewModel == null)
                 {
                     if (DefaultContent != null)
                     {
@@ -70,9 +71,9 @@ namespace ReactiveUI.Winforms
                 var view = viewLocator.ResolveView(x.ViewModel, x.Contract);
                 view.ViewModel = x.ViewModel;
 
-                CurrentView = InitView((Control)view);
-                this.Controls.Add(CurrentView);
-            }, RxApp.DefaultExceptionHandler.OnNext));
+                viewLastAdded = InitView((Control)view);
+                this.Controls.Add(viewLastAdded);
+            },RxApp.DefaultExceptionHandler.OnNext));
         }
 
         private Control InitView(Control view)
@@ -81,32 +82,14 @@ namespace ReactiveUI.Winforms
             return view;
         }
 
-        public Control CurrentView
+        IRoutingState _Router;
+        [Category("ReactiveUI"), Description("The router.")]
+        public IRoutingState Router
         {
-            get
-            {
-                return currentView;
-            }
-            private set
-            {
-                this.RaiseAndSetIfChanged(ref currentView, value);
-            }
+            get { return _Router; }
+            set { this.RaiseAndSetIfChanged(ref _Router, value); }
         }
-
-        [Category("ReactiveUI"), Description("The viewmodel to host.")]
-        [Bindable(true)]
-        public object ViewModel
-        {
-            get
-            {
-                return this.viewModel;
-            }
-            set
-            {
-                this.RaiseAndSetIfChanged(ref viewModel, value);
-            }
-        }
-
+       
 
 
         [Category("ReactiveUI"), Description("The default control when no viewmodel is specified")]
