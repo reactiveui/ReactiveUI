@@ -126,6 +126,12 @@
   <ItemGroup>
     <Compile Include="ComponentModelTypeConverter.cs" />
     <Compile Include="PlatformUnitTestDetector.cs" />
+    <Compile Include="Winforms\RoutedViewHost.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Winforms\RoutedViewHost.Designer.cs">
+      <DependentUpon>RoutedViewHost.cs</DependentUpon>
+    </Compile>
     <Compile Include="Winforms\ReactiveBindingList.cs" />
     <Compile Include="Winforms\CreatesCommandBinding.cs" />
     <Compile Include="Winforms\PlatformOperations.cs" />

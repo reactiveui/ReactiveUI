@@ -65,17 +65,15 @@
             Assert.Null(target.CurrentView);
             Assert.True(target.Controls.Contains(defaultContent));
         }
+    }
 
-        class FakeViewLocator : IViewLocator
+    class FakeViewLocator : IViewLocator
+    {
+        public Func<Type, IViewFor> LocatorFunc { get; set; }
+
+        public IViewFor ResolveView<T>(T viewModel, string contract = null) where T : class
         {
-            public Func<Type, IViewFor> LocatorFunc { get; set; }  
-
-            public IViewFor ResolveView<T>(T viewModel, string contract = null) where T : class
-            {
-                return LocatorFunc(viewModel.GetType());
-            }
+            return LocatorFunc(viewModel.GetType());
         }
-
-        
     }
 }
