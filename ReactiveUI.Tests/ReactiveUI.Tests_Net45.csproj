@@ -118,6 +118,8 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Winforms\ReactiveBindingListTests.cs" />
+    <Compile Include="Winforms\RoutedViewHostTests.cs" />
+    <Compile Include="Winforms\ViewModelViewHostTests.cs" />
     <Compile Include="Xaml\DependencyObjectObservableForPropertyTest.cs" />
     <Compile Include="ErrorsTest.cs" />
     <Compile Include="ObservableAsyncMRUCacheTest.cs" />
