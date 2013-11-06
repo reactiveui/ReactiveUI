@@ -1,98 +1,89 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Drawing;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Reactive.Disposables;
+using System.Reactive.Linq;
+using System.Runtime.CompilerServices;
 using System.Windows.Forms;
 
 namespace ReactiveUI.Winforms
 {
-    using System.Reactive.Disposables;
-    using System.Reactive.Linq;
-    using System.Runtime.CompilerServices;
-
-    [DefaultPropertyAttribute("ViewModel")]
-    public partial class RoutedViewHost : UserControl, INotifyPropertyChanged, System.ComponentModel.INotifyPropertyChanging
+    [DefaultProperty("ViewModel")]
+    public partial class RoutedViewHost : UserControl, INotifyPropertyChanged, INotifyPropertyChanging
     {
-        object viewModel;
+        #region Fields
+
+        readonly CompositeDisposable disposables = new CompositeDisposable();
+
+        IRoutingState _Router;
 
         Control defaultContent;
-     
 
-        private readonly CompositeDisposable disposables = new CompositeDisposable();
+        IObservable<string> viewContractObservable;
+
+        object viewModel;
+
+        #endregion
+
+        #region Constructors and Destructors
 
         public RoutedViewHost()
         {
-            InitializeComponent();
-            
-            disposables.Add(
-                this.WhenAny(x => x.DefaultContent, x => x.Value).Subscribe(x =>
-            {
-                if (x != null && this.Controls.Count==0) {
-                    this.Controls.Add(InitView(x));
-                    components.Add(DefaultContent);
+            this.InitializeComponent();
+
+            this.disposables.Add(this.WhenAny(x => x.DefaultContent, x => x.Value).Subscribe(x => {
+                if (x != null && this.Controls.Count == 0) {
+                    this.Controls.Add(this.InitView(x));
+                    this.components.Add(this.DefaultContent);
                 }
             }));
-             
 
-            ViewContractObservable = Observable.Return(default(string));
+            this.ViewContractObservable = Observable.Return(default(string));
 
-            var vmAndContract = Observable.CombineLatest(
-                this.WhenAnyObservable(x => x.Router.CurrentViewModel),
-                this.WhenAnyObservable(x => x.ViewContractObservable),
-                (vm, contract) => new { ViewModel = vm, Contract = contract });
+            var vmAndContract =
+                this.WhenAnyObservable(x => x.Router.CurrentViewModel)
+                    .CombineLatest(this.WhenAnyObservable(x => x.ViewContractObservable),
+                        (vm, contract) => new { ViewModel = vm, Contract = contract });
 
             Control viewLastAdded = null;
-            disposables.Add(
-                vmAndContract.Subscribe(x =>
-            {
+            this.disposables.Add(vmAndContract.Subscribe(x => {
                 //clear all hosted controls (view or default content)
                 this.Controls.Clear();
 
-                if (viewLastAdded != null)
-                {
+                if (viewLastAdded != null) {
                     viewLastAdded.Dispose();
                 }
 
-                if (x.ViewModel == null)
-                {
-                    if (DefaultContent != null)
-                    {
-                        InitView(DefaultContent);
-                        this.Controls.Add(DefaultContent);
+                if (x.ViewModel == null) {
+                    if (this.DefaultContent != null) {
+                        this.InitView(this.DefaultContent);
+                        this.Controls.Add(this.DefaultContent);
                     }
                     return;
                 }
 
-                var viewLocator = ViewLocator ?? ReactiveUI.ViewLocator.Current;
-                var view = viewLocator.ResolveView(x.ViewModel, x.Contract);
+                IViewLocator viewLocator = this.ViewLocator ?? ReactiveUI.ViewLocator.Current;
+                IViewFor view = viewLocator.ResolveView(x.ViewModel, x.Contract);
                 view.ViewModel = x.ViewModel;
 
-                viewLastAdded = InitView((Control)view);
+                viewLastAdded = this.InitView((Control)view);
                 this.Controls.Add(viewLastAdded);
-            },RxApp.DefaultExceptionHandler.OnNext));
+            }, RxApp.DefaultExceptionHandler.OnNext));
         }
 
-        private Control InitView(Control view)
-        {
-            view.Dock = DockStyle.Fill;
-            return view;
-        }
+        #endregion
 
-        IRoutingState _Router;
-        [Category("ReactiveUI"), Description("The router.")]
-        public IRoutingState Router
-        {
-            get { return _Router; }
-            set { this.RaiseAndSetIfChanged(ref _Router, value); }
-        }
-       
+        #region Public Events
 
+        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangingEventHandler PropertyChanging;
 
-        [Category("ReactiveUI"), Description("The default control when no viewmodel is specified")]
+        #endregion
+
+        #region Public Properties
+
+        [Category("ReactiveUI")]
+        [Description("The default control when no viewmodel is specified")]
         public Control DefaultContent
         {
             get
@@ -101,74 +92,92 @@ namespace ReactiveUI.Winforms
             }
             set
             {
-                this.RaiseAndSetIfChanged(ref defaultContent, value);
+                this.RaiseAndSetIfChanged(ref this.defaultContent, value);
+            }
+        }
+
+        [Category("ReactiveUI")]
+        [Description("The router.")]
+        public IRoutingState Router
+        {
+            get
+            {
+                return this._Router;
+            }
+            set
+            {
+                this.RaiseAndSetIfChanged(ref this._Router, value);
+            }
+        }
+
+        [Browsable(false)]
+        public IObservable<string> ViewContractObservable
+        {
+            get
+            {
+                return this.viewContractObservable;
+            }
+            set
+            {
+                this.RaiseAndSetIfChanged(ref this.viewContractObservable, value);
             }
         }
 
         [Browsable(false)]
         public IViewLocator ViewLocator { get; set; }
 
-        IObservable<string> viewContractObservable;
-        [Browsable(false)]
-        public IObservable<string> ViewContractObservable
-        {
-            get { return viewContractObservable; }
-            set { this.RaiseAndSetIfChanged(ref viewContractObservable, value); }
-        }
+        #endregion
 
-        /// <summary> 
-        /// Clean up any resources being used.
+        #region Methods
+
+        /// <summary>
+        ///     Clean up any resources being used.
         /// </summary>
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
-            if (disposing && (components != null))
-            {
-                components.Dispose();
-                disposables.Dispose();
+            if (disposing && (this.components != null)) {
+                this.components.Dispose();
+                this.disposables.Dispose();
             }
             base.Dispose(disposing);
         }
 
+        protected virtual void OnPropertyChanged(string propertyName)
+        {
+            if (this.PropertyChanged != null) {
+                this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+            }
+        }
 
-
-        #region INPC
-        public event PropertyChangedEventHandler PropertyChanged;
-        public event System.ComponentModel.PropertyChangingEventHandler PropertyChanging;
-
-
+        protected virtual void OnPropertyChanging(string propertyName)
+        {
+            if (this.PropertyChanging != null) {
+                this.PropertyChanging(this, new PropertyChangingEventArgs(propertyName));
+            }
+        }
 
         protected TRet RaiseAndSetIfChanged<TRet>(
             ref TRet backingField,
             TRet newValue,
             [CallerMemberName] string propertyName = null)
         {
-            if (EqualityComparer<TRet>.Default.Equals(backingField, newValue))
-            {
+            if (EqualityComparer<TRet>.Default.Equals(backingField, newValue)) {
                 return newValue;
             }
 
-            OnPropertyChanging(propertyName);
+            this.OnPropertyChanging(propertyName);
             backingField = newValue;
-            OnPropertyChanged(propertyName);
+            this.OnPropertyChanged(propertyName);
             return newValue;
         }
 
-        protected virtual void OnPropertyChanging(string propertyName)
+        Control InitView(Control view)
         {
-            if (PropertyChanging != null)
-            {
-                PropertyChanging(this, new System.ComponentModel.PropertyChangingEventArgs(propertyName));
-            }
+            view.Dock = DockStyle.Fill;
+            return view;
         }
 
-        protected virtual void OnPropertyChanged(string propertyName)
-        {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-            }
-        }
         #endregion
     }
 }
