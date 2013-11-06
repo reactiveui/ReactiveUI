@@ -81,6 +81,13 @@ public MainView()
     // Bind the View's SelectedItem to the ViewModel
     this.WhenAny(x => x.SomeList.SelectedItem)
         .BindTo(this, x => x.ViewModel.SelectedItem);
+
+    // Bind ViewModel's IsSelected via SelectedItem. Note that this
+    // is only for illustrative purposes, it'd be better to bind this
+    // at the ViewModel layer (i.e. WhenAny + ToProperty)
+    this.WhenAny(x => x.SomeList.SelectedItem)
+        .Select(x => x != null)
+        .BindTo(this, x => x.ViewModel.IsSelected);
 }
 ```
 
