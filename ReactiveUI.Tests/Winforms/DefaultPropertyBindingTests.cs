@@ -102,8 +102,19 @@ namespace ReactiveUI.Tests.Winforms
         }
     }
 
-    public class FakeWinformViewModel : ReactiveObject
+    public class FakeWinformViewModel : ReactiveObject, IRoutableViewModel
     {
+        public string UrlPathSegment {
+            get { return "fake"; }
+        }
+
+        public IScreen HostScreen { get; private set; }
+
+        public FakeWinformViewModel(IScreen screen = null)
+        {
+            HostScreen = screen;
+        }
+
         int someInteger;
         public int SomeInteger {
             get { return this.someInteger; }
