@@ -98,6 +98,8 @@
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Reactive.Core">
       <HintPath>..\ext\Portable-Net45+WinRT45+WP8\System.Reactive.Core.dll</HintPath>
     </Reference>
@@ -124,11 +126,23 @@
   <ItemGroup>
     <Compile Include="ComponentModelTypeConverter.cs" />
     <Compile Include="PlatformUnitTestDetector.cs" />
+    <Compile Include="Winforms\RoutedViewHost.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Winforms\RoutedViewHost.Designer.cs">
+      <DependentUpon>RoutedViewHost.cs</DependentUpon>
+    </Compile>
     <Compile Include="Winforms\ReactiveBindingList.cs" />
     <Compile Include="Winforms\CreatesCommandBinding.cs" />
     <Compile Include="Winforms\PlatformOperations.cs" />
     <Compile Include="Winforms\Properties\AssemblyInfo.cs" />
     <Compile Include="Winforms\Registrations.cs" />
+    <Compile Include="Winforms\ViewModelViewHost.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Winforms\ViewModelViewHost.Designer.cs">
+      <DependentUpon>ViewModelViewHost.cs</DependentUpon>
+    </Compile>
     <Compile Include="Winforms\WinformsCreatesObservableForProperty.cs" />
     <Compile Include="Winforms\WinformsDefaultPropertyBinding.cs" />
   </ItemGroup>
