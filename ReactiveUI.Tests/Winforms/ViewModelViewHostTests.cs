@@ -1,21 +1,19 @@
-﻿namespace ReactiveUI.Tests.Winforms
+﻿using System;
+using System.Linq;
+using System.Windows.Forms;
+using ReactiveUI.Winforms;
+using Xunit;
+
+namespace ReactiveUI.Tests.Winforms
 {
-    using System;
-    using System.Linq;
-    using System.Windows.Forms;
-
-    using Xunit;
-    using ReactiveUI.Winforms;
-
     public class ViewModelViewHostTests
     {
+        #region Public Methods and Operators
+
         [Fact]
         public void SettingViewModelShouldAddTheViewtoItsControls()
         {
-            var viewLocator = new FakeViewLocator()
-            {
-                LocatorFunc = (t)=> new FakeWinformsView()
-            };
+            var viewLocator = new FakeViewLocator { LocatorFunc = t => new FakeWinformsView() };
             var target = new ViewModelViewHost();
             target.ViewLocator = viewLocator;
 
@@ -23,22 +21,18 @@
 
             Assert.IsType<FakeWinformsView>(target.CurrentView);
             Assert.Equal(1, target.Controls.OfType<FakeWinformsView>().Count());
-
         }
 
         [Fact]
         public void ShouldDisposePreviousView()
         {
-            var viewLocator = new FakeViewLocator()
-            {
-                LocatorFunc = (t) => new FakeWinformsView()
-            };
+            var viewLocator = new FakeViewLocator { LocatorFunc = t => new FakeWinformsView() };
             var target = new ViewModelViewHost();
             target.ViewLocator = viewLocator;
 
             target.ViewModel = new FakeWinformViewModel();
 
-            var currentView = target.CurrentView;
+            Control currentView = target.CurrentView;
             bool isDisposed = false;
             currentView.Disposed += (o, e) => isDisposed = true;
 
@@ -51,29 +45,32 @@
         [Fact]
         public void ShouldSetDefaultContentWhenViewModelIsNull()
         {
-            var viewLocator = new FakeViewLocator()
-            {
-                LocatorFunc = (t) => new FakeWinformsView()
-            };
+            var viewLocator = new FakeViewLocator { LocatorFunc = t => new FakeWinformsView() };
             var defaultContent = new Control();
-            var target = new ViewModelViewHost()
-            {
-                DefaultContent = defaultContent,
-                ViewLocator = viewLocator
-            };
+            var target = new ViewModelViewHost { DefaultContent = defaultContent, ViewLocator = viewLocator };
 
             Assert.Null(target.CurrentView);
             Assert.True(target.Controls.Contains(defaultContent));
         }
+
+        #endregion
     }
 
     class FakeViewLocator : IViewLocator
     {
+        #region Public Properties
+
         public Func<Type, IViewFor> LocatorFunc { get; set; }
+
+        #endregion
+
+        #region Public Methods and Operators
 
         public IViewFor ResolveView<T>(T viewModel, string contract = null) where T : class
         {
-            return LocatorFunc(viewModel.GetType());
+            return this.LocatorFunc(viewModel.GetType());
         }
+
+        #endregion
     }
 }
