@@ -35,7 +35,7 @@ namespace ReactiveUI.Cocoa
     /// Internal class containing the common code between <see cref="ReactiveTableViewSource"/>
     /// and <see cref="ReactiveCollectionViewSource"/>.
     /// </summary>
-    class CommonReactiveSource<TUIView, TUIViewCell> : IDisposable, IEnableLogger
+    sealed class CommonReactiveSource<TUIView, TUIViewCell> : IDisposable, IEnableLogger
     {
         readonly CompositeDisposable innerDisp = new CompositeDisposable();
 
@@ -181,20 +181,9 @@ namespace ReactiveUI.Cocoa
             method(toChange);
         }
 
-        protected virtual void Dispose(bool disposing)
-        {
-            if (disposing) innerDisp.Dispose();
-        }
-
         public void Dispose()
         {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        ~CommonReactiveSource()
-        {
-            Dispose(false);
+            innerDisp.Dispose();
         }
     }
 }
