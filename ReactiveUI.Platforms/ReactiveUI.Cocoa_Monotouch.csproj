@@ -89,6 +89,7 @@
     <Compile Include="Cocoa\ReactiveTableViewSource.cs" />
     <Compile Include="Cocoa\ReactiveCollectionViewCell.cs" />
     <Compile Include="Cocoa\ReactiveCollectionViewSource.cs" />
+    <Compile Include="Cocoa\CommonReactiveSource.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ReactiveUI\ReactiveUI_Monotouch.csproj">
