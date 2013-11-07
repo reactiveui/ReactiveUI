@@ -65,8 +65,7 @@ namespace ReactiveUI.Cocoa
                         return;
 
                     this.Log().Info("Changed contents: [{0}]", String.Join(",", xs.Select(x => x.Action.ToString())));
-                    if (xs.Any(x => x.Action == NotifyCollectionChangedAction.Reset))
-                    {
+                    if (xs.Any(x => x.Action == NotifyCollectionChangedAction.Reset)) {
                         this.Log().Info("About to call ReloadData");
                         adapter.ReloadData();
                         return;
@@ -76,8 +75,7 @@ namespace ReactiveUI.Cocoa
                     var allChangedIndexes = updates.SelectMany(u => u.Item2).ToList();
                     // Detect if we're changing the same cell more than
                     // once - if so, issue a reset and be done
-                    if (allChangedIndexes.Count != allChangedIndexes.Distinct().Count())
-                    {
+                    if (allChangedIndexes.Count != allChangedIndexes.Distinct().Count()) {
                         this.Log().Info("Detected a dupe in the changelist. Issuing Reset");
                         adapter.ReloadData();
                         return;
@@ -86,12 +84,10 @@ namespace ReactiveUI.Cocoa
                     this.Log().Info("Beginning update");
                     adapter.PerformBatchUpdates(() =>
                     {
-                        foreach (var update in updates.AsEnumerable().Reverse())
-                        {
+                        foreach (var update in updates.AsEnumerable().Reverse()) {
                             var changeAction = update.Item1.Action;
                             var changedIndexes = update.Item2;
-                            switch (changeAction)
-                            {
+                            switch (changeAction) {
                                 case NotifyCollectionChangedAction.Add:
                                     doUpdate(adapter.InsertItems, changedIndexes, section);
                                     break;
@@ -134,8 +130,7 @@ namespace ReactiveUI.Cocoa
             var section = sectionInfo[indexPath.Section];
             var cell = adapter.DequeueReusableCell(section.CellKey, indexPath);
             var view = cell as IViewFor;
-            if (view != null)
-            {
+            if (view != null) {
                 this.Log().Info("GetCell: Setting vm for Row: " + indexPath.Row);
                 view.ViewModel = ((IList)section.Collection) [indexPath.Row];
             }
@@ -163,8 +158,7 @@ namespace ReactiveUI.Cocoa
 
         static IEnumerable<int> getChangedIndexes(NotifyCollectionChangedEventArgs ea)
         {
-            switch (ea.Action)
-            {
+            switch (ea.Action) {
                 case NotifyCollectionChangedAction.Add:
                 case NotifyCollectionChangedAction.Replace:
                     return Enumerable.Range(ea.NewStartingIndex, ea.NewItems != null ? ea.NewItems.Count : 1);
