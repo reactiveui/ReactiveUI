@@ -126,7 +126,7 @@ namespace ReactiveUI
                 .Do(_ => { lock (inflight) { inflight.OnNext(true); } })
                 .Merge()
                 .ObserveOn(defaultScheduler)
-                .Publish().PermaRef();
+                .Publish().RefCount();
         }
 
         /// <summary>
@@ -269,7 +269,12 @@ namespace ReactiveUI
             IScheduler scheduler = null)
         {
             Contract.Requires(calculationFunc != null);
-            return This.RegisterAsyncFunction(x => { calculationFunc(x); return new Unit(); }, scheduler);
+
+            // NB: This PermaRef isn't exactly correct, but the people using
+            // this method probably are Doing It Wrong, so let's let them
+            // continue to do so.
+            return This.RegisterAsyncFunction(x => { calculationFunc(x); return new Unit(); }, scheduler)
+                .Publish().PermaRef();
         }
 
         /// <summary>
@@ -296,7 +301,12 @@ namespace ReactiveUI
         public static IObservable<Unit> RegisterAsyncTask(this IReactiveCommand This, Func<object, Task> calculationFunc)
         {
             Contract.Requires(calculationFunc != null);
-            return This.RegisterAsync(x => calculationFunc(x).ToObservable());
+
+            // NB: This PermaRef isn't exactly correct, but the people using
+            // this method probably are Doing It Wrong, so let's let them
+            // continue to do so.
+            return This.RegisterAsync(x => calculationFunc(x).ToObservable())
+                .Publish().PermaRef();
         }
     }
 }
