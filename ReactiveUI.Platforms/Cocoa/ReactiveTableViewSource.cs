@@ -145,7 +145,7 @@ namespace ReactiveUI.Cocoa
 
         protected override void Dispose(bool disposing)
         {
-            commonSource.Dispose();
+            if (disposing) commonSource.Dispose();
             base.Dispose(disposing);
         }
 
