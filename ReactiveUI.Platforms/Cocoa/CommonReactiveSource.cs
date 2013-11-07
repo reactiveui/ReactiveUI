@@ -189,7 +189,7 @@ namespace ReactiveUI.Cocoa
 
         protected virtual void Dispose(bool disposing)
         {
-            innerDisp.Dispose();
+            if (disposing) innerDisp.Dispose();
         }
 
         public void Dispose()
