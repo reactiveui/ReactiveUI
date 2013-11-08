@@ -70,9 +70,8 @@ namespace ReactiveUI.Cocoa
             get { return elementSelected; }
         }
 
-        public IObservable<IEnumerable<NotifyCollectionChangedEventArgs>> Updated
-        {
-            get { return commonSource.Updated; }
+        public IObservable<IEnumerable<NotifyCollectionChangedEventArgs>> DidPerformUpdates {
+            get { return commonSource.DidPerformUpdates; }
         }
 
         public override UICollectionViewCell GetCell(UICollectionView collectionView, NSIndexPath indexPath)

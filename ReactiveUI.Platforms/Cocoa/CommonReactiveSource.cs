@@ -54,8 +54,7 @@ namespace ReactiveUI.Cocoa
         /// underlying collection (for example the return value will contain a single
         /// Reset event arg even though the collection did not send a Reset, but the adapter
         /// performed a Reload nevertheless)</value>
-        public IObservable<IEnumerable<NotifyCollectionChangedEventArgs>> Updated
-        {
+        public IObservable<IEnumerable<NotifyCollectionChangedEventArgs>> DidPerformUpdates {
             get { return updated; }
         }
 
