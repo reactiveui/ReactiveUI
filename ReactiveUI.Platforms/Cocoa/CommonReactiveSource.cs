@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using MonoTouch.Foundation;
+using System.Reactive.Subjects;
 
 namespace ReactiveUI.Cocoa
 {
@@ -43,6 +44,24 @@ namespace ReactiveUI.Cocoa
 
         readonly List<ISectionInformation<TUIView, TUIViewCell>> sectionInfo;
 
+        /// <summary>
+        /// IObservable that pushes a new value after the corresponding IUICollViewAdapter
+        /// finishes processing changes from the underlying collection. Due to the buffered
+        /// nature of the processing, the value is an IEnumerable of the changes.
+        /// </summary>
+        /// <value>An IEnumerable containing all the changes processed. Note that in
+        /// some cases those can be different than the change events published by the
+        /// underlying collection (for example the return value will contain a single
+        /// Reset event arg even though the collection did not send a Reset, but the adapter
+        /// performed a Reload nevertheless)</value>
+        public IObservable<IEnumerable<NotifyCollectionChangedEventArgs>> Updated
+        {
+            get { return updated; }
+        }
+
+        readonly ISubject<IEnumerable<NotifyCollectionChangedEventArgs>> updated =
+            new Subject<IEnumerable<NotifyCollectionChangedEventArgs>>();
+
         public CommonReactiveSource(
             IUICollViewAdapter<TUIView, TUIViewCell> adapter,
             IEnumerable<ISectionInformation<TUIView, TUIViewCell>> sectionInfo)
@@ -58,10 +77,13 @@ namespace ReactiveUI.Cocoa
                     if (xs.Count == 0)
                         return;
 
+                    var resetOnlyNotification = new [] {new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset)};
+
                     this.Log().Info("Changed contents: [{0}]", String.Join(",", xs.Select(x => x.Action.ToString())));
                     if (xs.Any(x => x.Action == NotifyCollectionChangedAction.Reset)) {
                         this.Log().Info("About to call ReloadData");
                         adapter.ReloadData();
+                        updated.OnNext(resetOnlyNotification);
                         return;
                     }
 
@@ -72,6 +94,7 @@ namespace ReactiveUI.Cocoa
                     if (allChangedIndexes.Count != allChangedIndexes.Distinct().Count()) {
                         this.Log().Info("Detected a dupe in the changelist. Issuing Reset");
                         adapter.ReloadData();
+                        updated.OnNext(resetOnlyNotification);
                         return;
                     }
 
@@ -107,6 +130,7 @@ namespace ReactiveUI.Cocoa
                         }
 
                         this.Log().Info("Ending update");
+                        updated.OnNext(xs);
                     });
                 });
 
