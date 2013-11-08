@@ -11,6 +11,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using System.Linq.Expressions;
 
 namespace ReactiveUI
 {
@@ -235,6 +236,28 @@ namespace ReactiveUI
                 }
                 command.Execute(x);
             });
+        }
+
+        /// <summary>
+        /// A utility method that will pipe an Observable to an ICommand (i.e.
+        /// it will first call its CanExecute with the provided value, then if
+        /// the command can be executed, Execute() will be called)
+        /// </summary>
+        /// <param name="target">The root object which has the Command.</param>
+        /// <param name="commandProperty">The expression to reference the Command.</param>
+        /// <returns>An object that when disposes, disconnects the Observable
+        /// from the command.</returns>
+        public static IDisposable InvokeCommand<T, TTarget>(this IObservable<T> This, TTarget target, Expression<Func<TTarget, ICommand>> commandProperty)
+        {
+            return This.CombineLatest(target.WhenAnyValue(commandProperty), (val, cmd) => new { val, cmd })
+                .ObserveOn(RxApp.MainThreadScheduler)
+                .Subscribe(x => {
+                    if (!x.cmd.CanExecute(x.val)) {
+                        return;
+                    }
+
+                    x.cmd.Execute(x.val);
+                });
         }
 
         /// <summary>
