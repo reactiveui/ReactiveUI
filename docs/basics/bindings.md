@@ -54,6 +54,17 @@ disp.Dispose();   // Disconnect the binding early.
 this.Bind(ViewModel, x => x.Name, x => x.Name.Text);
 ```
 
+* **BindCommand:** - Bind an `ICommand` to a control, or to a specific event
+  on that control (how this is implemented depends on the UI framework):
+
+```cs
+// Bind the OK command to the button
+this.BindCommand(ViewModel, x => x.OkCommand, x => x.OkButton);
+
+// Bind the OK command to when the user presses a key
+this.BindCommand(ViewModel, x => x.OkCommand, x => x.RootView, "KeyUp");
+```
+
 ### Converting between types
 
 Direct bindings between properties are convenient, but often the two types are
@@ -99,3 +110,28 @@ While you could certainly build complex bindings (even ones between two view
 models!), keep in mind that binding logic that you put in the View is
 untestable, so keeping the meaningful logic out of bindings is usually a Good
 Idea.
+
+### Hack Command Bindings
+
+Similarly to property bindings, you can also add custom Hack bindings for
+commands as well. Two methods that are useful for this are `InvokeCommand` and
+`WhenAnyObservable`. The former allows you to invoke a command whenever an
+Observable signals, and the latter allows you to safely get an Observable from
+a ViewModel in a safe way. Here's how they apply to commands:
+
+```cs
+//
+// This code is all in the View constructor
+//
+
+// Invoke a command whenever the Escape key is pressed
+// NB: This doesn't work if ViewModel changes. We should fix this in
+// a future version!
+this.Events().KeyUpObs
+    .Where(x => x.EventArgs.Key == Key.Escape)
+    .InvokeCommand(ViewModel.Cancel);
+
+// Subscribe to Cancel, and close the Window when it happens
+this.WhenAnyObservable(x => x.ViewModel.Cancel)
+    .Subscribe(_ => this.Close());
+```
