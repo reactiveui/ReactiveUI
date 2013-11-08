@@ -12,8 +12,7 @@ of methods, depending on what your async operation returns:
 
 * **RegisterAsync** - Registers an async method that returns `IObservable<T>`
 * **RegisterAsyncTask** - Registers an async method that returns `Task` or
-  `Task<T>`; use this method as well should you want to write an awaitable
-  method.
+  `Task<T>`; use this method if you want to write a method with `async/await`.
 * **RegisterAsyncFunc** - Registers a synchronous method that returns a value
   and is run on a background thread.
 * **RegisterAsyncAction** - Registers a synchronous method that does not
@@ -68,7 +67,7 @@ is running (i.e. to prevent more than one search from running at the same
 time). RegisterAsync does the work to make this happen for you. 
 
 Another difficult aspect of this code is that it can't handle exceptions - if
-executeSearch ever fails once, it will never signal again because of the Rx
+`executeSearch` ever fails once, it will never signal again because of the Rx
 Contract. ReactiveCommand handles marshaling exceptions to the
 `ThrownExceptions` property, which can be handled.
 
