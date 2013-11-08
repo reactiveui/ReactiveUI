@@ -90,8 +90,8 @@ namespace ReactiveUI.Tests
 			// aapt resource value: 0x7f040000
 			public const int OptionRemoteServer = 2130968576;
 			
-			// aapt resource value: 0x7f040010
-			public const int OptionsButton = 2130968592;
+			// aapt resource value: 0x7f04000f
+			public const int OptionsButton = 2130968591;
 			
 			// aapt resource value: 0x7f04000a
 			public const int ResultFullName = 2130968586;
@@ -126,11 +126,11 @@ namespace ReactiveUI.Tests
 			// aapt resource value: 0x7f040004
 			public const int ResultsResult = 2130968580;
 			
-			// aapt resource value: 0x7f04000f
-			public const int RunTestsButton = 2130968591;
-			
 			// aapt resource value: 0x7f04000e
-			public const int TestSuiteListView = 2130968590;
+			public const int RunTestsButton = 2130968590;
+			
+			// aapt resource value: 0x7f040010
+			public const int TestSuiteListView = 2130968592;
 			
 			static Id()
 			{
