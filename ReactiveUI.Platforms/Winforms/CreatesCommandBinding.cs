@@ -6,11 +6,10 @@ using System.Reactive.Linq;
 using System.Windows.Forms;
 using System.Windows.Input;
 using ReactiveUI;
+using System.Reflection;
 
 namespace ReactiveUI.Winforms
 {
-   
-
     /// <summary>
     /// This binder is the default binder for connecting to arbitrary events
     /// </summary>

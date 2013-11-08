@@ -62,8 +62,6 @@ namespace ReactiveUI.Winforms
             }, RxApp.DefaultExceptionHandler.OnNext));
         }
 
-        #endregion
-
         public event PropertyChangedEventHandler PropertyChanged;
         public event PropertyChangingEventHandler PropertyChanging;
 
