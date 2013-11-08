@@ -4,6 +4,7 @@ using MonoTouch.UIKit;
 using ReactiveUI;
 using System.Collections.Generic;
 using System.Reactive.Subjects;
+using System.Collections.Specialized;
 
 namespace ReactiveUI.Cocoa
 {
@@ -111,6 +112,11 @@ namespace ReactiveUI.Cocoa
         /// </summary>
         public IObservable<object> ElementSelected {
             get { return elementSelected; }
+        }
+
+        public IObservable<IEnumerable<NotifyCollectionChangedEventArgs>> Updated
+        {
+            get { return commonSource.Updated; }
         }
 
         public override UITableViewCell GetCell(UITableView tableView, NSIndexPath indexPath)
