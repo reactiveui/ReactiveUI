@@ -125,11 +125,9 @@ a ViewModel in a safe way. Here's how they apply to commands:
 //
 
 // Invoke a command whenever the Escape key is pressed
-// NB: This doesn't work if ViewModel changes. We should fix this in
-// a future version!
 this.Events().KeyUpObs
     .Where(x => x.EventArgs.Key == Key.Escape)
-    .InvokeCommand(ViewModel.Cancel);
+    .InvokeCommand(this, x => x.ViewModel.Cancel);
 
 // Subscribe to Cancel, and close the Window when it happens
 this.WhenAnyObservable(x => x.ViewModel.Cancel)
