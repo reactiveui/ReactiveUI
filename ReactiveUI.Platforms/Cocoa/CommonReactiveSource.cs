@@ -55,10 +55,10 @@ namespace ReactiveUI.Cocoa
         /// Reset event arg even though the collection did not send a Reset, but the adapter
         /// performed a Reload nevertheless)</value>
         public IObservable<IEnumerable<NotifyCollectionChangedEventArgs>> DidPerformUpdates {
-            get { return updated; }
+            get { return didPerformUpdates; }
         }
 
-        readonly ISubject<IEnumerable<NotifyCollectionChangedEventArgs>> updated =
+        readonly ISubject<IEnumerable<NotifyCollectionChangedEventArgs>> didPerformUpdates =
             new Subject<IEnumerable<NotifyCollectionChangedEventArgs>>();
 
         public CommonReactiveSource(
@@ -82,7 +82,7 @@ namespace ReactiveUI.Cocoa
                     if (xs.Any(x => x.Action == NotifyCollectionChangedAction.Reset)) {
                         this.Log().Info("About to call ReloadData");
                         adapter.ReloadData();
-                        updated.OnNext(resetOnlyNotification);
+                        didPerformUpdates.OnNext(resetOnlyNotification);
                         return;
                     }
 
@@ -93,7 +93,7 @@ namespace ReactiveUI.Cocoa
                     if (allChangedIndexes.Count != allChangedIndexes.Distinct().Count()) {
                         this.Log().Info("Detected a dupe in the changelist. Issuing Reset");
                         adapter.ReloadData();
-                        updated.OnNext(resetOnlyNotification);
+                        didPerformUpdates.OnNext(resetOnlyNotification);
                         return;
                     }
 
@@ -129,7 +129,7 @@ namespace ReactiveUI.Cocoa
                         }
 
                         this.Log().Info("Ending update");
-                        updated.OnNext(xs);
+                        didPerformUpdates.OnNext(xs);
                     });
                 });
 
