@@ -1,4 +1,4 @@
-# ReactiveCommand Basics
+# ReactiveCommand
 
 One of the core goals of every MVVM library is to provide an implementation of
 `ICommand`. This interface represents one of the two major parts of what
