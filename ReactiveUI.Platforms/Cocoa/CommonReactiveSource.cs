@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
+using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using MonoTouch.Foundation;
@@ -57,6 +58,8 @@ namespace ReactiveUI.Cocoa
         /// <summary>
         /// Gets or sets the list of sections that this <see cref="CommonReactiveSource"/>
         /// should display.  Setting a new value always causes the table view to be reloaded.
+        /// If the list implements <see cref="IReactiveNotifyCollectionChanged"/>,
+        /// then the source will react to changes to the contents of the list as well.
         /// </summary>
         public IReadOnlyList<TSectionInfo> SectionInfo {
             get { return SectionInfo; }
@@ -129,18 +132,48 @@ namespace ReactiveUI.Cocoa
         }
 
         void Resetup(IReadOnlyList<TSectionInfo> newSectionInfo) {
+            // Disposable that holds every garbage from this method.
             var disp = new CompositeDisposable();
             setupDisp.Disposable = disp;
-            for (int i = 0; i < newSectionInfo.Count; i++) {
-                var current = newSectionInfo[i].Collection;
-                disp.Add(current
+
+            // Disposable that holds the subscriptions to individual sections.
+            var subscrDisp = new SerialDisposable();
+            disp.Add(subscrDisp);
+
+            // Decide when we should check for section changes.
+            var reactiveSectionInfo = newSectionInfo as IReactiveNotifyCollectionChanged;
+            var sectionChanged = reactiveSectionInfo == null
+                ? Observable.Return(Unit.Default)
+                : reactiveSectionInfo
                     .Changed
-                    .Buffer(TimeSpan.FromMilliseconds(250), RxApp.MainThreadScheduler)
-                    .Subscribe(
-                        xs => SectionCollectionChanged(i, xs),
-                        exc => this.Log().ErrorException("Error while watching section " + i + "'s Collection.", exc)));
-            }
-            adapter.ReloadData();
+                    .Select(_ => Unit.Default)
+                    .ObserveOn(RxApp.MainThreadScheduler)
+                    .StartWith(Unit.Default);
+                    // ^ ObserveOn before StartWith is important,
+                    // this means that we'll bind the new Source
+                    // right away instead of waiting to be scheduled.
+            if (reactiveSectionInfo == null)
+                this.Log().Warn("New section info does not implement IReactiveNotifyCollectionChanged.");
+
+            // Add section change listeners.  Always will run once right away
+            // due to sectionChanged's construction.
+            disp.Add(sectionChanged
+                .Subscribe(_ => {
+                    // TODO: Instead of listening to Changed events and then reseting,
+                    // we could listen to more specific events and avoid some reloads.
+                    var disp2 = new CompositeDisposable();
+                    subscrDisp.Disposable = disp2;
+                    for (int i = 0; i < newSectionInfo.Count; i++) {
+                        var current = newSectionInfo[i].Collection;
+                        disp2.Add(current
+                            .Changed
+                            .Buffer(TimeSpan.FromMilliseconds(250), RxApp.MainThreadScheduler)
+                            .Subscribe(
+                                xs => SectionCollectionChanged(i, xs),
+                                exc => this.Log().ErrorException("Error while watching section " + i + "'s Collection.", exc)));
+                    }
+                    adapter.ReloadData();
+                }));
         }
 
         void SectionCollectionChanged(int section, IList<NotifyCollectionChangedEventArgs> xs) {

@@ -81,6 +81,8 @@ namespace ReactiveUI.Cocoa
         /// Gets or sets the data that should be displayed by this
         /// <see cref="ReactiveCollectionViewSource"/>.  You should
         /// probably bind your view model to this property.
+        /// If the list implements <see cref="IReactiveNotifyCollectionChanged"/>,
+        /// then the source will react to changes to the contents of the list as well.
         /// </summary>
         /// <value>The data.</value>
         public IReadOnlyList<CollectionViewSectionInformation> Data {
