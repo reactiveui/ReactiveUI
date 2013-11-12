@@ -62,7 +62,7 @@ namespace ReactiveUI.Cocoa
         /// then the source will react to changes to the contents of the list as well.
         /// </summary>
         public IReadOnlyList<TSectionInfo> SectionInfo {
-            get { return SectionInfo; }
+            get { return sectionInfo; }
             set { this.RaiseAndSetIfChanged(ref sectionInfo, value); }
         }
         IReadOnlyList<TSectionInfo> sectionInfo = null;
@@ -132,6 +132,11 @@ namespace ReactiveUI.Cocoa
         }
 
         void Resetup(IReadOnlyList<TSectionInfo> newSectionInfo) {
+            if (newSectionInfo == null) {
+                setupDisp.Disposable = Disposable.Empty;
+                return;
+            }
+
             // Disposable that holds every garbage from this method.
             var disp = new CompositeDisposable();
             setupDisp.Disposable = disp;
