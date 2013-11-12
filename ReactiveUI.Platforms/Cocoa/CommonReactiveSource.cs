@@ -36,7 +36,8 @@ namespace ReactiveUI.Cocoa
     /// Internal class containing the common code between <see cref="ReactiveTableViewSource"/>
     /// and <see cref="ReactiveCollectionViewSource"/>.
     /// </summary>
-    sealed class CommonReactiveSource<TUIView, TUIViewCell> : ReactiveObject, IDisposable, IEnableLogger
+    sealed class CommonReactiveSource<TUIView, TUIViewCell, TSectionInfo> : ReactiveObject, IDisposable, IEnableLogger
+        where TSectionInfo : ISectionInformation<TUIView, TUIViewCell>
     {
         /// <summary>
         /// Main disposable which is disposed when this object is disposed.
@@ -57,11 +58,11 @@ namespace ReactiveUI.Cocoa
         /// Gets or sets the list of sections that this <see cref="CommonReactiveSource"/>
         /// should display.  Setting a new value always causes the table view to be reloaded.
         /// </summary>
-        public IReadOnlyList<ISectionInformation<TUIView, TUIViewCell>> SectionInfo {
+        public IReadOnlyList<TSectionInfo> SectionInfo {
             get { return SectionInfo; }
             set { this.RaiseAndSetIfChanged(ref sectionInfo, value); }
         }
-        IReadOnlyList<ISectionInformation<TUIView, TUIViewCell>> sectionInfo = null;
+        IReadOnlyList<TSectionInfo> sectionInfo = null;
 
         /// <summary>
         /// IObservable that pushes a new value after the corresponding IUICollViewAdapter
@@ -127,7 +128,7 @@ namespace ReactiveUI.Cocoa
             mainDisp.Dispose();
         }
 
-        void Resetup(IReadOnlyList<ISectionInformation<TUIView, TUIViewCell>> newSectionInfo) {
+        void Resetup(IReadOnlyList<TSectionInfo> newSectionInfo) {
             var disp = new CompositeDisposable();
             setupDisp.Disposable = disp;
             for (int i = 0; i < newSectionInfo.Count; i++) {
