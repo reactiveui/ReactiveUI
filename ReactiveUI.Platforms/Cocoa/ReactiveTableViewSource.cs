@@ -106,16 +106,35 @@ namespace ReactiveUI.Cocoa
         readonly Subject<object> elementSelected = new Subject<object>();
 
         public ReactiveTableViewSource(UITableView tableView, IReactiveNotifyCollectionChanged collection, string cellKey, float sizeHint, Action<UITableViewCell> initializeCellAction = null)
-            : this (tableView, new[] { new TableSectionInformation<UITableViewCell>(collection, cellKey, sizeHint, initializeCellAction)})
-        {
+            : this(tableView) {
+            this.Data = new[] { new TableSectionInformation<UITableViewCell>(collection, cellKey, sizeHint, initializeCellAction)};
         }
 
+        [Obsolete("Please bind your view model to the Data property.")]
         public ReactiveTableViewSource(UITableView tableView, IReadOnlyList<TableSectionInformation> sectionInformation)
-        {
+            : this(tableView) {
+            this.Data = sectionInformation;
+        }
+
+        public ReactiveTableViewSource(UITableView tableView) {
             setupRxObj();
             var adapter = new UITableViewAdapter(tableView);
             this.commonSource = new CommonReactiveSource<UITableView, UITableViewCell, TableSectionInformation>(adapter);
-            this.commonSource.SectionInfo = sectionInformation;
+        }
+
+        /// <summary>
+        /// Gets or sets the data that should be displayed by this
+        /// <see cref="ReactiveTableViewSource"/>.  You should
+        /// probably bind your view model to this property.
+        /// </summary>
+        /// <value>The data.</value>
+        public IReadOnlyList<TableSectionInformation> Data {
+            get { return commonSource.SectionInfo; }
+            set {
+                raisePropertyChanging("Data");
+                commonSource.SectionInfo = value;
+                raisePropertyChanged("Data");
+            }
         }
 
         /// <summary>
