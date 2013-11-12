@@ -61,16 +61,35 @@ namespace ReactiveUI.Cocoa
         readonly Subject<object> elementSelected = new Subject<object>();
 
         public ReactiveCollectionViewSource(UICollectionView collectionView, IReactiveNotifyCollectionChanged collection, string cellKey, Action<UICollectionViewCell> initializeCellAction = null)
-            : this(collectionView, new[] { new CollectionViewSectionInformation<UICollectionViewCell>(collection, cellKey, initializeCellAction) })
-        {
+            : this(collectionView) {
+            this.Data = new[] { new CollectionViewSectionInformation<UICollectionViewCell>(collection, cellKey, initializeCellAction) };
         }
 
+        [Obsolete("Please bind your view model to the Data property.")]
         public ReactiveCollectionViewSource(UICollectionView collectionView, IReadOnlyList<CollectionViewSectionInformation> sectionInformation)
-        {
+            : this(collectionView) {
+            this.Data = sectionInformation;
+        }
+
+        public ReactiveCollectionViewSource(UICollectionView collectionView) {
             setupRxObj();
             var adapter = new UICollectionViewAdapter(collectionView);
             this.commonSource = new CommonReactiveSource<UICollectionView, UICollectionViewCell, CollectionViewSectionInformation>(adapter);
-            this.commonSource.SectionInfo = sectionInformation;
+        }
+
+        /// <summary>
+        /// Gets or sets the data that should be displayed by this
+        /// <see cref="ReactiveCollectionViewSource"/>.  You should
+        /// probably bind your view model to this property.
+        /// </summary>
+        /// <value>The data.</value>
+        public IReadOnlyList<CollectionViewSectionInformation> Data {
+            get { return commonSource.SectionInfo; }
+            set {
+                raisePropertyChanging("Data");
+                commonSource.SectionInfo = value;
+                raisePropertyChanged("Data");
+            }
         }
 
         /// <summary>
