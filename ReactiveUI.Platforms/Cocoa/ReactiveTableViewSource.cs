@@ -101,10 +101,11 @@ namespace ReactiveUI.Cocoa
         {
         }
 
-        public ReactiveTableViewSource(UITableView tableView, IEnumerable<TableSectionInformation> sectionInformation)
+        public ReactiveTableViewSource(UITableView tableView, IReadOnlyList<TableSectionInformation> sectionInformation)
         {
             var adapter = new UITableViewAdapter(tableView);
-            this.commonSource = new CommonReactiveSource<UITableView, UITableViewCell>(adapter, sectionInformation);
+            this.commonSource = new CommonReactiveSource<UITableView, UITableViewCell>(adapter);
+            this.commonSource.SectionInfo = sectionInformation;
         }
 
         /// <summary>
@@ -156,7 +157,7 @@ namespace ReactiveUI.Cocoa
 
         TableSectionInformation GetSectionInfo(int section)
         {
-            return (TableSectionInformation)commonSource.GetSectionInfo(section);
+            return (TableSectionInformation)commonSource.SectionInfo[section];
         }
 
         public override float GetHeightForRow(UITableView tableView, NSIndexPath indexPath)
