@@ -57,7 +57,7 @@ namespace ReactiveUI.Cocoa
 
     public class ReactiveCollectionViewSource : UICollectionViewSource, IEnableLogger, IDisposable, IReactiveNotifyPropertyChanged, IHandleObservableErrors
     {
-        readonly CommonReactiveSource<UICollectionView, UICollectionViewCell> commonSource;
+        readonly CommonReactiveSource<UICollectionView, UICollectionViewCell, CollectionViewSectionInformation> commonSource;
         readonly Subject<object> elementSelected = new Subject<object>();
 
         public ReactiveCollectionViewSource(UICollectionView collectionView, IReactiveNotifyCollectionChanged collection, string cellKey, Action<UICollectionViewCell> initializeCellAction = null)
@@ -69,7 +69,7 @@ namespace ReactiveUI.Cocoa
         {
             setupRxObj();
             var adapter = new UICollectionViewAdapter(collectionView);
-            this.commonSource = new CommonReactiveSource<UICollectionView, UICollectionViewCell>(adapter);
+            this.commonSource = new CommonReactiveSource<UICollectionView, UICollectionViewCell, CollectionViewSectionInformation>(adapter);
             this.commonSource.SectionInfo = sectionInformation;
         }
 
