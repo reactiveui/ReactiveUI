@@ -56,10 +56,11 @@ namespace ReactiveUI.Cocoa
         {
         }
 
-        public ReactiveCollectionViewSource(UICollectionView collectionView, IEnumerable<CollectionViewSectionInformation> sectionInformation)
+        public ReactiveCollectionViewSource(UICollectionView collectionView, IReadOnlyList<CollectionViewSectionInformation> sectionInformation)
         {
             var adapter = new UICollectionViewAdapter(collectionView);
-            this.commonSource = new CommonReactiveSource<UICollectionView, UICollectionViewCell>(adapter, sectionInformation);
+            this.commonSource = new CommonReactiveSource<UICollectionView, UICollectionViewCell>(adapter);
+            this.commonSource.SectionInfo = sectionInformation;
         }
 
         /// <summary>
