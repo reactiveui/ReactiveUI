@@ -169,12 +169,13 @@ namespace ReactiveUI.Cocoa
                     var disp2 = new CompositeDisposable();
                     subscrDisp.Disposable = disp2;
                     for (int i = 0; i < newSectionInfo.Count; i++) {
+                        var section = i;
                         var current = newSectionInfo[i].Collection;
                         disp2.Add(current
                             .Changed
                             .Buffer(TimeSpan.FromMilliseconds(250), RxApp.MainThreadScheduler)
                             .Subscribe(
-                                xs => SectionCollectionChanged(i, xs),
+                                xs => SectionCollectionChanged(section, xs),
                                 exc => this.Log().ErrorException("Error while watching section " + i + "'s Collection.", exc)));
                     }
                     adapter.ReloadData();
