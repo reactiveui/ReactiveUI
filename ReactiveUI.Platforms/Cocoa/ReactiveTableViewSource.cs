@@ -5,8 +5,9 @@ using System.Collections.Specialized;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Reactive.Concurrency;
-using System.Reactive.Subjects;
 using System.Reactive.Disposables;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
@@ -398,6 +399,105 @@ namespace ReactiveUI.Cocoa
         public void RaisePropertyChanging([CallerMemberName] string propertyName = null)
         {
             raisePropertyChanging(propertyName);
+        }
+    }
+
+
+
+    /// <summary>
+    /// Extension methods for <see cref="ReactiveTableViewSource"/>.
+    /// </summary>
+    public static class ReactiveTableViewSourceExtensions
+    {
+        /// <summary>
+        /// <para>Extension method that binds an observable of a list of table
+        /// sections as the source of a <see cref="UITableView"/>.</para>
+        /// <para>If your <see cref="IReadOnlyList"/> is also an instance of
+        /// <see cref="IReactiveNotifyCollectionChanged"/>, then this method
+        /// will silently update the bindings whenever it changes as well.
+        /// Otherwise, it will just log a message.</para>
+        /// </summary>
+        /// <returns>The <see cref="IDisposable"/> used to dispose this binding.</returns>
+        /// <param name="sectionsObservable">Sections observable.</param>
+        /// <param name="tableView">Table view.</param>
+        /// <param name="initSource">Optionally initializes some property of
+        /// the <see cref="ReactiveTableViewSource"/>.</param>
+        /// <typeparam name="TCell">Type of the <see cref="UITableViewCell"/>.</typeparam>
+        public static IDisposable BindTo<TCell>(
+            this IObservable<IReadOnlyList<TableSectionInformation<TCell>>> sectionsObservable,
+            UITableView tableView,
+            Func<ReactiveTableViewSource, IDisposable> initSource = null)
+            where TCell : UITableViewCell
+        {
+            var source = new ReactiveTableViewSource(tableView);
+            if (initSource != null) initSource(source);
+            var bind = sectionsObservable.BindTo(source, x => x.Data);
+            tableView.Source = source;
+            return new CompositeDisposable(bind, source);
+        }
+
+        /// <summary>
+        /// Extension method that binds an observable of a collection
+        /// as the source of a <see cref="UITableView"/>.
+        /// </summary>
+        /// <returns>The <see cref="IDisposable"/> used to dispose this binding.</returns>
+        /// <param name="sourceObservable">Source collection observable.</param>
+        /// <param name="tableView">Table view.</param>
+        /// <param name="cellKey">Cell key.</param>
+        /// <param name="sizeHint">Size hint.</param>
+        /// <param name="initializeCellAction">Initialize cell action.</param>
+        /// <param name="initSource">Optionally initializes some property of
+        /// the <see cref="ReactiveTableViewSource"/>.</param>
+        /// <typeparam name="TCell">Type of the <see cref="UITableViewCell"/>.</typeparam>
+        public static IDisposable BindTo<TCell>(
+            this IObservable<IReactiveNotifyCollectionChanged> sourceObservable,
+            UITableView tableView,
+            string cellKey,
+            float sizeHint,
+            Action<TCell> initializeCellAction = null,
+            Func<ReactiveTableViewSource, IDisposable> initSource = null)
+            where TCell : UITableViewCell
+        {
+            return sourceObservable
+                .Select(
+                    src => new[]
+                    {
+                        new TableSectionInformation<TCell>(
+                            src,
+                            cellKey,
+                            sizeHint,
+                            initializeCellAction)
+                    })
+                .BindTo(tableView, initSource);
+        }
+
+        /// <summary>
+        /// Extension method that binds an observable of a collection
+        /// as the source of a <see cref="UITableView"/>.  Also registers
+        /// the given class with an unspecified cellKey (you should probably
+        /// not specify any other cellKeys).
+        /// </summary>
+        /// <returns>The <see cref="IDisposable"/> used to dispose this binding.</returns>
+        /// <param name="sourceObservable">Source collection observable.</param>
+        /// <param name="tableView">Table view.</param>
+        /// <param name="sizeHint">Size hint.</param>
+        /// <param name="initializeCellAction">Initialize cell action.</param>
+        /// <param name="initSource">Optionally initializes some property of
+        /// the <see cref="ReactiveTableViewSource"/>.</param>
+        /// <typeparam name="TCell">Type of the <see cref="UITableViewCell"/>.</typeparam>
+        public static IDisposable BindTo<TCell>(
+            this IObservable<IReactiveNotifyCollectionChanged> sourceObservable,
+            UITableView tableView,
+            float sizeHint,
+            Action<TCell> initializeCellAction = null,
+            Func<ReactiveTableViewSource, IDisposable> initSource = null)
+            where TCell : UITableViewCell
+        {
+            var type = typeof(TCell);
+            var cellKey = type.ToString();
+            tableView.RegisterClassForCellReuse(type, new NSString(cellKey));
+            return sourceObservable
+                .BindTo(tableView, cellKey, sizeHint, initializeCellAction, initSource);
         }
     }
 }
