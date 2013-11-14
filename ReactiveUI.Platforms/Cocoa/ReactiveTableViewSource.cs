@@ -41,10 +41,10 @@ namespace ReactiveUI.Cocoa
     public class TableSectionInformation<TCell> : TableSectionInformation
         where TCell : UITableViewCell
     {
-        public TableSectionInformation(IReactiveNotifyCollectionChanged collection, string cellKey, float sizeHint, Action<TCell> initializeCellAction = null)
+        public TableSectionInformation(IReactiveNotifyCollectionChanged collection, NSString cellKey, float sizeHint, Action<TCell> initializeCellAction = null)
         {
             Collection = collection;
-            CellKey = new NSString(cellKey);
+            CellKey = cellKey;
             SizeHint = sizeHint;
             if (initializeCellAction != null)
                 InitializeCellAction = cell => initializeCellAction((TCell)cell);
@@ -106,7 +106,7 @@ namespace ReactiveUI.Cocoa
         readonly CommonReactiveSource<UITableView, UITableViewCell, TableSectionInformation> commonSource;
         readonly Subject<object> elementSelected = new Subject<object>();
 
-        public ReactiveTableViewSource(UITableView tableView, IReactiveNotifyCollectionChanged collection, string cellKey, float sizeHint, Action<UITableViewCell> initializeCellAction = null)
+        public ReactiveTableViewSource(UITableView tableView, IReactiveNotifyCollectionChanged collection, NSString cellKey, float sizeHint, Action<UITableViewCell> initializeCellAction = null)
             : this(tableView) {
             this.Data = new[] { new TableSectionInformation<UITableViewCell>(collection, cellKey, sizeHint, initializeCellAction)};
         }
@@ -452,7 +452,7 @@ namespace ReactiveUI.Cocoa
         public static IDisposable BindTo<TCell>(
             this IObservable<IReactiveNotifyCollectionChanged> sourceObservable,
             UITableView tableView,
-            string cellKey,
+            NSString cellKey,
             float sizeHint,
             Action<TCell> initializeCellAction = null,
             Func<ReactiveTableViewSource, IDisposable> initSource = null)
@@ -494,7 +494,7 @@ namespace ReactiveUI.Cocoa
             where TCell : UITableViewCell
         {
             var type = typeof(TCell);
-            var cellKey = type.ToString();
+            var cellKey = new NSString(type.ToString());
             tableView.RegisterClassForCellReuse(type, new NSString(cellKey));
             return sourceObservable
                 .BindTo(tableView, cellKey, sizeHint, initializeCellAction, initSource);
