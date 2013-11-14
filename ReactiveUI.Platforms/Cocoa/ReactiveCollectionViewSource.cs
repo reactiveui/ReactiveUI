@@ -28,10 +28,10 @@ namespace ReactiveUI.Cocoa
     public class CollectionViewSectionInformation<TCell> : CollectionViewSectionInformation
         where TCell : UICollectionViewCell
     {
-        public CollectionViewSectionInformation(IReactiveNotifyCollectionChanged collection, string cellKey, Action<TCell> initializeCellAction = null)
+        public CollectionViewSectionInformation(IReactiveNotifyCollectionChanged collection, NSString cellKey, Action<TCell> initializeCellAction = null)
         {
             Collection = collection;
-            CellKey = new NSString(cellKey);
+            CellKey = cellKey;
 
             if (initializeCellAction != null) {
                 InitializeCellAction = cell => initializeCellAction((TCell)cell);
@@ -61,7 +61,7 @@ namespace ReactiveUI.Cocoa
         readonly CommonReactiveSource<UICollectionView, UICollectionViewCell, CollectionViewSectionInformation> commonSource;
         readonly Subject<object> elementSelected = new Subject<object>();
 
-        public ReactiveCollectionViewSource(UICollectionView collectionView, IReactiveNotifyCollectionChanged collection, string cellKey, Action<UICollectionViewCell> initializeCellAction = null)
+        public ReactiveCollectionViewSource(UICollectionView collectionView, IReactiveNotifyCollectionChanged collection, NSString cellKey, Action<UICollectionViewCell> initializeCellAction = null)
             : this(collectionView) {
             this.Data = new[] { new CollectionViewSectionInformation<UICollectionViewCell>(collection, cellKey, initializeCellAction) };
         }
@@ -368,7 +368,7 @@ namespace ReactiveUI.Cocoa
         public static IDisposable BindTo<TCell>(
             this IObservable<IReactiveNotifyCollectionChanged> sourceObservable,
             UICollectionView collectionView,
-            string cellKey,
+            NSString cellKey,
             Action<TCell> initializeCellAction = null,
             Func<ReactiveCollectionViewSource, IDisposable> initSource = null)
             where TCell : UICollectionViewCell
@@ -406,7 +406,7 @@ namespace ReactiveUI.Cocoa
             where TCell : UICollectionViewCell
         {
             var type = typeof(TCell);
-            var cellKey = type.ToString();
+            var cellKey = new NSString(type.ToString());
             collectionView.RegisterClassForCell(type, new NSString(cellKey));
             return sourceObservable
                 .BindTo(collectionView, cellKey, initializeCellAction, initSource);
