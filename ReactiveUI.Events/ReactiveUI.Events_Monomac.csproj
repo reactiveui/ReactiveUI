@@ -68,6 +68,11 @@
         <Command type="BeforeBuild" command="/usr/bin/env ruby ${ProjectDir}/generate_events.rb /Library/Frameworks/Xamarin.Mac.framework/Versions/Current/lib/mono/XamMac.dll" />
       </CustomCommands>
     </CustomCommands>
+    <EnableCodeSigning>false</EnableCodeSigning>
+    <CreatePackage>false</CreatePackage>
+    <EnablePackageSigning>false</EnablePackageSigning>
+    <IncludeMonoRuntime>false</IncludeMonoRuntime>
+    <UseSGen>false</UseSGen>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <Optimize>True</Optimize>
@@ -104,14 +109,18 @@
     <CodeContractsCacheAnalysisResults>True</CodeContractsCacheAnalysisResults>
     <CodeContractsRuntimeCheckingLevel>Full</CodeContractsRuntimeCheckingLevel>
     <CodeContractsReferenceAssembly>%28none%29</CodeContractsReferenceAssembly>
-    <DocumentationFile>bin\Release\Mono\ReactiveUI.xml</DocumentationFile>
     <CustomCommands>
       <CustomCommands>
         <Command type="BeforeBuild" command="/usr/bin/env ruby ${ProjectDir}/generate_events.rb /Library/Frameworks/Xamarin.Mac.framework/Versions/Current/lib/mono/XamMac.dll" />
       </CustomCommands>
     </CustomCommands>
     <DebugSymbols>true</DebugSymbols>
-    <GenerateDocumentation>true</GenerateDocumentation>
+    <GenerateDocumentation>True</GenerateDocumentation>
+    <EnableCodeSigning>false</EnableCodeSigning>
+    <CreatePackage>false</CreatePackage>
+    <EnablePackageSigning>false</EnablePackageSigning>
+    <IncludeMonoRuntime>false</IncludeMonoRuntime>
+    <UseSGen>false</UseSGen>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
