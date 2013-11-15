@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
+using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using MonoTouch.Foundation;
@@ -36,13 +37,35 @@ namespace ReactiveUI.Cocoa
     /// Internal class containing the common code between <see cref="ReactiveTableViewSource"/>
     /// and <see cref="ReactiveCollectionViewSource"/>.
     /// </summary>
-    sealed class CommonReactiveSource<TUIView, TUIViewCell> : IDisposable, IEnableLogger
+    sealed class CommonReactiveSource<TUIView, TUIViewCell, TSectionInfo> : ReactiveObject, IDisposable, IEnableLogger
+        where TSectionInfo : ISectionInformation<TUIView, TUIViewCell>
     {
-        readonly CompositeDisposable innerDisp = new CompositeDisposable();
+        /// <summary>
+        /// Main disposable which is disposed when this object is disposed.
+        /// </summary>
+        readonly CompositeDisposable mainDisp = new CompositeDisposable();
 
+        /// <summary>
+        /// Disposable used by the setup procedure.
+        /// </summary>
+        readonly SerialDisposable setupDisp = new SerialDisposable();
+
+        /// <summary>
+        /// The adapter of the UIKit view.
+        /// </summary>
         readonly IUICollViewAdapter<TUIView, TUIViewCell> adapter;
 
-        readonly List<ISectionInformation<TUIView, TUIViewCell>> sectionInfo;
+        /// <summary>
+        /// Gets or sets the list of sections that this <see cref="CommonReactiveSource"/>
+        /// should display.  Setting a new value always causes the table view to be reloaded.
+        /// If the list implements <see cref="IReactiveNotifyCollectionChanged"/>,
+        /// then the source will react to changes to the contents of the list as well.
+        /// </summary>
+        public IReadOnlyList<TSectionInfo> SectionInfo {
+            get { return sectionInfo; }
+            set { this.RaiseAndSetIfChanged(ref sectionInfo, value); }
+        }
+        IReadOnlyList<TSectionInfo> sectionInfo = null;
 
         /// <summary>
         /// IObservable that pushes a new value after the corresponding IUICollViewAdapter
@@ -61,90 +84,20 @@ namespace ReactiveUI.Cocoa
         readonly ISubject<IEnumerable<NotifyCollectionChangedEventArgs>> didPerformUpdates =
             new Subject<IEnumerable<NotifyCollectionChangedEventArgs>>();
 
-        public CommonReactiveSource(
-            IUICollViewAdapter<TUIView, TUIViewCell> adapter,
-            IEnumerable<ISectionInformation<TUIView, TUIViewCell>> sectionInfo)
-        {
+        public CommonReactiveSource(IUICollViewAdapter<TUIView, TUIViewCell> adapter) {
             this.adapter = adapter;
-            this.sectionInfo = sectionInfo.ToList();
-                        
-            for (int i = 0; i < this.sectionInfo.Count; i++) {
-                var current = this.sectionInfo[i].Collection;
 
-                var section = i;
-                var disp = current.Changed.Buffer(TimeSpan.FromMilliseconds(250), RxApp.MainThreadScheduler).Subscribe(xs => {
-                    if (xs.Count == 0)
-                        return;
+            mainDisp.Add(setupDisp);
 
-                    var resetOnlyNotification = new [] {new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset)};
-
-                    this.Log().Info("Changed contents: [{0}]", String.Join(",", xs.Select(x => x.Action.ToString())));
-                    if (xs.Any(x => x.Action == NotifyCollectionChangedAction.Reset)) {
-                        this.Log().Info("About to call ReloadData");
-                        adapter.ReloadData();
-                        didPerformUpdates.OnNext(resetOnlyNotification);
-                        return;
-                    }
-
-                    var updates = xs.Select(ea => Tuple.Create(ea, getChangedIndexes(ea))).ToList();
-                    var allChangedIndexes = updates.SelectMany(u => u.Item2).ToList();
-                    // Detect if we're changing the same cell more than
-                    // once - if so, issue a reset and be done
-                    if (allChangedIndexes.Count != allChangedIndexes.Distinct().Count()) {
-                        this.Log().Info("Detected a dupe in the changelist. Issuing Reset");
-                        adapter.ReloadData();
-                        didPerformUpdates.OnNext(resetOnlyNotification);
-                        return;
-                    }
-
-                    this.Log().Info("Beginning update");
-                    adapter.PerformBatchUpdates(() => {
-                        foreach (var update in updates.AsEnumerable().Reverse()) {
-                            var changeAction = update.Item1.Action;
-                            var changedIndexes = update.Item2;
-                            switch (changeAction) {
-                            case NotifyCollectionChangedAction.Add:
-                                doUpdate(adapter.InsertItems, changedIndexes, section);
-                                break;
-                            case NotifyCollectionChangedAction.Remove:
-                                doUpdate(adapter.DeleteItems, changedIndexes, section);
-                                break;
-                            case NotifyCollectionChangedAction.Replace:
-                                doUpdate(adapter.ReloadItems, changedIndexes, section);
-                                break;
-                            case NotifyCollectionChangedAction.Move:
-                                // NB: ReactiveList currently only supports single-item
-                                // moves
-                                var ea = update.Item1;
-                                this.Log().Info("Calling MoveRow: {0}-{1} => {0}{2}", section, ea.OldStartingIndex, ea.NewStartingIndex);
-
-                                adapter.MoveItem(
-                                    NSIndexPath.FromRowSection(ea.OldStartingIndex, section),
-                                    NSIndexPath.FromRowSection(ea.NewStartingIndex, section));
-                                break;
-                            default:
-                                this.Log().Info("Unknown Action: {0}", changeAction);
-                                break;
-                            }
-                        }
-
-                        this.Log().Info("Ending update");
-                        didPerformUpdates.OnNext(xs);
-                    });
-                });
-
-                innerDisp.Add(disp);
-            }
-        }
-
-        public ISectionInformation<TUIView, TUIViewCell> GetSectionInfo(int section)
-        {
-            return sectionInfo[section];
+            mainDisp.Add(this
+                .WhenAnyValue(x => x.SectionInfo)
+                .ObserveOn(RxApp.MainThreadScheduler)
+                .Subscribe(resetup, exc => this.Log().ErrorException("Error while watching for SectionInfo.", exc)));
         }
 
         public TUIViewCell GetCell(NSIndexPath indexPath)
         {
-            var section = sectionInfo[indexPath.Section];
+            var section = SectionInfo[indexPath.Section];
             var cell = adapter.DequeueReusableCell(section.CellKey, indexPath);
             var view = cell as IViewFor;
 
@@ -159,20 +112,143 @@ namespace ReactiveUI.Cocoa
 
         public int NumberOfSections()
         {
-            return sectionInfo.Count;
+            return SectionInfo.Count;
         }
 
         public int RowsInSection(int section)
         {
-            var count = ((IList)sectionInfo[section].Collection).Count;
+            var count = ((IList)SectionInfo[section].Collection).Count;
             this.Log().Info("RowsInSection: {0}-{1}", section, count);
             return count;
         }
 
         public object ItemAt(NSIndexPath path)
         {
-            var list = (IList)sectionInfo[path.Section].Collection;
+            var list = (IList)SectionInfo[path.Section].Collection;
             return list[path.Row];
+        }
+
+        public void Dispose()
+        {
+            mainDisp.Dispose();
+        }
+
+        void resetup(IReadOnlyList<TSectionInfo> newSectionInfo) {
+            if (newSectionInfo == null) {
+                setupDisp.Disposable = Disposable.Empty;
+                return;
+            }
+
+            // Disposable that holds garbage from this method.
+            var disp = new CompositeDisposable();
+            setupDisp.Disposable = disp;
+
+            // Disposable that holds the subscriptions to individual sections.
+            var subscrDisp = new SerialDisposable();
+            disp.Add(subscrDisp);
+
+            // Decide when we should check for section changes.
+            var reactiveSectionInfo = newSectionInfo as IReactiveNotifyCollectionChanged;
+            var sectionChanged = reactiveSectionInfo == null ? Observable.Return(Unit.Default) : reactiveSectionInfo
+                .Changed
+                .Select(_ => Unit.Default)
+                .ObserveOn(RxApp.MainThreadScheduler)
+                .StartWith(Unit.Default);
+                // ^ ObserveOn before StartWith is important,
+                // this means that we'll bind the new Source
+                // right away instead of waiting to be scheduled.
+            
+            if (reactiveSectionInfo == null) {
+                this.Log().Warn("New section info does not implement IReactiveNotifyCollectionChanged.");
+            }
+
+            // Add section change listeners.  Always will run once right away
+            // due to sectionChanged's construction.
+            disp.Add(sectionChanged.Subscribe(_ => {
+                // TODO: Instead of listening to Changed events and then reseting,
+                // we could listen to more specific events and avoid some reloads.
+                var disp2 = new CompositeDisposable();
+                subscrDisp.Disposable = disp2;
+
+                for (int i = 0; i < newSectionInfo.Count; i++) {
+                    var section = i;
+                    var current = newSectionInfo[i].Collection;
+                    disp2.Add(current
+                        .Changed
+                        .Buffer(TimeSpan.FromMilliseconds(250), RxApp.MainThreadScheduler)
+                        .Subscribe(
+                            xs => sectionCollectionChanged(section, xs),
+                            ex => this.Log().ErrorException("Error while watching section " + i + "'s Collection.", ex)));
+                }
+
+                adapter.ReloadData();
+            }));
+        }
+
+        void sectionCollectionChanged(int section, IList<NotifyCollectionChangedEventArgs> xs) {
+            if (xs.Count == 0)
+                return;
+
+            var resetOnlyNotification = new [] {new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset)};
+
+            this.Log().Info("Changed contents: [{0}]", String.Join(",", xs.Select(x => x.Action.ToString())));
+
+            if (xs.Any(x => x.Action == NotifyCollectionChangedAction.Reset)) {
+                this.Log().Info("About to call ReloadData");
+                adapter.ReloadData();
+
+                didPerformUpdates.OnNext(resetOnlyNotification);
+                return;
+            }
+
+            var updates = xs.Select(ea => Tuple.Create(ea, getChangedIndexes(ea))).ToList();
+            var allChangedIndexes = updates.SelectMany(u => u.Item2).ToList();
+            // Detect if we're changing the same cell more than
+            // once - if so, issue a reset and be done
+            
+            if (allChangedIndexes.Count != allChangedIndexes.Distinct().Count()) {
+                this.Log().Info("Detected a dupe in the changelist. Issuing Reset");
+                adapter.ReloadData();
+
+                didPerformUpdates.OnNext(resetOnlyNotification);
+                return;
+            }
+
+            this.Log().Info("Beginning update");
+            adapter.PerformBatchUpdates(() => {
+                foreach (var update in updates.AsEnumerable().Reverse()) {
+                    var changeAction = update.Item1.Action;
+                    var changedIndexes = update.Item2;
+
+                    switch (changeAction) {
+                    case NotifyCollectionChangedAction.Add:
+                        doUpdate(adapter.InsertItems, changedIndexes, section);
+                        break;
+                    case NotifyCollectionChangedAction.Remove:
+                        doUpdate(adapter.DeleteItems, changedIndexes, section);
+                        break;
+                    case NotifyCollectionChangedAction.Replace:
+                        doUpdate(adapter.ReloadItems, changedIndexes, section);
+                        break;
+                    case NotifyCollectionChangedAction.Move:
+                        // NB: ReactiveList currently only supports single-item
+                        // moves
+                        var ea = update.Item1;
+                        this.Log().Info("Calling MoveRow: {0}-{1} => {0}{2}", section, ea.OldStartingIndex, ea.NewStartingIndex);
+
+                        adapter.MoveItem(
+                            NSIndexPath.FromRowSection(ea.OldStartingIndex, section),
+                            NSIndexPath.FromRowSection(ea.NewStartingIndex, section));
+                        break;
+                    default:
+                        this.Log().Info("Unknown Action: {0}", changeAction);
+                        break;
+                    }
+                }
+
+                this.Log().Info("Ending update");
+                didPerformUpdates.OnNext(xs);
+            });
         }
 
         static IEnumerable<int> getChangedIndexes(NotifyCollectionChangedEventArgs ea)
@@ -200,11 +276,6 @@ namespace ReactiveUI.Cocoa
                 String.Join(",", toChange.Select(x => x.Section + "-" + x.Row)));
 
             method(toChange);
-        }
-
-        public void Dispose()
-        {
-            innerDisp.Dispose();
         }
     }
 }
