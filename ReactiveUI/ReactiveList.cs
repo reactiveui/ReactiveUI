@@ -570,17 +570,9 @@ namespace ReactiveUI
                 changing.Where(_ => this._suppressionRefCount == 0).Subscribe(beforeChange =>
                     _itemChanging.Value.OnNext(new ObservedChange<T, object>() {
                         Sender = toTrack, PropertyName = beforeChange.PropertyName })),
-                changed
-                    .Do(x => {
-                        Debug.WriteLine(x);
-                    })
-                    .Where(_ => this._suppressionRefCount == 0)
-                    .Do(x => {
-                        Debug.WriteLine(x);
-                    })
-                    .Subscribe(change =>
-                        _itemChanged.Value.OnNext(new ObservedChange<T,object>() {
-                            Sender = toTrack, PropertyName = change.PropertyName })),
+                changed.Where(_ => this._suppressionRefCount == 0).Subscribe(change =>
+                    _itemChanged.Value.OnNext(new ObservedChange<T,object>() {
+                        Sender = toTrack, PropertyName = change.PropertyName })),
             };
 
             _propertyChangeWatchers.Add(toTrack, 
