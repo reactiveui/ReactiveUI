@@ -61,7 +61,40 @@ namespace ReactiveUI
                 skipInitial);
         }
 
-        /// <summary>
+		/// <summary>
+		/// ObservableForProperty returns an Observable representing the
+		/// property change notifications for a specific property on a
+		/// ReactiveObject. This method (unlike other Observables that return
+		/// IObservedChange) guarantees that the Value property of
+		/// the IObservedChange is set.
+		/// </summary>
+		/// <param name="propertyName">A string containing the property name</param>
+		/// <param name="beforeChange">If True, the Observable will notify
+		/// immediately before a property is going to change.</param>
+		/// <returns>An Observable representing the property change
+		/// notifications for the given property.</returns>
+		public static IObservable<IObservedChange<TSender, TValue>> ObservableForProperty<TSender, TValue>(
+		    this TSender This,
+		    string propertyName,
+		    bool beforeChange = false,
+		    bool skipInitial = true)
+	    {
+			var values = notifyForProperty(This, propertyName, beforeChange);
+		    if (!skipInitial) {
+				values = values.StartWith(new ObservedChange<object, object> { Sender = This, PropertyName = propertyName });
+		    }
+
+			return values.Select(x => x.fillInValue())
+						 .Distinct(x => x.Value)
+						 .Select(x => (IObservedChange<TSender, TValue>)new ObservedChange<TSender, TValue>
+						  {
+							  Sender = This,
+							  PropertyName = propertyName,
+							  Value = (TValue)x.Value
+						  });
+	    }
+
+	    /// <summary>
         /// ObservableForPropertyDynamic returns an Observable representing the
         /// property change notifications for a specific property on a
         /// ReactiveObject. This method (unlike other Observables that return
