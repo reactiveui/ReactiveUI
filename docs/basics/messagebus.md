@@ -83,7 +83,7 @@ public DocumentViewModel : ReactiveCommand
     }
 }
 
-public MainViewModel : ReactiveCommand
+public MainViewModel : ReactiveObject
 {
     public ReactiveList<DocumentViewModel> OpenDocuments { get; protected set; }
 
