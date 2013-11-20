@@ -4,13 +4,15 @@ $Projects = {
     "ReactiveUI.NLog", "ReactiveUI.Mobile", "RxUIViewModelGenerator", "ReactiveUI.Events"
 }
 
+$MSBuildLocation = "C:\Program Files (x86)\MSBuild\12.0\bin"
+
 $SlnFileExists = Test-Path ".\ReactiveUI_VSAll.sln"
 if ($SlnFileExists -eq $False) {
     echo "*** ERROR: Run this in the project root ***"
     exit -1
 }
 
-C:\Windows\Microsoft.NET\Framework\v4.0.30319\MSBuild.exe /t:Rebuild /p:Configuration=Release /p:Platform="Any CPU" /maxcpucount:1 .\ReactiveUI_VSAll.sln
+& "$MSBuildLocation\MSBuild.exe" /t:Rebuild /p:Configuration=Release /p:Platform="Any CPU" /maxcpucount:1 .\ReactiveUI.sln
 
 ###
 ### Build the Release directory
@@ -20,7 +22,7 @@ if (Test-Path .\Release) {
     rmdir -r -force .\Release
 }
 
-foreach-object $Archs | %{mkdir -p ".\Release\$_"}
+foreach-object $Archs | %{mkdir -Path ".\Release\$_"}
 
 foreach-object $Archs | %{
     $currentArch = $_
