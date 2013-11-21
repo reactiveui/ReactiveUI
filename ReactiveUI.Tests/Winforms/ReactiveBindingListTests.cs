@@ -1,5 +1,6 @@
 ﻿namespace ReactiveUI.Tests.Winforms
 {
+    using System;
     using System.Collections.Generic;
     using System.ComponentModel;
     using System.Linq;
@@ -183,6 +184,43 @@
 
             Assert.Equal(1, capturedEvents.Count);
             Assert.Equal(ListChangedType.Reset, capturedEvents[0].ListChangedType);
+        }
+
+        [Fact]
+        public void DerivedCollectionsShouldRaiseListChangedEvents()
+        {
+            var input = new[] { "Foo", "Bar", "Baz", "Bamf" };
+            var fixture = new ReactiveList<TestFixture>(
+                input.Select(x => new TestFixture() { IsOnlyOneWord = x }));
+            
+            IBindingList output = fixture.CreateDerivedBindingList(new Func<TestFixture, string>(x => x.IsOnlyOneWord));
+            var capturedEvents = new List<ListChangedEventArgs>();
+            output.ListChanged += (o, e) => capturedEvents.Add(e);
+
+
+            input.AssertAreEqual((IEnumerable<string>)output);
+
+            fixture.Add(new TestFixture() { IsOnlyOneWord = "Hello" });
+            Assert.Equal(capturedEvents.Last().ListChangedType,ListChangedType.ItemAdded);
+            Assert.Equal(5, output.Count);
+            Assert.Equal("Hello", output[4]);
+
+            fixture.RemoveAt(4);
+            Assert.Equal(capturedEvents.Last().ListChangedType, ListChangedType.ItemDeleted);
+            Assert.Equal(4, output.Count);
+
+            //replacing results in 
+            //1 itemdeleted
+            //2 itemadded
+            fixture[1] = new TestFixture() { IsOnlyOneWord = "Goodbye" };
+            Assert.Equal(4, output.Count);
+            Assert.Equal("Goodbye", output[1]);
+            Assert.Equal(capturedEvents[capturedEvents.Count - 2].ListChangedType, ListChangedType.ItemDeleted);
+            Assert.Equal(capturedEvents[capturedEvents.Count - 1].ListChangedType, ListChangedType.ItemAdded);
+
+            fixture.Clear();
+            Assert.Equal(0, output.Count);
+            Assert.Equal(capturedEvents.Last().ListChangedType, ListChangedType.Reset);
         }
     }
 }
