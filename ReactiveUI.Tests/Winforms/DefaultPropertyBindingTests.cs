@@ -4,6 +4,7 @@ using System.Windows.Forms;
 using Xunit;
 using ReactiveUI.Winforms;
 
+
 namespace ReactiveUI.Tests.Winforms
 {
     public class DefaultPropertyBindingTests
@@ -28,6 +29,29 @@ namespace ReactiveUI.Tests.Winforms
             output.Dispose();
 
             input.Text = "Bar";
+            Assert.Equal(1, output.Count);
+        }
+
+        [Fact]
+        public void WinformsCreatesObservableForPropertyWorksForThirdPartyControls()
+        {
+            var input = new AThirdPartyNamespace.ThirdPartyControl();
+            var fixture = new WinformsCreatesObservableForProperty();
+
+            Assert.NotEqual(0, fixture.GetAffinityForObject(typeof(AThirdPartyNamespace.ThirdPartyControl), "Value"));
+
+            var output = fixture.GetNotificationForProperty(input, "Value").CreateCollection();
+            Assert.Equal(0, output.Count);
+
+            input.Value = "Foo";
+            Assert.Equal(1, output.Count);
+            Assert.Equal(input, output[0].Sender);
+            Assert.Equal("Value", output[0].PropertyName);
+            Assert.Equal("Foo", output[0].Value);
+
+            output.Dispose();
+
+            input.Value = "Bar";
             Assert.Equal(1, output.Count);
         }
 
@@ -190,5 +214,40 @@ namespace ReactiveUI.Tests.Winforms
             this.BooleanProperty = new CheckBox();
             SomeDouble = new TextBox();
         }
+    }
+}
+
+namespace AThirdPartyNamespace
+{
+    public class ThirdPartyControl : Control
+    {
+        string value;
+
+        public string Value
+        {
+            get
+            {
+                return this.value;
+            }
+            set
+            {
+                if (this.value != value)
+                {
+                    this.value = value;
+                    this.OnValueChanged();
+                }
+            }
+        }
+
+        public event EventHandler ValueChanged;
+
+        protected virtual void OnValueChanged()
+        {
+            if (ValueChanged != null)
+            {
+                ValueChanged(this, EventArgs.Empty);
+            }
+        }
+
     }
 }

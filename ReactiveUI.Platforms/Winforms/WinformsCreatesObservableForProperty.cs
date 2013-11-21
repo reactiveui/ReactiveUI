@@ -1,14 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace ReactiveUI.Winforms
 {
+  
+
     public class WinformsCreatesObservableForProperty : ICreatesObservableForProperty
     {
         static readonly MemoizingMRUCache<Tuple<Type, string>, EventInfo> eventInfoCache = new MemoizingMRUCache<Tuple<Type, string>, EventInfo>((pair, _) => {
@@ -18,7 +18,8 @@ namespace ReactiveUI.Winforms
 
         public int GetAffinityForObject(Type type, string propertyName, bool beforeChanged = false)
         {
-            if (!type.FullName.ToLowerInvariant().StartsWith("system.windows.forms")) return 0;
+            bool supportsTypeBinding = typeof(Control).IsAssignableFrom(type);
+            if (!supportsTypeBinding) return 0;
 
             lock (eventInfoCache) {
                 var ei = eventInfoCache.Get(Tuple.Create(type, propertyName));
