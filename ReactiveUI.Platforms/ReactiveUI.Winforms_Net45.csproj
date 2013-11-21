@@ -126,6 +126,8 @@
   <ItemGroup>
     <Compile Include="ComponentModelTypeConverter.cs" />
     <Compile Include="PlatformUnitTestDetector.cs" />
+    <Compile Include="Winforms\ObservableCollectionChangedToListChangedTransformer.cs" />
+    <Compile Include="Winforms\ReactiveDerivedBindingListMixin.cs" />
     <Compile Include="Winforms\RoutedViewHost.cs">
       <SubType>UserControl</SubType>
     </Compile>
