@@ -553,6 +553,35 @@ namespace ReactiveUI.Tests
                 changes.Select(x => x.Value).AssertAreEqual(new[] { "Pre", "Foo" });
             });
         }
+
+        [Fact]
+        public void OFPNamedPropertyTestRepeats()
+        {
+            (new TestScheduler()).With(sched => {
+                var fixture = new TestFixture();
+                var changes = fixture.ObservableForProperty<TestFixture, string>("IsOnlyOneWord").CreateCollection();
+
+                fixture.IsOnlyOneWord = "Foo";
+                sched.Start();
+                Assert.Equal(1, changes.Count);
+
+                fixture.IsOnlyOneWord = "Bar";
+                sched.Start();
+                Assert.Equal(2, changes.Count);
+
+                fixture.IsOnlyOneWord = "Bar";
+                sched.Start();
+                Assert.Equal(2, changes.Count);
+
+                fixture.IsOnlyOneWord = "Foo";
+                sched.Start();
+                Assert.Equal(3, changes.Count);
+
+                Assert.True(changes.All(x => x.Sender == fixture));
+                Assert.True(changes.All(x => x.PropertyName == "IsOnlyOneWord"));
+                changes.Select(x => x.Value).AssertAreEqual(new[] { "Foo", "Bar", "Foo" });
+            });
+        }
     }
 
     public class WhenAnyObservableTests
