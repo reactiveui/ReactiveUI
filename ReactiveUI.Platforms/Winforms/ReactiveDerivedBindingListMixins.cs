@@ -14,8 +14,7 @@ namespace ReactiveUI.Winforms
     /// that are automatically updated when the respective Model collection is updated.
     /// </summary>
     public interface IReactiveDerivedBindingList<T> : IReactiveDerivedList<T>, IBindingList
-    {
-    }
+    {}
 
     class ReactiveDerivedBindingList<TSource, TValue> : ReactiveDerivedCollection<TSource, TValue>,
         IReactiveDerivedBindingList<TValue>
@@ -27,8 +26,7 @@ namespace ReactiveUI.Winforms
             Func<TValue, TValue, int> orderer,
             IObservable<Unit> signalReset)
             : base(source, selector, filter, orderer, signalReset)
-        {
-        }
+        {}
 
         protected override void raiseCollectionChanged(NotifyCollectionChangedEventArgs e)
         {
@@ -72,77 +70,23 @@ namespace ReactiveUI.Winforms
             throw new NotSupportedException();
         }
 
-        public bool AllowNew
-        {
-            get
-            {
-                return false;
-            }
-        }
+        public bool AllowNew { get { return false; } }
 
-        public bool AllowEdit
-        {
-            get
-            {
-                return false;
-            }
-        }
+        public bool AllowEdit { get { return false; } }
 
-        public bool AllowRemove
-        {
-            get
-            {
-                return false;
-            }
-        }
+        public bool AllowRemove { get { return false; } }
 
-        public bool SupportsChangeNotification
-        {
-            get
-            {
-                return true;
-            }
-        }
+        public bool SupportsChangeNotification { get { return true; } }
 
-        public bool SupportsSearching
-        {
-            get
-            {
-                return false;
-            }
-        }
+        public bool SupportsSearching { get { return false; } }
 
-        public bool SupportsSorting
-        {
-            get
-            {
-                return false;
-            }
-        }
+        public bool SupportsSorting { get { return false; } }
 
-        public bool IsSorted
-        {
-            get
-            {
-                return false;
-            }
-        }
+        public bool IsSorted { get { return false; } }
 
-        public PropertyDescriptor SortProperty
-        {
-            get
-            {
-                return null;
-            }
-        }
+        public PropertyDescriptor SortProperty { get { return null; } }
 
-        public ListSortDirection SortDirection
-        {
-            get
-            {
-                return ListSortDirection.Ascending;
-            }
-        }
+        public ListSortDirection SortDirection { get { return ListSortDirection.Ascending; } }
 
         public event ListChangedEventHandler ListChanged;
 
