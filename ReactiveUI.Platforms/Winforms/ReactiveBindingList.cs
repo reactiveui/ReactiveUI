@@ -22,8 +22,7 @@ namespace ReactiveUI.Winforms
     {
         public ReactiveBindingList()
             : this(null)
-        {
-        }
+        {}
 
         #region Implementation of ICancelAddNew
 
@@ -41,13 +40,7 @@ namespace ReactiveUI.Winforms
 
         #region Implementation of IRaiseItemChangedEvents
 
-        public bool RaisesItemChangedEvents
-        {
-            get
-            {
-                return base.ChangeTrackingEnabled;
-            }
-        }
+        public bool RaisesItemChangedEvents { get { return base.ChangeTrackingEnabled; } }
 
         #endregion
 
@@ -57,8 +50,7 @@ namespace ReactiveUI.Winforms
         /// <param name="items"></param>
         public ReactiveBindingList(IEnumerable<T> items)
             : base(items)
-        {
-        }
+        {}
 
         protected override void raiseCollectionChanged(NotifyCollectionChangedEventArgs e)
         {
@@ -100,77 +92,23 @@ namespace ReactiveUI.Winforms
             throw new NotSupportedException();
         }
 
-        public bool AllowNew
-        {
-            get
-            {
-                return true;
-            }
-        }
+        public bool AllowNew { get { return true; } }
 
-        public bool AllowEdit
-        {
-            get
-            {
-                return true;
-            }
-        }
+        public bool AllowEdit { get { return true; } }
 
-        public bool AllowRemove
-        {
-            get
-            {
-                return true;
-            }
-        }
+        public bool AllowRemove { get { return true; } }
 
-        public bool SupportsChangeNotification
-        {
-            get
-            {
-                return true;
-            }
-        }
+        public bool SupportsChangeNotification { get { return true; } }
 
-        public bool SupportsSearching
-        {
-            get
-            {
-                return false;
-            }
-        }
+        public bool SupportsSearching { get { return false; } }
 
-        public bool SupportsSorting
-        {
-            get
-            {
-                return false;
-            }
-        }
+        public bool SupportsSorting { get { return false; } }
 
-        public bool IsSorted
-        {
-            get
-            {
-                return false;
-            }
-        }
+        public bool IsSorted { get { return false; } }
 
-        public PropertyDescriptor SortProperty
-        {
-            get
-            {
-                return null;
-            }
-        }
+        public PropertyDescriptor SortProperty { get { return null; } }
 
-        public ListSortDirection SortDirection
-        {
-            get
-            {
-                return ListSortDirection.Ascending;
-            }
-        }
+        public ListSortDirection SortDirection { get { return ListSortDirection.Ascending; } }
 
         public event ListChangedEventHandler ListChanged;
 
