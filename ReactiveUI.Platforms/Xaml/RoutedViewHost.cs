@@ -92,7 +92,7 @@ namespace ReactiveUI.Xaml
                 var view = viewLocator.ResolveView(x.Item1, x.Item2) ?? viewLocator.ResolveView(x.Item1, null);
 
                 if (view == null) {
-                    throw new Exception(string.Format("Couldn't find view for '{0}'.", x.Item1));
+                    throw new Exception(String.Format("Couldn't find view for '{0}'.", x.Item1));
                 }
 
                 view.ViewModel = x.Item1;
