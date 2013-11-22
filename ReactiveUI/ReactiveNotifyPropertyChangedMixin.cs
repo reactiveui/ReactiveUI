@@ -86,7 +86,7 @@ namespace ReactiveUI
             }
 
             return values.Select(x => x.fillInValue())
-                 .Distinct(x => x.Value)
+                 .DistinctUntilChanged(x => x.Value)
                  .Select(x => (IObservedChange<TSender,TValue>) new ObservedChange<TSender, TValue> {
                       Sender = This,
                       PropertyName = propertyName,
