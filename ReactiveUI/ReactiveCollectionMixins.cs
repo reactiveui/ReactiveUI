@@ -176,7 +176,7 @@ namespace ReactiveUI
     /// It is read-only, and any attempts to change items in the collection will
     /// fail.
     /// </summary>
-    internal sealed class ReactiveDerivedCollection<TSource, TValue> : ReactiveDerivedCollection<TValue>, IDisposable
+    internal class ReactiveDerivedCollection<TSource, TValue> : ReactiveDerivedCollection<TValue>, IDisposable
     {
         readonly IEnumerable<TSource> source;
         readonly Func<TSource, TValue> selector;
