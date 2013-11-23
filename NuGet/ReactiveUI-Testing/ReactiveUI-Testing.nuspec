@@ -10,9 +10,21 @@
 		<language>en-us</language>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 
-		<dependencies>
-			<dependency id="reactiveui-core" version="[5.3.0]" />
-			<dependency id="Rx-Testing" version="2.1.30214.0" />
+		<dependencies>			
+			<group targetFramework="net45">
+				<dependency id="reactiveui-core" version="[5.3.0]" />
+        <dependency id="Rx-Testing" version="2.1.30214.0" />
+			</group>
+			<group targetFramework="WP8">
+				<dependency id="reactiveui-core" version="[5.3.0]" />
+        <dependency id="Rx-Testing" version="2.1.30214.0" />
+			</group>
+			<group targetFramework="monoandroid">
+				<dependency id="reactiveui-core" version="[5.3.0]" />        
+			</group>
+			<group targetFramework="monotouch">
+				<dependency id="reactiveui-core" version="[5.3.0]" />        
+			</group>
 		</dependencies>
 	</metadata>
 </package>

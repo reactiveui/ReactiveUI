@@ -11,8 +11,27 @@
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 
 		<dependencies>
-			<dependency id="reactiveui-core" version="[5.3.0]" />
-			<dependency id="Rx-Xaml" version="2.1.30214.0" />
+		    <group targetFramework="Monoandroid">
+          <dependency id="reactiveui-core" version="[5.3.0]" />
+		    </group>  
+		    <group targetFramework="Monomac">
+          <dependency id="reactiveui-core" version="[5.3.0]" />
+		    </group>  
+		    <group targetFramework="Monotouch">
+          <dependency id="reactiveui-core" version="[5.3.0]" />
+		    </group>  
+        <group targetFramework="net45">
+            <dependency id="reactiveui-core" version="[5.3.0]" />
+            <dependency id="Rx-Xaml" version="2.1.30214.0" />
+          </group>
+          <group targetFramework="wp8">
+            <dependency id="reactiveui-core" version="[5.3.0]" />
+            <dependency id="Rx-Xaml" version="2.1.30214.0" />
+          </group>
+          <group targetFramework="winrt45">
+            <dependency id="reactiveui-core" version="[5.3.0]" />            
+            <dependency id="Rx-Xaml" version="2.1.30214.0" />
+          </group>
 		</dependencies>
 	</metadata>
 </package>
