@@ -38,11 +38,11 @@ Because ViewModels do not explicitly reference UI frameworks or controls, this
 means that ViewModels can often be *reused across platforms*. This is a very
 powerful pattern that can drastically reduce the time required to port to a
 new platform, especially in conjunction with portable libraries designed to
-help in this task, such as [Splat](github.com/paulcbetts/splat) and
-[Akavache](github.com/akavache/Akavache). The majority of your application's
-interesting code (models / network handling / caching / image loading /
-viewmodels) can be used on all platforms, and only the View-related classes
-need to be rewritten.
+help in this task, such as [Splat](https://github.com/paulcbetts/splat) and
+[Akavache](https://github.com/akavache/Akavache). The majority of your
+application's interesting code (models / network handling / caching / image
+loading / viewmodels) can be used on all platforms, and only the View-related
+classes need to be rewritten.
 
 ### Common Mistakes and Misconceptions
 
