@@ -1,15 +1,18 @@
 # Creating ViewModels with ReactiveObject
 
-At the core of every MVVM framework is the ViewModel - while this class is the
-most interesting aspect of the MVVM pattern, it is also the most
+At the core of every MVVM framework is the *ViewModel* - while this class is
+the most interesting aspect of the MVVM pattern, it is also the most
 misunderstood. Properly reasoning about what a ViewModel is and is not, is
 crucial to correctly applying the MVVM pattern.
 
+### The Zen of The ViewModel
+
 Most UI frameworks have applied almost zero thought to unit testing when their
-framework was designed, or those concerns were deemed as out-of-scope. UI
-objects are often very difficult to test in unit test runners, as they are not
-just *plain objects*. They may have dependencies on a runloop existing, or
-often expect static classes / globals to be initialized in a certain way.
+framework was designed, or those concerns were deemed as out-of-scope. As a
+result, UI objects are often very difficult to test in unit test runners, as
+they are not just *plain objects*. They may have dependencies on a runloop
+existing, or often expect static classes / globals to be initialized in a
+certain way.
 
 So, since UI classes are untestable, our new goal is to put as much of our
 *interesting code*, into a class that *represents* the View, but is just a
@@ -17,19 +20,17 @@ regular class we can create. Then, we want the actual code in the View to be
 as boring, mechanical, and as short as possible, because it is inherently
 untestable.
 
-This class is called the ViewModel, and it is the Model of a View. This means,
-that you usually have one ViewModel per View. This doesn't have to be strictly
-true, but it is generally the case. 
+This class is called the **ViewModel**, and it is the *Model* of a *View*.
+This means, that you usually have one ViewModel per View. This doesn't have to
+be strictly true, but it is generally the case. 
 
 Another important aspect of understanding ViewModels is that they are an
-abstraction to separate **policy** from **mechanism**. ViewModels do not deal
-in the specifics of Buttons and Menus and TextBoxes, they only describe how
-the data in these elements are related. 
-
-For example, the "Copy" `ICommand` has no direct knowledge of the MenuItem or
-the Button that it is connected to, it only models the *Action* of Copying.
-The View has the responsibility of mapping the Copy command to the controls
-that invoke it.
+abstraction to separate *policy* from *mechanism*. ViewModels do not deal in
+the specifics of Buttons and Menus and TextBoxes, they only describe how the
+data in these elements are related. For example, the "Copy" `ICommand` has no
+direct knowledge of the MenuItem or the Button that it is connected to, it
+only models the *Action* of Copying. The View has the responsibility of
+mapping the Copy command to the controls that invoke it.
 
 ### ViewModels are Reusable
 
