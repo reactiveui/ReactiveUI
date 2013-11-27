@@ -98,18 +98,18 @@ namespace ReactiveUI.Cocoa
 
         public TUIViewCell GetCell(NSIndexPath indexPath)
         {
-            var section = SafeGetSectionInformation(indexPath.Section);
-            if (sectionInfo == null)
+            var secInfo = SafeGetSectionInformation(indexPath.Section);
+            if (secInfo == null)
                 return null;
-            var cell = adapter.DequeueReusableCell(section.CellKey, indexPath);
+            var cell = adapter.DequeueReusableCell(secInfo.CellKey, indexPath);
             var view = cell as IViewFor;
 
             if (view != null) {
                 this.Log().Info("GetCell: Setting vm for Row: " + indexPath.Row);
-                view.ViewModel = ((IList)section.Collection) [indexPath.Row];
+                view.ViewModel = ((IList)secInfo.Collection) [indexPath.Row];
             }
 
-            (section.InitializeCellAction ?? (_ => {}))(cell);
+            (secInfo.InitializeCellAction ?? (_ => {}))(cell);
             return cell;
         }
 
@@ -120,20 +120,20 @@ namespace ReactiveUI.Cocoa
 
         public int RowsInSection(int section)
         {
-            var sectionInfo = SafeGetSectionInformation(section);
-            if (sectionInfo == null)
+            var secInfo = SafeGetSectionInformation(section);
+            if (secInfo == null)
                 return 0;
-            var count = ((IList)sectionInfo.Collection).Count;
+            var count = ((IList)secInfo.Collection).Count;
             this.Log().Info("RowsInSection: {0}-{1}", section, count);
             return count;
         }
 
         public object ItemAt(NSIndexPath path)
         {
-            var sectionInfo = SafeGetSectionInformation(path.Section);
-            if (sectionInfo == null)
+            var secInfo = SafeGetSectionInformation(path.Section);
+            if (secInfo == null)
                 return null;
-            var list = (IList)sectionInfo.Collection;
+            var list = (IList)secInfo.Collection;
             return list[path.Row];
         }
 
