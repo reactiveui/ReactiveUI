@@ -38,7 +38,8 @@ namespace ReactiveUI.Cocoa
     /// and <see cref="ReactiveCollectionViewSource"/>.
     /// </summary>
     sealed class CommonReactiveSource<TUIView, TUIViewCell, TSectionInfo> : ReactiveObject, IDisposable, IEnableLogger
-        where TSectionInfo : ISectionInformation<TUIView, TUIViewCell>
+        where TSectionInfo : class, ISectionInformation<TUIView, TUIViewCell>
+        where TUIViewCell : class
     {
         /// <summary>
         /// Main disposable which is disposed when this object is disposed.
@@ -97,7 +98,9 @@ namespace ReactiveUI.Cocoa
 
         public TUIViewCell GetCell(NSIndexPath indexPath)
         {
-            var section = SectionInfo[indexPath.Section];
+            var section = SafeGetSectionInformation(indexPath.Section);
+            if (sectionInfo == null)
+                return null;
             var cell = adapter.DequeueReusableCell(section.CellKey, indexPath);
             var view = cell as IViewFor;
 
@@ -117,14 +120,20 @@ namespace ReactiveUI.Cocoa
 
         public int RowsInSection(int section)
         {
-            var count = ((IList)SectionInfo[section].Collection).Count;
+            var sectionInfo = SafeGetSectionInformation(section);
+            if (sectionInfo == null)
+                return 0;
+            var count = ((IList)sectionInfo.Collection).Count;
             this.Log().Info("RowsInSection: {0}-{1}", section, count);
             return count;
         }
 
         public object ItemAt(NSIndexPath path)
         {
-            var list = (IList)SectionInfo[path.Section].Collection;
+            var sectionInfo = SafeGetSectionInformation(path.Section);
+            if (sectionInfo == null)
+                return null;
+            var list = (IList)sectionInfo.Collection;
             return list[path.Row];
         }
 
@@ -172,7 +181,15 @@ namespace ReactiveUI.Cocoa
 
                 for (int i = 0; i < newSectionInfo.Count; i++) {
                     var section = i;
-                    var current = newSectionInfo[i].Collection;
+                    IReactiveNotifyCollectionChanged current;
+                    try {
+                        current = newSectionInfo[i].Collection;
+                    }
+                    // this array can change under our feet, but swalling the exception is harmless since a
+                    // new change event would have already been triggered by then.
+                    catch (ArgumentOutOfRangeException) { 
+                        this.Log().Debug("SectionInfo[] threw an ArgumentOutOfRangeException.");
+                        break; }
                     disp2.Add(current
                         .Changed
                         .Buffer(TimeSpan.FromMilliseconds(250), RxApp.MainThreadScheduler)
@@ -276,6 +293,26 @@ namespace ReactiveUI.Cocoa
                 String.Join(",", toChange.Select(x => x.Section + "-" + x.Row)));
 
             method(toChange);
+        }
+
+        /// <summary>
+        /// Tries to get the section-th item of SectionInfo, but if a
+        /// <see cref="ArgumentOutOfRangeException"/> is thrown, returns null instead.
+        /// </summary>
+        /// <returns>The corresponding TSectionInfo or null if out of range.</returns>
+        public TSectionInfo SafeGetSectionInformation(int section)
+        {
+            TSectionInfo tsi;
+            try {
+                tsi = SectionInfo[section];
+            }
+            // this array can change under our feet, but swalling the exception is harmless since a
+            // new change event would have already been triggered by then.
+            catch (ArgumentOutOfRangeException) {
+                this.Log().Debug("SectionInfo[] threw an ArgumentOutOfRangeException.");
+                return null;
+            }
+            return tsi;
         }
     }
 }

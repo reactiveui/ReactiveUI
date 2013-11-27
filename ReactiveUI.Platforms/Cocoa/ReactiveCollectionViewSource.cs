@@ -109,6 +109,7 @@ namespace ReactiveUI.Cocoa
             get { return commonSource.DidPerformUpdates; }
         }
 
+        // Will return null if indexPath refers to section that doesn't exit
         public override UICollectionViewCell GetCell(UICollectionView collectionView, NSIndexPath indexPath)
         {
             return commonSource.GetCell(indexPath);
@@ -119,11 +120,13 @@ namespace ReactiveUI.Cocoa
             return commonSource.NumberOfSections();
         }
 
+        // Will return null if section doesn't exit
         public override int GetItemsCount(UICollectionView collectionView, int section)
         {
             return commonSource.RowsInSection(section);
         }
 
+        // Will return null if indexPath refers to section that doesn't exit
         public override void ItemSelected(UICollectionView collectionView, NSIndexPath indexPath)
         {
             elementSelected.OnNext(commonSource.ItemAt(indexPath));

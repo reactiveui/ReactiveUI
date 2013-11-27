@@ -153,6 +153,7 @@ namespace ReactiveUI.Cocoa
             get { return commonSource.DidPerformUpdates; }
         }
 
+        // Will return null if indexPath refers to section that doesn't exit
         public override UITableViewCell GetCell(UITableView tableView, NSIndexPath indexPath)
         {
             return commonSource.GetCell(indexPath);
@@ -163,6 +164,7 @@ namespace ReactiveUI.Cocoa
             return commonSource.NumberOfSections();
         }
 
+        // Will return null if section doesn't exit
         public override int RowsInSection(UITableView tableview, int section)
         {
             return commonSource.RowsInSection(section);
@@ -178,6 +180,7 @@ namespace ReactiveUI.Cocoa
             return false;
         }
 
+        // Will return null if indexPath refers to section that doesn't exit
         public override void RowSelected(UITableView tableView, NSIndexPath indexPath)
         {
             elementSelected.OnNext(commonSource.ItemAt(indexPath));
@@ -191,30 +194,35 @@ namespace ReactiveUI.Cocoa
 
         public override float GetHeightForRow(UITableView tableView, NSIndexPath indexPath)
         {
-            return commonSource.SectionInfo[indexPath.Section].SizeHint;
+            var sectionInfo = commonSource.SafeGetSectionInformation(indexPath.Section);
+            return sectionInfo == null ? 0 : sectionInfo.SizeHint;
         }
 
         public override float GetHeightForHeader(UITableView tableView, int section)
         {
-            var header = commonSource.SectionInfo[section].Header;
+            var sectionInfo = commonSource.SafeGetSectionInformation(section);
+            var header = sectionInfo == null ? null : sectionInfo.Header;
             return header == null ? 0 : header.Height;
         }
 
         public override float GetHeightForFooter(UITableView tableView, int section)
         {
-            var footer = commonSource.SectionInfo[section].Footer;
+            var sectionInfo = commonSource.SafeGetSectionInformation(section);
+            var footer = sectionInfo == null ? null : sectionInfo.Footer;
             return footer == null ? 0 : footer.Height;
         }
 
         public override UIView GetViewForHeader(UITableView tableView, int section)
         {
-            var header = commonSource.SectionInfo[section].Header;
+            var sectionInfo = commonSource.SafeGetSectionInformation(section);
+            var header = sectionInfo == null ? null : sectionInfo.Header;
             return header == null ? null : header.View.Invoke();
         }
 
         public override UIView GetViewForFooter(UITableView tableView, int section)
         {
-            var footer = commonSource.SectionInfo[section].Footer;
+            var sectionInfo = commonSource.SafeGetSectionInformation(section);
+            var footer = sectionInfo == null ? null : sectionInfo.Footer;
             return footer == null ? null : footer.View.Invoke();
         }
 
