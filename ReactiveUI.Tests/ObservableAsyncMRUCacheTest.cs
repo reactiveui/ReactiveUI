@@ -57,5 +57,28 @@ namespace ReactiveUI.Tests
             sched.AdvanceTo(sched.FromTimeSpan(TimeSpan.FromMilliseconds(5000)));
             Assert.Equal(1*5 + 2*5 + 3*5 + 4*5 + 1*5, result);
         }
+
+        [Fact]
+        public void EnsureCacheDoesNotBlockOnRelease()
+        {
+            var input = new[] { 1, 2 };
+            var sched = new TestScheduler();
+            var releaseCount = 0;
+
+            var delay = TimeSpan.FromSeconds(1.0);
+            //set the cache to only hold one value, which forces an eviction of an inflight request from the inner cache
+            var fixture = new ObservableAsyncMRUCache<int, int>(x => Observable.Return(x * 5).Delay(delay, sched), 1, 2, x=>releaseCount+=1, sched);
+
+
+            int result = 0;
+            input.ToObservable(sched).SelectMany<int, int>(x => (IObservable<int>)fixture.AsyncGet(x)).Subscribe(x => result += x);
+
+            sched.AdvanceTo(sched.FromTimeSpan(TimeSpan.FromMilliseconds(1000)));
+            Assert.Equal(0,releaseCount);
+            sched.AdvanceTo(sched.FromTimeSpan(TimeSpan.FromMilliseconds(1001)));
+            Assert.Equal(1, releaseCount);
+           
+
+        }
     }
 }

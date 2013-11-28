@@ -48,10 +48,10 @@ namespace ReactiveUI
              * Return Subject
              * 
              * If Bar changes (notification fires on Foo), resubscribe to new Bar
-             * 	Resubscribe to new Baz, publish to Subject
+             *  Resubscribe to new Baz, publish to Subject
              * 
              * If Baz changes (notification fires on Bar),
-             * 	Resubscribe to new Baz, publish to Subject
+             *  Resubscribe to new Baz, publish to Subject
              */
 
             return SubscribeToExpressionChain<TSender, TValue>(
@@ -59,6 +59,39 @@ namespace ReactiveUI
                 propertyNames,
                 beforeChange,
                 skipInitial);
+        }
+
+        /// <summary>
+        /// ObservableForProperty returns an Observable representing the
+        /// property change notifications for a specific property on a
+        /// ReactiveObject. This method (unlike other Observables that return
+        /// IObservedChange) guarantees that the Value property of
+        /// the IObservedChange is set.
+        /// </summary>
+        /// <param name="propertyName">A string containing the property name</param>
+        /// <param name="beforeChange">If True, the Observable will notify
+        /// immediately before a property is going to change.</param>
+        /// <returns>An Observable representing the property change
+        /// notifications for the given property.</returns>
+        public static IObservable<IObservedChange<TSender, TValue>> ObservableForProperty<TSender, TValue>(
+            this TSender This,
+            string propertyName,
+            bool beforeChange = false,
+            bool skipInitial = true)
+        {
+            var values = notifyForProperty(This, propertyName, beforeChange);
+
+            if (!skipInitial) {
+                values = values.StartWith(new ObservedChange<object, object> { Sender = This, PropertyName = propertyName });
+            }
+
+            return values.Select(x => x.fillInValue())
+                 .DistinctUntilChanged(x => x.Value)
+                 .Select(x => (IObservedChange<TSender,TValue>) new ObservedChange<TSender, TValue> {
+                      Sender = This,
+                      PropertyName = propertyName,
+                      Value = (TValue)x.Value
+                  });
         }
 
         /// <summary>
@@ -95,10 +128,10 @@ namespace ReactiveUI
              * Return Subject
              * 
              * If Bar changes (notification fires on Foo), resubscribe to new Bar
-             * 	Resubscribe to new Baz, publish to Subject
+             *  Resubscribe to new Baz, publish to Subject
              * 
              * If Baz changes (notification fires on Bar),
-             * 	Resubscribe to new Baz, publish to Subject
+             *  Resubscribe to new Baz, publish to Subject
              */
 
             return SubscribeToExpressionChain<TSender, object>(
@@ -150,10 +183,9 @@ namespace ReactiveUI
             IObservable<IObservedChange<object, object>> notifier = 
                 Observable.Return((IObservedChange<object, object>)new ObservedChange<object, object>() { Value = source });
 
-            notifier = propertyNames.Aggregate(notifier, 
-                (n, name) => n
-                    .Select(y => nestedObservedChanges(name, y, beforeChange))
-                    .Switch());
+            notifier = propertyNames.Aggregate(notifier, (n, name) => n
+                .Select(y => nestedObservedChanges(name, y, beforeChange))
+                .Switch());
 
             if (skipInitial) {
                 notifier = notifier.Skip(1);
