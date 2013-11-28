@@ -58,22 +58,30 @@ namespace ReactiveUI
         [IgnoreDataMember]
         long changeNotificationsSuppressed = 0;
 
-        [IgnoreDataMember] 
+        [IgnoreDataMember]
         readonly ScheduledSubject<Exception> thrownExceptions = new ScheduledSubject<Exception>(Scheduler.Immediate, RxApp.DefaultExceptionHandler);
 
         [IgnoreDataMember]
         public IObservable<Exception> ThrownExceptions { get { return thrownExceptions; } }
-        
+
+        enum ESetupRxCallOrigin
+        {
+            Constructor,
+            OnDeserialized,
+        }
+
         protected ReactiveObject()
         {
-            setupRxObj();
+            setupRxObj(ESetupRxCallOrigin.Constructor);
         }
 
         [OnDeserialized]
-        void setupRxObj(StreamingContext sc) { setupRxObj(); }
+        void setupRxObj(StreamingContext sc) { setupRxObj(ESetupRxCallOrigin.OnDeserialized); }
 
-        void setupRxObj()
+        void setupRxObj(ESetupRxCallOrigin setupRxCallOrigin)
         {
+            this.Log().Debug("{0:X} of type {1} created via {2}", this.GetHashCode(), this.GetType(), setupRxCallOrigin);
+
             changingSubject = new Subject<IObservedChange<object, object>>();
             changedSubject = new Subject<IObservedChange<object, object>>();
 
@@ -150,7 +158,7 @@ namespace ReactiveUI
                 thrownExceptions.OnNext(ex);
             }
         }
-    } 
+    }
 
     public static class ReactiveObjectExpressionMixin
     {
@@ -204,7 +212,7 @@ namespace ReactiveUI
         {
             This.raisePropertyChanged(propertyName);
         }
-                
+
         /// <summary>
         /// Use this method in your ReactiveObject classes when creating custom
         /// properties where raiseAndSetIfChanged doesn't suffice.

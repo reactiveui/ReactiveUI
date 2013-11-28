@@ -67,7 +67,7 @@ namespace ReactiveUI.Tests
 
     public class ReactiveObjectTest
     {
-        [Fact]        
+        [Fact]
         public void ReactiveObjectSmokeTest()
         {
             var output_changing = new List<string>();
@@ -150,8 +150,8 @@ namespace ReactiveUI.Tests
         public void ChangingShouldAlwaysArriveBeforeChanged()
         {
             string before_set = "Foo";
-            string after_set = "Bar"; 
-            
+            string after_set = "Bar";
+
             var fixture = new TestFixture() { IsOnlyOneWord = before_set };
 
             bool before_fired = false;
@@ -189,5 +189,45 @@ namespace ReactiveUI.Tests
             fixture.IsOnlyOneWord = "Bar";
             Assert.Equal(1, exceptionList.Count);
         }
+
+        [Fact]
+        public void ReactiveObjectShouldLogConstructedMessage()
+        {
+            var logger = new TestLogger();
+            var resolver = new ModernDependencyResolver();
+            resolver.InitializeResolver();
+            resolver.RegisterConstant(new FuncLogManager(t => new WrappingFullLogger(logger, t)), typeof(ILogManager));
+            using (resolver.WithResolver())
+            {
+                var fixture = new TestFixture();
+                //the following assertion verifies that the logger has a log message with the object's hex hashcode and that it states constructor call (instead of deserialized)
+                Assert.True(logger.Messages.Any(x => x.Item1.Contains("Constructor") && x.Item1.Contains(fixture.GetHashCode().ToString("X"))), "Unable to find ReactiveObject constructed log message");
+            }
+        }
+
+        [Fact]
+        public void ReactiveObjectShouldLogDeserializedMessage()
+        {
+            var logger = new TestLogger();
+            var resolver = new ModernDependencyResolver();
+            resolver.InitializeResolver();
+            resolver.RegisterConstant(new FuncLogManager(t => new WrappingFullLogger(logger, t)), typeof(ILogManager));
+            using (resolver.WithResolver())
+            {
+                var fixture = new TestLogFixture();
+                //the following assertion verifies that the logger has a log message with the object's hex hashcode and that it states deserialized call (instead of constructor)
+                string json = JSONHelper.Serialize(fixture);
+                var deserializedFixture = JSONHelper.Deserialize<TestLogFixture>(json);
+                Assert.True(logger.Messages.Any(x => x.Item1.Contains("Deserialized") && x.Item1.Contains(deserializedFixture.GetHashCode().ToString("X"))), "Unable to find ReactiveObject deserialized log message");
+            }
+        }
+
+        [DataContract]
+        class TestLogFixture : ReactiveObject
+        {
+        }
+
+
+
     }
 }
