@@ -235,12 +235,15 @@ namespace ReactiveUI
                     }
                 }
             } else {
-                inner.Add(Observable
-                    .FromEventPattern<NotifyCollectionChangedEventHandler, NotifyCollectionChangedEventArgs>(
-                        x => incc.CollectionChanged += x,
-                        x => incc.CollectionChanged -= x)
-                    .Select(x => x.EventArgs)
-                    .Subscribe(onSourceCollectionChanged));
+                var irncc = source as IReactiveNotifyCollectionChanged;
+                var eventObs = irncc != null
+                    ? irncc.Changed
+                    : Observable
+                        .FromEventPattern<NotifyCollectionChangedEventHandler, NotifyCollectionChangedEventArgs>(
+                            x => incc.CollectionChanged += x,
+                            x => incc.CollectionChanged -= x)
+                        .Select(x => x.EventArgs);
+                inner.Add(eventObs.Subscribe(onSourceCollectionChanged));
             }
 
             var irc = source as IReactiveCollection;
