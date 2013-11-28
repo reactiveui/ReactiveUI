@@ -18,120 +18,76 @@ using ReactiveUI;
 
 namespace ReactiveUI.Cocoa
 {
-    public class TableSectionInformation : ISectionInformation<UITableView, UITableViewCell>
+    public class CollectionViewSectionInformation : ISectionInformation<UICollectionView, UICollectionViewCell>
     {
         public IReactiveNotifyCollectionChanged Collection { get; protected set; }
-        public Action<UITableViewCell> InitializeCellAction { get; protected set; }
+        public Action<UICollectionViewCell> InitializeCellAction { get; protected set; }
         public NSString CellKey { get; protected set; }
-        public float SizeHint { get; protected set; }
-
-        /// <summary>
-        /// Gets or sets the header of this section.
-        /// </summary>
-        /// <value>The header, or null if a header shouldn't be used.</value>
-        public TableSectionHeader Header { get; set; }
-
-        /// <summary>
-        /// Gets or sets the footer of this section.
-        /// </summary>
-        /// <value>The footer, or null if a footer shouldn't be used.</value>
-        public TableSectionHeader Footer { get; set; }
     }
 
-    public class TableSectionInformation<TCell> : TableSectionInformation
-        where TCell : UITableViewCell
+    public class CollectionViewSectionInformation<TCell> : CollectionViewSectionInformation
+        where TCell : UICollectionViewCell
     {
-        public TableSectionInformation(IReactiveNotifyCollectionChanged collection, NSString cellKey, float sizeHint, Action<TCell> initializeCellAction = null)
+        public CollectionViewSectionInformation(IReactiveNotifyCollectionChanged collection, NSString cellKey, Action<TCell> initializeCellAction = null)
         {
             Collection = collection;
             CellKey = cellKey;
-            SizeHint = sizeHint;
-            if (initializeCellAction != null)
+
+            if (initializeCellAction != null) {
                 InitializeCellAction = cell => initializeCellAction((TCell)cell);
+            }
         }
     }
 
-    class UITableViewAdapter : IUICollViewAdapter<UITableView, UITableViewCell>
+    class UICollectionViewAdapter : IUICollViewAdapter<UICollectionView, UICollectionViewCell>
     {
-        readonly UITableView view;
-        internal UITableViewAdapter(UITableView view) { this.view = view; }
+        readonly UICollectionView view;
+        internal UICollectionViewAdapter(UICollectionView view) { this.view = view; }
+
         public void ReloadData() { view.ReloadData(); }
-        public void PerformBatchUpdates(Action updates)
+        public void PerformBatchUpdates(Action updates) { view.PerformBatchUpdates(new NSAction(updates), null); }
+        public void InsertItems(NSIndexPath[] paths) { view.InsertItems(paths); }
+        public void DeleteItems(NSIndexPath[] paths) { view.DeleteItems(paths); }
+        public void ReloadItems(NSIndexPath[] paths) { view.ReloadItems(paths); }
+        public void MoveItem(NSIndexPath path, NSIndexPath newPath) { view.MoveItem(path, newPath); }
+
+        public UICollectionViewCell DequeueReusableCell(NSString cellKey, NSIndexPath path)
         {
-            view.BeginUpdates();
-            try { updates(); }
-            finally { view.EndUpdates(); }
-        }
-        public void InsertItems(NSIndexPath[] paths) { view.InsertRows(paths, UITableViewRowAnimation.Automatic); }
-        public void DeleteItems(NSIndexPath[] paths) { view.DeleteRows(paths, UITableViewRowAnimation.Automatic); }
-        public void ReloadItems(NSIndexPath[] paths) { view.ReloadRows(paths, UITableViewRowAnimation.Automatic); }
-        public void MoveItem(NSIndexPath path, NSIndexPath newPath) { view.MoveRow(path, newPath); }
-        public UITableViewCell DequeueReusableCell(NSString cellKey, NSIndexPath path)
-        {
-            return view.DequeueReusableCell(cellKey, path);
+            return (UICollectionViewCell)view.DequeueReusableCell(cellKey, path);
         }
     }
 
-    /// <summary>
-    /// A header or footer of a table section.
-    /// </summary>
-    public class TableSectionHeader
+    public class ReactiveCollectionViewSource : UICollectionViewSource, IEnableLogger, IDisposable, IReactiveNotifyPropertyChanged, IHandleObservableErrors
     {
-        /// <summary>
-        /// Gets the function that creates the <see cref="UIView"/>
-        /// used as header for this section.
-        /// </summary>
-        public Func<UIView> View { get; protected set; }
-
-        /// <summary>
-        /// Gets the height of the header.
-        /// </summary>
-        public float Height { get; protected set; }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TableSectionHeader"/>
-        /// struct.
-        /// </summary>
-        /// <param name="view">Function that creates header's <see cref="UIView"/>.</param>
-        /// <param name="height">Height of the header.</param>
-        public TableSectionHeader (Func<UIView> view, float height)
-        {
-            this.View = view;
-            this.Height = height;
-        }
-    }
-
-    public class ReactiveTableViewSource : UITableViewSource, IEnableLogger, IDisposable, IReactiveNotifyPropertyChanged, IHandleObservableErrors
-    {
-        readonly CommonReactiveSource<UITableView, UITableViewCell, TableSectionInformation> commonSource;
+        readonly CommonReactiveSource<UICollectionView, UICollectionViewCell, CollectionViewSectionInformation> commonSource;
         readonly Subject<object> elementSelected = new Subject<object>();
 
-        public ReactiveTableViewSource(UITableView tableView, IReactiveNotifyCollectionChanged collection, NSString cellKey, float sizeHint, Action<UITableViewCell> initializeCellAction = null)
-            : this(tableView) {
-            this.Data = new[] { new TableSectionInformation<UITableViewCell>(collection, cellKey, sizeHint, initializeCellAction)};
+        public ReactiveCollectionViewSource(UICollectionView collectionView, IReactiveNotifyCollectionChanged collection, NSString cellKey, Action<UICollectionViewCell> initializeCellAction = null)
+            : this(collectionView) {
+            this.Data = new[] { new CollectionViewSectionInformation<UICollectionViewCell>(collection, cellKey, initializeCellAction) };
         }
 
         [Obsolete("Please bind your view model to the Data property.")]
-        public ReactiveTableViewSource(UITableView tableView, IReadOnlyList<TableSectionInformation> sectionInformation)
-            : this(tableView) {
+        public ReactiveCollectionViewSource(UICollectionView collectionView, IReadOnlyList<CollectionViewSectionInformation> sectionInformation)
+            : this(collectionView) {
             this.Data = sectionInformation;
         }
 
-        public ReactiveTableViewSource(UITableView tableView) {
+        public ReactiveCollectionViewSource(UICollectionView collectionView) {
             setupRxObj();
-            var adapter = new UITableViewAdapter(tableView);
-            this.commonSource = new CommonReactiveSource<UITableView, UITableViewCell, TableSectionInformation>(adapter);
+            var adapter = new UICollectionViewAdapter(collectionView);
+            this.commonSource = new CommonReactiveSource<UICollectionView, UICollectionViewCell, CollectionViewSectionInformation>(adapter);
         }
 
         /// <summary>
         /// Gets or sets the data that should be displayed by this
-        /// <see cref="ReactiveTableViewSource"/>.  You should
+        /// <see cref="ReactiveCollectionViewSource"/>.  You should
         /// probably bind your view model to this property.
         /// If the list implements <see cref="IReactiveNotifyCollectionChanged"/>,
         /// then the source will react to changes to the contents of the list as well.
         /// </summary>
         /// <value>The data.</value>
-        public IReadOnlyList<TableSectionInformation> Data {
+        public IReadOnlyList<CollectionViewSectionInformation> Data {
             get { return commonSource.SectionInfo; }
             set {
                 if (commonSource.SectionInfo == value)  return;
@@ -143,7 +99,7 @@ namespace ReactiveUI.Cocoa
         }
 
         /// <summary>
-        /// Gets an IObservable that is a hook to <see cref="RowSelected"/> calls.
+        /// Gets an IObservable that is a hook to <see cref="ItemSelected"/> calls.
         /// </summary>
         public IObservable<object> ElementSelected {
             get { return elementSelected; }
@@ -153,32 +109,22 @@ namespace ReactiveUI.Cocoa
             get { return commonSource.DidPerformUpdates; }
         }
 
-        public override UITableViewCell GetCell(UITableView tableView, NSIndexPath indexPath)
+        public override UICollectionViewCell GetCell(UICollectionView collectionView, NSIndexPath indexPath)
         {
             return commonSource.GetCell(indexPath);
         }
 
-        public override int NumberOfSections(UITableView tableView)
+        public override int NumberOfSections(UICollectionView collectionView)
         {
             return commonSource.NumberOfSections();
         }
 
-        public override int RowsInSection(UITableView tableview, int section)
+        public override int GetItemsCount(UICollectionView collectionView, int section)
         {
             return commonSource.RowsInSection(section);
         }
 
-        public override bool CanEditRow(UITableView tableView, NSIndexPath indexPath)
-        {
-            return false;
-        }
-
-        public override bool CanMoveRow(UITableView tableView, NSIndexPath indexPath)
-        {
-            return false;
-        }
-
-        public override void RowSelected(UITableView tableView, NSIndexPath indexPath)
+        public override void ItemSelected(UICollectionView collectionView, NSIndexPath indexPath)
         {
             elementSelected.OnNext(commonSource.ItemAt(indexPath));
         }
@@ -188,37 +134,6 @@ namespace ReactiveUI.Cocoa
             if (disposing) commonSource.Dispose();
             base.Dispose(disposing);
         }
-
-        public override float GetHeightForRow(UITableView tableView, NSIndexPath indexPath)
-        {
-            return commonSource.SectionInfo[indexPath.Section].SizeHint;
-        }
-
-        public override float GetHeightForHeader(UITableView tableView, int section)
-        {
-            var header = commonSource.SectionInfo[section].Header;
-            return header == null ? 0 : header.Height;
-        }
-
-        public override float GetHeightForFooter(UITableView tableView, int section)
-        {
-            var footer = commonSource.SectionInfo[section].Footer;
-            return footer == null ? 0 : footer.Height;
-        }
-
-        public override UIView GetViewForHeader(UITableView tableView, int section)
-        {
-            var header = commonSource.SectionInfo[section].Header;
-            return header == null ? null : header.View.Invoke();
-        }
-
-        public override UIView GetViewForFooter(UITableView tableView, int section)
-        {
-            var footer = commonSource.SectionInfo[section].Footer;
-            return footer == null ? null : footer.View.Invoke();
-        }
-
-
 
         // Boring copy-paste of ReactiveObject et al follows:
         [field:IgnoreDataMember]
@@ -405,13 +320,13 @@ namespace ReactiveUI.Cocoa
     }
 
     /// <summary>
-    /// Extension methods for <see cref="ReactiveTableViewSource"/>.
+    /// Extension methods for <see cref="ReactiveCollectionViewSource"/>.
     /// </summary>
-    public static class ReactiveTableViewSourceExtensions
+    public static class ReactiveCollectionViewSourceExtensions
     {
         /// <summary>
-        /// <para>Extension method that binds an observable of a list of table
-        /// sections as the source of a <see cref="UITableView"/>.</para>
+        /// <para>Extension method that binds an observable of a list of collection
+        /// sections as the source of a <see cref="UICollectionView"/>.</para>
         /// <para>If your <see cref="IReadOnlyList"/> is also an instance of
         /// <see cref="IReactiveNotifyCollectionChanged"/>, then this method
         /// will silently update the bindings whenever it changes as well.
@@ -419,85 +334,80 @@ namespace ReactiveUI.Cocoa
         /// </summary>
         /// <returns>The <see cref="IDisposable"/> used to dispose this binding.</returns>
         /// <param name="sectionsObservable">Sections observable.</param>
-        /// <param name="tableView">Table view.</param>
+        /// <param name="collectionView">Collection view.</param>
         /// <param name="initSource">Optionally initializes some property of
-        /// the <see cref="ReactiveTableViewSource"/>.</param>
-        /// <typeparam name="TCell">Type of the <see cref="UITableViewCell"/>.</typeparam>
+        /// the <see cref="ReactiveCollectionViewSource"/>.</param>
+        /// <typeparam name="TCell">Type of the <see cref="UICollectionViewCell"/>.</typeparam>
         public static IDisposable BindTo<TCell>(
-            this IObservable<IReadOnlyList<TableSectionInformation<TCell>>> sectionsObservable,
-            UITableView tableView,
-            Func<ReactiveTableViewSource, IDisposable> initSource = null)
-            where TCell : UITableViewCell
+            this IObservable<IReadOnlyList<CollectionViewSectionInformation<TCell>>> sectionsObservable,
+            UICollectionView collectionView,
+            Func<ReactiveCollectionViewSource, IDisposable> initSource = null)
+            where TCell : UICollectionViewCell
         {
-            var source = new ReactiveTableViewSource(tableView);
+            var source = new ReactiveCollectionViewSource(collectionView);
             if (initSource != null) initSource(source);
             var bind = sectionsObservable.BindTo(source, x => x.Data);
-            tableView.Source = source;
+            collectionView.Source = source;
             return new CompositeDisposable(bind, source);
         }
 
         /// <summary>
         /// Extension method that binds an observable of a collection
-        /// as the source of a <see cref="UITableView"/>.
+        /// as the source of a <see cref="UICollectionView"/>.
         /// </summary>
         /// <returns>The <see cref="IDisposable"/> used to dispose this binding.</returns>
         /// <param name="sourceObservable">Source collection observable.</param>
-        /// <param name="tableView">Table view.</param>
+        /// <param name="collectionView">Collection view.</param>
         /// <param name="cellKey">Cell key.</param>
-        /// <param name="sizeHint">Size hint.</param>
         /// <param name="initializeCellAction">Initialize cell action.</param>
         /// <param name="initSource">Optionally initializes some property of
-        /// the <see cref="ReactiveTableViewSource"/>.</param>
-        /// <typeparam name="TCell">Type of the <see cref="UITableViewCell"/>.</typeparam>
+        /// the <see cref="ReactiveCollectionViewSource"/>.</param>
+        /// <typeparam name="TCell">Type of the <see cref="UICollectionViewCell"/>.</typeparam>
         public static IDisposable BindTo<TCell>(
             this IObservable<IReactiveNotifyCollectionChanged> sourceObservable,
-            UITableView tableView,
+            UICollectionView collectionView,
             NSString cellKey,
-            float sizeHint,
             Action<TCell> initializeCellAction = null,
-            Func<ReactiveTableViewSource, IDisposable> initSource = null)
-            where TCell : UITableViewCell
+            Func<ReactiveCollectionViewSource, IDisposable> initSource = null)
+            where TCell : UICollectionViewCell
         {
             return sourceObservable
                 .Select(
                     src => new[]
                     {
-                        new TableSectionInformation<TCell>(
+                        new CollectionViewSectionInformation<TCell>(
                             src,
                             cellKey,
-                            sizeHint,
                             initializeCellAction)
                     })
-                .BindTo(tableView, initSource);
+                .BindTo(collectionView, initSource);
         }
 
         /// <summary>
         /// Extension method that binds an observable of a collection
-        /// as the source of a <see cref="UITableView"/>.  Also registers
+        /// as the source of a <see cref="UICollectionView"/>.  Also registers
         /// the given class with an unspecified cellKey (you should probably
         /// not specify any other cellKeys).
         /// </summary>
         /// <returns>The <see cref="IDisposable"/> used to dispose this binding.</returns>
         /// <param name="sourceObservable">Source collection observable.</param>
-        /// <param name="tableView">Table view.</param>
-        /// <param name="sizeHint">Size hint.</param>
+        /// <param name="collectionView">Collection view.</param>
         /// <param name="initializeCellAction">Initialize cell action.</param>
         /// <param name="initSource">Optionally initializes some property of
-        /// the <see cref="ReactiveTableViewSource"/>.</param>
-        /// <typeparam name="TCell">Type of the <see cref="UITableViewCell"/>.</typeparam>
+        /// the <see cref="ReactiveCollectionViewSource"/>.</param>
+        /// <typeparam name="TCell">Type of the <see cref="UICollectionViewCell"/>.</typeparam>
         public static IDisposable BindTo<TCell>(
             this IObservable<IReactiveNotifyCollectionChanged> sourceObservable,
-            UITableView tableView,
-            float sizeHint,
+            UICollectionView collectionView,
             Action<TCell> initializeCellAction = null,
-            Func<ReactiveTableViewSource, IDisposable> initSource = null)
-            where TCell : UITableViewCell
+            Func<ReactiveCollectionViewSource, IDisposable> initSource = null)
+            where TCell : UICollectionViewCell
         {
             var type = typeof(TCell);
             var cellKey = new NSString(type.ToString());
-            tableView.RegisterClassForCellReuse(type, new NSString(cellKey));
+            collectionView.RegisterClassForCell(type, new NSString(cellKey));
             return sourceObservable
-                .BindTo(tableView, cellKey, sizeHint, initializeCellAction, initSource);
+                .BindTo(collectionView, cellKey, initializeCellAction, initSource);
         }
     }
 }

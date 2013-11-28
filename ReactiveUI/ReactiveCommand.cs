@@ -11,6 +11,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using System.Linq.Expressions;
 
 namespace ReactiveUI
 {
@@ -126,7 +127,7 @@ namespace ReactiveUI
                 .Do(_ => { lock (inflight) { inflight.OnNext(true); } })
                 .Merge()
                 .ObserveOn(defaultScheduler)
-                .Publish().PermaRef();
+                .Publish().RefCount();
         }
 
         /// <summary>
@@ -238,6 +239,28 @@ namespace ReactiveUI
         }
 
         /// <summary>
+        /// A utility method that will pipe an Observable to an ICommand (i.e.
+        /// it will first call its CanExecute with the provided value, then if
+        /// the command can be executed, Execute() will be called)
+        /// </summary>
+        /// <param name="target">The root object which has the Command.</param>
+        /// <param name="commandProperty">The expression to reference the Command.</param>
+        /// <returns>An object that when disposes, disconnects the Observable
+        /// from the command.</returns>
+        public static IDisposable InvokeCommand<T, TTarget>(this IObservable<T> This, TTarget target, Expression<Func<TTarget, ICommand>> commandProperty)
+        {
+            return This.CombineLatest(target.WhenAnyValue(commandProperty), (val, cmd) => new { val, cmd })
+                .ObserveOn(RxApp.MainThreadScheduler)
+                .Subscribe(x => {
+                    if (!x.cmd.CanExecute(x.val)) {
+                        return;
+                    }
+
+                    x.cmd.Execute(x.val);
+                });
+        }
+
+        /// <summary>
         /// RegisterAsyncFunction registers an asynchronous method that returns a result
         /// to be called whenever the Command's Execute method is called.
         /// </summary>
@@ -269,7 +292,12 @@ namespace ReactiveUI
             IScheduler scheduler = null)
         {
             Contract.Requires(calculationFunc != null);
-            return This.RegisterAsyncFunction(x => { calculationFunc(x); return new Unit(); }, scheduler);
+
+            // NB: This PermaRef isn't exactly correct, but the people using
+            // this method probably are Doing It Wrong, so let's let them
+            // continue to do so.
+            return This.RegisterAsyncFunction(x => { calculationFunc(x); return new Unit(); }, scheduler)
+                .Publish().PermaRef();
         }
 
         /// <summary>
@@ -296,7 +324,12 @@ namespace ReactiveUI
         public static IObservable<Unit> RegisterAsyncTask(this IReactiveCommand This, Func<object, Task> calculationFunc)
         {
             Contract.Requires(calculationFunc != null);
-            return This.RegisterAsync(x => calculationFunc(x).ToObservable());
+
+            // NB: This PermaRef isn't exactly correct, but the people using
+            // this method probably are Doing It Wrong, so let's let them
+            // continue to do so.
+            return This.RegisterAsync(x => calculationFunc(x).ToObservable())
+                .Publish().PermaRef();
         }
     }
 }

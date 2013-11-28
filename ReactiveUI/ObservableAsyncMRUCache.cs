@@ -71,7 +71,7 @@ namespace ReactiveUI
 
             Action<IObservable<TVal>> release = null;
             if (onRelease != null) {
-                release = new Action<IObservable<TVal>>(x => onRelease(x.First()));
+                release = new Action<IObservable<TVal>>(x => x.Subscribe(onRelease));
             }
 
             _innerCache = new MemoizingMRUCache<TParam, IObservable<TVal>>((x, val) => {
