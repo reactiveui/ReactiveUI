@@ -74,11 +74,12 @@ namespace ReactiveUI
 
         void setupRxObj()
         {
-            changingSubject = new Subject<IObservedChange<object, object>>();
-            changedSubject = new Subject<IObservedChange<object, object>>();
+            changingSubject = changingSubject ?? new Subject<IObservedChange<object, object>>();
+            changedSubject  = changedSubject  ?? new Subject<IObservedChange<object, object>>();
 
-            allPublicProperties = new Lazy<PropertyInfo[]>(() =>
-                GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance).ToArray());
+            allPublicProperties = allPublicProperties ??
+                new Lazy<PropertyInfo[]>(() =>
+                    GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance).ToArray());
         }
 
         /// <summary>
