@@ -1070,6 +1070,7 @@ namespace ReactiveUI
                 };
             }
 
+            //'viewProperty' is null exception
             return bindToDirect(source, view, viewProperty, fallbackWrapper);
         }
 
