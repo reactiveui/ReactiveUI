@@ -52,7 +52,7 @@ namespace ReactiveUI.Xaml
                     This.WhenAnyValue(command)
                         .Select(x => new InputCommand(x, shortcut, description))
                         .Subscribe(subj),
-                    keyEvent.Subscribe(_ => InputScope.Current.InvokeShortcut(shortcut)));
+                    keyEvent.Subscribe(_ => KeyboardManager.Current.InvokeShortcut(shortcut)));
             });
 
             return ret.Publish(null).RefCount();

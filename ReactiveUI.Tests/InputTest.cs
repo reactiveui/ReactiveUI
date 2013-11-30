@@ -14,7 +14,7 @@ namespace ReactiveUI.Tests
         public void InputScopeShouldInvokeCommandsInReverseOrder()
         {
             var view = new FakeView() { ViewModel = new FakeViewModel(), };
-            var fixture = new InputScope();
+            var fixture = new KeyboardManager();
 
             fixture.Register(
                 new InputSection("Foo",
@@ -38,7 +38,7 @@ namespace ReactiveUI.Tests
         public void InputScopeShouldntBlowUpOnMissingShortcut()
         {
             var view = new FakeView() { ViewModel = new FakeViewModel(), };
-            var fixture = new InputScope();
+            var fixture = new KeyboardManager();
 
             fixture.Register(
                 new InputSection("Foo",

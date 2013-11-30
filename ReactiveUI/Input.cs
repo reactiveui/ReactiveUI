@@ -38,27 +38,27 @@ namespace ReactiveUI
         }
     }
 
-    public interface IInputScope
+    public interface IKeyboardManager
     {
         IDisposable Register(params InputSection[] sections);
         void InvokeShortcut(string shortcut);
     }
 
-    sealed class InputScope
+    public sealed class KeyboardManager
     {
         readonly ReactiveList<InputSection> registeredSections = new ReactiveList<InputSection>();
 
-        public static IInputScope Current {
-            get { return RxApp.DependencyResolver.GetService<IInputScope>(); }
+        public static IKeyboardManager Current {
+            get { return RxApp.DependencyResolver.GetService<IKeyboardManager>(); }
         }
 
-        internal InputScope() { }
+        internal KeyboardManager() { }
 
         public IEnumerable<InputSection> RegisteredSections {
             get { return registeredSections;  }
         }
 
-        public IDisposable Register(params InputSection[] sections)
+        public IDisposable RegisterScope(params InputSection[] sections)
         {
             var currentSize = registeredSections.Count;
             var lengthToRemove = sections.Length;
