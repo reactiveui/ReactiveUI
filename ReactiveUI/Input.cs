@@ -14,15 +14,27 @@ namespace ReactiveUI
         string Description { get; }
     }
 
-    public class InputSection
+    public sealed class InputSection
     {
         public string SectionHeader { get; set; }
-        public ReactiveList<IObservable<IInputCommand>> Commands { get; protected set; }
+        internal ReactiveList<IObservable<IInputCommand>> CommandObservables { get; private set; }
 
         public InputSection(string sectionHeader, params IObservable<IInputCommand>[] commands)
         {
             SectionHeader = sectionHeader;
-            Commands = new ReactiveList<IObservable<IInputCommand>>(commands);
+            CommandObservables = new ReactiveList<IObservable<IInputCommand>>(commands);
+        }
+
+        public IEnumerable<IInputCommand> Commands {
+            get {
+                // NB: Same deal as below, we know that all of the CommandObservables
+                // return an initial value
+                return CommandObservables
+                    .Select(x => x.Take(1))
+                    .Concat()
+                    .Aggregate(new List<IInputCommand>(), (acc, x) => { acc.Add(x); return acc; })
+                    .First();
+            }
         }
     }
 
@@ -32,7 +44,7 @@ namespace ReactiveUI
         void InvokeShortcut(string shortcut);
     }
 
-    public class InputScope
+    sealed class InputScope
     {
         readonly ReactiveList<InputSection> registeredSections = new ReactiveList<InputSection>();
 
@@ -42,6 +54,10 @@ namespace ReactiveUI
 
         internal InputScope() { }
 
+        public IEnumerable<InputSection> RegisteredSections {
+            get { return registeredSections;  }
+        }
+
         public IDisposable Register(params InputSection[] sections)
         {
             var currentSize = registeredSections.Count;
@@ -50,7 +66,7 @@ namespace ReactiveUI
 
             // NB: This is to hold the RefCount open in AsInputCommand until we
             // drop the input section scope
-            var disp = sections.Select(x => x.Commands.ToObservable()).Merge().Subscribe();
+            var disp = sections.Select(x => x.CommandObservables.ToObservable()).Merge().Subscribe();
 
             return Disposable.Create(() => {
                 registeredSections.RemoveRange(currentSize, lengthToRemove);
@@ -63,7 +79,7 @@ namespace ReactiveUI
             // NB: This looks asynchronous, but it will always run synchronously
             // because we only add BehaviorSubjects to the Commands list
             registeredSections.Reverse().ToObservable()
-                .Select(x => x.Commands.ToObservable()).Concat()
+                .Select(x => x.CommandObservables.ToObservable()).Concat()
                 .Merge()
                 .Where(x => x != null && x.Shortcut == shortcut && x.CanExecute(null))
                 .Take(1)
