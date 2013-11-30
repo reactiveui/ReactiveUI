@@ -21,6 +21,7 @@ namespace ReactiveUI
             registerFunction(() => new DefaultLogManager(), typeof(ILogManager));
             registerFunction(() => new DebugLogger(), typeof(ILogger));
             registerFunction(() => new DummySuspensionHost(), typeof(ISuspensionHost));
+            registerFunction(() => new InputScope(), typeof(IInputScope));
         }
     }
 }
