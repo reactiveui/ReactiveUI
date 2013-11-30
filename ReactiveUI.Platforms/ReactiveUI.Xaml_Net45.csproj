@@ -127,6 +127,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ComponentModelTypeConverter.cs" />
+    <Compile Include="Xaml\Input.cs" />
     <Compile Include="Xaml\PlatformOperations.cs" />
     <Compile Include="PlatformUnitTestDetector.cs" />
     <Compile Include="Registrations.cs" />
