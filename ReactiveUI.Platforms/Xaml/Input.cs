@@ -7,8 +7,19 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
+#if WINRT
+using Windows.UI.Input;
+using Windows.UI.Xaml;
+using Windows.UI.Xaml.Input;
+using Windows.UI.Core;
+
+using Key = Windows.System.VirtualKey;
+using ModifierKeys = Windows.System.VirtualKeyModifiers;
+#else
 using System.Windows;
 using System.Windows.Input;
+#endif
 
 namespace ReactiveUI.Xaml
 {
@@ -23,9 +34,15 @@ namespace ReactiveUI.Xaml
             if (element == null) {
                 This.Log().Warn("Attempted to bind command '{0}' to a non-UIControl, command will never invoke!", description ?? "(none)");
             } else {
+#if WINRT
+                keyEvent = Observable.FromEventPattern<KeyEventHandler, KeyEventArgs>(x => element.KeyUp += x, x => element.KeyUp -= x)
+                    .Where(x => x.EventArgs.VirtualKey == key && getCurrentModifiers() == modifiers)
+                    .Select(_ => Unit.Default);
+#else
                 keyEvent = Observable.FromEventPattern<KeyEventHandler, KeyEventArgs>(x => element.KeyUp += x, x => element.KeyUp -= x)
                     .Where(x => x.EventArgs.Key == key && x.EventArgs.KeyboardDevice.Modifiers == modifiers)
                     .Select(_ => Unit.Default);
+#endif
             }
 
             var ret = Observable.Create<IInputCommand>(subj => {
@@ -45,7 +62,9 @@ namespace ReactiveUI.Xaml
         {
             var mods = new string[] {
                 modifiers.HasFlag(ModifierKeys.Control) ? "Ctrl" : null,
+#if !WINRT
                 modifiers.HasFlag(ModifierKeys.Alt) ? "Alt" : null,
+#endif
                 modifiers.HasFlag(ModifierKeys.Shift) ? "Shift" : null,
                 modifiers.HasFlag(ModifierKeys.Windows) ? "Meta" : null,
             }.Where(x => x != null);
@@ -55,5 +74,18 @@ namespace ReactiveUI.Xaml
                 String.Format("{0}-{1}", modString, key.ToString()) :
                 key.ToString();
         }
+
+#if WINRT
+        static ModifierKeys getCurrentModifiers()
+        {
+            var wnd = Window.Current.CoreWindow;
+
+            return 
+                (wnd.GetKeyState(Key.Shift) == CoreVirtualKeyStates.Down ? ModifierKeys.Shift : ModifierKeys.None) |
+                (wnd.GetKeyState(Key.Control) == CoreVirtualKeyStates.Down ? ModifierKeys.Control : ModifierKeys.None) |
+                (wnd.GetKeyState(Key.LeftWindows) == CoreVirtualKeyStates.Down ? ModifierKeys.Windows : ModifierKeys.None) |
+                (wnd.GetKeyState(Key.RightWindows) == CoreVirtualKeyStates.Down ? ModifierKeys.Windows : ModifierKeys.None);
+        }
+#endif
     }
 }
