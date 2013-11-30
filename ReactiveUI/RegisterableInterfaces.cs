@@ -212,7 +212,7 @@ namespace ReactiveUI
             BindingDirection direction);
     }
 
-    public interface IViewFor
+    public interface IViewFor : IEnableLogger
     {
         object ViewModel { get; set; }
     }
