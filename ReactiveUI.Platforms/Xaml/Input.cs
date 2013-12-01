@@ -27,11 +27,18 @@ namespace ReactiveUI.Xaml
 {
     public static class InputMixins
     {
+
         public static IObservable<IInputCommand> BindInputCommand<TViewModel>(this IViewFor<TViewModel> This, Expression<Func<IViewFor<TViewModel>, IReactiveCommand>> command, ModifierKeys modifiers, Key key, string description = null)
             where TViewModel : class
         {
+            return This.BindInputCommand(command, null, modifiers, key, description);
+        }
+
+        public static IObservable<IInputCommand> BindInputCommand<TViewModel>(this IViewFor<TViewModel> This, Expression<Func<IViewFor<TViewModel>, IReactiveCommand>> command, UIElement targetControl, ModifierKeys modifiers, Key key, string description = null)
+            where TViewModel : class
+        {
             var keyEvent = Observable.Never<Unit>();
-            var element = This as UIElement;
+            var element = targetControl ?? (This as UIElement);
 
             if (element == null) {
                 This.Log().Warn("Attempted to bind command '{0}' to a non-UIControl, command will never invoke!", description ?? "(none)");
