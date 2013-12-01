@@ -40,11 +40,13 @@ namespace ReactiveUI
 
     public interface IKeyboardManager
     {
-        IDisposable Register(params InputSection[] sections);
+        IEnumerable<InputSection> RegisteredSections { get; }
+
+        IDisposable RegisterScope(params InputSection[] sections);
         void InvokeShortcut(string shortcut);
     }
 
-    public sealed class KeyboardManager
+    public sealed class KeyboardManager : IKeyboardManager
     {
         readonly ReactiveList<InputSection> registeredSections = new ReactiveList<InputSection>();
 
@@ -66,7 +68,9 @@ namespace ReactiveUI
 
             // NB: This is to hold the RefCount open in AsInputCommand until we
             // drop the input section scope
-            var disp = sections.Select(x => x.CommandObservables.ToObservable()).Merge().Subscribe();
+            var disp = sections
+                .SelectMany(x => x.CommandObservables).Merge()
+                .Subscribe();
 
             return Disposable.Create(() => {
                 registeredSections.RemoveRange(currentSize, lengthToRemove);

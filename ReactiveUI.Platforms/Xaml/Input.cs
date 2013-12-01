@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reactive;
+using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Text;
@@ -16,6 +17,7 @@ using Windows.UI.Core;
 
 using Key = Windows.System.VirtualKey;
 using ModifierKeys = Windows.System.VirtualKeyModifiers;
+using System.Diagnostics;
 #else
 using System.Windows;
 using System.Windows.Input;
@@ -29,14 +31,16 @@ namespace ReactiveUI.Xaml
             where TViewModel : class
         {
             var keyEvent = Observable.Never<Unit>();
-            var element = command as UIElement;
+            var element = This as UIElement;
 
             if (element == null) {
                 This.Log().Warn("Attempted to bind command '{0}' to a non-UIControl, command will never invoke!", description ?? "(none)");
             } else {
 #if WINRT
-                keyEvent = Observable.FromEventPattern<KeyEventHandler, KeyEventArgs>(x => element.KeyUp += x, x => element.KeyUp -= x)
-                    .Where(x => x.EventArgs.VirtualKey == key && getCurrentModifiers() == modifiers)
+                // NB: This code probably doesn't work. WinRT is deeply,
+                // thoroughly broken, in every possible way.
+                keyEvent = Observable.FromEventPattern<KeyEventHandler, KeyRoutedEventArgs>(x => element.KeyUp += x, x => element.KeyUp -= x)
+                    .Where(x => x.EventArgs.Key == key && getCurrentModifiers() == modifiers)
                     .Select(_ => Unit.Default);
 #else
                 keyEvent = Observable.FromEventPattern<KeyEventHandler, KeyEventArgs>(x => element.KeyUp += x, x => element.KeyUp -= x)
