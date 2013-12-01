@@ -16,11 +16,11 @@ namespace ReactiveUI.Tests
             var view = new FakeView() { ViewModel = new FakeViewModel(), };
             var fixture = new KeyboardManager();
 
-            fixture.Register(
+            fixture.RegisterScope(
                 new InputSection("Foo",
                     view.GetInputCommand(x => x.ViewModel.Cmd, "Ctrl-C")));
 
-            fixture.Register(
+            fixture.RegisterScope(
                 new InputSection("Bar",
                     view.GetInputCommand(x => x.ViewModel.Cmd2, "Ctrl-C")));
 
@@ -40,11 +40,11 @@ namespace ReactiveUI.Tests
             var view = new FakeView() { ViewModel = new FakeViewModel(), };
             var fixture = new KeyboardManager();
 
-            fixture.Register(
+            fixture.RegisterScope(
                 new InputSection("Foo",
                     view.GetInputCommand(x => x.ViewModel.Cmd, "Ctrl-C")));
 
-            fixture.Register(
+            fixture.RegisterScope(
                 new InputSection("Bar",
                     view.GetInputCommand(x => x.ViewModel.Cmd2, "Ctrl-C")));
 
