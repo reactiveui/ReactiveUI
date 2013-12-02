@@ -17,11 +17,16 @@ namespace ReactiveUI
     public sealed class InputSection
     {
         public string SectionHeader { get; set; }
+        public bool IgnoreWhileTyping { get; set; }
+
         internal ReactiveList<IObservable<IInputCommand>> CommandObservables { get; private set; }
 
-        public InputSection(string sectionHeader, params IObservable<IInputCommand>[] commands)
+        public InputSection(string sectionHeader, params IObservable<IInputCommand>[] commands) : this(sectionHeader, true, commands) { }
+        public InputSection(string sectionHeader, bool ignoreWhileTyping, params IObservable<IInputCommand>[] commands)
         {
             SectionHeader = sectionHeader;
+            IgnoreWhileTyping = ignoreWhileTyping;
+
             CommandObservables = new ReactiveList<IObservable<IInputCommand>>(commands);
         }
 
