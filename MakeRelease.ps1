@@ -7,7 +7,7 @@ if ($SlnFileExists -eq $False) {
     exit -1
 }
 
-C:\Windows\Microsoft.NET\Framework\v4.0.30319\MSBuild.exe /t:Rebuild /p:Configuration=Release /p:Platform="Any CPU" /maxcpucount:1 .\ReactiveUI.sln
+C:\Windows\Microsoft.NET\Framework\v4.0.30319\MSBuild.exe /p:Configuration=Release /p:Platform="Any CPU" /maxcpucount:1 .\ReactiveUI.sln
 
 ###
 ### Build the Release directory
@@ -17,7 +17,7 @@ if (Test-Path .\Release) {
     rmdir -r -force .\Release
 }
 
-foreach-object $Archs | %{mkdir -p ".\Release\$_"}
+foreach-object $Archs | %{mkdir -Path ".\Release\$_"}
 
 foreach-object $Archs | %{
     $currentArch = $_
