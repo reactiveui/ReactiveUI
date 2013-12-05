@@ -1,7 +1,16 @@
 # ReactiveUI
 
-Use the Reactive Extensions for .NET along with Silverlight, WPF, or 
-Windows Phone to create elegant, testable User Interfaces.
+Use the Reactive Extensions for .NET to create elegant, testable User 
+Interfaces that run on any mobile or desktop platform.
+
+### Supported Platforms
+
+* Xamarin.iOS
+* Xamarin.Android
+* Xamarin.Mac
+* WPF
+* Windows Phone 8
+* Windows Store Apps
 
 This library is organized into several high-level assemblies:
 
