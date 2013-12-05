@@ -7,6 +7,7 @@ using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using MonoTouch.Foundation;
+using MonoTouch.UIKit;
 using System.Reactive.Subjects;
 
 namespace ReactiveUI.Cocoa
@@ -133,6 +134,8 @@ namespace ReactiveUI.Cocoa
         }
 
         void resetup(IReadOnlyList<TSectionInfo> newSectionInfo) {
+            UIApplication.EnsureUIThread();
+
             if (newSectionInfo == null) {
                 setupDisp.Disposable = Disposable.Empty;
                 return;
@@ -152,7 +155,7 @@ namespace ReactiveUI.Cocoa
                 .Changed
                 .Select(_ => Unit.Default)
                 .StartWith(Unit.Default);
-            
+
             if (reactiveSectionInfo == null) {
                 this.Log().Warn("New section info does not implement IReactiveNotifyCollectionChanged.");
             }
@@ -160,6 +163,7 @@ namespace ReactiveUI.Cocoa
             // Add section change listeners.  Always will run once right away
             // due to sectionChanged's construction.
             disp.Add(sectionChanged.Subscribe(_ => {
+                UIApplication.EnsureUIThread();
                 // TODO: Instead of listening to Changed events and then reseting,
                 // we could listen to more specific events and avoid some reloads.
                 var disp2 = new CompositeDisposable();
