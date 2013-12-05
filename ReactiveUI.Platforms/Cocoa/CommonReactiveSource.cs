@@ -91,7 +91,6 @@ namespace ReactiveUI.Cocoa
 
             mainDisp.Add(this
                 .WhenAnyValue(x => x.SectionInfo)
-                .ObserveOn(RxApp.MainThreadScheduler)
                 .Subscribe(resetup, exc => this.Log().ErrorException("Error while watching for SectionInfo.", exc)));
         }
 
@@ -152,11 +151,7 @@ namespace ReactiveUI.Cocoa
             var sectionChanged = reactiveSectionInfo == null ? Observable.Return(Unit.Default) : reactiveSectionInfo
                 .Changed
                 .Select(_ => Unit.Default)
-                .ObserveOn(RxApp.MainThreadScheduler)
                 .StartWith(Unit.Default);
-                // ^ ObserveOn before StartWith is important,
-                // this means that we'll bind the new Source
-                // right away instead of waiting to be scheduled.
             
             if (reactiveSectionInfo == null) {
                 this.Log().Warn("New section info does not implement IReactiveNotifyCollectionChanged.");
