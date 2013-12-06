@@ -14,6 +14,7 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using Windows.System;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -27,6 +28,10 @@ namespace MobileSample_WinRT.Views
             this.OneWayBind(ViewModel, x => x.RandomGuid, x => x.RandomGuid.Text);
             this.BindCommand(ViewModel, x => x.NavPage2, x => x.NavPage2);
             this.BindCommand(ViewModel, x => x.NavPage3, x => x.NavPage3);
+
+            KeyboardManager.Current.RegisterScope(
+                new InputSection("Main",
+                    this.BindInputCommand(x => x.ViewModel.NavPage2, VirtualKeyModifiers.Control, VirtualKey.K)));
         }
 
         public TestPage1ViewModel ViewModel {

@@ -16,10 +16,12 @@ namespace ReactiveUI.Tests
     public class FakeViewModel : ReactiveObject
     {
         public ReactiveCommand Cmd { get; protected set; }
+        public ReactiveCommand Cmd2 { get; protected set; }
 
         public FakeViewModel()
         {
             Cmd = new ReactiveCommand();
+            Cmd2 = new ReactiveCommand();
         }
     }
 
