@@ -66,7 +66,13 @@ namespace ReactiveUI.Cocoa
             get { return sectionInfo; }
             set { this.RaiseAndSetIfChanged(ref sectionInfo, value); }
         }
-        IReadOnlyList<TSectionInfo> sectionInfo = null;
+
+        /// <summary>
+        /// Field backing <see cref="SectionInfo"/>.  Initialized to an empty
+        /// array in order to avoid null reference exceptions if the source is
+        /// used before a real section info has been set.
+        /// </summary>
+        IReadOnlyList<TSectionInfo> sectionInfo = new TSectionInfo[] {};
 
         /// <summary>
         /// IObservable that pushes a new value after the corresponding IUICollViewAdapter
