@@ -7,6 +7,7 @@ using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using MonoTouch.Foundation;
+using MonoTouch.UIKit;
 using System.Reactive.Subjects;
 
 namespace ReactiveUI.Cocoa
@@ -91,7 +92,6 @@ namespace ReactiveUI.Cocoa
 
             mainDisp.Add(this
                 .WhenAnyValue(x => x.SectionInfo)
-                .ObserveOn(RxApp.MainThreadScheduler)
                 .Subscribe(resetup, exc => this.Log().ErrorException("Error while watching for SectionInfo.", exc)));
         }
 
@@ -134,6 +134,8 @@ namespace ReactiveUI.Cocoa
         }
 
         void resetup(IReadOnlyList<TSectionInfo> newSectionInfo) {
+            UIApplication.EnsureUIThread();
+
             if (newSectionInfo == null) {
                 setupDisp.Disposable = Disposable.Empty;
                 return;
@@ -152,12 +154,8 @@ namespace ReactiveUI.Cocoa
             var sectionChanged = reactiveSectionInfo == null ? Observable.Return(Unit.Default) : reactiveSectionInfo
                 .Changed
                 .Select(_ => Unit.Default)
-                .ObserveOn(RxApp.MainThreadScheduler)
                 .StartWith(Unit.Default);
-                // ^ ObserveOn before StartWith is important,
-                // this means that we'll bind the new Source
-                // right away instead of waiting to be scheduled.
-            
+
             if (reactiveSectionInfo == null) {
                 this.Log().Warn("New section info does not implement IReactiveNotifyCollectionChanged.");
             }
@@ -165,6 +163,7 @@ namespace ReactiveUI.Cocoa
             // Add section change listeners.  Always will run once right away
             // due to sectionChanged's construction.
             disp.Add(sectionChanged.Subscribe(_ => {
+                UIApplication.EnsureUIThread();
                 // TODO: Instead of listening to Changed events and then reseting,
                 // we could listen to more specific events and avoid some reloads.
                 var disp2 = new CompositeDisposable();
