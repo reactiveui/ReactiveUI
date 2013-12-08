@@ -88,7 +88,6 @@ namespace ReactiveUI
                 "NUNIT",
                 "XUNIT",
                 "MBUNIT",
-                "PEX.",
                 "NBEHAVE",
             };
 
