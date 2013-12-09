@@ -166,7 +166,7 @@ namespace ReactiveUI
     /// IReactiveNotifyPropertyChanged semantically as "Fire when *anything* in
     /// the collection or any of its items have changed, in any way".
     /// </summary>
-    public interface IReactiveCollection : IReactiveNotifyCollectionChanged, IReactiveNotifyCollectionItemChanged, ICollection, INotifyPropertyChanging, INotifyPropertyChanged, IEnableLogger
+    public interface IReactiveCollection : IReactiveNotifyCollectionChanged, IReactiveNotifyCollectionItemChanged, INotifyPropertyChanging, INotifyPropertyChanged, IEnableLogger, IEnumerable
     {
     }
 
@@ -362,7 +362,7 @@ namespace ReactiveUI
     /// IReactiveNotifyPropertyChanged semantically as "Fire when *anything* in
     /// the collection or any of its items have changed, in any way".
     /// </summary>
-    public interface IReactiveList<T> : IReactiveCollection<T>, IList<T>, IList
+    public interface IReactiveList<T> : IReactiveCollection<T>, IList<T>
     {
     }
 

@@ -19,6 +19,26 @@ namespace ReactiveUI.Tests
     public class ReactiveCollectionTest
     {
         [Fact]
+        public void CountPropertyIsNotAmbiguous()
+        {
+            IReactiveList<int> reactiveList = new ReactiveList<int>();
+            Assert.Equal(0, reactiveList.Count);
+            IList<int> list = reactiveList;
+            Assert.Equal(0, list.Count);
+
+            ICollection collection = new ReactiveList<int>();
+            var l = (IList) collection;
+            Assert.Same(collection, l);
+        }
+
+        [Fact]
+        public void IndexerIsNotAmbiguous()
+        {
+            IReactiveList<int> reactiveList = new ReactiveList<int> { 0, 1 };
+            Assert.Equal(0, reactiveList[0]);
+        }
+
+        [Fact]
         public void CollectionCountChangedTest()
         {
             var fixture = new ReactiveList<int>();
