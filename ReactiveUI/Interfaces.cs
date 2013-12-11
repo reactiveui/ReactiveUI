@@ -338,7 +338,7 @@ namespace ReactiveUI
     /// IReactiveCollection of T is the typed version of IReactiveCollection and
     /// adds type-specified versions of Observables
     /// </summary>
-    public interface IReactiveCollection<T> : IReactiveCollection, ICollection<T>, IReactiveNotifyCollectionChanged<T>, IReactiveNotifyCollectionItemChanged<T>
+    public interface IReactiveCollection<T> : IReactiveCollection, IReactiveNotifyCollectionChanged<T>, IReactiveNotifyCollectionItemChanged<T>
     {
     }
 
