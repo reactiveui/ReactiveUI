@@ -338,7 +338,7 @@ namespace ReactiveUI
     /// IReactiveNotifyPropertyChanged semantically as "Fire when *anything* in
     /// the collection or any of its items have changed, in any way".
     /// </summary>
-    public interface IReadOnlyReactiveCollection<out T> : IReadOnlyCollection<T>, IReactiveNotifyCollectionChanged<T>, IReactiveNotifyCollectionItemChanged<T>, INotifyPropertyChanging, INotifyPropertyChanged, IEnableLogger
+    public interface IReadOnlyReactiveCollection<out T> : IReadOnlyCollection<T>, IReactiveCollection<T>
     {
     }
 
