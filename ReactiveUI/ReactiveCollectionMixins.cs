@@ -246,7 +246,7 @@ namespace ReactiveUI
                 inner.Add(eventObs.Subscribe(onSourceCollectionChanged));
             }
 
-            var irc = source as IReactiveCollection;
+            var irc = source as IReactiveCollection<TSource>;
 
             if (irc != null) {
                 inner.Add(irc.ItemChanged.Select(x => (TSource)x.Sender).Subscribe(onItemChanged));
