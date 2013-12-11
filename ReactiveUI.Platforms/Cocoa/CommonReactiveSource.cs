@@ -56,6 +56,55 @@ namespace ReactiveUI.Cocoa
         /// </summary>
         readonly IUICollViewAdapter<TUIView, TUIViewCell> adapter;
 
+        // <summary>
+        // These UI{Table,Collection}Views are tricky.  Calling ReloadData
+        // won't immediately cause the data to be reloaded [1], contrary
+        // to popular belief.  If we setup these bindings right here,
+        // it is possible that *before* the table really reloads its data,
+        // we'll already put some changes on the queue to be processed.
+        // For example:
+        //
+        //  (a) ReloadData() is called.
+        //  (b) A change on the source is buffered.
+        //  (c) ReloadData() is processed.
+        //  (d) The change is processed.
+        //
+        // The problem here is that step (d) assumes that (b) came after
+        // (c), but it doesn't.  This leads the view into an inconsistent
+        // state, probably triggering an iOS assertion.
+        //
+        // In order to avoid this problem, we setup the change bindings
+        // only after the ReloadData() process has started.  And this
+        // is where things get even trickier!  We don't have any means
+        // to reliably know this!  Instead we assume that a call to
+        // NumberOfSections() after a ReloadData() means that the
+        // reload process has started.  Assuming that just one ReloadData()
+        // is in flight, I don't know if there is any other way
+        // NumberOfSections() would be called otherwise.
+        //
+        // And this is where we get to the last of our tricky problems:
+        // it is possible to call ReloadData() multiple times before
+        // the view gets the chance to process any of them [1]!
+        //
+        // So here's the current solution:
+        //
+        //  - Everytime NumberOfSections() is called,
+        //    we save the time when it occurred.
+        //
+        //  - Everytime a collection is changed,
+        //    we save the time it did so.
+        //
+        //  - When processing collection changes, we discard
+        //    everything that comes *before* the latest call to
+        //    NumberOfSections().
+        //
+        // Nasty!  Yes, I feel dirty!  But I'm not able to come up
+        // with a scenario that breaks this code.
+        //
+        // [1] http://stackoverflow.com/a/20115479
+        // </summary>
+        DateTime lastCallToNumberOfSections = DateTime.Now;
+
         /// <summary>
         /// Gets or sets the list of sections that this <see cref="CommonReactiveSource"/>
         /// should display.  Setting a new value always causes the table view to be reloaded.
@@ -95,10 +144,17 @@ namespace ReactiveUI.Cocoa
             this.adapter = adapter;
 
             mainDisp.Add(setupDisp);
-
+            mainDisp.Add(this
+                .ObservableForProperty(
+                    x => x.SectionInfo,
+                    true /* beforeChange */,
+                    true /* skipInitial */)
+                .Subscribe(
+                    _ => unsetupAll(),
+                    exc => this.Log().ErrorException("Error while SectionInfo was changing.", exc)));
             mainDisp.Add(this
                 .WhenAnyValue(x => x.SectionInfo)
-                .Subscribe(resetup, exc => this.Log().ErrorException("Error while watching for SectionInfo.", exc)));
+                .Subscribe(resetupAll, exc => this.Log().ErrorException("Error while watching for SectionInfo.", exc)));
         }
 
         public TUIViewCell GetCell(NSIndexPath indexPath) {
@@ -118,6 +174,7 @@ namespace ReactiveUI.Cocoa
         public int NumberOfSections() {
             var count = SectionInfo.Count;
             this.Log().Debug("NumberOfSections: {0} (from {1})", count, SectionInfo);
+            this.lastCallToNumberOfSections = DateTime.Now;
             return count;
         }
 
@@ -138,10 +195,20 @@ namespace ReactiveUI.Cocoa
             mainDisp.Dispose();
         }
 
-        void resetup(IReadOnlyList<TSectionInfo> newSectionInfo) {
+        void unsetupAll() {
+            // Dispose every binding.  Ensures that no matter what,
+            // we won't let events from the old data reach us while
+            // we morph into the new data.
+            this.Log().Debug("SectionInfo about to change, disposing all bindings...");
+            setupDisp.Disposable = Disposable.Empty;
+        }
+
+        void resetupAll(IReadOnlyList<TSectionInfo> newSectionInfo) {
+            this.Log().Debug("SectionInfo changed to {0}, resetup data and bindings...", newSectionInfo);
             UIApplication.EnsureUIThread();
 
             if (newSectionInfo == null) {
+                this.Log().Debug("Null SectionInfo, done!");
                 setupDisp.Disposable = Disposable.Empty;
                 return;
             }
@@ -156,6 +223,9 @@ namespace ReactiveUI.Cocoa
 
             // Decide when we should check for section changes.
             var reactiveSectionInfo = newSectionInfo as IReactiveNotifyCollectionChanged;
+            var sectionChanging = reactiveSectionInfo == null ? Observable.Never<Unit>() : reactiveSectionInfo
+                .Changing
+                .Select(_ => Unit.Default);
             var sectionChanged = reactiveSectionInfo == null ? Observable.Return(Unit.Default) : reactiveSectionInfo
                 .Changed
                 .Select(_ => Unit.Default)
@@ -170,6 +240,12 @@ namespace ReactiveUI.Cocoa
             //
             // TODO: Instead of listening to Changed events and then reseting,
             // we could listen to more specific events and avoid some reloads.
+            disp.Add(sectionChanging.Subscribe(_ => {
+                // Dispose the old bindings.  Ensures that old events won't
+                // arrive while we morph into the new data.
+                this.Log().Debug("{0} is about to change, disposing section bindings...", newSectionInfo);
+                subscrDisp.Disposable = Disposable.Empty;
+            }));
             disp.Add(sectionChanged.Subscribe(_ => {
                 this.Log().Debug("{0} is changed, resetup section data and bindings...", newSectionInfo);
                 UIApplication.EnsureUIThread();
@@ -182,6 +258,7 @@ namespace ReactiveUI.Cocoa
                     this.Log().Debug("Setting up section {0} binding...", section);
                     disp2.Add(current
                         .Changed
+                        .Select(timestamped)
                         .Buffer(TimeSpan.FromMilliseconds(250), RxApp.MainThreadScheduler)
                         .Subscribe(
                             xs => sectionCollectionChanged(section, xs),
@@ -197,15 +274,28 @@ namespace ReactiveUI.Cocoa
             this.Log().Debug("Done resetuping all bindings!");
         }
 
-        void sectionCollectionChanged(int section, IList<NotifyCollectionChangedEventArgs> xs) {
+        void sectionCollectionChanged(int section, IList<Timestamped<NotifyCollectionChangedEventArgs>> xs) {
             if (xs.Count == 0)
                 return;
 
             var resetOnlyNotification = new [] {new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset)};
 
-            this.Log().Info("Changed contents: [{0}]", String.Join(",", xs.Select(x => x.Action.ToString())));
+            this.Log().Debug(
+                "Changed contents: [{0}] (from {1})",
+                String.Join(",", xs.Select(x => x.Datum.Action.ToString())),
+                SectionInfo);
 
-            if (xs.Any(x => x.Action == NotifyCollectionChangedAction.Reset)) {
+            if (xs[0].Timestamp <= lastCallToNumberOfSections) {
+                var toDiscard = xs.TakeWhile(x => x.Timestamp <= lastCallToNumberOfSections).Count();
+                this.Log().Warn("Ignoring {0} changes that ocurred before the last call to NumberOfSections() from {1}.", toDiscard, SectionInfo);
+                if (toDiscard == xs.Count) {
+                    this.Log().Warn("Nothing remains!");
+                    return;
+                }
+                xs = xs.Skip(toDiscard).ToList();
+            }
+
+            if (xs.Any(x => x.Datum.Action == NotifyCollectionChangedAction.Reset)) {
                 this.Log().Debug("About to call ReloadData");
                 adapter.ReloadData();
 
@@ -213,7 +303,7 @@ namespace ReactiveUI.Cocoa
                 return;
             }
 
-            var updates = xs.Select(ea => Tuple.Create(ea, getChangedIndexes(ea))).ToList();
+            var updates = xs.Select(ea => Tuple.Create(ea.Datum, getChangedIndexes(ea.Datum))).ToList();
             var allChangedIndexes = updates.SelectMany(u => u.Item2).ToList();
             // Detect if we're changing the same cell more than
             // once - if so, issue a reset and be done
@@ -258,8 +348,8 @@ namespace ReactiveUI.Cocoa
                     }
                 }
 
-                this.Log().Info("Ending update");
-                didPerformUpdates.OnNext(xs);
+                this.Log().Debug("Ending update");
+                didPerformUpdates.OnNext(xs.Select(x => x.Datum).ToList());
             });
         }
 
@@ -288,6 +378,16 @@ namespace ReactiveUI.Cocoa
                 String.Join(",", toChange.Select(x => x.Section + "-" + x.Row)));
 
             method(toChange);
+        }
+
+        private static Timestamped<T> timestamped<T>(T datum) {
+            return new Timestamped<T>(datum);
+        }
+
+        private class Timestamped<T> {
+            public readonly DateTime Timestamp = DateTime.Now;
+            public readonly T Datum;
+            public Timestamped(T datum) { Datum = datum; }
         }
     }
 }
