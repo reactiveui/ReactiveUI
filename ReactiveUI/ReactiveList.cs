@@ -20,7 +20,7 @@ namespace ReactiveUI
 {
     [DebuggerDisplay("Count = {Count}")]
     [DebuggerTypeProxy(typeof(CollectionDebugView<>))]
-    public class ReactiveList<T> : IReactiveList<T>, IReadOnlyReactiveList<T>, IList<T>, IList
+    public class ReactiveList<T> : IReactiveList<T>, IReadOnlyReactiveList<T>, IList
     {
         public event NotifyCollectionChangedEventHandler CollectionChanging;
         public event NotifyCollectionChangedEventHandler CollectionChanged;
