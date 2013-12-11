@@ -101,14 +101,13 @@ namespace ReactiveUI.Cocoa
                 .Subscribe(resetup, exc => this.Log().ErrorException("Error while watching for SectionInfo.", exc)));
         }
 
-        public TUIViewCell GetCell(NSIndexPath indexPath)
-        {
+        public TUIViewCell GetCell(NSIndexPath indexPath) {
             var section = SectionInfo[indexPath.Section];
             var cell = adapter.DequeueReusableCell(section.CellKey, indexPath);
             var view = cell as IViewFor;
 
             if (view != null) {
-                this.Log().Info("GetCell: Setting vm for Row: " + indexPath.Row);
+                this.Log().Debug("GetCell: Setting vm for Row: " + indexPath.Row);
                 view.ViewModel = ((IList)section.Collection) [indexPath.Row];
             }
 
@@ -116,26 +115,26 @@ namespace ReactiveUI.Cocoa
             return cell;
         }
 
-        public int NumberOfSections()
-        {
-            return SectionInfo.Count;
-        }
-
-        public int RowsInSection(int section)
-        {
-            var count = ((IList)SectionInfo[section].Collection).Count;
-            this.Log().Info("RowsInSection: {0}-{1}", section, count);
+        public int NumberOfSections() {
+            var count = SectionInfo.Count;
+            this.Log().Debug("NumberOfSections: {0} (from {1})", count, SectionInfo);
             return count;
         }
 
-        public object ItemAt(NSIndexPath path)
-        {
+        public int RowsInSection(int section) {
+            var list = (IList)SectionInfo[section].Collection;
+            var count = list.Count;
+            this.Log().Debug("RowsInSection: {0}-{1} (from {2} / 3)", section, count, SectionInfo, list);
+            return count;
+        }
+
+        public object ItemAt(NSIndexPath path) {
             var list = (IList)SectionInfo[path.Section].Collection;
+            this.Log().Debug("ItemAt: {0}.{1} (from {2} / {3})", path.Section, path.Row, SectionInfo, list);
             return list[path.Row];
         }
 
-        public void Dispose()
-        {
+        public void Dispose() {
             mainDisp.Dispose();
         }
 
@@ -163,21 +162,24 @@ namespace ReactiveUI.Cocoa
                 .StartWith(Unit.Default);
 
             if (reactiveSectionInfo == null) {
-                this.Log().Warn("New section info does not implement IReactiveNotifyCollectionChanged.");
+                this.Log().Warn("New section info {0} does not implement IReactiveNotifyCollectionChanged.", newSectionInfo);
             }
 
             // Add section change listeners.  Always will run once right away
             // due to sectionChanged's construction.
+            //
+            // TODO: Instead of listening to Changed events and then reseting,
+            // we could listen to more specific events and avoid some reloads.
             disp.Add(sectionChanged.Subscribe(_ => {
+                this.Log().Debug("{0} is changed, resetup section data and bindings...", newSectionInfo);
                 UIApplication.EnsureUIThread();
-                // TODO: Instead of listening to Changed events and then reseting,
-                // we could listen to more specific events and avoid some reloads.
                 var disp2 = new CompositeDisposable();
                 subscrDisp.Disposable = disp2;
 
                 for (int i = 0; i < newSectionInfo.Count; i++) {
                     var section = i;
                     var current = newSectionInfo[i].Collection;
+                    this.Log().Debug("Setting up section {0} binding...", section);
                     disp2.Add(current
                         .Changed
                         .Buffer(TimeSpan.FromMilliseconds(250), RxApp.MainThreadScheduler)
@@ -185,9 +187,14 @@ namespace ReactiveUI.Cocoa
                             xs => sectionCollectionChanged(section, xs),
                             ex => this.Log().ErrorException("Error while watching section " + i + "'s Collection.", ex)));
                 }
+                this.Log().Debug("Done resetuping section data and bindings!");
 
+                // Tell the view that the data needs to be reloaded.
+                this.Log().Debug("Calling ReloadData()...", newSectionInfo);
                 adapter.ReloadData();
             }));
+
+            this.Log().Debug("Done resetuping all bindings!");
         }
 
         void sectionCollectionChanged(int section, IList<NotifyCollectionChangedEventArgs> xs) {
@@ -199,7 +206,7 @@ namespace ReactiveUI.Cocoa
             this.Log().Info("Changed contents: [{0}]", String.Join(",", xs.Select(x => x.Action.ToString())));
 
             if (xs.Any(x => x.Action == NotifyCollectionChangedAction.Reset)) {
-                this.Log().Info("About to call ReloadData");
+                this.Log().Debug("About to call ReloadData");
                 adapter.ReloadData();
 
                 didPerformUpdates.OnNext(resetOnlyNotification);
@@ -210,16 +217,16 @@ namespace ReactiveUI.Cocoa
             var allChangedIndexes = updates.SelectMany(u => u.Item2).ToList();
             // Detect if we're changing the same cell more than
             // once - if so, issue a reset and be done
-            
+
             if (allChangedIndexes.Count != allChangedIndexes.Distinct().Count()) {
-                this.Log().Info("Detected a dupe in the changelist. Issuing Reset");
+                this.Log().Debug("Detected a dupe in the changelist. Issuing Reset");
                 adapter.ReloadData();
 
                 didPerformUpdates.OnNext(resetOnlyNotification);
                 return;
             }
 
-            this.Log().Info("Beginning update");
+            this.Log().Debug("Beginning update");
             adapter.PerformBatchUpdates(() => {
                 foreach (var update in updates.AsEnumerable().Reverse()) {
                     var changeAction = update.Item1.Action;
@@ -239,14 +246,14 @@ namespace ReactiveUI.Cocoa
                         // NB: ReactiveList currently only supports single-item
                         // moves
                         var ea = update.Item1;
-                        this.Log().Info("Calling MoveRow: {0}-{1} => {0}{2}", section, ea.OldStartingIndex, ea.NewStartingIndex);
+                        this.Log().Debug("Calling MoveRow: {0}-{1} => {0}{2}", section, ea.OldStartingIndex, ea.NewStartingIndex);
 
                         adapter.MoveItem(
                             NSIndexPath.FromRowSection(ea.OldStartingIndex, section),
                             NSIndexPath.FromRowSection(ea.NewStartingIndex, section));
                         break;
                     default:
-                        this.Log().Info("Unknown Action: {0}", changeAction);
+                        this.Log().Debug("Unknown Action: {0}", changeAction);
                         break;
                     }
                 }
@@ -277,7 +284,7 @@ namespace ReactiveUI.Cocoa
                  .Select(x => NSIndexPath.FromRowSection(x, section))
                  .ToArray();
 
-            this.Log().Info("Calling {0}: [{1}]", method.Method.Name,
+            this.Log().Debug("Calling {0}: [{1}]", method.Method.Name,
                 String.Join(",", toChange.Select(x => x.Section + "-" + x.Row)));
 
             method(toChange);
