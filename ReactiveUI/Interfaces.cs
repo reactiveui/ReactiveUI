@@ -322,23 +322,10 @@ namespace ReactiveUI
     }
 
     /// <summary>
-    /// IReactiveCollection represents a collection that can notify when its
-    /// contents are changed (either items are added/removed, or the object
-    /// itself changes).
-    ///
-    /// It is important to implement the Changing/Changed from
-    /// IReactiveNotifyPropertyChanged semantically as "Fire when *anything* in
-    /// the collection or any of its items have changed, in any way".
-    /// </summary>
-    public interface IReactiveCollection : IReactiveNotifyCollectionChanged, IReactiveNotifyCollectionItemChanged, INotifyPropertyChanging, INotifyPropertyChanged, IEnableLogger, IEnumerable
-    {
-    }
-
-    /// <summary>
     /// IReactiveCollection of T is the typed version of IReactiveCollection and
     /// adds type-specified versions of Observables
     /// </summary>
-    public interface IReactiveCollection<T> : IReactiveCollection, IReactiveNotifyCollectionChanged<T>, IReactiveNotifyCollectionItemChanged<T>, IEnumerable<T>, INotifyPropertyChanging, INotifyPropertyChanged, IEnableLogger,
+    public interface IReactiveCollection<T> : IReactiveNotifyCollectionChanged<T>, IReactiveNotifyCollectionItemChanged<T>, IEnumerable<T>, INotifyPropertyChanging, INotifyPropertyChanged, IEnableLogger,
     {
     }
 
