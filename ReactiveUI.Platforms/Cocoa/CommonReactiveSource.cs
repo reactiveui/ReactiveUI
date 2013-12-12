@@ -101,9 +101,14 @@ namespace ReactiveUI.Cocoa
         // Nasty!  Yes, I feel dirty!  But I'm not able to come up
         // with a scenario that breaks this code.
         //
+        // Instead of using DateTime.Now, which has bad performance and
+        // smells, we keep a counter that is incremented everytime
+        // NumberOfSections() is called.  You can't reset your table
+        // more than 2^64 times due to this solution, though.
+        //
         // [1] http://stackoverflow.com/a/20115479
         // </summary>
-        DateTime lastCallToNumberOfSections = DateTime.Now;
+        UInt64 lastCallToNumberOfSections = 0;
 
         /// <summary>
         /// Gets or sets the list of sections that this <see cref="CommonReactiveSource"/>
@@ -174,7 +179,7 @@ namespace ReactiveUI.Cocoa
         public int NumberOfSections() {
             var count = SectionInfo.Count;
             this.Log().Debug("NumberOfSections: {0} (from {1})", count, SectionInfo);
-            this.lastCallToNumberOfSections = DateTime.Now;
+            this.lastCallToNumberOfSections++;
             return count;
         }
 
@@ -286,8 +291,8 @@ namespace ReactiveUI.Cocoa
                 SectionInfo);
 
             IList<NotifyCollectionChangedEventArgs> eas;
-            if (teas[0].Timestamp <= lastCallToNumberOfSections) {
-                var toDiscard = teas.TakeWhile(x => x.Timestamp <= lastCallToNumberOfSections).Count();
+            if (teas[0].Timestamp < lastCallToNumberOfSections) {
+                var toDiscard = teas.TakeWhile(x => x.Timestamp < lastCallToNumberOfSections).Count();
                 this.Log().Warn("Ignoring {0} changes that ocurred before the last call to NumberOfSections() from {1}.", toDiscard, SectionInfo);
                 if (toDiscard == teas.Count) {
                     this.Log().Warn("Nothing remains!");
@@ -383,14 +388,17 @@ namespace ReactiveUI.Cocoa
             method(toChange);
         }
 
-        private static Timestamped<T> timestamped<T>(T datum) {
-            return new Timestamped<T>(datum);
+        private Timestamped<T> timestamped<T>(T datum) {
+            return new Timestamped<T>(this.lastCallToNumberOfSections, datum);
         }
 
         private class Timestamped<T> {
-            public readonly DateTime Timestamp = DateTime.Now;
+            public readonly UInt64 Timestamp;
             public readonly T Datum;
-            public Timestamped(T datum) { Datum = datum; }
+            public Timestamped(UInt64 timestamp, T datum) {
+                Timestamp = timestamp;
+                Datum = datum;
+            }
         }
     }
 }
