@@ -145,7 +145,8 @@ namespace ReactiveUI.Cocoa
         readonly ISubject<IEnumerable<NotifyCollectionChangedEventArgs>> didPerformUpdates =
             new Subject<IEnumerable<NotifyCollectionChangedEventArgs>>();
 
-        public CommonReactiveSource(IUICollViewAdapter<TUIView, TUIViewCell> adapter) {
+        public CommonReactiveSource(IUICollViewAdapter<TUIView, TUIViewCell> adapter) 
+        {
             this.adapter = adapter;
 
             mainDisp.Add(setupDisp);
@@ -156,13 +157,15 @@ namespace ReactiveUI.Cocoa
                     true /* skipInitial */)
                 .Subscribe(
                     _ => unsetupAll(),
-                    exc => this.Log().ErrorException("Error while SectionInfo was changing.", exc)));
+                    ex => this.Log().ErrorException("Error while SectionInfo was changing.", ex)));
+
             mainDisp.Add(this
                 .WhenAnyValue(x => x.SectionInfo)
-                .Subscribe(resetupAll, exc => this.Log().ErrorException("Error while watching for SectionInfo.", exc)));
+                .Subscribe(resetupAll, ex => this.Log().ErrorException("Error while watching for SectionInfo.", ex)));
         }
 
-        public TUIViewCell GetCell(NSIndexPath indexPath) {
+        public TUIViewCell GetCell(NSIndexPath indexPath) 
+        {
             var section = SectionInfo[indexPath.Section];
             var cell = adapter.DequeueReusableCell(section.CellKey, indexPath);
             var view = cell as IViewFor;
@@ -176,31 +179,39 @@ namespace ReactiveUI.Cocoa
             return cell;
         }
 
-        public int NumberOfSections() {
+        public int NumberOfSections() 
+        {
             var count = SectionInfo.Count;
             this.Log().Debug("NumberOfSections: {0} (from {1})", count, SectionInfo);
             this.lastCallToNumberOfSections++;
+
             return count;
         }
 
-        public int RowsInSection(int section) {
+        public int RowsInSection(int section) 
+        {
             var list = (IList)SectionInfo[section].Collection;
             var count = list.Count;
             this.Log().Debug("RowsInSection: {0}-{1} (from {2} / 3)", section, count, SectionInfo, list);
+
             return count;
         }
 
-        public object ItemAt(NSIndexPath path) {
+        public object ItemAt(NSIndexPath path) 
+        {
             var list = (IList)SectionInfo[path.Section].Collection;
             this.Log().Debug("ItemAt: {0}.{1} (from {2} / {3})", path.Section, path.Row, SectionInfo, list);
+
             return list[path.Row];
         }
 
-        public void Dispose() {
+        public void Dispose() 
+        {
             mainDisp.Dispose();
         }
 
-        void unsetupAll() {
+        void unsetupAll() 
+        {
             // Dispose every binding.  Ensures that no matter what,
             // we won't let events from the old data reach us while
             // we morph into the new data.
@@ -208,7 +219,8 @@ namespace ReactiveUI.Cocoa
             setupDisp.Disposable = Disposable.Empty;
         }
 
-        void resetupAll(IReadOnlyList<TSectionInfo> newSectionInfo) {
+        void resetupAll(IReadOnlyList<TSectionInfo> newSectionInfo) 
+        {
             this.Log().Debug("SectionInfo changed to {0}, resetup data and bindings...", newSectionInfo);
             UIApplication.EnsureUIThread();
 
@@ -228,9 +240,11 @@ namespace ReactiveUI.Cocoa
 
             // Decide when we should check for section changes.
             var reactiveSectionInfo = newSectionInfo as IReactiveNotifyCollectionChanged;
+
             var sectionChanging = reactiveSectionInfo == null ? Observable.Never<Unit>() : reactiveSectionInfo
                 .Changing
                 .Select(_ => Unit.Default);
+
             var sectionChanged = reactiveSectionInfo == null ? Observable.Return(Unit.Default) : reactiveSectionInfo
                 .Changed
                 .Select(_ => Unit.Default)
@@ -251,9 +265,11 @@ namespace ReactiveUI.Cocoa
                 this.Log().Debug("{0} is about to change, disposing section bindings...", newSectionInfo);
                 subscrDisp.Disposable = Disposable.Empty;
             }));
+
             disp.Add(sectionChanged.Subscribe(_ => {
                 this.Log().Debug("{0} is changed, resetup section data and bindings...", newSectionInfo);
                 UIApplication.EnsureUIThread();
+
                 var disp2 = new CompositeDisposable();
                 subscrDisp.Disposable = disp2;
 
@@ -261,6 +277,7 @@ namespace ReactiveUI.Cocoa
                     var section = i;
                     var current = newSectionInfo[i].Collection;
                     this.Log().Debug("Setting up section {0} binding...", section);
+
                     disp2.Add(current
                         .Changed
                         .Select(timestamped)
@@ -269,6 +286,7 @@ namespace ReactiveUI.Cocoa
                             xs => sectionCollectionChanged(section, xs),
                             ex => this.Log().ErrorException("Error while watching section " + i + "'s Collection.", ex)));
                 }
+
                 this.Log().Debug("Done resetuping section data and bindings!");
 
                 // Tell the view that the data needs to be reloaded.
@@ -279,28 +297,31 @@ namespace ReactiveUI.Cocoa
             this.Log().Debug("Done resetuping all bindings!");
         }
 
-        void sectionCollectionChanged(int section, IList<Timestamped<NotifyCollectionChangedEventArgs>> teas) {
+        void sectionCollectionChanged(int section, IList<Timestamped<NotifyCollectionChangedEventArgs>> teas) 
+        {
             if (teas.Count == 0)
                 return;
 
-            var resetOnlyNotification = new [] {new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset)};
+            var resetOnlyNotification = new [] { new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset) };
 
             this.Log().Debug(
                 "Changed contents: [{0}] (from {1})",
-                String.Join(",", teas.Select(x => x.Datum.Action.ToString())),
+                String.Join(",", teas.Select(x => x.Value.Action.ToString())),
                 SectionInfo);
 
             IList<NotifyCollectionChangedEventArgs> eas;
             if (teas[0].Timestamp < lastCallToNumberOfSections) {
                 var toDiscard = teas.TakeWhile(x => x.Timestamp < lastCallToNumberOfSections).Count();
                 this.Log().Warn("Ignoring {0} changes that ocurred before the last call to NumberOfSections() from {1}.", toDiscard, SectionInfo);
+
                 if (toDiscard == teas.Count) {
                     this.Log().Warn("Nothing remains!");
                     return;
                 }
-                eas = teas.Skip(toDiscard).Select(x => x.Datum).ToList();
+
+                eas = teas.Skip(toDiscard).Select(x => x.Value).ToList();
             } else {
-                eas = teas.Select(x => x.Datum).ToList();
+                eas = teas.Select(x => x.Value).ToList();
             }
 
             if (eas.Any(x => x.Action == NotifyCollectionChangedAction.Reset)) {
@@ -313,9 +334,9 @@ namespace ReactiveUI.Cocoa
 
             var updates = eas.Select(ea => Tuple.Create(ea, getChangedIndexes(ea))).ToList();
             var allChangedIndexes = updates.SelectMany(u => u.Item2).ToList();
+
             // Detect if we're changing the same cell more than
             // once - if so, issue a reset and be done
-
             if (allChangedIndexes.Count != allChangedIndexes.Distinct().Count()) {
                 this.Log().Debug("Detected a dupe in the changelist. Issuing Reset");
                 adapter.ReloadData();
@@ -388,16 +409,20 @@ namespace ReactiveUI.Cocoa
             method(toChange);
         }
 
-        private Timestamped<T> timestamped<T>(T datum) {
-            return new Timestamped<T>(this.lastCallToNumberOfSections, datum);
+        Timestamped<T> timestamped<T>(T newValue) 
+        {
+            return new Timestamped<T>(this.lastCallToNumberOfSections, newValue);
         }
 
-        private class Timestamped<T> {
+        class Timestamped<T> 
+        {
             public readonly UInt64 Timestamp;
-            public readonly T Datum;
-            public Timestamped(UInt64 timestamp, T datum) {
+            public readonly T Value;
+
+            public Timestamped(UInt64 timestamp, T newValue) 
+            {
                 Timestamp = timestamp;
-                Datum = datum;
+                Value = newValue;
             }
         }
     }
