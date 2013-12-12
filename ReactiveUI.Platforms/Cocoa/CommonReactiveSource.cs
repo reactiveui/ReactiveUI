@@ -274,28 +274,31 @@ namespace ReactiveUI.Cocoa
             this.Log().Debug("Done resetuping all bindings!");
         }
 
-        void sectionCollectionChanged(int section, IList<Timestamped<NotifyCollectionChangedEventArgs>> xs) {
-            if (xs.Count == 0)
+        void sectionCollectionChanged(int section, IList<Timestamped<NotifyCollectionChangedEventArgs>> teas) {
+            if (teas.Count == 0)
                 return;
 
             var resetOnlyNotification = new [] {new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset)};
 
             this.Log().Debug(
                 "Changed contents: [{0}] (from {1})",
-                String.Join(",", xs.Select(x => x.Datum.Action.ToString())),
+                String.Join(",", teas.Select(x => x.Datum.Action.ToString())),
                 SectionInfo);
 
-            if (xs[0].Timestamp <= lastCallToNumberOfSections) {
-                var toDiscard = xs.TakeWhile(x => x.Timestamp <= lastCallToNumberOfSections).Count();
+            IList<NotifyCollectionChangedEventArgs> eas;
+            if (teas[0].Timestamp <= lastCallToNumberOfSections) {
+                var toDiscard = teas.TakeWhile(x => x.Timestamp <= lastCallToNumberOfSections).Count();
                 this.Log().Warn("Ignoring {0} changes that ocurred before the last call to NumberOfSections() from {1}.", toDiscard, SectionInfo);
-                if (toDiscard == xs.Count) {
+                if (toDiscard == teas.Count) {
                     this.Log().Warn("Nothing remains!");
                     return;
                 }
-                xs = xs.Skip(toDiscard).ToList();
+                eas = teas.Skip(toDiscard).Select(x => x.Datum).ToList();
+            } else {
+                eas = teas.Select(x => x.Datum).ToList();
             }
 
-            if (xs.Any(x => x.Datum.Action == NotifyCollectionChangedAction.Reset)) {
+            if (eas.Any(x => x.Action == NotifyCollectionChangedAction.Reset)) {
                 this.Log().Debug("About to call ReloadData");
                 adapter.ReloadData();
 
@@ -303,7 +306,7 @@ namespace ReactiveUI.Cocoa
                 return;
             }
 
-            var updates = xs.Select(ea => Tuple.Create(ea.Datum, getChangedIndexes(ea.Datum))).ToList();
+            var updates = eas.Select(ea => Tuple.Create(ea, getChangedIndexes(ea))).ToList();
             var allChangedIndexes = updates.SelectMany(u => u.Item2).ToList();
             // Detect if we're changing the same cell more than
             // once - if so, issue a reset and be done
@@ -349,7 +352,7 @@ namespace ReactiveUI.Cocoa
                 }
 
                 this.Log().Debug("Ending update");
-                didPerformUpdates.OnNext(xs.Select(x => x.Datum).ToList());
+                didPerformUpdates.OnNext(eas);
             });
         }
 
