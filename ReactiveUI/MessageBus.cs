@@ -169,7 +169,7 @@ namespace ReactiveUI
         {
             IScheduler scheduler;
             schedulerMappings.TryGetValue(tuple, out scheduler);
-            return scheduler ?? RxApp.MainThreadScheduler;
+            return scheduler ?? Scheduler.Immediate;
         }
     }
 

@@ -38,7 +38,7 @@ namespace ReactiveUI
         /// <typeparam name="T">The type of the message to listen to.</typeparam>
         /// <param name="scheduler">The scheduler on which to post the
         /// notifications for the specified type and contract.
-        /// RxApp.MainThreadScheduler by default.</param>
+        /// Scheduler.Immediate by default.</param>
         /// <param name="contract">A unique string to distinguish messages with
         /// identical types (i.e. "MyCoolViewModel") - if the message type is
         /// only used for one purpose, leave this as null.</param>

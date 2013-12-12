@@ -34,7 +34,7 @@ namespace ReactiveUI
         public ReactiveCommand(IObservable<bool> canExecute, bool allowsConcurrentExecution, IScheduler scheduler, bool initialCondition = true)
         {
             canExecute = canExecute ?? Observable.Return(true);
-            defaultScheduler = scheduler ?? RxApp.MainThreadScheduler;
+            defaultScheduler = scheduler ?? Scheduler.Immediate;
             AllowsConcurrentExecution = allowsConcurrentExecution;
 
             canExecute = canExecute.Catch<bool, Exception>(ex => {
@@ -212,7 +212,7 @@ namespace ReactiveUI
         /// ReactiveCommand based on an existing Observable chain.
         /// </summary>
         /// <param name="scheduler">The scheduler to publish events on - default
-        /// is RxApp.MainThreadScheduler.</param>
+        /// is Scheduler.Immediate.</param>
         /// <returns>A new ReactiveCommand whose CanExecute Observable is the
         /// current object.</returns>
         public static ReactiveCommand ToCommand(this IObservable<bool> This, bool allowsConcurrentExecution = false, IScheduler scheduler = null)
@@ -230,7 +230,7 @@ namespace ReactiveUI
         /// from the command.</returns>
         public static IDisposable InvokeCommand<T>(this IObservable<T> This, ICommand command)
         {
-            return This.ObserveOn(RxApp.MainThreadScheduler).Subscribe(x => {
+            return This.Subscribe(x => {
                 if (!command.CanExecute(x)) {
                     return;
                 }
@@ -250,7 +250,6 @@ namespace ReactiveUI
         public static IDisposable InvokeCommand<T, TTarget>(this IObservable<T> This, TTarget target, Expression<Func<TTarget, ICommand>> commandProperty)
         {
             return This.CombineLatest(target.WhenAnyValue(commandProperty), (val, cmd) => new { val, cmd })
-                .ObserveOn(RxApp.MainThreadScheduler)
                 .Subscribe(x => {
                     if (!x.cmd.CanExecute(x.val)) {
                         return;
