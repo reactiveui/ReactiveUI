@@ -38,18 +38,16 @@ namespace ReactiveUI.Xaml
             if (hasEventTarget) return 5;
 
             return defaultEventsToBind.Any(x => {
-                var ei = type.GetEvent(x.Item1, BindingFlags.Public | BindingFlags.FlattenHierarchy | BindingFlags.Instance);
+                var ei = type.GetRuntimeEvent(x.Item1);
                 return ei != null;
             }) ? 3 : 0;
         }
 
         public IDisposable BindCommandToObject(ICommand command, object target, IObservable<object> commandParameter)
         {
-            const BindingFlags bf = BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy;
-
             var type = target.GetType();
             var eventInfo = defaultEventsToBind
-                .Select(x => new { EventInfo = type.GetEvent(x.Item1, bf), Args = x.Item2 })
+                .Select(x => new { EventInfo = type.GetRuntimeEvent(x.Item1), Args = x.Item2 })
                 .FirstOrDefault(x => x.EventInfo != null);
 
             if (eventInfo == null) return null;
@@ -105,8 +103,8 @@ namespace ReactiveUI.Xaml
         public IDisposable BindCommandToObject(ICommand command, object target, IObservable<object> commandParameter)
         {
             var type = target.GetType();
-            var cmdPi = type.GetProperty("Command", BindingFlags.FlattenHierarchy | BindingFlags.Public | BindingFlags.Instance);
-            var cmdParamPi = type.GetProperty("CommandParameter", BindingFlags.FlattenHierarchy | BindingFlags.Public | BindingFlags.Instance);
+            var cmdPi = type.GetRuntimeProperty("Command");
+            var cmdParamPi = type.GetRuntimeProperty("CommandParameter");
             var ret = new CompositeDisposable();
 
             var originalCmd = cmdPi.GetValue(target, null);
