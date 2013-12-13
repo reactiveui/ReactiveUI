@@ -252,6 +252,8 @@ namespace ReactiveUI.Tests
             var deferred = RxApp.MainThreadScheduler;
             var taskpool = RxApp.TaskpoolScheduler;
 
+            Assert.False(true, "This test is hanging the runner");
+
             try {
                 var testDeferred = new CountingTestScheduler(Scheduler.Immediate);
                 var testTaskpool = new CountingTestScheduler(Scheduler.NewThread);
@@ -280,6 +282,8 @@ namespace ReactiveUI.Tests
         {
             var deferred = RxApp.MainThreadScheduler;
             var taskpool = RxApp.TaskpoolScheduler;
+
+            Assert.False(true, "This test is hanging the runner");
 
             try {
                 var testDeferred = new CountingTestScheduler(Scheduler.Immediate);
