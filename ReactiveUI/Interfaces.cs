@@ -168,6 +168,11 @@ namespace ReactiveUI
     /// </summary>
     public interface IReactiveCollection : IReactiveNotifyCollectionChanged, IReactiveNotifyCollectionItemChanged, INotifyPropertyChanging, INotifyPropertyChanged, IEnableLogger, IEnumerable
     {
+        IDisposable SuppressChangeNotifications();
+        
+#if !SILVERLIGHT
+        void Move(int oldIndex, int newIndex);
+#endif
     }
 
     /// <summary>
@@ -293,6 +298,10 @@ namespace ReactiveUI
         /// Doing It Wrong.
         /// </summary>
         IObservable<Unit> ShouldReset { get; }
+
+        IObservable<int> CountChanging { get; }
+        IObservable<int> CountChanged { get; }
+        IObservable<bool> IsEmptyChanged { get; }
     }
 
     /// <summary>
