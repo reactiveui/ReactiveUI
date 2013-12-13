@@ -159,10 +159,6 @@
       <Project>{9091337A-9E94-4DBD-801E-15E10DB72FFC}</Project>
       <Name>ReactiveUI.Mobile_Monotouch</Name>
     </ProjectReference>
-    <ProjectReference Include="..\ReactiveUI\ReactiveUI_Monotouch.csproj">
-      <Project>{9091337A-9E94-4DBD-801E-05E1FDA78FFC}</Project>
-      <Name>ReactiveUI_Monotouch</Name>
-    </ProjectReference>
     <ProjectReference Include="..\ReactiveUI.Testing\ReactiveUI.Testing_Monotouch.csproj">
       <Project>{90913370-9E94-3DBD-8F1E-15E10DB72FFC}</Project>
       <Name>ReactiveUI.Testing_Monotouch</Name>
@@ -170,6 +166,10 @@
     <ProjectReference Include="..\Microsoft.Reactive.Testing\Microsoft.Reactive.Testing_Monotouch.csproj">
       <Project>{74BA5B4E-257A-42A7-BDAB-1FB40A903909}</Project>
       <Name>Microsoft.Reactive.Testing_Monotouch</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj">
+      <Project>{464CB812-F99F-401B-BE4C-E8F0515CD19D}</Project>
+      <Name>ReactiveUI</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>
