@@ -54,6 +54,12 @@ namespace ReactiveUI.Xaml
 
         public ViewModelViewHost()
         {
+            // NB: InUnitTestRunner also returns true in Design Mode
+            if (RxApp.InUnitTestRunner()) {
+                ViewContractObservable = Observable.Never<string>();
+                return;
+            }
+
             var vmAndContract = Observable.CombineLatest(
                 this.WhenAnyValue(x => x.ViewModel),
                 this.WhenAnyObservable(x => x.ViewContractObservable),
