@@ -247,63 +247,21 @@ namespace ReactiveUI.Tests
         }
 
         [Fact]
-        public void RAFShouldActuallyRunOnTheTaskpool()
+        public async Task RAFShouldActuallyRunOnTheTaskpool()
         {
             var deferred = RxApp.MainThreadScheduler;
             var taskpool = RxApp.TaskpoolScheduler;
 
-            Assert.False(true, "This test is hanging the runner");
+            var fixture = new ReactiveCommand();
+            var threadId = fixture.RegisterAsyncFunction(_ => Thread.CurrentThread.ManagedThreadId)
+                .CreateCollection();
 
-            try {
-                var testDeferred = new CountingTestScheduler(Scheduler.Immediate);
-                var testTaskpool = new CountingTestScheduler(Scheduler.NewThread);
-                RxApp.MainThreadScheduler = testDeferred;
-                RxApp.TaskpoolScheduler = testTaskpool;
+            Assert.Equal(0, threadId.Count);
 
-                var fixture = new ReactiveCommand();
-                var result = fixture.RegisterAsyncFunction(x => {
-                    Thread.Sleep(1000);
-                    return (int)x*5;
-                });
+            fixture.Execute(1);
+            Assert.Equal(1, threadId.Count);
 
-                fixture.Execute(1);
-                Assert.Equal(5, result.First());
-
-                Assert.True(testDeferred.ScheduledItems.Count >= 1);
-                Assert.True(testTaskpool.ScheduledItems.Count >= 1);
-            } finally {
-                RxApp.MainThreadScheduler = deferred;
-                RxApp.TaskpoolScheduler = taskpool;
-            }
-        }
-
-        [Fact]
-        public void RAOShouldActuallyRunOnTheTaskpool()
-        {
-            var deferred = RxApp.MainThreadScheduler;
-            var taskpool = RxApp.TaskpoolScheduler;
-
-            Assert.False(true, "This test is hanging the runner");
-
-            try {
-                var testDeferred = new CountingTestScheduler(Scheduler.Immediate);
-                var testTaskpool = new CountingTestScheduler(Scheduler.NewThread);
-                RxApp.MainThreadScheduler = testDeferred;
-                RxApp.TaskpoolScheduler = testTaskpool;
-
-                var fixture = new ReactiveCommand();
-                var result = fixture.RegisterAsync(x =>
-                    Observable.Return((int)x*5).Delay(TimeSpan.FromSeconds(1), RxApp.TaskpoolScheduler));
-
-                fixture.Execute(1);
-                Assert.Equal(5, result.First());
-
-                Assert.True(testDeferred.ScheduledItems.Count >= 1);
-                Assert.True(testTaskpool.ScheduledItems.Count >= 1);
-            } finally {
-                RxApp.MainThreadScheduler = deferred;
-                RxApp.TaskpoolScheduler = taskpool;
-            }
+            Assert.NotEqual(Thread.CurrentThread.ManagedThreadId, threadId[0]);
         }
 
         [Fact]
