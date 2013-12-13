@@ -6369,8 +6369,10 @@
         </member>
         <member name="M:System.Reactive.Linq.Observable.Switch``1(System.IObservable{System.IObservable{``0}})">
             <summary>
-            Switches between the inner observable sequences such that the resulting sequence always produces elements from the most recently received inner observable sequence.
-            Each time a new inner observable sequence is received, the previous inner observable sequence is unsubscribed from.
+            Transforms an observable sequence of observable sequences into an observable sequence 
+            producing values only from the most recent observable sequence.
+            Each time a new inner observable sequence is received, unsubscribe from the 
+            previous inner observable sequence.
             </summary>
             <typeparam name="TSource">The type of the elements in the source sequences.</typeparam>
             <param name="sources">Observable sequence of inner observable sequences.</param>
@@ -6379,7 +6381,8 @@
         </member>
         <member name="M:System.Reactive.Linq.Observable.Switch``1(System.IObservable{System.Threading.Tasks.Task{``0}})">
             <summary>
-            Switches between the tasks such that the resulting sequence always produces results from the most recently received task.
+            Transforms an observable sequence of tasks into an observable sequence 
+            producing values only from the most recent observable sequence.
             Each time a new task is received, the previous task's result is ignored.
             </summary>
             <typeparam name="TSource">The type of the results produced by the source tasks.</typeparam>
@@ -7365,6 +7368,64 @@
             <returns>A sequence of observable groups, each of which corresponds to a unique key value, containing all elements that share that same key value.</returns>
             <exception cref="T:System.ArgumentNullException"><paramref name="source"/> or <paramref name="keySelector"/> or <paramref name="elementSelector"/> or <paramref name="comparer"/> is null.</exception>
         </member>
+        <member name="M:System.Reactive.Linq.Observable.GroupBy``2(System.IObservable{``0},System.Func{``0,``1},System.Int32)">
+            <summary>
+            Groups the elements of an observable sequence with the specified initial capacity according to a specified key selector function.
+            </summary>
+            <typeparam name="TSource">The type of the elements in the source sequence.</typeparam>
+            <typeparam name="TKey">The type of the grouping key computed for each element in the source sequence.</typeparam>
+            <param name="source">An observable sequence whose elements to group.</param>
+            <param name="keySelector">A function to extract the key for each element.</param>
+            <param name="capacity">The initial number of elements that the underlying dictionary can contain.</param>
+            <returns>A sequence of observable groups, each of which corresponds to a unique key value, containing all elements that share that same key value.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="source"/> or <paramref name="keySelector"/> is null.</exception>
+            <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="capacity"/> is less than 0.</exception>
+        </member>
+        <member name="M:System.Reactive.Linq.Observable.GroupBy``2(System.IObservable{``0},System.Func{``0,``1},System.Int32,System.Collections.Generic.IEqualityComparer{``1})">
+            <summary>
+            Groups the elements of an observable sequence with the specified initial capacity according to a specified key selector function and comparer.
+            </summary>
+            <typeparam name="TSource">The type of the elements in the source sequence.</typeparam>
+            <typeparam name="TKey">The type of the grouping key computed for each element in the source sequence.</typeparam>
+            <param name="source">An observable sequence whose elements to group.</param>
+            <param name="keySelector">A function to extract the key for each element.</param>
+            <param name="capacity">The initial number of elements that the underlying dictionary can contain.</param>
+            <param name="comparer">An equality comparer to compare keys with.</param>
+            <returns>A sequence of observable groups, each of which corresponds to a unique key value, containing all elements that share that same key value.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="source"/> or <paramref name="keySelector"/> or <paramref name="comparer"/> is null.</exception>
+            <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="capacity"/> is less than 0.</exception>
+        </member>
+        <member name="M:System.Reactive.Linq.Observable.GroupBy``3(System.IObservable{``0},System.Func{``0,``1},System.Func{``0,``2},System.Int32)">
+            <summary>
+            Groups the elements of an observable sequence with the specified initial capacity and selects the resulting elements by using a specified function.
+            </summary>
+            <typeparam name="TSource">The type of the elements in the source sequence.</typeparam>
+            <typeparam name="TKey">The type of the grouping key computed for each element in the source sequence.</typeparam>
+            <typeparam name="TElement">The type of the elements within the groups computed for each element in the source sequence.</typeparam>
+            <param name="source">An observable sequence whose elements to group.</param>
+            <param name="keySelector">A function to extract the key for each element.</param>
+            <param name="elementSelector">A function to map each source element to an element in an observable group.</param>
+            <param name="capacity">The initial number of elements that the underlying dictionary can contain.</param>
+            <returns>A sequence of observable groups, each of which corresponds to a unique key value, containing all elements that share that same key value.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="source"/> or <paramref name="keySelector"/> or <paramref name="elementSelector"/> is null.</exception>
+            <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="capacity"/> is less than 0.</exception>
+        </member>
+        <member name="M:System.Reactive.Linq.Observable.GroupBy``3(System.IObservable{``0},System.Func{``0,``1},System.Func{``0,``2},System.Int32,System.Collections.Generic.IEqualityComparer{``1})">
+            <summary>
+            Groups the elements of an observable sequence with the specified initial capacity according to a specified key selector function and comparer and selects the resulting elements by using a specified function.
+            </summary>
+            <typeparam name="TSource">The type of the elements in the source sequence.</typeparam>
+            <typeparam name="TKey">The type of the grouping key computed for each element in the source sequence.</typeparam>
+            <typeparam name="TElement">The type of the elements within the groups computed for each element in the source sequence.</typeparam>
+            <param name="source">An observable sequence whose elements to group.</param>
+            <param name="keySelector">A function to extract the key for each element.</param>
+            <param name="elementSelector">A function to map each source element to an element in an observable group.</param>
+            <param name="capacity">The initial number of elements that the underlying dictionary can contain.</param>
+            <param name="comparer">An equality comparer to compare keys with.</param>
+            <returns>A sequence of observable groups, each of which corresponds to a unique key value, containing all elements that share that same key value.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="source"/> or <paramref name="keySelector"/> or <paramref name="elementSelector"/> or <paramref name="comparer"/> is null.</exception>
+            <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="capacity"/> is less than 0.</exception>
+        </member>
         <member name="M:System.Reactive.Linq.Observable.GroupByUntil``4(System.IObservable{``0},System.Func{``0,``1},System.Func{``0,``2},System.Func{System.Reactive.Linq.IGroupedObservable{``1,``2},System.IObservable{``3}},System.Collections.Generic.IEqualityComparer{``1})">
             <summary>
             Groups the elements of an observable sequence according to a specified key selector function and comparer and selects the resulting elements by using a specified function.
@@ -7442,6 +7503,92 @@
             If a group's lifetime expires, a new group with the same key value can be created once an element with such a key value is encoutered.
             </returns>
             <exception cref="T:System.ArgumentNullException"><paramref name="source"/> or <paramref name="keySelector"/> or <paramref name="durationSelector"/> is null.</exception>
+        </member>
+        <member name="M:System.Reactive.Linq.Observable.GroupByUntil``4(System.IObservable{``0},System.Func{``0,``1},System.Func{``0,``2},System.Func{System.Reactive.Linq.IGroupedObservable{``1,``2},System.IObservable{``3}},System.Int32,System.Collections.Generic.IEqualityComparer{``1})">
+            <summary>
+            Groups the elements of an observable sequence with the specified initial capacity according to a specified key selector function and comparer and selects the resulting elements by using a specified function.
+            A duration selector function is used to control the lifetime of groups. When a group expires, it receives an OnCompleted notification. When a new element with the same
+            key value as a reclaimed group occurs, the group will be reborn with a new lifetime request.
+            </summary>
+            <typeparam name="TSource">The type of the elements in the source sequence.</typeparam>
+            <typeparam name="TKey">The type of the grouping key computed for each element in the source sequence.</typeparam>
+            <typeparam name="TElement">The type of the elements within the groups computed for each element in the source sequence.</typeparam>
+            <typeparam name="TDuration">The type of the elements in the duration sequences obtained for each group to denote its lifetime.</typeparam>
+            <param name="source">An observable sequence whose elements to group.</param>
+            <param name="keySelector">A function to extract the key for each element.</param>
+            <param name="elementSelector">A function to map each source element to an element in an observable group.</param>
+            <param name="durationSelector">A function to signal the expiration of a group.</param>
+            <param name="capacity">The initial number of elements that the underlying dictionary can contain.</param>
+            <param name="comparer">An equality comparer to compare keys with.</param>
+            <returns>
+            A sequence of observable groups, each of which corresponds to a unique key value, containing all elements that share that same key value.
+            If a group's lifetime expires, a new group with the same key value can be created once an element with such a key value is encountered.
+            </returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="source"/> or <paramref name="keySelector"/> or <paramref name="elementSelector"/> or <paramref name="durationSelector"/> or <paramref name="comparer"/> is null.</exception>
+            <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="capacity"/> is less than 0.</exception>
+        </member>
+        <member name="M:System.Reactive.Linq.Observable.GroupByUntil``4(System.IObservable{``0},System.Func{``0,``1},System.Func{``0,``2},System.Func{System.Reactive.Linq.IGroupedObservable{``1,``2},System.IObservable{``3}},System.Int32)">
+            <summary>
+            Groups the elements of an observable sequence with the specified initial capacity according to a specified key selector function and selects the resulting elements by using a specified function.
+            A duration selector function is used to control the lifetime of groups. When a group expires, it receives an OnCompleted notification. When a new element with the same
+            key value as a reclaimed group occurs, the group will be reborn with a new lifetime request.
+            </summary>
+            <typeparam name="TSource">The type of the elements in the source sequence.</typeparam>
+            <typeparam name="TKey">The type of the grouping key computed for each element in the source sequence.</typeparam>
+            <typeparam name="TElement">The type of the elements within the groups computed for each element in the source sequence.</typeparam>
+            <typeparam name="TDuration">The type of the elements in the duration sequences obtained for each group to denote its lifetime.</typeparam>
+            <param name="source">An observable sequence whose elements to group.</param>
+            <param name="keySelector">A function to extract the key for each element.</param>
+            <param name="elementSelector">A function to map each source element to an element in an observable group.</param>
+            <param name="durationSelector">A function to signal the expiration of a group.</param>
+            <param name="capacity">The initial number of elements that the underlying dictionary can contain.</param>
+            <returns>
+            A sequence of observable groups, each of which corresponds to a unique key value, containing all elements that share that same key value.
+            If a group's lifetime expires, a new group with the same key value can be created once an element with such a key value is encoutered.
+            </returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="source"/> or <paramref name="keySelector"/> or <paramref name="elementSelector"/> or <paramref name="durationSelector"/> is null.</exception>
+            <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="capacity"/> is less than 0.</exception>
+        </member>
+        <member name="M:System.Reactive.Linq.Observable.GroupByUntil``3(System.IObservable{``0},System.Func{``0,``1},System.Func{System.Reactive.Linq.IGroupedObservable{``1,``0},System.IObservable{``2}},System.Int32,System.Collections.Generic.IEqualityComparer{``1})">
+            <summary>
+            Groups the elements of an observable sequence with the specified initial capacity according to a specified key selector function and comparer.
+            A duration selector function is used to control the lifetime of groups. When a group expires, it receives an OnCompleted notification. When a new element with the same
+            key value as a reclaimed group occurs, the group will be reborn with a new lifetime request.
+            </summary>
+            <typeparam name="TSource">The type of the elements in the source sequence.</typeparam>
+            <typeparam name="TKey">The type of the grouping key computed for each element in the source sequence.</typeparam>
+            <typeparam name="TDuration">The type of the elements in the duration sequences obtained for each group to denote its lifetime.</typeparam>
+            <param name="source">An observable sequence whose elements to group.</param>
+            <param name="keySelector">A function to extract the key for each element.</param>
+            <param name="durationSelector">A function to signal the expiration of a group.</param>
+            <param name="capacity">The initial number of elements that the underlying dictionary can contain.</param>
+            <param name="comparer">An equality comparer to compare keys with.</param>
+            <returns>
+            A sequence of observable groups, each of which corresponds to a unique key value, containing all elements that share that same key value.
+            If a group's lifetime expires, a new group with the same key value can be created once an element with such a key value is encoutered.
+            </returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="source"/> or <paramref name="keySelector"/> or <paramref name="durationSelector"/> or <paramref name="comparer"/> is null.</exception>
+            <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="capacity"/> is less than 0.</exception>
+        </member>
+        <member name="M:System.Reactive.Linq.Observable.GroupByUntil``3(System.IObservable{``0},System.Func{``0,``1},System.Func{System.Reactive.Linq.IGroupedObservable{``1,``0},System.IObservable{``2}},System.Int32)">
+            <summary>
+            Groups the elements of an observable sequence with the specified initial capacity according to a specified key selector function.
+            A duration selector function is used to control the lifetime of groups. When a group expires, it receives an OnCompleted notification. When a new element with the same
+            key value as a reclaimed group occurs, the group will be reborn with a new lifetime request.
+            </summary>
+            <typeparam name="TSource">The type of the elements in the source sequence.</typeparam>
+            <typeparam name="TKey">The type of the grouping key computed for each element in the source sequence.</typeparam>
+            <typeparam name="TDuration">The type of the elements in the duration sequences obtained for each group to denote its lifetime.</typeparam>
+            <param name="source">An observable sequence whose elements to group.</param>
+            <param name="keySelector">A function to extract the key for each element.</param>
+            <param name="durationSelector">A function to signal the expiration of a group.</param>
+            <param name="capacity">The initial number of elements that the underlying dictionary can contain.</param>
+            <returns>
+            A sequence of observable groups, each of which corresponds to a unique key value, containing all elements that share that same key value.
+            If a group's lifetime expires, a new group with the same key value can be created once an element with such a key value is encoutered.
+            </returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="source"/> or <paramref name="keySelector"/> or <paramref name="durationSelector"/> is null.</exception>
+            <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="capacity"/> is less than 0.</exception>
         </member>
         <member name="M:System.Reactive.Linq.Observable.GroupJoin``5(System.IObservable{``0},System.IObservable{``1},System.Func{``0,System.IObservable{``2}},System.Func{``1,System.IObservable{``3}},System.Func{``0,System.IObservable{``1},``4})">
             <summary>
@@ -7532,12 +7679,12 @@
         </member>
         <member name="M:System.Reactive.Linq.Observable.SelectMany``2(System.IObservable{``0},System.Func{``0,System.Int32,System.IObservable{``1}})">
             <summary>
-            Projects each element of an observable sequence to an observable sequence and merges the resulting observable sequences into one observable sequence.
+            Projects each element of an observable sequence to an observable sequence by incorporating the element's index and merges the resulting observable sequences into one observable sequence.
             </summary>
             <typeparam name="TSource">The type of the elements in the source sequence.</typeparam>
             <typeparam name="TResult">The type of the elements in the projected inner sequences and the elements in the merged result sequence.</typeparam>
             <param name="source">An observable sequence of elements to project.</param>
-            <param name="selector">A transform function to apply to each source element; the second parameter of the function represents the index of the source element.</param>
+            <param name="selector">A transform function to apply to each element; the second parameter of the function represents the index of the source element.</param>
             <returns>An observable sequence whose elements are the result of invoking the one-to-many transform function on each element of the input sequence.</returns>
             <exception cref="T:System.ArgumentNullException"><paramref name="source"/> or <paramref name="selector"/> is null.</exception>
         </member>
@@ -7553,6 +7700,18 @@
             <remarks>This overload supports composition of observable sequences and tasks, without requiring manual conversion of the tasks to observable sequences using <see cref="M:System.Reactive.Threading.Tasks.TaskObservableExtensions.ToObservable``1(System.Threading.Tasks.Task{``0})"/>.</remarks>
             <exception cref="T:System.ArgumentNullException"><paramref name="source"/> or <paramref name="selector"/> is null.</exception>
         </member>
+        <member name="M:System.Reactive.Linq.Observable.SelectMany``2(System.IObservable{``0},System.Func{``0,System.Int32,System.Threading.Tasks.Task{``1}})">
+            <summary>
+            Projects each element of an observable sequence to a task by incorporating the element's index and merges all of the task results into one observable sequence.
+            </summary>
+            <typeparam name="TSource">The type of the elements in the source sequence.</typeparam>
+            <typeparam name="TResult">The type of the result produced by the projected tasks and the elements in the merged result sequence.</typeparam>
+            <param name="source">An observable sequence of elements to project.</param>
+            <param name="selector">A transform function to apply to each element; the second parameter of the function represents the index of the source element.</param>
+            <returns>An observable sequence whose elements are the result of the tasks executed for each element of the input sequence.</returns>
+            <remarks>This overload supports composition of observable sequences and tasks, without requiring manual conversion of the tasks to observable sequences using <see cref="M:System.Reactive.Threading.Tasks.TaskObservableExtensions.ToObservable``1(System.Threading.Tasks.Task{``0})"/>.</remarks>
+            <exception cref="T:System.ArgumentNullException"><paramref name="source"/> or <paramref name="selector"/> is null.</exception>
+        </member>
         <member name="M:System.Reactive.Linq.Observable.SelectMany``2(System.IObservable{``0},System.Func{``0,System.Threading.CancellationToken,System.Threading.Tasks.Task{``1}})">
             <summary>
             Projects each element of an observable sequence to a task with cancellation support and merges all of the task results into one observable sequence.
@@ -7561,6 +7720,18 @@
             <typeparam name="TResult">The type of the result produced by the projected tasks and the elements in the merged result sequence.</typeparam>
             <param name="source">An observable sequence of elements to project.</param>
             <param name="selector">A transform function to apply to each element.</param>
+            <returns>An observable sequence whose elements are the result of the tasks executed for each element of the input sequence.</returns>
+            <remarks>This overload supports composition of observable sequences and tasks, without requiring manual conversion of the tasks to observable sequences using <see cref="M:System.Reactive.Threading.Tasks.TaskObservableExtensions.ToObservable``1(System.Threading.Tasks.Task{``0})"/>.</remarks>
+            <exception cref="T:System.ArgumentNullException"><paramref name="source"/> or <paramref name="selector"/> is null.</exception>
+        </member>
+        <member name="M:System.Reactive.Linq.Observable.SelectMany``2(System.IObservable{``0},System.Func{``0,System.Int32,System.Threading.CancellationToken,System.Threading.Tasks.Task{``1}})">
+            <summary>
+            Projects each element of an observable sequence to a task by incorporating the element's index with cancellation support and merges all of the task results into one observable sequence.
+            </summary>
+            <typeparam name="TSource">The type of the elements in the source sequence.</typeparam>
+            <typeparam name="TResult">The type of the result produced by the projected tasks and the elements in the merged result sequence.</typeparam>
+            <param name="source">An observable sequence of elements to project.</param>
+            <param name="selector">A transform function to apply to each element; the second parameter of the function represents the index of the source element.</param>
             <returns>An observable sequence whose elements are the result of the tasks executed for each element of the input sequence.</returns>
             <remarks>This overload supports composition of observable sequences and tasks, without requiring manual conversion of the tasks to observable sequences using <see cref="M:System.Reactive.Threading.Tasks.TaskObservableExtensions.ToObservable``1(System.Threading.Tasks.Task{``0})"/>.</remarks>
             <exception cref="T:System.ArgumentNullException"><paramref name="source"/> or <paramref name="selector"/> is null.</exception>
@@ -7580,14 +7751,14 @@
         </member>
         <member name="M:System.Reactive.Linq.Observable.SelectMany``3(System.IObservable{``0},System.Func{``0,System.Int32,System.IObservable{``1}},System.Func{``0,System.Int32,``1,System.Int32,``2})">
             <summary>
-            Projects each element of an observable sequence to an observable sequence, invokes the result selector for the source element and each of the corresponding inner sequence's elements, and merges the results into one observable sequence.
+            Projects each element of an observable sequence to an observable sequence by incorporating the element's index, invokes the result selector for the source element and each of the corresponding inner sequence's elements, and merges the results into one observable sequence.
             </summary>
             <typeparam name="TSource">The type of the elements in the source sequence.</typeparam>
             <typeparam name="TCollection">The type of the elements in the projected intermediate sequences.</typeparam>
             <typeparam name="TResult">The type of the elements in the result sequence, obtained by using the selector to combine source sequence elements with their corresponding intermediate sequence elements.</typeparam>
             <param name="source">An observable sequence of elements to project.</param>
-            <param name="collectionSelector">A transform function to apply to each source element; the second parameter of the function represents the index of the source element.</param>
-            <param name="resultSelector">A transform function to apply to each element of the intermediate sequence.</param>
+            <param name="collectionSelector">A transform function to apply to each element; the second parameter of the function represents the index of the source element.</param>
+            <param name="resultSelector">A transform function to apply to each element of the intermediate sequence; the second parameter of the function represents the index of the source element and the fourth parameter represents the index of the intermediate element.</param>
             <returns>An observable sequence whose elements are the result of invoking the one-to-many transform function collectionSelector on each element of the input sequence and then mapping each of those sequence elements and their corresponding source element to a result element.</returns>
             <exception cref="T:System.ArgumentNullException"><paramref name="source"/> or <paramref name="collectionSelector"/> or <paramref name="resultSelector"/> is null.</exception>
         </member>
@@ -7601,6 +7772,20 @@
             <param name="source">An observable sequence of elements to project.</param>
             <param name="taskSelector">A transform function to apply to each element.</param>
             <param name="resultSelector">A transform function to apply to each element of the intermediate sequence.</param>
+            <returns>An observable sequence whose elements are the result of obtaining a task for each element of the input sequence and then mapping the task's result and its corresponding source element to a result element.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="source"/> or <paramref name="taskSelector"/> or <paramref name="resultSelector"/> is null.</exception>
+            <remarks>This overload supports using LINQ query comprehension syntax in C# and Visual Basic to compose observable sequences and tasks, without requiring manual conversion of the tasks to observable sequences using <see cref="M:System.Reactive.Threading.Tasks.TaskObservableExtensions.ToObservable``1(System.Threading.Tasks.Task{``0})"/>.</remarks>
+        </member>
+        <member name="M:System.Reactive.Linq.Observable.SelectMany``3(System.IObservable{``0},System.Func{``0,System.Int32,System.Threading.Tasks.Task{``1}},System.Func{``0,System.Int32,``1,``2})">
+            <summary>
+            Projects each element of an observable sequence to a task by incorporating the element's index, invokes the result selector for the source element and the task result, and merges the results into one observable sequence.
+            </summary>
+            <typeparam name="TSource">The type of the elements in the source sequence.</typeparam>
+            <typeparam name="TTaskResult">The type of the results produced by the projected intermediate tasks.</typeparam>
+            <typeparam name="TResult">The type of the elements in the result sequence, obtained by using the selector to combine source sequence elements with their corresponding intermediate task results.</typeparam>
+            <param name="source">An observable sequence of elements to project.</param>
+            <param name="taskSelector">A transform function to apply to each element; the second parameter of the function represents the index of the source element.</param>
+            <param name="resultSelector">A transform function to apply to each element of the intermediate sequence; the second parameter of the function represents the index of the source element.</param>
             <returns>An observable sequence whose elements are the result of obtaining a task for each element of the input sequence and then mapping the task's result and its corresponding source element to a result element.</returns>
             <exception cref="T:System.ArgumentNullException"><paramref name="source"/> or <paramref name="taskSelector"/> or <paramref name="resultSelector"/> is null.</exception>
             <remarks>This overload supports using LINQ query comprehension syntax in C# and Visual Basic to compose observable sequences and tasks, without requiring manual conversion of the tasks to observable sequences using <see cref="M:System.Reactive.Threading.Tasks.TaskObservableExtensions.ToObservable``1(System.Threading.Tasks.Task{``0})"/>.</remarks>
@@ -7619,6 +7804,20 @@
             <exception cref="T:System.ArgumentNullException"><paramref name="source"/> or <paramref name="taskSelector"/> or <paramref name="resultSelector"/> is null.</exception>
             <remarks>This overload supports using LINQ query comprehension syntax in C# and Visual Basic to compose observable sequences and tasks, without requiring manual conversion of the tasks to observable sequences using <see cref="M:System.Reactive.Threading.Tasks.TaskObservableExtensions.ToObservable``1(System.Threading.Tasks.Task{``0})"/>.</remarks>
         </member>
+        <member name="M:System.Reactive.Linq.Observable.SelectMany``3(System.IObservable{``0},System.Func{``0,System.Int32,System.Threading.CancellationToken,System.Threading.Tasks.Task{``1}},System.Func{``0,System.Int32,``1,``2})">
+            <summary>
+            Projects each element of an observable sequence to a task by incorporating the element's index with cancellation support, invokes the result selector for the source element and the task result, and merges the results into one observable sequence.
+            </summary>
+            <typeparam name="TSource">The type of the elements in the source sequence.</typeparam>
+            <typeparam name="TTaskResult">The type of the results produced by the projected intermediate tasks.</typeparam>
+            <typeparam name="TResult">The type of the elements in the result sequence, obtained by using the selector to combine source sequence elements with their corresponding intermediate task results.</typeparam>
+            <param name="source">An observable sequence of elements to project.</param>
+            <param name="taskSelector">A transform function to apply to each element; the second parameter of the function represents the index of the source element.</param>
+            <param name="resultSelector">A transform function to apply to each element of the intermediate sequence; the second parameter of the function represents the index of the source element.</param>
+            <returns>An observable sequence whose elements are the result of obtaining a task for each element of the input sequence and then mapping the task's result and its corresponding source element to a result element.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="source"/> or <paramref name="taskSelector"/> or <paramref name="resultSelector"/> is null.</exception>
+            <remarks>This overload supports using LINQ query comprehension syntax in C# and Visual Basic to compose observable sequences and tasks, without requiring manual conversion of the tasks to observable sequences using <see cref="M:System.Reactive.Threading.Tasks.TaskObservableExtensions.ToObservable``1(System.Threading.Tasks.Task{``0})"/>.</remarks>
+        </member>
         <member name="M:System.Reactive.Linq.Observable.SelectMany``2(System.IObservable{``0},System.Func{``0,System.IObservable{``1}},System.Func{System.Exception,System.IObservable{``1}},System.Func{System.IObservable{``1}})">
             <summary>
             Projects each notification of an observable sequence to an observable sequence and merges the resulting observable sequences into one observable sequence.
@@ -7632,16 +7831,16 @@
             <returns>An observable sequence whose elements are the result of invoking the one-to-many transform function corresponding to each notification in the input sequence.</returns>
             <exception cref="T:System.ArgumentNullException"><paramref name="source"/> or <paramref name="onNext"/> or <paramref name="onError"/> or <paramref name="onCompleted"/> is null.</exception>
         </member>
-        <member name="M:System.Reactive.Linq.Observable.SelectMany``2(System.IObservable{``0},System.Func{``0,System.Int32,System.IObservable{``1}},System.Func{System.Exception,System.Int32,System.IObservable{``1}},System.Func{System.Int32,System.IObservable{``1}})">
+        <member name="M:System.Reactive.Linq.Observable.SelectMany``2(System.IObservable{``0},System.Func{``0,System.Int32,System.IObservable{``1}},System.Func{System.Exception,System.IObservable{``1}},System.Func{System.IObservable{``1}})">
             <summary>
-            Projects each notification of an observable sequence to an observable sequence and merges the resulting observable sequences into one observable sequence.
+            Projects each notification of an observable sequence to an observable sequence by incorporating the element's index and merges the resulting observable sequences into one observable sequence.
             </summary>
             <typeparam name="TSource">The type of the elements in the source sequence.</typeparam>
             <typeparam name="TResult">The type of the elements in the projected inner sequences and the elements in the merged result sequence.</typeparam>
             <param name="source">An observable sequence of notifications to project.</param>
-            <param name="onNext">A transform function to apply to each element; the second parameter represents the index of the source element.</param>
-            <param name="onError">A transform function to apply when an error occurs in the source sequence; the second parameter represents the index of the source element.</param>
-            <param name="onCompleted">A transform function to apply when the end of the source sequence is reached; the second parameter represents the number of elements observed.</param>
+            <param name="onNext">A transform function to apply to each element; the second parameter of the function represents the index of the source element.</param>
+            <param name="onError">A transform function to apply when an error occurs in the source sequence.</param>
+            <param name="onCompleted">A transform function to apply when the end of the source sequence is reached.</param>
             <returns>An observable sequence whose elements are the result of invoking the one-to-many transform function corresponding to each notification in the input sequence.</returns>
             <exception cref="T:System.ArgumentNullException"><paramref name="source"/> or <paramref name="onNext"/> or <paramref name="onError"/> or <paramref name="onCompleted"/> is null.</exception>
         </member>
@@ -7659,13 +7858,12 @@
         </member>
         <member name="M:System.Reactive.Linq.Observable.SelectMany``2(System.IObservable{``0},System.Func{``0,System.Int32,System.Collections.Generic.IEnumerable{``1}})">
             <summary>
-            Projects each element of an observable sequence to an enumerable sequence and concatenates the resulting enumerable sequences into one observable sequence.
-            The index of each source element is used in the projected form of that element. 
+            Projects each element of an observable sequence to an enumerable sequence by incorporating the element's index and concatenates the resulting enumerable sequences into one observable sequence.
             </summary>
             <typeparam name="TSource">The type of the elements in the source sequence.</typeparam>
             <typeparam name="TResult">The type of the elements in the projected inner enumerable sequences and the elements in the merged result sequence.</typeparam>
             <param name="source">An observable sequence of elements to project.</param>
-            <param name="selector">A transform function to apply to each source element; the second parameter of the function represents the index of the source element.</param>
+            <param name="selector">A transform function to apply to each element; the second parameter of the function represents the index of the source element.</param>
             <returns>An observable sequence whose elements are the result of invoking the one-to-many transform function on each element of the input sequence.</returns>
             <exception cref="T:System.ArgumentNullException"><paramref name="source"/> or <paramref name="selector"/> is null.</exception>
             <remarks>The projected sequences are enumerated synchonously within the OnNext call of the source sequence. In order to do a concurrent, non-blocking merge, change the selector to return an observable sequence obtained using the <see cref="M:System.Reactive.Linq.Observable.ToObservable``1(System.Collections.Generic.IEnumerable{``0})"/> conversion.</remarks>
@@ -7686,14 +7884,14 @@
         </member>
         <member name="M:System.Reactive.Linq.Observable.SelectMany``3(System.IObservable{``0},System.Func{``0,System.Int32,System.Collections.Generic.IEnumerable{``1}},System.Func{``0,System.Int32,``1,System.Int32,``2})">
             <summary>
-            Projects each element of an observable sequence to an enumerable sequence, invokes the result selector for the source element and each of the corresponding inner sequence's elements, and merges the results into one observable sequence.
+            Projects each element of an observable sequence to an enumerable sequence by incorporating the element's index, invokes the result selector for the source element and each of the corresponding inner sequence's elements, and merges the results into one observable sequence.
             </summary>
             <typeparam name="TSource">The type of the elements in the source sequence.</typeparam>
             <typeparam name="TCollection">The type of the elements in the projected intermediate enumerable sequences.</typeparam>
             <typeparam name="TResult">The type of the elements in the result sequence, obtained by using the selector to combine source sequence elements with their corresponding intermediate sequence elements.</typeparam>
             <param name="source">An observable sequence of elements to project.</param>
             <param name="collectionSelector">A transform function to apply to each element; the second parameter of the function represents the index of the source element.</param>
-            <param name="resultSelector">A transform function to apply to each element of the intermediate sequence.</param>
+            <param name="resultSelector">A transform function to apply to each element of the intermediate sequence; the second parameter of the function represents the index of the source element and the fourth parameter represents the index of the intermediate element.</param>
             <returns>An observable sequence whose elements are the result of invoking the one-to-many transform function collectionSelector on each element of the input sequence and then mapping each of those sequence elements and their corresponding source element to a result element.</returns>
             <exception cref="T:System.ArgumentNullException"><paramref name="source"/> or <paramref name="collectionSelector"/> or <paramref name="resultSelector"/> is null.</exception>
             <remarks>The projected sequences are enumerated synchonously within the OnNext call of the source sequence. In order to do a concurrent, non-blocking merge, change the selector to return an observable sequence obtained using the <see cref="M:System.Reactive.Linq.Observable.ToObservable``1(System.Collections.Generic.IEnumerable{``0})"/> conversion.</remarks>
@@ -9594,6 +9792,22 @@
             <summary>
             Unsubscribe all observers and release resources.
             </summary>
+        </member>
+        <member name="P:System.Reactive.Subjects.BehaviorSubject`1.Value">
+            <summary>
+            Gets the current value or throws an exception.
+            </summary>
+            <value>The initial value passed to the constructor until <see cref="M:System.Reactive.Subjects.BehaviorSubject`1.OnNext(`0)"/> is called; after which, the last value passed to <see cref="M:System.Reactive.Subjects.BehaviorSubject`1.OnNext(`0)"/>.</value>
+            <remarks>
+            <para><see cref="P:System.Reactive.Subjects.BehaviorSubject`1.Value"/> is frozen after <see cref="M:System.Reactive.Subjects.BehaviorSubject`1.OnCompleted"/> is called.</para>
+            <para>After <see cref="M:System.Reactive.Subjects.BehaviorSubject`1.OnError(System.Exception)"/> is called, <see cref="P:System.Reactive.Subjects.BehaviorSubject`1.Value"/> always throws the specified exception.</para>
+            <para>An exception is always thrown after <see cref="M:System.Reactive.Subjects.BehaviorSubject`1.Dispose"/> is called.</para>
+            <alert type="caller">
+            Reading <see cref="P:System.Reactive.Subjects.BehaviorSubject`1.Value"/> is a thread-safe operation, though there's a potential race condition when <see cref="M:System.Reactive.Subjects.BehaviorSubject`1.OnNext(`0)"/> or <see cref="M:System.Reactive.Subjects.BehaviorSubject`1.OnError(System.Exception)"/> are being invoked concurrently.
+            In some cases, it may be necessary for a caller to use external synchronization to avoid race conditions.
+            </alert>
+            </remarks>
+            <exception cref="T:System.ObjectDisposedException">Dispose was called.</exception>
         </member>
         <member name="P:System.Reactive.Subjects.BehaviorSubject`1.HasObservers">
             <summary>

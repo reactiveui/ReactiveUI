@@ -13,12 +13,16 @@ namespace ReactiveUI
     {
         static readonly MemoizingMRUCache<Tuple<Type, string>, Func<object, object>> propReaderCache = 
             new MemoizingMRUCache<Tuple<Type, string>, Func<object, object>>((x,_) => {
-                var fi = (x.Item1).GetField(x.Item2, BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy);
+                var ti = x.Item1.GetTypeInfo();
+
+                var fi = ti.GetDeclaredField(x.Item2);
                 if (fi != null) {
                     return (fi.GetValue);
                 }
 
-                var pi = GetSafeProperty(x.Item1, x.Item2, BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy);
+                var pi = ti.DeclaredProperties
+                    .FirstOrDefault(y => !y.IsStatic() && y.Name == x.Item2);
+
                 if (pi != null) {
                     return (y => pi.GetValue(y, null));
                 }
@@ -28,12 +32,17 @@ namespace ReactiveUI
 
         static readonly MemoizingMRUCache<Tuple<Type, string>, Action<object, object>> propWriterCache = 
             new MemoizingMRUCache<Tuple<Type, string>, Action<object, object>>((x,_) => {
-                var fi = (x.Item1).GetField(x.Item2, BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy);
+                var ti = x.Item1.GetTypeInfo();
+                var fi = ti.DeclaredFields
+                    .FirstOrDefault(y => y.IsPublic && !y.IsStatic && y.Name == x.Item2);
+
                 if (fi != null) {
                     return (fi.SetValue);
                 }
 
-                var pi = GetSafeProperty(x.Item1, x.Item2, BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy);
+                var pi =  ti.DeclaredProperties
+                    .FirstOrDefault(y => !y.IsStatic() && y.Name == x.Item2);
+
                 if (pi != null) {
                     return ((y,v) => pi.SetValue(y, v, null));
                 }
@@ -116,15 +125,15 @@ namespace ReactiveUI
         public static Type[] GetTypesForPropChain(Type startingType, string[] propNames)
         {
             return propNames.Aggregate(new List<Type>(new[] {startingType}), (acc, x) => {
-                var type = acc.Last();
+                var type = acc.Last().GetTypeInfo();
 
-                var pi = GetSafeProperty(type, x, BindingFlags.FlattenHierarchy | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+                var pi = type.DeclaredProperties.FirstOrDefault(y => y.Name == x);
                 if (pi != null) {
                     acc.Add(pi.PropertyType);
                     return acc;
                 }
 
-                var fi = GetSafeField(type, x, BindingFlags.FlattenHierarchy | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+                var fi = type.DeclaredFields.FirstOrDefault(y => y.Name == x);
                 if (fi != null) {
                     acc.Add(fi.FieldType);
                     return acc;
@@ -269,13 +278,14 @@ namespace ReactiveUI
     
         public static Type GetEventArgsTypeForEvent(Type type, string eventName)
         {
-            var ei = type.GetEvent(eventName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy);
+            var ti = type.GetTypeInfo();
+            var ei = ti.GetDeclaredEvent(eventName);
             if (ei == null) {
                 throw new Exception(String.Format("Couldn't find {0}.{1}", type.FullName, eventName));
             }
     
             // Find the EventArgs type parameter of the event via digging around via reflection
-            var eventArgsType = ei.EventHandlerType.GetMethods().First(x => x.Name == "Invoke").GetParameters()[1].ParameterType;
+            var eventArgsType = ei.EventHandlerType.GetTypeInfo().DeclaredMethods.First(x => x.Name == "Invoke").GetParameters()[1].ParameterType;
             return eventArgsType;
         }
 
@@ -299,26 +309,6 @@ namespace ReactiveUI
                 .Switch();
         }
 
-        internal static FieldInfo GetSafeField(Type type, string propertyName, BindingFlags flags)
-        {
-            try {
-                return type.GetField(propertyName, flags);
-            } 
-            catch (AmbiguousMatchException) {
-                return type.GetFields(flags).First(pi => pi.Name == propertyName);
-            }
-        }
-
-        internal static PropertyInfo GetSafeProperty(Type type, string propertyName, BindingFlags flags)
-        {
-            try {
-                return type.GetProperty(propertyName, flags);
-            } 
-            catch (AmbiguousMatchException) {
-                return type.GetProperties(flags).First(pi => pi.Name == propertyName);
-            }
-        }
-
         internal static string[] getDefaultViewPropChain(object view, string[] vmPropChain)
         {
             var vmPropertyName = vmPropChain.Last();
@@ -340,6 +330,14 @@ namespace ReactiveUI
                 throw new Exception(String.Format("Couldn't find a default property for type {0}", control.GetType()));
             }
             return new[] {vmPropertyName, defaultProperty};
+        }
+    }
+
+    public static class ReflectionExtensions
+    {
+        public static bool IsStatic(this PropertyInfo This)
+        {
+            return (This.GetMethod ?? This.SetMethod).IsStatic;
         }
     }
 }

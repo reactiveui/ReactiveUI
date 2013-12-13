@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive;
+using System.Reflection;
 using System.Reactive.Linq;
 using System.Text;
 using ReactiveUI;
@@ -48,7 +49,7 @@ namespace ReactiveUI
             // * IViewFor<IFooBarViewModel>
             // * IViewFor<FooBarViewModel> (the original behavior in RxUI 3.1)
 
-            var attrs = viewModel.GetType().GetCustomAttributes(typeof (ViewContractAttribute), true);
+            var attrs = viewModel.GetType().GetTypeInfo().GetCustomAttributes(typeof (ViewContractAttribute), true);
 
             if (attrs.Any()) {
                 contract = contract ?? ((ViewContractAttribute) attrs.First()).Contract;

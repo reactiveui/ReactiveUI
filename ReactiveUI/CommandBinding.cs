@@ -388,7 +388,7 @@ namespace ReactiveUI
             }
 
             var eventArgsType = Reflection.GetEventArgsTypeForEvent(type, eventName);
-            var mi = binder.GetType().GetMethods().First(x => x.Name == "BindCommandToObject" && x.IsGenericMethod);
+            var mi = binder.GetType().GetTypeInfo().DeclaredMethods.First(x => x.Name == "BindCommandToObject" && x.IsGenericMethod);
             mi = mi.MakeGenericMethod(new[] {eventArgsType});
 
             //var ret = binder.BindCommandToObject<TEventArgs>(command, target, commandParameter, eventName);
