@@ -36,7 +36,7 @@
     <DebugSymbols>true</DebugSymbols>
     <RegisterForComInterop>false</RegisterForComInterop>
     <DocumentationFile>bin\Release\Monotouch\ReactiveUICocoa.XML</DocumentationFile>
-    <GenerateDocumentation>true</GenerateDocumentation>
+    <GenerateDocumentation>True</GenerateDocumentation>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -91,11 +91,11 @@
     <Compile Include="Cocoa\ReactiveCollectionViewSource.cs" />
     <Compile Include="Cocoa\CommonReactiveSource.cs" />
   </ItemGroup>
+  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <ItemGroup>
-    <ProjectReference Include="..\ReactiveUI\ReactiveUI_Monotouch.csproj">
-      <Project>{9091337A-9E94-4DBD-801E-05E1FDA78FFC}</Project>
-      <Name>ReactiveUI_Monotouch</Name>
+    <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj">
+      <Project>{464CB812-F99F-401B-BE4C-E8F0515CD19D}</Project>
+      <Name>ReactiveUI</Name>
     </ProjectReference>
   </ItemGroup>
-  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
 </Project>

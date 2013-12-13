@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel;
 using System.Reactive.Linq;
+using System.Reflection;
 
 namespace ReactiveUI
 {
@@ -12,7 +13,7 @@ namespace ReactiveUI
         public int GetAffinityForObject(Type type, string propertyName, bool beforeChanged)
         {
             var target = beforeChanged ? typeof (INotifyPropertyChanging) : typeof (INotifyPropertyChanged);
-            return target.IsAssignableFrom(type) ? 5 : 0;
+            return target.GetTypeInfo().IsAssignableFrom(type.GetTypeInfo()) ? 5 : 0;
         }
 
         public IObservable<IObservedChange<object, object>> GetNotificationForProperty(object sender, string propertyName, bool beforeChanged)

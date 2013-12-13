@@ -1146,6 +1146,11 @@
             operating system (cf. GetSystemTimeAdjustment).
             </summary>
         </member>
+        <member name="F:System.Reactive.Concurrency.LocalScheduler.MAXSUPPORTEDTIMER">
+            <summary>
+            Longest interval supported by <see cref="!:System.Threading.Timer"/>.
+            </summary>
+        </member>
         <member name="M:System.Reactive.Concurrency.LocalScheduler.Enqueue``1(System.Reactive.Concurrency.IScheduler,``0,System.DateTimeOffset,System.Func{System.Reactive.Concurrency.IScheduler,``0,System.IDisposable})">
             <summary>
             Enqueues absolute time scheduled work in the timer queue or the short term work list.
