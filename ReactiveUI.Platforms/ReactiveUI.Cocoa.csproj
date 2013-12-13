@@ -44,7 +44,7 @@
     <UseSGen>False</UseSGen>
     <DefineConstants>MONO; COCOA</DefineConstants>
     <DebugSymbols>true</DebugSymbols>
-    <GenerateDocumentation>true</GenerateDocumentation>
+    <GenerateDocumentation>True</GenerateDocumentation>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'AppStore|AnyCPU' ">
     <DebugType>none</DebugType>
@@ -105,12 +105,12 @@
     <Compile Include="Cocoa\ReactiveImageView.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ReactiveUI\ReactiveUI_MonoMac.csproj">
-      <Project>{292A477B-BB94-43C1-984E-E177EF9FEDB7}</Project>
-      <Name>ReactiveUI_MonoMac</Name>
-    </ProjectReference>
+    <Folder Include="Cocoa\" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Cocoa\" />
+    <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj">
+      <Project>{464CB812-F99F-401B-BE4C-E8F0515CD19D}</Project>
+      <Name>ReactiveUI</Name>
+    </ProjectReference>
   </ItemGroup>
 </Project>
