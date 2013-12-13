@@ -16,7 +16,7 @@ namespace ReactiveUI
     {
         public int GetAffinityForObjects(Type lhs, Type rhs)
         {
-            if (rhs.IsAssignableFrom(lhs)) {
+            if (rhs.GetTypeInfo().IsAssignableFrom(lhs.GetTypeInfo())) {
                 return 100;
             }
 
@@ -41,7 +41,7 @@ namespace ReactiveUI
         static MethodInfo genericMi = null;
         static MemoizingMRUCache<Type, MethodInfo> referenceCastCache = new MemoizingMRUCache<Type, MethodInfo>((t, _) => {
             genericMi = genericMi ?? 
-                typeof (EqualityTypeConverter).GetMethod("DoReferenceCast", BindingFlags.Public | BindingFlags.Static);
+                typeof (EqualityTypeConverter).GetTypeInfo().GetDeclaredMethod("DoReferenceCast");
             return genericMi.MakeGenericMethod(new[] {t});
         }, RxApp.SmallCacheLimit);
 

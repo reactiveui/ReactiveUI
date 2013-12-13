@@ -103,7 +103,6 @@
     <Compile Include="ReactiveObject.cs" />
     <Compile Include="RefcountDisposeWrapper.cs" />
     <Compile Include="Reflection.cs" />
-    <Compile Include="ReflectionStubs.cs" />
     <Compile Include="RegisterableInterfaces.cs" />
     <Compile Include="Registrations.cs" />
     <Compile Include="RoutableViewModelMixin.cs" />
