@@ -40,8 +40,9 @@ namespace ReactiveUI
 
         static MethodInfo genericMi = null;
         static MemoizingMRUCache<Type, MethodInfo> referenceCastCache = new MemoizingMRUCache<Type, MethodInfo>((t, _) => {
-            genericMi = genericMi ?? 
-                typeof (EqualityTypeConverter).GetTypeInfo().GetDeclaredMethod("DoReferenceCast");
+            genericMi = genericMi ??
+                typeof(EqualityTypeConverter).GetRuntimeMethods().First(x => x.Name == "DoReferenceCast");
+
             return genericMi.MakeGenericMethod(new[] {t});
         }, RxApp.SmallCacheLimit);
 

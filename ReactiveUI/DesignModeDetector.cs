@@ -27,7 +27,7 @@ namespace ReactiveUI
                 // Check WPF Design Mode
                 var type = Type.GetType("System.ComponentModel.DesignerProperties, PresentationFramework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35", false);
                 if (type != null) {
-                    var mInfo = type.GetTypeInfo().GetDeclaredMethod("GetIsInDesignMode");
+                    var mInfo = type.GetRuntimeMethods().FirstOrDefault(x => x.Name == "GetIsInDesignMode");
                     var dependencyObject = Type.GetType("System.Windows.DependencyObject, WindowsBase, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35", false); 
 
                     if (dependencyObject != null) {
@@ -36,14 +36,14 @@ namespace ReactiveUI
 
                 } else if((type = Type.GetType("System.ComponentModel.DesignerProperties, System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e", false)) != null) {
                     // Check Silverlight Design Mode
-                    var mInfo = type.GetTypeInfo().GetDeclaredMethod("GetIsInDesignMode");
+                    var mInfo = type.GetRuntimeMethods().FirstOrDefault(x => x.Name == "GetIsInDesignMode");
                     var dependencyObject = Type.GetType("System.Windows.Controls.Border, System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e", false);
                     if (dependencyObject != null) {
                         isInDesignMode = (bool)mInfo.Invoke(null, new object[] { Activator.CreateInstance(dependencyObject) });
                     }
                 } else if ((type = Type.GetType("Windows.ApplicationModel.DesignMode, Windows, ContentType=WindowsRuntime", false)) != null) {
                     // check WinRT next
-                    isInDesignMode = (bool)type.GetTypeInfo().GetDeclaredProperty("DesignModeEnabled").GetMethod.Invoke(null, null);
+                    isInDesignMode = (bool)type.GetRuntimeProperty("DesignModeEnabled").GetMethod.Invoke(null, null);
                 } else {
                     isInDesignMode = false;
                 }
