@@ -9,19 +9,20 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Runtime.Serialization;
 using System.Text;
+using System.Reflection;
 
 namespace ReactiveUI
 {
     public static class AutoPersistHelper
     {
         static MemoizingMRUCache<Type, Dictionary<string, bool>> persistablePropertiesCache = new MemoizingMRUCache<Type, Dictionary<string, bool>>((type, _) => {
-            return type.GetProperties()
-                .Where(x => x.CustomAttributes.Any(y => typeof(DataMemberAttribute).IsAssignableFrom(y.AttributeType)))
+            return type.GetTypeInfo().DeclaredProperties
+                .Where(x => x.CustomAttributes.Any(y => typeof(DataMemberAttribute).GetTypeInfo().IsAssignableFrom(y.AttributeType.GetTypeInfo())))
                 .ToDictionary(k => k.Name, v => true);
         }, RxApp.SmallCacheLimit);
 
         static MemoizingMRUCache<Type, bool> dataContractCheckCache = new MemoizingMRUCache<Type, bool>((t, _) => {
-            return t.GetCustomAttributes(typeof(DataContractAttribute), true).Any();
+            return t.GetTypeInfo().GetCustomAttributes(typeof(DataContractAttribute), true).Any();
         }, RxApp.SmallCacheLimit);
 
         public static IDisposable AutoPersist<T>(this T This, Func<T, IObservable<Unit>> doPersist, TimeSpan? interval = null)

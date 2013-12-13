@@ -189,16 +189,14 @@
             <param name="ticks">Recorded virtual time the OnCompleted notification occurs.</param>
             <returns>Recorded OnCompleted notification.</returns>
         </member>
-        <member name="M:Microsoft.Reactive.Testing.ReactiveTest.OnCompleted``1(``0,System.Int64)">
+        <member name="M:Microsoft.Reactive.Testing.ReactiveTest.OnCompleted``1(System.Int64,``0)">
             <summary>
-            Factory method for an OnCompleted notification record at a given time.
+            Factory method for an OnCompleted notification record at a given time, using inference to determine the type of <typeparamref name="T"/>.
             </summary>
             <typeparam name="T">The element type for the resulting notification object.</typeparam>
-            <param name="dummy">An unused instance of type T, to force the compiler to infer that T as part of the method's return value.</param>
             <param name="ticks">Recorded virtual time the OnCompleted notification occurs.</param>
+            <param name="witness">Object solely used to infer the type of the <typeparamref name="T"/> type parameter. This parameter is typically used when creating a sequence of anonymously typed elements.</param>
             <returns>Recorded OnCompleted notification.</returns>
-            <remarks>This overload is used for anonymous types - by passing in an instance of the type, the compiler can infer the 
-            anonymous type without you having to try naming the type.</remarks>
         </member>
         <member name="M:Microsoft.Reactive.Testing.ReactiveTest.OnError``1(System.Int64,System.Exception)">
             <summary>
@@ -220,31 +218,27 @@
             <returns>Recorded OnError notification with a predicate to assert a given exception.</returns>
             <exception cref="T:System.ArgumentNullException"><paramref name="predicate"/> is null.</exception>
         </member>
-        <member name="M:Microsoft.Reactive.Testing.ReactiveTest.OnError``1(``0,System.Int64,System.Exception)">
+        <member name="M:Microsoft.Reactive.Testing.ReactiveTest.OnError``1(System.Int64,System.Exception,``0)">
             <summary>
-            Factory method for an OnError notification record at a given time with a given error.
+            Factory method for an OnError notification record at a given time with a given error, using inference to determine the type of <typeparamref name="T"/>.
             </summary>
             <typeparam name="T">The element type for the resulting notification object.</typeparam>
-            <param name="dummy">An unused instance of type T, to force the compiler to infer that T as part of the method's return value.</param>
             <param name="ticks">Recorded virtual time the OnError notification occurs.</param>
             <param name="exception">Recorded exception stored in the OnError notification.</param>
+            <param name="witness">Object solely used to infer the type of the <typeparamref name="T"/> type parameter. This parameter is typically used when creating a sequence of anonymously typed elements.</param>
             <returns>Recorded OnError notification.</returns>
             <exception cref="T:System.ArgumentNullException"><paramref name="exception"/> is null.</exception>
-            <remarks>This overload is used for anonymous types - by passing in an instance of the type, the compiler can infer the 
-            anonymous type without you having to try naming the type.</remarks>
         </member>
-        <member name="M:Microsoft.Reactive.Testing.ReactiveTest.OnError``1(``0,System.Int64,System.Func{System.Exception,System.Boolean})">
+        <member name="M:Microsoft.Reactive.Testing.ReactiveTest.OnError``1(System.Int64,System.Func{System.Exception,System.Boolean},``0)">
             <summary>
-            Factory method for writing an assert that checks for an OnError notification record at a given time, using the specified predicate to check the exception.
+            Factory method for writing an assert that checks for an OnError notification record at a given time, using the specified predicate to check the exception and inference to determine the type of <typeparamref name="T"/>.
             </summary>
             <typeparam name="T">The element type for the resulting notification object.</typeparam>
-            <param name="dummy">An unused instance of type T, to force the compiler to infer that T as part of the method's return value.</param>
             <param name="ticks">Recorded virtual time the OnError notification occurs.</param>
             <param name="predicate">Predicate function to check the OnError notification value against an expected exception.</param>
+            <param name="witness">Object solely used to infer the type of the <typeparamref name="T"/> type parameter. This parameter is typically used when creating a sequence of anonymously typed elements.</param>
             <returns>Recorded OnError notification with a predicate to assert a given exception.</returns>
             <exception cref="T:System.ArgumentNullException"><paramref name="predicate"/> is null.</exception>
-            <remarks>This overload is used for anonymous types - by passing in an instance of the type, the compiler can infer the 
-            anonymous type without you having to try naming the type.</remarks>
         </member>
         <member name="M:Microsoft.Reactive.Testing.ReactiveTest.Subscribe(System.Int64,System.Int64)">
             <summary>
