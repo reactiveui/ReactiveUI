@@ -13,14 +13,13 @@ namespace ReactiveUI
     {
         static readonly MemoizingMRUCache<Tuple<Type, string>, Func<object, object>> propReaderCache = 
             new MemoizingMRUCache<Tuple<Type, string>, Func<object, object>>((x,_) => {
-                var ti = x.Item1.GetTypeInfo();
-
-                var fi = ti.GetDeclaredField(x.Item2);
+                var fi = x.Item1.GetRuntimeFields()
+                    .FirstOrDefault(y => !y.IsStatic && y.Name == x.Item2);
                 if (fi != null) {
                     return (fi.GetValue);
                 }
 
-                var pi = ti.DeclaredProperties
+                var pi = x.Item1.GetRuntimeProperties()
                     .FirstOrDefault(y => !y.IsStatic() && y.Name == x.Item2);
 
                 if (pi != null) {
@@ -32,15 +31,14 @@ namespace ReactiveUI
 
         static readonly MemoizingMRUCache<Tuple<Type, string>, Action<object, object>> propWriterCache = 
             new MemoizingMRUCache<Tuple<Type, string>, Action<object, object>>((x,_) => {
-                var ti = x.Item1.GetTypeInfo();
-                var fi = ti.DeclaredFields
+                var fi = x.Item1.GetRuntimeFields()
                     .FirstOrDefault(y => y.IsPublic && !y.IsStatic && y.Name == x.Item2);
 
                 if (fi != null) {
                     return (fi.SetValue);
                 }
 
-                var pi =  ti.DeclaredProperties
+                var pi =  x.Item1.GetRuntimeProperties()
                     .FirstOrDefault(y => !y.IsStatic() && y.Name == x.Item2);
 
                 if (pi != null) {
@@ -125,15 +123,15 @@ namespace ReactiveUI
         public static Type[] GetTypesForPropChain(Type startingType, string[] propNames)
         {
             return propNames.Aggregate(new List<Type>(new[] {startingType}), (acc, x) => {
-                var type = acc.Last().GetTypeInfo();
+                var type = acc.Last();
 
-                var pi = type.DeclaredProperties.FirstOrDefault(y => y.Name == x);
+                var pi = type.GetRuntimeProperties().FirstOrDefault(y => y.Name == x);
                 if (pi != null) {
                     acc.Add(pi.PropertyType);
                     return acc;
                 }
 
-                var fi = type.DeclaredFields.FirstOrDefault(y => y.Name == x);
+                var fi = type.GetRuntimeFields().FirstOrDefault(y => y.Name == x);
                 if (fi != null) {
                     acc.Add(fi.FieldType);
                     return acc;
@@ -278,14 +276,14 @@ namespace ReactiveUI
     
         public static Type GetEventArgsTypeForEvent(Type type, string eventName)
         {
-            var ti = type.GetTypeInfo();
-            var ei = ti.GetDeclaredEvent(eventName);
+            var ti = type;
+            var ei = ti.GetRuntimeEvent(eventName);
             if (ei == null) {
                 throw new Exception(String.Format("Couldn't find {0}.{1}", type.FullName, eventName));
             }
     
             // Find the EventArgs type parameter of the event via digging around via reflection
-            var eventArgsType = ei.EventHandlerType.GetTypeInfo().DeclaredMethods.First(x => x.Name == "Invoke").GetParameters()[1].ParameterType;
+            var eventArgsType = ei.EventHandlerType.GetRuntimeMethods().First(x => x.Name == "Invoke").GetParameters()[1].ParameterType;
             return eventArgsType;
         }
 

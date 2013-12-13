@@ -77,13 +77,13 @@ namespace ReactiveUI.Xaml
         {
 #if WINRT
             // Look for the DependencyProperty attached to this property name
-            var pi = type.GetProperty(propertyName + "Property", BindingFlags.Static | BindingFlags.Public | BindingFlags.FlattenHierarchy);
+            var pi = type.GetRuntimeProperties().FirstOrDefault(x => x.Name == (propertyName + "Property") && x.IsStatic());
             if (pi != null) {
                 return () => (DependencyProperty)pi.GetValue(null);
             }
 #endif
 
-            var fi = type.GetField(propertyName + "Property", BindingFlags.Static | BindingFlags.Public | BindingFlags.FlattenHierarchy);
+            var fi = type.GetRuntimeFields().FirstOrDefault(x => x.Name == propertyName + "Property" && x.IsStatic);
             if (fi != null) {
                 return () => (DependencyProperty)fi.GetValue(null);
             }
