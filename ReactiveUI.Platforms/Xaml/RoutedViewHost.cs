@@ -38,7 +38,7 @@ namespace ReactiveUI.Xaml
 
         /// <summary>
         /// This content is displayed whenever there is no page currently
-	    /// routed.
+        /// routed.
         /// </summary>
         public object DefaultContent {
             get { return (object)GetValue(DefaultContentProperty); }
@@ -61,7 +61,10 @@ namespace ReactiveUI.Xaml
             HorizontalContentAlignment = HorizontalAlignment.Stretch;
             VerticalContentAlignment = VerticalAlignment.Stretch;
 
-            if (RxApp.InUnitTestRunner()) return;
+            if (RxApp.InUnitTestRunner()) {
+                ViewContractObservable = Observable.Never<string>();
+                return;
+            }
 
             var platform = RxApp.DependencyResolver.GetService<IPlatformOperations>();
             if (platform == null) {
