@@ -266,6 +266,16 @@ namespace ReactiveUI
         IObservable<NotifyCollectionChangedEventArgs> Changed { get; }
 
         /// <summary>
+        /// Fires when the collection count changes, regardless of reason
+        /// </summary>
+        IObservable<int> CountChanging { get; }
+
+        /// <summary>
+        /// Fires when the collection count changes, regardless of reason
+        /// </summary>
+        IObservable<int> CountChanged { get; }
+
+        /// <summary>
         /// This Observable is fired when a ShouldReset fires on the collection. This
         /// means that you should forget your previous knowledge of the state
         /// of the collection and reread it.
