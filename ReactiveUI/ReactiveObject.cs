@@ -79,7 +79,7 @@ namespace ReactiveUI
 
             allPublicProperties = allPublicProperties ??
                 new Lazy<PropertyInfo[]>(() =>
-                    GetType().GetTypeInfo().DeclaredProperties
+                    GetType().GetRuntimeProperties()
                         .Where(x => !x.IsStatic())
                         .ToArray());
         }
