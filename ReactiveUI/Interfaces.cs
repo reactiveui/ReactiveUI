@@ -301,7 +301,6 @@ namespace ReactiveUI
 
         IObservable<int> CountChanging { get; }
         IObservable<int> CountChanged { get; }
-        IObservable<bool> IsEmptyChanged { get; }
     }
 
     /// <summary>
