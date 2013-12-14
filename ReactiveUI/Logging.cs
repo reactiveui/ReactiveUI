@@ -264,24 +264,23 @@ namespace ReactiveUI
     #region Extremely Dull Code Ahead
     internal class WrappingFullLogger : IFullLogger
     {
+        static readonly MethodInfo stringFormat =
+            typeof (String).GetTypeInfo().GetDeclaredMethods("Format")
+                .First(x => x.GetParameters()
+                    .Select(p => p.ParameterType)
+                    .SequenceEqual(new[] {
+                        typeof(IFormatProvider),
+                        typeof(string),
+                        typeof(object[]),
+                    }));
+
         readonly ILogger _inner;
         readonly string prefix;
-        static MethodInfo stringFormat;
 
         public WrappingFullLogger(ILogger inner, Type callingType)
         {
             _inner = inner;
             prefix = String.Format(CultureInfo.InvariantCulture, "{0}: ", callingType.Name);
-
-            var paramTypes = new[] {
-                typeof(IFormatProvider),
-                typeof(string),
-                typeof(object[]),
-            };
-
-            stringFormat = stringFormat ?? typeof (String).GetTypeInfo().GetDeclaredMethods("Format")
-                .First(x => x.GetParameters().Count() == 3 && 
-                    paramTypes.Zip(x.GetParameters(), (y,z) => new { Expected = y, Actual = z.ParameterType}).All(y => y.Expected == y.Actual));
 
             Contract.Requires(inner != null);
             Contract.Requires(stringFormat != null);
