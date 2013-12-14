@@ -2,6 +2,7 @@
 {
     using System;
     using System.Reactive.Linq;
+    using System.Reactive.Subjects;
     using System.Windows.Forms;
     using ReactiveUI.Winforms;
 
@@ -65,7 +66,25 @@
 
         }
 
-       
+        [Fact]
+        public void CommandBinderAffectsEnabledState()
+        {
+            var fixture = new CreatesWinformsCommandBinding();
+            var canExecute = new Subject<bool>();
+            canExecute.OnNext(true);
+            var cmd = new ReactiveCommand(canExecute);
+            var input = new Button { };
+
+            var disp = fixture.BindCommandToObject(cmd, input, Observable.Return((object)5));
+
+            Assert.True(input.Enabled);
+
+            canExecute.OnNext(false);
+
+            Assert.False(input.Enabled);
+
+            disp.Dispose();
+        }
     }
 
      public class CustomClickableControl : Control
