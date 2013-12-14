@@ -75,6 +75,19 @@ namespace ReactiveUI.Winforms
                 }
             }));
 
+            var enabledSetter = Reflection.GetValueSetterForProperty(target.GetType(), "Enabled");
+            if (enabledSetter != null)
+            {
+                object latestParam = null;
+                commandParameter.Subscribe(x => latestParam = x);
+                ret.Add(Observable.FromEventPattern<EventHandler, EventArgs>(x => command.CanExecuteChanged += x, x => command.CanExecuteChanged -= x)
+                    .Select(_ => command.CanExecute(latestParam))
+                    .Subscribe(x =>
+                    {
+                        enabledSetter(target, x);
+                    }));
+            }
+
             return ret;
         }
     }
