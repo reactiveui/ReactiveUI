@@ -43,9 +43,24 @@ namespace ReactiveUI
     /// </summary>
     public class ObservedChange<TSender, TValue> : IObservedChange<TSender, TValue>
     {
-        public TSender Sender { get; set; }
-        public string PropertyName { get; set; }
-        public TValue Value { get; set; }
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ObservedChange{TSender, TValue}"/> class.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="propertyName">Name of the property.</param>
+        /// <param name="value">The value.</param>
+        public ObservedChange(TSender sender, string propertyName, TValue value = default(TValue))
+        {
+            this.Sender = sender;
+            this.PropertyName = propertyName;
+            this.Value = value;
+        }
+
+        public TSender Sender { get; private set; }
+
+        public string PropertyName { get; private set; }
+
+        public TValue Value { get; private set; }
     }
 
     /// <summary>

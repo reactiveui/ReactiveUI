@@ -532,7 +532,7 @@ namespace ReactiveUI
             var inpc = toTrack as INotifyPropertyChanged;
             if (inpc != null) {
                 changed = Observable.FromEventPattern<PropertyChangedEventHandler, PropertyChangedEventArgs>(x => inpc.PropertyChanged += x, x => inpc.PropertyChanged -= x)
-                    .Select(x => new ObservedChange<T, object>() { PropertyName = x.EventArgs.PropertyName, Sender = toTrack });
+                    .Select(x => new ObservedChange<T, object>(toTrack, x.EventArgs.PropertyName));
                 goto isSetup;
             }
 
