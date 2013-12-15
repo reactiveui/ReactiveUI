@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 
 #if WINRT
@@ -43,7 +44,7 @@ namespace ReactiveUI.Xaml
             };
 
             var type = control.GetType();
-            var kvp = items.FirstOrDefault(x => x.Type.IsAssignableFrom(type));
+            var kvp = items.FirstOrDefault(x => x.Type.GetTypeInfo().IsAssignableFrom(type.GetTypeInfo()));
 
             return kvp != null ? Tuple.Create(kvp.Property, 5) : null;
         }
