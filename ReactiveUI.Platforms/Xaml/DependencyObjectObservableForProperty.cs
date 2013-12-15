@@ -57,7 +57,7 @@ namespace ReactiveUI.Xaml
             return Observable.Create<IObservedChange<object, object>>(subj => {
                 var dp = dpFetcher();
                 var dpd = DependencyPropertyDescriptor.FromProperty(dp, type);
-                var ev = new EventHandler((o, e) => subj.OnNext(new ObservedChange<object, object>() {Sender = sender, PropertyName = propertyName,}));
+                var ev = new EventHandler((o, e) => subj.OnNext(new ObservedChange<object, object>(sender, propertyName)));
                 dpd.AddValueChanged(sender, ev);
 
                 return Disposable.Create(() => dpd.RemoveValueChanged(sender, ev));
@@ -70,7 +70,7 @@ namespace ReactiveUI.Xaml
 
             return dpAndSubj.Item2
                 .Where(x => x == sender)
-                .Select(x => (IObservedChange<object, object>) new ObservedChange<object, object>() { Sender = x, PropertyName = propertyName });
+                .Select(x => new ObservedChange<object, object>(x, propertyName));
 #endif
         }
 
