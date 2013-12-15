@@ -31,14 +31,14 @@ namespace ReactiveUI
                         x => before.PropertyChanging += x, x => before.PropertyChanging -= x);
 
                     return obs.Where(x => x.EventArgs.PropertyName == propertyName)
-                        .Select(x => (IObservedChange<object, object>) new ObservedChange<object, object>() { Sender = sender, PropertyName = x.EventArgs.PropertyName })
+                        .Select(x => new ObservedChange<object, object>(sender, x.EventArgs.PropertyName))
                         .Subscribe(subj);
                 } else {
                     var obs = Observable.FromEventPattern<PropertyChangedEventHandler, PropertyChangedEventArgs>(
                         x => after.PropertyChanged += x, x => after.PropertyChanged -= x);
 
                     return obs.Where(x => x.EventArgs.PropertyName == propertyName)
-                        .Select(x => (IObservedChange<object, object>) new ObservedChange<object, object>() { Sender = sender, PropertyName = x.EventArgs.PropertyName })
+                        .Select(x => new ObservedChange<object, object>(sender, x.EventArgs.PropertyName))
                         .Subscribe(subj);
                 }
             });

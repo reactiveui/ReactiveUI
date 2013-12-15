@@ -26,11 +26,7 @@ namespace ReactiveUI.Xaml
 
             return Observable.Create<IObservedChange<object, object>>(subj => {
                 var handler = new EventHandler((o, e) => {
-                    subj.OnNext(new ObservedChange<object, object>() {
-                        Sender = sender,
-                        PropertyName = propertyName,
-                        Value = null,
-                    });
+                    subj.OnNext(new ObservedChange<object, object>(sender, propertyName));
                 });
 
                 dpd.AddValueChanged(sender, handler);
