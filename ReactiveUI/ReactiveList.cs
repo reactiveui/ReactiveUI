@@ -99,15 +99,15 @@ namespace ReactiveUI
             // NB: ObservableCollection has a Secret Handshake with WPF where 
             // they fire an INPC notification with the token "Item[]". Emulate 
             // it here
-            CountChanging.Where(_ => _suppressionRefCount == 0).Select(x => new PropertyChangingEventArgs("Count")).Subscribe(this.raisePropertyChanging);
+            CountChanging.Where(_ => _suppressionRefCount == 0).Select(x => new PropertyChangingEventArgs("Count")).Subscribe(this.RaisePropertyChanging);
 
-            CountChanged.Where(_ => _suppressionRefCount == 0).Select(x => new PropertyChangedEventArgs("Count")).Subscribe(this.raisePropertyChanged);
+            CountChanged.Where(_ => _suppressionRefCount == 0).Select(x => new PropertyChangedEventArgs("Count")).Subscribe(this.RaisePropertyChanged);
 
-            IsEmptyChanged.Where(_ => _suppressionRefCount == 0).Select(x => new PropertyChangedEventArgs("IsEmpty")).Subscribe(this.raisePropertyChanged);
+            IsEmptyChanged.Where(_ => _suppressionRefCount == 0).Select(x => new PropertyChangedEventArgs("IsEmpty")).Subscribe(this.RaisePropertyChanged);
 
-            Changing.Where(_ => _suppressionRefCount == 0).Select(x => new PropertyChangingEventArgs("Item[]")).Subscribe(this.raisePropertyChanging);
+            Changing.Where(_ => _suppressionRefCount == 0).Select(x => new PropertyChangingEventArgs("Item[]")).Subscribe(this.RaisePropertyChanging);
 
-            Changed.Where(_ => _suppressionRefCount == 0).Select(x => new PropertyChangedEventArgs("Item[]")).Subscribe(this.raisePropertyChanged);
+            Changed.Where(_ => _suppressionRefCount == 0).Select(x => new PropertyChangedEventArgs("Item[]")).Subscribe(this.RaisePropertyChanged);
         }
 
         public bool IsEmpty
@@ -476,36 +476,7 @@ namespace ReactiveUI
 
         public IObservable<IObservedChange<T, object>> ItemChanging { get { return _itemChanging.Value; } }
         public IObservable<IObservedChange<T, object>> ItemChanged { get { return _itemChanged.Value; } }
-
-        IObservable<object> IReactiveNotifyCollectionChanged.BeforeItemsAdded { get { return BeforeItemsAdded.Select(x => (object)x); } }
-        IObservable<object> IReactiveNotifyCollectionChanged.ItemsAdded { get { return ItemsAdded.Select(x => (object)x); } }
-
-        IObservable<object> IReactiveNotifyCollectionChanged.BeforeItemsRemoved { get { return BeforeItemsRemoved.Select(x => (object)x); } }
-        IObservable<object> IReactiveNotifyCollectionChanged.ItemsRemoved { get { return ItemsRemoved.Select(x => (object) x); } }
-
-        IObservable<IMoveInfo<object>> IReactiveNotifyCollectionChanged.BeforeItemsMoved { get { return BeforeItemsMoved.Select(x => (IMoveInfo<object>)x); } }
-        IObservable<IMoveInfo<object>> IReactiveNotifyCollectionChanged.ItemsMoved { get { return ItemsMoved.Select(x => (IMoveInfo<object>)x); } }
-
-        IObservable<IObservedChange<object, object>> IReactiveNotifyCollectionItemChanged.ItemChanging {
-            get {
-                return _itemChanging.Value.Select(x => (IObservedChange<object, object>) new ObservedChange<object, object>() {
-                    Sender = x.Sender,
-                    PropertyName = x.PropertyName,
-                    Value = x.Value,
-                });
-            }
-        }
-
-        IObservable<IObservedChange<object, object>> IReactiveNotifyCollectionItemChanged.ItemChanged {
-            get {
-                return _itemChanged.Value.Select(x => (IObservedChange<object, object>) new ObservedChange<object, object>() {
-                    Sender = x.Sender,
-                    PropertyName = x.PropertyName,
-                    Value = x.Value,
-                });
-            }
-        }
-
+        
         public IObservable<int> CountChanging {
             get { return _changing.Select(_ => _inner.Count).DistinctUntilChanged(); }
         }
@@ -547,11 +518,11 @@ namespace ReactiveUI
                 return;
             }
 
-            var changing = Observable.Never<IObservedChange<object, object>>();
-            var changed = Observable.Never<IObservedChange<object, object>>();
+            var changing = Observable.Never<IObservedChange<T, object>>();
+            var changed = Observable.Never<IObservedChange<T, object>>();
 
             this.Log().Info("Item hash: 0x{0:x}", toTrack.GetHashCode());
-            var irnpc = toTrack as IReactiveNotifyPropertyChanged;
+            var irnpc = toTrack as IReactiveNotifyPropertyChanged<T>;
             if (irnpc != null) {
                 changing = irnpc.Changing;
                 changed = irnpc.Changed;
@@ -561,8 +532,7 @@ namespace ReactiveUI
             var inpc = toTrack as INotifyPropertyChanged;
             if (inpc != null) {
                 changed = Observable.FromEventPattern<PropertyChangedEventHandler, PropertyChangedEventArgs>(x => inpc.PropertyChanged += x, x => inpc.PropertyChanged -= x)
-                    .Select(x => (IObservedChange<object, object>)
-                        new ObservedChange<object, object>() { PropertyName = x.EventArgs.PropertyName, Sender = inpc });
+                    .Select(x => new ObservedChange<T, object>() { PropertyName = x.EventArgs.PropertyName, Sender = toTrack });
                 goto isSetup;
             }
 
@@ -571,11 +541,9 @@ namespace ReactiveUI
         isSetup:
             var toDispose = new[] {
                 changing.Where(_ => this._suppressionRefCount == 0).Subscribe(beforeChange =>
-                    _itemChanging.Value.OnNext(new ObservedChange<T, object>() {
-                        Sender = toTrack, PropertyName = beforeChange.PropertyName })),
+                    _itemChanging.Value.OnNext(beforeChange)),
                 changed.Where(_ => this._suppressionRefCount == 0).Subscribe(change =>
-                    _itemChanged.Value.OnNext(new ObservedChange<T,object>() {
-                        Sender = toTrack, PropertyName = change.PropertyName })),
+                    _itemChanged.Value.OnNext(change)),
             };
 
             _propertyChangeWatchers.Add(toTrack, 
@@ -624,7 +592,7 @@ namespace ReactiveUI
             }
         }
 
-        protected virtual void raisePropertyChanging(PropertyChangingEventArgs e)
+        public virtual void RaisePropertyChanging(PropertyChangingEventArgs e)
         {
             var handler = this.PropertyChanging;
 
@@ -633,7 +601,7 @@ namespace ReactiveUI
             }
         }
 
-        protected virtual void raisePropertyChanged(PropertyChangedEventArgs e)
+        public virtual void RaisePropertyChanged(PropertyChangedEventArgs e)
         {
             var handler = this.PropertyChanged;
 
