@@ -52,7 +52,7 @@ namespace ReactiveUI.Xaml
 
             if (eventInfo == null) return null;
 
-            var mi = GetType().GetMethods().First(x => x.Name == "BindCommandToObject" && x.IsGenericMethod);
+            var mi = GetType().GetRuntimeMethods().First(x => x.Name == "BindCommandToObject" && x.IsGenericMethod);
             mi = mi.MakeGenericMethod(eventInfo.Args);
 
             return (IDisposable)mi.Invoke(this, new[] {command, target, commandParameter, eventInfo.EventInfo.Name});
