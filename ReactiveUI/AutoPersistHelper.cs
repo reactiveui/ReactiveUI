@@ -27,13 +27,13 @@ namespace ReactiveUI
         }, RxApp.SmallCacheLimit);
 
         public static IDisposable AutoPersist<T>(this T This, Func<T, IObservable<Unit>> doPersist, TimeSpan? interval = null)
-            where T : IReactiveNotifyPropertyChanged
+            where T : IReactiveNotifyPropertyChanged<T>
         {
             return This.AutoPersist(doPersist, Observable.Never<Unit>(), interval);
         }
 
         public static IDisposable AutoPersist<T, TDontCare>(this T This, Func<T, IObservable<Unit>> doPersist, IObservable<TDontCare> manualSaveSignal, TimeSpan? interval = null)
-            where T : IReactiveNotifyPropertyChanged
+            where T : IReactiveNotifyPropertyChanged<T>
         {
             interval = interval ?? TimeSpan.FromSeconds(3.0);
 
@@ -69,13 +69,13 @@ namespace ReactiveUI
         }
 
         public static IDisposable AutoPersistCollection<T>(this ReactiveList<T> This, Func<T, IObservable<Unit>> doPersist, TimeSpan? interval = null)
-            where T : IReactiveNotifyPropertyChanged
+            where T : IReactiveNotifyPropertyChanged<T>
         {
             return AutoPersistCollection(This, doPersist, Observable.Never<Unit>(), interval);
         }
 
         public static IDisposable AutoPersistCollection<T, TDontCare>(this ReactiveList<T> This, Func<T, IObservable<Unit>> doPersist, IObservable<TDontCare> manualSaveSignal, TimeSpan? interval = null)
-            where T : IReactiveNotifyPropertyChanged
+            where T : IReactiveNotifyPropertyChanged<T>
         {
             var disposerList = new Dictionary<T, IDisposable>();
 
@@ -96,7 +96,7 @@ namespace ReactiveUI
         }
 
         public static IDisposable ActOnEveryObject<T>(this ReactiveList<T> This, Action<T> onAdd, Action<T> onRemove)
-            where T : IReactiveNotifyPropertyChanged
+            where T : IReactiveNotifyPropertyChanged<T>
         {
             foreach (var v in This) { onAdd(v); }
 
