@@ -10,16 +10,10 @@
 		<language>en-us</language>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 
-		<dependencies>
-		    <group targetFramework="Monoandroid">
-          <dependency id="reactiveui-core" version="[5.3.0]" />
-		    </group>  
-		    <group targetFramework="Monomac">
-          <dependency id="reactiveui-core" version="[5.3.0]" />
-		    </group>  
-		    <group targetFramework="Monotouch">
-          <dependency id="reactiveui-core" version="[5.3.0]" />
-		    </group>  
+		<dependencies>		    
+		    <group>
+				    <dependency id="reactive-core" version="[5.3.0]" />
+	  		</group>
         <group targetFramework="net45">
             <dependency id="reactiveui-core" version="[5.3.0]" />
             <dependency id="Rx-Xaml" version="2.1.30214.0" />
