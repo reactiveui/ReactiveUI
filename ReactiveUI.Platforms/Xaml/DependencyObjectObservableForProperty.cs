@@ -24,7 +24,7 @@ namespace ReactiveUI.Xaml
     {
         public int GetAffinityForObject(Type type, string propertyName, bool beforeChanged = false)
         {
-            if (!typeof(DependencyObject).IsAssignableFrom(type)) return 0;
+            if (!typeof(DependencyObject).GetTypeInfo().IsAssignableFrom(type.GetTypeInfo())) return 0;
             if (getDependencyPropertyFetcher(type, propertyName) == null) return 0;
 
             return 4;
