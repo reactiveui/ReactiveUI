@@ -92,7 +92,7 @@ namespace ReactiveUI.Cocoa
         {
             bool propIsBoolean = false;
 
-            var pi = Reflection.GetSafeProperty(senderType, propertyName, BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
+            var pi = senderType.GetTypeInfo().DeclaredProperties.FirstOrDefault(x => !x.IsStatic());
             if (pi == null) goto attemptGuess;
 
             if (pi.DeclaringType == typeof(bool)) propIsBoolean = true;

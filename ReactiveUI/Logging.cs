@@ -4,6 +4,8 @@ using System.Reactive.Linq;
 using System.Reflection;
 using System.Globalization;
 using System.Text;
+using System.Linq;
+
 using System.Threading;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
@@ -262,16 +264,24 @@ namespace ReactiveUI
     #region Extremely Dull Code Ahead
     internal class WrappingFullLogger : IFullLogger
     {
+        static readonly MethodInfo stringFormat =
+            typeof (String).GetTypeInfo().GetDeclaredMethods("Format")
+                .First(x => x.GetParameters()
+                    .Select(p => p.ParameterType)
+                    .SequenceEqual(new[] {
+                        typeof(IFormatProvider),
+                        typeof(string),
+                        typeof(object[]),
+                    }));
+
         readonly ILogger _inner;
         readonly string prefix;
-        readonly MethodInfo stringFormat;
 
         public WrappingFullLogger(ILogger inner, Type callingType)
         {
             _inner = inner;
             prefix = String.Format(CultureInfo.InvariantCulture, "{0}: ", callingType.Name);
 
-            stringFormat = typeof (String).GetMethod("Format", new[] {typeof (IFormatProvider), typeof (string), typeof (object[])});
             Contract.Requires(inner != null);
             Contract.Requires(stringFormat != null);
         }
