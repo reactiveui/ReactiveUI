@@ -294,11 +294,11 @@ namespace ReactiveUI
     }
 
     /// <summary>
-    /// IReactiveDerivedList repreents a collection whose contents will "follow" another
+    /// IReactiveDerivedList represents a collection whose contents will "follow" another
     /// collection; this method is useful for creating ViewModel collections
     /// that are automatically updated when the respective Model collection is updated.
     /// </summary>
-    public interface IReactiveDerivedList<T> : IReadOnlyReactiveList<T>, IDisposable
+    public interface IReactiveDerivedList<out T> : IReadOnlyReactiveList<T>, IDisposable
     {
     }
 
