@@ -73,13 +73,6 @@
             Creates an object that schedules units of work on a designated thread.
             </summary>
         </member>
-        <member name="M:System.Reactive.Concurrency.EventLoopScheduler.#ctor(System.Func{System.Threading.ThreadStart,System.Threading.Thread})">
-            <summary>
-            Creates an object that schedules units of work on a designated thread, using the specified factory to control thread creation options.
-            </summary>
-            <param name="threadFactory">Factory function for thread creation.</param>
-            <exception cref="T:System.ArgumentNullException"><paramref name="threadFactory"/> is null.</exception>
-        </member>
         <member name="M:System.Reactive.Concurrency.EventLoopScheduler.Schedule``1(``0,System.TimeSpan,System.Func{System.Reactive.Concurrency.IScheduler,``0,System.IDisposable})">
             <summary>
             Schedules an action to be executed after dueTime.
@@ -143,13 +136,6 @@
             <summary>
             Creates an object that schedules each unit of work on a separate thread.
             </summary>
-        </member>
-        <member name="M:System.Reactive.Concurrency.NewThreadScheduler.#ctor(System.Func{System.Threading.ThreadStart,System.Threading.Thread})">
-            <summary>
-            Creates an object that schedules each unit of work on a separate thread.
-            </summary>
-            <param name="threadFactory">Factory function for thread creation.</param>
-            <exception cref="T:System.ArgumentNullException"><paramref name="threadFactory"/> is null.</exception>
         </member>
         <member name="M:System.Reactive.Concurrency.NewThreadScheduler.Schedule``1(``0,System.TimeSpan,System.Func{System.Reactive.Concurrency.IScheduler,``0,System.IDisposable})">
             <summary>
@@ -278,66 +264,6 @@
         <member name="P:System.Reactive.Concurrency.TaskPoolScheduler.Default">
             <summary>
             Gets an instance of this scheduler that uses the default TaskScheduler.
-            </summary>
-        </member>
-        <member name="T:System.Reactive.Concurrency.ThreadPoolScheduler">
-            <summary>
-            Represents an object that schedules units of work on the CLR thread pool.
-            </summary>
-            <seealso cref="P:System.Reactive.Concurrency.ThreadPoolScheduler.Instance">Singleton instance of this type exposed through this static property.</seealso>
-        </member>
-        <member name="M:System.Reactive.Concurrency.ThreadPoolScheduler.Schedule``1(``0,System.Func{System.Reactive.Concurrency.IScheduler,``0,System.IDisposable})">
-            <summary>
-            Schedules an action to be executed.
-            </summary>
-            <typeparam name="TState">The type of the state passed to the scheduled action.</typeparam>
-            <param name="state">State passed to the action to be executed.</param>
-            <param name="action">Action to be executed.</param>
-            <returns>The disposable object used to cancel the scheduled action (best effort).</returns>
-            <exception cref="T:System.ArgumentNullException"><paramref name="action"/> is null.</exception>
-        </member>
-        <member name="M:System.Reactive.Concurrency.ThreadPoolScheduler.Schedule``1(``0,System.TimeSpan,System.Func{System.Reactive.Concurrency.IScheduler,``0,System.IDisposable})">
-            <summary>
-            Schedules an action to be executed after dueTime, using a System.Threading.Timer object.
-            </summary>
-            <typeparam name="TState">The type of the state passed to the scheduled action.</typeparam>
-            <param name="state">State passed to the action to be executed.</param>
-            <param name="action">Action to be executed.</param>
-            <param name="dueTime">Relative time after which to execute the action.</param>
-            <returns>The disposable object used to cancel the scheduled action (best effort).</returns>
-            <exception cref="T:System.ArgumentNullException"><paramref name="action"/> is null.</exception>
-        </member>
-        <member name="M:System.Reactive.Concurrency.ThreadPoolScheduler.ScheduleLongRunning``1(``0,System.Action{``0,System.Reactive.Disposables.ICancelable})">
-            <summary>
-            Schedules a long-running task by creating a new thread. Cancellation happens through polling.
-            </summary>
-            <typeparam name="TState">The type of the state passed to the scheduled action.</typeparam>
-            <param name="state">State passed to the action to be executed.</param>
-            <param name="action">Action to be executed.</param>
-            <returns>The disposable object used to cancel the scheduled action (best effort).</returns>
-            <exception cref="T:System.ArgumentNullException"><paramref name="action"/> is null.</exception>
-        </member>
-        <member name="M:System.Reactive.Concurrency.ThreadPoolScheduler.StartStopwatch">
-            <summary>
-            Starts a new stopwatch object.
-            </summary>
-            <returns>New stopwatch object; started at the time of the request.</returns>
-        </member>
-        <member name="M:System.Reactive.Concurrency.ThreadPoolScheduler.SchedulePeriodic``1(``0,System.TimeSpan,System.Func{``0,``0})">
-            <summary>
-            Schedules a periodic piece of work, using a System.Threading.Timer object.
-            </summary>
-            <typeparam name="TState">The type of the state passed to the scheduled action.</typeparam>
-            <param name="state">Initial state passed to the action upon the first iteration.</param>
-            <param name="period">Period for running the work periodically.</param>
-            <param name="action">Action to be executed, potentially updating the state.</param>
-            <returns>The disposable object used to cancel the scheduled recurring action (best effort).</returns>
-            <exception cref="T:System.ArgumentNullException"><paramref name="action"/> is null.</exception>
-            <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="period"/> is less than or equal to zero.</exception>
-        </member>
-        <member name="P:System.Reactive.Concurrency.ThreadPoolScheduler.Instance">
-            <summary>
-            Gets the singleton instance of the CLR thread pool scheduler.
             </summary>
         </member>
         <member name="T:System.Reactive.PlatformServices.CurrentPlatformEnlightenmentProvider">
