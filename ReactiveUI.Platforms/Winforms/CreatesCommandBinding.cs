@@ -28,12 +28,12 @@ namespace ReactiveUI.Winforms
 
             if (isWinformControl) return 10;
 
-            if (hasEventTarget) return 5;
+            if (hasEventTarget) return 6;
 
             return defaultEventsToBind.Any(x =>{
                 var ei = type.GetEvent(x.Item1, BindingFlags.Public | BindingFlags.FlattenHierarchy | BindingFlags.Instance);
                 return ei != null;
-            }) ? 3 : 0;
+            }) ? 4 : 0;
         }
 
         public IDisposable BindCommandToObject(ICommand command, object target, IObservable<object> commandParameter)
