@@ -1148,7 +1148,7 @@
         </member>
         <member name="F:System.Reactive.Concurrency.LocalScheduler.MAXSUPPORTEDTIMER">
             <summary>
-            Longest interval supported by <see cref="T:System.Threading.Timer"/>.
+            Longest interval supported by <see cref="!:System.Threading.Timer"/>.
             </summary>
         </member>
         <member name="M:System.Reactive.Concurrency.LocalScheduler.Enqueue``1(System.Reactive.Concurrency.IScheduler,``0,System.DateTimeOffset,System.Func{System.Reactive.Concurrency.IScheduler,``0,System.IDisposable})">
