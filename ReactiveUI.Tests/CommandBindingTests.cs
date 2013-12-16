@@ -22,7 +22,7 @@ namespace ReactiveUI.Tests
             Cmd = new ReactiveCommand();
         }
     }
-
+ 
     public class FakeView : IViewFor<FakeViewModel>
     {
         public TextBox TheTextBox { get; protected set; }
@@ -142,7 +142,20 @@ namespace ReactiveUI.Tests
             Command1 = new ReactiveCommand();
             Command2 = new ReactiveCommand();
         }
+
+        public FakeNestedViewModel NestedViewModel { get; set; }
     }
+
+    public class FakeNestedViewModel : ReactiveObject
+    {
+        public FakeNestedViewModel()
+        {
+            NestedCommand = new ReactiveCommand();
+        }
+
+        public ReactiveCommand NestedCommand { get; protected set; }
+    }
+
 
     public class CommandBindView : IViewFor<CommandBindViewModel>
     {
@@ -204,6 +217,22 @@ namespace ReactiveUI.Tests
 
             disp.Dispose();
             Assert.Null(view.Command1.Command);
+        }
+        
+        [Fact]
+        public void CommandBindNestedCommandWireup()
+        {
+            var vm = new CommandBindViewModel()
+            {
+                NestedViewModel =  new FakeNestedViewModel()
+            };
+
+            var view = new CommandBindView { ViewModel = vm };
+            var fixture = new CommandBinderImplementation();
+
+            var disp = fixture.BindCommand(vm, view, m => m.NestedViewModel.NestedCommand, x => x.Command1);
+
+            Assert.Equal(vm.NestedViewModel.NestedCommand, view.Command1.Command);
         }
 
 #if !SILVERLIGHT
