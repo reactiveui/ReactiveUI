@@ -17,7 +17,7 @@ namespace ReactiveUI.Tests
         [Fact]
         public void DepPropNotifierShouldBeFound()
         {
-            Assert.True(RxApp.DependencyResolver.GetServices<ICreatesObservableForProperty>()
+            Assert.True(Locator.Current.GetServices<ICreatesObservableForProperty>()
                 .Any(x => x is DependencyObjectObservableForProperty));
         }
 #endif

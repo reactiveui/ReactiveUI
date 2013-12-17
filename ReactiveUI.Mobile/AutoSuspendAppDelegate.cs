@@ -31,7 +31,7 @@ namespace ReactiveUI.Mobile
     /// AutoSuspend-based App Delegate. To use AutoSuspend with iOS, change your
     /// AppDelegate to inherit from this class, then call:
     /// 
-    /// RxApp.DependencyResolver.GetService<ISuspensionHost>().SetupDefaultSuspendResume();
+    /// Locator.Current.GetService<ISuspensionHost>().SetupDefaultSuspendResume();
     /// </summary>
     public abstract class AutoSuspendAppDelegate : UIApplicationDelegate, IEnableLogger
     {
@@ -115,11 +115,11 @@ namespace ReactiveUI.Mobile
 
         internal void setupDefaultSuspendResume(ISuspensionDriver driver)
         {
-            driver = driver ?? RxApp.DependencyResolver.GetService<ISuspensionDriver>();
+            driver = driver ?? Locator.Current.GetService<ISuspensionDriver>();
 
             var window = new UIWindow(UIScreen.MainScreen.Bounds);
             _viewModelChanged.Subscribe(vm => {
-                var frame = RxApp.DependencyResolver.GetService<UIViewController>("InitialPage");
+                var frame = Locator.Current.GetService<UIViewController>("InitialPage");
                 var viewFor = frame as IViewFor;
                 if (viewFor != null) {
                     viewFor.ViewModel = vm;
@@ -142,13 +142,13 @@ namespace ReactiveUI.Mobile
             SuspensionHost.IsResuming
                 .SelectMany(x => driver.LoadState<IApplicationRootState>())
                 .LoggedCatch(this,
-                    Observable.Defer(() => Observable.Return(RxApp.DependencyResolver.GetService<IApplicationRootState>())),
+                    Observable.Defer(() => Observable.Return(Locator.Current.GetService<IApplicationRootState>())),
                     "Failed to restore app state from storage, creating from scratch")
                 .ObserveOn(RxApp.MainThreadScheduler)
                 .Subscribe(x => ViewModel = x);
 
             SuspensionHost.IsLaunchingNew.Subscribe(_ => {
-                ViewModel = RxApp.DependencyResolver.GetService<IApplicationRootState>();
+                ViewModel = Locator.Current.GetService<IApplicationRootState>();
             });
         }
     }
