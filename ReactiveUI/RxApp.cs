@@ -1,20 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Reactive;
 using System.Reactive.Concurrency;
-using System.Diagnostics.Contracts;
-using System.Linq;      
-using System.Linq.Expressions;
-using System.Reactive.Linq;
-using System.Reactive.Subjects;
-using System.Reflection;
-using System.Runtime.InteropServices;
-using System.Text.RegularExpressions;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Runtime.CompilerServices;
+using Splat;
 
 namespace ReactiveUI
 {
@@ -62,9 +50,7 @@ namespace ReactiveUI
                 });
             });
 
-            var r = new ModernDependencyResolver();
-            r.InitializeResolver();
-            _DependencyResolver = r;
+            Locator.CurrentMutable.InitializeReactiveUI();
 
             if (InUnitTestRunner()) {
                 LogHost.Default.Warn("*** Detected Unit Test Runner, setting MainThreadScheduler to CurrentThread ***");
@@ -86,48 +72,6 @@ namespace ReactiveUI
 #endif
                 _MainThreadScheduler = DefaultScheduler.Instance;
             }
-        }
-
-        [ThreadStatic] static IDependencyResolver _UnitTestDependencyResolver;
-        static IDependencyResolver _DependencyResolver;
-
-        /// <summary>
-        /// Gets or sets the dependency resolver. This class is used throughout
-        /// ReactiveUI for many internal operations as well as for general use
-        /// by applications. If this isn't assigned on startup, a default, highly
-        /// capable implementation will be used, and it is advised for most people
-        /// to simply use the default implementation.
-        /// 
-        /// Note that to create your own and assign it to the global dependency
-        /// resolver, you must initialize it via calling InitializeResolver(), or
-        /// else ReactiveUI internal classes will not be registered and Bad Things™
-        /// will happen.
-        /// </summary>
-        /// <value>The dependency resolver.</value>
-        public static IDependencyResolver DependencyResolver {
-            get {
-                var resolver = _UnitTestDependencyResolver ?? _DependencyResolver;
-                return _UnitTestDependencyResolver ?? _DependencyResolver;
-            }
-            set {
-                if (InUnitTestRunner()) {
-                    _UnitTestDependencyResolver = value;
-                    _DependencyResolver = _DependencyResolver ?? value;
-                } else {
-                    _DependencyResolver = value;
-                }
-            }
-        }
-
-        /// <summary>
-        /// Convenience property to return the DependencyResolver cast to a
-        /// MutableDependencyResolver. The default resolver is also a mutable
-        /// resolver, so this will be non-null. Use this to register new types
-        /// on startup if you are using the default resolver
-        /// </summary>
-        public static IMutableDependencyResolver MutableResolver {
-            get { return DependencyResolver as IMutableDependencyResolver; }
-            set { DependencyResolver = value; }
         }
 
         [ThreadStatic] static IScheduler _UnitTestMainThreadScheduler;
@@ -257,10 +201,8 @@ namespace ReactiveUI
             var fakeResolver = new FuncDependencyResolver(null,
                 (fac, type, str) => registerMethod(fac(), type));
 
-            fakeResolver.InitializeResolver();
+            fakeResolver.InitializeReactiveUI();
         }
-
-        static internal bool suppressLogging { get; set; }
 
 #if ANDROID || SILVERLIGHT || IOS
         public const int SmallCacheLimit = 32;
