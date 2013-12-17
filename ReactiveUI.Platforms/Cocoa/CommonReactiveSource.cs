@@ -9,6 +9,7 @@ using System.Reactive.Linq;
 using MonoTouch.Foundation;
 using MonoTouch.UIKit;
 using System.Reactive.Subjects;
+using Splat;
 
 namespace ReactiveUI.Cocoa
 {

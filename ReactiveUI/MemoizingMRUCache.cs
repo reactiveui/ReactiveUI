@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Diagnostics.Contracts;
+using Splat;
 
 namespace ReactiveUI
 {

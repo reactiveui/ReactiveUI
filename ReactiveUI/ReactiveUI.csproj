@@ -83,7 +83,6 @@
     <Compile Include="INPCObservableForProperty.cs" />
     <Compile Include="Interfaces.cs" />
     <Compile Include="IRNPCObservableForProperty.cs" />
-    <Compile Include="Logging.cs" />
     <Compile Include="MemoizingMRUCache.cs" />
     <Compile Include="MessageBus.cs" />
     <Compile Include="NullDefaultPropertyBindingProvider.cs" />

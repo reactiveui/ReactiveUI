@@ -14,6 +14,7 @@ using System.Runtime.CompilerServices;
 using System.Collections.Generic;
 using MonoTouch.Foundation;
 using MonoTouch.UIKit;
+using Splat;
 
 namespace ReactiveUI.Cocoa
 {

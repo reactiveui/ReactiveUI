@@ -9,6 +9,7 @@ using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Reflection;
 using System.Text;
+using Splat;
 
 #if WINRT
 using Windows.UI.Xaml;

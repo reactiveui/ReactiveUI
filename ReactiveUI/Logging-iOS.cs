@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
+using Splat;
 
 /* NB: This file exists separately from Logging.cs because all of the generics
  * used here trips up Xamarin.iOS's AOT compiler */
