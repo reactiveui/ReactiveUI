@@ -62,6 +62,9 @@
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Splat">
+      <HintPath>..\ext\Portable-Net45+WinRT45+WP8\Splat.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ReactiveBinding.cs" />
@@ -76,7 +79,6 @@
     <Compile Include="DummySuspension.cs" />
     <Compile Include="DesignModeDetector.cs" />
     <Compile Include="Errors.cs" />
-    <Compile Include="ModernDependencyResolver.cs" />
     <Compile Include="IDependencyResolver.cs" />
     <Compile Include="INPCObservableForProperty.cs" />
     <Compile Include="Interfaces.cs" />
