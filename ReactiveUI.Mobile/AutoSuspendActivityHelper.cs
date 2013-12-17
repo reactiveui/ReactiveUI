@@ -6,6 +6,7 @@ using System.Reactive.Subjects;
 using Android.App;
 using Android.OS;
 using System.Reflection;
+using Splat;
 
 namespace ReactiveUI.Mobile
 {

@@ -5,6 +5,7 @@ using System.Text;
 using ReactiveUI;
 using ReactiveUI.Routing;
 using Xunit;
+using Splat;
 
 namespace Foobar.ViewModels
 {

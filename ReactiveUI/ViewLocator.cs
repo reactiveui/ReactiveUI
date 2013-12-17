@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Reactive.Linq;
 using System.Text;
 using ReactiveUI;
+using Splat;
 
 namespace ReactiveUI
 {

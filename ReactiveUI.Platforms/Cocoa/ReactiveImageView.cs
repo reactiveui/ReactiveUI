@@ -12,6 +12,7 @@ using System.Diagnostics.Contracts;
 using System.Runtime.CompilerServices;
 using System.Collections.Generic;
 using System.Drawing;
+using Splat;
 
 #if UIKIT
 using MonoTouch.Foundation;
