@@ -8,6 +8,8 @@ using System.Reactive.Subjects;
 using System.Reflection;
 using System.Text;
 using System.Windows.Input;
+using Splat;
+using Splat;
 
 namespace ReactiveUI
 {
@@ -17,7 +19,7 @@ namespace ReactiveUI
 
         static CommandBinder()
         {
-            binderImplementation = RxApp.DependencyResolver.GetService<ICommandBinderImplementation>() ?? 
+            binderImplementation = Locator.Current.GetService<ICommandBinderImplementation>() ?? 
                 new CommandBinderImplementation();
         }
 

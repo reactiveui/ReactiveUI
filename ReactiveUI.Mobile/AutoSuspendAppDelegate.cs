@@ -8,6 +8,7 @@ using System.Reactive.Subjects;
 using System.Collections.Generic;
 using System.Reactive.Disposables;
 using ReactiveUI;
+using Splat;
 
 namespace ReactiveUI.Mobile
 {

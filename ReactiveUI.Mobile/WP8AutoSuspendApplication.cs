@@ -10,6 +10,7 @@ using System.Windows.Controls;
 using System.Windows.Interop;
 using Microsoft.Phone.Controls;
 using Microsoft.Phone.Shell;
+using Splat;
 
 namespace ReactiveUI.Mobile
 {

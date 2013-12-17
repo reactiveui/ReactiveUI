@@ -10,6 +10,7 @@ using System.Reactive.Threading.Tasks;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using Splat;
 
 namespace ReactiveUI
 {
