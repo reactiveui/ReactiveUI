@@ -14,7 +14,7 @@ namespace ReactiveUI
         /// <summary>
         /// This method allows you to initialize resolvers with the default 
         /// ReactiveUI types. All resolvers used as the default 
-        /// RxApp.DependencyResolver
+        /// Locator.Current
         /// </summary>
         /// <param name="resolver">The resolver to initialize.</param>
         public static void InitializeReactiveUI(this IMutableDependencyResolver resolver)
