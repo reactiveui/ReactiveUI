@@ -61,6 +61,9 @@
     <Reference Include="System.Reactive.PlatformServices">
       <HintPath>..\ext\monodroid\System.Reactive.PlatformServices.dll</HintPath>
     </Reference>
+    <Reference Include="Splat">
+      <HintPath>..\ext\monodroid\Splat.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Novell\Novell.MonoDroid.CSharp.targets" />
   <ItemGroup>

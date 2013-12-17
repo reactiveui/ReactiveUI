@@ -122,6 +122,9 @@
     <Reference Include="System.Reactive.PlatformServices">
       <HintPath>..\ext\net45\System.Reactive.PlatformServices.dll</HintPath>
     </Reference>
+    <Reference Include="Splat">
+      <HintPath>..\ext\mono\Splat.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />

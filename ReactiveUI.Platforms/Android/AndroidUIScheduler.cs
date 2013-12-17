@@ -6,6 +6,7 @@ using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
 using ReactiveUI;
 using Android.App;
+using Splat;
 
 namespace ReactiveUI.Android
 {

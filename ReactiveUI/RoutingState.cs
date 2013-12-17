@@ -6,6 +6,7 @@ using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Runtime.Serialization;
 using System.Windows.Input;
+using Splat;
 
 namespace ReactiveUI
 {
@@ -122,7 +123,7 @@ namespace ReactiveUI
             where T : IRoutableViewModel
         {
             var ret = new ReactiveCommand(This.Navigate.CanExecuteObservable);
-                ret.Select(_ => (IRoutableViewModel)RxApp.DependencyResolver.GetService<T>()).InvokeCommand(This.Navigate);
+                ret.Select(_ => (IRoutableViewModel)Locator.Current.GetService<T>()).InvokeCommand(This.Navigate);
                 return ret;
         }
     }
