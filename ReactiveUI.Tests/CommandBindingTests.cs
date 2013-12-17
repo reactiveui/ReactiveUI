@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using System.Reflection;
 using System.Text;
 using System.Windows;
@@ -233,6 +234,84 @@ namespace ReactiveUI.Tests
             var disp = fixture.BindCommand(vm, view, m => m.NestedViewModel.NestedCommand, x => x.Command1);
 
             Assert.Equal(vm.NestedViewModel.NestedCommand, view.Command1.Command);
+        }
+
+        [Fact]
+        public void CommandBindSetsInitialEnabledState_True()
+        {
+            var vm = new CommandBindViewModel();
+            var view = new CommandBindView() { ViewModel = vm };
+            var fixture = new CommandBinderImplementation();
+
+            var canExecute1 = new BehaviorSubject<bool>(true);
+            var cmd1 = new ReactiveCommand(canExecute1);
+            vm.Command1 = cmd1;
+
+            var disp = fixture.BindCommand(vm, view, x => x.Command1, x => x.Command1);
+
+            Assert.True(view.Command1.IsEnabled);
+        }
+
+        [Fact]
+        public void CommandBindSetsDisablesCommandWhenCanExecuteChanged()
+        {
+            var vm = new CommandBindViewModel();
+            var view = new CommandBindView() { ViewModel = vm };
+            var fixture = new CommandBinderImplementation();
+
+            var canExecute1 = new BehaviorSubject<bool>(true);
+            var cmd1 = new ReactiveCommand(canExecute1);
+            vm.Command1 = cmd1;
+
+
+            var disp = fixture.BindCommand(vm, view, x => x.Command1, x => x.Command1);
+
+            Assert.True(view.Command1.IsEnabled);
+
+            canExecute1.OnNext(false);
+
+            Assert.False(view.Command1.IsEnabled);
+        }
+
+        [Fact]
+        public void CommandBindSetsInitialEnabledState_False()
+        {
+            var vm = new CommandBindViewModel();
+            var view = new CommandBindView() { ViewModel = vm };
+            var fixture = new CommandBinderImplementation();
+
+            var canExecute1 = new BehaviorSubject<bool>(false);
+            var cmd1 = new ReactiveCommand(canExecute1);
+            vm.Command1 = cmd1;
+
+            var disp = fixture.BindCommand(vm, view, x => x.Command1, x => x.Command1);
+
+            Assert.False(view.Command1.IsEnabled);
+        }
+
+
+        [Fact]
+        public void CommandBindRaisesCanExecuteChangedOnBind()
+        {
+            var vm = new CommandBindViewModel();
+            var view = new CommandBindView() { ViewModel = vm };
+            var fixture = new CommandBinderImplementation();
+
+            var canExecute1 = new BehaviorSubject<bool>(true);
+            var cmd1 = new ReactiveCommand(canExecute1);
+            vm.Command1 = cmd1;
+
+            var disp = fixture.BindCommand(vm, view, x => x.Command1, x => x.Command1);
+
+            Assert.True(view.Command1.IsEnabled);
+
+            // Now  change to a disabled cmd
+
+            var canExecute2 = new BehaviorSubject<bool>(false);
+            var cmd2 = new ReactiveCommand(canExecute2);
+            vm.Command1 = cmd2;
+
+            Assert.False(view.Command1.IsEnabled);
         }
 
 #if !SILVERLIGHT
