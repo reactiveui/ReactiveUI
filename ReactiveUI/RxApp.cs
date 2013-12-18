@@ -52,7 +52,7 @@ namespace ReactiveUI
 
             Locator.CurrentMutable.InitializeReactiveUI();
 
-            if (InUnitTestRunner()) {
+            if (ModeDetector.InUnitTestRunner()) {
                 LogHost.Default.Warn("*** Detected Unit Test Runner, setting MainThreadScheduler to CurrentThread ***");
                 LogHost.Default.Warn("If we are not actually in a test runner, please file a bug\n");
                 _MainThreadScheduler = CurrentThreadScheduler.Instance;
@@ -94,7 +94,7 @@ namespace ReactiveUI
                 // own TestScheduler, and if this wasn't ThreadStatic, they would
                 // stomp on each other, causing test cases to randomly fail,
                 // then pass when you rerun them.
-                if (InUnitTestRunner()) {
+                if (ModeDetector.InUnitTestRunner()) {
                     _UnitTestMainThreadScheduler = value;
                     _MainThreadScheduler = _MainThreadScheduler ?? value;
                 } else {
@@ -117,7 +117,7 @@ namespace ReactiveUI
                 return _UnitTestTaskpoolScheduler ?? _TaskpoolScheduler;
             }
             set {
-                if (InUnitTestRunner()) {
+                if (ModeDetector.InUnitTestRunner()) {
                     _UnitTestTaskpoolScheduler = value;
                     _TaskpoolScheduler = _TaskpoolScheduler ?? value;
                 } else {
@@ -141,48 +141,6 @@ namespace ReactiveUI
             set {
                 _DefaultExceptionHandler = value;
             }
-        }
-
-        static bool? _InUnitTestRunnerOverride;
-        static bool? _InUnitTestRunner;
-
-        /// <summary>
-        /// This method allows you to override the return value of 
-        /// RxApp.InUnitTestRunner - a null value means that InUnitTestRunner
-        /// will determine this using its normal logic.
-        /// </summary>
-        public static bool? InUnitTestRunnerOverride 
-        {
-            get { return _InUnitTestRunnerOverride; }
-            set {
-                _InUnitTestRunnerOverride = value;
-
-                if(value.HasValue && !value.Value) {
-                    _UnitTestMainThreadScheduler = null;
-                    _UnitTestTaskpoolScheduler = null;
-                }
-            }
-        }
-
-        /// <summary>
-        /// InUnitTestRunner attempts to determine heuristically if the current
-        /// application is running in a unit test framework
-        /// </summary>
-        /// <returns>True if we have determined that a unit test framework is
-        /// currently running.</returns>
-        public static bool InUnitTestRunner()
-        {
-            if (InUnitTestRunnerOverride.HasValue) {
-                return InUnitTestRunnerOverride.Value;
-            }
-
-            if (!_InUnitTestRunner.HasValue) {
-                // NB: This is in a separate static ctor to avoid a deadlock on 
-                // the static ctor lock when blocking on async methods 
-                _InUnitTestRunner = UnitTestDetector.IsInUnitTestRunner() || DesignModeDetector.IsInDesignMode();
-            }
-
-            return _InUnitTestRunner.Value;
         }
 
         /// <summary>
