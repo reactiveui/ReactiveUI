@@ -63,6 +63,9 @@
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
+    <Reference Include="Splat">
+      <HintPath>..\ext\net45\Splat.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core">
@@ -145,10 +148,6 @@
     <ProjectReference Include="..\ReactiveUI.Blend\ReactiveUI.Blend_Net45.csproj">
       <Project>{7866b5b1-5457-43a2-976a-e784eb10f2da}</Project>
       <Name>ReactiveUI.Blend_Net45</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\ReactiveUI.NLog\ReactiveUI.NLog_Net45.csproj">
-      <Project>{08d3606b-ee79-43ee-8382-72a1091f1f30}</Project>
-      <Name>ReactiveUI.NLog_Net45</Name>
     </ProjectReference>
     <ProjectReference Include="..\ReactiveUI.Platforms\ReactiveUI.Winforms_Net45.csproj">
       <Project>{f5ecbde5-e525-4482-b568-63217bcb0a0b}</Project>

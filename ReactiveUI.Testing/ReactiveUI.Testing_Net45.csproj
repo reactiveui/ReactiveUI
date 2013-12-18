@@ -97,6 +97,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\ext\Net45\Microsoft.Reactive.Testing.dll</HintPath>
     </Reference>
+    <Reference Include="Splat">
+      <HintPath>..\ext\net45\Splat.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />

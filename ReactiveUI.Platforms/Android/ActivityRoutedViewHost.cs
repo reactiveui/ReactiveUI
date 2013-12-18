@@ -12,6 +12,7 @@ using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 using ActionbarSherlock.App;
+using Splat;
 
 namespace ReactiveUI.Android
 {
@@ -23,7 +24,7 @@ namespace ReactiveUI.Android
         public ActivityRoutedViewHost(Activity hostActivity, IViewLocator viewLocator = null)
         {
             viewLocator = viewLocator ?? ViewLocator.Current;
-            var platform = RxApp.DependencyResolver.GetService<IPlatformOperations>();
+            var platform = Locator.Current.GetService<IPlatformOperations>();
 
             var keyUp = hostActivity.GetType()
                 .GetMethods(BindingFlags.Public | BindingFlags.DeclaredOnly | BindingFlags.NonPublic | BindingFlags.Instance)

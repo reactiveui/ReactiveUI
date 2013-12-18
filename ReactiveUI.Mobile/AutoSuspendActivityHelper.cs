@@ -6,6 +6,7 @@ using System.Reactive.Subjects;
 using Android.App;
 using Android.OS;
 using System.Reflection;
+using Splat;
 
 namespace ReactiveUI.Mobile
 {
@@ -86,7 +87,7 @@ namespace ReactiveUI.Mobile
 
             bool hasRecentlyCrashed = false;
             host.SetupDefaultSuspendResumeFunc = new Action<ISuspensionDriver>(driver => {
-                driver = driver ?? RxApp.DependencyResolver.GetService<ISuspensionDriver>();
+                driver = driver ?? Locator.Current.GetService<ISuspensionDriver>();
 
                 // TODO: Handle crashes here
 
@@ -103,13 +104,13 @@ namespace ReactiveUI.Mobile
                 host.IsResuming
                     .SelectMany(x => driver.LoadState<IApplicationRootState>())
                     .LoggedCatch(this,
-                        Observable.Defer(() => Observable.Return(RxApp.DependencyResolver.GetService<IApplicationRootState>())),
+                        Observable.Defer(() => Observable.Return(Locator.Current.GetService<IApplicationRootState>())),
                         "Failed to restore app state from storage, creating from scratch")
                     .ObserveOn(RxApp.MainThreadScheduler)
                     .Subscribe(x => RootState.Current.ViewModel = x);
 
                 host.IsLaunchingNew.Subscribe(_ => {
-                    RootState.Current.ViewModel = RxApp.DependencyResolver.GetService<IApplicationRootState>();
+                    RootState.Current.ViewModel = Locator.Current.GetService<IApplicationRootState>();
                 });
             });
 

@@ -10,6 +10,7 @@ using System.Windows.Controls;
 using System.Windows.Interop;
 using Microsoft.Phone.Controls;
 using Microsoft.Phone.Shell;
+using Splat;
 
 namespace ReactiveUI.Mobile
 {
@@ -145,7 +146,7 @@ namespace ReactiveUI.Mobile
 
         internal void setupDefaultSuspendResume(ISuspensionDriver driver)
         {
-            driver = driver ?? RxApp.DependencyResolver.GetService<ISuspensionDriver>();
+            driver = driver ?? Locator.Current.GetService<ISuspensionDriver>();
 
             SuspensionHost.ShouldInvalidateState
                 .SelectMany(_ => driver.InvalidateState())
@@ -160,13 +161,13 @@ namespace ReactiveUI.Mobile
             SuspensionHost.IsResuming
                 .SelectMany(x => driver.LoadState<IApplicationRootState>())
                 .LoggedCatch(this,
-                    Observable.Defer(() => Observable.Return(RxApp.DependencyResolver.GetService<IApplicationRootState>())),
+                    Observable.Defer(() => Observable.Return(Locator.Current.GetService<IApplicationRootState>())),
                     "Failed to restore app state from storage, creating from scratch")
                 .ObserveOn(RxApp.MainThreadScheduler)
                 .Subscribe(x => ViewModel = x);
 
             SuspensionHost.IsLaunchingNew.Subscribe(_ => {
-                ViewModel = RxApp.DependencyResolver.GetService<IApplicationRootState>();
+                ViewModel = Locator.Current.GetService<IApplicationRootState>();
             });
         }
     }

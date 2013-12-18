@@ -60,6 +60,9 @@
     <Reference Include="Xamarin.Mobile">
       <HintPath>..\ext\ios\Xamarin.Mobile.dll</HintPath>
     </Reference>
+    <Reference Include="Splat">
+      <HintPath>..\ext\ios\Splat.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Resources\" />

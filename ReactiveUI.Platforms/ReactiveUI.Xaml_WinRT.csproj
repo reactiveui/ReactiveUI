@@ -36,7 +36,6 @@
     <DocumentationFile>bin\Release\WinRT45\ReactiveUI.Xaml.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="PlatformUnitTestDetector.cs" />
     <Compile Include="Registrations.cs" />
     <Compile Include="Xaml\AutoDataTemplateBindingHook.cs" />
     <Compile Include="Xaml\BindingTypeConverters.cs" />
@@ -53,6 +52,9 @@
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="Splat">
+      <HintPath>..\ext\winrt\Splat.dll</HintPath>
+    </Reference>
     <Reference Include="System.Reactive.Core">
       <HintPath>..\ext\winrt\System.Reactive.Core.dll</HintPath>
     </Reference>

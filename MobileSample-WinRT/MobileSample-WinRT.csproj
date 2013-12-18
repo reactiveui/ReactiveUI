@@ -127,6 +127,9 @@
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\ext\winrt\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="Splat">
+      <HintPath>..\ext\winrt\Splat.dll</HintPath>
+    </Reference>
     <Reference Include="System.Reactive.Core">
       <HintPath>..\ext\winrt\System.Reactive.Core.dll</HintPath>
     </Reference>
