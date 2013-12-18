@@ -128,7 +128,7 @@
       <HintPath>..\ext\winrt\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="Splat">
-      <HintPath>Z:\github\ReactiveUI\ext\winrt\Splat.dll</HintPath>
+      <HintPath>..\ext\winrt\Splat.dll</HintPath>
     </Reference>
     <Reference Include="System.Reactive.Core">
       <HintPath>..\ext\winrt\System.Reactive.Core.dll</HintPath>
