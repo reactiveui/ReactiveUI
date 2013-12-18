@@ -7,6 +7,7 @@ using System.Text;
 using System.Windows;
 using ReactiveUI;
 using ReactiveUI.Xaml;
+using Splat;
 
 #if WINRT
 using Windows.UI.Xaml;
@@ -61,9 +62,9 @@ namespace ReactiveUI.Xaml
             HorizontalContentAlignment = HorizontalAlignment.Stretch;
             VerticalContentAlignment = VerticalAlignment.Stretch;
 
-            if (RxApp.InUnitTestRunner()) return;
+            if (ModeDetector.InUnitTestRunner()) return;
 
-            var platform = RxApp.DependencyResolver.GetService<IPlatformOperations>();
+            var platform = Locator.Current.GetService<IPlatformOperations>();
             if (platform == null) {
                 throw new Exception("Couldn't find an IPlatformOperations. This should never happen, your dependency resolver is broken");
             }
