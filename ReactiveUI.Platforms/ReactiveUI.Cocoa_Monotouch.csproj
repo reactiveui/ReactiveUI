@@ -76,7 +76,6 @@
     <Compile Include="Cocoa\ViewModelViewHost.cs" />
     <Compile Include="FlexibleCommandBinder.cs" />
     <Compile Include="ComponentModelTypeConverter.cs" />
-    <Compile Include="PlatformUnitTestDetector.cs" />
     <Compile Include="Registrations.cs" />
     <Compile Include="Cocoa\PlatformOperations.cs" />
     <Compile Include="Cocoa\UIKitObservableForProperty.cs" />
