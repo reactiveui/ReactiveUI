@@ -56,7 +56,7 @@ namespace ReactiveUI.Xaml
         public ViewModelViewHost()
         {
             // NB: InUnitTestRunner also returns true in Design Mode
-            if (RxApp.InUnitTestRunner()) {
+            if (ModeDetector.InUnitTestRunner()) {
                 ViewContractObservable = Observable.Never<string>();
                 return;
             }
