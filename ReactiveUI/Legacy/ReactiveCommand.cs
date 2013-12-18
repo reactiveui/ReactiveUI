@@ -9,6 +9,7 @@ using System.Reactive.Threading.Tasks;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using ReactiveUI;
+using Splat;
 
 namespace ReactiveUI.Legacy
 {

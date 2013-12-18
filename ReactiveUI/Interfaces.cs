@@ -5,6 +5,7 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Reactive;
 using System.Windows.Input;
+using Splat;
 
 namespace ReactiveUI
 {

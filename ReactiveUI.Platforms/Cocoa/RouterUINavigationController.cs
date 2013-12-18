@@ -9,6 +9,7 @@ using System.Reactive.Disposables;
 using System.Reactive.Subjects;
 using MonoTouch.Foundation;
 using System.ComponentModel;
+using Splat;
 
 namespace ReactiveUI.Cocoa
 {
@@ -22,7 +23,7 @@ namespace ReactiveUI.Cocoa
             this.router = router;
             viewLocator = viewLocator ?? ViewLocator.Current;
 
-            var platform = RxApp.DependencyResolver.GetService<IPlatformOperations>();
+            var platform = Locator.Current.GetService<IPlatformOperations>();
 
             var vmAndContract = Observable.CombineLatest(
                 router.Navigate,

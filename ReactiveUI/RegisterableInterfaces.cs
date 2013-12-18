@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Reactive;
+using Splat;
 
 namespace ReactiveUI
 {

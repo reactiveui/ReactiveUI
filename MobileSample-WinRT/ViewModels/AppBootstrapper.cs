@@ -10,6 +10,7 @@ using Newtonsoft.Json;
 using ReactiveUI;
 using ReactiveUI.Mobile;
 using MobileSample_WinRT.Views;
+using Splat;
 
 namespace MobileSample_WinRT.ViewModels
 {
@@ -27,7 +28,7 @@ namespace MobileSample_WinRT.ViewModels
         {
             Router = new RoutingState();
 
-            var resolver = RxApp.MutableResolver;
+            var resolver = Locator.CurrentMutable;
 
             resolver.Register(() => new TestPage1View(), typeof(IViewFor<TestPage1ViewModel>), "FullScreenLandscape");
             resolver.Register(() => new TestPage2View(), typeof(IViewFor<TestPage2ViewModel>), "FullScreenLandscape");

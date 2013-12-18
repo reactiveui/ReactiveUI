@@ -15,6 +15,7 @@ using System.Threading;
 using MonoTouch.Foundation;
 using MonoTouch.UIKit;
 using ReactiveUI;
+using Splat;
 
 namespace ReactiveUI.Cocoa
 {

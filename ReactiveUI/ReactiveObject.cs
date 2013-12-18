@@ -12,6 +12,7 @@ using System.Runtime.Serialization;
 using System.Threading;
 using System.Reactive.Concurrency;
 using System.Runtime.CompilerServices;
+using Splat;
 
 namespace ReactiveUI
 {

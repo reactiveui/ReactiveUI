@@ -17,6 +17,7 @@ using System.Threading;
 using System.Reactive.Disposables;
 using System.Diagnostics.Contracts;
 using System.Runtime.CompilerServices;
+using Splat;
 
 namespace ReactiveUI.Android
 {

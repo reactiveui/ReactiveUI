@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Splat;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Concurrency;
@@ -29,7 +30,7 @@ namespace ReactiveUI.Mobile
         internal static IReactiveGeolocator Implementation {
             get { return _UnitTestImplementation ?? _Implementation; }
             set {
-                if (RxApp.InUnitTestRunner()) {
+                if (ModeDetector.InUnitTestRunner()) {
                     _UnitTestImplementation = value;
                     _Implementation = _Implementation ?? value;
                 } else {

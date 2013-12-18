@@ -135,6 +135,9 @@
     <Reference Include="Xamarin.Mobile">
       <HintPath>..\ext\monodroid\Xamarin.Mobile.dll</HintPath>
     </Reference>
+    <Reference Include="Splat">
+      <HintPath>..\ext\monodroid\Splat.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
