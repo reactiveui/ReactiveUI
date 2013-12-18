@@ -307,6 +307,12 @@ namespace EventBuilder
                 fullPath = targetAssemblyDirs.Select(x => Path.Combine(x, dllName)).FirstOrDefault(x => File.Exists(x));
             }
 
+            // NB: This hacks WinRT's weird mscorlib to just use the regular one
+            if (fullName.Contains("mscorlib") && fullName.Contains("255"))
+            {
+                fullPath = Environment.ExpandEnvironmentVariables(@"%SystemRoot%\Microsoft.NET\Framework\v4.0.30319\mscorlib.dll");
+            }
+
             if (fullPath == null)
             {
                 var err = String.Format("Failed to resolve!!! {0}", fullName);
@@ -326,6 +332,12 @@ namespace EventBuilder
             {
                 dllName = fullName.Split(',')[0] + ".winmd";
                 fullPath = targetAssemblyDirs.Select(x => Path.Combine(x, dllName)).FirstOrDefault(x => File.Exists(x));
+            }
+
+            // NB: This hacks WinRT's weird mscorlib to just use the regular one
+            if (fullName.Contains("mscorlib") && fullName.Contains("255"))
+            {
+                fullPath = Environment.ExpandEnvironmentVariables(@"%SystemRoot%\Microsoft.NET\Framework\v4.0.30319\mscorlib.dll");
             }
 
             if (fullPath == null)
