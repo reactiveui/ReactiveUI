@@ -26,5 +26,25 @@ namespace ReactiveUI
                     () => klass.Log().Info("{0} OnCompleted", message));
             }
         }
+
+        public static IObservable<T> LoggedCatch<T, TObj>(this IObservable<T> This, TObj klass, IObservable<T> next = null, string message = null)
+            where TObj : IEnableLogger
+        {
+            next = next ?? Observable.Return(default(T));
+            return This.Catch<T, Exception>(ex => {
+                klass.Log().WarnException(message ?? "", ex);
+                return next;
+            });
+        }
+
+        public static IObservable<T> LoggedCatch<T, TObj, TException>(this IObservable<T> This, TObj klass, Func<TException, IObservable<T>> next, string message = null)
+            where TObj : IEnableLogger
+            where TException : Exception
+        {
+            return This.Catch<T, TException>(ex => {
+                klass.Log().WarnException(message ?? "", ex);
+                return next(ex);
+            });
+        }
     }
 }
