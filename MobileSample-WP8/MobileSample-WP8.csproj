@@ -189,7 +189,7 @@
       <HintPath>.\Ninject.WP.dll</HintPath>
     </Reference>
     <Reference Include="Splat">
-      <HintPath>Z:\github\ReactiveUI\ext\WP80\Splat.dll</HintPath>
+      <HintPath>..\ext\WP80\Splat.dll</HintPath>
     </Reference>
     <Reference Include="System.Reactive.Core">
       <HintPath>..\ext\WP80\System.Reactive.Core.dll</HintPath>
