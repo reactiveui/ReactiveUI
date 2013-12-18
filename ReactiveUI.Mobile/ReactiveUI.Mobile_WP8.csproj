@@ -121,6 +121,9 @@
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\ext\Portable-Net45+WinRT45+WP8\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="Splat">
+      <HintPath>..\ext\WP80\Splat.dll</HintPath>
+    </Reference>
     <Reference Include="System.Observable" />
     <Reference Include="System.Reactive.Core">
       <HintPath>..\ext\WP80\System.Reactive.Core.dll</HintPath>

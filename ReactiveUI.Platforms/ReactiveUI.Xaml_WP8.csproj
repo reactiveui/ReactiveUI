@@ -109,6 +109,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="mscorlib.Extensions" />
+    <Reference Include="Splat">
+      <HintPath>..\ext\WP80\Splat.dll</HintPath>
+    </Reference>
     <Reference Include="System.Observable" />
     <Reference Include="System.Reactive.Core">
       <HintPath>..\ext\WP80\System.Reactive.Core.dll</HintPath>
