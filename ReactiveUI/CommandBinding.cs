@@ -8,6 +8,8 @@ using System.Reactive.Subjects;
 using System.Reflection;
 using System.Text;
 using System.Windows.Input;
+using Splat;
+using Splat;
 
 namespace ReactiveUI
 {
@@ -17,7 +19,7 @@ namespace ReactiveUI
 
         static CommandBinder()
         {
-            binderImplementation = RxApp.DependencyResolver.GetService<ICommandBinderImplementation>() ?? 
+            binderImplementation = Locator.Current.GetService<ICommandBinderImplementation>() ?? 
                 new CommandBinderImplementation();
         }
 
@@ -344,7 +346,7 @@ namespace ReactiveUI
     {
         static readonly MemoizingMRUCache<Type, ICreatesCommandBinding> bindCommandCache = 
             new MemoizingMRUCache<Type, ICreatesCommandBinding>((t, _) => {
-                return RxApp.DependencyResolver.GetServices<ICreatesCommandBinding>()
+                return Locator.Current.GetServices<ICreatesCommandBinding>()
                     .Aggregate(Tuple.Create(0, (ICreatesCommandBinding)null), (acc, x) => {
                         int score = x.GetAffinityForObject(t, false);
                         return (score > acc.Item1) ? Tuple.Create(score, x) : acc;
@@ -353,7 +355,7 @@ namespace ReactiveUI
 
         static readonly MemoizingMRUCache<Type, ICreatesCommandBinding> bindCommandEventCache = 
             new MemoizingMRUCache<Type, ICreatesCommandBinding>((t, _) => {
-                return RxApp.DependencyResolver.GetServices<ICreatesCommandBinding>()
+                return Locator.Current.GetServices<ICreatesCommandBinding>()
                     .Aggregate(Tuple.Create(0, (ICreatesCommandBinding)null), (acc, x) => {
                         int score = x.GetAffinityForObject(t, true);
                         return (score > acc.Item1) ? Tuple.Create(score, x) : acc;

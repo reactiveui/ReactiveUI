@@ -62,6 +62,9 @@
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Splat">
+      <HintPath>..\ext\Portable-Net45+WinRT45+WP8\Splat.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ReactiveBinding.cs" />
@@ -76,12 +79,10 @@
     <Compile Include="DummySuspension.cs" />
     <Compile Include="DesignModeDetector.cs" />
     <Compile Include="Errors.cs" />
-    <Compile Include="ModernDependencyResolver.cs" />
     <Compile Include="IDependencyResolver.cs" />
     <Compile Include="INPCObservableForProperty.cs" />
     <Compile Include="Interfaces.cs" />
     <Compile Include="IRNPCObservableForProperty.cs" />
-    <Compile Include="Logging.cs" />
     <Compile Include="MemoizingMRUCache.cs" />
     <Compile Include="MessageBus.cs" />
     <Compile Include="NullDefaultPropertyBindingProvider.cs" />
@@ -110,13 +111,13 @@
     <Compile Include="RxApp.cs" />
     <Compile Include="ViewLocator.cs" />
     <Compile Include="ScheduledSubject.cs" />
-    <Compile Include="UnitTestDetector.cs" />
     <Compile Include="VariadicTemplates.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>VariadicTemplates.tt</DependentUpon>
     </Compile>
     <Compile Include="WaitForDispatcherScheduler.cs" />
+    <Compile Include="LoggingMixins.cs" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />

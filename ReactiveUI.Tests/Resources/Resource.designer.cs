@@ -47,6 +47,7 @@ namespace ReactiveUI.Tests
 			global::Xamarin.Android.NUnitLite.Resource.Layout.results = global::ReactiveUI.Tests.Resource.Layout.results;
 			global::Xamarin.Android.NUnitLite.Resource.Layout.test_result = global::ReactiveUI.Tests.Resource.Layout.test_result;
 			global::Xamarin.Android.NUnitLite.Resource.Layout.test_suite = global::ReactiveUI.Tests.Resource.Layout.test_suite;
+			global::Splat.Resource.String.library_name = global::ReactiveUI.Tests.Resource.String.library_name;
 		}
 		
 		public partial class Attribute
@@ -81,56 +82,56 @@ namespace ReactiveUI.Tests
 		public partial class Id
 		{
 			
-			// aapt resource value: 0x7f040001
-			public const int OptionHostName = 2130968577;
+			// aapt resource value: 0x7f050001
+			public const int OptionHostName = 2131034113;
 			
-			// aapt resource value: 0x7f040002
-			public const int OptionPort = 2130968578;
+			// aapt resource value: 0x7f050002
+			public const int OptionPort = 2131034114;
 			
-			// aapt resource value: 0x7f040000
-			public const int OptionRemoteServer = 2130968576;
+			// aapt resource value: 0x7f050000
+			public const int OptionRemoteServer = 2131034112;
 			
-			// aapt resource value: 0x7f04000f
-			public const int OptionsButton = 2130968591;
+			// aapt resource value: 0x7f05000f
+			public const int OptionsButton = 2131034127;
 			
-			// aapt resource value: 0x7f04000a
-			public const int ResultFullName = 2130968586;
+			// aapt resource value: 0x7f05000a
+			public const int ResultFullName = 2131034122;
 			
-			// aapt resource value: 0x7f04000c
-			public const int ResultMessage = 2130968588;
+			// aapt resource value: 0x7f05000c
+			public const int ResultMessage = 2131034124;
 			
-			// aapt resource value: 0x7f04000b
-			public const int ResultResultState = 2130968587;
+			// aapt resource value: 0x7f05000b
+			public const int ResultResultState = 2131034123;
 			
-			// aapt resource value: 0x7f04000d
-			public const int ResultStackTrace = 2130968589;
+			// aapt resource value: 0x7f05000d
+			public const int ResultStackTrace = 2131034125;
 			
-			// aapt resource value: 0x7f040006
-			public const int ResultsFailed = 2130968582;
+			// aapt resource value: 0x7f050006
+			public const int ResultsFailed = 2131034118;
 			
-			// aapt resource value: 0x7f040003
-			public const int ResultsId = 2130968579;
+			// aapt resource value: 0x7f050003
+			public const int ResultsId = 2131034115;
 			
-			// aapt resource value: 0x7f040007
-			public const int ResultsIgnored = 2130968583;
+			// aapt resource value: 0x7f050007
+			public const int ResultsIgnored = 2131034119;
 			
-			// aapt resource value: 0x7f040008
-			public const int ResultsInconclusive = 2130968584;
+			// aapt resource value: 0x7f050008
+			public const int ResultsInconclusive = 2131034120;
 			
-			// aapt resource value: 0x7f040009
-			public const int ResultsMessage = 2130968585;
+			// aapt resource value: 0x7f050009
+			public const int ResultsMessage = 2131034121;
 			
-			// aapt resource value: 0x7f040005
-			public const int ResultsPassed = 2130968581;
+			// aapt resource value: 0x7f050005
+			public const int ResultsPassed = 2131034117;
 			
-			// aapt resource value: 0x7f040004
-			public const int ResultsResult = 2130968580;
+			// aapt resource value: 0x7f050004
+			public const int ResultsResult = 2131034116;
 			
-			// aapt resource value: 0x7f04000e
-			public const int RunTestsButton = 2130968590;
+			// aapt resource value: 0x7f05000e
+			public const int RunTestsButton = 2131034126;
 			
-			// aapt resource value: 0x7f040010
-			public const int TestSuiteListView = 2130968592;
+			// aapt resource value: 0x7f050010
+			public const int TestSuiteListView = 2131034128;
 			
 			static Id()
 			{
@@ -163,6 +164,22 @@ namespace ReactiveUI.Tests
 			}
 			
 			private Layout()
+			{
+			}
+		}
+		
+		public partial class String
+		{
+			
+			// aapt resource value: 0x7f040000
+			public const int library_name = 2130968576;
+			
+			static String()
+			{
+				global::Android.Runtime.ResourceIdManager.UpdateIdValues();
+			}
+			
+			private String()
 			{
 			}
 		}

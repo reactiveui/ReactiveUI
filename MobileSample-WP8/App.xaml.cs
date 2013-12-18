@@ -10,6 +10,7 @@ using MobileSample_WP8.Resources;
 using MobileSample_WP8.ViewModels;
 using ReactiveUI;
 using ReactiveUI.Mobile;
+using Splat;
 
 namespace MobileSample_WP8
 {
@@ -47,9 +48,9 @@ namespace MobileSample_WP8
             }
 
             //TODo get rid of ugly casting
-            ((ModernDependencyResolver)RxApp.DependencyResolver).Register(() => new AppBootstrapper(), typeof(IApplicationRootState));
+            ((ModernDependencyResolver)Locator.Current).Register(() => new AppBootstrapper(), typeof(IApplicationRootState));
 
-            var host = RxApp.DependencyResolver.GetService<ISuspensionHost>();
+            var host = Locator.Current.GetService<ISuspensionHost>();
             host.SetupDefaultSuspendResume();
         }
 

@@ -15,6 +15,7 @@ using System.Threading;
 using System.Reactive.Disposables;
 using System.Globalization;
 using System.Diagnostics;
+using Splat;
 
 namespace ReactiveUI
 {

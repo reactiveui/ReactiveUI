@@ -74,11 +74,6 @@ namespace ReactiveUI.Xaml
             registerFunction(() => new TargetActionCommandBinder(), typeof(ICreatesCommandBinding));
 #endif
 
-            RxApp.InUnitTestRunnerOverride = PlatformUnitTestDetector.InUnitTestRunner();
-            if (RxApp.InUnitTestRunner()) {
-                return;
-            }
-
             RxApp.TaskpoolScheduler = System.Reactive.Concurrency.TaskPoolScheduler.Default;
 
 #if COCOA

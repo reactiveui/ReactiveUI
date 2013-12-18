@@ -98,6 +98,9 @@
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="PresentationFramework.Aero" />
+    <Reference Include="Splat">
+      <HintPath>..\ext\net45\Splat.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
@@ -128,7 +131,6 @@
   <ItemGroup>
     <Compile Include="ComponentModelTypeConverter.cs" />
     <Compile Include="Xaml\PlatformOperations.cs" />
-    <Compile Include="PlatformUnitTestDetector.cs" />
     <Compile Include="Registrations.cs" />
     <Compile Include="Xaml\AutoDataTemplateBindingHook.cs" />
     <Compile Include="Xaml\BindingTypeConverters.cs" />

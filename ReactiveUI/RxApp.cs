@@ -1,20 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Reactive;
 using System.Reactive.Concurrency;
-using System.Diagnostics.Contracts;
-using System.Linq;      
-using System.Linq.Expressions;
-using System.Reactive.Linq;
-using System.Reactive.Subjects;
-using System.Reflection;
-using System.Runtime.InteropServices;
-using System.Text.RegularExpressions;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Runtime.CompilerServices;
+using Splat;
 
 namespace ReactiveUI
 {
@@ -62,11 +50,9 @@ namespace ReactiveUI
                 });
             });
 
-            var r = new ModernDependencyResolver();
-            r.InitializeResolver();
-            _DependencyResolver = r;
+            Locator.CurrentMutable.InitializeReactiveUI();
 
-            if (InUnitTestRunner()) {
+            if (ModeDetector.InUnitTestRunner()) {
                 LogHost.Default.Warn("*** Detected Unit Test Runner, setting MainThreadScheduler to CurrentThread ***");
                 LogHost.Default.Warn("If we are not actually in a test runner, please file a bug\n");
                 _MainThreadScheduler = CurrentThreadScheduler.Instance;
@@ -86,48 +72,6 @@ namespace ReactiveUI
 #endif
                 _MainThreadScheduler = DefaultScheduler.Instance;
             }
-        }
-
-        [ThreadStatic] static IDependencyResolver _UnitTestDependencyResolver;
-        static IDependencyResolver _DependencyResolver;
-
-        /// <summary>
-        /// Gets or sets the dependency resolver. This class is used throughout
-        /// ReactiveUI for many internal operations as well as for general use
-        /// by applications. If this isn't assigned on startup, a default, highly
-        /// capable implementation will be used, and it is advised for most people
-        /// to simply use the default implementation.
-        /// 
-        /// Note that to create your own and assign it to the global dependency
-        /// resolver, you must initialize it via calling InitializeResolver(), or
-        /// else ReactiveUI internal classes will not be registered and Bad Things™
-        /// will happen.
-        /// </summary>
-        /// <value>The dependency resolver.</value>
-        public static IDependencyResolver DependencyResolver {
-            get {
-                var resolver = _UnitTestDependencyResolver ?? _DependencyResolver;
-                return _UnitTestDependencyResolver ?? _DependencyResolver;
-            }
-            set {
-                if (InUnitTestRunner()) {
-                    _UnitTestDependencyResolver = value;
-                    _DependencyResolver = _DependencyResolver ?? value;
-                } else {
-                    _DependencyResolver = value;
-                }
-            }
-        }
-
-        /// <summary>
-        /// Convenience property to return the DependencyResolver cast to a
-        /// MutableDependencyResolver. The default resolver is also a mutable
-        /// resolver, so this will be non-null. Use this to register new types
-        /// on startup if you are using the default resolver
-        /// </summary>
-        public static IMutableDependencyResolver MutableResolver {
-            get { return DependencyResolver as IMutableDependencyResolver; }
-            set { DependencyResolver = value; }
         }
 
         [ThreadStatic] static IScheduler _UnitTestMainThreadScheduler;
@@ -150,7 +94,7 @@ namespace ReactiveUI
                 // own TestScheduler, and if this wasn't ThreadStatic, they would
                 // stomp on each other, causing test cases to randomly fail,
                 // then pass when you rerun them.
-                if (InUnitTestRunner()) {
+                if (ModeDetector.InUnitTestRunner()) {
                     _UnitTestMainThreadScheduler = value;
                     _MainThreadScheduler = _MainThreadScheduler ?? value;
                 } else {
@@ -173,7 +117,7 @@ namespace ReactiveUI
                 return _UnitTestTaskpoolScheduler ?? _TaskpoolScheduler;
             }
             set {
-                if (InUnitTestRunner()) {
+                if (ModeDetector.InUnitTestRunner()) {
                     _UnitTestTaskpoolScheduler = value;
                     _TaskpoolScheduler = _TaskpoolScheduler ?? value;
                 } else {
@@ -199,48 +143,6 @@ namespace ReactiveUI
             }
         }
 
-        static bool? _InUnitTestRunnerOverride;
-        static bool? _InUnitTestRunner;
-
-        /// <summary>
-        /// This method allows you to override the return value of 
-        /// RxApp.InUnitTestRunner - a null value means that InUnitTestRunner
-        /// will determine this using its normal logic.
-        /// </summary>
-        public static bool? InUnitTestRunnerOverride 
-        {
-            get { return _InUnitTestRunnerOverride; }
-            set {
-                _InUnitTestRunnerOverride = value;
-
-                if(value.HasValue && !value.Value) {
-                    _UnitTestMainThreadScheduler = null;
-                    _UnitTestTaskpoolScheduler = null;
-                }
-            }
-        }
-
-        /// <summary>
-        /// InUnitTestRunner attempts to determine heuristically if the current
-        /// application is running in a unit test framework
-        /// </summary>
-        /// <returns>True if we have determined that a unit test framework is
-        /// currently running.</returns>
-        public static bool InUnitTestRunner()
-        {
-            if (InUnitTestRunnerOverride.HasValue) {
-                return InUnitTestRunnerOverride.Value;
-            }
-
-            if (!_InUnitTestRunner.HasValue) {
-                // NB: This is in a separate static ctor to avoid a deadlock on 
-                // the static ctor lock when blocking on async methods 
-                _InUnitTestRunner = UnitTestDetector.IsInUnitTestRunner() || DesignModeDetector.IsInDesignMode();
-            }
-
-            return _InUnitTestRunner.Value;
-        }
-
         /// <summary>
         /// This method will initialize your custom service locator with the 
         /// built-in RxUI types. Use this to help initialize containers that
@@ -257,10 +159,8 @@ namespace ReactiveUI
             var fakeResolver = new FuncDependencyResolver(null,
                 (fac, type, str) => registerMethod(fac(), type));
 
-            fakeResolver.InitializeResolver();
+            fakeResolver.InitializeReactiveUI();
         }
-
-        static internal bool suppressLogging { get; set; }
 
 #if ANDROID || SILVERLIGHT || IOS
         public const int SmallCacheLimit = 32;
