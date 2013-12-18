@@ -28,11 +28,6 @@ namespace ReactiveUI.Winforms
             registerFunction(() => new CreatesWinformsCommandBinding(), typeof(ICreatesCommandBinding));
             registerFunction(() => new WinformsCreatesObservableForProperty(), typeof(ICreatesObservableForProperty));
 
-            RxApp.InUnitTestRunnerOverride = PlatformUnitTestDetector.InUnitTestRunner();
-            if (RxApp.InUnitTestRunner()) {
-                return;
-            }
-
             WindowsFormsSynchronizationContext.AutoInstall = true;
             RxApp.MainThreadScheduler = new WaitForDispatcherScheduler(() => new SynchronizationContextScheduler(new WindowsFormsSynchronizationContext()));
         }
