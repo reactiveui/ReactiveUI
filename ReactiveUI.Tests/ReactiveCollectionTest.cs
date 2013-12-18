@@ -7,6 +7,7 @@ using System.Reactive.Linq;
 using System.Text;
 using ReactiveUI.Testing;
 using Xunit;
+using Splat;
 
 using Microsoft.Reactive.Testing;
 using System.Collections.Specialized;
@@ -792,7 +793,8 @@ namespace ReactiveUI.Tests
                 var resolver = new ModernDependencyResolver();
                 var logger = new TestLogger();
 
-                resolver.InitializeResolver();
+                resolver.InitializeSplat();
+                resolver.InitializeReactiveUI();
                 resolver.RegisterConstant(new FuncLogManager(t => new WrappingFullLogger(logger, t)), typeof(ILogManager));
 
                 using(resolver.WithResolver()) {
@@ -827,7 +829,8 @@ namespace ReactiveUI.Tests
                 var resolver = new ModernDependencyResolver();
                 var logger = new TestLogger();
 
-                resolver.InitializeResolver();
+                resolver.InitializeSplat();
+                resolver.InitializeReactiveUI();
                 resolver.RegisterConstant(new FuncLogManager(t => new WrappingFullLogger(logger, t)), typeof(ILogManager));
 
                 using(resolver.WithResolver()) {
