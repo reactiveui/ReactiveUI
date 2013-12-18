@@ -28,12 +28,12 @@ namespace ReactiveUI.Winforms
 
             if (isWinformControl) return 10;
 
-            if (hasEventTarget) return 5;
+            if (hasEventTarget) return 6;
 
             return defaultEventsToBind.Any(x =>{
                 var ei = type.GetEvent(x.Item1, BindingFlags.Public | BindingFlags.FlattenHierarchy | BindingFlags.Instance);
                 return ei != null;
-            }) ? 3 : 0;
+            }) ? 4 : 0;
         }
 
         public IDisposable BindCommandToObject(ICommand command, object target, IObservable<object> commandParameter)
@@ -68,12 +68,25 @@ namespace ReactiveUI.Winforms
                 () => useEventArgsInstead = true));
 
             var evt = Observable.FromEventPattern<TEventArgs>(target, eventName);
-            ret.Add(evt.Subscribe(ea =>
-            {
-                if (command.CanExecute(useEventArgsInstead ? ea : latestParameter)){
+            ret.Add(evt.Subscribe(ea => {
+                if (command.CanExecute(useEventArgsInstead ? ea : latestParameter)) {
                     command.Execute(useEventArgsInstead ? ea : latestParameter);
                 }
             }));
+
+            var enabledSetter = Reflection.GetValueSetterForProperty(target.GetType(), "Enabled");
+
+            if (enabledSetter != null) {
+                object latestParam = null;
+                commandParameter.Subscribe(x => latestParam = x);
+
+                ret.Add(Observable.FromEventPattern<EventHandler, EventArgs>(x => command.CanExecuteChanged += x, x => command.CanExecuteChanged -= x)
+                    .Select(_ => command.CanExecute(latestParam))
+                    .StartWith(command.CanExecute(latestParam))
+                    .Subscribe(x => {
+                        enabledSetter(target, x);
+                    }));
+            }
 
             return ret;
         }

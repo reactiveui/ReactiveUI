@@ -254,7 +254,7 @@ namespace ReactiveUI
             IObservable<TProp> changed;
             IDisposable bindingDisposable = bindCommandInternal(viewModel, view, propertyName, viewPropGetter, withParameter, toEvent, out changed);
 
-            return new ReactiveBinding<TView, TViewModel, TProp>(view, viewModel, new string[] { ctlName }, new string[] { Reflection.SimpleExpressionToPropertyName(propertyName) }, 
+            return new ReactiveBinding<TView, TViewModel, TProp>(view, viewModel, new string[] { ctlName }, Reflection.ExpressionToPropertyNames(propertyName), 
                 changed, BindingDirection.OneWay, bindingDisposable);
         }
 
@@ -271,7 +271,7 @@ namespace ReactiveUI
             where TView : class, IViewFor<TViewModel>
             where TProp : ICommand
         {
-            var propName = Reflection.SimpleExpressionToPropertyName(propertyName);
+            var vmPropChain = Reflection.ExpressionToPropertyNames(propertyName);
 
             IDisposable disp = Disposable.Empty;
 
@@ -284,10 +284,12 @@ namespace ReactiveUI
                     return;
                 }
 
+                var vmString = String.Join(".", vmPropChain);
+
                 var target = viewPropGetter(view);
                 if (target == null) {
                     this.Log().Error("Binding {0}.{1} => {2}.{1} failed because target is null",
-                        typeof(TViewModel).FullName, propName, view.GetType().FullName);
+                        typeof(TViewModel).FullName, vmString, view.GetType().FullName);
                     disp = Disposable.Empty;
                 }
 
