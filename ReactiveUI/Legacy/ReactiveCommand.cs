@@ -28,12 +28,12 @@ namespace ReactiveUI.Legacy
         /// ObservableFromProperty, that defines when the Command can
         /// execute.</param>
         /// <param name="scheduler">The scheduler to publish events on - default
-        /// is RxApp.MainThreadScheduler.</param>
+        /// is Scheduler.Immediate.</param>
         /// <param name="initialCondition">Initial CanExecute state</param>
         public ReactiveCommand(IObservable<bool> canExecute = null, IScheduler scheduler = null, bool initialCondition = true)
         {
             canExecute = canExecute ?? Observable.Return(true).Concat(Observable.Never<bool>());
-            canExecute = canExecute.ObserveOn(scheduler ?? RxApp.MainThreadScheduler);
+            canExecute = canExecute.ObserveOn(scheduler ?? Scheduler.Immediate);
             commonCtor(scheduler, initialCondition);
 
             _inner = canExecute.Subscribe(
@@ -70,7 +70,7 @@ namespace ReactiveUI.Legacy
         /// <param name="executed">A method that will be invoked when the
         /// Execute method is invoked.</param>
         /// <param name="scheduler">The scheduler to publish events on - default
-        /// is RxApp.MainThreadScheduler.</param>
+        /// is Scheduler.Immediate.</param>
         /// <returns>A new ReactiveCommand object.</returns>
         public static ReactiveCommand Create(
             Func<object, bool> canExecute, 
@@ -94,7 +94,7 @@ namespace ReactiveUI.Legacy
         /// <param name="executed">A method that will be invoked when the
         /// Execute method is invoked.</param>
         /// <param name="scheduler">The scheduler to publish events on - default
-        /// is RxApp.MainThreadScheduler.</param>
+        /// is Scheduler.Immediate.</param>
         /// <returns>A new ReactiveCommand object.</returns>
         public static ReactiveCommand Create(
             Func<object, Task<bool>> canExecute, 
