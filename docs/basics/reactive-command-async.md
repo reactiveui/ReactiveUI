@@ -45,7 +45,7 @@ var usersAndAvatarResults = LoadUsersAndAvatars.RegisterAsyncTask(async _ => {
 
 usersAndAvatarResults.ToProperty(this, x => x.Users, ref users);
 
-usersAndAvatarResults.ThrownExceptions
+LoadUsersAndAvatars.ThrownExceptions
     .Subscribe(ex => this.Log().WarnException("Failed to load users", ex));
 ```
 
