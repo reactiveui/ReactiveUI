@@ -82,7 +82,6 @@
     <Compile Include="MessageBusTest.cs" />
     <Compile Include="NUnitShim.cs" />
     <Compile Include="ObservableAsPropertyHelperTest.cs" />
-    <Compile Include="ObservableAsyncMRUCacheTest.cs" />
     <Compile Include="ObservedChangedMixinTest.cs" />
     <Compile Include="OrderedComparerTests.cs" />
     <Compile Include="ReactiveCollectionTest.cs" />
