@@ -227,7 +227,7 @@ namespace ReactiveUI
             IDisposable bindingDisposable = bindCommandInternal(viewModel, view, propertyName, viewPropGetter, Observable.Empty<object>(), toEvent, out changed, cmd => {
                 var rc = cmd as IReactiveCommand;
                 if (rc == null) {
-                    return Legacy.ReactiveCommand.Create(x => cmd.CanExecute(x), _ => cmd.Execute(withParameter()));
+                    return new RelayCommand(cmd.CanExecute, _ => cmd.Execute(withParameter()));
                 } 
 
                 var ret = new ReactiveCommand(rc.CanExecuteObservable);
@@ -402,6 +402,37 @@ namespace ReactiveUI
             }
 
             return ret;
+        }
+    }
+
+    internal class RelayCommand : ICommand
+    {
+        readonly Func<object, bool> canExecute;
+        readonly Action<object> execute;
+
+        public RelayCommand(Func<object, bool> canExecute = null, Action<object> execute = null)
+        {
+            this.canExecute = canExecute ?? (_ => true);
+            this.execute = execute ?? (_ => {});
+        }
+
+        public event EventHandler CanExecuteChanged;
+
+        bool? prevCanExecute = null;
+        public bool CanExecute(object parameter)
+        {
+            var ce = canExecute(parameter);
+            if (CanExecuteChanged != null && (!prevCanExecute.HasValue || ce != prevCanExecute)) {
+                CanExecuteChanged(this, EventArgs.Empty);
+                prevCanExecute = ce;
+            }
+
+            return ce;
+        }
+
+        public void Execute(object parameter)
+        {
+            execute(parameter);
         }
     }
 }
