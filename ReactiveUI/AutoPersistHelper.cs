@@ -10,6 +10,7 @@ using System.Reactive.Linq;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Reflection;
+using Splat;
 
 namespace ReactiveUI
 {
