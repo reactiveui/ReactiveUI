@@ -6,6 +6,7 @@ using System.Reactive.Linq;
 using System.Reflection;
 using ReactiveUI;
 using System.Runtime.InteropServices;
+using Splat;
 
 #if UIKIT
 using MonoTouch.UIKit;
