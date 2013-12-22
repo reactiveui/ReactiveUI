@@ -21,7 +21,7 @@ namespace ReactiveUI
     /// be chained - for example a "Path" property and a chained
     /// "PathFileNameOnly" property.
     /// </summary>
-    public sealed class ObservableAsPropertyHelper<T> : IObservable<T>, IHandleObservableErrors, IDisposable, IEnableLogger
+    public sealed class ObservableAsPropertyHelper<T> : IHandleObservableErrors, IDisposable, IEnableLogger
     {
         T _lastValue;
         readonly IObservable<T> _source;
@@ -88,11 +88,6 @@ namespace ReactiveUI
         /// internal state.
         /// </summary>
         public IObservable<Exception> ThrownExceptions { get; private set; }
-
-        public IDisposable Subscribe(IObserver<T> observer)
-        {
-            return _source.Subscribe(observer);
-        }
 
         public void Dispose()
         {
