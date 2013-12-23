@@ -64,6 +64,9 @@
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Novell\Novell.MonoDroid.CSharp.targets" />
   <ItemGroup>
+    <Compile Include="..\CommonAssemblyInfo.cs">
+      <Link>Android\Properties\CommonAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="Android\ActivityRoutedViewHost.cs" />
     <Compile Include="Android\AndroidCommandBinders.cs" />
     <Compile Include="Android\AndroidUIScheduler.cs" />
