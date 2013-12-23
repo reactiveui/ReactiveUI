@@ -36,6 +36,9 @@
     <DocumentationFile>bin\Release\WinRT45\ReactiveUI.Xaml.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="..\CommonAssemblyInfo.cs">
+      <Link>Xaml\Properties\CommonAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="PlatformUnitTestDetector.cs" />
     <Compile Include="Registrations.cs" />
     <Compile Include="Xaml\AutoDataTemplateBindingHook.cs" />
