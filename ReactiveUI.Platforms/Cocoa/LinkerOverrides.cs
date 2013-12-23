@@ -14,7 +14,7 @@ namespace ReactiveUI.Cocoa.Cocoa
     /// This class exists to force the MT linker to include properties called by RxUI via reflection
     /// </summary>
     [Preserve]
-    class Magic
+    class LinkerOverrides
     {
 
         private void KeepMe()
