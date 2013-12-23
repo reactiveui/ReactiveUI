@@ -152,6 +152,9 @@
     <Reference Include="System.Net" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\CommonAssemblyInfo.cs">
+      <Link>Xaml\Properties\CommonAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="PlatformUnitTestDetector.cs" />
     <Compile Include="Registrations.cs" />
     <Compile Include="Xaml\AutoDataTemplateBindingHook.cs" />

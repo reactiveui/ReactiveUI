@@ -63,6 +63,9 @@
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.MonoTouch.CSharp.targets" />
   <ItemGroup>
+    <Compile Include="..\CommonAssemblyInfo.cs">
+      <Link>Cocoa\Properties\CommonAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="Cocoa\CocoaDefaultPropertyBinding.cs" />
     <Compile Include="Cocoa\KVOObservableForProperty.cs" />
     <Compile Include="Cocoa\NSRunloopScheduler.cs" />
