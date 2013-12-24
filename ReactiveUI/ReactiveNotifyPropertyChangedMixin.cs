@@ -15,6 +15,11 @@ namespace ReactiveUI
 {
     public static class ReactiveNotifyPropertyChangedMixin
     {
+        static ReactiveNotifyPropertyChangedMixin()
+        {
+            RxApp.EnsureInitialized();
+        }
+
         /// <summary>
         /// ObservableForProperty returns an Observable representing the
         /// property change notifications for a specific property on a

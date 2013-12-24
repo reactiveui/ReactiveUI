@@ -59,6 +59,7 @@ namespace ReactiveUI.Xaml
 
         public RoutedViewHost()
         {
+            RxApp.EnsureInitialized();
             HorizontalContentAlignment = HorizontalAlignment.Stretch;
             VerticalContentAlignment = VerticalAlignment.Stretch;
 
