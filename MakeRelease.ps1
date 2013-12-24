@@ -1,7 +1,9 @@
-﻿$Archs = {"Portable-Net45+WinRT45+WP8", "Net45", "WP8", "WinRT45", "Mono", "Monoandroid", "Monotouch", "Monomac"}
+﻿Param([string]$version = $null)
+
+$Archs = {"Portable-Net45+WinRT45+WP8", "Net45", "WP8", "WinRT45", "Mono", "Monoandroid", "Monotouch", "Monomac"}
 $Projects = {
     "ReactiveUI", "ReactiveUI.Testing", "ReactiveUI.Platforms", "ReactiveUI.Blend", 
-    "ReactiveUI.NLog", "ReactiveUI.Mobile", "RxUIViewModelGenerator", "ReactiveUI.Events"
+    "ReactiveUI.Mobile", "RxUIViewModelGenerator", "ReactiveUI.Events"
 }
 
 $MSBuildLocation = "C:\Program Files (x86)\MSBuild\12.0\bin"
@@ -41,6 +43,31 @@ ls -r .\Release | ?{$_.FullName.Contains("Clousot")} | %{rm $_.FullName}
 
 if (Test-Path .\NuGet-Release) {
     rm -r -fo .\NuGet-Release
+}
+
+# Update Nuspecs if we have a version
+if($version) {
+    $nuspecs = ls -r .\NuGet\*.nuspec
+
+    foreach($nuspec in $nuspecs) {
+        $xml = New-Object XML
+        $xml.Load($nuspec)
+        
+        # specify NS
+        $nsMgr = New-Object System.Xml.XmlNamespaceManager($xml.NameTable)
+        $nsMgr.AddNamespace("ns", "http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd")
+
+        # PowerShell makes editing XML docs so easy!
+        $xml.package.metadata.version = "$version-beta"
+
+        # get the rxui dependencies and update them
+        $deps = $xml.SelectNodes("//ns:dependency[contains(@id, 'reactiveui')]", $nsMgr) 
+        foreach($dep in $deps) {
+            $dep.version = "[" + $version + "-beta]"
+        }
+        
+        $xml.Save($nuspec)
+    }
 }
 
 cp -r .\NuGet .\NuGet-Release
