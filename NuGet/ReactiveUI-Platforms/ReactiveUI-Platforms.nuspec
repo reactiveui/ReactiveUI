@@ -15,15 +15,15 @@
       </group>
       <group targetFramework="net45">
         <dependency id="reactiveui-core" version="[5.99.0-beta]" />
-        <dependency id="Rx-Xaml" version="2.1.30214.0" />
+        <dependency id="Rx-Xaml" version="2.2.2" />
       </group>
       <group targetFramework="wp8">
         <dependency id="reactiveui-core" version="[5.99.0-beta]" />
-        <dependency id="Rx-Xaml" version="2.1.30214.0" />
+        <dependency id="Rx-Xaml" version="2.2.2" />
       </group>
       <group targetFramework="winrt45">
         <dependency id="reactiveui-core" version="[5.99.0-beta]" />
-        <dependency id="Rx-Xaml" version="2.1.30214.0" />
+        <dependency id="Rx-Xaml" version="2.2.2" />
       </group>
     </dependencies>
   </metadata>
