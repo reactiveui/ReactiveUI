@@ -64,6 +64,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\CommonAssemblyInfo.cs">
+      <Link>Properties\CommonAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="ReactiveBinding.cs" />
     <Compile Include="AutoPersistHelper.cs" />
     <Compile Include="BindingTypeConverters.cs" />
