@@ -10,6 +10,7 @@ using System.Reactive.Subjects;
 using MonoTouch.Foundation;
 using System.ComponentModel;
 using Splat;
+using ReactiveUI;
 
 namespace ReactiveUI.Cocoa
 {
@@ -20,6 +21,8 @@ namespace ReactiveUI.Cocoa
 
         public RouterUINavigationController(IRoutingState router, IViewLocator viewLocator = null)
         {
+            RxApp.EnsureInitialized();
+
             this.router = router;
             viewLocator = viewLocator ?? ViewLocator.Current;
 
