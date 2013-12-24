@@ -23,6 +23,7 @@ namespace ReactiveUI
 
         static BindingMixins()
         {
+            RxApp.EnsureInitialized();
             binderImplementation = new PropertyBinderImplementation();
         }
 
