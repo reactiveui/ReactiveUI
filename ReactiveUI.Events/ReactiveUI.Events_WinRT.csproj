@@ -39,6 +39,9 @@
     <DocumentationFile>bin\Release\WinRT45\ReactiveUI.Events.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="..\CommonAssemblyInfo.cs">
+      <Link>Properties\CommonAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="Events_WinRT.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
