@@ -127,6 +127,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\CommonAssemblyInfo.cs">
+      <Link>Winforms\Properties\CommonAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="ComponentModelTypeConverter.cs" />
     <Compile Include="Winforms\ObservableCollectionChangedToListChangedTransformer.cs" />
     <Compile Include="Winforms\ReactiveDerivedBindingListMixins.cs" />

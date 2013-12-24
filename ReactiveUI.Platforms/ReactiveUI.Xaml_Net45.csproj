@@ -129,6 +129,9 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\CommonAssemblyInfo.cs">
+      <Link>Xaml\Properties\CommonAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="ComponentModelTypeConverter.cs" />
     <Compile Include="Xaml\PlatformOperations.cs" />
     <Compile Include="Registrations.cs" />
