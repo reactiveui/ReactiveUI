@@ -162,6 +162,18 @@ namespace ReactiveUI
             fakeResolver.InitializeReactiveUI();
         }
 
+        /// <summary>
+        /// This method ensures that Splat's Default Locator is initialized
+        /// by ReactiveUI. This method is primarily used by ReactiveUI itself,
+        /// you can usually ignore it.
+        /// </summary>
+        public static void EnsureInitialized()
+        {
+            // NB: This doesn't actually do anything, it just makes sure we've
+            // called the static ctor.
+            MainThreadScheduler.GetType();
+        }
+
 #if ANDROID || SILVERLIGHT || IOS
         public const int SmallCacheLimit = 32;
         public const int BigCacheLimit = 64;
