@@ -1,6 +1,7 @@
 using System;
 using System.Reactive;
 using System.Reactive.Linq;
+using ReactiveUI;
 
 #if UIKIT
 using MonoTouch.UIKit;
@@ -26,6 +27,8 @@ namespace ReactiveUI.Cocoa
     {
         public ViewModelViewHost(NSView targetView)
         {
+            RxApp.EnsureInitialized();
+
             NSView viewLastAdded = null;
 
             ViewContractObservable = Observable.Return(default(string));

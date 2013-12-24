@@ -13,6 +13,7 @@ using Android.Views;
 using Android.Widget;
 using ActionbarSherlock.App;
 using Splat;
+using ReactiveUI;
 
 namespace ReactiveUI.Android
 {
@@ -23,6 +24,8 @@ namespace ReactiveUI.Android
 
         public ActivityRoutedViewHost(Activity hostActivity, IViewLocator viewLocator = null)
         {
+            RxApp.EnsureInitialized();
+
             viewLocator = viewLocator ?? ViewLocator.Current;
             var platform = Locator.Current.GetService<IPlatformOperations>();
 

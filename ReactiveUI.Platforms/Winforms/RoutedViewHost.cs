@@ -5,6 +5,7 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows.Forms;
+using ReactiveUI;
 
 namespace ReactiveUI.Winforms
 {
@@ -20,6 +21,7 @@ namespace ReactiveUI.Winforms
 
         public RoutedViewHost()
         {
+            RxApp.EnsureInitialized();
             this.InitializeComponent();
 
             this.disposables.Add(this.WhenAny(x => x.DefaultContent, x => x.Value).Subscribe(x => {
