@@ -10,6 +10,8 @@ namespace ReactiveUI
     {
         public static string GetPropertyForControl(object control)
         {
+            RxApp.EnsureInitialized();
+
             return Locator.Current.GetServices<IDefaultPropertyBindingProvider>()
                 .Select(x => x.GetPropertyForControl(control))
                 .Where(x => x != null)
