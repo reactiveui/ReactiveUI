@@ -23,11 +23,10 @@
 *This looks hard, but once you get your environment set up, it's really only 'Build in VS, build in Mono, run script'*
 
 1. Put the source into DropBox or another way you can share the same folder between a Mac and a PC (Parallels Shared Folders works too)
-1. Edit `**/AssemblyInfo.cs` (i.e. every file named AssemblyInfo.cs) and bump the versions
-1. Edit `NuGet/**/*.nuspec` (every nuspec file under the root NuGet folder) and do the same. Make sure to bump the dependent versions too!
+1. Edit `/CommonAssemblyInfo.cs` and bump the version
 1. Open ReactiveUI.sln and build it in Release mode under VS2012 on Windows 8 / Win8.1 with the WP8 SDK installed (nothing earlier is supported)
 1. Open MonoDevelop, and build ReactiveUI_XSAll.sln in Release mode
-1. Back on the PC, run `MakeRelease.ps1`
+1. Back on the PC, run `MakeRelease.ps1` and specify a NuGet SemVer, like `MakeRelease.ps1 -version "5.5.0-beta1"` 
 1. You'll end up with two new folders, `Release` and `Nuget-Release`, as well as the `.nupkg` files in the root directory.
 
 ## Some quirks

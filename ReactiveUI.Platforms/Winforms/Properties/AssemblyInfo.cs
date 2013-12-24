@@ -5,5 +5,4 @@ using System.Windows;
 
 [assembly: AssemblyDescription("An MVVM framework that integrates the Reactive Extensions")]
 [assembly: AssemblyProduct("ReactiveUI.Winforms")]
-[assembly: AssemblyVersion("5.4.0")]
 [assembly: InternalsVisibleTo("ReactiveUI.Tests_Net45")]
