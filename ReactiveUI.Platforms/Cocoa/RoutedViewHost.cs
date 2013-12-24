@@ -47,6 +47,7 @@ namespace ReactiveUI.Cocoa
 
         public RoutedViewHost(NSView targetView)
         {
+            RxApp.EnsureInitialized();
             NSView viewLastAdded = null;
 
             ViewContractObservable = Observable.Return(default(string));
