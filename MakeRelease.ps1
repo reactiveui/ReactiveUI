@@ -58,12 +58,12 @@ if($version) {
         $nsMgr.AddNamespace("ns", "http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd")
 
         # PowerShell makes editing XML docs so easy!
-        $xml.package.metadata.version = $version
+        $xml.package.metadata.version = "$version-beta"
 
         # get the rxui dependencies and update them
         $deps = $xml.SelectNodes("//ns:dependency[contains(@id, 'reactiveui')]", $nsMgr) 
         foreach($dep in $deps) {
-            $dep.version = "[" + $version + "]"
+            $dep.version = "[" + $version + "-beta]"
         }
         
         $xml.Save($nuspec)
