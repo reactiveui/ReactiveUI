@@ -15,11 +15,6 @@ namespace ReactiveUI
 {
     public static class ReactiveNotifyPropertyChangedMixin
     {
-        static ReactiveNotifyPropertyChangedMixin()
-        {
-            RxApp.EnsureInitialized();
-        }
-
         /// <summary>
         /// ObservableForProperty returns an Observable representing the
         /// property change notifications for a specific property on a
@@ -212,7 +207,7 @@ namespace ReactiveUI
 
         static readonly MemoizingMRUCache<Tuple<Type, string, bool>, ICreatesObservableForProperty> notifyFactoryCache =
             new MemoizingMRUCache<Tuple<Type, string, bool>, ICreatesObservableForProperty>((t, _) => {
-                return Locator.Current.GetServices<ICreatesObservableForProperty>()
+                return RxApp.Locator.GetServices<ICreatesObservableForProperty>()
                     .Aggregate(Tuple.Create(0, (ICreatesObservableForProperty)null), (acc, x) => {
                         int score = x.GetAffinityForObject(t.Item1, t.Item2, t.Item3);
                         return (score > acc.Item1) ? Tuple.Create(score, x) : acc;
