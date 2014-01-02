@@ -146,7 +146,7 @@ namespace ReactiveUI.Mobile
 
         internal void setupDefaultSuspendResume(ISuspensionDriver driver)
         {
-            driver = driver ?? Locator.Current.GetService<ISuspensionDriver>();
+            driver = driver ?? RxApp.DependencyResolver.GetService<ISuspensionDriver>();
 
             SuspensionHost.ShouldInvalidateState
                 .SelectMany(_ => driver.InvalidateState())
@@ -161,13 +161,13 @@ namespace ReactiveUI.Mobile
             SuspensionHost.IsResuming
                 .SelectMany(x => driver.LoadState<IApplicationRootState>())
                 .LoggedCatch(this,
-                    Observable.Defer(() => Observable.Return(Locator.Current.GetService<IApplicationRootState>())),
+                    Observable.Defer(() => Observable.Return(RxApp.DependencyResolver.GetService<IApplicationRootState>())),
                     "Failed to restore app state from storage, creating from scratch")
                 .ObserveOn(RxApp.MainThreadScheduler)
                 .Subscribe(x => ViewModel = x);
 
             SuspensionHost.IsLaunchingNew.Subscribe(_ => {
-                ViewModel = Locator.Current.GetService<IApplicationRootState>();
+                ViewModel = RxApp.DependencyResolver.GetService<IApplicationRootState>();
             });
         }
     }
