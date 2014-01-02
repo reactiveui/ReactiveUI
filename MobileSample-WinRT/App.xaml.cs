@@ -34,7 +34,7 @@ namespace MobileSample_WinRT
             Locator.CurrentMutable.Register(() => new AppBootstrapper(), typeof(IApplicationRootState));
 
             base.OnLaunched(args);
-            var host = RxApp.DependencyResolver.GetService<ISuspensionHost>();
+            var host = Locator.Current.GetService<ISuspensionHost>();
             host.SetupDefaultSuspendResume();
         }
     }

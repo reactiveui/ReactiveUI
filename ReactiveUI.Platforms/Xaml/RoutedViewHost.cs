@@ -67,7 +67,7 @@ namespace ReactiveUI.Xaml
                 return;
             }
 
-            var platform = RxApp.DependencyResolver.GetService<IPlatformOperations>();
+            var platform = RxApp.Locator.GetService<IPlatformOperations>();
             if (platform == null) {
                 throw new Exception("Couldn't find an IPlatformOperations. This should never happen, your dependency resolver is broken");
             }
