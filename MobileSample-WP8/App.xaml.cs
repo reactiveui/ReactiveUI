@@ -48,7 +48,7 @@ namespace MobileSample_WP8
             }
 
             //TODo get rid of ugly casting
-            ((ModernDependencyResolver)Locator.Current).Register(() => new AppBootstrapper(), typeof(IApplicationRootState));
+            Locator.CurrentMutable.Register(() => new AppBootstrapper(), typeof(IApplicationRootState));
 
             var host = Locator.Current.GetService<ISuspensionHost>();
             host.SetupDefaultSuspendResume();
