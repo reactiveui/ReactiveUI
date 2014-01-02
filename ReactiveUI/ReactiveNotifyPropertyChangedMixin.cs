@@ -207,7 +207,7 @@ namespace ReactiveUI
 
         static readonly MemoizingMRUCache<Tuple<Type, string, bool>, ICreatesObservableForProperty> notifyFactoryCache =
             new MemoizingMRUCache<Tuple<Type, string, bool>, ICreatesObservableForProperty>((t, _) => {
-                return RxApp.DependencyResolver.GetServices<ICreatesObservableForProperty>()
+                return RxApp.Locator.GetServices<ICreatesObservableForProperty>()
                     .Aggregate(Tuple.Create(0, (ICreatesObservableForProperty)null), (acc, x) => {
                         int score = x.GetAffinityForObject(t.Item1, t.Item2, t.Item3);
                         return (score > acc.Item1) ? Tuple.Create(score, x) : acc;

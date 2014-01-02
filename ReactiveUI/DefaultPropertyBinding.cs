@@ -10,7 +10,7 @@ namespace ReactiveUI
     {
         public static string GetPropertyForControl(object control)
         {
-            return RxApp.DependencyResolver.GetServices<IDefaultPropertyBindingProvider>()
+            return RxApp.Locator.GetServices<IDefaultPropertyBindingProvider>()
                 .Select(x => x.GetPropertyForControl(control))
                 .Where(x => x != null)
                 .OrderByDescending(x => x.Item2)
