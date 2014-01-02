@@ -55,8 +55,6 @@ namespace ReactiveUI.Xaml
 
         public ViewModelViewHost()
         {
-            RxApp.EnsureInitialized();
-
             // NB: InUnitTestRunner also returns true in Design Mode
             if (ModeDetector.InUnitTestRunner()) {
                 ViewContractObservable = Observable.Never<string>();
@@ -68,7 +66,7 @@ namespace ReactiveUI.Xaml
                 this.WhenAnyObservable(x => x.ViewContractObservable),
                 (vm, contract) => new { ViewModel = vm, Contract = contract, });
 
-            var platform = Locator.Current.GetService<IPlatformOperations>();
+            var platform = RxApp.DependencyResolver.GetService<IPlatformOperations>();
             if (platform == null) {
                 throw new Exception("Couldn't find an IPlatformOperations. This should never happen, your dependency resolver is broken");
             }
