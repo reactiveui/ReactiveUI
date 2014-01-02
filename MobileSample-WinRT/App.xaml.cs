@@ -31,10 +31,10 @@ namespace MobileSample_WinRT
 
         protected override void OnLaunched(LaunchActivatedEventArgs args)
         {
-            ((ModernDependencyResolver)Locator.Current).Register(() => new AppBootstrapper(), typeof(IApplicationRootState));
+            Locator.CurrentMutable.Register(() => new AppBootstrapper(), typeof(IApplicationRootState));
 
             base.OnLaunched(args);
-            var host = Locator.Current.GetService<ISuspensionHost>();
+            var host = RxApp.DependencyResolver.GetService<ISuspensionHost>();
             host.SetupDefaultSuspendResume();
         }
     }

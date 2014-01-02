@@ -59,7 +59,6 @@ namespace ReactiveUI.Xaml
 
         public RoutedViewHost()
         {
-            RxApp.EnsureInitialized();
             HorizontalContentAlignment = HorizontalAlignment.Stretch;
             VerticalContentAlignment = VerticalAlignment.Stretch;
 
@@ -68,7 +67,7 @@ namespace ReactiveUI.Xaml
                 return;
             }
 
-            var platform = Locator.Current.GetService<IPlatformOperations>();
+            var platform = RxApp.DependencyResolver.GetService<IPlatformOperations>();
             if (platform == null) {
                 throw new Exception("Couldn't find an IPlatformOperations. This should never happen, your dependency resolver is broken");
             }
