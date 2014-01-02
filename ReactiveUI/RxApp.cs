@@ -50,7 +50,7 @@ namespace ReactiveUI
                 });
             });
 
-            Locator.CurrentMutable.InitializeReactiveUI();
+            Splat.Locator.CurrentMutable.InitializeReactiveUI();
 
             if (ModeDetector.InUnitTestRunner()) {
                 LogHost.Default.Warn("*** Detected Unit Test Runner, setting MainThreadScheduler to CurrentThread ***");
@@ -167,9 +167,9 @@ namespace ReactiveUI
         /// by ReactiveUI. This method is primarily used by ReactiveUI itself,
         /// you can usually ignore it and should use Locator.Current.
         /// </summary>
-        public static IDependencyResolver DependencyResolver
+        internal static IDependencyResolver Locator
         {
-            get { return Locator.Current; }
+            get { return Splat.Locator.Current; }
         }
 
 #if ANDROID || SILVERLIGHT || IOS
