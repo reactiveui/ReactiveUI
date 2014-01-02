@@ -50,7 +50,7 @@ namespace ReactiveUI
                 });
             });
 
-            Locator.CurrentMutable.InitializeReactiveUI();
+            Splat.Locator.CurrentMutable.InitializeReactiveUI();
 
             if (ModeDetector.InUnitTestRunner()) {
                 LogHost.Default.Warn("*** Detected Unit Test Runner, setting MainThreadScheduler to CurrentThread ***");
@@ -163,15 +163,13 @@ namespace ReactiveUI
         }
 
         /// <summary>
-        /// This method ensures that Splat's Default Locator is initialized
+        /// Acessing Splat's Default Locator this way ensures it is initialized
         /// by ReactiveUI. This method is primarily used by ReactiveUI itself,
-        /// you can usually ignore it.
+        /// you can usually ignore it and should use Locator.Current.
         /// </summary>
-        public static void EnsureInitialized()
+        internal static IDependencyResolver Locator
         {
-            // NB: This doesn't actually do anything, it just makes sure we've
-            // called the static ctor.
-            MainThreadScheduler.GetType();
+            get { return Splat.Locator.Current; }
         }
 
 #if ANDROID || SILVERLIGHT || IOS

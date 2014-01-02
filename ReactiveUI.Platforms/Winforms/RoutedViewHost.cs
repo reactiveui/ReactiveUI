@@ -21,7 +21,6 @@ namespace ReactiveUI.Winforms
 
         public RoutedViewHost()
         {
-            RxApp.EnsureInitialized();
             this.InitializeComponent();
 
             this.disposables.Add(this.WhenAny(x => x.DefaultContent, x => x.Value).Subscribe(x => {
