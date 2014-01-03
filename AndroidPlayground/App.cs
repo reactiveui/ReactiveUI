@@ -19,16 +19,17 @@ namespace AndroidPlayground
         {
             var locator = new FuncServiceLocator();
 
-
-            RxApp.ConfigureServiceLocator(
-                (t, s) => locator.GetAllServices(t, s).FirstOrDefault(),
-                (t, s) => locator.GetAllServices(t, s).ToArray(),
-                (c, t, s) => locator.Register(() => Activator.CreateInstance(c), t, s));
+            // TODO: Fix Me
+            //RxApp.ConfigureServiceLocator(
+            //    (t, s) => locator.GetAllServices(t, s).FirstOrDefault(),
+            //    (t, s) => locator.GetAllServices(t, s).ToArray(),
+            //    (c, t, s) => locator.Register(() => Activator.CreateInstance(c), t, s));
 
             locator.Register(() => typeof(MainView), typeof(IViewFor<MainViewModel>));
             locator.Register(() => typeof(SecondaryView), typeof(IViewFor<SecondaryViewModel>));
 
-            RxApp.Register(typeof(AppBootstrapper), typeof(IApplicationRootState));
+            // TODO: Fix Me
+            //RxApp.Register(typeof(AppBootstrapper), typeof(IApplicationRootState));
             
 
             Locator = locator;

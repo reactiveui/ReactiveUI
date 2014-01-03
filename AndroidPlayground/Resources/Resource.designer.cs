@@ -952,23 +952,50 @@ namespace AndroidPlayground
 			// aapt resource value: 0x7f05000b
 			public const int abs__up = 2131034123;
 			
+			// aapt resource value: 0x7f050036
+			public const int closeMarket = 2131034166;
+			
 			// aapt resource value: 0x7f050009
 			public const int disableHome = 2131034121;
 			
 			// aapt resource value: 0x7f050027
 			public const int edit_query = 2131034151;
 			
+			// aapt resource value: 0x7f05003e
+			public const int high = 2131034174;
+			
 			// aapt resource value: 0x7f050006
 			public const int homeAsUp = 2131034118;
 			
+			// aapt resource value: 0x7f05003b
+			public const int lastChange = 2131034171;
+			
 			// aapt resource value: 0x7f050002
 			public const int listMode = 2131034114;
+			
+			// aapt resource value: 0x7f05003f
+			public const int low = 2131034175;
 			
 			// aapt resource value: 0x7f050033
 			public const int myButton = 2131034163;
 			
 			// aapt resource value: 0x7f050001
 			public const int normal = 2131034113;
+			
+			// aapt resource value: 0x7f05003d
+			public const int open = 2131034173;
+			
+			// aapt resource value: 0x7f050035
+			public const int openMarket = 2131034165;
+			
+			// aapt resource value: 0x7f05003c
+			public const int percentChange = 2131034172;
+			
+			// aapt resource value: 0x7f05003a
+			public const int price = 2131034170;
+			
+			// aapt resource value: 0x7f050037
+			public const int reset = 2131034167;
 			
 			// aapt resource value: 0x7f050008
 			public const int showCustom = 2131034120;
@@ -979,6 +1006,9 @@ namespace AndroidPlayground
 			// aapt resource value: 0x7f050007
 			public const int showTitle = 2131034119;
 			
+			// aapt resource value: 0x7f050039
+			public const int symbol = 2131034169;
+			
 			// aapt resource value: 0x7f050003
 			public const int tabMode = 2131034115;
 			
@@ -987,6 +1017,9 @@ namespace AndroidPlayground
 			
 			// aapt resource value: 0x7f050004
 			public const int useLogo = 2131034116;
+			
+			// aapt resource value: 0x7f050038
+			public const int watchList = 2131034168;
 			
 			// aapt resource value: 0x7f050000
 			public const int wrap_content = 2131034112;
@@ -1100,6 +1133,12 @@ namespace AndroidPlayground
 			
 			// aapt resource value: 0x7f03001a
 			public const int sherlock_spinner_item = 2130903066;
+			
+			// aapt resource value: 0x7f03001b
+			public const int WatchList = 2130903067;
+			
+			// aapt resource value: 0x7f03001c
+			public const int WatchListItem = 2130903068;
 			
 			static Layout()
 			{
