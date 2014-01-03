@@ -73,17 +73,27 @@
     <Reference Include="Mono.Android.Support.v4" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ViewModels\WatchListItemViewModel.cs" />
+    <Compile Include="Views\WatchListItemView.cs" />
+    <Compile Include="WatchListActivity.cs" />
     <Compile Include="MainActivity.cs" />
     <Compile Include="Resources\Resource.designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SecondaryActivity.cs" />
     <Compile Include="AppBootstrapper.cs" />
     <Compile Include="App.cs" />
+    <Compile Include="ViewModels\WatchListViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />
     <None Include="Assets\AboutAssets.txt" />
     <None Include="Properties\AndroidManifest.xml" />
+    <AndroidResource Include="Resources\layout\WatchList.axml">
+      <SubType>AndroidResource</SubType>
+    </AndroidResource>
+    <AndroidResource Include="Resources\layout\WatchListItem.axml">
+      <SubType>AndroidResource</SubType>
+    </AndroidResource>
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\layout\Main.axml" />
@@ -106,4 +116,5 @@
       <Name>ReactiveUI</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
 </Project>

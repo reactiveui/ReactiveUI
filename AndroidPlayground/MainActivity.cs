@@ -15,7 +15,7 @@ using Splat;
 
 namespace AndroidPlayground
 {
-    [Activity (Label = "AndroidPlayground", MainLauncher = true)]
+  //  [Activity (Label = "AndroidPlayground", MainLauncher = true)]
     public class MainView : SherlockActivity, IViewFor<MainViewModel>, INotifyPropertyChanged
     {
         int count = 1;

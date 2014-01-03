@@ -1205,7 +1205,6 @@ Global
 		{A120F2EC-F343-47BD-9BD3-7572C1E58433}.Debug|iPhone.ActiveCfg = Debug|Any CPU
 		{A120F2EC-F343-47BD-9BD3-7572C1E58433}.Debug|iPhoneSimulator.ActiveCfg = Debug|Any CPU
 		{A120F2EC-F343-47BD-9BD3-7572C1E58433}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{A120F2EC-F343-47BD-9BD3-7572C1E58433}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
 		{A120F2EC-F343-47BD-9BD3-7572C1E58433}.Debug|Net45.ActiveCfg = Debug|Any CPU
 		{A120F2EC-F343-47BD-9BD3-7572C1E58433}.Debug|x64.ActiveCfg = Debug|Any CPU
 		{A120F2EC-F343-47BD-9BD3-7572C1E58433}.Debug|x86.ActiveCfg = Debug|Any CPU
