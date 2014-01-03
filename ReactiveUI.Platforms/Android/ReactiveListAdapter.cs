@@ -13,10 +13,11 @@ namespace ReactiveUI.Android
 {
     public class ReactiveListAdapter<TViewModel, TView> : BaseAdapter<TViewModel>
         where TView : View
+        where TViewModel : class
     {
         readonly IReadOnlyReactiveList<TViewModel> list;
         readonly Action<TViewModel, TView> viewInitializer;
-        readonly Func<TViewModel, int> viewResourceId;
+        readonly Func<Context, TViewModel, TView> viewCreator;
         readonly Context ctx;
         readonly bool canRecycleViews;
         readonly LayoutInflater inflater;
@@ -24,11 +25,11 @@ namespace ReactiveUI.Android
         IDisposable _inner;
 
 
-        public ReactiveListAdapter(Context ctx, IReadOnlyReactiveList<TViewModel> backingList, Func<TViewModel, int> viewResourceId, Action<TViewModel, TView> viewInitializer)
+        public ReactiveListAdapter(Context ctx, IReadOnlyReactiveList<TViewModel> backingList, Func<Context, TViewModel, TView> viewCreator, Action<TViewModel, TView> viewInitializer)
         {
             this.ctx = ctx;
             this.list = backingList;
-            this.viewResourceId = viewResourceId;
+            this.viewCreator = viewCreator;
             this.viewInitializer = viewInitializer;
             this.inflater = (LayoutInflater)ctx.GetSystemService(Context.LayoutInflaterService);
 
@@ -38,27 +39,31 @@ namespace ReactiveUI.Android
                 .Subscribe(_ => this.NotifyDataSetChanged());
         }
 
-        public ReactiveListAdapter(Context ctx, IReadOnlyReactiveList<TViewModel> backingList, int viewResourceId, Action<TViewModel, TView> viewInitializer)
-            : this(ctx, backingList, _ => viewResourceId, viewInitializer)
+        public ReactiveListAdapter(Context ctx, IReadOnlyReactiveList<TViewModel> backingList, Func<Context, TView> viewCreator, Action<TViewModel, TView> viewInitializer)
+            : this(ctx, backingList, (c, _) => viewCreator(c), viewInitializer)
         {
             canRecycleViews = true;
         }
 
         public override View GetView(int position, View convertView, ViewGroup parent)
         {
-            
+
             View view;
 
             var data = list[position];
 
             if (canRecycleViews)
             {
-                view = convertView ?? inflater.Inflate(viewResourceId(data), parent, false);
+                view = convertView ?? viewCreator(ctx, data);
             }
             else
             {
-                view = inflater.Inflate(viewResourceId(data), parent, false);
+                view = viewCreator(ctx, data);
             }
+
+            var ivf = view as IViewFor<TViewModel>;
+            if (ivf != null)
+                ivf.ViewModel = data;
 
             viewInitializer(data, (TView)view);
             return view;

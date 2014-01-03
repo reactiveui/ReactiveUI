@@ -73,7 +73,9 @@
     <Compile Include="Android\ActivityRoutedViewHost.cs" />
     <Compile Include="Android\AndroidCommandBinders.cs" />
     <Compile Include="Android\AndroidUIScheduler.cs" />
+    <Compile Include="Android\ControlFetcherMixin.cs" />
     <Compile Include="Android\Properties\AssemblyInfo.cs" />
+    <Compile Include="Android\ReactiveLinearLayout.cs" />
     <Compile Include="Android\ReactiveListAdapter.cs" />
     <Compile Include="Android\ViewCommandExtensions.cs" />
     <Compile Include="ComponentModelTypeConverter.cs" />
