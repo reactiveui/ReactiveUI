@@ -14,8 +14,7 @@ namespace ReactiveUI.Cocoa
                 This.Execute(null);
             });
 
-            var cech = new EventHandler((o, e) =>
-            {
+            var cech = new EventHandler((o, e) => {
                 var canExecute = This.CanExecute(null);
                 control.Enabled = canExecute;
             });
@@ -25,11 +24,10 @@ namespace ReactiveUI.Cocoa
 
             control.Enabled = This.CanExecute(null);
 
-            return Disposable.Create(() =>
-                                     {
-                                         control.RemoveTarget(ev, events);
-                                         This.CanExecuteChanged -= cech;
-                                     });
+            return Disposable.Create(() => {
+                control.RemoveTarget(ev, events);
+                This.CanExecuteChanged -= cech;
+            });
         }
     }
 }
