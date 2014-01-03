@@ -46,8 +46,6 @@ namespace AndroidPlayground.ViewModels
             LoadDefaultStocks();
         }
 
-        public ICommand LoadDataCommand { get; private set; }
-
         public IReadOnlyReactiveList<WatchListItemViewModel> Stocks
         {
             get { return stocks; }
