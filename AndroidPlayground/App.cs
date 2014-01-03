@@ -2,7 +2,7 @@ using System;
 using ReactiveUI;
 using System.Collections.Generic;
 using System.Linq;
-using ReactiveUI.Routing;
+using ReactiveUI.Mobile;
 
 namespace AndroidPlayground
 {
@@ -19,15 +19,17 @@ namespace AndroidPlayground
         {
             var locator = new FuncServiceLocator();
 
+
             RxApp.ConfigureServiceLocator(
-                (t,s) => locator.GetAllServices(t,s).FirstOrDefault(),
-                (t,s) => locator.GetAllServices(t,s).ToArray(),
-                (c,t,s) => locator.Register(() => Activator.CreateInstance(c), t, s));
+                (t, s) => locator.GetAllServices(t, s).FirstOrDefault(),
+                (t, s) => locator.GetAllServices(t, s).ToArray(),
+                (c, t, s) => locator.Register(() => Activator.CreateInstance(c), t, s));
 
             locator.Register(() => typeof(MainView), typeof(IViewFor<MainViewModel>));
             locator.Register(() => typeof(SecondaryView), typeof(IViewFor<SecondaryViewModel>));
 
             RxApp.Register(typeof(AppBootstrapper), typeof(IApplicationRootState));
+            
 
             Locator = locator;
         }
