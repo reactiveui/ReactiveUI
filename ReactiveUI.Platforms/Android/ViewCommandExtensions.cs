@@ -12,14 +12,12 @@ namespace ReactiveUI.Android
     {
         public static IDisposable BindToTarget(this ICommand This, View control)
         {
-            var ev = new EventHandler((o, e) =>
-            {
+            var ev = new EventHandler((o, e) => {
                 if (!This.CanExecute(null)) return;
                 This.Execute(null);
             });
 
-            var cech = new EventHandler((o, e) =>
-            {
+            var cech = new EventHandler((o, e) => {
                 var canExecute = This.CanExecute(null);
                 control.Enabled = canExecute;
             });
@@ -29,11 +27,10 @@ namespace ReactiveUI.Android
 
             control.Enabled = This.CanExecute(null);
 
-            return Disposable.Create(() =>
-                                     {
-                                         This.CanExecuteChanged -= cech;
-                                         control.Click -= ev;
-                                     });
+            return Disposable.Create(() => {
+                This.CanExecuteChanged -= cech;
+                control.Click -= ev;
+            });
         }
     }
 
