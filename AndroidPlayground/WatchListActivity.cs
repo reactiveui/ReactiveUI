@@ -37,12 +37,12 @@ namespace AndroidPlayground
                 (viewModel, view) =>
                 {
                     view.Bind(view.ViewModel, vm => vm.Symbol, v => v.Symbol.Text);
-                    view.Bind(view.ViewModel, vm => vm.Price, v => v.Price.Text);
-                    view.Bind(view.ViewModel, vm => vm.LastChange, v => v.LastChange.Text);
-                    view.Bind(view.ViewModel, vm => vm.PercentChange, v => v.PercentChange.Text);
-                    view.Bind(view.ViewModel, vm => vm.DayOpen, v => v.Open.Text);
-                    view.Bind(view.ViewModel, vm => vm.DayHigh, v => v.High.Text);
-                    view.Bind(view.ViewModel, vm => vm.DayLow, v => v.Low.Text);
+                    view.OneWayBind(view.ViewModel, vm => vm.Price, v => v.Price.Text, v => string.Format("{0:0.00}", v));
+                    view.OneWayBind(view.ViewModel, vm => vm.LastChange, v => v.LastChange.Text, v => string.Format("{0:0.00}", v));
+                    view.OneWayBind(view.ViewModel, vm => vm.PercentChange, v => v.PercentChange.Text, v => string.Format("{0:P2}", v));
+                    view.OneWayBind(view.ViewModel, vm => vm.DayOpen, v => v.Open.Text, v => string.Format("{0:0.00}", v));
+                    view.OneWayBind(view.ViewModel, vm => vm.DayHigh, v => v.High.Text, v => string.Format("{0:0.00}", v));
+                    view.OneWayBind(view.ViewModel, vm => vm.DayLow, v => v.Low.Text, v => string.Format("{0:0.00}", v));
                 });
             WatchList.Adapter = adapter;
 
