@@ -55,7 +55,7 @@ namespace ReactiveUI.Android
 
             LayoutInflater.From(Context).Inflate(layoutId, this, true);
 
-            this.WireUpControls();
+           // this.WireUpControls();
         }
 
 
