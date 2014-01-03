@@ -12,8 +12,6 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Threading;
 using Android.Content;
-using Android.Runtime;
-using Android.Util;
 using Android.Views;
 using Android.Widget;
 using Splat;
@@ -24,7 +22,7 @@ namespace ReactiveUI.Android
         where TViewModel : class, IReactiveNotifyPropertyChanged
     {
    
-        public ReactiveLinearLayout(Context context, int layoutId)
+        protected ReactiveLinearLayout(Context context, int layoutId)
             : base(context, layoutId)
         {
         }
@@ -45,7 +43,8 @@ namespace ReactiveUI.Android
     /// </summary>
     public class ReactiveLinearLayout : LinearLayout, IReactiveNotifyPropertyChanged, IHandleObservableErrors
     {
-        public ReactiveLinearLayout(Context context, int layoutId) : base(context)
+        protected ReactiveLinearLayout(Context context, int layoutId)
+            : base(context)
         {
             Initialize(layoutId);
         }
