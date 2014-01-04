@@ -25,7 +25,6 @@ namespace ReactiveUI.Android
             : base(context, layoutId)
         {
         }
-     
 
         object IViewFor.ViewModel {
             get { return ViewModel; }
