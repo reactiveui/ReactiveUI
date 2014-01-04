@@ -8,14 +8,14 @@ using Android.Widget;
 using Android.OS;
 using ActionbarSherlock.App;
 using ReactiveUI;
-using ReactiveUI.Routing;
 using System.ComponentModel;
 using ReactiveUI.Android;
 using ReactiveUI.Mobile;
+using Splat;
 
 namespace AndroidPlayground
 {
-    [Activity (Label = "AndroidPlayground", MainLauncher = true)]
+  //  [Activity (Label = "AndroidPlayground", MainLauncher = true)]
     public class MainView : SherlockActivity, IViewFor<MainViewModel>, INotifyPropertyChanged
     {
         int count = 1;
@@ -45,7 +45,8 @@ namespace AndroidPlayground
         {
             // NB: This is dumb.
             Console.WriteLine(App.Current);
-            RxApp.DeferredScheduler = new AndroidUIScheduler(this);
+            RxApp.MainThreadScheduler = new WaitForDispatcherScheduler(() => new AndroidUIScheduler(this));
+
 
             suspendHelper = new AutoSuspendActivityHelper(this);
             suspendHelper.SuspensionHost.SetupDefaultSuspendResume();
@@ -106,7 +107,7 @@ namespace AndroidPlayground
 
         public MainViewModel(IScreen hostScreen)
         {
-            HostScreen = hostScreen ?? RxApp.GetService<IScreen>();
+            HostScreen = hostScreen ?? Locator.Current.GetService<IScreen>();
         }
     }
 }

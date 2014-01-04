@@ -25,7 +25,7 @@ namespace ReactiveUI.Android
         public ActivityRoutedViewHost(Activity hostActivity, IViewLocator viewLocator = null)
         {
             viewLocator = viewLocator ?? ViewLocator.Current;
-            var platform = Locator.Current.GetService<IPlatformOperations>();
+            var platform = RxApp.Locator.GetService<IPlatformOperations>();
 
             var keyUp = hostActivity.GetType()
                 .GetMethods(BindingFlags.Public | BindingFlags.DeclaredOnly | BindingFlags.NonPublic | BindingFlags.Instance)

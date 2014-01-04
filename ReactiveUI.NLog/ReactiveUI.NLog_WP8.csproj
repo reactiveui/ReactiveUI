@@ -25,6 +25,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>Bin\Debug\WP8\</OutputPath>
+    <IntermediateOutputPath>obj\Debug\WP8</IntermediateOutputPath>
     <DefineConstants>DEBUG;TRACE;SILVERLIGHT;WP8</DefineConstants>
     <NoStdLib>true</NoStdLib>
     <NoConfig>true</NoConfig>
@@ -58,6 +59,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>Bin\Release\WP8\</OutputPath>
+    <IntermediateOutputPath>obj\Release\WP8</IntermediateOutputPath>
     <DefineConstants>TRACE;SILVERLIGHT;WP8</DefineConstants>
     <NoStdLib>true</NoStdLib>
     <NoConfig>true</NoConfig>
@@ -70,6 +72,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>Bin\x86\Debug\WP8\</OutputPath>
+    <IntermediateOutputPath>obj\x86\Debug\WP8</IntermediateOutputPath>
     <DefineConstants>DEBUG;TRACE;SILVERLIGHT;WP8</DefineConstants>
     <NoStdLib>true</NoStdLib>
     <NoConfig>true</NoConfig>
@@ -80,6 +83,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>Bin\x86\Release\WP8\</OutputPath>
+    <IntermediateOutputPath>obj\x86\Release\WP8</IntermediateOutputPath>
     <DefineConstants>TRACE;SILVERLIGHT;WP8</DefineConstants>
     <NoStdLib>true</NoStdLib>
     <NoConfig>true</NoConfig>
