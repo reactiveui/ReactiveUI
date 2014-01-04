@@ -7,7 +7,6 @@ using System.Text;
 using Android.App;
 using Android.Views;
 
-
 namespace ReactiveUI.Android
 {
     public static class ControlFetcherMixin
@@ -17,7 +16,7 @@ namespace ReactiveUI.Android
 
         static ControlFetcherMixin()
         {
-            // NB: This is some hacky shit, but on MonoAndroid at the moment, 
+            // NB: This is some hacky shit, but on Xamarin.Android at the moment, 
             // this is always the entry assembly.
             var assm = AppDomain.CurrentDomain.GetAssemblies()[1];
             var resources = assm.GetModules().SelectMany(x => x.GetTypes()).First(x => x.Name == "Resource");
@@ -50,24 +49,21 @@ namespace ReactiveUI.Android
         public static void WireUpControls(this View This)
         {
             // Auto wire-up
-            //Get all the View properties from the activity
+            // Get all the View properties from the activity
             var members = from m in This.GetType().GetRuntimeProperties()
-                          where m.PropertyType.IsSubclassOf(typeof(View))
-                          select m;
+                where m.PropertyType.IsSubclassOf(typeof(View))
+                select m;
 
-            members.ToList().ForEach(m =>
-            {
-                try
-                {
-                    //Find the android control with the same name
+            members.ToList().ForEach(m => {
+                try {
+                    // Find the android control with the same name
                     var view = This.GetControl<View>(m.Name);
-                    //Set the activity field's value to the view with that identifier
+
+                    // Set the activity field's value to the view with that identifier
                     m.SetValue(This, view);
-                }
-                catch (Exception ex)
-                {
+                } catch (Exception ex) {
                     throw new MissingFieldException("Failed to wire up the Property "
-                                                     + m.Name + " to a View in your layout with a corresponding identifier", ex);
+                        + m.Name + " to a View in your layout with a corresponding identifier", ex);
                 }
             });
         }
@@ -80,24 +76,21 @@ namespace ReactiveUI.Android
         public static void WireUpControls(this Fragment This, View inflatedView)
         {
             // Auto wire-up
-            //Get all the View properties from the activity
+            // Get all the View properties from the activity
             var members = from m in This.GetType().GetRuntimeProperties()
-                          where m.PropertyType.IsSubclassOf(typeof(View))
-                          select m;
+                where m.PropertyType.IsSubclassOf(typeof(View))
+                select m;
 
-            members.ToList().ForEach(m =>
-            {
-                try
-                {
-                    //Find the android control with the same name from the view
+            members.ToList().ForEach(m => {
+                try {
+                    // Find the android control with the same name from the view
                     var view = inflatedView.GetControl<View>(m.Name);
-                    //Set the activity field's value to the view with that identifier
+
+                    // Set the activity field's value to the view with that identifier
                     m.SetValue(This, view);
-                }
-                catch (Exception ex)
-                {
+                } catch (Exception ex) {
                     throw new MissingFieldException("Failed to wire up the Property "
-                                                     + m.Name + " to a View in your layout with a corresponding identifier", ex);
+                        + m.Name + " to a View in your layout with a corresponding identifier", ex);
                 }
             });
         }
@@ -105,24 +98,21 @@ namespace ReactiveUI.Android
         public static void WireUpControls(this Activity This)
         {
             // Auto wire-up
-            //Get all the View properties from the activity
+            // Get all the View properties from the activity
             var members = from m in This.GetType().GetRuntimeProperties()
-                          where m.PropertyType.IsSubclassOf(typeof(View))
-                          select m;
+                where m.PropertyType.IsSubclassOf(typeof(View))
+                select m;
 
-            members.ToList().ForEach(m =>
-            {
-                try
-                {
-                    //Find the android control with the same name
+            members.ToList().ForEach(m => {
+                try {
+                    // Find the android control with the same name
                     var view = This.GetControl<View>(m.Name);
-                    //Set the activity field's value to the view with that identifier
+
+                    // Set the activity field's value to the view with that identifier
                     m.SetValue(This, view);
-                }
-                catch (Exception ex)
-                {
+                } catch (Exception ex) {
                     throw new MissingFieldException("Failed to wire up the Property "
-                                                     + m.Name + " to a View in your layout with a corresponding identifier", ex);
+                        + m.Name + " to a View in your layout with a corresponding identifier", ex);
                 }
             });
         }
@@ -132,8 +122,7 @@ namespace ReactiveUI.Android
             var ret = default(View);
             var ourViewCache = viewCache.GetOrCreateValue(rootView);
 
-            if (ourViewCache.TryGetValue(propertyName, out ret))
-            {
+            if (ourViewCache.TryGetValue(propertyName, out ret)) {
                 return ret;
             }
 
