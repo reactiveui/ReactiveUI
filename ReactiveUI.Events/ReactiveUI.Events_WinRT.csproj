@@ -25,6 +25,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\WinRT45\</OutputPath>
+    <IntermediateOutputPath>obj\Debug\WinRT45</IntermediateOutputPath>
     <DefineConstants>TRACE;DEBUG;WINRT</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -33,6 +34,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\WinRT45\</OutputPath>
+    <IntermediateOutputPath>obj\Release\WinRT45</IntermediateOutputPath>
     <DefineConstants>TRACE;WINRT</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
