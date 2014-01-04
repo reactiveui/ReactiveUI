@@ -21,17 +21,20 @@
     <DebugType>full</DebugType>
     <Optimize>False</Optimize>
     <OutputPath>bin\Debug\Monoandroid\</OutputPath>
+    <IntermediateOutputPath>obj\Debug\Monoandroid</IntermediateOutputPath>
     <DefineConstants>DEBUG; MONO; ANDROID</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AndroidLinkMode>None</AndroidLinkMode>
     <ConsolePause>False</ConsolePause>
-    <DocumentationFile>bin\Debug\Monoandroid\ReactiveUI.Android.XML</DocumentationFile>
+    <DocumentationFile>
+    </DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>True</Optimize>
     <OutputPath>bin\Release\Monoandroid\</OutputPath>
+    <IntermediateOutputPath>obj\Release\Monoandroid</IntermediateOutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>False</ConsolePause>
@@ -73,7 +76,11 @@
     <Compile Include="Android\ActivityRoutedViewHost.cs" />
     <Compile Include="Android\AndroidCommandBinders.cs" />
     <Compile Include="Android\AndroidUIScheduler.cs" />
+    <Compile Include="Android\ControlFetcherMixin.cs" />
     <Compile Include="Android\Properties\AssemblyInfo.cs" />
+    <Compile Include="Android\ReactiveLinearLayout.cs" />
+    <Compile Include="Android\ReactiveListAdapter.cs" />
+    <Compile Include="Android\ViewCommandExtensions.cs" />
     <Compile Include="ComponentModelTypeConverter.cs" />
     <Compile Include="FlexibleCommandBinder.cs" />
     <Compile Include="Registrations.cs" />
@@ -86,7 +93,6 @@
   <ItemGroup>
     <Folder Include="Properties\" />
   </ItemGroup>
-  <Import Project="$(MSBuildExtensionsPath)\Novell\Novell.MonoDroid.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <ItemGroup>
     <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj">

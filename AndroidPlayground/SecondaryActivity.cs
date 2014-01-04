@@ -12,10 +12,10 @@ using Android.Views;
 using Android.Widget;
 using ActionbarSherlock.App;
 using ReactiveUI;
-using ReactiveUI.Routing;
 using ReactiveUI.Android;
 using ReactiveUI.Mobile;
 using System.ComponentModel;
+using Splat;
 
 namespace AndroidPlayground
 {
@@ -48,7 +48,7 @@ namespace AndroidPlayground
         {
             // NB: Super Dumb
             Console.WriteLine(App.Current);
-            RxApp.DeferredScheduler = new AndroidUIScheduler(this);
+            RxApp.MainThreadScheduler = new WaitForDispatcherScheduler(() => new AndroidUIScheduler(this));
 
             routeHelper = new ActivityRoutedViewHost(this);
             suspendHelper = new AutoSuspendActivityHelper(this);
@@ -96,7 +96,7 @@ namespace AndroidPlayground
 
         public SecondaryViewModel(IScreen hostScreen)
         {
-            HostScreen = hostScreen ?? RxApp.GetService<IScreen>();
+            HostScreen = hostScreen ?? Locator.Current.GetService<IScreen>();
         }
     }
 }

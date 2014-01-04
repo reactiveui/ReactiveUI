@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -15,8 +15,14 @@
     <MonoAndroidResourcePrefix>Resources</MonoAndroidResourcePrefix>
     <MonoAndroidAssetsPrefix>Assets</MonoAndroidAssetsPrefix>
     <AssemblyName>AndroidPlayground</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0.3</TargetFrameworkVersion>
     <AndroidManifest>Properties\AndroidManifest.xml</AndroidManifest>
+    <AndroidUseLatestPlatformSdk />
+    <AndroidSupportedAbis>armeabi,armeabi-v7a,x86</AndroidSupportedAbis>
+    <AndroidStoreUncompressedFileExtensions />
+    <MandroidI18n />
+    <JavaMaximumHeapSize />
+    <JavaOptions />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -39,6 +45,9 @@
     <AndroidUseSharedRuntime>false</AndroidUseSharedRuntime>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Splat">
+      <HintPath>..\ext\monodroid\Splat.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
@@ -58,26 +67,33 @@
     <Reference Include="System.Reactive.PlatformServices">
       <HintPath>..\ext\monodroid\System.Reactive.PlatformServices.dll</HintPath>
     </Reference>
-    <Reference Include="System.Reactive.Providers">
-      <HintPath>..\ext\monodroid\System.Reactive.Providers.dll</HintPath>
-    </Reference>
     <Reference Include="Xamarin.Mobile">
       <HintPath>..\ext\monodroid\Xamarin.Mobile.dll</HintPath>
     </Reference>
     <Reference Include="Mono.Android.Support.v4" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ViewModels\WatchListItemViewModel.cs" />
+    <Compile Include="Views\WatchListItemView.cs" />
+    <Compile Include="WatchListActivity.cs" />
     <Compile Include="MainActivity.cs" />
     <Compile Include="Resources\Resource.designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SecondaryActivity.cs" />
     <Compile Include="AppBootstrapper.cs" />
     <Compile Include="App.cs" />
+    <Compile Include="ViewModels\WatchListViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />
     <None Include="Assets\AboutAssets.txt" />
     <None Include="Properties\AndroidManifest.xml" />
+    <AndroidResource Include="Resources\layout\WatchList.axml">
+      <SubType>AndroidResource</SubType>
+    </AndroidResource>
+    <AndroidResource Include="Resources\layout\WatchListItem.axml">
+      <SubType>AndroidResource</SubType>
+    </AndroidResource>
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\layout\Main.axml" />
@@ -87,17 +103,18 @@
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Novell\Novell.MonoDroid.CSharp.targets" />
   <ItemGroup>
-    <ProjectReference Include="..\ReactiveUI\ReactiveUI_Monodroid.csproj">
-      <Project>{F92A477B-BB94-43C1-984E-E177EF9FEDB7}</Project>
-      <Name>ReactiveUI_Monodroid</Name>
-    </ProjectReference>
     <ProjectReference Include="..\ReactiveUI.Mobile\ReactiveUI.Mobile_Monodroid.csproj">
-      <Project>{A92E477B-BB94-43C1-984E-E177EF9FEDB1}</Project>
+      <Project>{a92e477b-bb94-43c1-984e-e177ef9fedb1}</Project>
       <Name>ReactiveUI.Mobile_Monodroid</Name>
     </ProjectReference>
     <ProjectReference Include="..\ReactiveUI.Platforms\ReactiveUI.Android.csproj">
-      <Project>{F5A6E11B-B074-4A0B-B937-267D840E31DF}</Project>
+      <Project>{f5a6e11b-b074-4a0b-b937-267d840e31df}</Project>
       <Name>ReactiveUI.Android</Name>
     </ProjectReference>
+    <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj">
+      <Project>{464cb812-f99f-401b-be4c-e8f0515cd19d}</Project>
+      <Name>ReactiveUI</Name>
+    </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
 </Project>
