@@ -20,10 +20,8 @@ namespace ReactiveUI.Android
         readonly Func<Context, TViewModel, TView> viewCreator;
         readonly Context ctx;
         readonly bool canRecycleViews;
-        readonly LayoutInflater inflater;
 
         IDisposable _inner;
-
 
         public ReactiveListAdapter(Context ctx, IReadOnlyReactiveList<TViewModel> backingList, Func<Context, TViewModel, TView> viewCreator, Action<TViewModel, TView> viewInitializer)
         {
@@ -31,7 +29,6 @@ namespace ReactiveUI.Android
             this.list = backingList;
             this.viewCreator = viewCreator;
             this.viewInitializer = viewInitializer;
-            this.inflater = (LayoutInflater)ctx.GetSystemService(Context.LayoutInflaterService);
 
             // XXX: This is hella dumb.
             _inner = backingList.Changed
@@ -49,28 +46,24 @@ namespace ReactiveUI.Android
         {
 
             View view;
-
             var data = list[position];
 
-            if (canRecycleViews)
-            {
+            if (canRecycleViews) {
                 view = convertView ?? viewCreator(ctx, data);
-            }
-            else
-            {
+            } else {
                 view = viewCreator(ctx, data);
             }
 
             var ivf = view as IViewFor<TViewModel>;
-            if (ivf != null)
+            if (ivf != null) {
                 ivf.ViewModel = data;
+            }
 
             viewInitializer(data, (TView)view);
             return view;
         }
 
-        public override TViewModel this[int index]
-        {
+        public override TViewModel this[int index] {
             get { return list[index]; }
         }
 
@@ -79,8 +72,7 @@ namespace ReactiveUI.Android
             return list[position].GetHashCode();
         }
 
-        public override int Count
-        {
+        public override int Count {
             get { return list.Count; }
         }
 
@@ -90,5 +82,4 @@ namespace ReactiveUI.Android
             Interlocked.Exchange(ref _inner, Disposable.Empty).Dispose();
         }
     }
-
 }

@@ -18,18 +18,16 @@ using Splat;
 
 namespace ReactiveUI.Android
 {
-    public class ReactiveLinearLayout<TViewModel> : ReactiveLinearLayout, IViewFor<TViewModel>, IReactiveNotifyPropertyChanged, IHandleObservableErrors
+    public class ReactiveLinearLayout<TViewModel> : ReactiveLinearLayout, IViewFor<TViewModel>
         where TViewModel : class, IReactiveNotifyPropertyChanged
     {
-   
         protected ReactiveLinearLayout(Context context, int layoutId)
             : base(context, layoutId)
         {
         }
      
 
-        object IViewFor.ViewModel
-        {
+        object IViewFor.ViewModel {
             get { return ViewModel; }
             set { ViewModel = (TViewModel)value; }
         }
@@ -46,10 +44,10 @@ namespace ReactiveUI.Android
         protected ReactiveLinearLayout(Context context, int layoutId)
             : base(context)
         {
-            Initialize(layoutId);
+            initialize(layoutId);
         }
 
-        private void Initialize(int layoutId)
+        void initialize(int layoutId)
         {
             setupRxObj();
 
@@ -66,14 +64,12 @@ namespace ReactiveUI.Android
         [field: IgnoreDataMember]
         public event PropertyChangedEventHandler PropertyChanged;
 
-
         /// <summary>
         /// Represents an Observable that fires *before* a property is about to
         /// be changed.         
         /// </summary>
         [IgnoreDataMember]
-        public IObservable<IObservedChange<object, object>> Changing
-        {
+        public IObservable<IObservedChange<object, object>> Changing {
             get { return changingSubject; }
         }
 
@@ -82,8 +78,7 @@ namespace ReactiveUI.Android
         /// Represents an Observable that fires *after* a property has changed.
         /// </summary>
         [IgnoreDataMember]
-        public IObservable<IObservedChange<object, object>> Changed
-        {
+        public IObservable<IObservedChange<object, object>> Changed {
             get { return changedSubject; }
         }
 
@@ -137,15 +132,14 @@ namespace ReactiveUI.Android
         public IDisposable SuppressChangeNotifications()
         {
             Interlocked.Increment(ref changeNotificationsSuppressed);
+
             return Disposable.Create(() =>
                 Interlocked.Decrement(ref changeNotificationsSuppressed));
         }
 
-
         protected internal void raisePropertyChanging(string propertyName)
         {
             Contract.Requires(propertyName != null);
-
 
             if (!areChangeNotificationsEnabled || changingSubject == null)
                 return;
@@ -157,7 +151,6 @@ namespace ReactiveUI.Android
                 var e = new PropertyChangingEventArgs(propertyName);
                 handler(this, e);
             }
-
 
             notifyObservable(new ObservedChange<object, object>()
             {
@@ -172,9 +165,7 @@ namespace ReactiveUI.Android
         {
             Contract.Requires(propertyName != null);
 
-
             this.Log().Debug("{0:X}.{1} changed", this.GetHashCode(), propertyName);
-
 
             if (!areChangeNotificationsEnabled || changedSubject == null)
             {
@@ -182,14 +173,12 @@ namespace ReactiveUI.Android
                 return;
             }
 
-
             var handler = this.PropertyChanged;
             if (handler != null)
             {
                 var e = new PropertyChangedEventArgs(propertyName);
                 handler(this, e);
             }
-
 
             notifyObservable(new ObservedChange<object, object>()
             {
@@ -200,23 +189,15 @@ namespace ReactiveUI.Android
         }
 
 
-        protected bool areChangeNotificationsEnabled
-        {
-            get
-            {
-                return (Interlocked.Read(ref changeNotificationsSuppressed) == 0);
-            }
+        protected bool areChangeNotificationsEnabled {
+            get { return (Interlocked.Read(ref changeNotificationsSuppressed) == 0); }
         }
 
 
-        internal void notifyObservable<T>(T item, Subject<T> subject)
-        {
-            try
-            {
+        internal void notifyObservable<T>(T item, Subject<T> subject) {
+            try {
                 subject.OnNext(item);
-            }
-            catch (Exception ex)
-            {
+            } catch (Exception ex) {
                 this.Log().ErrorException("ReactiveObject Subscriber threw exception", ex);
                 thrownExceptions.OnNext(ex);
             }
@@ -237,22 +218,20 @@ namespace ReactiveUI.Android
         /// automatically provided through the CallerMemberName attribute.</param>
         /// <returns>The newly set value, normally discarded.</returns>
         public TRet RaiseAndSetIfChanged<TRet>(
-                ref TRet backingField,
-                TRet newValue,
-                [CallerMemberName] string propertyName = null)
+            ref TRet backingField,
+            TRet newValue,
+            [CallerMemberName] string propertyName = null)
         {
             Contract.Requires(propertyName != null);
 
-
-            if (EqualityComparer<TRet>.Default.Equals(backingField, newValue))
-            {
+            if (EqualityComparer<TRet>.Default.Equals(backingField, newValue)) {
                 return newValue;
             }
-
 
             raisePropertyChanging(propertyName);
             backingField = newValue;
             raisePropertyChanged(propertyName);
+
             return newValue;
         }
 
@@ -284,8 +263,5 @@ namespace ReactiveUI.Android
         {
             raisePropertyChanging(propertyName);
         }
-
-
-
     }
 }
