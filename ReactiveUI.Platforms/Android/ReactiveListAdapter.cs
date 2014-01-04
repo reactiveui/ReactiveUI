@@ -17,12 +17,12 @@ namespace ReactiveUI.Android
     {
         readonly IReadOnlyReactiveList<TViewModel> list;
         readonly Action<TViewModel, TView> viewInitializer;
-        readonly Func<Context, TView> viewCreator;
+        readonly Func<Context, TViewModel, TView> viewCreator;
         readonly Context ctx;
 
         IDisposable _inner;
 
-        public ReactiveListAdapter(Context ctx, IReadOnlyReactiveList<TViewModel> backingList, Func<Context, TView> viewCreator, Action<TViewModel, TView> viewInitializer)
+        public ReactiveListAdapter(Context ctx, IReadOnlyReactiveList<TViewModel> backingList, Func<Context, TViewModel, TView> viewCreator, Action<TViewModel, TView> viewInitializer)
         {
             this.ctx = ctx;
             this.list = backingList;
@@ -40,7 +40,7 @@ namespace ReactiveUI.Android
             View view;
             var data = list[position];
 
-            view = convertView ?? viewCreator(ctx);
+            view = convertView ?? viewCreator(ctx, data);
 
             var ivf = view as IViewFor<TViewModel>;
             if (ivf != null) {
