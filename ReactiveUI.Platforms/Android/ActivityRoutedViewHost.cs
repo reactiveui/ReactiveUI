@@ -24,8 +24,6 @@ namespace ReactiveUI.Android
 
         public ActivityRoutedViewHost(Activity hostActivity, IViewLocator viewLocator = null)
         {
-            RxApp.EnsureInitialized();
-
             viewLocator = viewLocator ?? ViewLocator.Current;
             var platform = Locator.Current.GetService<IPlatformOperations>();
 
