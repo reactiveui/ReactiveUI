@@ -30,6 +30,7 @@ namespace ReactiveUI.Android
                 CreateFromWidget<TabHost, TabHost.TabChangeEventArgs>(v => v.CurrentTab, (v, h) => v.TabChanged += h, (v, h) => v.TabChanged -= h),
                 CreateFromWidget<TimePicker, TimePicker.TimeChangedEventArgs>(v => v.CurrentHour, (v, h) => v.TimeChanged += h, (v, h) => v.TimeChanged -= h),
                 CreateFromWidget<TimePicker, TimePicker.TimeChangedEventArgs>(v => v.CurrentMinute, (v, h) => v.TimeChanged += h, (v, h) => v.TimeChanged -= h),
+                CreateFromAdapterView(),
      
               
             }.ToDictionary(k => Tuple.Create(k.Type, k.Property), v => v.Func);
@@ -60,6 +61,34 @@ namespace ReactiveUI.Android
                 }
             };
         }
+
+        private static DispatchTuple CreateFromAdapterView()
+        {
+            // AdapterView is more complicated because there are two events - one for select and one for deselect
+            // respond to both
+
+            const string propName = "SelectedItem";
+
+            return new DispatchTuple
+            {
+                Type = typeof(AdapterView),
+                Property = propName,
+                Func = x =>
+                {
+                    var v = (AdapterView)x;
+                    var getter = Reflection.GetValueFetcherOrThrow(typeof(AdapterView), propName);
+
+                    return 
+                        Observable.Merge(
+                            Observable.FromEventPattern<AdapterView.ItemSelectedEventArgs>(h => v.ItemSelected += h, h => v.ItemSelected -=h)
+                                .Select(_ => new ObservedChange<object, object>() { Sender = v, PropertyName = propName, Value = getter(v) }),
+                            Observable.FromEventPattern<AdapterView.NothingSelectedEventArgs>(h => v.NothingSelected += h, h => v.NothingSelected -= h)
+                                .Select(_ => new ObservedChange<object, object>() { Sender = v, PropertyName = propName, Value = null })
+                        );
+                }
+            };
+        }
+
 
         public int GetAffinityForObject(Type type, string propertyName, bool beforeChanged = false)
         {
