@@ -30,8 +30,7 @@ namespace ReactiveUI.Android
                 createFromWidget<TabHost, TabHost.TabChangeEventArgs>(v => v.CurrentTab, (v, h) => v.TabChanged += h, (v, h) => v.TabChanged -= h),
                 createFromWidget<TimePicker, TimePicker.TimeChangedEventArgs>(v => v.CurrentHour, (v, h) => v.TimeChanged += h, (v, h) => v.TimeChanged -= h),
                 createFromWidget<TimePicker, TimePicker.TimeChangedEventArgs>(v => v.CurrentMinute, (v, h) => v.TimeChanged += h, (v, h) => v.TimeChanged -= h),
-     
-              
+                createFromAdapterView(),
             }.ToDictionary(k => Tuple.Create(k.Type, k.Property), v => v.Func);
         }
 
@@ -54,6 +53,33 @@ namespace ReactiveUI.Android
             public Type Type { get; set; }
             public string Property { get; set; }
             public Func<object, IObservable<IObservedChange<object, object>>> Func { get; set; } 
+        }
+
+        static DispatchTuple createFromAdapterView()
+        {
+            // AdapterView is more complicated because there are two events - one for select and one for deselect
+            // respond to both
+
+            const string propName = "SelectedItem";
+
+            return new DispatchTuple
+            {
+                Type = typeof(AdapterView),
+                Property = propName,
+                Func = x =>
+                {
+                    var v = (AdapterView)x;
+                    var getter = Reflection.GetValueFetcherOrThrow(typeof(AdapterView), propName);
+
+                    return 
+                        Observable.Merge(
+                            Observable.FromEventPattern<AdapterView.ItemSelectedEventArgs>(h => v.ItemSelected += h, h => v.ItemSelected -=h)
+                                .Select(_ => new ObservedChange<object, object>() { Sender = v, PropertyName = propName, Value = getter(v) }),
+                            Observable.FromEventPattern<AdapterView.NothingSelectedEventArgs>(h => v.NothingSelected += h, h => v.NothingSelected -= h)
+                                .Select(_ => new ObservedChange<object, object>() { Sender = v, PropertyName = propName, Value = null })
+                        );
+                }
+            };
         }
 
         static DispatchTuple createFromWidget<TView, TEventArgs>(Expression<Func<TView, object>> property, Action<TView, EventHandler<TEventArgs>> addHandler, Action<TView, EventHandler<TEventArgs>> removeHandler)
