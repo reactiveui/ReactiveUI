@@ -21,6 +21,8 @@ namespace ReactiveUI.Android
     public class ReactiveLinearLayout<TViewModel> : ReactiveLinearLayout, IViewFor<TViewModel>
         where TViewModel : class, IReactiveNotifyPropertyChanged
     {
+        private TViewModel viewModel;
+
         protected ReactiveLinearLayout(Context context, int layoutId)
             : base(context, layoutId)
         {
@@ -31,7 +33,11 @@ namespace ReactiveUI.Android
             set { ViewModel = (TViewModel)value; }
         }
 
-        public TViewModel ViewModel { get; set; }
+        public TViewModel ViewModel
+        {
+            get { return viewModel; }
+            set { this.RaiseAndSetIfChanged(ref viewModel, value); }
+        }
     }
 
     /// <summary>
