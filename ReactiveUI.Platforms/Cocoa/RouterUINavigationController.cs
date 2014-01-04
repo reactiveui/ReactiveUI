@@ -21,8 +21,6 @@ namespace ReactiveUI.Cocoa
 
         public RouterUINavigationController(IRoutingState router, IViewLocator viewLocator = null)
         {
-            RxApp.EnsureInitialized();
-
             this.router = router;
             viewLocator = viewLocator ?? ViewLocator.Current;
 
