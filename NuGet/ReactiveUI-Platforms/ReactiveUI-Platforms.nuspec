@@ -2,7 +2,7 @@
 <package xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <metadata xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
     <id>reactiveui-platforms</id>
-    <version>5.99.0-beta</version>
+    <version>5.99.1-beta</version>
     <description>Platform specific extensions to ReactiveUI</description>
     <authors>Paul Betts</authors>
     <projectUrl>http://www.reactiveui.net</projectUrl>
@@ -11,18 +11,18 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <dependencies>
       <group>
-        <dependency id="reactiveui-core" version="[5.99.0-beta]" />
+        <dependency id="reactiveui-core" version="[5.99.1-beta]" />
       </group>
       <group targetFramework="net45">
-        <dependency id="reactiveui-core" version="[5.99.0-beta]" />
+        <dependency id="reactiveui-core" version="[5.99.1-beta]" />
         <dependency id="Rx-Xaml" version="2.2.2" />
       </group>
       <group targetFramework="wp8">
-        <dependency id="reactiveui-core" version="[5.99.0-beta]" />
+        <dependency id="reactiveui-core" version="[5.99.1-beta]" />
         <dependency id="Rx-Xaml" version="2.2.2" />
       </group>
       <group targetFramework="winrt45">
-        <dependency id="reactiveui-core" version="[5.99.0-beta]" />
+        <dependency id="reactiveui-core" version="[5.99.1-beta]" />
         <dependency id="Rx-Xaml" version="2.2.2" />
       </group>
     </dependencies>
