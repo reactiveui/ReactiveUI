@@ -77,12 +77,14 @@
     <Compile Include="Android\AndroidCommandBinders.cs" />
     <Compile Include="Android\AndroidUIScheduler.cs" />
     <Compile Include="Android\ControlFetcherMixin.cs" />
+    <Compile Include="Android\ObjectExtension.cs" />
     <Compile Include="Android\Properties\AssemblyInfo.cs" />
-    <Compile Include="Android\ReactiveLinearLayout.cs" />
+    <Compile Include="Android\ViewHolder.cs" />
     <Compile Include="Android\ReactiveListAdapter.cs" />
     <Compile Include="Android\ViewCommandExtensions.cs" />
     <Compile Include="ComponentModelTypeConverter.cs" />
     <Compile Include="FlexibleCommandBinder.cs" />
+    <Compile Include="IViewHolder.cs" />
     <Compile Include="Registrations.cs" />
     <Compile Include="Android\PlatformOperations.cs" />
     <Compile Include="Android\ReactiveActivity.cs" />
