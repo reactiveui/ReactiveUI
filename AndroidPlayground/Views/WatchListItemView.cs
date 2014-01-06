@@ -3,15 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Android.Content;
+using Android.Views;
 using Android.Widget;
 using AndroidPlayground.ViewModels;
 using ReactiveUI.Android;
 
 namespace AndroidPlayground.Views
 {
-    public class WatchListItemView : ReactiveLinearLayout<WatchListItemViewModel>
+    public class WatchListItemView : ViewHolder<WatchListItemViewModel>
     {
-        public WatchListItemView(Context context) : base(context, Resource.Layout.WatchListItem)
+        public WatchListItemView(View view) : base(view)
         {
             this.WireUpControls();
         }

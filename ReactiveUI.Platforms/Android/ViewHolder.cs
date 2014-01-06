@@ -11,24 +11,23 @@ using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Threading;
-using Android.Content;
 using Android.Views;
-using Android.Widget;
 using Splat;
 
 namespace ReactiveUI.Android
 {
-    public class ReactiveLinearLayout<TViewModel> : ReactiveLinearLayout, IViewFor<TViewModel>
+    public class ViewHolder<TViewModel> : ViewHolder, IViewFor<TViewModel>
         where TViewModel : class, IReactiveNotifyPropertyChanged
     {
         private TViewModel viewModel;
 
-        protected ReactiveLinearLayout(Context context, int layoutId)
-            : base(context, layoutId)
+        protected ViewHolder(View view)
+            : base(view)
         {
         }
 
-        object IViewFor.ViewModel {
+        object IViewFor.ViewModel
+        {
             get { return ViewModel; }
             set { ViewModel = (TViewModel)value; }
         }
@@ -44,23 +43,17 @@ namespace ReactiveUI.Android
     /// This is a View that has ReactiveObject powers 
     /// (i.e. you can call RaiseAndSetIfChanged)
     /// </summary>
-    public class ReactiveLinearLayout : LinearLayout, IReactiveNotifyPropertyChanged, IHandleObservableErrors
+    public class ViewHolder : IViewHolder, IViewFor, IReactiveNotifyPropertyChanged, IHandleObservableErrors
     {
-        protected ReactiveLinearLayout(Context context, int layoutId)
-            : base(context)
-        {
-            initialize(layoutId);
-        }
-
-        void initialize(int layoutId)
+        protected ViewHolder(View view)
         {
             setupRxObj();
-
-            LayoutInflater.From(Context).Inflate(layoutId, this, true);
-
-           // this.WireUpControls();
+            View = view;
         }
 
+
+
+        public View View { get; private set; }
 
         [field: IgnoreDataMember]
         public event PropertyChangingEventHandler PropertyChanging;
@@ -74,7 +67,8 @@ namespace ReactiveUI.Android
         /// be changed.         
         /// </summary>
         [IgnoreDataMember]
-        public IObservable<IObservedChange<object, object>> Changing {
+        public IObservable<IObservedChange<object, object>> Changing
+        {
             get { return changingSubject; }
         }
 
@@ -83,7 +77,8 @@ namespace ReactiveUI.Android
         /// Represents an Observable that fires *after* a property has changed.
         /// </summary>
         [IgnoreDataMember]
-        public IObservable<IObservedChange<object, object>> Changed {
+        public IObservable<IObservedChange<object, object>> Changed
+        {
             get { return changedSubject; }
         }
 
@@ -106,6 +101,8 @@ namespace ReactiveUI.Android
 
         [IgnoreDataMember]
         readonly ScheduledSubject<Exception> thrownExceptions = new ScheduledSubject<Exception>(Scheduler.Immediate, RxApp.DefaultExceptionHandler);
+
+        private object _viewModel;
 
 
         [IgnoreDataMember]
@@ -194,15 +191,20 @@ namespace ReactiveUI.Android
         }
 
 
-        protected bool areChangeNotificationsEnabled {
+        protected bool areChangeNotificationsEnabled
+        {
             get { return (Interlocked.Read(ref changeNotificationsSuppressed) == 0); }
         }
 
 
-        internal void notifyObservable<T>(T item, Subject<T> subject) {
-            try {
+        internal void notifyObservable<T>(T item, Subject<T> subject)
+        {
+            try
+            {
                 subject.OnNext(item);
-            } catch (Exception ex) {
+            }
+            catch (Exception ex)
+            {
                 this.Log().ErrorException("ReactiveObject Subscriber threw exception", ex);
                 thrownExceptions.OnNext(ex);
             }
@@ -229,7 +231,8 @@ namespace ReactiveUI.Android
         {
             Contract.Requires(propertyName != null);
 
-            if (EqualityComparer<TRet>.Default.Equals(backingField, newValue)) {
+            if (EqualityComparer<TRet>.Default.Equals(backingField, newValue))
+            {
                 return newValue;
             }
 
@@ -267,6 +270,12 @@ namespace ReactiveUI.Android
         public void RaisePropertyChanging([CallerMemberName] string propertyName = null)
         {
             raisePropertyChanging(propertyName);
+        }
+
+        object IViewFor.ViewModel
+        {
+            get { return _viewModel; }
+            set { this.RaiseAndSetIfChanged(ref _viewModel, value); }
         }
     }
 }

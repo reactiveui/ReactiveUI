@@ -8,59 +8,90 @@ using System.Threading;
 using Android.Content;
 using Android.Views;
 using Android.Widget;
+using Splat;
 
 namespace ReactiveUI.Android
 {
-    public class ReactiveListAdapter<TViewModel, TView> : BaseAdapter<TViewModel>
-        where TView : View
+    public class ReactiveListAdapter<TViewModel, TViewHolder> : BaseAdapter<TViewModel>, IEnableLogger
+        where TViewHolder : IViewHolder
         where TViewModel : class
     {
         readonly IReadOnlyReactiveList<TViewModel> list;
-        readonly Action<TViewModel, TView> viewInitializer;
-        readonly Func<Context, TViewModel, TView> viewCreator;
+        readonly int viewLayoutId;
+        readonly Action<TViewModel, TViewHolder> viewInitializer;
+        readonly Func<View, TViewHolder> viewCreator;
         readonly Context ctx;
+        private readonly LayoutInflater inflater;
+
+        private const int VIEW_HOLDER = -1337;
 
         IDisposable _inner;
 
-        public ReactiveListAdapter(Context ctx, IReadOnlyReactiveList<TViewModel> backingList, Func<Context, TViewModel, TView> viewCreator, Action<TViewModel, TView> viewInitializer)
+        public ReactiveListAdapter(
+            Context ctx,
+            IReadOnlyReactiveList<TViewModel> backingList,
+            int viewLayoutId,
+            Func<View, TViewHolder> viewCreator,
+            Action<TViewModel, TViewHolder> viewInitializer)
         {
             this.ctx = ctx;
             this.list = backingList;
+            this.viewLayoutId = viewLayoutId;
             this.viewCreator = viewCreator;
             this.viewInitializer = viewInitializer;
 
+            inflater = LayoutInflater.From(ctx);
+
             // XXX: This is hella dumb.
             _inner = backingList.Changed
-                .Buffer(TimeSpan.FromMilliseconds(250), RxApp.MainThreadScheduler)
+         //       .Log(this, "Collection Changed")
+                // .Buffer(TimeSpan.FromMilliseconds(250), RxApp.MainThreadScheduler)
                 .Subscribe(_ => this.NotifyDataSetChanged());
         }
 
         public override View GetView(int position, View convertView, ViewGroup parent)
         {
-            View view;
+
             var data = list[position];
 
-            view = convertView ?? viewCreator(ctx, data);
+            TViewHolder viewHolder;
+            if (convertView == null)
+            {
+                convertView = inflater.Inflate(viewLayoutId, parent, false);
+                viewHolder = viewCreator(convertView);
 
-            var ivf = view as IViewFor<TViewModel>;
-            if (ivf != null) {
+                convertView.SetTag(VIEW_HOLDER, viewHolder.ToJavaObject());
+                viewInitializer(data, viewHolder);
+            }
+            else
+            {
+                viewHolder = convertView.GetTag(VIEW_HOLDER).ToNetObject<TViewHolder>();
+            }
+
+
+            var ivf = viewHolder as IViewFor<TViewModel>;
+            if (ivf != null)
+            {
                 ivf.ViewModel = data;
             }
 
-            viewInitializer(data, (TView)view);
-            return view;
+            System.Diagnostics.Debug.WriteLine("Getting item: {0}", position);
+
+            return convertView;
         }
 
-        public override TViewModel this[int index] {
+        public override TViewModel this[int index]
+        {
             get { return list[index]; }
         }
 
         public override long GetItemId(int position)
         {
-            return list[position].GetHashCode();
+            return position;
         }
 
-        public override int Count {
+        public override int Count
+        {
             get { return list.Count; }
         }
 

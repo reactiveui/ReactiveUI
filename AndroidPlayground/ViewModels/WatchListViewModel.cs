@@ -32,15 +32,15 @@ namespace AndroidPlayground.ViewModels
         public WatchListViewModel()
         {
             var openCmd = new ReactiveCommand(this.WhenAnyValue(vm => vm.MarketState, m => m == MarketState.Closed));
-            openCmd.RegisterAsyncAction(_ => OpenMarket()).Subscribe();
+            openCmd.RegisterAsyncAction(_ => OpenMarket(), RxApp.MainThreadScheduler).Subscribe();
             OpenMarketCommand = openCmd;
 
             var closeCmd = new ReactiveCommand(this.WhenAnyValue(vm => vm.MarketState, m => m == MarketState.Open));
-            closeCmd.RegisterAsyncAction(_ => CloseMarket()).Subscribe();
+            closeCmd.RegisterAsyncAction(_ => CloseMarket(), RxApp.MainThreadScheduler).Subscribe();
             CloseMarketCommand = closeCmd;
 
             var resetCmd = new ReactiveCommand(this.WhenAnyValue(vm => vm.MarketState, m => m == MarketState.Closed));
-            resetCmd.RegisterAsyncAction(_ => Reset()).Subscribe();
+            resetCmd.RegisterAsyncAction(_ => Reset(), RxApp.MainThreadScheduler).Subscribe();
             ResetCommand = resetCmd;
 
             LoadDefaultStocks();
