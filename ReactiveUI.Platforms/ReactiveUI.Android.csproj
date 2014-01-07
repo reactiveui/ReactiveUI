@@ -84,7 +84,7 @@
     <Compile Include="Android\ViewCommandExtensions.cs" />
     <Compile Include="ComponentModelTypeConverter.cs" />
     <Compile Include="FlexibleCommandBinder.cs" />
-    <Compile Include="IViewHolder.cs" />
+    <Compile Include="Android\IViewHolder.cs" />
     <Compile Include="Registrations.cs" />
     <Compile Include="Android\PlatformOperations.cs" />
     <Compile Include="Android\ReactiveActivity.cs" />
