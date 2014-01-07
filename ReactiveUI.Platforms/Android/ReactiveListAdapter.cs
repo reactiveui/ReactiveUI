@@ -22,6 +22,7 @@ namespace ReactiveUI.Android
         readonly Func<View, TViewHolder> viewCreator;
         readonly Context ctx;
         private readonly LayoutInflater inflater;
+        readonly bool usesBindingOnly;
 
         private const int VIEW_HOLDER = -1337;
 
@@ -32,13 +33,15 @@ namespace ReactiveUI.Android
             IReadOnlyReactiveList<TViewModel> backingList,
             int viewLayoutId,
             Func<View, TViewHolder> viewCreator,
-            Action<TViewModel, TViewHolder> viewInitializer)
+            Action<TViewModel, TViewHolder> viewInitializer,
+            bool usesBindingOnly = true)
         {
             this.ctx = ctx;
             this.list = backingList;
             this.viewLayoutId = viewLayoutId;
             this.viewCreator = viewCreator;
             this.viewInitializer = viewInitializer;
+            this.usesBindingOnly = usesBindingOnly;
 
             inflater = LayoutInflater.From(ctx);
 
@@ -61,7 +64,12 @@ namespace ReactiveUI.Android
                 viewHolder = viewCreator(convertView);
 
                 convertView.SetTag(VIEW_HOLDER, viewHolder.ToJavaObject());
-                viewInitializer(data, viewHolder);
+
+                // for binding only, call the inializer once here
+                if (usesBindingOnly)
+                {
+                    viewInitializer(data, viewHolder);
+                }
             }
             else
             {
@@ -75,7 +83,11 @@ namespace ReactiveUI.Android
                 ivf.ViewModel = data;
             }
 
-            System.Diagnostics.Debug.WriteLine("Getting item: {0}", position);
+            if (!usesBindingOnly)
+            {
+                // call the inializer here for a call back on every getView
+                viewInitializer(data, viewHolder);
+            }
 
             return convertView;
         }
