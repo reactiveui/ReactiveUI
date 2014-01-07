@@ -17,7 +17,7 @@ using Splat;
 namespace ReactiveUI.Android
 {
     public class ViewHolder<TViewModel> : ViewHolder, IViewFor<TViewModel>
-        where TViewModel : class, IReactiveNotifyPropertyChanged
+        where TViewModel : class
     {
         private TViewModel viewModel;
 
