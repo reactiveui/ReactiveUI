@@ -1,11 +1,6 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reactive.Disposables;
-using System.Reactive.Linq;
-using System.Text;
 using System.Threading;
-using Android.Content;
 using Android.Views;
 using Android.Widget;
 using Splat;
@@ -30,7 +25,6 @@ namespace ReactiveUI.Android
             this.viewCreator = viewCreator;
             this.viewInitializer = viewInitializer;
 
-            // XXX: Hack city
             _inner = this.list.Changed.Subscribe(_ => NotifyDataSetChanged());
         }
 
