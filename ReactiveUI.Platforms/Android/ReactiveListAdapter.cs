@@ -34,6 +34,18 @@ namespace ReactiveUI.Android
             _inner = this.list.Changed.Subscribe(_ => NotifyDataSetChanged());
         }
 
+        public override TViewModel this[int index] {
+            get { return list[index]; }
+        }
+
+        public override long GetItemId(int position) {
+            return position;
+        }
+
+        public override int Count {
+            get { return list.Count; }
+        }
+
         public override View GetView(int position, View convertView, ViewGroup parent)
         {
             View theView = convertView;
@@ -53,21 +65,6 @@ namespace ReactiveUI.Android
             }
 
             return theView;
-        }
-
-        public override TViewModel this[int index]
-        {
-            get { return list[index]; }
-        }
-
-        public override long GetItemId(int position)
-        {
-            return position;
-        }
-
-        public override int Count
-        {
-            get { return list.Count; }
         }
 
         protected override void Dispose(bool disposing)
