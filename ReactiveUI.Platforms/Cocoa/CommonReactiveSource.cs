@@ -30,7 +30,7 @@ namespace ReactiveUI.Cocoa
     interface ISectionInformation<TUIView, TUIViewCell>
     {
         IReactiveNotifyCollectionChanged Collection { get; }
-        NSString CellKey { get; }
+        Func<object, NSString> CellKeySelector { get; }
         Action<TUIViewCell> InitializeCellAction { get; }
     }
 
@@ -167,12 +167,13 @@ namespace ReactiveUI.Cocoa
         public TUIViewCell GetCell(NSIndexPath indexPath) 
         {
             var section = SectionInfo[indexPath.Section];
-            var cell = adapter.DequeueReusableCell(section.CellKey, indexPath);
+            var vm = ((IList)section.Collection) [indexPath.Row];
+            var cell = adapter.DequeueReusableCell(section.CellKeySelector(vm), indexPath);
             var view = cell as IViewFor;
 
             if (view != null) {
                 this.Log().Debug("GetCell: Setting vm for Row: " + indexPath.Row);
-                view.ViewModel = ((IList)section.Collection) [indexPath.Row];
+                view.ViewModel = vm;
             }
 
             (section.InitializeCellAction ?? (_ => {}))(cell);

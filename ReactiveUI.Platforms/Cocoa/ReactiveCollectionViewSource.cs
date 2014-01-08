@@ -22,20 +22,25 @@ namespace ReactiveUI.Cocoa
     {
         public IReactiveNotifyCollectionChanged Collection { get; protected set; }
         public Action<UICollectionViewCell> InitializeCellAction { get; protected set; }
-        public NSString CellKey { get; protected set; }
+        public Func<object, NSString> CellKeySelector { get; protected set; }
     }
 
     public class CollectionViewSectionInformation<TCell> : CollectionViewSectionInformation
         where TCell : UICollectionViewCell
     {
-        public CollectionViewSectionInformation(IReactiveNotifyCollectionChanged collection, NSString cellKey, Action<TCell> initializeCellAction = null)
+        public CollectionViewSectionInformation(IReactiveNotifyCollectionChanged collection, Func<object, NSString> cellKeySelector, Action<TCell> initializeCellAction = null)
         {
             Collection = collection;
-            CellKey = cellKey;
+            CellKeySelector = cellKeySelector;
 
             if (initializeCellAction != null) {
                 InitializeCellAction = cell => initializeCellAction((TCell)cell);
             }
+        }
+
+        public CollectionViewSectionInformation(IReactiveNotifyCollectionChanged collection, NSString cellKey, Action<TCell> initializeCellAction = null)
+            : this(collection, _ => cellKey, initializeCellAction)
+        {
         }
     }
 
