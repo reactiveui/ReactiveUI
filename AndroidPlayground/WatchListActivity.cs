@@ -9,6 +9,7 @@ using AndroidPlayground.ViewModels;
 using AndroidPlayground.Views;
 using ReactiveUI;
 using ReactiveUI.Android;
+using Android.Views;
 
 namespace AndroidPlayground
 {
@@ -30,21 +31,10 @@ namespace AndroidPlayground
 
             this.WireUpControls();
 
-            var adapter = new ReactiveListAdapter<WatchListItemViewModel, WatchListItemView>(
-                this,
+            var adapter = new ReactiveListAdapter<WatchListItemViewModel>(
                 ViewModel.Stocks,
-                Resource.Layout.WatchListItem,
-                v => new WatchListItemView(v),
-                (viewModel, view) =>
-                {
-                    view.Bind(view.ViewModel, vm => vm.Symbol, v => v.Symbol.Text);
-                    view.OneWayBind(view.ViewModel, vm => vm.Price, v => v.Price.Text, v => string.Format("{0:0.00}", v));
-                    view.OneWayBind(view.ViewModel, vm => vm.LastChange, v => v.LastChange.Text, v => string.Format("{0:0.00}", v));
-                    view.OneWayBind(view.ViewModel, vm => vm.PercentChange, v => v.PercentChange.Text, v => string.Format("{0:P2}", v));
-                    view.OneWayBind(view.ViewModel, vm => vm.DayOpen, v => v.Open.Text, v => string.Format("{0:0.00}", v));
-                    view.OneWayBind(view.ViewModel, vm => vm.DayHigh, v => v.High.Text, v => string.Format("{0:0.00}", v));
-                    view.OneWayBind(view.ViewModel, vm => vm.DayLow, v => v.Low.Text, v => string.Format("{0:0.00}", v));
-                });
+                (viewModel, parent) => new WatchListItemView(this, parent));
+
             WatchList.Adapter = adapter;
 
             this.BindCommand(ViewModel, vm => vm.OpenMarketCommand, c => c.OpenMarket);
