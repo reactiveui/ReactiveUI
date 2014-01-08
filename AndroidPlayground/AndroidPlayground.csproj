@@ -17,7 +17,6 @@
     <AssemblyName>AndroidPlayground</AssemblyName>
     <TargetFrameworkVersion>v4.0.3</TargetFrameworkVersion>
     <AndroidManifest>Properties\AndroidManifest.xml</AndroidManifest>
-    <AndroidUseLatestPlatformSdk />
     <AndroidSupportedAbis>armeabi,armeabi-v7a,x86</AndroidSupportedAbis>
     <AndroidStoreUncompressedFileExtensions />
     <MandroidI18n />
@@ -104,15 +103,15 @@
   <Import Project="$(MSBuildExtensionsPath)\Novell\Novell.MonoDroid.CSharp.targets" />
   <ItemGroup>
     <ProjectReference Include="..\ReactiveUI.Mobile\ReactiveUI.Mobile_Monodroid.csproj">
-      <Project>{a92e477b-bb94-43c1-984e-e177ef9fedb1}</Project>
+      <Project>{A92E477B-BB94-43C1-984E-E177EF9FEDB1}</Project>
       <Name>ReactiveUI.Mobile_Monodroid</Name>
     </ProjectReference>
     <ProjectReference Include="..\ReactiveUI.Platforms\ReactiveUI.Android.csproj">
-      <Project>{f5a6e11b-b074-4a0b-b937-267d840e31df}</Project>
+      <Project>{F5A6E11B-B074-4A0B-B937-267D840E31DF}</Project>
       <Name>ReactiveUI.Android</Name>
     </ProjectReference>
     <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj">
-      <Project>{464cb812-f99f-401b-be4c-e8f0515cd19d}</Project>
+      <Project>{464CB812-F99F-401B-BE4C-E8F0515CD19D}</Project>
       <Name>ReactiveUI</Name>
     </ProjectReference>
   </ItemGroup>
