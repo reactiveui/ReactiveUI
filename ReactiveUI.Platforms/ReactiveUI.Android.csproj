@@ -27,8 +27,6 @@
     <WarningLevel>4</WarningLevel>
     <AndroidLinkMode>None</AndroidLinkMode>
     <ConsolePause>False</ConsolePause>
-    <DocumentationFile>
-    </DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -80,18 +78,17 @@
     <Compile Include="Android\LinkerOverrides.cs" />
     <Compile Include="Android\ObjectExtension.cs" />
     <Compile Include="Android\Properties\AssemblyInfo.cs" />
-    <Compile Include="Android\ViewHolder.cs" />
     <Compile Include="Android\ReactiveListAdapter.cs" />
     <Compile Include="Android\ViewCommandExtensions.cs" />
     <Compile Include="ComponentModelTypeConverter.cs" />
     <Compile Include="FlexibleCommandBinder.cs" />
-    <Compile Include="Android\IViewHolder.cs" />
     <Compile Include="Registrations.cs" />
     <Compile Include="Android\PlatformOperations.cs" />
     <Compile Include="Android\ReactiveActivity.cs" />
     <Compile Include="Android\ReactiveFragment.cs" />
     <Compile Include="Android\AndroidDefaultPropertyBinding.cs" />
     <Compile Include="Android\AndroidObservableForWidgets.cs" />
+    <Compile Include="Android\ReactiveViewHost.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

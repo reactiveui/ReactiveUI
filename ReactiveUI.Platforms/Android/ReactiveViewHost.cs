@@ -1,65 +1,108 @@
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics.Contracts;
-using System.Linq;
-using System.Reactive.Concurrency;
-using System.Reactive.Disposables;
-using System.Reactive.Subjects;
-using System.Reflection;
-using System.Runtime.CompilerServices;
+﻿using System;
 using System.Runtime.Serialization;
-using System.Text;
+using System.Reactive.Subjects;
+using System.Reactive.Concurrency;
+using System.Reflection;
+using System.Linq;
 using System.Threading;
-using Android.Views;
+using System.Reactive.Disposables;
+using System.Diagnostics.Contracts;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
+using System.Collections.Generic;
+using Android.Content;
 using Splat;
+using Android.Views;
+using Android.App;
 
 namespace ReactiveUI.Android
 {
-    public class ViewHolder<TViewModel> : ViewHolder, IViewFor<TViewModel>
-        where TViewModel : class
+    public interface IViewHost
     {
-        private TViewModel viewModel;
+        View View { get; }
+    }
 
-        protected ViewHolder(View view)
-            : base(view)
+    public static class ViewMixins
+    {
+        internal const int viewHostTag = -4222;
+
+        public static T GetViewHost<T>(this View This) where T : IViewHost
         {
+            var tagData = This.GetTag(viewHostTag);
+            if (tagData != null) return tagData.ToNetObject<T>();
+
+            return default(T);
         }
 
-        object IViewFor.ViewModel
+        public static IViewHost GetViewHost(this View This)
         {
-            get { return ViewModel; }
-            set { ViewModel = (TViewModel)value; }
-        }
+            var tagData = This.GetTag(viewHostTag);
+            if (tagData != null) return tagData.ToNetObject<IViewHost>();
 
-        public TViewModel ViewModel
-        {
-            get { return viewModel; }
-            set { this.RaiseAndSetIfChanged(ref viewModel, value); }
+            return null;
         }
     }
 
-    /// <summary>
-    /// This is a View that has ReactiveObject powers 
-    /// (i.e. you can call RaiseAndSetIfChanged)
-    /// </summary>
-    public class ViewHolder : IViewHolder, IViewFor, IReactiveNotifyPropertyChanged, IHandleObservableErrors
+    public abstract class ReactiveViewHost : IViewHost, IEnableLogger
     {
-        protected ViewHolder(View view)
-        {
-            setupRxObj();
-            View = view;
+        View view;
+        public View View {
+            get { return view; }
+            set {
+                if (view == value) return;
+                view = value;
+                view.SetTag(ViewMixins.viewHostTag, this.ToJavaObject());
+            }
         }
 
+        public static implicit operator View(ReactiveViewHost This)
+        {
+            return This.View;
+        }
 
+        protected ReactiveViewHost()
+        {
+        }
 
-        public View View { get; private set; }
+        protected ReactiveViewHost(Context ctx, int layoutId, ViewGroup parent, bool attachToRoot = false, bool performAutoWireup = true)
+        {
+            var inflater = LayoutInflater.FromContext(ctx);
+            View = inflater.Inflate(layoutId, parent, attachToRoot);
 
-        [field: IgnoreDataMember]
+            if (performAutoWireup) this.WireUpControls();
+        }
+    }
+
+    public abstract class ReactiveViewHost<TViewModel> : ReactiveViewHost, IViewFor<TViewModel>, IReactiveNotifyPropertyChanged
+        where TViewModel : class, IReactiveNotifyPropertyChanged
+    {
+
+        protected ReactiveViewHost(Context ctx, int layoutId, ViewGroup parent, bool attachToRoot = false, bool performAutoWireup = true)
+            : base(ctx, layoutId, parent, attachToRoot, performAutoWireup)
+        {
+            setupRxObj();
+        }
+
+        protected ReactiveViewHost()
+        {
+            setupRxObj();
+        }
+
+        TViewModel _ViewModel;
+        public TViewModel ViewModel {
+            get { return _ViewModel; }
+            set { this.RaiseAndSetIfChanged(ref _ViewModel, value); }
+        }
+        
+        object IViewFor.ViewModel {
+            get { return _ViewModel; }
+            set { _ViewModel = (TViewModel)value; }
+        }
+                
+        [field:IgnoreDataMember]
         public event PropertyChangingEventHandler PropertyChanging;
 
-
-        [field: IgnoreDataMember]
+        [field:IgnoreDataMember]
         public event PropertyChangedEventHandler PropertyChanged;
 
         /// <summary>
@@ -67,62 +110,47 @@ namespace ReactiveUI.Android
         /// be changed.         
         /// </summary>
         [IgnoreDataMember]
-        public IObservable<IObservedChange<object, object>> Changing
-        {
+        public IObservable<IObservedChange<object, object>> Changing {
             get { return changingSubject; }
         }
-
 
         /// <summary>
         /// Represents an Observable that fires *after* a property has changed.
         /// </summary>
         [IgnoreDataMember]
-        public IObservable<IObservedChange<object, object>> Changed
-        {
+        public IObservable<IObservedChange<object, object>> Changed {
             get { return changedSubject; }
         }
-
 
         [IgnoreDataMember]
         protected Lazy<PropertyInfo[]> allPublicProperties;
 
-
         [IgnoreDataMember]
         Subject<IObservedChange<object, object>> changingSubject;
-
 
         [IgnoreDataMember]
         Subject<IObservedChange<object, object>> changedSubject;
 
-
         [IgnoreDataMember]
         long changeNotificationsSuppressed = 0;
 
-
-        [IgnoreDataMember]
+        [IgnoreDataMember] 
         readonly ScheduledSubject<Exception> thrownExceptions = new ScheduledSubject<Exception>(Scheduler.Immediate, RxApp.DefaultExceptionHandler);
-
-        private object _viewModel;
-
 
         [IgnoreDataMember]
         public IObservable<Exception> ThrownExceptions { get { return thrownExceptions; } }
 
-
         [OnDeserialized]
         void setupRxObj(StreamingContext sc) { setupRxObj(); }
-
 
         void setupRxObj()
         {
             changingSubject = new Subject<IObservedChange<object, object>>();
             changedSubject = new Subject<IObservedChange<object, object>>();
 
-
             allPublicProperties = new Lazy<PropertyInfo[]>(() =>
                 GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance).ToArray());
         }
-
 
         /// <summary>
         /// When this method is called, an object will not fire change
@@ -134,7 +162,6 @@ namespace ReactiveUI.Android
         public IDisposable SuppressChangeNotifications()
         {
             Interlocked.Increment(ref changeNotificationsSuppressed);
-
             return Disposable.Create(() =>
                 Interlocked.Decrement(ref changeNotificationsSuppressed));
         }
@@ -146,22 +173,16 @@ namespace ReactiveUI.Android
             if (!areChangeNotificationsEnabled || changingSubject == null)
                 return;
 
-
             var handler = this.PropertyChanging;
-            if (handler != null)
-            {
+            if (handler != null) {
                 var e = new PropertyChangingEventArgs(propertyName);
                 handler(this, e);
             }
 
-            notifyObservable(new ObservedChange<object, object>()
-            {
-                PropertyName = propertyName,
-                Sender = this,
-                Value = null
+            notifyObservable(new ObservedChange<object, object>() {
+                PropertyName = propertyName, Sender = this, Value = null
             }, changingSubject);
         }
-
 
         protected internal void raisePropertyChanged(string propertyName)
         {
@@ -169,47 +190,38 @@ namespace ReactiveUI.Android
 
             this.Log().Debug("{0:X}.{1} changed", this.GetHashCode(), propertyName);
 
-            if (!areChangeNotificationsEnabled || changedSubject == null)
-            {
+            if (!areChangeNotificationsEnabled || changedSubject == null) {
                 this.Log().Debug("Suppressed change");
                 return;
             }
 
             var handler = this.PropertyChanged;
-            if (handler != null)
-            {
+            if (handler != null) {
                 var e = new PropertyChangedEventArgs(propertyName);
                 handler(this, e);
             }
 
-            notifyObservable(new ObservedChange<object, object>()
-            {
-                PropertyName = propertyName,
-                Sender = this,
-                Value = null
+            notifyObservable(new ObservedChange<object, object>() {
+                PropertyName = propertyName, Sender = this, Value = null
             }, changedSubject);
         }
 
-
-        protected bool areChangeNotificationsEnabled
-        {
-            get { return (Interlocked.Read(ref changeNotificationsSuppressed) == 0); }
+        protected bool areChangeNotificationsEnabled {
+            get {
+                return (Interlocked.Read(ref changeNotificationsSuppressed) == 0);
+            }
         }
-
 
         internal void notifyObservable<T>(T item, Subject<T> subject)
         {
-            try
-            {
+            try {
                 subject.OnNext(item);
-            }
-            catch (Exception ex)
-            {
+            } catch (Exception ex) {
                 this.Log().ErrorException("ReactiveObject Subscriber threw exception", ex);
                 thrownExceptions.OnNext(ex);
             }
         }
-
+                
         /// <summary>
         /// RaiseAndSetIfChanged fully implements a Setter for a read-write
         /// property on a ReactiveObject, using CallerMemberName to raise the notification
@@ -225,24 +237,21 @@ namespace ReactiveUI.Android
         /// automatically provided through the CallerMemberName attribute.</param>
         /// <returns>The newly set value, normally discarded.</returns>
         public TRet RaiseAndSetIfChanged<TRet>(
-            ref TRet backingField,
-            TRet newValue,
-            [CallerMemberName] string propertyName = null)
+                ref TRet backingField,
+                TRet newValue,
+                [CallerMemberName] string propertyName = null)
         {
             Contract.Requires(propertyName != null);
 
-            if (EqualityComparer<TRet>.Default.Equals(backingField, newValue))
-            {
+            if (EqualityComparer<TRet>.Default.Equals(backingField, newValue)) {
                 return newValue;
             }
 
             raisePropertyChanging(propertyName);
             backingField = newValue;
             raisePropertyChanged(propertyName);
-
             return newValue;
         }
-
 
         /// <summary>
         /// Use this method in your ReactiveObject classes when creating custom
@@ -257,7 +266,7 @@ namespace ReactiveUI.Android
         {
             raisePropertyChanged(propertyName);
         }
-
+                
         /// <summary>
         /// Use this method in your ReactiveObject classes when creating custom
         /// properties where raiseAndSetIfChanged doesn't suffice.
@@ -271,11 +280,6 @@ namespace ReactiveUI.Android
         {
             raisePropertyChanging(propertyName);
         }
-
-        object IViewFor.ViewModel
-        {
-            get { return _viewModel; }
-            set { this.RaiseAndSetIfChanged(ref _viewModel, value); }
-        }
     }
 }
+

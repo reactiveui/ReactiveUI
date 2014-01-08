@@ -46,7 +46,7 @@ namespace ReactiveUI.Android
             return GetControl<T>(This.View, propertyName);
         }
 
-        public static void WireUpControls(this IViewHolder This)
+        public static void WireUpControls(this IViewHost This)
         {
             // Auto wire-up
             // Get all the View properties from the activity
