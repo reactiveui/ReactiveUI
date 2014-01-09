@@ -70,7 +70,7 @@ However, instead of doing this, we can use Rx's operators to solve this in a
 more elegant way.
 
 ```cs
-public DocumentViewModel : ReactiveCommand
+public class DocumentViewModel : ReactiveObject
 {
     public ReactiveCommand Close { get; set; }
 
@@ -83,7 +83,7 @@ public DocumentViewModel : ReactiveCommand
     }
 }
 
-public MainViewModel : ReactiveObject
+public class MainViewModel : ReactiveObject
 {
     public ReactiveList<DocumentViewModel> OpenDocuments { get; protected set; }
 
