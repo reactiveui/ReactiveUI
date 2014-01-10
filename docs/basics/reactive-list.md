@@ -78,6 +78,10 @@ tracking is disabled by default for performance reasons. Note that one thing
 we *didn't* have to do in this code is, attempt to watch for changing elements
 in the collection - ReactiveList does that all for us.
 
+ReactiveList only tracks changes to its immediate objects, it won't track an
+entire object hierarchy (i.e. `listOfItems[0].Foo.Bar = true` won't trigger a
+change notification, but `listOfItems[0].Foo = Bar` will).
+
 ### Suppressing Notifications
 
 Since ReactiveLists are often bound to UI elements like ListBoxes, making many
