@@ -193,7 +193,7 @@ namespace ReactiveUI.Cocoa
         {
             var list = (IList)SectionInfo[section].Collection;
             var count = list.Count;
-            this.Log().Debug("RowsInSection: {0}-{1} (from {2} / 3)", section, count, SectionInfo, list);
+            this.Log().Debug("RowsInSection: {0}-{1} (from {2} / {3})", section, count, SectionInfo, list);
 
             return count;
         }
