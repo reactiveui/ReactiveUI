@@ -17,7 +17,7 @@ using Android.App;
 
 namespace ReactiveUI.Android
 {
-    public interface IViewHost
+    public interface ILayoutViewHost
     {
         View View { get; }
     }
@@ -26,7 +26,7 @@ namespace ReactiveUI.Android
     {
         internal const int viewHostTag = -4222;
 
-        public static T GetViewHost<T>(this View This) where T : IViewHost
+        public static T GetViewHost<T>(this View This) where T : ILayoutViewHost
         {
             var tagData = This.GetTag(viewHostTag);
             if (tagData != null) return tagData.ToNetObject<T>();
@@ -34,16 +34,16 @@ namespace ReactiveUI.Android
             return default(T);
         }
 
-        public static IViewHost GetViewHost(this View This)
+        public static ILayoutViewHost GetViewHost(this View This)
         {
             var tagData = This.GetTag(viewHostTag);
-            if (tagData != null) return tagData.ToNetObject<IViewHost>();
+            if (tagData != null) return tagData.ToNetObject<ILayoutViewHost>();
 
             return null;
         }
     }
 
-    public abstract class ReactiveViewHost : IViewHost, IEnableLogger
+    public abstract class LayoutViewHost : ILayoutViewHost, IEnableLogger
     {
         View view;
         public View View {
@@ -55,16 +55,16 @@ namespace ReactiveUI.Android
             }
         }
 
-        public static implicit operator View(ReactiveViewHost This)
+        public static implicit operator View(LayoutViewHost This)
         {
             return This.View;
         }
 
-        protected ReactiveViewHost()
+        protected LayoutViewHost()
         {
         }
 
-        protected ReactiveViewHost(Context ctx, int layoutId, ViewGroup parent, bool attachToRoot = false, bool performAutoWireup = true)
+        protected LayoutViewHost(Context ctx, int layoutId, ViewGroup parent, bool attachToRoot = false, bool performAutoWireup = true)
         {
             var inflater = LayoutInflater.FromContext(ctx);
             View = inflater.Inflate(layoutId, parent, attachToRoot);
@@ -73,7 +73,7 @@ namespace ReactiveUI.Android
         }
     }
 
-    public abstract class ReactiveViewHost<TViewModel> : ReactiveViewHost, IViewFor<TViewModel>, IReactiveNotifyPropertyChanged
+    public abstract class ReactiveViewHost<TViewModel> : LayoutViewHost, IViewFor<TViewModel>, IReactiveNotifyPropertyChanged
         where TViewModel : class, IReactiveNotifyPropertyChanged
     {
 
