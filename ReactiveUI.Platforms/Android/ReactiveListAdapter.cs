@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Reactive.Disposables;
 using System.Threading;
 using Android.Views;
@@ -33,7 +34,11 @@ namespace ReactiveUI.Android
         }
 
         public override long GetItemId(int position) {
-            return position;
+            return list[position].GetHashCode();
+        }
+
+        public override bool HasStableIds {
+            get { return true; }
         }
 
         public override int Count {
