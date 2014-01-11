@@ -8,6 +8,7 @@ using ReactiveUI.Mobile;
 using ReactiveUI;
 using System.Reactive.Linq;
 using System.Reactive;
+using Splat;
 
 namespace iOSPlayground
 {
@@ -20,15 +21,16 @@ namespace iOSPlayground
         public override bool WillFinishLaunching(UIApplication application, NSDictionary launchOptions)
         {
             // NB: Hax
-            (new ReactiveUI.Xaml.ServiceLocationRegistration()).Register();
-            (new ReactiveUI.Routing.ServiceLocationRegistration()).Register();
-            (new ReactiveUI.Cocoa.ServiceLocationRegistration()).Register();
-            (new ReactiveUI.Mobile.ServiceLocationRegistration()).Register();
+            var r = Locator.CurrentMutable;
+           // (new ReactiveUI.Xaml.ServiceLocationRegistration()).Register();
+         //   (new ReactiveUI.Routing.ServiceLocationRegistration()).Register();
+            (new ReactiveUI.Cocoa.Registrations()).Register((f, t) => r.Register(f, t));
+            (new ReactiveUI.Mobile.Registrations()).Register((f, t) => r.Register(f, t));
 
-            RxApp.Register(typeof(AppBootstrapper), typeof(IApplicationRootState));
-            RxApp.Register(typeof(DummySuspensionDriver), typeof(ISuspensionDriver));
+            r.Register(() => new AppBootstrapper(), typeof(IApplicationRootState));
+            r.Register(() => new DummySuspensionDriver(), typeof(ISuspensionDriver));
 
-            var host = RxApp.GetService<ISuspensionHost>();
+            var host = r.GetService<ISuspensionHost>();
             host.SetupDefaultSuspendResume();
 
             return true;

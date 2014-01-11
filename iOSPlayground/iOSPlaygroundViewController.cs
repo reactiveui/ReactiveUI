@@ -4,9 +4,9 @@ using System.Reactive.Concurrency;
 using MonoTouch.Foundation;
 using MonoTouch.UIKit;
 using ReactiveUI;
-using ReactiveUI.Routing;
 using System.ComponentModel;
 using System.Runtime.Serialization;
+using Splat;
 
 namespace iOSPlayground
 {
@@ -75,7 +75,7 @@ namespace iOSPlayground
 
         public iOSPlaygroundViewModel(IScreen hostScreen)
         {
-            HostScreen = hostScreen ?? RxApp.GetService<IScreen>();
+            HostScreen = hostScreen ?? Locator.Current.GetService<IScreen>();
             TheGuid = Guid.NewGuid().ToString();
         }
     }
