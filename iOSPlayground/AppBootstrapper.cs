@@ -1,8 +1,9 @@
 using System;
 using ReactiveUI;
+using ReactiveUI.Cocoa;
 using ReactiveUI.Mobile;
-using ReactiveUI.Routing;
 using System.Runtime.Serialization;
+using Splat;
 using TinyIoC;
 using MonoTouch.UIKit;
 using System.Linq;
@@ -32,25 +33,26 @@ namespace iOSPlayground
 
             var toRegister = new Dictionary<Tuple<Type, String>, List<Type>>();
 
-            RxApp.ConfigureServiceLocator(
-                (t, s) => s != null ? Kernel.Resolve(t, s) : Kernel.Resolve(t),
-                (t, s) => Kernel.ResolveAll(t, true),
-                (c, t, s) => { 
-                    if (toRegister != null) {
-                        var pair = Tuple.Create(t,s);
-                        if (!toRegister.ContainsKey(pair)) {
-                            toRegister[pair] = new List<Type>();
-                        }
-                        toRegister[pair].Add(c);
-                        return;
-                    }
+            // TODO: Fix Me
+            //RxApp.ConfigureServiceLocator(
+            //    (t, s) => s != null ? Kernel.Resolve(t, s) : Kernel.Resolve(t),
+            //    (t, s) => Kernel.ResolveAll(t, true),
+            //    (c, t, s) => { 
+            //        if (toRegister != null) {
+            //            var pair = Tuple.Create(t,s);
+            //            if (!toRegister.ContainsKey(pair)) {
+            //                toRegister[pair] = new List<Type>();
+            //            }
+            //            toRegister[pair].Add(c);
+            //            return;
+            //        }
 
-                    if (s != null) { 
-                        Kernel.Register(t, c, s); 
-                    } else { 
-                        Kernel.Register(t, c); 
-                    } 
-                });
+            //        if (s != null) { 
+            //            Kernel.Register(t, c, s); 
+            //        } else { 
+            //            Kernel.Register(t, c); 
+            //        } 
+            //    });
 
             foreach(var key in toRegister.Keys) {
                 var val = toRegister[key].Distinct();
@@ -61,7 +63,7 @@ namespace iOSPlayground
 
             var items = Kernel.ResolveAll(typeof(ICreatesObservableForProperty), true).ToArray();
 
-            Router.Navigate.Go<iOSPlaygroundViewModel>();
+           // Router.Navigate.Go<iOSPlaygroundViewModel>();
         }
     }
 }
