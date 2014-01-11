@@ -18,8 +18,8 @@ other schedulers such as the built-in Rx schedulers:
 These global variables are *global* because they can be globally replaced in a
 unit test (see the "Testing schedulers" section below). This means, that in a
 unit test, you can make *concurrent code* (i.e. code that runs on many
-threads simultaneously) run synchronously and have the same result happen
-every time.
+threads simultaneously) run synchronously and have **the same result happen
+every time**.
 
 ### Objects that care about scheduling
 
