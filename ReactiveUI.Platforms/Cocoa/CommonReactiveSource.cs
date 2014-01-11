@@ -183,7 +183,7 @@ namespace ReactiveUI.Cocoa
         public int NumberOfSections() 
         {
             var count = SectionInfo.Count;
-            this.Log().Debug("NumberOfSections: {0} (from {1})", count, SectionInfo);
+            this.Log().Debug(string.Format("NumberOfSections: {0} (from {1})", count, SectionInfo));
             this.lastCallToNumberOfSections++;
 
             return count;
@@ -193,7 +193,7 @@ namespace ReactiveUI.Cocoa
         {
             var list = (IList)SectionInfo[section].Collection;
             var count = list.Count;
-            this.Log().Debug("RowsInSection: {0}-{1} (from {2} / {3})", section, count, SectionInfo, list);
+            this.Log().Debug(string.Format("RowsInSection: {0}-{1} (from {2} / {3})", section, count, SectionInfo, list));
 
             return count;
         }
@@ -201,7 +201,7 @@ namespace ReactiveUI.Cocoa
         public object ItemAt(NSIndexPath path) 
         {
             var list = (IList)SectionInfo[path.Section].Collection;
-            this.Log().Debug("ItemAt: {0}.{1} (from {2} / {3})", path.Section, path.Row, SectionInfo, list);
+            this.Log().Debug(string.Format("ItemAt: {0}.{1} (from {2} / {3})", path.Section, path.Row, SectionInfo, list));
 
             return list[path.Row];
         }
