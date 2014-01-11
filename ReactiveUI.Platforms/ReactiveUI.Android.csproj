@@ -88,7 +88,7 @@
     <Compile Include="Android\ReactiveFragment.cs" />
     <Compile Include="Android\AndroidDefaultPropertyBinding.cs" />
     <Compile Include="Android\AndroidObservableForWidgets.cs" />
-    <Compile Include="Android\ReactiveViewHost.cs" />
+    <Compile Include="Android\LayoutViewHost.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
