@@ -23,7 +23,7 @@ namespace ReactiveUI.Cocoa
     {
         public IReactiveNotifyCollectionChanged Collection { get; protected set; }
         public Action<UITableViewCell> InitializeCellAction { get; protected set; }
-        public NSString CellKey { get; protected set; }
+        public Func<object, NSString> CellKeySelector { get; protected set; }
         public float SizeHint { get; protected set; }
 
         /// <summary>
@@ -42,13 +42,18 @@ namespace ReactiveUI.Cocoa
     public class TableSectionInformation<TCell> : TableSectionInformation
         where TCell : UITableViewCell
     {
-        public TableSectionInformation(IReactiveNotifyCollectionChanged collection, NSString cellKey, float sizeHint, Action<TCell> initializeCellAction = null)
+        public TableSectionInformation(IReactiveNotifyCollectionChanged collection, Func<object, NSString> cellKeySelector, float sizeHint, Action<TCell>initializeCellAction = null)
         {
             Collection = collection;
-            CellKey = cellKey;
             SizeHint = sizeHint;
+            CellKeySelector = cellKeySelector;
             if (initializeCellAction != null)
                 InitializeCellAction = cell => initializeCellAction((TCell)cell);
+        }
+
+        public TableSectionInformation(IReactiveNotifyCollectionChanged collection, NSString cellKey, float sizeHint, Action<TCell> initializeCellAction = null)
+            : this(collection, _ => cellKey, sizeHint, initializeCellAction)
+        {
         }
     }
 
