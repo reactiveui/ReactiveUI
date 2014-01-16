@@ -1,22 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reactive.Linq;
 using System.Text;
+
+#if !WINRT
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using System.Windows.Interactivity;
-using System.Linq;
-//using Microsoft.Expression.Interactivity.Core;
+using System.Windows.Controls;
+#else
+using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
+#endif
 
 namespace ReactiveUI.Blend
 {
-#if SILVERLIGHT
+#if SILVERLIGHT || WINRT
     public class FollowObservableStateBehavior : Behavior<Control>
 #else
     public class FollowObservableStateBehavior : Behavior<FrameworkElement>
@@ -27,9 +26,9 @@ namespace ReactiveUI.Blend
             set { SetValue(StateObservableProperty, value); }
         }
         public static readonly DependencyProperty StateObservableProperty =
-            DependencyProperty.Register("StateObservable", typeof(IObservable<string>), typeof(FollowObservableStateBehavior), new PropertyMetadata(onStateObservableChanged));
+            DependencyProperty.Register("StateObservable", typeof(IObservable<string>), typeof(FollowObservableStateBehavior), new PropertyMetadata(null, onStateObservableChanged));
 
-#if SILVERLIGHT
+#if SILVERLIGHT || WINRT
         public Control TargetObject {
             get { return (Control)GetValue(TargetObjectProperty); }
             set { SetValue(TargetObjectProperty, value); }
@@ -69,7 +68,7 @@ namespace ReactiveUI.Blend
             This.watcher = ((IObservable<string>)e.NewValue).ObserveOn(RxApp.MainThreadScheduler).Subscribe(
                 x => {
                     var target = This.TargetObject ?? This.AssociatedObject;
-#if SILVERLIGHT
+#if SILVERLIGHT || WINRT
                     VisualStateManager.GoToState(target, x, true);
 #else
                     if (target is Control) {
