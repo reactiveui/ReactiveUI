@@ -59,6 +59,16 @@ namespace ReactiveUI.Tests
             set { this.RaiseAndSetIfChanged(ref _NotSerialized, value); }
         }
 
+        [IgnoreDataMember]
+        int? _nullableInt;
+
+        [DataMember]
+        public int? NullableInt
+        {
+            get { return _nullableInt; }
+            set { this.RaiseAndSetIfChanged(ref _nullableInt, value); }
+        }
+
         public TestFixture()
         {
             TestCollection = new ReactiveList<int>() {ChangeTrackingEnabled = true};
