@@ -41,6 +41,9 @@
     <Reference Include="Microsoft.Reactive.Testing">
       <HintPath>..\ext\winrt\Microsoft.Reactive.Testing.dll</HintPath>
     </Reference>
+    <Reference Include="Splat">
+      <HintPath>..\ext\winrt\Splat.dll</HintPath>
+    </Reference>
     <Reference Include="System.Reactive.Core">
       <HintPath>..\ext\winrt\System.Reactive.Core.dll</HintPath>
     </Reference>
