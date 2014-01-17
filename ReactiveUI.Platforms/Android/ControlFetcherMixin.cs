@@ -6,13 +6,17 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using Android.App;
 using Android.Views;
+using Java.Interop;
 
 namespace ReactiveUI.Android
 {
     public static class ControlFetcherMixin
     {
         static readonly Dictionary<string, int> controlIds;
-        static ConditionalWeakTable<object, Dictionary<string, View>> viewCache = new ConditionalWeakTable<object, Dictionary<string, View>>();
+        static readonly ConditionalWeakTable<object, Dictionary<string, View>> viewCache = new ConditionalWeakTable<object, Dictionary<string, View>>();
+
+        static readonly MethodInfo getControlActivity;
+        static readonly MethodInfo getControlView;
 
         static ControlFetcherMixin()
         {
@@ -24,26 +28,42 @@ namespace ReactiveUI.Android
             controlIds = resources.GetNestedType("Id").GetFields()
                 .Where(x => x.FieldType == typeof(int))
                 .ToDictionary(k => k.Name.ToLowerInvariant(), v => (int)v.GetRawConstantValue());
+
+            var type = typeof(ControlFetcherMixin);
+            getControlActivity = type.GetMethod("GetControl", new[] { typeof(Activity), typeof(string) });
+            getControlView = type.GetMethod("GetControl", new[] { typeof(View), typeof(string) });
         }
 
         public static T GetControl<T>(this Activity This, [CallerMemberName]string propertyName = null)
             where T : View
         {
             return (T)getCachedControl(propertyName, This,
-                () => This.FindViewById(controlIds[propertyName.ToLowerInvariant()]));
+                () => This.FindViewById(controlIds[propertyName.ToLowerInvariant()]).JavaCast<T>());
         }
 
         public static T GetControl<T>(this View This, [CallerMemberName]string propertyName = null)
             where T : View
         {
             return (T)getCachedControl(propertyName, This,
-                () => This.FindViewById(controlIds[propertyName.ToLowerInvariant()]));
+                () => This.FindViewById(controlIds[propertyName.ToLowerInvariant()]).JavaCast<T>());
         }
 
         public static T GetControl<T>(this Fragment This, [CallerMemberName]string propertyName = null)
             where T : View
         {
             return GetControl<T>(This.View, propertyName);
+        }
+
+        private static View GetControlInternal(this View parent, Type viewType, string name)
+        {
+            var mi = getControlView.MakeGenericMethod(new[] { viewType });
+            return (View)mi.Invoke(null, new object[] { parent, name });
+        }
+
+        private static View GetControlInternal(this Activity parent, Type viewType, string name)
+        {
+            var mi = getControlActivity.MakeGenericMethod(new[] { viewType });
+            return (View)mi.Invoke(null, new object[] { parent, name });
         }
 
         public static void WireUpControls(this ILayoutViewHost This)
@@ -59,7 +79,7 @@ namespace ReactiveUI.Android
                 try
                 {
                     // Find the android control with the same name
-                    var view = This.View.GetControl<View>(m.Name);
+                    var view = This.View.GetControlInternal(m.PropertyType, m.Name);
 
                     // Set the activity field's value to the view with that identifier
                     m.SetValue(This, view);
@@ -72,22 +92,27 @@ namespace ReactiveUI.Android
             });
         }
 
+
         public static void WireUpControls(this View This)
         {
             // Auto wire-up
             // Get all the View properties from the activity
             var members = from m in This.GetType().GetRuntimeProperties()
-                where m.PropertyType.IsSubclassOf(typeof(View))
-                select m;
+                          where m.PropertyType.IsSubclassOf(typeof(View))
+                          select m;
 
-            members.ToList().ForEach(m => {
-                try {
+            members.ToList().ForEach(m =>
+            {
+                try
+                {
                     // Find the android control with the same name
-                    var view = This.GetControl<View>(m.Name);
+                    var view = This.GetControlInternal(m.PropertyType, m.Name);
 
                     // Set the activity field's value to the view with that identifier
                     m.SetValue(This, view);
-                } catch (Exception ex) {
+                }
+                catch (Exception ex)
+                {
                     throw new MissingFieldException("Failed to wire up the Property "
                         + m.Name + " to a View in your layout with a corresponding identifier", ex);
                 }
@@ -104,17 +129,21 @@ namespace ReactiveUI.Android
             // Auto wire-up
             // Get all the View properties from the activity
             var members = from m in This.GetType().GetRuntimeProperties()
-                where m.PropertyType.IsSubclassOf(typeof(View))
-                select m;
+                          where m.PropertyType.IsSubclassOf(typeof(View))
+                          select m;
 
-            members.ToList().ForEach(m => {
-                try {
+            members.ToList().ForEach(m =>
+            {
+                try
+                {
                     // Find the android control with the same name from the view
-                    var view = inflatedView.GetControl<View>(m.Name);
+                    var view = inflatedView.GetControlInternal(m.PropertyType, m.Name);
 
                     // Set the activity field's value to the view with that identifier
                     m.SetValue(This, view);
-                } catch (Exception ex) {
+                }
+                catch (Exception ex)
+                {
                     throw new MissingFieldException("Failed to wire up the Property "
                         + m.Name + " to a View in your layout with a corresponding identifier", ex);
                 }
@@ -126,17 +155,21 @@ namespace ReactiveUI.Android
             // Auto wire-up
             // Get all the View properties from the activity
             var members = from m in This.GetType().GetRuntimeProperties()
-                where m.PropertyType.IsSubclassOf(typeof(View))
-                select m;
+                          where m.PropertyType.IsSubclassOf(typeof(View))
+                          select m;
 
-            members.ToList().ForEach(m => {
-                try {
+            members.ToList().ForEach(m =>
+            {
+                try
+                {
                     // Find the android control with the same name
-                    var view = This.GetControl<View>(m.Name);
+                    var view = This.GetControlInternal(m.PropertyType, m.Name);
 
                     // Set the activity field's value to the view with that identifier
                     m.SetValue(This, view);
-                } catch (Exception ex) {
+                }
+                catch (Exception ex)
+                {
                     throw new MissingFieldException("Failed to wire up the Property "
                         + m.Name + " to a View in your layout with a corresponding identifier", ex);
                 }
@@ -148,7 +181,8 @@ namespace ReactiveUI.Android
             var ret = default(View);
             var ourViewCache = viewCache.GetOrCreateValue(rootView);
 
-            if (ourViewCache.TryGetValue(propertyName, out ret)) {
+            if (ourViewCache.TryGetValue(propertyName, out ret))
+            {
                 return ret;
             }
 
