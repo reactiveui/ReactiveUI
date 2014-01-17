@@ -42,6 +42,7 @@
     <DocumentationFile>bin\Release\Monoandroid\ReactiveUI.Android.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Mono.Android.Support.v4" />
     <Reference Include="System" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
@@ -79,6 +80,7 @@
     <Compile Include="Android\ObjectExtension.cs" />
     <Compile Include="Android\Properties\AssemblyInfo.cs" />
     <Compile Include="Android\ReactiveListAdapter.cs" />
+    <Compile Include="Android\ReactivePagerAdapter.cs" />
     <Compile Include="Android\ViewCommandExtensions.cs" />
     <Compile Include="ComponentModelTypeConverter.cs" />
     <Compile Include="FlexibleCommandBinder.cs" />
