@@ -134,6 +134,11 @@ namespace ReactiveUI.Cocoa
             elementSelected.OnNext(commonSource.ItemAt(indexPath));
         }
 
+        public object ItemAt(NSIndexPath indexPath)
+        {
+            return commonSource.ItemAt(indexPath);
+        }
+
         protected override void Dispose(bool disposing)
         {
             if (disposing) commonSource.Dispose();
