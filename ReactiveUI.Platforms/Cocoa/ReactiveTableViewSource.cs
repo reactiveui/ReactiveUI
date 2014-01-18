@@ -224,7 +224,10 @@ namespace ReactiveUI.Cocoa
             return footer == null ? null : footer.View.Invoke();
         }
 
-
+        public object ItemAt(NSIndexPath indexPath)
+        {
+            return commonSource.ItemAt(indexPath);
+        }
 
         // Boring copy-paste of ReactiveObject et al follows:
         [field:IgnoreDataMember]
