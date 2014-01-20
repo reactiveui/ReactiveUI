@@ -12,9 +12,11 @@ namespace ReactiveUI.Blend
             if (associatedObject == this.AssociatedObject || DesignMode.DesignModeEnabled) {
                 return;
             }
-            if(this.AssociatedObject != null) {
+
+            if (this.AssociatedObject != null) {
                 throw new InvalidOperationException("Cannot attach multiple objects.");
             }
+
             AssociatedObject = associatedObject as T;
             OnAttached();
         }
@@ -34,8 +36,7 @@ namespace ReactiveUI.Blend
 
         public T AssociatedObject { get; private set; }
 
-        DependencyObject IBehavior.AssociatedObject
-        {
+        DependencyObject IBehavior.AssociatedObject {
             get { return this.AssociatedObject; }
         }
     }
