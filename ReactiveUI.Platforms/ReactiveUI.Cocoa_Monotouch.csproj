@@ -37,7 +37,7 @@
     <DefineConstants>MONO; UIKIT; COCOA</DefineConstants>
     <DebugSymbols>true</DebugSymbols>
     <RegisterForComInterop>false</RegisterForComInterop>
-    <DocumentationFile>bin\Release\Monotouch\ReactiveUICocoa.XML</DocumentationFile>
+    <DocumentationFile>bin\Release\Monotouch\ReactiveUI.Cocoa.XML</DocumentationFile>
     <GenerateDocumentation>True</GenerateDocumentation>
   </PropertyGroup>
   <ItemGroup>
