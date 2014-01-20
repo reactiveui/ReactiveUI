@@ -24,8 +24,8 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\WinRT45\</OutputPath>
-    <IntermediateOutputPath>obj\Debug\WinRT45</IntermediateOutputPath>
+    <OutputPath>bin\Debug\WinRT451\</OutputPath>
+    <IntermediateOutputPath>obj\Debug\WinRT451</IntermediateOutputPath>
     <DefineConstants>TRACE;DEBUG;WINRT</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -33,12 +33,12 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\WinRT45\</OutputPath>
-    <IntermediateOutputPath>obj\Release\WinRT45</IntermediateOutputPath>
+    <OutputPath>bin\Release\WinRT451\</OutputPath>
+    <IntermediateOutputPath>obj\Release\WinRT451</IntermediateOutputPath>
     <DefineConstants>TRACE;WINRT</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Release\WinRT45\ReactiveUI.Xaml.xml</DocumentationFile>
+    <DocumentationFile>bin\Release\WinRT451\ReactiveUI.Xaml.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="..\CommonAssemblyInfo.cs">
