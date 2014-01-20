@@ -13,12 +13,11 @@ namespace ReactiveUI.Android
 {
     public class ReactivePagerAdapter<TViewModel> : PagerAdapter, IEnableLogger
         where TViewModel : class
-
     {
         readonly IReadOnlyReactiveList<TViewModel> list;
-        private readonly Func<TViewModel, ViewGroup, View> viewCreator;
-        private readonly Action<TViewModel, View> viewInitializer;
-        IDisposable _inner;
+        readonly Func<TViewModel, ViewGroup, View> viewCreator;
+        readonly Action<TViewModel, View> viewInitializer;
+        IDisposable inner;
 
         public ReactivePagerAdapter(IReadOnlyReactiveList<TViewModel> backingList,
                                     Func<TViewModel, ViewGroup, View> viewCreator,
@@ -28,7 +27,7 @@ namespace ReactiveUI.Android
             this.viewCreator = viewCreator;
             this.viewInitializer = viewInitializer;
 
-            _inner = this.list.Changed.Subscribe(_ => NotifyDataSetChanged());
+            inner = this.list.Changed.Subscribe(_ => NotifyDataSetChanged());
         }
 
         public override bool IsViewFromObject(View view, Object @object)
@@ -40,26 +39,21 @@ namespace ReactiveUI.Android
         {
             var data = list[position];
 
-            // PagerAdapter does not recycle itself.
-
+            // NB: PagerAdapter does not recycle itself.
             var theView = viewCreator(data, container);
 
             var ivf = theView.GetViewHost() as IViewFor<TViewModel>;
-            if (ivf != null)
-            {
+            if (ivf != null) {
                 ivf.ViewModel = data;
             }
 
-            if (viewInitializer != null)
-            {
+            if (viewInitializer != null) {
                 viewInitializer(data, theView);
             }
 
             container.AddView(theView, 0);
-
             return theView;
         }
-
 
         public override void DestroyItem(ViewGroup container, int position, Object @object)
         {
@@ -67,15 +61,14 @@ namespace ReactiveUI.Android
             container.RemoveView(view);
         }
 
-        public override int Count
-        {
+        public override int Count {
             get { return list.Count; }
         }
 
         protected override void Dispose(bool disposing)
         {
             base.Dispose(disposing);
-            Interlocked.Exchange(ref _inner, Disposable.Empty).Dispose();
+            Interlocked.Exchange(ref inner, Disposable.Empty).Dispose();
         }
     }
 }
