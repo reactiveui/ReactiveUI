@@ -106,7 +106,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BehaviorOfT.cs" />
+    <Compile Include="Behavior.cs" />
     <Compile Include="FollowObservableStateBehavior.cs" />
     <Compile Include="ObservableTriggerBehavior.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
