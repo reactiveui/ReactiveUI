@@ -398,7 +398,12 @@ namespace ReactiveUI.Tests
             fixture.WhenAny(x => x.PocoProperty, x => x).Subscribe(output.Add);
             var output2 = new List<string>();
             fixture.WhenAnyValue(x => x.PocoProperty).Subscribe(output2.Add);
+            var output3 = new List<IObservedChange<TestFixture, int?>>();
+            fixture.WhenAny(x => x.NullableInt, x => x).Subscribe(output3.Add);
 
+            var output4 = new List<int?>();
+            fixture.WhenAnyValue(x => x.NullableInt).Subscribe(output4.Add);
+           
             Assert.Equal(1, output.Count);
             Assert.Equal(fixture, output[0].Sender);
             Assert.Equal("PocoProperty", output[0].PropertyName);
@@ -406,6 +411,14 @@ namespace ReactiveUI.Tests
 
             Assert.Equal(1, output2.Count);
             Assert.Equal("Bamf", output2[0]);
+
+            Assert.Equal(1, output3.Count);
+            Assert.Equal(fixture, output3[0].Sender);
+            Assert.Equal("NullableInt", output3[0].PropertyName);
+            Assert.Equal(null, output3[0].Value);
+
+            Assert.Equal(1, output4.Count);
+            Assert.Equal(null, output4[0]);
         }
 
         [Fact]
