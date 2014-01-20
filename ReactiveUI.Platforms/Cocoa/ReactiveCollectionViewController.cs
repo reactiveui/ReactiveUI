@@ -15,6 +15,7 @@ using System.Drawing;
 
 using MonoTouch.Foundation;
 using MonoTouch.UIKit;
+using Splat;
 
 namespace ReactiveUI.Cocoa
 {
