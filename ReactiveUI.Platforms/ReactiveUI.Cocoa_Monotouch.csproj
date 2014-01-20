@@ -36,7 +36,7 @@
     <DebugSymbols>true</DebugSymbols>
     <RegisterForComInterop>false</RegisterForComInterop>
     <DocumentationFile>bin\Release\Monotouch\ReactiveUICocoa.XML</DocumentationFile>
-    <GenerateDocumentation>true</GenerateDocumentation>
+    <GenerateDocumentation>True</GenerateDocumentation>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -94,6 +94,7 @@
     <Compile Include="Cocoa\ReactiveCollectionViewCell.cs" />
     <Compile Include="Cocoa\ReactiveCollectionViewSource.cs" />
     <Compile Include="Cocoa\CommonReactiveSource.cs" />
+    <Compile Include="Cocoa\ReactiveCollectionViewController.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ReactiveUI\ReactiveUI_Monotouch.csproj">
