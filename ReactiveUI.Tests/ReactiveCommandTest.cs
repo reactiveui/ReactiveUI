@@ -533,5 +533,41 @@ namespace ReactiveUI.Tests
             Assert.Equal(3, canExecuteOutput.Count);
             Assert.Equal(true, canExecuteOutput[2]);
         }
+
+        [Fact]
+        public void TaskExceptionsShouldBeMarshaledToThrownExceptions()
+        {
+            (new TestScheduler()).With(sched => {
+                var fixture = new ReactiveCommand();
+
+                int result = 0;
+                fixture.RegisterAsyncTask(async _ => {
+                    await Observable.Timer(TimeSpan.FromMilliseconds(50), RxApp.TaskpoolScheduler);
+                    throw new Exception("Die");
+                    return 5;
+                }).Subscribe(x => result = x);
+
+                var error = default(Exception);
+                fixture.ThrownExceptions.Subscribe(ex => error = ex);
+
+                fixture.Execute(null);
+
+                sched.AdvanceByMs(20);
+                Assert.Null(error);
+                Assert.Equal(0, result);
+
+                // NB: We have to Thread.Sleep here to compensate for not being
+                // able to control the concurrency of Task
+                sched.AdvanceByMs(100);
+                Thread.Sleep(100);
+
+                // NB: Advance it one more so that the scheduled ThrownExceptions
+                // end up being dispatched
+                sched.AdvanceByMs(10);
+
+                Assert.NotNull(error);
+                Assert.Equal(0, result);
+            });
+        }
     }
 }
