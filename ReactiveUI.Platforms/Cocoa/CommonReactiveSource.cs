@@ -284,9 +284,10 @@ namespace ReactiveUI.Cocoa
                         .Changed
                         .Select(timestamped)
                         .Buffer(TimeSpan.FromMilliseconds(250), RxApp.MainThreadScheduler)
+                        .Where(b => b.Count > 0)
                         .Subscribe(
                             xs => sectionCollectionChanged(section, xs),
-                            ex => this.Log().ErrorException("Error while watching section " + i + "'s Collection.", ex)));
+                            ex => this.Log().ErrorException("Error while watching section " + section + "'s Collection.", ex)));
                 }
 
                 this.Log().Debug("Done resetuping section data and bindings!");
