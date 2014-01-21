@@ -1,4 +1,6 @@
-﻿using System;
+﻿#define DEBUG // enable the debug logger to work even when this lib is compiled in release mode
+
+using System;
 using System.ComponentModel;
 using System.Reactive.Linq;
 using System.Reflection;
