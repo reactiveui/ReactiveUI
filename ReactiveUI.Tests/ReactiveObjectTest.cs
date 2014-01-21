@@ -108,10 +108,10 @@ namespace ReactiveUI.Tests
             string json = JSONHelper.Serialize(fixture);
 
             // Should look something like:
-            // "{"TestCollection":[],"_IsNotNullString":"Foo","_IsOnlyOneWord":"Baz","_PocoProperty":null,"_StackOverflowTrigger":null,"_UsesExprRaiseSet":null}"
-            Assert.True(json.Count(x => x == ',') == 5);
-            Assert.True(json.Count(x => x == ':') == 6);
-            Assert.True(json.Count(x => x == '"') == 16);
+            // {"IsNotNullString":"Foo","IsOnlyOneWord":"Baz","NullableInt":null,"PocoProperty":null,"StackOverflowTrigger":null,"TestCollection":[],"UsesExprRaiseSet":null}
+            Assert.True(json.Count(x => x == ',') == 6);
+            Assert.True(json.Count(x => x == ':') == 7);
+            Assert.True(json.Count(x => x == '"') == 18);
         }
 
         [Fact]
