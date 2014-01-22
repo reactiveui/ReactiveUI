@@ -11,11 +11,6 @@ using Splat;
 
 namespace ReactiveUI
 {
-    public interface ISupportsActivation
-    {
-        ViewModelActivator Activator { get; }
-    }
-
     public class ViewModelActivator : IDisposable
     {
         readonly Func<IEnumerable<IDisposable>> block;
@@ -41,12 +36,6 @@ namespace ReactiveUI
         {
             Interlocked.Exchange(ref activationHandle, Disposable.Empty).Dispose();
         }
-    }
-
-    public interface IActivationForViewFetcher
-    {
-        int GetAffinityForView(Type view);
-        Tuple<IObservable<Unit>, IObservable<Unit>> GetActivationForView(IViewFor view);
     }
 
     public static class ViewForMixins
