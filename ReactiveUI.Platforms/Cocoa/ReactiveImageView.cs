@@ -26,7 +26,7 @@ using MonoMac.AppKit;
 
 namespace ReactiveUI.Cocoa
 {
-    public abstract class ReactiveImageView : NSImageView, IReactiveNotifyPropertyChanged, IHandleObservableErrors, IReactiveExtension
+    public abstract class ReactiveImageView : NSImageView, IReactiveNotifyPropertyChanged, IHandleObservableErrors, IReactiveObjectExtension
     {
         public ReactiveImageView(RectangleF frame) : base(frame) { this.setupReactiveExtension(); }
         public ReactiveImageView(IntPtr handle) : base(handle) { this.setupReactiveExtension(); }
@@ -42,7 +42,7 @@ namespace ReactiveUI.Cocoa
         [field:IgnoreDataMember]
         public event PropertyChangingEventHandler PropertyChanging;
 
-        void IReactiveExtension.RaisePropertyChanging(PropertyChangingEventArgs args) {
+        void IReactiveObjectExtension.RaisePropertyChanging(PropertyChangingEventArgs args) {
             var handler = PropertyChanging;
             if (handler != null) {
                 handler(this, args);
@@ -52,7 +52,7 @@ namespace ReactiveUI.Cocoa
         [field:IgnoreDataMember]
         public event PropertyChangedEventHandler PropertyChanged;
 
-        void IReactiveExtension.RaisePropertyChanged(PropertyChangedEventArgs args) {
+        void IReactiveObjectExtension.RaisePropertyChanged(PropertyChangedEventArgs args) {
             var handler = PropertyChanged;
             if (handler != null) {
                 handler(this, args);

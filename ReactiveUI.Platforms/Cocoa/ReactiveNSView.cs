@@ -28,7 +28,7 @@ namespace ReactiveUI.Cocoa
     /// This is an View that is both an NSView and has ReactiveObject powers 
     /// (i.e. you can call RaiseAndSetIfChanged)
     /// </summary>
-    public class ReactiveView : NSView, IReactiveNotifyPropertyChanged, IHandleObservableErrors, IReactiveExtension
+    public class ReactiveView : NSView, IReactiveNotifyPropertyChanged, IHandleObservableErrors, IReactiveObjectExtension
     {
         protected ReactiveView() : base()
         {
@@ -58,7 +58,7 @@ namespace ReactiveUI.Cocoa
         [field:IgnoreDataMember]
         public event PropertyChangingEventHandler PropertyChanging;
 
-        void IReactiveExtension.RaisePropertyChanging(PropertyChangingEventArgs args) {
+        void IReactiveObjectExtension.RaisePropertyChanging(PropertyChangingEventArgs args) {
             var handler = PropertyChanging;
             if (handler != null) {
                 handler(this, args);
@@ -68,7 +68,7 @@ namespace ReactiveUI.Cocoa
         [field:IgnoreDataMember]
         public event PropertyChangedEventHandler PropertyChanged;
 
-        void IReactiveExtension.RaisePropertyChanged(PropertyChangedEventArgs args) {
+        void IReactiveObjectExtension.RaisePropertyChanged(PropertyChangedEventArgs args) {
             var handler = PropertyChanged;
             if (handler != null) {
                 handler(this, args);
