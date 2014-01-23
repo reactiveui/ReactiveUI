@@ -11,7 +11,7 @@ using Splat;
 
 namespace ReactiveUI
 {
-    public class ViewModelActivator : IDisposable
+    public class ViewModelActivator
     {
         readonly Func<IEnumerable<IDisposable>> block;
         IDisposable activationHandle = Disposable.Empty;
@@ -24,15 +24,12 @@ namespace ReactiveUI
         public IDisposable Activate()
         {
             var disp = new CompositeDisposable(block());
-
             Interlocked.Exchange(ref activationHandle, disp).Dispose();
 
-            return Disposable.Create(() => {
-                Interlocked.Exchange(ref activationHandle, Disposable.Empty).Dispose();
-            });
+            return Disposable.Create(Deactivate);
         }
 
-        public void Dispose()
+        public void Deactivate()
         {
             Interlocked.Exchange(ref activationHandle, Disposable.Empty).Dispose();
         }
@@ -40,14 +37,14 @@ namespace ReactiveUI
 
     public static class ViewForMixins
     {
-        public static void WhenActivated(this ISupportsActivation This, out ViewModelActivator activator, Func<IEnumerable<IDisposable>> block)
+        public static ViewModelActivator WhenActivated(this ISupportsActivation This, Func<IEnumerable<IDisposable>> block)
         {
-            activator = new ViewModelActivator(block);
+            return new ViewModelActivator(block);
         }
 
-        public static void WhenActivated(this ISupportsActivation This, out ViewModelActivator activator, Action<Action<IDisposable>> block)
+        public static ViewModelActivator WhenActivated(this ISupportsActivation This, Action<Action<IDisposable>> block)
         {
-            activator = new ViewModelActivator(() => {
+            return new ViewModelActivator(() => {
                 var ret = new List<IDisposable>();
                 block(ret.Add);
                 return ret;
