@@ -446,8 +446,8 @@ namespace ReactiveUI
 
     public interface ICanActivate
     {
-        public IObservable<Unit> Activated { get; }
-        public IObservable<Unit> Deactivated { get; }
+        IObservable<Unit> Activated { get; }
+        IObservable<Unit> Deactivated { get; }
     }
 
     /// <summary>
