@@ -9,9 +9,9 @@ using System.ComponentModel;
 using Splat;
 using System.Collections.Generic;
 
-namespace ReactiveUI.Cocoa {
+namespace ReactiveUI {
 
-    public interface IReactiveExtension : IEnableLogger {
+    public interface IReactiveObjectExtension : IEnableLogger {
         event PropertyChangingEventHandler PropertyChanging;
         event PropertyChangedEventHandler PropertyChanged;
 
@@ -20,21 +20,21 @@ namespace ReactiveUI.Cocoa {
     }
 
     public static class IReactiveExtensionExtensions {
-        static ConditionalWeakTable<IReactiveExtension, ExtensionState> state = new ConditionalWeakTable<IReactiveExtension, ExtensionState>();
+        static ConditionalWeakTable<IReactiveObjectExtension, ExtensionState> state = new ConditionalWeakTable<IReactiveObjectExtension, ExtensionState>();
 
-        internal static void setupReactiveExtension(this IReactiveExtension This) {
+        internal static void setupReactiveExtension(this IReactiveObjectExtension This) {
             state.GetOrCreateValue(This);
         }
 
-        internal static IObservable<IObservedChange<object, object>> getChangedObservable(this IReactiveExtension This) {
+        internal static IObservable<IObservedChange<object, object>> getChangedObservable(this IReactiveObjectExtension This) {
             return state.GetOrCreateValue(This).ChangedSubject;
         }
 
-        internal static IObservable<IObservedChange<object, object>> getChangingObservable(this IReactiveExtension This) {
+        internal static IObservable<IObservedChange<object, object>> getChangingObservable(this IReactiveObjectExtension This) {
             return state.GetOrCreateValue(This).ChangingSubject;
         }
 
-        internal static IObservable<Exception> getThrownExceptionsObservable(this IReactiveExtension This) {
+        internal static IObservable<Exception> getThrownExceptionsObservable(this IReactiveObjectExtension This) {
             return state.GetOrCreateValue(This).ThrownExceptions;
         }
 
@@ -45,14 +45,14 @@ namespace ReactiveUI.Cocoa {
         /// </summary>
         /// <returns>An object that, when disposed, reenables change
         /// notifications.</returns>
-        internal static IDisposable suppressChangeNotifications(this IReactiveExtension This)
+        internal static IDisposable suppressChangeNotifications(this IReactiveObjectExtension This)
         {
             var s = state.GetOrCreateValue(This);
             Interlocked.Increment(ref s.ChangeNotificationsSuppressed);
             return Disposable.Create(() => Interlocked.Decrement(ref s.ChangeNotificationsSuppressed));
         }
 
-        internal static void raisePropertyChanging(this IReactiveExtension This, string propertyName)
+        internal static void raisePropertyChanging(this IReactiveObjectExtension This, string propertyName)
         {
             Contract.Requires(propertyName != null);
 
@@ -68,7 +68,7 @@ namespace ReactiveUI.Cocoa {
             }, s.ChangingSubject);
         }
 
-        internal static void raisePropertyChanged(this IReactiveExtension This, string propertyName)
+        internal static void raisePropertyChanged(this IReactiveObjectExtension This, string propertyName)
         {
             Contract.Requires(propertyName != null);
 
@@ -88,13 +88,13 @@ namespace ReactiveUI.Cocoa {
             }, s.ChangedSubject);
         }
 
-        internal static bool areChangeNotificationsEnabled(this IReactiveExtension This) {
+        internal static bool areChangeNotificationsEnabled(this IReactiveObjectExtension This) {
             var s = state.GetOrCreateValue(This);
 
             return (Interlocked.Read(ref s.ChangeNotificationsSuppressed) == 0);
         }
 
-        internal static void notifyObservable<T>(this IReactiveExtension This, T item, Subject<T> subject)
+        internal static void notifyObservable<T>(this IReactiveObjectExtension This, T item, Subject<T> subject)
         {
             var s = state.GetOrCreateValue(This);
 
@@ -120,11 +120,11 @@ namespace ReactiveUI.Cocoa {
         /// <param name="propertyName">The name of the property, usually 
         /// automatically provided through the CallerMemberName attribute.</param>
         /// <returns>The newly set value, normally discarded.</returns>
-        public static TRet RaiseAndSetIfChanged<TRet>(
-            this IReactiveExtension This,
+        public static TRet RaiseAndSetIfChanged<TObj, TRet>(
+            this TObj This,
             ref TRet backingField,
             TRet newValue,
-            [CallerMemberName] string propertyName = null)
+            [CallerMemberName] string propertyName = null) where TObj : IReactiveObjectExtension
         {
             Contract.Requires(propertyName != null);
 
@@ -147,7 +147,7 @@ namespace ReactiveUI.Cocoa {
         /// A string representing the name of the property that has been changed.
         /// Leave <c>null</c> to let the runtime set to caller member name.
         /// </param>
-        public static void RaisePropertyChanged(this IReactiveExtension This, [CallerMemberName] string propertyName = null)
+        public static void RaisePropertyChanged(this IReactiveObjectExtension This, [CallerMemberName] string propertyName = null)
         {
             This.raisePropertyChanged(propertyName);
         }
@@ -161,7 +161,7 @@ namespace ReactiveUI.Cocoa {
         /// A string representing the name of the property that has been changed.
         /// Leave <c>null</c> to let the runtime set to caller member name.
         /// </param>
-        public static void RaisePropertyChanging(this IReactiveExtension This, [CallerMemberName] string propertyName = null)
+        public static void RaisePropertyChanging(this IReactiveObjectExtension This, [CallerMemberName] string propertyName = null)
         {
             This.raisePropertyChanging(propertyName);
         }
