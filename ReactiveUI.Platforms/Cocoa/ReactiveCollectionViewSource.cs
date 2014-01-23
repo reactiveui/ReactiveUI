@@ -98,9 +98,9 @@ namespace ReactiveUI.Cocoa
             set {
                 if (commonSource.SectionInfo == value)  return;
 
-                raisePropertyChanging("Data");
+                this.raisePropertyChanging("Data");
                 commonSource.SectionInfo = value;
-                raisePropertyChanged("Data");
+                this.raisePropertyChanged("Data");
             }
         }
 
@@ -146,7 +146,6 @@ namespace ReactiveUI.Cocoa
             base.Dispose(disposing);
         }
 
-        [field:IgnoreDataMember]
         public event PropertyChangingEventHandler PropertyChanging;
 
         void IReactiveObjectExtension.RaisePropertyChanging(PropertyChangingEventArgs args) {
@@ -156,7 +155,6 @@ namespace ReactiveUI.Cocoa
             }
         }
 
-        [field:IgnoreDataMember]
         public event PropertyChangedEventHandler PropertyChanged;
 
         void IReactiveObjectExtension.RaisePropertyChanged(PropertyChangedEventArgs args) {
@@ -170,7 +168,6 @@ namespace ReactiveUI.Cocoa
         /// Represents an Observable that fires *before* a property is about to
         /// be changed.
         /// </summary>
-        [IgnoreDataMember]
         public IObservable<IObservedChange<object, object>> Changing {
             get { return this.getChangingObservable(); }
         }
@@ -178,16 +175,11 @@ namespace ReactiveUI.Cocoa
         /// <summary>
         /// Represents an Observable that fires *after* a property has changed.
         /// </summary>
-        [IgnoreDataMember]
         public IObservable<IObservedChange<object, object>> Changed {
             get { return this.getChangedObservable(); }
         }
 
-        [IgnoreDataMember]
         public IObservable<Exception> ThrownExceptions { get { return this.getThrownExceptionsObservable(); } }
-
-        [OnDeserialized]
-        void setupRxObj(StreamingContext sc) { setupRxObj(); }
 
         void setupRxObj()
         {
