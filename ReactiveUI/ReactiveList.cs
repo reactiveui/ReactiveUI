@@ -711,30 +711,30 @@ namespace ReactiveUI
             set { SetItem(index, value); }
         }
 
-        public int Add(object value)
+        int IList.Add(object value)
         {
             Add((T)value);
             return Count - 1;
         }
 
-        public bool Contains(object value)
+        bool IList.Contains(object value)
         {
             return IsCompatibleObject(value) && Contains((T)value);
         }
 
-        public int IndexOf(object value)
+        int IList.IndexOf(object value)
         {
             return IsCompatibleObject(value) ? IndexOf((T)value) : -1;
         }
 
-        public void Insert(int index, object value)
+        void IList.Insert(int index, object value)
         {
             Insert(index, (T)value);
         }
 
-        public bool IsFixedSize { get { return false; } }
+        bool IList.IsFixedSize { get { return false; } }
 
-        public void Remove(object value)
+        void IList.Remove(object value)
         {
             if (IsCompatibleObject(value)) Remove((T)value);
         }
@@ -745,14 +745,14 @@ namespace ReactiveUI
             set { this[index] = (T)value; }
         }
 
-        public void CopyTo(Array array, int index)
+        void ICollection.CopyTo(Array array, int index)
         {
             ((IList)_inner).CopyTo(array, index);
         }
 
-        public bool IsSynchronized { get { return false; } }
+        bool ICollection.IsSynchronized { get { return false; } }
 
-        public object SyncRoot { get { return this; } }
+        object ICollection.SyncRoot { get { return this; } }
 
         private static bool IsCompatibleObject(object value)
         {
@@ -768,7 +768,7 @@ namespace ReactiveUI
         int To { get; }
     }
 
-    public class MoveInfo<T> : IMoveInfo<T>
+    internal class MoveInfo<T> : IMoveInfo<T>
     {
         public IEnumerable<T> MovedItems { get; protected set; }
         public int From { get; protected set; }
