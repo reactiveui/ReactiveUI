@@ -54,8 +54,7 @@ namespace ReactiveUI.Cocoa
         {
             this.setupReactiveExtension();
         }
-                
-        [field:IgnoreDataMember]
+
         public event PropertyChangingEventHandler PropertyChanging;
 
         void IReactiveObjectExtension.RaisePropertyChanging(PropertyChangingEventArgs args) {
@@ -65,7 +64,6 @@ namespace ReactiveUI.Cocoa
             }
         }
 
-        [field:IgnoreDataMember]
         public event PropertyChangedEventHandler PropertyChanged;
 
         void IReactiveObjectExtension.RaisePropertyChanged(PropertyChangedEventArgs args) {
@@ -79,7 +77,6 @@ namespace ReactiveUI.Cocoa
         /// Represents an Observable that fires *before* a property is about to
         /// be changed.         
         /// </summary>
-        [IgnoreDataMember]
         public IObservable<IObservedChange<object, object>> Changing {
             get { return this.getChangingObservable(); }
         }
@@ -87,13 +84,9 @@ namespace ReactiveUI.Cocoa
         /// <summary>
         /// Represents an Observable that fires *after* a property has changed.
         /// </summary>
-        [IgnoreDataMember]
         public IObservable<IObservedChange<object, object>> Changed {
             get { return this.getChangedObservable(); }
         }
-
-        [OnDeserialized]
-        void setupRxObj(StreamingContext sc) { this.setupReactiveExtension(); }
 
         /// <summary>
         /// When this method is called, an object will not fire change
@@ -107,7 +100,6 @@ namespace ReactiveUI.Cocoa
             return this.suppressChangeNotifications();
         }
 
-        [IgnoreDataMember]
         public IObservable<Exception> ThrownExceptions { get { return this.getThrownExceptionsObservable(); } }
     }
 }
