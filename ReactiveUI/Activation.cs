@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -91,5 +92,20 @@ namespace ReactiveUI
                         return (score > acc.Item1) ? Tuple.Create(score, x) : acc;
                     }).Item2;
             }, RxApp.SmallCacheLimit);
+    }
+
+    public class CanActivateViewFetcher : IActivationForViewFetcher
+    {
+        public int GetAffinityForView(Type view)
+        {
+            return (typeof(ICanActivate).GetTypeInfo().IsAssignableFrom(view.GetType().GetTypeInfo())) ?
+                10 : 0;
+        }
+
+        public Tuple<IObservable<Unit>, IObservable<Unit>> GetActivationForView(IViewFor view)
+        {
+            var ca = view as ICanActivate;
+            return Tuple.Create(ca.Activated, ca.Deactivated);
+        }
     }
 }
