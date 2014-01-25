@@ -18,10 +18,11 @@ using MonoTouch.Foundation;
 using MonoTouch.UIKit;
 using NSTableViewController = MonoTouch.UIKit.UITableViewController;
 using NSTableViewStyle = MonoTouch.UIKit.UITableViewStyle;
+using System.Reactive;
 
 namespace ReactiveUI.Cocoa
 {
-    public abstract class ReactiveTableViewController : NSTableViewController, IReactiveNotifyPropertyChanged, IHandleObservableErrors, IReactiveObjectExtension
+    public abstract class ReactiveTableViewController : NSTableViewController, IReactiveNotifyPropertyChanged, IHandleObservableErrors, IReactiveObjectExtension, ICanActivate
     {
         protected ReactiveTableViewController(NSTableViewStyle withStyle) : base(withStyle) { setupRxObj(); }
         protected ReactiveTableViewController(string nibName, NSBundle bundle) : base(nibName, bundle) { setupRxObj(); }
@@ -82,6 +83,23 @@ namespace ReactiveUI.Cocoa
         public IDisposable SuppressChangeNotifications()
         {
             return this.suppressChangeNotifications();
+        }
+
+        Subject<Unit> activated = new Subject<Unit>();
+        public IObservable<Unit> Activated { get { return activated; } }
+        Subject<Unit> deactivated = new Subject<Unit>();
+        public IObservable<Unit> Deactivated { get { return deactivated; } }
+
+        public override void ViewDidLoad()
+        {
+            base.ViewDidLoad();
+            activated.OnNext(Unit.Default);
+        }
+
+        public override void ViewDidUnload()
+        {
+            base.ViewDidUnload();
+            deactivated.OnNext(Unit.Default);
         }
     }
 }
