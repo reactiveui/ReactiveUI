@@ -12,6 +12,7 @@ using System.Diagnostics.Contracts;
 using System.Runtime.CompilerServices;
 using System.Collections.Generic;
 using Splat;
+using System.Reactive;
 
 #if UIKIT
 using MonoTouch.UIKit;
@@ -28,7 +29,7 @@ namespace ReactiveUI.Cocoa
     /// This is an View that is both an NSView and has ReactiveObject powers 
     /// (i.e. you can call RaiseAndSetIfChanged)
     /// </summary>
-    public class ReactiveView : NSView, IReactiveNotifyPropertyChanged, IHandleObservableErrors, IReactiveObjectExtension
+    public class ReactiveView : NSView, IReactiveNotifyPropertyChanged, IHandleObservableErrors, IReactiveObjectExtension, ICanActivate
     {
         protected ReactiveView() : base()
         {
@@ -103,5 +104,20 @@ namespace ReactiveUI.Cocoa
         }
 
         public IObservable<Exception> ThrownExceptions { get { return this.getThrownExceptionsObservable(); } }
+        
+        Subject<Unit> activated = new Subject<Unit>();
+        public IObservable<Unit> Activated { get { return activated; } }
+        Subject<Unit> deactivated = new Subject<Unit>();
+        public IObservable<Unit> Deactivated { get { return deactivated; } }
+
+#if UIKIT
+        public override void WillMoveToSuperview(NSView newsuper)
+#else
+        public override void ViewWillMoveToSuperview(NSView newsuper)
+#endif
+        {
+            base.WillMoveToSuperview(newsuper);
+            RxApp.MainThreadScheduler.Schedule(() => (newsuper != null ? activated : deactivated).OnNext(Unit.Default));
+        }
     }
 }
