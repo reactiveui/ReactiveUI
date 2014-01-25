@@ -9,9 +9,10 @@ using System.ComponentModel;
 using Splat;
 using System.Collections.Generic;
 
-namespace ReactiveUI {
-
-    public interface IReactiveObjectExtension : IEnableLogger {
+namespace ReactiveUI 
+{
+    public interface IReactiveObjectExtension : IEnableLogger 
+    {
         event PropertyChangingEventHandler PropertyChanging;
         event PropertyChangedEventHandler PropertyChanged;
 
@@ -19,7 +20,8 @@ namespace ReactiveUI {
         void RaisePropertyChanged(PropertyChangedEventArgs args);
     }
 
-    public static class IReactiveExtensionExtensions {
+    public static class IReactiveExtensionExtensions 
+    {
         static ConditionalWeakTable<IReactiveObjectExtension, ExtensionState> state = new ConditionalWeakTable<IReactiveObjectExtension, ExtensionState>();
 
         internal static void setupReactiveExtension(this IReactiveObjectExtension This) {
@@ -88,7 +90,8 @@ namespace ReactiveUI {
             }, s.ChangedSubject);
         }
 
-        internal static bool areChangeNotificationsEnabled(this IReactiveObjectExtension This) {
+        internal static bool areChangeNotificationsEnabled(this IReactiveObjectExtension This) 
+	{
             var s = state.GetOrCreateValue(This);
 
             return (Interlocked.Read(ref s.ChangeNotificationsSuppressed) == 0);
@@ -166,8 +169,10 @@ namespace ReactiveUI {
             This.raisePropertyChanging(propertyName);
         }
 
-        class ExtensionState {
-            public ExtensionState() {
+        class ExtensionState 
+	{
+            public ExtensionState() 
+	    {
                 ChangingSubject = new Subject<IObservedChange<object, object>>();
                 ChangedSubject = new Subject<IObservedChange<object, object>>();
                 ThrownExceptions = new ScheduledSubject<Exception>(Scheduler.Immediate, RxApp.DefaultExceptionHandler);
