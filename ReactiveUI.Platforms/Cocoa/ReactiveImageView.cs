@@ -13,6 +13,7 @@ using System.Runtime.CompilerServices;
 using System.Collections.Generic;
 using System.Drawing;
 using Splat;
+using System.Reactive;
 
 #if UIKIT
 using MonoTouch.Foundation;
@@ -26,7 +27,7 @@ using MonoMac.AppKit;
 
 namespace ReactiveUI.Cocoa
 {
-    public abstract class ReactiveImageView : NSImageView, IReactiveNotifyPropertyChanged, IHandleObservableErrors, IReactiveObjectExtension
+    public abstract class ReactiveImageView : NSImageView, IReactiveNotifyPropertyChanged, IHandleObservableErrors, IReactiveObjectExtension, ICanActivate
     {
         public ReactiveImageView(RectangleF frame) : base(frame) { this.setupReactiveExtension(); }
         public ReactiveImageView(IntPtr handle) : base(handle) { this.setupReactiveExtension(); }
@@ -78,6 +79,21 @@ namespace ReactiveUI.Cocoa
         }
 
         public IObservable<Exception> ThrownExceptions { get { return this.getThrownExceptionsObservable(); } }
+        
+        Subject<Unit> activated = new Subject<Unit>();
+        public IObservable<Unit> Activated { get { return activated; } }
+        Subject<Unit> deactivated = new Subject<Unit>();
+        public IObservable<Unit> Deactivated { get { return deactivated; } }
+
+#if UIKIT
+        public override void WillMoveToSuperview(NSView newsuper)
+#else 
+        public override void ViewWillMoveToSuperview(NSView newsuper)
+#endif
+        {
+            base.WillMoveToSuperview(newsuper);
+            RxApp.MainThreadScheduler.Schedule(() => (newsuper != null ? activated : deactivated).OnNext(Unit.Default));
+        }
     }
 }
 
