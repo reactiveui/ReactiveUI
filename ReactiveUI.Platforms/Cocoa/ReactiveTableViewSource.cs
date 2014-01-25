@@ -231,7 +231,8 @@ namespace ReactiveUI.Cocoa
 
         public event PropertyChangingEventHandler PropertyChanging;
 
-        void IReactiveObjectExtension.RaisePropertyChanging(PropertyChangingEventArgs args) {
+        void IReactiveObjectExtension.RaisePropertyChanging(PropertyChangingEventArgs args) 
+	{
             var handler = PropertyChanging;
             if (handler != null) {
                 handler(this, args);
@@ -240,7 +241,8 @@ namespace ReactiveUI.Cocoa
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        void IReactiveObjectExtension.RaisePropertyChanged(PropertyChangedEventArgs args) {
+        void IReactiveObjectExtension.RaisePropertyChanged(PropertyChangedEventArgs args) 
+	{
             var handler = PropertyChanged;
             if (handler != null) {
                 handler(this, args);
