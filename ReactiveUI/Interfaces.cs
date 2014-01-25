@@ -285,6 +285,8 @@ namespace ReactiveUI
         /// Doing It Wrong.
         /// </summary>
         IObservable<Unit> ShouldReset { get; }
+
+        IDisposable SuppressChangeNotifications();
     }
 
     /// <summary>
@@ -338,6 +340,7 @@ namespace ReactiveUI
     /// </summary>
     public interface IReactiveCollection<out T> : IReactiveNotifyCollectionChanged<T>, IReactiveNotifyCollectionItemChanged<T>, IEnumerable<T>, INotifyPropertyChanging, INotifyPropertyChanged, IEnableLogger
     {
+        void Reset();
     }
 
     /// <summary>
@@ -386,6 +389,18 @@ namespace ReactiveUI
     /// </summary>
     public interface IReactiveList<T> : IReactiveCollection<T>, IList<T>
     {
+        void AddRange(IEnumerable<T> collection);
+
+        void InsertRange(int index, IEnumerable<T> collection);
+        void RemoveAll(IEnumerable<T> items);
+
+        void RemoveRange(int index, int count);
+
+        void Sort(IComparer<T> comparer = null);
+
+        void Sort(Comparison<T> comparison);
+
+        void Sort(int index, int count, IComparer<T> comparer);
     }
 
     // NB: This is just a name we can bolt extension methods to
