@@ -57,6 +57,12 @@ namespace ReactiveUI
             });
         }
 
+        public static IDisposable WithActivation(this ISupportsActivation This)
+        {
+            This.Activator.Activate();
+            return Disposable.Create(This.Activator.Deactivate);
+        }
+
         public static IDisposable WhenActivated(this IViewFor This, Func<IEnumerable<IDisposable>> block)
         {
             var activationFetcher = activationFetcherCache.Get(This.GetType());
