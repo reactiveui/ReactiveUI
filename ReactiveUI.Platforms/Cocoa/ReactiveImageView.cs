@@ -20,6 +20,7 @@ using MonoTouch.Foundation;
 using MonoTouch.UIKit;
 using NSImageView = MonoTouch.UIKit.UIImageView;
 using NSImage = MonoTouch.UIKit.UIImage;
+using NSView = MonoTouch.UIKit.UIView;
 #else
 using MonoMac.AppKit;
 #endif
