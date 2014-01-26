@@ -135,13 +135,13 @@
       <Link>Xaml\Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="ComponentModelTypeConverter.cs" />
+    <Compile Include="Xaml\WpfDependencyObjectObservableForProperty.cs" />
     <Compile Include="Xaml\ActivationForViewFetcher.cs" />
     <Compile Include="Xaml\PlatformOperations.cs" />
     <Compile Include="Registrations.cs" />
     <Compile Include="Xaml\AutoDataTemplateBindingHook.cs" />
     <Compile Include="Xaml\BindingTypeConverters.cs" />
     <Compile Include="Xaml\CreatesCommandBinding.cs" />
-    <Compile Include="Xaml\DependencyObjectObservableForProperty.cs" />
     <Compile Include="Xaml\Properties\AssemblyInfo.cs" />
     <Compile Include="Xaml\RoutedViewHost.cs" />
     <Compile Include="Xaml\TransitioningContentControl.cs" />
