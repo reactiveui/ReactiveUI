@@ -63,23 +63,30 @@ namespace ReactiveUI
 
             var activationEvents = activationFetcher.GetActivationForView(This);
 
-            var viewForDisp = new SerialDisposable();
-            var currentDisp = new SerialDisposable();
-
-            var currentVmOrNull = Observable.CombineLatest(This.WhenAnyValue(x => x.ViewModel), activationEvents.Item1, (vm, _) => vm)
-                    .Where(vm => vm is ISupportsActivation);
-
-            var currentVmUnsubscribedOnDispose = Observable.Merge(
-                    activationEvents.Item1.Select(_ => currentVmOrNull),
-                    activationEvents.Item2.Select(_ => Observable.Never<object>()))
-                .Switch();
+            var viewDisposable = new SerialDisposable();
 
             return new CompositeDisposable(
-                currentVmUnsubscribedOnDispose
-                    .Subscribe(vm => viewForDisp.Disposable = ((ISupportsActivation)vm).Activator.Activate()),
-                activationEvents.Item1.Subscribe(_ => currentDisp.Disposable = new CompositeDisposable(block())),
-                activationEvents.Item2.Subscribe(_ => currentDisp.Disposable = viewForDisp.Disposable = Disposable.Empty),
-                currentDisp, viewForDisp);
+                activationEvents.Item1.Subscribe(_ => viewDisposable.Disposable = new CompositeDisposable(block())),
+                activationEvents.Item2.Subscribe(_ => viewDisposable.Disposable = Disposable.Empty),
+                handleViewModelActivation(This, activationEvents),
+                viewDisposable);
+        }
+
+        static IDisposable handleViewModelActivation(IViewFor view, Tuple<IObservable<Unit>, IObservable<Unit>> activation)
+        {
+            var vm = view.ViewModel as ISupportsActivation;
+            var disp = new SerialDisposable() { Disposable = (vm != null ? vm.Activator.Activate() : Disposable.Empty) };
+
+            var latestVm = Observable.Merge(
+                    activation.Item1.Select(_ => view.WhenAnyValue(x => x.ViewModel)),
+                    activation.Item2.Select(_ => Observable.Never<object>().StartWith(default(object))))
+                .Switch()
+                .Select(x => x as ISupportsActivation);
+
+            return new CompositeDisposable(
+                disp,
+                latestVm.Subscribe(x => disp.Disposable = 
+                    (x != null ? x.Activator.Activate() : Disposable.Empty)));
         }
 
         public static IDisposable WhenActivated(this IViewFor This, Action<Action<IDisposable>> block)
