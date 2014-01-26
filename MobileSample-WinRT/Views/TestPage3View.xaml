@@ -5,12 +5,24 @@
     xmlns:local="using:MobileSample_WinRT.Views"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:xaml="using:ReactiveUI.Xaml"
     mc:Ignorable="d">
 
     <Grid Background="{StaticResource ApplicationPageBackgroundThemeBrush}">
         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
             <TextBlock Style="{StaticResource HeaderTextStyle}" Text="Page 3." HorizontalAlignment="Center"/>
             <TextBlock x:Name="RandomGuid" Style="{StaticResource BodyTextStyle}" Margin="0,16,0,0" FontSize="24" HorizontalAlignment="Center"/>
+            <ListView x:Name="ListOfTiles" Width="400" Height="550">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <xaml:ViewModelViewHost ViewModel="{Binding}" />
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+            <StackPanel Orientation="Horizontal">
+                <Button x:Name="PopulateList" Content="Populate List" />
+                <Button x:Name="ClearList" Content="Clear List" />
+            </StackPanel>
         </StackPanel>
     </Grid>
 </Page>

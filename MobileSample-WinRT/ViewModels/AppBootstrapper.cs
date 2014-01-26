@@ -33,6 +33,7 @@ namespace MobileSample_WinRT.ViewModels
             resolver.Register(() => new TestPage1View(), typeof(IViewFor<TestPage1ViewModel>), "FullScreenLandscape");
             resolver.Register(() => new TestPage2View(), typeof(IViewFor<TestPage2ViewModel>), "FullScreenLandscape");
             resolver.Register(() => new TestPage3View(), typeof(IViewFor<TestPage3ViewModel>), "FullScreenLandscape");
+            resolver.Register(() => new StringTileView(), typeof(IViewFor<StringTileViewModel>));
 
             resolver.Register(() => new TestPage1ViewModel(), typeof(TestPage1ViewModel));
             resolver.Register(() => new TestPage2ViewModel(), typeof(TestPage2ViewModel));
