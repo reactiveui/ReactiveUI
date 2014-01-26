@@ -66,9 +66,16 @@ namespace ReactiveUI
             var viewForDisp = new SerialDisposable();
             var currentDisp = new SerialDisposable();
 
+            var currentVmOrNull = Observable.CombineLatest(This.WhenAnyValue(x => x.ViewModel), activationEvents.Item1, (vm, _) => vm)
+                    .Where(vm => vm is ISupportsActivation);
+
+            var currentVmUnsubscribedOnDispose = Observable.Merge(
+                    activationEvents.Item1.Select(_ => currentVmOrNull),
+                    activationEvents.Item2.Select(_ => Observable.Never<object>()))
+                .Switch();
+
             return new CompositeDisposable(
-                Observable.CombineLatest(This.WhenAnyValue(x => x.ViewModel), activationEvents.Item1, (vm, _) => vm)
-                    .Where(vm => vm is ISupportsActivation)
+                currentVmUnsubscribedOnDispose
                     .Subscribe(vm => viewForDisp.Disposable = ((ISupportsActivation)vm).Activator.Activate()),
                 activationEvents.Item1.Subscribe(_ => currentDisp.Disposable = new CompositeDisposable(block())),
                 activationEvents.Item2.Subscribe(_ => currentDisp.Disposable = viewForDisp.Disposable = Disposable.Empty),
