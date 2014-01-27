@@ -19,7 +19,7 @@ namespace ReactiveUI.Xaml
     /// the ViewModel property and display it. This control is very useful
     /// inside a DataTemplate to display the View associated with a ViewModel.
     /// </summary>
-    public class ViewModelViewHost : TransitioningContentControl
+    public class ViewModelViewHost : TransitioningContentControl, IViewFor
     {
         /// <summary>
         /// The ViewModel to display
@@ -76,21 +76,24 @@ namespace ReactiveUI.Xaml
                 .StartWith(platform.GetOrientation())
                 .Select(x => x != null ? x.ToString() : default(string));
 
-            vmAndContract.Subscribe(x => {
-                if (x.ViewModel == null) {
-                    Content = DefaultContent;
-                    return;
-                }
+            this.WhenActivated(d => {
+                d(vmAndContract.Subscribe(x => {
+                    if (x.ViewModel == null) {
+                        Content = DefaultContent;
+                        return;
+                    }
 
-                var viewLocator = ViewLocator ?? ReactiveUI.ViewLocator.Current;
-                var view = viewLocator.ResolveView(x.ViewModel, x.Contract) ?? viewLocator.ResolveView(x.ViewModel, null);
+                    var viewLocator = ViewLocator ?? ReactiveUI.ViewLocator.Current;
+                    var view = viewLocator.ResolveView(x.ViewModel, x.Contract) ??
+                               viewLocator.ResolveView(x.ViewModel, null);
 
-                if (view == null) {
-                    throw new Exception(String.Format("Couldn't find view for '{0}'.", x.ViewModel));
-                }
+                    if (view == null) {
+                        throw new Exception(String.Format("Couldn't find view for '{0}'.", x.ViewModel));
+                    }
 
-                view.ViewModel = x.ViewModel;
-                Content = view;
+                    view.ViewModel = x.ViewModel;
+                    Content = view;
+                }));
             });
         }
 
