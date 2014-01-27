@@ -3,6 +3,7 @@ using ReactiveUI;
 using System.Runtime.Serialization;
 using System.ComponentModel;
 using System.Reflection;
+using System.Reactive;
 using System.Reactive.Subjects;
 using System.Reactive.Concurrency;
 using System.Linq;
@@ -20,7 +21,7 @@ using NSTableViewStyle = MonoTouch.UIKit.UITableViewStyle;
 
 namespace ReactiveUI.Cocoa
 {
-    public abstract class ReactiveTableViewController : NSTableViewController, IReactiveNotifyPropertyChanged, IHandleObservableErrors
+    public abstract class ReactiveTableViewController : NSTableViewController, IReactiveNotifyPropertyChanged, IHandleObservableErrors, ICanActivate
     {
         protected ReactiveTableViewController(NSTableViewStyle withStyle) : base(withStyle) { setupRxObj(); }
         protected ReactiveTableViewController(string nibName, NSBundle bundle) : base(nibName, bundle) { setupRxObj(); }
@@ -93,6 +94,24 @@ namespace ReactiveUI.Cocoa
             Interlocked.Increment(ref changeNotificationsSuppressed);
             return Disposable.Create(() => Interlocked.Decrement(ref changeNotificationsSuppressed));
         }
+
+        Subject<Unit> activated = new Subject<Unit>();
+        public IObservable<Unit> Activated { get { return activated; } }
+        Subject<Unit> deactivated = new Subject<Unit>();
+        public IObservable<Unit> Deactivated { get return deactivated; } }
+
+        public override void ViewDidLoad()
+        {
+            base.ViewDidLoad();
+            activated.OnNext(Unit.Default);
+        }
+
+        public override void ViewDidUnload()
+        {
+            base.ViewDidUnload();
+            deactivated.OnNext(Unit.Default);
+        }
+
 
         protected internal void raisePropertyChanging(string propertyName)
         {

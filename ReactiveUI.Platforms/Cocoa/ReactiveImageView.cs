@@ -3,6 +3,7 @@ using ReactiveUI;
 using System.Runtime.Serialization;
 using System.ComponentModel;
 using System.Reflection;
+using System.Reactive;
 using System.Reactive.Subjects;
 using System.Reactive.Concurrency;
 using System.Linq;
@@ -25,7 +26,7 @@ using MonoMac.AppKit;
 
 namespace ReactiveUI.Cocoa
 {
-    public abstract class ReactiveImageView : NSImageView, IReactiveNotifyPropertyChanged, IHandleObservableErrors
+    public abstract class ReactiveImageView : NSImageView, IReactiveNotifyPropertyChanged, IHandleObservableErrors, ICanActivate
     {
         public ReactiveImageView(RectangleF frame) : base(frame) { setupRxObj(); }
         public ReactiveImageView(IntPtr handle) : base(handle) { setupRxObj(); }
@@ -78,6 +79,21 @@ namespace ReactiveUI.Cocoa
 
         [IgnoreDataMember]
         public IObservable<Exception> ThrownExceptions { get { return thrownExceptions; } }
+
+        Subject<Unit> activated = new Subject<Unit>();
+        public IObservable<Unit> Activated { get { return activated; } }
+        Subject<Unit> deactivated = new Subject<Unit>();
+        public IObservable<Unit> Deactivated { get { return deactivated; } }
+
+#if UIKIT
+        public override void WillMoveToSuperview(NSView newsuper)
+#else
+        public override void ViewWillMoveToSuperview(NSView newsuper)
+#endif
+        {
+            base.WillMoveToSuperview(newsuper);
+            RxApp.MainThreadScheduler.Schedule(() => (newsuper != null ? activated : deactivated).OnNext(Unit.Default));
+        }
 
         [OnDeserialized]
         void setupRxObj(StreamingContext sc) { setupRxObj(); }
