@@ -1,0 +1,198 @@
+﻿using System;
+using System.Reactive;
+using System.Reactive.Disposables;
+using System.Reactive.Subjects;
+using Xunit;
+
+namespace ReactiveUI.Tests
+{
+    public class ActivatingViewModel : ReactiveObject, ISupportsActivation
+    {
+        public ViewModelActivator Activator { get; protected set; }
+
+        public int IsActiveCount { get; protected set; }
+
+        public ActivatingViewModel()
+        {
+            Activator = this.WhenActivated(d =>
+            {
+                IsActiveCount++;
+                d(Disposable.Create(() => IsActiveCount--));
+            });
+        }
+    }
+
+    public class ActivatingView : ReactiveObject, IViewFor<ActivatingViewModel>
+    {
+        ActivatingViewModel viewModel;
+        public ActivatingViewModel ViewModel
+        {
+            get { return viewModel; }
+            set { this.RaiseAndSetIfChanged(ref viewModel, value); }
+        }
+
+        object IViewFor.ViewModel
+        {
+            get { return ViewModel; }
+            set { ViewModel = (ActivatingViewModel)value; }
+        }
+
+        public ActivatingView()
+        {
+            this.WhenActivated(d =>
+            {
+                IsActiveCount++;
+                d(Disposable.Create(() => IsActiveCount--));
+            });
+        }
+
+        public int IsActiveCount { get; set; }
+
+        public Subject<Unit> Loaded = new Subject<Unit>();
+        public Subject<Unit> Unloaded = new Subject<Unit>();
+    }
+
+    public class ActivatingViewFetcher : IActivationForViewFetcher
+    {
+        public int GetAffinityForView(Type view)
+        {
+            return view == typeof(ActivatingView) ? 100 : 0;
+        }
+
+        public Tuple<IObservable<Unit>, IObservable<Unit>> GetActivationForView(IViewFor view)
+        {
+            var av = (ActivatingView)view;
+            return Tuple.Create<IObservable<Unit>, IObservable<Unit>>(av.Loaded, av.Unloaded);
+        }
+    }
+
+    public class ActivatingViewModelTests
+    {
+        [Fact]
+        public void PreviousActivationsGetTrashedOnDoubleActivate()
+        {
+            var fixture = new ActivatingViewModel();
+            Assert.Equal(0, fixture.IsActiveCount);
+
+            fixture.Activator.Activate();
+            Assert.Equal(1, fixture.IsActiveCount);
+
+            fixture.Activator.Activate();
+            Assert.Equal(1, fixture.IsActiveCount);
+
+            fixture.Activator.Deactivate();
+            Assert.Equal(0, fixture.IsActiveCount);
+        }
+    }
+
+    public class ActivatingViewTests
+    {
+        [Fact]
+        public void ActivatingViewSmokeTest()
+        {
+            var locator = new ModernDependencyResolver();
+            locator.InitializeResolver();
+            locator.Register(() => new ActivatingViewFetcher(), typeof(IActivationForViewFetcher));
+
+            using (locator.WithResolver())
+            {
+                var vm = new ActivatingViewModel();
+                var fixture = new ActivatingView();
+
+                fixture.ViewModel = vm;
+                Assert.Equal(0, vm.IsActiveCount);
+                Assert.Equal(0, fixture.IsActiveCount);
+
+                fixture.Loaded.OnNext(Unit.Default);
+                Assert.Equal(1, vm.IsActiveCount);
+                Assert.Equal(1, fixture.IsActiveCount);
+
+                fixture.Unloaded.OnNext(Unit.Default);
+                Assert.Equal(0, vm.IsActiveCount);
+                Assert.Equal(0, fixture.IsActiveCount);
+            }
+        }
+
+        [Fact]
+        public void NullingViewModelShouldDeactivateIt()
+        {
+            var locator = new ModernDependencyResolver();
+            locator.InitializeResolver();
+            locator.Register(() => new ActivatingViewFetcher(), typeof(IActivationForViewFetcher));
+
+            using (locator.WithResolver())
+            {
+                var vm = new ActivatingViewModel();
+                var fixture = new ActivatingView();
+
+                fixture.ViewModel = vm;
+                Assert.Equal(0, vm.IsActiveCount);
+                Assert.Equal(0, fixture.IsActiveCount);
+
+                fixture.Loaded.OnNext(Unit.Default);
+                Assert.Equal(1, vm.IsActiveCount);
+                Assert.Equal(1, fixture.IsActiveCount);
+
+                fixture.ViewModel = null;
+                Assert.Equal(0, vm.IsActiveCount);
+            }
+        }
+
+        [Fact]
+        public void SwitchingViewModelShouldDeactivateIt()
+        {
+            var locator = new ModernDependencyResolver();
+            locator.InitializeResolver();
+            locator.Register(() => new ActivatingViewFetcher(), typeof(IActivationForViewFetcher));
+
+            using (locator.WithResolver())
+            {
+                var vm = new ActivatingViewModel();
+                var fixture = new ActivatingView();
+
+                fixture.ViewModel = vm;
+                Assert.Equal(0, vm.IsActiveCount);
+                Assert.Equal(0, fixture.IsActiveCount);
+
+                fixture.Loaded.OnNext(Unit.Default);
+                Assert.Equal(1, vm.IsActiveCount);
+                Assert.Equal(1, fixture.IsActiveCount);
+
+                var newVm = new ActivatingViewModel();
+                Assert.Equal(0, newVm.IsActiveCount);
+
+                fixture.ViewModel = newVm;
+                Assert.Equal(0, vm.IsActiveCount);
+                Assert.Equal(1, newVm.IsActiveCount);
+            }
+        }
+
+        [Fact]
+        public void SettingViewModelAfterLoadedShouldLoadIt()
+        {
+            var locator = new ModernDependencyResolver();
+            locator.InitializeResolver();
+            locator.Register(() => new ActivatingViewFetcher(), typeof(IActivationForViewFetcher));
+
+            using (locator.WithResolver())
+            {
+                var vm = new ActivatingViewModel();
+                var fixture = new ActivatingView();
+
+                Assert.Equal(0, vm.IsActiveCount);
+                Assert.Equal(0, fixture.IsActiveCount);
+
+                fixture.Loaded.OnNext(Unit.Default);
+                Assert.Equal(1, fixture.IsActiveCount);
+
+                fixture.ViewModel = vm;
+                Assert.Equal(1, fixture.IsActiveCount);
+                Assert.Equal(1, vm.IsActiveCount);
+
+                fixture.Unloaded.OnNext(Unit.Default);
+                Assert.Equal(0, fixture.IsActiveCount);
+                Assert.Equal(0, vm.IsActiveCount);
+            }
+        }
+    }
+}

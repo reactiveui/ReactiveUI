@@ -448,6 +448,38 @@ namespace ReactiveUI
     }
 
     /// <summary>
+    /// Implement this interfaces for ViewModels that can respond to the
+    /// activation lifecycle of their associated View. This is a good place
+    /// to register UserError handlers
+    /// </summary>
+    public interface ISupportsActivation
+    {
+        /// <summary>
+        /// Create this using this.WhenActivated in the constructor of
+        /// your ViewModel.
+        /// </summary>
+        ViewModelActivator Activator { get; }
+    }
+
+    /// <summary>
+    /// Implement this on views which directly track their own activation/
+    /// deactivation status.
+    /// </summary>
+    public interface ICanActivate
+    {
+        /// <summary>
+        /// Fires OnNext() when the view is activated. This sequence should
+        /// never complete or error.
+        /// </summary>
+        IObservable<Unit> Activated { get; }
+        /// <summary>
+        /// Fires OnNext() when the view is deactivated. This sequence should
+        /// never complete or error.
+        /// </summary>
+        IObservable<Unit> Deactivated { get; } 
+    }
+
+    /// <summary>
     /// Allows an additional string to make view resolution more specific than just a type.
     /// </summary>
     public class ViewContractAttribute : Attribute
