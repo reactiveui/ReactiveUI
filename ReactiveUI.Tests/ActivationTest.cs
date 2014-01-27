@@ -26,6 +26,19 @@ namespace ReactiveUI.Tests
         }
     }
 
+    public class DerivedActivatingViewModel : ActivatingViewModel
+    {
+        public int IsActiveCountAlso { get; protected set; }
+
+        public DerivedActivatingViewModel()
+        {
+            Activator = this.WhenActivated(d => {
+                IsActiveCountAlso++;
+                d(Disposable.Create(() => IsActiveCountAlso--));
+            });
+        }
+    }
+
     public class ActivatingView : ReactiveObject, IViewFor<ActivatingViewModel>
     {
         ActivatingViewModel viewModel;
@@ -83,6 +96,26 @@ namespace ReactiveUI.Tests
 
             fixture.Activator.Deactivate();
             Assert.Equal(0, fixture.IsActiveCount);
+        }
+
+        [Fact]
+        public void DerivedActivationsDontGetStomped()
+        {
+            var fixture = new DerivedActivatingViewModel();
+            Assert.Equal(0, fixture.IsActiveCount);
+            Assert.Equal(0, fixture.IsActiveCountAlso);
+
+            fixture.Activator.Activate();
+            Assert.Equal(1, fixture.IsActiveCount);
+            Assert.Equal(1, fixture.IsActiveCountAlso);
+
+            fixture.Activator.Activate();
+            Assert.Equal(1, fixture.IsActiveCount);
+            Assert.Equal(1, fixture.IsActiveCountAlso);
+
+            fixture.Activator.Deactivate();
+            Assert.Equal(0, fixture.IsActiveCount);
+            Assert.Equal(0, fixture.IsActiveCountAlso);
         }
     }
 
