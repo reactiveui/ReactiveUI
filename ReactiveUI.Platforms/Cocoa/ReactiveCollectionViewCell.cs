@@ -4,6 +4,7 @@ using ReactiveUI;
 using System.Runtime.Serialization;
 using System.ComponentModel;
 using System.Reflection;
+using System.Reactive;
 using System.Reactive.Subjects;
 using System.Reactive.Concurrency;
 using System.Linq;
@@ -17,7 +18,7 @@ using MonoTouch.UIKit;
 
 namespace ReactiveUI.Cocoa
 {
-    public abstract class ReactiveCollectionViewCell : UICollectionViewCell, IReactiveNotifyPropertyChanged, IHandleObservableErrors
+    public abstract class ReactiveCollectionViewCell : UICollectionViewCell, IReactiveNotifyPropertyChanged, IHandleObservableErrors, ICanActivate
     {
         public ReactiveCollectionViewCell(IntPtr handle) : base (handle) { setupRxObj(); }
         public ReactiveCollectionViewCell(NSObjectFlag t) : base (t) { setupRxObj(); }
@@ -88,6 +89,17 @@ namespace ReactiveUI.Cocoa
         {
             Interlocked.Increment(ref changeNotificationsSuppressed);
             return Disposable.Create(() => Interlocked.Decrement(ref changeNotificationsSuppressed));
+        }
+
+        Subject<Unit> activated = new Subject<Unit>();
+        public IObservable<Unit> Activated { get { return activated; } }
+        Subject<Unit> deactivated = new Subject<Unit>();
+        public IObservable<Unit> Deactivated { get { return deactivated; } }
+
+        public override void WillMoveToSuperview(UIView newsuper)
+        {
+            base.WillMoveToSuperview(newsuper);
+            RxApp.MainThreadScheduler.Schedule(() => (newsuper != null ? activated : deactivated).OnNext(Unit.Default));
         }
 
         protected internal void raisePropertyChanging(string propertyName)
