@@ -12,21 +12,26 @@ using Splat;
 
 namespace ReactiveUI
 {
-    public class ViewModelActivator
+    public sealed class ViewModelActivator
     {
-        readonly Func<IEnumerable<IDisposable>> block;
+        readonly List<Func<IEnumerable<IDisposable>>> blocks;
         IDisposable activationHandle = Disposable.Empty;
 
-        public ViewModelActivator(Func<IEnumerable<IDisposable>> block)
+        public ViewModelActivator()
         {
-            this.block = block;
+            blocks = new List<Func<IEnumerable<IDisposable>>>();
+        }
+
+        internal void addActivationBlock(Func<IEnumerable<IDisposable>> block)
+        {
+            blocks.Add(block);
         }
 
         public IDisposable Activate()
         {
-            var disp = new CompositeDisposable(block());
-            Interlocked.Exchange(ref activationHandle, disp).Dispose();
+            var disp = new CompositeDisposable(blocks.SelectMany(x => x()));
 
+            Interlocked.Exchange(ref activationHandle, disp).Dispose();
             return Disposable.Create(Deactivate);
         }
 
@@ -38,33 +43,16 @@ namespace ReactiveUI
 
     public static class ViewForMixins
     {
-        public static ViewModelActivator WhenActivated(this ISupportsActivation This, Func<IEnumerable<IDisposable>> block)
+        public static void WhenActivated(this ISupportsActivation This, Func<IEnumerable<IDisposable>> block)
         {
-            var activator = This.Activator;
-
-            return new ViewModelActivator(() =>{
-                var list = block().ToList();
-
-                if (activator != null) {
-                    list.Add(activator.Activate());
-                }
-
-                return list;
-            });
+            This.Activator.addActivationBlock(block);
         }
 
-        public static ViewModelActivator WhenActivated(this ISupportsActivation This, Action<Action<IDisposable>> block)
+        public static void WhenActivated(this ISupportsActivation This, Action<Action<IDisposable>> block)
         {
-            var activator = This.Activator;
-
-            return new ViewModelActivator(() => {
+            This.Activator.addActivationBlock(() => {
                 var ret = new List<IDisposable>();
                 block(ret.Add);
-
-                if (activator != null) {
-                    ret.Add(activator.Activate());
-                }
-
                 return ret;
             });
         }
