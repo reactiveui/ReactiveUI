@@ -11,6 +11,7 @@ using Android.Widget;
 using System.Runtime.Serialization;
 using System.ComponentModel;
 using System.Reflection;
+using System.Reactive;
 using System.Reactive.Subjects;
 using System.Reactive.Concurrency;
 using System.Threading;
@@ -45,7 +46,7 @@ namespace ReactiveUI.Android
     /// This is an Activity that is both an Activity and has ReactiveObject powers 
     /// (i.e. you can call RaiseAndSetIfChanged)
     /// </summary>
-    public class ReactiveActivity : Activity, IReactiveNotifyPropertyChanged, IHandleObservableErrors
+    public class ReactiveActivity : Activity, IReactiveNotifyPropertyChanged, IHandleObservableErrors, ICanActivate
     {
         protected ReactiveActivity() 
         {
@@ -118,6 +119,24 @@ namespace ReactiveUI.Android
             Interlocked.Increment(ref changeNotificationsSuppressed);
             return Disposable.Create(() =>
                 Interlocked.Decrement(ref changeNotificationsSuppressed));
+        }
+
+        readonly Subject<Unit> activated = new Subject<Unit>();
+        public IObservable<Unit> Activated { get { return activated; } }
+
+        readonly Subject<Unit> deactivated = new Subject<Unit>();
+        public IObservable<Unit> Deactivated { get { return deactivated; } }
+
+        public override void OnPause()
+        {
+            base.OnPause();
+            deactivated.OnNext(Unit.Default);
+        }
+         
+        public override void OnResume()
+        {
+            base.OnResume();
+            activated.OnNext(Unit.Default);
         }
 
         protected internal void raisePropertyChanging(string propertyName)
