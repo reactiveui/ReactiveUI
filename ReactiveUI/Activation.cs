@@ -40,14 +40,31 @@ namespace ReactiveUI
     {
         public static ViewModelActivator WhenActivated(this ISupportsActivation This, Func<IEnumerable<IDisposable>> block)
         {
-            return new ViewModelActivator(block);
+            var activator = This.Activator;
+
+            return new ViewModelActivator(() =>{
+                var list = block().ToList();
+
+                if (activator != null) {
+                    list.Add(activator.Activate());
+                }
+
+                return list;
+            });
         }
 
         public static ViewModelActivator WhenActivated(this ISupportsActivation This, Action<Action<IDisposable>> block)
         {
+            var activator = This.Activator;
+
             return new ViewModelActivator(() => {
                 var ret = new List<IDisposable>();
                 block(ret.Add);
+
+                if (activator != null) {
+                    ret.Add(activator.Activate());
+                }
+
                 return ret;
             });
         }
