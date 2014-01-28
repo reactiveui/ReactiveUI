@@ -20,7 +20,7 @@
     <TargetFrameworkVersion />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <PlatformTarget>x86</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -59,6 +59,9 @@
     <Compile Include="ViewModels\TestPage2ViewModel.cs" />
     <Compile Include="ViewModels\TestPage3ViewModel.cs" />
     <Compile Include="ViewModels\TestPage1ViewModel.cs" />
+    <Compile Include="Views\StringTileView.xaml.cs">
+      <DependentUpon>StringTileView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\TestPage3View.xaml.cs">
       <DependentUpon>TestPage3View.xaml</DependentUpon>
     </Compile>
@@ -96,6 +99,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="MainPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\StringTileView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

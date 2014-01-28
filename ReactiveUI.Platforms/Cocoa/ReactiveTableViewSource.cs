@@ -232,7 +232,7 @@ namespace ReactiveUI.Cocoa
         public event PropertyChangingEventHandler PropertyChanging;
 
         void IReactiveObjectExtension.RaisePropertyChanging(PropertyChangingEventArgs args) 
-	{
+        {
             var handler = PropertyChanging;
             if (handler != null) {
                 handler(this, args);
@@ -242,7 +242,7 @@ namespace ReactiveUI.Cocoa
         public event PropertyChangedEventHandler PropertyChanged;
 
         void IReactiveObjectExtension.RaisePropertyChanged(PropertyChangedEventArgs args) 
-	{
+        {
             var handler = PropertyChanged;
             if (handler != null) {
                 handler(this, args);
@@ -311,8 +311,10 @@ namespace ReactiveUI.Cocoa
         {
             var source = new ReactiveTableViewSource(tableView);
             if (initSource != null) initSource(source);
+
             var bind = sectionsObservable.BindTo(source, x => x.Data);
             tableView.Source = source;
+
             return new CompositeDisposable(bind, source);
         }
 
@@ -339,15 +341,13 @@ namespace ReactiveUI.Cocoa
             where TCell : UITableViewCell
         {
             return sourceObservable
-                .Select(
-                    src => new[]
-                    {
-                        new TableSectionInformation<TCell>(
-                            src,
-                            cellKey,
-                            sizeHint,
-                            initializeCellAction)
-                    })
+                .Select(src => new[] {
+                    new TableSectionInformation<TCell>(
+                        src,
+                        cellKey,
+                        sizeHint,
+                        initializeCellAction),
+                })
                 .BindTo(tableView, initSource);
         }
 
@@ -376,6 +376,7 @@ namespace ReactiveUI.Cocoa
             var type = typeof(TCell);
             var cellKey = new NSString(type.ToString());
             tableView.RegisterClassForCellReuse(type, new NSString(cellKey));
+
             return sourceObservable
                 .BindTo(tableView, cellKey, sizeHint, initializeCellAction, initSource);
         }

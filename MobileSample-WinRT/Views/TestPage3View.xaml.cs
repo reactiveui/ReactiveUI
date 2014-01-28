@@ -23,7 +23,14 @@ namespace MobileSample_WinRT.Views
         public TestPage3View()
         {
             this.InitializeComponent();
-            this.OneWayBind(ViewModel, x => x.RandomGuid, x => x.RandomGuid.Text);
+
+            this.WhenActivated(d => {
+                d(this.OneWayBind(ViewModel, x => x.RandomGuid, x => x.RandomGuid.Text));
+                d(this.OneWayBind(ViewModel, x => x.ListOfTiles, x => x.ListOfTiles.ItemsSource));
+
+                d(this.BindCommand(ViewModel, x => x.PopulateList, x => x.PopulateList));
+                d(this.BindCommand(ViewModel, x => x.ClearList, x => x.ClearList));
+            });
         }
 
         public TestPage3ViewModel ViewModel {

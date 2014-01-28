@@ -32,8 +32,9 @@ namespace MobileSample_WinRT
         protected override void OnLaunched(LaunchActivatedEventArgs args)
         {
             Locator.CurrentMutable.Register(() => new AppBootstrapper(), typeof(IApplicationRootState));
-
             base.OnLaunched(args);
+
+            RxApp.MainThreadScheduler.GetType();
             var host = Locator.Current.GetService<ISuspensionHost>();
             host.SetupDefaultSuspendResume();
         }

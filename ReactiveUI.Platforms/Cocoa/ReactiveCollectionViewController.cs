@@ -16,10 +16,11 @@ using System.Drawing;
 using MonoTouch.Foundation;
 using MonoTouch.UIKit;
 using Splat;
+using System.Reactive;
 
 namespace ReactiveUI.Cocoa
 {
-    public abstract class ReactiveCollectionViewController : UICollectionViewController, IReactiveNotifyPropertyChanged, IHandleObservableErrors, IReactiveObjectExtension
+    public abstract class ReactiveCollectionViewController : UICollectionViewController, IReactiveNotifyPropertyChanged, IHandleObservableErrors, IReactiveObjectExtension, ICanActivate
     {
         protected ReactiveCollectionViewController(UICollectionViewLayout withLayout) : base(withLayout) { setupRxObj(); }
         protected ReactiveCollectionViewController(string nibName, NSBundle bundle) : base(nibName, bundle) { setupRxObj(); }
@@ -31,7 +32,7 @@ namespace ReactiveUI.Cocoa
         public event PropertyChangingEventHandler PropertyChanging;
 
         void IReactiveObjectExtension.RaisePropertyChanging(PropertyChangingEventArgs args) 
-	{
+        {
             var handler = PropertyChanging;
             if (handler != null) {
                 handler(this, args);
@@ -40,7 +41,8 @@ namespace ReactiveUI.Cocoa
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        void IReactiveObjectExtension.RaisePropertyChanged(PropertyChangedEventArgs args) {
+        void IReactiveObjectExtension.RaisePropertyChanged(PropertyChangedEventArgs args) 
+        {
             var handler = PropertyChanged;
             if (handler != null) {
                 handler(this, args);
@@ -79,6 +81,23 @@ namespace ReactiveUI.Cocoa
         public IDisposable SuppressChangeNotifications()
         {
             return this.suppressChangeNotifications();
+        }
+                
+        Subject<Unit> activated = new Subject<Unit>();
+        public IObservable<Unit> Activated { get { return activated; } }
+        Subject<Unit> deactivated = new Subject<Unit>();
+        public IObservable<Unit> Deactivated { get { return deactivated; } }
+
+        public override void ViewDidLoad()
+        {
+            base.ViewDidLoad();
+            activated.OnNext(Unit.Default);
+        }
+
+        public override void ViewDidUnload()
+        {
+            base.ViewDidUnload();
+            deactivated.OnNext(Unit.Default);
         }
     }
 }

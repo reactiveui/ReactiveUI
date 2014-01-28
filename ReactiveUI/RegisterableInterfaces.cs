@@ -312,6 +312,12 @@ namespace ReactiveUI
         IViewFor ResolveView<T>(T viewModel, string contract = null) where T : class;
     }
 
+    public interface IActivationForViewFetcher
+    {
+        int GetAffinityForView(Type view);
+        Tuple<IObservable<Unit>, IObservable<Unit>> GetActivationForView(IViewFor view);
+    }
+
     internal interface IPlatformOperations
     {
         string GetOrientation();

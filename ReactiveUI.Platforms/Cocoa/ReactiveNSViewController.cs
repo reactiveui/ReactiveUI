@@ -12,6 +12,7 @@ using System.Diagnostics.Contracts;
 using System.Runtime.CompilerServices;
 using System.Collections.Generic;
 using Splat;
+using System.Reactive;
 
 #if UIKIT
 using MonoTouch.UIKit;
@@ -58,7 +59,7 @@ namespace ReactiveUI.Cocoa
         public event PropertyChangingEventHandler PropertyChanging;
 
         void IReactiveObjectExtension.RaisePropertyChanging(PropertyChangingEventArgs args) 
-	{
+        {
             var handler = PropertyChanging;
             if (handler != null) {
                 handler(this, args);
@@ -68,7 +69,7 @@ namespace ReactiveUI.Cocoa
         public event PropertyChangedEventHandler PropertyChanged;
 
         void IReactiveObjectExtension.RaisePropertyChanged(PropertyChangedEventArgs args) 
-	{
+        {
             var handler = PropertyChanged;
             if (handler != null) {
                 handler(this, args);
@@ -102,6 +103,23 @@ namespace ReactiveUI.Cocoa
         public IDisposable SuppressChangeNotifications()
         {
             return this.suppressChangeNotifications();
+        }
+                
+        Subject<Unit> activated = new Subject<Unit>();
+        public IObservable<Unit> Activated { get { return activated; } }
+        Subject<Unit> deactivated = new Subject<Unit>();
+        public IObservable<Unit> Deactivated { get { return deactivated; } }
+
+        public override void ViewDidLoad()
+        {
+            base.ViewDidLoad();
+            activated.OnNext(Unit.Default);
+        }
+
+        public override void ViewDidUnload()
+        {
+            base.ViewDidUnload();
+            deactivated.OnNext(Unit.Default);
         }
     }
 }
