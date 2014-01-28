@@ -23,7 +23,7 @@ namespace ReactiveUI.Xaml
     /// the View and wire up the ViewModel whenever a new ViewModel is
     /// navigated to. Put this control as the only control in your Window.
     /// </summary>
-    public class RoutedViewHost : TransitioningContentControl
+    public class RoutedViewHost : TransitioningContentControl, IViewFor
     {
         IDisposable _inner = null;
 
@@ -57,6 +57,9 @@ namespace ReactiveUI.Xaml
 
         public IViewLocator ViewLocator { get; set; }
 
+        // NB: This is just a scam to get WhenActivated
+        object IViewFor.ViewModel { get; set; }
+
         public RoutedViewHost()
         {
             HorizontalContentAlignment = HorizontalAlignment.Stretch;
@@ -83,25 +86,27 @@ namespace ReactiveUI.Xaml
                 this.WhenAnyObservable(x => x.ViewContractObservable),
                 (vm, contract) => Tuple.Create(vm, contract));
 
-            // NB: The DistinctUntilChanged is useful because most views in 
-            // WinRT will end up getting here twice - once for configuring
-            // the RoutedViewHost's ViewModel, and once on load via SizeChanged
-            vmAndContract.DistinctUntilChanged().Subscribe(x => {
-                if (x.Item1 == null) {
-                    Content = DefaultContent;
-                    return;
-                }
+            this.WhenActivated(d => {
+                // NB: The DistinctUntilChanged is useful because most views in 
+                // WinRT will end up getting here twice - once for configuring
+                // the RoutedViewHost's ViewModel, and once on load via SizeChanged
+                d(vmAndContract.DistinctUntilChanged().Subscribe(x => {
+                    if (x.Item1 == null) {
+                        Content = DefaultContent;
+                        return;
+                    }
 
-                var viewLocator = ViewLocator ?? ReactiveUI.ViewLocator.Current;
-                var view = viewLocator.ResolveView(x.Item1, x.Item2) ?? viewLocator.ResolveView(x.Item1, null);
+                    var viewLocator = ViewLocator ?? ReactiveUI.ViewLocator.Current;
+                    var view = viewLocator.ResolveView(x.Item1, x.Item2) ?? viewLocator.ResolveView(x.Item1, null);
 
-                if (view == null) {
-                    throw new Exception(String.Format("Couldn't find view for '{0}'.", x.Item1));
-                }
+                    if (view == null) {
+                        throw new Exception(String.Format("Couldn't find view for '{0}'.", x.Item1));
+                    }
 
-                view.ViewModel = x.Item1;
-                Content = view;
-            }, ex => RxApp.DefaultExceptionHandler.OnNext(ex));
+                    view.ViewModel = x.Item1;
+                    Content = view;
+                }, ex => RxApp.DefaultExceptionHandler.OnNext(ex)));
+            });
         }
     }
 }
