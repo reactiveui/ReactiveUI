@@ -42,6 +42,7 @@
       <Link>Xaml\Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Registrations.cs" />
+    <Compile Include="Xaml\ActivationForViewFetcher.cs" />
     <Compile Include="Xaml\AutoDataTemplateBindingHook.cs" />
     <Compile Include="Xaml\BindingTypeConverters.cs" />
     <Compile Include="Xaml\CreatesCommandBinding.cs" />

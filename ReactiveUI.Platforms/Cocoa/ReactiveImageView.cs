@@ -13,12 +13,14 @@ using System.Runtime.CompilerServices;
 using System.Collections.Generic;
 using System.Drawing;
 using Splat;
+using System.Reactive;
 
 #if UIKIT
 using MonoTouch.Foundation;
 using MonoTouch.UIKit;
 using NSImageView = MonoTouch.UIKit.UIImageView;
 using NSImage = MonoTouch.UIKit.UIImage;
+using NSView = MonoTouch.UIKit.UIView;
 #else
 using MonoMac.AppKit;
 #endif
@@ -26,7 +28,7 @@ using MonoMac.AppKit;
 
 namespace ReactiveUI.Cocoa
 {
-    public abstract class ReactiveImageView : NSImageView, IReactiveNotifyPropertyChanged, IHandleObservableErrors, IReactiveObjectExtension
+    public abstract class ReactiveImageView : NSImageView, IReactiveNotifyPropertyChanged, IHandleObservableErrors, IReactiveObjectExtension, ICanActivate
     {
         public ReactiveImageView(RectangleF frame) : base(frame) { this.setupReactiveExtension(); }
         public ReactiveImageView(IntPtr handle) : base(handle) { this.setupReactiveExtension(); }
@@ -42,7 +44,7 @@ namespace ReactiveUI.Cocoa
         public event PropertyChangingEventHandler PropertyChanging;
 
         void IReactiveObjectExtension.RaisePropertyChanging(PropertyChangingEventArgs args) 
-	{
+        {
             var handler = PropertyChanging;
             if (handler != null) {
                 handler(this, args);
@@ -51,7 +53,8 @@ namespace ReactiveUI.Cocoa
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        void IReactiveObjectExtension.RaisePropertyChanged(PropertyChangedEventArgs args) {
+        void IReactiveObjectExtension.RaisePropertyChanged(PropertyChangedEventArgs args) 
+        {
             var handler = PropertyChanged;
             if (handler != null) {
                 handler(this, args);
@@ -78,6 +81,21 @@ namespace ReactiveUI.Cocoa
         }
 
         public IObservable<Exception> ThrownExceptions { get { return this.getThrownExceptionsObservable(); } }
+        
+        Subject<Unit> activated = new Subject<Unit>();
+        public IObservable<Unit> Activated { get { return activated; } }
+        Subject<Unit> deactivated = new Subject<Unit>();
+        public IObservable<Unit> Deactivated { get { return deactivated; } }
+
+#if UIKIT
+        public override void WillMoveToSuperview(NSView newsuper)
+#else 
+        public override void ViewWillMoveToSuperview(NSView newsuper)
+#endif
+        {
+            base.WillMoveToSuperview(newsuper);
+            RxApp.MainThreadScheduler.Schedule(() => (newsuper != null ? activated : deactivated).OnNext(Unit.Default));
+        }
     }
 }
 

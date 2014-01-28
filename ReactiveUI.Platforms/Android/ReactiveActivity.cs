@@ -18,6 +18,7 @@ using System.Reactive.Disposables;
 using System.Diagnostics.Contracts;
 using System.Runtime.CompilerServices;
 using Splat;
+using System.Reactive;
 
 namespace ReactiveUI.Android
 {
@@ -25,7 +26,7 @@ namespace ReactiveUI.Android
     /// This is an Activity that is both an Activity and has ReactiveObject powers 
     /// (i.e. you can call RaiseAndSetIfChanged)
     /// </summary>
-    public class ReactiveActivity<TViewModel> : ReactiveActivity, IViewFor<TViewModel>, IReactiveNotifyPropertyChanged, IHandleObservableErrors
+    public class ReactiveActivity<TViewModel> : ReactiveActivity, IViewFor<TViewModel>, ICanActivate
         where TViewModel : class, IReactiveNotifyPropertyChanged
     {
         protected ReactiveActivity() { }
@@ -234,6 +235,24 @@ namespace ReactiveUI.Android
         public void RaisePropertyChanging([CallerMemberName] string propertyName = null)
         {
             raisePropertyChanging(propertyName);
+        }
+
+        readonly Subject<Unit> activated = new Subject<Unit>();
+        public IObservable<Unit> Activated { get { return activated; } }
+
+        readonly Subject<Unit> deactivated = new Subject<Unit>();
+        public IObservable<Unit> Deactivated { get { return deactivated; } }
+
+        protected override void OnPause()
+        {
+            base.OnPause();
+            deactivated.OnNext(Unit.Default);
+        }
+                
+        protected override void OnResume()
+        {
+            base.OnResume();
+            activated.OnNext(Unit.Default);
         }
     }
 }

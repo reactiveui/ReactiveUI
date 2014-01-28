@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.Reflection;
 using System.Reactive.Subjects;
 using System.Reactive.Concurrency;
+using System.Reactive;
 using System.Linq;
 using System.Threading;
 using System.Reactive.Disposables;
@@ -15,10 +16,11 @@ using System.Collections.Generic;
 using MonoTouch.Foundation;
 using MonoTouch.UIKit;
 using Splat;
+using ReactiveUI;
 
 namespace ReactiveUI.Cocoa
 {
-    public abstract class ReactiveCollectionViewCell : UICollectionViewCell, IReactiveNotifyPropertyChanged, IHandleObservableErrors, IReactiveObjectExtension
+    public abstract class ReactiveCollectionViewCell : UICollectionViewCell, IReactiveNotifyPropertyChanged, IHandleObservableErrors, IReactiveObjectExtension, ICanActivate
     {
         public ReactiveCollectionViewCell(IntPtr handle) : base (handle) { setupRxObj(); }
         public ReactiveCollectionViewCell(NSObjectFlag t) : base (t) { setupRxObj(); }
@@ -29,7 +31,7 @@ namespace ReactiveUI.Cocoa
         public event PropertyChangingEventHandler PropertyChanging;
 
         void IReactiveObjectExtension.RaisePropertyChanging(PropertyChangingEventArgs args) 
-	{
+        {
             var handler = PropertyChanging;
             if (handler != null) {
                 handler(this, args);
@@ -38,7 +40,8 @@ namespace ReactiveUI.Cocoa
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        void IReactiveObjectExtension.RaisePropertyChanged(PropertyChangedEventArgs args) {
+        void IReactiveObjectExtension.RaisePropertyChanged(PropertyChangedEventArgs args) 
+        {
             var handler = PropertyChanged;
             if (handler != null) {
                 handler(this, args);
@@ -77,6 +80,17 @@ namespace ReactiveUI.Cocoa
         public IDisposable SuppressChangeNotifications()
         {
             return this.suppressChangeNotifications();
+        }
+
+        Subject<Unit> activated = new Subject<Unit>();
+        public IObservable<Unit> Activated { get { return activated; } }
+        Subject<Unit> deactivated = new Subject<Unit>();
+        public IObservable<Unit> Deactivated { get { return deactivated; } }
+
+        public override void WillMoveToSuperview(UIView newsuper)
+        {
+            base.WillMoveToSuperview(newsuper);
+            RxApp.MainThreadScheduler.Schedule(() => (newsuper != null ? activated : deactivated).OnNext(Unit.Default));
         }
     }
 }
