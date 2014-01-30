@@ -37,6 +37,32 @@ namespace ReactiveUI
         /// </summary>
         TValue Value { get; }
     }
+    
+    /// <summary>
+    /// IObservedChangeWithHistory 
+    /// </summary>
+    public interface IObservedChangeWithHistory<out TSender, out TValue>
+    {
+        /// <summary>
+        /// The object that has raised the change.
+        /// </summary>
+        TSender Sender { get; }
+
+        /// <summary>
+        /// The name of the property that has changed on Sender.
+        /// </summary>
+        string PropertyName { get; }
+
+        /// <summary>
+        /// The value of the property before the change was made
+        /// </summary>
+        TValue OldValue { get; }
+
+        /// <summary>
+        /// The value of the property after the change as been made
+        /// </summary>
+        TValue NewValue { get; }
+    }
 
     /// <summary>
     /// A data-only version of IObservedChange
@@ -139,6 +165,14 @@ namespace ReactiveUI
         /// property is set to the same value multiple times.
         /// </summary>
         IObservable<IObservedChange<object, object>> Changed { get; }
+
+        /// <summary>
+        /// Represents an Observable that fires *after* a property has changed and 
+        /// provides both the old and new values for that property.
+        /// Note that this should not fire duplicate change notifications if a
+        /// property is set to the same value multiple times.
+        /// </summary>
+        IObservable<IObservedChangeWithHistory<object, object>> ChangedWithHistory { get; }
 
         /// <summary>
         /// When this method is called, an object will not fire change
