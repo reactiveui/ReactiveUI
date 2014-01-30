@@ -93,7 +93,11 @@ namespace ReactiveUI.Cocoa
         public override void ViewWillMoveToSuperview(NSView newsuper)
 #endif
         {
+#if UIKIT
             base.WillMoveToSuperview(newsuper);
+#else
+            base.ViewWillMoveToSuperview(newsuper);
+#endif
             RxApp.MainThreadScheduler.Schedule(() => (newsuper != null ? activated : deactivated).OnNext(Unit.Default));
         }
     }
