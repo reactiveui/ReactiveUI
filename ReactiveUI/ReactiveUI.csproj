@@ -124,6 +124,7 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Activation.cs" />
     <Compile Include="BindingTypeConverters.cs" />
     <Compile Include="CompatMixins.cs" />
     <Compile Include="DefaultPropertyBinding.cs" />

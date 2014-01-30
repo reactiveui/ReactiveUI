@@ -27,6 +27,7 @@ namespace ReactiveUI.Xaml
             RxApp.Register(typeof (CreatesCommandBindingViaCommandParameter), typeof(ICreatesCommandBinding));
             RxApp.Register(typeof (CreatesCommandBindingViaEvent), typeof(ICreatesCommandBinding));
             RxApp.Register(typeof (BooleanToVisibilityTypeConverter), typeof (IBindingTypeConverter));
+            RxApp.Register(typeof(ActivationForViewFetcher), typeof(IActivationForViewFetcher));
 #endif
 
 #if WINRT

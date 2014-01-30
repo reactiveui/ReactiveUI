@@ -89,6 +89,7 @@
     <Reference Include="System.Windows.Browser" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ActivationForViewFetcher.cs" />
     <Compile Include="BindingTypeConverters.cs" />
     <Compile Include="CommandBinding.cs" />
     <Compile Include="CreatesCommandBinding.cs" />

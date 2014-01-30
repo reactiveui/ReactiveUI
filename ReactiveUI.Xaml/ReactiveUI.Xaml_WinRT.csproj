@@ -36,6 +36,7 @@
     <DocumentationFile>bin\Release\WinRT45\ReactiveUI.Xaml_WinRT.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="ActivationForViewFetcher.cs" />
     <Compile Include="BindingTypeConverters.cs" />
     <Compile Include="CommandBinding.cs" />
     <Compile Include="CreatesCommandBinding.cs" />
