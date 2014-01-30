@@ -22,7 +22,8 @@ using System.Reactive;
 
 namespace ReactiveUI.Cocoa
 {
-    public abstract class ReactiveTableViewController : NSTableViewController, IReactiveNotifyPropertyChanged, IHandleObservableErrors, IReactiveObjectExtension, ICanActivate
+    public abstract class ReactiveTableViewController : NSTableViewController, 
+	IReactiveNotifyPropertyChanged, IHandleObservableErrors, IReactiveObjectExtension, ICanActivate
     {
         protected ReactiveTableViewController(NSTableViewStyle withStyle) : base(withStyle) { setupRxObj(); }
         protected ReactiveTableViewController(string nibName, NSBundle bundle) : base(nibName, bundle) { setupRxObj(); }
@@ -90,15 +91,15 @@ namespace ReactiveUI.Cocoa
         Subject<Unit> deactivated = new Subject<Unit>();
         public IObservable<Unit> Deactivated { get { return deactivated; } }
 
-        public override void ViewDidLoad()
+        public override void ViewDidAppear(bool animated)
         {
-            base.ViewDidLoad();
+            base.ViewDidAppear(animated);
             activated.OnNext(Unit.Default);
         }
 
-        public override void ViewDidUnload()
+        public override void ViewDidDisappear(bool animated)
         {
-            base.ViewDidUnload();
+            base.ViewDidDisappear(animated);
             deactivated.OnNext(Unit.Default);
         }
     }
