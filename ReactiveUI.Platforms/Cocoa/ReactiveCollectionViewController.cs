@@ -20,7 +20,8 @@ using System.Reactive;
 
 namespace ReactiveUI.Cocoa
 {
-    public abstract class ReactiveCollectionViewController : UICollectionViewController, IReactiveNotifyPropertyChanged, IHandleObservableErrors, IReactiveObjectExtension, ICanActivate
+    public abstract class ReactiveCollectionViewController : UICollectionViewController, 
+	IReactiveNotifyPropertyChanged, IHandleObservableErrors, IReactiveObjectExtension, ICanActivate
     {
         protected ReactiveCollectionViewController(UICollectionViewLayout withLayout) : base(withLayout) { setupRxObj(); }
         protected ReactiveCollectionViewController(string nibName, NSBundle bundle) : base(nibName, bundle) { setupRxObj(); }
@@ -88,15 +89,15 @@ namespace ReactiveUI.Cocoa
         Subject<Unit> deactivated = new Subject<Unit>();
         public IObservable<Unit> Deactivated { get { return deactivated; } }
 
-        public override void ViewDidLoad()
+        public override void ViewDidAppear(bool animated)
         {
-            base.ViewDidLoad();
+            base.ViewDidAppear(animated);
             activated.OnNext(Unit.Default);
         }
 
-        public override void ViewDidUnload()
+        public override void ViewDidDisappear(bool animated)
         {
-            base.ViewDidUnload();
+            base.ViewDidDisappear(animated);
             deactivated.OnNext(Unit.Default);
         }
     }

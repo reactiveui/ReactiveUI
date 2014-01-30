@@ -29,7 +29,11 @@ namespace ReactiveUI.Cocoa
     /// This is an View that is both an NSViewController and has ReactiveObject powers 
     /// (i.e. you can call RaiseAndSetIfChanged)
     /// </summary>
-    public class ReactiveViewController : NSViewController, IReactiveNotifyPropertyChanged, IHandleObservableErrors, IReactiveObjectExtension
+    public class ReactiveViewController : NSViewController, 
+	    IReactiveNotifyPropertyChanged, IHandleObservableErrors, IReactiveObjectExtension
+#if UIKIT
+        , ICanActivate
+#endif
     {
         protected ReactiveViewController() : base()
         {
@@ -105,21 +109,23 @@ namespace ReactiveUI.Cocoa
             return this.suppressChangeNotifications();
         }
                 
+#if UIKIT
         Subject<Unit> activated = new Subject<Unit>();
         public IObservable<Unit> Activated { get { return activated; } }
         Subject<Unit> deactivated = new Subject<Unit>();
         public IObservable<Unit> Deactivated { get { return deactivated; } }
 
-        public override void ViewDidLoad()
+        public override void ViewDidAppear(bool animated)
         {
-            base.ViewDidLoad();
+            base.ViewDidAppear(animated);
             activated.OnNext(Unit.Default);
         }
 
-        public override void ViewDidUnload()
+        public override void ViewDidDisappear(bool animated)
         {
-            base.ViewDidUnload();
+            base.ViewDidDisappear(animated);
             deactivated.OnNext(Unit.Default);
         }
+#endif
     }
 }
