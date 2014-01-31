@@ -75,6 +75,17 @@ namespace ReactiveUI
     }
 
     /// <summary>
+    /// A data-only version of IObservedChange
+    /// </summary>
+    public class ObservedChangeWithHistory<TSender, TValue> : IObservedChangeWithHistory<TSender, TValue>
+    {
+        public TSender Sender { get; set; }
+        public string PropertyName { get; set; }
+        public TValue OldValue { get; set; }
+        public TValue NewValue { get; set; }
+    }
+
+    /// <summary>
     /// This interface is implemented by RxUI objects which are given 
     /// IObservables as input - when the input IObservables OnError, instead of 
     /// disabling the RxUI object, we catch the IObservable and pipe it into
