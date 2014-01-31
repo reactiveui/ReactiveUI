@@ -37,7 +37,7 @@ namespace ReactiveUI
         /// </summary>
         TValue Value { get; }
     }
-    
+
     /// <summary>
     /// IObservedChangeWithHistory 
     /// </summary>
@@ -211,7 +211,7 @@ namespace ReactiveUI
         /// ChangeTrackingEnabled is set to True.
         /// </summary>
         IObservable<IObservedChange<TSender, object>> ItemChanged { get; }
-        
+
         ///<summary>
         /// Provides Item Changed notifications, including old and new values, for any item in collection that
         /// implements IReactiveNotifyPropertyChanged. This is only enabled when
