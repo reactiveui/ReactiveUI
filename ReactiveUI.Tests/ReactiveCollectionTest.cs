@@ -1640,24 +1640,23 @@ namespace ReactiveUI.Tests
             var fixture = new ReactiveList<ReactivePerson>() { ChangeTrackingEnabled = true };
             string oldName = string.Empty;
             string newName = string.Empty;
+            string propertyName = string.Empty;
+            var sender = new ReactivePerson();
+
             Assert.NotNull(fixture);
             var names = new string[] { "Alice", "Bob" };
 
-            // This subscription doesn't. It is returning the same value for both 'old and new'
-            var zip = fixture.ItemChanging.Zip(fixture.ItemChanged, (oldrec, newrec) => new
-            {
-                o = oldrec.GetValue().ToString(),
-                n = newrec.GetValue().ToString()
-            });
-
-            zip.Subscribe(x =>
-            {
-                oldName = x.o;
-                newName = x.n;
+            fixture.ItemChangedWithHistory.Subscribe(x => {
+                oldName = (string)x.OldValue;
+                newName = (string)x.NewValue;
+                propertyName = x.PropertyName;
+                sender = x.Sender;
             });
 
             // Add records
-            fixture.AddRange(names.Select(n => new ReactivePerson { FirstName = n }));
+            var namesList = new List<ReactivePerson>();
+            namesList.AddRange(names.Select(n => new ReactivePerson { FirstName = n }));
+            fixture.AddRange(namesList);
 
             // manipulate records
             fixture[0].FirstName = "Eve";
@@ -1665,6 +1664,8 @@ namespace ReactiveUI.Tests
             // Assert
             Assert.Equal(oldName, "Alice");
             Assert.Equal(newName, "Eve");
+            Assert.Equal(propertyName, "FirstName");
+            Assert.Same(sender, namesList.First());
         }
     }
 

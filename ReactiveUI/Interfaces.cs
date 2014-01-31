@@ -90,7 +90,7 @@ namespace ReactiveUI
     }
 
     /// <summary>
-    /// A data-only version of IObservedChange
+    /// A data-only version of IObservedChangeWithHistory
     /// </summary>
     public class ObservedChangeWithHistory<TSender, TValue> : IObservedChangeWithHistory<TSender, TValue>
     {
@@ -211,6 +211,13 @@ namespace ReactiveUI
         /// ChangeTrackingEnabled is set to True.
         /// </summary>
         IObservable<IObservedChange<TSender, object>> ItemChanged { get; }
+        
+        ///<summary>
+        /// Provides Item Changed notifications, including old and new values, for any item in collection that
+        /// implements IReactiveNotifyPropertyChanged. This is only enabled when
+        /// ChangeTrackingEnabled is set to True.
+        /// </summary>
+        IObservable<IObservedChangeWithHistory<object, object>> ItemChangedWithHistory { get; }
 
         /// <summary>
         /// Enables the ItemChanging and ItemChanged properties; when this is
@@ -223,6 +230,13 @@ namespace ReactiveUI
 
     /// <summary>
     /// IReactiveNotifyCollectionChanged of T provides notifications when the contents
+
+        /// <summary>
+        /// Provides Item Changed notifications, reporting on both old and new value, 
+        /// for any item in collection that implements IReactiveNotifyPropertyChanged. 
+        /// This is only enabled when ChangeTrackingEnabled is set to True.
+        /// </summary>
+        new IObservable<IObservedChangeWithHistory<T, object>> ItemChangedWithHistory { get; }
     /// of collection are changed (items are added/removed/moved).
     /// </summary>
     public interface IReactiveNotifyCollectionChanged<out T>
