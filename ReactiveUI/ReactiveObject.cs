@@ -6,6 +6,7 @@ using System.Diagnostics.Contracts;
 using System.Reactive.Disposables;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Reflection;
 using System.Runtime.Serialization;
@@ -50,6 +51,7 @@ namespace ReactiveUI
         /// </summary>
         [IgnoreDataMember]
         public IObservable<IObservedChange<ReactiveObject, object>> Changing {
+        {
             get { return this.getChangingObservable(); }
         }
 
@@ -58,17 +60,38 @@ namespace ReactiveUI
         /// </summary>
         [IgnoreDataMember]
         public IObservable<IObservedChange<ReactiveObject, object>> Changed {
+        {
             get { return this.getChangedObservable(); }
+        }
+
+        /// <summary>
+        /// Represents an observable that fires *after* a property has changed, providing access to both the old and new values.
+        /// </summary>
+        public IObservable<IObservedChangeWithHistory<object, object>> ChangedWithHistory
+        {
+            get
+            {
+                var result = this.Changing.Select(x => x.GetValue())
+                    .Zip(this.Changed, (oldRecVal, newRec) => new ObservedChangeWithHistory<object, object>
+                            {
+                                PropertyName = newRec.PropertyName,
+                                Sender = newRec.Sender,
+                                OldValue = oldRecVal,
+                                NewValue = newRec.GetValue()
+                            });
+                return result;
+            }
         }
 
         [IgnoreDataMember]
         public IObservable<Exception> ThrownExceptions { get { return this.getThrownExceptionsObservable(); } }
-        
+
         protected ReactiveObject()
         {
         }
 
-        public IDisposable SuppressChangeNotifications() {
+        public IDisposable SuppressChangeNotifications()
+        {
             return this.suppressChangeNotifications();
         }
 
