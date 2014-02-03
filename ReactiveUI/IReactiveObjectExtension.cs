@@ -20,7 +20,8 @@ namespace ReactiveUI
         void RaisePropertyChanged(PropertyChangedEventArgs args);
     }
 
-    public static class IReactiveExtensionExtensions 
+    [Preserve(AllMembers = true)]
+    public static class IReactiveObjectExtensions
     {
         static ConditionalWeakTable<IReactiveObjectExtension, ExtensionState> state = new ConditionalWeakTable<IReactiveObjectExtension, ExtensionState>();
 
@@ -91,7 +92,7 @@ namespace ReactiveUI
         }
 
         internal static bool areChangeNotificationsEnabled(this IReactiveObjectExtension This) 
-	{
+        {
             var s = state.GetOrCreateValue(This);
 
             return (Interlocked.Read(ref s.ChangeNotificationsSuppressed) == 0);
@@ -170,9 +171,9 @@ namespace ReactiveUI
         }
 
         class ExtensionState 
-	{
+        {
             public ExtensionState() 
-	    {
+            {
                 ChangingSubject = new Subject<IObservedChange<object, object>>();
                 ChangedSubject = new Subject<IObservedChange<object, object>>();
                 ThrownExceptions = new ScheduledSubject<Exception>(Scheduler.Immediate, RxApp.DefaultExceptionHandler);
@@ -186,4 +187,3 @@ namespace ReactiveUI
         }
     }
 }
-
