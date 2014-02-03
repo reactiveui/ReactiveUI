@@ -20,18 +20,9 @@ namespace ReactiveUI
         void RaisePropertyChanged(PropertyChangedEventArgs args);
     }
 
+    [Preserve(AllMembers = true)]
     public static class IReactiveObjectExtensions
     {
-        // from http://docs.xamarin.com/guides/android/advanced_topics/linking/
-        #pragma warning disable 0219, 0649
-        static bool falseflag = false;
-        static IReactiveObjectExtensions() {
-            if (falseflag) {
-                var ignore = new ReactiveObject();
-            }
-        }
-        #pragma warning restore 0219, 0649
-
         static ConditionalWeakTable<IReactiveObjectExtension, ExtensionState> state = new ConditionalWeakTable<IReactiveObjectExtension, ExtensionState>();
 
         internal static void setupReactiveExtension(this IReactiveObjectExtension This) {
@@ -194,6 +185,12 @@ namespace ReactiveUI
 
             public long ChangeNotificationsSuppressed;
         }
+    }
+
+    // according to spouliot, this is just a string match, and will cause the linker to be ok with everything.
+    internal class PreserveAttribute : Attribute
+    {
+        public bool AllMembers { get; set; }
     }
 }
 
