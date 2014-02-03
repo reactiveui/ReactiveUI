@@ -20,8 +20,18 @@ namespace ReactiveUI
         void RaisePropertyChanged(PropertyChangedEventArgs args);
     }
 
-    public static class IReactiveExtensionExtensions 
+    public static class IReactiveObjectExtensions
     {
+        // from http://docs.xamarin.com/guides/android/advanced_topics/linking/
+        #pragma warning disable 0219, 0649
+        static bool falseflag = false;
+        static IReactiveObjectExtensions() {
+            if (falseflag) {
+                var ignore = new ReactiveObject();
+            }
+        }
+        #pragma warning restore 0219, 0649
+
         static ConditionalWeakTable<IReactiveObjectExtension, ExtensionState> state = new ConditionalWeakTable<IReactiveObjectExtension, ExtensionState>();
 
         internal static void setupReactiveExtension(this IReactiveObjectExtension This) {
@@ -91,7 +101,7 @@ namespace ReactiveUI
         }
 
         internal static bool areChangeNotificationsEnabled(this IReactiveObjectExtension This) 
-	{
+        {
             var s = state.GetOrCreateValue(This);
 
             return (Interlocked.Read(ref s.ChangeNotificationsSuppressed) == 0);
@@ -170,9 +180,9 @@ namespace ReactiveUI
         }
 
         class ExtensionState 
-	{
+        {
             public ExtensionState() 
-	    {
+            {
                 ChangingSubject = new Subject<IObservedChange<object, object>>();
                 ChangedSubject = new Subject<IObservedChange<object, object>>();
                 ThrownExceptions = new ScheduledSubject<Exception>(Scheduler.Immediate, RxApp.DefaultExceptionHandler);
