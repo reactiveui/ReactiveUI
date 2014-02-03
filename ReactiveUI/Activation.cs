@@ -77,7 +77,12 @@ namespace ReactiveUI
             var viewDisposable = new SerialDisposable();
 
             return new CompositeDisposable(
-                activationEvents.Item1.Subscribe(_ => viewDisposable.Disposable = new CompositeDisposable(block())),
+                activationEvents.Item1.Subscribe(_ => {
+                    // NB: We need to make sure to respect ordering so that the cleanup
+                    // happens before we invoke block again
+                    viewDisposable.Disposable = Disposable.Empty;
+                    viewDisposable.Disposable = new CompositeDisposable(block());
+                }),
                 activationEvents.Item2.Subscribe(_ => viewDisposable.Disposable = Disposable.Empty),
                 handleViewModelActivation(This, activationEvents),
                 viewDisposable);
