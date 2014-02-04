@@ -23,7 +23,7 @@ namespace ReactiveUI.Xaml
     /// the View and wire up the ViewModel whenever a new ViewModel is
     /// navigated to. Put this control as the only control in your Window.
     /// </summary>
-    public class RoutedViewHost : TransitioningContentControl, IViewFor
+    public class RoutedViewHost : TransitioningContentControl, IActivatable
     {
         IDisposable _inner = null;
 
@@ -56,9 +56,6 @@ namespace ReactiveUI.Xaml
             DependencyProperty.Register("ViewContractObservable", typeof(IObservable<string>), typeof(RoutedViewHost), new PropertyMetadata(Observable.Return(default(string))));
 
         public IViewLocator ViewLocator { get; set; }
-
-        // NB: This is just a scam to get WhenActivated
-        object IViewFor.ViewModel { get; set; }
 
         public RoutedViewHost()
         {

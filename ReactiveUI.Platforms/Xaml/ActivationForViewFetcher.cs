@@ -21,7 +21,7 @@ namespace ReactiveUI.Xaml
             return (typeof(FrameworkElement).GetTypeInfo().IsAssignableFrom(view.GetTypeInfo())) ? 10 : 0;
         }
 
-        public Tuple<IObservable<Unit>, IObservable<Unit>> GetActivationForView(IViewFor view)
+        public Tuple<IObservable<Unit>, IObservable<Unit>> GetActivationForView(IActivatable view)
         {
             var fe = view as FrameworkElement;
             return Tuple.Create(

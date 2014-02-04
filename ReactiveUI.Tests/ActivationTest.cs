@@ -75,7 +75,7 @@ namespace ReactiveUI.Tests
             return view == typeof(ActivatingView) ? 100 : 0;
         }
 
-        public Tuple<IObservable<Unit>, IObservable<Unit>> GetActivationForView(IViewFor view)
+        public Tuple<IObservable<Unit>, IObservable<Unit>> GetActivationForView(IActivatable view)
         {
             var av = view as ActivatingView;
             return Tuple.Create<IObservable<Unit>, IObservable<Unit>>(av.Loaded, av.Unloaded);
