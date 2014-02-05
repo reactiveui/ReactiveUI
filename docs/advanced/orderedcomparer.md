@@ -82,3 +82,5 @@ regardless of culture and casing for example.
        orderer: OrderedComparer<Employee>
            .OrderBy(x => x.Name, StringComparer.OrdinalIgnoreCase)
 ```
+
+Note: If you sort custom classes which implement ```ICompare``` or ```ICompare<T>``` the default comparer will use that. 
