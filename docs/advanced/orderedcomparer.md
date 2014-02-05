@@ -68,3 +68,17 @@ above of creating a dedicated Sort method you can even just pass that straight i
    var employees = new ReactiveList<Employee> { ... }
    var orderedEmployees = employees.CreateDerivedCollect(x => x, orderer:  SortEmployee);
 ```
+
+### Combining with custom comparers
+
+By default ```OrderBy```, ```OrderByDescending```, ```ThenBy``` and  ```ThenByDescending``` uses ```Comparer<T>.Default``` for actually comparing
+values, exactly like LINQ to objects does. For strings that means that it uses
+```StringComparer.CurrentCulture```.
+
+You can swap that out in each step though. Say that you want to sort by name
+regardless of culture and casing for example.
+
+```csharp
+       orderer: OrderedComparer<Employee>
+           .OrderBy(x => x.Name, StringComparer.OrdinalIgnoreCase)
+```
