@@ -2,7 +2,7 @@
 
 OrderedComparer is a composer that allows you to create a comparer using the familiar LINQ ordering syntax. It's handy for creating a comparer for use in derived collections.
 
-## Lets sort some employees
+## Let's sort some employees
 
 Say that we have a ```ReactiveList<Employee>``` where ```Employee``` is defined as follows.
 
