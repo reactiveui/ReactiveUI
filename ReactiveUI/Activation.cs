@@ -63,7 +63,7 @@ namespace ReactiveUI
             return Disposable.Create(This.Activator.Deactivate);
         }
 
-        public static IDisposable WhenActivated(this IViewFor This, Func<IEnumerable<IDisposable>> block)
+        public static IDisposable WhenActivated(this IActivatable This, Func<IEnumerable<IDisposable>> block)
         {
             var activationFetcher = activationFetcherCache.Get(This.GetType());
             if (activationFetcher == null) {
@@ -76,6 +76,11 @@ namespace ReactiveUI
 
             var viewDisposable = new SerialDisposable();
 
+            var vmDisp = Disposable.Empty;
+            if (This is IViewFor) {
+                vmDisp = handleViewModelActivation(This as IViewFor, activationEvents);
+            }
+
             return new CompositeDisposable(
                 activationEvents.Item1.Subscribe(_ => {
                     // NB: We need to make sure to respect ordering so that the cleanup
@@ -84,8 +89,7 @@ namespace ReactiveUI
                     viewDisposable.Disposable = new CompositeDisposable(block());
                 }),
                 activationEvents.Item2.Subscribe(_ => viewDisposable.Disposable = Disposable.Empty),
-                handleViewModelActivation(This, activationEvents),
-                viewDisposable);
+                vmDisp, viewDisposable);
         }
 
         static IDisposable handleViewModelActivation(IViewFor view, Tuple<IObservable<Unit>, IObservable<Unit>> activation)
@@ -105,7 +109,7 @@ namespace ReactiveUI
                     (x != null ? x.Activator.Activate() : Disposable.Empty)));
         }
 
-        public static IDisposable WhenActivated(this IViewFor This, Action<Action<IDisposable>> block)
+        public static IDisposable WhenActivated(this IActivatable This, Action<Action<IDisposable>> block)
         {
             return This.WhenActivated(() => {
                 var ret = new List<IDisposable>();
@@ -132,7 +136,7 @@ namespace ReactiveUI
                 10 : 0;
         }
 
-        public Tuple<IObservable<Unit>, IObservable<Unit>> GetActivationForView(IViewFor view)
+        public Tuple<IObservable<Unit>, IObservable<Unit>> GetActivationForView(IActivatable view)
         {
             var ca = view as ICanActivate;
             return Tuple.Create(ca.Activated, ca.Deactivated);
