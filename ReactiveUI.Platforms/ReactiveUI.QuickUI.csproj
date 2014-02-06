@@ -70,6 +70,12 @@
     <Compile Include="..\CommonAssemblyInfo.cs">
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="QuickUI\ActivationForViewFetcher.cs" />
+    <Compile Include="QuickUI\AutoDataTemplateBindingHook.cs" />
+    <Compile Include="QuickUI\CreatesCommandBinding.cs" />
+    <Compile Include="QuickUI\RoutedViewHost.cs" />
+    <Compile Include="QuickUI\ViewModelViewHost.cs" />
+    <Compile Include="QuickUI\XamlDefaultPropertyBinding.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
@@ -79,4 +85,13 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <ItemGroup>
+    <Folder Include="QuickUI\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj">
+      <Project>{464CB812-F99F-401B-BE4C-E8F0515CD19D}</Project>
+      <Name>ReactiveUI</Name>
+    </ProjectReference>
+  </ItemGroup>
 </Project>
