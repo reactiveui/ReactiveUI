@@ -213,7 +213,9 @@ namespace ReactiveUI
             BindingDirection direction);
     }
 
-    public interface IViewFor
+    public interface IActivatable { }
+
+    public interface IViewFor : IActivatable
     {
         object ViewModel { get; set; }
     }
@@ -315,7 +317,7 @@ namespace ReactiveUI
     public interface IActivationForViewFetcher
     {
         int GetAffinityForView(Type view);
-        Tuple<IObservable<Unit>, IObservable<Unit>> GetActivationForView(IViewFor view);
+        Tuple<IObservable<Unit>, IObservable<Unit>> GetActivationForView(IActivatable view);
     }
 
     internal interface IPlatformOperations
