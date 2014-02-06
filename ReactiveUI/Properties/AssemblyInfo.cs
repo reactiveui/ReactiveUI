@@ -16,3 +16,4 @@ using System.Runtime.CompilerServices;
 [assembly: InternalsVisibleTo("ReactiveUI.Android")]
 [assembly: InternalsVisibleTo("ReactiveUI.Mobile")]
 [assembly: InternalsVisibleTo("ReactiveUI.Winforms")]
+[assembly: InternalsVisibleTo("ReactiveUI.QuickUI")]
