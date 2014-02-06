@@ -28,6 +28,11 @@ namespace EventBuilder
                 targetAssemblyDirs.Add("/Library/Frameworks/Mono.framework/Versions/Current/lib/mono/4.5");
             }
 
+	    // NB: Triple down on Laziness
+            if (targetAssemblyNames.Any(x => x.ToLowerInvariant().Contains("quickui"))) {
+                targetAssemblyDirs.Add("/Library/Frameworks/Mono.framework/Versions/Current/lib/mono/xbuild-frameworks/.NETPortable/v4.5/Profile/Profile78");
+            }
+
             var rp = new ReaderParameters() { AssemblyResolver = new PathSearchAssemblyResolver(targetAssemblyDirs.ToArray()) };
             var targetAssemblies = targetAssemblyNames
                 .Select(x => AssemblyDefinition.ReadAssembly(x, rp)).ToArray();
