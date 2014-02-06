@@ -76,6 +76,7 @@
     <Compile Include="QuickUI\RoutedViewHost.cs" />
     <Compile Include="QuickUI\ViewModelViewHost.cs" />
     <Compile Include="QuickUI\XamlDefaultPropertyBinding.cs" />
+    <Compile Include="QuickUI\ReactiveContentView.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
