@@ -157,11 +157,11 @@ namespace ReactiveUI
         /// return a positive value, the host will use the one which returns 
         /// the highest value. When in doubt, return '2' or '0'.
         /// </summary>
-        /// <param name="lhs">The left-hand object to compare (i.e. 'from')</param>
-        /// <param name="rhs">The right-hand object to compare (i.e. 'to')</param>
+        /// <param name="fromType">The source type to convert from</param>
+        /// <param name="toType">The target type to convert to</param>
         /// <returns>A positive integer if TryConvert is supported, 
         /// zero or a negative value otherwise</returns>
-        int GetAffinityForObjects(Type lhs, Type rhs);
+        int GetAffinityForObjects(Type fromType, Type toType);
 
         /// <summary>
         /// Convert a given object to the specified type.
