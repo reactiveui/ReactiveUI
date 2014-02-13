@@ -123,7 +123,7 @@ namespace ReactiveUI
             where T : IRoutableViewModel
         {
             var ret = new ReactiveCommand(This.Navigate.CanExecuteObservable);
-            ret.Select(_ => (IRoutableViewModel)RxApp.Locator.GetService<T>()).InvokeCommand(This.Navigate);
+            ret.Select(_ => (IRoutableViewModel)Locator.Current.GetService<T>()).InvokeCommand(This.Navigate);
                 return ret;
         }
     }
