@@ -14,7 +14,7 @@ namespace ReactiveUI
     {
         public static IViewLocator Current {
             get {
-                var ret = RxApp.Locator.GetService<IViewLocator>();
+                var ret = Locator.Current.GetService<IViewLocator>();
                 if (ret == null) {
                     throw new Exception("Could not find a default ViewLocator. This should never happen, your dependency resolver is broken");
                 }
@@ -74,7 +74,7 @@ namespace ReactiveUI
             var ret = default(IViewFor);
 
             try {
-                ret = (IViewFor)RxApp.Locator.GetService(type, contract);
+                ret = (IViewFor)Locator.Current.GetService(type, contract);
             } catch (Exception ex) {
                 this.Log().ErrorException("Failed to instantiate view: " + type.FullName, ex);
                 throw;
