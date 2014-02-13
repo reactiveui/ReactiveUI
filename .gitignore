@@ -25,5 +25,4 @@ version-bump.patch
 ReactiveUI.Events/Events.cs
 ReactiveUI.Events/Events_*.cs
 
-packages
 ext/monodroid/18
