@@ -25,6 +25,12 @@ namespace ReactiveUI.Tests
         public ReactiveCommand Command1 { get; protected set; }
         public ReactiveCommand Command2 { get; protected set; }
 
+        ReactiveList<int> myListOfInts;
+        public ReactiveList<int> MyListOfInts {
+            get { return myListOfInts; }
+            set { this.RaiseAndSetIfChanged(ref myListOfInts, value); }
+        }
+
         public TestWhenAnyObsViewModel()
         {
             Command1 = new ReactiveCommand();
@@ -622,6 +628,24 @@ namespace ReactiveUI.Tests
             Assert.True(
                 new[] {1, 2, 1,}.Zip(list, (expected, actual) => new {expected, actual})
                                 .All(x => x.expected == x.actual));
+        }
+
+        [Fact]
+        public void WhenAnyWithNullObjectShouldUpdateWhenObjectIsntNullAnymore()
+        {
+            var fixture = new TestWhenAnyObsViewModel();
+            var output = fixture.WhenAnyObservable(x => x.MyListOfInts.CountChanged).CreateCollection();
+
+            Assert.Equal(0, output.Count);
+
+            fixture.MyListOfInts = new ReactiveList<int>();
+            Assert.Equal(0, output.Count);
+
+            fixture.MyListOfInts.Add(1);
+            Assert.Equal(1, output.Count);
+
+            fixture.MyListOfInts = null;
+            Assert.Equal(1, output.Count);
         }
     }
 
