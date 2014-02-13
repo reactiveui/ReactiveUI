@@ -21,7 +21,7 @@ namespace ReactiveUI
     public sealed class ObservableAsPropertyHelper<T> : IHandleObservableErrors, IDisposable, IEnableLogger
     {
         T _lastValue;
-        readonly IObservable<T> _source;
+        readonly IConnectableObservable<T> _source;
         IDisposable _inner;
 
         /// <summary>
@@ -66,17 +66,17 @@ namespace ReactiveUI
             // Fire off an initial RaisePropertyChanged to make sure bindings
             // have a value
             subj.OnNext(initialValue);
-
-            var src = observable.DistinctUntilChanged().Multicast(subj);
-            _inner = src.Connect();
-            _source = src;
+            _source = observable.DistinctUntilChanged().Multicast(subj);
         }
 
         /// <summary>
         /// The last provided value from the Observable. 
         /// </summary>
         public T Value {
-            get { return _lastValue; }
+            get { 
+                _inner = _inner ?? _source.Connect();
+                return _lastValue; 
+            }
         }
 
         /// <summary>
@@ -87,7 +87,7 @@ namespace ReactiveUI
 
         public void Dispose()
         {
-            _inner.Dispose();
+            (_inner ?? Disposable.Empty).Dispose();
             _inner = null;
         }
 
