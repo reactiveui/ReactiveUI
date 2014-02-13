@@ -120,7 +120,7 @@ namespace ReactiveUI
 
         static readonly MemoizingMRUCache<Type, IActivationForViewFetcher> activationFetcherCache = 
             new MemoizingMRUCache<Type, IActivationForViewFetcher>((t, _) => {
-                return RxApp.Locator.GetServices<IActivationForViewFetcher>()
+                return Locator.Current.GetServices<IActivationForViewFetcher>()
                     .Aggregate(Tuple.Create(0, default(IActivationForViewFetcher)), (acc, x) => {
                         int score = x.GetAffinityForView(t);
                         return (score > acc.Item1) ? Tuple.Create(score, x) : acc;
