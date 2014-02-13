@@ -50,8 +50,6 @@ namespace ReactiveUI
                 });
             });
 
-            Splat.Locator.CurrentMutable.InitializeReactiveUI();
-
             if (ModeDetector.InUnitTestRunner()) {
                 LogHost.Default.Warn("*** Detected Unit Test Runner, setting MainThreadScheduler to CurrentThread ***");
                 LogHost.Default.Warn("If we are not actually in a test runner, please file a bug\n");
@@ -141,35 +139,6 @@ namespace ReactiveUI
             set {
                 _DefaultExceptionHandler = value;
             }
-        }
-
-        /// <summary>
-        /// This method will initialize your custom service locator with the 
-        /// built-in RxUI types. Use this to help initialize containers that
-        /// don't conform easily to IMutableDependencyResolver.
-        /// </summary>
-        /// <param name="registerMethod">Create a method here that will 
-        /// register a constant. For example, the NInject version of
-        /// this method might look like:
-        /// 
-        /// (obj, type) => kernel.Bind(type).ToConstant(obj)
-        /// </param>
-        public static void InitializeCustomResolver(Action<object, Type> registerMethod)
-        {
-            var fakeResolver = new FuncDependencyResolver(null,
-                (fac, type, str) => registerMethod(fac(), type));
-
-            fakeResolver.InitializeReactiveUI();
-        }
-
-        /// <summary>
-        /// Acessing Splat's Default Locator this way ensures it is initialized
-        /// by ReactiveUI. This method is primarily used by ReactiveUI itself,
-        /// you can usually ignore it and should use Locator.Current.
-        /// </summary>
-        internal static IDependencyResolver Locator
-        {
-            get { return Splat.Locator.Current; }
         }
 
 #if ANDROID || SILVERLIGHT || IOS
