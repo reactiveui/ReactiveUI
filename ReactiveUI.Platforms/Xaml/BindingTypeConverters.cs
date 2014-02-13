@@ -23,10 +23,10 @@ namespace ReactiveUI.Xaml
     /// </summary>
     public class BooleanToVisibilityTypeConverter : IBindingTypeConverter
     {
-        public int GetAffinityForObjects(Type lhs, Type rhs)
+        public int GetAffinityForObjects(Type fromType, Type toType)
         {
-            if (lhs == typeof (bool) && rhs == typeof (Visibility)) return 10;
-            if (lhs == typeof (Visibility) && rhs == typeof (bool)) return 10;
+            if (fromType == typeof (bool) && toType == typeof (Visibility)) return 10;
+            if (fromType == typeof (Visibility) && toType == typeof (bool)) return 10;
             return 0;
         }
 
