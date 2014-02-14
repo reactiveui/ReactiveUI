@@ -5,6 +5,7 @@ using System.Text;
 using System.Reactive.Linq;
 using System.Reactive.Disposables;
 using System.Linq.Expressions;
+using Splat;
 
 namespace ReactiveUI
 {
@@ -56,7 +57,7 @@ namespace ReactiveUI
         readonly ReactiveList<InputSection> registeredSections = new ReactiveList<InputSection>();
 
         public static IKeyboardManager Current {
-            get { return RxApp.DependencyResolver.GetService<IKeyboardManager>(); }
+            get { return Locator.Current.GetService<IKeyboardManager>(); }
         }
 
         internal KeyboardManager() { }
