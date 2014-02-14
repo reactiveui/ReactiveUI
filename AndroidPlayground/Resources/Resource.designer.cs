@@ -26,6 +26,7 @@ namespace AndroidPlayground
 		
 		public static void UpdateIdValues()
 		{
+			global::Splat.Resource.String.library_name = global::AndroidPlayground.Resource.String.library_name;
 		}
 		
 		public partial class Attribute
@@ -951,23 +952,50 @@ namespace AndroidPlayground
 			// aapt resource value: 0x7f04000b
 			public const int abs__up = 2130968587;
 			
+			// aapt resource value: 0x7f040036
+			public const int closeMarket = 2130968630;
+			
 			// aapt resource value: 0x7f040009
 			public const int disableHome = 2130968585;
 			
 			// aapt resource value: 0x7f040027
 			public const int edit_query = 2130968615;
 			
+			// aapt resource value: 0x7f04003e
+			public const int high = 2130968638;
+			
 			// aapt resource value: 0x7f040006
 			public const int homeAsUp = 2130968582;
 			
+			// aapt resource value: 0x7f04003b
+			public const int lastChange = 2130968635;
+			
 			// aapt resource value: 0x7f040002
 			public const int listMode = 2130968578;
+			
+			// aapt resource value: 0x7f04003f
+			public const int low = 2130968639;
 			
 			// aapt resource value: 0x7f040033
 			public const int myButton = 2130968627;
 			
 			// aapt resource value: 0x7f040001
 			public const int normal = 2130968577;
+			
+			// aapt resource value: 0x7f04003d
+			public const int open = 2130968637;
+			
+			// aapt resource value: 0x7f040035
+			public const int openMarket = 2130968629;
+			
+			// aapt resource value: 0x7f04003c
+			public const int percentChange = 2130968636;
+			
+			// aapt resource value: 0x7f04003a
+			public const int price = 2130968634;
+			
+			// aapt resource value: 0x7f040037
+			public const int reset = 2130968631;
 			
 			// aapt resource value: 0x7f040008
 			public const int showCustom = 2130968584;
@@ -978,6 +1006,9 @@ namespace AndroidPlayground
 			// aapt resource value: 0x7f040007
 			public const int showTitle = 2130968583;
 			
+			// aapt resource value: 0x7f040039
+			public const int symbol = 2130968633;
+			
 			// aapt resource value: 0x7f040003
 			public const int tabMode = 2130968579;
 			
@@ -986,6 +1017,9 @@ namespace AndroidPlayground
 			
 			// aapt resource value: 0x7f040004
 			public const int useLogo = 2130968580;
+			
+			// aapt resource value: 0x7f040038
+			public const int watchList = 2130968632;
 			
 			// aapt resource value: 0x7f040000
 			public const int wrap_content = 2130968576;
@@ -1100,6 +1134,12 @@ namespace AndroidPlayground
 			// aapt resource value: 0x7f03001a
 			public const int sherlock_spinner_item = 2130903066;
 			
+			// aapt resource value: 0x7f03001b
+			public const int WatchList = 2130903067;
+			
+			// aapt resource value: 0x7f03001c
+			public const int WatchListItem = 2130903068;
+			
 			static Layout()
 			{
 				global::Android.Runtime.ResourceIdManager.UpdateIdValues();
@@ -1158,11 +1198,14 @@ namespace AndroidPlayground
 			// aapt resource value: 0x7f090009
 			public const int abs__shareactionprovider_share_with_application = 2131296265;
 			
+			// aapt resource value: 0x7f090011
+			public const int app_name = 2131296273;
+			
 			// aapt resource value: 0x7f090010
-			public const int app_name = 2131296272;
+			public const int hello = 2131296272;
 			
 			// aapt resource value: 0x7f09000f
-			public const int hello = 2131296271;
+			public const int library_name = 2131296271;
 			
 			static String()
 			{

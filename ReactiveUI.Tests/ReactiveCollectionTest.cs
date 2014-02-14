@@ -7,6 +7,7 @@ using System.Reactive.Linq;
 using System.Text;
 using ReactiveUI.Testing;
 using Xunit;
+using Splat;
 
 using Microsoft.Reactive.Testing;
 using System.Collections.Specialized;
@@ -18,6 +19,26 @@ namespace ReactiveUI.Tests
 {
     public class ReactiveCollectionTest
     {
+        [Fact]
+        public void CountPropertyIsNotAmbiguous()
+        {
+            IReactiveList<int> reactiveList = new ReactiveList<int>();
+            Assert.Equal(0, reactiveList.Count);
+            IList<int> list = reactiveList;
+            Assert.Equal(0, list.Count);
+
+            ICollection collection = new ReactiveList<int>();
+            var l = (IList) collection;
+            Assert.Same(collection, l);
+        }
+
+        [Fact]
+        public void IndexerIsNotAmbiguous()
+        {
+            IReactiveList<int> reactiveList = new ReactiveList<int> { 0, 1 };
+            Assert.Equal(0, reactiveList[0]);
+        }
+
         [Fact]
         public void CollectionCountChangedTest()
         {
@@ -772,10 +793,9 @@ namespace ReactiveUI.Tests
                 var resolver = new ModernDependencyResolver();
                 var logger = new TestLogger();
 
-                resolver.InitializeResolver();
-                resolver.RegisterConstant(new FuncLogManager(t => new WrappingFullLogger(logger, t)), typeof(ILogManager));
-
                 using(resolver.WithResolver()) {
+                    resolver.RegisterConstant(new FuncLogManager(t => new WrappingFullLogger(logger, t)), typeof(ILogManager));
+
                     var incc = new ReactiveList<NoOneHasEverSeenThisClassBefore>();
                     Assert.True(incc is INotifyCollectionChanged);
                     var inccDerived = incc.CreateDerivedCollection(x => x);
@@ -807,10 +827,9 @@ namespace ReactiveUI.Tests
                 var resolver = new ModernDependencyResolver();
                 var logger = new TestLogger();
 
-                resolver.InitializeResolver();
-                resolver.RegisterConstant(new FuncLogManager(t => new WrappingFullLogger(logger, t)), typeof(ILogManager));
-
                 using(resolver.WithResolver()) {
+                    resolver.RegisterConstant(new FuncLogManager(t => new WrappingFullLogger(logger, t)), typeof(ILogManager));
+
                     var incc = new ReactiveList<NoOneHasEverSeenThisClassBeforeEither>();
                     var inccDerived = incc.CreateDerivedCollection(x => x);
 

@@ -4,6 +4,7 @@ using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Windows;
 using ReactiveUI.Xaml;
+using Splat;
 
 #if WINRT
 using Windows.UI.Xaml;
@@ -19,7 +20,7 @@ namespace ReactiveUI.Xaml
     /// the ViewModel property and display it. This control is very useful
     /// inside a DataTemplate to display the View associated with a ViewModel.
     /// </summary>
-    public class ViewModelViewHost : TransitioningContentControl
+    public class ViewModelViewHost : TransitioningContentControl, IViewFor
     {
         /// <summary>
         /// The ViewModel to display
@@ -54,12 +55,18 @@ namespace ReactiveUI.Xaml
 
         public ViewModelViewHost()
         {
+            // NB: InUnitTestRunner also returns true in Design Mode
+            if (ModeDetector.InUnitTestRunner()) {
+                ViewContractObservable = Observable.Never<string>();
+                return;
+            }
+
             var vmAndContract = Observable.CombineLatest(
                 this.WhenAnyValue(x => x.ViewModel),
                 this.WhenAnyObservable(x => x.ViewContractObservable),
                 (vm, contract) => new { ViewModel = vm, Contract = contract, });
 
-            var platform = RxApp.DependencyResolver.GetService<IPlatformOperations>();
+            var platform = Locator.Current.GetService<IPlatformOperations>();
             if (platform == null) {
                 throw new Exception("Couldn't find an IPlatformOperations. This should never happen, your dependency resolver is broken");
             }
@@ -70,17 +77,23 @@ namespace ReactiveUI.Xaml
                 .StartWith(platform.GetOrientation())
                 .Select(x => x != null ? x.ToString() : default(string));
 
-            vmAndContract.Subscribe(x => {
-                if (x.ViewModel == null) {
-                    Content = DefaultContent;
-                    return;
-                }
+            this.WhenActivated(d => {
+                d(vmAndContract.Subscribe(x => {
+                    if (x.ViewModel == null) {
+                        Content = DefaultContent;
+                        return;
+                    }
 
-                var viewLocator = ViewLocator ?? ReactiveUI.ViewLocator.Current;
-                var view = viewLocator.ResolveView(x.ViewModel, x.Contract);
+                    var viewLocator = ViewLocator ?? ReactiveUI.ViewLocator.Current;
+                    var view = viewLocator.ResolveView(x.ViewModel, x.Contract) ?? viewLocator.ResolveView(x.ViewModel, null);
 
-                view.ViewModel = x.ViewModel;
-                Content = view;
+                    if (view == null) {
+                        throw new Exception(String.Format("Couldn't find view for '{0}'.", x.ViewModel));
+                    }
+
+                    view.ViewModel = x.ViewModel;
+                    Content = view;
+                }));
             });
         }
 

@@ -1,10 +1,10 @@
 using System;
 using System.Reactive;
 using System.Reactive.Linq;
+using ReactiveUI;
 
 #if UIKIT
 using MonoTouch.UIKit;
-
 using NSView = MonoTouch.UIKit.UIView;
 using NSViewController = MonoTouch.UIKit.UIViewController;
 #else

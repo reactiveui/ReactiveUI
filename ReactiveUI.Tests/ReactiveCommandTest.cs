@@ -247,59 +247,21 @@ namespace ReactiveUI.Tests
         }
 
         [Fact]
-        public void RAFShouldActuallyRunOnTheTaskpool()
+        public async Task RAFShouldActuallyRunOnTheTaskpool()
         {
             var deferred = RxApp.MainThreadScheduler;
             var taskpool = RxApp.TaskpoolScheduler;
 
-            try {
-                var testDeferred = new CountingTestScheduler(Scheduler.Immediate);
-                var testTaskpool = new CountingTestScheduler(Scheduler.NewThread);
-                RxApp.MainThreadScheduler = testDeferred;
-                RxApp.TaskpoolScheduler = testTaskpool;
+            var fixture = new ReactiveCommand();
+            var threadId = fixture.RegisterAsyncFunction(_ => Thread.CurrentThread.ManagedThreadId)
+                .CreateCollection();
 
-                var fixture = new ReactiveCommand();
-                var result = fixture.RegisterAsyncFunction(x => {
-                    Thread.Sleep(1000);
-                    return (int)x*5;
-                });
+            Assert.Equal(0, threadId.Count);
 
-                fixture.Execute(1);
-                Assert.Equal(5, result.First());
+            fixture.Execute(1);
+            Assert.Equal(1, threadId.Count);
 
-                Assert.True(testDeferred.ScheduledItems.Count >= 1);
-                Assert.True(testTaskpool.ScheduledItems.Count >= 1);
-            } finally {
-                RxApp.MainThreadScheduler = deferred;
-                RxApp.TaskpoolScheduler = taskpool;
-            }
-        }
-
-        [Fact]
-        public void RAOShouldActuallyRunOnTheTaskpool()
-        {
-            var deferred = RxApp.MainThreadScheduler;
-            var taskpool = RxApp.TaskpoolScheduler;
-
-            try {
-                var testDeferred = new CountingTestScheduler(Scheduler.Immediate);
-                var testTaskpool = new CountingTestScheduler(Scheduler.NewThread);
-                RxApp.MainThreadScheduler = testDeferred;
-                RxApp.TaskpoolScheduler = testTaskpool;
-
-                var fixture = new ReactiveCommand();
-                var result = fixture.RegisterAsync(x =>
-                    Observable.Return((int)x*5).Delay(TimeSpan.FromSeconds(1), RxApp.TaskpoolScheduler));
-
-                fixture.Execute(1);
-                Assert.Equal(5, result.First());
-
-                Assert.True(testDeferred.ScheduledItems.Count >= 1);
-                Assert.True(testTaskpool.ScheduledItems.Count >= 1);
-            } finally {
-                RxApp.MainThreadScheduler = deferred;
-                RxApp.TaskpoolScheduler = taskpool;
-            }
+            Assert.NotEqual(Thread.CurrentThread.ManagedThreadId, threadId[0]);
         }
 
         [Fact]
@@ -570,6 +532,42 @@ namespace ReactiveUI.Tests
             Assert.True(fixture.CanExecute(null));
             Assert.Equal(3, canExecuteOutput.Count);
             Assert.Equal(true, canExecuteOutput[2]);
+        }
+
+        [Fact]
+        public void TaskExceptionsShouldBeMarshaledToThrownExceptions()
+        {
+            (new TestScheduler()).With(sched => {
+                var fixture = new ReactiveCommand();
+
+                int result = 0;
+                fixture.RegisterAsyncTask(async _ => {
+                    await Observable.Timer(TimeSpan.FromMilliseconds(50), RxApp.TaskpoolScheduler);
+                    throw new Exception("Die");
+                    return 5;
+                }).Subscribe(x => result = x);
+
+                var error = default(Exception);
+                fixture.ThrownExceptions.Subscribe(ex => error = ex);
+
+                fixture.Execute(null);
+
+                sched.AdvanceByMs(20);
+                Assert.Null(error);
+                Assert.Equal(0, result);
+
+                // NB: We have to Thread.Sleep here to compensate for not being
+                // able to control the concurrency of Task
+                sched.AdvanceByMs(100);
+                Thread.Sleep(100);
+
+                // NB: Advance it one more so that the scheduled ThrownExceptions
+                // end up being dispatched
+                sched.AdvanceByMs(10);
+
+                Assert.NotNull(error);
+                Assert.Equal(0, result);
+            });
         }
     }
 }

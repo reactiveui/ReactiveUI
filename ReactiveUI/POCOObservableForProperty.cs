@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reactive.Linq;
+using Splat;
 
 namespace ReactiveUI
 {
@@ -29,8 +30,7 @@ namespace ReactiveUI
 
             return Observable.Return((IObservedChange<object, object>) new ObservedChange<object, object>() {
                 Sender = sender, PropertyName = propertyName
-            }, RxApp.MainThreadScheduler)
-                .Concat(Observable.Never<IObservedChange<object, object>>());
+            }).Concat(Observable.Never<IObservedChange<object, object>>());
         }
     }
 }

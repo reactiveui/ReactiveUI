@@ -14,8 +14,20 @@ namespace ReactiveUI.Cocoa
                 This.Execute(null);
             });
 
+            var cech = new EventHandler((o, e) => {
+                var canExecute = This.CanExecute(null);
+                control.Enabled = canExecute;
+            });
+
+            This.CanExecuteChanged += cech;
             control.AddTarget(ev, events);
-            return Disposable.Create(() => control.RemoveTarget(ev, events));
+
+            control.Enabled = This.CanExecute(null);
+
+            return Disposable.Create(() => {
+                control.RemoveTarget(ev, events);
+                This.CanExecuteChanged -= cech;
+            });
         }
     }
 }

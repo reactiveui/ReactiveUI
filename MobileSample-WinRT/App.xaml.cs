@@ -18,6 +18,7 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using System.Reactive.Linq;
+using Splat;
 
 namespace MobileSample_WinRT
 {
@@ -30,10 +31,11 @@ namespace MobileSample_WinRT
 
         protected override void OnLaunched(LaunchActivatedEventArgs args)
         {
-            ((ModernDependencyResolver)RxApp.DependencyResolver).Register(() => new AppBootstrapper(), typeof(IApplicationRootState));
-
+            Locator.CurrentMutable.Register(() => new AppBootstrapper(), typeof(IApplicationRootState));
             base.OnLaunched(args);
-            var host = RxApp.DependencyResolver.GetService<ISuspensionHost>();
+
+            RxApp.MainThreadScheduler.GetType();
+            var host = Locator.Current.GetService<ISuspensionHost>();
             host.SetupDefaultSuspendResume();
         }
     }

@@ -8,6 +8,8 @@ using System.Reactive.Subjects;
 using System.Reflection;
 using System.Text;
 using System.Windows.Input;
+using Splat;
+using ReactiveUI;
 
 namespace ReactiveUI
 {
@@ -17,7 +19,7 @@ namespace ReactiveUI
 
         static CommandBinder()
         {
-            binderImplementation = RxApp.DependencyResolver.GetService<ICommandBinderImplementation>() ?? 
+            binderImplementation = Locator.Current.GetService<ICommandBinderImplementation>() ?? 
                 new CommandBinderImplementation();
         }
 
@@ -225,7 +227,7 @@ namespace ReactiveUI
             IDisposable bindingDisposable = bindCommandInternal(viewModel, view, propertyName, viewPropGetter, Observable.Empty<object>(), toEvent, out changed, cmd => {
                 var rc = cmd as IReactiveCommand;
                 if (rc == null) {
-                    return Legacy.ReactiveCommand.Create(x => cmd.CanExecute(x), _ => cmd.Execute(withParameter()));
+                    return new RelayCommand(cmd.CanExecute, _ => cmd.Execute(withParameter()));
                 } 
 
                 var ret = new ReactiveCommand(rc.CanExecuteObservable);
@@ -254,7 +256,7 @@ namespace ReactiveUI
             IObservable<TProp> changed;
             IDisposable bindingDisposable = bindCommandInternal(viewModel, view, propertyName, viewPropGetter, withParameter, toEvent, out changed);
 
-            return new ReactiveBinding<TView, TViewModel, TProp>(view, viewModel, new string[] { ctlName }, new string[] { Reflection.SimpleExpressionToPropertyName(propertyName) }, 
+            return new ReactiveBinding<TView, TViewModel, TProp>(view, viewModel, new string[] { ctlName }, Reflection.ExpressionToPropertyNames(propertyName), 
                 changed, BindingDirection.OneWay, bindingDisposable);
         }
 
@@ -271,7 +273,7 @@ namespace ReactiveUI
             where TView : class, IViewFor<TViewModel>
             where TProp : ICommand
         {
-            var propName = Reflection.SimpleExpressionToPropertyName(propertyName);
+            var vmPropChain = Reflection.ExpressionToPropertyNames(propertyName);
 
             IDisposable disp = Disposable.Empty;
 
@@ -284,10 +286,12 @@ namespace ReactiveUI
                     return;
                 }
 
+                var vmString = String.Join(".", vmPropChain);
+
                 var target = viewPropGetter(view);
                 if (target == null) {
                     this.Log().Error("Binding {0}.{1} => {2}.{1} failed because target is null",
-                        typeof(TViewModel).FullName, propName, view.GetType().FullName);
+                        typeof(TViewModel).FullName, vmString, view.GetType().FullName);
                     disp = Disposable.Empty;
                 }
 
@@ -342,7 +346,7 @@ namespace ReactiveUI
     {
         static readonly MemoizingMRUCache<Type, ICreatesCommandBinding> bindCommandCache = 
             new MemoizingMRUCache<Type, ICreatesCommandBinding>((t, _) => {
-                return RxApp.DependencyResolver.GetServices<ICreatesCommandBinding>()
+                return Locator.Current.GetServices<ICreatesCommandBinding>()
                     .Aggregate(Tuple.Create(0, (ICreatesCommandBinding)null), (acc, x) => {
                         int score = x.GetAffinityForObject(t, false);
                         return (score > acc.Item1) ? Tuple.Create(score, x) : acc;
@@ -351,7 +355,7 @@ namespace ReactiveUI
 
         static readonly MemoizingMRUCache<Type, ICreatesCommandBinding> bindCommandEventCache = 
             new MemoizingMRUCache<Type, ICreatesCommandBinding>((t, _) => {
-                return RxApp.DependencyResolver.GetServices<ICreatesCommandBinding>()
+                return Locator.Current.GetServices<ICreatesCommandBinding>()
                     .Aggregate(Tuple.Create(0, (ICreatesCommandBinding)null), (acc, x) => {
                         int score = x.GetAffinityForObject(t, true);
                         return (score > acc.Item1) ? Tuple.Create(score, x) : acc;
@@ -388,7 +392,7 @@ namespace ReactiveUI
             }
 
             var eventArgsType = Reflection.GetEventArgsTypeForEvent(type, eventName);
-            var mi = binder.GetType().GetMethods().First(x => x.Name == "BindCommandToObject" && x.IsGenericMethod);
+            var mi = binder.GetType().GetTypeInfo().DeclaredMethods.First(x => x.Name == "BindCommandToObject" && x.IsGenericMethod);
             mi = mi.MakeGenericMethod(new[] {eventArgsType});
 
             //var ret = binder.BindCommandToObject<TEventArgs>(command, target, commandParameter, eventName);
@@ -398,6 +402,37 @@ namespace ReactiveUI
             }
 
             return ret;
+        }
+    }
+
+    internal class RelayCommand : ICommand
+    {
+        readonly Func<object, bool> canExecute;
+        readonly Action<object> execute;
+
+        public RelayCommand(Func<object, bool> canExecute = null, Action<object> execute = null)
+        {
+            this.canExecute = canExecute ?? (_ => true);
+            this.execute = execute ?? (_ => {});
+        }
+
+        public event EventHandler CanExecuteChanged;
+
+        bool? prevCanExecute = null;
+        public bool CanExecute(object parameter)
+        {
+            var ce = canExecute(parameter);
+            if (CanExecuteChanged != null && (!prevCanExecute.HasValue || ce != prevCanExecute)) {
+                CanExecuteChanged(this, EventArgs.Empty);
+                prevCanExecute = ce;
+            }
+
+            return ce;
+        }
+
+        public void Execute(object parameter)
+        {
+            execute(parameter);
         }
     }
 }

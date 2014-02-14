@@ -9,6 +9,7 @@ using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Splat;
 
 namespace ReactiveUI.Mobile
 {
@@ -79,7 +80,7 @@ namespace ReactiveUI.Mobile
 
         internal void setupDefaultSuspendResume(ISuspensionDriver driver)
         {
-            driver = driver ?? RxApp.DependencyResolver.GetService<ISuspensionDriver>();
+            driver = driver ?? Locator.Current.GetService<ISuspensionDriver>();
 
             _viewModelChanged.Subscribe(vm => {
                 var page = default(IViewFor);
@@ -92,7 +93,7 @@ namespace ReactiveUI.Mobile
 
                 page = Window.Current.Content as IViewFor;
                 if (page == null) {
-                    page = RxApp.DependencyResolver.GetService<IViewFor>("InitialPage");
+                    page = Locator.Current.GetService<IViewFor>("InitialPage");
                     frame.Content = (UIElement)page;
                 }
 
@@ -113,13 +114,13 @@ namespace ReactiveUI.Mobile
             SuspensionHost.IsResuming
                 .SelectMany(x => driver.LoadState<IApplicationRootState>())
                 .LoggedCatch(this,
-                    Observable.Defer(() => Observable.Return(RxApp.DependencyResolver.GetService<IApplicationRootState>())),
+                    Observable.Defer(() => Observable.Return(Locator.Current.GetService<IApplicationRootState>())),
                     "Failed to restore app state from storage, creating from scratch")
                 .ObserveOn(RxApp.MainThreadScheduler)
                 .Subscribe(x => ViewModel = x);
 
             SuspensionHost.IsLaunchingNew.Subscribe(_ => {
-                ViewModel = RxApp.DependencyResolver.GetService<IApplicationRootState>();
+                ViewModel = Locator.Current.GetService<IApplicationRootState>();
             });
         }
 

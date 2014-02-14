@@ -22,7 +22,8 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>bin\Debug\Net45</OutputPath>
+    <IntermediateOutputPath>obj\Debug\Net45</IntermediateOutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -31,7 +32,8 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
+    <OutputPath>bin\Release\Net45</OutputPath>
+    <IntermediateOutputPath>obj\Release\Net45</IntermediateOutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -63,6 +65,9 @@
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
+    <Reference Include="Splat">
+      <HintPath>..\ext\net45\Splat.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core">
@@ -107,6 +112,7 @@
     </CodeAnalysisDependentAssemblyPaths>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ActivationTest.cs" />
     <Compile Include="AutoPersistHelperTest.cs" />
     <Compile Include="AwaiterTest.cs" />
     <Compile Include="BindingTypeConvertersTest.cs" />
@@ -123,7 +129,6 @@
     <Compile Include="Winforms\ViewModelViewHostTests.cs" />
     <Compile Include="Xaml\DependencyObjectObservableForPropertyTest.cs" />
     <Compile Include="ErrorsTest.cs" />
-    <Compile Include="ObservableAsyncMRUCacheTest.cs" />
     <Compile Include="MessageBusTest.cs" />
     <Compile Include="ObservableAsPropertyHelperTest.cs" />
     <Compile Include="ObservedChangedMixinTest.cs" />
@@ -146,10 +151,6 @@
     <ProjectReference Include="..\ReactiveUI.Blend\ReactiveUI.Blend_Net45.csproj">
       <Project>{7866b5b1-5457-43a2-976a-e784eb10f2da}</Project>
       <Name>ReactiveUI.Blend_Net45</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\ReactiveUI.NLog\ReactiveUI.NLog_Net45.csproj">
-      <Project>{08d3606b-ee79-43ee-8382-72a1091f1f30}</Project>
-      <Name>ReactiveUI.NLog_Net45</Name>
     </ProjectReference>
     <ProjectReference Include="..\ReactiveUI.Platforms\ReactiveUI.Winforms_Net45.csproj">
       <Project>{f5ecbde5-e525-4482-b568-63217bcb0a0b}</Project>
@@ -176,6 +177,9 @@
     <Content Include="Xaml\TestInterface.cs.txt" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="nlog.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

@@ -25,6 +25,12 @@ namespace ReactiveUI.Tests
         public ReactiveCommand Command1 { get; protected set; }
         public ReactiveCommand Command2 { get; protected set; }
 
+        ReactiveList<int> myListOfInts;
+        public ReactiveList<int> MyListOfInts {
+            get { return myListOfInts; }
+            set { this.RaiseAndSetIfChanged(ref myListOfInts, value); }
+        }
+
         public TestWhenAnyObsViewModel()
         {
             Command1 = new ReactiveCommand();
@@ -398,7 +404,12 @@ namespace ReactiveUI.Tests
             fixture.WhenAny(x => x.PocoProperty, x => x).Subscribe(output.Add);
             var output2 = new List<string>();
             fixture.WhenAnyValue(x => x.PocoProperty).Subscribe(output2.Add);
+            var output3 = new List<IObservedChange<TestFixture, int?>>();
+            fixture.WhenAny(x => x.NullableInt, x => x).Subscribe(output3.Add);
 
+            var output4 = new List<int?>();
+            fixture.WhenAnyValue(x => x.NullableInt).Subscribe(output4.Add);
+           
             Assert.Equal(1, output.Count);
             Assert.Equal(fixture, output[0].Sender);
             Assert.Equal("PocoProperty", output[0].PropertyName);
@@ -406,6 +417,14 @@ namespace ReactiveUI.Tests
 
             Assert.Equal(1, output2.Count);
             Assert.Equal("Bamf", output2[0]);
+
+            Assert.Equal(1, output3.Count);
+            Assert.Equal(fixture, output3[0].Sender);
+            Assert.Equal("NullableInt", output3[0].PropertyName);
+            Assert.Equal(null, output3[0].Value);
+
+            Assert.Equal(1, output4.Count);
+            Assert.Equal(null, output4[0]);
         }
 
         [Fact]
@@ -553,6 +572,35 @@ namespace ReactiveUI.Tests
                 changes.Select(x => x.Value).AssertAreEqual(new[] { "Pre", "Foo" });
             });
         }
+
+        [Fact]
+        public void OFPNamedPropertyTestRepeats()
+        {
+            (new TestScheduler()).With(sched => {
+                var fixture = new TestFixture();
+                var changes = fixture.ObservableForProperty<TestFixture, string>("IsOnlyOneWord").CreateCollection();
+
+                fixture.IsOnlyOneWord = "Foo";
+                sched.Start();
+                Assert.Equal(1, changes.Count);
+
+                fixture.IsOnlyOneWord = "Bar";
+                sched.Start();
+                Assert.Equal(2, changes.Count);
+
+                fixture.IsOnlyOneWord = "Bar";
+                sched.Start();
+                Assert.Equal(2, changes.Count);
+
+                fixture.IsOnlyOneWord = "Foo";
+                sched.Start();
+                Assert.Equal(3, changes.Count);
+
+                Assert.True(changes.All(x => x.Sender == fixture));
+                Assert.True(changes.All(x => x.PropertyName == "IsOnlyOneWord"));
+                changes.Select(x => x.Value).AssertAreEqual(new[] { "Foo", "Bar", "Foo" });
+            });
+        }
     }
 
     public class WhenAnyObservableTests
@@ -580,6 +628,24 @@ namespace ReactiveUI.Tests
             Assert.True(
                 new[] {1, 2, 1,}.Zip(list, (expected, actual) => new {expected, actual})
                                 .All(x => x.expected == x.actual));
+        }
+
+        [Fact]
+        public void WhenAnyWithNullObjectShouldUpdateWhenObjectIsntNullAnymore()
+        {
+            var fixture = new TestWhenAnyObsViewModel();
+            var output = fixture.WhenAnyObservable(x => x.MyListOfInts.CountChanged).CreateCollection();
+
+            Assert.Equal(0, output.Count);
+
+            fixture.MyListOfInts = new ReactiveList<int>();
+            Assert.Equal(0, output.Count);
+
+            fixture.MyListOfInts.Add(1);
+            Assert.Equal(1, output.Count);
+
+            fixture.MyListOfInts = null;
+            Assert.Equal(1, output.Count);
         }
     }
 

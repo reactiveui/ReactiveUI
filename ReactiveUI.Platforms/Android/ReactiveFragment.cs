@@ -18,6 +18,8 @@ using System.Threading;
 using System.Reactive.Disposables;
 using System.Diagnostics.Contracts;
 using System.Runtime.CompilerServices;
+using Splat;
+using System.Reactive;
 
 namespace ReactiveUI.Android
 {
@@ -25,7 +27,7 @@ namespace ReactiveUI.Android
     /// This is a Fragment that is both an Activity and has ReactiveObject powers 
     /// (i.e. you can call RaiseAndSetIfChanged)
     /// </summary>
-    public class ReactiveFragment<TViewModel> : ReactiveFragment, IViewFor<TViewModel>, IReactiveNotifyPropertyChanged, IHandleObservableErrors
+    public class ReactiveFragment<TViewModel> : ReactiveFragment, IViewFor<TViewModel>, ICanActivate
         where TViewModel : class, IReactiveNotifyPropertyChanged
     {
         protected ReactiveFragment() { }
@@ -233,6 +235,24 @@ namespace ReactiveUI.Android
         public void RaisePropertyChanging([CallerMemberName] string propertyName = null)
         {
             raisePropertyChanging(propertyName);
+        }
+
+        readonly Subject<Unit> activated = new Subject<Unit>();
+        public IObservable<Unit> Activated { get { return activated; } }
+
+        readonly Subject<Unit> deactivated = new Subject<Unit>();
+        public IObservable<Unit> Deactivated { get { return deactivated; } }
+
+        public override void OnPause()
+        {
+            base.OnPause();
+            deactivated.OnNext(Unit.Default);
+        }
+                
+        public override void OnResume()
+        {
+            base.OnResume();
+            activated.OnNext(Unit.Default);
         }
     }
 }

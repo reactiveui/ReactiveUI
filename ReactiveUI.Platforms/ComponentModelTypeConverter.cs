@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using Splat;
 
 namespace ReactiveUI
 {
@@ -24,9 +25,9 @@ namespace ReactiveUI
             return converter.CanConvertTo(types.Item2) ? converter : null;
         }, RxApp.SmallCacheLimit);
 
-        public int GetAffinityForObjects(Type lhs, Type rhs)
+        public int GetAffinityForObjects(Type fromType, Type toType)
         {
-            var converter = typeConverterCache.Get(Tuple.Create(lhs, rhs));
+            var converter = typeConverterCache.Get(Tuple.Create(fromType, toType));
             return converter != null ? 10 : 0;
         }
 

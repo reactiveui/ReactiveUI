@@ -26,6 +26,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\Monoandroid\</OutputPath>
+    <IntermediateOutputPath>obj\Debug\Monoandroid</IntermediateOutputPath>
     <DefineConstants>DEBUG; MONO</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -37,6 +38,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\Monoandroid\</OutputPath>
+    <IntermediateOutputPath>obj\Release\Monoandroid</IntermediateOutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AndroidUseSharedRuntime>false</AndroidUseSharedRuntime>
@@ -49,7 +51,6 @@
     <Reference Include="System.Core" />
     <Reference Include="Mono.Android" />
     <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="Mono.Android.Support.v4" />
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\ext\monodroid\Newtonsoft.Json.dll</HintPath>
     </Reference>
@@ -69,6 +70,12 @@
     <Reference Include="System.Reactive.PlatformServices">
       <HintPath>..\ext\monodroid\System.Reactive.PlatformServices.dll</HintPath>
     </Reference>
+    <Reference Include="Splat">
+      <HintPath>..\ext\monodroid\Splat.dll</HintPath>
+    </Reference>
+    <Reference Include="Xamarin.Android.Support.v13">
+      <HintPath>..\ext\monodroid\Xamarin.Android.Support.v13.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Resources\Resource.designer.cs" />
@@ -79,7 +86,6 @@
     <Compile Include="MessageBusTest.cs" />
     <Compile Include="NUnitShim.cs" />
     <Compile Include="ObservableAsPropertyHelperTest.cs" />
-    <Compile Include="ObservableAsyncMRUCacheTest.cs" />
     <Compile Include="ObservedChangedMixinTest.cs" />
     <Compile Include="OrderedComparerTests.cs" />
     <Compile Include="ReactiveCollectionTest.cs" />
@@ -116,13 +122,13 @@
       <Project>{1920477B-BB94-93CF-984E-E177EF9FEDB1}</Project>
       <Name>ReactiveUI.Testing_Monodroid</Name>
     </ProjectReference>
-    <ProjectReference Include="..\ReactiveUI\ReactiveUI_Monodroid.csproj">
-      <Project>{F92A477B-BB94-43C1-984E-E177EF9FEDB7}</Project>
-      <Name>ReactiveUI_Monodroid</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Microsoft.Reactive.Testing\Microsoft.Reactive.Testing_Monodroid.csproj">
       <Project>{1131910A-9D6D-473F-9C69-3DCF6A1C81BC}</Project>
       <Name>Microsoft.Reactive.Testing_Monodroid</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj">
+      <Project>{464CB812-F99F-401B-BE4C-E8F0515CD19D}</Project>
+      <Name>ReactiveUI</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>

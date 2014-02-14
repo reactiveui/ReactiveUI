@@ -5,6 +5,7 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows.Forms;
+using ReactiveUI;
 
 namespace ReactiveUI.Winforms
 {

@@ -45,6 +45,7 @@ namespace ReactiveUI.Xaml
 #endif
 
 #if !MONO
+            registerFunction(() => new ActivationForViewFetcher(), typeof(IActivationForViewFetcher));
             registerFunction(() => new DependencyObjectObservableForProperty(), typeof(ICreatesObservableForProperty));
             registerFunction(() => new XamlDefaultPropertyBinding(), typeof(IDefaultPropertyBindingProvider));
             registerFunction(() => new CreatesCommandBindingViaCommandParameter(), typeof(ICreatesCommandBinding));
@@ -73,11 +74,6 @@ namespace ReactiveUI.Xaml
 #if COCOA && !UIKIT
             registerFunction(() => new TargetActionCommandBinder(), typeof(ICreatesCommandBinding));
 #endif
-
-            RxApp.InUnitTestRunnerOverride = PlatformUnitTestDetector.InUnitTestRunner();
-            if (RxApp.InUnitTestRunner()) {
-                return;
-            }
 
             RxApp.TaskpoolScheduler = System.Reactive.Concurrency.TaskPoolScheduler.Default;
 

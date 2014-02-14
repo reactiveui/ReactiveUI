@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Splat;
 
 namespace ReactiveUI
 {
@@ -9,7 +10,7 @@ namespace ReactiveUI
     {
         public static string GetPropertyForControl(object control)
         {
-            return RxApp.DependencyResolver.GetServices<IDefaultPropertyBindingProvider>()
+            return Locator.Current.GetServices<IDefaultPropertyBindingProvider>()
                 .Select(x => x.GetPropertyForControl(control))
                 .Where(x => x != null)
                 .OrderByDescending(x => x.Item2)

@@ -9,6 +9,7 @@ using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Runtime.CompilerServices;
 using System.Threading;
+using Splat;
 
 namespace ReactiveUI
 {
@@ -176,7 +177,7 @@ namespace ReactiveUI
     /// It is read-only, and any attempts to change items in the collection will
     /// fail.
     /// </summary>
-    internal sealed class ReactiveDerivedCollection<TSource, TValue> : ReactiveDerivedCollection<TValue>, IDisposable
+    internal class ReactiveDerivedCollection<TSource, TValue> : ReactiveDerivedCollection<TValue>, IDisposable
     {
         readonly IEnumerable<TSource> source;
         readonly Func<TSource, TValue> selector;
@@ -235,20 +236,18 @@ namespace ReactiveUI
                     }
                 }
             } else {
-                var collChanged = new Subject<NotifyCollectionChangedEventArgs>();
-
-                var connObs = Observable
-                    .FromEventPattern<NotifyCollectionChangedEventHandler, NotifyCollectionChangedEventArgs>(
-                        x => incc.CollectionChanged += x,
-                        x => incc.CollectionChanged -= x)
-                    .Select(x => x.EventArgs)
-                    .Multicast(collChanged);
-
-                inner.Add(collChanged.Subscribe(onSourceCollectionChanged));
-                inner.Add(connObs.Connect());
+                var irncc = source as IReactiveNotifyCollectionChanged;
+                var eventObs = irncc != null
+                    ? irncc.Changed
+                    : Observable
+                        .FromEventPattern<NotifyCollectionChangedEventHandler, NotifyCollectionChangedEventArgs>(
+                            x => incc.CollectionChanged += x,
+                            x => incc.CollectionChanged -= x)
+                        .Select(x => x.EventArgs);
+                inner.Add(eventObs.Subscribe(onSourceCollectionChanged));
             }
 
-            var irc = source as IReactiveCollection;
+            var irc = source as IReactiveCollection<TSource>;
 
             if (irc != null) {
                 inner.Add(irc.ItemChanged.Select(x => (TSource)x.Sender).Subscribe(onItemChanged));
@@ -749,7 +748,7 @@ namespace ReactiveUI
 
             onError = onError ?? (ex => RxApp.DefaultExceptionHandler.OnNext(ex));
             if (withDelay == null) {
-                inner.Disposable = observable.ObserveOn(RxApp.MainThreadScheduler).Subscribe(internalAdd, onError);
+                inner.Disposable = observable.Subscribe(internalAdd, onError);
                 return;
             }
 

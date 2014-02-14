@@ -12,11 +12,9 @@ namespace ReactiveUI.Cocoa
     public abstract class UIKitObservableForPropertyBase :
         ICreatesObservableForProperty
     {
-        #region ICreatesObservableForProperty implementation
-
         public int GetAffinityForObject(Type type, string propertyName, bool beforeChanged = false)
         {
-            if(beforeChanged)
+            if (beforeChanged)
                 return 0;
 
             var match = config.Keys
@@ -33,7 +31,7 @@ namespace ReactiveUI.Cocoa
 
         public IObservable<IObservedChange<object, object>> GetNotificationForProperty(object sender, string propertyName, bool beforeChanged = false)
         {
-            if(beforeChanged)
+            if (beforeChanged)
                 return Observable.Never<IObservedChange<object, object>>();
 
             var type = sender.GetType();
@@ -49,8 +47,6 @@ namespace ReactiveUI.Cocoa
 
             return match.CreateObservable((NSObject) sender, propertyName);
         }
-
-        #endregion
 
         internal class ObservablePropertyInfo
         {

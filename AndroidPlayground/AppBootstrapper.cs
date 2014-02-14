@@ -1,5 +1,5 @@
 using System;
-using ReactiveUI.Routing;
+using ReactiveUI;
 using ReactiveUI.Mobile;
 
 namespace AndroidPlayground

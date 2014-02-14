@@ -7,6 +7,7 @@ using System.Text;
 using System.Windows;
 using ReactiveUI;
 using ReactiveUI.Xaml;
+using Splat;
 
 #if WINRT
 using Windows.UI.Xaml;
@@ -22,7 +23,7 @@ namespace ReactiveUI.Xaml
     /// the View and wire up the ViewModel whenever a new ViewModel is
     /// navigated to. Put this control as the only control in your Window.
     /// </summary>
-    public class RoutedViewHost : TransitioningContentControl
+    public class RoutedViewHost : TransitioningContentControl, IActivatable
     {
         IDisposable _inner = null;
 
@@ -38,7 +39,7 @@ namespace ReactiveUI.Xaml
 
         /// <summary>
         /// This content is displayed whenever there is no page currently
-	    /// routed.
+        /// routed.
         /// </summary>
         public object DefaultContent {
             get { return (object)GetValue(DefaultContentProperty); }
@@ -61,9 +62,12 @@ namespace ReactiveUI.Xaml
             HorizontalContentAlignment = HorizontalAlignment.Stretch;
             VerticalContentAlignment = VerticalAlignment.Stretch;
 
-            if (RxApp.InUnitTestRunner()) return;
+            if (ModeDetector.InUnitTestRunner()) {
+                ViewContractObservable = Observable.Never<string>();
+                return;
+            }
 
-            var platform = RxApp.DependencyResolver.GetService<IPlatformOperations>();
+            var platform = Locator.Current.GetService<IPlatformOperations>();
             if (platform == null) {
                 throw new Exception("Couldn't find an IPlatformOperations. This should never happen, your dependency resolver is broken");
             }
@@ -79,25 +83,27 @@ namespace ReactiveUI.Xaml
                 this.WhenAnyObservable(x => x.ViewContractObservable),
                 (vm, contract) => Tuple.Create(vm, contract));
 
-            // NB: The DistinctUntilChanged is useful because most views in 
-            // WinRT will end up getting here twice - once for configuring
-            // the RoutedViewHost's ViewModel, and once on load via SizeChanged
-            vmAndContract.DistinctUntilChanged().Subscribe(x => {
-                if (x.Item1 == null) {
-                    Content = DefaultContent;
-                    return;
-                }
+            this.WhenActivated(d => {
+                // NB: The DistinctUntilChanged is useful because most views in 
+                // WinRT will end up getting here twice - once for configuring
+                // the RoutedViewHost's ViewModel, and once on load via SizeChanged
+                d(vmAndContract.DistinctUntilChanged().Subscribe(x => {
+                    if (x.Item1 == null) {
+                        Content = DefaultContent;
+                        return;
+                    }
 
-                var viewLocator = ViewLocator ?? ReactiveUI.ViewLocator.Current;
-                var view = viewLocator.ResolveView(x.Item1, x.Item2) ?? viewLocator.ResolveView(x.Item1, null);
+                    var viewLocator = ViewLocator ?? ReactiveUI.ViewLocator.Current;
+                    var view = viewLocator.ResolveView(x.Item1, x.Item2) ?? viewLocator.ResolveView(x.Item1, null);
 
-                if (view == null) {
-                    throw new Exception(string.Format("Couldn't find view for '{0}'.", x.Item1));
-                }
+                    if (view == null) {
+                        throw new Exception(String.Format("Couldn't find view for '{0}'.", x.Item1));
+                    }
 
-                view.ViewModel = x.Item1;
-                Content = view;
-            }, ex => RxApp.DefaultExceptionHandler.OnNext(ex));
+                    view.ViewModel = x.Item1;
+                    Content = view;
+                }, ex => RxApp.DefaultExceptionHandler.OnNext(ex)));
+            });
         }
     }
 }

@@ -9,6 +9,7 @@ using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Reflection;
 using System.Text;
+using Splat;
 
 #if WINRT
 using Windows.UI.Xaml;
@@ -24,7 +25,7 @@ namespace ReactiveUI.Xaml
     {
         public int GetAffinityForObject(Type type, string propertyName, bool beforeChanged = false)
         {
-            if (!typeof(DependencyObject).IsAssignableFrom(type)) return 0;
+            if (!typeof(DependencyObject).GetTypeInfo().IsAssignableFrom(type.GetTypeInfo())) return 0;
             if (getDependencyPropertyFetcher(type, propertyName) == null) return 0;
 
             return 4;
@@ -77,13 +78,13 @@ namespace ReactiveUI.Xaml
         {
 #if WINRT
             // Look for the DependencyProperty attached to this property name
-            var pi = type.GetProperty(propertyName + "Property", BindingFlags.Static | BindingFlags.Public | BindingFlags.FlattenHierarchy);
+            var pi = type.GetRuntimeProperties().FirstOrDefault(x => x.Name == (propertyName + "Property") && x.IsStatic());
             if (pi != null) {
                 return () => (DependencyProperty)pi.GetValue(null);
             }
 #endif
 
-            var fi = type.GetField(propertyName + "Property", BindingFlags.Static | BindingFlags.Public | BindingFlags.FlattenHierarchy);
+            var fi = type.GetRuntimeFields().FirstOrDefault(x => x.Name == propertyName + "Property" && x.IsStatic);
             if (fi != null) {
                 return () => (DependencyProperty)fi.GetValue(null);
             }

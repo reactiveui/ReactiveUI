@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Reactive;
+using Splat;
 
 namespace ReactiveUI
 {
@@ -38,7 +39,7 @@ namespace ReactiveUI
         /// <typeparam name="T">The type of the message to listen to.</typeparam>
         /// <param name="scheduler">The scheduler on which to post the
         /// notifications for the specified type and contract.
-        /// RxApp.MainThreadScheduler by default.</param>
+        /// CurrentThreadScheduler by default.</param>
         /// <param name="contract">A unique string to distinguish messages with
         /// identical types (i.e. "MyCoolViewModel") - if the message type is
         /// only used for one purpose, leave this as null.</param>
@@ -156,11 +157,11 @@ namespace ReactiveUI
         /// return a positive value, the host will use the one which returns 
         /// the highest value. When in doubt, return '2' or '0'.
         /// </summary>
-        /// <param name="lhs">The left-hand object to compare (i.e. 'from')</param>
-        /// <param name="rhs">The right-hand object to compare (i.e. 'to')</param>
+        /// <param name="fromType">The source type to convert from</param>
+        /// <param name="toType">The target type to convert to</param>
         /// <returns>A positive integer if TryConvert is supported, 
         /// zero or a negative value otherwise</returns>
-        int GetAffinityForObjects(Type lhs, Type rhs);
+        int GetAffinityForObjects(Type fromType, Type toType);
 
         /// <summary>
         /// Convert a given object to the specified type.
@@ -212,7 +213,9 @@ namespace ReactiveUI
             BindingDirection direction);
     }
 
-    public interface IViewFor : IEnableLogger
+    public interface IActivatable : IEnableLogger { }
+
+    public interface IViewFor : IActivatable
     {
         object ViewModel { get; set; }
     }
@@ -309,6 +312,12 @@ namespace ReactiveUI
         /// <param name="viewModel">View model.</param>
         /// <param name="contract">Contract.</param>
         IViewFor ResolveView<T>(T viewModel, string contract = null) where T : class;
+    }
+
+    public interface IActivationForViewFetcher
+    {
+        int GetAffinityForView(Type view);
+        Tuple<IObservable<Unit>, IObservable<Unit>> GetActivationForView(IActivatable view);
     }
 
     internal interface IPlatformOperations
