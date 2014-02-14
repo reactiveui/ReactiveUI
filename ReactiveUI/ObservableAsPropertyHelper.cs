@@ -7,6 +7,7 @@ using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using Splat;
+using System.Reactive.Disposables;
 
 namespace ReactiveUI
 {
@@ -16,15 +17,11 @@ namespace ReactiveUI
     /// Observable. The property will be read-only, but will still fire change
     /// notifications. This class can be created directly, but is more often created via the
     /// ToProperty and ObservableToProperty extension methods.
-    ///
-    /// This class is also an Observable itself, so that output properties can
-    /// be chained - for example a "Path" property and a chained
-    /// "PathFileNameOnly" property.
     /// </summary>
     public sealed class ObservableAsPropertyHelper<T> : IHandleObservableErrors, IDisposable, IEnableLogger
     {
         T _lastValue;
-        readonly IObservable<T> _source;
+        readonly IConnectableObservable<T> _source;
         IDisposable _inner;
 
         /// <summary>
@@ -47,11 +44,11 @@ namespace ReactiveUI
             Contract.Requires(observable != null);
             Contract.Requires(onChanged != null);
 
-            scheduler = scheduler ?? RxApp.MainThreadScheduler;
+            scheduler = scheduler ?? CurrentThreadScheduler.Instance;
             _lastValue = initialValue;
 
             var subj = new ScheduledSubject<T>(scheduler);
-            var exSubject = new ScheduledSubject<Exception>(Scheduler.Immediate, RxApp.DefaultExceptionHandler);
+            var exSubject = new ScheduledSubject<Exception>(CurrentThreadScheduler.Instance, RxApp.DefaultExceptionHandler);
 
             bool firedInitial = false;
             subj.Subscribe(x => {
@@ -59,7 +56,6 @@ namespace ReactiveUI
                 // from a Subscribe
                 if (firedInitial && EqualityComparer<T>.Default.Equals(x, _lastValue)) return;
 
-                this.Log().Debug("Property helper {0:X} changed", this.GetHashCode());
                 _lastValue = x;
                 onChanged(x);
                 firedInitial = true;
@@ -70,17 +66,17 @@ namespace ReactiveUI
             // Fire off an initial RaisePropertyChanged to make sure bindings
             // have a value
             subj.OnNext(initialValue);
-
-            var src = observable.DistinctUntilChanged().Multicast(subj);
-            _inner = src.Connect();
-            _source = src;
+            _source = observable.DistinctUntilChanged().Multicast(subj);
         }
 
         /// <summary>
         /// The last provided value from the Observable. 
         /// </summary>
         public T Value {
-            get { return _lastValue; }
+            get { 
+                _inner = _inner ?? _source.Connect();
+                return _lastValue; 
+            }
         }
 
         /// <summary>
@@ -91,7 +87,7 @@ namespace ReactiveUI
 
         public void Dispose()
         {
-            _inner.Dispose();
+            (_inner ?? Disposable.Empty).Dispose();
             _inner = null;
         }
 
@@ -129,7 +125,6 @@ namespace ReactiveUI
                 _ => This.raisePropertyChanged(prop_name), 
                 initialValue, scheduler);
 
-            LogHost.Default.Debug("OAPH {0:X} is for {1}", ret, prop_name);
             return ret;
         }
 
