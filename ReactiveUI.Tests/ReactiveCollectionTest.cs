@@ -793,11 +793,9 @@ namespace ReactiveUI.Tests
                 var resolver = new ModernDependencyResolver();
                 var logger = new TestLogger();
 
-                resolver.InitializeSplat();
-                resolver.InitializeReactiveUI();
-                resolver.RegisterConstant(new FuncLogManager(t => new WrappingFullLogger(logger, t)), typeof(ILogManager));
-
                 using(resolver.WithResolver()) {
+                    resolver.RegisterConstant(new FuncLogManager(t => new WrappingFullLogger(logger, t)), typeof(ILogManager));
+
                     var incc = new ReactiveList<NoOneHasEverSeenThisClassBefore>();
                     Assert.True(incc is INotifyCollectionChanged);
                     var inccDerived = incc.CreateDerivedCollection(x => x);
@@ -829,11 +827,9 @@ namespace ReactiveUI.Tests
                 var resolver = new ModernDependencyResolver();
                 var logger = new TestLogger();
 
-                resolver.InitializeSplat();
-                resolver.InitializeReactiveUI();
-                resolver.RegisterConstant(new FuncLogManager(t => new WrappingFullLogger(logger, t)), typeof(ILogManager));
-
                 using(resolver.WithResolver()) {
+                    resolver.RegisterConstant(new FuncLogManager(t => new WrappingFullLogger(logger, t)), typeof(ILogManager));
+
                     var incc = new ReactiveList<NoOneHasEverSeenThisClassBeforeEither>();
                     var inccDerived = incc.CreateDerivedCollection(x => x);
 
