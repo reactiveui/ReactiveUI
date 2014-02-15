@@ -13,8 +13,9 @@ namespace AndroidPlayground.Views
 {
     public class WatchListItemView : ReactiveViewHost<WatchListItemViewModel>
     {
-        public WatchListItemView(Context ctx, ViewGroup parent) : base(ctx, Resource.Layout.WatchListItem, parent)
+        public WatchListItemView(WatchListItemViewModel viewModel, Context ctx, ViewGroup parent) : base(ctx, Resource.Layout.WatchListItem, parent)
         {
+            ViewModel = viewModel;
             this.Bind(ViewModel, vm => vm.Symbol, v => v.Symbol.Text);
             this.OneWayBind(ViewModel, vm => vm.Price, v => v.Price.Text, v => string.Format("{0:0.00}", v));
             this.OneWayBind(ViewModel, vm => vm.LastChange, v => v.LastChange.Text, v => string.Format("{0:0.00}", v));
