@@ -33,7 +33,7 @@ namespace AndroidPlayground
 
             var adapter = new ReactiveListAdapter<WatchListItemViewModel>(
                 ViewModel.Stocks,
-                (viewModel, parent) => new WatchListItemView(this, parent));
+                (viewModel, parent) => new WatchListItemView(viewModel, this, parent));
 
             WatchList.Adapter = adapter;
 
