@@ -85,7 +85,7 @@ namespace ReactiveUI.Cocoa
     {
         /// <summary>
         /// Gets the function that creates the <see cref="UIView"/>
-        /// used as header for this section.
+        /// used as header for this section. Overrides Title
         /// </summary>
         public Func<UIView> View { get; protected set; }
 
@@ -93,6 +93,11 @@ namespace ReactiveUI.Cocoa
         /// Gets the height of the header.
         /// </summary>
         public float Height { get; protected set; }
+
+        /// <summary>
+        /// Gets the title for the section header, only used if View is null.
+        /// </summary>
+        public string Title { get; protected set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TableSectionHeader"/>
@@ -104,6 +109,15 @@ namespace ReactiveUI.Cocoa
         {
             this.View = view;
             this.Height = height;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveUI.Cocoa.TableSectionHeader"/> class.
+        /// </summary>
+        /// <param name="title">Title to use.</param>
+        public TableSectionHeader (string title)
+        {
+            this.Title = title;
         }
     }
 
@@ -203,7 +217,7 @@ namespace ReactiveUI.Cocoa
         public override float GetHeightForHeader(UITableView tableView, int section)
         {
             var header = commonSource.SectionInfo[section].Header;
-            return header == null ? 0 : header.Height;
+            return header == null || header.View == null ? -1 : header.Height; // -1 is a magic # that causes iOS to use the regular height. go figure.
         }
 
         public override float GetHeightForFooter(UITableView tableView, int section)
@@ -212,10 +226,16 @@ namespace ReactiveUI.Cocoa
             return footer == null ? 0 : footer.Height;
         }
 
+        public override string TitleForHeader(UITableView tableView, int section)
+        {
+            var header = commonSource.SectionInfo [section].Header;
+            return header == null || header.Title == null ? null : header.Title;
+        }
+
         public override UIView GetViewForHeader(UITableView tableView, int section)
         {
             var header = commonSource.SectionInfo[section].Header;
-            return header == null ? null : header.View.Invoke();
+            return header == null || header.View == null ? null : header.View.Invoke();
         }
 
         public override UIView GetViewForFooter(UITableView tableView, int section)
