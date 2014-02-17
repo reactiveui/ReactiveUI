@@ -74,6 +74,8 @@ namespace ReactiveUI.Tests.Winforms
             var input = new Button { };
 
             using (var disp = fixture.BindCommandToObject(cmd, input, Observable.Return((object)5))) {
+                canExecute.OnNext(true);
+
                 Assert.True(input.Enabled);
 
                 canExecute.OnNext(false);
