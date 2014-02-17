@@ -91,7 +91,11 @@ namespace ReactiveUI
             this.scheduler = scheduler ?? RxApp.MainThreadScheduler;
             this.executeAsync = executeAsync;
 
-            this.canExecute = canExecute.CombineLatest(isExecuting.StartWith(false), (ce,ie) => ce && !ie)
+            this.canExecute = canExecute.CombineLatest(isExecuting.StartWith(false), (ce, ie) => ce && !ie)
+                .Catch<bool, Exception>(ex => {
+                    exceptions.OnNext(ex);
+                    return Observable.Return(false);
+                })
                 .Do(x => {
                     var fireCanExecuteChanged = (canExecuteChanged != null && canExecuteLatest != x);
                     canExecuteLatest = x;
@@ -136,7 +140,7 @@ namespace ReactiveUI
         public IObservable<bool> CanExecuteObservable {
             get {
                 if (canExecuteDisp == null) canExecuteDisp = canExecute.Connect();
-                return canExecute.StartWith(canExecuteLatest);
+                return canExecute.StartWith(canExecuteLatest).DistinctUntilChanged();
             }
         }
 
