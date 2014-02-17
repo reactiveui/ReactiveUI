@@ -127,7 +127,7 @@ namespace ReactiveUI
                     exceptions.OnNext(ex);
                     return Observable.Empty<T>();
                 })
-                .Publish().PermaRef();
+                .Multicast(new ReplaySubject<T>()).PermaRef();
         }
 
         /// <summary>
