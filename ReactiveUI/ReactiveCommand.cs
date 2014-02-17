@@ -17,10 +17,10 @@ namespace ReactiveUI
 {
     public static class ReactiveCommand
     {
-        public static ReactiveCommand<Unit> Create(IObservable<bool> canExecute = null, IScheduler scheduler = null)
+        public static ReactiveCommand<object> Create(IObservable<bool> canExecute = null, IScheduler scheduler = null)
         {
             canExecute = canExecute ?? Observable.Return(true);
-            return new ReactiveCommand<Unit>(canExecute, _ => Observable.Return(Unit.Default), scheduler);
+            return new ReactiveCommand<object>(canExecute, x => Observable.Return(x), scheduler);
         }
 
         public static ReactiveCommand<Unit> Create(IObservable<bool> canExecute, Action<object> executeAsync, IScheduler scheduler = null)
@@ -154,7 +154,7 @@ namespace ReactiveUI
         /// is RxApp.MainThreadScheduler.</param>
         /// <returns>A new ReactiveCommand whose CanExecute Observable is the
         /// current object.</returns>
-        public static ReactiveCommand<Unit> ToCommand(this IObservable<bool> This, IScheduler scheduler = null)
+        public static ReactiveCommand<object> ToCommand(this IObservable<bool> This, IScheduler scheduler = null)
         {
             return ReactiveCommand.Create(This, scheduler);
         }
