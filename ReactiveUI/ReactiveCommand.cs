@@ -28,7 +28,12 @@ namespace ReactiveUI
             return new ReactiveCommand<Unit>(canExecute, x => Observable.Start(() => executeAsync(x), RxApp.TaskpoolScheduler), scheduler);
         }
 
-        public static ReactiveCommand<T> Create<T>(IObservable<bool> canExecute, Func<object, T> executeAsync, IScheduler scheduler = null)
+        public static ReactiveCommand<T> Create<T>(IObservable<bool> canExecute, Func<object, IObservable<T>> executeAsync, IScheduler scheduler = null)
+        {
+            return new ReactiveCommand<T>(canExecute, executeAsync, scheduler);
+        }
+
+        public static ReactiveCommand<T> CreateFunction<T>(IObservable<bool> canExecute, Func<object, T> executeAsync, IScheduler scheduler = null)
         {
             return new ReactiveCommand<T>(canExecute, x => Observable.Start(() => executeAsync(x), RxApp.TaskpoolScheduler), scheduler);
         }

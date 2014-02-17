@@ -66,7 +66,9 @@ namespace ReactiveUI
         void setupRx()
         {
             NavigateBack = ReactiveCommand.Create(
-                NavigationStack.CountChanged.StartWith(_NavigationStack.Count).Select(x => x > 1));
+                NavigationStack.CountChanged.StartWith(_NavigationStack.Count).Select(x => x > 1),
+                _ => Observable.Return(Unit.Default));
+
             NavigateBack.Subscribe(_ =>
                 NavigationStack.RemoveAt(NavigationStack.Count - 1));
 
