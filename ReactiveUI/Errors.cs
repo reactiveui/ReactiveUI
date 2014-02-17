@@ -353,7 +353,7 @@ namespace ReactiveUI
     /// (usually in the form of a button) that will help resolve or mitigate a
     /// UserError.
     /// </summary>
-    public class RecoveryCommand : ReactiveCommand, IRecoveryCommand
+    public class RecoveryCommand : ReactiveCommand<Unit>, IRecoveryCommand
     {
         public bool IsDefault { get; set; }
         public bool IsCancel { get; set; }
@@ -367,6 +367,7 @@ namespace ReactiveUI
         /// <param name="handler">A convenience handler - equivalent to
         /// Subscribing to the command and setting the RecoveryResult.</param>
         public RecoveryCommand(string commandName, Func<object, RecoveryOptionResult> handler = null)
+            : base(Observable.Return(true), _ => Observable.Return(Unit.Default))
         {
             CommandName = commandName;
 
