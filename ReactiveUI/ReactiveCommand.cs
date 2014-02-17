@@ -82,7 +82,7 @@ namespace ReactiveUI
         readonly ScheduledSubject<Exception> exceptions;
 
         IConnectableObservable<bool> canExecute;
-        bool canExecuteLatest = true;
+        bool canExecuteLatest = false;
         IDisposable canExecuteDisp;
         int inflightCount = 0;
 
@@ -91,7 +91,7 @@ namespace ReactiveUI
             this.scheduler = scheduler ?? RxApp.MainThreadScheduler;
             this.executeAsync = executeAsync;
 
-            this.canExecute = canExecute.CombineLatest(isExecuting, (ce,ie) => ce && !ie)
+            this.canExecute = canExecute.CombineLatest(isExecuting.StartWith(false), (ce,ie) => ce && !ie)
                 .Do(x => {
                     var fireCanExecuteChanged = (canExecuteChanged != null && canExecuteLatest != x);
                     canExecuteLatest = x;
