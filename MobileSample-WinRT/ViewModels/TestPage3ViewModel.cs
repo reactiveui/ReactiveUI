@@ -32,8 +32,8 @@ namespace MobileSample_WinRT.ViewModels
         public ReactiveList<string> ListOfStrings { get; protected set; }
         public IReactiveDerivedList<StringTileViewModel> ListOfTiles { get; protected set; }
 
-        public ReactiveCommand PopulateList { get; protected set; }
-        public ReactiveCommand ClearList { get; protected set; }
+        public ReactiveCommand<object> PopulateList { get; protected set; }
+        public ReactiveCommand<object> ClearList { get; protected set; }
 
         public TestPage3ViewModel(IScreen screen = null)
         {
@@ -43,10 +43,10 @@ namespace MobileSample_WinRT.ViewModels
             ListOfStrings = new ReactiveList<string>();
             ListOfTiles = ListOfStrings.CreateDerivedCollection(x => new StringTileViewModel(x));
 
-            PopulateList = new ReactiveCommand();
+            PopulateList = ReactiveCommand.Create();
             PopulateList.Subscribe(_ => ListOfStrings.AddRange(Enumerable.Range(0, 50).Select(__ => Guid.NewGuid().ToString())));
 
-            ClearList = new ReactiveCommand();
+            ClearList = ReactiveCommand.Create();
             ClearList.Subscribe(_ => {
                 ListOfStrings.Clear();
                 GC.Collect(10, GCCollectionMode.Forced, true);
