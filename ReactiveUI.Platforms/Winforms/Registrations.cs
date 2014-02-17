@@ -8,6 +8,7 @@ using System.Windows;
 using ReactiveUI;
 using System.Reactive.Concurrency;
 using System.Windows.Forms;
+using Splat;
 
 namespace ReactiveUI.Winforms
 {
@@ -28,8 +29,10 @@ namespace ReactiveUI.Winforms
             registerFunction(() => new CreatesWinformsCommandBinding(), typeof(ICreatesCommandBinding));
             registerFunction(() => new WinformsCreatesObservableForProperty(), typeof(ICreatesObservableForProperty));
 
-            WindowsFormsSynchronizationContext.AutoInstall = true;
-            RxApp.MainThreadScheduler = new WaitForDispatcherScheduler(() => new SynchronizationContextScheduler(new WindowsFormsSynchronizationContext()));
+            if (!ModeDetector.InUnitTestRunner()) {
+                WindowsFormsSynchronizationContext.AutoInstall = true;
+                RxApp.MainThreadScheduler = new WaitForDispatcherScheduler(() => new SynchronizationContextScheduler(new WindowsFormsSynchronizationContext()));
+            }
         }
     }
 }
