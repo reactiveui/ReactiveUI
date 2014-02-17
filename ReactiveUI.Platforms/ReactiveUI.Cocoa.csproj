@@ -106,6 +106,7 @@
     <Compile Include="Cocoa\ReactiveNSView.cs" />
     <Compile Include="Cocoa\ReactiveNSViewController.cs" />
     <Compile Include="Cocoa\ReactiveImageView.cs" />
+    <Compile Include="Cocoa\ReactiveControl.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Cocoa\" />
