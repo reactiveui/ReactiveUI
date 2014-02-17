@@ -376,30 +376,32 @@ namespace ReactiveUI.Tests
             // Initial state for ReactiveCommands is to be executable
             var fixture = ReactiveCommand.CreateCombined(cmd1, cmd2, cmd3);
             var canExecuteOutput = fixture.CanExecuteObservable.CreateCollection();
-            Assert.True(fixture.CanExecute(null));
+
+            // cmd1 and cmd2 are ??? so, result is false
+            Assert.False(fixture.CanExecute(null));
             Assert.Equal(1, canExecuteOutput.Count);
 
             // 1 is false, 2 is true
             subj1.OnNext(false);
             Assert.False(fixture.CanExecute(null));
-            Assert.Equal(2, canExecuteOutput.Count);
-            Assert.Equal(false, canExecuteOutput[1]);
+            Assert.Equal(1, canExecuteOutput.Count);
+            Assert.Equal(false, canExecuteOutput[0]);
 
             // 1 is false, 2 is false
             subj2.OnNext(false);
             Assert.False(fixture.CanExecute(null));
-            Assert.Equal(2, canExecuteOutput.Count);
+            Assert.Equal(1, canExecuteOutput.Count);
 
             // 1 is true, 2 is false
             subj1.OnNext(true);
             Assert.False(fixture.CanExecute(null));
-            Assert.Equal(2, canExecuteOutput.Count);
+            Assert.Equal(1, canExecuteOutput.Count);
                         
             // 1 is true, 2 is true
             subj2.OnNext(true);
             Assert.True(fixture.CanExecute(null));
-            Assert.Equal(3, canExecuteOutput.Count);
-            Assert.Equal(true, canExecuteOutput[2]);
+            Assert.Equal(2, canExecuteOutput.Count);
+            Assert.Equal(true, canExecuteOutput[1]);
         }
 
         [Fact]
@@ -462,7 +464,7 @@ namespace ReactiveUI.Tests
             // Initial state for ReactiveCommands is to be executable
             var fixture = ReactiveCommand.CreateCombined(parentSubj, cmd1, cmd2, cmd3);
             var canExecuteOutput = fixture.CanExecuteObservable.CreateCollection();
-            Assert.True(fixture.CanExecute(null));
+            Assert.False(fixture.CanExecute(null));
             Assert.Equal(1, canExecuteOutput.Count);
 
             parentSubj.OnNext(false);
@@ -470,30 +472,30 @@ namespace ReactiveUI.Tests
             // 1 is false, 2 is true
             subj1.OnNext(false);
             Assert.False(fixture.CanExecute(null));
-            Assert.Equal(2, canExecuteOutput.Count);
-            Assert.Equal(false, canExecuteOutput[1]);
+            Assert.Equal(1, canExecuteOutput.Count);
+            Assert.Equal(false, canExecuteOutput[0]);
 
             // 1 is false, 2 is false
             subj2.OnNext(false);
             Assert.False(fixture.CanExecute(null));
-            Assert.Equal(2, canExecuteOutput.Count);
+            Assert.Equal(1, canExecuteOutput.Count);
 
             // 1 is true, 2 is false
             subj1.OnNext(true);
             Assert.False(fixture.CanExecute(null));
-            Assert.Equal(2, canExecuteOutput.Count);
+            Assert.Equal(1, canExecuteOutput.Count);
                         
             // 1 is true, 2 is true, but it doesn't matter because
             // parent is still false
             subj2.OnNext(true);
             Assert.False(fixture.CanExecute(null));
-            Assert.Equal(2, canExecuteOutput.Count);
+            Assert.Equal(1, canExecuteOutput.Count);
 
             // Parent is finally true, mark it true
             parentSubj.OnNext(true);
             Assert.True(fixture.CanExecute(null));
-            Assert.Equal(3, canExecuteOutput.Count);
-            Assert.Equal(true, canExecuteOutput[2]);
+            Assert.Equal(2, canExecuteOutput.Count);
+            Assert.Equal(true, canExecuteOutput[1]);
         }
 
         [Fact]
