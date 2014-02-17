@@ -1,6 +1,7 @@
 using System;
 using System.Drawing;
 using System.Runtime.Serialization;
+using System.Reactive;
 using System.Reactive.Subjects;
 using System.Reactive.Concurrency;
 using System.Reflection;
@@ -27,7 +28,7 @@ namespace ReactiveUI.Cocoa
     /// This is an View that is both an NSView and has ReactiveObject powers 
     /// (i.e. you can call RaiseAndSetIfChanged)
     /// </summary>
-    public class ReactiveView : NSView, IReactiveNotifyPropertyChanged, IHandleObservableErrors
+    public class ReactiveView : NSView, IReactiveNotifyPropertyChanged, IHandleObservableErrors, ICanActivate
     {
         protected ReactiveView() : base()
         {
@@ -94,6 +95,21 @@ namespace ReactiveUI.Cocoa
 
         [IgnoreDataMember]
         public IObservable<Exception> ThrownExceptions { get { return thrownExceptions; } }
+
+        Subject<Unit> activated = new Subject<Unit>();
+        public IObservable<Unit> Activated { get { return activated; } }
+        Subject<Unit> deactivated = new Subject<Unit>();
+        public IObservable<Unit> Deactivated { get { return deactivated; } }
+ 
+#if UIKIT
+        public override void WillMoveToSuperview(NSView newsuper)
+#else
+        public override void ViewWillMoveToSuperview(NSView newsuper)
+#endif
+        {
+            base.WillMoveToSuperview(newsuper);
+            RxApp.MainThreadScheduler.Schedule(() => (newsuper != null ? activated : deactivated).OnNext(Unit.Default));
+        }
 
         [OnDeserialized]
         void setupRxObj(StreamingContext sc) { setupRxObj(); }

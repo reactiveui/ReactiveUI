@@ -34,7 +34,7 @@
     <DefineConstants>MONO; IOS</DefineConstants>
     <DocumentationFile>bin\Release\Monotouch\ReactiveUI.XML</DocumentationFile>
     <DebugSymbols>true</DebugSymbols>
-    <GenerateDocumentation>true</GenerateDocumentation>
+    <GenerateDocumentation>True</GenerateDocumentation>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -112,6 +112,7 @@
     <Compile Include="AutoPersistHelper.cs" />
     <Compile Include="Logging-iOS.cs" />
     <Compile Include="DummySuspension.cs" />
+    <Compile Include="Activation.cs" />
   </ItemGroup>
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
 </Project>

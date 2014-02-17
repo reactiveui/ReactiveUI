@@ -157,6 +157,7 @@
     </Compile>
     <Compile Include="PlatformUnitTestDetector.cs" />
     <Compile Include="Registrations.cs" />
+    <Compile Include="Xaml\ActivationForViewFetcher.cs" />
     <Compile Include="Xaml\AutoDataTemplateBindingHook.cs" />
     <Compile Include="Xaml\BindingTypeConverters.cs" />
     <Compile Include="Xaml\CreatesCommandBinding.cs" />
