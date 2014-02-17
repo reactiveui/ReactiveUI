@@ -20,6 +20,7 @@ namespace ReactiveUI
         readonly Subject<T> executeResults = new Subject<T>();
         readonly Func<IObservable<T>> executeAsync;
         readonly IScheduler scheduler;
+        readonly ScheduledSubject<Exception> exceptions;
 
         IConnectableObservable<bool> canExecute;
         bool canExecuteLatest = true;
@@ -29,6 +30,8 @@ namespace ReactiveUI
         public AsyncCommand(IObservable<bool> canExecute, Func<IObservable<T>> executeAsync, IScheduler scheduler = null)
         {
             this.scheduler = scheduler ?? RxApp.MainThreadScheduler;
+            this.executeAsync = executeAsync;
+
             this.canExecute = canExecute
                 .Do(x => {
                     var fireCanExecuteChanged = (canExecuteChanged != null && canExecuteLatest != x);
@@ -39,6 +42,8 @@ namespace ReactiveUI
                     }
                 })
                 .Publish();
+
+            ThrownExceptions = exceptions = new ScheduledSubject<Exception>(CurrentThreadScheduler.Instance, RxApp.DefaultExceptionHandler);
         }
 
         public static AsyncCommand<Unit> Create(IObservable<bool> canExecute, IScheduler scheduler = null)
@@ -56,6 +61,13 @@ namespace ReactiveUI
             return new AsyncCommand<T>(canExecute, () => executeAsync().ToObservable(), scheduler);
         }
 
+        /// <summary>
+        /// Fires whenever an exception would normally terminate ReactiveUI 
+        /// internal state.
+        /// </summary>
+        /// <value>The thrown exceptions.</value>
+        public IObservable<Exception> ThrownExceptions { get; protected set; }
+
         public IObservable<T> ExecuteAsync()
         {
             Interlocked.Increment(ref inflightCount);
@@ -64,6 +76,10 @@ namespace ReactiveUI
                 .ObserveOn(scheduler)
                 .Finally(() => Interlocked.Decrement(ref inflightCount))
                 .Do(x => executeResults.OnNext(x))
+                .Catch<T, Exception>(ex => {
+                    exceptions.OnNext(ex);
+                    return Observable.Empty<T>();
+                })
                 .Publish().PermaRef();
         }
 
