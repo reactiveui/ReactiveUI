@@ -311,6 +311,16 @@ namespace ReactiveUI
         IViewFor ResolveView<T>(T viewModel, string contract = null) where T : class;
     }
 
+    /// <summary>
+    /// Implement this to override how Views determine when they have been
+    /// activated and deactivated.
+    /// </summary>
+    public interface IActivationForViewFetcher
+    {
+        int GetAffinityForView(Type view);
+        Tuple<IObservable<Unit>, IObservable<Unit>> GetActivationForView(IViewFor view);
+    }
+
     internal interface IPlatformOperations
     {
         string GetOrientation();
