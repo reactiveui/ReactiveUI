@@ -5,6 +5,7 @@ using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using System.Reactive.Threading.Tasks;
 using System.Threading;
 using System.Threading.Tasks;
 using ReactiveUI.Testing;
@@ -240,16 +241,16 @@ namespace ReactiveUI.Tests
         }
 
         [Fact]
-        public void RAFShouldActuallyRunOnTheTaskpool()
+        public async Task RAFShouldActuallyRunOnTheTaskpool()
         {
-            var threadId = new List<int>();
-            var fixture = ReactiveCommand.Create(Observable.Return(true),
-                _ => threadId.Add(Thread.CurrentThread.ManagedThreadId));
+            var fixture = ReactiveCommand.CreateFunction(Observable.Return(true),
+                _ => Thread.CurrentThread.ManagedThreadId);
+
+            var threadId = fixture.CreateCollection();
 
             Assert.Equal(0, threadId.Count);
 
-            fixture.ExecuteAsync(1);
-            Thread.Sleep(1000);
+            var tid = fixture.ExecuteAsync(1).ToTask().Result;
 
             Assert.Equal(1, threadId.Count);
 
