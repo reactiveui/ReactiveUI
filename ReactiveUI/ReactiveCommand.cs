@@ -15,6 +15,91 @@ using System.Linq.Expressions;
 
 namespace ReactiveUI
 {
+    public class AsyncCommand<T> : ICommand, IObservable<T>, IHandleObservableErrors, IDisposable
+    {
+        readonly Subject<T> executeResults = new Subject<T>();
+        readonly Func<IObservable<T>> executeAsync;
+        readonly IScheduler scheduler;
+
+        IConnectableObservable<bool> canExecute;
+        bool canExecuteLatest = true;
+        IDisposable canExecuteDisp;
+        int inflightCount = 0;
+
+        public AsyncCommand(IObservable<bool> canExecute, Func<IObservable<T>> executeAsync, IScheduler scheduler = null)
+        {
+            this.scheduler = scheduler ?? RxApp.MainThreadScheduler;
+            this.canExecute = canExecute
+                .Do(x => {
+                    var fireCanExecuteChanged = (canExecuteChanged != null && canExecuteLatest != x);
+                    canExecuteLatest = x;
+
+                    if (fireCanExecuteChanged) {
+                        canExecuteChanged(this, EventArgs.Empty);
+                    }
+                })
+                .Publish();
+        }
+
+        public static AsyncCommand<Unit> Create(IObservable<bool> canExecute, IScheduler scheduler = null)
+        {
+            return new AsyncCommand<Unit>(canExecute, () => Observable.Return(Unit.Default), scheduler);
+        }
+
+        public static AsyncCommand<Unit> Create(IObservable<bool> canExecute, Action executeAsync, IScheduler scheduler = null)
+        {
+            return new AsyncCommand<Unit>(canExecute, () => Observable.Start(executeAsync, RxApp.TaskpoolScheduler), scheduler);
+        }
+
+        public static AsyncCommand<T> CreateAsync<T>(IObservable<bool> canExecute, Func<Task<T>> executeAsync, IScheduler scheduler = null)
+        {
+            return new AsyncCommand<T>(canExecute, () => executeAsync().ToObservable(), scheduler);
+        }
+
+        public IObservable<T> ExecuteAsync()
+        {
+            Interlocked.Increment(ref inflightCount);
+
+            return executeAsync()
+                .ObserveOn(scheduler)
+                .Finally(() => Interlocked.Decrement(ref inflightCount))
+                .Do(x => executeResults.OnNext(x))
+                .Publish().PermaRef();
+        }
+
+        public IDisposable Subscribe(IObserver<T> observer)
+        {
+            return executeResults.Subscribe(observer);
+        }
+
+        bool ICommand.CanExecute(object parameter)
+        {
+            if (canExecuteDisp == null) canExecuteDisp = canExecute.Connect();
+            return inflightCount < 1 && canExecuteLatest;
+        }
+
+        event EventHandler canExecuteChanged;
+        event EventHandler ICommand.CanExecuteChanged
+        {
+            add { 
+                if (canExecuteDisp == null) canExecuteDisp = canExecute.Connect();
+                canExecuteChanged += value; 
+            }
+            remove { canExecuteChanged -= value; }
+        }
+
+        void ICommand.Execute(object parameter)
+        {
+            ExecuteAsync();
+        }
+
+        public void Dispose()
+        {
+            var disp = Interlocked.Exchange(ref canExecuteDisp, null);
+            if (disp != null) disp.Dispose();
+        }
+    }
+
     /// <summary>
     /// ReactiveCommand is the default Command implementation in ReactiveUI, which
     /// conforms to the spec described in IReactiveCommand. 
@@ -159,7 +244,7 @@ namespace ReactiveUI
         }
 
         bool canExecuteLatest;
-        public bool CanExecute(object parameter)
+        bool ICommand.CanExecute(object parameter)
         {
             return canExecuteLatest;
         }
