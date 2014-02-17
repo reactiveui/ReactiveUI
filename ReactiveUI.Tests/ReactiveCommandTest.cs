@@ -61,7 +61,9 @@ namespace ReactiveUI.Tests
                 return changes_as_observable;
             });
 
-            input.DistinctUntilChanged().AssertAreEqual(result.ToList());
+            // NB: Skip(1) is because CanExecuteObservable should have
+            // BehaviorSubject Nature(tm)
+            input.DistinctUntilChanged().AssertAreEqual(result.Skip(1).ToList());
         }
 
         [Fact]
@@ -123,15 +125,14 @@ namespace ReactiveUI.Tests
 
             canExecute.OnError(new Exception("Aieeeee!"));
 
-            // The command should just latch at whatever its previous state was
-            // before the exception
-            Assert.True(fixture.CanExecute(null));
+            // The command should latch to false forever
+            Assert.False(fixture.CanExecute(null));
 
             Assert.Equal(1, exceptions.Count);
             Assert.Equal("Aieeeee!", exceptions[0].Message);
 
-            Assert.Equal(false, canExecuteStates[canExecuteStates.Count - 2]);
-            Assert.Equal(true, canExecuteStates[canExecuteStates.Count - 1]);
+            Assert.Equal(false, canExecuteStates[canExecuteStates.Count - 1]);
+            Assert.Equal(true, canExecuteStates[canExecuteStates.Count - 2]);
         }
 
         [Fact]
@@ -139,15 +140,18 @@ namespace ReactiveUI.Tests
         {
             (new TestScheduler()).With(sched => {
                 var canExecute = new Subject<bool>();
-                var fixture = createCommand(canExecute);
-
-                canExecute.OnNext(true);
-                canExecute.OnError(new Exception("Aieeeee!"));
+                var fixture = createCommand(canExecute, sched);
+                var result = fixture.CanExecuteObservable.CreateCollection();
 
                 bool failed = true;
                 try {
-                    sched.Start();
-                    Assert.True(fixture.CanExecute(null));
+                    sched.AdvanceByMs(10);
+                    canExecute.OnNext(true);
+                    canExecute.OnError(new Exception("Aieeeee!"));
+                    sched.AdvanceByMs(10);
+
+                    // NB: canExecute failing should bring us down
+                    Assert.True(false);
                 } catch (Exception ex) {
                     failed = (ex.InnerException.Message != "Aieeeee!");
                 }
@@ -236,19 +240,17 @@ namespace ReactiveUI.Tests
         }
 
         [Fact]
-        public async Task RAFShouldActuallyRunOnTheTaskpool()
+        public void RAFShouldActuallyRunOnTheTaskpool()
         {
-            var deferred = RxApp.MainThreadScheduler;
-            var taskpool = RxApp.TaskpoolScheduler;
-
-            var fixture = ReactiveCommand.CreateFunction(Observable.Return(true), 
-                _ => Thread.CurrentThread.ManagedThreadId);
-                
-            var threadId = fixture.CreateCollection();
+            var threadId = new List<int>();
+            var fixture = ReactiveCommand.Create(Observable.Return(true),
+                _ => threadId.Add(Thread.CurrentThread.ManagedThreadId));
 
             Assert.Equal(0, threadId.Count);
 
-            fixture.Execute(1);
+            fixture.ExecuteAsync(1);
+            Thread.Sleep(1000);
+
             Assert.Equal(1, threadId.Count);
 
             Assert.NotEqual(Thread.CurrentThread.ManagedThreadId, threadId[0]);
@@ -418,7 +420,7 @@ namespace ReactiveUI.Tests
                 var fixture = ReactiveCommand.CreateCombined(cmd1, cmd2, cmd3);
                 var canExecuteOutput = fixture.CanExecuteObservable.CreateCollection();
                 Assert.True(fixture.CanExecute(null));
-                Assert.Equal(0, canExecuteOutput.Count);
+                Assert.Equal(1, canExecuteOutput.Count);
 
                 fixture.Execute(42);
 
@@ -456,7 +458,6 @@ namespace ReactiveUI.Tests
             var cmd2 = ReactiveCommand.Create(subj2);
             var cmd3 = ReactiveCommand.Create();
             var parentSubj = new Subject<bool>();
-
 
             // Initial state for ReactiveCommands is to be executable
             var fixture = ReactiveCommand.CreateCombined(parentSubj, cmd1, cmd2, cmd3);
