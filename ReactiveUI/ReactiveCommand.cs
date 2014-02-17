@@ -38,10 +38,38 @@ namespace ReactiveUI
             return new ReactiveCommand<T>(canExecute, x => Observable.Start(() => executeAsync(x), RxApp.TaskpoolScheduler), scheduler);
         }
 
-
         public static ReactiveCommand<T> CreateAsync<T>(IObservable<bool> canExecute, Func<object, Task<T>> executeAsync, IScheduler scheduler = null)
         {
             return new ReactiveCommand<T>(canExecute, x => executeAsync(x).ToObservable(), scheduler);
+        }
+        /// <summary>
+        /// This creates a ReactiveCommand that calls several child 
+        /// ReactiveCommands when invoked. Its CanExecute will match the
+        /// combined result of the child CanExecutes (i.e. if any child
+        /// commands cannot execute, neither can the parent)
+        /// </summary>
+        /// <param name="canExecute">An Observable that determines whether the 
+        /// parent command can execute</param>
+        /// <param name="commands">The commands to combine.</param>
+        public static ReactiveCommand<object> CreateCombined(IObservable<bool> canExecute, params IReactiveCommand[] commands)
+        {
+            var childrenCanExecute = commands
+                .Select(x => x.CanExecuteObservable)
+                .CombineLatest(latestCanExecute => latestCanExecute.All(x => x != false));
+
+            var canExecuteSum = Observable.CombineLatest(
+                canExecute.StartWith(true),
+                childrenCanExecute,
+                (parent, child) => parent && child);
+
+            var ret = ReactiveCommand.Create(canExecuteSum);
+            ret.Subscribe(x => commands.ForEach(cmd => cmd.Execute(x)));
+            return ret;
+        }
+
+        public static ReactiveCommand<object> CreateCombined(params IReactiveCommand[] commands)
+        {
+            return CreateCombined(Observable.Return(true), commands);
         }
     }
 
@@ -121,14 +149,14 @@ namespace ReactiveUI
             return executeResults.Subscribe(observer);
         }
 
-        bool ICommand.CanExecute(object parameter)
+        public bool CanExecute(object parameter)
         {
             if (canExecuteDisp == null) canExecuteDisp = canExecute.Connect();
             return canExecuteLatest;
         }
 
         event EventHandler canExecuteChanged;
-        event EventHandler ICommand.CanExecuteChanged
+        public event EventHandler CanExecuteChanged
         {
             add { 
                 if (canExecuteDisp == null) canExecuteDisp = canExecute.Connect();
@@ -137,7 +165,7 @@ namespace ReactiveUI
             remove { canExecuteChanged -= value; }
         }
 
-        void ICommand.Execute(object parameter)
+        public void Execute(object parameter)
         {
             ExecuteAsync(parameter);
         }
