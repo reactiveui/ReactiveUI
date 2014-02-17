@@ -22,8 +22,8 @@ namespace ReactiveUI.Tests
 {
     public class TestWhenAnyObsViewModel : ReactiveObject
     {
-        public ReactiveCommand Command1 { get; protected set; }
-        public ReactiveCommand Command2 { get; protected set; }
+        public ReactiveCommand<object> Command1 { get; protected set; }
+        public ReactiveCommand<object> Command2 { get; protected set; }
 
         ReactiveList<int> myListOfInts;
         public ReactiveList<int> MyListOfInts {
@@ -33,8 +33,8 @@ namespace ReactiveUI.Tests
 
         public TestWhenAnyObsViewModel()
         {
-            Command1 = new ReactiveCommand();
-            Command2 = new ReactiveCommand();
+            Command1 = ReactiveCommand.Create();
+            Command2 = ReactiveCommand.Create();
         }
     }
 
@@ -616,13 +616,13 @@ namespace ReactiveUI.Tests
 
             Assert.Equal(0, list.Count);
 
-            fixture.Command1.Execute(1);
+            fixture.Command1.ExecuteAsync(1);
             Assert.Equal(1, list.Count);
 
-            fixture.Command2.Execute(2);
+            fixture.Command2.ExecuteAsync(2);
             Assert.Equal(2, list.Count);
 
-            fixture.Command1.Execute(1);
+            fixture.Command1.ExecuteAsync(1);
             Assert.Equal(3, list.Count);
 
             Assert.True(

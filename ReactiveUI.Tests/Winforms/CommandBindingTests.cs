@@ -1,22 +1,19 @@
-﻿namespace ReactiveUI.Tests.Winforms
+﻿using System;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
+using System.Windows.Forms;
+using ReactiveUI.Winforms;
+using Xunit;
+
+namespace ReactiveUI.Tests.Winforms
 {
-    using System;
-    using System.Reactive.Linq;
-    using System.Reactive.Subjects;
-    using System.Windows.Forms;
-    using ReactiveUI.Winforms;
-
-    using Xunit;
-
-  
-
     public class CommandBindingTests
     {
         [Fact]
         public void CommandBinderBindsToButton()
         {
             var fixture = new CreatesWinformsCommandBinding();
-            var cmd = new ReactiveCommand();
+            var cmd = ReactiveCommand.Create();
             var input = new Button { };
 
             Assert.True(fixture.GetAffinityForObject(input.GetType(), true) > 0);
@@ -43,7 +40,7 @@
         public void CommandBinderBindsToCustomControl()
         {
             var fixture = new CreatesWinformsCommandBinding();
-            var cmd = new ReactiveCommand();
+            var cmd = ReactiveCommand.Create();
             var input = new CustomClickableControl { };
 
             Assert.True(fixture.GetAffinityForObject(input.GetType(), true) > 0);
@@ -73,7 +70,7 @@
             var canExecute = new Subject<bool>();
             canExecute.OnNext(true);
 
-            var cmd = new ReactiveCommand(canExecute);
+            var cmd = ReactiveCommand.Create(canExecute);
             var input = new Button { };
 
             using (var disp = fixture.BindCommandToObject(cmd, input, Observable.Return((object)5))) {
@@ -122,7 +119,7 @@
             view.Command1.PerformClick();;
             Assert.Equal(1, invokeCount);
 
-            var newCmd = new ReactiveCommand();
+            var newCmd = ReactiveCommand.Create();
             vm.Command1 = newCmd;
 
             view.Command1.PerformClick();
@@ -146,7 +143,7 @@
             view.Command1.PerformClick(); ;
             Assert.Equal(1, invokeCount);
 
-            var newCmd = new ReactiveCommand();
+            var newCmd = ReactiveCommand.Create();
             vm.Command1 = newCmd;
 
             view.Command1.PerformClick();
@@ -182,11 +179,11 @@
 
     public class FakeViewModel : ReactiveObject
     {
-        public ReactiveCommand Cmd { get; protected set; }
+        public ReactiveCommand<object> Cmd { get; protected set; }
 
         public FakeViewModel()
         {
-            Cmd = new ReactiveCommand();
+            Cmd = ReactiveCommand.Create();
         }
     }
 
@@ -211,15 +208,15 @@
 
     public class WinformCommandBindViewModel : ReactiveObject
     {
-        private ReactiveCommand _Command1;
-        public ReactiveCommand Command1
+        ReactiveCommand<object> _Command1;
+        public ReactiveCommand<object> Command1
         {
             get { return _Command1; }
             set { this.RaiseAndSetIfChanged(ref _Command1, value); }
         }
 
-        private ReactiveCommand _Command2;
-        public ReactiveCommand Command2
+        ReactiveCommand<object> _Command2;
+        public ReactiveCommand<object> Command2
         {
             get { return _Command2; }
             set { this.RaiseAndSetIfChanged(ref _Command2, value); }
@@ -227,8 +224,8 @@
 
         public WinformCommandBindViewModel()
         {
-            Command1 = new ReactiveCommand();
-            Command2  = new ReactiveCommand();
+            Command1 = ReactiveCommand.Create();
+            Command2 = ReactiveCommand.Create();
         }
     }
 
