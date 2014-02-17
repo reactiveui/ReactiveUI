@@ -55,7 +55,7 @@ namespace ReactiveUI
                 return _innerScheduler;
             } catch (Exception) {
                 // NB: Dispatcher's not ready yet. Keep using CurrentThread
-                return Scheduler.CurrentThread;
+                return CurrentThreadScheduler.Instance;
             }
         }
     }
