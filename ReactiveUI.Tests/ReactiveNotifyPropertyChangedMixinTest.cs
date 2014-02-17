@@ -16,6 +16,7 @@ using Microsoft.Reactive.Testing;
 #if !MONO
 using System.Windows.Controls;
 using ReactiveUI.Xaml;
+using System.Threading.Tasks;
 #endif
 
 namespace ReactiveUI.Tests
@@ -606,7 +607,7 @@ namespace ReactiveUI.Tests
     public class WhenAnyObservableTests
     {
         [Fact]
-        public void WhenAnyObservableSmokeTest()
+        public async Task WhenAnyObservableSmokeTest()
         {
             var fixture = new TestWhenAnyObsViewModel();
 
@@ -616,13 +617,13 @@ namespace ReactiveUI.Tests
 
             Assert.Equal(0, list.Count);
 
-            fixture.Command1.ExecuteAsync(1);
+            await fixture.Command1.ExecuteAsync(1);
             Assert.Equal(1, list.Count);
 
-            fixture.Command2.ExecuteAsync(2);
+            await fixture.Command2.ExecuteAsync(2);
             Assert.Equal(2, list.Count);
 
-            fixture.Command1.ExecuteAsync(1);
+            await fixture.Command1.ExecuteAsync(1);
             Assert.Equal(3, list.Count);
 
             Assert.True(

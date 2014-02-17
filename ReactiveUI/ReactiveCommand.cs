@@ -12,6 +12,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Linq.Expressions;
+using System.Reactive.Disposables;
 
 namespace ReactiveUI
 {
@@ -132,23 +133,33 @@ namespace ReactiveUI
 
         public IObservable<T> ExecuteAsync(object parameter = null)
         {
-            if (Interlocked.Increment(ref inflightCount) == 1) {
-                isExecuting.OnNext(true);
-            }
+            var ret = Observable.Create<T>(subj => {
+                if (Interlocked.Increment(ref inflightCount) == 1) {
+                    isExecuting.OnNext(true);
+                }
 
-            return executeAsync(parameter)
-                .ObserveOn(scheduler)
-                .Finally(() => {
-                    if (Interlocked.Decrement(ref inflightCount) == 0) {
-                        isExecuting.OnNext(false);
-                    }
-                })
-                .Do(x => executeResults.OnNext(x))
-                .Catch<T, Exception>(ex => {
-                    exceptions.OnNext(ex);
-                    return Observable.Empty<T>();
-                })
-                .Multicast(new ReplaySubject<T>()).PermaRef();
+                var decrement = new SerialDisposable() { 
+                    Disposable = Disposable.Create(() => {
+                        if (Interlocked.Decrement(ref inflightCount) == 0) {
+                            isExecuting.OnNext(false);
+                        }
+                    })
+                };
+
+                var disp = executeAsync(parameter)
+                    .ObserveOn(scheduler)
+                    .Finally(() => decrement.Disposable = Disposable.Empty)
+                    .Do(x => executeResults.OnNext(x))
+                    .Catch<T, Exception>(ex => {
+                        exceptions.OnNext(ex);
+                        return Observable.Empty<T>();
+                    })
+                    .Subscribe(subj);
+
+                return new CompositeDisposable(disp, decrement);
+            });
+
+            return ret.Publish().RefCount();
         }
 
         /// <summary>
@@ -192,7 +203,7 @@ namespace ReactiveUI
 
         public void Execute(object parameter)
         {
-            ExecuteAsync(parameter);
+            ExecuteAsync(parameter).Subscribe();
         }
 
         public void Dispose()
