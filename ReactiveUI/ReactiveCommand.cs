@@ -141,7 +141,7 @@ namespace ReactiveUI
         }
 
         public IObservable<bool> IsExecuting {
-            get { return isExecuting; }
+            get { return isExecuting.StartWith(inflightCount > 0); }
         }
 
         public IDisposable Subscribe(IObserver<T> observer)
