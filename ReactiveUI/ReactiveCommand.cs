@@ -17,33 +17,34 @@ namespace ReactiveUI
 {
     public static class ReactiveCommand
     {
-        public static ReactiveCommand<Unit> Create(IObservable<bool> canExecute, IScheduler scheduler = null)
+        public static ReactiveCommand<Unit> Create(IObservable<bool> canExecute = null, IScheduler scheduler = null)
         {
-            return new ReactiveCommand<Unit>(canExecute, () => Observable.Return(Unit.Default), scheduler);
+            canExecute = canExecute ?? Observable.Return(true);
+            return new ReactiveCommand<Unit>(canExecute, _ => Observable.Return(Unit.Default), scheduler);
         }
 
-        public static ReactiveCommand<Unit> Create(IObservable<bool> canExecute, Action executeAsync, IScheduler scheduler = null)
+        public static ReactiveCommand<Unit> Create(IObservable<bool> canExecute, Action<object> executeAsync, IScheduler scheduler = null)
         {
-            return new ReactiveCommand<Unit>(canExecute, () => Observable.Start(executeAsync, RxApp.TaskpoolScheduler), scheduler);
+            return new ReactiveCommand<Unit>(canExecute, x => Observable.Start(() => executeAsync(x), RxApp.TaskpoolScheduler), scheduler);
         }
 
-        public static ReactiveCommand<T> Create<T>(IObservable<bool> canExecute, Func<T> executeAsync, IScheduler scheduler = null)
+        public static ReactiveCommand<T> Create<T>(IObservable<bool> canExecute, Func<object, T> executeAsync, IScheduler scheduler = null)
         {
-            return new ReactiveCommand<T>(canExecute, () => Observable.Start(executeAsync, RxApp.TaskpoolScheduler), scheduler);
+            return new ReactiveCommand<T>(canExecute, x => Observable.Start(() => executeAsync(x), RxApp.TaskpoolScheduler), scheduler);
         }
 
 
-        public static ReactiveCommand<T> CreateAsync<T>(IObservable<bool> canExecute, Func<Task<T>> executeAsync, IScheduler scheduler = null)
+        public static ReactiveCommand<T> CreateAsync<T>(IObservable<bool> canExecute, Func<object, Task<T>> executeAsync, IScheduler scheduler = null)
         {
-            return new ReactiveCommand<T>(canExecute, () => executeAsync().ToObservable(), scheduler);
+            return new ReactiveCommand<T>(canExecute, x => executeAsync(x).ToObservable(), scheduler);
         }
     }
 
-    public class ReactiveCommand<T> : ICommand, IObservable<T>, IHandleObservableErrors, IDisposable
+    public class ReactiveCommand<T> : IReactiveCommand<T>
     {
         readonly Subject<T> executeResults = new Subject<T>();
         readonly Subject<bool> isExecuting = new Subject<bool>();
-        readonly Func<IObservable<T>> executeAsync;
+        readonly Func<object, IObservable<T>> executeAsync;
         readonly IScheduler scheduler;
         readonly ScheduledSubject<Exception> exceptions;
 
@@ -52,7 +53,7 @@ namespace ReactiveUI
         IDisposable canExecuteDisp;
         int inflightCount = 0;
 
-        public ReactiveCommand(IObservable<bool> canExecute, Func<IObservable<T>> executeAsync, IScheduler scheduler = null)
+        public ReactiveCommand(IObservable<bool> canExecute, Func<object, IObservable<T>> executeAsync, IScheduler scheduler = null)
         {
             this.scheduler = scheduler ?? RxApp.MainThreadScheduler;
             this.executeAsync = executeAsync;
@@ -71,13 +72,13 @@ namespace ReactiveUI
             ThrownExceptions = exceptions = new ScheduledSubject<Exception>(CurrentThreadScheduler.Instance, RxApp.DefaultExceptionHandler);
         }
 
-        public IObservable<T> ExecuteAsync()
+        public IObservable<T> ExecuteAsync(object parameter = null)
         {
             if (Interlocked.Increment(ref inflightCount) == 1) {
                 isExecuting.OnNext(true);
             }
 
-            return executeAsync()
+            return executeAsync(parameter)
                 .ObserveOn(scheduler)
                 .Finally(() => {
                     if (Interlocked.Decrement(ref inflightCount) == 0) {
@@ -133,7 +134,7 @@ namespace ReactiveUI
 
         void ICommand.Execute(object parameter)
         {
-            ExecuteAsync();
+            ExecuteAsync(parameter);
         }
 
         public void Dispose()

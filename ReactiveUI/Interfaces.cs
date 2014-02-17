@@ -68,31 +68,8 @@ namespace ReactiveUI
         IObservable<Exception> ThrownExceptions { get; }
     }
 
-    /// <summary>
-    /// IReactiveCommand represents an ICommand which also notifies when it is
-    /// executed (i.e. when Execute is called) via IObservable. Conceptually,
-    /// this represents an Event, so as a result this IObservable should never
-    /// OnComplete or OnError.
-    /// 
-    /// In previous versions of ReactiveUI, this interface was split into two
-    /// separate interfaces, one to handle async methods and one for "standard"
-    /// commands, but these have now been merged - every ReactiveCommand is now
-    /// a ReactiveAsyncCommand.
-    /// </summary>
-    public interface IReactiveCommand : IHandleObservableErrors, IObservable<object>, ICommand, IDisposable, IEnableLogger
+    public interface IReactiveCommand : IHandleObservableErrors, ICommand, IDisposable, IEnableLogger
     {
-        /// <summary>
-        /// Registers an asynchronous method to be called whenever the command
-        /// is Executed. This method returns an IObservable representing the
-        /// asynchronous operation, and is allowed to OnError / should OnComplete.
-        /// </summary>
-        /// <returns>A filtered version of the Observable which is marshaled 
-        /// to the UI thread. This Observable should only report successes and
-        /// instead send OnError messages to the ThrownExceptions property.
-        /// </returns>
-        /// <param name="asyncBlock">The asynchronous method to call.</param>
-        IObservable<T> RegisterAsync<T>(Func<object, IObservable<T>> asyncBlock);
-
         /// <summary>
         /// Gets a value indicating whether this instance can execute observable.
         /// </summary>
@@ -107,18 +84,23 @@ namespace ReactiveUI
         /// </summary>
         /// <value><c>true</c> if this instance is executing; otherwise, <c>false</c>.</value>
         IObservable<bool> IsExecuting { get; }
-
-        /// <summary>
-        /// Gets a value indicating whether this 
-        /// <see cref="ReactiveUI.IReactiveCommand"/> allows concurrent 
-        /// execution. If false, the CanExecute of the command will be disabled
-        /// while async operations are currently in-flight.
-        /// </summary>
-        /// <value><c>true</c> if allows concurrent execution; otherwise, <c>false</c>.</value>
-        bool AllowsConcurrentExecution { get; }
     }
 
-
+    /// <summary>
+    /// IReactiveCommand represents an ICommand which also notifies when it is
+    /// executed (i.e. when Execute is called) via IObservable. Conceptually,
+    /// this represents an Event, so as a result this IObservable should never
+    /// OnComplete or OnError.
+    /// 
+    /// In previous versions of ReactiveUI, this interface was split into two
+    /// separate interfaces, one to handle async methods and one for "standard"
+    /// commands, but these have now been merged - every ReactiveCommand is now
+    /// a ReactiveAsyncCommand.
+    /// </summary>
+    public interface IReactiveCommand<T> : IObservable<T>, IReactiveCommand
+    {
+        IObservable<T> ExecuteAsync(object parameter = null);
+    }
 
     /// <summary>
     /// IReactiveNotifyPropertyChanged represents an extended version of
@@ -401,39 +383,6 @@ namespace ReactiveUI
         void Sort(Comparison<T> comparison);
 
         void Sort(int index, int count, IComparer<T> comparer);
-    }
-
-    // NB: This is just a name we can bolt extension methods to
-    public interface INavigateCommand : IReactiveCommand { }
-
-    public interface IRoutingState : IReactiveNotifyPropertyChanged
-    {
-        /// <summary>
-        /// Represents the current navigation stack, the last element in the
-        /// collection being the currently visible ViewModel.
-        /// </summary>
-        ReactiveList<IRoutableViewModel> NavigationStack { get; }
-
-        /// <summary>
-        /// Navigates back to the previous element in the stack.
-        /// </summary>
-        IReactiveCommand NavigateBack { get; }
-
-        /// <summary>
-        /// Navigates to the a new element in the stack - the Execute parameter
-        /// must be a ViewModel that implements IRoutableViewModel.
-        /// </summary>
-        INavigateCommand Navigate { get; }
-
-        /// <summary>
-        /// Navigates to a new element and resets the navigation stack (i.e. the
-        /// new ViewModel will now be the only element in the stack) - the
-        /// Execute parameter must be a ViewModel that implements
-        /// IRoutableViewModel.
-        /// </summary>
-        INavigateCommand NavigateAndReset { get; }
-
-        IObservable<IRoutableViewModel> CurrentViewModel { get; }
     }
 
     /// <summary>
