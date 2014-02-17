@@ -243,7 +243,7 @@ namespace ReactiveUI.Tests
         [Fact]
         public async Task RAFShouldActuallyRunOnTheTaskpool()
         {
-            var fixture = ReactiveCommand.CreateFunction(Observable.Return(true),
+            var fixture = ReactiveCommand.CreateWithFunction(Observable.Return(true),
                 _ => Thread.CurrentThread.ManagedThreadId);
 
             var threadId = fixture.CreateCollection();
