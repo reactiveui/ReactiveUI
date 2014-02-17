@@ -99,6 +99,7 @@
     <Compile Include="Cocoa\ReactiveCollectionViewSource.cs" />
     <Compile Include="Cocoa\CommonReactiveSource.cs" />
     <Compile Include="Cocoa\ReactiveCollectionViewController.cs" />
+    <Compile Include="Cocoa\ReactiveControl.cs" />
   </ItemGroup>
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <ItemGroup>
