@@ -40,8 +40,8 @@ namespace ReactiveUI
         [IgnoreDataMember] Lazy<Subject<T>> _itemsAdded;
         [IgnoreDataMember] Lazy<Subject<T>> _beforeItemsRemoved;
         [IgnoreDataMember] Lazy<Subject<T>> _itemsRemoved;
-        [IgnoreDataMember] Lazy<Subject<IObservedChange<T, object>>> _itemChanging;
-        [IgnoreDataMember] Lazy<Subject<IObservedChange<T, object>>> _itemChanged;
+        [IgnoreDataMember] Lazy<ISubject<IObservedChange<T, object>>> _itemChanging;
+        [IgnoreDataMember] Lazy<ISubject<IObservedChange<T, object>>> _itemChanged;
         [IgnoreDataMember] Lazy<Subject<IMoveInfo<T>>> _beforeItemsMoved;
         [IgnoreDataMember] Lazy<Subject<IMoveInfo<T>>> _itemsMoved;
 
@@ -61,7 +61,7 @@ namespace ReactiveUI
         public ReactiveList() { setupRx(); }
         public ReactiveList(IEnumerable<T> initialContents) { setupRx(initialContents); }
 
-        public ReactiveList(IEnumerable<T> initialContents = null, double resetChangeThreshold = 0.3)
+        public ReactiveList(IEnumerable<T> initialContents = null, double resetChangeThreshold = 0.3, IScheduler scheduler = null)
         {
             setupRx(initialContents, resetChangeThreshold);
         }
@@ -69,8 +69,10 @@ namespace ReactiveUI
         [OnDeserialized]
         void setupRx(StreamingContext _) { setupRx(); }
 
-        void setupRx(IEnumerable<T> initialContents = null, double resetChangeThreshold = 0.3)
+        void setupRx(IEnumerable<T> initialContents = null, double resetChangeThreshold = 0.3, IScheduler scheduler = null)
         {
+            scheduler = scheduler ?? RxApp.MainThreadScheduler;
+
             _inner = _inner ?? new List<T>();
 
             _changing = new Subject<NotifyCollectionChangedEventArgs>();
@@ -85,8 +87,8 @@ namespace ReactiveUI
             _itemsAdded = new Lazy<Subject<T>>(() => new Subject<T>());
             _beforeItemsRemoved = new Lazy<Subject<T>>(() => new Subject<T>());
             _itemsRemoved = new Lazy<Subject<T>>(() => new Subject<T>());
-            _itemChanging = new Lazy<Subject<IObservedChange<T, object>>>(() => new Subject<IObservedChange<T, object>>());
-            _itemChanged = new Lazy<Subject<IObservedChange<T, object>>>(() => new Subject<IObservedChange<T, object>>());
+            _itemChanging = new Lazy<ISubject<IObservedChange<T, object>>>(() => new ScheduledSubject<IObservedChange<T, object>>(scheduler));
+            _itemChanged = new Lazy<ISubject<IObservedChange<T, object>>>(() => new ScheduledSubject<IObservedChange<T, object>>(scheduler));
             _beforeItemsMoved = new Lazy<Subject<IMoveInfo<T>>>(() => new Subject<IMoveInfo<T>>());
             _itemsMoved = new Lazy<Subject<IMoveInfo<T>>>(() => new Subject<IMoveInfo<T>>());
 
