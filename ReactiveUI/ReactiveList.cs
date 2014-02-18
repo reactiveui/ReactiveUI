@@ -63,7 +63,7 @@ namespace ReactiveUI
 
         public ReactiveList(IEnumerable<T> initialContents = null, double resetChangeThreshold = 0.3, IScheduler scheduler = null)
         {
-            setupRx(initialContents, resetChangeThreshold);
+            setupRx(initialContents, resetChangeThreshold, scheduler);
         }
 
         [OnDeserialized]
