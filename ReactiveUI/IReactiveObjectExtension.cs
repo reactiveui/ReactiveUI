@@ -11,7 +11,7 @@ using System.Collections.Generic;
 
 namespace ReactiveUI 
 {
-    public interface IReactiveObjectExtension : IEnableLogger 
+    public interface IReactiveObjectExtension : INotifyPropertyChanged, INotifyPropertyChanging, IEnableLogger 
     {
         event PropertyChangingEventHandler PropertyChanging;
         event PropertyChangedEventHandler PropertyChanged;
@@ -23,91 +23,61 @@ namespace ReactiveUI
     [Preserve(AllMembers = true)]
     public static class IReactiveObjectExtensions
     {
-        static ConditionalWeakTable<IReactiveObjectExtension, ExtensionState> state = new ConditionalWeakTable<IReactiveObjectExtension, ExtensionState>();
+        static ConditionalWeakTable<IReactiveObjectExtension, IExtensionState<IReactiveObjectExtension>> state = new ConditionalWeakTable<IReactiveObjectExtension, IExtensionState<IReactiveObjectExtension>>();
 
-        internal static void setupReactiveExtension(this IReactiveObjectExtension This) {
-            state.GetOrCreateValue(This);
-        }
-
-        internal static IObservable<IObservedChange<object, object>> getChangedObservable(this IReactiveObjectExtension This) {
-            return state.GetOrCreateValue(This).ChangedSubject;
-        }
-
-        internal static IObservable<IObservedChange<object, object>> getChangingObservable(this IReactiveObjectExtension This) {
-            return state.GetOrCreateValue(This).ChangingSubject;
-        }
-
-        internal static IObservable<Exception> getThrownExceptionsObservable(this IReactiveObjectExtension This) {
-            return state.GetOrCreateValue(This).ThrownExceptions;
-        }
-
-        /// <summary>
-        /// When this method is called, an object will not fire change
-        /// notifications (neither traditional nor Observable notifications)
-        /// until the return value is disposed.
-        /// </summary>
-        /// <returns>An object that, when disposed, reenables change
-        /// notifications.</returns>
-        internal static IDisposable suppressChangeNotifications(this IReactiveObjectExtension This)
+        internal static void setupReactiveExtension<TSender>(this TSender This) where TSender : IReactiveObjectExtension
         {
-            var s = state.GetOrCreateValue(This);
-            Interlocked.Increment(ref s.ChangeNotificationsSuppressed);
-            return Disposable.Create(() => Interlocked.Decrement(ref s.ChangeNotificationsSuppressed));
+            state.GetValue(This, key => (IExtensionState<IReactiveObjectExtension>)new ExtensionState<TSender>(This));
         }
 
-        internal static void raisePropertyChanging(this IReactiveObjectExtension This, string propertyName)
+        internal static IObservable<IObservedChange<TSender, object>> getChangedObservable<TSender>(this TSender This) where TSender : IReactiveObjectExtension
+        {
+            var val = state.GetValue(This, key => (IExtensionState<IReactiveObjectExtension>)new ExtensionState<TSender>(This));
+            return ((IExtensionState<TSender>)val).Changed;
+        }
+
+        internal static IObservable<IObservedChange<TSender, object>> getChangingObservable<TSender>(this TSender This) where TSender : IReactiveObjectExtension 
+        {
+            var val = state.GetValue(This, key => (IExtensionState<IReactiveObjectExtension>)new ExtensionState<TSender>(This));
+            return ((IExtensionState<TSender>)val).Changing;
+        }
+
+        internal static IObservable<Exception> getThrownExceptionsObservable<TSender>(this TSender This) where TSender : IReactiveObjectExtension 
+        {
+            var s = state.GetValue(This, key => (IExtensionState<IReactiveObjectExtension>)new ExtensionState<TSender>(This));
+            return s.ThrownExceptions;
+        }
+
+        internal static void raisePropertyChanging<TSender>(this TSender This, string propertyName) where TSender : IReactiveObjectExtension 
         {
             Contract.Requires(propertyName != null);
 
-            var s = state.GetOrCreateValue(This);
+            var s = state.GetValue(This, key => (IExtensionState<IReactiveObjectExtension>)new ExtensionState<TSender>(This));
 
-            if (!This.areChangeNotificationsEnabled() || s.ChangingSubject == null)
-                return;
-
-            This.RaisePropertyChanging(new PropertyChangingEventArgs(propertyName));
-
-            This.notifyObservable(new ObservedChange<object, object>() {
-                PropertyName = propertyName, Sender = This, Value = null
-            }, s.ChangingSubject);
+            s.raisePropertyChanging(propertyName);
         }
 
-        internal static void raisePropertyChanged(this IReactiveObjectExtension This, string propertyName)
+        internal static void raisePropertyChanged<TSender>(this TSender This, string propertyName) where TSender : IReactiveObjectExtension 
         {
             Contract.Requires(propertyName != null);
 
-            var s = state.GetOrCreateValue(This);
-
-            This.Log().Debug("{0:X}.{1} changed", This.GetHashCode(), propertyName);
-
-            if (!This.areChangeNotificationsEnabled() || s.ChangedSubject == null) {
-                This.Log().Debug("Suppressed change");
-                return;
-            }
-
-            This.RaisePropertyChanged(new PropertyChangedEventArgs(propertyName));
-
-            This.notifyObservable(new ObservedChange<object, object>() {
-                PropertyName = propertyName, Sender = This, Value = null
-            }, s.ChangedSubject);
+            var s = state.GetValue(This, key => (IExtensionState<IReactiveObjectExtension>)new ExtensionState<TSender>(This));
+            
+            s.raisePropertyChanged(propertyName);
         }
 
-        internal static bool areChangeNotificationsEnabled(this IReactiveObjectExtension This) 
+        internal static IDisposable suppressChangeNotifications<TSender>(this TSender This) where TSender : IReactiveObjectExtension
         {
-            var s = state.GetOrCreateValue(This);
+            var s = state.GetValue(This, key => (IExtensionState<IReactiveObjectExtension>)new ExtensionState<TSender>(This));
 
-            return (Interlocked.Read(ref s.ChangeNotificationsSuppressed) == 0);
+            return s.suppressChangeNotifications();
         }
 
-        internal static void notifyObservable<T>(this IReactiveObjectExtension This, T item, Subject<T> subject)
+        internal static bool areChangeNotificationsEnabled<TSender>(this TSender This) where TSender : IReactiveObjectExtension
         {
-            var s = state.GetOrCreateValue(This);
+            var s = state.GetValue(This, key => (IExtensionState<IReactiveObjectExtension>)new ExtensionState<TSender>(This));
 
-            try {
-                subject.OnNext(item);
-            } catch (Exception ex) {
-                This.Log().ErrorException("ReactiveObject Subscriber threw exception", ex);
-                s.ThrownExceptions.OnNext(ex);
-            }
+            return s.areChangeNotificationsEnabled();
         }
 
         /// <summary>
@@ -170,20 +140,102 @@ namespace ReactiveUI
             This.raisePropertyChanging(propertyName);
         }
 
-        class ExtensionState 
+        class ExtensionState<TSender> : IExtensionState<TSender> where TSender : IReactiveObjectExtension
         {
-            public ExtensionState() 
+            private long changeNotificationsSuppressed;
+            private ISubject<IObservedChange<TSender, object>> changingSubject;
+            private ISubject<IObservedChange<TSender, object>> changedSubject;
+            private ISubject<Exception> thrownExceptions;
+
+            private TSender sender;
+
+            /// <summary>
+            /// Initializes a new instance of the <see cref="ExtensionState{TSender}"/> class.
+            /// </summary>
+            public ExtensionState(TSender sender) 
             {
-                ChangingSubject = new Subject<IObservedChange<object, object>>();
-                ChangedSubject = new Subject<IObservedChange<object, object>>();
-                ThrownExceptions = new ScheduledSubject<Exception>(Scheduler.Immediate, RxApp.DefaultExceptionHandler);
+                this.sender = sender;
+                this.changingSubject = new Subject<IObservedChange<TSender, object>>();
+                this.changedSubject = new Subject<IObservedChange<TSender, object>>();
+                this.thrownExceptions = new ScheduledSubject<Exception>(Scheduler.Immediate, RxApp.DefaultExceptionHandler);
             }
 
-            public Subject<IObservedChange<object, object>> ChangingSubject { get; private set; }
-            public Subject<IObservedChange<object, object>> ChangedSubject { get; private set; }
-            public ScheduledSubject<Exception> ThrownExceptions { get; private set; }
+            public IObservable<IObservedChange<TSender, object>> Changing {
+                get { return this.changingSubject; }
+            }           
 
-            public long ChangeNotificationsSuppressed;
+            public IObservable<IObservedChange<TSender, object>> Changed {
+                get { return this.changedSubject; }
+            }
+
+            public IObservable<Exception> ThrownExceptions {
+                get { return thrownExceptions; }
+            }
+
+            public bool areChangeNotificationsEnabled()
+            {
+                return (Interlocked.Read(ref changeNotificationsSuppressed) == 0);
+            }            
+
+            /// <summary>
+            /// When this method is called, an object will not fire change
+            /// notifications (neither traditional nor Observable notifications)
+            /// until the return value is disposed.
+            /// </summary>
+            /// <returns>An object that, when disposed, reenables change
+            /// notifications.</returns>
+            public IDisposable suppressChangeNotifications()
+            {
+                Interlocked.Increment(ref changeNotificationsSuppressed);
+                return Disposable.Create(() => Interlocked.Decrement(ref changeNotificationsSuppressed));
+            }
+
+            public void raisePropertyChanging(string propertyName)
+            {
+                if (!this.areChangeNotificationsEnabled())
+                    return;
+
+                sender.RaisePropertyChanging(new PropertyChangingEventArgs(propertyName));
+
+                this.notifyObservable(sender, new ObservedChange<TSender, object>(sender, propertyName, null), this.changingSubject);
+            }
+
+            public void raisePropertyChanged(string propertyName)
+            {
+                if (!this.areChangeNotificationsEnabled())
+                    return;
+
+                sender.RaisePropertyChanged(new PropertyChangedEventArgs(propertyName));
+
+                this.notifyObservable(sender, new ObservedChange<TSender, object>(sender, propertyName, null), this.changedSubject);
+            }
+
+            internal void notifyObservable<T>(IReactiveObjectExtension rxObj, T item, ISubject<T> subject)
+            {
+                try {
+                    subject.OnNext(item);
+                } catch (Exception ex) {
+                    rxObj.Log().ErrorException("ReactiveObject Subscriber threw exception", ex);
+                    thrownExceptions.OnNext(ex);
+                }
+            }
+        }
+
+        interface IExtensionState<out TSender> where TSender: IReactiveObjectExtension
+        {
+            IObservable<IObservedChange<TSender, object>> Changing { get; }
+
+            IObservable<IObservedChange<TSender, object>> Changed { get; }
+
+            void raisePropertyChanging(string propertyName);
+
+            void raisePropertyChanged(string propertyName);
+
+            IObservable<Exception> ThrownExceptions { get; }
+
+            bool areChangeNotificationsEnabled();
+
+            IDisposable suppressChangeNotifications();
         }
     }
 }
