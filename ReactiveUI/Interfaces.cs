@@ -121,7 +121,7 @@ namespace ReactiveUI
     /// IReactiveNotifyPropertyChanged represents an extended version of
     /// INotifyPropertyChanged that also exposes typed Observables.
     /// </summary>
-    public interface IReactiveNotifyPropertyChanged<out TSender> : INotifyPropertyChanged, INotifyPropertyChanging, IEnableLogger
+    public interface IReactiveNotifyPropertyChanged<out TSender>
     {
         /// <summary>
         /// Represents an Observable that fires *before* a property is about to
@@ -151,21 +151,21 @@ namespace ReactiveUI
     /// IReactiveNotifyCollectionItemChanged provides notifications for collection item updates, ie when an object in
     /// a collection changes.
     /// </summary>
-    public interface IReactiveNotifyCollectionItemChanged<out T>
+    public interface IReactiveNotifyCollectionItemChanged<out TSender>
     {
         /// <summary>
         /// Provides Item Changing notifications for any item in collection that
         /// implements IReactiveNotifyPropertyChanged. This is only enabled when
         /// ChangeTrackingEnabled is set to True.
         /// </summary>
-        new IObservable<IObservedChange<T, object>> ItemChanging { get; }
+        IObservable<IObservedChange<TSender, object>> ItemChanging { get; }
 
         /// <summary>
         /// Provides Item Changed notifications for any item in collection that
         /// implements IReactiveNotifyPropertyChanged. This is only enabled when
         /// ChangeTrackingEnabled is set to True.
         /// </summary>
-        new IObservable<IObservedChange<T, object>> ItemChanged { get; }
+        IObservable<IObservedChange<TSender, object>> ItemChanged { get; }
 
         /// <summary>
         /// Enables the ItemChanging and ItemChanged properties; when this is
@@ -180,7 +180,7 @@ namespace ReactiveUI
     /// IReactiveNotifyCollectionChanged of T provides notifications when the contents
     /// of collection are changed (items are added/removed/moved).
     /// </summary>
-    public interface IReactiveNotifyCollectionChanged<out T> : INotifyCollectionChanged
+    public interface IReactiveNotifyCollectionChanged<out T>
     {
         /// <summary>
         /// Fires when items are added to the collection, once per item added.
@@ -242,6 +242,8 @@ namespace ReactiveUI
         /// </summary>
         IObservable<int> CountChanged { get; }
 
+        IObservable<bool> IsEmptyChanged { get; }
+
         /// <summary>
         /// This Observable is fired when a ShouldReset fires on the collection. This
         /// means that you should forget your previous knowledge of the state
@@ -262,7 +264,7 @@ namespace ReactiveUI
     /// It is important to implement the Changing/Changed from
     /// IReactiveNotifyPropertyChanged semantically as "Fire when *anything* in
     /// the collection or any of its items have changed, in any way".
-    public interface IReactiveCollection<out T> : IReactiveNotifyCollectionChanged<T>, IReactiveNotifyCollectionItemChanged<T>, IEnumerable<T>, INotifyPropertyChanging, INotifyPropertyChanged, IEnableLogger
+    public interface IReactiveCollection<out T> : IReactiveNotifyCollectionChanged<T>, IReactiveNotifyCollectionItemChanged<T>, IEnumerable<T>, INotifyCollectionChanged, IReactiveObjectExtension
     {
         void Reset();
     }
@@ -330,7 +332,7 @@ namespace ReactiveUI
     /// <summary>
     /// Implement this interface for ViewModels that can be navigated to.
     /// </summary>
-    public interface IRoutableViewModel : IEnableLogger
+    public interface IRoutableViewModel : IReactiveObjectExtension
     {
         /// <summary>
         /// A string token representing the current ViewModel, such as 'login' or 'user'
