@@ -33,7 +33,7 @@ namespace ReactiveUI
         /// property is often not set for performance reasons, unless you have
         /// explicitly requested an Observable for a property via a method such
         /// as ObservableForProperty. To retrieve the value for the property,
-        /// use the Value() extension method.
+        /// use the GetValue() extension method.
         /// </summary>
         TValue Value { get; }
     }
