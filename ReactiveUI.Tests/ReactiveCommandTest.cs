@@ -5,6 +5,7 @@ using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using System.Reactive.Threading.Tasks;
 using System.Threading;
 using System.Threading.Tasks;
 using ReactiveUI.Testing;
@@ -15,21 +16,9 @@ namespace ReactiveUI.Tests
 {
     public class ReactiveCommandInterfaceTest
     {
-        protected IReactiveCommand createCommand(IObservable<bool> canExecute, IScheduler scheduler = null)
+        protected ReactiveCommand<object> createCommand(IObservable<bool> canExecute, IScheduler scheduler = null)
         {
-            return new ReactiveCommand(canExecute, false, scheduler);
-        }
-
-        [Fact]
-        public void CommandInitialConditionShouldBeAdjustable()
-        {
-            var sub = new Subject<bool>();
-            var cmd = new ReactiveCommand(sub);
-            Assert.Equal(true, cmd.CanExecute(null));
-
-            var cmd2 = new ReactiveCommand(sub, false);
-            Assert.Equal(false, cmd2.CanExecute(null));
-
+            return ReactiveCommand.Create(canExecute, scheduler);
         }
 
         [Fact]
@@ -73,7 +62,9 @@ namespace ReactiveUI.Tests
                 return changes_as_observable;
             });
 
-            input.DistinctUntilChanged().AssertAreEqual(result.ToList());
+            // NB: Skip(1) is because CanExecuteObservable should have
+            // BehaviorSubject Nature(tm)
+            input.DistinctUntilChanged().AssertAreEqual(result.Skip(1).ToList());
         }
 
         [Fact]
@@ -135,15 +126,14 @@ namespace ReactiveUI.Tests
 
             canExecute.OnError(new Exception("Aieeeee!"));
 
-            // The command should just latch at whatever its previous state was
-            // before the exception
-            Assert.True(fixture.CanExecute(null));
+            // The command should latch to false forever
+            Assert.False(fixture.CanExecute(null));
 
             Assert.Equal(1, exceptions.Count);
             Assert.Equal("Aieeeee!", exceptions[0].Message);
 
-            Assert.Equal(false, canExecuteStates[canExecuteStates.Count - 2]);
-            Assert.Equal(true, canExecuteStates[canExecuteStates.Count - 1]);
+            Assert.Equal(false, canExecuteStates[canExecuteStates.Count - 1]);
+            Assert.Equal(true, canExecuteStates[canExecuteStates.Count - 2]);
         }
 
         [Fact]
@@ -151,15 +141,18 @@ namespace ReactiveUI.Tests
         {
             (new TestScheduler()).With(sched => {
                 var canExecute = new Subject<bool>();
-                var fixture = createCommand(canExecute);
-
-                canExecute.OnNext(true);
-                canExecute.OnError(new Exception("Aieeeee!"));
+                var fixture = createCommand(canExecute, sched);
+                var result = fixture.CanExecuteObservable.CreateCollection();
 
                 bool failed = true;
                 try {
-                    sched.Start();
-                    Assert.True(fixture.CanExecute(null));
+                    sched.AdvanceByMs(10);
+                    canExecute.OnNext(true);
+                    canExecute.OnError(new Exception("Aieeeee!"));
+                    sched.AdvanceByMs(10);
+
+                    // NB: canExecute failing should bring us down
+                    Assert.True(false);
                 } catch (Exception ex) {
                     failed = (ex.InnerException.Message != "Aieeeee!");
                 }
@@ -175,11 +168,12 @@ namespace ReactiveUI.Tests
         public void RegisterAsyncFunctionSmokeTest()
         {
             (new TestScheduler()).With(sched => {
-                var fixture = new ReactiveCommand();
+                var fixture = ReactiveCommand.Create(Observable.Return(true),
+                    _ => Observable.Return(5).Delay(TimeSpan.FromSeconds(5), sched));
+
                 IReactiveDerivedList<int> results;
 
-                results = fixture.RegisterAsync(_ =>
-                    Observable.Return(5).Delay(TimeSpan.FromSeconds(5), sched)).CreateCollection();
+                results = fixture.CreateCollection();
 
                 var inflightResults = fixture.IsExecuting.CreateCollection();
                 sched.AdvanceToMs(10);
@@ -201,15 +195,15 @@ namespace ReactiveUI.Tests
         public void MultipleSubscribersShouldntDecrementRefcountBelowZero()
         {
             (new TestScheduler()).With(sched => {
-                var fixture = new ReactiveCommand();
+                var fixture = ReactiveCommand.Create(Observable.Return(true),
+                    _ => Observable.Return(5).Delay(TimeSpan.FromMilliseconds(5000), sched));
+
                 var results = new List<int>();
                 bool[] subscribers = new[] {false, false, false, false, false};
 
-                var output = fixture.RegisterAsync(_ =>
-                    Observable.Return(5).Delay(TimeSpan.FromMilliseconds(5000), sched));
-                output.Subscribe(x => results.Add(x));
+                fixture.Subscribe(x => results.Add(x));
 
-                Enumerable.Range(0, 5).Run(x => output.Subscribe(_ => subscribers[x] = true));
+                Enumerable.Range(0, 5).Run(x => fixture.Subscribe(_ => subscribers[x] = true));
 
                 Assert.True(fixture.CanExecute(null));
 
@@ -231,11 +225,11 @@ namespace ReactiveUI.Tests
         {
             (new TestScheduler()).With(sched => {
                 bool latestExecuting = false;
-                var fixture = new ReactiveCommand(null, false, sched);
+                var fixture = ReactiveCommand.Create(Observable.Return(true),
+                    _ => new[] {1, 2, 3}.ToObservable(),
+                    sched);
 
-                var results = fixture
-                    .RegisterAsync(_ => new[] {1, 2, 3}.ToObservable())
-                    .CreateCollection();
+                var results = fixture.CreateCollection();
                 fixture.IsExecuting.Subscribe(x => latestExecuting = x);
 
                 fixture.Execute(1);
@@ -249,16 +243,15 @@ namespace ReactiveUI.Tests
         [Fact]
         public async Task RAFShouldActuallyRunOnTheTaskpool()
         {
-            var deferred = RxApp.MainThreadScheduler;
-            var taskpool = RxApp.TaskpoolScheduler;
+            var fixture = ReactiveCommand.CreateWithFunction(Observable.Return(true),
+                _ => Thread.CurrentThread.ManagedThreadId);
 
-            var fixture = new ReactiveCommand();
-            var threadId = fixture.RegisterAsyncFunction(_ => Thread.CurrentThread.ManagedThreadId)
-                .CreateCollection();
+            var threadId = fixture.CreateCollection();
 
             Assert.Equal(0, threadId.Count);
 
-            fixture.Execute(1);
+            var tid = fixture.ExecuteAsync(1).ToTask().Result;
+
             Assert.Equal(1, threadId.Count);
 
             Assert.NotEqual(Thread.CurrentThread.ManagedThreadId, threadId[0]);
@@ -277,13 +270,13 @@ namespace ReactiveUI.Tests
                     sched.OnNextAt(1100, false)
                     );
 
-                var fixture = new ReactiveCommand(canExecute);
+                var fixture = ReactiveCommand.Create(canExecute,
+                    x => Observable.Return((int)x * 5).Delay(TimeSpan.FromMilliseconds(900), RxApp.MainThreadScheduler));
+                
                 int calculatedResult = -1;
                 bool latestCanExecute = false;
 
-                fixture.RegisterAsync(x =>
-                    Observable.Return((int)x*5).Delay(TimeSpan.FromMilliseconds(900), RxApp.MainThreadScheduler))
-                    .Subscribe(x => calculatedResult = x);
+                fixture.Subscribe(x => calculatedResult = x);
 
                 fixture.CanExecuteObservable.Subscribe(x => latestCanExecute = x);
 
@@ -325,44 +318,16 @@ namespace ReactiveUI.Tests
         }
 
         [Fact]
-        public void AllowConcurrentExecutionTest()
-        {
-            (new TestScheduler()).With(sched => {
-                var fixture = new ReactiveCommand(null, true, sched);
-
-                Assert.True(fixture.CanExecute(null));
-
-                var result = fixture.RegisterAsync(_ => Observable.Return(4).Delay(TimeSpan.FromSeconds(5), sched))
-                    .CreateCollection();
-                Assert.Equal(0, result.Count);
-
-                sched.AdvanceToMs(25);
-                Assert.Equal(0, result.Count);
-
-                fixture.Execute(null);
-                Assert.True(fixture.CanExecute(null));
-                Assert.Equal(0, result.Count);
-
-                sched.AdvanceToMs(2500);
-                Assert.True(fixture.CanExecute(null));
-                Assert.Equal(0, result.Count);
-
-                sched.AdvanceToMs(5500);
-                Assert.True(fixture.CanExecute(null));
-                Assert.Equal(1, result.Count);
-            });
-        }
-
-        [Fact]
         public void DisallowConcurrentExecutionTest()
         {
             (new TestScheduler()).With(sched => {
-                var fixture = new ReactiveCommand(null, false, sched);
+                var fixture = ReactiveCommand.Create(Observable.Return(true), 
+                    _ => Observable.Return(4).Delay(TimeSpan.FromSeconds(5), sched), 
+                    sched);
 
                 Assert.True(fixture.CanExecute(null));
 
-                var result = fixture.RegisterAsync(_ => Observable.Return(4).Delay(TimeSpan.FromSeconds(5), sched))
-                    .CreateCollection();
+                var result = fixture.CreateCollection();
                 Assert.Equal(0, result.Count);
 
                 sched.AdvanceToMs(25);
@@ -385,9 +350,9 @@ namespace ReactiveUI.Tests
         [Fact]
         public void CombinedCommandsShouldFireChildCommands()
         {
-            var cmd1 = new ReactiveCommand();
-            var cmd2 = new ReactiveCommand();
-            var cmd3 = new ReactiveCommand();
+            var cmd1 = ReactiveCommand.Create();
+            var cmd2 = ReactiveCommand.Create();
+            var cmd3 = ReactiveCommand.Create();
 
             var output = new[] { cmd1, cmd2, cmd3, }.Merge().CreateCollection();
 
@@ -404,60 +369,61 @@ namespace ReactiveUI.Tests
         public void CombinedCommandsShouldReflectCanExecuteOfChildren()
         {
             var subj1 = new Subject<bool>();
-            var cmd1 = new ReactiveCommand(subj1);
+            var cmd1 = ReactiveCommand.Create(subj1);
             var subj2 = new Subject<bool>();
-            var cmd2 = new ReactiveCommand(subj2);
-            var cmd3 = new ReactiveCommand();
+            var cmd2 = ReactiveCommand.Create(subj2);
+            var cmd3 = ReactiveCommand.Create();
 
             // Initial state for ReactiveCommands is to be executable
             var fixture = ReactiveCommand.CreateCombined(cmd1, cmd2, cmd3);
             var canExecuteOutput = fixture.CanExecuteObservable.CreateCollection();
-            Assert.True(fixture.CanExecute(null));
+
+            // cmd1 and cmd2 are ??? so, result is false
+            Assert.False(fixture.CanExecute(null));
             Assert.Equal(1, canExecuteOutput.Count);
 
             // 1 is false, 2 is true
             subj1.OnNext(false);
             Assert.False(fixture.CanExecute(null));
-            Assert.Equal(2, canExecuteOutput.Count);
-            Assert.Equal(false, canExecuteOutput[1]);
+            Assert.Equal(1, canExecuteOutput.Count);
+            Assert.Equal(false, canExecuteOutput[0]);
 
             // 1 is false, 2 is false
             subj2.OnNext(false);
             Assert.False(fixture.CanExecute(null));
-            Assert.Equal(2, canExecuteOutput.Count);
+            Assert.Equal(1, canExecuteOutput.Count);
 
             // 1 is true, 2 is false
             subj1.OnNext(true);
             Assert.False(fixture.CanExecute(null));
-            Assert.Equal(2, canExecuteOutput.Count);
+            Assert.Equal(1, canExecuteOutput.Count);
                         
             // 1 is true, 2 is true
             subj2.OnNext(true);
             Assert.True(fixture.CanExecute(null));
-            Assert.Equal(3, canExecuteOutput.Count);
-            Assert.Equal(true, canExecuteOutput[2]);
+            Assert.Equal(2, canExecuteOutput.Count);
+            Assert.Equal(true, canExecuteOutput[1]);
         }
 
         [Fact]
         public void CombinedCommandsShouldBeInactiveOnAsyncInflightOps()
         {
             (new TestScheduler()).With(sched => {
-                var cmd1 = new ReactiveCommand();
-                var cmd2 = new ReactiveCommand();
-                var cmd3 = new ReactiveCommand();
+                var cmd1 = ReactiveCommand.Create(Observable.Return(true), 
+                    x => Observable.Return(x).Delay(TimeSpan.FromMilliseconds(100), sched));
+                var cmd2 = ReactiveCommand.Create(Observable.Return(true),
+                    x => Observable.Return(x).Delay(TimeSpan.FromMilliseconds(300), sched));
 
-                var result1 = cmd1
-                    .RegisterAsync(x => Observable.Return(x).Delay(TimeSpan.FromMilliseconds(100), sched))
-                    .CreateCollection();
+                var cmd3 = ReactiveCommand.Create();
 
-                var result2 = cmd2
-                    .RegisterAsync(x => Observable.Return(x).Delay(TimeSpan.FromMilliseconds(300), sched))
-                    .CreateCollection();
+                var result1 = cmd1.CreateCollection();
+
+                var result2 = cmd2.CreateCollection();
 
                 var fixture = ReactiveCommand.CreateCombined(cmd1, cmd2, cmd3);
                 var canExecuteOutput = fixture.CanExecuteObservable.CreateCollection();
                 Assert.True(fixture.CanExecute(null));
-                Assert.Equal(0, canExecuteOutput.Count);
+                Assert.Equal(1, canExecuteOutput.Count);
 
                 fixture.Execute(42);
 
@@ -490,17 +456,16 @@ namespace ReactiveUI.Tests
         public void CombinedCommandsShouldReflectParentCanExecute()
         {
             var subj1 = new Subject<bool>();
-            var cmd1 = new ReactiveCommand(subj1);
+            var cmd1 = ReactiveCommand.Create(subj1);
             var subj2 = new Subject<bool>();
-            var cmd2 = new ReactiveCommand(subj2);
-            var cmd3 = new ReactiveCommand();
+            var cmd2 = ReactiveCommand.Create(subj2);
+            var cmd3 = ReactiveCommand.Create();
             var parentSubj = new Subject<bool>();
-
 
             // Initial state for ReactiveCommands is to be executable
             var fixture = ReactiveCommand.CreateCombined(parentSubj, cmd1, cmd2, cmd3);
             var canExecuteOutput = fixture.CanExecuteObservable.CreateCollection();
-            Assert.True(fixture.CanExecute(null));
+            Assert.False(fixture.CanExecute(null));
             Assert.Equal(1, canExecuteOutput.Count);
 
             parentSubj.OnNext(false);
@@ -508,44 +473,44 @@ namespace ReactiveUI.Tests
             // 1 is false, 2 is true
             subj1.OnNext(false);
             Assert.False(fixture.CanExecute(null));
-            Assert.Equal(2, canExecuteOutput.Count);
-            Assert.Equal(false, canExecuteOutput[1]);
+            Assert.Equal(1, canExecuteOutput.Count);
+            Assert.Equal(false, canExecuteOutput[0]);
 
             // 1 is false, 2 is false
             subj2.OnNext(false);
             Assert.False(fixture.CanExecute(null));
-            Assert.Equal(2, canExecuteOutput.Count);
+            Assert.Equal(1, canExecuteOutput.Count);
 
             // 1 is true, 2 is false
             subj1.OnNext(true);
             Assert.False(fixture.CanExecute(null));
-            Assert.Equal(2, canExecuteOutput.Count);
+            Assert.Equal(1, canExecuteOutput.Count);
                         
             // 1 is true, 2 is true, but it doesn't matter because
             // parent is still false
             subj2.OnNext(true);
             Assert.False(fixture.CanExecute(null));
-            Assert.Equal(2, canExecuteOutput.Count);
+            Assert.Equal(1, canExecuteOutput.Count);
 
             // Parent is finally true, mark it true
             parentSubj.OnNext(true);
             Assert.True(fixture.CanExecute(null));
-            Assert.Equal(3, canExecuteOutput.Count);
-            Assert.Equal(true, canExecuteOutput[2]);
+            Assert.Equal(2, canExecuteOutput.Count);
+            Assert.Equal(true, canExecuteOutput[1]);
         }
 
         [Fact]
         public void TaskExceptionsShouldBeMarshaledToThrownExceptions()
         {
             (new TestScheduler()).With(sched => {
-                var fixture = new ReactiveCommand();
-
-                int result = 0;
-                fixture.RegisterAsyncTask(async _ => {
+                var fixture = ReactiveCommand.CreateAsync(Observable.Return(true), async _ => {
                     await Observable.Timer(TimeSpan.FromMilliseconds(50), RxApp.TaskpoolScheduler);
                     throw new Exception("Die");
                     return 5;
-                }).Subscribe(x => result = x);
+                }, sched);
+
+                int result = 0;
+                fixture.Subscribe(x => result = x);
 
                 var error = default(Exception);
                 fixture.ThrownExceptions.Subscribe(ex => error = ex);

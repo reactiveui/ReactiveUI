@@ -14,7 +14,7 @@ namespace ReactiveUI.Winforms
     {
         readonly CompositeDisposable disposables = new CompositeDisposable();
 
-        IRoutingState _Router;
+        RoutingState _Router;
         Control defaultContent;
         IObservable<string> viewContractObservable;
         object viewModel;
@@ -75,7 +75,7 @@ namespace ReactiveUI.Winforms
 
         [Category("ReactiveUI")]
         [Description("The router.")]
-        public IRoutingState Router {
+        public RoutingState Router {
             get { return this._Router; }
             set { this.RaiseAndSetIfChanged(ref this._Router, value); }
         }
