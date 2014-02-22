@@ -30,12 +30,12 @@ namespace ReactiveUI.Xaml
         /// <summary>
         /// The Router associated with this View Host.
         /// </summary>
-        public IRoutingState Router {
-            get { return (IRoutingState)GetValue(RouterProperty); }
+        public RoutingState Router {
+            get { return (RoutingState)GetValue(RouterProperty); }
             set { SetValue(RouterProperty, value); }
         }
         public static readonly DependencyProperty RouterProperty =
-            DependencyProperty.Register("Router", typeof(IRoutingState), typeof(RoutedViewHost), new PropertyMetadata(null));
+            DependencyProperty.Register("Router", typeof(RoutingState), typeof(RoutedViewHost), new PropertyMetadata(null));
 
         /// <summary>
         /// This content is displayed whenever there is no page currently
