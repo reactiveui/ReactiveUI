@@ -230,7 +230,7 @@ namespace ReactiveUI
                     return new RelayCommand(cmd.CanExecute, _ => cmd.Execute(withParameter()));
                 } 
 
-                var ret = new ReactiveCommand(rc.CanExecuteObservable);
+                var ret = ReactiveCommand.Create(rc.CanExecuteObservable);
                 ret.Subscribe(_ => rc.Execute(withParameter()));
                 return ret;
             });

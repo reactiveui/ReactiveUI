@@ -17,12 +17,8 @@ namespace MobileSample_WinRT.ViewModels
     [DataContract]
     public class AppBootstrapper : ReactiveObject, IApplicationRootState
     {
-        [DataMember] RoutingState _Router;
-
-        public IRoutingState Router {
-            get { return _Router; }
-            set { _Router = (RoutingState) value; } // XXX: This is dumb.
-        }
+        [DataMember] 
+        public RoutingState Router { get; set; }
 
         public AppBootstrapper()
         {

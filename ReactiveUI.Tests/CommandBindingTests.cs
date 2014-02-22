@@ -16,11 +16,11 @@ namespace ReactiveUI.Tests
 {
     public class FakeViewModel : ReactiveObject
     {
-        public ReactiveCommand Cmd { get; protected set; }
+        public ReactiveCommand<object> Cmd { get; protected set; }
 
         public FakeViewModel()
         {
-            Cmd = new ReactiveCommand();
+            Cmd = ReactiveCommand.Create();
         }
     }
  
@@ -48,8 +48,8 @@ namespace ReactiveUI.Tests
         public void CommandBinderBindsToButton()
         {
             var fixture = new CreatesCommandBindingViaCommandParameter();
-            var origCmd = new ReactiveCommand();
-            var cmd = new ReactiveCommand();
+            var origCmd = ReactiveCommand.Create();
+            var cmd = ReactiveCommand.Create();
             var input = new Button { Command = origCmd, CommandParameter = 42 };
 
             Assert.True(fixture.GetAffinityForObject(input.GetType(), true) <= 0);
@@ -71,7 +71,7 @@ namespace ReactiveUI.Tests
         {
             var input = new TestFixture();
             var fixture = new CreatesCommandBindingViaEvent();
-            var cmd = new ReactiveCommand();
+            var cmd = ReactiveCommand.Create();
 
             Assert.True(fixture.GetAffinityForObject(input.GetType(), true) > 0);
             Assert.False(fixture.GetAffinityForObject(input.GetType(), false) > 0);
@@ -103,7 +103,7 @@ namespace ReactiveUI.Tests
         {
             var input = new Button();
             var fixture = new CreatesCommandBindingViaEvent();
-            var cmd = new ReactiveCommand();
+            var cmd = ReactiveCommand.Create();
 
             Assert.True(fixture.GetAffinityForObject(input.GetType(), false) > 0);
 
@@ -126,22 +126,22 @@ namespace ReactiveUI.Tests
 
     public class CommandBindViewModel : ReactiveObject
     {
-        public ReactiveCommand _Command1;
-        public ReactiveCommand Command1 {
+        public ReactiveCommand<object> _Command1;
+        public ReactiveCommand<object> Command1 {
             get { return _Command1; }
             set { this.RaiseAndSetIfChanged(ref _Command1, value); }
         }
 
-        public ReactiveCommand _Command2;
-        public ReactiveCommand Command2 {
+        public ReactiveCommand<object> _Command2;
+        public ReactiveCommand<object> Command2 {
             get { return _Command2; }
             set { this.RaiseAndSetIfChanged(ref _Command2, value); }
         }
 
         public CommandBindViewModel()
         {
-            Command1 = new ReactiveCommand();
-            Command2 = new ReactiveCommand();
+            Command1 = ReactiveCommand.Create();
+            Command2 = ReactiveCommand.Create();
         }
 
         public FakeNestedViewModel NestedViewModel { get; set; }
@@ -151,10 +151,10 @@ namespace ReactiveUI.Tests
     {
         public FakeNestedViewModel()
         {
-            NestedCommand = new ReactiveCommand();
+            NestedCommand = ReactiveCommand.Create();
         }
 
-        public ReactiveCommand NestedCommand { get; protected set; }
+        public ReactiveCommand<object> NestedCommand { get; protected set; }
     }
 
 
@@ -192,7 +192,7 @@ namespace ReactiveUI.Tests
             var disp = fixture.BindCommand(vm, view, x => x.Command1);
             Assert.Equal(vm.Command1, view.Command1.Command);
 
-            var newCmd = new ReactiveCommand();
+            var newCmd = ReactiveCommand.Create();
             vm.Command1 = newCmd;
             Assert.Equal(newCmd, view.Command1.Command);
 
@@ -212,7 +212,7 @@ namespace ReactiveUI.Tests
             var disp = fixture.BindCommand(vm, view, x => x.Command1, x => x.Command1);
             Assert.Equal(vm.Command1, view.Command1.Command);
 
-            var newCmd = new ReactiveCommand();
+            var newCmd = ReactiveCommand.Create();
             vm.Command1 = newCmd;
             Assert.Equal(newCmd, view.Command1.Command);
 
@@ -244,7 +244,7 @@ namespace ReactiveUI.Tests
             var fixture = new CommandBinderImplementation();
 
             var canExecute1 = new BehaviorSubject<bool>(true);
-            var cmd1 = new ReactiveCommand(canExecute1);
+            var cmd1 = ReactiveCommand.Create(canExecute1);
             vm.Command1 = cmd1;
 
             var disp = fixture.BindCommand(vm, view, x => x.Command1, x => x.Command1);
@@ -260,9 +260,8 @@ namespace ReactiveUI.Tests
             var fixture = new CommandBinderImplementation();
 
             var canExecute1 = new BehaviorSubject<bool>(true);
-            var cmd1 = new ReactiveCommand(canExecute1);
+            var cmd1 = ReactiveCommand.Create(canExecute1);
             vm.Command1 = cmd1;
-
 
             var disp = fixture.BindCommand(vm, view, x => x.Command1, x => x.Command1);
 
@@ -281,7 +280,7 @@ namespace ReactiveUI.Tests
             var fixture = new CommandBinderImplementation();
 
             var canExecute1 = new BehaviorSubject<bool>(false);
-            var cmd1 = new ReactiveCommand(canExecute1);
+            var cmd1 = ReactiveCommand.Create(canExecute1);
             vm.Command1 = cmd1;
 
             var disp = fixture.BindCommand(vm, view, x => x.Command1, x => x.Command1);
@@ -298,7 +297,7 @@ namespace ReactiveUI.Tests
             var fixture = new CommandBinderImplementation();
 
             var canExecute1 = new BehaviorSubject<bool>(true);
-            var cmd1 = new ReactiveCommand(canExecute1);
+            var cmd1 = ReactiveCommand.Create(canExecute1);
             vm.Command1 = cmd1;
 
             var disp = fixture.BindCommand(vm, view, x => x.Command1, x => x.Command1);
@@ -308,7 +307,7 @@ namespace ReactiveUI.Tests
             // Now  change to a disabled cmd
 
             var canExecute2 = new BehaviorSubject<bool>(false);
-            var cmd2 = new ReactiveCommand(canExecute2);
+            var cmd2 = ReactiveCommand.Create(canExecute2);
             vm.Command1 = cmd2;
 
             Assert.False(view.Command1.IsEnabled);
