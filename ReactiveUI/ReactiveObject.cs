@@ -22,12 +22,12 @@ namespace ReactiveUI
     /// Changing and Changed Observables to monitor object changes.
     /// </summary>
     [DataContract]
-    public class ReactiveObject : IReactiveNotifyPropertyChanged<ReactiveObject>, IHandleObservableErrors, IReactiveObjectExtension
+    public class ReactiveObject : IReactiveNotifyPropertyChanged<ReactiveObject>, IHandleObservableErrors, IReactiveObject
     {
         [field:IgnoreDataMember]
         public event PropertyChangingEventHandler PropertyChanging;
 
-        void IReactiveObjectExtension.RaisePropertyChanging(PropertyChangingEventArgs args) 
+        public virtual void RaisePropertyChanging(PropertyChangingEventArgs args) 
         {
             var handler = PropertyChanging;
 
@@ -39,7 +39,7 @@ namespace ReactiveUI
         [field:IgnoreDataMember]
         public event PropertyChangedEventHandler PropertyChanged;
 
-        void IReactiveObjectExtension.RaisePropertyChanged(PropertyChangedEventArgs args) 
+        public virtual void RaisePropertyChanged(PropertyChangedEventArgs args) 
         {
             var handler = PropertyChanged;
 
@@ -71,11 +71,7 @@ namespace ReactiveUI
         
         protected ReactiveObject()
         {
-            this.setupReactiveExtension();
         }
-
-        [OnDeserialized]
-        void setupRxObj(StreamingContext sc) { this.setupReactiveExtension(); }
 
         public IDisposable SuppressChangeNotifications() {
             return this.suppressChangeNotifications();
