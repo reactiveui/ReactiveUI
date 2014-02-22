@@ -748,7 +748,7 @@ namespace ReactiveUI
 
             onError = onError ?? (ex => RxApp.DefaultExceptionHandler.OnNext(ex));
             if (withDelay == null) {
-                inner.Disposable = observable.Subscribe(internalAdd, onError);
+                inner.Disposable = observable.ObserveOn(RxApp.MainThreadScheduler).Subscribe(internalAdd, onError);
                 return;
             }
 
