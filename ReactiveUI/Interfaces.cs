@@ -264,7 +264,7 @@ namespace ReactiveUI
     /// It is important to implement the Changing/Changed from
     /// IReactiveNotifyPropertyChanged semantically as "Fire when *anything* in
     /// the collection or any of its items have changed, in any way".
-    public interface IReactiveCollection<out T> : IReactiveNotifyCollectionChanged<T>, IReactiveNotifyCollectionItemChanged<T>, IEnumerable<T>, INotifyCollectionChanged, IReactiveObjectExtension
+    public interface IReactiveCollection<out T> : IReactiveNotifyCollectionChanged<T>, IReactiveNotifyCollectionItemChanged<T>, IEnumerable<T>, INotifyCollectionChanged, IReactiveObject
     {
         void Reset();
     }
@@ -332,7 +332,7 @@ namespace ReactiveUI
     /// <summary>
     /// Implement this interface for ViewModels that can be navigated to.
     /// </summary>
-    public interface IRoutableViewModel : IReactiveObjectExtension
+    public interface IRoutableViewModel : IReactiveObject
     {
         /// <summary>
         /// A string token representing the current ViewModel, such as 'login' or 'user'
