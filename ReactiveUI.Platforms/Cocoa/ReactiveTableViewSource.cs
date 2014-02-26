@@ -223,13 +223,19 @@ namespace ReactiveUI.Cocoa
         public override float GetHeightForFooter(UITableView tableView, int section)
         {
             var footer = commonSource.SectionInfo[section].Footer;
-            return footer == null ? 0 : footer.Height;
+            return footer == null || footer.View == null ? -1 : footer.Height;
         }
 
         public override string TitleForHeader(UITableView tableView, int section)
         {
-            var header = commonSource.SectionInfo [section].Header;
+            var header = commonSource.SectionInfo[section].Header;
             return header == null || header.Title == null ? null : header.Title;
+        }
+
+        public override string TitleForFooter(UITableView tableView, int section)
+        {
+            var footer = commonSource.SectionInfo [section].Footer;
+            return footer == null || footer.Title == null ? null : footer.Title;
         }
 
         public override UIView GetViewForHeader(UITableView tableView, int section)
@@ -241,7 +247,7 @@ namespace ReactiveUI.Cocoa
         public override UIView GetViewForFooter(UITableView tableView, int section)
         {
             var footer = commonSource.SectionInfo[section].Footer;
-            return footer == null ? null : footer.View.Invoke();
+            return footer == null || footer.View == null ? null : footer.View.Invoke();
         }
 
         public object ItemAt(NSIndexPath indexPath)
