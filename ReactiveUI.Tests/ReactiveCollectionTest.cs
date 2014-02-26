@@ -97,7 +97,7 @@ namespace ReactiveUI.Tests
             results.AssertAreEqual(output);
         }
 
-        [Fact]           
+        [Fact]
         public void CollectionCountChangedFiresWhenClearing()
         {
             var items = new ReactiveList<object>(new []{new object()});
@@ -107,6 +107,15 @@ namespace ReactiveUI.Tests
             items.Clear();
 
             Assert.True(countChanged);
+        }
+
+        [Fact]
+        public void WhenAddingRangeOfNullArgumentNullExceptionIsThrown()
+        {
+            var fixture = new ReactiveList<int>();
+
+            Assert.Throws<ArgumentNullException>(() => fixture.AddRange(null));
+
         }
 
         [Fact]

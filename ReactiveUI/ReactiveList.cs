@@ -242,6 +242,11 @@ namespace ReactiveUI
 
         public virtual void AddRange(IEnumerable<T> collection)
         {
+            if (collection == null)
+            {
+                throw new ArgumentNullException("collection");
+            }
+
             var list = collection.ToList();
             var disp = isLengthAboveResetThreshold(list.Count) ?
                 SuppressChangeNotifications() : Disposable.Empty;
