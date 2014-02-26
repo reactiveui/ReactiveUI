@@ -31,16 +31,18 @@ namespace AndroidPlayground.ViewModels
 
         public WatchListViewModel()
         {
-            var openCmd = new ReactiveCommand(this.WhenAnyValue(vm => vm.MarketState, m => m == MarketState.Closed));
-            openCmd.RegisterAsyncAction(_ => OpenMarket(), RxApp.MainThreadScheduler).Subscribe();
+            var openCmd = ReactiveCommand.Create(this.WhenAnyValue(vm => vm.MarketState, m => m == MarketState.Closed),
+                _ => OpenMarket(), RxApp.MainThreadScheduler);
             OpenMarketCommand = openCmd;
 
-            var closeCmd = new ReactiveCommand(this.WhenAnyValue(vm => vm.MarketState, m => m == MarketState.Open));
-            closeCmd.RegisterAsyncAction(_ => CloseMarket(), RxApp.MainThreadScheduler).Subscribe();
+            var closeCmd = ReactiveCommand.Create(
+                this.WhenAnyValue(vm => vm.MarketState, m => m == MarketState.Open),
+                _ => CloseMarket(), RxApp.MainThreadScheduler);
             CloseMarketCommand = closeCmd;
 
-            var resetCmd = new ReactiveCommand(this.WhenAnyValue(vm => vm.MarketState, m => m == MarketState.Closed));
-            resetCmd.RegisterAsyncAction(_ => Reset(), RxApp.MainThreadScheduler).Subscribe();
+            var resetCmd = ReactiveCommand.Create(
+                this.WhenAnyValue(vm => vm.MarketState, m => m == MarketState.Closed),
+                _ => Reset(), RxApp.MainThreadScheduler);
             ResetCommand = resetCmd;
 
             LoadDefaultStocks();
@@ -70,14 +72,12 @@ namespace AndroidPlayground.ViewModels
                 return false;
             }
 
-
             // Update the stock price by a random factor of the range percent
             var random = new Random((int)Math.Floor(stock.Price));
             var percentChange = random.NextDouble()*rangePercent;
             var pos = random.NextDouble() > 0.51;
             var change = Math.Round(stock.Price*(decimal)percentChange, 2);
             change = pos ? change : -change;
-
 
             stock.Price += change;
             return true;
