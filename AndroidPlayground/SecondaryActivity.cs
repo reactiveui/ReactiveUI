@@ -1,16 +1,13 @@
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-
 using Android.App;
 using Android.Content;
 using Android.OS;
 using Android.Runtime;
 using Android.Views;
 using Android.Widget;
-using ActionbarSherlock.App;
 using ReactiveUI;
 using ReactiveUI.Android;
 using ReactiveUI.Mobile;
@@ -20,29 +17,10 @@ using Splat;
 namespace AndroidPlayground
 {
     [Activity (Label = "SecondaryActivity")]
-    public class SecondaryView : SherlockActivity, IViewFor<SecondaryViewModel>
+    public class SecondaryView : ReactiveActivity<SecondaryViewModel>
     {
         readonly ActivityRoutedViewHost routeHelper;
         readonly AutoSuspendActivityHelper suspendHelper;
-
-        #region Boring copy-paste code I want to die
-        SecondaryViewModel _ViewModel;
-        public SecondaryViewModel ViewModel {
-            get { return _ViewModel; }
-            set {
-                if (_ViewModel == value) return;
-                _ViewModel = value;
-                if (PropertyChanged != null) PropertyChanged(this, new PropertyChangedEventArgs("ViewModel"));
-            }
-        }
-        
-        object IViewFor.ViewModel {
-            get { return ViewModel; }
-            set { ViewModel = (SecondaryViewModel)value; }
-        }
-        
-        public event PropertyChangedEventHandler PropertyChanged;
-        #endregion
 
         public SecondaryView()
         {
