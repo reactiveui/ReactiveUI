@@ -385,7 +385,10 @@ namespace ReactiveUI
 
         public virtual void RemoveAll(IEnumerable<T> items)
         {
-            Contract.Requires(items != null);
+            if (items == null)
+            {
+                throw new ArgumentNullException("items");
+            }
 
             var disp = isLengthAboveResetThreshold(items.Count()) ?
                 SuppressChangeNotifications() : Disposable.Empty;

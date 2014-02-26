@@ -119,6 +119,14 @@ namespace ReactiveUI.Tests
         }
 
         [Fact]
+        public void WhenRemovingAllOfNullArgumentNullExceptionIsThrown()
+        {
+            var fixture = new ReactiveList<int>();
+
+            Assert.Throws<ArgumentNullException>(() => fixture.RemoveAll(null));
+        }
+
+        [Fact]
         public void WhenInsertingRangeOfNullArgumentNullExceptionIsThrown()
         {
             var fixture = new ReactiveList<int>();
