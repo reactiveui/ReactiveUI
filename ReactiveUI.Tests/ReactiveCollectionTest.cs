@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Text;
+using System.Windows.Documents;
 using ReactiveUI.Testing;
 using Xunit;
 using Splat;
@@ -115,7 +116,22 @@ namespace ReactiveUI.Tests
             var fixture = new ReactiveList<int>();
 
             Assert.Throws<ArgumentNullException>(() => fixture.AddRange(null));
+        }
 
+        [Fact]
+        public void WhenInsertingRangeOfNullArgumentNullExceptionIsThrown()
+        {
+            var fixture = new ReactiveList<int>();
+
+            Assert.Throws<ArgumentNullException>(() => fixture.InsertRange(1,null));
+        }
+
+        [Fact]
+        public void WhenInsertingRangeOutOfRangeExceptionIsThrown()
+        {
+            var fixture = new ReactiveList<int>();
+
+            Assert.Throws<ArgumentOutOfRangeException>(() => fixture.InsertRange(1, new List<int>()));
         }
 
         [Fact]
