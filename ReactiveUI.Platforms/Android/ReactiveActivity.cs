@@ -11,9 +11,12 @@ using Android.Widget;
 using System.Runtime.Serialization;
 using System.ComponentModel;
 using System.Reflection;
+using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Reactive.Concurrency;
+using System.Reactive.Threading.Tasks;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Reactive.Disposables;
 using System.Diagnostics.Contracts;
 using System.Runtime.CompilerServices;
@@ -120,6 +123,45 @@ namespace ReactiveUI.Android
         {
             base.OnResume();
             activated.OnNext(Unit.Default);
+        }
+
+        readonly Subject<Tuple<int, Result, Intent>> activityResult = new Subject<Tuple<int, Result, Intent>>();
+        public IObservable<Tuple<int, Result, Intent>> ActivityResult { 
+            get { return activityResult; }
+        }
+
+        protected override void OnActivityResult(int requestCode, Result resultCode, Intent data)
+        {
+            base.OnActivityResult(requestCode, resultCode, data);
+            activityResult.OnNext(Tuple.Create(requestCode, resultCode, data));
+        }
+
+        public Task<Tuple<Result, Intent>> StartActivityForResultAsync(Intent intent, int requestCode)
+        {
+            // NB: It's important that we set up the subscription *before* we
+            // call ActivityForResult
+            var ret = ActivityResult
+                .Where(x => x.Item1 == requestCode)
+                .Select(x => Tuple.Create(x.Item2, x.Item3))
+                .FirstAsync()
+                .ToTask();
+
+            StartActivityForResult(intent, requestCode);
+            return ret;
+        }
+                
+        public Task<Tuple<Result, Intent>> StartActivityForResultAsync(Type type, int requestCode)
+        {
+            // NB: It's important that we set up the subscription *before* we
+            // call ActivityForResult
+            var ret = ActivityResult
+                .Where(x => x.Item1 == requestCode)
+                .Select(x => Tuple.Create(x.Item2, x.Item3))
+                .FirstAsync()
+                .ToTask();
+
+            StartActivityForResult(type, requestCode);
+            return ret;
         }
     }
 }
