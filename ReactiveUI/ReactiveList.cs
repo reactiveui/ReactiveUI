@@ -242,6 +242,11 @@ namespace ReactiveUI
 
         public virtual void AddRange(IEnumerable<T> collection)
         {
+            if (collection == null)
+            {
+                throw new ArgumentNullException("collection");
+            }
+
             var list = collection.ToList();
             var disp = isLengthAboveResetThreshold(list.Count) ?
                 SuppressChangeNotifications() : Disposable.Empty;
@@ -286,6 +291,11 @@ namespace ReactiveUI
 
         public virtual void InsertRange(int index, IEnumerable<T> collection)
         {
+            if (collection == null)
+            {
+                throw new ArgumentNullException("collection");
+            }
+
             var list = collection.ToList();
             var disp = isLengthAboveResetThreshold(list.Count) ?
                 SuppressChangeNotifications() : Disposable.Empty;
@@ -375,7 +385,10 @@ namespace ReactiveUI
 
         public virtual void RemoveAll(IEnumerable<T> items)
         {
-            Contract.Requires(items != null);
+            if (items == null)
+            {
+                throw new ArgumentNullException("items");
+            }
 
             var disp = isLengthAboveResetThreshold(items.Count()) ?
                 SuppressChangeNotifications() : Disposable.Empty;
