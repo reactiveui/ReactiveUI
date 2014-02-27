@@ -5,11 +5,9 @@ using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Text;
-using System.Windows.Documents;
 using ReactiveUI.Testing;
 using Xunit;
 using Splat;
-
 using Microsoft.Reactive.Testing;
 using System.Collections.Specialized;
 using System.Reactive.Subjects;
