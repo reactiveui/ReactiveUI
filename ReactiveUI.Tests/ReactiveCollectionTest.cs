@@ -8,7 +8,6 @@ using System.Text;
 using ReactiveUI.Testing;
 using Xunit;
 using Splat;
-
 using Microsoft.Reactive.Testing;
 using System.Collections.Specialized;
 using System.Reactive.Subjects;
@@ -97,7 +96,7 @@ namespace ReactiveUI.Tests
             results.AssertAreEqual(output);
         }
 
-        [Fact]           
+        [Fact]
         public void CollectionCountChangedFiresWhenClearing()
         {
             var items = new ReactiveList<object>(new []{new object()});
@@ -107,6 +106,38 @@ namespace ReactiveUI.Tests
             items.Clear();
 
             Assert.True(countChanged);
+        }
+
+        [Fact]
+        public void WhenAddingRangeOfNullArgumentNullExceptionIsThrown()
+        {
+            var fixture = new ReactiveList<int>();
+
+            Assert.Throws<ArgumentNullException>(() => fixture.AddRange(null));
+        }
+
+        [Fact]
+        public void WhenRemovingAllOfNullArgumentNullExceptionIsThrown()
+        {
+            var fixture = new ReactiveList<int>();
+
+            Assert.Throws<ArgumentNullException>(() => fixture.RemoveAll(null));
+        }
+
+        [Fact]
+        public void WhenInsertingRangeOfNullArgumentNullExceptionIsThrown()
+        {
+            var fixture = new ReactiveList<int>();
+
+            Assert.Throws<ArgumentNullException>(() => fixture.InsertRange(1,null));
+        }
+
+        [Fact]
+        public void WhenInsertingRangeOutOfRangeExceptionIsThrown()
+        {
+            var fixture = new ReactiveList<int>();
+
+            Assert.Throws<ArgumentOutOfRangeException>(() => fixture.InsertRange(1, new List<int>()));
         }
 
         [Fact]
