@@ -261,6 +261,9 @@ namespace ReactiveUI.Xaml
                     this.RaiseTransitionStarted();
                     VisualStateManager.GoToState(this, startingTransitionName, false);
                 }
+            } else {
+                if (this.currentContentPresentationSite != null)
+                    this.currentContentPresentationSite.Content = newContent;
             }
         }
 
@@ -300,9 +303,6 @@ namespace ReactiveUI.Xaml
 
             this.previousContentPresentationSite =
                 (ContentPresenter) GetTemplateChild("PART_PreviousContentPresentationSite");
-            if (this.previousContentPresentationSite == null) {
-                throw new ArgumentException("PART_PreviousContentPresentationSite not found.");
-            }
 
             // Set the current content site to the first piece of content.
             this.currentContentPresentationSite.Content = Content;
