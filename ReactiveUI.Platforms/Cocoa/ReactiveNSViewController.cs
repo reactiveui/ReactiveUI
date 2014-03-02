@@ -1,6 +1,7 @@
 using System;
 using System.Drawing;
 using System.Runtime.Serialization;
+using System.Reactive;
 using System.Reactive.Subjects;
 using System.Reactive.Concurrency;
 using System.Reflection;
@@ -119,6 +120,23 @@ namespace ReactiveUI.Cocoa
             Interlocked.Increment(ref changeNotificationsSuppressed);
             return Disposable.Create(() =>
                 Interlocked.Decrement(ref changeNotificationsSuppressed));
+        }
+
+        Subject<Unit> activated = new Subject<Unit>();
+        public IObservable<Unit> Activated { get { return activated; } }
+        Subject<Unit> deactivated = new Subject<Unit>();
+        public IObservable<Unit> Deactivated { get { return deactivated; } }
+
+        public override void ViewDidLoad()
+        {
+            base.ViewDidLoad();
+            activated.OnNext(Unit.Default);
+        }
+
+        public override void ViewDidUnload()
+        {
+            base.ViewDidUnload();
+            deactivated.OnNext(Unit.Default);
         }
 
         protected internal void raisePropertyChanging(string propertyName)
