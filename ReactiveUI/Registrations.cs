@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using ReactiveUI.Mobile;
 
 namespace ReactiveUI
@@ -21,6 +17,7 @@ namespace ReactiveUI
             registerFunction(() => new DefaultLogManager(), typeof(ILogManager));
             registerFunction(() => new DebugLogger(), typeof(ILogger));
             registerFunction(() => new DummySuspensionHost(), typeof(ISuspensionHost));
+            registerFunction(() => new CanActivateViewFetcher(), typeof(IActivationForViewFetcher));
         }
     }
 }
