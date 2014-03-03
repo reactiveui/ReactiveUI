@@ -6,7 +6,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{689EC7CA-2D81-4124-929E-397B330CC358}</ProjectGuid>
+    <ProjectGuid>{38293C8C-061C-4D69-8247-2693673141FD}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ReactiveUI.Events</RootNamespace>
@@ -22,6 +22,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\WinRT45\</OutputPath>
+    <IntermediateOutputPath>obj\Debug\WinRT45</IntermediateOutputPath>
     <DefineConstants>TRACE;DEBUG;WINRT</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -30,16 +31,17 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\WinRT45\</OutputPath>
+    <IntermediateOutputPath>obj\Release\WinRT45</IntermediateOutputPath>
     <DefineConstants>TRACE;WINRT</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
+    <WarningLevel>3</WarningLevel>
     <DocumentationFile>bin\Release\WinRT45\ReactiveUI.Events.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="..\CommonAssemblyInfo.cs">
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Events_WinRT.cs" />
+    <Compile Include="Events_WinRT80.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -71,20 +73,19 @@
       <Name>ReactiveUI</Name>
     </ProjectReference>
   </ItemGroup>
-  <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' ">
+  <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '11.0' ">
     <VisualStudioVersion>11.0</VisualStudioVersion>
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v$(VisualStudioVersion)\Microsoft.Windows.UI.Xaml.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
   <PropertyGroup>
     <PreBuildEvent>%25SystemRoot%25\Microsoft.NET\Framework\v4.0.30319\msbuild.exe /p:Configuration=Release "$(ProjectDir)EventBuilder.csproj"
-"$(ProjectDir)EventBuilder.exe" "$(ProjectDir)\WinMetadata.Win80\Windows.Foundation.winmd" "$(ProjectDir)\WinMetadata.Win80\Windows.Globalization.winmd" "$(ProjectDir)\WinMetadata.Win80\Windows.Graphics.winmd" "$(ProjectDir)\WinMetadata.Win80\Windows.Management.winmd" "$(ProjectDir)\WinMetadata.Win80\Windows.Media.winmd" "$(ProjectDir)\WinMetadata.Win80\Windows.Networking.winmd" "$(ProjectDir)\WinMetadata.Win80\Windows.Security.winmd" "$(ProjectDir)\WinMetadata.Win80\Windows.Storage.winmd" "$(ProjectDir)\WinMetadata.Win80\Windows.System.winmd" "$(ProjectDir)\WinMetadata.Win80\Windows.UI.winmd" "$(ProjectDir)\WinMetadata.Win80\Windows.UI.Xaml.winmd" "$(ProjectDir)\WinMetadata.Win80\Windows.Web.winmd" "$(ProjectDir)\WinMetadata.Win80\Windows.ApplicationModel.winmd" "$(ProjectDir)\WinMetadata.Win80\Windows.Data.winmd" "$(ProjectDir)\WinMetadata.Win80\Windows.Devices.winmd" "$(ProjectDir)Events.mustache" &gt; "$(ProjectDir)Events_WinRT.cs"
+"$(ProjectDir)EventBuilder.exe" "$(ProjectDir)\WinMetadata.Win80\Windows.Foundation.winmd" "$(ProjectDir)\WinMetadata.Win80\Windows.Globalization.winmd" "$(ProjectDir)\WinMetadata.Win80\Windows.Graphics.winmd" "$(ProjectDir)\WinMetadata.Win80\Windows.Management.winmd" "$(ProjectDir)\WinMetadata.Win80\Windows.Media.winmd" "$(ProjectDir)\WinMetadata.Win80\Windows.Networking.winmd" "$(ProjectDir)\WinMetadata.Win80\Windows.Security.winmd" "$(ProjectDir)\WinMetadata.Win80\Windows.Storage.winmd" "$(ProjectDir)\WinMetadata.Win80\Windows.System.winmd" "$(ProjectDir)\WinMetadata.Win80\Windows.UI.winmd" "$(ProjectDir)\WinMetadata.Win80\Windows.UI.Xaml.winmd" "$(ProjectDir)\WinMetadata.Win80\Windows.Web.winmd" "$(ProjectDir)\WinMetadata.Win80\Windows.ApplicationModel.winmd" "$(ProjectDir)\WinMetadata.Win80\Windows.Data.winmd" "$(ProjectDir)\WinMetadata.Win80\Windows.Devices.winmd" "$(ProjectDir)Events.mustache" &gt; "$(ProjectDir)Events_WinRT80.cs"
 del "$(ProjectDir)EventBuilder.exe"
 del "$(ProjectDir)EventBuilder.pdb"
 del "$(ProjectDir)Nustache.Core.dll"
 del "$(ProjectDir)Mono.Cecil.dll"
-del "$(ProjectDir)Mono.Cecil.pdb"
-</PreBuildEvent>
+del "$(ProjectDir)Mono.Cecil.pdb"</PreBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
