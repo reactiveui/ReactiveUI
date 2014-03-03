@@ -1,6 +1,7 @@
 using System;
 using System.Drawing;
 using System.Runtime.Serialization;
+using System.Reactive;
 using System.Reactive.Subjects;
 using System.Reactive.Concurrency;
 using System.Reflection;
@@ -28,6 +29,9 @@ namespace ReactiveUI.Cocoa
     /// (i.e. you can call RaiseAndSetIfChanged)
     /// </summary>
     public class ReactiveViewController : NSViewController, IReactiveNotifyPropertyChanged, IHandleObservableErrors
+#if UIKIT
+    , ICanActivate
+#endif
     {
         protected ReactiveViewController() : base()
         {
@@ -120,6 +124,25 @@ namespace ReactiveUI.Cocoa
             return Disposable.Create(() =>
                 Interlocked.Decrement(ref changeNotificationsSuppressed));
         }
+
+#if UIKIT
+        Subject<Unit> activated = new Subject<Unit>();
+        public IObservable<Unit> Activated { get { return activated; } }
+        Subject<Unit> deactivated = new Subject<Unit>();
+        public IObservable<Unit> Deactivated { get { return deactivated; } }
+
+        public override void ViewDidLoad()
+        {
+            base.ViewDidLoad();
+            activated.OnNext(Unit.Default);
+        }
+
+        public override void ViewDidUnload()
+        {
+            base.ViewDidUnload();
+            deactivated.OnNext(Unit.Default);
+        }
+#endif
 
         protected internal void raisePropertyChanging(string propertyName)
         {
