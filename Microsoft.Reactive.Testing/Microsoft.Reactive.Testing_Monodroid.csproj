@@ -42,16 +42,16 @@
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
     <Reference Include="Mono.Android" />
-    <Reference Include="System.Reactive.Core">
+    <Reference Include="System.Reactive.Core, Version=0.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
       <HintPath>..\ext\monodroid\System.Reactive.Core.dll</HintPath>
     </Reference>
-    <Reference Include="System.Reactive.Interfaces">
+    <Reference Include="System.Reactive.Interfaces, Version=0.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
       <HintPath>..\ext\monodroid\System.Reactive.Interfaces.dll</HintPath>
     </Reference>
-    <Reference Include="System.Reactive.Linq">
+    <Reference Include="System.Reactive.Linq, Version=0.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
       <HintPath>..\ext\monodroid\System.Reactive.Linq.dll</HintPath>
     </Reference>
-    <Reference Include="System.Reactive.PlatformServices">
+    <Reference Include="System.Reactive.PlatformServices, Version=0.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
       <HintPath>..\ext\monodroid\System.Reactive.PlatformServices.dll</HintPath>
     </Reference>
   </ItemGroup>
