@@ -184,6 +184,7 @@
     <Compile Include="ViewLocator.cs" />
     <Compile Include="AutoPersistHelper.cs" />
     <Compile Include="DummySuspension.cs" />
+    <Compile Include="Activation.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
