@@ -242,7 +242,7 @@ namespace ReactiveUI
         /// <summary>
         /// The Router associated with this Screen.
         /// </summary>
-        IRoutingState Router { get; }
+        RoutingState Router { get; }
     }
 
     public interface ICreatesCommandBinding

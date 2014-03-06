@@ -26,8 +26,8 @@ namespace ReactiveUI.Routing.Tests
 
     public class TestScreen : ReactiveObject, IScreen
     {
-        IRoutingState _Router;
-        public IRoutingState Router {
+        RoutingState _Router;
+        public RoutingState Router {
             get { return _Router; }
             set { this.RaiseAndSetIfChanged(ref _Router, value); }
         }

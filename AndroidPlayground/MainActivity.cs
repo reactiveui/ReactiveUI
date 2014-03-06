@@ -6,7 +6,6 @@ using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 using Android.OS;
-using ActionbarSherlock.App;
 using ReactiveUI;
 using System.ComponentModel;
 using ReactiveUI.Android;
@@ -16,30 +15,11 @@ using Splat;
 namespace AndroidPlayground
 {
   //  [Activity (Label = "AndroidPlayground", MainLauncher = true)]
-    public class MainView : SherlockActivity, IViewFor<MainViewModel>, INotifyPropertyChanged
+    public class MainView : ReactiveActivity<MainViewModel> 
     {
         int count = 1;
         readonly ActivityRoutedViewHost routeHelper;
         readonly AutoSuspendActivityHelper suspendHelper;
-
-        #region Boring copy-paste code I want to die
-        MainViewModel _ViewModel;
-        public MainViewModel ViewModel {
-            get { return _ViewModel; }
-            set {
-                if (_ViewModel == value) return;
-                _ViewModel = value;
-                if (PropertyChanged != null) PropertyChanged(this, new PropertyChangedEventArgs("ViewModel"));
-            }
-        }
-        
-        object IViewFor.ViewModel {
-            get { return ViewModel; }
-            set { ViewModel = (MainViewModel)value; }
-        }
-        
-        public event PropertyChangedEventHandler PropertyChanged;
-        #endregion
 
         public MainView()
         {
