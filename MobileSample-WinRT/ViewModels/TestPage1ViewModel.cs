@@ -13,8 +13,8 @@ namespace MobileSample_WinRT.ViewModels
         public string UrlPathSegment { get { return "test1"; } }
         public IScreen HostScreen { get; private set; }
 
-        public IReactiveCommand NavPage2 { get; protected set; }
-        public IReactiveCommand NavPage3 { get; protected set; }
+        public IReactiveCommand<object> NavPage2 { get; protected set; }
+        public IReactiveCommand<object> NavPage3 { get; protected set; }
 
         [DataMember]
         Guid _RandomGuid;

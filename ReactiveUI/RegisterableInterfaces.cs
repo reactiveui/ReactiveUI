@@ -213,7 +213,7 @@ namespace ReactiveUI
             BindingDirection direction);
     }
 
-    public interface IActivatable { }
+    public interface IActivatable : IEnableLogger { }
 
     public interface IViewFor : IActivatable
     {

@@ -135,6 +135,7 @@
       <Link>Xaml\Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="ComponentModelTypeConverter.cs" />
+    <Compile Include="Xaml\Input.cs" />
     <Compile Include="Xaml\WpfDependencyObjectObservableForProperty.cs" />
     <Compile Include="Xaml\ActivationForViewFetcher.cs" />
     <Compile Include="Xaml\PlatformOperations.cs" />
