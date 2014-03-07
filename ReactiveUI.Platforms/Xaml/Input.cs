@@ -28,7 +28,6 @@ namespace ReactiveUI.Xaml
 {
     public static class InputMixins
     {
-
         public static IObservable<IInputCommand<TCmd>> BindInputCommand<TViewModel,TCmd>(this IViewFor<TViewModel> This, Expression<Func<IViewFor<TViewModel>, IReactiveCommand<TCmd>>> command, ModifierKeys modifiers, Key key, string description = null)
             where TViewModel : class
         {
