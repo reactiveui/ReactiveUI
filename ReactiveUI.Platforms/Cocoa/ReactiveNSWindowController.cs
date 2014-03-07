@@ -7,15 +7,15 @@ using System.Reactive;
 
 namespace ReactiveUI.Cocoa
 {
-    public class ReactiveNSWindowController : NSWindowController, IReactiveNotifyPropertyChanged, IHandleObservableErrors, IReactiveObjectExtension, ICanActivate
+    public class ReactiveWindowController : NSWindowController, IReactiveNotifyPropertyChanged, IHandleObservableErrors, IReactiveObjectExtension, ICanActivate
     {
-        protected ReactiveNSWindowController(NSWindow window) : base(window) { setupRxObj(); }
-        protected ReactiveNSWindowController(string windowNibName) : base(windowNibName) { setupRxObj(); }
-        protected ReactiveNSWindowController(string windowNibName, NSObject owner) : base(windowNibName, owner) { setupRxObj(); }
-        protected ReactiveNSWindowController(NSCoder coder) : base(coder) { setupRxObj(); }
-        protected ReactiveNSWindowController(NSObjectFlag t) : base(t) { setupRxObj(); }
-        protected ReactiveNSWindowController(IntPtr handle) : base(handle) { setupRxObj(); }
-        protected ReactiveNSWindowController() { setupRxObj(); }
+        protected ReactiveWindowController(NSWindow window) : base(window) { setupRxObj(); }
+        protected ReactiveWindowController(string windowNibName) : base(windowNibName) { setupRxObj(); }
+        protected ReactiveWindowController(string windowNibName, NSObject owner) : base(windowNibName, owner) { setupRxObj(); }
+        protected ReactiveWindowController(NSCoder coder) : base(coder) { setupRxObj(); }
+        protected ReactiveWindowController(NSObjectFlag t) : base(t) { setupRxObj(); }
+        protected ReactiveWindowController(IntPtr handle) : base(handle) { setupRxObj(); }
+        protected ReactiveWindowController() { setupRxObj(); }
 
         public event PropertyChangingEventHandler PropertyChanging;
 
