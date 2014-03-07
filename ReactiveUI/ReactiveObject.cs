@@ -27,7 +27,7 @@ namespace ReactiveUI
         [field:IgnoreDataMember]
         public event PropertyChangingEventHandler PropertyChanging;
 
-        public virtual void RaisePropertyChanging(PropertyChangingEventArgs args) 
+        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args) 
         {
             var handler = PropertyChanging;
 
@@ -39,7 +39,7 @@ namespace ReactiveUI
         [field:IgnoreDataMember]
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public virtual void RaisePropertyChanged(PropertyChangedEventArgs args) 
+        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args) 
         {
             var handler = PropertyChanged;
 
