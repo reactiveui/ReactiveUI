@@ -61,8 +61,7 @@ namespace ReactiveUI
         /// Represents an Observable that fires *after* a property has changed.
         /// </summary>
         [IgnoreDataMember]
-        public IObservable<IObservedChange<ReactiveObject, object>> Changed
-        {
+        public IObservable<IObservedChange<ReactiveObject, object>> Changed {
             get { return this.getChangedObservable(); }
         }
 
@@ -75,6 +74,10 @@ namespace ReactiveUI
 
         public IDisposable SuppressChangeNotifications() {
             return this.suppressChangeNotifications();
+        }
+
+        public bool AreChangeNotificationsEnabled() {
+            return this.areChangeNotificationsEnabled();
         }
     }
 }
