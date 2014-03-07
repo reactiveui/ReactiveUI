@@ -15,6 +15,8 @@ namespace ReactiveUI
         string Description { get; }
     }
 
+    public interface IInputCommand<T> : IReactiveCommand<T>, IInputCommand { }
+
     public sealed class InputSection
     {
         public string SectionHeader { get; set; }
@@ -99,27 +101,33 @@ namespace ReactiveUI
 
     public static class InputMixins
     {
-        public static IObservable<IInputCommand> AsInputCommand(this IReactiveCommand This, string shortcut, string description = null)
+        public static IInputCommand<T> AsInputCommand<T>(this IReactiveCommand<T> This, string shortcut, string description = null)
         {
-            return Observable.Return(new InputCommand(This, shortcut, description))
-                .Publish(null)
-                .RefCount();
+            return InputCommand.CreateWith(This, shortcut, description);
         }
 
-        public static IObservable<IInputCommand> GetInputCommand<TTarget>(this TTarget This, Expression<Func<TTarget, IReactiveCommand>> property, string shortcut, string description = null)
+        public static IObservable<IInputCommand<TCmd>> GetInputCommand<TTarget, TCmd>(this TTarget This, Expression<Func<TTarget, IReactiveCommand<TCmd>>> property, string shortcut, string description = null)
         {
             return This.WhenAnyValue(property)
-                .Select(x => new InputCommand(x, shortcut, description))
+                .Select(x => x.AsInputCommand(shortcut, description))
                 .Publish(null)
                 .RefCount();
         }
     }
 
-    class InputCommand : IInputCommand
+    public static class InputCommand
     {
-        IReactiveCommand inner;
+        public static IInputCommand<T> CreateWith<T>(IReactiveCommand<T> innerCommand, string shortcut, string description)
+        {
+            return new InputCommand<T>(innerCommand, shortcut, description);
+        }
+    }
 
-        public InputCommand(IReactiveCommand innerCommand, string shortcut, string description)
+    class InputCommand<T> : IInputCommand<T>
+    {
+        IReactiveCommand<T> inner;
+
+        public InputCommand(IReactiveCommand<T> innerCommand, string shortcut, string description)
         {
             inner = innerCommand;
             Shortcut = shortcut;
@@ -130,11 +138,6 @@ namespace ReactiveUI
         public string Description { get; protected set; }
 
         #region Boring Code
-        public IObservable<T> RegisterAsync<T>(Func<object, IObservable<T>> asyncBlock)
-        {
-            return inner.RegisterAsync(asyncBlock);
-        }
-
         public IObservable<bool> CanExecuteObservable {
             get { return inner.CanExecuteObservable; }
         }
@@ -143,15 +146,11 @@ namespace ReactiveUI
             get { return inner.IsExecuting; }
         }
 
-        public bool AllowsConcurrentExecution {
-            get { return inner.AllowsConcurrentExecution; }
-        }
-
         public IObservable<Exception> ThrownExceptions {
             get { return inner.ThrownExceptions; }
         }
 
-        public IDisposable Subscribe(IObserver<object> observer)
+        public IDisposable Subscribe(IObserver<T> observer)
         {
             return inner.Subscribe(observer);
         }
@@ -169,6 +168,11 @@ namespace ReactiveUI
         public void Execute(object parameter)
         {
             inner.Execute(parameter);
+        }
+
+        public IObservable<T> ExecuteAsync(object parameter = null)
+        {
+            return inner.ExecuteAsync(parameter);
         }
 
         public void Dispose()

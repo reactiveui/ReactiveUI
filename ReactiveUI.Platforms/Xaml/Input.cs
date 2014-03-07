@@ -29,13 +29,13 @@ namespace ReactiveUI.Xaml
     public static class InputMixins
     {
 
-        public static IObservable<IInputCommand> BindInputCommand<TViewModel>(this IViewFor<TViewModel> This, Expression<Func<IViewFor<TViewModel>, IReactiveCommand>> command, ModifierKeys modifiers, Key key, string description = null)
+        public static IObservable<IInputCommand<TCmd>> BindInputCommand<TViewModel,TCmd>(this IViewFor<TViewModel> This, Expression<Func<IViewFor<TViewModel>, IReactiveCommand<TCmd>>> command, ModifierKeys modifiers, Key key, string description = null)
             where TViewModel : class
         {
             return This.BindInputCommand(command, null, modifiers, key, description);
         }
 
-        public static IObservable<IInputCommand> BindInputCommand<TViewModel>(this IViewFor<TViewModel> This, Expression<Func<IViewFor<TViewModel>, IReactiveCommand>> command, UIElement targetControl, ModifierKeys modifiers, Key key, string description = null)
+        public static IObservable<IInputCommand<TCmd>> BindInputCommand<TViewModel,TCmd>(this IViewFor<TViewModel> This, Expression<Func<IViewFor<TViewModel>, IReactiveCommand<TCmd>>> command, UIElement targetControl, ModifierKeys modifiers, Key key, string description = null)
             where TViewModel : class
         {
             var keyEvent = Observable.Never<Unit>();
@@ -57,12 +57,12 @@ namespace ReactiveUI.Xaml
 #endif
             }
 
-            var ret = Observable.Create<IInputCommand>(subj => {
+            var ret = Observable.Create<IInputCommand<TCmd>>(subj => {
                 var shortcut = keysToShortcutName(modifiers, key);
 
                 return new CompositeDisposable(
                     This.WhenAnyValue(command)
-                        .Select(x => new InputCommand(x, shortcut, description))
+                        .Select(x => InputCommand.CreateWith(x, shortcut, description))
                         .Subscribe(subj),
                     keyEvent.Subscribe(_ => KeyboardManager.Current.InvokeShortcut(shortcut)));
             });
