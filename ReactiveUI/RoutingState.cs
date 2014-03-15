@@ -278,25 +278,51 @@ namespace ReactiveUI
             where T : class
         {
 
-            if (This != null)
-            {
+            if (This != null){
                 if (This.GetType() == typeof(Tuple<T, IRoutingParams>)) return This as Tuple<T, IRoutingParams>;
                 var vmNparams = This as IRoutableViewModelWithParams;
-                if (vmNparams != null)
-                {
+                if (vmNparams != null){
                     return new Tuple<T, IRoutingParams>(vmNparams.RoutableViewModel as T, vmNparams.RoutingParams);
                 }
                 else
                 {
                     var vm = This as IRoutableViewModel;
-                    if (vm != null)
-                    {
+                    if (vm != null){
                         return new Tuple<T, IRoutingParams>(vm as T, null);
                     }
                 }
             }
             return null;
         }
+
+        /// <summary>
+        /// Navigates the specified router.
+        /// </summary>
+        /// <param name="router">The router.</param>
+        /// <param name="viewModel">The view model.</param>
+        /// <param name="routingParams">The routing parameters.</param>
+        public static void Navigate(this IRoutingState router, IRoutableViewModel viewModel, IRoutingParams routingParams)
+        {
+            if (router != null){
+                router.Navigate.Execute(Tuple.Create(viewModel, routingParams));
+            }
+        }
+
+        /// <summary>
+        /// Navigates the specified router.
+        /// </summary>
+        /// <param name="router">The router.</param>
+        /// <param name="viewModel">The view model.</param>
+        /// <param name="notInNavigationStack">if set to <c>true</c> [not in navigation stack].</param>
+        public static void Navigate(this IRoutingState router, IRoutableViewModel viewModel, bool notInNavigationStack)
+        {
+            router.Navigate(viewModel,
+                new RoutingParams
+                {
+                    NotInNavigationStack = notInNavigationStack
+                });
+        }
+
 
     }
 
