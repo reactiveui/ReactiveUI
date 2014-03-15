@@ -48,6 +48,12 @@ namespace ReactiveUI
         [IgnoreDataMember]
         IObservable<IRoutableViewModel> CurrentViewModel { get; }
 
+        /// <summary>
+        /// Gets the navigate back view model.
+        /// </summary>
+        [IgnoreDataMember]
+        IObservable<IRoutableViewModel> NavigateBackViewModel { get; }
+
     }
 
     public interface IRoutingParams
