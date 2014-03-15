@@ -23,7 +23,7 @@ namespace ReactiveUI
         }
     }
 
-    class DefaultViewLocator : IViewLocator, IEnableLogger
+    public class DefaultViewLocator : IViewLocator, IEnableLogger
     {
         public Func<string, string> ViewModelToViewFunc { get; set; }
 
@@ -44,27 +44,35 @@ namespace ReactiveUI
         public IViewFor ResolveView<T>(T viewModel, string contract = null)
             where T : class
         {
-            // Given IFooBarViewModel (whose name we derive from T), we'll look 
-            // for a few things:
-            // * IFooBarView that implements IViewFor
-            // * IViewFor<IFooBarViewModel>
-            // * IViewFor<FooBarViewModel> (the original behavior in RxUI 3.1)
+            if (viewModel == null) return null;
 
-            var attrs = viewModel.GetType().GetTypeInfo().GetCustomAttributes(typeof (ViewContractAttribute), true);
+            var viewModelClass = viewModel;
+            IRoutingParams routeParams = null;
 
-            if (attrs.Any()) {
-                contract = contract ?? ((ViewContractAttribute) attrs.First()).Contract;
+            // Check if viewModel is IRoutableViewModelWithParams
+            var viewModelWithParams = viewModel as IRoutableViewModelWithParams;
+            if (viewModelWithParams != null)
+            {
+                viewModelClass = viewModelWithParams.RoutableViewModel as T;
+                routeParams = viewModelWithParams.RoutingParams;
+            }
+
+            var attrs = viewModelClass.GetType().GetTypeInfo().GetCustomAttributes(typeof(ViewContractAttribute), true);
+
+            if (attrs.Any())
+            {
+                contract = contract ?? ((ViewContractAttribute)attrs.First()).Contract;
             }
 
             // IFooBarView that implements IViewFor (or custom ViewModelToViewFunc)
-            var typeToFind = ViewModelToViewFunc(viewModel.GetType().AssemblyQualifiedName);
-                
+            var typeToFind = ViewModelToViewFunc(viewModelClass.GetType().AssemblyQualifiedName);
+
             var ret = attemptToResolveView(Reflection.ReallyFindType(typeToFind, false), contract);
             if (ret != null) return ret;
 
             // IViewFor<FooBarViewModel> (the original behavior in RxUI 3.1)
-            var viewType = typeof (IViewFor<>);
-            return attemptToResolveView(viewType.MakeGenericType(viewModel.GetType()), contract);
+            var viewType = typeof(IViewFor<>);
+            return attemptToResolveView(viewType.MakeGenericType(viewModelClass.GetType()), contract);
         }
 
         IViewFor attemptToResolveView(Type type, string contract)
