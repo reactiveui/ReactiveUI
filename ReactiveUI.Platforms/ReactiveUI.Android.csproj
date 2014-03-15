@@ -42,7 +42,15 @@
     <DocumentationFile>bin\Release\Monoandroid\ReactiveUI.Android.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="ActionBarSherlock, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\ReactiveUI.Xamarin.Samples\libs\Xamarin.Android\ActionBarSherlock.dll</HintPath>
+    </Reference>
+    <Reference Include="Mono.Android.Support.v4" />
     <Reference Include="System" />
+    <Reference Include="System.Runtime.InteropServices.WindowsRuntime">
+      <HintPath>..\ext\monodroid\System.Runtime.InteropServices.WindowsRuntime.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
     <Reference Include="Mono.Android" />
@@ -70,12 +78,17 @@
     </Compile>
     <Compile Include="Android\ActivityRoutedViewHost.cs" />
     <Compile Include="Android\AndroidCommandBinders.cs" />
+    <Compile Include="Android\AndroidLogger.cs" />
     <Compile Include="Android\AndroidUIScheduler.cs" />
+    <Compile Include="Android\App.cs" />
     <Compile Include="Android\ControlFetcherMixin.cs" />
     <Compile Include="Android\LinkerOverrides.cs" />
     <Compile Include="Android\ObjectExtension.cs" />
     <Compile Include="Android\Properties\AssemblyInfo.cs" />
     <Compile Include="Android\ReactiveListAdapter.cs" />
+    <Compile Include="Android\ReactiveSherlockActivity.cs" />
+    <Compile Include="Android\ReactiveSherlockFragment.cs" />
+    <Compile Include="Android\ReactiveSherlockFragmentActivity.cs" />
     <Compile Include="Android\ViewCommandExtensions.cs" />
     <Compile Include="ComponentModelTypeConverter.cs" />
     <Compile Include="FlexibleCommandBinder.cs" />
