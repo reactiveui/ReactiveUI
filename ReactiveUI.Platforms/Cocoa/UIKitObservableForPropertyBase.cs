@@ -94,7 +94,7 @@ namespace ReactiveUI.Cocoa
 
                 EventHandler handler = (s,e)=>
                 {
-                    subj.OnNext(new ObservedChange<object, object>() { Sender = sender, PropertyName = propertyName });
+                    subj.OnNext(new ObservedChange<object, object>(sender, propertyName));
                 };
 
                 control.AddTarget(handler, evt);
@@ -119,7 +119,7 @@ namespace ReactiveUI.Cocoa
             {
                 var handle = NSNotificationCenter.DefaultCenter.AddObserver (notification, (e)=>
                 {
-                    subj.OnNext(new ObservedChange<object, object>() { Sender = sender, PropertyName = propertyName });
+                    subj.OnNext(new ObservedChange<object, object>(sender, propertyName));
                 }, sender);
 
                 return Disposable.Create(() =>
@@ -142,7 +142,7 @@ namespace ReactiveUI.Cocoa
             {
                 return Observable.FromEventPattern(sender, eventName).Subscribe((e) =>
                 {
-                    subj.OnNext(new ObservedChange<object, object>() { Sender = sender, PropertyName = propertyName });
+                    subj.OnNext(new ObservedChange<object, object>(sender, propertyName));
                 });
             });
         }

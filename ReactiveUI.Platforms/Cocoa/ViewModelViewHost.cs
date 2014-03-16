@@ -58,13 +58,12 @@ namespace ReactiveUI.Cocoa
             set { this.RaiseAndSetIfChanged(ref _DefaultContent, value); }
         }
 
-        IReactiveNotifyPropertyChanged _ViewModel;
-        public IReactiveNotifyPropertyChanged ViewModel {
+        IReactiveObject _ViewModel;
+        public IReactiveObject ViewModel {
             get { return _ViewModel; }
             set { this.RaiseAndSetIfChanged(ref _ViewModel, value); }
         }
-
-
+        
         IObservable<string> _ViewContractObservable;
         public IObservable<string> ViewContractObservable {
             get { return _ViewContractObservable; }

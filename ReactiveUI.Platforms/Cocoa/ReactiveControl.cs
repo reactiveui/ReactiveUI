@@ -16,36 +16,31 @@ using MonoTouch.UIKit;
 
 namespace ReactiveUI.Cocoa
 {
-    public class ReactiveControl : UIControl, IReactiveNotifyPropertyChanged, IHandleObservableErrors, IReactiveObjectExtension, ICanActivate
+    public class ReactiveControl : UIControl, IReactiveNotifyPropertyChanged<ReactiveControl>, IHandleObservableErrors, IReactiveObject, ICanActivate
     {
         protected ReactiveControl() : base()
         {
-            this.setupReactiveExtension();
         }
 
         protected ReactiveControl(NSCoder c) : base(c)
         {
-            this.setupReactiveExtension();
         }
 
         protected ReactiveControl(NSObjectFlag f) : base(f)
         {
-            this.setupReactiveExtension();
         }
 
         protected ReactiveControl(IntPtr handle) : base(handle)
         {
-            this.setupReactiveExtension();
         }
 
         protected ReactiveControl(RectangleF size) : base(size)
         {
-            this.setupReactiveExtension();
         }
 
         public event PropertyChangingEventHandler PropertyChanging;
 
-        void IReactiveObjectExtension.RaisePropertyChanging(PropertyChangingEventArgs args) 
+        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args) 
         {
             var handler = PropertyChanging;
             if (handler != null) {
@@ -55,7 +50,7 @@ namespace ReactiveUI.Cocoa
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        void IReactiveObjectExtension.RaisePropertyChanged(PropertyChangedEventArgs args) 
+        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args) 
         {
             var handler = PropertyChanged;
             if (handler != null) {
@@ -67,14 +62,14 @@ namespace ReactiveUI.Cocoa
         /// Represents an Observable that fires *before* a property is about to
         /// be changed.
         /// </summary>
-        public IObservable<IObservedChange<object, object>> Changing {
+        public IObservable<IObservedChange<ReactiveControl, object>> Changing {
             get { return this.getChangingObservable(); }
         }
 
         /// <summary>
         /// Represents an Observable that fires *after* a property has changed.
         /// </summary>
-        public IObservable<IObservedChange<object, object>> Changed {
+        public IObservable<IObservedChange<ReactiveControl, object>> Changed {
             get { return this.getChangedObservable(); }
         }
 

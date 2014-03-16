@@ -19,9 +19,9 @@ using Splat;
 
 namespace ReactiveUI.Cocoa
 {
-    public class TableSectionInformation : ISectionInformation<UITableView, UITableViewCell>
+    public class TableSectionInformation<TSource> : ISectionInformation<TSource, UITableView, UITableViewCell>
     {
-        public IReactiveNotifyCollectionChanged Collection { get; protected set; }
+        public IReactiveNotifyCollectionChanged<TSource> Collection { get; protected set; }
         public Action<UITableViewCell> InitializeCellAction { get; protected set; }
         public Func<object, NSString> CellKeySelector { get; protected set; }
         public float SizeHint { get; protected set; }
@@ -39,10 +39,10 @@ namespace ReactiveUI.Cocoa
         public TableSectionHeader Footer { get; set; }
     }
 
-    public class TableSectionInformation<TCell> : TableSectionInformation
+    public class TableSectionInformation<TSource, TCell> : TableSectionInformation<TSource>
         where TCell : UITableViewCell
     {
-        public TableSectionInformation(IReactiveNotifyCollectionChanged collection, Func<object, NSString> cellKeySelector, float sizeHint, Action<TCell>initializeCellAction = null)
+        public TableSectionInformation(IReactiveNotifyCollectionChanged<TSource> collection, Func<object, NSString> cellKeySelector, float sizeHint, Action<TCell> initializeCellAction = null)
         {
             Collection = collection;
             SizeHint = sizeHint;
@@ -51,7 +51,7 @@ namespace ReactiveUI.Cocoa
                 InitializeCellAction = cell => initializeCellAction((TCell)cell);
         }
 
-        public TableSectionInformation(IReactiveNotifyCollectionChanged collection, NSString cellKey, float sizeHint, Action<TCell> initializeCellAction = null)
+        public TableSectionInformation(IReactiveNotifyCollectionChanged<TSource> collection, NSString cellKey, float sizeHint, Action<TCell> initializeCellAction = null)
             : this(collection, _ => cellKey, sizeHint, initializeCellAction)
         {
         }
@@ -121,18 +121,18 @@ namespace ReactiveUI.Cocoa
         }
     }
 
-    public class ReactiveTableViewSource : UITableViewSource, IEnableLogger, IDisposable, IReactiveNotifyPropertyChanged, IHandleObservableErrors, IReactiveObjectExtension
+    public class ReactiveTableViewSource<TSource> : UITableViewSource, IEnableLogger, IDisposable, IReactiveNotifyPropertyChanged<ReactiveTableViewSource<TSource>>, IHandleObservableErrors, IReactiveObject
     {
-        readonly CommonReactiveSource<UITableView, UITableViewCell, TableSectionInformation> commonSource;
+        readonly CommonReactiveSource<TSource, UITableView, UITableViewCell, TableSectionInformation<TSource>> commonSource;
         readonly Subject<object> elementSelected = new Subject<object>();
 
-        public ReactiveTableViewSource(UITableView tableView, IReactiveNotifyCollectionChanged collection, NSString cellKey, float sizeHint, Action<UITableViewCell> initializeCellAction = null)
+        public ReactiveTableViewSource(UITableView tableView, IReactiveNotifyCollectionChanged<TSource> collection, NSString cellKey, float sizeHint, Action<UITableViewCell> initializeCellAction = null)
             : this(tableView) {
-            this.Data = new[] { new TableSectionInformation<UITableViewCell>(collection, cellKey, sizeHint, initializeCellAction)};
+            this.Data = new[] { new TableSectionInformation<TSource, UITableViewCell>(collection, cellKey, sizeHint, initializeCellAction)};
         }
 
         [Obsolete("Please bind your view model to the Data property.")]
-        public ReactiveTableViewSource(UITableView tableView, IReadOnlyList<TableSectionInformation> sectionInformation)
+        public ReactiveTableViewSource(UITableView tableView, IReadOnlyList<TableSectionInformation<TSource>> sectionInformation)
             : this(tableView) {
             this.Data = sectionInformation;
         }
@@ -140,7 +140,7 @@ namespace ReactiveUI.Cocoa
         public ReactiveTableViewSource(UITableView tableView) {
             setupRxObj();
             var adapter = new UITableViewAdapter(tableView);
-            this.commonSource = new CommonReactiveSource<UITableView, UITableViewCell, TableSectionInformation>(adapter);
+            this.commonSource = new CommonReactiveSource<TSource, UITableView, UITableViewCell, TableSectionInformation<TSource>>(adapter);
         }
 
         /// <summary>
@@ -151,7 +151,8 @@ namespace ReactiveUI.Cocoa
         /// then the source will react to changes to the contents of the list as well.
         /// </summary>
         /// <value>The data.</value>
-        public IReadOnlyList<TableSectionInformation> Data {
+        public IReadOnlyList<TableSectionInformation<TSource>> Data
+        {
             get { return commonSource.SectionInfo; }
             set {
                 if (commonSource.SectionInfo == value)  return;
@@ -251,7 +252,7 @@ namespace ReactiveUI.Cocoa
 
         public event PropertyChangingEventHandler PropertyChanging;
 
-        void IReactiveObjectExtension.RaisePropertyChanging(PropertyChangingEventArgs args) 
+        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args) 
         {
             var handler = PropertyChanging;
             if (handler != null) {
@@ -261,7 +262,7 @@ namespace ReactiveUI.Cocoa
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        void IReactiveObjectExtension.RaisePropertyChanged(PropertyChangedEventArgs args) 
+        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args) 
         {
             var handler = PropertyChanged;
             if (handler != null) {
@@ -273,14 +274,14 @@ namespace ReactiveUI.Cocoa
         /// Represents an Observable that fires *before* a property is about to
         /// be changed.
         /// </summary>
-        public IObservable<IObservedChange<object, object>> Changing {
+        public IObservable<IObservedChange<ReactiveTableViewSource<TSource>, object>> Changing {
             get { return this.getChangingObservable(); }
         }
 
         /// <summary>
         /// Represents an Observable that fires *after* a property has changed.
         /// </summary>
-        public IObservable<IObservedChange<object, object>> Changed {
+        public IObservable<IObservedChange<ReactiveTableViewSource<TSource>, object>> Changed {
             get { return this.getChangedObservable(); }
         }
 
@@ -288,7 +289,6 @@ namespace ReactiveUI.Cocoa
 
         void setupRxObj()
         {
-            this.setupReactiveExtension();
         }
 
         /// <summary>
@@ -323,13 +323,13 @@ namespace ReactiveUI.Cocoa
         /// <param name="initSource">Optionally initializes some property of
         /// the <see cref="ReactiveTableViewSource"/>.</param>
         /// <typeparam name="TCell">Type of the <see cref="UITableViewCell"/>.</typeparam>
-        public static IDisposable BindTo<TCell>(
-            this IObservable<IReadOnlyList<TableSectionInformation<TCell>>> sectionsObservable,
+        public static IDisposable BindTo<TSource, TCell>(
+            this IObservable<IReadOnlyList<TableSectionInformation<TSource, TCell>>> sectionsObservable,
             UITableView tableView,
-            Func<ReactiveTableViewSource, IDisposable> initSource = null)
+            Func<ReactiveTableViewSource<TSource>, IDisposable> initSource = null)
             where TCell : UITableViewCell
         {
-            var source = new ReactiveTableViewSource(tableView);
+            var source = new ReactiveTableViewSource<TSource>(tableView);
             if (initSource != null) initSource(source);
 
             var bind = sectionsObservable.BindTo(source, x => x.Data);
@@ -351,18 +351,18 @@ namespace ReactiveUI.Cocoa
         /// <param name="initSource">Optionally initializes some property of
         /// the <see cref="ReactiveTableViewSource"/>.</param>
         /// <typeparam name="TCell">Type of the <see cref="UITableViewCell"/>.</typeparam>
-        public static IDisposable BindTo<TCell>(
-            this IObservable<IReactiveNotifyCollectionChanged> sourceObservable,
+        public static IDisposable BindTo<TSource, TCell>(
+            this IObservable<IReactiveNotifyCollectionChanged<TSource>> sourceObservable,
             UITableView tableView,
             NSString cellKey,
             float sizeHint,
             Action<TCell> initializeCellAction = null,
-            Func<ReactiveTableViewSource, IDisposable> initSource = null)
+            Func<ReactiveTableViewSource<TSource>, IDisposable> initSource = null)
             where TCell : UITableViewCell
         {
             return sourceObservable
                 .Select(src => new[] {
-                    new TableSectionInformation<TCell>(
+                    new TableSectionInformation<TSource, TCell>(
                         src,
                         cellKey,
                         sizeHint,
@@ -385,12 +385,12 @@ namespace ReactiveUI.Cocoa
         /// <param name="initSource">Optionally initializes some property of
         /// the <see cref="ReactiveTableViewSource"/>.</param>
         /// <typeparam name="TCell">Type of the <see cref="UITableViewCell"/>.</typeparam>
-        public static IDisposable BindTo<TCell>(
-            this IObservable<IReactiveNotifyCollectionChanged> sourceObservable,
+        public static IDisposable BindTo<TSource, TCell>(
+            this IObservable<IReactiveNotifyCollectionChanged<TSource>> sourceObservable,
             UITableView tableView,
             float sizeHint,
             Action<TCell> initializeCellAction = null,
-            Func<ReactiveTableViewSource, IDisposable> initSource = null)
+            Func<ReactiveTableViewSource<TSource>, IDisposable> initSource = null)
             where TCell : UITableViewCell
         {
             var type = typeof(TCell);
