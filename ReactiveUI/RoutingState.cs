@@ -304,7 +304,7 @@ namespace ReactiveUI
         public static void Navigate(this IRoutingState router, IRoutableViewModel viewModel, IRoutingParams routingParams)
         {
             if (router != null){
-                router.Navigate.Execute(Tuple.Create(viewModel, routingParams));
+                router.Navigate.Execute(new RoutableViewModelWithParams(viewModel, routingParams));
             }
         }
 
