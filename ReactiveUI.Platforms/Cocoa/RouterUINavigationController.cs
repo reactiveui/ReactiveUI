@@ -16,10 +16,10 @@ namespace ReactiveUI.Cocoa
 {
     public class RouterUINavigationController : UINavigationController
     {
-        readonly IRoutingState router;
+        readonly RoutingState router;
         readonly Subject<Unit> orientationChanged = new Subject<Unit>();
 
-        public RouterUINavigationController(IRoutingState router, IViewLocator viewLocator = null)
+        public RouterUINavigationController(RoutingState router, IViewLocator viewLocator = null)
         {
             this.router = router;
             viewLocator = viewLocator ?? ViewLocator.Current;
@@ -71,11 +71,11 @@ namespace ReactiveUI.Cocoa
     
         class RouterUINavigationControllerDelegate : UINavigationControllerDelegate
         {
-            IRoutingState router;
+            RoutingState router;
             RouterUINavigationController parent;
             IDisposable prevBackWireup = Disposable.Empty;
 
-            public RouterUINavigationControllerDelegate(RouterUINavigationController parent, IRoutingState router)
+            public RouterUINavigationControllerDelegate(RouterUINavigationController parent, RoutingState router)
             {
                 this.parent = parent;
                 this.router = router;
