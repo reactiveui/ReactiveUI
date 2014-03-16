@@ -7,6 +7,7 @@ using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using ReactiveUI.Testing;
 using Xunit;
@@ -16,7 +17,6 @@ using Microsoft.Reactive.Testing;
 #if !MONO
 using System.Windows.Controls;
 using ReactiveUI.Xaml;
-using System.Threading.Tasks;
 #endif
 
 namespace ReactiveUI.Tests
