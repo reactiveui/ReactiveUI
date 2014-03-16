@@ -6,7 +6,7 @@ namespace AndroidPlayground
 {
     public class AppBootstrapper : IApplicationRootState
     {
-        public IRoutingState Router { get; protected set; }
+        public RoutingState Router { get; protected set; }
 
         public AppBootstrapper()
         {
