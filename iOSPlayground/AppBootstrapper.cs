@@ -17,7 +17,7 @@ namespace iOSPlayground
         public TinyIoCContainer Kernel { get; protected set; }
         
         [DataMember]
-        public IRoutingState Router { get; protected set; }
+        public RoutingState Router { get; protected set; }
 
         public AppBootstrapper()
         {
