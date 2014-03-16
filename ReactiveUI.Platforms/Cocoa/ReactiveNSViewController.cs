@@ -30,39 +30,34 @@ namespace ReactiveUI.Cocoa
     /// (i.e. you can call RaiseAndSetIfChanged)
     /// </summary>
     public class ReactiveViewController : NSViewController, 
-	    IReactiveNotifyPropertyChanged, IHandleObservableErrors, IReactiveObjectExtension
+	    IReactiveNotifyPropertyChanged<ReactiveViewController>, IHandleObservableErrors, IReactiveObject
 #if UIKIT
         , ICanActivate
 #endif
     {
         protected ReactiveViewController() : base()
         {
-            this.setupReactiveExtension();
         }
 
         protected ReactiveViewController(NSCoder c) : base(c)
         {
-            this.setupReactiveExtension();
         }
 
         protected ReactiveViewController(NSObjectFlag f) : base(f)
         {
-            this.setupReactiveExtension();
         }
 
         protected ReactiveViewController(IntPtr handle) : base(handle)
         {
-            this.setupReactiveExtension();
         }
 
         protected ReactiveViewController(string nibNameOrNull, NSBundle nibBundleOrNull) : base(nibNameOrNull, nibBundleOrNull)
         {
-            this.setupReactiveExtension();
         }
                 
         public event PropertyChangingEventHandler PropertyChanging;
 
-        void IReactiveObjectExtension.RaisePropertyChanging(PropertyChangingEventArgs args) 
+        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args) 
         {
             var handler = PropertyChanging;
             if (handler != null) {
@@ -72,7 +67,7 @@ namespace ReactiveUI.Cocoa
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        void IReactiveObjectExtension.RaisePropertyChanged(PropertyChangedEventArgs args) 
+        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args) 
         {
             var handler = PropertyChanged;
             if (handler != null) {
@@ -84,14 +79,14 @@ namespace ReactiveUI.Cocoa
         /// Represents an Observable that fires *before* a property is about to
         /// be changed.         
         /// </summary>
-        public IObservable<IObservedChange<object, object>> Changing {
+        public IObservable<IObservedChange<ReactiveViewController, object>> Changing {
             get { return this.getChangingObservable(); }
         }
 
         /// <summary>
         /// Represents an Observable that fires *after* a property has changed.
         /// </summary>
-        public IObservable<IObservedChange<object, object>> Changed {
+        public IObservable<IObservedChange<ReactiveViewController, object>> Changed {
             get { return this.getChangedObservable(); }
         }
 
