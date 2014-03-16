@@ -90,8 +90,6 @@
     <Compile Include="Events.cs" />
   </ItemGroup>
   <ItemGroup>
-  </ItemGroup>
-  <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Reactive.Core">
       <HintPath>..\ext\ios\System.Reactive.Core.dll</HintPath>
