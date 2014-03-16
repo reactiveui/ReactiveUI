@@ -26,4 +26,7 @@ ReactiveUI.Events/Events.cs
 ReactiveUI.Events/Events_*.cs
 
 ext/monodroid/18
-packages/
+
+#NuGet
+packages
+!packages/repositories.config
