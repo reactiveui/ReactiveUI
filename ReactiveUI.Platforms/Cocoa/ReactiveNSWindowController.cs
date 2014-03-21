@@ -7,7 +7,7 @@ using System.Reactive;
 
 namespace ReactiveUI.Cocoa
 {
-    public class ReactiveWindowController : NSWindowController, IReactiveNotifyPropertyChanged, IHandleObservableErrors, IReactiveObjectExtension, ICanActivate
+    public class ReactiveWindowController : NSWindowController, IReactiveNotifyPropertyChanged, IHandleObservableErrors, IReactiveObject, ICanActivate
     {
         protected ReactiveWindowController(NSWindow window) : base(window) { setupRxObj(); }
         protected ReactiveWindowController(string windowNibName) : base(windowNibName) { setupRxObj(); }
@@ -19,7 +19,7 @@ namespace ReactiveUI.Cocoa
 
         public event PropertyChangingEventHandler PropertyChanging;
 
-        void IReactiveObjectExtension.RaisePropertyChanging(PropertyChangingEventArgs args) 
+        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args) 
         {
             var handler = PropertyChanging;
             if (handler != null) {
@@ -29,7 +29,7 @@ namespace ReactiveUI.Cocoa
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        void IReactiveObjectExtension.RaisePropertyChanged(PropertyChangedEventArgs args) 
+        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args) 
         {
             var handler = PropertyChanged;
             if (handler != null) {
