@@ -21,7 +21,7 @@ namespace MobileSample_WinRT.ViewModels
 
         public RoutingState Router {
             get { return _Router; }
-            set { _Router = (RoutingState) value; } // XXX: This is dumb.
+            set { _Router = value; }
         }
 
         public AppBootstrapper()

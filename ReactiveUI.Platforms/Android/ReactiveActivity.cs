@@ -11,9 +11,12 @@ using Android.Widget;
 using System.Runtime.Serialization;
 using System.ComponentModel;
 using System.Reflection;
+using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Reactive.Concurrency;
+using System.Reactive.Threading.Tasks;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Reactive.Disposables;
 using System.Diagnostics.Contracts;
 using System.Runtime.CompilerServices;
@@ -27,7 +30,7 @@ namespace ReactiveUI.Android
     /// (i.e. you can call RaiseAndSetIfChanged)
     /// </summary>
     public class ReactiveActivity<TViewModel> : ReactiveActivity, IViewFor<TViewModel>, ICanActivate
-        where TViewModel : class, IReactiveObject
+        where TViewModel : class
     {
         protected ReactiveActivity() { }
 
@@ -47,45 +50,37 @@ namespace ReactiveUI.Android
     /// This is an Activity that is both an Activity and has ReactiveObject powers 
     /// (i.e. you can call RaiseAndSetIfChanged)
     /// </summary>
-    public class ReactiveActivity : Activity, IReactiveNotifyPropertyChanged<ReactiveActivity>, IHandleObservableErrors, IReactiveObject
+    public class ReactiveActivity : Activity, IReactiveObject, IReactiveNotifyPropertyChanged<ReactiveActivity>, IHandleObservableErrors
     {
-        [field: IgnoreDataMember]
-        public event PropertyChangingEventHandler PropertyChanging;
-
-        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args)
-        {
-            var handler = PropertyChanging;
-
-            if (handler != null)
-            {
-                handler(this, args);
-            }
-        }
-
-        [field: IgnoreDataMember]
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args)
-        {
-            var handler = PropertyChanged;
-
-            if (handler != null)
-            {
-                handler(this, args);
-            }
-        }
-
         protected ReactiveActivity() 
         {
             RxApp.MainThreadScheduler = new WaitForDispatcherScheduler(() => new AndroidUIScheduler(this));
-            setupRxObj();
+        }
+
+        public event PropertyChangingEventHandler PropertyChanging;
+
+        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args) 
+        {
+            var handler = PropertyChanging;
+            if (handler != null) {
+                handler(this, args);
+            }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args) 
+        {
+            var handler = PropertyChanged;
+            if (handler != null) {
+                handler(this, args);
+            }
         }
 
         /// <summary>
         /// Represents an Observable that fires *before* a property is about to
         /// be changed.         
         /// </summary>
-        [IgnoreDataMember]
         public IObservable<IObservedChange<ReactiveActivity, object>> Changing {
             get { return this.getChangingObservable(); }
         }
@@ -93,24 +88,8 @@ namespace ReactiveUI.Android
         /// <summary>
         /// Represents an Observable that fires *after* a property has changed.
         /// </summary>
-        [IgnoreDataMember]
         public IObservable<IObservedChange<ReactiveActivity, object>> Changed {
             get { return this.getChangedObservable(); }
-        }
-
-        [IgnoreDataMember]
-        protected Lazy<PropertyInfo[]> allPublicProperties;
-
-        [IgnoreDataMember]
-        public IObservable<Exception> ThrownExceptions { get { return this.getThrownExceptionsObservable(); } }
-
-        [OnDeserialized]
-        void setupRxObj(StreamingContext sc) { setupRxObj(); }
-
-        void setupRxObj()
-        {
-            allPublicProperties = new Lazy<PropertyInfo[]>(() =>
-                GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance).ToArray());
         }
 
         /// <summary>
@@ -125,10 +104,7 @@ namespace ReactiveUI.Android
             return this.suppressChangeNotifications();
         }
 
-        public bool AreChangeNotificationsEnabled()
-        {
-            return this.areChangeNotificationsEnabled();
-        }
+        public IObservable<Exception> ThrownExceptions { get { return this.getThrownExceptionsObservable(); } }
 
         readonly Subject<Unit> activated = new Subject<Unit>();
         public IObservable<Unit> Activated { get { return activated; } }
@@ -146,6 +122,45 @@ namespace ReactiveUI.Android
         {
             base.OnResume();
             activated.OnNext(Unit.Default);
+        }
+
+        readonly Subject<Tuple<int, Result, Intent>> activityResult = new Subject<Tuple<int, Result, Intent>>();
+        public IObservable<Tuple<int, Result, Intent>> ActivityResult { 
+            get { return activityResult; }
+        }
+
+        protected override void OnActivityResult(int requestCode, Result resultCode, Intent data)
+        {
+            base.OnActivityResult(requestCode, resultCode, data);
+            activityResult.OnNext(Tuple.Create(requestCode, resultCode, data));
+        }
+
+        public Task<Tuple<Result, Intent>> StartActivityForResultAsync(Intent intent, int requestCode)
+        {
+            // NB: It's important that we set up the subscription *before* we
+            // call ActivityForResult
+            var ret = ActivityResult
+                .Where(x => x.Item1 == requestCode)
+                .Select(x => Tuple.Create(x.Item2, x.Item3))
+                .FirstAsync()
+                .ToTask();
+
+            StartActivityForResult(intent, requestCode);
+            return ret;
+        }
+                
+        public Task<Tuple<Result, Intent>> StartActivityForResultAsync(Type type, int requestCode)
+        {
+            // NB: It's important that we set up the subscription *before* we
+            // call ActivityForResult
+            var ret = ActivityResult
+                .Where(x => x.Item1 == requestCode)
+                .Select(x => Tuple.Create(x.Item2, x.Item3))
+                .FirstAsync()
+                .ToTask();
+
+            StartActivityForResult(type, requestCode);
+            return ret;
         }
     }
 }
