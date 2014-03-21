@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>10.0.0</ProductVersion>
+    <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{0913BF79-061F-4667-ADF9-8E6CDA6D1213}</ProjectGuid>
     <ProjectTypeGuids>{42C0BBD9-55CE-4FC1-8D90-A7348ABAFB23};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -107,6 +107,7 @@
     <Compile Include="Cocoa\ReactiveNSViewController.cs" />
     <Compile Include="Cocoa\ReactiveImageView.cs" />
     <Compile Include="Cocoa\ReactiveControl.cs" />
+    <Compile Include="Cocoa\ReactiveNSWindowController.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Cocoa\" />
