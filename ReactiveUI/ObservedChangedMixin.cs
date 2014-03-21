@@ -45,17 +45,6 @@ namespace ReactiveUI
             return Reflection.TryGetValueForPropertyChain(out changeValue, current, fullPropName.Split('.'));
         }
 
-        internal static IObservedChange<TSender, TValue> fillInValue<TSender, TValue>(this IObservedChange<TSender, TValue> This)
-        {
-            // XXX: This is an internal method because I'm unsafely upcasting,
-            // but in certain cases it's needed.
-            var ret = (ObservedChange<TSender, TValue>)This;
-            var val = default(TValue);
-            This.TryGetValue(out val);
-            ret.Value = val;
-            return ret;
-        }
-
         /// <summary>
         /// Given a fully filled-out IObservedChange object, SetValueToProperty
         /// will apply it to the specified object (i.e. it will ensure that

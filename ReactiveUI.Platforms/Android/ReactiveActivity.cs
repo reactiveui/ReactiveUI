@@ -30,7 +30,7 @@ namespace ReactiveUI.Android
     /// (i.e. you can call RaiseAndSetIfChanged)
     /// </summary>
     public class ReactiveActivity<TViewModel> : ReactiveActivity, IViewFor<TViewModel>, ICanActivate
-        where TViewModel : class, IReactiveNotifyPropertyChanged
+        where TViewModel : class
     {
         protected ReactiveActivity() { }
 
@@ -50,17 +50,16 @@ namespace ReactiveUI.Android
     /// This is an Activity that is both an Activity and has ReactiveObject powers 
     /// (i.e. you can call RaiseAndSetIfChanged)
     /// </summary>
-    public class ReactiveActivity : Activity, IReactiveObjectExtension, IReactiveNotifyPropertyChanged, IHandleObservableErrors
+    public class ReactiveActivity : Activity, IReactiveObject, IReactiveNotifyPropertyChanged<ReactiveActivity>, IHandleObservableErrors
     {
         protected ReactiveActivity() 
         {
             RxApp.MainThreadScheduler = new WaitForDispatcherScheduler(() => new AndroidUIScheduler(this));
-            this.setupReactiveExtension();
         }
 
         public event PropertyChangingEventHandler PropertyChanging;
 
-        void IReactiveObjectExtension.RaisePropertyChanging(PropertyChangingEventArgs args) 
+        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args) 
         {
             var handler = PropertyChanging;
             if (handler != null) {
@@ -70,7 +69,7 @@ namespace ReactiveUI.Android
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        void IReactiveObjectExtension.RaisePropertyChanged(PropertyChangedEventArgs args) 
+        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args) 
         {
             var handler = PropertyChanged;
             if (handler != null) {
@@ -82,14 +81,14 @@ namespace ReactiveUI.Android
         /// Represents an Observable that fires *before* a property is about to
         /// be changed.         
         /// </summary>
-        public IObservable<IObservedChange<object, object>> Changing {
+        public IObservable<IObservedChange<ReactiveActivity, object>> Changing {
             get { return this.getChangingObservable(); }
         }
 
         /// <summary>
         /// Represents an Observable that fires *after* a property has changed.
         /// </summary>
-        public IObservable<IObservedChange<object, object>> Changed {
+        public IObservable<IObservedChange<ReactiveActivity, object>> Changed {
             get { return this.getChangedObservable(); }
         }
 
