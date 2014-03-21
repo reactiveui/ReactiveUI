@@ -22,12 +22,12 @@ namespace ReactiveUI
     /// Changing and Changed Observables to monitor object changes.
     /// </summary>
     [DataContract]
-    public class ReactiveObject : IReactiveNotifyPropertyChanged, IHandleObservableErrors, IReactiveObjectExtension
+    public class ReactiveObject : IReactiveNotifyPropertyChanged<ReactiveObject>, IHandleObservableErrors, IReactiveObject
     {
         [field:IgnoreDataMember]
         public event PropertyChangingEventHandler PropertyChanging;
 
-        void IReactiveObjectExtension.RaisePropertyChanging(PropertyChangingEventArgs args) 
+        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args) 
         {
             var handler = PropertyChanging;
 
@@ -39,7 +39,7 @@ namespace ReactiveUI
         [field:IgnoreDataMember]
         public event PropertyChangedEventHandler PropertyChanged;
 
-        void IReactiveObjectExtension.RaisePropertyChanged(PropertyChangedEventArgs args) 
+        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args) 
         {
             var handler = PropertyChanged;
 
@@ -53,7 +53,7 @@ namespace ReactiveUI
         /// be changed.         
         /// </summary>
         [IgnoreDataMember]
-        public IObservable<IObservedChange<object, object>> Changing {
+        public IObservable<IObservedChange<ReactiveObject, object>> Changing {
             get { return this.getChangingObservable(); }
         }
 
@@ -61,7 +61,7 @@ namespace ReactiveUI
         /// Represents an Observable that fires *after* a property has changed.
         /// </summary>
         [IgnoreDataMember]
-        public IObservable<IObservedChange<object, object>> Changed {
+        public IObservable<IObservedChange<ReactiveObject, object>> Changed {
             get { return this.getChangedObservable(); }
         }
 
@@ -70,14 +70,14 @@ namespace ReactiveUI
         
         protected ReactiveObject()
         {
-            this.setupReactiveExtension();
         }
-
-        [OnDeserialized]
-        void setupRxObj(StreamingContext sc) { this.setupReactiveExtension(); }
 
         public IDisposable SuppressChangeNotifications() {
             return this.suppressChangeNotifications();
+        }
+
+        public bool AreChangeNotificationsEnabled() {
+            return this.areChangeNotificationsEnabled();
         }
     }
 }

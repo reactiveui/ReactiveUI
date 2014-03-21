@@ -19,7 +19,7 @@ using System.Reactive;
 
 namespace ReactiveUI.Cocoa
 {
-    public abstract class ReactiveTableViewCell : UITableViewCell, IReactiveNotifyPropertyChanged, IHandleObservableErrors, IReactiveObjectExtension, ICanActivate
+    public abstract class ReactiveTableViewCell : UITableViewCell, IReactiveNotifyPropertyChanged<ReactiveTableViewCell>, IHandleObservableErrors, IReactiveObject, ICanActivate
     {
         public ReactiveTableViewCell(IntPtr handle) : base (handle) { setupRxObj(); }
         public ReactiveTableViewCell(NSObjectFlag t) : base (t) { setupRxObj(); }
@@ -31,7 +31,7 @@ namespace ReactiveUI.Cocoa
 
         public event PropertyChangingEventHandler PropertyChanging;
 
-        void IReactiveObjectExtension.RaisePropertyChanging(PropertyChangingEventArgs args) 
+        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args) 
         {
             var handler = PropertyChanging;
             if (handler != null) {
@@ -41,7 +41,7 @@ namespace ReactiveUI.Cocoa
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        void IReactiveObjectExtension.RaisePropertyChanged(PropertyChangedEventArgs args) 
+        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args) 
         {
             var handler = PropertyChanged;
             if (handler != null) {
@@ -53,14 +53,14 @@ namespace ReactiveUI.Cocoa
         /// Represents an Observable that fires *before* a property is about to
         /// be changed.         
         /// </summary>
-        public IObservable<IObservedChange<object, object>> Changing {
+        public IObservable<IObservedChange<ReactiveTableViewCell, object>> Changing {
             get { return this.getChangingObservable(); }
         }
 
         /// <summary>
         /// Represents an Observable that fires *after* a property has changed.
         /// </summary>
-        public IObservable<IObservedChange<object, object>> Changed {
+        public IObservable<IObservedChange<ReactiveTableViewCell, object>> Changed {
             get { return this.getChangedObservable(); }
         }
 
@@ -68,7 +68,6 @@ namespace ReactiveUI.Cocoa
 
         void setupRxObj()
         {
-            this.setupReactiveExtension();
         }
 
         /// <summary>

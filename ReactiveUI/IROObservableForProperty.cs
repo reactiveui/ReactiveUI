@@ -7,25 +7,25 @@ namespace ReactiveUI
     /// <summary>
     /// Generates Observables based on observing Reactive objects
     /// </summary>
-    public class IRNPCObservableForProperty : ICreatesObservableForProperty
+    public class IROObservableForProperty : ICreatesObservableForProperty
     {
         public int GetAffinityForObject(Type type, string propertyName, bool beforeChanged = false)
         {
-            // NB: Since every IRNPC is also an INPC, we need to bind more 
+            // NB: Since every IReactiveObject is also an INPC, we need to bind more 
             // tightly than INPCObservableForProperty, so we return 10 here 
             // instead of one
-            return typeof (IReactiveNotifyPropertyChanged).GetTypeInfo().IsAssignableFrom(type.GetTypeInfo()) ? 10 : 0;
+            return typeof (IReactiveObject).GetTypeInfo().IsAssignableFrom(type.GetTypeInfo()) ? 10 : 0;
         }
 
         public IObservable<IObservedChange<object, object>> GetNotificationForProperty(object sender, string propertyName, bool beforeChanged = false)
         {
-            var irnpc = sender as IReactiveNotifyPropertyChanged;
-            if (irnpc == null) {
+            var iro = sender as IReactiveObject;
+            if (iro == null) {
                 throw new ArgumentException("Sender doesn't implement IReactiveNotifyPropertyChanging");
             }
 
             return Observable.Create<IObservedChange<object, object>>(subj => {
-                var obs = (beforeChanged ? irnpc.Changing : irnpc.Changed);
+                var obs = (beforeChanged ? iro.getChangingObservable() : iro.getChangedObservable());
 
                 return obs
                     .Where(x => x.PropertyName == propertyName)
