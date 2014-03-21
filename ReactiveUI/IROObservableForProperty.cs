@@ -11,7 +11,7 @@ namespace ReactiveUI
     {
         public int GetAffinityForObject(Type type, string propertyName, bool beforeChanged = false)
         {
-            // NB: Since every IReactiveObjectExtension is also an INPC, we need to bind more 
+            // NB: Since every IReactiveObject is also an INPC, we need to bind more 
             // tightly than INPCObservableForProperty, so we return 10 here 
             // instead of one
             return typeof (IReactiveObject).GetTypeInfo().IsAssignableFrom(type.GetTypeInfo()) ? 10 : 0;
