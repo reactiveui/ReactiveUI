@@ -176,8 +176,8 @@ namespace ReactiveUI.Tests.Winforms
         }
     }
 
-   
-   
+
+
 
     public class FakeViewModel : ReactiveObject
     {

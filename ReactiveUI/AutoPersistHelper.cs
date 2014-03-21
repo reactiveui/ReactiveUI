@@ -27,13 +27,13 @@ namespace ReactiveUI
         }, RxApp.SmallCacheLimit);
 
         public static IDisposable AutoPersist<T>(this T This, Func<T, IObservable<Unit>> doPersist, TimeSpan? interval = null)
-            where T : IReactiveNotifyPropertyChanged
+            where T : IReactiveObject
         {
             return This.AutoPersist(doPersist, Observable.Never<Unit>(), interval);
         }
 
         public static IDisposable AutoPersist<T, TDontCare>(this T This, Func<T, IObservable<Unit>> doPersist, IObservable<TDontCare> manualSaveSignal, TimeSpan? interval = null)
-            where T : IReactiveNotifyPropertyChanged
+            where T : IReactiveObject
         {
             interval = interval ?? TimeSpan.FromSeconds(3.0);
 
@@ -49,7 +49,7 @@ namespace ReactiveUI
             }
 
             var saveHint = Observable.Merge(
-                This.Changed.Where(x => persistableProperties.ContainsKey(x.PropertyName)).Select(_ => Unit.Default),
+                This.getChangedObservable().Where(x => persistableProperties.ContainsKey(x.PropertyName)).Select(_ => Unit.Default),
                 manualSaveSignal.Select(_ => Unit.Default));
 
             var autoSaver = saveHint
@@ -69,13 +69,13 @@ namespace ReactiveUI
         }
 
         public static IDisposable AutoPersistCollection<T>(this ReactiveList<T> This, Func<T, IObservable<Unit>> doPersist, TimeSpan? interval = null)
-            where T : IReactiveNotifyPropertyChanged
+            where T : IReactiveObject
         {
             return AutoPersistCollection(This, doPersist, Observable.Never<Unit>(), interval);
         }
 
         public static IDisposable AutoPersistCollection<T, TDontCare>(this ReactiveList<T> This, Func<T, IObservable<Unit>> doPersist, IObservable<TDontCare> manualSaveSignal, TimeSpan? interval = null)
-            where T : IReactiveNotifyPropertyChanged
+            where T : IReactiveObject
         {
             var disposerList = new Dictionary<T, IDisposable>();
 
@@ -96,7 +96,7 @@ namespace ReactiveUI
         }
 
         public static IDisposable ActOnEveryObject<T>(this ReactiveList<T> This, Action<T> onAdd, Action<T> onRemove)
-            where T : IReactiveNotifyPropertyChanged
+            where T : IReactiveObject
         {
             foreach (var v in This) { onAdd(v); }
 

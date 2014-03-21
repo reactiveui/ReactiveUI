@@ -28,9 +28,9 @@ namespace ReactiveUI.Cocoa
         TUIViewCell DequeueReusableCell(NSString cellKey, NSIndexPath path);
     }
 
-    interface ISectionInformation<TUIView, TUIViewCell>
+    interface ISectionInformation<TSource, TUIView, TUIViewCell>
     {
-        IReactiveNotifyCollectionChanged Collection { get; }
+        IReactiveNotifyCollectionChanged<TSource> Collection { get; }
         Func<object, NSString> CellKeySelector { get; }
         Action<TUIViewCell> InitializeCellAction { get; }
     }
@@ -39,8 +39,8 @@ namespace ReactiveUI.Cocoa
     /// Internal class containing the common code between <see cref="ReactiveTableViewSource"/>
     /// and <see cref="ReactiveCollectionViewSource"/>.
     /// </summary>
-    sealed class CommonReactiveSource<TUIView, TUIViewCell, TSectionInfo> : ReactiveObject, IDisposable, IEnableLogger
-        where TSectionInfo : ISectionInformation<TUIView, TUIViewCell>
+    sealed class CommonReactiveSource<TSource, TUIView, TUIViewCell, TSectionInfo> : ReactiveObject, IDisposable, IEnableLogger
+        where TSectionInfo : ISectionInformation<TSource, TUIView, TUIViewCell>
     {
         /// <summary>
         /// Main disposable which is disposed when this object is disposed.
@@ -241,7 +241,7 @@ namespace ReactiveUI.Cocoa
             disp.Add(subscrDisp);
 
             // Decide when we should check for section changes.
-            var reactiveSectionInfo = newSectionInfo as IReactiveNotifyCollectionChanged;
+            var reactiveSectionInfo = newSectionInfo as IReactiveNotifyCollectionChanged<TSource>;
 
             var sectionChanging = reactiveSectionInfo == null ? Observable.Never<Unit>() : reactiveSectionInfo
                 .Changing

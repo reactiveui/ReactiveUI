@@ -16,7 +16,7 @@
     <ProjectTypeGuids>{786C830F-07A1-408B-BD7F-6EE04809D6DB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
-    <ProductVersion>10.0.0</ProductVersion>
+    <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <FodyPath>..\packages\Fody.1.20.0.0</FodyPath>
   </PropertyGroup>
@@ -84,7 +84,7 @@
     <Compile Include="IDependencyResolver.cs" />
     <Compile Include="INPCObservableForProperty.cs" />
     <Compile Include="Interfaces.cs" />
-    <Compile Include="IRNPCObservableForProperty.cs" />
+    <Compile Include="IROObservableForProperty.cs" />
     <Compile Include="MessageBus.cs" />
     <Compile Include="NullDefaultPropertyBindingProvider.cs" />
     <Compile Include="ObservableAsPropertyHelper.cs" />
@@ -116,7 +116,7 @@
     </Compile>
     <Compile Include="WaitForDispatcherScheduler.cs" />
     <Compile Include="LoggingMixins.cs" />
-    <Compile Include="IReactiveObjectExtension.cs" />
+    <Compile Include="IReactiveObject.cs" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
