@@ -28,7 +28,7 @@ namespace ReactiveUI.Android
     /// (i.e. you can call RaiseAndSetIfChanged)
     /// </summary>
     public class ReactiveFragment<TViewModel> : ReactiveFragment, IViewFor<TViewModel>, ICanActivate
-        where TViewModel : class, IReactiveObject
+        where TViewModel : class
     {
         protected ReactiveFragment() { }
 
@@ -48,44 +48,34 @@ namespace ReactiveUI.Android
     /// This is a Fragment that is both an Activity and has ReactiveObject powers 
     /// (i.e. you can call RaiseAndSetIfChanged)
     /// </summary>
-    public class ReactiveFragment : Fragment, IReactiveNotifyPropertyChanged<ReactiveFragment>, IHandleObservableErrors, IReactiveObject
-    {        
-        [field: IgnoreDataMember]
+    public class ReactiveFragment : Fragment, IReactiveNotifyPropertyChanged<ReactiveFragment>, IReactiveObject, IHandleObservableErrors
+    {
+        protected ReactiveFragment() { }
+
         public event PropertyChangingEventHandler PropertyChanging;
 
-        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args)
+        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args) 
         {
             var handler = PropertyChanging;
-
-            if (handler != null)
-            {
+            if (handler != null) {
                 handler(this, args);
             }
         }
 
-        [field: IgnoreDataMember]
         public event PropertyChangedEventHandler PropertyChanged;
 
-        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args)
+        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args) 
         {
             var handler = PropertyChanged;
-
-            if (handler != null)
-            {
+            if (handler != null) {
                 handler(this, args);
             }
-        }
-        
-        protected ReactiveFragment()
-        {
-            setupRxObj();
         }
 
         /// <summary>
         /// Represents an Observable that fires *before* a property is about to
         /// be changed.         
         /// </summary>
-        [IgnoreDataMember]
         public IObservable<IObservedChange<ReactiveFragment, object>> Changing {
             get { return this.getChangingObservable(); }
         }
@@ -93,24 +83,8 @@ namespace ReactiveUI.Android
         /// <summary>
         /// Represents an Observable that fires *after* a property has changed.
         /// </summary>
-        [IgnoreDataMember]
         public IObservable<IObservedChange<ReactiveFragment, object>> Changed {
             get { return this.getChangedObservable(); }
-        }
-
-        [IgnoreDataMember]
-        protected Lazy<PropertyInfo[]> allPublicProperties;
-
-        [IgnoreDataMember]
-        public IObservable<Exception> ThrownExceptions { get { return this.getThrownExceptionsObservable(); } }
-
-        [OnDeserialized]
-        void setupRxObj(StreamingContext sc) { setupRxObj(); }
-
-        void setupRxObj()
-        {
-            allPublicProperties = new Lazy<PropertyInfo[]>(() =>
-                GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance).ToArray());
         }
 
         /// <summary>
@@ -125,11 +99,8 @@ namespace ReactiveUI.Android
             return this.suppressChangeNotifications();
         }
 
-        public bool AreChangeNotificationsEnabled()
-        {
-            return this.areChangeNotificationsEnabled();
-        }
-
+        public IObservable<Exception> ThrownExceptions { get { return this.getThrownExceptionsObservable(); } }
+       
         readonly Subject<Unit> activated = new Subject<Unit>();
         public IObservable<Unit> Activated { get { return activated; } }
 

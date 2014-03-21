@@ -62,9 +62,6 @@
     <Reference Include="Splat">
       <HintPath>..\ext\monodroid\Splat.dll</HintPath>
     </Reference>
-    <Reference Include="Xamarin.Android.Support.v13">
-      <HintPath>..\ext\monodroid\Xamarin.Android.Support.v13.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Novell\Novell.MonoDroid.CSharp.targets" />
   <ItemGroup>
@@ -79,7 +76,6 @@
     <Compile Include="Android\ObjectExtension.cs" />
     <Compile Include="Android\Properties\AssemblyInfo.cs" />
     <Compile Include="Android\ReactiveListAdapter.cs" />
-    <Compile Include="Android\ReactivePagerAdapter.cs" />
     <Compile Include="Android\ViewCommandExtensions.cs" />
     <Compile Include="ComponentModelTypeConverter.cs" />
     <Compile Include="FlexibleCommandBinder.cs" />

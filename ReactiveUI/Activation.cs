@@ -132,7 +132,7 @@ namespace ReactiveUI
     {
         public int GetAffinityForView(Type view)
         {
-            return (typeof(ICanActivate).GetTypeInfo().IsAssignableFrom(view.GetType().GetTypeInfo())) ?
+            return (typeof(ICanActivate).GetTypeInfo().IsAssignableFrom(view.GetTypeInfo())) ?
                 10 : 0;
         }
 
