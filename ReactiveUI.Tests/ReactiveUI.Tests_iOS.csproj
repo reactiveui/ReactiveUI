@@ -10,78 +10,28 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>ReactiveUI.Tests</RootNamespace>
     <IPhoneResourcePrefix>Resources</IPhoneResourcePrefix>
+    <AssemblyName>ReactiveUI_Tests_iOS</AssemblyName>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|iPhoneSimulator' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\iPhoneSimulator\Debug</OutputPath>
-    <DefineConstants>DEBUG; MONO</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <MtouchLink>None</MtouchLink>
-    <ConsolePause>false</ConsolePause>
-    <MtouchDebug>true</MtouchDebug>
-    <AssemblyName>ReactiveUI_Tests_Monotouch</AssemblyName>
-    <MtouchI18n>
-    </MtouchI18n>
-    <MtouchArch>ARMv7</MtouchArch>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|iPhoneSimulator' ">
-    <Optimize>true</Optimize>
-    <OutputPath>bin\iPhoneSimulator\Release</OutputPath>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <MtouchLink>None</MtouchLink>
-    <ConsolePause>false</ConsolePause>
-    <DefineConstants>MONO</DefineConstants>
-    <AssemblyName>ReactiveUI_Tests_Monotouch</AssemblyName>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|iPhone' ">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\iPhone\Debug</OutputPath>
-    <DefineConstants>DEBUG; MONO</DefineConstants>
+    <DefineConstants>DEBUG;MONO</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <MtouchDebug>true</MtouchDebug>
     <ConsolePause>false</ConsolePause>
     <CodesignKey>iPhone Developer</CodesignKey>
-    <AssemblyName>ReactiveUI_Tests_Monotouch</AssemblyName>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|iPhone' ">
-    <DebugType>full</DebugType>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\iPhone\Release</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
     <CodesignKey>iPhone Developer</CodesignKey>
-    <ConsolePause>false</ConsolePause>
-    <AssemblyName>ReactiveUITests_iOS</AssemblyName>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Ad-Hoc|iPhone' ">
-    <DebugType>full</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\iPhone\Ad-Hoc</OutputPath>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <CodesignKey>iPhone Distribution</CodesignKey>
-    <BuildIpa>true</BuildIpa>
-    <ConsolePause>false</ConsolePause>
-    <CodesignProvision>Automatic:AdHoc</CodesignProvision>
-    <AssemblyName>ReactiveUITests_iOS</AssemblyName>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'AppStore|iPhone' ">
-    <DebugType>full</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\iPhone\AppStore</OutputPath>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <CodesignKey>iPhone Distribution</CodesignKey>
-    <ConsolePause>false</ConsolePause>
-    <CodesignProvision>Automatic:AppStore</CodesignProvision>
-    <AssemblyName>ReactiveUITests_iOS</AssemblyName>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -107,9 +57,6 @@
     <Reference Include="Xamarin.Mobile">
       <HintPath>..\ext\ios\Xamarin.Mobile.dll</HintPath>
     </Reference>
-    <Reference Include="System.Reactive.Debugger">
-      <HintPath>..\ext\ios\System.Reactive.Debugger.dll</HintPath>
-    </Reference>
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Json" />
     <Reference Include="Splat">
@@ -118,7 +65,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Resources\" />
-    <Folder Include="Cocoa\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Info.plist" />
@@ -149,28 +95,24 @@
     <Compile Include="Cocoa\KVOBindingTests.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ReactiveUI.Platforms\ReactiveUI.Cocoa_Monotouch.csproj">
-      <Project>{9091337A-9E94-4DBD-801E-15E1FDA78FFC}</Project>
-      <Name>ReactiveUI.Cocoa_Monotouch</Name>
+    <ProjectReference Include="..\Microsoft.Reactive.Testing\Microsoft.Reactive.Testing_iOS.csproj">
+      <Project>{74ba5b4e-257a-42a7-bdab-1fb40a903909}</Project>
+      <Name>Microsoft.Reactive.Testing_iOS</Name>
     </ProjectReference>
-    <ProjectReference Include="..\ReactiveUI.Events\ReactiveUI.Events_Monotouch_XS.csproj">
-      <Project>{334E6DAC-0D70-4CE0-80CB-DFD3147DBE18}</Project>
-      <Name>ReactiveUI.Events_Monotouch_XS</Name>
+    <ProjectReference Include="..\ReactiveUI.Mobile\ReactiveUI.Mobile_iOS.csproj">
+      <Project>{9091337a-9e94-4dbd-801e-15e10db72ffc}</Project>
+      <Name>ReactiveUI.Mobile_iOS</Name>
     </ProjectReference>
-    <ProjectReference Include="..\ReactiveUI.Mobile\ReactiveUI.Mobile_Monotouch.csproj">
-      <Project>{9091337A-9E94-4DBD-801E-15E10DB72FFC}</Project>
-      <Name>ReactiveUI.Mobile_Monotouch</Name>
+    <ProjectReference Include="..\ReactiveUI.Platforms\ReactiveUI.iOS.csproj">
+      <Project>{9091337a-9e94-4dbd-801e-15e1fda78ffc}</Project>
+      <Name>ReactiveUI.iOS</Name>
     </ProjectReference>
-    <ProjectReference Include="..\ReactiveUI.Testing\ReactiveUI.Testing_Monotouch.csproj">
-      <Project>{90913370-9E94-3DBD-8F1E-15E10DB72FFC}</Project>
-      <Name>ReactiveUI.Testing_Monotouch</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Microsoft.Reactive.Testing\Microsoft.Reactive.Testing_Monotouch.csproj">
-      <Project>{74BA5B4E-257A-42A7-BDAB-1FB40A903909}</Project>
-      <Name>Microsoft.Reactive.Testing_Monotouch</Name>
+    <ProjectReference Include="..\ReactiveUI.Testing\ReactiveUI.Testing_iOS.csproj">
+      <Project>{90913370-9e94-3dbd-8f1e-15e10db72ffc}</Project>
+      <Name>ReactiveUI.Testing_iOS</Name>
     </ProjectReference>
     <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj">
-      <Project>{464CB812-F99F-401B-BE4C-E8F0515CD19D}</Project>
+      <Project>{464cb812-f99f-401b-be4c-e8f0515cd19d}</Project>
       <Name>ReactiveUI</Name>
     </ProjectReference>
   </ItemGroup>
