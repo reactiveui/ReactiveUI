@@ -9,15 +9,15 @@
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
 	<key>MinimumOSVersion</key>
-	<string>6.0</string>
+	<string></string>
 	<key>UIDeviceFamily</key>
 	<array>
 		<integer>1</integer>
 	</array>
 	<key>CFBundleDisplayName</key>
-	<string>iOSPlayground</string>
+	<string>MobileSample-iOS</string>
 	<key>CFBundleIdentifier</key>
-	<string>iOSPlayground</string>
+	<string>MobileSample-iOS</string>
 	<key>CFBundleVersion</key>
 	<string>1.0</string>
 	<key>NSMainNibFile</key>
