@@ -8,13 +8,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		TraceAndTestImpact.testsettings = TraceAndTestImpact.testsettings
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Mobile_Monotouch", "ReactiveUI.Mobile\ReactiveUI.Mobile_Monotouch.csproj", "{9091337A-9E94-4DBD-801E-15E10DB72FFC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Mobile_iOS", "ReactiveUI.Mobile\ReactiveUI.Mobile_iOS.csproj", "{9091337A-9E94-4DBD-801E-15E10DB72FFC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Mobile_Monodroid", "ReactiveUI.Mobile\ReactiveUI.Mobile_Monodroid.csproj", "{A92E477B-BB94-43C1-984E-E177EF9FEDB1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Mobile_Android", "ReactiveUI.Mobile\ReactiveUI.Mobile_Android.csproj", "{A92E477B-BB94-43C1-984E-E177EF9FEDB1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Android", "ReactiveUI.Platforms\ReactiveUI.Android.csproj", "{F5A6E11B-B074-4A0B-B937-267D840E31DF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Cocoa_Monotouch", "ReactiveUI.Platforms\ReactiveUI.Cocoa_Monotouch.csproj", "{9091337A-9E94-4DBD-801E-15E1FDA78FFC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.iOS", "ReactiveUI.Platforms\ReactiveUI.iOS.csproj", "{9091337A-9E94-4DBD-801E-15E1FDA78FFC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Cocoa", "ReactiveUI.Platforms\ReactiveUI.Cocoa.csproj", "{0913BF79-061F-4667-ADF9-8E6CDA6D1213}"
 EndProject
@@ -24,9 +24,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Events_Monomac",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Tests_Monotouch", "ReactiveUI.Tests\ReactiveUI.Tests_Monotouch.csproj", "{52BC39BB-AC43-44D8-AAAA-8C2386F75D76}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Testing_Monotouch", "ReactiveUI.Testing\ReactiveUI.Testing_Monotouch.csproj", "{90913370-9E94-3DBD-8F1E-15E10DB72FFC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Testing_iOS", "ReactiveUI.Testing\ReactiveUI.Testing_iOS.csproj", "{90913370-9E94-3DBD-8F1E-15E10DB72FFC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Testing_Monodroid", "ReactiveUI.Testing\ReactiveUI.Testing_Monodroid.csproj", "{1920477B-BB94-93CF-984E-E177EF9FEDB1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Testing_Android", "ReactiveUI.Testing\ReactiveUI.Testing_Android.csproj", "{1920477B-BB94-93CF-984E-E177EF9FEDB1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Testing_MonoMac", "ReactiveUI.Testing\ReactiveUI.Testing_MonoMac.csproj", "{E1F2AD19-276E-4D05-A41A-89AA133CECFC}"
 EndProject
@@ -34,9 +34,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Events_Monodroid
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Reactive.Testing_MonoMac", "Microsoft.Reactive.Testing\Microsoft.Reactive.Testing_MonoMac.csproj", "{AA27F817-FAD2-4622-B68A-651A8AA9E076}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Reactive.Testing_Monodroid", "Microsoft.Reactive.Testing\Microsoft.Reactive.Testing_Monodroid.csproj", "{1131910A-9D6D-473F-9C69-3DCF6A1C81BC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Reactive.Testing_Android", "Microsoft.Reactive.Testing\Microsoft.Reactive.Testing_Android.csproj", "{1131910A-9D6D-473F-9C69-3DCF6A1C81BC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Reactive.Testing_Monotouch", "Microsoft.Reactive.Testing\Microsoft.Reactive.Testing_Monotouch.csproj", "{74BA5B4E-257A-42A7-BDAB-1FB40A903909}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Reactive.Testing_iOS", "Microsoft.Reactive.Testing\Microsoft.Reactive.Testing_iOS.csproj", "{74BA5B4E-257A-42A7-BDAB-1FB40A903909}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI", "ReactiveUI\ReactiveUI.csproj", "{464CB812-F99F-401B-BE4C-E8F0515CD19D}"
 EndProject
@@ -529,7 +529,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
-		StartupItem = ReactiveUI.Mobile\ReactiveUI.Mobile_Monotouch.csproj
+		StartupItem = ReactiveUI.Mobile\ReactiveUI.Mobile_iOS.csproj
 		Policies = $0
 		$0.TextStylePolicy = $1
 		$1.inheritsSet = null
