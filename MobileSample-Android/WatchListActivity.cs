@@ -5,13 +5,13 @@ using System.Text;
 using Android.App;
 using Android.OS;
 using Android.Widget;
-using AndroidPlayground.ViewModels;
-using AndroidPlayground.Views;
+using MobileSample_Android.ViewModels;
+using MobileSample_Android.Views;
 using ReactiveUI;
 using ReactiveUI.Android;
 using Android.Views;
 
-namespace AndroidPlayground
+namespace MobileSample_Android
 {
     [Activity(Label = "AndroidPlayground", MainLauncher = true)]
     public class WatchListActivity : ReactiveActivity<WatchListViewModel>

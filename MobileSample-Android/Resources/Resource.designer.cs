@@ -9,9 +9,9 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-[assembly: global::Android.Runtime.ResourceDesignerAttribute("AndroidPlayground.Resource", IsApplication=true)]
+[assembly: global::Android.Runtime.ResourceDesignerAttribute("MobileSample_Android.Resource", IsApplication=true)]
 
-namespace AndroidPlayground
+namespace MobileSample_Android
 {
 	
 	
@@ -26,7 +26,7 @@ namespace AndroidPlayground
 		
 		public static void UpdateIdValues()
 		{
-			global::Splat.Resource.String.library_name = global::AndroidPlayground.Resource.String.library_name;
+			global::Splat.Resource.String.library_name = global::MobileSample_Android.Resource.String.library_name;
 		}
 		
 		public partial class Attribute
