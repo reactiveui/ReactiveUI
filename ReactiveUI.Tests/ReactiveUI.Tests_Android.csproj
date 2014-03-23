@@ -8,18 +8,20 @@
     <ProjectGuid>{56222D75-B176-4654-8396-377E60B22D39}</ProjectGuid>
     <ProjectTypeGuids>{EFBA0AD7-5A72-4C68-AF49-83D382785DCF};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ReactiveUI.Tests</RootNamespace>
-    <AndroidApplication>True</AndroidApplication>
+    <AssemblyName>ReactiveUI.Tests_Android</AssemblyName>
+    <FileAlignment>512</FileAlignment>
+    <AndroidApplication>true</AndroidApplication>
     <AndroidResgenFile>Resources\Resource.designer.cs</AndroidResgenFile>
-    <AndroidResgenClass>Resource</AndroidResgenClass>
-    <MonoAndroidResourcePrefix>Resources</MonoAndroidResourcePrefix>
-    <MonoAndroidAssetsPrefix>Assets</MonoAndroidAssetsPrefix>
-    <AssemblyName>ReactiveUI.Tests_Monodroid</AssemblyName>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
     <TargetFrameworkVersion>v4.0.3</TargetFrameworkVersion>
-    <AndroidSupportedAbis>armeabi%3barmeabi-v7a%3bx86</AndroidSupportedAbis>
-    <MandroidI18n />
-    <AndroidLinkMode>None</AndroidLinkMode>
     <AndroidManifest>Properties\AndroidManifest.xml</AndroidManifest>
+    <AndroidSupportedAbis>armeabi,armeabi-v7a,x86</AndroidSupportedAbis>
+    <AndroidStoreUncompressedFileExtensions />
+    <MandroidI18n />
+    <JavaMaximumHeapSize />
+    <JavaOptions />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -27,23 +29,21 @@
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\Monoandroid\</OutputPath>
     <IntermediateOutputPath>obj\Debug\Monoandroid</IntermediateOutputPath>
-    <DefineConstants>DEBUG; MONO</DefineConstants>
+    <DefineConstants>DEBUG;MONO;ANDROID</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <ConsolePause>false</ConsolePause>
-    <AndroidSupportedAbis>armeabi-v7a,x86</AndroidSupportedAbis>
-    <AndroidStoreUncompressedFileExtensions>
-    </AndroidStoreUncompressedFileExtensions>
+    <AndroidUseSharedRuntime>True</AndroidUseSharedRuntime>
+    <AndroidLinkMode>None</AndroidLinkMode>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\Monoandroid\</OutputPath>
+    <DefineConstants>MONO;ANDROID</DefineConstants>
     <IntermediateOutputPath>obj\Release\Monoandroid</IntermediateOutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AndroidUseSharedRuntime>false</AndroidUseSharedRuntime>
-    <ConsolePause>false</ConsolePause>
-    <DefineConstants>MONO</DefineConstants>
+    <AndroidLinkMode>SdkOnly</AndroidLinkMode>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -103,32 +103,41 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />
-    <None Include="Properties\AndroidManifest.xml" />
   </ItemGroup>
   <ItemGroup>
-    <AndroidResource Include="Resources\drawable\Icon.png" />
+    <AndroidResource Include="Resources\Drawable\Icon.png" />
   </ItemGroup>
-  <Import Project="$(MSBuildExtensionsPath)\Novell\Novell.MonoDroid.CSharp.targets" />
   <ItemGroup>
+    <Content Include="Properties\AndroidManifest.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Microsoft.Reactive.Testing\Microsoft.Reactive.Testing_Android.csproj">
+      <Project>{1131910a-9d6d-473f-9c69-3dcf6a1c81bc}</Project>
+      <Name>Microsoft.Reactive.Testing_Android</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ReactiveUI.Mobile\ReactiveUI.Mobile_Android.csproj">
+      <Project>{a92e477b-bb94-43c1-984e-e177ef9fedb1}</Project>
+      <Name>ReactiveUI.Mobile_Android</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ReactiveUI.Platforms\ReactiveUI.Android.csproj">
-      <Project>{F5A6E11B-B074-4A0B-B937-267D840E31DF}</Project>
+      <Project>{f5a6e11b-b074-4a0b-b937-267d840e31df}</Project>
       <Name>ReactiveUI.Android</Name>
     </ProjectReference>
-    <ProjectReference Include="..\ReactiveUI.Mobile\ReactiveUI.Mobile_Monodroid.csproj">
-      <Project>{A92E477B-BB94-43C1-984E-E177EF9FEDB1}</Project>
-      <Name>ReactiveUI.Mobile_Monodroid</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\ReactiveUI.Testing\ReactiveUI.Testing_Monodroid.csproj">
-      <Project>{1920477B-BB94-93CF-984E-E177EF9FEDB1}</Project>
-      <Name>ReactiveUI.Testing_Monodroid</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Microsoft.Reactive.Testing\Microsoft.Reactive.Testing_Monodroid.csproj">
-      <Project>{1131910A-9D6D-473F-9C69-3DCF6A1C81BC}</Project>
-      <Name>Microsoft.Reactive.Testing_Monodroid</Name>
+    <ProjectReference Include="..\ReactiveUI.Testing\ReactiveUI.Testing_Android.csproj">
+      <Project>{1920477b-bb94-93cf-984e-e177ef9fedb1}</Project>
+      <Name>ReactiveUI.Testing_Android</Name>
     </ProjectReference>
     <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj">
-      <Project>{464CB812-F99F-401B-BE4C-E8F0515CD19D}</Project>
+      <Project>{464cb812-f99f-401b-be4c-e8f0515cd19d}</Project>
       <Name>ReactiveUI</Name>
     </ProjectReference>
   </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+     Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
 </Project>
