@@ -5,22 +5,15 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{A92E477B-BB94-43C1-984E-E177EF9FEDB1}</ProjectGuid>
+    <ProjectGuid>{1920477B-BB94-93CF-984E-E177EF9FEDB1}</ProjectGuid>
     <ProjectTypeGuids>{EFBA0AD7-5A72-4C68-AF49-83D382785DCF};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ReactiveUI.Mobile</RootNamespace>
-    <AssemblyName>ReactiveUI.Mobile</AssemblyName>
+    <RootNamespace>ReactiveUI.Testing</RootNamespace>
+    <AssemblyName>ReactiveUI.Testing</AssemblyName>
     <FileAlignment>512</FileAlignment>
-    <SccProjectName>
-    </SccProjectName>
-    <SccLocalPath>
-    </SccLocalPath>
-    <SccAuxPath>
-    </SccAuxPath>
-    <SccProvider>
-    </SccProvider>
     <CodeContractsAssemblyMode>1</CodeContractsAssemblyMode>
+    <AndroidUseLatestPlatformSdk />
     <TargetFrameworkVersion>v4.0.3</TargetFrameworkVersion>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
@@ -30,7 +23,8 @@
     <DebugType>full</DebugType>
     <Optimize>False</Optimize>
     <OutputPath>bin\Debug\Monoandroid\</OutputPath>
-    <DefineConstants>DEBUG;TRACE; MONO; ANDROID</DefineConstants>
+    <IntermediateOutputPath>obj\Debug\Monoandroid</IntermediateOutputPath>
+    <DefineConstants>DEBUG;TRACE;MONO;ANDROID</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CodeContractsEnableRuntimeChecking>False</CodeContractsEnableRuntimeChecking>
@@ -66,12 +60,14 @@
     <RunCodeAnalysis>false</RunCodeAnalysis>
     <CodeContractsPointerObligations>False</CodeContractsPointerObligations>
     <AndroidLinkMode>None</AndroidLinkMode>
+    <DocumentationFile>bin\Debug\Monoandroid\ReactiveUI.Testing.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>True</Optimize>
     <OutputPath>bin\Release\Monoandroid\</OutputPath>
-    <DefineConstants>TRACE; MONO; ANDROID</DefineConstants>
+    <IntermediateOutputPath>obj\Release\Monoandroid</IntermediateOutputPath>
+    <DefineConstants>TRACE;MONO;ANDROID</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CodeContractsEnableRuntimeChecking>False</CodeContractsEnableRuntimeChecking>
@@ -104,7 +100,7 @@
     <CodeContractsRuntimeCheckingLevel>Full</CodeContractsRuntimeCheckingLevel>
     <CodeContractsReferenceAssembly>%28none%29</CodeContractsReferenceAssembly>
     <AndroidUseSharedRuntime>False</AndroidUseSharedRuntime>
-    <DocumentationFile>bin\Release\Monoandroid\ReactiveUI.Mobile.XML</DocumentationFile>
+    <DocumentationFile>bin\Release\Monoandroid\ReactiveUI.Testing.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Newtonsoft.Json">
@@ -116,6 +112,7 @@
     <Reference Include="System.Xml.Linq" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Mono.Android" />
+    <Reference Include="Xamarin.Android.NUnitLite" />
     <Reference Include="System.Reactive.Core">
       <HintPath>..\ext\monodroid\System.Reactive.Core.dll</HintPath>
     </Reference>
@@ -128,9 +125,6 @@
     <Reference Include="System.Reactive.PlatformServices">
       <HintPath>..\ext\monodroid\System.Reactive.PlatformServices.dll</HintPath>
     </Reference>
-    <Reference Include="Xamarin.Mobile">
-      <HintPath>..\ext\monodroid\Xamarin.Mobile.dll</HintPath>
-    </Reference>
     <Reference Include="Splat">
       <HintPath>..\ext\monodroid\Splat.dll</HintPath>
     </Reference>
@@ -140,17 +134,16 @@
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Interfaces.cs" />
-    <Compile Include="Registrations.cs" />
-    <Compile Include="SuspensionHost.cs" />
-    <Compile Include="AutoSuspendActivityHelper.cs" />
-    <Compile Include="Geolocation.cs" />
-    <Compile Include="BundleSuspensionDriver.cs" />
+    <Compile Include="TestUtils.cs" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Microsoft.Reactive.Testing\Microsoft.Reactive.Testing_Android.csproj">
+      <Project>{1131910a-9d6d-473f-9c69-3dcf6a1c81bc}</Project>
+      <Name>Microsoft.Reactive.Testing_Android</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ReactiveUI.Platforms\ReactiveUI.Android.csproj">
       <Project>{F5A6E11B-B074-4A0B-B937-267D840E31DF}</Project>
       <Name>ReactiveUI.Android</Name>
@@ -160,6 +153,7 @@
       <Name>ReactiveUI</Name>
     </ProjectReference>
   </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
@@ -167,6 +161,5 @@
   <Target Name="AfterBuild">
   </Target>
   -->
-  <Import Project="$(MSBuildExtensionsPath)\Novell\Novell.MonoDroid.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
 </Project>

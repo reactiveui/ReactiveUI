@@ -5,7 +5,7 @@ using System.Reactive.Linq;
 using System.Text;
 using ReactiveUI;
 
-namespace AndroidPlayground.ViewModels
+namespace MobileSample_Android.ViewModels
 {
     public class WatchListItemViewModel : ReactiveObject
     {

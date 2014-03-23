@@ -8,9 +8,9 @@
     <ProjectGuid>{420CF325-38B9-4B30-8978-D519EC40B6A8}</ProjectGuid>
     <ProjectTypeGuids>{6BC8ED88-2882-458C-8E55-DFD12B67127B};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Exe</OutputType>
-    <RootNamespace>iOSPlayground</RootNamespace>
+    <RootNamespace>MobileSample_iOS</RootNamespace>
     <IPhoneResourcePrefix>Resources</IPhoneResourcePrefix>
-    <AssemblyName>iOSPlayground</AssemblyName>
+    <AssemblyName>MobileSampleiOS</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|iPhoneSimulator' ">
     <DebugSymbols>True</DebugSymbols>
@@ -125,11 +125,11 @@
     <InterfaceDefinition Include="iOSPlaygroundViewController.xib" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ReactiveUI.Mobile\ReactiveUI.Mobile_Monotouch.csproj">
+    <ProjectReference Include="..\ReactiveUI.Mobile\ReactiveUI.Mobile_iOS.csproj">
       <Project>{9091337a-9e94-4dbd-801e-15e10db72ffc}</Project>
       <Name>ReactiveUI.Mobile_Monotouch</Name>
     </ProjectReference>
-    <ProjectReference Include="..\ReactiveUI.Platforms\ReactiveUI.Cocoa_Monotouch.csproj">
+    <ProjectReference Include="..\ReactiveUI.Platforms\ReactiveUI.iOS.csproj">
       <Project>{9091337a-9e94-4dbd-801e-15e1fda78ffc}</Project>
       <Name>ReactiveUI.Cocoa_Monotouch</Name>
     </ProjectReference>
