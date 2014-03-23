@@ -6,7 +6,7 @@
 //
 using MonoTouch.Foundation;
 
-namespace iOSPlayground
+namespace MobileSample_iOS
 {
 	[Register ("iOSPlaygroundViewController")]
 	partial class iOSPlaygroundViewController

@@ -5,11 +5,11 @@ using System.Text;
 using Android.Content;
 using Android.Views;
 using Android.Widget;
-using AndroidPlayground.ViewModels;
+using MobileSample_Android.ViewModels;
 using ReactiveUI;
 using ReactiveUI.Android;
 
-namespace AndroidPlayground.Views
+namespace MobileSample_Android.Views
 {
     public class WatchListItemView : ReactiveViewHost<WatchListItemViewModel>
     {

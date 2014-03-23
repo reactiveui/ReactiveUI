@@ -12,7 +12,7 @@ using ReactiveUI.Android;
 using ReactiveUI.Mobile;
 using Splat;
 
-namespace AndroidPlayground
+namespace MobileSample_Android
 {
   //  [Activity (Label = "AndroidPlayground", MainLauncher = true)]
     public class MainView : ReactiveActivity<MainViewModel> 

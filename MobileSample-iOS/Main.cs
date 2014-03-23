@@ -5,7 +5,7 @@ using System.Linq;
 using MonoTouch.Foundation;
 using MonoTouch.UIKit;
 
-namespace iOSPlayground
+namespace MobileSample_iOS
 {
     public class Application
     {
