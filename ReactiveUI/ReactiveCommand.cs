@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Linq.Expressions;
 using System.Reactive.Disposables;
+using Splat;
 
 namespace ReactiveUI
 {
@@ -119,11 +120,11 @@ namespace ReactiveUI
                     return Observable.Return(false);
                 })
                 .Do(x => {
-                    var fireCanExecuteChanged = (canExecuteChanged != null && canExecuteLatest != x);
+                    var fireCanExecuteChanged = (canExecuteLatest != x);
                     canExecuteLatest = x;
 
                     if (fireCanExecuteChanged) {
-                        canExecuteChanged(this, EventArgs.Empty);
+                        CanExecuteChangedEventManager.DeliverEvent(this, EventArgs.Empty);
                     }
                 })
                 .Publish();
@@ -191,14 +192,13 @@ namespace ReactiveUI
             return canExecuteLatest;
         }
 
-        event EventHandler canExecuteChanged;
         public event EventHandler CanExecuteChanged
         {
             add { 
                 if (canExecuteDisp == null) canExecuteDisp = canExecute.Connect();
-                canExecuteChanged += value; 
+                CanExecuteChangedEventManager.AddHandler(this, value); 
             }
-            remove { canExecuteChanged -= value; }
+            remove { CanExecuteChangedEventManager.RemoveHandler(this, value); }
         }
 
         public void Execute(object parameter)
