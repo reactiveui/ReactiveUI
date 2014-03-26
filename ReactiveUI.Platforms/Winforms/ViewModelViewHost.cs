@@ -10,7 +10,7 @@ using ReactiveUI;
 namespace ReactiveUI.Winforms
 {
     [DefaultProperty("ViewModel")]
-    public partial class ViewModelViewHost : UserControl, INotifyPropertyChanged, INotifyPropertyChanging
+    public partial class ViewModelViewHost : UserControl, IReactiveObject
     {
         readonly CompositeDisposable disposables = new CompositeDisposable();
 
@@ -126,35 +126,6 @@ namespace ReactiveUI.Winforms
             }
 
             base.Dispose(disposing);
-        }
-
-        protected virtual void OnPropertyChanged(string propertyName)
-        {
-            if (this.PropertyChanged != null) {
-                this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-            }
-        }
-
-        protected virtual void OnPropertyChanging(string propertyName)
-        {
-            if (this.PropertyChanging != null) {
-                this.PropertyChanging(this, new PropertyChangingEventArgs(propertyName));
-            }
-        }
-
-        protected TRet RaiseAndSetIfChanged<TRet>(
-            ref TRet backingField,
-            TRet newValue,
-            [CallerMemberName] string propertyName = null)
-        {
-            if (EqualityComparer<TRet>.Default.Equals(backingField, newValue)) {
-                return newValue;
-            }
-
-            this.OnPropertyChanging(propertyName);
-            backingField = newValue;
-            this.OnPropertyChanged(propertyName);
-            return newValue;
         }
 
         Control InitView(Control view)
