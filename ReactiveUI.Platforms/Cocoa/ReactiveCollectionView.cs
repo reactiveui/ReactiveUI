@@ -28,7 +28,6 @@ namespace ReactiveUI.Cocoa
         protected ReactiveCollectionView(NSObjectFlag t) : base(t) { setupRxObj(); }
         protected ReactiveCollectionView(NSCoder coder) : base(coder) { setupRxObj(); }
 
-        [IgnoreDataMember]
         public event PropertyChangingEventHandler PropertyChanging
         {
             add { PropertyChangingEventManager.AddHandler(this, value); }
@@ -40,7 +39,6 @@ namespace ReactiveUI.Cocoa
             PropertyChangingEventManager.DeliverEvent(this, args);
         }
 
-        [IgnoreDataMember]
         public event PropertyChangedEventHandler PropertyChanged
         {
             add { PropertyChangedEventManager.AddHandler(this, value); }

@@ -74,6 +74,11 @@ namespace ReactiveUI.Android
             remove { PropertyChangedEventManager.RemoveHandler(this, value); }
         }
 
+        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args)
+        {
+            PropertyChangedEventManager.DeliverEvent(this, args);
+        }
+
         /// <summary>
         /// Represents an Observable that fires *before* a property is about to
         /// be changed.         
