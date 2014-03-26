@@ -146,7 +146,6 @@ namespace ReactiveUI.Cocoa
             base.Dispose(disposing);
         }
 
-        [IgnoreDataMember]
         public event PropertyChangingEventHandler PropertyChanging
         {
             add { PropertyChangingEventManager.AddHandler(this, value); }
@@ -158,7 +157,6 @@ namespace ReactiveUI.Cocoa
             PropertyChangingEventManager.DeliverEvent(this, args);
         }
 
-        [IgnoreDataMember]
         public event PropertyChangedEventHandler PropertyChanged
         {
             add { PropertyChangedEventManager.AddHandler(this, value); }
