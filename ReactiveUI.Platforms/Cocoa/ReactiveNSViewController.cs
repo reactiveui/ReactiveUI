@@ -54,25 +54,27 @@ namespace ReactiveUI.Cocoa
         protected ReactiveViewController(string nibNameOrNull, NSBundle nibBundleOrNull) : base(nibNameOrNull, nibBundleOrNull)
         {
         }
-                
-        public event PropertyChangingEventHandler PropertyChanging;
 
-        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args) 
+        public event PropertyChangingEventHandler PropertyChanging
         {
-            var handler = PropertyChanging;
-            if (handler != null) {
-                handler(this, args);
-            }
+            add { PropertyChangingEventManager.AddHandler(this, value); }
+            remove { PropertyChangingEventManager.RemoveHandler(this, value); }
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args) 
+        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args)
         {
-            var handler = PropertyChanged;
-            if (handler != null) {
-                handler(this, args);
-            }
+            PropertyChangingEventManager.DeliverEvent(this, args);
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged
+        {
+            add { PropertyChangedEventManager.AddHandler(this, value); }
+            remove { PropertyChangedEventManager.RemoveHandler(this, value); }
+        }
+
+        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args)
+        {
+            PropertyChangedEventManager.DeliverEvent(this, args);
         }
 
         /// <summary>
