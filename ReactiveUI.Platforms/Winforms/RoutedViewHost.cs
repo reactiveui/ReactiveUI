@@ -10,7 +10,7 @@ using ReactiveUI;
 namespace ReactiveUI.Winforms
 {
     [DefaultProperty("ViewModel")]
-    public partial class RoutedViewHost : UserControl, INotifyPropertyChanged, INotifyPropertyChanging
+    public partial class RoutedViewHost : UserControl, IReactiveObject
     {
         readonly CompositeDisposable disposables = new CompositeDisposable();
 
@@ -63,8 +63,27 @@ namespace ReactiveUI.Winforms
             }, RxApp.DefaultExceptionHandler.OnNext));
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
-        public event PropertyChangingEventHandler PropertyChanging;
+        public event PropertyChangingEventHandler PropertyChanging
+        {
+            add { PropertyChangingEventManager.AddHandler(this, value); }
+            remove { PropertyChangingEventManager.RemoveHandler(this, value); }
+        }
+
+        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args)
+        {
+            PropertyChangingEventManager.DeliverEvent(this, args);
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged
+        {
+            add { PropertyChangedEventManager.AddHandler(this, value); }
+            remove { PropertyChangedEventManager.RemoveHandler(this, value); }
+        }
+
+        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args)
+        {
+            PropertyChangedEventManager.DeliverEvent(this, args);
+        }
 
         [Category("ReactiveUI")]
         [Description("The default control when no viewmodel is specified")]
@@ -101,36 +120,6 @@ namespace ReactiveUI.Winforms
             }
 
             base.Dispose(disposing);
-        }
-
-        protected virtual void OnPropertyChanged(string propertyName)
-        {
-            if (this.PropertyChanged != null) {
-                this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-            }
-        }
-
-        protected virtual void OnPropertyChanging(string propertyName)
-        {
-            if (this.PropertyChanging != null) {
-                this.PropertyChanging(this, new PropertyChangingEventArgs(propertyName));
-            }
-        }
-
-        protected TRet RaiseAndSetIfChanged<TRet>(
-            ref TRet backingField,
-            TRet newValue,
-            [CallerMemberName] string propertyName = null)
-        {
-            if (EqualityComparer<TRet>.Default.Equals(backingField, newValue)) {
-                return newValue;
-            }
-
-            this.OnPropertyChanging(propertyName);
-            backingField = newValue;
-            this.OnPropertyChanged(propertyName);
-
-            return newValue;
         }
 
         Control InitView(Control view)

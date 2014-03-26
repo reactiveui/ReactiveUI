@@ -26,26 +26,26 @@ namespace ReactiveUI
         public event NotifyCollectionChangedEventHandler CollectionChanging;
         public event NotifyCollectionChangedEventHandler CollectionChanged;
 
-        [field: IgnoreDataMember]
-        public event PropertyChangingEventHandler PropertyChanging;
-
-        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args) {
-            var handler = PropertyChanging;
-
-            if (handler != null) {
-                handler(this, args);
-            }
+        public event PropertyChangingEventHandler PropertyChanging
+        {
+            add { PropertyChangingEventManager.AddHandler(this, value); }
+            remove { PropertyChangingEventManager.RemoveHandler(this, value); }
         }
 
-        [field: IgnoreDataMember]
-        public event PropertyChangedEventHandler PropertyChanged;
+        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args)
+        {
+            PropertyChangingEventManager.DeliverEvent(this, args);
+        }
 
-        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args) {
-            var handler = PropertyChanged;
+        public event PropertyChangedEventHandler PropertyChanged
+        {
+            add { PropertyChangedEventManager.AddHandler(this, value); }
+            remove { PropertyChangedEventManager.RemoveHandler(this, value); }
+        }
 
-            if (handler != null) {
-                handler(this, args);
-            }
+        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args)
+        {
+            PropertyChangedEventManager.DeliverEvent(this, args);
         }
 
         [IgnoreDataMember] Subject<NotifyCollectionChangedEventArgs> _changing;

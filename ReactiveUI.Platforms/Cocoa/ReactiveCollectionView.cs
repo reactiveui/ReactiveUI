@@ -28,24 +28,28 @@ namespace ReactiveUI.Cocoa
         protected ReactiveCollectionView(NSObjectFlag t) : base(t) { setupRxObj(); }
         protected ReactiveCollectionView(NSCoder coder) : base(coder) { setupRxObj(); }
 
-        public event PropertyChangingEventHandler PropertyChanging;
-
-        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args) 
+        [IgnoreDataMember]
+        public event PropertyChangingEventHandler PropertyChanging
         {
-            var handler = PropertyChanging;
-            if (handler != null) {
-                handler(this, args);
-            }
+            add { PropertyChangingEventManager.AddHandler(this, value); }
+            remove { PropertyChangingEventManager.RemoveHandler(this, value); }
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args) 
+        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args)
         {
-            var handler = PropertyChanged;
-            if (handler != null) {
-                handler(this, args);
-            }
+            PropertyChangingEventManager.DeliverEvent(this, args);
+        }
+
+        [IgnoreDataMember]
+        public event PropertyChangedEventHandler PropertyChanged
+        {
+            add { PropertyChangedEventManager.AddHandler(this, value); }
+            remove { PropertyChangedEventManager.RemoveHandler(this, value); }
+        }
+
+        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args)
+        {
+            PropertyChangedEventManager.DeliverEvent(this, args);
         }
 
         /// <summary>
