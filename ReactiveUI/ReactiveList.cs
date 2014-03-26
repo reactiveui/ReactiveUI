@@ -23,8 +23,17 @@ namespace ReactiveUI
     [DebuggerTypeProxy(typeof(CollectionDebugView<>))]
     public class ReactiveList<T> : IReactiveList<T>, IReadOnlyReactiveList<T>, IList
     {
-        public event NotifyCollectionChangedEventHandler CollectionChanging;
-        public event NotifyCollectionChangedEventHandler CollectionChanged;
+        public event NotifyCollectionChangedEventHandler CollectionChanging
+        {
+            add { CollectionChangingEventManager.AddHandler(this, value); }
+            remove { CollectionChangingEventManager.RemoveHandler(this, value); }
+        }
+
+        public event NotifyCollectionChangedEventHandler CollectionChanged
+        {
+            add { CollectionChangedEventManager.AddHandler(this, value); }
+            remove { CollectionChangedEventManager.RemoveHandler(this, value); }
+        }
 
         public event PropertyChangingEventHandler PropertyChanging
         {
@@ -482,7 +491,7 @@ namespace ReactiveUI
         {
             Interlocked.Increment(ref _resetNotificationCount);
 
-            if (!_hasWhinedAboutNoResetSub && _resetSubCount == 0 && CollectionChanged == null) {
+            if (!_hasWhinedAboutNoResetSub && _resetSubCount == 0) {
                 LogHost.Default.Warn("SuppressChangeNotifications was called (perhaps via AddRange), yet you do not");
                 LogHost.Default.Warn("have a subscription to ShouldReset. This probably isn't what you want, as ItemsAdded");
                 LogHost.Default.Warn("and friends will appear to 'miss' items");
@@ -605,20 +614,12 @@ namespace ReactiveUI
 
         protected virtual void raiseCollectionChanging(NotifyCollectionChangedEventArgs e)
         {
-            var handler = this.CollectionChanging;
-
-            if(handler != null) {
-                handler(this, e);
-            }
+            CollectionChangingEventManager.DeliverEvent(this, e);
         }
 
         protected virtual void raiseCollectionChanged(NotifyCollectionChangedEventArgs e)
         {
-            var handler = this.CollectionChanged;
-
-            if (handler != null) {
-                handler(this, e);
-            }
+            CollectionChangedEventManager.DeliverEvent(this, e);
         }
 
         #region Super Boring IList crap
