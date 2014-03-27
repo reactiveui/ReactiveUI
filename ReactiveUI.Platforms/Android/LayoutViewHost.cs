@@ -98,31 +98,24 @@ namespace ReactiveUI.Android
             get { return _ViewModel; }
             set { _ViewModel = (TViewModel)value; }
         }
-                
-        [field: IgnoreDataMember]
-        public event PropertyChangingEventHandler PropertyChanging;
 
-        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args)
-        {
-            var handler = PropertyChanging;
-
-            if (handler != null)
-            {
-                handler(this, args);
-            }
+        public event PropertyChangingEventHandler PropertyChanging {
+            add { PropertyChangingEventManager.AddHandler(this, value); }
+            remove { PropertyChangingEventManager.RemoveHandler(this, value); }
         }
 
-        [field: IgnoreDataMember]
-        public event PropertyChangedEventHandler PropertyChanged;
+        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args) {
+            PropertyChangingEventManager.DeliverEvent(this, args);
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged {
+            add { PropertyChangedEventManager.AddHandler(this, value); }
+            remove { PropertyChangedEventManager.RemoveHandler(this, value); }
+        }
 
         void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args)
         {
-            var handler = PropertyChanged;
-
-            if (handler != null)
-            {
-                handler(this, args);
-            }
+            PropertyChangedEventManager.DeliverEvent(this, args);
         }
 
         /// <summary>

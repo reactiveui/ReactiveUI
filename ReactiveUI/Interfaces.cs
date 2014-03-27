@@ -264,7 +264,7 @@ namespace ReactiveUI
     /// It is important to implement the Changing/Changed from
     /// IReactiveNotifyPropertyChanged semantically as "Fire when *anything* in
     /// the collection or any of its items have changed, in any way".
-    public interface IReactiveCollection<out T> : IReactiveNotifyCollectionChanged<T>, IReactiveNotifyCollectionItemChanged<T>, IEnumerable<T>, INotifyCollectionChanged, IReactiveObject
+    public interface IReactiveCollection<out T> : IReactiveNotifyCollectionChanged<T>, IReactiveNotifyCollectionItemChanged<T>, IEnumerable<T>, INotifyCollectionChanged, INotifyCollectionChanging, IReactiveObject
     {
         void Reset();
     }
