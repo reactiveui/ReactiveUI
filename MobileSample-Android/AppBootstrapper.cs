@@ -3,7 +3,7 @@ using ReactiveUI;
 using ReactiveUI.Mobile;
 using Splat;
 
-namespace AndroidPlayground
+namespace MobileSample_Android
 {
     public class AppBootstrapper : IApplicationRootState
     {

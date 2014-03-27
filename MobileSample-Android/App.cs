@@ -5,7 +5,7 @@ using System.Linq;
 using ReactiveUI.Mobile;
 using Splat;
 
-namespace AndroidPlayground
+namespace MobileSample_Android
 {
     public class App
     {
