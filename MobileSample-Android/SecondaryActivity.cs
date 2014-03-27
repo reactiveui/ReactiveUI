@@ -14,7 +14,7 @@ using ReactiveUI.Mobile;
 using System.ComponentModel;
 using Splat;
 
-namespace AndroidPlayground
+namespace MobileSample_Android
 {
     [Activity (Label = "SecondaryActivity")]
     public class SecondaryView : ReactiveActivity<SecondaryViewModel>

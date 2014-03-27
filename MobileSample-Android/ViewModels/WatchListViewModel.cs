@@ -6,7 +6,7 @@ using System.Text;
 using System.Windows.Input;
 using ReactiveUI;
 
-namespace AndroidPlayground.ViewModels
+namespace MobileSample_Android.ViewModels
 {
     // borrowed from https://github.com/SignalR/SignalR-StockTicker/blob/master/SignalR.StockTicker/SignalR.StockTicker/SignalR.StockTicker/StockTicker.cs
 

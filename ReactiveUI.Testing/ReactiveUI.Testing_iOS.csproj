@@ -2,7 +2,7 @@
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <Platform Condition=" '$(Platform)' == '' ">iPhoneSimulator</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{90913370-9E94-3DBD-8F1E-15E10DB72FFC}</ProjectGuid>
@@ -20,27 +20,31 @@
     <Optimize>False</Optimize>
     <OutputPath>bin\Debug\Monotouch</OutputPath>
     <IntermediateOutputPath>obj\Debug\Monotouch</IntermediateOutputPath>
-    <DefineConstants>DEBUG; MONO; UIKIT</DefineConstants>
+    <DefineConstants>DEBUG;MONO;UIKIT</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>False</ConsolePause>
+    <MtouchDebug>true</MtouchDebug>
+    <CodesignKey>iPhone Developer</CodesignKey>
+    <DocumentationFile>
+    </DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
+    <DebugType>none</DebugType>
     <Optimize>True</Optimize>
     <OutputPath>bin\Release\Monotouch</OutputPath>
     <IntermediateOutputPath>obj\Release\Monotouch</IntermediateOutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>False</ConsolePause>
-    <DefineConstants>MONO; UIKIT</DefineConstants>
+    <DefineConstants>MONO;UIKIT</DefineConstants>
     <DocumentationFile>bin\Release\Monotouch\ReactiveUI.Testing.XML</DocumentationFile>
-    <DebugSymbols>true</DebugSymbols>
     <GenerateDocumentation>True</GenerateDocumentation>
+    <CodesignKey>iPhone Developer</CodesignKey>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Newtonsoft.Json">
-      <HintPath>..\ext\monodroid\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\ext\ios\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
@@ -68,13 +72,13 @@
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.MonoTouch.CSharp.targets" />
   <ItemGroup>
-    <ProjectReference Include="..\ReactiveUI.Platforms\ReactiveUI.Cocoa_Monotouch.csproj">
-      <Project>{9091337A-9E94-4DBD-801E-15E1FDA78FFC}</Project>
-      <Name>ReactiveUI.Cocoa_Monotouch</Name>
+    <ProjectReference Include="..\Microsoft.Reactive.Testing\Microsoft.Reactive.Testing_iOS.csproj">
+      <Project>{74ba5b4e-257a-42a7-bdab-1fb40a903909}</Project>
+      <Name>Microsoft.Reactive.Testing_iOS</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Microsoft.Reactive.Testing\Microsoft.Reactive.Testing_Monotouch.csproj">
-      <Project>{74BA5B4E-257A-42A7-BDAB-1FB40A903909}</Project>
-      <Name>Microsoft.Reactive.Testing_Monotouch</Name>
+    <ProjectReference Include="..\ReactiveUI.Platforms\ReactiveUI.iOS.csproj">
+      <Project>{9091337a-9e94-4dbd-801e-15e1fda78ffc}</Project>
+      <Name>ReactiveUI.iOS</Name>
     </ProjectReference>
     <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj">
       <Project>{464CB812-F99F-401B-BE4C-E8F0515CD19D}</Project>
