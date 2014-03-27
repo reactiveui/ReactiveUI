@@ -29,8 +29,7 @@ namespace ReactiveUI.Cocoa
         public ReactiveTableViewCell(UITableViewCellStyle style, NSString reuseIdentifier) : base(style, reuseIdentifier) { setupRxObj(); }
         public ReactiveTableViewCell(RectangleF frame) : base (frame) { setupRxObj(); }
 
-        public event PropertyChangingEventHandler PropertyChanging
-        {
+        public event PropertyChangingEventHandler PropertyChanging {
             add { PropertyChangingEventManager.AddHandler(this, value); }
             remove { PropertyChangingEventManager.RemoveHandler(this, value); }
         }
@@ -40,8 +39,7 @@ namespace ReactiveUI.Cocoa
             PropertyChangingEventManager.DeliverEvent(this, args);
         }
 
-        public event PropertyChangedEventHandler PropertyChanged
-        {
+        public event PropertyChangedEventHandler PropertyChanged {
             add { PropertyChangedEventManager.AddHandler(this, value); }
             remove { PropertyChangedEventManager.RemoveHandler(this, value); }
         }
