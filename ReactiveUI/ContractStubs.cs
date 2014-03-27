@@ -20,15 +20,11 @@ namespace ReactiveUI
     	PropertyChangingEventArgs e
     );
 
-    public interface INotifyPropertyChanging 
-    {
+    public interface INotifyPropertyChanging {
         event PropertyChangingEventHandler PropertyChanging;
     }
 
-
-
-    public interface INotifyCollectionChanging
-    {
+    public interface INotifyCollectionChanging {
         event NotifyCollectionChangedEventHandler CollectionChanging;
     }
 }

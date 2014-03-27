@@ -7,7 +7,7 @@ using System.Reactive;
 
 namespace ReactiveUI.Cocoa
 {
-    public class ReactiveWindowController : NSWindowController, IReactiveNotifyPropertyChanged, IHandleObservableErrors, IReactiveObject, ICanActivate
+    public class ReactiveWindowController : NSWindowController, IReactiveNotifyPropertyChanged<ReactiveWindowController>, IHandleObservableErrors, IReactiveObject, ICanActivate
     {
         protected ReactiveWindowController(NSWindow window) : base(window) { setupRxObj(); }
         protected ReactiveWindowController(string windowNibName) : base(windowNibName) { setupRxObj(); }
@@ -41,14 +41,14 @@ namespace ReactiveUI.Cocoa
         /// Represents an Observable that fires *before* a property is about to
         /// be changed.         
         /// </summary>
-        public IObservable<IObservedChange<object, object>> Changing {
+        public IObservable<IObservedChange<ReactiveWindowController, object>> Changing {
             get { return this.getChangingObservable(); }
         }
 
         /// <summary>
         /// Represents an Observable that fires *after* a property has changed.
         /// </summary>
-        public IObservable<IObservedChange<object, object>> Changed {
+        public IObservable<IObservedChange<ReactiveWindowController, object>> Changed {
             get { return this.getChangedObservable(); }
         }
 
@@ -56,7 +56,6 @@ namespace ReactiveUI.Cocoa
 
         void setupRxObj()
         {
-            this.setupReactiveExtension();
         }
 
         /// <summary>
