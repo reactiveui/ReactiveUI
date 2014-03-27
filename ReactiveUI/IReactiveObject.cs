@@ -22,29 +22,29 @@ namespace ReactiveUI
     }
 
     [Preserve(AllMembers = true)]
-    internal static class IReactiveObjectExtensions
+    public static class IReactiveObjectExtensions
     {
         static ConditionalWeakTable<IReactiveObject, IExtensionState<IReactiveObject>> state = new ConditionalWeakTable<IReactiveObject, IExtensionState<IReactiveObject>>();
         
-        public static IObservable<IObservedChange<TSender, object>> getChangedObservable<TSender>(this TSender This) where TSender : IReactiveObject
+        internal static IObservable<IObservedChange<TSender, object>> getChangedObservable<TSender>(this TSender This) where TSender : IReactiveObject
         {
             var val = state.GetValue(This, key => (IExtensionState<IReactiveObject>)new ExtensionState<TSender>(This));
             return val.Changed.Cast<IObservedChange<TSender, object>>();
         }
 
-        public static IObservable<IObservedChange<TSender, object>> getChangingObservable<TSender>(this TSender This) where TSender : IReactiveObject 
+        internal static IObservable<IObservedChange<TSender, object>> getChangingObservable<TSender>(this TSender This) where TSender : IReactiveObject 
         {
             var val = state.GetValue(This, key => (IExtensionState<IReactiveObject>)new ExtensionState<TSender>(This));
             return val.Changing.Cast<IObservedChange<TSender, object>>();
         }
 
-        public static IObservable<Exception> getThrownExceptionsObservable<TSender>(this TSender This) where TSender : IReactiveObject 
+        internal static IObservable<Exception> getThrownExceptionsObservable<TSender>(this TSender This) where TSender : IReactiveObject 
         {
             var s = state.GetValue(This, key => (IExtensionState<IReactiveObject>)new ExtensionState<TSender>(This));
             return s.ThrownExceptions;
         }
 
-        public static void raisePropertyChanging<TSender>(this TSender This, string propertyName) where TSender : IReactiveObject 
+        internal static void raisePropertyChanging<TSender>(this TSender This, string propertyName) where TSender : IReactiveObject 
         {
             Contract.Requires(propertyName != null);
 
@@ -53,7 +53,7 @@ namespace ReactiveUI
             s.raisePropertyChanging(propertyName);
         }
 
-        public static void raisePropertyChanged<TSender>(this TSender This, string propertyName) where TSender : IReactiveObject 
+        internal static void raisePropertyChanged<TSender>(this TSender This, string propertyName) where TSender : IReactiveObject 
         {
             Contract.Requires(propertyName != null);
 
@@ -62,14 +62,14 @@ namespace ReactiveUI
             s.raisePropertyChanged(propertyName);
         }
 
-        public static IDisposable suppressChangeNotifications<TSender>(this TSender This) where TSender : IReactiveObject
+        internal static IDisposable suppressChangeNotifications<TSender>(this TSender This) where TSender : IReactiveObject
         {
             var s = state.GetValue(This, key => (IExtensionState<IReactiveObject>)new ExtensionState<TSender>(This));
 
             return s.suppressChangeNotifications();
         }
 
-        public static bool areChangeNotificationsEnabled<TSender>(this TSender This) where TSender : IReactiveObject
+        internal static bool areChangeNotificationsEnabled<TSender>(this TSender This) where TSender : IReactiveObject
         {
             var s = state.GetValue(This, key => (IExtensionState<IReactiveObject>)new ExtensionState<TSender>(This));
 
