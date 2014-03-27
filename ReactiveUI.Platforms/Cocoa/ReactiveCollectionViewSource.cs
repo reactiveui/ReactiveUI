@@ -19,17 +19,17 @@ using Splat;
 
 namespace ReactiveUI.Cocoa
 {
-    public class CollectionViewSectionInformation : ISectionInformation<UICollectionView, UICollectionViewCell>
+    public class CollectionViewSectionInformation<TSource> : ISectionInformation<TSource, UICollectionView, UICollectionViewCell>
     {
-        public IReactiveNotifyCollectionChanged<object> Collection { get; protected set; }
+        public IReactiveNotifyCollectionChanged<TSource> Collection { get; protected set; }
         public Action<UICollectionViewCell> InitializeCellAction { get; protected set; }
         public Func<object, NSString> CellKeySelector { get; protected set; }
     }
 
-    public class CollectionViewSectionInformation<TCell> : CollectionViewSectionInformation
+    public class CollectionViewSectionInformation<TSource, TCell> : CollectionViewSectionInformation<TSource>
         where TCell : UICollectionViewCell
     {
-        public CollectionViewSectionInformation(IReactiveNotifyCollectionChanged<object> collection, Func<object, NSString> cellKeySelector, Action<TCell> initializeCellAction = null)
+        public CollectionViewSectionInformation(IReactiveNotifyCollectionChanged<TSource> collection, Func<object, NSString> cellKeySelector, Action<TCell> initializeCellAction = null)
         {
             Collection = collection;
             CellKeySelector = cellKeySelector;
@@ -39,7 +39,7 @@ namespace ReactiveUI.Cocoa
             }
         }
 
-        public CollectionViewSectionInformation(IReactiveNotifyCollectionChanged<object> collection, NSString cellKey, Action<TCell> initializeCellAction = null)
+        public CollectionViewSectionInformation(IReactiveNotifyCollectionChanged<TSource> collection, NSString cellKey, Action<TCell> initializeCellAction = null)
             : this(collection, _ => cellKey, initializeCellAction)
         {
         }
@@ -63,18 +63,18 @@ namespace ReactiveUI.Cocoa
         }
     }
 
-    public class ReactiveCollectionViewSource : UICollectionViewSource, IEnableLogger, IDisposable, IReactiveNotifyPropertyChanged<ReactiveCollectionViewSource>, IHandleObservableErrors, IReactiveObject
+    public class ReactiveCollectionViewSource<TSource> : UICollectionViewSource, IEnableLogger, IDisposable, IReactiveNotifyPropertyChanged<ReactiveCollectionViewSource<TSource>>, IHandleObservableErrors, IReactiveObject
     {
-        readonly CommonReactiveSource<UICollectionView, UICollectionViewCell, CollectionViewSectionInformation> commonSource;
+        readonly CommonReactiveSource<TSource, UICollectionView, UICollectionViewCell, CollectionViewSectionInformation<TSource>> commonSource;
         readonly Subject<object> elementSelected = new Subject<object>();
 
-        public ReactiveCollectionViewSource(UICollectionView collectionView, IReactiveNotifyCollectionChanged<object> collection, NSString cellKey, Action<UICollectionViewCell> initializeCellAction = null)
+        public ReactiveCollectionViewSource(UICollectionView collectionView, IReactiveNotifyCollectionChanged<TSource> collection, NSString cellKey, Action<UICollectionViewCell> initializeCellAction = null)
             : this(collectionView) {
-            this.Data = new[] { new CollectionViewSectionInformation<UICollectionViewCell>(collection, cellKey, initializeCellAction) };
+            this.Data = new[] { new CollectionViewSectionInformation<TSource, UICollectionViewCell>(collection, cellKey, initializeCellAction) };
         }
 
         [Obsolete("Please bind your view model to the Data property.")]
-        public ReactiveCollectionViewSource(UICollectionView collectionView, IReadOnlyList<CollectionViewSectionInformation> sectionInformation)
+        public ReactiveCollectionViewSource(UICollectionView collectionView, IReadOnlyList<CollectionViewSectionInformation<TSource>> sectionInformation)
             : this(collectionView) {
             this.Data = sectionInformation;
         }
@@ -82,7 +82,7 @@ namespace ReactiveUI.Cocoa
         public ReactiveCollectionViewSource(UICollectionView collectionView) {
             setupRxObj();
             var adapter = new UICollectionViewAdapter(collectionView);
-            this.commonSource = new CommonReactiveSource<UICollectionView, UICollectionViewCell, CollectionViewSectionInformation>(adapter);
+            this.commonSource = new CommonReactiveSource<TSource, UICollectionView, UICollectionViewCell, CollectionViewSectionInformation<TSource>>(adapter);
         }
 
         /// <summary>
@@ -93,7 +93,8 @@ namespace ReactiveUI.Cocoa
         /// then the source will react to changes to the contents of the list as well.
         /// </summary>
         /// <value>The data.</value>
-        public IReadOnlyList<CollectionViewSectionInformation> Data {
+        public IReadOnlyList<CollectionViewSectionInformation<TSource>> Data
+        {
             get { return commonSource.SectionInfo; }
             set {
                 if (commonSource.SectionInfo == value)  return;
@@ -149,7 +150,7 @@ namespace ReactiveUI.Cocoa
         public event PropertyChangingEventHandler PropertyChanging;
 
         void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args) 
-	{
+	    {
             var handler = PropertyChanging;
             if (handler != null) {
                 handler(this, args);
@@ -169,14 +170,14 @@ namespace ReactiveUI.Cocoa
         /// Represents an Observable that fires *before* a property is about to
         /// be changed.
         /// </summary>
-        public IObservable<IObservedChange<ReactiveCollectionViewSource, object>> Changing {
+        public IObservable<IObservedChange<ReactiveCollectionViewSource<TSource>, object>> Changing {
             get { return this.getChangingObservable(); }
         }
 
         /// <summary>
         /// Represents an Observable that fires *after* a property has changed.
         /// </summary>
-        public IObservable<IObservedChange<ReactiveCollectionViewSource, object>> Changed {
+        public IObservable<IObservedChange<ReactiveCollectionViewSource<TSource>, object>> Changed {
             get { return this.getChangedObservable(); }
         }
 
@@ -218,13 +219,13 @@ namespace ReactiveUI.Cocoa
         /// <param name="initSource">Optionally initializes some property of
         /// the <see cref="ReactiveCollectionViewSource"/>.</param>
         /// <typeparam name="TCell">Type of the <see cref="UICollectionViewCell"/>.</typeparam>
-        public static IDisposable BindTo<TCell>(
-            this IObservable<IReadOnlyList<CollectionViewSectionInformation<TCell>>> sectionsObservable,
+        public static IDisposable BindTo<TSource, TCell>(
+            this IObservable<IReadOnlyList<CollectionViewSectionInformation<TSource, TCell>>> sectionsObservable,
             UICollectionView collectionView,
-            Func<ReactiveCollectionViewSource, IDisposable> initSource = null)
+            Func<ReactiveCollectionViewSource<TSource>, IDisposable> initSource = null)
             where TCell : UICollectionViewCell
         {
-            var source = new ReactiveCollectionViewSource(collectionView);
+            var source = new ReactiveCollectionViewSource<TSource>(collectionView);
             if (initSource != null) initSource(source);
             var bind = sectionsObservable.BindTo(source, x => x.Data);
             collectionView.Source = source;
@@ -243,19 +244,19 @@ namespace ReactiveUI.Cocoa
         /// <param name="initSource">Optionally initializes some property of
         /// the <see cref="ReactiveCollectionViewSource"/>.</param>
         /// <typeparam name="TCell">Type of the <see cref="UICollectionViewCell"/>.</typeparam>
-        public static IDisposable BindTo<TCell>(
-            this IObservable<IReactiveNotifyCollectionChanged<object>> sourceObservable,
+        public static IDisposable BindTo<TSource,TCell>(
+            this IObservable<IReactiveNotifyCollectionChanged<TSource>> sourceObservable,
             UICollectionView collectionView,
             NSString cellKey,
             Action<TCell> initializeCellAction = null,
-            Func<ReactiveCollectionViewSource, IDisposable> initSource = null)
+            Func<ReactiveCollectionViewSource<TSource>, IDisposable> initSource = null)
             where TCell : UICollectionViewCell
         {
             return sourceObservable
                 .Select(
                     src => new[]
                     {
-                        new CollectionViewSectionInformation<TCell>(
+                        new CollectionViewSectionInformation<TSource, TCell>(
                             src,
                             cellKey,
                             initializeCellAction)
@@ -276,11 +277,11 @@ namespace ReactiveUI.Cocoa
         /// <param name="initSource">Optionally initializes some property of
         /// the <see cref="ReactiveCollectionViewSource"/>.</param>
         /// <typeparam name="TCell">Type of the <see cref="UICollectionViewCell"/>.</typeparam>
-        public static IDisposable BindTo<TCell>(
-            this IObservable<IReactiveNotifyCollectionChanged<object>> sourceObservable,
+        public static IDisposable BindTo<TSource, TCell>(
+            this IObservable<IReactiveNotifyCollectionChanged<TSource>> sourceObservable,
             UICollectionView collectionView,
             Action<TCell> initializeCellAction = null,
-            Func<ReactiveCollectionViewSource, IDisposable> initSource = null)
+            Func<ReactiveCollectionViewSource<TSource>, IDisposable> initSource = null)
             where TCell : UICollectionViewCell
         {
             var type = typeof(TCell);
