@@ -40,23 +40,23 @@ namespace ReactiveUI
     /// <typeparam name="TEventArgs">The type of the event arguments.</typeparam>
     public class WeakEventManager<TEventSource, TEventHandler, TEventArgs>
     {
-        private static readonly object StaticSource = new object();
+        static readonly object StaticSource = new object();
 
         /// <summary>
         /// Mapping between the target of the delegate (for example a Button) and the handler (EventHandler).
         /// Windows Phone needs this, otherwise the event handler gets garbage collected.
         /// </summary>
-        private ConditionalWeakTable<object, IList<Delegate>> targetToEventHandler = new ConditionalWeakTable<object, IList<Delegate>>();
+        ConditionalWeakTable<object, List<Delegate>> targetToEventHandler = new ConditionalWeakTable<object, List<Delegate>>();
 
         /// <summary>
         /// Mapping from the source of the event to the list of handlers. This is a CWT to ensure it does not leak the source of the event.
         /// </summary>
-        private ConditionalWeakTable<object, IList<WeakHandler>> sourceToWeakHandlers = new ConditionalWeakTable<object, IList<WeakHandler>>();
+        ConditionalWeakTable<object, List<WeakHandler>> sourceToWeakHandlers = new ConditionalWeakTable<object, List<WeakHandler>>();
 
-        private static Lazy<WeakEventManager<TEventSource, TEventHandler, TEventArgs>> current = new Lazy<WeakEventManager<TEventSource, TEventHandler, TEventArgs>>(() => new WeakEventManager<TEventSource, TEventHandler, TEventArgs>());
+        static Lazy<WeakEventManager<TEventSource, TEventHandler, TEventArgs>> current = 
+            new Lazy<WeakEventManager<TEventSource, TEventHandler, TEventArgs>>(() => new WeakEventManager<TEventSource, TEventHandler, TEventArgs>());
 
-        private static WeakEventManager<TEventSource, TEventHandler, TEventArgs> Current
-        {
+        static WeakEventManager<TEventSource, TEventHandler, TEventArgs> Current {
             get { return current.Value; }
         }
 
@@ -73,26 +73,16 @@ namespace ReactiveUI
         /// </summary>
         /// <param name="source">The source.</param>
         /// <param name="handler">The handler.</param>
-        /// <exception cref="System.ArgumentNullException">
-        /// source
-        /// or
-        /// handler
-        /// </exception>
-        /// <exception cref="System.ArgumentException">handler must be Delegate type</exception>
         public static void AddHandler(TEventSource source, TEventHandler handler)
         {
-            if (source == null)
-            {
-                throw new ArgumentNullException("source");
-            }
-            if (handler == null)
-            {
-                throw new ArgumentNullException("handler");
-            }
+            if (source == null) throw new ArgumentNullException("source");
+            if (handler == null) throw new ArgumentNullException("handler");
+
             if (!typeof(TEventHandler).GetTypeInfo().IsSubclassOf(typeof(Delegate)))
             {
-                throw new ArgumentException("handler must be Delegate type");
+                throw new ArgumentException("Handler must be Delegate type");
             }
+
             WeakEventManager<TEventSource, TEventHandler, TEventArgs>.Current.PrivateAddHandler(source, handler);
         }
 
@@ -101,26 +91,16 @@ namespace ReactiveUI
         /// </summary>
         /// <param name="source">The source.</param>
         /// <param name="handler">The handler.</param>
-        /// <exception cref="System.ArgumentNullException">
-        /// source
-        /// or
-        /// handler
-        /// </exception>
-        /// <exception cref="System.ArgumentException">handler must be Delegate type</exception>
         public static void RemoveHandler(TEventSource source, TEventHandler handler)
         {
-            if (source == null)
-            {
-                throw new ArgumentNullException("source");
-            }
-            if (handler == null)
-            {
-                throw new ArgumentNullException("handler");
-            }
+            if (source == null) throw new ArgumentNullException("source");
+            if (handler == null) throw new ArgumentNullException("handler");
+
             if (!typeof(TEventHandler).GetTypeInfo().IsSubclassOf(typeof(Delegate)))
             {
                 throw new ArgumentException("handler must be Delegate type");
             }
+
             WeakEventManager<TEventSource, TEventHandler, TEventArgs>.Current.PrivateRemoveHandler(source, handler);
         }
 
@@ -150,34 +130,33 @@ namespace ReactiveUI
         {
         }
 
-        private void PrivateAddHandler(TEventSource source, TEventHandler handler)
+        void PrivateAddHandler(TEventSource source, TEventHandler handler)
         {
             this.AddWeakHandler(source, handler);
             this.AddTargetHandler(handler);
         }
 
-        private void AddWeakHandler(TEventSource source, TEventHandler handler)
+        void AddWeakHandler(TEventSource source, TEventHandler handler)
         {
             WeakHandler handlerSink = new WeakHandler(source, handler);
-            IList<WeakHandler> weakHandlers;
-            if (this.sourceToWeakHandlers.TryGetValue(source, out weakHandlers))
-            {
+            List<WeakHandler> weakHandlers;
+            if (this.sourceToWeakHandlers.TryGetValue(source, out weakHandlers)) {
                 weakHandlers.Add(handlerSink);
-            }
-            else
-            {
+            } else {
                 weakHandlers = new List<WeakHandler>();
                 weakHandlers.Add(handlerSink);
+
                 this.sourceToWeakHandlers.Add(source, weakHandlers);
                 this.StartListening(source);
             }
         }
 
-        private void AddTargetHandler(TEventHandler handler)
+        void AddTargetHandler(TEventHandler handler)
         {
-            Delegate @delegate = handler as Delegate;
+            var @delegate = handler as Delegate;
             object key = @delegate.Target ?? WeakEventManager<TEventSource, TEventHandler, TEventArgs>.StaticSource;
-            IList<Delegate> delegates;
+            List<Delegate> delegates;
+
             if (this.targetToEventHandler.TryGetValue(key, out delegates))
             {
                 delegates.Add(@delegate);
@@ -186,94 +165,91 @@ namespace ReactiveUI
             {
                 delegates = new List<Delegate>();
                 delegates.Add(@delegate);
+
                 this.targetToEventHandler.Add(key, delegates);
             }
         }
 
-        private void PrivateRemoveHandler(TEventSource source, TEventHandler handler)
+        void PrivateRemoveHandler(TEventSource source, TEventHandler handler)
         {
             this.RemoveWeakHandler(source, handler);
             this.RemoveTargetHandler(handler);
         }
 
-        private void RemoveWeakHandler(TEventSource source, TEventHandler handler)
+        void RemoveWeakHandler(TEventSource source, TEventHandler handler)
         {
-            IList<WeakHandler> weakHandlers;
-            if (this.sourceToWeakHandlers.TryGetValue(source, out weakHandlers))
-            {
-                foreach (WeakHandler weakHandler in weakHandlers)
-                {
-                    if (weakHandler.Matches(source, handler))
-                    {
-                        weakHandlers.Remove(weakHandler);
-                        if (weakHandlers.Count == 0)
-                        {
-                            this.sourceToWeakHandlers.Remove(source);
-                            this.StopListening(source);
-                        }
-                        break;
-                    }
+            var weakHandlers = default(List<WeakHandler>);
+
+            if (!this.sourceToWeakHandlers.TryGetValue(source, out weakHandlers)) return;
+
+            foreach (var weakHandler in weakHandlers) {
+                if (!weakHandler.Matches(source, handler)) continue;
+
+                weakHandlers.Remove(weakHandler);
+
+                if (weakHandlers.Count == 0) {
+                    this.sourceToWeakHandlers.Remove(source);
+                    this.StopListening(source);
                 }
+
+                break;
             }
         }
 
-        private void RemoveTargetHandler(TEventHandler handler)
+        void RemoveTargetHandler(TEventHandler handler)
         {
-            Delegate @delegate = handler as Delegate;
+            var @delegate = handler as Delegate;
             object key = @delegate.Target ?? WeakEventManager<TEventSource, TEventHandler, TEventArgs>.StaticSource;
-            IList<Delegate> delegates;
-            if (this.targetToEventHandler.TryGetValue(key, out delegates))
-            {
+
+            var delegates = default(List<Delegate>);
+            if (this.targetToEventHandler.TryGetValue(key, out delegates)) {
                 delegates.Remove(@delegate);
-                if (delegates.Count == 0)
-                {
+
+                if (delegates.Count == 0) {
                     this.targetToEventHandler.Remove(key);
                 }
             }
         }
 
-        private void PrivateDeliverEvent(object sender, TEventArgs args)
+        void PrivateDeliverEvent(object sender, TEventArgs args)
         {
             object source = sender != null ? sender : WeakEventManager<TEventSource, TEventHandler, TEventArgs>.StaticSource;
-            IList<WeakHandler> weakHandlers;
-            if (this.sourceToWeakHandlers.TryGetValue(source, out weakHandlers))
-            {
+            var weakHandlers = default(List<WeakHandler>);
+
+            if (this.sourceToWeakHandlers.TryGetValue(source, out weakHandlers)) {
                 this.DeliverEventToList(source, args, weakHandlers);
             }
         }
 
-        protected virtual void DeliverEventToList(object sender, TEventArgs args, IList<WeakHandler> list)
+        protected virtual void DeliverEventToList(object sender, TEventArgs args, List<WeakHandler> list)
         {
-            foreach (var handler in list)
-            {
-                if (handler.IsActive)
-                {
-                    Delegate @delegate = handler.Handler as Delegate;
+            foreach (var handler in list) {
+                if (handler.IsActive) {
+                    var @delegate = handler.Handler as Delegate;
                     @delegate.DynamicInvoke(sender, args);
                 }
             }
+
             this.Purge(sender, list);
         }
 
-        protected virtual void Purge(object sender, IList<WeakHandler> list)
+        protected virtual void Purge(object sender, List<WeakHandler> list)
         {
-            IList<WeakHandler> inActive = null;
-            foreach (var handler in list)
-            {
-                if (!handler.IsActive)
-                {
+            var inActive = default(List<WeakHandler>);
+
+            foreach (var handler in list) {
+                if (!handler.IsActive) {
                     if (inActive == null) inActive = new List<WeakHandler>();
                     inActive.Add(handler);
                 }
             }
-            if (inActive != null)
-            {
-                foreach (var handler in inActive)
-                {
+
+            if (inActive != null) {
+                foreach (var handler in inActive) {
                     list.Remove(handler);
                 }
-                if (list.Count == 0)
-                {
+
+                if (list.Count == 0) {
                     this.sourceToWeakHandlers.Remove(sender);
                 }
             }
@@ -281,24 +257,18 @@ namespace ReactiveUI
 
         protected class WeakHandler
         {
-            private WeakReference source;
-            private WeakReference originalHandler;
+            WeakReference source;
+            WeakReference originalHandler;
 
-            public bool IsActive
-            {
+            public bool IsActive {
                 get { return this.source != null && this.source.IsAlive && this.originalHandler != null && this.originalHandler.IsAlive; }
             }
 
-            public TEventHandler Handler
-            {
-                get
-                {
-                    if (this.originalHandler == null)
-                    {
+            public TEventHandler Handler {
+                get {
+                    if (this.originalHandler == null) {
                         return default(TEventHandler);
-                    }
-                    else
-                    {
+                    } else {
                         return (TEventHandler)this.originalHandler.Target;
                     }
                 }
