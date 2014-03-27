@@ -8,7 +8,7 @@ using System.ComponentModel;
 using System.Runtime.Serialization;
 using Splat;
 
-namespace iOSPlayground
+namespace MobileSample_iOS
 {
     public partial class iOSPlaygroundViewController : UIViewController, IViewFor<iOSPlaygroundViewModel>, INotifyPropertyChanged
     {

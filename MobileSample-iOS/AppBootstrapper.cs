@@ -9,7 +9,7 @@ using MonoTouch.UIKit;
 using System.Linq;
 using System.Collections.Generic;
 
-namespace iOSPlayground
+namespace MobileSample_iOS
 {
     public class AppBootstrapper : ReactiveObject, IApplicationRootState
     {
