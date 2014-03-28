@@ -49,6 +49,7 @@ namespace ReactiveUI.Tests
             Assert.False(listBoxRef.IsAlive);
         }
 
+        [Fact]
         public void DataContextDoesNotLeakTest()
         {
             ListBox listBox = new ListBox();
