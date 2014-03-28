@@ -53,25 +53,19 @@ namespace ReactiveUI.Xaml
                 return ret.GetNotificationForProperty(sender, propertyName, beforeChanged);
             }
 
-#if !WINRT && !SILVERLIGHT
-            return Observable.Create<IObservedChange<object, object>>(subj => {
-                var dp = dpFetcher();
-                var dpd = DependencyPropertyDescriptor.FromProperty(dp, type);
-                var ev = new EventHandler((o, e) => subj.OnNext(new ObservedChange<object, object>(sender, propertyName)));
-                dpd.AddValueChanged(sender, ev);
-
-                return Disposable.Create(() => dpd.RemoveValueChanged(sender, ev));
-            });
-#else
             var dpAndSubj = createAttachedProperty(type, propertyName);
 
-            BindingOperations.SetBinding(sender as DependencyObject, dpAndSubj.Item1,
-                new Binding() { Source = sender as DependencyObject, Path = new PropertyPath(propertyName) });
+            return Observable.Create<IObservedChange<object, object>>(obs => {
+                BindingOperations.SetBinding(sender as DependencyObject, dpAndSubj.Item1,
+                    new Binding() { Source = sender as DependencyObject, Path = new PropertyPath(propertyName) });
 
-            return dpAndSubj.Item2
-                .Where(x => x == sender)
-                .Select(x => new ObservedChange<object, object>(x, propertyName));
-#endif
+                var disp = dpAndSubj.Item2
+                    .Where(x => x == sender)
+                    .Select(x => new ObservedChange<object, object>(x, propertyName))
+                    .Subscribe(obs);
+                // ClearBinding calls ClearValue http://stackoverflow.com/questions/1639219/clear-binding-in-silverlight-remove-data-binding-from-setbinding
+                return new CompositeDisposable(Disposable.Create(() => (sender as DependencyObject).ClearValue(dpAndSubj.Item1)), disp);
+            });
         }
 
         Func<DependencyProperty> getDependencyPropertyFetcher(Type type, string propertyName)
