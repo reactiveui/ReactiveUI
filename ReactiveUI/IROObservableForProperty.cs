@@ -21,7 +21,7 @@ namespace ReactiveUI
         {
             var iro = sender as IReactiveObject;
             if (iro == null) {
-                throw new ArgumentException("Sender doesn't implement IReactiveNotifyPropertyChanging");
+                throw new ArgumentException("Sender doesn't implement IReactiveObject");
             }
 
             return Observable.Create<IObservedChange<object, object>>(subj => {
