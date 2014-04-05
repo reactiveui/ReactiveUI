@@ -7,6 +7,7 @@ using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using ReactiveUI.Testing;
 using Xunit;
@@ -17,7 +18,6 @@ using System.Threading.Tasks;
 #if !MONO
 using System.Windows.Controls;
 using ReactiveUI.Xaml;
-using System.Threading.Tasks;
 #endif
 
 namespace ReactiveUI.Tests
@@ -341,7 +341,7 @@ namespace ReactiveUI.Tests
                 {x => x.Child.IsOnlyOneWord.Length, new[] {typeof(TestFixture), typeof(string), typeof(int) }},
                 {x => x.SomeOtherParam, new[] { typeof(int) }},
                 {x => x.Child.IsNotNullString, new[] {typeof(TestFixture), typeof(string)}},
-                {x => x.Child.Changed, new[] {typeof(TestFixture), typeof(IObservable<IObservedChange<object, object>>)}},
+                {x => x.Child.Changed, new[] {typeof(TestFixture), typeof(IObservable<IObservedChange<ReactiveObject, object>>)}},
             };
 
             var results = data.Keys.Select(x => new {input = x, output = Reflection.ExpressionToPropertyNames(x)}).ToArray();

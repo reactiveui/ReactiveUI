@@ -38,6 +38,7 @@ namespace ReactiveUI.Cocoa
                 typeof(NSCell),
                 typeof(NSMenu),
                 typeof(NSMenuItem),
+                typeof(NSToolbarItem),
             };
 #endif
         }

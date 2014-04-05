@@ -12,7 +12,7 @@ namespace ReactiveUI
         public void Register(Action<Func<object>, Type> registerFunction)
         {            
             registerFunction(() => new INPCObservableForProperty(), typeof(ICreatesObservableForProperty));
-            registerFunction(() => new IRNPCObservableForProperty(), typeof(ICreatesObservableForProperty));
+            registerFunction(() => new IROObservableForProperty(), typeof(ICreatesObservableForProperty));
             registerFunction(() => new POCOObservableForProperty(), typeof(ICreatesObservableForProperty));
             registerFunction(() => new NullDefaultPropertyBindingProvider(), typeof(IDefaultPropertyBindingProvider));
             registerFunction(() => new EqualityTypeConverter(), typeof(IBindingTypeConverter));
