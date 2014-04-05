@@ -76,11 +76,6 @@ namespace ReactiveUI
 
     public class RoutableViewModelWithParams : IRoutableViewModelWithParams
     {
-        public event PropertyChangedEventHandler PropertyChanged;
-        public event PropertyChangingEventHandler PropertyChanging;
-        public IObservable<IObservedChange<object, object>> Changing { get; private set; }
-        public IObservable<IObservedChange<object, object>> Changed { get; private set; }
-
         public IDisposable SuppressChangeNotifications()
         {
             throw new NotImplementedException();
@@ -95,8 +90,43 @@ namespace ReactiveUI
         public string UrlPathSegment { get { return RoutableViewModel.UrlPathSegment; } }
         public IScreen HostScreen { get { return RoutableViewModel.HostScreen; } }
 
+
+
         public IRoutingParams RoutingParams { get; private set; }
         public IRoutableViewModel RoutableViewModel { get; private set; }
+        event PropertyChangingEventHandler IReactiveObject.PropertyChanging
+        {
+            add { throw new NotImplementedException(); }
+            remove { throw new NotImplementedException(); }
+        }
+
+        event PropertyChangedEventHandler IReactiveObject.PropertyChanged
+        {
+            add { throw new NotImplementedException(); }
+            remove { throw new NotImplementedException(); }
+        }
+
+        public void RaisePropertyChanging(PropertyChangingEventArgs args)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void RaisePropertyChanged(PropertyChangedEventArgs args)
+        {
+            throw new NotImplementedException();
+        }
+
+        event PropertyChangedEventHandler INotifyPropertyChanged.PropertyChanged
+        {
+            add { throw new NotImplementedException(); }
+            remove { throw new NotImplementedException(); }
+        }
+
+        event PropertyChangingEventHandler INotifyPropertyChanging.PropertyChanging
+        {
+            add { throw new NotImplementedException(); }
+            remove { throw new NotImplementedException(); }
+        }
     }
 
     /// <summary>
