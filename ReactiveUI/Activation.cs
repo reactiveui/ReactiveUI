@@ -16,6 +16,7 @@ namespace ReactiveUI
     {
         readonly List<Func<IEnumerable<IDisposable>>> blocks;
         IDisposable activationHandle = Disposable.Empty;
+        int refCount = 0;
 
         public ViewModelActivator()
         {
@@ -29,15 +30,19 @@ namespace ReactiveUI
 
         public IDisposable Activate()
         {
-            var disp = new CompositeDisposable(blocks.SelectMany(x => x()));
+            if (Interlocked.Increment(ref refCount) < 2) {
+                var disp = new CompositeDisposable(blocks.SelectMany(x => x()));
+                Interlocked.Exchange(ref activationHandle, disp).Dispose();
+            }
 
-            Interlocked.Exchange(ref activationHandle, disp).Dispose();
             return Disposable.Create(Deactivate);
         }
 
         public void Deactivate()
         {
-            Interlocked.Exchange(ref activationHandle, Disposable.Empty).Dispose();
+            if (Interlocked.Decrement(ref refCount) < 1) {
+                Interlocked.Exchange(ref activationHandle, Disposable.Empty).Dispose();
+            }
         }
     }
 
