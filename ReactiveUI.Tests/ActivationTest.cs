@@ -85,7 +85,7 @@ namespace ReactiveUI.Tests
     public class ActivatingViewModelTests
     {
         [Fact]
-        public void PreviousActivationsGetTrashedOnDoubleActivate()
+        public void ActivationsGetRefCounted()
         {
             var fixture = new ActivatingViewModel();
             Assert.Equal(0, fixture.IsActiveCount);
@@ -96,6 +96,10 @@ namespace ReactiveUI.Tests
             fixture.Activator.Activate();
             Assert.Equal(1, fixture.IsActiveCount);
 
+            fixture.Activator.Deactivate();
+            Assert.Equal(1, fixture.IsActiveCount);
+
+            // Refcount drops to zero
             fixture.Activator.Deactivate();
             Assert.Equal(0, fixture.IsActiveCount);
         }
