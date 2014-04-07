@@ -35,12 +35,12 @@ namespace ReactiveUI
                 Interlocked.Exchange(ref activationHandle, disp).Dispose();
             }
 
-            return Disposable.Create(Deactivate);
+            return Disposable.Create(() => Deactivate());
         }
 
-        public void Deactivate()
+        public void Deactivate(bool ignoreRefCount = false)
         {
-            if (Interlocked.Decrement(ref refCount) < 1) {
+            if (Interlocked.Decrement(ref refCount) < 1 || ignoreRefCount) {
                 Interlocked.Exchange(ref activationHandle, Disposable.Empty).Dispose();
             }
         }
