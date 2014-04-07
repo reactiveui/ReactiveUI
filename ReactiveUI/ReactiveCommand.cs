@@ -172,8 +172,18 @@ namespace ReactiveUI
 
         public IObservable<bool> CanExecuteObservable {
             get {
-                if (canExecuteDisp == null) canExecuteDisp = canExecute.Connect();
-                return canExecute.StartWith(canExecuteLatest).DistinctUntilChanged();
+                var ret = canExecute.StartWith(canExecuteLatest).DistinctUntilChanged();
+
+                if (canExecuteDisp != null) return null;
+                return Observable.Create<bool>(subj => {
+                    var disp = ret.Subscribe(subj);
+
+                    // NB: We intentionally leak the CanExecute disconnect, it's 
+                    // cleaned up by the global Dispose. This is kind of a
+                    // "Lazy Subscription" to CanExecute by the command itself.
+                    canExecuteDisp = canExecute.Connect();
+                    return disp;
+                });
             }
         }
 
