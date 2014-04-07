@@ -65,7 +65,7 @@ namespace ReactiveUI
         public static IDisposable WithActivation(this ISupportsActivation This)
         {
             This.Activator.Activate();
-            return Disposable.Create(This.Activator.Deactivate);
+            return Disposable.Create(() => This.Activator.Deactivate());
         }
 
         public static IDisposable WhenActivated(this IActivatable This, Func<IEnumerable<IDisposable>> block)
