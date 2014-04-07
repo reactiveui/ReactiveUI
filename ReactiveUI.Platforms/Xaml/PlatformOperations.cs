@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Windows.Graphics.Display;
 
 namespace ReactiveUI.Xaml
 {
@@ -12,7 +11,7 @@ namespace ReactiveUI.Xaml
         public string GetOrientation()
         {
 #if WINRT
-            return DisplayInformation.GetForCurrentView().CurrentOrientation.ToString();
+            return Windows.Graphics.Display.DisplayInformation.GetForCurrentView().CurrentOrientation.ToString(); 
 #elif SILVERLIGHT
             var app = System.Windows.Application.Current;
             if (app == null) return null;
