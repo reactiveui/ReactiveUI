@@ -40,7 +40,7 @@ namespace ReactiveUI
 
             var platDllCount = platforms.Count(x => processRegistrationForNamespace(x, assmName, resolver) == true);
             if (platDllCount == 0) {
-                throw new Exception("We couldn't load a Platform DLL. This probably means you need to Install-Package ReactiveUI-Platforms on your App");
+                LogHost.Default.Warn("We couldn't load a Platform DLL. This probably means you need to Install-Package ReactiveUI-Platforms on your App");
             }
 
             extraNs.ForEach(ns => processRegistrationForNamespace(ns, assmName, resolver));
