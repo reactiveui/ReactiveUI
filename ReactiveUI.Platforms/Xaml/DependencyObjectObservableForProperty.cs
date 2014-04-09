@@ -9,6 +9,7 @@ using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Reflection;
 using System.Text;
+using Splat;
 
 #if WINRT
 using Windows.UI.Xaml;
@@ -24,7 +25,7 @@ namespace ReactiveUI.Xaml
     {
         public int GetAffinityForObject(Type type, string propertyName, bool beforeChanged = false)
         {
-            if (!typeof(DependencyObject).IsAssignableFrom(type)) return 0;
+            if (!typeof(DependencyObject).GetTypeInfo().IsAssignableFrom(type.GetTypeInfo())) return 0;
             if (getDependencyPropertyFetcher(type, propertyName) == null) return 0;
 
             return 4;
@@ -52,40 +53,61 @@ namespace ReactiveUI.Xaml
                 return ret.GetNotificationForProperty(sender, propertyName, beforeChanged);
             }
 
-#if !WINRT && !SILVERLIGHT
-            return Observable.Create<IObservedChange<object, object>>(subj => {
-                var dp = dpFetcher();
-                var dpd = DependencyPropertyDescriptor.FromProperty(dp, type);
-                var ev = new EventHandler((o, e) => subj.OnNext(new ObservedChange<object, object>() {Sender = sender, PropertyName = propertyName,}));
-                dpd.AddValueChanged(sender, ev);
-
-                return Disposable.Create(() => dpd.RemoveValueChanged(sender, ev));
-            });
-#else
             var dpAndSubj = createAttachedProperty(type, propertyName);
 
-            BindingOperations.SetBinding(sender as DependencyObject, dpAndSubj.Item1,
-                new Binding() { Source = sender as DependencyObject, Path = new PropertyPath(propertyName) });
+            return Observable.Create<IObservedChange<object, object>>(obs => {
+                BindingOperations.SetBinding(sender as DependencyObject, dpAndSubj.Item1,
+                    new Binding() { Source = sender as DependencyObject, Path = new PropertyPath(propertyName) });
 
-            return dpAndSubj.Item2
-                .Where(x => x == sender)
-                .Select(x => (IObservedChange<object, object>) new ObservedChange<object, object>() { Sender = x, PropertyName = propertyName });
-#endif
+                var disp = dpAndSubj.Item2
+                    .Where(x => x == sender)
+                    .Select(x => new ObservedChange<object, object>(x, propertyName))
+                    .Subscribe(obs);
+                // ClearBinding calls ClearValue http://stackoverflow.com/questions/1639219/clear-binding-in-silverlight-remove-data-binding-from-setbinding
+                return new CompositeDisposable(Disposable.Create(() => (sender as DependencyObject).ClearValue(dpAndSubj.Item1)), disp);
+            });
         }
 
         Func<DependencyProperty> getDependencyPropertyFetcher(Type type, string propertyName)
         {
+            var typeInfo = type.GetTypeInfo();
 #if WINRT
             // Look for the DependencyProperty attached to this property name
-            var pi = type.GetProperty(propertyName + "Property", BindingFlags.Static | BindingFlags.Public | BindingFlags.FlattenHierarchy);
+            var pi = actuallyGetProperty(typeInfo, propertyName + "Property");
             if (pi != null) {
                 return () => (DependencyProperty)pi.GetValue(null);
             }
 #endif
 
-            var fi = type.GetField(propertyName + "Property", BindingFlags.Static | BindingFlags.Public | BindingFlags.FlattenHierarchy);
+            var fi = actuallyGetField(typeInfo, propertyName + "Property");
             if (fi != null) {
                 return () => (DependencyProperty)fi.GetValue(null);
+            }
+
+            return null;
+        }
+
+        PropertyInfo actuallyGetProperty(TypeInfo typeInfo, string propertyName)
+        {
+            var current = typeInfo;
+            while (current != null) {
+                var ret = typeInfo.GetDeclaredProperty(propertyName);
+                if (ret != null && ret.IsStatic()) return ret;
+
+                current = current.BaseType.GetTypeInfo();
+            }
+
+            return null;
+        }
+
+        FieldInfo actuallyGetField(TypeInfo typeInfo, string propertyName)
+        {
+            var current = typeInfo;
+            while (current != null) {
+                var ret = typeInfo.GetDeclaredField(propertyName);
+                if (ret != null && ret.IsStatic) return ret;
+
+                current = current.BaseType.GetTypeInfo();
             }
 
             return null;
