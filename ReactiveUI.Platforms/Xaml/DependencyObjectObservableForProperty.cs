@@ -70,17 +70,44 @@ namespace ReactiveUI.Xaml
 
         Func<DependencyProperty> getDependencyPropertyFetcher(Type type, string propertyName)
         {
+            var typeInfo = type.GetTypeInfo();
 #if WINRT
             // Look for the DependencyProperty attached to this property name
-            var pi = type.GetRuntimeProperties().FirstOrDefault(x => x.Name == (propertyName + "Property") && x.IsStatic());
+            var pi = actuallyGetProperty(typeInfo, propertyName + "Property");
             if (pi != null) {
                 return () => (DependencyProperty)pi.GetValue(null);
             }
 #endif
 
-            var fi = type.GetRuntimeFields().FirstOrDefault(x => x.Name == propertyName + "Property" && x.IsStatic);
+            var fi = actuallyGetField(typeInfo, propertyName + "Property");
             if (fi != null) {
                 return () => (DependencyProperty)fi.GetValue(null);
+            }
+
+            return null;
+        }
+
+        PropertyInfo actuallyGetProperty(TypeInfo typeInfo, string propertyName)
+        {
+            var current = typeInfo;
+            while (current != null) {
+                var ret = typeInfo.GetDeclaredProperty(propertyName);
+                if (ret != null && ret.IsStatic()) return ret;
+
+                current = current.BaseType.GetTypeInfo();
+            }
+
+            return null;
+        }
+
+        FieldInfo actuallyGetField(TypeInfo typeInfo, string propertyName)
+        {
+            var current = typeInfo;
+            while (current != null) {
+                var ret = typeInfo.GetDeclaredField(propertyName);
+                if (ret != null && ret.IsStatic) return ret;
+
+                current = current.BaseType.GetTypeInfo();
             }
 
             return null;
