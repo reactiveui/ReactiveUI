@@ -266,6 +266,25 @@ namespace ReactiveUI.Tests
             view.ViewModel = vm;
             Assert.Equal(vm.JustADouble.ToString(), view.FakeControl.NullHatingString);
         }
+        
+        [Fact]
+        public void TwoWayBindToSelectedItemOfItemsControl()
+        {
+        	var vm = new PropertyBindViewModel();
+        	var view = new PropertyBindView() { ViewModel = vm };
+        	view.FakeItemsControl.ItemsSource = new ReactiveList<string>(new[] { "aaa", "bbb", "ccc" });
+        
+        	view.Bind(view.ViewModel, x => x.Property1, x => x.FakeItemsControl.SelectedItem);
+        
+        	Assert.Null(view.FakeItemsControl.SelectedItem);
+        	Assert.Null(vm.Property1);
+        
+        	view.FakeItemsControl.SelectedItem = "aaa";
+        	Assert.Equal("aaa", vm.Property1); // fail
+        
+        	vm.Property1 = "bbb";
+        	Assert.Equal("bbb", view.FakeItemsControl.SelectedItem);
+        }
 
 #if !MONO
         [Fact]
