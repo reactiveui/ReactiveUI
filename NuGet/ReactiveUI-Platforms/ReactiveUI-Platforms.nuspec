@@ -2,7 +2,7 @@
 <package xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
 	<metadata xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
 		<id>reactiveui-platforms</id>
-		<version>5.5.0</version>
+		<version>5.5.1</version>
 		<description>Platform specific extensions to ReactiveUI</description>
 		<authors>Paul Betts</authors>
 		<projectUrl>http://www.reactiveui.net</projectUrl>
@@ -12,24 +12,24 @@
 
 		<dependencies>
 		    <group targetFramework="Monoandroid">
-          <dependency id="reactiveui-core" version="[5.5.0]" />
+          <dependency id="reactiveui-core" version="[5.5.1]" />
 		    </group>  
 		    <group targetFramework="Monomac">
-          <dependency id="reactiveui-core" version="[5.5.0]" />
+          <dependency id="reactiveui-core" version="[5.5.1]" />
 		    </group>  
 		    <group targetFramework="Monotouch">
-          <dependency id="reactiveui-core" version="[5.5.0]" />
+          <dependency id="reactiveui-core" version="[5.5.1]" />
 		    </group>  
         <group targetFramework="net45">
-            <dependency id="reactiveui-core" version="[5.5.0]" />
+            <dependency id="reactiveui-core" version="[5.5.1]" />
             <dependency id="Rx-Xaml" version="2.1.30214.0" />
           </group>
           <group targetFramework="wp8">
-            <dependency id="reactiveui-core" version="[5.5.0]" />
+            <dependency id="reactiveui-core" version="[5.5.1]" />
             <dependency id="Rx-Xaml" version="2.1.30214.0" />
           </group>
           <group targetFramework="winrt45">
-            <dependency id="reactiveui-core" version="[5.5.0]" />
+            <dependency id="reactiveui-core" version="[5.5.1]" />
             <dependency id="Rx-Xaml" version="2.1.30214.0" />
           </group>
 		</dependencies>
