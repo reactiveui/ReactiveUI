@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Reflection;
 using System.ComponentModel;
@@ -21,16 +24,9 @@ namespace ReactiveUI.Xaml
             var type = sender.GetType();
             var dpd = DependencyPropertyDescriptor.FromProperty(getDependencyProperty(type, propertyName), sender.GetType());
 
-            return Observable.Create<IObservedChange<object, object>>(subj =>
-            {
-                var handler = new EventHandler((o, e) =>
-                {
-                    subj.OnNext(new ObservedChange<object, object>()
-                    {
-                        Sender = sender,
-                        PropertyName = propertyName,
-                        Value = null,
-                    });
+            return Observable.Create<IObservedChange<object, object>>(subj => {
+                var handler = new EventHandler((o, e) => {
+                    subj.OnNext(new ObservedChange<object, object>(sender, propertyName));
                 });
 
                 dpd.AddValueChanged(sender, handler);
@@ -40,9 +36,10 @@ namespace ReactiveUI.Xaml
 
         DependencyProperty getDependencyProperty(Type type, string propertyName)
         {
-            var fi = type.GetRuntimeFields().FirstOrDefault(x => x.Name == propertyName + "Property" && x.IsStatic);
-            if (fi != null)
-            {
+            var fi = type.GetTypeInfo().GetFields(BindingFlags.FlattenHierarchy | BindingFlags.Static | BindingFlags.Public)
+                .FirstOrDefault(x => x.Name == propertyName + "Property" && x.IsStatic);
+
+            if (fi != null) {
                 return (DependencyProperty)fi.GetValue(null);
             }
 
