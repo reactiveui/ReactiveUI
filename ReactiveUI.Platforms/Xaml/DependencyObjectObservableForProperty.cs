@@ -9,7 +9,6 @@ using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Reflection;
 using System.Text;
-using Splat;
 
 #if WINRT
 using Windows.UI.Xaml;
@@ -61,7 +60,7 @@ namespace ReactiveUI.Xaml
 
                 var disp = dpAndSubj.Item2
                     .Where(x => x == sender)
-                    .Select(x => new ObservedChange<object, object>(x, propertyName))
+                    .Select(x => new ObservedChange<object, object>() { Sender = x, PropertyName = propertyName })
                     .Subscribe(obs);
                 // ClearBinding calls ClearValue http://stackoverflow.com/questions/1639219/clear-binding-in-silverlight-remove-data-binding-from-setbinding
                 return new CompositeDisposable(Disposable.Create(() => (sender as DependencyObject).ClearValue(dpAndSubj.Item1)), disp);
