@@ -102,7 +102,7 @@ namespace ReactiveUI
             var vm = view.ViewModel as ISupportsActivation;
             var disp = new SerialDisposable() { Disposable = Disposable.Empty };
 
-            var latestVm = activation.Item1.Select(_ => view.WhenAnyValue(x => x.ViewModel).StartWith(vm))
+            var latestVm = activation.Item1.Select(_ => view.WhenAnyValue(x => x.ViewModel))
                 .Switch()
                 .Select(x => x as ISupportsActivation);
 
