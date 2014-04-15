@@ -30,7 +30,7 @@ namespace ReactiveUI
 
         public IDisposable Activate()
         {
-            if (Interlocked.Increment(ref refCount) < 2) {
+            if (Interlocked.Increment(ref refCount) == 1) {
                 var disp = new CompositeDisposable(blocks.SelectMany(x => x()));
                 Interlocked.Exchange(ref activationHandle, disp).Dispose();
             }
@@ -40,7 +40,7 @@ namespace ReactiveUI
 
         public void Deactivate(bool ignoreRefCount = false)
         {
-            if (Interlocked.Decrement(ref refCount) < 1 || ignoreRefCount) {
+            if (Interlocked.Decrement(ref refCount) == 0 || ignoreRefCount) {
                 Interlocked.Exchange(ref activationHandle, Disposable.Empty).Dispose();
             }
         }
