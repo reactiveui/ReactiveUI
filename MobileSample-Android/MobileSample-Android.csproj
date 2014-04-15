@@ -43,6 +43,9 @@
       <HintPath>..\ext\monodroid\Splat.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Linq.Expressions" />
+    <Reference Include="System.ObjectModel" />
+    <Reference Include="System.Runtime" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
     <Reference Include="Mono.Android" />

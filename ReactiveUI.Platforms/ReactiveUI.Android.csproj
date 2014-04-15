@@ -8,11 +8,11 @@
     <ProjectGuid>{F5A6E11B-B074-4A0B-B937-267D840E31DF}</ProjectGuid>
     <ProjectTypeGuids>{EFBA0AD7-5A72-4C68-AF49-83D382785DCF};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
-	<AppDesignerFolder>Properties</AppDesignerFolder>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ReactiveUI.Android</RootNamespace>
     <AssemblyName>ReactiveUI.Android</AssemblyName>
-	<FileAlignment>512</FileAlignment>
-	<AndroidUseLatestPlatformSdk />
+    <FileAlignment>512</FileAlignment>
+    <AndroidUseLatestPlatformSdk />
     <TargetFrameworkVersion>v4.0.3</TargetFrameworkVersion>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
@@ -44,6 +44,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.Linq.Expressions" />
+    <Reference Include="System.ObjectModel" />
+    <Reference Include="System.Runtime" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
     <Reference Include="Mono.Android" />
