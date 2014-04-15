@@ -79,37 +79,56 @@ namespace ReactiveUI
 
             var activationEvents = activationFetcher.GetActivationForView(This);
 
+            var vmDisposable = Disposable.Empty;
+            if (This is IViewFor) {
+                vmDisposable = handleViewModelActivation(This as IViewFor, activationEvents);
+            }
+            var viewDisposable = handleViewActivation(block, activationEvents);
+            
+            return new CompositeDisposable(vmDisposable, viewDisposable);
+        }
+
+        static IDisposable handleViewActivation(Func<IEnumerable<IDisposable>> block, Tuple<IObservable<Unit>, IObservable<Unit>> activation)
+        {
             var viewDisposable = new SerialDisposable();
 
-            var vmDisp = Disposable.Empty;
-            if (This is IViewFor) {
-                vmDisp = handleViewModelActivation(This as IViewFor, activationEvents);
-            }
-
             return new CompositeDisposable(
-                activationEvents.Item1.Subscribe(_ => {
+                //activation
+                activation.Item1.Subscribe(_ => {
                     // NB: We need to make sure to respect ordering so that the cleanup
                     // happens before we invoke block again
                     viewDisposable.Disposable = Disposable.Empty;
                     viewDisposable.Disposable = new CompositeDisposable(block());
                 }),
-                activationEvents.Item2.Subscribe(_ => viewDisposable.Disposable = Disposable.Empty),
-                vmDisp, viewDisposable);
+                //deactivation
+                activation.Item2.Subscribe(_ => {
+                    viewDisposable.Dispose();
+                }),
+                viewDisposable);
         }
 
         static IDisposable handleViewModelActivation(IViewFor view, Tuple<IObservable<Unit>, IObservable<Unit>> activation)
         {
-            var vm = view.ViewModel as ISupportsActivation;
-            var disp = new SerialDisposable() { Disposable = Disposable.Empty };
-
-            var latestVm = activation.Item1.Select(_ => view.WhenAnyValue(x => x.ViewModel))
-                .Switch()
-                .Select(x => x as ISupportsActivation);
+            var vmDisposable = new SerialDisposable();
 
             return new CompositeDisposable(
-                disp,
-                latestVm.Subscribe(x => disp.Disposable =
-                    (x != null ? x.Activator.Activate() : Disposable.Empty)));
+                //activation
+                activation.Item1.Select(_ => view.WhenAnyValue(x => x.ViewModel))
+                .Switch()
+                .Select(x => x as ISupportsActivation)
+                .Subscribe(x => {
+                    // NB: We need to make sure to respect ordering so that the cleanup
+                    // happens before we activate again
+                    vmDisposable.Disposable = Disposable.Empty;
+                    if(x != null) {
+                        vmDisposable.Disposable = x.Activator.Activate();
+                    }
+                }),
+                //deactivation
+                activation.Item2.Subscribe(_ => {
+                    vmDisposable.Dispose();
+                }),
+                vmDisposable);
         }
 
         public static IDisposable WhenActivated(this IActivatable This, Action<Action<IDisposable>> block)
