@@ -100,17 +100,15 @@ namespace ReactiveUI
         static IDisposable handleViewModelActivation(IViewFor view, Tuple<IObservable<Unit>, IObservable<Unit>> activation)
         {
             var vm = view.ViewModel as ISupportsActivation;
-            var disp = new SerialDisposable() { Disposable = (vm != null ? vm.Activator.Activate() : Disposable.Empty) };
+            var disp = new SerialDisposable() { Disposable = Disposable.Empty };
 
-            var latestVm = Observable.Merge(
-                    activation.Item1.Select(_ => view.WhenAnyValue(x => x.ViewModel)),
-                    activation.Item2.Select(_ => Observable.Never<object>().StartWith(default(object))))
+            var latestVm = activation.Item1.Select(_ => view.WhenAnyValue(x => x.ViewModel).StartWith(vm))
                 .Switch()
                 .Select(x => x as ISupportsActivation);
 
             return new CompositeDisposable(
                 disp,
-                latestVm.Subscribe(x => disp.Disposable = 
+                latestVm.Subscribe(x => disp.Disposable =
                     (x != null ? x.Activator.Activate() : Disposable.Empty)));
         }
 
