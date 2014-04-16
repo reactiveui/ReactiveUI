@@ -72,9 +72,8 @@ namespace ReactiveUI
         {
             var activationFetcher = activationFetcherCache.Get(This.GetType());
             if (activationFetcher == null) {
-                throw new ArgumentException(
-                    String.Format("Don't know how to detect when {0} is activated/deactivated, you may need to implement IActivationForViewFetcher",
-                        This.GetType().FullName));
+                var msg = "Don't know how to detect when {0} is activated/deactivated, you may need to implement IActivationForViewFetcher";
+                throw new ArgumentException(String.Format(msg, This.GetType().FullName));
             }
 
             var activationEvents = activationFetcher.GetActivationForView(This);
@@ -83,8 +82,8 @@ namespace ReactiveUI
             if (This is IViewFor) {
                 vmDisposable = handleViewModelActivation(This as IViewFor, activationEvents);
             }
+
             var viewDisposable = handleViewActivation(block, activationEvents);
-            
             return new CompositeDisposable(vmDisposable, viewDisposable);
         }
 
@@ -93,14 +92,14 @@ namespace ReactiveUI
             var viewDisposable = new SerialDisposable();
 
             return new CompositeDisposable(
-                //activation
+                // Activation
                 activation.Item1.Subscribe(_ => {
                     // NB: We need to make sure to respect ordering so that the cleanup
                     // happens before we invoke block again
                     viewDisposable.Disposable = Disposable.Empty;
                     viewDisposable.Disposable = new CompositeDisposable(block());
                 }),
-                //deactivation
+                // Deactivation
                 activation.Item2.Subscribe(_ => {
                     viewDisposable.Dispose();
                 }),
@@ -112,19 +111,20 @@ namespace ReactiveUI
             var vmDisposable = new SerialDisposable();
 
             return new CompositeDisposable(
-                //activation
-                activation.Item1.Select(_ => view.WhenAnyValue(x => x.ViewModel))
-                .Switch()
-                .Select(x => x as ISupportsActivation)
-                .Subscribe(x => {
-                    // NB: We need to make sure to respect ordering so that the cleanup
-                    // happens before we activate again
-                    vmDisposable.Disposable = Disposable.Empty;
-                    if(x != null) {
-                        vmDisposable.Disposable = x.Activator.Activate();
-                    }
-                }),
-                //deactivation
+                // Activation
+                activation.Item1
+                    .Select(_ => view.WhenAnyValue(x => x.ViewModel))
+                    .Switch()
+                    .Select(x => x as ISupportsActivation)
+                    .Subscribe(x => {
+                        // NB: We need to make sure to respect ordering so that the cleanup
+                        // happens before we activate again
+                        vmDisposable.Disposable = Disposable.Empty;
+                        if(x != null) {
+                            vmDisposable.Disposable = x.Activator.Activate();
+                        }
+                    }),
+                // Deactivation
                 activation.Item2.Subscribe(_ => {
                     vmDisposable.Dispose();
                 }),
