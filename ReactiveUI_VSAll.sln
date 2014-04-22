@@ -92,6 +92,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Events_WPA81", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Events_WP81", "ReactiveUI.Events\ReactiveUI.Events_WP81.csproj", "{4F7CE962-4373-4D80-828F-C09FC880A539}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Xaml_WP81", "ReactiveUI.Platforms\ReactiveUI.Xaml_WP81.csproj", "{DABB79A1-E734-46DE-8A99-C095D4786722}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Ad-Hoc|Any CPU = Ad-Hoc|Any CPU
@@ -1740,6 +1742,50 @@ Global
 		{4F7CE962-4373-4D80-828F-C09FC880A539}.Release|x64.ActiveCfg = Release|Any CPU
 		{4F7CE962-4373-4D80-828F-C09FC880A539}.Release|x86.ActiveCfg = Release|x86
 		{4F7CE962-4373-4D80-828F-C09FC880A539}.Release|x86.Build.0 = Release|x86
+		{DABB79A1-E734-46DE-8A99-C095D4786722}.Ad-Hoc|Any CPU.ActiveCfg = Release|Any CPU
+		{DABB79A1-E734-46DE-8A99-C095D4786722}.Ad-Hoc|Any CPU.Build.0 = Release|Any CPU
+		{DABB79A1-E734-46DE-8A99-C095D4786722}.Ad-Hoc|ARM.ActiveCfg = Release|ARM
+		{DABB79A1-E734-46DE-8A99-C095D4786722}.Ad-Hoc|ARM.Build.0 = Release|ARM
+		{DABB79A1-E734-46DE-8A99-C095D4786722}.Ad-Hoc|iPhone.ActiveCfg = Release|Any CPU
+		{DABB79A1-E734-46DE-8A99-C095D4786722}.Ad-Hoc|iPhoneSimulator.ActiveCfg = Release|Any CPU
+		{DABB79A1-E734-46DE-8A99-C095D4786722}.Ad-Hoc|Mixed Platforms.ActiveCfg = Release|x86
+		{DABB79A1-E734-46DE-8A99-C095D4786722}.Ad-Hoc|Mixed Platforms.Build.0 = Release|x86
+		{DABB79A1-E734-46DE-8A99-C095D4786722}.Ad-Hoc|x64.ActiveCfg = Release|Any CPU
+		{DABB79A1-E734-46DE-8A99-C095D4786722}.Ad-Hoc|x86.ActiveCfg = Release|x86
+		{DABB79A1-E734-46DE-8A99-C095D4786722}.Ad-Hoc|x86.Build.0 = Release|x86
+		{DABB79A1-E734-46DE-8A99-C095D4786722}.AppStore|Any CPU.ActiveCfg = Release|Any CPU
+		{DABB79A1-E734-46DE-8A99-C095D4786722}.AppStore|Any CPU.Build.0 = Release|Any CPU
+		{DABB79A1-E734-46DE-8A99-C095D4786722}.AppStore|ARM.ActiveCfg = Release|ARM
+		{DABB79A1-E734-46DE-8A99-C095D4786722}.AppStore|ARM.Build.0 = Release|ARM
+		{DABB79A1-E734-46DE-8A99-C095D4786722}.AppStore|iPhone.ActiveCfg = Release|Any CPU
+		{DABB79A1-E734-46DE-8A99-C095D4786722}.AppStore|iPhoneSimulator.ActiveCfg = Release|Any CPU
+		{DABB79A1-E734-46DE-8A99-C095D4786722}.AppStore|Mixed Platforms.ActiveCfg = Release|x86
+		{DABB79A1-E734-46DE-8A99-C095D4786722}.AppStore|Mixed Platforms.Build.0 = Release|x86
+		{DABB79A1-E734-46DE-8A99-C095D4786722}.AppStore|x64.ActiveCfg = Release|Any CPU
+		{DABB79A1-E734-46DE-8A99-C095D4786722}.AppStore|x86.ActiveCfg = Release|x86
+		{DABB79A1-E734-46DE-8A99-C095D4786722}.AppStore|x86.Build.0 = Release|x86
+		{DABB79A1-E734-46DE-8A99-C095D4786722}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DABB79A1-E734-46DE-8A99-C095D4786722}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DABB79A1-E734-46DE-8A99-C095D4786722}.Debug|ARM.ActiveCfg = Debug|ARM
+		{DABB79A1-E734-46DE-8A99-C095D4786722}.Debug|ARM.Build.0 = Debug|ARM
+		{DABB79A1-E734-46DE-8A99-C095D4786722}.Debug|iPhone.ActiveCfg = Debug|Any CPU
+		{DABB79A1-E734-46DE-8A99-C095D4786722}.Debug|iPhoneSimulator.ActiveCfg = Debug|Any CPU
+		{DABB79A1-E734-46DE-8A99-C095D4786722}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
+		{DABB79A1-E734-46DE-8A99-C095D4786722}.Debug|Mixed Platforms.Build.0 = Debug|x86
+		{DABB79A1-E734-46DE-8A99-C095D4786722}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{DABB79A1-E734-46DE-8A99-C095D4786722}.Debug|x86.ActiveCfg = Debug|x86
+		{DABB79A1-E734-46DE-8A99-C095D4786722}.Debug|x86.Build.0 = Debug|x86
+		{DABB79A1-E734-46DE-8A99-C095D4786722}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DABB79A1-E734-46DE-8A99-C095D4786722}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DABB79A1-E734-46DE-8A99-C095D4786722}.Release|ARM.ActiveCfg = Release|ARM
+		{DABB79A1-E734-46DE-8A99-C095D4786722}.Release|ARM.Build.0 = Release|ARM
+		{DABB79A1-E734-46DE-8A99-C095D4786722}.Release|iPhone.ActiveCfg = Release|Any CPU
+		{DABB79A1-E734-46DE-8A99-C095D4786722}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
+		{DABB79A1-E734-46DE-8A99-C095D4786722}.Release|Mixed Platforms.ActiveCfg = Release|x86
+		{DABB79A1-E734-46DE-8A99-C095D4786722}.Release|Mixed Platforms.Build.0 = Release|x86
+		{DABB79A1-E734-46DE-8A99-C095D4786722}.Release|x64.ActiveCfg = Release|Any CPU
+		{DABB79A1-E734-46DE-8A99-C095D4786722}.Release|x86.ActiveCfg = Release|x86
+		{DABB79A1-E734-46DE-8A99-C095D4786722}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
