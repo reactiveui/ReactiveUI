@@ -26,11 +26,7 @@ namespace ReactiveUI.Xaml
 
             return Observable.Create<IObservedChange<object, object>>(subj => {
                 var handler = new EventHandler((o, e) => {
-                    subj.OnNext(new ObservedChange<object, object>() {
-                        Sender = sender,
-                        PropertyName = propertyName,
-                        Value = null,
-                    });
+                    subj.OnNext(new ObservedChange<object, object>(sender, propertyName));
                 });
 
                 dpd.AddValueChanged(sender, handler);
@@ -40,7 +36,9 @@ namespace ReactiveUI.Xaml
 
         DependencyProperty getDependencyProperty(Type type, string propertyName)
         {
-            var fi = type.GetRuntimeFields().FirstOrDefault(x => x.Name == propertyName + "Property" && x.IsStatic);
+            var fi = type.GetTypeInfo().GetFields(BindingFlags.FlattenHierarchy | BindingFlags.Static | BindingFlags.Public)
+                .FirstOrDefault(x => x.Name == propertyName + "Property" && x.IsStatic);
+
             if (fi != null) {
                 return (DependencyProperty)fi.GetValue(null);
             }

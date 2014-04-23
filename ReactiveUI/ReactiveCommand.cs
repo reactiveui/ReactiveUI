@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Linq.Expressions;
 using System.Reactive.Disposables;
+using Splat;
 
 namespace ReactiveUI
 {
@@ -44,6 +45,11 @@ namespace ReactiveUI
             return new ReactiveCommand<T>(canExecute, x => executeAsync(x).ToObservable(), scheduler);
         }
 
+        public static ReactiveCommand<Unit> CreateAsync(IObservable<bool> canExecute, Func<object, Task> executeAsync, IScheduler scheduler = null)
+        {
+            return new ReactiveCommand<Unit>(canExecute, x => executeAsync(x).ToObservable(), scheduler);
+        }
+
         public static ReactiveCommand<Unit> Create(Action<object> executeAsync, IScheduler scheduler = null)
         {
             return new ReactiveCommand<Unit>(Observable.Return(true), x => Observable.Start(() => executeAsync(x), RxApp.TaskpoolScheduler), scheduler);
@@ -62,6 +68,11 @@ namespace ReactiveUI
         public static ReactiveCommand<T> CreateAsync<T>(Func<object, Task<T>> executeAsync, IScheduler scheduler = null)
         {
             return new ReactiveCommand<T>(Observable.Return(true), x => executeAsync(x).ToObservable(), scheduler);
+        }
+
+        public static ReactiveCommand<Unit> CreateAsync(Func<object, Task> executeAsync, IScheduler scheduler = null)
+        {
+            return new ReactiveCommand<Unit>(Observable.Return(true), x => executeAsync(x).ToObservable(), scheduler);
         }
 
         /// <summary>
@@ -119,11 +130,11 @@ namespace ReactiveUI
                     return Observable.Return(false);
                 })
                 .Do(x => {
-                    var fireCanExecuteChanged = (canExecuteChanged != null && canExecuteLatest != x);
+                    var fireCanExecuteChanged = (canExecuteLatest != x);
                     canExecuteLatest = x;
 
                     if (fireCanExecuteChanged) {
-                        canExecuteChanged(this, EventArgs.Empty);
+                        CanExecuteChangedEventManager.DeliverEvent(this, EventArgs.Empty);
                     }
                 })
                 .Publish();
@@ -171,8 +182,18 @@ namespace ReactiveUI
 
         public IObservable<bool> CanExecuteObservable {
             get {
-                if (canExecuteDisp == null) canExecuteDisp = canExecute.Connect();
-                return canExecute.StartWith(canExecuteLatest).DistinctUntilChanged();
+                var ret = canExecute.StartWith(canExecuteLatest).DistinctUntilChanged();
+
+                if (canExecuteDisp != null) return null;
+                return Observable.Create<bool>(subj => {
+                    var disp = ret.Subscribe(subj);
+
+                    // NB: We intentionally leak the CanExecute disconnect, it's 
+                    // cleaned up by the global Dispose. This is kind of a
+                    // "Lazy Subscription" to CanExecute by the command itself.
+                    canExecuteDisp = canExecute.Connect();
+                    return disp;
+                });
             }
         }
 
@@ -191,14 +212,13 @@ namespace ReactiveUI
             return canExecuteLatest;
         }
 
-        event EventHandler canExecuteChanged;
         public event EventHandler CanExecuteChanged
         {
             add { 
                 if (canExecuteDisp == null) canExecuteDisp = canExecute.Connect();
-                canExecuteChanged += value; 
+                CanExecuteChangedEventManager.AddHandler(this, value); 
             }
-            remove { canExecuteChanged -= value; }
+            remove { CanExecuteChangedEventManager.RemoveHandler(this, value); }
         }
 
         public void Execute(object parameter)

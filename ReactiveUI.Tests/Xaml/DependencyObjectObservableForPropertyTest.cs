@@ -19,6 +19,16 @@ namespace ReactiveUI.Tests
         }
     }
 
+    public class DerivedDepObjFixture : DepObjFixture
+    {
+        public string AnotherTestString {
+            get { return (string)GetValue(AnotherTestStringProperty); }
+            set { SetValue(AnotherTestStringProperty, value); }
+        }
+        public static readonly DependencyProperty AnotherTestStringProperty =
+            DependencyProperty.Register("AnotherTestString", typeof(string), typeof(DerivedDepObjFixture), new PropertyMetadata(null));
+    }
+
     public class DependencyObjectObservableForPropertyTest
     {
         [Fact]
@@ -41,6 +51,29 @@ namespace ReactiveUI.Tests
             disp1.Dispose();
             disp2.Dispose();
         }
+
+        [Fact]
+        public void DerivedDependencyObjectObservableForPropertySmokeTest()
+        {
+            var fixture = new DerivedDepObjFixture();
+            var binder = new DependencyObjectObservableForProperty();
+            Assert.NotEqual(0, binder.GetAffinityForObject(typeof (DerivedDepObjFixture), "TestString"));
+            Assert.Equal(0, binder.GetAffinityForObject(typeof (DerivedDepObjFixture), "DoesntExist"));
+
+            var results = new List<IObservedChange<object, object>>();
+            var disp1 = binder.GetNotificationForProperty(fixture, "TestString").Subscribe(results.Add);
+            var disp2 = binder.GetNotificationForProperty(fixture, "TestString").Subscribe(results.Add);
+
+            fixture.TestString = "Foo";
+            fixture.TestString = "Bar";
+
+            Assert.Equal(4, results.Count);
+
+            disp1.Dispose();
+            disp2.Dispose();
+        }
+
+
 
         [Fact]
         public void WhenAnyWithDependencyObjectTest()

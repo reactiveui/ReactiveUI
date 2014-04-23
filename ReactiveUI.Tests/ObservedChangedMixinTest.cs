@@ -48,11 +48,7 @@ namespace ReactiveUI.Tests
                 Child = new TestFixture() {IsNotNullString = "Foo"},
             };
 
-            var fixture = new ObservedChange<HostTestFixture, string>() {
-                Sender = input,
-                PropertyName = "Child.IsNotNullString",
-                Value = null,
-            };
+            var fixture = new ObservedChange<HostTestFixture, string>(input, "Child.IsNotNullString");
 
             Assert.Equal("Foo", fixture.GetValue());
         }
@@ -64,11 +60,7 @@ namespace ReactiveUI.Tests
                 Child = new TestFixture() {IsNotNullString = "Foo"},
             };
 
-            var fixture = new ObservedChange<TestFixture, string>() {
-                Sender = new TestFixture() { IsOnlyOneWord = "Bar" },
-                PropertyName = "IsOnlyOneWord",
-                Value = null,
-            };
+            var fixture = new ObservedChange<TestFixture, string>(new TestFixture() { IsOnlyOneWord = "Bar" }, "IsOnlyOneWord");
 
             fixture.SetValueToProperty(output, x => x.Child.IsNotNullString);
             Assert.Equal("Bar", output.Child.IsNotNullString);

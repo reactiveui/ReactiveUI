@@ -20,8 +20,8 @@ using System.Reactive;
 
 namespace ReactiveUI.Cocoa
 {
-    public abstract class ReactiveCollectionViewController : UICollectionViewController, 
-	IReactiveNotifyPropertyChanged, IHandleObservableErrors, IReactiveObjectExtension, ICanActivate
+    public abstract class ReactiveCollectionViewController : UICollectionViewController,
+    IReactiveNotifyPropertyChanged<ReactiveCollectionViewController>, IHandleObservableErrors, IReactiveObject, ICanActivate
     {
         protected ReactiveCollectionViewController(UICollectionViewLayout withLayout) : base(withLayout) { setupRxObj(); }
         protected ReactiveCollectionViewController(string nibName, NSBundle bundle) : base(nibName, bundle) { setupRxObj(); }
@@ -30,38 +30,38 @@ namespace ReactiveUI.Cocoa
         protected ReactiveCollectionViewController(NSCoder coder) : base(coder) { setupRxObj(); }
         protected ReactiveCollectionViewController() { setupRxObj(); }
 
-        public event PropertyChangingEventHandler PropertyChanging;
-
-        void IReactiveObjectExtension.RaisePropertyChanging(PropertyChangingEventArgs args) 
-        {
-            var handler = PropertyChanging;
-            if (handler != null) {
-                handler(this, args);
-            }
+        public event PropertyChangingEventHandler PropertyChanging {
+            add { PropertyChangingEventManager.AddHandler(this, value); }
+            remove { PropertyChangingEventManager.RemoveHandler(this, value); }
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        void IReactiveObjectExtension.RaisePropertyChanged(PropertyChangedEventArgs args) 
+        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args)
         {
-            var handler = PropertyChanged;
-            if (handler != null) {
-                handler(this, args);
-            }
+            PropertyChangingEventManager.DeliverEvent(this, args);
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged {
+            add { PropertyChangedEventManager.AddHandler(this, value); }
+            remove { PropertyChangedEventManager.RemoveHandler(this, value); }
+        }
+
+        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args)
+        {
+            PropertyChangedEventManager.DeliverEvent(this, args);
         }
 
         /// <summary>
         /// Represents an Observable that fires *before* a property is about to
         /// be changed.
         /// </summary>
-        public IObservable<IObservedChange<object, object>> Changing {
+        public IObservable<IObservedChange<ReactiveCollectionViewController, object>> Changing {
             get { return this.getChangingObservable(); }
         }
 
         /// <summary>
         /// Represents an Observable that fires *after* a property has changed.
         /// </summary>
-        public IObservable<IObservedChange<object, object>> Changed {
+        public IObservable<IObservedChange<ReactiveCollectionViewController, object>> Changed {
             get { return this.getChangedObservable(); }
         }
 
@@ -69,7 +69,6 @@ namespace ReactiveUI.Cocoa
 
         void setupRxObj()
         {
-            this.setupReactiveExtension();
         }
 
         /// <summary>
