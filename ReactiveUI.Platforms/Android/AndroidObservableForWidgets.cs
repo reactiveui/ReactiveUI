@@ -74,9 +74,9 @@ namespace ReactiveUI.Android
                     return 
                         Observable.Merge(
                             Observable.FromEventPattern<AdapterView.ItemSelectedEventArgs>(h => v.ItemSelected += h, h => v.ItemSelected -=h)
-                                .Select(_ => new ObservedChange<object, object>() { Sender = v, PropertyName = propName, Value = getter(v) }),
+                                .Select(_ => new ObservedChange<object, object>(v, propName, getter(v))),
                             Observable.FromEventPattern<AdapterView.NothingSelectedEventArgs>(h => v.NothingSelected += h, h => v.NothingSelected -= h)
-                                .Select(_ => new ObservedChange<object, object>() { Sender = v, PropertyName = propName, Value = null })
+                                .Select(_ => new ObservedChange<object, object>(v, propName))
                         );
                 }
             };
@@ -102,7 +102,7 @@ namespace ReactiveUI.Android
                     var getter = Reflection.GetValueFetcherOrThrow(typeof(TView), propName);
 
                     return Observable.FromEventPattern<TEventArgs>(h => addHandler(v, h) , h => removeHandler(v, h))
-                        .Select(_ => new ObservedChange<object, object>() { Sender = v, PropertyName = propName, Value = getter(v) }); 
+                        .Select(_ => new ObservedChange<object, object>(v, propName, getter(v))); 
                 }
             };
         }

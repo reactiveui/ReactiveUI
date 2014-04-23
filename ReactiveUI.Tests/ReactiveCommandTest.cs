@@ -422,30 +422,31 @@ namespace ReactiveUI.Tests
 
                 var fixture = ReactiveCommand.CreateCombined(cmd1, cmd2, cmd3);
                 var canExecuteOutput = fixture.CanExecuteObservable.CreateCollection();
+
                 Assert.True(fixture.CanExecute(null));
-                Assert.Equal(1, canExecuteOutput.Count);
+                Assert.Equal(0, canExecuteOutput.Count);
 
                 fixture.Execute(42);
 
-                // NB: The first canExecuteOutput is because of the initial value
+                // NB: The first two canExecuteOutputs are because of the initial value
                 // that shows up because we finally ran the scheduler
                 sched.AdvanceToMs(50.0);
-                Assert.Equal(2, canExecuteOutput.Count);
-                Assert.Equal(true, canExecuteOutput[0]);
-                Assert.Equal(false, canExecuteOutput[1]);
+                Assert.Equal(3, canExecuteOutput.Count);
+                Assert.Equal(true, canExecuteOutput[1]);
+                Assert.Equal(false, canExecuteOutput[2]);
                 Assert.Equal(false, fixture.CanExecute(null));
                 Assert.Equal(0, result1.Count);
                 Assert.Equal(0, result2.Count);
 
                 sched.AdvanceToMs(250.0);
-                Assert.Equal(2, canExecuteOutput.Count);
+                Assert.Equal(3, canExecuteOutput.Count);
                 Assert.Equal(false, fixture.CanExecute(null));
                 Assert.Equal(1, result1.Count);
                 Assert.Equal(0, result2.Count);
                                 
                 sched.AdvanceToMs(500.0);
-                Assert.Equal(3, canExecuteOutput.Count);
-                Assert.Equal(true, canExecuteOutput[2]);
+                Assert.Equal(4, canExecuteOutput.Count);
+                Assert.Equal(true, canExecuteOutput[3]);
                 Assert.Equal(true, fixture.CanExecute(null));
                 Assert.Equal(1, result1.Count);
                 Assert.Equal(1, result2.Count);
