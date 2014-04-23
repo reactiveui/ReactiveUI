@@ -28,51 +28,51 @@ using MonoMac.AppKit;
 
 namespace ReactiveUI.Cocoa
 {
-    public abstract class ReactiveImageView : NSImageView, IReactiveNotifyPropertyChanged, IHandleObservableErrors, IReactiveObjectExtension, ICanActivate
+    public abstract class ReactiveImageView : NSImageView, IReactiveNotifyPropertyChanged<ReactiveImageView>, IHandleObservableErrors, IReactiveObject, ICanActivate
     {
-        public ReactiveImageView(RectangleF frame) : base(frame) { this.setupReactiveExtension(); }
-        public ReactiveImageView(IntPtr handle) : base(handle) { this.setupReactiveExtension(); }
-        public ReactiveImageView() { this.setupReactiveExtension(); }
+        public ReactiveImageView(RectangleF frame) : base(frame) { }
+        public ReactiveImageView(IntPtr handle) : base(handle) { }
+        public ReactiveImageView() { }
 
 #if UIKIT
-        public ReactiveImageView(NSImage image) : base(image) { this.setupReactiveExtension(); }
-        public ReactiveImageView(NSObjectFlag t) : base(t) { this.setupReactiveExtension(); }
-        public ReactiveImageView(NSImage image, NSImage highlightedImage) : base(image, highlightedImage) { this.setupReactiveExtension(); }
-        public ReactiveImageView(NSCoder coder) : base(coder) { this.setupReactiveExtension(); }
+        public ReactiveImageView(NSImage image) : base(image) { }
+        public ReactiveImageView(NSObjectFlag t) : base(t) { }
+        public ReactiveImageView(NSImage image, NSImage highlightedImage) : base(image, highlightedImage) { }
+        public ReactiveImageView(NSCoder coder) : base(coder) { }
 #endif
 
-        public event PropertyChangingEventHandler PropertyChanging;
-
-        void IReactiveObjectExtension.RaisePropertyChanging(PropertyChangingEventArgs args) 
-        {
-            var handler = PropertyChanging;
-            if (handler != null) {
-                handler(this, args);
-            }
+        public event PropertyChangingEventHandler PropertyChanging {
+            add { PropertyChangingEventManager.AddHandler(this, value); }
+            remove { PropertyChangingEventManager.RemoveHandler(this, value); }
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        void IReactiveObjectExtension.RaisePropertyChanged(PropertyChangedEventArgs args) 
+        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args)
         {
-            var handler = PropertyChanged;
-            if (handler != null) {
-                handler(this, args);
-            }
+            PropertyChangingEventManager.DeliverEvent(this, args);
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged {
+            add { PropertyChangedEventManager.AddHandler(this, value); }
+            remove { PropertyChangedEventManager.RemoveHandler(this, value); }
+        }
+
+        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args)
+        {
+            PropertyChangedEventManager.DeliverEvent(this, args);
         }
 
         /// <summary>
         /// Represents an Observable that fires *before* a property is about to
         /// be changed.         
         /// </summary>
-        public IObservable<IObservedChange<object, object>> Changing {
+        public IObservable<IObservedChange<ReactiveImageView, object>> Changing {
             get { return this.getChangingObservable(); }
         }
 
         /// <summary>
         /// Represents an Observable that fires *after* a property has changed.
         /// </summary>
-        public IObservable<IObservedChange<object, object>> Changed {
+        public IObservable<IObservedChange<ReactiveImageView, object>> Changed {
             get { return this.getChangedObservable(); }
         }
 

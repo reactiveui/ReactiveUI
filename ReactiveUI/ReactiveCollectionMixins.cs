@@ -236,7 +236,7 @@ namespace ReactiveUI
                     }
                 }
             } else {
-                var irncc = source as IReactiveNotifyCollectionChanged;
+                var irncc = source as IReactiveNotifyCollectionChanged<TSource>;
                 var eventObs = irncc != null
                     ? irncc.Changed
                     : Observable
@@ -250,7 +250,7 @@ namespace ReactiveUI
             var irc = source as IReactiveCollection<TSource>;
 
             if (irc != null) {
-                inner.Add(irc.ItemChanged.Select(x => (TSource)x.Sender).Subscribe(onItemChanged));
+                inner.Add(irc.ItemChanged.Select(x => x.Sender).Subscribe(onItemChanged));
             }
 
             if (signalReset != null) {

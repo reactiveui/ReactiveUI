@@ -19,15 +19,18 @@ namespace ReactiveUI
         /// <param name="resolver">The resolver to initialize.</param>
         public static void InitializeReactiveUI(this IMutableDependencyResolver resolver)
         {
-            var namespaces = new[] { 
-                "ReactiveUI",
+            var platforms = new[] { 
                 "ReactiveUI.Xaml", 
                 "ReactiveUI.Winforms",
-                "ReactiveUI.Mobile", 
-                "ReactiveUI.NLog", 
                 "ReactiveUI.Gtk", 
                 "ReactiveUI.Cocoa", 
                 "ReactiveUI.Android",
+            };
+
+            var extraNs = new[] {
+                "ReactiveUI",
+                "ReactiveUI.NLog", 
+                "ReactiveUI.Mobile", 
             };
 
             var fdr = typeof(ModernDependencyResolver);
@@ -35,16 +38,26 @@ namespace ReactiveUI
             var assmName = new AssemblyName(
                 fdr.AssemblyQualifiedName.Replace(fdr.FullName + ", ", ""));
 
-            namespaces.ForEach(ns => {
-                var targetType = ns + ".Registrations";
-                string fullName = targetType + ", " + assmName.FullName.Replace(assmName.Name, ns);
+            var platDllCount = platforms.Count(x => processRegistrationForNamespace(x, assmName, resolver) == true);
+            if (platDllCount == 0) {
+                LogHost.Default.Warn("We couldn't load a Platform DLL. This probably means you need to Install-Package ReactiveUI-Platforms on your App");
+            }
 
-                var registerTypeClass = Reflection.ReallyFindType(fullName, false);
-                if (registerTypeClass == null) return;
+            extraNs.ForEach(ns => processRegistrationForNamespace(ns, assmName, resolver));
+        }
 
-                var registerer = (IWantsToRegisterStuff)Activator.CreateInstance(registerTypeClass);
-                registerer.Register((f, t) => resolver.RegisterConstant(f(), t));
-            });
+        static bool processRegistrationForNamespace(string ns, AssemblyName assmName, IMutableDependencyResolver resolver)
+        {
+            var targetType = ns + ".Registrations";
+            string fullName = targetType + ", " + assmName.FullName.Replace(assmName.Name, ns);
+
+            var registerTypeClass = Reflection.ReallyFindType(fullName, false);
+            if (registerTypeClass == null) return false;
+
+            var registerer = (IWantsToRegisterStuff)Activator.CreateInstance(registerTypeClass);
+            registerer.Register((f, t) => resolver.RegisterConstant(f(), t));
+
+            return true;
         }
     }
 }

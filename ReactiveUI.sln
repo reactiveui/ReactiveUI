@@ -45,7 +45,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RxUIViewModelGenerator", "R
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Winforms_Net45", "ReactiveUI.Platforms\ReactiveUI.Winforms_Net45.csproj", "{F5ECBDE5-E525-4482-B568-63217BCB0A0B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Testing_WinRT80", "ReactiveUI.Testing\ReactiveUI.Testing_WinRT80.csproj", "{1ACA04C7-F566-4095-8306-7947428230F3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Testing_WinRT", "ReactiveUI.Testing\ReactiveUI.Testing_WinRT.csproj", "{1ACA04C7-F566-4095-8306-7947428230F3}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Xaml_WinRT80", "ReactiveUI.Platforms\ReactiveUI.Xaml_WinRT80.csproj", "{1C0C56B6-98E1-4916-A470-C5A2C8EAF630}"
 EndProject
@@ -983,9 +983,6 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(Performance) = preSolution
-		HasPerformanceSessions = true
 	EndGlobalSection
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = ReactiveUI.vsmdi
