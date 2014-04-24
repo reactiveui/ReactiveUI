@@ -261,7 +261,7 @@ namespace ReactiveUI.Tests
                 Assert.Equal(0, fixture.IsActiveCount);
 
                 fixture.Loaded.OnNext(Unit.Default);
-                Assert.Equal(1, vm.IsActiveCount); // Fails here
+                Assert.Equal(1, vm.IsActiveCount);
                 Assert.Equal(1, fixture.IsActiveCount);
             }
         }
