@@ -234,5 +234,37 @@ namespace ReactiveUI.Tests
                 Assert.Equal(0, vm.IsActiveCount);
             }
         }
+
+        [Fact]
+        public void CanUnloadAndLoadViewAgain()
+        {
+            var locator = new ModernDependencyResolver();
+            locator.InitializeSplat();
+            locator.InitializeReactiveUI();
+            locator.Register(() => new ActivatingViewFetcher(), typeof(IActivationForViewFetcher));
+
+            using (locator.WithResolver())
+            {
+                var vm = new ActivatingViewModel();
+                var fixture = new ActivatingView();
+
+                fixture.ViewModel = vm;
+                Assert.Equal(0, vm.IsActiveCount);
+                Assert.Equal(0, fixture.IsActiveCount);
+
+                fixture.Loaded.OnNext(Unit.Default);
+                Assert.Equal(1, vm.IsActiveCount);
+                Assert.Equal(1, fixture.IsActiveCount);
+
+                fixture.Unloaded.OnNext(Unit.Default);
+                Assert.Equal(0, vm.IsActiveCount);
+                Assert.Equal(0, fixture.IsActiveCount);
+
+                fixture.Loaded.OnNext(Unit.Default);
+                Assert.Equal(1, vm.IsActiveCount); // Fails here
+                Assert.Equal(1, fixture.IsActiveCount);
+            }
+        }
+
     }
 }
