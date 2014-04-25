@@ -101,7 +101,7 @@ namespace ReactiveUI
                 }),
                 // Deactivation
                 activation.Item2.Subscribe(_ => {
-                    viewDisposable.Dispose();
+                    viewDisposable.Disposable = Disposable.Empty;
                 }),
                 viewDisposable);
         }
@@ -126,7 +126,7 @@ namespace ReactiveUI
                     }),
                 // Deactivation
                 activation.Item2.Subscribe(_ => {
-                    vmDisposable.Dispose();
+                    vmDisposable.Disposable = Disposable.Empty;
                 }),
                 vmDisposable);
         }
