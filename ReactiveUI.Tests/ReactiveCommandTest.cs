@@ -89,6 +89,26 @@ namespace ReactiveUI.Tests
         }
 
         [Fact]
+        public void ObservableCanExecuteIsNotNullAfterCanExecuteCalled()
+        {
+            var fixture = createCommand(null);
+
+            fixture.CanExecute(null);
+
+            Assert.NotNull(fixture.CanExecuteObservable);
+        }
+
+        [Fact]
+        public void ObservableCanExecuteIsNotNullAfterCanExecuteChangedEventAdded()
+        {
+            var fixture = createCommand(null);
+
+            fixture.CanExecuteChanged += (sender, args) => { };
+
+            Assert.NotNull(fixture.CanExecuteObservable);
+        }
+
+        [Fact]
         public void MultipleSubscribesShouldntResultInMultipleNotifications()
         {
             var input = new[] {1, 2, 1, 2};
