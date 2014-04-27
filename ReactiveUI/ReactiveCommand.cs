@@ -106,7 +106,7 @@ namespace ReactiveUI
         }
     }
 
-    public class ReactiveCommand<T> : IReactiveCommand<T>
+    public class ReactiveCommand<T> : IReactiveCommand<T>, IReactiveCommand
     {
         readonly Subject<T> executeResults = new Subject<T>();
         readonly Subject<bool> isExecuting = new Subject<bool>();
