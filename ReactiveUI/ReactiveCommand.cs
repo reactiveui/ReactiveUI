@@ -184,7 +184,8 @@ namespace ReactiveUI
             get {
                 var ret = canExecute.StartWith(canExecuteLatest).DistinctUntilChanged();
 
-                if (canExecuteDisp != null) return null;
+                if (canExecuteDisp != null) return ret;
+
                 return Observable.Create<bool>(subj => {
                     var disp = ret.Subscribe(subj);
 
