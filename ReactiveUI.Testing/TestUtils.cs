@@ -131,12 +131,11 @@ namespace ReactiveUI.Testing
         }
 
         /// <summary>
-        /// AdvanceToMs moves the TestScheduler along by the specified time in
+        /// AdvanceByMs moves the TestScheduler along by the specified time in
         /// milliseconds.
         /// </summary>
-        /// <param name="milliseconds">The time offset to set the TestScheduler
-        /// to, in milliseconds. Note that this is *not* additive or
-        /// incremental, it sets the time.</param>
+        /// <param name="milliseconds">The relative time to advance the TestScheduler 
+        /// by, in milliseconds.</param>
         public static void AdvanceByMs(this TestScheduler sched, double milliseconds)
         {
             sched.AdvanceBy(sched.FromTimeSpan(TimeSpan.FromMilliseconds(milliseconds)));
