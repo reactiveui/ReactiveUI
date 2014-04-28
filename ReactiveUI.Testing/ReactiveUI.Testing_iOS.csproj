@@ -2,7 +2,7 @@
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">iPhoneSimulator</Platform>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{90913370-9E94-3DBD-8F1E-15E10DB72FFC}</ProjectGuid>
@@ -26,8 +26,6 @@
     <ConsolePause>False</ConsolePause>
     <MtouchDebug>true</MtouchDebug>
     <CodesignKey>iPhone Developer</CodesignKey>
-    <DocumentationFile>
-    </DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
@@ -73,11 +71,11 @@
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.MonoTouch.CSharp.targets" />
   <ItemGroup>
     <ProjectReference Include="..\Microsoft.Reactive.Testing\Microsoft.Reactive.Testing_iOS.csproj">
-      <Project>{74ba5b4e-257a-42a7-bdab-1fb40a903909}</Project>
+      <Project>{74BA5B4E-257A-42A7-BDAB-1FB40A903909}</Project>
       <Name>Microsoft.Reactive.Testing_iOS</Name>
     </ProjectReference>
     <ProjectReference Include="..\ReactiveUI.Platforms\ReactiveUI.iOS.csproj">
-      <Project>{9091337a-9e94-4dbd-801e-15e1fda78ffc}</Project>
+      <Project>{9091337A-9E94-4DBD-801E-15E1FDA78FFC}</Project>
       <Name>ReactiveUI.iOS</Name>
     </ProjectReference>
     <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj">
