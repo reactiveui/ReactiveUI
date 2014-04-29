@@ -25,6 +25,11 @@ version-bump.patch
 ReactiveUI.Events/Events.cs
 ReactiveUI.Events/Events_*.cs
 
+ReactiveUI.Events/EventBuilder.exe
+ReactiveUI.Events/EventBuilder.exe.mdb
+ReactiveUI.Events/Mono.Cecil.dll
+ReactiveUI.Events/Nustache.Core.dll
+
 ext/monodroid/18
 
 #NuGet

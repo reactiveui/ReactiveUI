@@ -45,6 +45,11 @@ namespace ReactiveUI
             return new ReactiveCommand<T>(canExecute, x => executeAsync(x).ToObservable(), scheduler);
         }
 
+        public static ReactiveCommand<Unit> CreateAsync(IObservable<bool> canExecute, Func<object, Task> executeAsync, IScheduler scheduler = null)
+        {
+            return new ReactiveCommand<Unit>(canExecute, x => executeAsync(x).ToObservable(), scheduler);
+        }
+
         public static ReactiveCommand<Unit> Create(Action<object> executeAsync, IScheduler scheduler = null)
         {
             return new ReactiveCommand<Unit>(Observable.Return(true), x => Observable.Start(() => executeAsync(x), RxApp.TaskpoolScheduler), scheduler);
@@ -63,6 +68,11 @@ namespace ReactiveUI
         public static ReactiveCommand<T> CreateAsync<T>(Func<object, Task<T>> executeAsync, IScheduler scheduler = null)
         {
             return new ReactiveCommand<T>(Observable.Return(true), x => executeAsync(x).ToObservable(), scheduler);
+        }
+
+        public static ReactiveCommand<Unit> CreateAsync(Func<object, Task> executeAsync, IScheduler scheduler = null)
+        {
+            return new ReactiveCommand<Unit>(Observable.Return(true), x => executeAsync(x).ToObservable(), scheduler);
         }
 
         /// <summary>
@@ -96,7 +106,7 @@ namespace ReactiveUI
         }
     }
 
-    public class ReactiveCommand<T> : IReactiveCommand<T>
+    public class ReactiveCommand<T> : IReactiveCommand<T>, IReactiveCommand
     {
         readonly Subject<T> executeResults = new Subject<T>();
         readonly Subject<bool> isExecuting = new Subject<bool>();
@@ -173,8 +183,19 @@ namespace ReactiveUI
 
         public IObservable<bool> CanExecuteObservable {
             get {
-                if (canExecuteDisp == null) canExecuteDisp = canExecute.Connect();
-                return canExecute.StartWith(canExecuteLatest).DistinctUntilChanged();
+                var ret = canExecute.StartWith(canExecuteLatest).DistinctUntilChanged();
+
+                if (canExecuteDisp != null) return ret;
+
+                return Observable.Create<bool>(subj => {
+                    var disp = ret.Subscribe(subj);
+
+                    // NB: We intentionally leak the CanExecute disconnect, it's 
+                    // cleaned up by the global Dispose. This is kind of a
+                    // "Lazy Subscription" to CanExecute by the command itself.
+                    canExecuteDisp = canExecute.Connect();
+                    return disp;
+                });
             }
         }
 

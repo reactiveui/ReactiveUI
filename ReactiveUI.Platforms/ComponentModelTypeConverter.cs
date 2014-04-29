@@ -64,7 +64,7 @@ namespace ReactiveUI
                     result = null;
                     return false;
                 } else {
-                    throw;
+                    throw new Exception(string.Format("Can't convert from {0} to {1}.", from.GetType(), toType), e);
                 }
             }
         }

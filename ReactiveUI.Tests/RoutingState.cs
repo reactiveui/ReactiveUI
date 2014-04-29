@@ -109,6 +109,7 @@ namespace ReactiveUI.Routing.Tests
             Assert.Equal(4, output.Count);
             Assert.Equal("A", ((TestViewModel)output.Last()).SomeProp);
         }
+<<<<<<< HEAD
 
         [Fact]
         public void NavigateWithoutBackStack()
@@ -247,5 +248,22 @@ namespace ReactiveUI.Routing.Tests
         }
 
         
+=======
+        
+        [Fact]
+        public void NavigateAndResetCheckNavigationStack()
+        {
+            var fixture = new TestScreen();
+            fixture.Router = new RoutingState();
+            var viewModel = new TestViewModel();
+
+            Assert.False(fixture.Router.NavigationStack.Any());
+
+            fixture.Router.NavigateAndReset.Execute(viewModel);
+
+            Assert.True(fixture.Router.NavigationStack.Count == 1);
+            Assert.True(object.ReferenceEquals(fixture.Router.NavigationStack.First(), viewModel));
+        }
+>>>>>>> upstream/rxui6-master
     }
 }
