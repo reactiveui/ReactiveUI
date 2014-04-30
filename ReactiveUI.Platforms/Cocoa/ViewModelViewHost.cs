@@ -58,8 +58,25 @@ namespace ReactiveUI.Cocoa
                 view.ViewModel = x.ViewModel;
 
                 viewLastAdded = ((NSViewController)view).View;
-                targetView.AddSubview(viewLastAdded);           
+
+                // required for Auto Layout to work correctly,
+                // see https://developer.apple.com/library/ios/documentation/userexperience/conceptual/AutolayoutPG/AdoptingAutoLayout/AdoptingAutoLayout.html
+                viewLastAdded.TranslatesAutoresizingMaskIntoConstraints = false;
+
+                targetView.AddSubview(viewLastAdded);
+
+                // add edge constraints so that subview trails changes in parent
+                AddEdgeConstraint(NSLayoutAttribute.Left,  targetView, viewLastAdded);
+                AddEdgeConstraint(NSLayoutAttribute.Right, targetView, viewLastAdded);
+                AddEdgeConstraint(NSLayoutAttribute.Top, targetView, viewLastAdded);
+                AddEdgeConstraint(NSLayoutAttribute.Bottom,  targetView, viewLastAdded);
             });
+        }
+
+        private void AddEdgeConstraint(NSLayoutAttribute edge, NSView parentView, NSView subView)
+        {
+            var constraint = NSLayoutConstraint.Create(subView, edge, NSLayoutRelation.Equal, parentView, edge, 1, 0);
+            parentView.AddConstraint(constraint);
         }
 
         NSViewController _DefaultContent;
