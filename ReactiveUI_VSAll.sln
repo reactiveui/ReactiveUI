@@ -10,11 +10,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		TraceAndTestImpact.testsettings = TraceAndTestImpact.testsettings
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MobileSample-WinRT", "MobileSample-WinRT\MobileSample-WinRT.csproj", "{E8C81219-761C-4749-B997-23E171B58D14}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Playground-WinRT", "Playground-WinRT\Playground-WinRT.csproj", "{E8C81219-761C-4749-B997-23E171B58D14}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MobileSample-WinRT80", "MobileSample-WinRT80\MobileSample-WinRT80.csproj", "{4F871151-48AF-4476-9489-E31690DACAB9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Playground-WinRT80", "Playground-WinRT80\Playground-WinRT80.csproj", "{4F871151-48AF-4476-9489-E31690DACAB9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MobileSample-WP8", "MobileSample-WP8\MobileSample-WP8.csproj", "{B5708000-73EE-43A2-9830-454C74B037F1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Playground-WP8", "Playground-WP8\Playground-WP8.csproj", "{B5708000-73EE-43A2-9830-454C74B037F1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI", "ReactiveUI\ReactiveUI.csproj", "{464CB812-F99F-401B-BE4C-E8F0515CD19D}"
 EndProject
@@ -78,9 +78,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Reactive.Testing_
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Reactive.Testing_iOS", "Microsoft.Reactive.Testing\Microsoft.Reactive.Testing_iOS.csproj", "{74BA5B4E-257A-42A7-BDAB-1FB40A903909}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MobileSample-Android", "MobileSample-Android\MobileSample-Android.csproj", "{D444AA58-1C6B-4CEE-B5F5-76145E0B86E5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Playground-Android", "Playground-Android\Playground-Android.csproj", "{D444AA58-1C6B-4CEE-B5F5-76145E0B86E5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MobileSample-iOS", "MobileSample-iOS\MobileSample-iOS.csproj", "{420CF325-38B9-4B30-8978-D519EC40B6A8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Playground-iOS", "Playground-iOS\Playground-iOS.csproj", "{420CF325-38B9-4B30-8978-D519EC40B6A8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PerfConsoleRunner", "PerfConsoleRunner\PerfConsoleRunner.csproj", "{DBC5FEB0-8535-4D77-AA1B-BA8957253996}"
 EndProject
