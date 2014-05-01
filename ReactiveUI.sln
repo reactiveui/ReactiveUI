@@ -29,9 +29,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Mobile_WinRT", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Mobile_WP8", "ReactiveUI.Mobile\ReactiveUI.Mobile_WP8.csproj", "{B90F3D02-1E3A-4DD7-8E00-30F28B6DCC1E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MobileSample-WP8", "MobileSample-WP8\MobileSample-WP8.csproj", "{B5708000-73EE-43A2-9830-454C74B037F1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Playground-WP8", "Playground-WP8\Playground-WP8.csproj", "{B5708000-73EE-43A2-9830-454C74B037F1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MobileSample-WinRT", "MobileSample-WinRT\MobileSample-WinRT.csproj", "{E8C81219-761C-4749-B997-23E171B58D14}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Playground-WinRT", "Playground-WinRT\Playground-WinRT.csproj", "{E8C81219-761C-4749-B997-23E171B58D14}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI", "ReactiveUI\ReactiveUI.csproj", "{464CB812-F99F-401B-BE4C-E8F0515CD19D}"
 EndProject
