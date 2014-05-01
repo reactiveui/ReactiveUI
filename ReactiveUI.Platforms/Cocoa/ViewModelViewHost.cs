@@ -2,6 +2,7 @@ using System;
 using System.Reactive;
 using System.Reactive.Linq;
 using ReactiveUI;
+using Splat;
 
 #if UIKIT
 using MonoTouch.UIKit;
@@ -24,8 +25,20 @@ namespace ReactiveUI.Cocoa
     /// </summary>
     public class ViewModelViewHost : ReactiveObject 
     {
+        /// <summary>
+        /// Gets or sets a value indicating whether this <see cref="ReactiveUI.Cocoa.ViewModelViewHost"/>
+        /// will automatically create Auto Layout constraints tying the sub view to the parent view.
+        /// </summary>
+        /// <value><c>true</c> if add layout contraints to sub view; otherwise, <c>false</c>.</value>
+        public bool AddAutoLayoutConstraintsToSubView { get; set; } 
+
         public ViewModelViewHost(NSView targetView)
         {
+            if (targetView == null) throw new ArgumentNullException("targetView");
+
+            // default to auto-wiring layout constraints
+            AddAutoLayoutConstraintsToSubView = true;
+
             NSView viewLastAdded = null;
 
             ViewContractObservable = Observable.Return(default(string));
@@ -59,17 +72,28 @@ namespace ReactiveUI.Cocoa
 
                 viewLastAdded = ((NSViewController)view).View;
 
-                // required for Auto Layout to work correctly,
-                // see https://developer.apple.com/library/ios/documentation/userexperience/conceptual/AutolayoutPG/AdoptingAutoLayout/AdoptingAutoLayout.html
-                viewLastAdded.TranslatesAutoresizingMaskIntoConstraints = false;
+                if (viewLastAdded == null)
+                {
+                    var message = string.Format("No view associated with view controller {0}.", view.GetType());
+                    throw new Exception(message);
+                }
+
+                if (AddAutoLayoutConstraintsToSubView)
+                {
+                    // see https://developer.apple.com/library/ios/documentation/userexperience/conceptual/AutolayoutPG/AdoptingAutoLayout/AdoptingAutoLayout.html
+                    viewLastAdded.TranslatesAutoresizingMaskIntoConstraints = false;
+                }
 
                 targetView.AddSubview(viewLastAdded);
 
-                // add edge constraints so that subview trails changes in parent
-                AddEdgeConstraint(NSLayoutAttribute.Left,  targetView, viewLastAdded);
-                AddEdgeConstraint(NSLayoutAttribute.Right, targetView, viewLastAdded);
-                AddEdgeConstraint(NSLayoutAttribute.Top, targetView, viewLastAdded);
-                AddEdgeConstraint(NSLayoutAttribute.Bottom,  targetView, viewLastAdded);
+                if (AddAutoLayoutConstraintsToSubView)
+                {
+                    // add edge constraints so that subview trails changes in parent
+                    AddEdgeConstraint(NSLayoutAttribute.Left,  targetView, viewLastAdded);
+                    AddEdgeConstraint(NSLayoutAttribute.Right, targetView, viewLastAdded);
+                    AddEdgeConstraint(NSLayoutAttribute.Top, targetView, viewLastAdded);
+                    AddEdgeConstraint(NSLayoutAttribute.Bottom,  targetView, viewLastAdded);
+                }
             });
         }
 
