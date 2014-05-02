@@ -58,16 +58,18 @@ namespace ReactiveUI.Cocoa
 
                 var viewLocator = ViewLocator ?? ReactiveUI.ViewLocator.Current;
                 var view = viewLocator.ResolveView(x.ViewModel, x.Contract);
-				if (view == null)
-				{
-                    var message = string.Format("Unable to resolve view for \"{0}\"", x.ViewModel.GetType());
-                    if (x.Contract != null)
-                    {
-                        message += string.Format(" and contract \"{1}\"", x.Contract.GetType());
+
+                if (view == null) {
+                    var message = String.Format("Unable to resolve view for \"{0}\"", x.ViewModel.GetType());
+
+                    if (x.Contract != null) {
+                        message += String.Format(" and contract \"{1}\"", x.Contract.GetType());
                     }
+
                     message += ".";
-					throw new Exception(message);
-				}
+                    throw new Exception(message);
+                }
+
                 view.ViewModel = x.ViewModel;
 
                 viewLastAdded = ((NSViewController)view).View;

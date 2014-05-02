@@ -106,7 +106,7 @@ namespace ReactiveUI
         }
     }
 
-    public class ReactiveCommand<T> : IReactiveCommand<T>
+    public class ReactiveCommand<T> : IReactiveCommand<T>, IReactiveCommand
     {
         readonly Subject<T> executeResults = new Subject<T>();
         readonly Subject<bool> isExecuting = new Subject<bool>();
@@ -184,7 +184,8 @@ namespace ReactiveUI
             get {
                 var ret = canExecute.StartWith(canExecuteLatest).DistinctUntilChanged();
 
-                if (canExecuteDisp != null) return null;
+                if (canExecuteDisp != null) return ret;
+
                 return Observable.Create<bool>(subj => {
                     var disp = ret.Subscribe(subj);
 
