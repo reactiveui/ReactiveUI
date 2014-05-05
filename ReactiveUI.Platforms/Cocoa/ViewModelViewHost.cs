@@ -2,6 +2,7 @@ using System;
 using System.Reactive;
 using System.Reactive.Linq;
 using ReactiveUI;
+using Splat;
 
 #if UIKIT
 using MonoTouch.UIKit;
@@ -24,10 +25,18 @@ namespace ReactiveUI.Cocoa
     /// </summary>
     public class ViewModelViewHost : ReactiveObject 
     {
+        /// <summary>
+        /// Gets or sets a value indicating whether this <see cref="ReactiveUI.Cocoa.ViewModelViewHost"/>
+        /// will automatically create Auto Layout constraints tying the sub view to the parent view.
+        /// </summary>
+        /// <value><c>true</c> if add layout contraints to sub view; otherwise, <c>false</c>.</value>
+        public bool AddAutoLayoutConstraintsToSubView { get; set; } 
+
         public ViewModelViewHost(NSView targetView)
         {
-            NSView viewLastAdded = null;
+            if (targetView == null) throw new ArgumentNullException("targetView");
 
+            NSView viewLastAdded = null;
             ViewContractObservable = Observable.Return(default(string));
 
             var vmAndContract = Observable.CombineLatest(
@@ -60,8 +69,33 @@ namespace ReactiveUI.Cocoa
                 view.ViewModel = x.ViewModel;
 
                 viewLastAdded = ((NSViewController)view).View;
-                targetView.AddSubview(viewLastAdded);           
+
+                if (viewLastAdded == null) {
+                    var message = string.Format("No view associated with view controller {0}.", view.GetType());
+                    throw new Exception(message);
+                }
+
+                if (AddAutoLayoutConstraintsToSubView) {
+                    // see https://developer.apple.com/library/ios/documentation/userexperience/conceptual/AutolayoutPG/AdoptingAutoLayout/AdoptingAutoLayout.html
+                    viewLastAdded.TranslatesAutoresizingMaskIntoConstraints = false;
+                }
+
+                targetView.AddSubview(viewLastAdded);
+
+                if (AddAutoLayoutConstraintsToSubView) {
+                    // add edge constraints so that subview trails changes in parent
+                    addEdgeConstraint(NSLayoutAttribute.Left,  targetView, viewLastAdded);
+                    addEdgeConstraint(NSLayoutAttribute.Right, targetView, viewLastAdded);
+                    addEdgeConstraint(NSLayoutAttribute.Top, targetView, viewLastAdded);
+                    addEdgeConstraint(NSLayoutAttribute.Bottom,  targetView, viewLastAdded);
+                }
             });
+        }
+
+        void addEdgeConstraint(NSLayoutAttribute edge, NSView parentView, NSView subView)
+        {
+            var constraint = NSLayoutConstraint.Create(subView, edge, NSLayoutRelation.Equal, parentView, edge, 1, 0);
+            parentView.AddConstraint(constraint);
         }
 
         NSViewController _DefaultContent;
