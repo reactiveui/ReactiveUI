@@ -1646,9 +1646,9 @@ namespace ReactiveUI.Tests
             Assert.NotNull(fixture);
             var names = new string[] { "Alice", "Bob" };
 
-            fixture.ItemChangedWithHistory.Subscribe(x => {
-                oldName = (string)x.OldValue;
-                newName = (string)x.NewValue;
+            fixture.ItemChangedWithHistory().Subscribe(x => {
+                oldName = (string)x.Value.Item1;
+                newName = (string)x.Value.Item2;
                 propertyName = x.PropertyName;
                 sender = x.Sender;
             });

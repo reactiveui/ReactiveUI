@@ -105,15 +105,15 @@ namespace ReactiveUI.Tests
         public void ReactiveObjectChangeWithHistoryTest()
         {
             var fixture = new TestFixture();
-            IObservedChangeWithHistory<object, object> result = new ObservedChangeWithHistory<object, object>();
+            IObservedChange<ReactiveObject, Tuple<object, object>> result = null;
 
-            fixture.ChangedWithHistory.Subscribe(x => result = x);
+            fixture.ChangedWithHistory().Subscribe(x => result = x);
             
             fixture.IsOnlyOneWord = "Alice";
             fixture.IsOnlyOneWord = "Bob";
 
-            Assert.Equal(result.OldValue, "Alice");
-            Assert.Equal(result.NewValue, "Bob");
+            Assert.Equal(result.Value.Item1, "Alice");
+            Assert.Equal(result.Value.Item2, "Bob");
         }
 
         [Fact]
