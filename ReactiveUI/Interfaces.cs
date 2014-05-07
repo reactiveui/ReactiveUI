@@ -39,32 +39,6 @@ namespace ReactiveUI
     }
 
     /// <summary>
-    /// IObservedChangeWithHistory 
-    /// </summary>
-    public interface IObservedChangeWithHistory<out TSender, out TValue>
-    {
-        /// <summary>
-        /// The object that has raised the change.
-        /// </summary>
-        TSender Sender { get; }
-
-        /// <summary>
-        /// The name of the property that has changed on Sender.
-        /// </summary>
-        string PropertyName { get; }
-
-        /// <summary>
-        /// The value of the property before the change was made
-        /// </summary>
-        TValue OldValue { get; }
-
-        /// <summary>
-        /// The value of the property after the change as been made
-        /// </summary>
-        TValue NewValue { get; }
-    }
-
-    /// <summary>
     /// A data-only version of IObservedChange
     /// </summary>
     public class ObservedChange<TSender, TValue> : IObservedChange<TSender, TValue>
@@ -87,17 +61,6 @@ namespace ReactiveUI
         public string PropertyName { get; private set; }
 
         public TValue Value { get; private set; }
-    }
-
-    /// <summary>
-    /// A data-only version of IObservedChangeWithHistory
-    /// </summary>
-    public class ObservedChangeWithHistory<TSender, TValue> : IObservedChangeWithHistory<TSender, TValue>
-    {
-        public TSender Sender { get; set; }
-        public string PropertyName { get; set; }
-        public TValue OldValue { get; set; }
-        public TValue NewValue { get; set; }
     }
 
     /// <summary>
@@ -175,14 +138,6 @@ namespace ReactiveUI
         IObservable<IObservedChange<TSender, object>> Changed { get; }
 
         /// <summary>
-        /// Represents an Observable that fires *after* a property has changed and 
-        /// provides both the old and new values for that property.
-        /// Note that this should not fire duplicate change notifications if a
-        /// property is set to the same value multiple times.
-        /// </summary>
-        IObservable<IObservedChangeWithHistory<object, object>> ChangedWithHistory { get; }
-
-        /// <summary>
         /// When this method is called, an object will not fire change
         /// notifications (neither traditional nor Observable notifications)
         /// until the return value is disposed.
@@ -212,13 +167,6 @@ namespace ReactiveUI
         /// </summary>
         IObservable<IObservedChange<TSender, object>> ItemChanged { get; }
 
-        ///<summary>
-        /// Provides Item Changed notifications, including old and new values, for any item in collection that
-        /// implements IReactiveNotifyPropertyChanged. This is only enabled when
-        /// ChangeTrackingEnabled is set to True.
-        /// </summary>
-        IObservable<IObservedChangeWithHistory<object, object>> ItemChangedWithHistory { get; }
-
         /// <summary>
         /// Enables the ItemChanging and ItemChanged properties; when this is
         /// enabled, whenever a property on any object implementing
@@ -230,13 +178,6 @@ namespace ReactiveUI
 
     /// <summary>
     /// IReactiveNotifyCollectionChanged of T provides notifications when the contents
-
-        /// <summary>
-        /// Provides Item Changed notifications, reporting on both old and new value, 
-        /// for any item in collection that implements IReactiveNotifyPropertyChanged. 
-        /// This is only enabled when ChangeTrackingEnabled is set to True.
-        /// </summary>
-        new IObservable<IObservedChangeWithHistory<T, object>> ItemChangedWithHistory { get; }
     /// of collection are changed (items are added/removed/moved).
     /// </summary>
     public interface IReactiveNotifyCollectionChanged<out T>
@@ -426,7 +367,7 @@ namespace ReactiveUI
         /// A unique string that will be used along with the type to resolve a View
         /// </summary>
         public string Contract { get; set; }
-    }
+    }    
 }
 
 // vim: tw=120 ts=4 sw=4 et :
