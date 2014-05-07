@@ -514,31 +514,7 @@ namespace ReactiveUI
 
         public IObservable<IObservedChange<T, object>> ItemChanging { get { return _itemChanging.Value; } }
         public IObservable<IObservedChange<T, object>> ItemChanged { get { return _itemChanged.Value; } }
-        
-        public IObservable<IObservedChangeWithHistory<T, object>> ItemChangedWithHistory
-        {
-            get
-            {
-                var result = ItemChanging.Select(x=>x.GetValue()) .Zip(ItemChanged, (oldVal, newVal) => new ObservedChangeWithHistory<T, object>
-                {
-                    Sender = newVal.Sender,
-                    PropertyName = newVal.PropertyName,
-                    OldValue = oldVal,
-                    NewValue = newVal.GetValue()
-                });
-                return result;
-            }
-        }
 
-            }
-        }
-
-        IObservable<IObservedChangeWithHistory<object, object>> IReactiveNotifyCollectionItemChanged.ItemChangedWithHistory
-        {
-            get
-            {
-                // todo: really not sure what's going on with this method. Can someone please check this to see if I've completely gone off the farm?
-                return (IObservable<IObservedChangeWithHistory<object, object>>)this.ItemChangedWithHistory;
         public IObservable<int> CountChanging {
             get { return _changing.Select(_ => _inner.Count).DistinctUntilChanged(); }
         }
