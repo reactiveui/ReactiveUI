@@ -910,4 +910,19 @@ namespace ReactiveUI
             return This.CreateDerivedCollection(selector, filter, orderer, (IObservable<Unit>)null);
         }
     }
+
+    public static class ReactiveListMixins
+    {
+        ///<summary>
+        /// Provides Item Changed notifications, including old and new values, for any item in collection that
+        /// implements IReactiveNotifyPropertyChanged. This is only enabled when
+        /// ChangeTrackingEnabled is set to True.
+        /// </summary>
+        public static IObservable<IObservedChange<TSender, Tuple<object, object>>> ItemChangedWithHistory<TSender>(this IReactiveNotifyCollectionItemChanged<TSender> This)
+        {
+            return This.ItemChanging.Select(x => x.GetValue())
+                .Zip(This.ItemChanged, (oldRecVal, newRec) =>
+                    new ObservedChange<TSender, Tuple<object, object>>(newRec.Sender, newRec.PropertyName, Tuple.Create(oldRecVal, newRec.GetValue())));
+        }
+    }
 }
