@@ -4,7 +4,7 @@ using System.Reactive.Subjects;
 
 namespace ReactiveUI.Events
 {
-    public class SingleAwaitSubject<T> : ISubject<T>
+    class SingleAwaitSubject<T> : ISubject<T>
     {
         readonly Subject<T> inner = new Subject<T>();
 
