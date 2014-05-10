@@ -5,25 +5,34 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{1920477B-BB94-93CF-984E-E177EF9FEDB1}</ProjectGuid>
-    <ProjectTypeGuids>{EFBA0AD7-5A72-4C68-AF49-83D382785DCF};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <ProjectGuid>{F5ECBDE5-E525-4482-B568-63217BCB0A0B}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ReactiveUI.Testing</RootNamespace>
-    <AssemblyName>ReactiveUI.Testing</AssemblyName>
+    <RootNamespace>ReactiveUI</RootNamespace>
+    <AssemblyName>ReactiveUI.Winforms</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <SccProjectName>
+    </SccProjectName>
+    <SccLocalPath>
+    </SccLocalPath>
+    <SccAuxPath>
+    </SccAuxPath>
+    <SccProvider>
+    </SccProvider>
     <CodeContractsAssemblyMode>1</CodeContractsAssemblyMode>
-    <TargetFrameworkVersion>v4.0.3</TargetFrameworkVersion>
+    <Utf8Output>true</Utf8Output>
+    <ExpressionBlendVersion>4.0.30816.0</ExpressionBlendVersion>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>True</DebugSymbols>
+    <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
-    <Optimize>False</Optimize>
-    <OutputPath>bin\Debug\Monoandroid\</OutputPath>
-    <IntermediateOutputPath>obj\Debug\Monoandroid</IntermediateOutputPath>
-    <DefineConstants>DEBUG;TRACE;MONO;ANDROID</DefineConstants>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\Net45\</OutputPath>
+    <IntermediateOutputPath>obj\Debug\WinForms_Net45</IntermediateOutputPath>
+    <DefineConstants>TRACE;DEBUG;WINFORMS</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CodeContractsEnableRuntimeChecking>False</CodeContractsEnableRuntimeChecking>
@@ -40,33 +49,25 @@
     <CodeContractsShowSquigglies>False</CodeContractsShowSquigglies>
     <CodeContractsUseBaseLine>False</CodeContractsUseBaseLine>
     <CodeContractsEmitXMLDocs>False</CodeContractsEmitXMLDocs>
-    <CodeContractsCustomRewriterAssembly>
-    </CodeContractsCustomRewriterAssembly>
-    <CodeContractsCustomRewriterClass>
-    </CodeContractsCustomRewriterClass>
-    <CodeContractsLibPaths>
-    </CodeContractsLibPaths>
-    <CodeContractsExtraRewriteOptions>
-    </CodeContractsExtraRewriteOptions>
-    <CodeContractsExtraAnalysisOptions>
-    </CodeContractsExtraAnalysisOptions>
-    <CodeContractsBaseLineFile>
-    </CodeContractsBaseLineFile>
+    <CodeContractsCustomRewriterAssembly />
+    <CodeContractsCustomRewriterClass />
+    <CodeContractsLibPaths />
+    <CodeContractsExtraRewriteOptions />
+    <CodeContractsExtraAnalysisOptions />
+    <CodeContractsBaseLineFile />
     <CodeContractsCacheAnalysisResults>False</CodeContractsCacheAnalysisResults>
     <CodeContractsRuntimeCheckingLevel>Full</CodeContractsRuntimeCheckingLevel>
     <CodeContractsReferenceAssembly>%28none%29</CodeContractsReferenceAssembly>
     <CodeAnalysisRuleSet>ExtendedCorrectnessRules.ruleset</CodeAnalysisRuleSet>
     <RunCodeAnalysis>false</RunCodeAnalysis>
     <CodeContractsPointerObligations>False</CodeContractsPointerObligations>
-    <AndroidLinkMode>None</AndroidLinkMode>
-    <DocumentationFile>bin\Debug\Monoandroid\ReactiveUI.Testing.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
-    <Optimize>True</Optimize>
-    <OutputPath>bin\Release\Monoandroid\</OutputPath>
-    <IntermediateOutputPath>obj\Release\Monoandroid</IntermediateOutputPath>
-    <DefineConstants>TRACE;MONO;ANDROID</DefineConstants>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\Net45\</OutputPath>
+    <IntermediateOutputPath>obj\Release\Winforms_Net45\</IntermediateOutputPath>
+    <DefineConstants>TRACE;WINFORMS</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CodeContractsEnableRuntimeChecking>False</CodeContractsEnableRuntimeChecking>
@@ -83,72 +84,93 @@
     <CodeContractsShowSquigglies>True</CodeContractsShowSquigglies>
     <CodeContractsUseBaseLine>False</CodeContractsUseBaseLine>
     <CodeContractsEmitXMLDocs>False</CodeContractsEmitXMLDocs>
-    <CodeContractsCustomRewriterAssembly>
-    </CodeContractsCustomRewriterAssembly>
-    <CodeContractsCustomRewriterClass>
-    </CodeContractsCustomRewriterClass>
-    <CodeContractsLibPaths>
-    </CodeContractsLibPaths>
-    <CodeContractsExtraRewriteOptions>
-    </CodeContractsExtraRewriteOptions>
-    <CodeContractsExtraAnalysisOptions>
-    </CodeContractsExtraAnalysisOptions>
-    <CodeContractsBaseLineFile>
-    </CodeContractsBaseLineFile>
+    <CodeContractsCustomRewriterAssembly />
+    <CodeContractsCustomRewriterClass />
+    <CodeContractsLibPaths />
+    <CodeContractsExtraRewriteOptions />
+    <CodeContractsExtraAnalysisOptions />
+    <CodeContractsBaseLineFile />
     <CodeContractsCacheAnalysisResults>True</CodeContractsCacheAnalysisResults>
     <CodeContractsRuntimeCheckingLevel>Full</CodeContractsRuntimeCheckingLevel>
     <CodeContractsReferenceAssembly>%28none%29</CodeContractsReferenceAssembly>
-    <AndroidUseSharedRuntime>False</AndroidUseSharedRuntime>
-    <DocumentationFile>bin\Release\Monoandroid\ReactiveUI.Testing.XML</DocumentationFile>
+    <DocumentationFile>bin\Release\Net45\ReactiveUI.Winforms.xml</DocumentationFile>
+    <NoWarn>1591, 1573, 1711, 1587, 1570, 1572</NoWarn>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\ext\monodroid\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Splat">
+      <HintPath>..\ext\net45\Splat.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="Mono.Android" />
-    <Reference Include="Xamarin.Android.NUnitLite" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Reactive.Core">
-      <HintPath>..\ext\monodroid\System.Reactive.Core.dll</HintPath>
+      <HintPath>..\ext\Portable-Net45+WinRT45+WP8\System.Reactive.Core.dll</HintPath>
     </Reference>
     <Reference Include="System.Reactive.Interfaces">
-      <HintPath>..\ext\monodroid\System.Reactive.Interfaces.dll</HintPath>
+      <HintPath>..\ext\Portable-Net45+WinRT45+WP8\System.Reactive.Interfaces.dll</HintPath>
     </Reference>
     <Reference Include="System.Reactive.Linq">
-      <HintPath>..\ext\monodroid\System.Reactive.Linq.dll</HintPath>
+      <HintPath>..\ext\Portable-Net45+WinRT45+WP8\System.Reactive.Linq.dll</HintPath>
     </Reference>
     <Reference Include="System.Reactive.PlatformServices">
-      <HintPath>..\ext\monodroid\System.Reactive.PlatformServices.dll</HintPath>
+      <HintPath>..\ext\net45\System.Reactive.PlatformServices.dll</HintPath>
     </Reference>
-    <Reference Include="Splat">
-      <HintPath>..\ext\monodroid\Splat.dll</HintPath>
+    <Reference Include="System.Reactive.Windows.Threading, Version=2.0.20823.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\ext\net45\System.Reactive.Windows.Threading.dll</HintPath>
     </Reference>
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xaml" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\CommonAssemblyInfo.cs">
-      <Link>Properties\CommonAssemblyInfo.cs</Link>
+      <Link>Winforms\Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TestUtils.cs" />
+    <Compile Include="Winforms\ObservableCollectionChangedToListChangedTransformer.cs" />
+    <Compile Include="Winforms\ReactiveDerivedBindingListMixins.cs" />
+    <Compile Include="Winforms\RoutedViewHost.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Winforms\RoutedViewHost.Designer.cs">
+      <DependentUpon>RoutedViewHost.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Winforms\ReactiveBindingList.cs" />
+    <Compile Include="Winforms\CreatesCommandBinding.cs" />
+    <Compile Include="Winforms\PlatformOperations.cs" />
+    <Compile Include="Winforms\Properties\AssemblyInfo.cs" />
+    <Compile Include="Winforms\Registrations.cs" />
+    <Compile Include="Winforms\ViewModelViewHost.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Winforms\ViewModelViewHost.Designer.cs">
+      <DependentUpon>ViewModelViewHost.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Winforms\WinformsCreatesObservableForProperty.cs" />
+    <Compile Include="Winforms\WinformsDefaultPropertyBinding.cs" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Microsoft.Reactive.Testing\Microsoft.Reactive.Testing_Android.csproj">
-      <Project>{1131910A-9D6D-473F-9C69-3DCF6A1C81BC}</Project>
-      <Name>Microsoft.Reactive.Testing_Android</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\ReactiveUI\ReactiveUI_Android.csproj">
-      <Project>{F5A6E11B-B074-4A0B-B937-267D840E31DF}</Project>
-      <Name>ReactiveUI_Android</Name>
+    <Folder Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ReactiveUI\ReactiveUI_Net45.csproj">
+      <Project>{1ce2d235-8072-4649-ba5a-cfb1af8776e0}</Project>
+      <Name>ReactiveUI_Net45</Name>
     </ProjectReference>
   </ItemGroup>
-  <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
@@ -156,5 +178,4 @@
   <Target Name="AfterBuild">
   </Target>
   -->
-  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
 </Project>

@@ -1,53 +1,66 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <MinimumVisualStudioVersion>11.0</MinimumVisualStudioVersion>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{464CB812-F99F-401B-BE4C-E8F0515CD19D}</ProjectGuid>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{0913BF79-061F-4667-ADF9-8E6CDA6D1213}</ProjectGuid>
+    <ProjectTypeGuids>{42C0BBD9-55CE-4FC1-8D90-A7348ABAFB23};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ReactiveUI</RootNamespace>
     <AssemblyName>ReactiveUI</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <TargetFrameworkProfile>Profile78</TargetFrameworkProfile>
-    <FileAlignment>512</FileAlignment>
-    <ProjectTypeGuids>{786C830F-07A1-408B-BD7F-6EE04809D6DB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
-    <RestorePackages>true</RestorePackages>
-    <ProductVersion>8.0.30703</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
+    <DebugSymbols>True</DebugSymbols>
     <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\Portable-Net45+WinRT45+WP8\</OutputPath>
-    <IntermediateOutputPath>obj\Debug\Portable-Net45+WinRT45+WP8\</IntermediateOutputPath>
-    <DefineConstants>TRACE;DEBUG;PORTABLE</DefineConstants>
+    <Optimize>False</Optimize>
+    <OutputPath>bin\Debug\MonoMac</OutputPath>
+    <IntermediateOutputPath>obj\Debug\MonoMac</IntermediateOutputPath>
+    <DefineConstants>DEBUG; MONO; COCOA</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <EnablePackageSigning>False</EnablePackageSigning>
+    <IncludeMonoRuntime>False</IncludeMonoRuntime>
+    <ConsolePause>False</ConsolePause>
+    <EnableCodeSigning>False</EnableCodeSigning>
+    <CreatePackage>False</CreatePackage>
+    <CodeSigningKey>Mac Developer</CodeSigningKey>
+    <UseSGen>False</UseSGen>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\Portable-Net45+WinRT45+WP8\</OutputPath>
-    <IntermediateOutputPath>obj\Release\Portable-Net45+WinRT45+WP8\</IntermediateOutputPath>
-    <DefineConstants>TRACE;PORTABLE</DefineConstants>
+    <Optimize>True</Optimize>
+    <OutputPath>bin\Release\MonoMac</OutputPath>
+    <IntermediateOutputPath>obj\Release\MonoMac</IntermediateOutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Release\Portable-Net45+WinRT45+WP8\ReactiveUI.XML</DocumentationFile>
+    <EnablePackageSigning>False</EnablePackageSigning>
+    <IncludeMonoRuntime>False</IncludeMonoRuntime>
+    <LinkMode>Full</LinkMode>
+    <ConsolePause>False</ConsolePause>
+    <EnableCodeSigning>False</EnableCodeSigning>
+    <CreatePackage>False</CreatePackage>
+    <CodeSigningKey>Mac Developer</CodeSigningKey>
+    <UseSGen>False</UseSGen>
+    <DefineConstants>MONO; COCOA</DefineConstants>
+    <DebugSymbols>true</DebugSymbols>
+    <GenerateDocumentation>True</GenerateDocumentation>
   </PropertyGroup>
   <ItemGroup>
-    <!-- A reference to the entire .NET Framework is automatically included -->
-    <None Include="packages.config" />
-    <None Include="VariadicTemplates.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>VariadicTemplates.cs</LastGenOutput>
-    </None>
     <Reference Include="System" />
+    <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="XamMac" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="Splat">
+      <HintPath>..\ext\mono\Splat.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\ext\Portable-Net45+WinRT45+WP8\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System.Reactive.Core">
       <HintPath>..\ext\Portable-Net45+WinRT45+WP8\System.Reactive.Core.dll</HintPath>
     </Reference>
@@ -57,19 +70,31 @@
     <Reference Include="System.Reactive.Linq">
       <HintPath>..\ext\Portable-Net45+WinRT45+WP8\System.Reactive.Linq.dll</HintPath>
     </Reference>
-    <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="Splat">
-      <HintPath>..\ext\Portable-Net45+WinRT45+WP8\Splat.dll</HintPath>
+    <Reference Include="System.Reactive.PlatformServices">
+      <HintPath>..\ext\Portable-Net45+WinRT45+WP8\System.Reactive.PlatformServices.dll</HintPath>
     </Reference>
   </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
+    <Compile Include="Cocoa\CocoaDefaultPropertyBinding.cs" />
+    <Compile Include="Cocoa\KVOObservableForProperty.cs" />
+    <Compile Include="Cocoa\NSRunloopScheduler.cs" />
+    <Compile Include="Cocoa\RoutedViewHost.cs" />
+    <Compile Include="Cocoa\TargetActionCommandBinder.cs" />
+    <Compile Include="Cocoa\ViewModelViewHost.cs" />
+    <Compile Include="Cocoa\Properties\AssemblyInfo.cs" />
+    <Compile Include="Platform\ComponentModelTypeConverter.cs" />
+    <Compile Include="Platform\Registrations.cs" />
+    <Compile Include="Cocoa\PlatformOperations.cs" />
+    <Compile Include="Cocoa\ReactiveNSView.cs" />
+    <Compile Include="Cocoa\ReactiveNSViewController.cs" />
+    <Compile Include="Cocoa\ReactiveImageView.cs" />
+    <Compile Include="Cocoa\ReactiveControl.cs" />
+    <Compile Include="Cocoa\ReactiveNSWindowController.cs" />
     <Compile Include="..\CommonAssemblyInfo.cs">
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Activation.cs" />
-    <Compile Include="PortableLibraryStubs.cs" />
     <Compile Include="ReactiveBinding.cs" />
     <Compile Include="AutoPersistHelper.cs" />
     <Compile Include="BindingTypeConverters.cs" />
@@ -79,6 +104,7 @@
     <Compile Include="ContractStubs.cs" />
     <Compile Include="DefaultPropertyBinding.cs" />
     <Compile Include="DummySuspension.cs" />
+    <Compile Include="DesignModeDetector.cs" />
     <Compile Include="Errors.cs" />
     <Compile Include="IDependencyResolver.cs" />
     <Compile Include="INPCObservableForProperty.cs" />
@@ -119,15 +145,6 @@
     <Compile Include="WeakEventManager.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+    <Folder Include="Cocoa\" />
   </ItemGroup>
-  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
-  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
 </Project>
