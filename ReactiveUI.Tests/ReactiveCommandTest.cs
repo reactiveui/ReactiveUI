@@ -188,7 +188,7 @@ namespace ReactiveUI.Tests
         public void RegisterAsyncFunctionSmokeTest()
         {
             (new TestScheduler()).With(sched => {
-                var fixture = ReactiveCommand.Create(Observable.Return(true),
+                var fixture = ReactiveCommand.CreateAsyncObservable(Observable.Return(true),
                     _ => Observable.Return(5).Delay(TimeSpan.FromSeconds(5), sched));
 
                 IReactiveDerivedList<int> results;
@@ -215,7 +215,7 @@ namespace ReactiveUI.Tests
         public void MultipleSubscribersShouldntDecrementRefcountBelowZero()
         {
             (new TestScheduler()).With(sched => {
-                var fixture = ReactiveCommand.Create(Observable.Return(true),
+                var fixture = ReactiveCommand.CreateAsyncObservable(Observable.Return(true),
                     _ => Observable.Return(5).Delay(TimeSpan.FromMilliseconds(5000), sched));
 
                 var results = new List<int>();
@@ -245,7 +245,7 @@ namespace ReactiveUI.Tests
         {
             (new TestScheduler()).With(sched => {
                 bool latestExecuting = false;
-                var fixture = ReactiveCommand.Create(Observable.Return(true),
+                var fixture = ReactiveCommand.CreateAsyncObservable(Observable.Return(true),
                     _ => new[] {1, 2, 3}.ToObservable(),
                     sched);
 
@@ -263,7 +263,7 @@ namespace ReactiveUI.Tests
         [Fact]
         public async Task RAFShouldActuallyRunOnTheTaskpool()
         {
-            var fixture = ReactiveCommand.CreateWithFunction(Observable.Return(true),
+            var fixture = ReactiveCommand.CreateAsyncFunction(Observable.Return(true),
                 _ => Thread.CurrentThread.ManagedThreadId);
 
             var threadId = fixture.CreateCollection();
@@ -290,7 +290,7 @@ namespace ReactiveUI.Tests
                     sched.OnNextAt(1100, false)
                     );
 
-                var fixture = ReactiveCommand.Create(canExecute,
+                var fixture = ReactiveCommand.CreateAsyncObservable(canExecute,
                     x => Observable.Return((int)x * 5).Delay(TimeSpan.FromMilliseconds(900), RxApp.MainThreadScheduler));
                 
                 int calculatedResult = -1;
@@ -341,7 +341,7 @@ namespace ReactiveUI.Tests
         public void DisallowConcurrentExecutionTest()
         {
             (new TestScheduler()).With(sched => {
-                var fixture = ReactiveCommand.Create(Observable.Return(true), 
+                var fixture = ReactiveCommand.CreateAsyncObservable(Observable.Return(true), 
                     _ => Observable.Return(4).Delay(TimeSpan.FromSeconds(5), sched), 
                     sched);
 
@@ -429,9 +429,9 @@ namespace ReactiveUI.Tests
         public void CombinedCommandsShouldBeInactiveOnAsyncInflightOps()
         {
             (new TestScheduler()).With(sched => {
-                var cmd1 = ReactiveCommand.Create(Observable.Return(true), 
+                var cmd1 = ReactiveCommand.CreateAsyncObservable(Observable.Return(true), 
                     x => Observable.Return(x).Delay(TimeSpan.FromMilliseconds(100), sched));
-                var cmd2 = ReactiveCommand.Create(Observable.Return(true),
+                var cmd2 = ReactiveCommand.CreateAsyncObservable(Observable.Return(true),
                     x => Observable.Return(x).Delay(TimeSpan.FromMilliseconds(300), sched));
 
                 var cmd3 = ReactiveCommand.Create();
@@ -524,7 +524,7 @@ namespace ReactiveUI.Tests
         public void TaskExceptionsShouldBeMarshaledToThrownExceptions()
         {
             (new TestScheduler()).With(sched => {
-                var fixture = ReactiveCommand.CreateAsync(Observable.Return(true), async _ => {
+                var fixture = ReactiveCommand.CreateAsyncTask(Observable.Return(true), async _ => {
                     await Observable.Timer(TimeSpan.FromMilliseconds(50), RxApp.TaskpoolScheduler);
                     throw new Exception("Die");
                     return 5;
