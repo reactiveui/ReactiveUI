@@ -416,5 +416,5 @@ namespace ReactiveUI.Mobile
         IObservable<Unit> InvalidateState();
     }
 
-    public interface IApplicationRootState : IScreen { }
+    public interface IApplicationRootState : IEnableLogger { }
 }
