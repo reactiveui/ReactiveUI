@@ -85,11 +85,8 @@ namespace ReactiveUI.Mobile
             host.IsResuming = onResume;
             host.IsUnpausing = onResume;
 
-            bool hasRecentlyCrashed = false;
             host.SetupDefaultSuspendResumeFunc = new Action<ISuspensionDriver>(driver => {
                 driver = driver ?? Locator.Current.GetService<ISuspensionDriver>();
-
-                // TODO: Handle crashes here
 
                 host.ShouldInvalidateState
                     .SelectMany(_ => driver.InvalidateState())

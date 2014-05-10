@@ -64,7 +64,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Android\ActivityRoutedViewHost.cs" />
     <Compile Include="Android\AndroidCommandBinders.cs" />
     <Compile Include="Android\AndroidUIScheduler.cs" />
     <Compile Include="Android\ControlFetcherMixin.cs" />
