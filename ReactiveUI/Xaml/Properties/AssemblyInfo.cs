@@ -3,9 +3,6 @@ using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
 using System.Windows;
 
-[assembly: AssemblyDescription("An MVVM framework that integrates the Reactive Extensions")]
-[assembly: AssemblyProduct("ReactiveUI.Xaml")]
-
 #if !(WINRT || SILVERLIGHT || MONO)
 [assembly: ThemeInfo(
    ResourceDictionaryLocation.None, //where theme specific resource dictionaries are located

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Specialized;
 
-#if UIKIT || PORTABLE
+#if UIKIT || PORTABLE || WINRT
 
 namespace ReactiveUI
 {
@@ -34,7 +34,7 @@ namespace ReactiveUI
     }
 }
 
-#if PORTABLE
+#if PORTABLE || WINRT
 namespace ReactiveUI
 {
     [AttributeUsage(AttributeTargets.All, Inherited = false, AllowMultiple = true)]
