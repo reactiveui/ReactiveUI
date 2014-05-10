@@ -48,6 +48,11 @@ namespace ReactiveUI
 
     public static class ViewForMixins
     {
+        static ViewForMixins()
+        {
+            RxApp.EnsureInitialized();
+        }
+
         public static void WhenActivated(this ISupportsActivation This, Func<IEnumerable<IDisposable>> block)
         {
             This.Activator.addActivationBlock(block);
