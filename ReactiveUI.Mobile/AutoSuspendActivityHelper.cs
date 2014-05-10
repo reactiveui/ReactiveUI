@@ -32,25 +32,6 @@ namespace ReactiveUI.Mobile
         }
     }
 
-    public class RootState : ReactiveObject
-    {
-        static RootState _Current = new RootState();
-        public static RootState Current { get { return _Current; } }
-
-        protected RootState() { }
-
-        IApplicationRootState _ViewModel;
-        public IApplicationRootState ViewModel {
-            get { return _ViewModel; }
-            set { this.RaiseAndSetIfChanged(ref _ViewModel, value); }
-        }
-
-        public static T As<T>() where T : IApplicationRootState
-        {
-            return (T)Current.ViewModel;
-        }
-    }
-
     public class AutoSuspendActivityHelper : IEnableLogger
     {
         readonly Subject<Bundle> onCreate = new Subject<Bundle>();
@@ -58,7 +39,17 @@ namespace ReactiveUI.Mobile
         readonly Subject<Unit> onPause = new Subject<Unit>();
         readonly Subject<Bundle> onSaveInstanceState = new Subject<Bundle>();
 
+        static IApplicationRootState viewModel { get; set; }
+
         public ISuspensionHost SuspensionHost { get; set; }
+
+        static AutoSuspendActivityHelper()
+        {
+            Locator.RegisterResolverCallbackChanged(() => {
+                if (Locator.CurrentMutable == null) return;
+                Locator.CurrentMutable.Register(() => AutoSuspendActivityHelper.viewModel, typeof(IApplicationRootState), "CurrentState");
+            });
+        }
 
         public AutoSuspendActivityHelper(Activity hostActivity)
         {
@@ -94,7 +85,7 @@ namespace ReactiveUI.Mobile
                     .Subscribe(_ => this.Log().Info("Invalidated app state"));
 
                 host.ShouldPersistState
-                    .SelectMany(x => driver.SaveState(RootState.Current.ViewModel).Finally(x.Dispose))
+                    .SelectMany(x => driver.SaveState(viewModel).Finally(x.Dispose))
                     .LoggedCatch(this, Observable.Return(Unit.Default), "Tried to persist app state")
                     .Subscribe(_ => this.Log().Info("Persisted application state"));
 
@@ -104,10 +95,10 @@ namespace ReactiveUI.Mobile
                         Observable.Defer(() => Observable.Return(Locator.Current.GetService<IApplicationRootState>())),
                         "Failed to restore app state from storage, creating from scratch")
                     .ObserveOn(RxApp.MainThreadScheduler)
-                    .Subscribe(x => RootState.Current.ViewModel = x);
+                    .Subscribe(x => viewModel = x);
 
                 host.IsLaunchingNew.Subscribe(_ => {
-                    RootState.Current.ViewModel = Locator.Current.GetService<IApplicationRootState>();
+                    viewModel = Locator.Current.GetService<IApplicationRootState>();
                 });
             });
 
@@ -136,4 +127,3 @@ namespace ReactiveUI.Mobile
         }
     }
 }
-
