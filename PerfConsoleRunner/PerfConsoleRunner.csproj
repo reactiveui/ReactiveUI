@@ -83,9 +83,9 @@
       <Project>{6fbde6ea-2202-4a70-8ee4-7ba6d515952e}</Project>
       <Name>ReactiveUI.Tests_Net45</Name>
     </ProjectReference>
-    <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj">
-      <Project>{464cb812-f99f-401b-be4c-e8f0515cd19d}</Project>
-      <Name>ReactiveUI</Name>
+    <ProjectReference Include="..\ReactiveUI\ReactiveUI_Net45.csproj">
+      <Project>{1ce2d235-8072-4649-ba5a-cfb1af8776e0}</Project>
+      <Name>ReactiveUI_Net45</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
