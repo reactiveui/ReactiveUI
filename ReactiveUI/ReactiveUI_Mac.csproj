@@ -8,8 +8,8 @@
     <ProjectGuid>{0913BF79-061F-4667-ADF9-8E6CDA6D1213}</ProjectGuid>
     <ProjectTypeGuids>{42C0BBD9-55CE-4FC1-8D90-A7348ABAFB23};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
-    <RootNamespace>ReactiveUI.Cocoa</RootNamespace>
-    <AssemblyName>ReactiveUI.Cocoa</AssemblyName>
+    <RootNamespace>ReactiveUI</RootNamespace>
+    <AssemblyName>ReactiveUI</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -100,22 +100,69 @@
     <Compile Include="Cocoa\TargetActionCommandBinder.cs" />
     <Compile Include="Cocoa\ViewModelViewHost.cs" />
     <Compile Include="Cocoa\Properties\AssemblyInfo.cs" />
-    <Compile Include="ComponentModelTypeConverter.cs" />
-    <Compile Include="Registrations.cs" />
+    <Compile Include="Platform\ComponentModelTypeConverter.cs" />
+    <Compile Include="Platform\Registrations.cs" />
     <Compile Include="Cocoa\PlatformOperations.cs" />
     <Compile Include="Cocoa\ReactiveNSView.cs" />
     <Compile Include="Cocoa\ReactiveNSViewController.cs" />
     <Compile Include="Cocoa\ReactiveImageView.cs" />
     <Compile Include="Cocoa\ReactiveControl.cs" />
     <Compile Include="Cocoa\ReactiveNSWindowController.cs" />
+
+    <Compile Include="..\CommonAssemblyInfo.cs">
+      <Link>Properties\CommonAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="Activation.cs" />
+    <Compile Include="ReactiveBinding.cs" />
+    <Compile Include="AutoPersistHelper.cs" />
+    <Compile Include="BindingTypeConverters.cs" />
+    <Compile Include="CollectionDebugView.cs" />
+    <Compile Include="CommandBinding.cs" />
+    <Compile Include="CompatMixins.cs" />
+    <Compile Include="ContractStubs.cs" />
+    <Compile Include="DefaultPropertyBinding.cs" />
+    <Compile Include="DummySuspension.cs" />
+    <Compile Include="DesignModeDetector.cs" />
+    <Compile Include="Errors.cs" />
+    <Compile Include="IDependencyResolver.cs" />
+    <Compile Include="INPCObservableForProperty.cs" />
+    <Compile Include="Interfaces.cs" />
+    <Compile Include="IROObservableForProperty.cs" />
+    <Compile Include="MessageBus.cs" />
+    <Compile Include="NullDefaultPropertyBindingProvider.cs" />
+    <Compile Include="ObservableAsPropertyHelper.cs" />
+    <Compile Include="ObservedChangedMixin.cs" />
+    <Compile Include="OrderedComparer.cs" />
+    <Compile Include="POCOObservableForProperty.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="PropertyBinding.cs" />
+    <Compile Include="ReactiveList.cs" />
+    <Compile Include="ReactiveCollectionMixins.cs" />
+    <Compile Include="ReactiveCommand.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ReactiveNotifyPropertyChangedMixin.cs" />
+    <Compile Include="ReactiveObject.cs" />
+    <Compile Include="RefcountDisposeWrapper.cs" />
+    <Compile Include="Reflection.cs" />
+    <Compile Include="RegisterableInterfaces.cs" />
+    <Compile Include="Registrations.cs" />
+    <Compile Include="RoutableViewModelMixin.cs" />
+    <Compile Include="RoutingState.cs" />
+    <Compile Include="RxApp.cs" />
+    <Compile Include="ViewLocator.cs" />
+    <Compile Include="ScheduledSubject.cs" />
+    <Compile Include="VariadicTemplates.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>VariadicTemplates.tt</DependentUpon>
+    </Compile>
+    <Compile Include="WaitForDispatcherScheduler.cs" />
+    <Compile Include="LoggingMixins.cs" />
+    <Compile Include="IReactiveObject.cs" />
+    <Compile Include="WeakEventManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Cocoa\" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj">
-      <Project>{464CB812-F99F-401B-BE4C-E8F0515CD19D}</Project>
-      <Name>ReactiveUI</Name>
-    </ProjectReference>
   </ItemGroup>
 </Project>

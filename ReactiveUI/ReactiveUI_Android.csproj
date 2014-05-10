@@ -9,8 +9,8 @@
     <ProjectTypeGuids>{EFBA0AD7-5A72-4C68-AF49-83D382785DCF};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ReactiveUI.Android</RootNamespace>
-    <AssemblyName>ReactiveUI.Android</AssemblyName>
+    <RootNamespace>ReactiveUI</RootNamespace>
+    <AssemblyName>ReactiveUI</AssemblyName>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkVersion>v4.0.3</TargetFrameworkVersion>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
@@ -39,7 +39,7 @@
     <AndroidUseSharedRuntime>False</AndroidUseSharedRuntime>
     <DefineConstants>MONO;ANDROID</DefineConstants>
     <DebugSymbols>true</DebugSymbols>
-    <DocumentationFile>bin\Release\Monoandroid\ReactiveUI.Android.XML</DocumentationFile>
+    <DocumentationFile>bin\Release\Monoandroid\ReactiveUI.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -76,24 +76,68 @@
     <Compile Include="Android\Properties\AssemblyInfo.cs" />
     <Compile Include="Android\ReactiveListAdapter.cs" />
     <Compile Include="Android\ViewCommandExtensions.cs" />
-    <Compile Include="ComponentModelTypeConverter.cs" />
-    <Compile Include="FlexibleCommandBinder.cs" />
-    <Compile Include="Registrations.cs" />
+    <Compile Include="Platform\ComponentModelTypeConverter.cs" />
+    <Compile Include="Platform\FlexibleCommandBinder.cs" />
+    <Compile Include="Platform\Registrations.cs" />
     <Compile Include="Android\PlatformOperations.cs" />
     <Compile Include="Android\ReactiveActivity.cs" />
     <Compile Include="Android\ReactiveFragment.cs" />
     <Compile Include="Android\AndroidDefaultPropertyBinding.cs" />
     <Compile Include="Android\AndroidObservableForWidgets.cs" />
     <Compile Include="Android\LayoutViewHost.cs" />
+
+    <Compile Include="Activation.cs" />
+    <Compile Include="ReactiveBinding.cs" />
+    <Compile Include="AutoPersistHelper.cs" />
+    <Compile Include="BindingTypeConverters.cs" />
+    <Compile Include="CollectionDebugView.cs" />
+    <Compile Include="CommandBinding.cs" />
+    <Compile Include="CompatMixins.cs" />
+    <Compile Include="ContractStubs.cs" />
+    <Compile Include="DefaultPropertyBinding.cs" />
+    <Compile Include="DummySuspension.cs" />
+    <Compile Include="DesignModeDetector.cs" />
+    <Compile Include="Errors.cs" />
+    <Compile Include="IDependencyResolver.cs" />
+    <Compile Include="INPCObservableForProperty.cs" />
+    <Compile Include="Interfaces.cs" />
+    <Compile Include="IROObservableForProperty.cs" />
+    <Compile Include="MessageBus.cs" />
+    <Compile Include="NullDefaultPropertyBindingProvider.cs" />
+    <Compile Include="ObservableAsPropertyHelper.cs" />
+    <Compile Include="ObservedChangedMixin.cs" />
+    <Compile Include="OrderedComparer.cs" />
+    <Compile Include="POCOObservableForProperty.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="PropertyBinding.cs" />
+    <Compile Include="ReactiveList.cs" />
+    <Compile Include="ReactiveCollectionMixins.cs" />
+    <Compile Include="ReactiveCommand.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ReactiveNotifyPropertyChangedMixin.cs" />
+    <Compile Include="ReactiveObject.cs" />
+    <Compile Include="RefcountDisposeWrapper.cs" />
+    <Compile Include="Reflection.cs" />
+    <Compile Include="RegisterableInterfaces.cs" />
+    <Compile Include="Registrations.cs" />
+    <Compile Include="RoutableViewModelMixin.cs" />
+    <Compile Include="RoutingState.cs" />
+    <Compile Include="RxApp.cs" />
+    <Compile Include="ViewLocator.cs" />
+    <Compile Include="ScheduledSubject.cs" />
+    <Compile Include="VariadicTemplates.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>VariadicTemplates.tt</DependentUpon>
+    </Compile>
+    <Compile Include="WaitForDispatcherScheduler.cs" />
+    <Compile Include="LoggingMixins.cs" />
+    <Compile Include="IReactiveObject.cs" />
+    <Compile Include="WeakEventManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj">
-      <Project>{464CB812-F99F-401B-BE4C-E8F0515CD19D}</Project>
-      <Name>ReactiveUI</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
