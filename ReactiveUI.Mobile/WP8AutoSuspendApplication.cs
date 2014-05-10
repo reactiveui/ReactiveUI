@@ -33,17 +33,7 @@ namespace ReactiveUI.Mobile
     {
         internal static SuspensionHost SuspensionHost;
 
-        readonly Subject<IApplicationRootState> _viewModelChanged = new Subject<IApplicationRootState>();
-        IApplicationRootState _ViewModel;
-
-        public IApplicationRootState ViewModel {
-            get { return _ViewModel; }
-            set {
-                if (_ViewModel == value) return;
-                _ViewModel = value; 
-                _viewModelChanged.OnNext(value);
-            }
-        }
+        IApplicationRootState viewModel { get; set; }
 
         public static PhoneApplicationFrame RootFrame { get; protected set; }
 
@@ -89,59 +79,10 @@ namespace ReactiveUI.Mobile
 
             SuspensionHost = host;
 
-            //
-            // Do the equivalent steps that the boilerplate code does for WP8 apps
-            //
-
-            if (RootFrame != null) return;
-            RootFrame = new PhoneApplicationFrame();
-
-            var currentBackHook = default(IDisposable);
-            var currentViewFor = default(WeakReference<IViewFor>);
-
-            RootFrame.Navigated += (o, e) => {
-                // Always clear the WP8 Back Stack, we're using our own
-                while (RootFrame.RemoveBackEntry() != null) {}
-
-                if (currentBackHook != null) currentBackHook.Dispose();
-                var page = RootFrame.Content as PhoneApplicationPage;
-                if (page != null) {
-                    currentBackHook = Observable.FromEventPattern<CancelEventArgs>(x => page.BackKeyPress += x, x => page.BackKeyPress -= x)
-                        .Where(_ => ViewModel != null)
-                        .Subscribe(x => {
-                            if (!ViewModel.Router.NavigateBack.CanExecute(null)) return;
-
-                            x.EventArgs.Cancel = true;
-                            ViewModel.Router.NavigateBack.Execute(null);
-                        });
-
-                    var viewFor = page as IViewFor;
-                    if (viewFor == null) {
-                        throw new Exception("Your Main Page (i.e. the one that is pointed to by WMAppManifest) must implement IViewFor<YourAppBootstrapperClass>");
-                    }
-
-                    currentViewFor = new WeakReference<IViewFor>(viewFor);
-                    viewFor.ViewModel = ViewModel;
-                }
-
-                // Finally make it live
-                RootVisual = RootFrame;
-            };
-
-            _viewModelChanged.StartWith(ViewModel).Where(x => x != null).Subscribe(vm => {
-                var viewFor = default(IViewFor);
-                if (currentViewFor != null && currentViewFor.TryGetTarget(out viewFor)) {
-                    viewFor.ViewModel = vm;
-                }
+            Locator.RegisterResolverCallbackChanged(() => {
+                if (Locator.CurrentMutable == null) return;
+                Locator.CurrentMutable.Register(() => this.viewModel, typeof(IApplicationRootState), "CurrentState");
             });
-
-            UnhandledException += (o, e) => {
-                if (Debugger.IsAttached) Debugger.Break();
-            };
-
-            RootFrame.NavigationFailed += (o, e) => {
-                if (Debugger.IsAttached) Debugger.Break();
-            };
         }
 
         internal void setupDefaultSuspendResume(ISuspensionDriver driver)
@@ -154,7 +95,7 @@ namespace ReactiveUI.Mobile
                 .Subscribe(_ => this.Log().Info("Invalidated app state"));
 
             SuspensionHost.ShouldPersistState
-                .SelectMany(x => driver.SaveState(ViewModel).Finally(x.Dispose))
+                .SelectMany(x => driver.SaveState(viewModel).Finally(x.Dispose))
                 .LoggedCatch(this, Observable.Return(Unit.Default), "Tried to persist app state")
                 .Subscribe(_ => this.Log().Info("Persisted application state"));
 
@@ -164,10 +105,10 @@ namespace ReactiveUI.Mobile
                     Observable.Defer(() => Observable.Return(Locator.Current.GetService<IApplicationRootState>())),
                     "Failed to restore app state from storage, creating from scratch")
                 .ObserveOn(RxApp.MainThreadScheduler)
-                .Subscribe(x => ViewModel = x);
+                .Subscribe(x => viewModel = x);
 
             SuspensionHost.IsLaunchingNew.Subscribe(_ => {
-                ViewModel = Locator.Current.GetService<IApplicationRootState>();
+                viewModel = Locator.Current.GetService<IApplicationRootState>();
             });
         }
     }

@@ -33,17 +33,7 @@ namespace ReactiveUI.Mobile
         readonly ReplaySubject<LaunchActivatedEventArgs> _launched = new ReplaySubject<LaunchActivatedEventArgs>();
         internal static SuspensionHost SuspensionHost;
 
-        readonly Subject<IApplicationRootState> _viewModelChanged = new Subject<IApplicationRootState>();
-        IApplicationRootState _ViewModel;
-
-        public IApplicationRootState ViewModel {
-            get { return _ViewModel; }
-            set {
-                if (_ViewModel == value) return;
-                _ViewModel = value; 
-                _viewModelChanged.OnNext(value);
-            }
-        }
+        IApplicationRootState viewModel { get; set; }
 
         protected AutoSuspendApplication()
         {
@@ -76,30 +66,16 @@ namespace ReactiveUI.Mobile
             host.ShouldInvalidateState = shouldInvalidateState;
 
             SuspensionHost = host;
+
+            Locator.RegisterResolverCallbackChanged(() => {
+                if (Locator.CurrentMutable == null) return;
+                Locator.CurrentMutable.Register(() => this.viewModel, typeof(IApplicationRootState), "CurrentState");
+            });
         }
 
         internal void setupDefaultSuspendResume(ISuspensionDriver driver)
         {
             driver = driver ?? Locator.Current.GetService<ISuspensionDriver>();
-
-            _viewModelChanged.Subscribe(vm => {
-                var page = default(IViewFor);
-                var frame = Window.Current.Content as Frame;
-
-                if (frame == null) {
-                    frame = new Frame();
-                    Window.Current.Content = frame;
-                }
-
-                page = Window.Current.Content as IViewFor;
-                if (page == null) {
-                    page = Locator.Current.GetService<IViewFor>("InitialPage");
-                    frame.Content = (UIElement)page;
-                }
-
-                page.ViewModel = vm;
-                Window.Current.Activate();
-            });
 
             SuspensionHost.ShouldInvalidateState
                 .SelectMany(_ => driver.InvalidateState())
@@ -107,7 +83,7 @@ namespace ReactiveUI.Mobile
                 .Subscribe(_ => this.Log().Info("Invalidated app state"));
 
             SuspensionHost.ShouldPersistState
-                .SelectMany(x => driver.SaveState(ViewModel).Finally(x.Dispose))
+                .SelectMany(x => driver.SaveState(viewModel).Finally(x.Dispose))
                 .LoggedCatch(this, Observable.Return(Unit.Default), "Tried to persist app state")
                 .Subscribe(_ => this.Log().Info("Persisted application state"));
 
@@ -117,10 +93,10 @@ namespace ReactiveUI.Mobile
                     Observable.Defer(() => Observable.Return(Locator.Current.GetService<IApplicationRootState>())),
                     "Failed to restore app state from storage, creating from scratch")
                 .ObserveOn(RxApp.MainThreadScheduler)
-                .Subscribe(x => ViewModel = x);
+                .Subscribe(x => viewModel = x);
 
             SuspensionHost.IsLaunchingNew.Subscribe(_ => {
-                ViewModel = Locator.Current.GetService<IApplicationRootState>();
+                viewModel = Locator.Current.GetService<IApplicationRootState>();
             });
         }
 
