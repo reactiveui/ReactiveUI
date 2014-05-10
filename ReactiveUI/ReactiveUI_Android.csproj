@@ -129,6 +129,8 @@
     <Compile Include="LoggingMixins.cs" />
     <Compile Include="IReactiveObject.cs" />
     <Compile Include="WeakEventManager.cs" />
+    <Compile Include="Android\BundleSuspensionDriver.cs" />
+    <Compile Include="Android\AutoSuspendActivityHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
