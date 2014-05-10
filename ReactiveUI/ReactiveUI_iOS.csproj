@@ -150,5 +150,8 @@
     <Compile Include="LoggingMixins.cs" />
     <Compile Include="IReactiveObject.cs" />
     <Compile Include="WeakEventManager.cs" />
+    <Compile Include="Cocoa\AutoSuspendAppDelegate.cs" />
+    <Compile Include="Cocoa\JsonSuspensionDriver.cs" />
+    <Compile Include="SuspensionHost.cs" />
   </ItemGroup>
 </Project>

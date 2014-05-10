@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Windows;
 using ReactiveUI;
+using ReactiveUI.Mobile;
 using System.Reactive.Concurrency;
 
 #if COCOA
@@ -83,6 +84,20 @@ namespace ReactiveUI
 
 #if WINRT
             RxApp.MainThreadScheduler = new WaitForDispatcherScheduler(() => CoreDispatcherScheduler.Current);
+#endif
+
+#if WP8
+            registerFunction(() => new WP8SuspensionHost(), typeof (ISuspensionHost));
+            registerFunction(() => new PhoneServiceStateDriver(), typeof (ISuspensionDriver));
+#elif WINRT
+            registerFunction(() => new WinRTSuspensionHost(), typeof(ISuspensionHost));
+            registerFunction(() => new WinRTAppDataDriver(), typeof(ISuspensionDriver));
+#elif UIKIT
+            registerFunction(() => new CocoaSuspensionHost(), typeof(ISuspensionHost));
+            registerFunction(() => new AppSupportJsonSuspensionDriver(), typeof(ISuspensionDriver));
+#elif ANDROID
+            registerFunction(() => new AndroidSuspensionHost(), typeof(ISuspensionHost));
+            registerFunction(() => new BundleSuspensionDriver(), typeof(ISuspensionDriver));
 #endif
         }
     }
