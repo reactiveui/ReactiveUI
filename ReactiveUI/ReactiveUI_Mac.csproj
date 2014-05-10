@@ -88,9 +88,6 @@
       <HintPath>..\ext\Portable-Net45+WinRT45+WP8\System.Reactive.PlatformServices.dll</HintPath>
     </Reference>
   </ItemGroup>
-  <ItemGroup>
-    <None Include="Info.plist" />
-  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <Compile Include="Cocoa\CocoaDefaultPropertyBinding.cs" />
@@ -108,7 +105,6 @@
     <Compile Include="Cocoa\ReactiveImageView.cs" />
     <Compile Include="Cocoa\ReactiveControl.cs" />
     <Compile Include="Cocoa\ReactiveNSWindowController.cs" />
-
     <Compile Include="..\CommonAssemblyInfo.cs">
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
