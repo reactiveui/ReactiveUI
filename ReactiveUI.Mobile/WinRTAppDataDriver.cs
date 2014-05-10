@@ -27,7 +27,6 @@ namespace ReactiveUI.Mobile
             };
         }
 
-
         public IObservable<T> LoadState<T>() where T : class, IApplicationRootState
         {
             var serializer = JsonSerializer.Create(SerializerSettings);
@@ -47,7 +46,6 @@ namespace ReactiveUI.Mobile
 
         public IObservable<Unit> SaveState<T>(T state) where T : class, IApplicationRootState
         {
-
             var serializer = JsonSerializer.Create(SerializerSettings);
             try {
                 var writer = new StringWriter();

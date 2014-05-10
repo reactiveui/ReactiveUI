@@ -20,8 +20,6 @@ namespace MobileSample_WP8
         public MainPage()
         {
             InitializeComponent();
-
-            this.OneWayBind(ViewModel, x => x.Router, x => x.Router.Router);
         }
 
         public AppBootstrapper ViewModel {
