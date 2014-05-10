@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Reactive;
 using System.Reactive.Concurrency;
+using System.Runtime.CompilerServices;
 using Splat;
 
 namespace ReactiveUI
@@ -135,6 +136,12 @@ namespace ReactiveUI
             set {
                 _DefaultExceptionHandler = value;
             }
+        }
+
+        [MethodImpl(MethodImplOptions.NoOptimization)]
+        internal static void EnsureInitialized()
+        {
+            // NB: This method only exists to invoke the static constructor
         }
 
 #if ANDROID || SILVERLIGHT || IOS

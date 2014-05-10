@@ -17,6 +17,11 @@ namespace ReactiveUI
     [DataContract]
     public class RoutingState : ReactiveObject
     {
+        static RoutingState()
+        {
+            RxApp.EnsureInitialized();
+        }
+
         [DataMember] ReactiveList<IRoutableViewModel> _NavigationStack;
 
         /// <summary>
