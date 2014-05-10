@@ -9,8 +9,8 @@
     <ProjectGuid>{689EC7C5-2D81-4124-929E-397B330CC358}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ReactiveUI.Xaml</RootNamespace>
-    <AssemblyName>ReactiveUI.Xaml</AssemblyName>
+    <RootNamespace>ReactiveUI</RootNamespace>
+    <AssemblyName>ReactiveUI</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{BC8A1FFA-BEE3-4634-8014-F334798102B3};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -38,13 +38,13 @@
     <DefineConstants>TRACE;WINRT</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Release\WinRT451\ReactiveUI.Xaml.xml</DocumentationFile>
+    <DocumentationFile>bin\Release\WinRT451\ReactiveUI.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="..\CommonAssemblyInfo.cs">
       <Link>Xaml\Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Registrations.cs" />
+    <Compile Include="Platform\Registrations.cs" />
     <Compile Include="Xaml\ActivationForViewFetcher.cs" />
     <Compile Include="Xaml\AutoDataTemplateBindingHook.cs" />
     <Compile Include="Xaml\BindingTypeConverters.cs" />
@@ -56,6 +56,59 @@
     <Compile Include="Xaml\TransitioningContentControl.WinRT.cs" />
     <Compile Include="Xaml\ViewModelViewHost.cs" />
     <Compile Include="Xaml\XamlDefaultPropertyBinding.cs" />
+
+    <Compile Include="..\CommonAssemblyInfo.cs">
+      <Link>Properties\CommonAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="Activation.cs" />
+    <Compile Include="ReactiveBinding.cs" />
+    <Compile Include="AutoPersistHelper.cs" />
+    <Compile Include="BindingTypeConverters.cs" />
+    <Compile Include="CollectionDebugView.cs" />
+    <Compile Include="CommandBinding.cs" />
+    <Compile Include="CompatMixins.cs" />
+    <Compile Include="ContractStubs.cs" />
+    <Compile Include="DefaultPropertyBinding.cs" />
+    <Compile Include="DummySuspension.cs" />
+    <Compile Include="DesignModeDetector.cs" />
+    <Compile Include="Errors.cs" />
+    <Compile Include="IDependencyResolver.cs" />
+    <Compile Include="INPCObservableForProperty.cs" />
+    <Compile Include="Interfaces.cs" />
+    <Compile Include="IROObservableForProperty.cs" />
+    <Compile Include="MessageBus.cs" />
+    <Compile Include="NullDefaultPropertyBindingProvider.cs" />
+    <Compile Include="ObservableAsPropertyHelper.cs" />
+    <Compile Include="ObservedChangedMixin.cs" />
+    <Compile Include="OrderedComparer.cs" />
+    <Compile Include="POCOObservableForProperty.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="PropertyBinding.cs" />
+    <Compile Include="ReactiveList.cs" />
+    <Compile Include="ReactiveCollectionMixins.cs" />
+    <Compile Include="ReactiveCommand.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ReactiveNotifyPropertyChangedMixin.cs" />
+    <Compile Include="ReactiveObject.cs" />
+    <Compile Include="RefcountDisposeWrapper.cs" />
+    <Compile Include="Reflection.cs" />
+    <Compile Include="RegisterableInterfaces.cs" />
+    <Compile Include="Registrations.cs" />
+    <Compile Include="RoutableViewModelMixin.cs" />
+    <Compile Include="RoutingState.cs" />
+    <Compile Include="RxApp.cs" />
+    <Compile Include="ViewLocator.cs" />
+    <Compile Include="ScheduledSubject.cs" />
+    <Compile Include="VariadicTemplates.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>VariadicTemplates.tt</DependentUpon>
+    </Compile>
+    <Compile Include="WaitForDispatcherScheduler.cs" />
+    <Compile Include="LoggingMixins.cs" />
+    <Compile Include="IReactiveObject.cs" />
+    <Compile Include="WeakEventManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
@@ -82,12 +135,6 @@
     <Reference Include="System.Reactive.WindowsRuntime">
       <HintPath>..\ext\winrt\System.Reactive.WindowsRuntime.dll</HintPath>
     </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj">
-      <Project>{464cb812-f99f-401b-be4c-e8f0515cd19d}</Project>
-      <Name>ReactiveUI</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

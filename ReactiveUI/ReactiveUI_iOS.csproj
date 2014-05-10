@@ -8,9 +8,9 @@
     <ProjectGuid>{9091337A-9E94-4DBD-801E-15E1FDA78FFC}</ProjectGuid>
     <ProjectTypeGuids>{6BC8ED88-2882-458C-8E55-DFD12B67127B};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
-    <RootNamespace>ReactiveUI.Cocoa</RootNamespace>
+    <RootNamespace>ReactiveUI</RootNamespace>
     <IPhoneResourcePrefix>Resources</IPhoneResourcePrefix>
-    <AssemblyName>ReactiveUI.Cocoa</AssemblyName>
+    <AssemblyName>ReactiveUI</AssemblyName>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
   </PropertyGroup>
@@ -36,7 +36,7 @@
     <WarningLevel>4</WarningLevel>
     <ConsolePause>False</ConsolePause>
     <DefineConstants>MONO; UIKIT; COCOA</DefineConstants>
-    <DocumentationFile>bin\Release\Monotouch\ReactiveUI.Cocoa.XML</DocumentationFile>
+    <DocumentationFile>bin\Release\Monotouch\ReactiveUI.xml</DocumentationFile>
     <GenerateDocumentation>True</GenerateDocumentation>
     <CodesignKey>iPhone Developer</CodesignKey>
   </PropertyGroup>
@@ -80,9 +80,9 @@
     <Compile Include="Cocoa\RouterUINavigationController.cs" />
     <Compile Include="Cocoa\TargetActionCommandBinder.cs" />
     <Compile Include="Cocoa\ViewModelViewHost.cs" />
-    <Compile Include="FlexibleCommandBinder.cs" />
-    <Compile Include="ComponentModelTypeConverter.cs" />
-    <Compile Include="Registrations.cs" />
+    <Compile Include="Platform\FlexibleCommandBinder.cs" />
+    <Compile Include="Platform\ComponentModelTypeConverter.cs" />
+    <Compile Include="Platform\Registrations.cs" />
     <Compile Include="Cocoa\PlatformOperations.cs" />
     <Compile Include="Cocoa\UIKitObservableForProperty.cs" />
     <Compile Include="Cocoa\UIKitObservableForPropertyBase.cs" />
@@ -103,12 +103,58 @@
     <Compile Include="Cocoa\ReactivePageViewController.cs" />
     <Compile Include="Cocoa\ReactiveCollectionView.cs" />
     <Compile Include="Cocoa\ReactiveCollectionReusableView.cs" />
-  </ItemGroup>
-  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
-  <ItemGroup>
-    <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj">
-      <Project>{464CB812-F99F-401B-BE4C-E8F0515CD19D}</Project>
-      <Name>ReactiveUI</Name>
-    </ProjectReference>
+
+    <Compile Include="..\CommonAssemblyInfo.cs">
+      <Link>Properties\CommonAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="Activation.cs" />
+    <Compile Include="ReactiveBinding.cs" />
+    <Compile Include="AutoPersistHelper.cs" />
+    <Compile Include="BindingTypeConverters.cs" />
+    <Compile Include="CollectionDebugView.cs" />
+    <Compile Include="CommandBinding.cs" />
+    <Compile Include="CompatMixins.cs" />
+    <Compile Include="ContractStubs.cs" />
+    <Compile Include="DefaultPropertyBinding.cs" />
+    <Compile Include="DummySuspension.cs" />
+    <Compile Include="DesignModeDetector.cs" />
+    <Compile Include="Errors.cs" />
+    <Compile Include="IDependencyResolver.cs" />
+    <Compile Include="INPCObservableForProperty.cs" />
+    <Compile Include="Interfaces.cs" />
+    <Compile Include="IROObservableForProperty.cs" />
+    <Compile Include="MessageBus.cs" />
+    <Compile Include="NullDefaultPropertyBindingProvider.cs" />
+    <Compile Include="ObservableAsPropertyHelper.cs" />
+    <Compile Include="ObservedChangedMixin.cs" />
+    <Compile Include="OrderedComparer.cs" />
+    <Compile Include="POCOObservableForProperty.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="PropertyBinding.cs" />
+    <Compile Include="ReactiveList.cs" />
+    <Compile Include="ReactiveCollectionMixins.cs" />
+    <Compile Include="ReactiveCommand.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ReactiveNotifyPropertyChangedMixin.cs" />
+    <Compile Include="ReactiveObject.cs" />
+    <Compile Include="RefcountDisposeWrapper.cs" />
+    <Compile Include="Reflection.cs" />
+    <Compile Include="RegisterableInterfaces.cs" />
+    <Compile Include="Registrations.cs" />
+    <Compile Include="RoutableViewModelMixin.cs" />
+    <Compile Include="RoutingState.cs" />
+    <Compile Include="RxApp.cs" />
+    <Compile Include="ViewLocator.cs" />
+    <Compile Include="ScheduledSubject.cs" />
+    <Compile Include="VariadicTemplates.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>VariadicTemplates.tt</DependentUpon>
+    </Compile>
+    <Compile Include="WaitForDispatcherScheduler.cs" />
+    <Compile Include="LoggingMixins.cs" />
+    <Compile Include="IReactiveObject.cs" />
+    <Compile Include="WeakEventManager.cs" />
   </ItemGroup>
 </Project>
