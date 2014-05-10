@@ -75,14 +75,6 @@
       <Project>{600998c4-54dd-4755-bfa8-6f44544d8e2e}</Project>
       <Name>ReactiveUI.Events_Net45</Name>
     </ProjectReference>
-    <ProjectReference Include="..\ReactiveUI.Platforms\ReactiveUI.Winforms_Net45.csproj">
-      <Project>{f5ecbde5-e525-4482-b568-63217bcb0a0b}</Project>
-      <Name>ReactiveUI.Winforms_Net45</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\ReactiveUI.Platforms\ReactiveUI.Xaml_Net45.csproj">
-      <Project>{1ce2d235-8072-4649-ba5a-cfb1af8776e0}</Project>
-      <Name>ReactiveUI.Xaml_Net45</Name>
-    </ProjectReference>
     <ProjectReference Include="..\ReactiveUI.Testing\ReactiveUI.Testing_Net45.csproj">
       <Project>{dd99fd0f-82f6-4c30-930e-4a1d0df01d65}</Project>
       <Name>ReactiveUI.Testing_Net45</Name>
