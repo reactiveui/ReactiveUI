@@ -103,7 +103,6 @@
     <Compile Include="Cocoa\ReactivePageViewController.cs" />
     <Compile Include="Cocoa\ReactiveCollectionView.cs" />
     <Compile Include="Cocoa\ReactiveCollectionReusableView.cs" />
-
     <Compile Include="..\CommonAssemblyInfo.cs">
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>

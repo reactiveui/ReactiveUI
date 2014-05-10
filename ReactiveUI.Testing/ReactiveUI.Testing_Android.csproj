@@ -143,13 +143,9 @@
       <Project>{1131910A-9D6D-473F-9C69-3DCF6A1C81BC}</Project>
       <Name>Microsoft.Reactive.Testing_Android</Name>
     </ProjectReference>
-    <ProjectReference Include="..\ReactiveUI.Platforms\ReactiveUI.Android.csproj">
+    <ProjectReference Include="..\ReactiveUI\ReactiveUI_Android.csproj">
       <Project>{F5A6E11B-B074-4A0B-B937-267D840E31DF}</Project>
-      <Name>ReactiveUI.Android</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj">
-      <Project>{464CB812-F99F-401B-BE4C-E8F0515CD19D}</Project>
-      <Name>ReactiveUI</Name>
+      <Name>ReactiveUI_Android</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />

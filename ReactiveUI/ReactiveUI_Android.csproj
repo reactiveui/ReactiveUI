@@ -85,7 +85,6 @@
     <Compile Include="Android\AndroidDefaultPropertyBinding.cs" />
     <Compile Include="Android\AndroidObservableForWidgets.cs" />
     <Compile Include="Android\LayoutViewHost.cs" />
-
     <Compile Include="Activation.cs" />
     <Compile Include="ReactiveBinding.cs" />
     <Compile Include="AutoPersistHelper.cs" />
