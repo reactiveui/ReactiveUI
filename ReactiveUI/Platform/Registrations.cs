@@ -17,24 +17,20 @@ using MonoTouch.UIKit;
 using NSApplication = MonoTouch.UIKit.UIApplication;
 #elif COCOA && !UIKIT
 using MonoMac.AppKit;
+#elif ANDROID
+using ReactiveUI.Android;
+#elif XAML
+using ReactiveUI.Xaml;
 #endif
 
-#if ANDROID
-using ReactiveUI.Android.Android;
-
-namespace ReactiveUI.Android
-#elif COCOA
-namespace ReactiveUI.Cocoa
-#else
-namespace ReactiveUI.Xaml
-#endif
+namespace ReactiveUI
 {
     /// <summary>
     /// Ignore me. This class is a secret handshake between RxUI and RxUI.Xaml
     /// in order to register certain classes on startup that would be difficult
     /// to register otherwise.
     /// </summary>
-    public class Registrations : IWantsToRegisterStuff
+    public class PlatformRegistrations : IWantsToRegisterStuff
     {
         public void Register(Action<Func<object>, Type> registerFunction)
         {

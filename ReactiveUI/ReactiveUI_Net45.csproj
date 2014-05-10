@@ -32,7 +32,7 @@
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\Net45\</OutputPath>
     <IntermediateOutputPath>obj\Debug\Net45</IntermediateOutputPath>
-    <DefineConstants>DEBUG;TRACE;NET_45</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;NET_45; XAML</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CodeContractsEnableRuntimeChecking>False</CodeContractsEnableRuntimeChecking>
@@ -67,7 +67,7 @@
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\Net45\</OutputPath>
     <IntermediateOutputPath>bin\Release\Net45</IntermediateOutputPath>
-    <DefineConstants>TRACE;NET_45</DefineConstants>
+    <DefineConstants>TRACE;NET_45; XAML</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CodeContractsEnableRuntimeChecking>False</CodeContractsEnableRuntimeChecking>
