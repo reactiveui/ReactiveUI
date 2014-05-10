@@ -26,7 +26,7 @@
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\WinRT451\</OutputPath>
     <IntermediateOutputPath>obj\Debug\WinRT451</IntermediateOutputPath>
-    <DefineConstants>TRACE;DEBUG;WINRT</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;WINRT; XAML</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -35,7 +35,7 @@
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\WinRT451\</OutputPath>
     <IntermediateOutputPath>obj\Release\WinRT451</IntermediateOutputPath>
-    <DefineConstants>TRACE;WINRT</DefineConstants>
+    <DefineConstants>TRACE;WINRT; XAML</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>bin\Release\WinRT451\ReactiveUI.xml</DocumentationFile>

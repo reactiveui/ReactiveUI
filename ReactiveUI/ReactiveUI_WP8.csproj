@@ -26,7 +26,7 @@
     <Optimize>false</Optimize>
     <OutputPath>Bin\Debug\WP8\</OutputPath>
     <IntermediateOutputPath>obj\Debug\WP8</IntermediateOutputPath>
-    <DefineConstants>DEBUG;TRACE;SILVERLIGHT;WP8</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;SILVERLIGHT;WP8;XAML</DefineConstants>
     <NoStdLib>true</NoStdLib>
     <NoConfig>true</NoConfig>
     <ErrorReport>prompt</ErrorReport>
@@ -60,7 +60,7 @@
     <Optimize>true</Optimize>
     <OutputPath>Bin\Release\WP8\</OutputPath>
     <IntermediateOutputPath>obj\Release\WP8</IntermediateOutputPath>
-    <DefineConstants>TRACE;SILVERLIGHT;WP8</DefineConstants>
+    <DefineConstants>TRACE;SILVERLIGHT;WP8;XAML</DefineConstants>
     <NoStdLib>true</NoStdLib>
     <NoConfig>true</NoConfig>
     <ErrorReport>prompt</ErrorReport>
