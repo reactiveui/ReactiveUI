@@ -152,9 +152,9 @@
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj">
-      <Project>{464CB812-F99F-401B-BE4C-E8F0515CD19D}</Project>
-      <Name>ReactiveUI</Name>
+    <ProjectReference Include="..\ReactiveUI\ReactiveUI_WP8.csproj">
+      <Project>{f9459904-f785-4255-866a-a619787cb895}</Project>
+      <Name>ReactiveUI_WP8</Name>
     </ProjectReference>
   </ItemGroup>
   <ProjectExtensions />
