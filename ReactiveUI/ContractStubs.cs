@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Specialized;
 
-#if IOS || PORTABLE
+#if UIKIT || PORTABLE
 
 namespace ReactiveUI
 {
@@ -23,12 +23,16 @@ namespace ReactiveUI
     public interface INotifyPropertyChanging {
         event PropertyChangingEventHandler PropertyChanging;
     }
+}
 
+#endif
+
+namespace ReactiveUI
+{    
     public interface INotifyCollectionChanging {
         event NotifyCollectionChangedEventHandler CollectionChanging;
     }
 }
-#endif
 
 #if PORTABLE
 namespace ReactiveUI
