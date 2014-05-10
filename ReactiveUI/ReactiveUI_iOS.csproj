@@ -104,7 +104,7 @@
     <Compile Include="Cocoa\ReactiveCollectionView.cs" />
     <Compile Include="Cocoa\ReactiveCollectionReusableView.cs" />
     <Compile Include="..\CommonAssemblyInfo.cs">
-      <Link>Properties\CommonAssemblyInfo.cs</Link>
+      <Link>Cocoa\Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Activation.cs" />
     <Compile Include="ReactiveBinding.cs" />
@@ -116,7 +116,6 @@
     <Compile Include="ContractStubs.cs" />
     <Compile Include="DefaultPropertyBinding.cs" />
     <Compile Include="DummySuspension.cs" />
-    <Compile Include="DesignModeDetector.cs" />
     <Compile Include="Errors.cs" />
     <Compile Include="IDependencyResolver.cs" />
     <Compile Include="INPCObservableForProperty.cs" />
