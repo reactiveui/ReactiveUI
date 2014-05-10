@@ -58,7 +58,7 @@ namespace {{Name}}.Rx
     public {{Abstract}} partial class {{Name}}Rx : {{Name}}
     {
 {{#ZeroParameterMethods}}
-        protected readonly SingleAwaitSubject<Unit> _{{Name}} = new SingleAwaitSubject<Unit>();
+        readonly SingleAwaitSubject<Unit> _{{Name}} = new SingleAwaitSubject<Unit>();
         public IObservable<Unit> {{Name}}Obs { get { return _{{Name}}; } }
         public override void {{Name}}()
         {
@@ -67,7 +67,7 @@ namespace {{Name}}.Rx
 
 {{/ZeroParameterMethods}}
 {{#SingleParameterMethods}}
-        protected readonly SingleAwaitSubject<{{ParameterType}}> _{{Name}} = new SingleAwaitSubject<{{ParameterType}}>();
+        readonly SingleAwaitSubject<{{ParameterType}}> _{{Name}} = new SingleAwaitSubject<{{ParameterType}}>();
         public IObservable<{{ParameterType}}> {{Name}}Obs { get { return _{{Name}}; } }
         public override void {{Name}}({{ParameterType}} {{ParameterName}})
         {
@@ -76,7 +76,7 @@ namespace {{Name}}.Rx
 
 {{/SingleParameterMethods}}
 {{#MultiParameterMethods}}
-        protected readonly SingleAwaitSubject<Tuple<{{ParameterTypeList}}>> _{{Name}} = new SingleAwaitSubject<Tuple<{{ParameterTypeList}}>>();
+        readonly SingleAwaitSubject<Tuple<{{ParameterTypeList}}>> _{{Name}} = new SingleAwaitSubject<Tuple<{{ParameterTypeList}}>>();
         public IObservable<Tuple<{{ParameterTypeList}}>> {{Name}}Obs { get { return _{{Name}}; } }
         public override void {{Name}}({{ParameterList}})
         {
