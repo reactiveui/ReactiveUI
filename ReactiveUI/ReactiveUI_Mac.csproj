@@ -17,6 +17,7 @@
     <DebugType>full</DebugType>
     <Optimize>False</Optimize>
     <OutputPath>bin\Debug\MonoMac</OutputPath>
+    <IntermediateOutputPath>obj\Debug\MonoMac</IntermediateOutputPath>
     <DefineConstants>DEBUG; MONO; COCOA</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -31,6 +32,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <Optimize>True</Optimize>
     <OutputPath>bin\Release\MonoMac</OutputPath>
+    <IntermediateOutputPath>obj\Release\MonoMac</IntermediateOutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <EnablePackageSigning>False</EnablePackageSigning>
@@ -44,22 +46,6 @@
     <DefineConstants>MONO; COCOA</DefineConstants>
     <DebugSymbols>true</DebugSymbols>
     <GenerateDocumentation>True</GenerateDocumentation>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'AppStore|AnyCPU' ">
-    <DebugType>none</DebugType>
-    <Optimize>True</Optimize>
-    <OutputPath>bin\AppStore\MonoMac</OutputPath>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <PackageSigningKey>3rd Party Mac Developer Installer</PackageSigningKey>
-    <IncludeMonoRuntime>True</IncludeMonoRuntime>
-    <LinkMode>Full</LinkMode>
-    <EnablePackageSigning>True</EnablePackageSigning>
-    <ConsolePause>False</ConsolePause>
-    <EnableCodeSigning>True</EnableCodeSigning>
-    <CreatePackage>True</CreatePackage>
-    <CodeSigningKey>3rd Party Mac Developer Application</CodeSigningKey>
-    <UseSGen>False</UseSGen>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
