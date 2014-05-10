@@ -17,6 +17,11 @@ namespace ReactiveUI
     [DataContract]
     public class RoutingState : ReactiveObject
     {
+        static RoutingState()
+        {
+            RxApp.EnsureInitialized();
+        }
+
         [DataMember] ReactiveList<IRoutableViewModel> _NavigationStack;
 
         /// <summary>
@@ -65,7 +70,7 @@ namespace ReactiveUI
 
         void setupRx()
         {
-            NavigateBack = ReactiveCommand.Create(
+            NavigateBack = ReactiveCommand.CreateAsyncObservable(
                 NavigationStack.CountChanged.StartWith(_NavigationStack.Count).Select(x => x > 1),
                 _ => Observable.Return(Unit.Default));
 
