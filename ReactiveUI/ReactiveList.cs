@@ -271,11 +271,12 @@ namespace ReactiveUI
                 throw new ArgumentNullException("collection");
             }
 
-            var list = collection.ToList();
-            var disp = isLengthAboveResetThreshold(list.Count) ?
-                SuppressChangeNotifications() : Disposable.Empty;
+            var list = collection as ICollection<T> ?? collection.ToList();
+            var disp = isLengthAboveResetThreshold(list.Count)
+                ? SuppressChangeNotifications() : Disposable.Empty;
 
             using (disp) {
+                // reset notification
                 if (!this.areChangeNotificationsEnabled()) {
                     _inner.AddRange(list);
                  
@@ -287,21 +288,52 @@ namespace ReactiveUI
                     return;
                 }
 
-                var ea = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, list, _inner.Count/*we are appending a range*/);
+                // range notification
+                if (RxApp.SupportsRangeNotifications)
+                {
+                    var ea = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, list, _inner.Count/*we are appending a range*/);
 
-                _changing.OnNext(ea);
-                if (_beforeItemsAdded.IsValueCreated) {
-                    foreach (var item in list) {
-                        _beforeItemsAdded.Value.OnNext(item);
+                    _changing.OnNext(ea);
+
+                    if (_beforeItemsAdded.IsValueCreated)
+                    {
+                        foreach (var item in list)
+                        {
+                            _beforeItemsAdded.Value.OnNext(item);
+                        }
+                    }
+
+                    _inner.AddRange(list);
+
+                    _changed.OnNext(ea);
+                    if (_itemsAdded.IsValueCreated)
+                    {
+                        foreach (var item in list)
+                        {
+                            _itemsAdded.Value.OnNext(item);
+                        }
                     }
                 }
+                // per item notification
+                else
+                {
+                    foreach (var item in list)
+                    {
+                        var ea = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item, _inner.Count);
 
-                _inner.AddRange(list);
+                        _changing.OnNext(ea);
+                        if (_beforeItemsAdded.IsValueCreated)
+                        {
+                            _beforeItemsAdded.Value.OnNext(item);
+                        }
 
-                _changed.OnNext(ea);
-                if (_itemsAdded.IsValueCreated){
-                    foreach (var item in list) {
-                        _itemsAdded.Value.OnNext(item);
+                        _inner.Add(item);
+
+                        _changed.OnNext(ea);
+                        if (_itemsAdded.IsValueCreated)
+                        {
+                            _itemsAdded.Value.OnNext(item);
+                        }
                     }
                 }
 
@@ -320,11 +352,12 @@ namespace ReactiveUI
                 throw new ArgumentNullException("collection");
             }
 
-            var list = collection.ToList();
+            var list = collection as ICollection<T> ?? collection.ToList();
             var disp = isLengthAboveResetThreshold(list.Count) ?
                 SuppressChangeNotifications() : Disposable.Empty;
 
             using (disp) {
+                // reset notification
                 if (!this.areChangeNotificationsEnabled()) {
                     _inner.InsertRange(index, list);
 
@@ -336,24 +369,54 @@ namespace ReactiveUI
 
                     return;
                 }
+                // range notification
+                if (RxApp.SupportsRangeNotifications)
+                {
+                    var ea = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, list, index);
 
-                var ea = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, list, index);
+                    _changing.OnNext(ea);
+                    if (_beforeItemsAdded.IsValueCreated)
+                    {
+                        foreach (var item in list)
+                        {
+                            _beforeItemsAdded.Value.OnNext(item);
+                        }
+                    }
 
-                _changing.OnNext(ea);
-                if (_beforeItemsAdded.IsValueCreated) {
-                    foreach (var item in list) {
-                        _beforeItemsAdded.Value.OnNext(item);
+                    _inner.InsertRange(index, list);
+
+                    _changed.OnNext(ea);
+                    if (_itemsAdded.IsValueCreated)
+                    {
+                        foreach (var item in list)
+                        {
+                            _itemsAdded.Value.OnNext(item);
+                        }
+                    }
+                }
+                // per item notification
+                else
+                {
+                    foreach (var item in list)
+                    {
+                        var ea = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item, index);
+
+                        _changing.OnNext(ea);
+                        if (_beforeItemsAdded.IsValueCreated)
+                        {
+                            _beforeItemsAdded.Value.OnNext(item);
+                        }
+
+                        _inner.Insert(index, item);
+
+                        _changed.OnNext(ea);
+                        if (_itemsAdded.IsValueCreated)
+                        {
+                            _itemsAdded.Value.OnNext(item);
+                        }
                     }
                 }
 
-                _inner.InsertRange(index, list);
-
-                _changed.OnNext(ea);
-                if (_itemsAdded.IsValueCreated) {
-                    foreach (var item in list) {
-                        _itemsAdded.Value.OnNext(item);
-                    }
-                }
 
                 if (ChangeTrackingEnabled) {
                     foreach (var item in list) {
