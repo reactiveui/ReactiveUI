@@ -33,6 +33,11 @@ namespace ReactiveUI
 #if !PORTABLE
             _TaskpoolScheduler = TaskPoolScheduler.Default;
 #endif
+            // Initialize this to false as most platforms do not support
+            // range notification for INotifyCollectionChanged
+            // platforms that doe support it should set this to true in
+            // ReactiveUI.Platforms
+            SupportsRangeNotifications = false;
 
             Locator.RegisterResolverCallbackChanged(() => {
                 if (Locator.CurrentMutable == null) return;
@@ -135,6 +140,17 @@ namespace ReactiveUI
             }
             set {
                 _DefaultExceptionHandler = value;
+            }
+        }
+
+        static bool _SupportsRangeNotifications;
+
+        public static bool SupportsRangeNotifications  {
+            get {
+                return _SupportsRangeNotifications;
+            }
+            set {
+                _SupportsRangeNotifications = value;
             }
         }
 
