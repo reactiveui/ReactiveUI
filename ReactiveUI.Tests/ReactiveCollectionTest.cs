@@ -137,7 +137,7 @@ namespace ReactiveUI.Tests
         {
             var fixture = new ReactiveList<int>();
 
-            Assert.Throws<ArgumentOutOfRangeException>(() => fixture.InsertRange(1, new List<int>()));
+            Assert.Throws<ArgumentOutOfRangeException>(() => fixture.InsertRange(1, new List<int>() { 1 }));
         }
 
         [Fact]
@@ -369,7 +369,7 @@ namespace ReactiveUI.Tests
             fixture[5].IsNotNullString = "Baz";
             Assert.Equal(1, reset.Count);
             Assert.Equal(3, itemChanged.Count);
-   }
+        }
 
         [Fact]
         public void GetAResetWhenWeAddALotOfItems()
@@ -380,6 +380,32 @@ namespace ReactiveUI.Tests
 
             fixture.AddRange(new[] { 2,3,4,5,6,7,8,9,10,11,12,13, });
             Assert.Equal(1, reset.Count);
+        }
+
+        [Fact]
+        public void GetARangeWhenWeAddAListOfItems()
+        {
+            var fixture = new ReactiveList<int> { 1, 2, 3, 4, 5 };
+            var changed = fixture.Changed.CreateCollection();
+            Assert.Equal(0, changed.Count);
+
+            fixture.AddRange(new[] { 6, 7 });
+            Assert.Equal(1, changed.Count);
+            Assert.Equal(NotifyCollectionChangedAction.Add, changed.First().Action);
+        }
+
+        [Fact]
+        public void GetSingleItemNotificationWhenWeAddAListOfItemsAndRangeIsFalse()
+        {
+            RxApp.SupportsRangeNotifications = false;
+            var fixture = new ReactiveList<int> { 1, 2, 3, 4, 5 };
+            var changed = fixture.Changed.CreateCollection();
+            Assert.Equal(0, changed.Count);
+
+            fixture.AddRange(new[] { 6, 7 });
+            Assert.Equal(2, changed.Count);
+            Assert.Equal(NotifyCollectionChangedAction.Add, changed[0].Action);
+            Assert.Equal(NotifyCollectionChangedAction.Add, changed[1].Action);
         }
 
         [Fact]
