@@ -313,34 +313,20 @@ namespace ReactiveUI
                             _itemsAdded.Value.OnNext(item);
                         }
                     }
-                }
-                // per item notification
-                else
-                {
-                    foreach (var item in list)
+
+                    if (ChangeTrackingEnabled)
                     {
-                        var ea = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item, _inner.Count);
-
-                        _changing.OnNext(ea);
-                        if (_beforeItemsAdded.IsValueCreated)
+                        foreach (var item in list)
                         {
-                            _beforeItemsAdded.Value.OnNext(item);
-                        }
-
-                        _inner.Add(item);
-
-                        _changed.OnNext(ea);
-                        if (_itemsAdded.IsValueCreated)
-                        {
-                            _itemsAdded.Value.OnNext(item);
+                            addItemToPropertyTracking(item);
                         }
                     }
+                    return;
                 }
-
-                if (ChangeTrackingEnabled) {
-                    foreach (var item in list) {
-                        addItemToPropertyTracking(item);
-                    }
+                // per item notification                
+                foreach (var item in list)
+                {
+                    this.Add(item);
                 }
             }
         }
@@ -393,35 +379,20 @@ namespace ReactiveUI
                             _itemsAdded.Value.OnNext(item);
                         }
                     }
-                }
-                // per item notification
-                else
-                {
-                    foreach (var item in list)
+                    
+                    if (ChangeTrackingEnabled)
                     {
-                        var ea = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item, index);
-
-                        _changing.OnNext(ea);
-                        if (_beforeItemsAdded.IsValueCreated)
+                        foreach (var item in list)
                         {
-                            _beforeItemsAdded.Value.OnNext(item);
-                        }
-
-                        _inner.Insert(index, item);
-
-                        _changed.OnNext(ea);
-                        if (_itemsAdded.IsValueCreated)
-                        {
-                            _itemsAdded.Value.OnNext(item);
+                            addItemToPropertyTracking(item);
                         }
                     }
+                    return;
                 }
-
-
-                if (ChangeTrackingEnabled) {
-                    foreach (var item in list) {
-                        addItemToPropertyTracking(item);
-                    }
+                // per item notification                
+                foreach (var item in list)
+                {
+                    this.Insert(index++, item);
                 }
             }
         }
@@ -438,6 +409,7 @@ namespace ReactiveUI
                     items.Add(_inner[i]);
                 }
 
+                // reset notification
                 if (!this.areChangeNotificationsEnabled()) {
                     _inner.RemoveRange(index,count);
 
@@ -449,23 +421,44 @@ namespace ReactiveUI
                     return;
                 }
 
-                var ea = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, items, index);
+                // range notification
+                if (RxApp.SupportsRangeNotifications)
+                {
+                    var ea = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, items, index);
 
-                _changing.OnNext(ea);
-                if (_beforeItemsRemoved.IsValueCreated) {
-                    foreach (var item in items) {
-                        _beforeItemsRemoved.Value.OnNext(item);
+                    _changing.OnNext(ea);
+                    if (_beforeItemsRemoved.IsValueCreated)
+                    {
+                        foreach (var item in items)
+                        {
+                            _beforeItemsRemoved.Value.OnNext(item);
+                        }
                     }
+
+                    _inner.RemoveRange(index, count);
+                    _changed.OnNext(ea);
+
+                    if (ChangeTrackingEnabled)
+                    {
+                        foreach (var item in items)
+                        {
+                            removeItemFromPropertyTracking(item);
+                        }
+                    }
+
+                    if (_itemsRemoved.IsValueCreated)
+                    {
+                        foreach (var item in items)
+                        {
+                            _itemsRemoved.Value.OnNext(item);
+                        }
+                    }
+                    return;
                 }
-
-                _inner.RemoveRange(index,count);
-                _changed.OnNext(ea);
-
-                if (_itemsRemoved.IsValueCreated || ChangeTrackingEnabled) {
-                    foreach (var item in items) {
-                        if (_itemsRemoved.IsValueCreated) { _itemsRemoved.Value.OnNext(item); }
-                        if (ChangeTrackingEnabled) removeItemFromPropertyTracking(item);
-                    }
+                // per item notification                
+                foreach (var item in items)
+                {
+                    this.Remove(item);
                 }
             }
         }
