@@ -271,7 +271,9 @@ namespace ReactiveUI
                 throw new ArgumentNullException("collection");
             }
 
-            var list = collection as ICollection<T> ?? collection.ToList();
+            // we need list to implement at least IEnumerable<T> and IList
+            // because NotifyCollectionChangedEventArgs expects an IList
+            var list = collection as List<T> ?? collection.ToList();
             var disp = isLengthAboveResetThreshold(list.Count)
                 ? SuppressChangeNotifications() : Disposable.Empty;
 
@@ -338,7 +340,9 @@ namespace ReactiveUI
                 throw new ArgumentNullException("collection");
             }
 
-            var list = collection as ICollection<T> ?? collection.ToList();
+            // we need list to implement at least IEnumerable<T> and IList
+            // because NotifyCollectionChangedEventArgs expects an IList
+            var list = collection as List<T> ?? collection.ToList();
             var disp = isLengthAboveResetThreshold(list.Count) ?
                 SuppressChangeNotifications() : Disposable.Empty;
 
