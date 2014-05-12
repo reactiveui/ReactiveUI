@@ -167,9 +167,6 @@
     <Content Include="Xaml\TestInterface.cs.txt" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="nlog.config">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
