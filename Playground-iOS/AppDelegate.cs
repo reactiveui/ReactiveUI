@@ -22,9 +22,7 @@ namespace MobileSample_iOS
         {
             // NB: Hax
             var r = Locator.CurrentMutable;
-           // (new ReactiveUI.Xaml.ServiceLocationRegistration()).Register();
-         //   (new ReactiveUI.Routing.ServiceLocationRegistration()).Register();
-            (new ReactiveUI.Cocoa.Registrations()).Register((f, t) => r.Register(f, t));
+            (new ReactiveUI.Registrations()).Register((f, t) => r.Register(f, t));
             (new ReactiveUI.Mobile.Registrations()).Register((f, t) => r.Register(f, t));
 
             r.Register(() => new AppBootstrapper(), typeof(IApplicationRootState));
