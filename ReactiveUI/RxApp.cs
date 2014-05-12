@@ -146,14 +146,28 @@ namespace ReactiveUI
             }
         }
 
+        [ThreadStatic] static bool? _UnitTestSupportsRangeNotifications;
         static bool _SupportsRangeNotifications;
 
         public static bool SupportsRangeNotifications  {
             get {
-                return _SupportsRangeNotifications;
+                return _UnitTestSupportsRangeNotifications ?? _SupportsRangeNotifications;
             }
             set {
-                _SupportsRangeNotifications = value;
+                // N.B. The ThreadStatic dance here is for the unit test case -
+                // often, each test will override MainThreadScheduler with their
+                // own TestScheduler, and if this wasn't ThreadStatic, they would
+                // stomp on each other, causing test cases to randomly fail,
+                // then pass when you rerun them.
+                if (ModeDetector.InUnitTestRunner())
+                {
+                    _UnitTestSupportsRangeNotifications = value;
+                    _SupportsRangeNotifications = value;
+                }
+                else
+                {
+                    _SupportsRangeNotifications = value;
+                }
             }
         }
 
