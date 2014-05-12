@@ -45,7 +45,6 @@
     <Compile Include="Xaml\CreatesCommandBinding.cs" />
     <Compile Include="Xaml\DependencyObjectObservableForProperty.cs" />
     <Compile Include="Xaml\PlatformOperations.cs" />
-    <Compile Include="Xaml\Properties\AssemblyInfo.cs" />
     <Compile Include="Xaml\RoutedViewHost.cs" />
     <Compile Include="Xaml\TransitioningContentControl.WinRT.cs" />
     <Compile Include="Xaml\ViewModelViewHost.cs" />
