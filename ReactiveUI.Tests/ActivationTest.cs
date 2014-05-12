@@ -120,6 +120,10 @@ namespace ReactiveUI.Tests
             Assert.Equal(1, fixture.IsActiveCountAlso);
 
             fixture.Activator.Deactivate();
+            Assert.Equal(1, fixture.IsActiveCount);
+            Assert.Equal(1, fixture.IsActiveCountAlso);
+
+            fixture.Activator.Deactivate();
             Assert.Equal(0, fixture.IsActiveCount);
             Assert.Equal(0, fixture.IsActiveCountAlso);
         }
