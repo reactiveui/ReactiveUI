@@ -161,13 +161,13 @@
     <Compile Include="WP8AutoSuspendApplication.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj">
-      <Project>{464CB812-F99F-401B-BE4C-E8F0515CD19D}</Project>
-      <Name>ReactiveUI</Name>
-    </ProjectReference>
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <ProjectReference Include="..\ReactiveUI\ReactiveUI_WP8.csproj">
+      <Project>{f9459904-f785-4255-866a-a619787cb895}</Project>
+      <Name>ReactiveUI_WP8</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\$(TargetFrameworkIdentifier)\$(TargetFrameworkVersion)\Microsoft.$(TargetFrameworkIdentifier).$(TargetFrameworkVersion).Overrides.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\$(TargetFrameworkIdentifier)\$(TargetFrameworkVersion)\Microsoft.$(TargetFrameworkIdentifier).CSharp.targets" />
