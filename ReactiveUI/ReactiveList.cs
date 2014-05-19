@@ -63,8 +63,8 @@ namespace ReactiveUI
         [IgnoreDataMember] Lazy<Subject<T>> _itemsAdded;
         [IgnoreDataMember] Lazy<Subject<T>> _beforeItemsRemoved;
         [IgnoreDataMember] Lazy<Subject<T>> _itemsRemoved;
-        [IgnoreDataMember] Lazy<ISubject<IObservedChange<T, object>>> _itemChanging;
-        [IgnoreDataMember] Lazy<ISubject<IObservedChange<T, object>>> _itemChanged;
+        [IgnoreDataMember] Lazy<ISubject<IReactivePropertyChangedEventArgs<T>>> _itemChanging;
+        [IgnoreDataMember] Lazy<ISubject<IReactivePropertyChangedEventArgs<T>>> _itemChanged;
         [IgnoreDataMember] Lazy<Subject<IMoveInfo<T>>> _beforeItemsMoved;
         [IgnoreDataMember] Lazy<Subject<IMoveInfo<T>>> _itemsMoved;
 
@@ -111,8 +111,8 @@ namespace ReactiveUI
             _itemsAdded = new Lazy<Subject<T>>(() => new Subject<T>());
             _beforeItemsRemoved = new Lazy<Subject<T>>(() => new Subject<T>());
             _itemsRemoved = new Lazy<Subject<T>>(() => new Subject<T>());
-            _itemChanging = new Lazy<ISubject<IObservedChange<T, object>>>(() => new ScheduledSubject<IObservedChange<T, object>>(scheduler));
-            _itemChanged = new Lazy<ISubject<IObservedChange<T, object>>>(() => new ScheduledSubject<IObservedChange<T, object>>(scheduler));
+            _itemChanging = new Lazy<ISubject<IReactivePropertyChangedEventArgs<T>>>(() => new ScheduledSubject<IReactivePropertyChangedEventArgs<T>>(scheduler));
+            _itemChanged = new Lazy<ISubject<IReactivePropertyChangedEventArgs<T>>>(() => new ScheduledSubject<IReactivePropertyChangedEventArgs<T>>(scheduler));
             _beforeItemsMoved = new Lazy<Subject<IMoveInfo<T>>>(() => new Subject<IMoveInfo<T>>());
             _itemsMoved = new Lazy<Subject<IMoveInfo<T>>>(() => new Subject<IMoveInfo<T>>());
 
@@ -511,8 +511,8 @@ namespace ReactiveUI
         public IObservable<IMoveInfo<T>> BeforeItemsMoved { get { return _beforeItemsMoved.Value; } }
         public IObservable<IMoveInfo<T>> ItemsMoved { get { return _itemsMoved.Value; } }
 
-        public IObservable<IObservedChange<T, object>> ItemChanging { get { return _itemChanging.Value; } }
-        public IObservable<IObservedChange<T, object>> ItemChanged { get { return _itemChanged.Value; } }
+        public IObservable<IReactivePropertyChangedEventArgs<T>> ItemChanging { get { return _itemChanging.Value; } }
+        public IObservable<IReactivePropertyChangedEventArgs<T>> ItemChanged { get { return _itemChanged.Value; } }
         
         public IObservable<int> CountChanging {
             get { return _changing.Select(_ => _inner.Count).DistinctUntilChanged(); }
@@ -555,21 +555,21 @@ namespace ReactiveUI
                 return;
             }
 
-            var changing = Observable.Never<IObservedChange<T, object>>();
-            var changed = Observable.Never<IObservedChange<T, object>>();
+            var changing = Observable.Never<IReactivePropertyChangedEventArgs<T>>();
+            var changed = Observable.Never<IReactivePropertyChangedEventArgs<T>>();
 
             this.Log().Info("Item hash: 0x{0:x}", toTrack.GetHashCode());
             var ro = toTrack as IReactiveObject;
             if (ro != null) {
-                changing = ro.getChangingObservable().Select(i => new ObservedChange<T, object>(toTrack, i.PropertyName));
-                changed = ro.getChangedObservable().Select(i => new ObservedChange<T, object>(toTrack, i.PropertyName));
+                changing = ro.getChangingObservable().Cast<IReactivePropertyChangedEventArgs<T>>();
+                changed = ro.getChangedObservable().Cast<IReactivePropertyChangedEventArgs<T>>();
                 goto isSetup;
             }
 
             var inpc = toTrack as INotifyPropertyChanged;
             if (inpc != null) {
                 changed = Observable.FromEventPattern<PropertyChangedEventHandler, PropertyChangedEventArgs>(x => inpc.PropertyChanged += x, x => inpc.PropertyChanged -= x)
-                    .Select(x => new ObservedChange<T, object>(toTrack, x.EventArgs.PropertyName));
+                    .Select(x => new ReactivePropertyChangedEventArgs<T>(toTrack, x.EventArgs.PropertyName));
                 goto isSetup;
             }
 
