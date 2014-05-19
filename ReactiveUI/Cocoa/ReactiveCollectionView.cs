@@ -52,14 +52,14 @@ namespace ReactiveUI.Cocoa
         /// Represents an Observable that fires *before* a property is about to
         /// be changed.
         /// </summary>
-        public IObservable<IObservedChange<ReactiveCollectionView, object>> Changing {
+        public IObservable<IReactivePropertyChangedEventArgs<ReactiveCollectionView>> Changing {
             get { return this.getChangingObservable(); }
         }
 
         /// <summary>
         /// Represents an Observable that fires *after* a property has changed.
         /// </summary>
-        public IObservable<IObservedChange<ReactiveCollectionView, object>> Changed {
+        public IObservable<IReactivePropertyChangedEventArgs<ReactiveCollectionView>> Changed {
             get { return this.getChangedObservable(); }
         }
 
