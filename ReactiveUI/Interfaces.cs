@@ -179,14 +179,14 @@ namespace ReactiveUI
         /// be changed. Note that this should not fire duplicate change notifications if a
         /// property is set to the same value multiple times.
         /// </summary>
-        IObservable<IObservedChange<TSender, object>> Changing { get; }
+        IObservable<IReactivePropertyChangedEventArgs<TSender>> Changing { get; }
 
         /// <summary>
         /// Represents an Observable that fires *after* a property has changed.
         /// Note that this should not fire duplicate change notifications if a
         /// property is set to the same value multiple times.
         /// </summary>
-        IObservable<IObservedChange<TSender, object>> Changed { get; }
+        IObservable<IReactivePropertyChangedEventArgs<TSender>> Changed { get; }
 
         /// <summary>
         /// When this method is called, an object will not fire change
