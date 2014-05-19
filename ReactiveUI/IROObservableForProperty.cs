@@ -29,6 +29,7 @@ namespace ReactiveUI
 
                 return obs
                     .Where(x => x.PropertyName == propertyName)
+                    .Select(x => new ObservedChange<object,object>(sender, propertyName))
                     .Subscribe(subj);
             });
         }
