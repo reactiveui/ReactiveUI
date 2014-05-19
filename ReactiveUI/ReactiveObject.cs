@@ -49,7 +49,7 @@ namespace ReactiveUI
         /// be changed.         
         /// </summary>
         [IgnoreDataMember]
-        public IObservable<IObservedChange<ReactiveObject, object>> Changing {
+        public IObservable<IReactivePropertyChangedEventArgs<ReactiveObject>> Changing {
             get { return this.getChangingObservable(); }
         }
 
@@ -57,7 +57,7 @@ namespace ReactiveUI
         /// Represents an Observable that fires *after* a property has changed.
         /// </summary>
         [IgnoreDataMember]
-        public IObservable<IObservedChange<ReactiveObject, object>> Changed {
+        public IObservable<IReactivePropertyChangedEventArgs<ReactiveObject>> Changed {
             get { return this.getChangedObservable(); }
         }
 
