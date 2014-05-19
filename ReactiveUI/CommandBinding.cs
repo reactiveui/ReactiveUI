@@ -10,6 +10,7 @@ using System.Text;
 using System.Windows.Input;
 using Splat;
 using ReactiveUI;
+using System.Reactive;
 
 namespace ReactiveUI
 {
@@ -45,7 +46,7 @@ namespace ReactiveUI
             where TView : class, IViewFor<TViewModel>
             where TProp : ICommand
         {
-            return binderImplementation.BindCommand(viewModel, view, propertyName, toEvent);
+            return binderImplementation.BindCommand<TView, TViewModel, TProp, Unit>(viewModel, view, propertyName, null, toEvent);
         }
                 
         /// <summary>
@@ -158,15 +159,6 @@ namespace ReactiveUI
 
     interface ICommandBinderImplementation : IEnableLogger
     {
-        IReactiveBinding<TView, TViewModel, TProp> BindCommand<TView, TViewModel, TProp>(
-                TViewModel viewModel, 
-                TView view, 
-                Expression<Func<TViewModel, TProp>> propertyName,
-                string toEvent = null)
-            where TViewModel : class
-            where TView : class, IViewFor<TViewModel>
-            where TProp : ICommand;
-
         IReactiveBinding<TView, TViewModel, TProp> BindCommand<TView, TViewModel, TProp, TControl, TParam>(
                 TViewModel viewModel, 
                 TView view, 
@@ -192,25 +184,6 @@ namespace ReactiveUI
 
     public class CommandBinderImplementation : ICommandBinderImplementation 
     {
-        public IReactiveBinding<TView, TViewModel, TProp> BindCommand<TView, TViewModel, TProp>(
-                TViewModel viewModel, 
-                TView view, 
-                Expression<Func<TViewModel, TProp>> propertyName,
-                string toEvent = null)
-            where TViewModel : class
-            where TView : class, IViewFor<TViewModel>
-            where TProp : ICommand
-        {
-            var ctlName = Reflection.SimpleExpressionToPropertyName(propertyName);
-            var viewPropGetter = Reflection.GetValueFetcherForProperty(typeof (TView), ctlName);
-
-            IObservable<TProp> changed;
-            IDisposable disp = bindCommandInternal(viewModel, view, propertyName, viewPropGetter, Observable.Empty<object>(), toEvent, out changed);
-
-            return new ReactiveBinding<TView, TViewModel, TProp>(view, viewModel, new string[] { ctlName }, new string[] { ctlName },
-                changed, BindingDirection.OneWay, disp);
-        }
-
         public IReactiveBinding<TView, TViewModel, TProp> BindCommand<TView, TViewModel, TProp, TControl, TParam>(
                 TViewModel viewModel, 
                 TView view, 
@@ -222,7 +195,16 @@ namespace ReactiveUI
             where TView : class, IViewFor<TViewModel>
             where TProp : ICommand
         {
-            var ctlName = Reflection.SimpleExpressionToPropertyName(controlName);
+            var ctlName = default(string);
+
+            if (controlName == null)
+            {
+                ctlName = Reflection.SimpleExpressionToPropertyName(propertyName);
+            }
+            else
+            {
+                ctlName = Reflection.SimpleExpressionToPropertyName(controlName);
+            }
             var viewPropGetter = Reflection.GetValueFetcherForProperty(typeof (TView), ctlName);
 
             IObservable<TProp> changed;
@@ -252,8 +234,17 @@ namespace ReactiveUI
             where TView : class, IViewFor<TViewModel>
             where TProp : ICommand
         {
-            var ctlName = Reflection.SimpleExpressionToPropertyName(controlName);
-            var viewPropGetter = Reflection.GetValueFetcherForProperty(typeof (TView), ctlName);
+            var ctlName = default(string);
+
+            if (controlName == null)
+            {
+                ctlName = Reflection.SimpleExpressionToPropertyName(propertyName);
+            }
+            else
+            {
+                ctlName = Reflection.SimpleExpressionToPropertyName(controlName);
+            }
+            var viewPropGetter = Reflection.GetValueFetcherForProperty(typeof(TView), ctlName);
 
             IObservable<TProp> changed;
             IDisposable bindingDisposable = bindCommandInternal(viewModel, view, propertyName, viewPropGetter, withParameter, toEvent, out changed);
