@@ -209,14 +209,14 @@ namespace ReactiveUI
         /// implements IReactiveNotifyPropertyChanged. This is only enabled when
         /// ChangeTrackingEnabled is set to True.
         /// </summary>
-        IObservable<IObservedChange<TSender, object>> ItemChanging { get; }
+        IObservable<IReactivePropertyChangedEventArgs<TSender>> ItemChanging { get; }
 
         /// <summary>
         /// Provides Item Changed notifications for any item in collection that
         /// implements IReactiveNotifyPropertyChanged. This is only enabled when
         /// ChangeTrackingEnabled is set to True.
         /// </summary>
-        IObservable<IObservedChange<TSender, object>> ItemChanged { get; }
+        IObservable<IReactivePropertyChangedEventArgs<TSender>> ItemChanged { get; }
 
         /// <summary>
         /// Enables the ItemChanging and ItemChanged properties; when this is
