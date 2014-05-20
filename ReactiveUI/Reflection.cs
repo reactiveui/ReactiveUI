@@ -237,7 +237,7 @@ namespace ReactiveUI
             return true;
         }
 
-        public static bool SetValueToPropertyChain<TValue>(object target, string[] propNames, TValue value, bool shouldThrow = true)
+        public static bool TrySetValueToPropertyChain<TValue>(object target, string[] propNames, TValue value, bool shouldThrow = true)
         {
             foreach (var propName in propNames.SkipLast(1)) {
                 var getter = shouldThrow ?
