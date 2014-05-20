@@ -639,7 +639,7 @@ namespace ReactiveUI
                 // NB: In this case, TVProp is possibly wrong due to type 
                 // conversion. Figure out if this is the case, then re-call Bind
                 // with the right TVProp
-                viewExpression = Reflection.getViewPropChainWithDefault(view, vmExpression);
+                viewExpression = Reflection.getViewExpressionWithProperty(view, vmExpression);
                 var tvProp = viewExpression.Type;
                 if (tvProp != typeof (TVProp)) {
                     var mi = this.GetType().GetTypeInfo().GetDeclaredMethod("Bind").MakeGenericMethod(typeof (TViewModel), typeof (TView), typeof (TVMProp), tvProp, typeof (TDontCare));
@@ -775,7 +775,7 @@ namespace ReactiveUI
             var fallbackWrapper = default(Func<TVProp>);
 
             if (viewProperty == null) {
-                viewExpression = Reflection.getViewPropChainWithDefault(view, vmExpression);
+                viewExpression = Reflection.getViewExpressionWithProperty(view, vmExpression);
                 var tvProp = viewExpression.Type;
                 if (tvProp != typeof(TVProp))
                 {
@@ -866,7 +866,7 @@ namespace ReactiveUI
             var viewExpression = default(Expression);
 
             if (viewProperty == null) {
-                viewExpression = Reflection.getViewPropChainWithDefault(view, vmExpression);                
+                viewExpression = Reflection.getViewExpressionWithProperty(view, vmExpression);                
             } else {
                 viewExpression = Reflection.Rewrite(viewProperty.Body);
             }
