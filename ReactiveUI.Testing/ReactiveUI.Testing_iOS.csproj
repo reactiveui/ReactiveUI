@@ -74,13 +74,9 @@
       <Project>{74BA5B4E-257A-42A7-BDAB-1FB40A903909}</Project>
       <Name>Microsoft.Reactive.Testing_iOS</Name>
     </ProjectReference>
-    <ProjectReference Include="..\ReactiveUI.Platforms\ReactiveUI.iOS.csproj">
+    <ProjectReference Include="..\ReactiveUI\ReactiveUI_iOS.csproj">
       <Project>{9091337A-9E94-4DBD-801E-15E1FDA78FFC}</Project>
-      <Name>ReactiveUI.iOS</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj">
-      <Project>{464CB812-F99F-401B-BE4C-E8F0515CD19D}</Project>
-      <Name>ReactiveUI</Name>
+      <Name>ReactiveUI_iOS</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />

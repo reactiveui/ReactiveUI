@@ -19,6 +19,8 @@ namespace ReactiveUI
 
         static CommandBinder()
         {
+            RxApp.EnsureInitialized();
+
             binderImplementation = Locator.Current.GetService<ICommandBinderImplementation>() ?? 
                 new CommandBinderImplementation();
         }

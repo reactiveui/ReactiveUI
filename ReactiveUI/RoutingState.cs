@@ -136,8 +136,14 @@ namespace ReactiveUI
     [DataContract]
     public class RoutingState : ReactiveObject, IRoutingState
     {
+
         [DataMember]
         ReactiveList<IRoutableViewModel> _NavigationStack;
+
+        static RoutingState()
+        {
+            RxApp.EnsureInitialized();
+        }
 
         /// <summary>
         /// Represents the current navigation stack, the last element in the
@@ -223,9 +229,13 @@ namespace ReactiveUI
 
         void setupRx()
         {
+
             NavigateBackViewModel = new Subject<IRoutableViewModel>();
 
-            NavigateBack = ReactiveCommand.Create(
+            //NavigateBack = ReactiveCommand.Create(
+
+            NavigateBack = ReactiveCommand.CreateAsyncObservable(
+
                 NavigationStack.CountChanged.StartWith(_NavigationStack.Count).Select(x => x > 1),
                 _ => Observable.Return(Unit.Default));
 

@@ -12,12 +12,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Mobile_iOS", "Re
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Mobile_Android", "ReactiveUI.Mobile\ReactiveUI.Mobile_Android.csproj", "{A92E477B-BB94-43C1-984E-E177EF9FEDB1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Android", "ReactiveUI.Platforms\ReactiveUI.Android.csproj", "{F5A6E11B-B074-4A0B-B937-267D840E31DF}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.iOS", "ReactiveUI.Platforms\ReactiveUI.iOS.csproj", "{9091337A-9E94-4DBD-801E-15E1FDA78FFC}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Cocoa", "ReactiveUI.Platforms\ReactiveUI.Cocoa.csproj", "{0913BF79-061F-4667-ADF9-8E6CDA6D1213}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Events_Monotouch_XS", "ReactiveUI.Events\ReactiveUI.Events_Monotouch_XS.csproj", "{334E6DAC-0D70-4CE0-80CB-DFD3147DBE18}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Events_Monomac", "ReactiveUI.Events\ReactiveUI.Events_Monomac.csproj", "{292A477A-BB94-43C1-F841-E177EF9FEDB8}"
@@ -39,6 +33,12 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI", "ReactiveUI\ReactiveUI.csproj", "{464CB812-F99F-401B-BE4C-E8F0515CD19D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.AndroidSupport", "ReactiveUI.AndroidSupport\ReactiveUI.AndroidSupport.csproj", "{F5A6E11B-B074-4A1C-B937-267D840E31DF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI_Android", "ReactiveUI\ReactiveUI_Android.csproj", "{F5A6E11B-B074-4A0B-B937-267D840E31DF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI_iOS", "ReactiveUI\ReactiveUI_iOS.csproj", "{9091337A-9E94-4DBD-801E-15E1FDA78FFC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI_Mac", "ReactiveUI\ReactiveUI_Mac.csproj", "{0913BF79-061F-4667-ADF9-8E6CDA6D1213}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

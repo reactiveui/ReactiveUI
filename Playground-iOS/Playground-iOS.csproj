@@ -129,7 +129,7 @@
       <Project>{9091337a-9e94-4dbd-801e-15e10db72ffc}</Project>
       <Name>ReactiveUI.Mobile_Monotouch</Name>
     </ProjectReference>
-    <ProjectReference Include="..\ReactiveUI.Platforms\ReactiveUI.iOS.csproj">
+    <ProjectReference Include="..\ReactiveUI\ReactiveUI_iOS.csproj">
       <Project>{9091337a-9e94-4dbd-801e-15e1fda78ffc}</Project>
       <Name>ReactiveUI.Cocoa_Monotouch</Name>
     </ProjectReference>
