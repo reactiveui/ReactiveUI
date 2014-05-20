@@ -58,7 +58,7 @@ namespace ReactiveUI
             string propName = null;
 
             try {
-                var propExpr = property.Body as MemberExpression;
+                var propExpr = expressionRewriter.Visit(property.Body) as MemberExpression;
                 if (propExpr.Expression.NodeType != ExpressionType.Parameter) {
                     throw new ArgumentException("Property expression must be of the form 'x => x.SomeProperty'");
                 }
@@ -75,7 +75,7 @@ namespace ReactiveUI
         {
             var ret = new List<string>();
 
-            var current = property.Body;
+            var current = expressionRewriter.Visit(property.Body);
             while(current.NodeType != ExpressionType.Parameter) {
 
                 // This happens when a value type gets boxed
@@ -99,7 +99,7 @@ namespace ReactiveUI
 
         public static Type[] ExpressionToPropertyTypes<TObj, TRet>(Expression<Func<TObj, TRet>> property)
         {
-            var current = property.Body;
+            var current = expressionRewriter.Visit(property.Body);
 
             while(current.NodeType != ExpressionType.Parameter) {
                 // This happens when a value type gets boxed
