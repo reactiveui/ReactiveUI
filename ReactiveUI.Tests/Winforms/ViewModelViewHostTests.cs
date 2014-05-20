@@ -47,7 +47,7 @@ namespace ReactiveUI.Tests.Winforms
             var defaultContent = new Control();
             var target = new ViewModelViewHost { DefaultContent = defaultContent, ViewLocator = viewLocator };
 
-            Assert.Null(target.CurrentView);
+            Assert.Equal(target.CurrentView, defaultContent);
             Assert.True(target.Controls.Contains(defaultContent));
         }
 
@@ -59,9 +59,9 @@ namespace ReactiveUI.Tests.Winforms
             var target = new ViewModelViewHost { DefaultContent = defaultContent, ViewLocator = viewLocator,CacheViews = true };
 
             target.ViewModel = new FakeWinformViewModel();
-            var cachedView = target.CurrentView;
+            var cachedView = target.Content;
             target.ViewModel = new FakeWinformViewModel();
-            Assert.True(object.ReferenceEquals(cachedView, target.CurrentView));
+            Assert.True(object.ReferenceEquals(cachedView, target.Content));
         }
 
         [Fact]
@@ -69,7 +69,7 @@ namespace ReactiveUI.Tests.Winforms
         {
             var viewLocator = new FakeViewLocator { LocatorFunc = t => new FakeWinformsView() };
             var defaultContent = new Control();
-            var target = new ViewModelViewHost { DefaultContent = defaultContent, ViewLocator = viewLocator, CacheViews = true };
+            var target = new ViewModelViewHost { DefaultContent = defaultContent, ViewLocator = viewLocator, CacheViews = false };
 
             target.ViewModel = new FakeWinformViewModel();
             var cachedView = target.CurrentView;
