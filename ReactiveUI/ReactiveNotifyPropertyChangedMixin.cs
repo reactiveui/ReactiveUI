@@ -42,9 +42,7 @@ namespace ReactiveUI
             if (This == null) {
                 throw new ArgumentNullException("Sender");
             }
-
-            var propertyNames = Reflection.ExpressionToPropertyNames(property);
-
+            
             /* x => x.Foo.Bar.Baz;
              * 
              * Subscribe to This, look for Foo
@@ -62,7 +60,7 @@ namespace ReactiveUI
 
             return SubscribeToExpressionChain<TSender, TValue>(
                 This,
-                propertyNames,
+                property.Body,
                 beforeChange,
                 skipInitial);
         }
@@ -74,18 +72,24 @@ namespace ReactiveUI
         /// IObservedChange) guarantees that the Value property of
         /// the IObservedChange is set.
         /// </summary>
-        /// <param name="propertyName">A string containing the property name</param>
+        /// <param name="expression">A simple expression.</param>
         /// <param name="beforeChange">If True, the Observable will notify
         /// immediately before a property is going to change.</param>
         /// <returns>An Observable representing the property change
         /// notifications for the given property.</returns>
         public static IObservable<IObservedChange<TSender, TValue>> ObservableForProperty<TSender, TValue>(
             this TSender This,
-            string propertyName,
+            Expression expression,
             bool beforeChange = false,
             bool skipInitial = true)
         {
-            var values = notifyForProperty(This, propertyName, beforeChange);
+            expression = Reflection.Rewrite(expression);
+            if (expression.GetParent().NodeType != ExpressionType.Parameter) {
+                throw new ArgumentException("Property expression must be of the form 'x => x.SomeProperty'");
+            }
+
+            var values = notifyForProperty(This, expression, beforeChange);
+            var propertyName = expression.GetMemberInfo().Name;
 
             if (!skipInitial) {
                 values = values.StartWith(new ObservedChange<object, object>(This, propertyName));
@@ -95,56 +99,9 @@ namespace ReactiveUI
                  .DistinctUntilChanged(x => x.Value);
         }
 
-        /// <summary>
-        /// ObservableForPropertyDynamic returns an Observable representing the
-        /// property change notifications for a specific property on a
-        /// ReactiveObject. This method (unlike other Observables that return
-        /// IObservedChange) guarantees that the Value property of
-        /// the IObservedChange is set.
-        /// </summary>
-        /// <param name="property">An Expression representing the property (i.e.
-        /// 'x => x.SomeProperty.SomeOtherProperty'</param>
-        /// <param name="beforeChange">If True, the Observable will notify
-        /// immediately before a property is going to change.</param>
-        /// <returns>An Observable representing the property change
-        /// notifications for the given property.</returns>
-        public static IObservable<IObservedChange<TSender, object>> ObservableForProperty<TSender>(
-                this TSender This,
-                string[] property,
-                bool beforeChange = false,
-                bool skipInitial = true)
+        static IObservedChange<object, object> observedChangeFor(Expression expression, IObservedChange<object, object> sourceChange)
         {
-            var propertyNames = new LinkedList<string>(property);
-
-            if (This == null) {
-                throw new ArgumentNullException("Sender");
-            }
-
-            /* x => x.Foo.Bar.Baz;
-             * 
-             * Subscribe to This, look for Foo
-             * Subscribe to Foo, look for Bar
-             * Subscribe to Bar, look for Baz
-             * Subscribe to Baz, publish to Subject
-             * Return Subject
-             * 
-             * If Bar changes (notification fires on Foo), resubscribe to new Bar
-             *  Resubscribe to new Baz, publish to Subject
-             * 
-             * If Baz changes (notification fires on Bar),
-             *  Resubscribe to new Baz, publish to Subject
-             */
-
-            return SubscribeToExpressionChain<TSender, object>(
-                This,
-                propertyNames,
-                beforeChange,
-                skipInitial);
-        }
-
-
-        static IObservedChange<object, object> observedChangeFor(string propertyName, IObservedChange<object, object> sourceChange)
-        {
+            var propertyName = expression.GetMemberInfo().Name;
             if (sourceChange.Value == null) {
                 return new ObservedChange<object, object>(sourceChange.Value, propertyName);;
             }
@@ -156,10 +113,10 @@ namespace ReactiveUI
             }
         }
 
-        static IObservable<IObservedChange<object, object>> nestedObservedChanges(string propertyName, IObservedChange<object, object> sourceChange, bool beforeChange)
+        static IObservable<IObservedChange<object, object>> nestedObservedChanges(Expression expression, IObservedChange<object, object> sourceChange, bool beforeChange)
         {
             // Make sure a change at a root node propogates events down
-            var kicker = observedChangeFor(propertyName, sourceChange);
+            var kicker = observedChangeFor(expression, sourceChange);
 
             // Handle null values in the chain
             if (sourceChange.Value == null) {
@@ -167,25 +124,26 @@ namespace ReactiveUI
             }
 
             // Handle non null values in the chain
-            return notifyForProperty(sourceChange.Value, propertyName, beforeChange)
+            return notifyForProperty(sourceChange.Value, expression, beforeChange)
                 .Select(x => new ObservedChange<object, object>(x.Sender, x.PropertyName, x.GetValue()))
                 .StartWith(kicker);
         }
 
         public static IObservable<IObservedChange<TSender, TValue>> SubscribeToExpressionChain<TSender, TValue> ( 
             this TSender source,
-            IEnumerable<string> propertyNames, 
+            Expression expression, 
             bool beforeChange = false,
             bool skipInitial = true)
         {
-            var path = String.Join(".", propertyNames);
-
             IObservable<IObservedChange<object, object>> notifier = 
                 Observable.Return(new ObservedChange<object, object>(null, null, source));
 
-            notifier = propertyNames.Aggregate(notifier, (n, name) => n
-                .Select(y => nestedObservedChanges(name, y, beforeChange))
+            IEnumerable<Expression> chain = expression.GetExpressionChain();
+            notifier = chain.Aggregate(notifier, (n, expr) => n
+                .Select(y => nestedObservedChanges(expr, y, beforeChange))
                 .Switch());
+
+            var path = String.Join(".", chain.Select(x => x.GetMemberInfo().Name));
 
             if (skipInitial) {
                 notifier = notifier.Skip(1);
@@ -207,11 +165,11 @@ namespace ReactiveUI
                     }).Item2;
             }, RxApp.BigCacheLimit);
 
-        static IObservable<IObservedChange<object, object>> notifyForProperty(object sender, string propertyName, bool beforeChange)
+        static IObservable<IObservedChange<object, object>> notifyForProperty(object sender, Expression expression, bool beforeChange)
         {
             var result = default(ICreatesObservableForProperty);
             lock (notifyFactoryCache) {
-                result = notifyFactoryCache.Get(Tuple.Create(sender.GetType(), propertyName, beforeChange));
+                result = notifyFactoryCache.Get(Tuple.Create(sender.GetType(), expression.GetMemberInfo().Name, beforeChange));
             }
 
             if (result == null) {
@@ -220,7 +178,7 @@ namespace ReactiveUI
                     sender.GetType()));
             }
             
-            return result.GetNotificationForProperty(sender, propertyName, beforeChange);
+            return result.GetNotificationForProperty(sender, expression, beforeChange);
         }
 
         /// <summary>
