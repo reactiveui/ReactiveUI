@@ -787,6 +787,8 @@ namespace ReactiveUI
 
                 viewType = Reflection.GetTypesForPropChain(typeof(TView), viewPropChain).Last();
             } else {
+                viewPropChain = Reflection.ExpressionToPropertyNames(viewProperty);
+
                 viewType = typeof (TVProp);                
             }
             
