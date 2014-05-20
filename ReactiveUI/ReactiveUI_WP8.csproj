@@ -96,6 +96,7 @@
     <Reference Include="System.Net" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ExpressionMixins.cs" />
     <Compile Include="ExpressionRewriter.cs" />
     <Compile Include="Platform\Registrations.cs" />
     <Compile Include="Xaml\ActivationForViewFetcher.cs" />
