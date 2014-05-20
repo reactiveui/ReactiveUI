@@ -208,7 +208,7 @@ namespace ReactiveUI
                 this.notifyObservable(sender, changed, this.changedSubject);
             }
 
-            internal void notifyObservable<T>(IReactiveObject rxObj, T item, ISubject<T> subject)
+            internal void notifyObservable<T>(TSender rxObj, T item, ISubject<T> subject)
             {
                 try {
                     subject.OnNext(item);
