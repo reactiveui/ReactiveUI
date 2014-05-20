@@ -681,7 +681,6 @@ namespace ReactiveUI
                     var changed = EqualityComparer<TVProp>.Default.Equals(vValue, vmAsView) != true;
                     if (!changed) return null;
 
-                    this.Log().Info(vmChangedString + (vmAsView != null ? vmAsView.ToString() : "(null)"));
                     return Tuple.Create((object)vmAsView, isVm);
                 } else {
                     object tmp;
@@ -693,7 +692,6 @@ namespace ReactiveUI
                     var changed = EqualityComparer<TVMProp>.Default.Equals(vmValue, vAsViewModel) != true;
                     if (!changed) return null;
 
-                    this.Log().Info(viewChangedString + (vAsViewModel != null ? vAsViewModel.ToString() : "(null)"));
                     return Tuple.Create((object)vAsViewModel, isVm);
                 }
             });
