@@ -74,7 +74,7 @@ namespace ReactiveUI
             RxApp.TaskpoolScheduler = System.Reactive.Concurrency.TaskPoolScheduler.Default;
 
 #if COCOA
-            RxApp.MainThreadScheduler = new WaitForDispatcherScheduler(() => new NSRunloopScheduler(NSApplication.SharedApplication));
+            RxApp.MainThreadScheduler = new WaitForDispatcherScheduler(() => new NSRunloopScheduler());
 #endif
 
 #if !MONO && !WINRT
