@@ -99,34 +99,29 @@ namespace ReactiveUI
                  .DistinctUntilChanged(x => x.Value);
         }
 
-        static IObservedChange<object, object> observedChangeFor(Expression expression, IObservedChange<object, object> sourceChange)
+        /// <summary>
+        /// ObservableForProperty returns an Observable representing the
+        /// property change notifications for a specific property on a
+        /// ReactiveObject, running the IObservedChange through a Selector
+        /// function.
+        /// </summary>
+        /// <param name="property">An Expression representing the property (i.e.
+        /// 'x => x.SomeProperty'</param>
+        /// <param name="selector">A Select function that will be run on each
+        /// item.</param>
+        /// <param name="beforeChange">If True, the Observable will notify
+        /// immediately before a property is going to change.</param>
+        /// <returns>An Observable representing the property change
+        /// notifications for the given property.</returns>
+        public static IObservable<TRet> ObservableForProperty<TSender, TValue, TRet>(
+                this TSender This,
+                Expression<Func<TSender, TValue>> property,
+                Func<TValue, TRet> selector,
+                bool beforeChange = false)
+            where TSender : class
         {
-            var propertyName = expression.GetMemberInfo().Name;
-            if (sourceChange.Value == null) {
-                return new ObservedChange<object, object>(sourceChange.Value, propertyName);;
-            }
-            else
-            {
-                object value;
-                Reflection.TryGetValueForPropertyChain(out value, sourceChange.Value, propertyName.Split('.'));
-                return new ObservedChange<object, object>(sourceChange.Value, propertyName, value);
-            }
-        }
-
-        static IObservable<IObservedChange<object, object>> nestedObservedChanges(Expression expression, IObservedChange<object, object> sourceChange, bool beforeChange)
-        {
-            // Make sure a change at a root node propogates events down
-            var kicker = observedChangeFor(expression, sourceChange);
-
-            // Handle null values in the chain
-            if (sourceChange.Value == null) {
-                return Observable.Return(kicker);
-            }
-
-            // Handle non null values in the chain
-            return notifyForProperty(sourceChange.Value, expression, beforeChange)
-                .Select(x => new ObservedChange<object, object>(x.Sender, x.PropertyName, x.GetValue()))
-                .StartWith(kicker);
+            Contract.Requires(selector != null);
+            return This.ObservableForProperty(property, beforeChange).Select(x => selector(x.Value));
         }
 
         public static IObservable<IObservedChange<TSender, TValue>> SubscribeToExpressionChain<TSender, TValue> ( 
@@ -138,7 +133,7 @@ namespace ReactiveUI
             IObservable<IObservedChange<object, object>> notifier = 
                 Observable.Return(new ObservedChange<object, object>(null, null, source));
 
-            IEnumerable<Expression> chain = expression.GetExpressionChain();
+            IEnumerable<Expression> chain = Reflection.Rewrite(expression).GetExpressionChain();
             notifier = chain.Aggregate(notifier, (n, expr) => n
                 .Select(y => nestedObservedChanges(expr, y, beforeChange))
                 .Switch());
@@ -154,6 +149,38 @@ namespace ReactiveUI
             var r = notifier.Select(x => new ObservedChange<TSender, TValue>(source, path, (TValue)x.GetValue()));
 
             return r.DistinctUntilChanged(x=>x.Value);
+        }
+
+        static IObservedChange<object, object> observedChangeFor(Expression expression, IObservedChange<object, object> sourceChange)
+        {
+            var propertyName = expression.GetMemberInfo().Name;
+            if (sourceChange.Value == null)
+            {
+                return new ObservedChange<object, object>(sourceChange.Value, propertyName); ;
+            }
+            else
+            {
+                object value;
+                Reflection.TryGetValueForPropertyChain(out value, sourceChange.Value, propertyName.Split('.'));
+                return new ObservedChange<object, object>(sourceChange.Value, propertyName, value);
+            }
+        }
+
+        static IObservable<IObservedChange<object, object>> nestedObservedChanges(Expression expression, IObservedChange<object, object> sourceChange, bool beforeChange)
+        {
+            // Make sure a change at a root node propogates events down
+            var kicker = observedChangeFor(expression, sourceChange);
+
+            // Handle null values in the chain
+            if (sourceChange.Value == null)
+            {
+                return Observable.Return(kicker);
+            }
+
+            // Handle non null values in the chain
+            return notifyForProperty(sourceChange.Value, expression, beforeChange)
+                .Select(x => new ObservedChange<object, object>(x.Sender, x.PropertyName, x.GetValue()))
+                .StartWith(kicker);
         }
 
         static readonly MemoizingMRUCache<Tuple<Type, string, bool>, ICreatesObservableForProperty> notifyFactoryCache =
@@ -179,31 +206,6 @@ namespace ReactiveUI
             }
             
             return result.GetNotificationForProperty(sender, expression, beforeChange);
-        }
-
-        /// <summary>
-        /// ObservableForProperty returns an Observable representing the
-        /// property change notifications for a specific property on a
-        /// ReactiveObject, running the IObservedChange through a Selector
-        /// function.
-        /// </summary>
-        /// <param name="property">An Expression representing the property (i.e.
-        /// 'x => x.SomeProperty'</param>
-        /// <param name="selector">A Select function that will be run on each
-        /// item.</param>
-        /// <param name="beforeChange">If True, the Observable will notify
-        /// immediately before a property is going to change.</param>
-        /// <returns>An Observable representing the property change
-        /// notifications for the given property.</returns>
-        public static IObservable<TRet> ObservableForProperty<TSender, TValue, TRet>(
-                this TSender This, 
-                Expression<Func<TSender, TValue>> property, 
-                Func<TValue, TRet> selector, 
-                bool beforeChange = false)
-            where TSender : class
-        {           
-            Contract.Requires(selector != null);
-            return This.ObservableForProperty(property, beforeChange).Select(x => selector(x.Value));
         }
     }
 }
