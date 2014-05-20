@@ -947,7 +947,7 @@ namespace ReactiveUI
             }
 
             var bindInfo = Observable.CombineLatest(
-                This, target.WhenAny(viewExpression.GetParent(), x => x.Value),
+                This, target.WhenAnyDynamic(viewExpression.GetParent(), x => x.Value),
                 (val, host) => new { val, host });
 
             return bindInfo
