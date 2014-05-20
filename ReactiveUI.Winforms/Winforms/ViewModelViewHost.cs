@@ -7,10 +7,12 @@ using System.Runtime.CompilerServices;
 using System.Windows.Forms;
 using ReactiveUI;
 
+using Splat;
+
 namespace ReactiveUI.Winforms
 {
     [DefaultProperty("ViewModel")]
-    public partial class ViewModelViewHost : UserControl, IReactiveObject
+    public partial class ViewModelViewHost : UserControl, IReactiveObject, IViewFor
     {
         readonly CompositeDisposable disposables = new CompositeDisposable();
 
@@ -21,41 +23,44 @@ namespace ReactiveUI.Winforms
 
         object content;
 
-        bool cacheViews = true;
+        public static bool DefaultCacheViewsEnabled { get; set; }
+
+        bool cacheViews;
 
         public ViewModelViewHost()
         {
             this.InitializeComponent();
+            this.cacheViews = DefaultCacheViewsEnabled;
+            foreach (var subscription in this.SetupBindings()) {
+                disposables.Add(subscription);
+            }
+        }
 
-
+        private IEnumerable<IDisposable> SetupBindings()
+        {
             var viewChanges =
-              this.WhenAnyValue(x => x.Content)
-                  .Select(x => x as Control)
-                  .Where(x => x != null)
-                  .Subscribe(x =>
-                  {
-                      //change the view in the ui
-                      this.SuspendLayout();
+                this.WhenAnyValue(x => x.Content).Select(x => x as Control).Where(x => x != null).Subscribe(x => {
+                    //change the view in the ui
+                    this.SuspendLayout();
 
-                      //clear out existing visible control view
-                      foreach (Control c in this.Controls)
-                      {
-                          c.Dispose();
-                          this.Controls.Remove(c);
-                      }
+                    //clear out existing visible control view
+                    foreach (Control c in this.Controls) {
+                        c.Dispose();
+                        this.Controls.Remove(c);
+                    }
 
-                      x.Dock = DockStyle.Fill;
-                      this.Controls.Add(x);
-                      this.ResumeLayout();
-                  });
+                    x.Dock = DockStyle.Fill;
+                    this.Controls.Add(x);
+                    this.ResumeLayout();
+                });
 
-            this.disposables.Add(viewChanges);
+            yield return viewChanges;
 
-            this.disposables.Add(this.WhenAny(x => x.DefaultContent, x => x.Value).Subscribe(x => {
+            yield return this.WhenAny(x => x.DefaultContent, x => x.Value).Subscribe(x => {
                 if (x != null && this.currentView == null) {
                     this.Content = DefaultContent;
                 }
-            }));
+            });
 
             this.ViewContractObservable = Observable.Return(default(string));
 
@@ -66,21 +71,29 @@ namespace ReactiveUI.Winforms
 
 
 
-            this.disposables.Add(vmAndContract.Subscribe(x => {
-                //clear all hosted controls (view or default content)
-                if (this.ViewModel == null) {
-                    if (this.DefaultContent != null) {
+           yield return vmAndContract.Subscribe(x =>
+            {
+
+                //set content to default when viewmodel is null
+                if (this.ViewModel == null)
+                {
+                    if (this.DefaultContent != null)
+                    {
                         this.Content = DefaultContent;
                     }
                     return;
                 }
 
-                if (CacheViews) {
+                if (CacheViews)
+                {
                     //when caching views, check the current viewmodel and type
                     var c = content as IViewFor;
                     if (c != null && c.ViewModel != null
-                        && c.ViewModel.GetType() == x.ViewModel.GetType()) {
-                            c.ViewModel = x.ViewModel;
+                        && c.ViewModel.GetType() == x.ViewModel.GetType())
+                    {
+                        c.ViewModel = x.ViewModel;
+                        //return early here after setting the viewmodel
+                        //allowing the view to update it's bindings
                         return;
                     }
                 }
@@ -90,7 +103,7 @@ namespace ReactiveUI.Winforms
                 this.Content = view;
                 view.ViewModel = x.ViewModel;
 
-            }, RxApp.DefaultExceptionHandler.OnNext));
+            }, RxApp.DefaultExceptionHandler.OnNext);
         }
 
         public event PropertyChangingEventHandler PropertyChanging
