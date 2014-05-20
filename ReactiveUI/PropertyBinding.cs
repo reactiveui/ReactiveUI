@@ -658,7 +658,7 @@ namespace ReactiveUI
             }
 
             var somethingChanged = Observable.Merge(
-                Reflection.ViewModelWhenAnyValueDynamic(viewModel, view, vmPropChain).Select(_ => true),
+                Reflection.ViewModelWhenAnyValue(viewModel, view, vmProperty).Select(_ => true),
                 signalInitialUpdate.Select(_ => true),
                 signalViewUpdate != null ? 
                     signalViewUpdate.Select(_ => false) : 
@@ -802,7 +802,7 @@ namespace ReactiveUI
             var ret = evalBindingHooks(viewModel, view, vmPropChain, viewPropChain, BindingDirection.OneWay);
             if (!ret) return null;
 
-            var source = Reflection.ViewModelWhenAnyValueDynamic(viewModel, view, vmPropChain)
+            var source = Reflection.ViewModelWhenAnyValue(viewModel, view, vmProperty)
                     .SelectMany(x => {
                         object tmp;
                         if (!converter.TryConvert(x, viewType, conversionHint, out tmp)) return Observable.Empty<TVProp>();
@@ -880,7 +880,7 @@ namespace ReactiveUI
             var ret = evalBindingHooks(viewModel, view, vmPropChain, viewPropChain, BindingDirection.OneWay);
             if (!ret) return null;
 
-            var source = Reflection.ViewModelWhenAnyValueDynamic(viewModel, view, vmPropChain).Select(x => (TProp)x).Select(selector);
+            var source = Reflection.ViewModelWhenAnyValue(viewModel, view, vmProperty).Select(x => (TProp)x).Select(selector);
 
             IDisposable disp = bindToDirect(source, view, viewProperty, fallbackValue);
 
