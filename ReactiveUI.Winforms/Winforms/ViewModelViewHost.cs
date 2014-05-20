@@ -19,6 +19,8 @@ namespace ReactiveUI.Winforms
         IObservable<string> viewContractObservable;
         object viewModel;
 
+        bool cacheViews=true;
+
         public ViewModelViewHost()
         {
             this.InitializeComponent();
@@ -40,6 +42,8 @@ namespace ReactiveUI.Winforms
 
             this.disposables.Add(vmAndContract.Subscribe(x => {
                 //clear all hosted controls (view or default content)
+
+
                 this.Controls.Clear();
 
                 if (this.currentView != null) {
@@ -110,6 +114,16 @@ namespace ReactiveUI.Winforms
         public object ViewModel {
             get { return this.viewModel; }
             set { this.RaiseAndSetIfChanged(ref this.viewModel, value); }
+        }
+
+        [Category("ReactiveUI")]
+        [Description("Cache Views")]
+        [Bindable(true)]
+        [DefaultValue(true)]
+        public bool CacheViews
+        {
+            get { return this.cacheViews; }
+            set { this.RaiseAndSetIfChanged(ref this.cacheViews, value); }
         }
 
         /// <summary>
