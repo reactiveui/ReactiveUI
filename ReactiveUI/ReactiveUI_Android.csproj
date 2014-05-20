@@ -79,6 +79,7 @@
     <Compile Include="Android\ObjectExtension.cs" />
     <Compile Include="Android\ReactiveListAdapter.cs" />
     <Compile Include="Android\ViewCommandExtensions.cs" />
+    <Compile Include="ExpressionRewriter.cs" />
     <Compile Include="Platform\ComponentModelTypeConverter.cs" />
     <Compile Include="Platform\FlexibleCommandBinder.cs" />
     <Compile Include="Platform\Registrations.cs" />

@@ -131,6 +131,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ExpressionRewriter.cs" />
     <Compile Include="Platform\ComponentModelTypeConverter.cs" />
     <Compile Include="Xaml\WpfDependencyObjectObservableForProperty.cs" />
     <Compile Include="Xaml\ActivationForViewFetcher.cs" />
