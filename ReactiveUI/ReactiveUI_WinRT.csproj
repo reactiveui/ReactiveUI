@@ -41,6 +41,7 @@
     <DocumentationFile>bin\Release\WinRT451\ReactiveUI.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="ExpressionMixins.cs" />
     <Compile Include="ExpressionRewriter.cs" />
     <Compile Include="Platform\Registrations.cs" />
     <Compile Include="Xaml\ActivationForViewFetcher.cs" />
