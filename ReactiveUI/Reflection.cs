@@ -301,6 +301,16 @@ namespace ReactiveUI
                 .Switch();
         }
 
+        internal static IObservable<object> ViewModelWhenAnyValue<TView, TViewModel>(TViewModel viewModel, TView view, Expression expression)
+            where TView : IViewFor
+            where TViewModel : class
+        {
+            return view.WhenAnyValue(x => x.ViewModel)
+                .Where(x => x != null)
+                .Select(x => ((TViewModel)x).WhenAnyDynamic(expression, y => y.Value))
+                .Switch();
+        }
+
         internal static string getViewPropChain(object view, string[] vmPropChain)
         {
             var vmPropertyName = vmPropChain.Last();
