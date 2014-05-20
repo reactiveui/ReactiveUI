@@ -56,6 +56,22 @@ namespace ReactiveUI
         {
                             return This.ObservableForProperty(property1, false, false).Select(selector); 
                     }
+
+		
+        /// <summary>
+        /// WhenAny allows you to observe whenever one or more properties on an
+        /// object have changed, providing an initial value when the Observable
+        /// is set up, unlike ObservableForProperty(). Use this method in
+        /// constructors to set up bindings between properties that also need an
+        /// initial setup.
+        /// </summary>
+        public static IObservable<TRet> WhenAnyDynamic<TSender, TRet>(this TSender This, 
+                            Expression property1, 
+                            Func<IObservedChange<TSender, object>, TRet> selector)
+        {
+                            return ReactiveNotifyPropertyChangedMixin
+                    .SubscribeToExpressionChain<TSender,object>(This, property1, false, false).Select(selector); 
+                    }
                                                             
         /// <summary>
         /// WhenAnyValue allows you to observe whenever the value of one or more
@@ -89,6 +105,28 @@ namespace ReactiveUI
                         return Observable.CombineLatest(
                                     This.ObservableForProperty(property1, false, false), 
                                     This.ObservableForProperty(property2, false, false), 
+                                selector
+            );
+                    }
+
+		
+        /// <summary>
+        /// WhenAny allows you to observe whenever one or more properties on an
+        /// object have changed, providing an initial value when the Observable
+        /// is set up, unlike ObservableForProperty(). Use this method in
+        /// constructors to set up bindings between properties that also need an
+        /// initial setup.
+        /// </summary>
+        public static IObservable<TRet> WhenAnyDynamic<TSender, TRet>(this TSender This, 
+                            Expression property1, 
+                            Expression property2, 
+                            Func<IObservedChange<TSender, object>, IObservedChange<TSender, object>, TRet> selector)
+        {
+                        return Observable.CombineLatest(
+                                    ReactiveNotifyPropertyChangedMixin
+                        .SubscribeToExpressionChain<TSender,object>(This, property1, false, false), 
+                                    ReactiveNotifyPropertyChangedMixin
+                        .SubscribeToExpressionChain<TSender,object>(This, property2, false, false), 
                                 selector
             );
                     }
@@ -131,6 +169,31 @@ namespace ReactiveUI
                                 selector
             );
                     }
+
+		
+        /// <summary>
+        /// WhenAny allows you to observe whenever one or more properties on an
+        /// object have changed, providing an initial value when the Observable
+        /// is set up, unlike ObservableForProperty(). Use this method in
+        /// constructors to set up bindings between properties that also need an
+        /// initial setup.
+        /// </summary>
+        public static IObservable<TRet> WhenAnyDynamic<TSender, TRet>(this TSender This, 
+                            Expression property1, 
+                            Expression property2, 
+                            Expression property3, 
+                            Func<IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, TRet> selector)
+        {
+                        return Observable.CombineLatest(
+                                    ReactiveNotifyPropertyChangedMixin
+                        .SubscribeToExpressionChain<TSender,object>(This, property1, false, false), 
+                                    ReactiveNotifyPropertyChangedMixin
+                        .SubscribeToExpressionChain<TSender,object>(This, property2, false, false), 
+                                    ReactiveNotifyPropertyChangedMixin
+                        .SubscribeToExpressionChain<TSender,object>(This, property3, false, false), 
+                                selector
+            );
+                    }
                                                             
         /// <summary>
         /// WhenAnyValue allows you to observe whenever the value of one or more
@@ -170,6 +233,34 @@ namespace ReactiveUI
                                     This.ObservableForProperty(property2, false, false), 
                                     This.ObservableForProperty(property3, false, false), 
                                     This.ObservableForProperty(property4, false, false), 
+                                selector
+            );
+                    }
+
+		
+        /// <summary>
+        /// WhenAny allows you to observe whenever one or more properties on an
+        /// object have changed, providing an initial value when the Observable
+        /// is set up, unlike ObservableForProperty(). Use this method in
+        /// constructors to set up bindings between properties that also need an
+        /// initial setup.
+        /// </summary>
+        public static IObservable<TRet> WhenAnyDynamic<TSender, TRet>(this TSender This, 
+                            Expression property1, 
+                            Expression property2, 
+                            Expression property3, 
+                            Expression property4, 
+                            Func<IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, TRet> selector)
+        {
+                        return Observable.CombineLatest(
+                                    ReactiveNotifyPropertyChangedMixin
+                        .SubscribeToExpressionChain<TSender,object>(This, property1, false, false), 
+                                    ReactiveNotifyPropertyChangedMixin
+                        .SubscribeToExpressionChain<TSender,object>(This, property2, false, false), 
+                                    ReactiveNotifyPropertyChangedMixin
+                        .SubscribeToExpressionChain<TSender,object>(This, property3, false, false), 
+                                    ReactiveNotifyPropertyChangedMixin
+                        .SubscribeToExpressionChain<TSender,object>(This, property4, false, false), 
                                 selector
             );
                     }
@@ -218,6 +309,37 @@ namespace ReactiveUI
                                 selector
             );
                     }
+
+		
+        /// <summary>
+        /// WhenAny allows you to observe whenever one or more properties on an
+        /// object have changed, providing an initial value when the Observable
+        /// is set up, unlike ObservableForProperty(). Use this method in
+        /// constructors to set up bindings between properties that also need an
+        /// initial setup.
+        /// </summary>
+        public static IObservable<TRet> WhenAnyDynamic<TSender, TRet>(this TSender This, 
+                            Expression property1, 
+                            Expression property2, 
+                            Expression property3, 
+                            Expression property4, 
+                            Expression property5, 
+                            Func<IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, TRet> selector)
+        {
+                        return Observable.CombineLatest(
+                                    ReactiveNotifyPropertyChangedMixin
+                        .SubscribeToExpressionChain<TSender,object>(This, property1, false, false), 
+                                    ReactiveNotifyPropertyChangedMixin
+                        .SubscribeToExpressionChain<TSender,object>(This, property2, false, false), 
+                                    ReactiveNotifyPropertyChangedMixin
+                        .SubscribeToExpressionChain<TSender,object>(This, property3, false, false), 
+                                    ReactiveNotifyPropertyChangedMixin
+                        .SubscribeToExpressionChain<TSender,object>(This, property4, false, false), 
+                                    ReactiveNotifyPropertyChangedMixin
+                        .SubscribeToExpressionChain<TSender,object>(This, property5, false, false), 
+                                selector
+            );
+                    }
                                                             
         /// <summary>
         /// WhenAnyValue allows you to observe whenever the value of one or more
@@ -263,6 +385,40 @@ namespace ReactiveUI
                                     This.ObservableForProperty(property4, false, false), 
                                     This.ObservableForProperty(property5, false, false), 
                                     This.ObservableForProperty(property6, false, false), 
+                                selector
+            );
+                    }
+
+		
+        /// <summary>
+        /// WhenAny allows you to observe whenever one or more properties on an
+        /// object have changed, providing an initial value when the Observable
+        /// is set up, unlike ObservableForProperty(). Use this method in
+        /// constructors to set up bindings between properties that also need an
+        /// initial setup.
+        /// </summary>
+        public static IObservable<TRet> WhenAnyDynamic<TSender, TRet>(this TSender This, 
+                            Expression property1, 
+                            Expression property2, 
+                            Expression property3, 
+                            Expression property4, 
+                            Expression property5, 
+                            Expression property6, 
+                            Func<IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, TRet> selector)
+        {
+                        return Observable.CombineLatest(
+                                    ReactiveNotifyPropertyChangedMixin
+                        .SubscribeToExpressionChain<TSender,object>(This, property1, false, false), 
+                                    ReactiveNotifyPropertyChangedMixin
+                        .SubscribeToExpressionChain<TSender,object>(This, property2, false, false), 
+                                    ReactiveNotifyPropertyChangedMixin
+                        .SubscribeToExpressionChain<TSender,object>(This, property3, false, false), 
+                                    ReactiveNotifyPropertyChangedMixin
+                        .SubscribeToExpressionChain<TSender,object>(This, property4, false, false), 
+                                    ReactiveNotifyPropertyChangedMixin
+                        .SubscribeToExpressionChain<TSender,object>(This, property5, false, false), 
+                                    ReactiveNotifyPropertyChangedMixin
+                        .SubscribeToExpressionChain<TSender,object>(This, property6, false, false), 
                                 selector
             );
                     }
@@ -317,6 +473,43 @@ namespace ReactiveUI
                                 selector
             );
                     }
+
+		
+        /// <summary>
+        /// WhenAny allows you to observe whenever one or more properties on an
+        /// object have changed, providing an initial value when the Observable
+        /// is set up, unlike ObservableForProperty(). Use this method in
+        /// constructors to set up bindings between properties that also need an
+        /// initial setup.
+        /// </summary>
+        public static IObservable<TRet> WhenAnyDynamic<TSender, TRet>(this TSender This, 
+                            Expression property1, 
+                            Expression property2, 
+                            Expression property3, 
+                            Expression property4, 
+                            Expression property5, 
+                            Expression property6, 
+                            Expression property7, 
+                            Func<IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, TRet> selector)
+        {
+                        return Observable.CombineLatest(
+                                    ReactiveNotifyPropertyChangedMixin
+                        .SubscribeToExpressionChain<TSender,object>(This, property1, false, false), 
+                                    ReactiveNotifyPropertyChangedMixin
+                        .SubscribeToExpressionChain<TSender,object>(This, property2, false, false), 
+                                    ReactiveNotifyPropertyChangedMixin
+                        .SubscribeToExpressionChain<TSender,object>(This, property3, false, false), 
+                                    ReactiveNotifyPropertyChangedMixin
+                        .SubscribeToExpressionChain<TSender,object>(This, property4, false, false), 
+                                    ReactiveNotifyPropertyChangedMixin
+                        .SubscribeToExpressionChain<TSender,object>(This, property5, false, false), 
+                                    ReactiveNotifyPropertyChangedMixin
+                        .SubscribeToExpressionChain<TSender,object>(This, property6, false, false), 
+                                    ReactiveNotifyPropertyChangedMixin
+                        .SubscribeToExpressionChain<TSender,object>(This, property7, false, false), 
+                                selector
+            );
+                    }
                                                             
         /// <summary>
         /// WhenAnyValue allows you to observe whenever the value of one or more
@@ -368,6 +561,46 @@ namespace ReactiveUI
                                     This.ObservableForProperty(property6, false, false), 
                                     This.ObservableForProperty(property7, false, false), 
                                     This.ObservableForProperty(property8, false, false), 
+                                selector
+            );
+                    }
+
+		
+        /// <summary>
+        /// WhenAny allows you to observe whenever one or more properties on an
+        /// object have changed, providing an initial value when the Observable
+        /// is set up, unlike ObservableForProperty(). Use this method in
+        /// constructors to set up bindings between properties that also need an
+        /// initial setup.
+        /// </summary>
+        public static IObservable<TRet> WhenAnyDynamic<TSender, TRet>(this TSender This, 
+                            Expression property1, 
+                            Expression property2, 
+                            Expression property3, 
+                            Expression property4, 
+                            Expression property5, 
+                            Expression property6, 
+                            Expression property7, 
+                            Expression property8, 
+                            Func<IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, TRet> selector)
+        {
+                        return Observable.CombineLatest(
+                                    ReactiveNotifyPropertyChangedMixin
+                        .SubscribeToExpressionChain<TSender,object>(This, property1, false, false), 
+                                    ReactiveNotifyPropertyChangedMixin
+                        .SubscribeToExpressionChain<TSender,object>(This, property2, false, false), 
+                                    ReactiveNotifyPropertyChangedMixin
+                        .SubscribeToExpressionChain<TSender,object>(This, property3, false, false), 
+                                    ReactiveNotifyPropertyChangedMixin
+                        .SubscribeToExpressionChain<TSender,object>(This, property4, false, false), 
+                                    ReactiveNotifyPropertyChangedMixin
+                        .SubscribeToExpressionChain<TSender,object>(This, property5, false, false), 
+                                    ReactiveNotifyPropertyChangedMixin
+                        .SubscribeToExpressionChain<TSender,object>(This, property6, false, false), 
+                                    ReactiveNotifyPropertyChangedMixin
+                        .SubscribeToExpressionChain<TSender,object>(This, property7, false, false), 
+                                    ReactiveNotifyPropertyChangedMixin
+                        .SubscribeToExpressionChain<TSender,object>(This, property8, false, false), 
                                 selector
             );
                     }
@@ -428,6 +661,49 @@ namespace ReactiveUI
                                 selector
             );
                     }
+
+		
+        /// <summary>
+        /// WhenAny allows you to observe whenever one or more properties on an
+        /// object have changed, providing an initial value when the Observable
+        /// is set up, unlike ObservableForProperty(). Use this method in
+        /// constructors to set up bindings between properties that also need an
+        /// initial setup.
+        /// </summary>
+        public static IObservable<TRet> WhenAnyDynamic<TSender, TRet>(this TSender This, 
+                            Expression property1, 
+                            Expression property2, 
+                            Expression property3, 
+                            Expression property4, 
+                            Expression property5, 
+                            Expression property6, 
+                            Expression property7, 
+                            Expression property8, 
+                            Expression property9, 
+                            Func<IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, TRet> selector)
+        {
+                        return Observable.CombineLatest(
+                                    ReactiveNotifyPropertyChangedMixin
+                        .SubscribeToExpressionChain<TSender,object>(This, property1, false, false), 
+                                    ReactiveNotifyPropertyChangedMixin
+                        .SubscribeToExpressionChain<TSender,object>(This, property2, false, false), 
+                                    ReactiveNotifyPropertyChangedMixin
+                        .SubscribeToExpressionChain<TSender,object>(This, property3, false, false), 
+                                    ReactiveNotifyPropertyChangedMixin
+                        .SubscribeToExpressionChain<TSender,object>(This, property4, false, false), 
+                                    ReactiveNotifyPropertyChangedMixin
+                        .SubscribeToExpressionChain<TSender,object>(This, property5, false, false), 
+                                    ReactiveNotifyPropertyChangedMixin
+                        .SubscribeToExpressionChain<TSender,object>(This, property6, false, false), 
+                                    ReactiveNotifyPropertyChangedMixin
+                        .SubscribeToExpressionChain<TSender,object>(This, property7, false, false), 
+                                    ReactiveNotifyPropertyChangedMixin
+                        .SubscribeToExpressionChain<TSender,object>(This, property8, false, false), 
+                                    ReactiveNotifyPropertyChangedMixin
+                        .SubscribeToExpressionChain<TSender,object>(This, property9, false, false), 
+                                selector
+            );
+                    }
                                                             
         /// <summary>
         /// WhenAnyValue allows you to observe whenever the value of one or more
@@ -485,6 +761,52 @@ namespace ReactiveUI
                                     This.ObservableForProperty(property8, false, false), 
                                     This.ObservableForProperty(property9, false, false), 
                                     This.ObservableForProperty(property10, false, false), 
+                                selector
+            );
+                    }
+
+		
+        /// <summary>
+        /// WhenAny allows you to observe whenever one or more properties on an
+        /// object have changed, providing an initial value when the Observable
+        /// is set up, unlike ObservableForProperty(). Use this method in
+        /// constructors to set up bindings between properties that also need an
+        /// initial setup.
+        /// </summary>
+        public static IObservable<TRet> WhenAnyDynamic<TSender, TRet>(this TSender This, 
+                            Expression property1, 
+                            Expression property2, 
+                            Expression property3, 
+                            Expression property4, 
+                            Expression property5, 
+                            Expression property6, 
+                            Expression property7, 
+                            Expression property8, 
+                            Expression property9, 
+                            Expression property10, 
+                            Func<IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, TRet> selector)
+        {
+                        return Observable.CombineLatest(
+                                    ReactiveNotifyPropertyChangedMixin
+                        .SubscribeToExpressionChain<TSender,object>(This, property1, false, false), 
+                                    ReactiveNotifyPropertyChangedMixin
+                        .SubscribeToExpressionChain<TSender,object>(This, property2, false, false), 
+                                    ReactiveNotifyPropertyChangedMixin
+                        .SubscribeToExpressionChain<TSender,object>(This, property3, false, false), 
+                                    ReactiveNotifyPropertyChangedMixin
+                        .SubscribeToExpressionChain<TSender,object>(This, property4, false, false), 
+                                    ReactiveNotifyPropertyChangedMixin
+                        .SubscribeToExpressionChain<TSender,object>(This, property5, false, false), 
+                                    ReactiveNotifyPropertyChangedMixin
+                        .SubscribeToExpressionChain<TSender,object>(This, property6, false, false), 
+                                    ReactiveNotifyPropertyChangedMixin
+                        .SubscribeToExpressionChain<TSender,object>(This, property7, false, false), 
+                                    ReactiveNotifyPropertyChangedMixin
+                        .SubscribeToExpressionChain<TSender,object>(This, property8, false, false), 
+                                    ReactiveNotifyPropertyChangedMixin
+                        .SubscribeToExpressionChain<TSender,object>(This, property9, false, false), 
+                                    ReactiveNotifyPropertyChangedMixin
+                        .SubscribeToExpressionChain<TSender,object>(This, property10, false, false), 
                                 selector
             );
                     }
@@ -551,6 +873,55 @@ namespace ReactiveUI
                                 selector
             );
                     }
+
+		
+        /// <summary>
+        /// WhenAny allows you to observe whenever one or more properties on an
+        /// object have changed, providing an initial value when the Observable
+        /// is set up, unlike ObservableForProperty(). Use this method in
+        /// constructors to set up bindings between properties that also need an
+        /// initial setup.
+        /// </summary>
+        public static IObservable<TRet> WhenAnyDynamic<TSender, TRet>(this TSender This, 
+                            Expression property1, 
+                            Expression property2, 
+                            Expression property3, 
+                            Expression property4, 
+                            Expression property5, 
+                            Expression property6, 
+                            Expression property7, 
+                            Expression property8, 
+                            Expression property9, 
+                            Expression property10, 
+                            Expression property11, 
+                            Func<IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, TRet> selector)
+        {
+                        return Observable.CombineLatest(
+                                    ReactiveNotifyPropertyChangedMixin
+                        .SubscribeToExpressionChain<TSender,object>(This, property1, false, false), 
+                                    ReactiveNotifyPropertyChangedMixin
+                        .SubscribeToExpressionChain<TSender,object>(This, property2, false, false), 
+                                    ReactiveNotifyPropertyChangedMixin
+                        .SubscribeToExpressionChain<TSender,object>(This, property3, false, false), 
+                                    ReactiveNotifyPropertyChangedMixin
+                        .SubscribeToExpressionChain<TSender,object>(This, property4, false, false), 
+                                    ReactiveNotifyPropertyChangedMixin
+                        .SubscribeToExpressionChain<TSender,object>(This, property5, false, false), 
+                                    ReactiveNotifyPropertyChangedMixin
+                        .SubscribeToExpressionChain<TSender,object>(This, property6, false, false), 
+                                    ReactiveNotifyPropertyChangedMixin
+                        .SubscribeToExpressionChain<TSender,object>(This, property7, false, false), 
+                                    ReactiveNotifyPropertyChangedMixin
+                        .SubscribeToExpressionChain<TSender,object>(This, property8, false, false), 
+                                    ReactiveNotifyPropertyChangedMixin
+                        .SubscribeToExpressionChain<TSender,object>(This, property9, false, false), 
+                                    ReactiveNotifyPropertyChangedMixin
+                        .SubscribeToExpressionChain<TSender,object>(This, property10, false, false), 
+                                    ReactiveNotifyPropertyChangedMixin
+                        .SubscribeToExpressionChain<TSender,object>(This, property11, false, false), 
+                                selector
+            );
+                    }
                                                             
         /// <summary>
         /// WhenAnyValue allows you to observe whenever the value of one or more
@@ -614,6 +985,58 @@ namespace ReactiveUI
                                     This.ObservableForProperty(property10, false, false), 
                                     This.ObservableForProperty(property11, false, false), 
                                     This.ObservableForProperty(property12, false, false), 
+                                selector
+            );
+                    }
+
+		
+        /// <summary>
+        /// WhenAny allows you to observe whenever one or more properties on an
+        /// object have changed, providing an initial value when the Observable
+        /// is set up, unlike ObservableForProperty(). Use this method in
+        /// constructors to set up bindings between properties that also need an
+        /// initial setup.
+        /// </summary>
+        public static IObservable<TRet> WhenAnyDynamic<TSender, TRet>(this TSender This, 
+                            Expression property1, 
+                            Expression property2, 
+                            Expression property3, 
+                            Expression property4, 
+                            Expression property5, 
+                            Expression property6, 
+                            Expression property7, 
+                            Expression property8, 
+                            Expression property9, 
+                            Expression property10, 
+                            Expression property11, 
+                            Expression property12, 
+                            Func<IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, TRet> selector)
+        {
+                        return Observable.CombineLatest(
+                                    ReactiveNotifyPropertyChangedMixin
+                        .SubscribeToExpressionChain<TSender,object>(This, property1, false, false), 
+                                    ReactiveNotifyPropertyChangedMixin
+                        .SubscribeToExpressionChain<TSender,object>(This, property2, false, false), 
+                                    ReactiveNotifyPropertyChangedMixin
+                        .SubscribeToExpressionChain<TSender,object>(This, property3, false, false), 
+                                    ReactiveNotifyPropertyChangedMixin
+                        .SubscribeToExpressionChain<TSender,object>(This, property4, false, false), 
+                                    ReactiveNotifyPropertyChangedMixin
+                        .SubscribeToExpressionChain<TSender,object>(This, property5, false, false), 
+                                    ReactiveNotifyPropertyChangedMixin
+                        .SubscribeToExpressionChain<TSender,object>(This, property6, false, false), 
+                                    ReactiveNotifyPropertyChangedMixin
+                        .SubscribeToExpressionChain<TSender,object>(This, property7, false, false), 
+                                    ReactiveNotifyPropertyChangedMixin
+                        .SubscribeToExpressionChain<TSender,object>(This, property8, false, false), 
+                                    ReactiveNotifyPropertyChangedMixin
+                        .SubscribeToExpressionChain<TSender,object>(This, property9, false, false), 
+                                    ReactiveNotifyPropertyChangedMixin
+                        .SubscribeToExpressionChain<TSender,object>(This, property10, false, false), 
+                                    ReactiveNotifyPropertyChangedMixin
+                        .SubscribeToExpressionChain<TSender,object>(This, property11, false, false), 
+                                    ReactiveNotifyPropertyChangedMixin
+                        .SubscribeToExpressionChain<TSender,object>(This, property12, false, false), 
                                 selector
             );
                     }
