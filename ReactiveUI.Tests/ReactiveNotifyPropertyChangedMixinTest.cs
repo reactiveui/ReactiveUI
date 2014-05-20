@@ -506,7 +506,7 @@ namespace ReactiveUI.Tests
         {
             (new TestScheduler()).With(sched => {
                 var fixture = new TestFixture();
-                var changes = fixture.ObservableForProperty<TestFixture, string>("IsOnlyOneWord").CreateCollection();
+                var changes = fixture.ObservableForProperty<TestFixture, string>(x => x.IsOnlyOneWord).CreateCollection();
 
                 fixture.IsOnlyOneWord = "Foo";
                 sched.Start();
@@ -535,7 +535,7 @@ namespace ReactiveUI.Tests
         {
             (new TestScheduler()).With(sched => {
                 var fixture = new TestFixture() { IsOnlyOneWord = "Pre" };
-                var changes = fixture.ObservableForProperty<TestFixture, string>("IsOnlyOneWord", skipInitial: false).CreateCollection();
+                var changes = fixture.ObservableForProperty<TestFixture, string>(x => x.IsOnlyOneWord, skipInitial: false).CreateCollection();
 
                 sched.Start();
                 Assert.Equal(1, changes.Count);
@@ -555,7 +555,7 @@ namespace ReactiveUI.Tests
         {
             (new TestScheduler()).With(sched => {
                 var fixture = new TestFixture() { IsOnlyOneWord = "Pre" };
-                var changes = fixture.ObservableForProperty<TestFixture, string>("IsOnlyOneWord", beforeChange: true).CreateCollection();
+                var changes = fixture.ObservableForProperty<TestFixture, string>(x => x.IsOnlyOneWord, beforeChange: true).CreateCollection();
 
                 sched.Start();
                 Assert.Equal(0, changes.Count);
@@ -579,7 +579,7 @@ namespace ReactiveUI.Tests
         {
             (new TestScheduler()).With(sched => {
                 var fixture = new TestFixture();
-                var changes = fixture.ObservableForProperty<TestFixture, string>("IsOnlyOneWord").CreateCollection();
+                var changes = fixture.ObservableForProperty<TestFixture, string>(x => x.IsOnlyOneWord).CreateCollection();
 
                 fixture.IsOnlyOneWord = "Foo";
                 sched.Start();
