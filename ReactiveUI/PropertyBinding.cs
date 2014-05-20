@@ -639,7 +639,7 @@ namespace ReactiveUI
                 // NB: In this case, TVProp is possibly wrong due to type 
                 // conversion. Figure out if this is the case, then re-call Bind
                 // with the right TVProp
-                viewPropChain = Reflection.getDefaultViewPropChain(view, vmPropChain);
+                viewPropChain = Reflection.getViewPropChainWithDefault(view, vmPropChain);
                 var tvProp = Reflection.GetTypesForPropChain(typeof (TView), viewPropChain).Last();
                 if (tvProp != typeof (TVProp)) {
                     var mi = this.GetType().GetTypeInfo().GetDeclaredMethod("Bind").MakeGenericMethod(typeof (TViewModel), typeof (TView), typeof (TVMProp), tvProp, typeof (TDontCare));
@@ -783,7 +783,7 @@ namespace ReactiveUI
             var viewType = default(Type);
 
             if (viewProperty == null) {
-                viewPropChain = Reflection.getDefaultViewPropChain(view, Reflection.ExpressionToPropertyNames(vmProperty));
+                viewPropChain = Reflection.getViewPropChainWithDefault(view, Reflection.ExpressionToPropertyNames(vmProperty));
 
                 viewType = Reflection.GetTypesForPropChain(typeof(TView), viewPropChain).Last();
             } else {
@@ -872,7 +872,7 @@ namespace ReactiveUI
             var vmString = String.Format("{0}.{1}", typeof (TViewModel).Name, String.Join(".", vmPropChain));
 
             if (viewProperty == null) {
-                viewPropChain = Reflection.getDefaultViewPropChain(view, Reflection.ExpressionToPropertyNames(vmProperty));                
+                viewPropChain = Reflection.getViewPropChainWithDefault(view, Reflection.ExpressionToPropertyNames(vmProperty));                
             } else {
                 viewPropChain = Reflection.ExpressionToPropertyNames(viewProperty);
             }
