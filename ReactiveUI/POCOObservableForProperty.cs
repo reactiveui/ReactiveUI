@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Reactive.Linq;
 using Splat;
 
@@ -18,7 +19,7 @@ namespace ReactiveUI
         }
 
         static readonly Dictionary<Type, bool> hasWarned = new Dictionary<Type, bool>();
-        public IObservable<IObservedChange<object, object>> GetNotificationForProperty(object sender, string propertyName, bool beforeChanged = false)
+        public IObservable<IObservedChange<object, object>> GetNotificationForProperty(object sender, Expression expression, bool beforeChanged = false)
         {
             var type = sender.GetType();
             if (!hasWarned.ContainsKey(type)) {
@@ -28,7 +29,7 @@ namespace ReactiveUI
                 hasWarned[type] = true;
             }
 
-            return Observable.Return(new ObservedChange<object, object>(sender, propertyName), RxApp.MainThreadScheduler)
+            return Observable.Return(new ObservedChange<object, object>(sender, expression.GetMemberInfo().Name), RxApp.MainThreadScheduler)
                 .Concat(Observable.Never<IObservedChange<object, object>>());
         }
     }
