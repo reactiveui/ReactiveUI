@@ -1,4 +1,5 @@
 using System;
+using System.Linq.Expressions;
 using System.Reactive.Linq;
 using System.Reflection;
 
@@ -17,21 +18,33 @@ namespace ReactiveUI
             return typeof (IReactiveObject).GetTypeInfo().IsAssignableFrom(type.GetTypeInfo()) ? 10 : 0;
         }
 
-        public IObservable<IObservedChange<object, object>> GetNotificationForProperty(object sender, string propertyName, bool beforeChanged = false)
+        public IObservable<IObservedChange<object, object>> GetNotificationForProperty(object sender, Expression expression, bool beforeChanged = false)
         {
             var iro = sender as IReactiveObject;
             if (iro == null) {
                 throw new ArgumentException("Sender doesn't implement IReactiveObject");
             }
 
-            return Observable.Create<IObservedChange<object, object>>(subj => {
-                var obs = (beforeChanged ? iro.getChangingObservable() : iro.getChangedObservable());
+            var obs = beforeChanged ? iro.getChangingObservable() : iro.getChangedObservable();
 
-                return obs
-                    .Where(x => x.PropertyName == propertyName)
-                    .Select(x => new ObservedChange<object,object>(sender, propertyName))
-                    .Subscribe(subj);
-            });
+            MemberInfo memberInfo = expression.GetMemberInfo();
+            if (beforeChanged) {
+                if (expression.NodeType == ExpressionType.Index) {
+                    return obs.Where(x => x.PropertyName.Equals(memberInfo.Name + "[]"))
+                        .Select(x => new ObservedChange<object, object>(sender, x.PropertyName));
+                } else {
+                    return obs.Where(x => x.PropertyName.Equals(memberInfo.Name))
+                        .Select(x => new ObservedChange<object, object>(sender, x.PropertyName));
+                }
+            } else {
+                if (expression.NodeType == ExpressionType.Index) {
+                    return obs.Where(x => x.PropertyName.Equals(memberInfo.Name + "[]"))
+                        .Select(x => new ObservedChange<object, object>(sender, x.PropertyName));
+                } else {
+                    return obs.Where(x => x.PropertyName.Equals(memberInfo.Name))
+                        .Select(x => new ObservedChange<object, object>(sender, x.PropertyName));
+                }
+            }
         }
     }
 }
