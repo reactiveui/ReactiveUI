@@ -50,6 +50,32 @@ namespace ReactiveUI.Tests.Winforms
             Assert.Null(target.CurrentView);
             Assert.True(target.Controls.Contains(defaultContent));
         }
+
+        [Fact]
+        public void ShouldCacheViewWhenEnabled()
+        {
+            var viewLocator = new FakeViewLocator { LocatorFunc = t => new FakeWinformsView() };
+            var defaultContent = new Control();
+            var target = new ViewModelViewHost { DefaultContent = defaultContent, ViewLocator = viewLocator,CacheViews = true };
+
+            target.ViewModel = new FakeWinformViewModel();
+            var cachedView = target.CurrentView;
+            target.ViewModel = new FakeWinformViewModel();
+            Assert.True(object.ReferenceEquals(cachedView, target.CurrentView));
+        }
+
+        [Fact]
+        public void ShouldNotCacheViewWhenDisabled()
+        {
+            var viewLocator = new FakeViewLocator { LocatorFunc = t => new FakeWinformsView() };
+            var defaultContent = new Control();
+            var target = new ViewModelViewHost { DefaultContent = defaultContent, ViewLocator = viewLocator, CacheViews = true };
+
+            target.ViewModel = new FakeWinformViewModel();
+            var cachedView = target.CurrentView;
+            target.ViewModel = new FakeWinformViewModel();
+            Assert.False(object.ReferenceEquals(cachedView,target.CurrentView));
+        }
     }
 
     class FakeViewLocator : IViewLocator
