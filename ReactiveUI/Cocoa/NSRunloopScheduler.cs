@@ -4,10 +4,12 @@ using System.Collections.Generic;
 using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
+using MonoTouch.CoreFoundation;
 
 #if UIKIT
 using MonoTouch.UIKit;
 using MonoTouch.Foundation;
+
 #else
 using MonoMac.AppKit;
 using MonoMac.Foundation;
@@ -15,41 +17,31 @@ using MonoMac.Foundation;
 
 namespace ReactiveUI.Cocoa
 {
-    /// <summary>
-    /// Provides a scheduler which will use the Cocoa main loop to schedule
-    /// work on. This is the Cocoa equivalent of DispatcherScheduler.
-    /// </summary>
+	/// <summary>
+	/// Provides a scheduler which will use the Cocoa main loop to schedule
+	/// work on. This is the Cocoa equivalent of DispatcherScheduler.
+	/// </summary>
 	public class NSRunloopScheduler : IScheduler
 	{
-		NSObject theApp;
-		
-		#if UIKIT
-		public NSRunloopScheduler (UIApplication app)
-		{
-			theApp = app;
-		}
-		#else
-		public NSRunloopScheduler (NSApplication app)
-		{
-			theApp = app;
-		}
-		#endif
-		
 		public DateTimeOffset Now {
 			get { return DateTimeOffset.Now; }
 		}
-		
+
 		public IDisposable Schedule<TState>(TState state, Func<IScheduler, TState, IDisposable> action)
 		{
-			var innerDisp = new SingleAssignmentDisposable ();
+			if (NSThread.IsMain) {
+				return action(this, state);
+			} else {
+				var innerDisp = new SingleAssignmentDisposable();
 
-			theApp.BeginInvokeOnMainThread (new NSAction (() => {
-				if (!innerDisp.IsDisposed) innerDisp.Disposable = action (this, state);
-			}));
-			
-			return innerDisp;
+				DispatchQueue.MainQueue.DispatchAsync(new NSAction(() => {
+					if (!innerDisp.IsDisposed) innerDisp.Disposable = action(this, state);
+				}));
+    			
+				return innerDisp;
+			}
 		}
-		
+
 		public IDisposable Schedule<TState>(TState state, DateTimeOffset dueTime, Func<IScheduler, TState, IDisposable> action)
 		{
 			if (dueTime <= Now) {
@@ -58,7 +50,7 @@ namespace ReactiveUI.Cocoa
 			
 			return Schedule(state, dueTime - Now, action);
 		}
-		
+
 		public IDisposable Schedule<TState>(TState state, TimeSpan dueTime, Func<IScheduler, TState, IDisposable> action)
 		{
 			var innerDisp = Disposable.Empty;
