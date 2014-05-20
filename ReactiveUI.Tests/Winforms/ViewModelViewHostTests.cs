@@ -8,6 +8,12 @@ namespace ReactiveUI.Tests.Winforms
 {
     public class ViewModelViewHostTests
     {
+
+        public ViewModelViewHostTests()
+        {
+            ViewModelViewHost.DefaultCacheViewsEnabled = true;
+        }
+
         [Fact]
         public void SettingViewModelShouldAddTheViewtoItsControls()
         {
@@ -24,8 +30,11 @@ namespace ReactiveUI.Tests.Winforms
         [Fact]
         public void ShouldDisposePreviousView()
         {
-            var viewLocator = new FakeViewLocator { LocatorFunc = t => new FakeWinformsView() };
-            var target = new ViewModelViewHost();
+            var viewLocator = new FakeViewLocator { LocatorFunc = t => new FakeWinformsView()};
+            var target = new ViewModelViewHost()
+            {
+                CacheViews = false
+            };
             target.ViewLocator = viewLocator;
 
             target.ViewModel = new FakeWinformViewModel();
