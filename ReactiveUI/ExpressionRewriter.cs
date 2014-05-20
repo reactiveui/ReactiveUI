@@ -27,6 +27,8 @@ namespace ReactiveUI
                     return this.VisitParameter((ParameterExpression)node);
                 case ExpressionType.Constant:
                     return this.VisitConstant((ConstantExpression)node);
+                case ExpressionType.Convert:
+                    return this.VisitUnary((UnaryExpression)node);
                 default:
                     throw new NotSupportedException(string.Format("Unsupported expression type: '{0}'", node.NodeType));
             }
@@ -51,6 +53,8 @@ namespace ReactiveUI
                 Expression expression = this.Visit(node.Operand);
                 //translate arraylength into normal member expression
                 return Expression.MakeMemberAccess(expression, expression.Type.GetRuntimeProperty("Length"));
+            } else if (node.NodeType == ExpressionType.Convert) {
+                return this.Visit(node.Operand);
             } else {
                 return node.Update(this.Visit(node.Operand));
             }
