@@ -19,17 +19,41 @@ namespace ReactiveUI.Winforms
         IObservable<string> viewContractObservable;
         object viewModel;
 
-        bool cacheViews=true;
+        object content;
+
+        bool cacheViews = true;
 
         public ViewModelViewHost()
         {
             this.InitializeComponent();
 
+
+            var viewChanges =
+              this.WhenAnyValue(x => x.Content)
+                  .Select(x => x as Control)
+                  .Where(x => x != null)
+                  .Subscribe(x =>
+                  {
+                      //change the view in the ui
+                      this.SuspendLayout();
+
+                      //clear out existing visible control view
+                      foreach (Control c in this.Controls)
+                      {
+                          c.Dispose();
+                          this.Controls.Remove(c);
+                      }
+
+                      x.Dock = DockStyle.Fill;
+                      this.Controls.Add(x);
+                      this.ResumeLayout();
+                  });
+
+            this.disposables.Add(viewChanges);
+
             this.disposables.Add(this.WhenAny(x => x.DefaultContent, x => x.Value).Subscribe(x => {
                 if (x != null && this.currentView == null) {
-                    this.Controls.Clear();
-                    this.Controls.Add(this.InitView(x));
-                    this.components.Add(this.DefaultContent);
+                    this.Content = DefaultContent;
                 }
             }));
 
@@ -40,34 +64,37 @@ namespace ReactiveUI.Winforms
                     .CombineLatest(this.WhenAnyObservable(x => x.ViewContractObservable),
                         (vm, contract) => new { ViewModel = vm, Contract = contract });
 
+
+
             this.disposables.Add(vmAndContract.Subscribe(x => {
                 //clear all hosted controls (view or default content)
-
-
-                this.Controls.Clear();
-
-                if (this.currentView != null) {
-                    this.currentView.Dispose();
-                }
-
                 if (this.ViewModel == null) {
                     if (this.DefaultContent != null) {
-                        this.InitView(this.DefaultContent);
-                        this.Controls.Add(this.DefaultContent);
+                        this.Content = DefaultContent;
                     }
                     return;
                 }
 
+                if (CacheViews) {
+                    //when caching views, check the current viewmodel and type
+                    var c = content as IViewFor;
+                    if (c != null && c.ViewModel != null
+                        && c.ViewModel.GetType() == x.ViewModel.GetType()) {
+                            c.ViewModel = x.ViewModel;
+                        return;
+                    }
+                }
+
                 IViewLocator viewLocator = this.ViewLocator ?? ReactiveUI.ViewLocator.Current;
                 IViewFor view = viewLocator.ResolveView(x.ViewModel, x.Contract);
+                this.Content = view;
                 view.ViewModel = x.ViewModel;
 
-                this.CurrentView = this.InitView((Control)view);
-                this.Controls.Add(this.CurrentView);
             }, RxApp.DefaultExceptionHandler.OnNext));
         }
 
-        public event PropertyChangingEventHandler PropertyChanging {
+        public event PropertyChangingEventHandler PropertyChanging
+        {
             add { PropertyChangingEventManager.AddHandler(this, value); }
             remove { PropertyChangingEventManager.RemoveHandler(this, value); }
         }
@@ -77,7 +104,8 @@ namespace ReactiveUI.Winforms
             PropertyChangingEventManager.DeliverEvent(this, args);
         }
 
-        public event PropertyChangedEventHandler PropertyChanged {
+        public event PropertyChangedEventHandler PropertyChanged
+        {
             add { PropertyChangedEventManager.AddHandler(this, value); }
             remove { PropertyChangedEventManager.RemoveHandler(this, value); }
         }
@@ -87,20 +115,22 @@ namespace ReactiveUI.Winforms
             PropertyChangedEventManager.DeliverEvent(this, args);
         }
 
-        public Control CurrentView {
-            get { return this.currentView; }
-            private set { this.RaiseAndSetIfChanged(ref this.currentView, value); }
+        public Control CurrentView
+        {
+            get { return this.content as Control; }
         }
 
         [Category("ReactiveUI")]
         [Description("The default control when no viewmodel is specified")]
-        public Control DefaultContent {
+        public Control DefaultContent
+        {
             get { return this.defaultContent; }
             set { this.RaiseAndSetIfChanged(ref this.defaultContent, value); }
         }
 
         [Browsable(false)]
-        public IObservable<string> ViewContractObservable {
+        public IObservable<string> ViewContractObservable
+        {
             get { return this.viewContractObservable; }
             set { this.RaiseAndSetIfChanged(ref this.viewContractObservable, value); }
         }
@@ -111,9 +141,19 @@ namespace ReactiveUI.Winforms
         [Category("ReactiveUI")]
         [Description("The viewmodel to host.")]
         [Bindable(true)]
-        public object ViewModel {
+        public object ViewModel
+        {
             get { return this.viewModel; }
             set { this.RaiseAndSetIfChanged(ref this.viewModel, value); }
+        }
+
+        [Category("ReactiveUI")]
+        [Description("The Current View")]
+        [Bindable(true)]
+        public object Content
+        {
+            get { return this.content; }
+            protected set { this.RaiseAndSetIfChanged(ref this.content, value); }
         }
 
         [Category("ReactiveUI")]
@@ -132,18 +172,13 @@ namespace ReactiveUI.Winforms
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
-            if (disposing && (this.components != null)) {
+            if (disposing && (this.components != null))
+            {
                 this.components.Dispose();
                 this.disposables.Dispose();
             }
 
             base.Dispose(disposing);
-        }
-
-        Control InitView(Control view)
-        {
-            view.Dock = DockStyle.Fill;
-            return view;
         }
     }
 }
