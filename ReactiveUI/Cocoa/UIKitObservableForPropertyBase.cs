@@ -6,6 +6,7 @@ using System.Reactive.Disposables;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Linq.Expressions;
 
 namespace ReactiveUI.Cocoa
 {
@@ -29,12 +30,13 @@ namespace ReactiveUI.Cocoa
             return match.Affinity;
         }
 
-        public IObservable<IObservedChange<object, object>> GetNotificationForProperty(object sender, string propertyName, bool beforeChanged = false)
+        public IObservable<IObservedChange<object, object>> GetNotificationForProperty(object sender, Expression expression, bool beforeChanged = false)
         {
             if (beforeChanged)
                 return Observable.Never<IObservedChange<object, object>>();
 
             var type = sender.GetType();
+            var propertyName = expression.GetMemberInfo().Name;
 
             var match = config.Keys
                 .Where(x=> x.IsAssignableFrom(type) && config[x].Keys.Contains(propertyName))
