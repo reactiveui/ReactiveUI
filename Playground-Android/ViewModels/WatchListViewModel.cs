@@ -31,16 +31,16 @@ namespace MobileSample_Android.ViewModels
 
         public WatchListViewModel()
         {
-            var openCmd = ReactiveCommand.Create(this.WhenAnyValue(vm => vm.MarketState, m => m == MarketState.Closed),
+            var openCmd = ReactiveCommand.CreateAsyncFunction(this.WhenAnyValue(vm => vm.MarketState, m => m == MarketState.Closed),
                 _ => OpenMarket(), RxApp.MainThreadScheduler);
             OpenMarketCommand = openCmd;
 
-            var closeCmd = ReactiveCommand.Create(
+            var closeCmd = ReactiveCommand.CreateAsyncFunction(
                 this.WhenAnyValue(vm => vm.MarketState, m => m == MarketState.Open),
                 _ => CloseMarket(), RxApp.MainThreadScheduler);
             CloseMarketCommand = closeCmd;
 
-            var resetCmd = ReactiveCommand.Create(
+            var resetCmd = ReactiveCommand.CreateAsyncFunction(
                 this.WhenAnyValue(vm => vm.MarketState, m => m == MarketState.Closed),
                 _ => Reset(), RxApp.MainThreadScheduler);
             ResetCommand = resetCmd;

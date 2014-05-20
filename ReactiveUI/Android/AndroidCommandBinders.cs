@@ -1,7 +1,7 @@
 using System;
 using Android.Views;
 
-namespace ReactiveUI.Android.Android
+namespace ReactiveUI.Android
 {
     public class AndroidCommandBinders : FlexibleCommandBinder
     {
