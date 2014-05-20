@@ -710,9 +710,9 @@ namespace ReactiveUI
 
             IDisposable disp = changes.Subscribe(isVmWithLatestValue => {
                 if (isVmWithLatestValue.Item2) {
-                    Reflection.SetValueToPropertyChain(view, viewPropChain, isVmWithLatestValue.Item1, false);
+                    Reflection.TrySetValueToPropertyChain(view, viewPropChain, isVmWithLatestValue.Item1, false);
                 } else {
-                    Reflection.SetValueToPropertyChain(view.ViewModel, vmPropChain, isVmWithLatestValue.Item1, false);
+                    Reflection.TrySetValueToPropertyChain(view.ViewModel, vmPropChain, isVmWithLatestValue.Item1, false);
                 }
             });
 
