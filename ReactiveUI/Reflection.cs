@@ -71,6 +71,11 @@ namespace ReactiveUI
             return propName;
         }
 
+        public static Expression Rewrite(Expression expression)
+        {
+            return expressionRewriter.Visit(expression);
+        }
+
         public static string[] ExpressionToPropertyNames<TObj, TRet>(Expression<Func<TObj, TRet>> property)
         {
             var ret = new List<string>();
@@ -293,16 +298,6 @@ namespace ReactiveUI
             return view.WhenAnyValue(x => x.ViewModel)
                 .Where(x => x != null)
                 .Select(x => ((TViewModel)x).WhenAnyValue(property))
-                .Switch();
-        }
-
-        internal static IObservable<object> ViewModelWhenAnyValueDynamic<TView, TViewModel>(TViewModel viewModel, TView view, string[] property)
-            where TView : IViewFor
-            where TViewModel : class
-        {
-            return view.WhenAny(x => x.ViewModel, x => x.Value)
-                .Where(x => x != null)
-                .Select(x => property.Length == 0 ? Observable.Return(x) : ((TViewModel)x).WhenAnyDynamic(property, y => y.Value))
                 .Switch();
         }
 
