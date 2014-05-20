@@ -265,7 +265,7 @@ namespace ReactiveUI
             IDisposable disp = Disposable.Empty;
 
             var bindInfo = Observable.CombineLatest(
-                This, view.WhenAnyDynamic(controlPropChain, x => x.Value),
+                This, view.WhenAny(controlPropChain, x => x.Value),
                 (val, host) => new { val, host });
 
             var propSub = bindInfo
