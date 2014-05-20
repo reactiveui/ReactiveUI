@@ -37,9 +37,7 @@ namespace ReactiveUI.Xaml
                 new { Type = typeof(ProgressBar), Property = "Value" },
                 new { Type = typeof(ItemsControl), Property = "ItemsSource" },
                 new { Type = typeof(Image), Property = "Source" },
-#if !SILVERLIGHT && !WINRT
-                new { Type = typeof(FrameworkContentElement), Property = "Content" },
-#endif
+                new { Type = typeof(ContentControl), Property = "Content" },
                 new { Type = typeof(FrameworkElement), Property = "Visibility" },
             };
 
