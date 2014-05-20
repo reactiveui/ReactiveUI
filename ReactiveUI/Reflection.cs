@@ -12,6 +12,8 @@ namespace ReactiveUI
 {
     public static class Reflection 
     {
+        static ExpressionRewriter expressionRewriter = new ExpressionRewriter();
+
         static readonly MemoizingMRUCache<Tuple<Type, string>, Func<object, object>> propReaderCache = 
             new MemoizingMRUCache<Tuple<Type, string>, Func<object, object>>((x,_) => {
                 var fi = x.Item1.GetRuntimeFields()
