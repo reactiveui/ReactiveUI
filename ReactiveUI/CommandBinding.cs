@@ -187,29 +187,26 @@ namespace ReactiveUI
         public IReactiveBinding<TView, TViewModel, TProp> BindCommand<TView, TViewModel, TProp, TControl, TParam>(
                 TViewModel viewModel, 
                 TView view, 
-                Expression<Func<TViewModel, TProp>> propertyName, 
-                Expression<Func<TView, TControl>> controlName,
+                Expression<Func<TViewModel, TProp>> vmProperty, 
+                Expression<Func<TView, TControl>> controlProperty,
                 Func<TParam> withParameter,
                 string toEvent = null)
             where TViewModel : class
             where TView : class, IViewFor<TViewModel>
             where TProp : ICommand
         {
-            var ctlName = default(string);
+            var vmPropChain = Reflection.ExpressionToPropertyNames(vmProperty);
+            var controlPropChain = default(string[]);
 
-            if (controlName == null)
-            {
-                ctlName = Reflection.SimpleExpressionToPropertyName(propertyName);
+            if (controlProperty == null) {
+                controlPropChain = new string[] { Reflection.getViewPropChain(view, vmPropChain) };
+            } else {
+                controlPropChain = Reflection.ExpressionToPropertyNames(controlProperty);
             }
-            else
-            {
-                ctlName = Reflection.SimpleExpressionToPropertyName(controlName);
-            }
-            var viewPropGetter = Reflection.GetValueFetcherForProperty(typeof (TView), ctlName);
 
-            var source = Reflection.ViewModelWhenAnyValue(viewModel, view, propertyName);
+            var source = Reflection.ViewModelWhenAnyValue(viewModel, view, vmProperty);
 
-            IDisposable bindingDisposable = bindCommandInternal(source, view, propertyName, viewPropGetter, Observable.Empty<object>(), toEvent, cmd => {
+            IDisposable bindingDisposable = bindCommandInternal(source, view, controlPropChain, Observable.Empty<object>(), toEvent, cmd => {
                 var rc = cmd as IReactiveCommand;
                 if (rc == null) {
                     return new RelayCommand(cmd.CanExecute, _ => cmd.Execute(withParameter()));
@@ -220,80 +217,73 @@ namespace ReactiveUI
                 return ret;
             });
 
-            return new ReactiveBinding<TView, TViewModel, TProp>(view, viewModel, new string[] { ctlName }, new string[] { Reflection.SimpleExpressionToPropertyName(propertyName) },
+            return new ReactiveBinding<TView, TViewModel, TProp>(view, viewModel, controlPropChain, vmPropChain,
                 source, BindingDirection.OneWay, bindingDisposable);
         }
 
         public IReactiveBinding<TView, TViewModel, TProp> BindCommand<TView, TViewModel, TProp, TControl, TParam>(
                 TViewModel viewModel, 
                 TView view, 
-                Expression<Func<TViewModel, TProp>> propertyName, 
-                Expression<Func<TView, TControl>> controlName,
+                Expression<Func<TViewModel, TProp>> vmProperty, 
+                Expression<Func<TView, TControl>> controlProperty,
                 IObservable<TParam> withParameter,
                 string toEvent = null)
             where TViewModel : class
             where TView : class, IViewFor<TViewModel>
             where TProp : ICommand
         {
-            var ctlName = default(string);
+            var vmPropChain = Reflection.ExpressionToPropertyNames(vmProperty);
+            var controlPropChain = default(string[]);
 
-            if (controlName == null)
+            if (controlProperty == null)
             {
-                ctlName = Reflection.SimpleExpressionToPropertyName(propertyName);
+                controlPropChain = new string[] { Reflection.getViewPropChain(view, vmPropChain) };
             }
             else
             {
-                ctlName = Reflection.SimpleExpressionToPropertyName(controlName);
+                controlPropChain = Reflection.ExpressionToPropertyNames(controlProperty);
             }
-            var viewPropGetter = Reflection.GetValueFetcherForProperty(typeof(TView), ctlName);
 
-            var source = Reflection.ViewModelWhenAnyValue(viewModel, view, propertyName);
+            var source = Reflection.ViewModelWhenAnyValue(viewModel, view, vmProperty);
 
-            IDisposable bindingDisposable = bindCommandInternal(source, view, propertyName, viewPropGetter, withParameter, toEvent);
+            IDisposable bindingDisposable = bindCommandInternal(source, view, controlPropChain, withParameter, toEvent);
 
-            return new ReactiveBinding<TView, TViewModel, TProp>(view, viewModel, new string[] { ctlName }, Reflection.ExpressionToPropertyNames(propertyName), 
+            return new ReactiveBinding<TView, TViewModel, TProp>(view, viewModel, controlPropChain, vmPropChain, 
                 source, BindingDirection.OneWay, bindingDisposable);
         }
 
-        IDisposable bindCommandInternal<TView, TViewModel, TProp, TParam>(
+        IDisposable bindCommandInternal<TView, TProp, TParam>(
                 IObservable<TProp> This,
                 TView view, 
-                Expression<Func<TViewModel, TProp>> propertyName, 
-                Func<object, object> viewPropGetter,
+                string[] controlPropChain, 
                 IObservable<TParam> withParameter,
                 string toEvent,
                 Func<ICommand, ICommand> commandFixuper = null)
-            where TViewModel : class
-            where TView : class, IViewFor<TViewModel>
+            where TView : class, IViewFor
             where TProp : ICommand
         {
-            var vmPropChain = Reflection.ExpressionToPropertyNames(propertyName);
-
             IDisposable disp = Disposable.Empty;
 
-            var propSub = This.Subscribe(x => {
-                disp.Dispose();
-                if (x == null) {
-                    disp = Disposable.Empty;
-                    return;
-                }
+            var bindInfo = Observable.CombineLatest(
+                This, view.WhenAnyDynamic(controlPropChain, x => x.Value),
+                (val, host) => new { val, host });
 
-                var vmString = String.Join(".", vmPropChain);
+            var propSub = bindInfo
+                .Where(x => x.host != null)
+                .Subscribe(x => {
+                    disp.Dispose();
+                    if (x == null) {
+                        disp = Disposable.Empty;
+                        return;
+                    }
 
-                var target = viewPropGetter(view);
-                if (target == null) {
-                    this.Log().Error("Binding {0}.{1} => {2}.{1} failed because target is null",
-                        typeof(TViewModel).FullName, vmString, view.GetType().FullName);
-                    disp = Disposable.Empty;
-                }
-
-                var cmd = commandFixuper != null ? commandFixuper(x) : x;
-                if (toEvent != null) {
-                    disp = CreatesCommandBinding.BindCommandToObject(cmd, target, withParameter.Select(y => (object)y), toEvent);
-                } else {
-                    disp = CreatesCommandBinding.BindCommandToObject(cmd, target, withParameter.Select(y => (object)y));
-                }
-            });
+                    var cmd = commandFixuper != null ? commandFixuper(x.val) : x.val;
+                    if (toEvent != null) {
+                        disp = CreatesCommandBinding.BindCommandToObject(cmd, x.host, withParameter.Select(y => (object)y), toEvent);
+                    } else {
+                        disp = CreatesCommandBinding.BindCommandToObject(cmd, x.host, withParameter.Select(y => (object)y));
+                    }
+                });
 
             return Disposable.Create(() => {
                 propSub.Dispose();
