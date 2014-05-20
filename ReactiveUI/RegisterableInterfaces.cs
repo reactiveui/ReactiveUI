@@ -17,6 +17,13 @@ namespace ReactiveUI
         AsyncOneWay,
     }
 
+    public enum DeviceOrientation : byte
+    {
+        None,
+        Portrait,
+        Landscape
+    }
+
     /// <summary>
     /// IMessageBus represents an object that can act as a "Message Bus", a
     /// simple way for ViewModels and other objects to communicate with each
@@ -320,9 +327,10 @@ namespace ReactiveUI
         Tuple<IObservable<Unit>, IObservable<Unit>> GetActivationForView(IActivatable view);
     }
 
-    internal interface IPlatformOperations
+    public interface IPlatformOperations
     {
         string GetOrientation();
+        DeviceOrientation GetOrientationEnum();
     }
 
     internal interface IWantsToRegisterStuff

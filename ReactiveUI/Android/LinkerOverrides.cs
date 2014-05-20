@@ -29,15 +29,17 @@ namespace ReactiveUI.Android
             var cb = new RadioButton(null);
             cb.Checked = cb.Checked;
 
-            var np = new NumberPicker(null);
-            np.Value = np.Value;
-
             var rb = new RatingBar(null);
             rb.Rating = rb.Rating;
 
+#if ANDROID_4
+            
+            var np = new NumberPicker(null);
+            np.Value = np.Value;
+
             var cv = new CalendarView(null);
             cv.Date = cv.Date;
-
+#endif
             var th = new TabHost(null);
             th.CurrentTab = th.CurrentTab;
 

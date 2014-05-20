@@ -968,7 +968,9 @@ namespace ReactiveUI
 
             var setter = Reflection.GetValueSetterOrThrow(types.Reverse().Skip(1).First(), names.Last());
             if (names.Length == 1) {
-                return This.Subscribe(
+                return This
+                    .ObserveOn(RxApp.MainThreadScheduler)
+                    .Subscribe(
                     x => setter(target, x),
                     ex => {
                         this.Log().ErrorException("Binding recieved an Exception!", ex);
@@ -982,6 +984,7 @@ namespace ReactiveUI
 
             return bindInfo
                 .Where(x => x.host != null)
+                .ObserveOn(RxApp.MainThreadScheduler)
                 .Subscribe(
                     x => setter(x.host, x.val),
                     ex => {

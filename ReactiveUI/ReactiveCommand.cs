@@ -130,6 +130,7 @@ namespace ReactiveUI
                     exceptions.OnNext(ex);
                     return Observable.Return(false);
                 })
+                .ObserveOn(RxApp.MainThreadScheduler)
                 .Do(x => {
                     var fireCanExecuteChanged = (canExecuteLatest != x);
                     canExecuteLatest = x;

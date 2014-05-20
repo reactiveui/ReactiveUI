@@ -71,6 +71,7 @@
     <Compile Include="..\CommonAssemblyInfo.cs">
       <Link>Cocoa\Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Cocoa\AppDelegateBase.cs" />
     <Compile Include="Cocoa\CocoaDefaultPropertyBinding.cs" />
     <Compile Include="Cocoa\KVOObservableForProperty.cs" />
     <Compile Include="Cocoa\LinkerOverrides.cs" />

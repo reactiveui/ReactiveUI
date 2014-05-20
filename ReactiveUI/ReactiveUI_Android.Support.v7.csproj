@@ -5,16 +5,17 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{F5A6E11B-B074-4A0B-B937-267D840E31DF}</ProjectGuid>
+    <ProjectGuid>{CE4AF694-FFD4-42E1-8C94-24991F6B2D12}</ProjectGuid>
     <ProjectTypeGuids>{EFBA0AD7-5A72-4C68-AF49-83D382785DCF};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ReactiveUI</RootNamespace>
     <AssemblyName>ReactiveUI</AssemblyName>
     <FileAlignment>512</FileAlignment>
-    <TargetFrameworkVersion>v4.0.3</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v2.1</TargetFrameworkVersion>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
+    <AndroidUseLatestPlatformSdk />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -22,7 +23,7 @@
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\Monoandroid\</OutputPath>
     <IntermediateOutputPath>obj\Debug\Monoandroid</IntermediateOutputPath>
-    <DefineConstants>DEBUG;MONO;ANDROID;ANDROID_4</DefineConstants>
+    <DefineConstants>DEBUG;MONO;ANDROID;ANDROID_2</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AndroidLinkMode>None</AndroidLinkMode>
@@ -42,10 +43,6 @@
     <DocumentationFile>bin\Release\Monoandroid\ReactiveUI.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="ActionBarSherlock, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\ReactiveUI.Xamarin.Samples\libs\Xamarin.Android\ActionBarSherlock.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Reactive.Core, Version=2.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -70,11 +67,17 @@
     <Reference Include="Splat">
       <HintPath>..\ext\monodroid\Splat.dll</HintPath>
     </Reference>
-    <Reference Include="Xamarin.Android.Support.v13">
-      <HintPath>..\ext\monodroid\Xamarin.Android.Support.v13.dll</HintPath>
+    <Reference Include="Xamarin.Android.Support.v4">
+      <HintPath>..\ext\monodroid\Xamarin.Android.Support.v4.dll</HintPath>
+    </Reference>
+    <Reference Include="Xamarin.Android.Support.v7.AppCompat">
+      <HintPath>..\ext\monodroid\Xamarin.Android.Support.v7.AppCompat.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Android.Support.v7\Properties\AssemblyInfo.cs" />
+    <Compile Include="Android.Support.v7\ReactiveActionBarActivity.cs" />
+    <Compile Include="Android.Support.v7\ReactiveFragment.cs" />
     <Compile Include="Android\ActivityRoutedViewHost.cs" />
     <Compile Include="Android\AndroidCommandBinders.cs" />
     <Compile Include="Android\AndroidLogger.cs" />
@@ -83,7 +86,6 @@
     <Compile Include="Android\ControlFetcherMixin.cs" />
     <Compile Include="Android\LinkerOverrides.cs" />
     <Compile Include="Android\ObjectExtension.cs" />
-    <Compile Include="Android\Properties\AssemblyInfo.cs" />
     <Compile Include="Android\ReactiveListAdapter.cs" />
     <Compile Include="Android\ViewCommandExtensions.cs" />
     <Compile Include="Platform\ComponentModelTypeConverter.cs" />
@@ -91,7 +93,6 @@
     <Compile Include="Platform\Registrations.cs" />
     <Compile Include="Android\PlatformOperations.cs" />
     <Compile Include="Android\ReactiveActivity.cs" />
-    <Compile Include="Android\ReactiveFragment.cs" />
     <Compile Include="Android\AndroidDefaultPropertyBinding.cs" />
     <Compile Include="Android\AndroidObservableForWidgets.cs" />
     <Compile Include="Android\LayoutViewHost.cs" />
@@ -116,7 +117,6 @@
     <Compile Include="ObservedChangedMixin.cs" />
     <Compile Include="OrderedComparer.cs" />
     <Compile Include="POCOObservableForProperty.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PropertyBinding.cs" />
     <Compile Include="ReactiveList.cs" />
     <Compile Include="ReactiveCollectionMixins.cs" />
@@ -144,7 +144,10 @@
     <Compile Include="IReactiveObject.cs" />
     <Compile Include="WeakEventManager.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Android\Properties\" />
+    <Folder Include="Properties\" />
+  </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

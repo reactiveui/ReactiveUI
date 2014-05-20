@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using System.Threading;
 using Android.Views;
 using Android.Widget;
@@ -26,7 +27,9 @@ namespace ReactiveUI.Android
             this.viewCreator = viewCreator;
             this.viewInitializer = viewInitializer;
 
-            _inner = this.list.Changed.Subscribe(_ => NotifyDataSetChanged());
+            _inner = this.list.Changed
+                .ObserveOn(RxApp.MainThreadScheduler)
+                .Subscribe(_ => NotifyDataSetChanged());
         }
 
         public override TViewModel this[int index] {

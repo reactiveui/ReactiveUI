@@ -11,7 +11,7 @@ using System.Reactive.Concurrency;
 #if COCOA
 using ReactiveUI.Cocoa;
 #endif
-
+using ReactiveUI.Android.Android;
 #if UIKIT
 using MonoTouch.UIKit;
 using NSApplication = MonoTouch.UIKit.UIApplication;

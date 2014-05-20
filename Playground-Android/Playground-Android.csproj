@@ -93,7 +93,7 @@
       <Project>{a92e477b-bb94-43c1-984e-e177ef9fedb1}</Project>
       <Name>ReactiveUI.Mobile_Android</Name>
     </ProjectReference>
-    <ProjectReference Include="..\ReactiveUI.Platforms\ReactiveUI.Android.csproj">
+    <ProjectReference Include="..\ReactiveUI\ReactiveUI_Android.csproj">
       <Project>{f5a6e11b-b074-4a0b-b937-267d840e31df}</Project>
       <Name>ReactiveUI.Android</Name>
     </ProjectReference>
