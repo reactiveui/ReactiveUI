@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics.Contracts;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
@@ -31,17 +32,18 @@ namespace ReactiveUI.Xaml
             return 4;
         }
 
-        public IObservable<IObservedChange<object, object>> GetNotificationForProperty(object sender, string propertyName, bool beforeChanged = false)
+        public IObservable<IObservedChange<object, object>> GetNotificationForProperty(object sender, System.Linq.Expressions.Expression expression, bool beforeChanged = false)
         {
             Contract.Requires(sender != null && sender is DependencyObject);
             var type = sender.GetType();
+            var propertyName = expression.GetMemberInfo().Name;
 
             if (beforeChanged == true) {
                 this.Log().Warn("Tried to bind DO {0}.{1}, but DPs can't do beforeChanged. Binding as POCO object",
                     type.FullName, propertyName);
 
                 var ret = new POCOObservableForProperty();
-                return ret.GetNotificationForProperty(sender, propertyName, beforeChanged);
+                return ret.GetNotificationForProperty(sender, expression, beforeChanged);
             }
 
             var dpFetcher = getDependencyPropertyFetcher(type, propertyName);
@@ -50,7 +52,7 @@ namespace ReactiveUI.Xaml
                     type.FullName, propertyName);
 
                 var ret = new POCOObservableForProperty();
-                return ret.GetNotificationForProperty(sender, propertyName, beforeChanged);
+                return ret.GetNotificationForProperty(sender, expression, beforeChanged);
             }
 
             var dpAndSubj = createAttachedProperty(type, propertyName);

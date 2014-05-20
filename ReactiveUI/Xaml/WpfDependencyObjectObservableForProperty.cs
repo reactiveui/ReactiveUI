@@ -19,10 +19,11 @@ namespace ReactiveUI.Xaml
             return getDependencyProperty(type, propertyName) != null ? 4 : 0;
         }
 
-        public IObservable<IObservedChange<object, object>> GetNotificationForProperty(object sender, string propertyName, bool beforeChanged = false)
+        public IObservable<IObservedChange<object, object>> GetNotificationForProperty(object sender, System.Linq.Expressions.Expression expression, bool beforeChanged = false)
         {
             var type = sender.GetType();
-            var dpd = DependencyPropertyDescriptor.FromProperty(getDependencyProperty(type, propertyName), sender.GetType());
+            var propertyName = expression.GetMemberInfo().Name;
+            var dpd = DependencyPropertyDescriptor.FromProperty(getDependencyProperty(type, propertyName), type);
 
             return Observable.Create<IObservedChange<object, object>>(subj => {
                 var handler = new EventHandler((o, e) => {
