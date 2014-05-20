@@ -561,8 +561,8 @@ namespace ReactiveUI
             this.Log().Info("Item hash: 0x{0:x}", toTrack.GetHashCode());
             var ro = toTrack as IReactiveObject;
             if (ro != null) {
-                changing = ro.getChangingObservable().Cast<IReactivePropertyChangedEventArgs<T>>();
-                changed = ro.getChangedObservable().Cast<IReactivePropertyChangedEventArgs<T>>();
+                changing = ro.getChangingObservable().Select(i => new ReactivePropertyChangingEventArgs<T>(toTrack, i.PropertyName));
+                changed = ro.getChangedObservable().Select(i => new ReactivePropertyChangedEventArgs<T>(toTrack, i.PropertyName));
                 goto isSetup;
             }
 
