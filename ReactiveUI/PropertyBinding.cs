@@ -662,7 +662,7 @@ namespace ReactiveUI
                 signalInitialUpdate.Select(_ => true),
                 signalViewUpdate != null ? 
                     signalViewUpdate.Select(_ => false) : 
-                    view.WhenAnyDynamic(viewPropChain, x => (TVProp) x.Value).Select(_ => false));
+                    view.WhenAny(viewPropChain, x => (TVProp) x.Value).Select(_ => false));
 
             var vmString = String.Format("{0}.{1}", typeof (TViewModel).Name, String.Join(".", vmPropChain));
             var vString = String.Format("{0}.{1}", typeof (TView).Name, String.Join(".", viewPropChain));
@@ -955,7 +955,7 @@ namespace ReactiveUI
             }
 
             var bindInfo = Observable.CombineLatest(
-                This, target.WhenAnyDynamic(names.SkipLast(1).ToArray(), x => x.Value),
+                This, target.WhenAny(names.SkipLast(1).ToArray(), x => x.Value),
                 (val, host) => new { val, host });
 
             return bindInfo
