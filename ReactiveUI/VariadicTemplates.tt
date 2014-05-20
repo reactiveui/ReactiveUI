@@ -88,34 +88,6 @@ namespace ReactiveUI
             );
             <# } #>
         }
-
-        /// <summary>
-        /// WhenAny allows you to observe whenever one or more properties on an
-        /// object have changed, providing an initial value when the Observable
-        /// is set up, unlike ObservableForProperty(). Use this method in
-        /// constructors to set up bindings between properties that also need an
-        /// initial setup.
-        /// </summary>
-        public static IObservable<TRet> WhenAnyDynamic<TSender, TRet>(this TSender This, 
-            <# for(int i=1; i <= length; i++) { #>
-                string[] property<#=i#>, 
-            <# } #>
-                Func<<#= dynamicSelectorTypeParams #>, TRet> selector)
-        {
-            <# if (length == 1){ #>
-                return ReactiveNotifyPropertyChangedMixin
-                    .SubscribeToExpressionChain<TSender,object>(This, property<#=1#>, false, false).Select(selector); 
-            <# }else{ #>
-            return Observable.CombineLatest(
-                <# for(int i=1; i <= length; i++) { #>
-                    ReactiveNotifyPropertyChangedMixin
-                        .SubscribeToExpressionChain<TSender,object>(This, property<#=i#>, false, false), 
-                <# } #>
-                selector
-            );
-            <# } #>
-        }
-
     <# } #>
     }
 
