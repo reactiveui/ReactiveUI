@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Reactive;
 using Splat;
+using System.Linq.Expressions;
 
 namespace ReactiveUI
 {
@@ -131,8 +132,9 @@ namespace ReactiveUI
         /// object and a property name.
         /// </summary>
         /// <param name="sender">The object to observe.</param>
-        /// <param name="propertyName">The property on the object to observe. 
-        /// This property will not be a dotted property, only a simple name.
+        /// <param name="expression">The expression on the object to observe. 
+        /// This will be either a MemberExpression or an IndexExpression
+        /// dependending on the property.
         /// </param>
         /// <param name="beforeChanged">If true, signal just before the 
         /// property value actually changes. If false, signal after the 
@@ -140,7 +142,7 @@ namespace ReactiveUI
         /// <returns>An IObservable which is signalled whenever the specified
         /// property on the object changes. If this cannot be done for a 
         /// specified value of beforeChanged, return Observable.Never</returns>
-        IObservable<IObservedChange<object, object>> GetNotificationForProperty(object sender, string propertyName, bool beforeChanged = false);
+        IObservable<IObservedChange<object, object>> GetNotificationForProperty(object sender, Expression expression, bool beforeChanged = false);
     }
 
     /// <summary>
