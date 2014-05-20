@@ -20,11 +20,10 @@ namespace ReactiveUI.Tests.Winforms
             Assert.True(fixture.GetAffinityForObject(input.GetType(), false) > 0);
             bool commandExecuted = false;
             object ea = null;
-            cmd.Subscribe(o =>
-                {
-                    ea = o;
-                    commandExecuted = true;
-                });
+            cmd.Subscribe(o => {
+                ea = o;
+                commandExecuted = true;
+            });
 
             var disp = fixture.BindCommandToObject(cmd, input, Observable.Return((object)5));
 
@@ -47,8 +46,7 @@ namespace ReactiveUI.Tests.Winforms
             Assert.True(fixture.GetAffinityForObject(input.GetType(), false) > 0);
             bool commandExecuted = false;
             object ea = null;
-            cmd.Subscribe(o =>
-            {
+            cmd.Subscribe(o => {
                 ea = o;
                 commandExecuted = true;
             });
@@ -85,24 +83,24 @@ namespace ReactiveUI.Tests.Winforms
         }
     }
 
-     public class CustomClickableControl : Control
+    public class CustomClickableControl : Control
+    {
+        public void PerformClick()
         {
-            public void PerformClick()
-            {
-                this.InvokeOnClick(this, EventArgs.Empty);
-            }
-
-            public void RaiseMouseClickEvent(System.Windows.Forms.MouseEventArgs args)
-            {
-                this.OnMouseClick(args);
-            }
-
-            public void RaiseMouseUpEvent(System.Windows.Forms.MouseEventArgs args)
-            {
-                this.OnMouseUp(args);
-            }
-
+            this.InvokeOnClick(this, EventArgs.Empty);
         }
+
+        public void RaiseMouseClickEvent(System.Windows.Forms.MouseEventArgs args)
+        {
+            this.OnMouseClick(args);
+        }
+
+        public void RaiseMouseUpEvent(System.Windows.Forms.MouseEventArgs args)
+        {
+            this.OnMouseUp(args);
+        }
+
+    }
 
     public class CommandBindingImplementationTests
     {
@@ -174,9 +172,6 @@ namespace ReactiveUI.Tests.Winforms
             Assert.Equal(1, invokeCount);
         }
     }
-
-
-
 
     public class FakeViewModel : ReactiveObject
     {
