@@ -56,12 +56,10 @@ namespace ReactiveUI
             return sb.ToString();
         }
 
-        public static Func<object, object[], object> GetValueFetcherForProperty(Expression expression)
+        public static Func<object, object[], object> GetValueFetcherForProperty(MemberInfo member)
         {
-            Contract.Requires(expression != null);
-
-            MemberInfo member = expression.GetMemberInfo();
-
+            Contract.Requires(member != null);
+            
             FieldInfo field = member as FieldInfo;
             if (field != null)
             {
@@ -76,23 +74,20 @@ namespace ReactiveUI
             return null;
         }
 
-        public static Func<object, object[], object> GetValueFetcherOrThrow(Expression expression)
+        public static Func<object, object[], object> GetValueFetcherOrThrow(MemberInfo member)
         {
-            var ret = GetValueFetcherForProperty(expression);
+            var ret = GetValueFetcherForProperty(member);
 
             if (ret == null)
             {
-                MemberInfo member = expression.GetMemberInfo();
                 throw new ArgumentException(String.Format("Type '{0}' must have a property '{1}'", member.DeclaringType, member.Name));
             }
             return ret;
         }
 
-        public static Action<object, object, object[]> GetValueSetterForProperty(Expression expression)
+        public static Action<object, object, object[]> GetValueSetterForProperty(MemberInfo member)
         {
-            Contract.Requires(expression != null);
-
-            MemberInfo member = expression.GetMemberInfo();
+            Contract.Requires(member != null);
 
             FieldInfo field = member as FieldInfo;
             if(field != null)
@@ -108,12 +103,11 @@ namespace ReactiveUI
             return null;
         }
 
-        public static Action<object, object, object[]> GetValueSetterOrThrow(Expression expression)
+        public static Action<object, object, object[]> GetValueSetterOrThrow(MemberInfo member)
         {
-            var ret = GetValueSetterForProperty(expression);
+            var ret = GetValueSetterForProperty(member);
 
             if (ret == null) {
-                MemberInfo member = expression.GetMemberInfo();
                 throw new ArgumentException(String.Format("Type '{0}' must have a property '{1}'", member.DeclaringType, member.Name));
             }
             return ret;
@@ -127,7 +121,7 @@ namespace ReactiveUI
                     return false;
                 }
 
-                current = GetValueFetcherOrThrow(expression)(current, null);
+                current = GetValueFetcherOrThrow(expression.GetMemberInfo())(current, null);
             }
 
             if (current == null) {
@@ -136,7 +130,7 @@ namespace ReactiveUI
             }
 
             Expression lastExpression = expressionChain.Last();
-            changeValue = (TValue) GetValueFetcherOrThrow(lastExpression)(current, null);
+            changeValue = (TValue) GetValueFetcherOrThrow(lastExpression.GetMemberInfo())(current, null);
             return true;
         }
 
@@ -152,7 +146,7 @@ namespace ReactiveUI
                 }
 
                 var sender = current;
-                current = GetValueFetcherOrThrow(expression)(current, null);
+                current = GetValueFetcherOrThrow(expression.GetMemberInfo())(current, null);
                 var box = new ObservedChange<object, object>(sender, expression, current);
 
                 changeValues[currentIndex] = box;
@@ -165,7 +159,7 @@ namespace ReactiveUI
             }
 
             Expression lastExpression = expressionChain.Last();
-            changeValues[currentIndex] = new ObservedChange<object, object>(current, lastExpression, GetValueFetcherOrThrow(lastExpression)(current, null));
+            changeValues[currentIndex] = new ObservedChange<object, object>(current, lastExpression, GetValueFetcherOrThrow(lastExpression.GetMemberInfo())(current, null));
 
             return true;
         }
@@ -174,8 +168,8 @@ namespace ReactiveUI
         {
             foreach (var expression in expressionChain.SkipLast(1)) {
                 var getter = shouldThrow ?
-                    GetValueFetcherOrThrow(expression) :
-                    GetValueFetcherForProperty(expression);
+                    GetValueFetcherOrThrow(expression.GetMemberInfo()) :
+                    GetValueFetcherForProperty(expression.GetMemberInfo());
 
                 target = getter(target, null);
             }
@@ -184,8 +178,8 @@ namespace ReactiveUI
 
             Expression lastExpression = expressionChain.Last();
             var setter = shouldThrow ?
-                GetValueSetterOrThrow(lastExpression) :
-                GetValueSetterForProperty(lastExpression);
+                GetValueSetterOrThrow(lastExpression.GetMemberInfo()) :
+                GetValueSetterForProperty(lastExpression.GetMemberInfo());
 
             if (setter == null) return false;
             setter(target, value, null);
@@ -245,7 +239,7 @@ namespace ReactiveUI
         {
             var controlExpression = getViewExpression(view, vmExpression);
 
-            var control = GetValueFetcherForProperty(controlExpression)(view, null);
+            var control = GetValueFetcherForProperty(controlExpression.GetMemberInfo())(view, null);
             if (control == null)
             {
                 throw new Exception(String.Format("Tried to bind to control but it was null: {0}.{1}", view.GetType().FullName,

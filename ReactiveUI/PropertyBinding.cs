@@ -936,7 +936,7 @@ namespace ReactiveUI
             Expression viewExpression,
             Func<TValue> fallbackValue = null)
         {
-            var setter = Reflection.GetValueSetterOrThrow(viewExpression);
+            var setter = Reflection.GetValueSetterOrThrow(viewExpression.GetMemberInfo());
             if (viewExpression.GetParent().NodeType == ExpressionType.Parameter) { 
                 return This.Subscribe(
                     x => setter(target, x, null),
