@@ -809,7 +809,7 @@ namespace ReactiveUI
                 return converter.TryConvert(fallbackValue(), typeof(TVProp), conversionHint, out tmp) ? (TVProp)tmp : default(TVProp);
             };
 
-            IDisposable disp = bindToDirect(source, view, viewProperty, fallbackWrapper);
+            IDisposable disp = bindToDirect(source, view, viewExpression, fallbackWrapper);
 
             return new ReactiveBinding<TView, TViewModel, TVProp>(view, viewModel, viewExpression, vmExpression, source, BindingDirection.OneWay, disp);
         }
