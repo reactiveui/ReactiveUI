@@ -12,8 +12,7 @@ namespace ReactiveUI.Android
         public AndroidCommandBinders()
         {
             Type view = typeof(View);
-            Expression enabledExporession = Expression.MakeMemberAccess(Expression.Parameter(view), view.GetRuntimeProperty("Enabled"));
-            Register(view, 9, (cmd, t, cp)=> ForEvent(cmd, t, cp, "Click", enabledExporession));
+            Register(view, 9, (cmd, t, cp)=> ForEvent(cmd, t, cp, "Click", view.GetRuntimeProperty("Enabled")));
         }
     }
 }

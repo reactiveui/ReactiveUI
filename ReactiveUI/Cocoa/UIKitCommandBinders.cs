@@ -1,4 +1,5 @@
 using System;
+using System.Reflection;
 using ReactiveUI;
 using System.Collections.Generic;
 using MonoTouch.UIKit;
@@ -16,9 +17,9 @@ namespace ReactiveUI.Cocoa
 
         public UIKitCommandBinders ()
         {
-            Register(typeof(UIControl), 9, (cmd, t, cp)=> ForTargetAction(cmd, t, cp, "Enabled"));
-            Register(typeof(UIRefreshControl), 10, (cmd, t, cp)=> ForEvent(cmd, t, cp, "ValueChanged", "Enabled"));
-            Register(typeof(UIBarButtonItem), 10, (cmd, t, cp)=> ForEvent(cmd, t, cp, "Clicked", "Enabled"));
+            Register(typeof(UIControl), 9, (cmd, t, cp)=> ForTargetAction(cmd, t, cp, typeof(UIControl).GetRuntimeProperty("Enabled")));
+            Register(typeof(UIRefreshControl), 10, (cmd, t, cp)=> ForEvent(cmd, t, cp, "ValueChanged", typeof(UIRefreshControl).GetRuntimeProperty("Enabled")));
+            Register(typeof(UIBarButtonItem), 10, (cmd, t, cp)=> ForEvent(cmd, t, cp, "Clicked", typeof(UIBarButtonItem).GetRuntimeProperty("Enabled")));
         }
     }
 }
