@@ -138,7 +138,7 @@ namespace ReactiveUI.Tests
                 Assert.Equal(3, changes.Count);
 
                 Assert.True(changes.All(x => x.Sender == fixture));
-                Assert.True(changes.All(x => x.PropertyName == "IsOnlyOneWord"));
+                Assert.True(changes.All(x => x.GetPropertyName() == "IsOnlyOneWord"));
                 changes.Select(x => x.Value).AssertAreEqual(new[] {"Foo", "Bar", "Baz"});
             });
         }
@@ -167,7 +167,7 @@ namespace ReactiveUI.Tests
                 Assert.Equal(3, changes.Count);
 
                 Assert.True(changes.All(x => x.Sender == fixture));
-                Assert.True(changes.All(x => x.PropertyName == "Child.IsOnlyOneWord"));
+                Assert.True(changes.All(x => x.GetPropertyName() == "Child.IsOnlyOneWord"));
                 changes.Select(x => x.Value).AssertAreEqual(new[] {"Foo", "Bar", "Baz"});
             });
         }
@@ -207,7 +207,7 @@ namespace ReactiveUI.Tests
                 Assert.Equal(4, changes.Count);
 
                 Assert.True(changes.All(x => x.Sender == fixture));
-                Assert.True(changes.All(x => x.PropertyName == "Child.IsOnlyOneWord"));
+                Assert.True(changes.All(x => x.GetPropertyName() == "Child.IsOnlyOneWord"));
                 changes.Select(x => x.Value).AssertAreEqual(new[] {"Foo", "Bar", null, "Baz"});
             });           
         }
@@ -240,7 +240,7 @@ namespace ReactiveUI.Tests
                 Assert.Equal(3, changes.Count);
 
                 Assert.True(changes.All(x => x.Sender == fixture));
-                Assert.True(changes.All(x => x.PropertyName == "Child.IsOnlyOneWord"));
+                Assert.True(changes.All(x => x.GetPropertyName() == "Child.IsOnlyOneWord"));
                 changes.Select(x => x.Value).AssertAreEqual(new[] {"Foo", "Bar", null});
             });
         }
@@ -413,7 +413,7 @@ namespace ReactiveUI.Tests
            
             Assert.Equal(1, output.Count);
             Assert.Equal(fixture, output[0].Sender);
-            Assert.Equal("PocoProperty", output[0].PropertyName);
+            Assert.Equal("PocoProperty", output[0].GetPropertyName());
             Assert.Equal("Bamf", output[0].Value);
 
             Assert.Equal(1, output2.Count);
@@ -421,7 +421,7 @@ namespace ReactiveUI.Tests
 
             Assert.Equal(1, output3.Count);
             Assert.Equal(fixture, output3[0].Sender);
-            Assert.Equal("NullableInt", output3[0].PropertyName);
+            Assert.Equal("NullableInt", output3[0].GetPropertyName());
             Assert.Equal(null, output3[0].Value);
 
             Assert.Equal(1, output4.Count);
@@ -525,7 +525,7 @@ namespace ReactiveUI.Tests
                 Assert.Equal(3, changes.Count);
 
                 Assert.True(changes.All(x => x.Sender == fixture));
-                Assert.True(changes.All(x => x.PropertyName == "IsOnlyOneWord"));
+                Assert.True(changes.All(x => x.GetPropertyName() == "IsOnlyOneWord"));
                 changes.Select(x => x.Value).AssertAreEqual(new[] { "Foo", "Bar", "Baz" });
             });
         }
@@ -545,7 +545,7 @@ namespace ReactiveUI.Tests
                 Assert.Equal(2, changes.Count);
 
                 Assert.True(changes.All(x => x.Sender == fixture));
-                Assert.True(changes.All(x => x.PropertyName == "IsOnlyOneWord"));
+                Assert.True(changes.All(x => x.GetPropertyName() == "IsOnlyOneWord"));
                 changes.Select(x => x.Value).AssertAreEqual(new[] { "Pre", "Foo" });
             });
         }
@@ -569,7 +569,7 @@ namespace ReactiveUI.Tests
                 Assert.Equal(2, changes.Count);
 
                 Assert.True(changes.All(x => x.Sender == fixture));
-                Assert.True(changes.All(x => x.PropertyName == "IsOnlyOneWord"));
+                Assert.True(changes.All(x => x.GetPropertyName() == "IsOnlyOneWord"));
                 changes.Select(x => x.Value).AssertAreEqual(new[] { "Pre", "Foo" });
             });
         }
@@ -598,7 +598,7 @@ namespace ReactiveUI.Tests
                 Assert.Equal(3, changes.Count);
 
                 Assert.True(changes.All(x => x.Sender == fixture));
-                Assert.True(changes.All(x => x.PropertyName == "IsOnlyOneWord"));
+                Assert.True(changes.All(x => x.GetPropertyName() == "IsOnlyOneWord"));
                 changes.Select(x => x.Value).AssertAreEqual(new[] { "Foo", "Bar", "Foo" });
             });
         }
