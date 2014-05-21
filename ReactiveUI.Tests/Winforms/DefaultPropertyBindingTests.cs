@@ -23,7 +23,7 @@ namespace ReactiveUI.Tests.Winforms
             input.Text = "Foo";
             Assert.Equal(1, output.Count);
             Assert.Equal(input, output[0].Sender);
-            Assert.Equal("Text", output[0].PropertyName);
+            Assert.Equal("Text", output[0].GetPropertyName());
             Assert.Equal("Foo", output[0].Value);
 
             output.Dispose();
@@ -46,7 +46,7 @@ namespace ReactiveUI.Tests.Winforms
             input.Value = "Foo";
             Assert.Equal(1, output.Count);
             Assert.Equal(input, output[0].Sender);
-            Assert.Equal("Value", output[0].PropertyName);
+            Assert.Equal("Value", output[0].GetPropertyName());
             Assert.Equal("Foo", output[0].Value);
 
             output.Dispose();
