@@ -35,14 +35,12 @@ namespace ReactiveUI.Android
         protected ReactiveActivity() { }
 
         TViewModel _ViewModel;
-        public TViewModel ViewModel
-        {
+        public TViewModel ViewModel {
             get { return _ViewModel; }
             set { this.RaiseAndSetIfChanged(ref _ViewModel, value); }
         }
 
-        object IViewFor.ViewModel
-        {
+        object IViewFor.ViewModel {
             get { return _ViewModel; }
             set { _ViewModel = (TViewModel)value; }
         }
@@ -59,25 +57,21 @@ namespace ReactiveUI.Android
             RxApp.MainThreadScheduler = new WaitForDispatcherScheduler(() => new AndroidUIScheduler(this));
         }
 
-        public event PropertyChangingEventHandler PropertyChanging
-        {
+        public event PropertyChangingEventHandler PropertyChanging {
             add { PropertyChangingEventManager.AddHandler(this, value); }
             remove { PropertyChangingEventManager.RemoveHandler(this, value); }
         }
 
-        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args)
-        {
+        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args) {
             PropertyChangingEventManager.DeliverEvent(this, args);
         }
 
-        public event PropertyChangedEventHandler PropertyChanged
-        {
+        public event PropertyChangedEventHandler PropertyChanged {
             add { PropertyChangedEventManager.AddHandler(this, value); }
             remove { PropertyChangedEventManager.RemoveHandler(this, value); }
         }
 
-        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args)
-        {
+        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args) {
             PropertyChangedEventManager.DeliverEvent(this, args);
         }
 
@@ -85,16 +79,14 @@ namespace ReactiveUI.Android
         /// Represents an Observable that fires *before* a property is about to
         /// be changed.         
         /// </summary>
-        public IObservable<IReactivePropertyChangedEventArgs<ReactiveActivity>> Changing
-        {
+        public IObservable<IReactivePropertyChangedEventArgs<ReactiveActivity>> Changing {
             get { return this.getChangingObservable(); }
         }
 
         /// <summary>
         /// Represents an Observable that fires *after* a property has changed.
         /// </summary>
-        public IObservable<IReactivePropertyChangedEventArgs<ReactiveActivity>> Changed
-        {
+        public IObservable<IReactivePropertyChangedEventArgs<ReactiveActivity>> Changed {
             get { return this.getChangedObservable(); }
         }
 
@@ -105,8 +97,7 @@ namespace ReactiveUI.Android
         /// </summary>
         /// <returns>An object that, when disposed, reenables change
         /// notifications.</returns>
-        public IDisposable SuppressChangeNotifications()
-        {
+        public IDisposable SuppressChangeNotifications() {
             return this.suppressChangeNotifications();
         }
 
@@ -131,8 +122,7 @@ namespace ReactiveUI.Android
         }
 
         readonly Subject<Tuple<int, Result, Intent>> activityResult = new Subject<Tuple<int, Result, Intent>>();
-        public IObservable<Tuple<int, Result, Intent>> ActivityResult
-        {
+        public IObservable<Tuple<int, Result, Intent>> ActivityResult {
             get { return activityResult; }
         }
 
