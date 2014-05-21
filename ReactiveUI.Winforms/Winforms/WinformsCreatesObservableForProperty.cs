@@ -41,7 +41,7 @@ namespace ReactiveUI.Winforms
                 var handler = new EventHandler((o, e) => {
                     if (completed) return;
                     try {
-                        subj.OnNext(new ObservedChange<object, object>(sender, expression, getter(sender, null)));
+                        subj.OnNext(new ObservedChange<object, object>(sender, expression));
                     } catch (Exception ex) {
                         subj.OnError(ex);
                         completed = true;
