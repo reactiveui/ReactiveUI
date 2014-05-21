@@ -666,8 +666,8 @@ namespace ReactiveUI
 
             var changeWithValues = somethingChanged.Select(isVm => {
                 TVMProp vmValue; TVProp vValue;
-                if (!Reflection.TryGetValueForPropertyChain(out vmValue, view.ViewModel, vmExpression) ||
-                    !Reflection.TryGetValueForPropertyChain(out vValue, view, viewExpression)) {
+                if (!Reflection.TryGetValueForPropertyChain(out vmValue, view.ViewModel, vmExpression.GetExpressionChain()) ||
+                    !Reflection.TryGetValueForPropertyChain(out vValue, view, viewExpression.GetExpressionChain())) {
                     return null;
                 }
 
@@ -703,9 +703,9 @@ namespace ReactiveUI
 
             IDisposable disp = changes.Subscribe(isVmWithLatestValue => {
                 if (isVmWithLatestValue.Item2) {
-                    Reflection.TrySetValueToPropertyChain(view, viewExpression, isVmWithLatestValue.Item1, false);
+                    Reflection.TrySetValueToPropertyChain(view, viewExpression.GetExpressionChain(), isVmWithLatestValue.Item1, false);
                 } else {
-                    Reflection.TrySetValueToPropertyChain(view.ViewModel, vmExpression, isVmWithLatestValue.Item1, false);
+                    Reflection.TrySetValueToPropertyChain(view.ViewModel, vmExpression.GetExpressionChain(), isVmWithLatestValue.Item1, false);
                 }
             });
 
@@ -969,7 +969,7 @@ namespace ReactiveUI
             if (vmExpression != null) {
                 vmFetcher = () => {
                     IObservedChange<object, object>[] fetchedValues;
-                    Reflection.TryGetAllValuesForPropertyChain(out fetchedValues, viewModel, vmExpression);
+                    Reflection.TryGetAllValuesForPropertyChain(out fetchedValues, viewModel, vmExpression.GetExpressionChain());
                     return fetchedValues;
                 };
             } else {
@@ -982,7 +982,7 @@ namespace ReactiveUI
             
             var vFetcher = new Func<IObservedChange<object, object>[]>(() => {
                 IObservedChange<object, object>[] fetchedValues;
-                Reflection.TryGetAllValuesForPropertyChain(out fetchedValues, view, viewExpression);
+                Reflection.TryGetAllValuesForPropertyChain(out fetchedValues, view, viewExpression.GetExpressionChain());
                 return fetchedValues;
             });
 
