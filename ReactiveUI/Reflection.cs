@@ -274,16 +274,6 @@ namespace ReactiveUI
             return eventArgsType;
         }
 
-        internal static IObservable<TProp> ViewModelWhenAnyValue<TView, TViewModel, TProp>(TViewModel viewModel, TView view, Expression<Func<TViewModel, TProp>> property)
-            where TView : IViewFor
-            where TViewModel : class
-        {
-            return view.WhenAnyValue(x => x.ViewModel)
-                .Where(x => x != null)
-                .Select(x => ((TViewModel)x).WhenAnyValue(property))
-                .Switch();
-        }
-
         internal static IObservable<object> ViewModelWhenAnyValue<TView, TViewModel>(TViewModel viewModel, TView view, Expression expression)
             where TView : IViewFor
             where TViewModel : class
