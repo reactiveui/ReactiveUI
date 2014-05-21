@@ -936,13 +936,13 @@ namespace ReactiveUI
             Expression viewExpression,
             Func<TValue> fallbackValue = null)
         {
-            var setter = Reflection.GetValueSetterOrThrow(viewExpression.GetMemberInfo());
+            var setter = Reflection.GetValueSetterOrThrow(viewExpression);
             if (viewExpression.GetParent().NodeType == ExpressionType.Parameter) { 
                 return This.Subscribe(
-                    x => setter(target, x),
+                    x => setter(target, x, null),
                     ex => {
                         this.Log().ErrorException("Binding recieved an Exception!", ex);
-                        if (fallbackValue != null) setter(target, fallbackValue());
+                        if (fallbackValue != null) setter(target, fallbackValue(), null);
                     });
             }
 
@@ -953,10 +953,10 @@ namespace ReactiveUI
             return bindInfo
                 .Where(x => x.host != null)
                 .Subscribe(
-                    x => setter(x.host, x.val),
+                    x => setter(x.host, x.val, null),
                     ex => {
                         this.Log().ErrorException("Binding recieved an Exception!", ex);
-                        if (fallbackValue != null) setter(target, fallbackValue());
+                        if (fallbackValue != null) setter(target, fallbackValue(), null);
                     });
         }
 
