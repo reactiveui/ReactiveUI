@@ -3,7 +3,9 @@ using System.Reactive.Disposables;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Reflection;
 using System.Windows.Input;
+using System.Linq.Expressions;
 
 #if UIKIT
 using MonoTouch.UIKit;
@@ -85,7 +87,7 @@ namespace ReactiveUI.Android
         /// <param name="commandParameter">Command parameter.</param>
         /// <param name="eventName">Event name.</param>
         /// <param name="enablePropertyName">Enable property name.</param>
-        protected static IDisposable ForEvent(ICommand command, object target, IObservable<object> commandParameter, string eventName, string enablePropertyName)
+        protected static IDisposable ForEvent(ICommand command, object target, IObservable<object> commandParameter, string eventName, PropertyInfo enabledProperty)
         {
             commandParameter = commandParameter ?? Observable.Return(target);
 
@@ -97,18 +99,18 @@ namespace ReactiveUI.Android
                     command.Execute(latestParam);
             });
 
-            var enabledSetter = Reflection.GetValueSetterForProperty(target.GetType(), enablePropertyName);
+            var enabledSetter = Reflection.GetValueSetterForProperty(enabledProperty);
             if(enabledSetter == null) return actionDisp;
 
             // initial enabled state
-            enabledSetter(target, command.CanExecute(latestParam));
+            enabledSetter(target, command.CanExecute(latestParam), null);
 
             var compDisp = new CompositeDisposable(
                 actionDisp,
                 commandParameter.Subscribe(x => latestParam = x),
                 Observable.FromEventPattern<EventHandler, EventArgs>(x => command.CanExecuteChanged += x, x => command.CanExecuteChanged -= x)
                     .Select(_ => command.CanExecute(latestParam))
-                    .Subscribe(x => enabledSetter(target, x)));
+                    .Subscribe(x => enabledSetter(target, x, null)));
 
             return compDisp;
         }
@@ -117,7 +119,7 @@ namespace ReactiveUI.Android
         /// <summary>
         /// Creates a commands binding from event and a property
         /// </summary>
-        protected static IDisposable ForTargetAction(ICommand command, object target, IObservable<object> commandParameter, string enablePropertyName)
+        protected static IDisposable ForTargetAction(ICommand command, object target, IObservable<object> commandParameter, PropertyInfo enabledProperty)
         {
             commandParameter = commandParameter ?? Observable.Return(target);
 
@@ -135,18 +137,18 @@ namespace ReactiveUI.Android
                 actionDisp = Disposable.Create(() => ctl.RemoveTarget(eh, UIControlEvent.TouchUpInside));
             } 
 
-            var enabledSetter = Reflection.GetValueSetterForProperty(target.GetType(), enablePropertyName);
+            var enabledSetter = Reflection.GetValueSetterForProperty(enabledProperty);
             if (enabledSetter == null) return actionDisp;
 
             // Initial enabled state
-            enabledSetter(target, command.CanExecute(latestParam));
+            enabledSetter(target, command.CanExecute(latestParam), null);
 
             var compDisp = new CompositeDisposable(
                 actionDisp,
                 commandParameter.Subscribe(x => latestParam = x),
                 Observable.FromEventPattern<EventHandler, EventArgs>(x => command.CanExecuteChanged += x, x => command.CanExecuteChanged -= x)
                     .Select(_ => command.CanExecute(latestParam))
-                    .Subscribe(x => enabledSetter(target, x)));
+                    .Subscribe(x => enabledSetter(target, x, null)));
 
             return compDisp;
         }

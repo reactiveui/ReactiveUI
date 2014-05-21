@@ -76,7 +76,7 @@ namespace ReactiveUI.Cocoa
 
             return Observable.Create<IObservedChange<object, object>>(subj => {
                 var bobs = new BlockObserveValueDelegate((key,s,_) => {
-                    subj.OnNext(new ObservedChange<object, object>(s, propertyName));
+                    subj.OnNext(new ObservedChange<object, object>(s, expression));
                 });
                 var pin = GCHandle.Alloc(bobs);
 
