@@ -343,8 +343,8 @@ namespace ReactiveUI.Tests
                 { x => x.Child.Changed, new[] {typeof(TestFixture), typeof(IObservable<IReactivePropertyChangedEventArgs<ReactiveObject>>)}},
             };
 
-            var results = data.Keys.Select(x => new { input = x, output = Reflection.Rewrite(x).GetExpressionChain() }).ToArray();
-            var resultTypes = dataTypes.Keys.Select(x => new {input = x, output = Reflection.Rewrite(x).GetExpressionChain() }).ToArray();
+            var results = data.Keys.Select(x => new { input = x, output = Reflection.Rewrite(x.Body).GetExpressionChain() }).ToArray();
+            var resultTypes = dataTypes.Keys.Select(x => new {input = x, output = Reflection.Rewrite(x.Body).GetExpressionChain() }).ToArray();
 
             foreach(var x in results) {
                 data[x.input].AssertAreEqual(x.output.Select(y => y.GetMemberInfo().Name));
