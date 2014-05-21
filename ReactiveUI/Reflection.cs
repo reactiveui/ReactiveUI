@@ -45,53 +45,6 @@ namespace ReactiveUI
             return ret.ToArray();
         }
 
-        public static Type[] ExpressionToPropertyTypes<TObj, TRet>(Expression<Func<TObj, TRet>> property)
-        {
-            var current = expressionRewriter.Visit(property.Body);
-
-            while(current.NodeType != ExpressionType.Parameter) {
-                // This happens when a value type gets boxed
-                if (current.NodeType == ExpressionType.Convert || current.NodeType == ExpressionType.ConvertChecked) {
-                    var ue = (UnaryExpression) current;
-                    current = ue.Operand;
-                    continue;
-                }
-
-                if (current.NodeType != ExpressionType.MemberAccess) {
-                    throw new ArgumentException("Property expression must be of the form 'x => x.SomeProperty.SomeOtherProperty'");
-                }
-
-                var me = (MemberExpression)current;
-                current = me.Expression;
-            }
-
-            var startingType = ((ParameterExpression) current).Type;
-            var propNames = ExpressionToPropertyNames(property);
-
-            return GetTypesForPropChain(startingType, propNames);
-        }
-
-        public static Type[] GetTypesForPropChain(Type startingType, string[] propNames)
-        {
-            return propNames.Aggregate(new List<Type>(new[] {startingType}), (acc, x) => {
-                var type = acc.Last();
-
-                var pi = type.GetRuntimeProperties().FirstOrDefault(y => y.Name == x);
-                if (pi != null) {
-                    acc.Add(pi.PropertyType);
-                    return acc;
-                }
-
-                var fi = type.GetRuntimeFields().FirstOrDefault(y => y.Name == x);
-                if (fi != null) {
-                    acc.Add(fi.FieldType);
-                    return acc;
-                }
-
-                throw new ArgumentException("Property expression must be of the form 'x => x.SomeProperty.SomeOtherProperty'");
-            }).Skip(1).ToArray();
-        }
-
         public static Func<object, object[], object> GetValueFetcherForProperty(Expression expression)
         {
             Contract.Requires(expression != null);
