@@ -658,7 +658,7 @@ namespace ReactiveUI
             }
 
             var somethingChanged = Observable.Merge(
-                Reflection.ViewModelWhenAnyValue(viewModel, view, vmProperty).Select(_ => true),
+                Reflection.ViewModelWhenAnyValue(viewModel, view, vmExpression).Select(_ => true),
                 signalInitialUpdate.Select(_ => true),
                 signalViewUpdate != null ? 
                     signalViewUpdate.Select(_ => false) : 
@@ -797,7 +797,7 @@ namespace ReactiveUI
             var ret = evalBindingHooks(viewModel, view, vmExpression, viewExpression, BindingDirection.OneWay);
             if (!ret) return null;
 
-            var source = Reflection.ViewModelWhenAnyValue(viewModel, view, vmProperty)
+            var source = Reflection.ViewModelWhenAnyValue(viewModel, view, vmExpression)
                     .SelectMany(x => {
                         object tmp;
                         if (!converter.TryConvert(x, viewType, conversionHint, out tmp)) return Observable.Empty<TVProp>();
