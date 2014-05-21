@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Linq.Expressions;
 using System.Reactive;
 using System.Windows.Input;
 using Splat;
@@ -22,9 +23,9 @@ namespace ReactiveUI
         TSender Sender { get; }
 
         /// <summary>
-        /// The name of the property that has changed on Sender.
+        /// The expression of the member that has changed on Sender.
         /// </summary>
-        string PropertyName { get; }
+        Expression Expression { get; }
 
         /// <summary>
         /// The value of the property that has changed. IMPORTANT NOTE: This
@@ -45,18 +46,18 @@ namespace ReactiveUI
         /// Initializes a new instance of the <see cref="ObservedChange{TSender, TValue}"/> class.
         /// </summary>
         /// <param name="sender">The sender.</param>
-        /// <param name="propertyName">Name of the property.</param>
+        /// <param name="expression">Expression describing the member.</param>
         /// <param name="value">The value.</param>
-        public ObservedChange(TSender sender, string propertyName, TValue value = default(TValue))
+        public ObservedChange(TSender sender, Expression expression, TValue value = default(TValue))
         {
             this.Sender = sender;
-            this.PropertyName = propertyName;
+            this.Expression = expression;
             this.Value = value;
         }
 
         public TSender Sender { get; private set; }
 
-        public string PropertyName { get; private set; }
+        public Expression Expression { get; private set; }
 
         public TValue Value { get; private set; }
     }

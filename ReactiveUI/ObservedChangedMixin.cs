@@ -14,10 +14,21 @@ namespace ReactiveUI
         /// it has changed.
         /// </summary>
         /// <returns>The current value of the property</returns>
+        public static string GetPropertyName<TSender, TValue>(this IObservedChange<TSender, TValue> This)
+        {
+            return Reflection.ExpressionToPropertyNames(This.Expression);
+        }
+
+        /// <summary>
+        /// Returns the current value of a property given a notification that
+        /// it has changed.
+        /// </summary>
+        /// <returns>The current value of the property</returns>
         public static TValue GetValue<TSender, TValue>(this IObservedChange<TSender, TValue> This)
         {
             TValue ret;
-            if (!This.TryGetValue(out ret)) {
+            if (!This.TryGetValue(out ret))
+            {
                 throw new Exception(String.Format("One of the properties in the expression '{0}' was null", This.PropertyName));
             }
             return ret;
