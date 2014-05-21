@@ -161,7 +161,8 @@ namespace ReactiveUI
             else
             {
                 object value;
-                Reflection.TryGetValueForPropertyChain(out value, sourceChange.Value, propertyName.Split('.'));
+                // expression is always a simple expression
+                Reflection.TryGetValueForPropertyChain(out value, sourceChange.Value, new[] { expression });
                 return new ObservedChange<object, object>(sourceChange.Value, propertyName, value);
             }
         }
