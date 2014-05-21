@@ -142,7 +142,7 @@ namespace ReactiveUI
 
                 var sender = current;
                 current = GetValueFetcherOrThrow(expression)(current, null);
-                var box = new ObservedChange<object, object>(sender, expression.GetMemberInfo().Name, current);
+                var box = new ObservedChange<object, object>(sender, expression, current);
 
                 changeValues[currentIndex] = box;
                 currentIndex++;
@@ -154,7 +154,7 @@ namespace ReactiveUI
             }
 
             Expression lastExpression = expressionChain.Last();
-            changeValues[currentIndex] = new ObservedChange<object, object>(current, lastExpression.GetMemberInfo().Name, GetValueFetcherOrThrow(lastExpression)(current, null));
+            changeValues[currentIndex] = new ObservedChange<object, object>(current, lastExpression, GetValueFetcherOrThrow(lastExpression)(current, null));
 
             return true;
         }
