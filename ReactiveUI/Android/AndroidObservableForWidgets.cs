@@ -18,7 +18,7 @@ namespace ReactiveUI.Android
     /// </summary>
     public class AndroidObservableForWidgets : ICreatesObservableForProperty
     {
-        static readonly IDictionary<Tuple<Type, string>, Func<object, IObservable<IObservedChange<object, object>>>> dispatchTable;
+        static readonly IDictionary<Tuple<Type, string>, Func<object, Expression, IObservable<IObservedChange<object, object>>>> dispatchTable;
         static AndroidObservableForWidgets()
         {
             dispatchTable = new[] { 
@@ -45,14 +45,14 @@ namespace ReactiveUI.Android
             var type = sender.GetType();
             var tableItem = dispatchTable.Keys.First(x => x.Item1.IsAssignableFrom(type) && x.Item2 == expression.GetMemberInfo().Name);
 
-            return dispatchTable[tableItem](sender);
+            return dispatchTable[tableItem](sender, expression);
         }
 
         class DispatchTuple
         {
             public Type Type { get; set; }
             public string Property { get; set; }
-            public Func<object, IObservable<IObservedChange<object, object>>> Func { get; set; } 
+            public Func<object, Expression, IObservable<IObservedChange<object, object>>> Func { get; set; } 
         }
 
         static DispatchTuple createFromAdapterView()
@@ -66,17 +66,16 @@ namespace ReactiveUI.Android
             {
                 Type = typeof(AdapterView),
                 Property = propName,
-                Func = x =>
+                Func = (x, ex) =>
                 {
                     var v = (AdapterView)x;
-                    var getter = Reflection.GetValueFetcherOrThrow(typeof(AdapterView), propName);
 
                     return 
                         Observable.Merge(
                             Observable.FromEventPattern<AdapterView.ItemSelectedEventArgs>(h => v.ItemSelected += h, h => v.ItemSelected -=h)
-                                .Select(_ => new ObservedChange<object, object>(v, propName, getter(v))),
+                                .Select(_ => new ObservedChange<object, object>(v, ex)),
                             Observable.FromEventPattern<AdapterView.NothingSelectedEventArgs>(h => v.NothingSelected += h, h => v.NothingSelected -= h)
-                                .Select(_ => new ObservedChange<object, object>(v, propName))
+                                .Select(_ => new ObservedChange<object, object>(v, ex))
                         );
                 }
             };
@@ -88,21 +87,16 @@ namespace ReactiveUI.Android
         {
             // ExpressionToPropertyNames is used here as it handles boxing expressions that might
             // occur due to our use of object
-            var propNames = Reflection.ExpressionToPropertyNames(property);
+            var propName = property.Body.GetMemberInfo().Name;
 
-            if (propNames.Length != 1)
-                throw new ArgumentException("property must be in the form 'x => x.SomeValue'", "property");
-
-            var propName = propNames[0];
             return new DispatchTuple {
                 Type = typeof(TView),
                 Property = propName,
-                Func = x => {
+                Func = (x, ex) => {
                     var v = (TView)x;
-                    var getter = Reflection.GetValueFetcherOrThrow(typeof(TView), propName);
 
                     return Observable.FromEventPattern<TEventArgs>(h => addHandler(v, h) , h => removeHandler(v, h))
-                        .Select(_ => new ObservedChange<object, object>(v, propName, getter(v))); 
+                        .Select(_ => new ObservedChange<object, object>(v, ex)); 
                 }
             };
         }
