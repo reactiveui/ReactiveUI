@@ -68,40 +68,6 @@ namespace ReactiveUI
         /// <summary>
         /// ObservableForProperty returns an Observable representing the
         /// property change notifications for a specific property on a
-        /// ReactiveObject. This method (unlike other Observables that return
-        /// IObservedChange) guarantees that the Value property of
-        /// the IObservedChange is set.
-        /// </summary>
-        /// <param name="expression">A simple expression.</param>
-        /// <param name="beforeChange">If True, the Observable will notify
-        /// immediately before a property is going to change.</param>
-        /// <returns>An Observable representing the property change
-        /// notifications for the given property.</returns>
-        public static IObservable<IObservedChange<TSender, TValue>> ObservableForProperty<TSender, TValue>(
-            this TSender This,
-            Expression expression,
-            bool beforeChange = false,
-            bool skipInitial = true)
-        {
-            expression = Reflection.Rewrite(expression);
-            if (expression.GetParent().NodeType != ExpressionType.Parameter) {
-                throw new ArgumentException("Property expression must be of the form 'x => x.SomeProperty'");
-            }
-
-            var values = notifyForProperty(This, expression, beforeChange);
-            var propertyName = expression.GetMemberInfo().Name;
-
-            if (!skipInitial) {
-                values = values.StartWith(new ObservedChange<object, object>(This, propertyName));
-            }
-
-            return values.Select(x => new ObservedChange<TSender, TValue>(This, propertyName, (TValue)x.GetValue()))
-                 .DistinctUntilChanged(x => x.Value);
-        }
-
-        /// <summary>
-        /// ObservableForProperty returns an Observable representing the
-        /// property change notifications for a specific property on a
         /// ReactiveObject, running the IObservedChange through a Selector
         /// function.
         /// </summary>
