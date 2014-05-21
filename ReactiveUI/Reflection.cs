@@ -5,6 +5,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reactive.Linq;
 using System.Reflection;
+using System.Text;
 using ReactiveUI;
 using Splat;
 
@@ -19,30 +20,40 @@ namespace ReactiveUI
             return expressionRewriter.Visit(expression);
         }
 
-        public static string[] ExpressionToPropertyNames<TObj, TRet>(Expression<Func<TObj, TRet>> property)
+        public static string ExpressionToPropertyNames(Expression expression)
         {
-            var ret = new List<string>();
+            Contract.Requires(expression != null);
 
-            var current = expressionRewriter.Visit(property.Body);
-            while(current.NodeType != ExpressionType.Parameter) {
+            StringBuilder sb = new StringBuilder();
 
-                // This happens when a value type gets boxed
-                if (current.NodeType == ExpressionType.Convert || current.NodeType == ExpressionType.ConvertChecked) {
-                    var ue = (UnaryExpression) current;
-                    current = ue.Operand;
-                    continue;
+            foreach (var exp in expression.GetExpressionChain())
+            {
+                if (exp.NodeType != ExpressionType.Parameter)
+                {
+                    // Indexer expression
+                    if (exp.NodeType == ExpressionType.Index)
+                    {
+                        var ie = (IndexExpression)exp;
+                        sb.Append(ie.Indexer.Name);
+                        sb.Append('[');
+                        foreach (var argument in ie.Arguments)
+                        {
+                            sb.Append(((ConstantExpression)argument).Value);
+                            sb.Append(',');
+                        }
+                        sb.Replace(',', ']', sb.Length - 1, 1);
+                    }
+                    else if (exp.NodeType == ExpressionType.MemberAccess)
+                    {
+                        var me = (MemberExpression)exp;
+                        sb.Append(me.Member.Name);
+                    }
                 }
-
-                if (current.NodeType != ExpressionType.MemberAccess) {
-                    throw new ArgumentException("Property expression must be of the form 'x => x.SomeProperty.SomeOtherProperty'");
-                }
-
-                var me = (MemberExpression)current;
-                ret.Insert(0, me.Member.Name);
-                current = me.Expression;
+                sb.Append('.');
             }
+            sb.Remove(sb.Length - 1, 1);
 
-            return ret.ToArray();
+            return sb.ToString();
         }
 
         public static Func<object, object[], object> GetValueFetcherForProperty(Expression expression)
