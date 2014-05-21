@@ -12,44 +12,7 @@ namespace ReactiveUI
 {
     public static class Reflection 
     {
-        static ExpressionRewriter expressionRewriter = new ExpressionRewriter();
-
-        static readonly MemoizingMRUCache<Tuple<Type, string>, Func<object, object>> propReaderCache = 
-            new MemoizingMRUCache<Tuple<Type, string>, Func<object, object>>((x,_) => {
-                var fi = x.Item1.GetRuntimeFields()
-                    .FirstOrDefault(y => !y.IsStatic && y.Name == x.Item2);
-                if (fi != null) {
-                    return (fi.GetValue);
-                }
-
-                var pi = x.Item1.GetRuntimeProperties()
-                    .FirstOrDefault(y => !y.IsStatic() && y.Name == x.Item2);
-
-                if (pi != null) {
-                    return (y => pi.GetValue(y, null));
-                }
-
-                return null;
-            }, RxApp.BigCacheLimit);
-
-        static readonly MemoizingMRUCache<Tuple<Type, string>, Action<object, object>> propWriterCache = 
-            new MemoizingMRUCache<Tuple<Type, string>, Action<object, object>>((x,_) => {
-                var fi = x.Item1.GetRuntimeFields()
-                    .FirstOrDefault(y => y.IsPublic && !y.IsStatic && y.Name == x.Item2);
-
-                if (fi != null) {
-                    return (fi.SetValue);
-                }
-
-                var pi =  x.Item1.GetRuntimeProperties()
-                    .FirstOrDefault(y => !y.IsStatic() && y.Name == x.Item2);
-
-                if (pi != null) {
-                    return ((y,v) => pi.SetValue(y, v, null));
-                }
-
-                return null;
-            }, RxApp.BigCacheLimit);
+        static ExpressionRewriter expressionRewriter = new ExpressionRewriter();        
 
         public static string SimpleExpressionToPropertyName<TObj, TRet>(Expression<Func<TObj, TRet>> property)
         {
@@ -147,50 +110,67 @@ namespace ReactiveUI
 
                 throw new ArgumentException("Property expression must be of the form 'x => x.SomeProperty.SomeOtherProperty'");
             }).Skip(1).ToArray();
-        }        
-
-        public static Func<TObj, object> GetValueFetcherForProperty<TObj>(string propName)
-        {
-            var ret = GetValueFetcherForProperty(typeof(TObj), propName);
-            return x => (TObj) ret(x);
         }
 
-        public static Func<object, object> GetValueFetcherForProperty(Type type, string propName)
+        public static Func<object, object[], object> GetValueFetcherForProperty(Expression expression)
         {
-            Contract.Requires(type != null);
-            Contract.Requires(propName != null);
+            Contract.Requires(expression != null);
 
-            lock (propReaderCache) {
-                return propReaderCache.Get(Tuple.Create(type, propName));
+            MemberInfo member = expression.GetMemberInfo();
+
+            FieldInfo field = member as FieldInfo;
+            if (field != null)
+            {
+                return (obj, args) => field.GetValue(obj);
             }
+            PropertyInfo property = member as PropertyInfo;
+            if (property != null)
+            {
+                return property.GetValue;
+            }
+
+            return null;
         }
 
-        public static Func<object, object> GetValueFetcherOrThrow(Type type, string propName)
+        public static Func<object, object[], object> GetValueFetcherOrThrow(Expression expression)
         {
-            var ret = GetValueFetcherForProperty(type, propName);
+            var ret = GetValueFetcherForProperty(expression);
 
-            if (ret == null) {
-                throw new ArgumentException(String.Format("Type '{0}' must have a property '{1}'", type, propName));
+            if (ret == null)
+            {
+                MemberInfo member = expression.GetMemberInfo();
+                throw new ArgumentException(String.Format("Type '{0}' must have a property '{1}'", member.DeclaringType, member.Name));
             }
             return ret;
         }
 
-        public static Action<object, object> GetValueSetterForProperty(Type type, string propName)
+        public static Action<object, object, object[]> GetValueSetterForProperty(Expression expression)
         {
-            Contract.Requires(type != null);
-            Contract.Requires(propName != null);
+            Contract.Requires(expression != null);
 
-            lock (propReaderCache) {
-                return propWriterCache.Get(Tuple.Create(type, propName));
+            MemberInfo member = expression.GetMemberInfo();
+
+            FieldInfo field = member as FieldInfo;
+            if(field != null)
+            {
+                return (obj, val, args) => field.SetValue(obj, val);
             }
+            PropertyInfo property = member as PropertyInfo;
+            if (property != null)
+            {
+                return property.SetValue;
+            }
+
+            return null;
         }
 
-        public static Action<object, object> GetValueSetterOrThrow(Type type, string propName)
+        public static Action<object, object, object[]> GetValueSetterOrThrow(Expression expression)
         {
-            var ret = GetValueSetterForProperty(type, propName);
+            var ret = GetValueSetterForProperty(expression);
 
             if (ret == null) {
-                throw new ArgumentException(String.Format("Type '{0}' must have a property '{1}'", type, propName));
+                MemberInfo member = expression.GetMemberInfo();
+                throw new ArgumentException(String.Format("Type '{0}' must have a property '{1}'", member.DeclaringType, member.Name));
             }
             return ret;
         }
