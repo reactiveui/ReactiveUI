@@ -103,16 +103,14 @@ namespace ReactiveUI
             notifier = chain.Aggregate(notifier, (n, expr) => n
                 .Select(y => nestedObservedChanges(expr, y, beforeChange))
                 .Switch());
-
-            var path = String.Join(".", chain.Select(x => x.GetMemberInfo().Name));
-
+            
             if (skipInitial) {
                 notifier = notifier.Skip(1);
             }
 
             notifier = notifier.Where(x => x.Sender != null);
 
-            var r = notifier.Select(x => new ObservedChange<TSender, TValue>(source, path, (TValue)x.GetValue()));
+            var r = notifier.Select(x => new ObservedChange<TSender, TValue>(source, expression, (TValue)x.GetValue()));
 
             return r.DistinctUntilChanged(x=>x.Value);
         }
@@ -122,14 +120,14 @@ namespace ReactiveUI
             var propertyName = expression.GetMemberInfo().Name;
             if (sourceChange.Value == null)
             {
-                return new ObservedChange<object, object>(sourceChange.Value, propertyName); ;
+                return new ObservedChange<object, object>(sourceChange.Value, expression); ;
             }
             else
             {
                 object value;
                 // expression is always a simple expression
                 Reflection.TryGetValueForPropertyChain(out value, sourceChange.Value, new[] { expression });
-                return new ObservedChange<object, object>(sourceChange.Value, propertyName, value);
+                return new ObservedChange<object, object>(sourceChange.Value, expression, value);
             }
         }
 
@@ -146,7 +144,7 @@ namespace ReactiveUI
 
             // Handle non null values in the chain
             return notifyForProperty(sourceChange.Value, expression, beforeChange)
-                .Select(x => new ObservedChange<object, object>(x.Sender, x.PropertyName, x.GetValue()))
+                .Select(x => new ObservedChange<object, object>(x.Sender, expression, x.GetValue()))
                 .StartWith(kicker);
         }
 

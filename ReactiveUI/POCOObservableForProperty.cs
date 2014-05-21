@@ -29,7 +29,7 @@ namespace ReactiveUI
                 hasWarned[type] = true;
             }
 
-            return Observable.Return(new ObservedChange<object, object>(sender, expression.GetMemberInfo().Name), RxApp.MainThreadScheduler)
+            return Observable.Return(new ObservedChange<object, object>(sender, expression), RxApp.MainThreadScheduler)
                 .Concat(Observable.Never<IObservedChange<object, object>>());
         }
     }
