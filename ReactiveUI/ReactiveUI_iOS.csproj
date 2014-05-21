@@ -149,5 +149,6 @@
     <Compile Include="LoggingMixins.cs" />
     <Compile Include="IReactiveObject.cs" />
     <Compile Include="WeakEventManager.cs" />
+    <Compile Include="Cocoa\ReactiveTableView.cs" />
   </ItemGroup>
 </Project>
