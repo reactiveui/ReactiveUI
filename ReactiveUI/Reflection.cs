@@ -195,15 +195,15 @@ namespace ReactiveUI
             return ret;
         }
 
-        public static bool TryGetValueForPropertyChain<TValue>(out TValue changeValue, object current, string[] propNames)
+        public static bool TryGetValueForPropertyChain<TValue>(out TValue changeValue, object current, IEnumerable<Expression> expressionChain)
         {
-            foreach (var propName in propNames.SkipLast(1)) {
+            foreach (var expression in expressionChain.SkipLast(1)) {
                 if (current == null) {
                     changeValue = default(TValue);
                     return false;
                 }
 
-                current = GetValueFetcherOrThrow(current.GetType(), propName)(current);
+                current = GetValueFetcherOrThrow(current.GetType(), expression.GetMemberInfo().Name)(current);
             }
 
             if (current == null) {
@@ -211,24 +211,25 @@ namespace ReactiveUI
                 return false;
             }
 
-            changeValue = (TValue) GetValueFetcherOrThrow(current.GetType(), propNames.Last())(current);
+            Expression lastExpression = expressionChain.Last();
+            changeValue = (TValue) GetValueFetcherOrThrow(current.GetType(), lastExpression.GetMemberInfo().Name)(current);
             return true;
         }
 
-        public static bool TryGetAllValuesForPropertyChain(out IObservedChange<object, object>[] changeValues, object current, string[] propNames)
+        public static bool TryGetAllValuesForPropertyChain(out IObservedChange<object, object>[] changeValues, object current, IEnumerable<Expression> expressionChain)
         {
             int currentIndex = 0;
-            changeValues = new IObservedChange<object,object>[propNames.Length];
+            changeValues = new IObservedChange<object,object>[expressionChain.Count()];
 
-            foreach (var propName in propNames.SkipLast(1)) {
+            foreach (var expression in expressionChain.SkipLast(1)) {
                 if (current == null) {
                     changeValues[currentIndex] = null;
                     return false;
                 }
 
                 var sender = current;
-                current = GetValueFetcherOrThrow(current.GetType(), propName)(current);
-                var box = new ObservedChange<object, object>(sender, propName, current);
+                current = GetValueFetcherOrThrow(current.GetType(), expression.GetMemberInfo().Name)(current);
+                var box = new ObservedChange<object, object>(sender, expression.GetMemberInfo().Name, current);
 
                 changeValues[currentIndex] = box;
                 currentIndex++;
@@ -239,26 +240,28 @@ namespace ReactiveUI
                 return false;
             }
 
-            changeValues[currentIndex] = new ObservedChange<object, object>(current, propNames.Last(), GetValueFetcherOrThrow(current.GetType(), propNames.Last())(current));
+            Expression lastExpression = expressionChain.Last();
+            changeValues[currentIndex] = new ObservedChange<object, object>(current, lastExpression.GetMemberInfo().Name, GetValueFetcherOrThrow(current.GetType(), lastExpression.GetMemberInfo().Name)(current));
 
             return true;
         }
 
-        public static bool TrySetValueToPropertyChain<TValue>(object target, string[] propNames, TValue value, bool shouldThrow = true)
+        public static bool TrySetValueToPropertyChain<TValue>(object target, IEnumerable<Expression> expressionChain, TValue value, bool shouldThrow = true)
         {
-            foreach (var propName in propNames.SkipLast(1)) {
+            foreach (var expression in expressionChain.SkipLast(1)) {
                 var getter = shouldThrow ?
-                    GetValueFetcherOrThrow(target.GetType(), propName) :
-                    GetValueFetcherForProperty(target.GetType(), propName);
+                    GetValueFetcherOrThrow(target.GetType(), expression.GetMemberInfo().Name) :
+                    GetValueFetcherForProperty(target.GetType(), expression.GetMemberInfo().Name);
 
                 target = getter(target);
             }
 
             if (target == null) return false;
 
+            Expression lastExpression = expressionChain.Last();
             var setter = shouldThrow ?
-                GetValueSetterOrThrow(target.GetType(), propNames.Last()) :
-                GetValueSetterForProperty(target.GetType(), propNames.Last());
+                GetValueSetterOrThrow(target.GetType(), lastExpression.GetMemberInfo().Name) :
+                GetValueSetterForProperty(target.GetType(), lastExpression.GetMemberInfo().Name);
 
             if (setter == null) return false;
             setter(target, value);
