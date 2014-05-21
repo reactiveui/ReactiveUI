@@ -195,18 +195,18 @@ namespace ReactiveUI
             where TView : class, IViewFor<TViewModel>
             where TProp : ICommand
         {
-            var vmPropChain = Reflection.ExpressionToPropertyNames(vmProperty);
-            var controlPropChain = default(string[]);
+            var vmExpression = Reflection.Rewrite(vmProperty.Body);
+            var controlExpression = default(Expression);
 
             if (controlProperty == null) {
-                controlPropChain = new string[] { Reflection.getViewPropChain(view, vmPropChain) };
+                controlExpression = Reflection.getViewExpression(view, vmExpression);
             } else {
-                controlPropChain = Reflection.ExpressionToPropertyNames(controlProperty);
+                controlExpression = Reflection.Rewrite(controlProperty.Body);
             }
 
-            var source = Reflection.ViewModelWhenAnyValue(viewModel, view, vmProperty);
+            var source = Reflection.ViewModelWhenAnyValue(viewModel, view, vmExpression).Cast<TProp>();
 
-            IDisposable bindingDisposable = bindCommandInternal(source, view, controlPropChain, Observable.Empty<object>(), toEvent, cmd => {
+            IDisposable bindingDisposable = bindCommandInternal(source, view, controlExpression, Observable.Empty<object>(), toEvent, cmd => {
                 var rc = cmd as IReactiveCommand;
                 if (rc == null) {
                     return new RelayCommand(cmd.CanExecute, _ => cmd.Execute(withParameter()));
@@ -217,7 +217,7 @@ namespace ReactiveUI
                 return ret;
             });
 
-            return new ReactiveBinding<TView, TViewModel, TProp>(view, viewModel, controlPropChain, vmPropChain,
+            return new ReactiveBinding<TView, TViewModel, TProp>(view, viewModel, controlExpression, vmExpression,
                 source, BindingDirection.OneWay, bindingDisposable);
         }
 
@@ -232,30 +232,27 @@ namespace ReactiveUI
             where TView : class, IViewFor<TViewModel>
             where TProp : ICommand
         {
-            var vmPropChain = Reflection.ExpressionToPropertyNames(vmProperty);
-            var controlPropChain = default(string[]);
+            var vmExpression = Reflection.Rewrite(vmProperty.Body);
+            var controlExpression = default(Expression);
 
-            if (controlProperty == null)
-            {
-                controlPropChain = new string[] { Reflection.getViewPropChain(view, vmPropChain) };
-            }
-            else
-            {
-                controlPropChain = Reflection.ExpressionToPropertyNames(controlProperty);
+            if (controlProperty == null) {
+                controlExpression = Reflection.getViewExpression(view, vmExpression);
+            } else {
+                controlExpression = Reflection.Rewrite(controlProperty.Body);
             }
 
-            var source = Reflection.ViewModelWhenAnyValue(viewModel, view, vmProperty);
+            var source = Reflection.ViewModelWhenAnyValue(viewModel, view, vmExpression).Cast<TProp>();
 
-            IDisposable bindingDisposable = bindCommandInternal(source, view, controlPropChain, withParameter, toEvent);
+            IDisposable bindingDisposable = bindCommandInternal(source, view, controlExpression, withParameter, toEvent);
 
-            return new ReactiveBinding<TView, TViewModel, TProp>(view, viewModel, controlPropChain, vmPropChain, 
+            return new ReactiveBinding<TView, TViewModel, TProp>(view, viewModel, controlExpression, vmExpression, 
                 source, BindingDirection.OneWay, bindingDisposable);
         }
 
         IDisposable bindCommandInternal<TView, TProp, TParam>(
                 IObservable<TProp> This,
                 TView view, 
-                string[] controlPropChain, 
+                Expression controlExpression, 
                 IObservable<TParam> withParameter,
                 string toEvent,
                 Func<ICommand, ICommand> commandFixuper = null)
@@ -265,7 +262,7 @@ namespace ReactiveUI
             IDisposable disp = Disposable.Empty;
 
             var bindInfo = Observable.CombineLatest(
-                This, view.WhenAny(controlPropChain, x => x.Value),
+                This, view.WhenAnyDynamic(controlExpression, x => x.Value),
                 (val, host) => new { val, host });
 
             var propSub = bindInfo
