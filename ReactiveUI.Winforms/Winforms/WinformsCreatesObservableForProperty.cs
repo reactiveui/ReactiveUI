@@ -30,7 +30,6 @@ namespace ReactiveUI.Winforms
         public IObservable<IObservedChange<object, object>> GetNotificationForProperty(object sender, Expression expression, bool beforeChanged = false)
         {
             var ei = default(EventInfo);
-            var getter = Reflection.GetValueFetcherOrThrow(expression);
 
             lock (eventInfoCache) {
                 ei = eventInfoCache.Get(Tuple.Create(sender.GetType(), expression.GetMemberInfo().Name));
