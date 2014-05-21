@@ -33,10 +33,10 @@ namespace ReactiveUI
 
                 if (expression.NodeType == ExpressionType.Index) {
                     return obs.Where(x => x.EventArgs.PropertyName.Equals(memberInfo.Name + "[]"))
-                        .Select(x => new ObservedChange<object, object>(sender, x.EventArgs.PropertyName));
+                        .Select(x => new ObservedChange<object, object>(sender, expression));
                 } else {
                     return obs.Where(x => x.EventArgs.PropertyName.Equals(memberInfo.Name))
-                    .Select(x => new ObservedChange<object, object>(sender, x.EventArgs.PropertyName));
+                    .Select(x => new ObservedChange<object, object>(sender, expression));
                 }
             } else {
                 var obs = Observable.FromEventPattern<PropertyChangedEventHandler, PropertyChangedEventArgs>(
@@ -44,10 +44,10 @@ namespace ReactiveUI
 
                 if (expression.NodeType == ExpressionType.Index) {
                     return obs.Where(x => x.EventArgs.PropertyName.Equals(memberInfo.Name + "[]"))
-                    .Select(x => new ObservedChange<object, object>(sender, x.EventArgs.PropertyName));
+                    .Select(x => new ObservedChange<object, object>(sender, expression));
                 } else {
                     return obs.Where(x => x.EventArgs.PropertyName.Equals(memberInfo.Name))
-                    .Select(x => new ObservedChange<object, object>(sender, x.EventArgs.PropertyName));
+                    .Select(x => new ObservedChange<object, object>(sender, expression));
                 }
             }
         }
