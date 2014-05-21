@@ -939,7 +939,7 @@ namespace ReactiveUI
             var setter = Reflection.GetValueSetterOrThrow(viewExpression.GetMemberInfo());
             if (viewExpression.GetParent().NodeType == ExpressionType.Parameter) { 
                 return This.Subscribe(
-                    x => setter(target, x, null),
+                    x => setter(target, x, viewExpression.GetArgumentsArray()),
                     ex => {
                         this.Log().ErrorException("Binding recieved an Exception!", ex);
                         if (fallbackValue != null) setter(target, fallbackValue(), null);
@@ -953,10 +953,10 @@ namespace ReactiveUI
             return bindInfo
                 .Where(x => x.host != null)
                 .Subscribe(
-                    x => setter(x.host, x.val, null),
+                    x => setter(x.host, x.val, viewExpression.GetArgumentsArray()),
                     ex => {
                         this.Log().ErrorException("Binding recieved an Exception!", ex);
-                        if (fallbackValue != null) setter(target, fallbackValue(), null);
+                        if (fallbackValue != null) setter(target, fallbackValue(), viewExpression.GetArgumentsArray());
                     });
         }
 

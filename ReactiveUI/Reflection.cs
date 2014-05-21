@@ -121,7 +121,7 @@ namespace ReactiveUI
                     return false;
                 }
 
-                current = GetValueFetcherOrThrow(expression.GetMemberInfo())(current, null);
+                current = GetValueFetcherOrThrow(expression.GetMemberInfo())(current, expression.GetArgumentsArray());
             }
 
             if (current == null) {
@@ -130,7 +130,7 @@ namespace ReactiveUI
             }
 
             Expression lastExpression = expressionChain.Last();
-            changeValue = (TValue) GetValueFetcherOrThrow(lastExpression.GetMemberInfo())(current, null);
+            changeValue = (TValue) GetValueFetcherOrThrow(lastExpression.GetMemberInfo())(current, lastExpression.GetArgumentsArray());
             return true;
         }
 
@@ -146,7 +146,7 @@ namespace ReactiveUI
                 }
 
                 var sender = current;
-                current = GetValueFetcherOrThrow(expression.GetMemberInfo())(current, null);
+                current = GetValueFetcherOrThrow(expression.GetMemberInfo())(current, expression.GetArgumentsArray());
                 var box = new ObservedChange<object, object>(sender, expression, current);
 
                 changeValues[currentIndex] = box;
@@ -159,7 +159,7 @@ namespace ReactiveUI
             }
 
             Expression lastExpression = expressionChain.Last();
-            changeValues[currentIndex] = new ObservedChange<object, object>(current, lastExpression, GetValueFetcherOrThrow(lastExpression.GetMemberInfo())(current, null));
+            changeValues[currentIndex] = new ObservedChange<object, object>(current, lastExpression, GetValueFetcherOrThrow(lastExpression.GetMemberInfo())(current, lastExpression.GetArgumentsArray()));
 
             return true;
         }
@@ -171,7 +171,7 @@ namespace ReactiveUI
                     GetValueFetcherOrThrow(expression.GetMemberInfo()) :
                     GetValueFetcherForProperty(expression.GetMemberInfo());
 
-                target = getter(target, null);
+                target = getter(target, expression.GetArgumentsArray());
             }
 
             if (target == null) return false;
@@ -182,7 +182,7 @@ namespace ReactiveUI
                 GetValueSetterForProperty(lastExpression.GetMemberInfo());
 
             if (setter == null) return false;
-            setter(target, value, null);
+            setter(target, value, lastExpression.GetArgumentsArray());
             return true;
         }
 
@@ -239,7 +239,7 @@ namespace ReactiveUI
         {
             var controlExpression = getViewExpression(view, vmExpression);
 
-            var control = GetValueFetcherForProperty(controlExpression.GetMemberInfo())(view, null);
+            var control = GetValueFetcherForProperty(controlExpression.GetMemberInfo())(view, controlExpression.GetArgumentsArray());
             if (control == null)
             {
                 throw new Exception(String.Format("Tried to bind to control but it was null: {0}.{1}", view.GetType().FullName,
