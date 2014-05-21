@@ -120,9 +120,12 @@ namespace ReactiveUI
             Contract.Requires(observable != null);
             Contract.Requires(property != null);
 
-            string prop_name = Reflection.SimpleExpressionToPropertyName(property);
+            Expression expression = Reflection.Rewrite(property.Body);
+            if (expression.GetParent().NodeType != ExpressionType.Parameter) {
+                throw new ArgumentException("Property expression must be of the form 'x => x.SomeProperty'");
+            }
             var ret = new ObservableAsPropertyHelper<TRet>(observable, 
-                _ => This.raisePropertyChanged(prop_name), 
+                _ => This.raisePropertyChanged(expression.GetMemberInfo().Name), 
                 initialValue, scheduler);
 
             return ret;

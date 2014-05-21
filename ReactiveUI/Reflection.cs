@@ -13,27 +13,7 @@ namespace ReactiveUI
     public static class Reflection 
     {
         static ExpressionRewriter expressionRewriter = new ExpressionRewriter();        
-
-        public static string SimpleExpressionToPropertyName<TObj, TRet>(Expression<Func<TObj, TRet>> property)
-        {
-            Contract.Requires(property != null);
-
-            string propName = null;
-
-            try {
-                var propExpr = expressionRewriter.Visit(property.Body) as MemberExpression;
-                if (propExpr.Expression.NodeType != ExpressionType.Parameter) {
-                    throw new ArgumentException("Property expression must be of the form 'x => x.SomeProperty'");
-                }
-
-                propName = propExpr.Member.Name;
-            } catch (NullReferenceException) {
-                throw new ArgumentException("Property expression must be of the form 'x => x.SomeProperty'");
-            }
-
-            return propName;
-        }
-
+        
         public static Expression Rewrite(Expression expression)
         {
             return expressionRewriter.Visit(expression);
