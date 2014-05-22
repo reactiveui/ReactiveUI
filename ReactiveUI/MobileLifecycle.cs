@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Reactive;
 using System.Reactive.Linq;
+using Splat;
+using System.Reactive.Disposables;
 
 namespace ReactiveUI.Mobile
 {
-    public class SuspensionHost : ISuspensionHost
+    public class SuspensionHost : ReactiveObject, ISuspensionHost
     {
         public IObservable<Unit> IsLaunchingNew { get; set; }
         public IObservable<Unit> IsResuming { get; set; }
@@ -31,6 +33,37 @@ namespace ReactiveUI.Mobile
         public void SetupDefaultSuspendResume(ISuspensionDriver driver = null)
         {
             SetupDefaultSuspendResumeFunc(driver);
+        }
+    }
+
+    public static class SuspensionHostExtensions
+    {
+        public static IDisposable SetupDefaultSuspendResume(this ISuspensionHost This, ISuspensionDriver driver = null)
+        {
+            var ret = new CompositeDisposable();
+            driver = driver ?? Locator.Current.GetService<ISuspensionDriver>();
+
+            ret.Add(This.ShouldInvalidateState
+                .SelectMany(_ => driver.InvalidateState())
+                .LoggedCatch(this, Observable.Return(Unit.Default), "Tried to invalidate app state")
+                .Subscribe(_ => This.Log().Info("Invalidated app state")));
+
+            ret.Add(This.ShouldPersistState
+                .SelectMany(x => driver.SaveState(viewModel).Finally(x.Dispose))
+                .LoggedCatch(this, Observable.Return(Unit.Default), "Tried to persist app state")
+                .Subscribe(_ => This.Log().Info("Persisted application state")));
+
+            ret.Add(This.IsResuming
+                .SelectMany(x => driver.LoadState<IApplicationRootState>())
+                .LoggedCatch(this,
+                    Observable.Defer(() => Observable.Return(Locator.Current.GetService<IApplicationRootState>())),
+                    "Failed to restore app state from storage, creating from scratch")
+                .ObserveOn(RxApp.MainThreadScheduler)
+                .Subscribe(x => viewModel = x));
+
+            ret.Add(This.IsLaunchingNew.Subscribe(_ => {
+                viewModel = Locator.Current.GetService<IApplicationRootState>();
+            }));
         }
     }
 
@@ -76,4 +109,6 @@ namespace ReactiveUI.Mobile
             return Observable.Return(Unit.Default);
         }
     }
+
+
 }

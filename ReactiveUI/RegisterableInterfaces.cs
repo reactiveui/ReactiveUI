@@ -383,14 +383,6 @@ namespace ReactiveUI.Mobile
         /// usually is called after an app has crashed
         /// </summary>
         IObservable<Unit> ShouldInvalidateState { get; }
-
-        /// <summary>
-        /// Sets up the default suspend resume behavior, which is to use the
-        /// ISuspensionDriver to save / reload application state. Using this also
-        /// requires you to register an IApplicationRootState that will create a
-        /// new application root state from scratch.
-        /// </summary>
-        void SetupDefaultSuspendResume(ISuspensionDriver driver = null);
     }
 
     /// <summary>
