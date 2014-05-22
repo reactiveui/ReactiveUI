@@ -63,19 +63,17 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Properties\" />
     <Folder Include="Resources\" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.MonoTouch.CSharp.targets" />
   <ItemGroup>
     <Compile Include="..\CommonAssemblyInfo.cs">
-      <Link>Cocoa\Properties\CommonAssemblyInfo.cs</Link>
+      <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Cocoa\CocoaDefaultPropertyBinding.cs" />
     <Compile Include="Cocoa\KVOObservableForProperty.cs" />
     <Compile Include="Cocoa\LinkerOverrides.cs" />
     <Compile Include="Cocoa\NSRunloopScheduler.cs" />
-    <Compile Include="Cocoa\Properties\AssemblyInfo.cs" />
     <Compile Include="Cocoa\RoutedViewHost.cs" />
     <Compile Include="Cocoa\TargetActionCommandBinder.cs" />
     <Compile Include="Cocoa\ViewModelViewHost.cs" />
@@ -153,5 +151,6 @@
     <Compile Include="Cocoa\AutoSuspendAppDelegate.cs" />
     <Compile Include="Cocoa\JsonSuspensionDriver.cs" />
     <Compile Include="SuspensionHost.cs" />
+    <Compile Include="Cocoa\ReactiveTableView.cs" />
   </ItemGroup>
 </Project>

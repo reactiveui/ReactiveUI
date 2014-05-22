@@ -96,7 +96,6 @@ namespace ReactiveUI.Tests
             fixture.BindCommand(fixture.ViewModel, x => x.Cmd, x => x.TheTextBox, "MouseDown");
         }
 
-
 #if !SILVERLIGHT
         [Fact]
         public void EventBinderBindsToImplicitEvent()
@@ -185,11 +184,10 @@ namespace ReactiveUI.Tests
         {
             var vm = new CommandBindViewModel();
             var view = new CommandBindView() {ViewModel = vm};
-            var fixture = new CommandBinderImplementation();
 
             Assert.Null(view.Command1.Command);
 
-            var disp = fixture.BindCommand(vm, view, x => x.Command1);
+            var disp = view.BindCommand(vm, x => x.Command1);
             Assert.Equal(vm.Command1, view.Command1.Command);
 
             var newCmd = ReactiveCommand.Create();
@@ -205,11 +203,10 @@ namespace ReactiveUI.Tests
         {
             var vm = new CommandBindViewModel();
             var view = new CommandBindView() {ViewModel = vm};
-            var fixture = new CommandBinderImplementation();
 
             Assert.Null(view.Command1.Command);
 
-            var disp = fixture.BindCommand(vm, view, x => x.Command1, x => x.Command1);
+            var disp = view.BindCommand(vm, x => x.Command1, x => x.Command1);
             Assert.Equal(vm.Command1, view.Command1.Command);
 
             var newCmd = ReactiveCommand.Create();
@@ -229,9 +226,8 @@ namespace ReactiveUI.Tests
             };
 
             var view = new CommandBindView { ViewModel = vm };
-            var fixture = new CommandBinderImplementation();
 
-            var disp = fixture.BindCommand(vm, view, m => m.NestedViewModel.NestedCommand, x => x.Command1);
+            var disp = view.BindCommand(vm, m => m.NestedViewModel.NestedCommand, x => x.Command1);
 
             Assert.Equal(vm.NestedViewModel.NestedCommand, view.Command1.Command);
         }
@@ -241,13 +237,12 @@ namespace ReactiveUI.Tests
         {
             var vm = new CommandBindViewModel();
             var view = new CommandBindView() { ViewModel = vm };
-            var fixture = new CommandBinderImplementation();
 
             var canExecute1 = new BehaviorSubject<bool>(true);
             var cmd1 = ReactiveCommand.Create(canExecute1);
             vm.Command1 = cmd1;
 
-            var disp = fixture.BindCommand(vm, view, x => x.Command1, x => x.Command1);
+            var disp = view.BindCommand(vm, x => x.Command1, x => x.Command1);
 
             Assert.True(view.Command1.IsEnabled);
         }
@@ -257,13 +252,12 @@ namespace ReactiveUI.Tests
         {
             var vm = new CommandBindViewModel();
             var view = new CommandBindView() { ViewModel = vm };
-            var fixture = new CommandBinderImplementation();
 
             var canExecute1 = new BehaviorSubject<bool>(true);
             var cmd1 = ReactiveCommand.Create(canExecute1);
             vm.Command1 = cmd1;
 
-            var disp = fixture.BindCommand(vm, view, x => x.Command1, x => x.Command1);
+            var disp = view.BindCommand(vm, x => x.Command1, x => x.Command1);
 
             Assert.True(view.Command1.IsEnabled);
 
@@ -277,13 +271,12 @@ namespace ReactiveUI.Tests
         {
             var vm = new CommandBindViewModel();
             var view = new CommandBindView() { ViewModel = vm };
-            var fixture = new CommandBinderImplementation();
 
             var canExecute1 = new BehaviorSubject<bool>(false);
             var cmd1 = ReactiveCommand.Create(canExecute1);
             vm.Command1 = cmd1;
 
-            var disp = fixture.BindCommand(vm, view, x => x.Command1, x => x.Command1);
+            var disp = view.BindCommand(vm, x => x.Command1, x => x.Command1);
 
             Assert.False(view.Command1.IsEnabled);
         }
@@ -294,13 +287,12 @@ namespace ReactiveUI.Tests
         {
             var vm = new CommandBindViewModel();
             var view = new CommandBindView() { ViewModel = vm };
-            var fixture = new CommandBinderImplementation();
 
             var canExecute1 = new BehaviorSubject<bool>(true);
             var cmd1 = ReactiveCommand.Create(canExecute1);
             vm.Command1 = cmd1;
 
-            var disp = fixture.BindCommand(vm, view, x => x.Command1, x => x.Command1);
+            var disp = view.BindCommand(vm, x => x.Command1, x => x.Command1);
 
             Assert.True(view.Command1.IsEnabled);
 
@@ -319,12 +311,11 @@ namespace ReactiveUI.Tests
         {
             var vm = new CommandBindViewModel();
             var view = new CommandBindView() {ViewModel = vm};
-            var fixture = new CommandBinderImplementation();
 
             int invokeCount = 0;
             vm.Command2.Subscribe(_ => invokeCount += 1);
 
-            var disp = fixture.BindCommand(vm, view, x => x.Command2, x => x.Command2, "MouseUp");
+            var disp = view.BindCommand(vm, x => x.Command2, x => x.Command2, "MouseUp");
 
             view.Command2.RaiseEvent(new MouseButtonEventArgs(Mouse.PrimaryDevice, 0, MouseButton.Left) { RoutedEvent = Image.MouseUpEvent });
 
