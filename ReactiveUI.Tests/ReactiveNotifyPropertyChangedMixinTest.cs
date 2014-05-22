@@ -13,7 +13,6 @@ using ReactiveUI.Testing;
 using Xunit;
 
 using Microsoft.Reactive.Testing;
-using System.Threading.Tasks;
 
 #if !MONO
 using System.Windows.Controls;
