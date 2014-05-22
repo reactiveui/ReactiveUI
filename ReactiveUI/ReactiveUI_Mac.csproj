@@ -82,7 +82,6 @@
     <Compile Include="Cocoa\RoutedViewHost.cs" />
     <Compile Include="Cocoa\TargetActionCommandBinder.cs" />
     <Compile Include="Cocoa\ViewModelViewHost.cs" />
-    <Compile Include="Cocoa\Properties\AssemblyInfo.cs" />
     <Compile Include="Platform\ComponentModelTypeConverter.cs" />
     <Compile Include="Platform\Registrations.cs" />
     <Compile Include="Cocoa\PlatformOperations.cs" />
@@ -103,7 +102,6 @@
     <Compile Include="CompatMixins.cs" />
     <Compile Include="ContractStubs.cs" />
     <Compile Include="DefaultPropertyBinding.cs" />
-    <Compile Include="DummySuspension.cs" />
     <Compile Include="Errors.cs" />
     <Compile Include="IDependencyResolver.cs" />
     <Compile Include="INPCObservableForProperty.cs" />

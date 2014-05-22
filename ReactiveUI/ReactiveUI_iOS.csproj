@@ -61,6 +61,9 @@
     <Reference Include="Splat">
       <HintPath>..\ext\ios\Splat.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\ext\ios\Newtonsoft.Json.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Resources\" />
@@ -151,6 +154,5 @@
     <Compile Include="Cocoa\AutoSuspendAppDelegate.cs" />
     <Compile Include="Cocoa\JsonSuspensionDriver.cs" />
     <Compile Include="Cocoa\ReactiveTableView.cs" />
-    <Compile Include="MobileLifecycle.cs" />
   </ItemGroup>
 </Project>
