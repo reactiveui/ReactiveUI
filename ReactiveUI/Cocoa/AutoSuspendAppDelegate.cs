@@ -106,33 +106,6 @@ namespace ReactiveUI.Mobile
         {
             _willTerminate.OnNext(application);
         }
-
-        internal void setupDefaultSuspendResume(ISuspensionDriver driver)
-        {
-            driver = driver ?? Locator.Current.GetService<ISuspensionDriver>();
-
-            SuspensionHost.ShouldInvalidateState
-                .SelectMany(_ => driver.InvalidateState())
-                .LoggedCatch(this, Observable.Return(Unit.Default), "Tried to invalidate app state")
-                .Subscribe(_ => this.Log().Info("Invalidated app state"));
-
-            SuspensionHost.ShouldPersistState
-                .SelectMany(x => driver.SaveState(viewModel).Finally(x.Dispose))
-                .LoggedCatch(this, Observable.Return(Unit.Default), "Tried to persist app state")
-                .Subscribe(_ => this.Log().Info("Persisted application state"));
-
-            SuspensionHost.IsResuming
-                .SelectMany(x => driver.LoadState<IApplicationRootState>())
-                .LoggedCatch(this,
-                    Observable.Defer(() => Observable.Return(Locator.Current.GetService<IApplicationRootState>())),
-                    "Failed to restore app state from storage, creating from scratch")
-                .ObserveOn(RxApp.MainThreadScheduler)
-                .Subscribe(x => viewModel = x);
-
-            SuspensionHost.IsLaunchingNew.Subscribe(_ => {
-                viewModel = Locator.Current.GetService<IApplicationRootState>();
-            });
-        }
     }
 }
 
