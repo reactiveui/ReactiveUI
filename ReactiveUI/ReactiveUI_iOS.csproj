@@ -109,13 +109,13 @@
     <Compile Include="CompatMixins.cs" />
     <Compile Include="ContractStubs.cs" />
     <Compile Include="DefaultPropertyBinding.cs" />
-    <Compile Include="DummySuspension.cs" />
     <Compile Include="Errors.cs" />
     <Compile Include="IDependencyResolver.cs" />
     <Compile Include="INPCObservableForProperty.cs" />
     <Compile Include="Interfaces.cs" />
     <Compile Include="IROObservableForProperty.cs" />
     <Compile Include="MessageBus.cs" />
+    <Compile Include="MobileLifecycle.cs" />
     <Compile Include="NullDefaultPropertyBindingProvider.cs" />
     <Compile Include="ObservableAsPropertyHelper.cs" />
     <Compile Include="ObservedChangedMixin.cs" />
@@ -150,7 +150,7 @@
     <Compile Include="WeakEventManager.cs" />
     <Compile Include="Cocoa\AutoSuspendAppDelegate.cs" />
     <Compile Include="Cocoa\JsonSuspensionDriver.cs" />
-    <Compile Include="SuspensionHost.cs" />
     <Compile Include="Cocoa\ReactiveTableView.cs" />
+    <Compile Include="MobileLifecycle.cs" />
   </ItemGroup>
 </Project>
