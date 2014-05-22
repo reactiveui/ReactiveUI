@@ -350,7 +350,7 @@ namespace ReactiveUI.Mobile
     /// host operating system publishes. Subscribe to these events in order to
     /// handle app suspend / resume.
     /// </summary>
-    public interface ISuspensionHost
+    public interface ISuspensionHost : IReactiveObject
     {
         /// <summary>
         /// Signals when the application is launching new. This can happen when
