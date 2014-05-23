@@ -19,7 +19,6 @@ namespace MobileSample_Android
     [Activity (Label = "SecondaryActivity")]
     public class SecondaryView : ReactiveActivity<SecondaryViewModel>
     {
-        readonly ActivityRoutedViewHost routeHelper;
         readonly AutoSuspendActivityHelper suspendHelper;
 
         public SecondaryView()
@@ -28,7 +27,6 @@ namespace MobileSample_Android
             Console.WriteLine(App.Current);
             RxApp.MainThreadScheduler = new WaitForDispatcherScheduler(() => new AndroidUIScheduler(this));
 
-            routeHelper = new ActivityRoutedViewHost(this);
             suspendHelper = new AutoSuspendActivityHelper(this);
         }
 
@@ -38,11 +36,6 @@ namespace MobileSample_Android
             suspendHelper.OnCreate(bundle);
 
             SetContentView(Resource.Layout.Secondary);
-        }
-
-        public override bool OnKeyUp(Keycode keyCode, KeyEvent e)
-        {
-            return routeHelper.OnKeyUp(keyCode, e);
         }
 
         protected override void OnResume()

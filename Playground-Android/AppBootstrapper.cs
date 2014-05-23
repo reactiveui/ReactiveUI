@@ -2,20 +2,19 @@ using System;
 using ReactiveUI;
 using ReactiveUI.Mobile;
 using Splat;
+using System.Runtime.Serialization;
 
 namespace MobileSample_Android
 {
-    public class AppBootstrapper : IApplicationRootState
+    [DataContract]
+    public class AppBootstrapper
     {
-        public RoutingState Router { get; protected set; }
+        [DataMember]
+        public Guid SavedGuid { get; set; }
 
         public AppBootstrapper()
         {
-            Locator.CurrentMutable.Register(() => this, typeof(IScreen));
-            Locator.CurrentMutable.Register(() => this, typeof(IApplicationRootState));
-
-            Router = new RoutingState();
-            Router.Navigate.Execute(new MainViewModel(this));
+            SavedGuid = Guid.NewGuid();
         }
     }
 }
