@@ -12,6 +12,8 @@ namespace ReactiveUI.Mobile
         public BundleSuspensionDriver()
         {
             SerializerSettings = new JsonSerializerSettings() {
+                ObjectCreationHandling = ObjectCreationHandling.Replace,
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
                 TypeNameHandling = TypeNameHandling.All,
             };
         }
