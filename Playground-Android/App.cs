@@ -31,6 +31,11 @@ namespace MobileSample_Android
             // TODO: Fix Me
             //RxApp.Register(typeof(AppBootstrapper), typeof(IApplicationRootState));
         }
+
+        public static void EnsureInitialized()
+        {
+            Current.ToString();
+        }
     }
 }
 
