@@ -9,39 +9,34 @@ namespace ReactiveUI.Mobile
 {
     internal class SuspensionHost : ReactiveObject, ISuspensionHost
     {
-        readonly Subject<Unit> isLaunchingNewProxy = new Subject<Unit>();
-        readonly SerialDisposable isLaunchingNewSub = new SerialDisposable();
+        readonly ReplaySubject<IObservable<Unit>> isLaunchingNew = new ReplaySubject<IObservable<Unit>>(1);
         public IObservable<Unit> IsLaunchingNew {
-            get { return isLaunchingNewProxy; }
-            set { isLaunchingNewSub.Disposable = value.Subscribe(isLaunchingNewProxy); }
+            get { return isLaunchingNew.Switch(); }
+            set { isLaunchingNew.OnNext(value); }
         }
 
-        readonly Subject<Unit> isResumingProxy = new Subject<Unit>();
-        readonly SerialDisposable isResumingSub = new SerialDisposable();
+        readonly ReplaySubject<IObservable<Unit>> isResuming = new ReplaySubject<IObservable<Unit>>(1);
         public IObservable<Unit> IsResuming {
-            get { return isResumingProxy; }
-            set { isResumingSub.Disposable = value.Subscribe(isResumingProxy); }
+            get { return isResuming.Switch(); }
+            set { isResuming.OnNext(value); }
         }
 
-        readonly Subject<Unit> isUnpausingProxy = new Subject<Unit>();
-        readonly SerialDisposable isUnpausingSub = new SerialDisposable();
+        readonly ReplaySubject<IObservable<Unit>> isUnpausing = new ReplaySubject<IObservable<Unit>>(1);
         public IObservable<Unit> IsUnpausing {
-            get { return isUnpausingProxy; }
-            set { isLaunchingNewSub.Disposable = value.Subscribe(isUnpausingProxy); }
+            get { return isUnpausing.Switch(); }
+            set { isUnpausing.OnNext(value); }
         }
 
-        readonly Subject<IDisposable> shouldPersistStateProxy = new Subject<IDisposable>();
-        readonly SerialDisposable shouldPersistStateSub = new SerialDisposable();
+        readonly ReplaySubject<IObservable<IDisposable>> shouldPersistState = new ReplaySubject<IObservable<IDisposable>>(1);
         public IObservable<IDisposable> ShouldPersistState {
-            get { return shouldPersistStateProxy; }
-            set { shouldPersistStateSub.Disposable = value.Subscribe(shouldPersistStateProxy); }
+            get { return shouldPersistState.Switch(); }
+            set { shouldPersistState.OnNext(value); }
         }
 
-        readonly Subject<Unit> shouldInvalidateStateProxy = new Subject<Unit>();
-        readonly SerialDisposable shouldInvalidateStateSub = new SerialDisposable();
+        readonly ReplaySubject<IObservable<Unit>> shouldInvalidateState = new ReplaySubject<IObservable<Unit>>(1);
         public IObservable<Unit> ShouldInvalidateState {
-            get { return shouldInvalidateStateProxy; }
-            set { shouldInvalidateStateSub.Disposable = value.Subscribe(shouldInvalidateStateProxy); }
+            get { return shouldInvalidateState.Switch(); }
+            set { shouldInvalidateState.OnNext(value); }
         }
 
         public Func<object> CreateNewAppState { get; set; }
@@ -73,7 +68,8 @@ namespace ReactiveUI.Mobile
     {
         public static IObservable<T> ObserveAppState<T>(this ISuspensionHost This)
         {
-            return This.WhenAny(x => x.AppState, x => (T)x.Value);
+            return This.WhenAny(x => x.AppState, x => (T)x.Value)
+                .Where(x => x != null);
         }
 
         public static T GetAppState<T>(this ISuspensionHost This)
@@ -104,9 +100,8 @@ namespace ReactiveUI.Mobile
                 .ObserveOn(RxApp.MainThreadScheduler)
                 .Subscribe(x => This.AppState = x));
 
-            ret.Add(This.IsLaunchingNew.Subscribe(_ => {
-                This.AppState = This.CreateNewAppState();
-            }));
+            ret.Add(This.IsLaunchingNew.Subscribe(_ =>
+                This.AppState = This.CreateNewAppState()));
 
             return ret;
         }
