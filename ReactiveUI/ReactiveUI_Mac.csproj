@@ -82,7 +82,6 @@
     <Compile Include="Cocoa\RoutedViewHost.cs" />
     <Compile Include="Cocoa\TargetActionCommandBinder.cs" />
     <Compile Include="Cocoa\ViewModelViewHost.cs" />
-    <Compile Include="Cocoa\Properties\AssemblyInfo.cs" />
     <Compile Include="Platform\ComponentModelTypeConverter.cs" />
     <Compile Include="Platform\Registrations.cs" />
     <Compile Include="Cocoa\PlatformOperations.cs" />
@@ -91,6 +90,7 @@
     <Compile Include="Cocoa\ReactiveImageView.cs" />
     <Compile Include="Cocoa\ReactiveControl.cs" />
     <Compile Include="Cocoa\ReactiveNSWindowController.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="..\CommonAssemblyInfo.cs">
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
@@ -115,7 +115,6 @@
     <Compile Include="ObservedChangedMixin.cs" />
     <Compile Include="OrderedComparer.cs" />
     <Compile Include="POCOObservableForProperty.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PropertyBinding.cs" />
     <Compile Include="ReactiveList.cs" />
     <Compile Include="ReactiveCollectionMixins.cs" />
