@@ -384,9 +384,9 @@ namespace ReactiveUI.Mobile
         /// </summary>
         IObservable<Unit> ShouldInvalidateState { get; set; }
 
-        Func<IApplicationRootState> CreateNewAppState { get; set; }
+        Func<object> CreateNewAppState { get; set; }
 
-        IApplicationRootState AppState { get; set; }
+        object AppState { get; set; }
     }
 
     /// <summary>
@@ -399,18 +399,16 @@ namespace ReactiveUI.Mobile
         /// <summary>
         /// Loads the application state from persistent storage
         /// </summary>
-        IObservable<T> LoadState<T>() where T : class, IApplicationRootState;
+        IObservable<object> LoadState();
 
         /// <summary>
         /// Saves the application state to disk.
         /// </summary>
-        IObservable<Unit> SaveState<T>(T state) where T : class, IApplicationRootState;
+        IObservable<Unit> SaveState(object state);
 
         /// <summary>
         /// Invalidates the application state (i.e. deletes it from disk)
         /// </summary>
         IObservable<Unit> InvalidateState();
     }
-
-    public interface IApplicationRootState : IEnableLogger { }
 }
