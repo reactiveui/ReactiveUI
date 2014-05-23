@@ -49,12 +49,6 @@ namespace MobileSample_Android
             base.OnRestart();
             suspendHelper.OnRestart();
         }
-
-        protected override void OnStart()
-        {
-            base.OnStart();
-            suspendHelper.OnStart();
-        }
     }
     
     public class SecondaryViewModel : ReactiveObject, IRoutableViewModel

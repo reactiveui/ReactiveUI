@@ -59,10 +59,10 @@ namespace MobileSample_Android
             suspendHelper.OnRestart();
         }
 
-        protected override void OnStart()
+        protected override void OnDestroy()
         {
-            base.OnStart();
-            suspendHelper.OnStart();
+            base.OnDestroy();
+            Console.WriteLine("DEADED");
         }
     }
 
