@@ -11,7 +11,7 @@ namespace ReactiveUI.Mobile
         {
             try {
                 return Observable.Return(JsonConvert.DeserializeObject<T>(
-                    AndroidSuspensionHost.latestBundle.GetString("__state")));
+                    AutoSuspendActivityHelper.LatestBundle.GetString("__state")));
             } catch (Exception ex) {
                 return Observable.Throw<T>(ex);
             }
@@ -20,7 +20,7 @@ namespace ReactiveUI.Mobile
         public IObservable<Unit> SaveState<T>(T state) where T : class, IApplicationRootState
         {
             try {
-                AndroidSuspensionHost.latestBundle.PutString("__state", JsonConvert.SerializeObject(state));
+                AutoSuspendActivityHelper.LatestBundle.PutString("__state", JsonConvert.SerializeObject(state));
                 return Observable.Return(Unit.Default);
             
             } catch(Exception ex) {
@@ -31,7 +31,7 @@ namespace ReactiveUI.Mobile
         public IObservable<Unit> InvalidateState()
         {
             try {
-                AndroidSuspensionHost.latestBundle.PutString("__state", "");
+                AutoSuspendActivityHelper.LatestBundle.PutString("__state", "");
                 return Observable.Return(Unit.Default);
             
             } catch(Exception ex) {
