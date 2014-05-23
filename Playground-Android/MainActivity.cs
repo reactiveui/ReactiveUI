@@ -38,7 +38,11 @@ namespace MobileSample_Android
             this.WireUpControls();
 
             RxApp.SuspensionHost.ObserveAppState<AppBootstrapper>()
+                .StartWith(RxApp.SuspensionHost.GetAppState<AppBootstrapper>())
                 .Select(x => x.SavedGuid)
+                .Do(x => {
+                    Console.WriteLine(x);
+                })
                 .BindTo(this, x => x.SavedGuid.Text);
         }
 
@@ -48,16 +52,16 @@ namespace MobileSample_Android
             suspendHelper.OnSaveInstanceState(outState);
         }
 
-        protected override void OnResume()
+        protected override void OnRestart()
         {
-            base.OnResume();
-            suspendHelper.OnResume();
+            base.OnRestart();
+            suspendHelper.OnRestart();
         }
 
-        protected override void OnPause()
+        protected override void OnStart()
         {
-            base.OnPause();
-            suspendHelper.OnPause();
+            base.OnStart();
+            suspendHelper.OnStart();
         }
     }
 
