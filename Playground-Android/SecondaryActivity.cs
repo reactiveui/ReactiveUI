@@ -37,23 +37,23 @@ namespace MobileSample_Android
 
             SetContentView(Resource.Layout.Secondary);
         }
-
-        protected override void OnResume()
-        {
-            base.OnResume();
-            suspendHelper.OnResume();
-        }
-
-        protected override void OnPause()
-        {
-            base.OnPause();
-            suspendHelper.OnPause();
-        }
-        
+                
         protected override void OnSaveInstanceState(Bundle outState)
         {
             base.OnSaveInstanceState(outState);
             suspendHelper.OnSaveInstanceState(outState);
+        }
+
+        protected override void OnRestart()
+        {
+            base.OnRestart();
+            suspendHelper.OnRestart();
+        }
+
+        protected override void OnStart()
+        {
+            base.OnStart();
+            suspendHelper.OnStart();
         }
     }
     
