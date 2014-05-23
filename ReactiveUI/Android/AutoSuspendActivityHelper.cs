@@ -7,22 +7,31 @@ using Android.App;
 using Android.OS;
 using System.Reflection;
 using Splat;
+using System.Reactive.Disposables;
 
 namespace ReactiveUI.Mobile
 {
     public class AutoSuspendActivityHelper : IEnableLogger
     {
         readonly Subject<Bundle> onCreate = new Subject<Bundle>();
-        readonly Subject<Unit> onResume = new Subject<Unit>();
+        readonly Subject<Unit> onRestart = new Subject<Unit>();
         readonly Subject<Unit> onPause = new Subject<Unit>();
+        readonly Subject<Unit> onStart = new Subject<Unit>();
         readonly Subject<Bundle> onSaveInstanceState = new Subject<Bundle>();
 
         public static Bundle LatestBundle { get; set; }
 
+        public static readonly Subject<Unit> untimelyDemise = new Subject<Unit>();
+
+        static AutoSuspendActivityHelper()
+        {
+            AppDomain.CurrentDomain.UnhandledException += (o, e) => untimelyDemise.OnNext(Unit.Default);
+        }
+
         public AutoSuspendActivityHelper(Activity hostActivity)
         {
             var methodsToCheck = new[] {
-                "OnCreate", "OnResume", "OnPause", "OnSaveInstanceState",
+                "OnCreate", "OnRestart", "OnPause", "OnSaveInstanceState", "OnStart",
             };
 
             var missingMethod = methodsToCheck
@@ -39,8 +48,13 @@ namespace ReactiveUI.Mobile
             Observable.Merge(onCreate, onSaveInstanceState).Subscribe(x => LatestBundle = x);
 
             RxApp.SuspensionHost.IsLaunchingNew = onCreate.Select(_ => Unit.Default);
-            RxApp.SuspensionHost.IsResuming = onResume;
-            RxApp.SuspensionHost.IsUnpausing = onResume;
+            RxApp.SuspensionHost.IsResuming = onRestart;
+            RxApp.SuspensionHost.IsUnpausing = onStart;
+
+            RxApp.SuspensionHost.ShouldPersistState = Observable.Merge(
+                onPause.Select(_ => Disposable.Empty), onSaveInstanceState.Select(_ => Disposable.Empty));
+
+            RxApp.SuspensionHost.ShouldInvalidateState = untimelyDemise;
         }
 
         public void OnCreate(Bundle bundle)
@@ -48,14 +62,14 @@ namespace ReactiveUI.Mobile
             onCreate.OnNext(bundle);
         }
 
-        public void OnResume()
+        public void OnStart()
         {
-            onResume.OnNext(Unit.Default);
+            onStart.OnNext(Unit.Default);
         }
 
-        public void OnPause()
+        public void OnRestart()
         {
-            onResume.OnNext(Unit.Default);
+            onRestart.OnNext(Unit.Default);
         }
 
         public void OnSaveInstanceState(Bundle outState)
