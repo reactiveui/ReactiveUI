@@ -27,7 +27,7 @@ namespace ReactiveUI.Mobile
             };
         }
 
-        public IObservable<T> LoadState<T>() where T : class, IApplicationRootState
+        public IObservable<object> LoadState()
         {
             var serializer = JsonSerializer.Create(SerializerSettings);
 
@@ -36,15 +36,15 @@ namespace ReactiveUI.Mobile
                 .SelectMany(x => {
                     try {
                         var reader = new JsonTextReader(new StringReader(x));
-                        var ret = serializer.Deserialize<T>(reader);
+                        var ret = serializer.Deserialize(reader);
                         return Observable.Return(ret);
                     } catch (Exception ex) {
-                        return Observable.Throw<T>(ex);
+                        return Observable.Throw<object>(ex);
                     }
                 });
         }
 
-        public IObservable<Unit> SaveState<T>(T state) where T : class, IApplicationRootState
+        public IObservable<Unit> SaveState(object state)
         {
             var serializer = JsonSerializer.Create(SerializerSettings);
             try {

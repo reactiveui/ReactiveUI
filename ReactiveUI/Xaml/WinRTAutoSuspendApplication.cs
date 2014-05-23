@@ -13,49 +13,29 @@ using Splat;
 
 namespace ReactiveUI.Mobile
 {
-    class WinRTSuspensionHost : ISuspensionHost
-    {
-        public IObservable<Unit> IsLaunchingNew { get { return AutoSuspendApplication.SuspensionHost.IsLaunchingNew; } }
-        public IObservable<Unit> IsResuming { get { return AutoSuspendApplication.SuspensionHost.IsResuming; } }
-        public IObservable<Unit> IsUnpausing { get { return AutoSuspendApplication.SuspensionHost.IsUnpausing; } }
-        public IObservable<IDisposable> ShouldPersistState { get { return AutoSuspendApplication.SuspensionHost.ShouldPersistState; } }
-        public IObservable<Unit> ShouldInvalidateState { get { return AutoSuspendApplication.SuspensionHost.ShouldInvalidateState; } }
-
-        public void SetupDefaultSuspendResume(ISuspensionDriver driver = null)
-        {
-            var app = (AutoSuspendApplication) Application.Current;
-            app.setupDefaultSuspendResume(driver);
-        }
-    }
-
     public abstract class AutoSuspendApplication : Application, IEnableLogger
     {
         readonly ReplaySubject<LaunchActivatedEventArgs> _launched = new ReplaySubject<LaunchActivatedEventArgs>();
-        internal static SuspensionHost SuspensionHost;
-
-        IApplicationRootState viewModel { get; set; }
 
         protected AutoSuspendApplication()
         {
-            var host = new SuspensionHost();
-
             var launchNew = new[] { ApplicationExecutionState.ClosedByUser, ApplicationExecutionState.NotRunning, };
-            host.IsLaunchingNew = _launched
+            RxApp.SuspensionHost.IsLaunchingNew = _launched
                 .Where(x => launchNew.Contains(x.PreviousExecutionState))
                 .Select(_ => Unit.Default);
 
-            host.IsResuming = _launched
+            RxApp.SuspensionHost.IsResuming = _launched
                 .Where(x => x.PreviousExecutionState == ApplicationExecutionState.Terminated)
                 .Select(_ => Unit.Default);
 
             var unpausing = new[] { ApplicationExecutionState.Suspended, ApplicationExecutionState.Running, };
-            host.IsUnpausing = _launched
+            RxApp.SuspensionHost.IsUnpausing = _launched
                 .Where(x => unpausing.Contains(x.PreviousExecutionState))
                 .Select(_ => Unit.Default);
 
             var shouldPersistState = new Subject<SuspendingEventArgs>();
             Suspending += (o, e) => shouldPersistState.OnNext(e);
-            host.ShouldPersistState =
+            RxApp.SuspensionHost.ShouldPersistState =
                 shouldPersistState.Select(x => {
                     var deferral = x.SuspendingOperation.GetDeferral();
                     return Disposable.Create(deferral.Complete);
@@ -63,41 +43,7 @@ namespace ReactiveUI.Mobile
 
             var shouldInvalidateState = new Subject<Unit>();
             UnhandledException += (o, e) => shouldInvalidateState.OnNext(Unit.Default);
-            host.ShouldInvalidateState = shouldInvalidateState;
-
-            SuspensionHost = host;
-
-            Locator.RegisterResolverCallbackChanged(() => {
-                if (Locator.CurrentMutable == null) return;
-                Locator.CurrentMutable.Register(() => this.viewModel, typeof(IApplicationRootState), "CurrentState");
-            });
-        }
-
-        internal void setupDefaultSuspendResume(ISuspensionDriver driver)
-        {
-            driver = driver ?? Locator.Current.GetService<ISuspensionDriver>();
-
-            SuspensionHost.ShouldInvalidateState
-                .SelectMany(_ => driver.InvalidateState())
-                .LoggedCatch(this, Observable.Return(Unit.Default), "Tried to invalidate app state")
-                .Subscribe(_ => this.Log().Info("Invalidated app state"));
-
-            SuspensionHost.ShouldPersistState
-                .SelectMany(x => driver.SaveState(viewModel).Finally(x.Dispose))
-                .LoggedCatch(this, Observable.Return(Unit.Default), "Tried to persist app state")
-                .Subscribe(_ => this.Log().Info("Persisted application state"));
-
-            SuspensionHost.IsResuming
-                .SelectMany(x => driver.LoadState<IApplicationRootState>())
-                .LoggedCatch(this,
-                    Observable.Defer(() => Observable.Return(Locator.Current.GetService<IApplicationRootState>())),
-                    "Failed to restore app state from storage, creating from scratch")
-                .ObserveOn(RxApp.MainThreadScheduler)
-                .Subscribe(x => viewModel = x);
-
-            SuspensionHost.IsLaunchingNew.Subscribe(_ => {
-                viewModel = Locator.Current.GetService<IApplicationRootState>();
-            });
+            RxApp.SuspensionHost.ShouldInvalidateState = shouldInvalidateState;
         }
 
         protected override void OnLaunched(LaunchActivatedEventArgs args)
