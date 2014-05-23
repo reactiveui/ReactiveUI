@@ -12,21 +12,6 @@ using Splat;
 
 namespace ReactiveUI.Mobile
 {
-    class CocoaSuspensionHost : ISuspensionHost
-    {
-        public IObservable<Unit> IsLaunchingNew { get { return ((AutoSuspendAppDelegate)UIApplication.SharedApplication.Delegate).SuspensionHost.IsLaunchingNew; } }
-        public IObservable<Unit> IsResuming { get { return ((AutoSuspendAppDelegate)UIApplication.SharedApplication.Delegate).SuspensionHost.IsResuming; } }
-        public IObservable<Unit> IsUnpausing { get { return ((AutoSuspendAppDelegate)UIApplication.SharedApplication.Delegate).SuspensionHost.IsUnpausing; } }
-        public IObservable<IDisposable> ShouldPersistState { get { return ((AutoSuspendAppDelegate)UIApplication.SharedApplication.Delegate).SuspensionHost.ShouldPersistState; } }
-        public IObservable<Unit> ShouldInvalidateState { get { return ((AutoSuspendAppDelegate)UIApplication.SharedApplication.Delegate).SuspensionHost.ShouldInvalidateState; } }
-
-        public void SetupDefaultSuspendResume(ISuspensionDriver driver = null)
-        {
-            var app = (AutoSuspendAppDelegate) UIApplication.SharedApplication.Delegate;
-            app.setupDefaultSuspendResume(driver);
-        }
-    }
-
     /// <summary>
     /// AutoSuspend-based App Delegate. To use AutoSuspend with iOS, change your
     /// AppDelegate to inherit from this class, then call:
@@ -40,23 +25,19 @@ namespace ReactiveUI.Mobile
         readonly Subject<UIApplication> _backgrounded = new Subject<UIApplication>();
         readonly Subject<UIApplication> _willTerminate = new Subject<UIApplication>();
 
-        internal SuspensionHost SuspensionHost;
-        protected IApplicationRootState viewModel { get ; set;}
-
         public IDictionary<string, string> LaunchOptions { get; protected set; }
 
         public AutoSuspendAppDelegate()
         {
-            var host = new SuspensionHost();
-            host.IsLaunchingNew = Observable.Never<Unit>();
-            host.IsResuming = _finishedLaunching.Select(_ => Unit.Default);
-            host.IsUnpausing = _activated.Select(_ => Unit.Default);
+            RxApp.SuspensionHost.IsLaunchingNew = Observable.Never<Unit>();
+            RxApp.SuspensionHost.IsResuming = _finishedLaunching.Select(_ => Unit.Default);
+            RxApp.SuspensionHost.IsUnpausing = _activated.Select(_ => Unit.Default);
 
             var untimelyDeath = new Subject<Unit>();
             AppDomain.CurrentDomain.UnhandledException += (o,e) => untimelyDeath.OnNext(Unit.Default);
 
-            host.ShouldInvalidateState = untimelyDeath;
-            host.ShouldPersistState = _willTerminate.Merge(_backgrounded).SelectMany(app => {
+            RxApp.SuspensionHost.ShouldInvalidateState = untimelyDeath;
+            RxApp.SuspensionHost.ShouldPersistState = _willTerminate.Merge(_backgrounded).SelectMany(app => {
                 var taskId = app.BeginBackgroundTask(new NSAction(() => untimelyDeath.OnNext(Unit.Default)));
 
                 // NB: We're being force-killed, signal invalidate instead
@@ -65,15 +46,7 @@ namespace ReactiveUI.Mobile
                     return Observable.Empty<IDisposable>();
                 }
 
-                return Observable.Return(
-                    Disposable.Create(() => app.EndBackgroundTask(taskId)));
-            });
-
-            SuspensionHost = host;
-
-            Locator.RegisterResolverCallbackChanged(() => {
-                if (Locator.CurrentMutable == null) return;
-                Locator.CurrentMutable.Register(() => this.viewModel, typeof(IApplicationRootState), "CurrentState");
+                return Observable.Return(Disposable.Create(() => app.EndBackgroundTask(taskId)));
             });
         }
 
