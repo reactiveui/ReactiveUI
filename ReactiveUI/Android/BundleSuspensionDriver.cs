@@ -21,9 +21,14 @@ namespace ReactiveUI.Mobile
         public IObservable<object> LoadState()
         {
             try {
-                return Observable.Return(JsonConvert.DeserializeObject(
-                    AutoSuspendActivityHelper.LatestBundle.GetString("__state"),
-                    SerializerSettings));
+                // NB: Sometimes OnCreate gives us a null bundle
+                if (AutoSuspendActivityHelper.LatestBundle == null) {
+                    return Observable.Return(default(object));
+                }
+
+                var ret = JsonConvert.DeserializeObject(
+                    AutoSuspendActivityHelper.LatestBundle.GetString("__state"), SerializerSettings);
+                return Observable.Return(ret);
             } catch (Exception ex) {
                 return Observable.Throw<object>(ex);
             }
