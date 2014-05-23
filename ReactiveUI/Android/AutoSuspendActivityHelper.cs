@@ -10,28 +10,6 @@ using Splat;
 
 namespace ReactiveUI.Mobile
 {
-    class AndroidSuspensionHost : ISuspensionHost
-    {
-        internal static ISuspensionHost inner { get; set; }
-        internal static Bundle latestBundle { get; set; }
-
-        static AndroidSuspensionHost()
-        {
-            inner = new SuspensionHost();
-        }
-
-        public IObservable<Unit> IsLaunchingNew { get { return inner.IsLaunchingNew; } }
-        public IObservable<Unit> IsResuming { get { return inner.IsResuming; } }
-        public IObservable<Unit> IsUnpausing { get { return inner.IsUnpausing; } } 
-        public IObservable<IDisposable> ShouldPersistState { get { return inner.ShouldPersistState; } }
-        public IObservable<Unit> ShouldInvalidateState { get { return inner.ShouldInvalidateState; } }
-
-        public void SetupDefaultSuspendResume(ISuspensionDriver driver = null)
-        {
-            inner.SetupDefaultSuspendResume(driver);
-        }
-    }
-
     public class AutoSuspendActivityHelper : IEnableLogger
     {
         readonly Subject<Bundle> onCreate = new Subject<Bundle>();
@@ -39,17 +17,7 @@ namespace ReactiveUI.Mobile
         readonly Subject<Unit> onPause = new Subject<Unit>();
         readonly Subject<Bundle> onSaveInstanceState = new Subject<Bundle>();
 
-        static IApplicationRootState viewModel { get; set; }
-
-        public ISuspensionHost SuspensionHost { get; set; }
-
-        static AutoSuspendActivityHelper()
-        {
-            Locator.RegisterResolverCallbackChanged(() => {
-                if (Locator.CurrentMutable == null) return;
-                Locator.CurrentMutable.Register(() => AutoSuspendActivityHelper.viewModel, typeof(IApplicationRootState), "CurrentState");
-            });
-        }
+        public static Bundle LatestBundle { get; set; }
 
         public AutoSuspendActivityHelper(Activity hostActivity)
         {
@@ -68,16 +36,11 @@ namespace ReactiveUI.Mobile
                 throw new Exception(String.Format("Your activity must implement {0} and call AutoSuspendActivityHelper.{0}", missingMethod.Item1));
             }
 
-            Observable.Merge(onCreate, onSaveInstanceState)
-                .Subscribe(x => AndroidSuspensionHost.latestBundle = x);
+            Observable.Merge(onCreate, onSaveInstanceState).Subscribe(x => LatestBundle = x);
 
-            var host = new SuspensionHost();
-            host.IsLaunchingNew = onCreate.Select(_ => Unit.Default);
-            host.IsResuming = onResume;
-            host.IsUnpausing = onResume;
-
-            SuspensionHost = host;
-            AndroidSuspensionHost.inner = host;
+            RxApp.SuspensionHost.IsLaunchingNew = onCreate.Select(_ => Unit.Default);
+            RxApp.SuspensionHost.IsResuming = onResume;
+            RxApp.SuspensionHost.IsUnpausing = onResume;
         }
 
         public void OnCreate(Bundle bundle)
