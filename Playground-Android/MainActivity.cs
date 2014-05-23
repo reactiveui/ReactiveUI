@@ -30,6 +30,8 @@ namespace MobileSample_Android
         protected override void OnCreate(Bundle bundle)
         {
             base.OnCreate(bundle);
+
+            App.EnsureInitialized();
             suspendHelper.OnCreate(bundle);
 
             // Set our view from the "main" layout resource
@@ -38,7 +40,6 @@ namespace MobileSample_Android
             this.WireUpControls();
 
             RxApp.SuspensionHost.ObserveAppState<AppBootstrapper>()
-                .StartWith(RxApp.SuspensionHost.GetAppState<AppBootstrapper>())
                 .Select(x => x.SavedGuid)
                 .Do(x => {
                     Console.WriteLine(x);
