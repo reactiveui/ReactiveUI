@@ -21,19 +21,19 @@ namespace ReactiveUI.Mobile
             };
         }
 
-        public IObservable<T> LoadState<T>() where T : class, IApplicationRootState
+        public IObservable<object> LoadState()
         {
             var serializer = JsonSerializer.Create(SerializerSettings);
             try {
                 var state = (string) PhoneApplicationService.Current.State["state"];
                 var reader = new JsonTextReader(new StringReader(state));
-                return Observable.Return(serializer.Deserialize<T>(reader));
+                return Observable.Return(serializer.Deserialize(reader));
             } catch (Exception ex) {
-                return Observable.Throw<T>(ex);
+                return Observable.Throw<object>(ex);
             }
         }
 
-        public IObservable<Unit> SaveState<T>(T state) where T : class, IApplicationRootState
+        public IObservable<Unit> SaveState(object state)
         {
             var serializer = JsonSerializer.Create(SerializerSettings);
             try {

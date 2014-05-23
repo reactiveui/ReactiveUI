@@ -42,7 +42,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Platform\Registrations.cs" />
-    <Compile Include="SuspensionHost.cs" />
     <Compile Include="Xaml\ActivationForViewFetcher.cs" />
     <Compile Include="Xaml\AutoDataTemplateBindingHook.cs" />
     <Compile Include="Xaml\BindingTypeConverters.cs" />
