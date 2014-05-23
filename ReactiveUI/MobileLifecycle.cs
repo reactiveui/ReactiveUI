@@ -92,16 +92,13 @@ namespace ReactiveUI.Mobile
                 .LoggedCatch(This, Observable.Return(Unit.Default), "Tried to persist app state")
                 .Subscribe(_ => This.Log().Info("Persisted application state")));
 
-            ret.Add(This.IsResuming
+            ret.Add(Observable.Merge(This.IsResuming, This.IsLaunchingNew)
                 .SelectMany(x => driver.LoadState())
                 .LoggedCatch(This,
                     Observable.Defer(() => Observable.Return(This.CreateNewAppState())),
                     "Failed to restore app state from storage, creating from scratch")
                 .ObserveOn(RxApp.MainThreadScheduler)
-                .Subscribe(x => This.AppState = x));
-
-            ret.Add(This.IsLaunchingNew.Subscribe(_ =>
-                This.AppState = This.CreateNewAppState()));
+                .Subscribe(x => This.AppState = x ?? This.CreateNewAppState()));
 
             return ret;
         }
