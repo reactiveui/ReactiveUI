@@ -67,42 +67,45 @@ namespace ReactiveUI.Mobile
 
             ShouldPersistState = Observable.Throw<IDisposable>(new Exception(message));
         }
+    }
 
-        public IObservable<T> ObserveAppState<T>()
+    public static class SuspensionHostExtensions
+    {
+        public static IObservable<T> ObserveAppState<T>(this ISuspensionHost This)
         {
-            return this.WhenAny(x => x.AppState, x => (T)x.Value);
+            return This.WhenAny(x => x.AppState, x => (T)x.Value);
         }
 
-        public T GetAppState<T>()
+        public static T GetAppState<T>(this ISuspensionHost This)
         {
-            return (T)AppState;
+            return (T)This.AppState;
         }
                 
-        public IDisposable SetupDefaultSuspendResume(ISuspensionDriver driver = null)
+        public static IDisposable SetupDefaultSuspendResume(this ISuspensionHost This, ISuspensionDriver driver = null)
         {
             var ret = new CompositeDisposable();
             driver = driver ?? Locator.Current.GetService<ISuspensionDriver>();
 
-            ret.Add(this.ShouldInvalidateState
+            ret.Add(This.ShouldInvalidateState
                 .SelectMany(_ => driver.InvalidateState())
-                .LoggedCatch(this, Observable.Return(Unit.Default), "Tried to invalidate app state")
-                .Subscribe(_ => this.Log().Info("Invalidated app state")));
+                .LoggedCatch(This, Observable.Return(Unit.Default), "Tried to invalidate app state")
+                .Subscribe(_ => This.Log().Info("Invalidated app state")));
 
-            ret.Add(this.ShouldPersistState
-                .SelectMany(x => driver.SaveState(AppState).Finally(x.Dispose))
-                .LoggedCatch(this, Observable.Return(Unit.Default), "Tried to persist app state")
-                .Subscribe(_ => this.Log().Info("Persisted application state")));
+            ret.Add(This.ShouldPersistState
+                .SelectMany(x => driver.SaveState(This.AppState).Finally(x.Dispose))
+                .LoggedCatch(This, Observable.Return(Unit.Default), "Tried to persist app state")
+                .Subscribe(_ => This.Log().Info("Persisted application state")));
 
-            ret.Add(this.IsResuming
+            ret.Add(This.IsResuming
                 .SelectMany(x => driver.LoadState<IApplicationRootState>())
-                .LoggedCatch(this,
-                    Observable.Defer(() => Observable.Return(CreateNewAppState())),
+                .LoggedCatch(This,
+                    Observable.Defer(() => Observable.Return(This.CreateNewAppState())),
                     "Failed to restore app state from storage, creating from scratch")
                 .ObserveOn(RxApp.MainThreadScheduler)
-                .Subscribe(x => AppState = x));
+                .Subscribe(x => This.AppState = x));
 
-            ret.Add(this.IsLaunchingNew.Subscribe(_ => {
-                AppState = CreateNewAppState();
+            ret.Add(This.IsLaunchingNew.Subscribe(_ => {
+                This.AppState = This.CreateNewAppState();
             }));
 
             return ret;
