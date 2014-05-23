@@ -68,6 +68,8 @@ namespace ReactiveUI
             if (_MainThreadScheduler == null) {
                 _MainThreadScheduler = DefaultScheduler.Instance;
             }
+
+            SuspensionHost = new SuspensionHost();
         }
 
         [ThreadStatic] static IScheduler _UnitTestMainThreadScheduler;
