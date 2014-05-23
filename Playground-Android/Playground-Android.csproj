@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>10.0.0</ProductVersion>
+    <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{D444AA58-1C6B-4CEE-B5F5-76145E0B86E5}</ProjectGuid>
     <ProjectTypeGuids>{EFBA0AD7-5A72-4C68-AF49-83D382785DCF};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -26,8 +26,8 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <AndroidUseSharedRuntime>True</AndroidUseSharedRuntime>
     <AndroidLinkMode>None</AndroidLinkMode>
+    <EmbedAssembliesIntoApk>True</EmbedAssembliesIntoApk>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -43,8 +43,6 @@
       <HintPath>..\ext\monodroid\Splat.dll</HintPath>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Runtime" />
-    <Reference Include="System.Threading.Tasks" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
     <Reference Include="Mono.Android" />
@@ -60,6 +58,7 @@
     <Reference Include="System.Reactive.PlatformServices">
       <HintPath>..\ext\monodroid\System.Reactive.PlatformServices.dll</HintPath>
     </Reference>
+    <Reference Include="System.Runtime.Serialization" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ViewModels\WatchListItemViewModel.cs" />
@@ -91,12 +90,8 @@
     <AndroidResource Include="Resources\layout\Secondary.axml" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ReactiveUI.Mobile\ReactiveUI.Mobile_Android.csproj">
-      <Project>{a92e477b-bb94-43c1-984e-e177ef9fedb1}</Project>
-      <Name>ReactiveUI.Mobile_Android</Name>
-    </ProjectReference>
     <ProjectReference Include="..\ReactiveUI\ReactiveUI_Android.csproj">
-      <Project>{f5a6e11b-b074-4a0b-b937-267d840e31df}</Project>
+      <Project>{F5A6E11B-B074-4A0B-B937-267D840E31DF}</Project>
       <Name>ReactiveUI_Android</Name>
     </ProjectReference>
   </ItemGroup>
