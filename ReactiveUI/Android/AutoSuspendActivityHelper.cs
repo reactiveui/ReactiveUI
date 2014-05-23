@@ -31,7 +31,7 @@ namespace ReactiveUI.Mobile
         public AutoSuspendActivityHelper(Activity hostActivity)
         {
             var methodsToCheck = new[] {
-                "OnCreate", "OnRestart", "OnPause", "OnSaveInstanceState", "OnStart",
+                "OnCreate", "OnRestart", "OnSaveInstanceState", "OnStart",
             };
 
             var missingMethod = methodsToCheck
