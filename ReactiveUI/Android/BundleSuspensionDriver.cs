@@ -7,20 +7,30 @@ namespace ReactiveUI.Mobile
 {
     public class BundleSuspensionDriver : ISuspensionDriver
     {
-        public IObservable<T> LoadState<T>() where T : class, IApplicationRootState
+        public JsonSerializerSettings SerializerSettings { get; set; }
+
+        public BundleSuspensionDriver()
+        {
+            SerializerSettings = new JsonSerializerSettings() {
+                TypeNameHandling = TypeNameHandling.All,
+            };
+        }
+
+        public IObservable<object> LoadState()
         {
             try {
-                return Observable.Return(JsonConvert.DeserializeObject<T>(
-                    AutoSuspendActivityHelper.LatestBundle.GetString("__state")));
+                return Observable.Return(JsonConvert.DeserializeObject(
+                    AutoSuspendActivityHelper.LatestBundle.GetString("__state"),
+                    SerializerSettings));
             } catch (Exception ex) {
-                return Observable.Throw<T>(ex);
+                return Observable.Throw<object>(ex);
             }
         }
 
-        public IObservable<Unit> SaveState<T>(T state) where T : class, IApplicationRootState
+        public IObservable<Unit> SaveState(object state)
         {
             try {
-                AutoSuspendActivityHelper.LatestBundle.PutString("__state", JsonConvert.SerializeObject(state));
+                AutoSuspendActivityHelper.LatestBundle.PutString("__state", JsonConvert.SerializeObject(state, SerializerSettings));
                 return Observable.Return(Unit.Default);
             
             } catch(Exception ex) {
