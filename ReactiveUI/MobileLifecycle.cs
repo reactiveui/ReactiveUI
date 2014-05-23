@@ -44,10 +44,10 @@ namespace ReactiveUI.Mobile
             set { shouldInvalidateStateSub.Disposable = value.Subscribe(shouldInvalidateStateProxy); }
         }
 
-        public Func<IApplicationRootState> CreateNewAppState { get; set; }
+        public Func<object> CreateNewAppState { get; set; }
 
-        IApplicationRootState appState;
-        public IApplicationRootState AppState {
+        object appState;
+        public object AppState {
             get { return appState; }
             set { this.RaiseAndSetIfChanged(ref appState, value); }
         }
@@ -97,7 +97,7 @@ namespace ReactiveUI.Mobile
                 .Subscribe(_ => This.Log().Info("Persisted application state")));
 
             ret.Add(This.IsResuming
-                .SelectMany(x => driver.LoadState<IApplicationRootState>())
+                .SelectMany(x => driver.LoadState())
                 .LoggedCatch(This,
                     Observable.Defer(() => Observable.Return(This.CreateNewAppState())),
                     "Failed to restore app state from storage, creating from scratch")
@@ -114,12 +114,12 @@ namespace ReactiveUI.Mobile
 
     public class DummySuspensionDriver : ISuspensionDriver
     {
-        public IObservable<T> LoadState<T>() where T : class, IApplicationRootState
+        public IObservable<object> LoadState()
         {
-            return Observable.Return(Activator.CreateInstance<T>());
+            return Observable.Return(default(object));
         }
 
-        public IObservable<Unit> SaveState<T>(T state) where T : class, IApplicationRootState
+        public IObservable<Unit> SaveState(object state)
         {
             return Observable.Return(Unit.Default);
         }
