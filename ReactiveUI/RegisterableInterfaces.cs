@@ -354,7 +354,7 @@ namespace ReactiveUI.Mobile
     {
         /// <summary>
         /// Signals when the application is launching new. This can happen when
-        /// an app has recently crashed, as well as the firs time the app has
+        /// an app has recently crashed, as well as the first time the app has
         /// been launched. Apps should create their state from scratch.
         /// </summary>
         IObservable<Unit> IsLaunchingNew { get; set; }
