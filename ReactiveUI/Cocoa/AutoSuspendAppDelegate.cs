@@ -23,7 +23,6 @@ namespace ReactiveUI.Mobile
         readonly Subject<UIApplication> _finishedLaunching = new Subject<UIApplication>();
         readonly Subject<UIApplication> _activated = new Subject<UIApplication>();
         readonly Subject<UIApplication> _backgrounded = new Subject<UIApplication>();
-        readonly Subject<UIApplication> _willTerminate = new Subject<UIApplication>();
 
         public IDictionary<string, string> LaunchOptions { get; protected set; }
 
@@ -38,18 +37,17 @@ namespace ReactiveUI.Mobile
 
             RxApp.SuspensionHost.ShouldInvalidateState = untimelyDeath;
 
-            RxApp.SuspensionHost.ShouldPersistState = Observable.Merge(_willTerminate, _backgrounded)
-                .SelectMany(app => {
-                    var taskId = app.BeginBackgroundTask(new NSAction(() => untimelyDeath.OnNext(Unit.Default)));
+            RxApp.SuspensionHost.ShouldPersistState = _backgrounded.SelectMany(app => {
+                var taskId = app.BeginBackgroundTask(new NSAction(() => untimelyDeath.OnNext(Unit.Default)));
 
-                    // NB: We're being force-killed, signal invalidate instead
-                    if (taskId == UIApplication.BackgroundTaskInvalid) {
-                        untimelyDeath.OnNext(Unit.Default);
-                        return Observable.Empty<IDisposable>();
-                    }
+                // NB: We're being force-killed, signal invalidate instead
+                if (taskId == UIApplication.BackgroundTaskInvalid) {
+                    untimelyDeath.OnNext(Unit.Default);
+                    return Observable.Empty<IDisposable>();
+                }
 
-                    return Observable.Return(Disposable.Create(() => app.EndBackgroundTask(taskId)));
-                });
+                return Observable.Return(Disposable.Create(() => app.EndBackgroundTask(taskId)));
+            });
         }
 
         public override bool FinishedLaunching(UIApplication application, NSDictionary launchOptions)
@@ -75,11 +73,6 @@ namespace ReactiveUI.Mobile
         public override void DidEnterBackground(UIApplication application)
         {
             _backgrounded.OnNext(application);
-        }
-
-        public override void WillTerminate(UIApplication application)
-        {
-            _willTerminate.OnNext(application);
         }
     }
 }
