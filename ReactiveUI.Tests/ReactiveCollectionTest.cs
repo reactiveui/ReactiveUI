@@ -1633,8 +1633,51 @@ namespace ReactiveUI.Tests
             Assert.Equal(1, fixture.Count);
             Assert.False(fixture.Contains("bar"));
         }
+
+        [Fact]
+        public void ItemChangingZippedWithItemChangedTest()
+        {
+            var fixture = new ReactiveList<ReactivePerson>() { ChangeTrackingEnabled = true };
+            string oldName = string.Empty;
+            string newName = string.Empty;
+            string propertyName = string.Empty;
+            var sender = new ReactivePerson();
+
+            Assert.NotNull(fixture);
+            var names = new string[] { "Alice", "Bob" };
+
+            fixture.ItemChangedWithHistory().Subscribe(x => {
+                oldName = (string)x.Value.Item1;
+                newName = (string)x.Value.Item2;
+                propertyName = x.PropertyName;
+                sender = x.Sender;
+            });
+
+            // Add records
+            var namesList = new List<ReactivePerson>();
+            namesList.AddRange(names.Select(n => new ReactivePerson { FirstName = n }));
+            fixture.AddRange(namesList);
+
+            // manipulate records
+            fixture[0].FirstName = "Eve";
+
+            // Assert
+            Assert.Equal(oldName, "Alice");
+            Assert.Equal(newName, "Eve");
+            Assert.Equal(propertyName, "FirstName");
+            Assert.Same(sender, namesList.First());
+        }
     }
 
+    public class ReactivePerson : ReactiveObject
+    {
+        string _firstName;
+        public string FirstName
+        {
+            get { return _firstName; }
+            set { this.RaiseAndSetIfChanged(ref _firstName, value); }
+        }
+    }
 #if SILVERLIGHT
     public class JSONHelper
     {

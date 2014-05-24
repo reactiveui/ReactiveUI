@@ -6,6 +6,7 @@ using System.Diagnostics.Contracts;
 using System.Reactive.Disposables;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Reflection;
 using System.Runtime.Serialization;
@@ -63,12 +64,13 @@ namespace ReactiveUI
 
         [IgnoreDataMember]
         public IObservable<Exception> ThrownExceptions { get { return this.getThrownExceptionsObservable(); } }
-        
+
         protected ReactiveObject()
         {
         }
 
-        public IDisposable SuppressChangeNotifications() {
+        public IDisposable SuppressChangeNotifications()
+        {
             return this.suppressChangeNotifications();
         }
 

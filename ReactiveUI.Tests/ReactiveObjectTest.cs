@@ -100,6 +100,21 @@ namespace ReactiveUI.Tests
             output.AssertAreEqual(output_changing);
             results.AssertAreEqual(output);
         }
+        
+        [Fact]        
+        public void ReactiveObjectChangeWithHistoryTest()
+        {
+            var fixture = new TestFixture();
+            IObservedChange<ReactiveObject, Tuple<object, object>> result = null;
+
+            fixture.ChangedWithHistory().Subscribe(x => result = x);
+            
+            fixture.IsOnlyOneWord = "Alice";
+            fixture.IsOnlyOneWord = "Bob";
+
+            Assert.Equal(result.Value.Item1, "Alice");
+            Assert.Equal(result.Value.Item2, "Bob");
+        }
 
         [Fact]
         public void ReactiveObjectShouldntSerializeAnythingExtra()
@@ -128,7 +143,6 @@ namespace ReactiveUI.Tests
             Assert.Equal(1, output.Count);
             Assert.Equal("UsesExprRaiseSet", output[0]);
         }
-
 
         [Fact]
         public void ObservableForPropertyUsingExpression()

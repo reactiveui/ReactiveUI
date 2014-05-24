@@ -371,7 +371,7 @@ namespace ReactiveUI
         /// A unique string that will be used along with the type to resolve a View
         /// </summary>
         public string Contract { get; set; }
-    }
+    }    
 }
 
 // vim: tw=120 ts=4 sw=4 et :

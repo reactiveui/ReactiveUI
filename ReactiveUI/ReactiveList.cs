@@ -132,6 +132,7 @@ namespace ReactiveUI
             Changing.Where(_ => this.areChangeNotificationsEnabled()).Subscribe(_ => this.RaisePropertyChanging("Item[]"));
 
             Changed.Where(_ => this.areChangeNotificationsEnabled()).Subscribe(_ => this.RaisePropertyChanged("Item[]"));
+            
         }
 
         public bool IsEmpty
@@ -513,7 +514,7 @@ namespace ReactiveUI
 
         public IObservable<IObservedChange<T, object>> ItemChanging { get { return _itemChanging.Value; } }
         public IObservable<IObservedChange<T, object>> ItemChanged { get { return _itemChanged.Value; } }
-        
+
         public IObservable<int> CountChanging {
             get { return _changing.Select(_ => _inner.Count).DistinctUntilChanged(); }
         }

@@ -142,7 +142,16 @@ namespace ReactiveUI
                 skipInitial);
         }
 
-
+        /// <summary> 
+        /// Represents an observable that fires *after* a property has changed, providing access to both the old and new values.
+        /// </summary>
+        public static IObservable<IObservedChange<TSender, Tuple<object, object>>> ChangedWithHistory<TSender>(this IReactiveNotifyPropertyChanged<TSender> This)
+        {
+            return This.Changing.Select(x => x.GetValue())
+                .Zip(This.Changed, (oldRecVal, newRec) => 
+                    new ObservedChange<TSender, Tuple<object, object>>(newRec.Sender, newRec.PropertyName, Tuple.Create(oldRecVal, newRec.GetValue())));
+        }
+        
         static IObservedChange<object, object> observedChangeFor(string propertyName, IObservedChange<object, object> sourceChange)
         {
             if (sourceChange.Value == null) {
