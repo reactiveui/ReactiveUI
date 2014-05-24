@@ -37,17 +37,19 @@ namespace ReactiveUI.Mobile
             AppDomain.CurrentDomain.UnhandledException += (o,e) => untimelyDeath.OnNext(Unit.Default);
 
             RxApp.SuspensionHost.ShouldInvalidateState = untimelyDeath;
-            RxApp.SuspensionHost.ShouldPersistState = _willTerminate.Merge(_backgrounded).SelectMany(app => {
-                var taskId = app.BeginBackgroundTask(new NSAction(() => untimelyDeath.OnNext(Unit.Default)));
 
-                // NB: We're being force-killed, signal invalidate instead
-                if (taskId == UIApplication.BackgroundTaskInvalid) {
-                    untimelyDeath.OnNext(Unit.Default);
-                    return Observable.Empty<IDisposable>();
-                }
+            RxApp.SuspensionHost.ShouldPersistState = Observable.Merge(_willTerminate, _backgrounded)
+                .SelectMany(app => {
+                    var taskId = app.BeginBackgroundTask(new NSAction(() => untimelyDeath.OnNext(Unit.Default)));
 
-                return Observable.Return(Disposable.Create(() => app.EndBackgroundTask(taskId)));
-            });
+                    // NB: We're being force-killed, signal invalidate instead
+                    if (taskId == UIApplication.BackgroundTaskInvalid) {
+                        untimelyDeath.OnNext(Unit.Default);
+                        return Observable.Empty<IDisposable>();
+                    }
+
+                    return Observable.Return(Disposable.Create(() => app.EndBackgroundTask(taskId)));
+                });
         }
 
         public override bool FinishedLaunching(UIApplication application, NSDictionary launchOptions)
