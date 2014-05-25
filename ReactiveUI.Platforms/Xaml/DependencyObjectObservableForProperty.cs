@@ -93,7 +93,7 @@ namespace ReactiveUI.Xaml
                 var ret = typeInfo.GetDeclaredProperty(propertyName);
                 if (ret != null && ret.IsStatic()) return ret;
 
-                current = current.BaseType.GetTypeInfo();
+                current = current.BaseType != null ? current.BaseType.GetTypeInfo() : null;
             }
 
             return null;
@@ -106,7 +106,7 @@ namespace ReactiveUI.Xaml
                 var ret = typeInfo.GetDeclaredField(propertyName);
                 if (ret != null && ret.IsStatic) return ret;
 
-                current = current.BaseType.GetTypeInfo();
+                current = current.BaseType != null ? current.BaseType.GetTypeInfo() : null;
             }
 
             return null;
