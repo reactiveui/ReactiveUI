@@ -87,7 +87,7 @@ public class TweetsListViewModel : ReactiveObject
 
         VisibleTiles = TweetTiles.CreateDerivedCollection(
             x => x,
-            x => x.IsVisible);
+            x => !x.IsHidden);
     }
 }
 ```
