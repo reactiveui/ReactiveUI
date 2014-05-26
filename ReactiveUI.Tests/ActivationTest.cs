@@ -16,6 +16,7 @@ namespace ReactiveUI.Tests
         public ViewModelActivator Activator { get; protected set; }
 
         public int IsActiveCount { get; protected set; }
+        public int ActivationHandlerCallCount { get; protected set; }
 
         public ActivatingViewModel()
         {
@@ -23,6 +24,7 @@ namespace ReactiveUI.Tests
                 
             this.WhenActivated(d => {
                 IsActiveCount++;
+                this.ActivationHandlerCallCount++;
                 d(Disposable.Create(() => IsActiveCount--));
             });
         }
@@ -58,11 +60,13 @@ namespace ReactiveUI.Tests
         {
             this.WhenActivated(d => {
                 IsActiveCount++;
+                ActivationHandlerCount++;
                 d(Disposable.Create(() => IsActiveCount--));
             });
         }
 
         public int IsActiveCount { get; set; }
+        public int ActivationHandlerCount { get; protected set; }
 
         public Subject<Unit> Loaded = new Subject<Unit>();
         public Subject<Unit> Unloaded = new Subject<Unit>();
@@ -150,6 +154,35 @@ namespace ReactiveUI.Tests
                 fixture.Unloaded.OnNext(Unit.Default);
                 Assert.Equal(0, vm.IsActiveCount);
                 Assert.Equal(0, fixture.IsActiveCount);
+            }
+        }
+
+        [Fact]
+        public void ActivatingViewMultipleTimesShouldOnlyCallActivationHandlerOnce()
+        {
+            var locator = new ModernDependencyResolver();
+            locator.InitializeSplat();
+            locator.InitializeReactiveUI();
+            locator.Register(() => new ActivatingViewFetcher(), typeof(IActivationForViewFetcher));
+
+            using (locator.WithResolver())
+            {
+                var vm = new ActivatingViewModel();
+                var fixture = new ActivatingView();
+
+                fixture.ViewModel = vm;
+                Assert.Equal(0, vm.ActivationHandlerCallCount);
+                Assert.Equal(0, fixture.ActivationHandlerCount);
+
+                //now trigger the 'activating' logic twice without de-activating:
+
+                fixture.Loaded.OnNext(Unit.Default);
+                Assert.Equal(1, vm.ActivationHandlerCallCount);
+                Assert.Equal(1, fixture.ActivationHandlerCount);
+
+                fixture.Loaded.OnNext(Unit.Default);
+                Assert.Equal(1, vm.ActivationHandlerCallCount); //activation handler should not have been called twice
+                Assert.Equal(1, fixture.ActivationHandlerCount);
             }
         }
 
