@@ -6,17 +6,21 @@ using System.Reactive.Linq;
 using MonoMac.Foundation;
 using MonoMac.AppKit;
 using System.Reactive.Disposables;
+using Splat;
 
 namespace ReactiveUI
 {
-    public class AutoSuspendAppDelegate : NSApplicationDelegate
+    public class AutoSuspendHelper : IEnableLogger
     {
         readonly Subject<IDisposable> shouldPersistState = new Subject<IDisposable>();
         readonly Subject<Unit> isResuming = new Subject<Unit>();
         readonly Subject<Unit> isUnpausing = new Subject<Unit>();
 
-        public AutoSuspendAppDelegate()
+        public AutoSuspendHelper(NSApplicationDelegate appDelegate)
         {
+            Reflection.ThrowIfMethodsNotOverloaded("AutoSuspendHelper", appDelegate,
+                "ApplicationShouldTerminate", "DidFinishLaunching", "DidResignActive", "DidBecomeActive", "DidHide");
+
             RxApp.SuspensionHost.IsLaunchingNew = Observable.Never<Unit>();
             RxApp.SuspensionHost.IsResuming = isResuming;
             RxApp.SuspensionHost.IsUnpausing = isUnpausing;
@@ -29,7 +33,7 @@ namespace ReactiveUI
             RxApp.SuspensionHost.ShouldInvalidateState = untimelyDemise;
         }
 
-        public override NSApplicationTerminateReply ApplicationShouldTerminate(NSApplication sender)
+        public NSApplicationTerminateReply ApplicationShouldTerminate(NSApplication sender)
         {
             RxApp.MainThreadScheduler.Schedule(() =>
                 shouldPersistState.OnNext(Disposable.Create(() =>
@@ -38,22 +42,22 @@ namespace ReactiveUI
             return NSApplicationTerminateReply.Later;
         }
 
-        public override void DidFinishLaunching(NSNotification notification)
+        public void DidFinishLaunching(NSNotification notification)
         {
             isResuming.OnNext(Unit.Default);
         }
 
-        public override void DidResignActive(NSNotification notification)
+        public void DidResignActive(NSNotification notification)
         {
             shouldPersistState.OnNext(Disposable.Empty);
         }
 
-        public override void DidBecomeActive(NSNotification notification)
+        public void DidBecomeActive(NSNotification notification)
         {
             isUnpausing.OnNext(Unit.Default);
         }
 
-        public override void DidHide(NSNotification notification)
+        public void DidHide(NSNotification notification)
         {
             shouldPersistState.OnNext(Disposable.Empty);
         }
