@@ -13,7 +13,7 @@ using Android.Views;
 
 namespace MobileSample_Android
 {
-    [Activity(Label = "AndroidPlayground", MainLauncher = true)]
+    //[Activity(Label = "AndroidPlayground", MainLauncher = true)]
     public class WatchListActivity : ReactiveActivity<WatchListViewModel>
     {
         public Button OpenMarket { get; private set; }

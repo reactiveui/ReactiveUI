@@ -69,6 +69,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="mscorlib.Extensions" />
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\ext\WP80\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="Splat">
       <HintPath>..\ext\WP80\Splat.dll</HintPath>
     </Reference>
@@ -102,10 +105,12 @@
     <Compile Include="Xaml\BindingTypeConverters.cs" />
     <Compile Include="Xaml\CreatesCommandBinding.cs" />
     <Compile Include="Xaml\DependencyObjectObservableForProperty.cs" />
+    <Compile Include="Xaml\PhoneServiceStateDriver.cs" />
     <Compile Include="Xaml\PlatformOperations.cs" />
     <Compile Include="Xaml\RoutedViewHost.cs" />
     <Compile Include="Xaml\TransitioningContentControl.cs" />
     <Compile Include="Xaml\ViewModelViewHost.cs" />
+    <Compile Include="Xaml\WP8AutoSuspendApplication.cs" />
     <Compile Include="Xaml\XamlDefaultPropertyBinding.cs" />
     <Compile Include="..\CommonAssemblyInfo.cs">
       <Link>Properties\CommonAssemblyInfo.cs</Link>
@@ -119,13 +124,13 @@
     <Compile Include="CompatMixins.cs" />
     <Compile Include="ContractStubs.cs" />
     <Compile Include="DefaultPropertyBinding.cs" />
-    <Compile Include="DummySuspension.cs" />
     <Compile Include="Errors.cs" />
     <Compile Include="IDependencyResolver.cs" />
     <Compile Include="INPCObservableForProperty.cs" />
     <Compile Include="Interfaces.cs" />
     <Compile Include="IROObservableForProperty.cs" />
     <Compile Include="MessageBus.cs" />
+    <Compile Include="MobileLifecycle.cs" />
     <Compile Include="NullDefaultPropertyBindingProvider.cs" />
     <Compile Include="ObservableAsPropertyHelper.cs" />
     <Compile Include="ObservedChangedMixin.cs" />
