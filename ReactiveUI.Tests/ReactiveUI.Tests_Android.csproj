@@ -120,10 +120,6 @@
       <Project>{1131910a-9d6d-473f-9c69-3dcf6a1c81bc}</Project>
       <Name>Microsoft.Reactive.Testing_Android</Name>
     </ProjectReference>
-    <ProjectReference Include="..\ReactiveUI.Mobile\ReactiveUI.Mobile_Android.csproj">
-      <Project>{a92e477b-bb94-43c1-984e-e177ef9fedb1}</Project>
-      <Name>ReactiveUI.Mobile_Android</Name>
-    </ProjectReference>
     <ProjectReference Include="..\ReactiveUI.Testing\ReactiveUI.Testing_Android.csproj">
       <Project>{1920477b-bb94-93cf-984e-e177ef9fedb1}</Project>
       <Name>ReactiveUI.Testing_Android</Name>
