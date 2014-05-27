@@ -1,55 +1,47 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-
 using MonoTouch.Foundation;
 using MonoTouch.UIKit;
-using ReactiveUI.Mobile;
 using ReactiveUI;
-using System.Reactive.Linq;
-using System.Reactive;
-using Splat;
+using ReactiveUI.Mobile;
 
-namespace MobileSample_iOS
+namespace PlaygroundiOS
 {
-    // The UIApplicationDelegate for the application. This class is responsible for launching the 
-    // User Interface of the application, as well as listening (and optionally responding) to 
+    // The UIApplicationDelegate for the application. This class is responsible for launching the
+    // User Interface of the application, as well as listening (and optionally responding) to
     // application events from iOS.
-    [Register ("AppDelegate")]
-    public partial class AppDelegate : AutoSuspendAppDelegate
+    [Register("AppDelegate")]
+    public partial class AppDelegate : UIApplicationDelegate
     {
-        public override bool WillFinishLaunching(UIApplication application, NSDictionary launchOptions)
+        // class-level declarations
+        public override UIWindow Window { get; set; }
+        readonly AutoSuspendHelper autoSuspendHelper;
+
+        public AppDelegate()
         {
-            // NB: Hax
-            var r = Locator.CurrentMutable;
-            (new ReactiveUI.Registrations()).Register((f, t) => r.Register(f, t));
-            (new ReactiveUI.Mobile.Registrations()).Register((f, t) => r.Register(f, t));
+            // if you want to use a different Application Delegate class from "AppDelegate"
+            // you can specify it here.
+            RxApp.SuspensionHost.CreateNewAppState = () => new AppState();
+            RxApp.SuspensionHost.SetupDefaultSuspendResume();
 
-            r.Register(() => new AppBootstrapper(), typeof(IApplicationRootState));
-            r.Register(() => new DummySuspensionDriver(), typeof(ISuspensionDriver));
+            autoSuspendHelper = new AutoSuspendHelper(this);
+        }
 
-            var host = r.GetService<ISuspensionHost>();
-            host.SetupDefaultSuspendResume();
-
+        public override bool FinishedLaunching(UIApplication application, NSDictionary launchOptions)
+        {
+            autoSuspendHelper.FinishedLaunching(application, launchOptions);
             return true;
         }
-    }
 
-    public class DummySuspensionDriver : ISuspensionDriver
-    {
-        public IObservable<T> LoadState<T>() where T : class, IApplicationRootState
+        public override void OnActivated(UIApplication application)
         {
-            return Observable.Throw<T>(new Exception("Didn't work lol"));
+            autoSuspendHelper.OnActivated(application);
         }
 
-        public IObservable<Unit> SaveState<T>(T state) where T : class, IApplicationRootState
+        public override void DidEnterBackground(UIApplication application)
         {
-            return Observable.Return(Unit.Default);
-        }
-
-        public IObservable<Unit> InvalidateState()
-        {
-            return Observable.Return(Unit.Default);
+            autoSuspendHelper.DidEnterBackground(application);
         }
     }
 }
