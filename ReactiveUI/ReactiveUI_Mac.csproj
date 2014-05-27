@@ -141,6 +141,7 @@
     <Compile Include="LoggingMixins.cs" />
     <Compile Include="IReactiveObject.cs" />
     <Compile Include="WeakEventManager.cs" />
+    <Compile Include="Cocoa\AutoLayoutViewModelViewHost.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Cocoa\" />
