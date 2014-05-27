@@ -99,10 +99,6 @@
       <Project>{74ba5b4e-257a-42a7-bdab-1fb40a903909}</Project>
       <Name>Microsoft.Reactive.Testing_iOS</Name>
     </ProjectReference>
-    <ProjectReference Include="..\ReactiveUI.Mobile\ReactiveUI.Mobile_iOS.csproj">
-      <Project>{9091337a-9e94-4dbd-801e-15e10db72ffc}</Project>
-      <Name>ReactiveUI.Mobile_iOS</Name>
-    </ProjectReference>
     <ProjectReference Include="..\ReactiveUI.Testing\ReactiveUI.Testing_iOS.csproj">
       <Project>{90913370-9e94-3dbd-8f1e-15e10db72ffc}</Project>
       <Name>ReactiveUI.Testing_iOS</Name>
