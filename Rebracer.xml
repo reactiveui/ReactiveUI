@@ -7,19 +7,6 @@
 <!--See https://github.com/SLaks/Rebracer for more information-->
 <UserSettings>
   <ToolsOptions>
-    <ToolsOptionsCategory name="Environment">
-      <ToolsOptionsSubCategory name="TaskList">
-        <PropertyValue name="CommentTokens" ArrayType="VT_VARIANT" ArrayElementCount="4">
-          <PropertyValue name="0">TODO:2</PropertyValue>
-          <PropertyValue name="1">HACK:2</PropertyValue>
-          <PropertyValue name="2">UNDONE:2</PropertyValue>
-          <PropertyValue name="3">UnresolvedMergeConflict:3</PropertyValue>
-        </PropertyValue>
-        <PropertyValue name="ConfirmTaskDeletion">true</PropertyValue>
-        <PropertyValue name="DontShowFilePaths">true</PropertyValue>
-        <PropertyValue name="WarnOnAddingHiddenItem">false</PropertyValue>
-      </ToolsOptionsSubCategory>
-    </ToolsOptionsCategory>
     <ToolsOptionsCategory name="TextEditor">
       <ToolsOptionsSubCategory name="CSharp-Specific">
         <PropertyValue name="AutoComment">1</PropertyValue>
@@ -46,7 +33,7 @@
         <PropertyValue name="NewLines_Keywords_Else">0</PropertyValue>
         <PropertyValue name="NewLines_Keywords_Finally">0</PropertyValue>
         <PropertyValue name="NewLines_ObjectInitializer_EachMember">1</PropertyValue>
-        <PropertyValue name="NewLines_QueryExpression_EachClause">1</PropertyValue>
+        <PropertyValue name="NewLines_QueryExpression_EachClause">0</PropertyValue>
         <PropertyValue name="ShowKeywords">1</PropertyValue>
         <PropertyValue name="ShowSnippets">1</PropertyValue>
         <PropertyValue name="SortUsings_PlaceSystemFirst">1</PropertyValue>
@@ -77,155 +64,7 @@
         <PropertyValue name="Wrapping_IgnoreSpacesAroundVariableDeclaration">0</PropertyValue>
         <PropertyValue name="Wrapping_KeepStatementsOnSingleLine">1</PropertyValue>
         <PropertyValue name="Wrapping_PreserveSingleLine">1</PropertyValue>
-      </ToolsOptionsSubCategory>
-      <ToolsOptionsSubCategory name="JavaScript Specific">
-        <PropertyValue name="DownloadRemoteReferences">false</PropertyValue>
-        <PropertyValue name="FormatCompletedBlockOnRightCurlyBrace">true</PropertyValue>
-        <PropertyValue name="FormatCompletedLineOnEnter">true</PropertyValue>
-        <PropertyValue name="FormatCompletedStatementOnSemicolon">true</PropertyValue>
-        <PropertyValue name="FormatOnPaste">true</PropertyValue>
-        <PropertyValue name="ImplicitReferencesString">Implicit (Windows 8.0)|C:\Program Files (x86)\Microsoft Visual Studio 12.0\JavaScript\References\libhelp.js|C:\Program Files (x86)\Microsoft Visual Studio 12.0\JavaScript\References\sitetypesWindows.js|C:\Program Files (x86)\Microsoft Visual Studio 12.0\JavaScript\References\domWindows_8.0.js|C:\Program Files (x86)\Microsoft Visual Studio 12.0\JavaScript\References\underscorefilter.js|C:\Program Files (x86)\Microsoft Visual Studio 12.0\JavaScript\References\showPlainComments.js;Implicit (Windows 8.1)|C:\Program Files (x86)\Microsoft Visual Studio 12.0\JavaScript\References\libhelp.js|C:\Program Files (x86)\Microsoft Visual Studio 12.0\JavaScript\References\sitetypesWindows.js|C:\Program Files (x86)\Microsoft Visual Studio 12.0\JavaScript\References\domWindows_8.1.js|C:\Program Files (x86)\Microsoft Visual Studio 12.0\JavaScript\References\underscorefilter.js|C:\Program Files (x86)\Microsoft Visual Studio 12.0\JavaScript\References\showPlainComments.js;Implicit (Web)|C:\Program Files (x86)\Microsoft Visual Studio 12.0\JavaScript\References\libhelp.js|C:\Program Files (x86)\Microsoft Visual Studio 12.0\JavaScript\References\sitetypesWeb.js|C:\Program Files (x86)\Microsoft Visual Studio 12.0\JavaScript\References\domWeb.js|C:\Program Files (x86)\Microsoft Visual Studio 12.0\JavaScript\References\underscorefilter.js|C:\Program Files (x86)\Microsoft Visual Studio 12.0\JavaScript\References\showPlainComments.js|~/Scripts/_references.js;Dedicated Worker|C:\Program Files (x86)\Microsoft Visual Studio 12.0\JavaScript\References\libhelp.js|C:\Program Files (x86)\Microsoft Visual Studio 12.0\JavaScript\References\dedicatedworker.js|C:\Program Files (x86)\Microsoft Visual Studio 12.0\JavaScript\References\underscorefilter.js|C:\Program Files (x86)\Microsoft Visual Studio 12.0\JavaScript\References\showPlainComments.js;Generic|C:\Program Files (x86)\Microsoft Visual Studio 12.0\JavaScript\References\libhelp.js|C:\Program Files (x86)\Microsoft Visual Studio 12.0\JavaScript\References\underscorefilter.js|C:\Program Files (x86)\Microsoft Visual Studio 12.0\JavaScript\References\showPlainComments.js;</PropertyValue>
-        <PropertyValue name="InsertSpaceAfterCommaDelimiter">true</PropertyValue>
-        <PropertyValue name="InsertSpaceAfterFunctionKeywordForAnonymousFunctions">true</PropertyValue>
-        <PropertyValue name="InsertSpaceAfterKeywordsInControlFlowStatements">true</PropertyValue>
-        <PropertyValue name="InsertSpaceAfterOpeningAndBeforeClosingNonemptyParenthesis">false</PropertyValue>
-        <PropertyValue name="InsertSpaceAfterSemicolonInForStatements">true</PropertyValue>
-        <PropertyValue name="InsertSpaceBeforeAndAfterBinaryOperators">true</PropertyValue>
-        <PropertyValue name="PlaceOpenBraceOnNewLineForControlBlocks">false</PropertyValue>
-        <PropertyValue name="PlaceOpenBraceOnNewLineForFunctions">false</PropertyValue>
-        <PropertyValue name="ShowErrorsAsWarnings">true</PropertyValue>
-        <PropertyValue name="ShowSyntaxErrors">true</PropertyValue>
-      </ToolsOptionsSubCategory>
-      <ToolsOptionsSubCategory name="C/C++ Specific">
-        <PropertyValue name="AddSemicolonForClassTypes">true</PropertyValue>
-        <PropertyValue name="AlignParameters">false</PropertyValue>
-        <PropertyValue name="AlwaysUseFallbackLocation">false</PropertyValue>
-        <PropertyValue name="AutoFormatOnBraceCompletion">true</PropertyValue>
-        <PropertyValue name="AutoFormatOnClosingBrace">true</PropertyValue>
-        <PropertyValue name="AutoFormatOnPaste">true</PropertyValue>
-        <PropertyValue name="AutoFormatOnSemicolon">true</PropertyValue>
-        <PropertyValue name="AutoIndentOnTab">false</PropertyValue>
-        <PropertyValue name="AutoTuneMaximumCachedTranslationUnits">true</PropertyValue>
-        <PropertyValue name="AutomaticOutliningOfPragmaRegions">true</PropertyValue>
-        <PropertyValue name="AutomaticOutliningOfStatementBlocks">false</PropertyValue>
-        <PropertyValue name="ColorizeInactiveBlocksDifferently">true</PropertyValue>
-        <PropertyValue name="DisableAggressiveMemberList">false</PropertyValue>
-        <PropertyValue name="DisableDatabase">false</PropertyValue>
-        <PropertyValue name="DisableDatabaseAutoUpdates">false</PropertyValue>
-        <PropertyValue name="DisableDatabaseImplicitAutoCleanup">false</PropertyValue>
-        <PropertyValue name="DisableDatabaseImplicitFiles">false</PropertyValue>
-        <PropertyValue name="DisableDatabaseUpdates">false</PropertyValue>
-        <PropertyValue name="DisableErrorReporting">false</PropertyValue>
-        <PropertyValue name="DisableExternalDependenciesFolders">false</PropertyValue>
-        <PropertyValue name="DisableInactiveCodeOpacity">false</PropertyValue>
-        <PropertyValue name="DisableIncludeAutoComplete">false</PropertyValue>
-        <PropertyValue name="DisableIntelliSense">false</PropertyValue>
-        <PropertyValue name="DisableIntelliSenseUpdating">false</PropertyValue>
-        <PropertyValue name="DisableMemberListExpansions">false</PropertyValue>
-        <PropertyValue name="DisableMemberListKeywords">false</PropertyValue>
-        <PropertyValue name="DisablePreLoadNavigateToCache">false</PropertyValue>
-        <PropertyValue name="DisableReferenceHighlighting">false</PropertyValue>
-        <PropertyValue name="DisableSemanticColoring">false</PropertyValue>
-        <PropertyValue name="DisableSharedIntelliSense">false</PropertyValue>
-        <PropertyValue name="DisableSquiggles">false</PropertyValue>
-        <PropertyValue name="DoNotWarnIfFallbackLocationUsed">false</PropertyValue>
-        <PropertyValue name="EnableLogging">false</PropertyValue>
-        <PropertyValue name="EnableQuickInfoToolTips">true</PropertyValue>
-        <PropertyValue name="EnterOutliningModeWhenFilesOpen">true</PropertyValue>
-        <PropertyValue name="EnumerateCommentTasks">true</PropertyValue>
-        <PropertyValue name="FallbackLocation"></PropertyValue>
-        <PropertyValue name="GroupBrackets">true</PropertyValue>
-        <PropertyValue name="HideUnconfirmedReferencesResults">false</PropertyValue>
-        <PropertyValue name="HighlightMatchingTokens">true</PropertyValue>
-        <PropertyValue name="IndentAccessSpecifiers">false</PropertyValue>
-        <PropertyValue name="IndentBlockContents">true</PropertyValue>
-        <PropertyValue name="IndentBraces">false</PropertyValue>
-        <PropertyValue name="IndentCaseContents">true</PropertyValue>
-        <PropertyValue name="IndentCaseLabels">false</PropertyValue>
-        <PropertyValue name="IndentGotoLabels">1</PropertyValue>
-        <PropertyValue name="IndentNamespaceContents">true</PropertyValue>
-        <PropertyValue name="LoggingFilter">0</PropertyValue>
-        <PropertyValue name="LoggingLevel">5</PropertyValue>
-        <PropertyValue name="MaximumCachedTranslationUnits">2</PropertyValue>
-        <PropertyValue name="MemberListCommitAggressive">false</PropertyValue>
-        <PropertyValue name="MemberListCommitCharacters">{}[]().,:;+-*/%&amp;|^!=&lt;&gt;?@#\</PropertyValue>
-        <PropertyValue name="MemberListFilterInaccessible">true</PropertyValue>
-        <PropertyValue name="MemberListFilterMode">3</PropertyValue>
-        <PropertyValue name="NewlineControlBlockBrace">0</PropertyValue>
-        <PropertyValue name="NewlineEmptyFunctionCloseBrace">true</PropertyValue>
-        <PropertyValue name="NewlineEmptyTypeCloseBrace">true</PropertyValue>
-        <PropertyValue name="NewlineFunctionBrace">0</PropertyValue>
-        <PropertyValue name="NewlineInitListBrace">0</PropertyValue>
-        <PropertyValue name="NewlineKeywordCatch">true</PropertyValue>
-        <PropertyValue name="NewlineKeywordElse">true</PropertyValue>
-        <PropertyValue name="NewlineKeywordWhile">false</PropertyValue>
-        <PropertyValue name="NewlineLambdaBrace">0</PropertyValue>
-        <PropertyValue name="NewlineNamespaceBrace">0</PropertyValue>
-        <PropertyValue name="NewlineTypeBrace">0</PropertyValue>
-        <PropertyValue name="PreserveBlock">1</PropertyValue>
-        <PropertyValue name="PreserveParameterIndentation">false</PropertyValue>
-        <PropertyValue name="RecreateDatabase">false</PropertyValue>
-        <PropertyValue name="RemoveSpaceBeforeSemicolon">true</PropertyValue>
-        <PropertyValue name="RescanSolution">false</PropertyValue>
-        <PropertyValue name="RescanSolutionInterval">60</PropertyValue>
-        <PropertyValue name="SmartMemberListCommitOnEnter">false</PropertyValue>
-        <PropertyValue name="SpaceAfterCastParenthesis">false</PropertyValue>
-        <PropertyValue name="SpaceAfterComma">true</PropertyValue>
-        <PropertyValue name="SpaceAfterSemicolon">true</PropertyValue>
-        <PropertyValue name="SpaceAroundAssignmentOperator">2</PropertyValue>
-        <PropertyValue name="SpaceAroundBinaryOperator">2</PropertyValue>
-        <PropertyValue name="SpaceAroundConditionalOperator">2</PropertyValue>
-        <PropertyValue name="SpaceBeforeBracket">false</PropertyValue>
-        <PropertyValue name="SpaceBeforeComma">false</PropertyValue>
-        <PropertyValue name="SpaceBeforeConstructorColon">true</PropertyValue>
-        <PropertyValue name="SpaceBeforeControlBlockParenthesis">true</PropertyValue>
-        <PropertyValue name="SpaceBeforeEmptyBracket">false</PropertyValue>
-        <PropertyValue name="SpaceBeforeFunctionParenthesis">false</PropertyValue>
-        <PropertyValue name="SpaceBeforeInheritanceColon">true</PropertyValue>
-        <PropertyValue name="SpaceBeforeInitListBrace">false</PropertyValue>
-        <PropertyValue name="SpaceBeforeLambdaParenthesis">false</PropertyValue>
-        <PropertyValue name="SpaceBetweenEmptyBraces">false</PropertyValue>
-        <PropertyValue name="SpaceBetweenEmptyBrackets">false</PropertyValue>
-        <PropertyValue name="SpaceBetweenEmptyFunctionParentheses">false</PropertyValue>
-        <PropertyValue name="SpaceBetweenEmptyLambdaBrackets">false</PropertyValue>
-        <PropertyValue name="SpaceWithinBrackets">false</PropertyValue>
-        <PropertyValue name="SpaceWithinCastParentheses">false</PropertyValue>
-        <PropertyValue name="SpaceWithinControlBlockParentheses">false</PropertyValue>
-        <PropertyValue name="SpaceWithinExpressionParentheses">false</PropertyValue>
-        <PropertyValue name="SpaceWithinFunctionParentheses">false</PropertyValue>
-        <PropertyValue name="SpaceWithinInitListBraces">true</PropertyValue>
-        <PropertyValue name="SpaceWithinLambdaBrackets">false</PropertyValue>
-        <PropertyValue name="TrimSpaceAroundScope">true</PropertyValue>
-        <PropertyValue name="TrimSpaceUnaryOperator">true</PropertyValue>
-        <PropertyValue name="UseForwardSlashForIncludeAutoComplete">false</PropertyValue>
-      </ToolsOptionsSubCategory>
-      <ToolsOptionsSubCategory name="TypeScript Specific">
-        <PropertyValue name="AutomaticallyCompileTypeScriptFilesWhenSavedWhenNoSolution">false</PropertyValue>
-        <PropertyValue name="FormatCompletedBlockOnRightCurlyBrace">true</PropertyValue>
-        <PropertyValue name="FormatCompletedLineOnEnter">true</PropertyValue>
-        <PropertyValue name="FormatCompletedStatementOnSemicolon">true</PropertyValue>
-        <PropertyValue name="FormatOnPaste">true</PropertyValue>
-        <PropertyValue name="InsertSpaceAfterCommaDelimiter">true</PropertyValue>
-        <PropertyValue name="InsertSpaceAfterFunctionKeywordForAnonymousFunctions">true</PropertyValue>
-        <PropertyValue name="InsertSpaceAfterKeywordsInControlFlowStatements">true</PropertyValue>
-        <PropertyValue name="InsertSpaceAfterOpeningAndBeforeClosingNonemptyParenthesis">false</PropertyValue>
-        <PropertyValue name="InsertSpaceAfterSemicolonInForStatements">true</PropertyValue>
-        <PropertyValue name="InsertSpaceBeforeAndAfterBinaryOperators">true</PropertyValue>
-        <PropertyValue name="PlaceOpenBraceOnNewLineForControlBlocks">false</PropertyValue>
-        <PropertyValue name="PlaceOpenBraceOnNewLineForFunctions">false</PropertyValue>
-        <PropertyValue name="ShowVirtualProjectsInSolutionExplorerWhenNoSolution">true</PropertyValue>
-        <PropertyValue name="ShowVirtualProjectsInSolutionExplorerWhenSolutionOpen">false</PropertyValue>
-        <PropertyValue name="UseAMDCodeGenerationForModulesThatAreNotPartOfAProject">false</PropertyValue>
-        <PropertyValue name="UseCommonJSCodeGenerationForModulesThatAreNotPartOfAProject">false</PropertyValue>
-      </ToolsOptionsSubCategory>
-      <ToolsOptionsSubCategory name="HTMLX Specific">
-        <PropertyValue name="EnableValidation">true</PropertyValue>
-        <PropertyValue name="ErrorsAsWarnings">true</PropertyValue>
-        <PropertyValue name="FormatOnPaste">true</PropertyValue>
-        <PropertyValue name="InsertAttributeValueQuotes">true</PropertyValue>
-        <PropertyValue name="InsertClosingTag">true</PropertyValue>
-        <PropertyValue name="XHtmlCodingStyle">true</PropertyValue>
-      </ToolsOptionsSubCategory>
+      </ToolsOptionsSubCategory>      
     </ToolsOptionsCategory>
   </ToolsOptions>
 </UserSettings>
