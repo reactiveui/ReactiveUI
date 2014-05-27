@@ -141,7 +141,7 @@
     <Compile Include="LoggingMixins.cs" />
     <Compile Include="IReactiveObject.cs" />
     <Compile Include="WeakEventManager.cs" />
-    <Compile Include="Cocoa\AppKitAutoSuspendDelegate.cs" />
+    <Compile Include="Cocoa\AppKitAutoSuspendHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Cocoa\" />

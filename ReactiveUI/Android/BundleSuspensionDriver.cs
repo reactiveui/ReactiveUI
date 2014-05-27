@@ -22,12 +22,12 @@ namespace ReactiveUI.Mobile
         {
             try {
                 // NB: Sometimes OnCreate gives us a null bundle
-                if (AutoSuspendActivityHelper.LatestBundle == null) {
+                if (AutoSuspendHelper.LatestBundle == null) {
                     return Observable.Return(default(object));
                 }
 
                 var ret = JsonConvert.DeserializeObject(
-                    AutoSuspendActivityHelper.LatestBundle.GetString("__state"), SerializerSettings);
+                    AutoSuspendHelper.LatestBundle.GetString("__state"), SerializerSettings);
                 return Observable.Return(ret);
             } catch (Exception ex) {
                 return Observable.Throw<object>(ex);
@@ -37,7 +37,7 @@ namespace ReactiveUI.Mobile
         public IObservable<Unit> SaveState(object state)
         {
             try {
-                AutoSuspendActivityHelper.LatestBundle.PutString("__state", JsonConvert.SerializeObject(state, SerializerSettings));
+                AutoSuspendHelper.LatestBundle.PutString("__state", JsonConvert.SerializeObject(state, SerializerSettings));
                 return Observable.Return(Unit.Default);
             
             } catch(Exception ex) {
@@ -48,7 +48,7 @@ namespace ReactiveUI.Mobile
         public IObservable<Unit> InvalidateState()
         {
             try {
-                AutoSuspendActivityHelper.LatestBundle.PutString("__state", "");
+                AutoSuspendHelper.LatestBundle.PutString("__state", "");
                 return Observable.Return(Unit.Default);
             
             } catch(Exception ex) {

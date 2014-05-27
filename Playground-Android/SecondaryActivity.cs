@@ -19,7 +19,7 @@ namespace MobileSample_Android
     [Activity (Label = "SecondaryActivity")]
     public class SecondaryView : ReactiveActivity<SecondaryViewModel>
     {
-        readonly AutoSuspendActivityHelper suspendHelper;
+        readonly AutoSuspendHelper suspendHelper;
 
         public SecondaryView()
         {
@@ -27,7 +27,7 @@ namespace MobileSample_Android
             Console.WriteLine(App.Current);
             RxApp.MainThreadScheduler = new WaitForDispatcherScheduler(() => new AndroidUIScheduler(this));
 
-            suspendHelper = new AutoSuspendActivityHelper(this);
+            suspendHelper = new AutoSuspendHelper(this);
         }
 
         protected override void OnCreate(Bundle bundle)

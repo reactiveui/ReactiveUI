@@ -18,13 +18,13 @@ namespace MobileSample_Android
     public class MainView : ReactiveActivity<MainViewModel> 
     {
         int count = 1;
-        readonly AutoSuspendActivityHelper suspendHelper;
+        readonly AutoSuspendHelper suspendHelper;
 
         public TextView SavedGuid { get; set; }
 
         public MainView()
         {
-            suspendHelper = new AutoSuspendActivityHelper(this);
+            suspendHelper = new AutoSuspendHelper(this);
         }
 
         protected override void OnCreate(Bundle bundle)
