@@ -241,7 +241,7 @@ namespace ReactiveUI.Cocoa
             disp.Add(subscrDisp);
 
             // Decide when we should check for section changes.
-            var reactiveSectionInfo = newSectionInfo as IReactiveNotifyCollectionChanged<TSource>;
+            var reactiveSectionInfo = newSectionInfo as IReactiveNotifyCollectionChanged<TSectionInfo>;
 
             var sectionChanging = reactiveSectionInfo == null ? Observable.Never<Unit>() : reactiveSectionInfo
                 .Changing

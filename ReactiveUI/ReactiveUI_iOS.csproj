@@ -70,6 +70,7 @@
     <Compile Include="..\CommonAssemblyInfo.cs">
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Cocoa\AutoLayoutViewModelViewHost.cs" />
     <Compile Include="Cocoa\CocoaDefaultPropertyBinding.cs" />
     <Compile Include="Cocoa\KVOObservableForProperty.cs" />
     <Compile Include="Cocoa\LinkerOverrides.cs" />
@@ -149,5 +150,6 @@
     <Compile Include="LoggingMixins.cs" />
     <Compile Include="IReactiveObject.cs" />
     <Compile Include="WeakEventManager.cs" />
+    <Compile Include="Cocoa\ReactiveTableView.cs" />
   </ItemGroup>
 </Project>
