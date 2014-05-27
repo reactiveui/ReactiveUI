@@ -159,13 +159,10 @@ namespace ReactiveUI
                 // own TestScheduler, and if this wasn't ThreadStatic, they would
                 // stomp on each other, causing test cases to randomly fail,
                 // then pass when you rerun them.
-                if (ModeDetector.InUnitTestRunner())
-                {
+                if (ModeDetector.InUnitTestRunner()) {
                     _UnitTestSupportsRangeNotifications = value;
                     _SupportsRangeNotifications = value;
-                }
-                else
-                {
+                } else {
                     _SupportsRangeNotifications = value;
                 }
             }

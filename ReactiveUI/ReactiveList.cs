@@ -291,16 +291,13 @@ namespace ReactiveUI
                 }
 
                 // range notification
-                if (RxApp.SupportsRangeNotifications)
-                {
+                if (RxApp.SupportsRangeNotifications) {
                     var ea = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, list, _inner.Count/*we are appending a range*/);
 
                     _changing.OnNext(ea);
 
-                    if (_beforeItemsAdded.IsValueCreated)
-                    {
-                        foreach (var item in list)
-                        {
+                    if (_beforeItemsAdded.IsValueCreated) {
+                        foreach (var item in list) {
                             _beforeItemsAdded.Value.OnNext(item);
                         }
                     }
@@ -308,26 +305,23 @@ namespace ReactiveUI
                     _inner.AddRange(list);
 
                     _changed.OnNext(ea);
-                    if (_itemsAdded.IsValueCreated)
-                    {
-                        foreach (var item in list)
-                        {
+                    if (_itemsAdded.IsValueCreated) {
+                        foreach (var item in list) {
                             _itemsAdded.Value.OnNext(item);
                         }
                     }
 
-                    if (ChangeTrackingEnabled)
-                    {
-                        foreach (var item in list)
-                        {
+                    if (ChangeTrackingEnabled) {
+                        foreach (var item in list) {
                             addItemToPropertyTracking(item);
                         }
                     }
+
                     return;
                 }
+
                 // per item notification                
-                foreach (var item in list)
-                {
+                foreach (var item in list) {
                     this.Add(item);
                 }
             }
@@ -360,8 +354,7 @@ namespace ReactiveUI
                     return;
                 }
                 // range notification
-                if (RxApp.SupportsRangeNotifications)
-                {
+                if (RxApp.SupportsRangeNotifications) {
                     var ea = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, list, index);
 
                     _changing.OnNext(ea);
@@ -376,26 +369,23 @@ namespace ReactiveUI
                     _inner.InsertRange(index, list);
 
                     _changed.OnNext(ea);
-                    if (_itemsAdded.IsValueCreated)
-                    {
-                        foreach (var item in list)
-                        {
+                    if (_itemsAdded.IsValueCreated) {
+                        foreach (var item in list) {
                             _itemsAdded.Value.OnNext(item);
                         }
                     }
                     
-                    if (ChangeTrackingEnabled)
-                    {
-                        foreach (var item in list)
-                        {
+                    if (ChangeTrackingEnabled) {
+                        foreach (var item in list) {
                             addItemToPropertyTracking(item);
                         }
                     }
+
                     return;
                 }
+
                 // per item notification                
-                foreach (var item in list)
-                {
+                foreach (var item in list) {
                     this.Insert(index++, item);
                 }
             }
@@ -426,15 +416,12 @@ namespace ReactiveUI
                 }
 
                 // range notification
-                if (RxApp.SupportsRangeNotifications)
-                {
+                if (RxApp.SupportsRangeNotifications) {
                     var ea = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, items, index);
 
                     _changing.OnNext(ea);
-                    if (_beforeItemsRemoved.IsValueCreated)
-                    {
-                        foreach (var item in items)
-                        {
+                    if (_beforeItemsRemoved.IsValueCreated) {
+                        foreach (var item in items) {
                             _beforeItemsRemoved.Value.OnNext(item);
                         }
                     }
@@ -442,26 +429,22 @@ namespace ReactiveUI
                     _inner.RemoveRange(index, count);
                     _changed.OnNext(ea);
 
-                    if (ChangeTrackingEnabled)
-                    {
-                        foreach (var item in items)
-                        {
+                    if (ChangeTrackingEnabled) {
+                        foreach (var item in items) {
                             removeItemFromPropertyTracking(item);
                         }
                     }
 
-                    if (_itemsRemoved.IsValueCreated)
-                    {
-                        foreach (var item in items)
-                        {
+                    if (_itemsRemoved.IsValueCreated) {
+                        foreach (var item in items) {
                             _itemsRemoved.Value.OnNext(item);
                         }
                     }
                     return;
                 }
-                // per item notification                
-                foreach (var item in items)
-                {
+
+                // per item notification
+                foreach (var item in items) {
                     this.Remove(item);
                 }
             }
