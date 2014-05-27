@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Windows;
+using System.Windows.Controls;
 using ReactiveUI.Xaml;
 using Xunit;
 
@@ -73,8 +74,6 @@ namespace ReactiveUI.Tests
             disp2.Dispose();
         }
 
-
-
         [Fact]
         public void WhenAnyWithDependencyObjectTest()
         {
@@ -87,6 +86,24 @@ namespace ReactiveUI.Tests
             Assert.Null(outputs.First());
             Assert.Equal(4, outputs.Count);
             Assert.True(inputs.Zip(outputs.Skip(1), (expected, actual) => expected == actual).All(x => x));
+        }
+
+        [Fact]
+        public void ListBoxSelectedItemTest()
+        {
+            var input = new ListBox();
+            input.Items.Add("Foo");
+            input.Items.Add("Bar");
+            input.Items.Add("Baz");
+
+            var output = input.WhenAnyValue(x => x.SelectedItem).CreateCollection();
+            Assert.Equal(1, output.Count);
+
+            input.SelectedIndex = 1;
+            Assert.Equal(2, output.Count);
+
+            input.SelectedIndex = 2;
+            Assert.Equal(3, output.Count);
         }
     }
 }

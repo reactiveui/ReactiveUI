@@ -284,6 +284,20 @@ namespace ReactiveUI
             return eventArgsType;
         }
 
+        public static void ThrowIfMethodsNotOverloaded(string callingTypeName, object targetObject, params string[] methodsToCheck)
+        {
+            var missingMethod = methodsToCheck
+                .Select(x => {
+                    var methods = targetObject.GetType().GetTypeInfo().DeclaredMethods;
+                    return Tuple.Create(x, methods.FirstOrDefault(y => y.Name == x));
+                })
+                .FirstOrDefault(x => x.Item2 == null);
+
+            if (missingMethod != null) {
+                throw new Exception(String.Format("Your class must implement {0} and call {1}.{0}", missingMethod.Item1, callingTypeName));
+            }
+        }
+
         internal static IObservable<TProp> ViewModelWhenAnyValue<TView, TViewModel, TProp>(TViewModel viewModel, TView view, Expression<Func<TViewModel, TProp>> property)
             where TView : IViewFor
             where TViewModel : class
