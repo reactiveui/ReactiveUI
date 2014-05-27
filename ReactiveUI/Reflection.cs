@@ -237,7 +237,7 @@ namespace ReactiveUI
             return true;
         }
 
-        public static bool SetValueToPropertyChain<TValue>(object target, string[] propNames, TValue value, bool shouldThrow = true)
+        public static bool TrySetValueToPropertyChain<TValue>(object target, string[] propNames, TValue value, bool shouldThrow = true)
         {
             foreach (var propName in propNames.SkipLast(1)) {
                 var getter = shouldThrow ?
@@ -304,27 +304,35 @@ namespace ReactiveUI
                 .Switch();
         }
 
-        internal static string[] getDefaultViewPropChain(object view, string[] vmPropChain)
+        internal static string getViewPropChain(object view, string[] vmPropChain)
         {
             var vmPropertyName = vmPropChain.Last();
             var getter = GetValueFetcherForProperty(view.GetType(), vmPropertyName);
-            if (getter == null) {
+            if (getter == null)
+            {
                 throw new Exception(String.Format("Tried to bind to control but it wasn't present on the object: {0}.{1}",
                     view.GetType().FullName, vmPropertyName));
             }
 
-            var control = getter(view);
+            return vmPropertyName;
+        }
+
+        internal static string[] getViewPropChainWithDefault(object view, string[] vmPropChain)
+        {
+            var viewPropChain = getViewPropChain(view, vmPropChain);
+
+            var control = GetValueFetcherForProperty(view.GetType(), viewPropChain)(view);
 
             if (control == null) {
                 throw new Exception(String.Format("Tried to bind to control but it was null: {0}.{1}", view.GetType().FullName,
-                    vmPropertyName));
+                    viewPropChain));
             }
 
             var defaultProperty = DefaultPropertyBinding.GetPropertyForControl(control);
             if (defaultProperty == null) {
                 throw new Exception(String.Format("Couldn't find a default property for type {0}", control.GetType()));
             }
-            return new[] {vmPropertyName, defaultProperty};
+            return new[] { viewPropChain, defaultProperty};
         }
     }
 

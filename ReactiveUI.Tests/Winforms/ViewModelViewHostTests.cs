@@ -8,6 +8,12 @@ namespace ReactiveUI.Tests.Winforms
 {
     public class ViewModelViewHostTests
     {
+
+        public ViewModelViewHostTests()
+        {
+            ViewModelViewHost.DefaultCacheViewsEnabled = true;
+        }
+
         [Fact]
         public void SettingViewModelShouldAddTheViewtoItsControls()
         {
@@ -24,8 +30,11 @@ namespace ReactiveUI.Tests.Winforms
         [Fact]
         public void ShouldDisposePreviousView()
         {
-            var viewLocator = new FakeViewLocator { LocatorFunc = t => new FakeWinformsView() };
-            var target = new ViewModelViewHost();
+            var viewLocator = new FakeViewLocator { LocatorFunc = t => new FakeWinformsView()};
+            var target = new ViewModelViewHost()
+            {
+                CacheViews = false
+            };
             target.ViewLocator = viewLocator;
 
             target.ViewModel = new FakeWinformViewModel();
@@ -47,8 +56,34 @@ namespace ReactiveUI.Tests.Winforms
             var defaultContent = new Control();
             var target = new ViewModelViewHost { DefaultContent = defaultContent, ViewLocator = viewLocator };
 
-            Assert.Null(target.CurrentView);
+            Assert.Equal(target.CurrentView, defaultContent);
             Assert.True(target.Controls.Contains(defaultContent));
+        }
+
+        [Fact]
+        public void ShouldCacheViewWhenEnabled()
+        {
+            var viewLocator = new FakeViewLocator { LocatorFunc = t => new FakeWinformsView() };
+            var defaultContent = new Control();
+            var target = new ViewModelViewHost { DefaultContent = defaultContent, ViewLocator = viewLocator,CacheViews = true };
+
+            target.ViewModel = new FakeWinformViewModel();
+            var cachedView = target.Content;
+            target.ViewModel = new FakeWinformViewModel();
+            Assert.True(object.ReferenceEquals(cachedView, target.Content));
+        }
+
+        [Fact]
+        public void ShouldNotCacheViewWhenDisabled()
+        {
+            var viewLocator = new FakeViewLocator { LocatorFunc = t => new FakeWinformsView() };
+            var defaultContent = new Control();
+            var target = new ViewModelViewHost { DefaultContent = defaultContent, ViewLocator = viewLocator, CacheViews = false };
+
+            target.ViewModel = new FakeWinformViewModel();
+            var cachedView = target.CurrentView;
+            target.ViewModel = new FakeWinformViewModel();
+            Assert.False(object.ReferenceEquals(cachedView,target.CurrentView));
         }
     }
 

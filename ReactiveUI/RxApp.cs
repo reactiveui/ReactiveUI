@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Reactive;
 using System.Reactive.Concurrency;
+using System.Runtime.CompilerServices;
 using Splat;
 
 namespace ReactiveUI
@@ -29,11 +30,15 @@ namespace ReactiveUI
     {
         static RxApp()
         {
-#if PORTABLE
-            _TaskpoolScheduler = Scheduler.Default;
-#else
+#if !PORTABLE
             _TaskpoolScheduler = TaskPoolScheduler.Default;
 #endif
+
+            Locator.RegisterResolverCallbackChanged(() => {
+                if (Locator.CurrentMutable == null) return;
+                Locator.CurrentMutable.InitializeReactiveUI();
+            });
+
             DefaultExceptionHandler = Observer.Create<Exception>(ex => {
                 // NB: If you're seeing this, it means that an 
                 // ObservableAsPropertyHelper or the CanExecute of a 
@@ -60,14 +65,6 @@ namespace ReactiveUI
             }
 
             if (_MainThreadScheduler == null) {
-#if !ANDROID
-                // NB: We can't initialize a scheduler automatically on Android
-                // because it is intrinsically tied to the current Activity, 
-                // so devs have to set it up by hand :-/
-                LogHost.Default.Error("*** ReactiveUI Platform DLL reference not added - using Default scheduler *** ");
-                LogHost.Default.Error("Add a reference to ReactiveUI.{Xaml / Cocoa / etc}.");
-                LogHost.Default.Error("or consider explicitly setting RxApp.MainThreadScheduler if not");
-#endif
                 _MainThreadScheduler = DefaultScheduler.Instance;
             }
         }
@@ -139,6 +136,12 @@ namespace ReactiveUI
             set {
                 _DefaultExceptionHandler = value;
             }
+        }
+
+        [MethodImpl(MethodImplOptions.NoOptimization)]
+        internal static void EnsureInitialized()
+        {
+            // NB: This method only exists to invoke the static constructor
         }
 
 #if ANDROID || SILVERLIGHT || IOS

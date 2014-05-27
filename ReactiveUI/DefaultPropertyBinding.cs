@@ -8,6 +8,11 @@ namespace ReactiveUI
 {
     public class DefaultPropertyBinding
     {
+        static DefaultPropertyBinding()
+        {
+            RxApp.EnsureInitialized();
+        }
+
         public static string GetPropertyForControl(object control)
         {
             return Locator.Current.GetServices<IDefaultPropertyBindingProvider>()

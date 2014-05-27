@@ -12,21 +12,17 @@
     <dependencies>
       <group>
         <dependency id="reactiveui-core" version="[5.99.5-beta]" />
-        <dependency id="Newtonsoft.Json" version="6.0.1" />
       </group>
       <group targetFramework="net45">
         <dependency id="reactiveui-core" version="[5.99.5-beta]" />
-        <dependency id="Newtonsoft.Json" version="6.0.1" />
         <dependency id="Rx-Xaml" version="2.2.2" />
       </group>
       <group targetFramework="wp8">
         <dependency id="reactiveui-core" version="[5.99.5-beta]" />
-        <dependency id="Newtonsoft.Json" version="6.0.1" />
         <dependency id="Rx-Xaml" version="2.2.2" />
       </group>
       <group targetFramework="winrt45">
         <dependency id="reactiveui-core" version="[5.99.5-beta]" />
-        <dependency id="Newtonsoft.Json" version="6.0.1" />
         <dependency id="Rx-Xaml" version="2.2.2" />
       </group>
     </dependencies>
