@@ -37,10 +37,10 @@ namespace ReactiveUI
 
             // Initialize this to false as most platforms do not support
             // range notification for INotifyCollectionChanged
-#if NET_45
-            SupportsRangeNotifications = true;
-#else
+#if WP8 || WINRT
             SupportsRangeNotifications = false;
+#else
+            SupportsRangeNotifications = true;
 #endif
 
             Locator.RegisterResolverCallbackChanged(() => {

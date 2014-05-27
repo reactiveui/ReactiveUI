@@ -287,11 +287,9 @@ namespace ReactiveUI
                             addItemToPropertyTracking(item);
                         }
                     }
-                    return;
                 }
-
                 // range notification
-                if (RxApp.SupportsRangeNotifications) {
+                else if (RxApp.SupportsRangeNotifications) {
                     var ea = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, list, _inner.Count/*we are appending a range*/);
 
                     _changing.OnNext(ea);
@@ -316,13 +314,11 @@ namespace ReactiveUI
                             addItemToPropertyTracking(item);
                         }
                     }
-
-                    return;
-                }
-
-                // per item notification                
-                foreach (var item in list) {
-                    this.Add(item);
+                } else {
+                    // per item notification                
+                    foreach (var item in list) {
+                        this.Add(item);
+                    }
                 }
             }
         }
@@ -350,18 +346,14 @@ namespace ReactiveUI
                             addItemToPropertyTracking(item);
                         }
                     }
-
-                    return;
                 }
                 // range notification
-                if (RxApp.SupportsRangeNotifications) {
+                else if (RxApp.SupportsRangeNotifications) {
                     var ea = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, list, index);
 
                     _changing.OnNext(ea);
-                    if (_beforeItemsAdded.IsValueCreated)
-                    {
-                        foreach (var item in list)
-                        {
+                    if (_beforeItemsAdded.IsValueCreated) {
+                        foreach (var item in list) {
                             _beforeItemsAdded.Value.OnNext(item);
                         }
                     }
@@ -374,19 +366,17 @@ namespace ReactiveUI
                             _itemsAdded.Value.OnNext(item);
                         }
                     }
-                    
+
                     if (ChangeTrackingEnabled) {
                         foreach (var item in list) {
                             addItemToPropertyTracking(item);
                         }
                     }
-
-                    return;
-                }
-
-                // per item notification                
-                foreach (var item in list) {
-                    this.Insert(index++, item);
+                } else {
+                    // per item notification                
+                    foreach (var item in list) {
+                        this.Insert(index++, item);
+                    }
                 }
             }
         }
@@ -412,11 +402,9 @@ namespace ReactiveUI
                             removeItemFromPropertyTracking(item);
                         }
                     }
-                    return;
                 }
-
                 // range notification
-                if (RxApp.SupportsRangeNotifications) {
+                else if (RxApp.SupportsRangeNotifications) {
                     var ea = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, items, index);
 
                     _changing.OnNext(ea);
@@ -440,12 +428,11 @@ namespace ReactiveUI
                             _itemsRemoved.Value.OnNext(item);
                         }
                     }
-                    return;
-                }
-
-                // per item notification
-                foreach (var item in items) {
-                    this.Remove(item);
+                } else {
+                    // per item notification
+                    foreach (var item in items) {
+                        this.Remove(item);
+                    }
                 }
             }
         }
@@ -491,8 +478,7 @@ namespace ReactiveUI
         {
             publishResetNotification();
         }
-
-
+        
         protected virtual void publishResetNotification()
         {
             var ea = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset);
@@ -505,12 +491,10 @@ namespace ReactiveUI
             return (double) toChangeLength/_inner.Count > ResetChangeThreshold &&
                 toChangeLength > 10;
         }
-
-
+        
         /*
          * IReactiveCollection<T>
          */
-
         public bool ChangeTrackingEnabled {
             get { return _propertyChangeWatchers != null; }
             set {
@@ -585,12 +569,10 @@ namespace ReactiveUI
                         Observable.Return(Unit.Default)), x => _resetSubCount += x);
             }
         }
-
-
+        
         /*
          * Property Change Tracking
          */
-
         void addItemToPropertyTracking(T toTrack)
         {
             if (_propertyChangeWatchers.ContainsKey(toTrack)) {
