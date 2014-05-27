@@ -4,15 +4,15 @@ using System.Collections.Generic;
 using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
-using MonoTouch.CoreFoundation;
 
 #if UIKIT
 using MonoTouch.UIKit;
 using MonoTouch.Foundation;
-
+using MonoTouch.CoreFoundation;
 #else
 using MonoMac.AppKit;
 using MonoMac.Foundation;
+using MonoMac.CoreFoundation;
 #endif
 
 namespace ReactiveUI.Cocoa
