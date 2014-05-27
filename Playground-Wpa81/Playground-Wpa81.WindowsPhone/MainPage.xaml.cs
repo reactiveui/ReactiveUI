@@ -13,6 +13,9 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 
+using ReactiveUI;
+using ReactiveUI.Mobile;
+
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234238
 
 namespace Playground_Wpa81
@@ -20,11 +23,24 @@ namespace Playground_Wpa81
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.
     /// </summary>
-    public sealed partial class MainPage : Page
+    public sealed partial class MainPage : Page, IViewFor<MainPageViewModel>
     {
         public MainPage()
         {
             this.InitializeComponent();
+
+            RxApp.SuspensionHost.ObserveAppState<MainPageViewModel>()
+                .BindTo(this, x => x.ViewModel);
+
+            this.BindCommand(ViewModel, x => x.DoIt, x => x.doIt);
+
+            int count = 0;
+            this.WhenAnyObservable(x => x.ViewModel.DoIt).Subscribe(_ => {
+                count++;
+                result.Text = String.Format("You clicked {0} times!", count);
+            });
+
+            this.OneWayBind(ViewModel, x => x.SavedGuid, x => x.SavedGuid.Text);
 
             this.NavigationCacheMode = NavigationCacheMode.Required;
         }
@@ -44,5 +60,18 @@ namespace Playground_Wpa81
             // If you are using the NavigationHelper provided by some templates,
             // this event is handled for you.
         }
+
+        public MainPageViewModel ViewModel {
+            get { return (MainPageViewModel)GetValue(ViewModelProperty); }
+            set { SetValue(ViewModelProperty, value); }
+        }
+        public static readonly DependencyProperty ViewModelProperty =
+            DependencyProperty.Register("ViewModel", typeof(MainPageViewModel), typeof(MainPage), new PropertyMetadata(null));
+
+        object IViewFor.ViewModel {
+            get { return ViewModel; }
+            set { ViewModel = (MainPageViewModel)ViewModel; }
+        }
+
     }
 }

@@ -9,6 +9,13 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Grid>
+        <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <Button x:Name="doIt" Content="Click me!" />
+            <TextBlock x:Name="result"  FontSize="16" />
+
+            <TextBlock Text="Your saved state GUID is:" FontSize="24" Margin="0,16,0,0"/>
+            <TextBlock x:Name="SavedGuid" FontSize="16" />
+        </StackPanel>
 
     </Grid>
 </Page>
