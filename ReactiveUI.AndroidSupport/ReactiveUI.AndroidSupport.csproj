@@ -12,7 +12,6 @@
     <RootNamespace>ReactiveUI.Android</RootNamespace>
     <AssemblyName>ReactiveUI.Android</AssemblyName>
     <FileAlignment>512</FileAlignment>
-    <AndroidUseLatestPlatformSdk />
     <RootNamespace>ReactiveUI.Android.Support</RootNamespace>
     <AssemblyName>ReactiveUI.Android.Support</AssemblyName>
     <FileAlignment>512</FileAlignment>

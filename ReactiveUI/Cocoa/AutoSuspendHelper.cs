@@ -18,7 +18,7 @@ namespace ReactiveUI.Mobile
     /// 
     /// Locator.Current.GetService<ISuspensionHost>().SetupDefaultSuspendResume();
     /// </summary>
-    public abstract class AutoSuspendAppDelegate : UIApplicationDelegate, IEnableLogger
+    public class AutoSuspendHelper : IEnableLogger
     {
         readonly Subject<UIApplication> _finishedLaunching = new Subject<UIApplication>();
         readonly Subject<UIApplication> _activated = new Subject<UIApplication>();
@@ -26,8 +26,11 @@ namespace ReactiveUI.Mobile
 
         public IDictionary<string, string> LaunchOptions { get; protected set; }
 
-        public AutoSuspendAppDelegate()
+        public AutoSuspendHelper(UIApplicationDelegate appDelegate)
         {
+            Reflection.ThrowIfMethodsNotOverloaded("AutoSuspendHelper", appDelegate,
+                "FinishedLaunching", "OnActivated", "DidEnterBackground");
+
             RxApp.SuspensionHost.IsLaunchingNew = Observable.Never<Unit>();
             RxApp.SuspensionHost.IsResuming = _finishedLaunching.Select(_ => Unit.Default);
             RxApp.SuspensionHost.IsUnpausing = _activated.Select(_ => Unit.Default);
@@ -50,7 +53,7 @@ namespace ReactiveUI.Mobile
             });
         }
 
-        public override bool FinishedLaunching(UIApplication application, NSDictionary launchOptions)
+        public void FinishedLaunching(UIApplication application, NSDictionary launchOptions)
         {
             if (launchOptions != null) {
                 LaunchOptions = launchOptions.Keys.ToDictionary(k => k.ToString(), v => launchOptions[v].ToString());
@@ -61,16 +64,14 @@ namespace ReactiveUI.Mobile
             // NB: This is run in-context (i.e. not scheduled), so by the time this
             // statement returns, UIWindow should be created already
             _finishedLaunching.OnNext(application);
-
-            return true;
         }
 
-        public override void OnActivated(UIApplication application)
+        public void OnActivated(UIApplication application)
         {
             _activated.OnNext(application);
         }
 
-        public override void DidEnterBackground(UIApplication application)
+        public void DidEnterBackground(UIApplication application)
         {
             _backgrounded.OnNext(application);
         }

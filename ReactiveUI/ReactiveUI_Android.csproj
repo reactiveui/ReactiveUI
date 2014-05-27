@@ -139,7 +139,7 @@
     <Compile Include="IReactiveObject.cs" />
     <Compile Include="WeakEventManager.cs" />
     <Compile Include="Android\BundleSuspensionDriver.cs" />
-    <Compile Include="Android\AutoSuspendActivityHelper.cs" />
+    <Compile Include="Android\AutoSuspendHelper.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
