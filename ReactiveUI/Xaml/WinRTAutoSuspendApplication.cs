@@ -13,12 +13,14 @@ using Splat;
 
 namespace ReactiveUI.Mobile
 {
-    public abstract class AutoSuspendApplication : Application, IEnableLogger
+    public class AutoSuspendHelper : IEnableLogger
     {
         readonly ReplaySubject<LaunchActivatedEventArgs> _launched = new ReplaySubject<LaunchActivatedEventArgs>(1);
 
-        protected AutoSuspendApplication()
+        public AutoSuspendHelper(Application app)
         {
+            Reflection.ThrowIfMethodsNotOverloaded("AutoSuspendHelper", app, "OnLaunched");
+
             var launchNew = new[] { ApplicationExecutionState.ClosedByUser, ApplicationExecutionState.NotRunning, };
             RxApp.SuspensionHost.IsLaunchingNew = _launched
                 .Where(x => launchNew.Contains(x.PreviousExecutionState))
@@ -34,7 +36,7 @@ namespace ReactiveUI.Mobile
                 .Select(_ => Unit.Default);
 
             var shouldPersistState = new Subject<SuspendingEventArgs>();
-            Suspending += (o, e) => shouldPersistState.OnNext(e);
+            app.Suspending += (o, e) => shouldPersistState.OnNext(e);
             RxApp.SuspensionHost.ShouldPersistState =
                 shouldPersistState.Select(x => {
                     var deferral = x.SuspendingOperation.GetDeferral();
@@ -42,13 +44,12 @@ namespace ReactiveUI.Mobile
                 });
 
             var shouldInvalidateState = new Subject<Unit>();
-            UnhandledException += (o, e) => shouldInvalidateState.OnNext(Unit.Default);
+            app.UnhandledException += (o, e) => shouldInvalidateState.OnNext(Unit.Default);
             RxApp.SuspensionHost.ShouldInvalidateState = shouldInvalidateState;
         }
 
-        protected override void OnLaunched(LaunchActivatedEventArgs args)
+        public void OnLaunched(LaunchActivatedEventArgs args)
         {
-            base.OnLaunched(args);
             _launched.OnNext(args);
         }
     }

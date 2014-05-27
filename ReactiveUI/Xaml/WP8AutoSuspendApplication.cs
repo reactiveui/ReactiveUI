@@ -14,9 +14,9 @@ using Splat;
 
 namespace ReactiveUI.Mobile
 {
-    public class AutoSuspendApplication : Application, IEnableLogger
+    public class AutoSuspendHelper : IEnableLogger
     {
-        protected AutoSuspendApplication()
+        public AutoSuspendHelper(Application app)
         {
             RxApp.SuspensionHost.IsLaunchingNew =
                 Observable.FromEventPattern<LaunchingEventArgs>(
@@ -51,7 +51,7 @@ namespace ReactiveUI.Mobile
                     .Select(_ => Disposable.Empty));
 
             RxApp.SuspensionHost.ShouldInvalidateState =
-                Observable.FromEventPattern<ApplicationUnhandledExceptionEventArgs>(x => UnhandledException += x, x => UnhandledException -= x)
+                Observable.FromEventPattern<ApplicationUnhandledExceptionEventArgs>(x => app.UnhandledException += x, x => app.UnhandledException -= x)
                     .Select(_ => Unit.Default);
         }
     }
