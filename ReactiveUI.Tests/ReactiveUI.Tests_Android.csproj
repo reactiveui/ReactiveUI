@@ -47,6 +47,11 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel" />
+    <Reference Include="System.Linq.Expressions" />
+    <Reference Include="System.ObjectModel" />
+    <Reference Include="System.Runtime" />
+    <Reference Include="System.Threading.Tasks" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
     <Reference Include="Mono.Android" />
@@ -119,10 +124,6 @@
       <Project>{a92e477b-bb94-43c1-984e-e177ef9fedb1}</Project>
       <Name>ReactiveUI.Mobile_Android</Name>
     </ProjectReference>
-    <ProjectReference Include="..\ReactiveUI.Platforms\ReactiveUI.Android.csproj">
-      <Project>{f5a6e11b-b074-4a0b-b937-267d840e31df}</Project>
-      <Name>ReactiveUI.Android</Name>
-    </ProjectReference>
     <ProjectReference Include="..\ReactiveUI.Testing\ReactiveUI.Testing_Android.csproj">
       <Project>{1920477b-bb94-93cf-984e-e177ef9fedb1}</Project>
       <Name>ReactiveUI.Testing_Android</Name>
@@ -130,6 +131,10 @@
     <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj">
       <Project>{464cb812-f99f-401b-be4c-e8f0515cd19d}</Project>
       <Name>ReactiveUI</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ReactiveUI\ReactiveUI_Android.csproj">
+      <Project>{f5a6e11b-b074-4a0b-b937-267d840e31df}</Project>
+      <Name>ReactiveUI_Android</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />

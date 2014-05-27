@@ -48,6 +48,11 @@ namespace ReactiveUI
 
     public static class ViewForMixins
     {
+        static ViewForMixins()
+        {
+            RxApp.EnsureInitialized();
+        }
+
         public static void WhenActivated(this ISupportsActivation This, Func<IEnumerable<IDisposable>> block)
         {
             This.Activator.addActivationBlock(block);
@@ -101,7 +106,7 @@ namespace ReactiveUI
                 }),
                 // Deactivation
                 activation.Item2.Subscribe(_ => {
-                    viewDisposable.Dispose();
+                    viewDisposable.Disposable = Disposable.Empty;
                 }),
                 viewDisposable);
         }
@@ -126,7 +131,7 @@ namespace ReactiveUI
                     }),
                 // Deactivation
                 activation.Item2.Subscribe(_ => {
-                    vmDisposable.Dispose();
+                    vmDisposable.Disposable = Disposable.Empty;
                 }),
                 vmDisposable);
         }

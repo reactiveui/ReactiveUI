@@ -10,7 +10,16 @@
     <language>en-us</language>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <dependencies>
-      <dependency id="reactiveui-platforms" version="[5.99.5-beta]" />
+      <group>
+        <dependency id="reactiveui-platforms" version="[5.99.5-beta]" />
+      </group>
+
+      <group targetFramework="MonoAndroid">
+        <dependency id="xamstore-xamarin.mobile" version="0.7.1" />
+      </group>
+      <group targetFramework="MonoTouch">
+        <dependency id="xamstore-xamarin.mobile" version="0.7.1" />
+      </group>
     </dependencies>
   </metadata>
 </package>

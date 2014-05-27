@@ -19,29 +19,19 @@ namespace ReactiveUI
         /// <param name="resolver">The resolver to initialize.</param>
         public static void InitializeReactiveUI(this IMutableDependencyResolver resolver)
         {
-            var platforms = new[] { 
-                "ReactiveUI.Xaml", 
-                "ReactiveUI.Winforms",
-                "ReactiveUI.Gtk", 
-                "ReactiveUI.Cocoa", 
-                "ReactiveUI.Android",
+            var extraNs = new[] {
+                "ReactiveUI.Mobile", 
+                "ReactiveUI.Winforms", 
             };
 
-            var extraNs = new[] {
-                "ReactiveUI",
-                "ReactiveUI.NLog", 
-                "ReactiveUI.Mobile", 
-            };
+            // Set up the built-in registration
+            (new Registrations()).Register((f,t) => resolver.RegisterConstant(f(), t));
+            (new PlatformRegistrations()).Register((f,t) => resolver.RegisterConstant(f(), t));
 
             var fdr = typeof(ModernDependencyResolver);
 
             var assmName = new AssemblyName(
                 fdr.AssemblyQualifiedName.Replace(fdr.FullName + ", ", ""));
-
-            var platDllCount = platforms.Count(x => processRegistrationForNamespace(x, assmName, resolver) == true);
-            if (platDllCount == 0) {
-                LogHost.Default.Warn("We couldn't load a Platform DLL. This probably means you need to Install-Package ReactiveUI-Platforms on your App");
-            }
 
             extraNs.ForEach(ns => processRegistrationForNamespace(ns, assmName, resolver));
         }
