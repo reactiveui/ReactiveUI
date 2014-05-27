@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using ReactiveUI;
+using ReactiveUI.Mobile;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.Foundation;
@@ -23,7 +25,7 @@ namespace Playground_Wpa81
     /// <summary>
     /// Provides application-specific behavior to supplement the default Application class.
     /// </summary>
-    public sealed partial class App : Application
+    public sealed partial class App : AutoSuspendApplication
     {
 #if WINDOWS_PHONE_APP
         private TransitionCollection transitions;
@@ -37,6 +39,9 @@ namespace Playground_Wpa81
         {
             this.InitializeComponent();
             this.Suspending += this.OnSuspending;
+
+            RxApp.SuspensionHost.CreateNewAppState = () => new MainPageViewModel();
+            RxApp.SuspensionHost.SetupDefaultSuspendResume();
         }
 
         /// <summary>
@@ -47,6 +52,8 @@ namespace Playground_Wpa81
         /// <param name="e">Details about the launch request and process.</param>
         protected override void OnLaunched(LaunchActivatedEventArgs e)
         {
+            base.OnLaunched(e);
+
 #if DEBUG
             if (System.Diagnostics.Debugger.IsAttached)
             {

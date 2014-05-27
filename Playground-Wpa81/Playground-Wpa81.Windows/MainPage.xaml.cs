@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
-using ReactiveUI;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI.Xaml;
@@ -13,6 +12,9 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+
+using ReactiveUI;
+using ReactiveUI.Mobile;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -26,7 +28,8 @@ namespace Playground_Wpa81
         public MainPage()
         {
             this.InitializeComponent();
-            ViewModel = new MainPageViewModel();
+            RxApp.SuspensionHost.ObserveAppState<MainPageViewModel>()
+                .BindTo(this, x => x.ViewModel);
 
             this.BindCommand(ViewModel, x => x.DoIt, x => x.doIt);
 
@@ -35,6 +38,8 @@ namespace Playground_Wpa81
                 count++;
                 result.Text = String.Format("You clicked {0} times!", count);
             });
+
+            this.OneWayBind(ViewModel, x => x.SavedGuid, x => x.SavedGuid.Text);
         }
 
         public MainPageViewModel ViewModel {
