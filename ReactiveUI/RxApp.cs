@@ -4,6 +4,7 @@ using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Runtime.CompilerServices;
 using Splat;
+using ReactiveUI.Mobile;
 
 namespace ReactiveUI
 {
@@ -75,6 +76,8 @@ namespace ReactiveUI
             if (_MainThreadScheduler == null) {
                 _MainThreadScheduler = DefaultScheduler.Instance;
             }
+
+            SuspensionHost = new SuspensionHost();
         }
 
         [ThreadStatic] static IScheduler _UnitTestMainThreadScheduler;
@@ -143,6 +146,24 @@ namespace ReactiveUI
             }
             set {
                 _DefaultExceptionHandler = value;
+            }
+        }
+
+        [ThreadStatic] static ISuspensionHost _UnitTestSuspensionHost;
+        static ISuspensionHost _SuspensionHost;
+
+        public static ISuspensionHost SuspensionHost {
+            get { 
+                var host = _UnitTestSuspensionHost ?? _SuspensionHost;
+                return host;
+            }
+            set {
+                if (ModeDetector.InUnitTestRunner()) {
+                    _UnitTestSuspensionHost = value;
+                    _SuspensionHost = _SuspensionHost ?? value;
+                } else {
+                    _SuspensionHost = value;
+                }
             }
         }
 

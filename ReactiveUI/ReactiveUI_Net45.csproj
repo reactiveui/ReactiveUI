@@ -132,6 +132,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Platform\ComponentModelTypeConverter.cs" />
+    <Compile Include="Xaml\WpfAutoSuspendHelper.cs" />
     <Compile Include="Xaml\WpfDependencyObjectObservableForProperty.cs" />
     <Compile Include="Xaml\ActivationForViewFetcher.cs" />
     <Compile Include="Xaml\PlatformOperations.cs" />
@@ -155,13 +156,13 @@
     <Compile Include="CompatMixins.cs" />
     <Compile Include="ContractStubs.cs" />
     <Compile Include="DefaultPropertyBinding.cs" />
-    <Compile Include="DummySuspension.cs" />
     <Compile Include="Errors.cs" />
     <Compile Include="IDependencyResolver.cs" />
     <Compile Include="INPCObservableForProperty.cs" />
     <Compile Include="Interfaces.cs" />
     <Compile Include="IROObservableForProperty.cs" />
     <Compile Include="MessageBus.cs" />
+    <Compile Include="MobileLifecycle.cs" />
     <Compile Include="NullDefaultPropertyBindingProvider.cs" />
     <Compile Include="ObservableAsPropertyHelper.cs" />
     <Compile Include="ObservedChangedMixin.cs" />
