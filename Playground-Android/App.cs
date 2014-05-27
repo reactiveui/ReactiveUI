@@ -25,8 +25,16 @@ namespace MobileSample_Android
             Locator.CurrentMutable.Register(() => typeof(MainView), typeof(IViewFor<MainViewModel>));
             Locator.CurrentMutable.Register(() => typeof(SecondaryView), typeof(IViewFor<SecondaryViewModel>));
 
+            RxApp.SuspensionHost.CreateNewAppState = () => new AppBootstrapper();
+            RxApp.SuspensionHost.SetupDefaultSuspendResume();
+
             // TODO: Fix Me
             //RxApp.Register(typeof(AppBootstrapper), typeof(IApplicationRootState));
+        }
+
+        public static void EnsureInitialized()
+        {
+            Current.ToString();
         }
     }
 }
