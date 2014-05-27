@@ -25,8 +25,9 @@ namespace Playground_Wpa81
     /// <summary>
     /// Provides application-specific behavior to supplement the default Application class.
     /// </summary>
-    public sealed partial class App : AutoSuspendApplication
+    public sealed partial class App : Application
     {
+        readonly AutoSuspendHelper autoSuspendHelper;
 #if WINDOWS_PHONE_APP
         private TransitionCollection transitions;
 #endif
@@ -39,6 +40,7 @@ namespace Playground_Wpa81
         {
             this.InitializeComponent();
             this.Suspending += this.OnSuspending;
+            autoSuspendHelper = new AutoSuspendHelper(this);
 
             RxApp.SuspensionHost.CreateNewAppState = () => new MainPageViewModel();
             RxApp.SuspensionHost.SetupDefaultSuspendResume();
@@ -53,6 +55,7 @@ namespace Playground_Wpa81
         protected override void OnLaunched(LaunchActivatedEventArgs e)
         {
             base.OnLaunched(e);
+            autoSuspendHelper.OnLaunched(e);
 
 #if DEBUG
             if (System.Diagnostics.Debugger.IsAttached)
