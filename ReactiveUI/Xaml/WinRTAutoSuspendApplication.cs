@@ -15,7 +15,7 @@ namespace ReactiveUI.Mobile
 {
     public abstract class AutoSuspendApplication : Application, IEnableLogger
     {
-        readonly ReplaySubject<LaunchActivatedEventArgs> _launched = new ReplaySubject<LaunchActivatedEventArgs>();
+        readonly ReplaySubject<LaunchActivatedEventArgs> _launched = new ReplaySubject<LaunchActivatedEventArgs>(1);
 
         protected AutoSuspendApplication()
         {
