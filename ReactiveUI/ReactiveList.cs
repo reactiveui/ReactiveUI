@@ -23,31 +23,55 @@ namespace ReactiveUI
     [DebuggerTypeProxy(typeof(CollectionDebugView<>))]
     public class ReactiveList<T> : IReactiveList<T>, IReadOnlyReactiveList<T>, IList
     {
-        public event NotifyCollectionChangedEventHandler CollectionChanging;
-        public event NotifyCollectionChangedEventHandler CollectionChanged;
+        public event NotifyCollectionChangedEventHandler CollectionChanging {
+            add { CollectionChangingEventManager.AddHandler(this, value); }
+            remove { CollectionChangingEventManager.RemoveHandler(this, value); }
+        }
 
-        public event PropertyChangingEventHandler PropertyChanging;
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event NotifyCollectionChangedEventHandler CollectionChanged {
+            add { CollectionChangedEventManager.AddHandler(this, value); }
+            remove { CollectionChangedEventManager.RemoveHandler(this, value); }
+        }
+
+        public event PropertyChangingEventHandler PropertyChanging
+        {
+            add { PropertyChangingEventManager.AddHandler(this, value); }
+            remove { PropertyChangingEventManager.RemoveHandler(this, value); }
+        }
+
+        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args)
+        {
+            PropertyChangingEventManager.DeliverEvent(this, args);
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged {
+            add { PropertyChangedEventManager.AddHandler(this, value); }
+            remove { PropertyChangedEventManager.RemoveHandler(this, value); }
+        }
+
+        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args)
+        {
+            PropertyChangedEventManager.DeliverEvent(this, args);
+        }
 
         [IgnoreDataMember] Subject<NotifyCollectionChangedEventArgs> _changing;
         [IgnoreDataMember] Subject<NotifyCollectionChangedEventArgs> _changed;
         
         [DataMember] List<T> _inner;
-
-        [IgnoreDataMember] int _suppressionRefCount = 0;
-
+        
         [IgnoreDataMember] Lazy<Subject<T>> _beforeItemsAdded;
         [IgnoreDataMember] Lazy<Subject<T>> _itemsAdded;
         [IgnoreDataMember] Lazy<Subject<T>> _beforeItemsRemoved;
         [IgnoreDataMember] Lazy<Subject<T>> _itemsRemoved;
-        [IgnoreDataMember] Lazy<Subject<IObservedChange<T, object>>> _itemChanging;
-        [IgnoreDataMember] Lazy<Subject<IObservedChange<T, object>>> _itemChanged;
+        [IgnoreDataMember] Lazy<ISubject<IObservedChange<T, object>>> _itemChanging;
+        [IgnoreDataMember] Lazy<ISubject<IObservedChange<T, object>>> _itemChanged;
         [IgnoreDataMember] Lazy<Subject<IMoveInfo<T>>> _beforeItemsMoved;
         [IgnoreDataMember] Lazy<Subject<IMoveInfo<T>>> _itemsMoved;
 
         [IgnoreDataMember] Dictionary<object, RefcountDisposeWrapper> _propertyChangeWatchers = null;
 
         [IgnoreDataMember] int _resetSubCount = 0;
+        [IgnoreDataMember] int _resetNotificationCount = 0;
         static bool _hasWhinedAboutNoResetSub = false;
 
         [IgnoreDataMember]
@@ -61,23 +85,25 @@ namespace ReactiveUI
         public ReactiveList() { setupRx(); }
         public ReactiveList(IEnumerable<T> initialContents) { setupRx(initialContents); }
 
-        public ReactiveList(IEnumerable<T> initialContents = null, double resetChangeThreshold = 0.3)
+        public ReactiveList(IEnumerable<T> initialContents = null, double resetChangeThreshold = 0.3, IScheduler scheduler = null)
         {
-            setupRx(initialContents, resetChangeThreshold);
+            setupRx(initialContents, resetChangeThreshold, scheduler);
         }
 
         [OnDeserialized]
         void setupRx(StreamingContext _) { setupRx(); }
 
-        void setupRx(IEnumerable<T> initialContents = null, double resetChangeThreshold = 0.3)
+        void setupRx(IEnumerable<T> initialContents = null, double resetChangeThreshold = 0.3, IScheduler scheduler = null)
         {
+            scheduler = scheduler ?? RxApp.MainThreadScheduler;
+
             _inner = _inner ?? new List<T>();
 
             _changing = new Subject<NotifyCollectionChangedEventArgs>();
-            _changing.Where(_=>_suppressionRefCount == 0).Subscribe(raiseCollectionChanging);
+            _changing.Where(_ => this.areChangeNotificationsEnabled()).Subscribe(raiseCollectionChanging);
 
             _changed = new Subject<NotifyCollectionChangedEventArgs>();
-            _changed.Where(_ => _suppressionRefCount == 0).Subscribe(raiseCollectionChanged);
+            _changed.Where(_ => this.areChangeNotificationsEnabled()).Subscribe(raiseCollectionChanged);
 
             ResetChangeThreshold = resetChangeThreshold;
 
@@ -85,8 +111,8 @@ namespace ReactiveUI
             _itemsAdded = new Lazy<Subject<T>>(() => new Subject<T>());
             _beforeItemsRemoved = new Lazy<Subject<T>>(() => new Subject<T>());
             _itemsRemoved = new Lazy<Subject<T>>(() => new Subject<T>());
-            _itemChanging = new Lazy<Subject<IObservedChange<T, object>>>(() => new Subject<IObservedChange<T, object>>());
-            _itemChanged = new Lazy<Subject<IObservedChange<T, object>>>(() => new Subject<IObservedChange<T, object>>());
+            _itemChanging = new Lazy<ISubject<IObservedChange<T, object>>>(() => new ScheduledSubject<IObservedChange<T, object>>(scheduler));
+            _itemChanged = new Lazy<ISubject<IObservedChange<T, object>>>(() => new ScheduledSubject<IObservedChange<T, object>>(scheduler));
             _beforeItemsMoved = new Lazy<Subject<IMoveInfo<T>>>(() => new Subject<IMoveInfo<T>>());
             _itemsMoved = new Lazy<Subject<IMoveInfo<T>>>(() => new Subject<IMoveInfo<T>>());
 
@@ -97,15 +123,15 @@ namespace ReactiveUI
             // NB: ObservableCollection has a Secret Handshake with WPF where 
             // they fire an INPC notification with the token "Item[]". Emulate 
             // it here
-            CountChanging.Where(_ => _suppressionRefCount == 0).Select(x => new PropertyChangingEventArgs("Count")).Subscribe(this.raisePropertyChanging);
+            CountChanging.Where(_ => this.areChangeNotificationsEnabled()).Subscribe(_ => this.RaisePropertyChanging("Count"));
 
-            CountChanged.Where(_ => _suppressionRefCount == 0).Select(x => new PropertyChangedEventArgs("Count")).Subscribe(this.raisePropertyChanged);
+            CountChanged.Where(_ => this.areChangeNotificationsEnabled()).Subscribe(_ => this.RaisePropertyChanged("Count"));
 
-            IsEmptyChanged.Where(_ => _suppressionRefCount == 0).Select(x => new PropertyChangedEventArgs("IsEmpty")).Subscribe(this.raisePropertyChanged);
+            IsEmptyChanged.Where(_ => this.areChangeNotificationsEnabled()).Subscribe(_ => this.RaisePropertyChanged("IsEmpty"));
 
-            Changing.Where(_ => _suppressionRefCount == 0).Select(x => new PropertyChangingEventArgs("Item[]")).Subscribe(this.raisePropertyChanging);
+            Changing.Where(_ => this.areChangeNotificationsEnabled()).Subscribe(_ => this.RaisePropertyChanging("Item[]"));
 
-            Changed.Where(_ => _suppressionRefCount == 0).Select(x => new PropertyChangedEventArgs("Item[]")).Subscribe(this.raisePropertyChanged);
+            Changed.Where(_ => this.areChangeNotificationsEnabled()).Subscribe(_ => this.RaisePropertyChanged("Item[]"));
         }
 
         public bool IsEmpty
@@ -120,7 +146,7 @@ namespace ReactiveUI
 
         protected void InsertItem(int index, T item)
         {
-            if (_suppressionRefCount > 0) {
+            if (!this.areChangeNotificationsEnabled()) {
                 _inner.Insert(index, item);
             
                 if (ChangeTrackingEnabled) addItemToPropertyTracking(item);
@@ -144,7 +170,7 @@ namespace ReactiveUI
         {
             var item = _inner[index];
 
-            if (_suppressionRefCount > 0) {
+            if (!this.areChangeNotificationsEnabled()) {
                 _inner.RemoveAt(index);
             
                 if (ChangeTrackingEnabled) removeItemFromPropertyTracking(item);
@@ -167,7 +193,7 @@ namespace ReactiveUI
         {
             var item = _inner[oldIndex];
 
-            if (_suppressionRefCount > 0) {
+            if (!this.areChangeNotificationsEnabled()) {
                 _inner.RemoveAt(oldIndex);
                 _inner.Insert(newIndex, item);
 
@@ -189,7 +215,7 @@ namespace ReactiveUI
 
         protected void SetItem(int index, T item)
         {
-            if (_suppressionRefCount > 0) {
+            if (!this.areChangeNotificationsEnabled()) {
                 _inner[index] = item;
 
                 if (ChangeTrackingEnabled) {
@@ -215,7 +241,7 @@ namespace ReactiveUI
 
         protected void ClearItems()
         {
-            if (_suppressionRefCount > 0) {
+            if (!this.areChangeNotificationsEnabled()) {
                 _inner.Clear();
             
                 if (ChangeTrackingEnabled) clearAllPropertyChangeWatchers();
@@ -240,12 +266,20 @@ namespace ReactiveUI
 
         public virtual void AddRange(IEnumerable<T> collection)
         {
-            var list = collection.ToList();
-            var disp = isLengthAboveResetThreshold(list.Count) ?
-                SuppressChangeNotifications() : Disposable.Empty;
+            if (collection == null)
+            {
+                throw new ArgumentNullException("collection");
+            }
+
+            // we need list to implement at least IEnumerable<T> and IList
+            // because NotifyCollectionChangedEventArgs expects an IList
+            var list = collection as List<T> ?? collection.ToList();
+            var disp = isLengthAboveResetThreshold(list.Count)
+                ? SuppressChangeNotifications() : Disposable.Empty;
 
             using (disp) {
-                if (_suppressionRefCount > 0) {
+                // reset notification
+                if (!this.areChangeNotificationsEnabled()) {
                     _inner.AddRange(list);
                  
                     if (ChangeTrackingEnabled) {
@@ -253,30 +287,37 @@ namespace ReactiveUI
                             addItemToPropertyTracking(item);
                         }
                     }
-                    return;
                 }
+                // range notification
+                else if (RxApp.SupportsRangeNotifications) {
+                    var ea = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, list, _inner.Count/*we are appending a range*/);
 
-                var ea = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, list, _inner.Count/*we are appending a range*/);
+                    _changing.OnNext(ea);
 
-                _changing.OnNext(ea);
-                if (_beforeItemsAdded.IsValueCreated) {
-                    foreach (var item in list) {
-                        _beforeItemsAdded.Value.OnNext(item);
+                    if (_beforeItemsAdded.IsValueCreated) {
+                        foreach (var item in list) {
+                            _beforeItemsAdded.Value.OnNext(item);
+                        }
                     }
-                }
 
-                _inner.AddRange(list);
+                    _inner.AddRange(list);
 
-                _changed.OnNext(ea);
-                if (_itemsAdded.IsValueCreated){
-                    foreach (var item in list) {
-                        _itemsAdded.Value.OnNext(item);
+                    _changed.OnNext(ea);
+                    if (_itemsAdded.IsValueCreated) {
+                        foreach (var item in list) {
+                            _itemsAdded.Value.OnNext(item);
+                        }
                     }
-                }
 
-                if (ChangeTrackingEnabled) {
+                    if (ChangeTrackingEnabled) {
+                        foreach (var item in list) {
+                            addItemToPropertyTracking(item);
+                        }
+                    }
+                } else {
+                    // per item notification                
                     foreach (var item in list) {
-                        addItemToPropertyTracking(item);
+                        this.Add(item);
                     }
                 }
             }
@@ -284,12 +325,20 @@ namespace ReactiveUI
 
         public virtual void InsertRange(int index, IEnumerable<T> collection)
         {
-            var list = collection.ToList();
+            if (collection == null)
+            {
+                throw new ArgumentNullException("collection");
+            }
+
+            // we need list to implement at least IEnumerable<T> and IList
+            // because NotifyCollectionChangedEventArgs expects an IList
+            var list = collection as List<T> ?? collection.ToList();
             var disp = isLengthAboveResetThreshold(list.Count) ?
                 SuppressChangeNotifications() : Disposable.Empty;
 
             using (disp) {
-                if (_suppressionRefCount > 0) {
+                // reset notification
+                if (!this.areChangeNotificationsEnabled()) {
                     _inner.InsertRange(index, list);
 
                     if (ChangeTrackingEnabled) {
@@ -297,31 +346,36 @@ namespace ReactiveUI
                             addItemToPropertyTracking(item);
                         }
                     }
-
-                    return;
                 }
+                // range notification
+                else if (RxApp.SupportsRangeNotifications) {
+                    var ea = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, list, index);
 
-                var ea = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, list, index);
-
-                _changing.OnNext(ea);
-                if (_beforeItemsAdded.IsValueCreated) {
-                    foreach (var item in list) {
-                        _beforeItemsAdded.Value.OnNext(item);
+                    _changing.OnNext(ea);
+                    if (_beforeItemsAdded.IsValueCreated) {
+                        foreach (var item in list) {
+                            _beforeItemsAdded.Value.OnNext(item);
+                        }
                     }
-                }
 
-                _inner.InsertRange(index, list);
+                    _inner.InsertRange(index, list);
 
-                _changed.OnNext(ea);
-                if (_itemsAdded.IsValueCreated) {
-                    foreach (var item in list) {
-                        _itemsAdded.Value.OnNext(item);
+                    _changed.OnNext(ea);
+                    if (_itemsAdded.IsValueCreated) {
+                        foreach (var item in list) {
+                            _itemsAdded.Value.OnNext(item);
+                        }
                     }
-                }
 
-                if (ChangeTrackingEnabled) {
+                    if (ChangeTrackingEnabled) {
+                        foreach (var item in list) {
+                            addItemToPropertyTracking(item);
+                        }
+                    }
+                } else {
+                    // per item notification                
                     foreach (var item in list) {
-                        addItemToPropertyTracking(item);
+                        this.Insert(index++, item);
                     }
                 }
             }
@@ -339,7 +393,8 @@ namespace ReactiveUI
                     items.Add(_inner[i]);
                 }
 
-                if (_suppressionRefCount > 0) {
+                // reset notification
+                if (!this.areChangeNotificationsEnabled()) {
                     _inner.RemoveRange(index,count);
 
                     if (ChangeTrackingEnabled) {
@@ -347,25 +402,36 @@ namespace ReactiveUI
                             removeItemFromPropertyTracking(item);
                         }
                     }
-                    return;
                 }
+                // range notification
+                else if (RxApp.SupportsRangeNotifications) {
+                    var ea = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, items, index);
 
-                var ea = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, items, index);
-
-                _changing.OnNext(ea);
-                if (_beforeItemsRemoved.IsValueCreated) {
-                    foreach (var item in items) {
-                        _beforeItemsRemoved.Value.OnNext(item);
+                    _changing.OnNext(ea);
+                    if (_beforeItemsRemoved.IsValueCreated) {
+                        foreach (var item in items) {
+                            _beforeItemsRemoved.Value.OnNext(item);
+                        }
                     }
-                }
 
-                _inner.RemoveRange(index,count);
-                _changed.OnNext(ea);
+                    _inner.RemoveRange(index, count);
+                    _changed.OnNext(ea);
 
-                if (_itemsRemoved.IsValueCreated || ChangeTrackingEnabled) {
+                    if (ChangeTrackingEnabled) {
+                        foreach (var item in items) {
+                            removeItemFromPropertyTracking(item);
+                        }
+                    }
+
+                    if (_itemsRemoved.IsValueCreated) {
+                        foreach (var item in items) {
+                            _itemsRemoved.Value.OnNext(item);
+                        }
+                    }
+                } else {
+                    // per item notification
                     foreach (var item in items) {
-                        if (_itemsRemoved.IsValueCreated) { _itemsRemoved.Value.OnNext(item); }
-                        if (ChangeTrackingEnabled) removeItemFromPropertyTracking(item);
+                        this.Remove(item);
                     }
                 }
             }
@@ -373,7 +439,10 @@ namespace ReactiveUI
 
         public virtual void RemoveAll(IEnumerable<T> items)
         {
-            Contract.Requires(items != null);
+            if (items == null)
+            {
+                throw new ArgumentNullException("items");
+            }
 
             var disp = isLengthAboveResetThreshold(items.Count()) ?
                 SuppressChangeNotifications() : Disposable.Empty;
@@ -409,8 +478,7 @@ namespace ReactiveUI
         {
             publishResetNotification();
         }
-
-
+        
         protected virtual void publishResetNotification()
         {
             var ea = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset);
@@ -423,12 +491,10 @@ namespace ReactiveUI
             return (double) toChangeLength/_inner.Count > ResetChangeThreshold &&
                 toChangeLength > 10;
         }
-
-
+        
         /*
          * IReactiveCollection<T>
          */
-
         public bool ChangeTrackingEnabled {
             get { return _propertyChangeWatchers != null; }
             set {
@@ -447,20 +513,20 @@ namespace ReactiveUI
 
         public IDisposable SuppressChangeNotifications()
         {
-            Interlocked.Increment(ref _suppressionRefCount);
+            Interlocked.Increment(ref _resetNotificationCount);
 
-            if (!_hasWhinedAboutNoResetSub && _resetSubCount == 0 && CollectionChanged == null) {
+            if (!_hasWhinedAboutNoResetSub && _resetSubCount == 0) {
                 LogHost.Default.Warn("SuppressChangeNotifications was called (perhaps via AddRange), yet you do not");
                 LogHost.Default.Warn("have a subscription to ShouldReset. This probably isn't what you want, as ItemsAdded");
                 LogHost.Default.Warn("and friends will appear to 'miss' items");
                 _hasWhinedAboutNoResetSub = true;
             }
 
-            return Disposable.Create(() => {
-                if (Interlocked.Decrement(ref _suppressionRefCount) == 0) {
+            return new CompositeDisposable(this.suppressChangeNotifications(), Disposable.Create(() => {
+                if (Interlocked.Decrement(ref _resetNotificationCount) == 0){
                     publishResetNotification();
                 }
-            });
+            }));
         }
 
         public IObservable<T> BeforeItemsAdded { get { return _beforeItemsAdded.Value; } }
@@ -474,36 +540,7 @@ namespace ReactiveUI
 
         public IObservable<IObservedChange<T, object>> ItemChanging { get { return _itemChanging.Value; } }
         public IObservable<IObservedChange<T, object>> ItemChanged { get { return _itemChanged.Value; } }
-
-        IObservable<object> IReactiveNotifyCollectionChanged.BeforeItemsAdded { get { return BeforeItemsAdded.Select(x => (object)x); } }
-        IObservable<object> IReactiveNotifyCollectionChanged.ItemsAdded { get { return ItemsAdded.Select(x => (object)x); } }
-
-        IObservable<object> IReactiveNotifyCollectionChanged.BeforeItemsRemoved { get { return BeforeItemsRemoved.Select(x => (object)x); } }
-        IObservable<object> IReactiveNotifyCollectionChanged.ItemsRemoved { get { return ItemsRemoved.Select(x => (object) x); } }
-
-        IObservable<IMoveInfo<object>> IReactiveNotifyCollectionChanged.BeforeItemsMoved { get { return BeforeItemsMoved.Select(x => (IMoveInfo<object>)x); } }
-        IObservable<IMoveInfo<object>> IReactiveNotifyCollectionChanged.ItemsMoved { get { return ItemsMoved.Select(x => (IMoveInfo<object>)x); } }
-
-        IObservable<IObservedChange<object, object>> IReactiveNotifyCollectionItemChanged.ItemChanging {
-            get {
-                return _itemChanging.Value.Select(x => (IObservedChange<object, object>) new ObservedChange<object, object>() {
-                    Sender = x.Sender,
-                    PropertyName = x.PropertyName,
-                    Value = x.Value,
-                });
-            }
-        }
-
-        IObservable<IObservedChange<object, object>> IReactiveNotifyCollectionItemChanged.ItemChanged {
-            get {
-                return _itemChanged.Value.Select(x => (IObservedChange<object, object>) new ObservedChange<object, object>() {
-                    Sender = x.Sender,
-                    PropertyName = x.PropertyName,
-                    Value = x.Value,
-                });
-            }
-        }
-
+        
         public IObservable<int> CountChanging {
             get { return _changing.Select(_ => _inner.Count).DistinctUntilChanged(); }
         }
@@ -532,12 +569,10 @@ namespace ReactiveUI
                         Observable.Return(Unit.Default)), x => _resetSubCount += x);
             }
         }
-
-
+        
         /*
          * Property Change Tracking
          */
-
         void addItemToPropertyTracking(T toTrack)
         {
             if (_propertyChangeWatchers.ContainsKey(toTrack)) {
@@ -545,35 +580,30 @@ namespace ReactiveUI
                 return;
             }
 
-            var changing = Observable.Never<IObservedChange<object, object>>();
-            var changed = Observable.Never<IObservedChange<object, object>>();
+            var changing = Observable.Never<IObservedChange<T, object>>();
+            var changed = Observable.Never<IObservedChange<T, object>>();
 
             this.Log().Info("Item hash: 0x{0:x}", toTrack.GetHashCode());
-            var irnpc = toTrack as IReactiveNotifyPropertyChanged;
-            if (irnpc != null) {
-                changing = irnpc.Changing;
-                changed = irnpc.Changed;
+            var ro = toTrack as IReactiveObject;
+            if (ro != null) {
+                changing = ro.getChangingObservable().Select(i => new ObservedChange<T, object>(toTrack, i.PropertyName));
+                changed = ro.getChangedObservable().Select(i => new ObservedChange<T, object>(toTrack, i.PropertyName));
                 goto isSetup;
             }
 
             var inpc = toTrack as INotifyPropertyChanged;
             if (inpc != null) {
                 changed = Observable.FromEventPattern<PropertyChangedEventHandler, PropertyChangedEventArgs>(x => inpc.PropertyChanged += x, x => inpc.PropertyChanged -= x)
-                    .Select(x => (IObservedChange<object, object>)
-                        new ObservedChange<object, object>() { PropertyName = x.EventArgs.PropertyName, Sender = inpc });
+                    .Select(x => new ObservedChange<T, object>(toTrack, x.EventArgs.PropertyName));
                 goto isSetup;
             }
 
-            this.Log().Warn("Property change notifications are enabled and type {0} isn't INotifyPropertyChanged or ReactiveObject", typeof(T));
+            this.Log().Warn("Property change notifications are enabled and type {0} isn't INotifyPropertyChanged or IReactiveObject", typeof(T));
 
         isSetup:
             var toDispose = new[] {
-                changing.Where(_ => this._suppressionRefCount == 0).Subscribe(beforeChange =>
-                    _itemChanging.Value.OnNext(new ObservedChange<T, object>() {
-                        Sender = toTrack, PropertyName = beforeChange.PropertyName })),
-                changed.Where(_ => this._suppressionRefCount == 0).Subscribe(change =>
-                    _itemChanged.Value.OnNext(new ObservedChange<T,object>() {
-                        Sender = toTrack, PropertyName = change.PropertyName })),
+                changing.Where(_ => this.areChangeNotificationsEnabled()).Subscribe(_itemChanging.Value.OnNext),
+                changed.Where(_ => this.areChangeNotificationsEnabled()).Subscribe(_itemChanged.Value.OnNext),
             };
 
             _propertyChangeWatchers.Add(toTrack, 
@@ -606,38 +636,12 @@ namespace ReactiveUI
 
         protected virtual void raiseCollectionChanging(NotifyCollectionChangedEventArgs e)
         {
-            var handler = this.CollectionChanging;
-
-            if(handler != null) {
-                handler(this, e);
-            }
+            CollectionChangingEventManager.DeliverEvent(this, e);
         }
 
         protected virtual void raiseCollectionChanged(NotifyCollectionChangedEventArgs e)
         {
-            var handler = this.CollectionChanged;
-
-            if (handler != null) {
-                handler(this, e);
-            }
-        }
-
-        protected virtual void raisePropertyChanging(PropertyChangingEventArgs e)
-        {
-            var handler = this.PropertyChanging;
-
-            if (handler != null) {
-                handler(this, e);
-            }
-        }
-
-        protected virtual void raisePropertyChanged(PropertyChangedEventArgs e)
-        {
-            var handler = this.PropertyChanged;
-
-            if (handler != null) {
-                handler(this, e);
-            }
+            CollectionChangedEventManager.DeliverEvent(this, e);
         }
 
         #region Super Boring IList crap

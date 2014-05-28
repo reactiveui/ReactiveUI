@@ -146,9 +146,9 @@
       <Project>{AA27F817-FAD2-4622-B68A-651A8AA9E076}</Project>
       <Name>Microsoft.Reactive.Testing_MonoMac</Name>
     </ProjectReference>
-    <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj">
-      <Project>{464CB812-F99F-401B-BE4C-E8F0515CD19D}</Project>
-      <Name>ReactiveUI</Name>
+    <ProjectReference Include="..\ReactiveUI\ReactiveUI_Mac.csproj">
+      <Project>{0913BF79-061F-4667-ADF9-8E6CDA6D1213}</Project>
+      <Name>ReactiveUI_Mac</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>

@@ -1,0 +1,111 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">iPhoneSimulator</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{52BC39BB-AC43-44D8-AAAA-8C2386F75D76}</ProjectGuid>
+    <ProjectTypeGuids>{6BC8ED88-2882-458C-8E55-DFD12B67127B};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>ReactiveUI.Tests</RootNamespace>
+    <IPhoneResourcePrefix>Resources</IPhoneResourcePrefix>
+    <AssemblyName>ReactiveUI_Tests_iOS</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\iPhone\Debug</OutputPath>
+    <DefineConstants>DEBUG;MONO</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <MtouchDebug>true</MtouchDebug>
+    <ConsolePause>false</ConsolePause>
+    <CodesignKey>iPhone Developer</CodesignKey>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\iPhone\Release</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+    <CodesignKey>iPhone Developer</CodesignKey>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Core" />
+    <Reference Include="monotouch" />
+    <Reference Include="MonoTouch.NUnitLite" />
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\ext\ios\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reactive.Core">
+      <HintPath>..\ext\ios\System.Reactive.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reactive.Interfaces">
+      <HintPath>..\ext\ios\System.Reactive.Interfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reactive.Linq">
+      <HintPath>..\ext\ios\System.Reactive.Linq.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reactive.PlatformServices">
+      <HintPath>..\ext\ios\System.Reactive.PlatformServices.dll</HintPath>
+    </Reference>
+    <Reference Include="Xamarin.Mobile">
+      <HintPath>..\ext\ios\Xamarin.Mobile.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Json" />
+    <Reference Include="Splat">
+      <HintPath>..\ext\ios\Splat.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Resources\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Info.plist" />
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.MonoTouch.CSharp.targets" />
+  <ItemGroup>
+    <Compile Include="Cocoa\Main.cs" />
+    <Compile Include="Cocoa\UnitTestAppDelegate.cs" />
+    <Compile Include="AutoPersistHelperTest.cs" />
+    <Compile Include="BindingTypeConvertersTest.cs" />
+    <Compile Include="ErrorsTest.cs" />
+    <Compile Include="MessageBusTest.cs" />
+    <Compile Include="ObservableAsPropertyHelperTest.cs" />
+    <Compile Include="ObservedChangedMixinTest.cs" />
+    <Compile Include="OrderedComparerTests.cs" />
+    <Compile Include="ReactiveCommandTest.cs" />
+    <Compile Include="ReactiveObjectTest.cs" />
+    <Compile Include="RoutingState.cs" />
+    <Compile Include="RxAppTest.cs" />
+    <Compile Include="RxRouting.cs" />
+    <Compile Include="TestLogger.cs" />
+    <Compile Include="Utility.cs" />
+    <Compile Include="NUnitShim.cs" />
+    <Compile Include="ReactiveCollectionTest.cs" />
+    <Compile Include="ReactiveNotifyPropertyChangedMixinTest.cs" />
+    <Compile Include="Cocoa\PropertyBindingTestViews.cs" />
+    <Compile Include="PropertyBindingTest.cs" />
+    <Compile Include="Cocoa\KVOBindingTests.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Microsoft.Reactive.Testing\Microsoft.Reactive.Testing_iOS.csproj">
+      <Project>{74ba5b4e-257a-42a7-bdab-1fb40a903909}</Project>
+      <Name>Microsoft.Reactive.Testing_iOS</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ReactiveUI.Testing\ReactiveUI.Testing_iOS.csproj">
+      <Project>{90913370-9e94-3dbd-8f1e-15e10db72ffc}</Project>
+      <Name>ReactiveUI.Testing_iOS</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ReactiveUI\ReactiveUI_iOS.csproj">
+      <Project>{9091337a-9e94-4dbd-801e-15e1fda78ffc}</Project>
+      <Name>ReactiveUI_iOS</Name>
+    </ProjectReference>
+  </ItemGroup>
+</Project>
