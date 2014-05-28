@@ -146,6 +146,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Rx-XAML.2.2.4\lib\windowsphone8\System.Reactive.Windows.Threading.dll</HintPath>
     </Reference>
+    <Reference Include="System.Reactive.WindowsRuntime">
+      <HintPath>..\packages\Rx-WinRT.2.2.4\lib\windowsphone8\System.Reactive.WindowsRuntime.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\CommonAssemblyInfo.cs">
