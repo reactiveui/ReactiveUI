@@ -68,8 +68,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Rx-PlatformServices.2.2.4\lib\windows8\System.Reactive.PlatformServices.dll</HintPath>
     </Reference>
-    <Reference Include="System.Reactive.Windows.Threading">
-      <HintPath>..\ext\winrt\System.Reactive.Windows.Threading.dll</HintPath>
+    <Reference Include="System.Reactive.Windows.Threading, Version=2.2.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Rx-XAML.2.2.4\lib\windows8\System.Reactive.Windows.Threading.dll</HintPath>
     </Reference>
     <Reference Include="System.Reactive.WindowsRuntime">
       <HintPath>..\ext\winrt\System.Reactive.WindowsRuntime.dll</HintPath>
