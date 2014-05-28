@@ -35,6 +35,14 @@ namespace ReactiveUI
             _TaskpoolScheduler = TaskPoolScheduler.Default;
 #endif
 
+            // Initialize this to false as most platforms do not support
+            // range notification for INotifyCollectionChanged
+#if WP8 || WINRT
+            SupportsRangeNotifications = false;
+#else
+            SupportsRangeNotifications = true;
+#endif
+
             Locator.RegisterResolverCallbackChanged(() => {
                 if (Locator.CurrentMutable == null) return;
                 Locator.CurrentMutable.InitializeReactiveUI();
@@ -155,6 +163,28 @@ namespace ReactiveUI
                     _SuspensionHost = _SuspensionHost ?? value;
                 } else {
                     _SuspensionHost = value;
+                }
+            }
+        }
+
+        [ThreadStatic] static bool? _UnitTestSupportsRangeNotifications;
+        static bool _SupportsRangeNotifications;
+
+        public static bool SupportsRangeNotifications  {
+            get {
+                return _UnitTestSupportsRangeNotifications ?? _SupportsRangeNotifications;
+            }
+            set {
+                // N.B. The ThreadStatic dance here is for the unit test case -
+                // often, each test will override MainThreadScheduler with their
+                // own TestScheduler, and if this wasn't ThreadStatic, they would
+                // stomp on each other, causing test cases to randomly fail,
+                // then pass when you rerun them.
+                if (ModeDetector.InUnitTestRunner()) {
+                    _UnitTestSupportsRangeNotifications = value;
+                    _SupportsRangeNotifications = value;
+                } else {
+                    _SupportsRangeNotifications = value;
                 }
             }
         }

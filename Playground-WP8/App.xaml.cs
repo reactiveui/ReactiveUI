@@ -14,7 +14,7 @@ using Splat;
 
 namespace MobileSample_WP8
 {
-    public partial class App : AutoSuspendApplication
+    public partial class App : Application
     {
         /// <summary>
         /// Constructor for the Application object.
@@ -46,10 +46,7 @@ namespace MobileSample_WP8
                 // and consume battery power when the user is not using the phone.
                 PhoneApplicationService.Current.UserIdleDetectionMode = IdleDetectionMode.Disabled;
             }
-
-            //TODo get rid of ugly casting
-            Locator.CurrentMutable.Register(() => new AppBootstrapper(), typeof(IApplicationRootState));
-
+            
             var host = Locator.Current.GetService<ISuspensionHost>();
             host.SetupDefaultSuspendResume();
         }
