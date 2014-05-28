@@ -112,6 +112,7 @@
     <Compile Include="BindingTypeConvertersTest.cs" />
     <Compile Include="CommandBindingTests.cs" />
     <Compile Include="WeakEventManagerTest.cs" />
+    <Compile Include="Winforms\ActivationTests.cs" />
     <Compile Include="Winforms\CommandBindingTests.cs">
       <SubType>Component</SubType>
     </Compile>
