@@ -59,11 +59,11 @@
     <Reference Include="Splat">
       <HintPath>..\ext\Portable-Net45+WinRT45+WP8\Splat.dll</HintPath>
     </Reference>
-    <Reference Include="Xamarin.QuickUI.Core">
-      <HintPath>..\ext\Portable-Net45+WinRT45+WP8\Xamarin.QuickUI.Core.dll</HintPath>
+    <Reference Include="Xamarin.Forms.Core">
+      <HintPath>..\ext\Portable-Net45+WinRT45+WP8\Xamarin.Forms.Core.dll</HintPath>
     </Reference>
-    <Reference Include="Xamarin.QuickUI.Xaml">
-      <HintPath>..\ext\Portable-Net45+WinRT45+WP8\Xamarin.QuickUI.Xaml.dll</HintPath>
+    <Reference Include="Xamarin.Forms.Xaml">
+      <HintPath>..\ext\Portable-Net45+WinRT45+WP8\Xamarin.Forms.Xaml.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -71,9 +71,6 @@
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="QuickUI\ActivationForViewFetcher.cs" />
-    <Compile Include="QuickUI\AutoDataTemplateBindingHook.cs" />
-    <Compile Include="QuickUI\CreatesCommandBinding.cs" />
-    <Compile Include="QuickUI\RoutedViewHost.cs" />
     <Compile Include="QuickUI\ViewModelViewHost.cs" />
     <Compile Include="QuickUI\XamlDefaultPropertyBinding.cs" />
     <Compile Include="QuickUI\ReactiveContentView.cs" />

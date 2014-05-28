@@ -4,7 +4,7 @@ using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Windows;
 using Splat;
-using Xamarin.QuickUI;
+using Xamarin.Forms;
 
 namespace ReactiveUI.QuickUI
 {
@@ -57,7 +57,7 @@ namespace ReactiveUI.QuickUI
                 this.WhenAnyObservable(x => x.ViewContractObservable),
                 (vm, contract) => new { ViewModel = vm, Contract = contract, });
 
-            var platform = RxApp.Locator.GetService<IPlatformOperations>();
+            var platform = Locator.Current.GetService<IPlatformOperations>();
             if (platform == null) {
                 throw new Exception("Couldn't find an IPlatformOperations. This should never happen, your dependency resolver is broken");
             }
@@ -71,8 +71,8 @@ namespace ReactiveUI.QuickUI
             (this as IViewFor).WhenActivated(() => {
                 return new[] { vmAndContract.Subscribe(x => {
                     if (x.ViewModel == null) {
-                        foreach (View v in this.Children) this.Remove(v);
-                        if (DefaultContent != null) this.Add(DefaultContent);
+                        foreach (View v in this.Children) this.Children.Remove(v);
+                        if (DefaultContent != null) this.Children.Add(DefaultContent);
                         return;
                     }
 
@@ -85,8 +85,8 @@ namespace ReactiveUI.QuickUI
 
                     view.ViewModel = x.ViewModel;
 
-                    foreach (View v in this.Children) this.Remove(v);
-                    if (view != null) this.Add(view as View);
+                    foreach (View v in this.Children) this.Children.Remove(v);
+                    if (view != null) this.Children.Add(view as View);
                 })};
             });
         }

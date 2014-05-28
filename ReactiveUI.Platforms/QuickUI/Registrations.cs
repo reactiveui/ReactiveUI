@@ -19,15 +19,8 @@ namespace ReactiveUI.QuickUI
     {
         public void Register(Action<Func<object>, Type> registerFunction)
         {
-            //TODO
-            //registerFunction(() => new PlatformOperations(), typeof(IPlatformOperations));
-
             registerFunction(() => new ActivationForViewFetcher(), typeof(IActivationForViewFetcher));
             registerFunction(() => new XamlDefaultPropertyBinding(), typeof(IDefaultPropertyBindingProvider));
-            registerFunction(() => new CreatesCommandBindingViaCommandParameter(), typeof(ICreatesCommandBinding));
-            registerFunction(() => new CreatesCommandBindingViaEvent(), typeof(ICreatesCommandBinding));
-            //TODO:
-            //registerFunction(() => new AutoDataTemplateBindingHook(), typeof(IPropertyBindingHook));
         }
     }
 }

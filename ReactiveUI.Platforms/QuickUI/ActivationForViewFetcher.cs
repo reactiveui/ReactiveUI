@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Reflection;
-using Xamarin.QuickUI;
+using Xamarin.Forms;
 
 namespace ReactiveUI.QuickUI
 {

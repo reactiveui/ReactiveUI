@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Reflection;
-using Xamarin.QuickUI;
+using Xamarin.Forms;
 
 namespace ReactiveUI.QuickUI
 {
@@ -17,7 +17,6 @@ namespace ReactiveUI.QuickUI
                 new { Type = typeof(TextCell), Property = "Text" },
                 new { Type = typeof(Label), Property = "Text" },
                 new { Type = typeof(ProgressBar), Property = "Value" },
-                new { Type = typeof(ItemsView), Property = "ItemsSource" },
                 new { Type = typeof(Image), Property = "Source" },
             };
 
