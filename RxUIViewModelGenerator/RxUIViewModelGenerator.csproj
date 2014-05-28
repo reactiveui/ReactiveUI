@@ -43,7 +43,8 @@
     <Reference Include="Mono.Cecil">
       <HintPath>..\ext\Mono.Cecil.dll</HintPath>
     </Reference>
-    <Reference Include="Nustache.Core">
+    <Reference Include="Nustache.Core, Version=1.12.4.29, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Nustache.1.12.4.29\lib\net20\Nustache.Core.dll</HintPath>
     </Reference>
     <Reference Include="System" />
@@ -61,12 +62,12 @@
     <Compile Include="ScaffoldRenderer.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
-    <None Include="packages.config" />
     <EmbeddedResource Include="Resources\ViewModelGeneratedTemplate.mustache" />
     <EmbeddedResource Include="Resources\ViewModelTemplate.mustache" />
     <EmbeddedResource Include="Resources\XamlViewTemplate.mustache" />
     <EmbeddedResource Include="Resources\XamlViewCodebehindTemplate.mustache" />
+    <None Include="app.config" />
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
