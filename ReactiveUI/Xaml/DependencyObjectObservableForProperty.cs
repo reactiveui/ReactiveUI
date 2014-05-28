@@ -93,10 +93,10 @@ namespace ReactiveUI.Xaml
         {
             var current = typeInfo;
             while (current != null) {
-                var ret = typeInfo.GetDeclaredProperty(propertyName);
+                var ret = current.GetDeclaredProperty(propertyName);
                 if (ret != null && ret.IsStatic()) return ret;
 
-                current = current.BaseType.GetTypeInfo();
+                current = current.BaseType != null ? current.BaseType.GetTypeInfo() : null;
             }
 
             return null;
@@ -106,10 +106,10 @@ namespace ReactiveUI.Xaml
         {
             var current = typeInfo;
             while (current != null) {
-                var ret = typeInfo.GetDeclaredField(propertyName);
+                var ret = current.GetDeclaredField(propertyName);
                 if (ret != null && ret.IsStatic) return ret;
 
-                current = current.BaseType.GetTypeInfo();
+                current = current.BaseType != null ? current.BaseType.GetTypeInfo() : null;
             }
 
             return null;

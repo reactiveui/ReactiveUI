@@ -6,11 +6,12 @@ using System.Reactive.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows.Forms;
 using ReactiveUI;
+using Splat;
 
 namespace ReactiveUI.Winforms
 {
     [DefaultProperty("ViewModel")]
-    public partial class ViewModelViewHost : UserControl, IReactiveObject
+    public partial class ViewModelViewHost : UserControl, IReactiveObject, IViewFor
     {
         readonly CompositeDisposable disposables = new CompositeDisposable();
 
@@ -19,17 +20,44 @@ namespace ReactiveUI.Winforms
         IObservable<string> viewContractObservable;
         object viewModel;
 
+        public static bool DefaultCacheViewsEnabled { get; set; }
+
+
         public ViewModelViewHost()
         {
             this.InitializeComponent();
+            this.cacheViews = DefaultCacheViewsEnabled;
 
-            this.disposables.Add(this.WhenAny(x => x.DefaultContent, x => x.Value).Subscribe(x => {
+            foreach (var subscription in this.setupBindings()) {
+                disposables.Add(subscription);
+            }
+        }
+
+        IEnumerable<IDisposable> setupBindings()
+        {
+            var viewChanges =
+                this.WhenAnyValue(x => x.Content).Select(x => x as Control).Where(x => x != null).Subscribe(x => {
+                    // change the view in the ui
+                    this.SuspendLayout();
+
+                    // clear out existing visible control view
+                    foreach (Control c in this.Controls) {
+                        c.Dispose();
+                        this.Controls.Remove(c);
+                    }
+
+                    x.Dock = DockStyle.Fill;
+                    this.Controls.Add(x);
+                    this.ResumeLayout();
+                });
+
+            yield return viewChanges;
+
+            yield return this.WhenAny(x => x.DefaultContent, x => x.Value).Subscribe(x => {
                 if (x != null && this.currentView == null) {
-                    this.Controls.Clear();
-                    this.Controls.Add(this.InitView(x));
-                    this.components.Add(this.DefaultContent);
+                    this.Content = DefaultContent;
                 }
-            }));
+            });
 
             this.ViewContractObservable = Observable.Return(default(string));
 
@@ -38,29 +66,36 @@ namespace ReactiveUI.Winforms
                     .CombineLatest(this.WhenAnyObservable(x => x.ViewContractObservable),
                         (vm, contract) => new { ViewModel = vm, Contract = contract });
 
-            this.disposables.Add(vmAndContract.Subscribe(x => {
-                //clear all hosted controls (view or default content)
-                this.Controls.Clear();
-
-                if (this.currentView != null) {
-                    this.currentView.Dispose();
-                }
-
+            yield return vmAndContract.Subscribe(x => {
+                // set content to default when viewmodel is null
                 if (this.ViewModel == null) {
                     if (this.DefaultContent != null) {
-                        this.InitView(this.DefaultContent);
-                        this.Controls.Add(this.DefaultContent);
+                        this.Content = DefaultContent;
                     }
+
                     return;
+                }
+
+                if (CacheViews) {
+                    // when caching views, check the current viewmodel and type
+                    var c = content as IViewFor;
+
+                    if (c != null && c.ViewModel != null
+                        && c.ViewModel.GetType() == x.ViewModel.GetType()) {
+                        c.ViewModel = x.ViewModel;
+
+                        // return early here after setting the viewmodel
+                        // allowing the view to update it's bindings
+                        return;
+                    }
                 }
 
                 IViewLocator viewLocator = this.ViewLocator ?? ReactiveUI.ViewLocator.Current;
                 IViewFor view = viewLocator.ResolveView(x.ViewModel, x.Contract);
+                this.Content = view;
                 view.ViewModel = x.ViewModel;
 
-                this.CurrentView = this.InitView((Control)view);
-                this.Controls.Add(this.CurrentView);
-            }, RxApp.DefaultExceptionHandler.OnNext));
+            }, RxApp.DefaultExceptionHandler.OnNext);
         }
 
         public event PropertyChangingEventHandler PropertyChanging {
@@ -84,8 +119,7 @@ namespace ReactiveUI.Winforms
         }
 
         public Control CurrentView {
-            get { return this.currentView; }
-            private set { this.RaiseAndSetIfChanged(ref this.currentView, value); }
+            get { return this.content as Control; }
         }
 
         [Category("ReactiveUI")]
@@ -112,24 +146,40 @@ namespace ReactiveUI.Winforms
             set { this.RaiseAndSetIfChanged(ref this.viewModel, value); }
         }
 
+        object content;
+
+        [Category("ReactiveUI")]
+        [Description("The Current View")]
+        [Bindable(true)]
+        public object Content {
+            get { return this.content; }
+            protected set { this.RaiseAndSetIfChanged(ref this.content, value); }
+        }
+
+        bool cacheViews;
+
+        [Category("ReactiveUI")]
+        [Description("Cache Views")]
+        [Bindable(true)]
+        [DefaultValue(true)]
+        public bool CacheViews {
+            get { return this.cacheViews; }
+            set { this.RaiseAndSetIfChanged(ref this.cacheViews, value); }
+        }
+
         /// <summary>
         ///     Clean up any resources being used.
         /// </summary>
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
-            if (disposing && (this.components != null)) {
+            if (disposing && (this.components != null))
+            {
                 this.components.Dispose();
                 this.disposables.Dispose();
             }
 
             base.Dispose(disposing);
-        }
-
-        Control InitView(Control view)
-        {
-            view.Dock = DockStyle.Fill;
-            return view;
         }
     }
 }

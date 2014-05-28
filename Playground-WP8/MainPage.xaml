@@ -13,5 +13,4 @@
     Foreground="{StaticResource PhoneForegroundBrush}"
     SupportedOrientations="Portrait" Orientation="Portrait"
     shell:SystemTray.IsVisible="True">
-    <routing:RoutedViewHost x:Name="Router" />
 </phone:PhoneApplicationPage>
