@@ -111,7 +111,7 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Newtonsoft.Json">
-      <HintPath>..\ext\winrt\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\packages\Newtonsoft.Json.6.0.3\lib\portable-net45+wp80+win8+wpa81\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="Splat">
       <HintPath>..\packages\Splat.1.3.1\lib\Portable-Win81+Wpa81\Splat.dll</HintPath>
@@ -132,7 +132,7 @@
       <HintPath>..\packages\Rx-XAML.2.2.4\lib\portable-win81+wpa81\System.Reactive.Windows.Threading.dll</HintPath>
     </Reference>
     <Reference Include="System.Reactive.WindowsRuntime">
-      <HintPath>..\ext\winrt\System.Reactive.WindowsRuntime.dll</HintPath>
+      <HintPath>..\packages\Rx-WinRT.2.2.4\lib\portable-win81+wpa81\System.Reactive.WindowsRuntime.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -146,7 +146,6 @@
     <VisualStudioVersion>12.0</VisualStudioVersion>
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
-  <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
