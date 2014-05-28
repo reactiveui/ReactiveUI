@@ -66,12 +66,14 @@
     <Reference Include="Splat">
       <HintPath>..\ext\monodroid\Splat.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\ext\monodroid\Newtonsoft.Json.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\CommonAssemblyInfo.cs">
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Android\ActivityRoutedViewHost.cs" />
     <Compile Include="Android\AndroidCommandBinders.cs" />
     <Compile Include="Android\AndroidUIScheduler.cs" />
     <Compile Include="Android\ControlFetcherMixin.cs" />
@@ -99,13 +101,13 @@
     <Compile Include="CompatMixins.cs" />
     <Compile Include="ContractStubs.cs" />
     <Compile Include="DefaultPropertyBinding.cs" />
-    <Compile Include="DummySuspension.cs" />
     <Compile Include="Errors.cs" />
     <Compile Include="IDependencyResolver.cs" />
     <Compile Include="INPCObservableForProperty.cs" />
     <Compile Include="Interfaces.cs" />
     <Compile Include="IROObservableForProperty.cs" />
     <Compile Include="MessageBus.cs" />
+    <Compile Include="MobileLifecycle.cs" />
     <Compile Include="NullDefaultPropertyBindingProvider.cs" />
     <Compile Include="ObservableAsPropertyHelper.cs" />
     <Compile Include="ObservedChangedMixin.cs" />
@@ -138,6 +140,8 @@
     <Compile Include="LoggingMixins.cs" />
     <Compile Include="IReactiveObject.cs" />
     <Compile Include="WeakEventManager.cs" />
+    <Compile Include="Android\BundleSuspensionDriver.cs" />
+    <Compile Include="Android\AutoSuspendHelper.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
