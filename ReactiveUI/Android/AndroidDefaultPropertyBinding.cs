@@ -16,7 +16,6 @@ namespace ReactiveUI.Android
             // specific to least specific.
             var items = new[] {
                 new { Type = typeof(TextView), Property = "Text" },
-                new { Type = typeof(ImageView), Property = "Drawable" },
                 new { Type = typeof(ProgressBar), Property = "Progress" },
                 new { Type = typeof(CompoundButton), Property = "Checked" },
             };

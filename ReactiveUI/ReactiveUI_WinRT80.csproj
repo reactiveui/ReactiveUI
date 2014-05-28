@@ -23,7 +23,7 @@
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\WinRT45\</OutputPath>
     <IntermediateOutputPath>obj\Debug\WinRT45</IntermediateOutputPath>
-    <DefineConstants>TRACE;DEBUG;WINRT; XAML</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;WINRT; XAML;WINRT80</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -50,6 +50,8 @@
     <Compile Include="Xaml\RoutedViewHost.cs" />
     <Compile Include="Xaml\TransitioningContentControl.WinRT.cs" />
     <Compile Include="Xaml\ViewModelViewHost.cs" />
+    <Compile Include="Xaml\WinRTAppDataDriver.cs" />
+    <Compile Include="Xaml\WinRTAutoSuspendApplication.cs" />
     <Compile Include="Xaml\XamlDefaultPropertyBinding.cs" />
     <Compile Include="..\CommonAssemblyInfo.cs">
       <Link>Properties\CommonAssemblyInfo.cs</Link>
@@ -63,13 +65,13 @@
     <Compile Include="CompatMixins.cs" />
     <Compile Include="ContractStubs.cs" />
     <Compile Include="DefaultPropertyBinding.cs" />
-    <Compile Include="DummySuspension.cs" />
     <Compile Include="Errors.cs" />
     <Compile Include="IDependencyResolver.cs" />
     <Compile Include="INPCObservableForProperty.cs" />
     <Compile Include="Interfaces.cs" />
     <Compile Include="IROObservableForProperty.cs" />
     <Compile Include="MessageBus.cs" />
+    <Compile Include="MobileLifecycle.cs" />
     <Compile Include="NullDefaultPropertyBindingProvider.cs" />
     <Compile Include="ObservableAsPropertyHelper.cs" />
     <Compile Include="ObservedChangedMixin.cs" />
@@ -107,6 +109,9 @@
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\ext\winrt\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="Splat">
       <HintPath>..\ext\winrt\Splat.dll</HintPath>
     </Reference>

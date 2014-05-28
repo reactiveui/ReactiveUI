@@ -345,6 +345,7 @@ namespace ReactiveUI
     /// </summary>
     public interface IReadOnlyReactiveList<out T> : IReadOnlyReactiveCollection<T>, IReadOnlyList<T>
     {
+        bool IsEmpty { get; } 
     }
 
     /// <summary>
@@ -367,9 +368,12 @@ namespace ReactiveUI
     /// </summary>
     public interface IReactiveList<T> : IReactiveCollection<T>, IList<T>
     {
+        bool IsEmpty { get; } 
+
         void AddRange(IEnumerable<T> collection);
 
         void InsertRange(int index, IEnumerable<T> collection);
+
         void RemoveAll(IEnumerable<T> items);
 
         void RemoveRange(int index, int count);

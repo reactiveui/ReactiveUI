@@ -1,8 +1,6 @@
 using System;
-using System.Reactive;
 using System.Reactive.Linq;
 using ReactiveUI;
-using Splat;
 
 #if UIKIT
 using MonoTouch.UIKit;
@@ -10,7 +8,6 @@ using NSView = MonoTouch.UIKit.UIView;
 using NSViewController = MonoTouch.UIKit.UIViewController;
 #else
 using MonoMac.AppKit;
-using MonoMac.Foundation;
 #endif
 
 namespace ReactiveUI.Cocoa
@@ -52,10 +49,12 @@ namespace ReactiveUI.Cocoa
                     return;
                 }
 
+                // get an instance of the view controller for the supplied VM + Contract
                 var viewLocator = ViewLocator ?? ReactiveUI.ViewLocator.Current;
-                var view = viewLocator.ResolveView(x.ViewModel, x.Contract);
+                var viewController = viewLocator.ResolveView(x.ViewModel, x.Contract);
 
-                if (view == null) {
+                // if not found, throw
+                if (viewController == null) {
                     var message = String.Format("Unable to resolve view for \"{0}\"", x.ViewModel.GetType());
 
                     if (x.Contract != null) {
@@ -66,12 +65,13 @@ namespace ReactiveUI.Cocoa
                     throw new Exception(message);
                 }
 
-                view.ViewModel = x.ViewModel;
+                // set the VM on the controller and stash a copy of the added view
+                viewController.ViewModel = x.ViewModel;
+                viewLastAdded = ((NSViewController)viewController).View;
 
-                viewLastAdded = ((NSViewController)view).View;
-
+                // sanity check, view controllers are expect to have a view
                 if (viewLastAdded == null) {
-                    var message = string.Format("No view associated with view controller {0}.", view.GetType());
+                    var message = string.Format("No view associated with view controller {0}.", viewController.GetType());
                     throw new Exception(message);
                 }
 
@@ -83,7 +83,7 @@ namespace ReactiveUI.Cocoa
                 targetView.AddSubview(viewLastAdded);
 
                 if (AddAutoLayoutConstraintsToSubView) {
-                    // add edge constraints so that subview trails changes in parent
+                    // Add edge constraints so that subview trails changes in parent
                     addEdgeConstraint(NSLayoutAttribute.Left,  targetView, viewLastAdded);
                     addEdgeConstraint(NSLayoutAttribute.Right, targetView, viewLastAdded);
                     addEdgeConstraint(NSLayoutAttribute.Top, targetView, viewLastAdded);
