@@ -219,9 +219,9 @@ namespace ReactiveUI
                     return false;
                 }
 
-                var box = new ObservedChange<object, object> { Sender = current, PropertyName = propName };
+                var sender = current;
                 current = GetValueFetcherOrThrow(current.GetType(), propName)(current);
-                box.Value = current;
+                var box = new ObservedChange<object, object>(sender, propName, current);
 
                 changeValues[currentIndex] = box;
                 currentIndex++;
@@ -232,16 +232,12 @@ namespace ReactiveUI
                 return false;
             }
 
-            changeValues[currentIndex] = new ObservedChange<object, object> {
-                Sender = current,
-                PropertyName = propNames.Last(),
-                Value = GetValueFetcherOrThrow(current.GetType(), propNames.Last())(current)
-            };
+            changeValues[currentIndex] = new ObservedChange<object, object>(current, propNames.Last(), GetValueFetcherOrThrow(current.GetType(), propNames.Last())(current));
 
             return true;
         }
 
-        public static bool SetValueToPropertyChain<TValue>(object target, string[] propNames, TValue value, bool shouldThrow = true)
+        public static bool TrySetValueToPropertyChain<TValue>(object target, string[] propNames, TValue value, bool shouldThrow = true)
         {
             foreach (var propName in propNames.SkipLast(1)) {
                 var getter = shouldThrow ?
@@ -288,6 +284,20 @@ namespace ReactiveUI
             return eventArgsType;
         }
 
+        public static void ThrowIfMethodsNotOverloaded(string callingTypeName, object targetObject, params string[] methodsToCheck)
+        {
+            var missingMethod = methodsToCheck
+                .Select(x => {
+                    var methods = targetObject.GetType().GetTypeInfo().DeclaredMethods;
+                    return Tuple.Create(x, methods.FirstOrDefault(y => y.Name == x));
+                })
+                .FirstOrDefault(x => x.Item2 == null);
+
+            if (missingMethod != null) {
+                throw new Exception(String.Format("Your class must implement {0} and call {1}.{0}", missingMethod.Item1, callingTypeName));
+            }
+        }
+
         internal static IObservable<TProp> ViewModelWhenAnyValue<TView, TViewModel, TProp>(TViewModel viewModel, TView view, Expression<Func<TViewModel, TProp>> property)
             where TView : IViewFor
             where TViewModel : class
@@ -308,27 +318,35 @@ namespace ReactiveUI
                 .Switch();
         }
 
-        internal static string[] getDefaultViewPropChain(object view, string[] vmPropChain)
+        internal static string getViewPropChain(object view, string[] vmPropChain)
         {
             var vmPropertyName = vmPropChain.Last();
             var getter = GetValueFetcherForProperty(view.GetType(), vmPropertyName);
-            if (getter == null) {
+            if (getter == null)
+            {
                 throw new Exception(String.Format("Tried to bind to control but it wasn't present on the object: {0}.{1}",
                     view.GetType().FullName, vmPropertyName));
             }
 
-            var control = getter(view);
+            return vmPropertyName;
+        }
+
+        internal static string[] getViewPropChainWithDefault(object view, string[] vmPropChain)
+        {
+            var viewPropChain = getViewPropChain(view, vmPropChain);
+
+            var control = GetValueFetcherForProperty(view.GetType(), viewPropChain)(view);
 
             if (control == null) {
                 throw new Exception(String.Format("Tried to bind to control but it was null: {0}.{1}", view.GetType().FullName,
-                    vmPropertyName));
+                    viewPropChain));
             }
 
             var defaultProperty = DefaultPropertyBinding.GetPropertyForControl(control);
             if (defaultProperty == null) {
                 throw new Exception(String.Format("Couldn't find a default property for type {0}", control.GetType()));
             }
-            return new[] {vmPropertyName, defaultProperty};
+            return new[] { viewPropChain, defaultProperty};
         }
     }
 

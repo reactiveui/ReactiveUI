@@ -15,6 +15,11 @@ namespace ReactiveUI
 {
     public static class ReactiveNotifyPropertyChangedMixin
     {
+        static ReactiveNotifyPropertyChangedMixin()
+        {
+            RxApp.EnsureInitialized();
+        }
+
         /// <summary>
         /// ObservableForProperty returns an Observable representing the
         /// property change notifications for a specific property on a
@@ -83,16 +88,11 @@ namespace ReactiveUI
             var values = notifyForProperty(This, propertyName, beforeChange);
 
             if (!skipInitial) {
-                values = values.StartWith(new ObservedChange<object, object> { Sender = This, PropertyName = propertyName });
+                values = values.StartWith(new ObservedChange<object, object>(This, propertyName));
             }
 
-            return values.Select(x => x.fillInValue())
-                 .DistinctUntilChanged(x => x.Value)
-                 .Select(x => (IObservedChange<TSender,TValue>) new ObservedChange<TSender, TValue> {
-                      Sender = This,
-                      PropertyName = propertyName,
-                      Value = (TValue)x.Value
-                  });
+            return values.Select(x => new ObservedChange<TSender, TValue>(This, propertyName, (TValue)x.GetValue()))
+                 .DistinctUntilChanged(x => x.Value);
         }
 
         /// <summary>
@@ -145,16 +145,15 @@ namespace ReactiveUI
 
         static IObservedChange<object, object> observedChangeFor(string propertyName, IObservedChange<object, object> sourceChange)
         {
-            var p = new ObservedChange<object, object>() { 
-                Sender = sourceChange.Value, 
-                PropertyName = propertyName,
-            };
-
             if (sourceChange.Value == null) {
-                return p;
+                return new ObservedChange<object, object>(sourceChange.Value, propertyName);;
             }
-            
-            return p.fillInValue();
+            else
+            {
+                object value;
+                Reflection.TryGetValueForPropertyChain(out value, sourceChange.Value, propertyName.Split('.'));
+                return new ObservedChange<object, object>(sourceChange.Value, propertyName, value);
+            }
         }
 
         static IObservable<IObservedChange<object, object>> nestedObservedChanges(string propertyName, IObservedChange<object, object> sourceChange, bool beforeChange)
@@ -169,7 +168,7 @@ namespace ReactiveUI
 
             // Handle non null values in the chain
             return notifyForProperty(sourceChange.Value, propertyName, beforeChange)
-                .Select(x => x.fillInValue())
+                .Select(x => new ObservedChange<object, object>(x.Sender, x.PropertyName, x.GetValue()))
                 .StartWith(kicker);
         }
 
@@ -182,7 +181,7 @@ namespace ReactiveUI
             var path = String.Join(".", propertyNames);
 
             IObservable<IObservedChange<object, object>> notifier = 
-                Observable.Return((IObservedChange<object, object>)new ObservedChange<object, object>() { Value = source });
+                Observable.Return(new ObservedChange<object, object>(null, null, source));
 
             notifier = propertyNames.Aggregate(notifier, (n, name) => n
                 .Select(y => nestedObservedChanges(name, y, beforeChange))
@@ -194,20 +193,14 @@ namespace ReactiveUI
 
             notifier = notifier.Where(x => x.Sender != null);
 
-            var r = notifier
-                .Select(x => x.fillInValue())
-                .Select(x => (IObservedChange<TSender, TValue>) new ObservedChange<TSender, TValue>() {
-                    Sender = source,
-                    PropertyName = path,
-                    Value = (TValue)x.Value,
-                });
+            var r = notifier.Select(x => new ObservedChange<TSender, TValue>(source, path, (TValue)x.GetValue()));
 
             return r.DistinctUntilChanged(x=>x.Value);
         }
 
         static readonly MemoizingMRUCache<Tuple<Type, string, bool>, ICreatesObservableForProperty> notifyFactoryCache =
             new MemoizingMRUCache<Tuple<Type, string, bool>, ICreatesObservableForProperty>((t, _) => {
-                return RxApp.Locator.GetServices<ICreatesObservableForProperty>()
+                return Locator.Current.GetServices<ICreatesObservableForProperty>()
                     .Aggregate(Tuple.Create(0, (ICreatesObservableForProperty)null), (acc, x) => {
                         int score = x.GetAffinityForObject(t.Item1, t.Item2, t.Item3);
                         return (score > acc.Item1) ? Tuple.Create(score, x) : acc;

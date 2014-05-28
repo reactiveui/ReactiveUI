@@ -7,6 +7,7 @@ using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using ReactiveUI.Testing;
 using Xunit;
@@ -22,13 +23,19 @@ namespace ReactiveUI.Tests
 {
     public class TestWhenAnyObsViewModel : ReactiveObject
     {
-        public ReactiveCommand Command1 { get; protected set; }
-        public ReactiveCommand Command2 { get; protected set; }
+        public ReactiveCommand<object> Command1 { get; protected set; }
+        public ReactiveCommand<object> Command2 { get; protected set; }
+
+        ReactiveList<int> myListOfInts;
+        public ReactiveList<int> MyListOfInts {
+            get { return myListOfInts; }
+            set { this.RaiseAndSetIfChanged(ref myListOfInts, value); }
+        }
 
         public TestWhenAnyObsViewModel()
         {
-            Command1 = new ReactiveCommand();
-            Command2 = new ReactiveCommand();
+            Command1 = ReactiveCommand.Create();
+            Command2 = ReactiveCommand.Create();
         }
     }
 
@@ -333,7 +340,7 @@ namespace ReactiveUI.Tests
                 {x => x.Child.IsOnlyOneWord.Length, new[] {typeof(TestFixture), typeof(string), typeof(int) }},
                 {x => x.SomeOtherParam, new[] { typeof(int) }},
                 {x => x.Child.IsNotNullString, new[] {typeof(TestFixture), typeof(string)}},
-                {x => x.Child.Changed, new[] {typeof(TestFixture), typeof(IObservable<IObservedChange<object, object>>)}},
+                {x => x.Child.Changed, new[] {typeof(TestFixture), typeof(IObservable<IObservedChange<ReactiveObject, object>>)}},
             };
 
             var results = data.Keys.Select(x => new {input = x, output = Reflection.ExpressionToPropertyNames(x)}).ToArray();
@@ -600,7 +607,7 @@ namespace ReactiveUI.Tests
     public class WhenAnyObservableTests
     {
         [Fact]
-        public void WhenAnyObservableSmokeTest()
+        public async Task WhenAnyObservableSmokeTest()
         {
             var fixture = new TestWhenAnyObsViewModel();
 
@@ -610,18 +617,36 @@ namespace ReactiveUI.Tests
 
             Assert.Equal(0, list.Count);
 
-            fixture.Command1.Execute(1);
+            await fixture.Command1.ExecuteAsync(1);
             Assert.Equal(1, list.Count);
 
-            fixture.Command2.Execute(2);
+            await fixture.Command2.ExecuteAsync(2);
             Assert.Equal(2, list.Count);
 
-            fixture.Command1.Execute(1);
+            await fixture.Command1.ExecuteAsync(1);
             Assert.Equal(3, list.Count);
 
             Assert.True(
                 new[] {1, 2, 1,}.Zip(list, (expected, actual) => new {expected, actual})
                                 .All(x => x.expected == x.actual));
+        }
+
+        [Fact]
+        public void WhenAnyWithNullObjectShouldUpdateWhenObjectIsntNullAnymore()
+        {
+            var fixture = new TestWhenAnyObsViewModel();
+            var output = fixture.WhenAnyObservable(x => x.MyListOfInts.CountChanged).CreateCollection();
+
+            Assert.Equal(0, output.Count);
+
+            fixture.MyListOfInts = new ReactiveList<int>();
+            Assert.Equal(0, output.Count);
+
+            fixture.MyListOfInts.Add(1);
+            Assert.Equal(1, output.Count);
+
+            fixture.MyListOfInts = null;
+            Assert.Equal(1, output.Count);
         }
     }
 

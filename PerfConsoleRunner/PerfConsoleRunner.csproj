@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>PerfConsoleRunner</RootNamespace>
     <AssemblyName>PerfConsoleRunner</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
@@ -26,6 +26,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <PlatformTarget>x86</PlatformTarget>
@@ -35,6 +36,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -47,28 +49,44 @@
     <Reference Include="xunit">
       <HintPath>..\ext\xunit\xunit.dll</HintPath>
     </Reference>
+    <Reference Include="xunit.console.clr4">
+      <HintPath>..\ext\xunit\xunit.console.clr4.exe</HintPath>
+    </Reference>
     <Reference Include="xunit.extensions">
       <HintPath>..\ext\xunit\xunit.extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="xunit.runner.utility">
+      <HintPath>..\ext\xunit\xunit.runner.utility.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Utility.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\ReactiveUI.Tests\ReactiveUI.Tests.csproj">
-      <Project>{6FBDE6EA-2202-4A70-8EE4-7BA6D515952E}</Project>
-      <Name>ReactiveUI.Tests</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj">
-      <Project>{292A477B-BB94-43C1-984E-E177EF9FEDB7}</Project>
-      <Name>ReactiveUI</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ReactiveUI.Blend\ReactiveUI.Blend_Net45.csproj">
+      <Project>{7866b5b1-5457-43a2-976a-e784eb10f2da}</Project>
+      <Name>ReactiveUI.Blend_Net45</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ReactiveUI.Events\ReactiveUI.Events_Net45.csproj">
+      <Project>{600998c4-54dd-4755-bfa8-6f44544d8e2e}</Project>
+      <Name>ReactiveUI.Events_Net45</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ReactiveUI.Testing\ReactiveUI.Testing_Net45.csproj">
+      <Project>{dd99fd0f-82f6-4c30-930e-4a1d0df01d65}</Project>
+      <Name>ReactiveUI.Testing_Net45</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ReactiveUI.Tests\ReactiveUI.Tests_Net45.csproj">
+      <Project>{6fbde6ea-2202-4a70-8ee4-7ba6d515952e}</Project>
+      <Name>ReactiveUI.Tests_Net45</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ReactiveUI\ReactiveUI_Net45.csproj">
+      <Project>{1ce2d235-8072-4649-ba5a-cfb1af8776e0}</Project>
+      <Name>ReactiveUI_Net45</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
