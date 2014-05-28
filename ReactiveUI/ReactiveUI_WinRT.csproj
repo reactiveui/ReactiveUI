@@ -114,7 +114,7 @@
       <HintPath>..\ext\winrt\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="Splat">
-      <HintPath>..\ext\Portable-Win81+Wpa81\Splat.dll</HintPath>
+      <HintPath>..\packages\Splat.1.3.1\lib\Portable-Win81+Wpa81\Splat.dll</HintPath>
     </Reference>
     <Reference Include="System.Reactive.Core">
       <HintPath>..\packages\Rx-Core.2.2.4\lib\portable-win81+wpa81\System.Reactive.Core.dll</HintPath>

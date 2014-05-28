@@ -45,6 +45,10 @@
     <DocumentationFile>bin\Release\Monoandroid\ReactiveUI.Android.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Splat, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Splat.1.3.1\lib\monoandroid\Splat.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel" />
     <Reference Include="System.Linq.Expressions" />
@@ -71,9 +75,6 @@
     <Reference Include="System.Core" />
     <Reference Include="Mono.Android" />
     <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="Splat">
-      <HintPath>..\ext\monodroid\Splat.dll</HintPath>
-    </Reference>
     <Reference Include="Xamarin.Android.Support.v13">
       <HintPath>..\ext\monodroid\Xamarin.Android.Support.v13.dll</HintPath>
     </Reference>
