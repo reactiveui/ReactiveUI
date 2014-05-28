@@ -41,7 +41,7 @@ namespace ReactiveUI
         /// <remarks>If a scheduler is already registered for the specified runtime and contract, this will overrwrite the existing registration.</remarks>
         /// <typeparam name="T">The type of the message to listen to.</typeparam>
         /// <param name="scheduler">The scheduler on which to post the
-        /// notifications for the specified type and contract. RxApp.MainThreadScheduler by default.</param>
+        /// notifications for the specified type and contract. CurrentThreadScheduler by default.</param>
         /// <param name="contract">A unique string to distinguish messages with
         /// identical types (i.e. "MyCoolViewModel") - if the message type is
         /// only used for one purpose, leave this as null.</param>
@@ -170,7 +170,7 @@ namespace ReactiveUI
         {
             IScheduler scheduler;
             schedulerMappings.TryGetValue(tuple, out scheduler);
-            return scheduler ?? RxApp.MainThreadScheduler;
+            return scheduler ?? CurrentThreadScheduler.Instance;
         }
     }
 

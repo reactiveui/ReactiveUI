@@ -8,7 +8,6 @@ using System.Text;
 using ReactiveUI.Testing;
 using Xunit;
 using Splat;
-
 using Microsoft.Reactive.Testing;
 using System.Collections.Specialized;
 using System.Reactive.Subjects;
@@ -17,6 +16,39 @@ using System.Diagnostics;
 
 namespace ReactiveUI.Tests
 {
+    public class FakeCollectionModel : ReactiveObject
+    {
+        bool isHidden;
+        public bool IsHidden {
+            get { return isHidden; }
+            set { this.RaiseAndSetIfChanged(ref isHidden, value); }
+        }
+
+        int someNumber;
+        public int SomeNumber {
+            get { return someNumber; }
+            set { this.RaiseAndSetIfChanged(ref someNumber, value); }
+        }
+    }
+
+    public class FakeCollectionViewModel : ReactiveObject
+    {
+        public FakeCollectionModel Model { get; protected set; }
+
+        ObservableAsPropertyHelper<string> numberAsString;
+        public string NumberAsString {
+            get { return numberAsString.Value; }
+        }
+
+        public FakeCollectionViewModel(FakeCollectionModel model)
+        {
+            Model = model;
+
+            this.WhenAny(x => x.Model.SomeNumber, x => x.Value.ToString())
+                .ToProperty(this, x => x.NumberAsString, out numberAsString);
+        }
+    }
+
     public class ReactiveCollectionTest
     {
         [Fact]
@@ -64,7 +96,7 @@ namespace ReactiveUI.Tests
             results.AssertAreEqual(output);
         }
 
-        [Fact]           
+        [Fact]
         public void CollectionCountChangedFiresWhenClearing()
         {
             var items = new ReactiveList<object>(new []{new object()});
@@ -74,6 +106,38 @@ namespace ReactiveUI.Tests
             items.Clear();
 
             Assert.True(countChanged);
+        }
+
+        [Fact]
+        public void WhenAddingRangeOfNullArgumentNullExceptionIsThrown()
+        {
+            var fixture = new ReactiveList<int>();
+
+            Assert.Throws<ArgumentNullException>(() => fixture.AddRange(null));
+        }
+
+        [Fact]
+        public void WhenRemovingAllOfNullArgumentNullExceptionIsThrown()
+        {
+            var fixture = new ReactiveList<int>();
+
+            Assert.Throws<ArgumentNullException>(() => fixture.RemoveAll(null));
+        }
+
+        [Fact]
+        public void WhenInsertingRangeOfNullArgumentNullExceptionIsThrown()
+        {
+            var fixture = new ReactiveList<int>();
+
+            Assert.Throws<ArgumentNullException>(() => fixture.InsertRange(1,null));
+        }
+
+        [Fact]
+        public void WhenInsertingRangeOutOfRangeExceptionIsThrown()
+        {
+            var fixture = new ReactiveList<int>();
+
+            Assert.Throws<ArgumentOutOfRangeException>(() => fixture.InsertRange(1, new List<int>() { 1 }));
         }
 
         [Fact]
@@ -305,7 +369,7 @@ namespace ReactiveUI.Tests
             fixture[5].IsNotNullString = "Baz";
             Assert.Equal(1, reset.Count);
             Assert.Equal(3, itemChanged.Count);
-   }
+        }
 
         [Fact]
         public void GetAResetWhenWeAddALotOfItems()
@@ -316,6 +380,32 @@ namespace ReactiveUI.Tests
 
             fixture.AddRange(new[] { 2,3,4,5,6,7,8,9,10,11,12,13, });
             Assert.Equal(1, reset.Count);
+        }
+
+        [Fact]
+        public void GetARangeWhenWeAddAListOfItems()
+        {
+            var fixture = new ReactiveList<int> { 1, 2, 3, 4, 5 };
+            var changed = fixture.Changed.CreateCollection();
+            Assert.Equal(0, changed.Count);
+
+            fixture.AddRange(new[] { 6, 7 });
+            Assert.Equal(1, changed.Count);
+            Assert.Equal(NotifyCollectionChangedAction.Add, changed.First().Action);
+        }
+
+        [Fact]
+        public void GetSingleItemNotificationWhenWeAddAListOfItemsAndRangeIsFalse()
+        {
+            RxApp.SupportsRangeNotifications = false;
+            var fixture = new ReactiveList<int> { 1, 2, 3, 4, 5 };
+            var changed = fixture.Changed.CreateCollection();
+            Assert.Equal(0, changed.Count);
+
+            fixture.AddRange(new[] { 6, 7 });
+            Assert.Equal(2, changed.Count);
+            Assert.Equal(NotifyCollectionChangedAction.Add, changed[0].Action);
+            Assert.Equal(NotifyCollectionChangedAction.Add, changed[1].Action);
         }
 
         [Fact]
@@ -793,11 +883,9 @@ namespace ReactiveUI.Tests
                 var resolver = new ModernDependencyResolver();
                 var logger = new TestLogger();
 
-                resolver.InitializeSplat();
-                resolver.InitializeReactiveUI();
-                resolver.RegisterConstant(new FuncLogManager(t => new WrappingFullLogger(logger, t)), typeof(ILogManager));
-
                 using(resolver.WithResolver()) {
+                    resolver.RegisterConstant(new FuncLogManager(t => new WrappingFullLogger(logger, t)), typeof(ILogManager));
+
                     var incc = new ReactiveList<NoOneHasEverSeenThisClassBefore>();
                     Assert.True(incc is INotifyCollectionChanged);
                     var inccDerived = incc.CreateDerivedCollection(x => x);
@@ -829,11 +917,9 @@ namespace ReactiveUI.Tests
                 var resolver = new ModernDependencyResolver();
                 var logger = new TestLogger();
 
-                resolver.InitializeSplat();
-                resolver.InitializeReactiveUI();
-                resolver.RegisterConstant(new FuncLogManager(t => new WrappingFullLogger(logger, t)), typeof(ILogManager));
-
                 using(resolver.WithResolver()) {
+                    resolver.RegisterConstant(new FuncLogManager(t => new WrappingFullLogger(logger, t)), typeof(ILogManager));
+
                     var incc = new ReactiveList<NoOneHasEverSeenThisClassBeforeEither>();
                     var inccDerived = incc.CreateDerivedCollection(x => x);
 
@@ -1459,6 +1545,26 @@ namespace ReactiveUI.Tests
 
             collection.Add(3);
             Assert.Equal(2, orderedCollection.Count);
+        }
+
+        [Fact]
+        public void DerivedCollectionFilterTest()
+        {
+            var models = new ReactiveList<FakeCollectionModel>(
+                new[] { 0, 1, 2, 3, 4, }.Select(x => new FakeCollectionModel() { SomeNumber = x }));
+            models.ChangeTrackingEnabled = true;
+
+            var viewModels = models.CreateDerivedCollection(x => new FakeCollectionViewModel(x), x => !x.IsHidden);
+            Assert.Equal(5, viewModels.Count);
+
+            models[0].IsHidden = true;
+            Assert.Equal(4, viewModels.Count);
+
+            models[4].IsHidden = true;
+            Assert.Equal(3, viewModels.Count);
+
+            models[0].IsHidden = false;
+            Assert.Equal(4, viewModels.Count);
         }
 
         [Fact]

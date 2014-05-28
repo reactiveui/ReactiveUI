@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using Splat;
 
 namespace ReactiveUI
@@ -15,25 +12,25 @@ namespace ReactiveUI
     /// </summary>
     public class EqualityTypeConverter : IBindingTypeConverter
     {
-        public int GetAffinityForObjects(Type lhs, Type rhs)
+        public int GetAffinityForObjects(Type fromType, Type toType)
         {
-            if (rhs.GetTypeInfo().IsAssignableFrom(lhs.GetTypeInfo())) {
+            if (toType.GetTypeInfo().IsAssignableFrom(fromType.GetTypeInfo())) {
                 return 100;
             }
 
             // NB: WPF is terrible.
-            if (lhs == typeof (object)) {
+            if (fromType == typeof (object)) {
                 return 100;
             }
 
-            var realType = Nullable.GetUnderlyingType(lhs);
+            var realType = Nullable.GetUnderlyingType(fromType);
             if (realType != null) {
-                return GetAffinityForObjects(realType, rhs);
+                return GetAffinityForObjects(realType, toType);
             }
 
-            realType = Nullable.GetUnderlyingType(rhs);
+            realType = Nullable.GetUnderlyingType(toType);
             if (realType != null) {
-                return GetAffinityForObjects(lhs, realType);
+                return GetAffinityForObjects(fromType, realType);
             }
 
             return 0;
@@ -93,9 +90,9 @@ namespace ReactiveUI
     /// </summary>
     public class StringConverter : IBindingTypeConverter
     {
-        public int GetAffinityForObjects(Type lhs, Type rhs)
+        public int GetAffinityForObjects(Type fromType, Type toType)
         {
-            return (rhs == typeof (string) ? 2 : 0);
+            return (toType == typeof (string) ? 2 : 0);
         }
 
         public bool TryConvert(object from, Type toType, object conversionHint, out object result)

@@ -25,6 +25,8 @@ namespace ReactiveUI.Tests
 
                 sched.Start();
 
+                Assert.Equal(input.Last(), fixture.Value);
+
                 // Note: Why doesn't the list match the above one? We're supposed
                 // to suppress duplicate notifications, of course :)
                 (new[] { -5, 1, 2, 3, 4 }).AssertAreEqual(output);

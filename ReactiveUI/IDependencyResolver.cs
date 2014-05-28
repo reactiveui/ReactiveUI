@@ -19,33 +19,36 @@ namespace ReactiveUI
         /// <param name="resolver">The resolver to initialize.</param>
         public static void InitializeReactiveUI(this IMutableDependencyResolver resolver)
         {
-            var namespaces = new[] { 
-                "ReactiveUI",
-                "ReactiveUI.Xaml", 
-                "ReactiveUI.Winforms",
+            var extraNs = new[] {
                 "ReactiveUI.Mobile", 
-                "ReactiveUI.NLog", 
-                "ReactiveUI.Gtk", 
-                "ReactiveUI.Cocoa", 
-                "ReactiveUI.Android",
                 "ReactiveUI.QuickUI",
+                "ReactiveUI.Winforms", 
             };
+
+            // Set up the built-in registration
+            (new Registrations()).Register((f,t) => resolver.RegisterConstant(f(), t));
+            (new PlatformRegistrations()).Register((f,t) => resolver.RegisterConstant(f(), t));
 
             var fdr = typeof(ModernDependencyResolver);
 
             var assmName = new AssemblyName(
                 fdr.AssemblyQualifiedName.Replace(fdr.FullName + ", ", ""));
 
-            namespaces.ForEach(ns => {
-                var targetType = ns + ".Registrations";
-                string fullName = targetType + ", " + assmName.FullName.Replace(assmName.Name, ns);
+            extraNs.ForEach(ns => processRegistrationForNamespace(ns, assmName, resolver));
+        }
 
-                var registerTypeClass = Reflection.ReallyFindType(fullName, false);
-                if (registerTypeClass == null) return;
+        static bool processRegistrationForNamespace(string ns, AssemblyName assmName, IMutableDependencyResolver resolver)
+        {
+            var targetType = ns + ".Registrations";
+            string fullName = targetType + ", " + assmName.FullName.Replace(assmName.Name, ns);
 
-                var registerer = (IWantsToRegisterStuff)Activator.CreateInstance(registerTypeClass);
-                registerer.Register((f, t) => resolver.Register(f, t));
-            });
+            var registerTypeClass = Reflection.ReallyFindType(fullName, false);
+            if (registerTypeClass == null) return false;
+
+            var registerer = (IWantsToRegisterStuff)Activator.CreateInstance(registerTypeClass);
+            registerer.Register((f, t) => resolver.RegisterConstant(f(), t));
+
+            return true;
         }
     }
 }

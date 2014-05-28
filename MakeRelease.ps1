@@ -1,9 +1,9 @@
 ﻿Param([string]$version = $null)
 
-$Archs = {"Portable-Net45+WinRT45+WP8", "Net45", "WP8", "WinRT45", "WinRT451", "Mono", "Monoandroid", "Monotouch", "Monomac"}
+$Archs = {"Portable-Net45+WinRT45+WP8", "Net45", "WP8", "WinRT45", "WinRT451", "Mono", "Monoandroid", "Monotouch", "Monomac", "Portable-Win81+Wpa81"}
 $Projects = {
-    "ReactiveUI", "ReactiveUI.Testing", "ReactiveUI.Platforms", "ReactiveUI.Blend", 
-    "ReactiveUI.Mobile", "RxUIViewModelGenerator", "ReactiveUI.Events"
+    "ReactiveUI", "ReactiveUI.Testing", "ReactiveUI.Blend", "ReactiveUI.Mobile", 
+    "RxUIViewModelGenerator", "ReactiveUI.Events", "ReactiveUI.AndroidSupport"
 }
 
 $MSBuildLocation = "C:\Program Files (x86)\MSBuild\12.0\bin"

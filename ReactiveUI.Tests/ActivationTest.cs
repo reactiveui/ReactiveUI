@@ -85,7 +85,7 @@ namespace ReactiveUI.Tests
     public class ActivatingViewModelTests
     {
         [Fact]
-        public void PreviousActivationsGetTrashedOnDoubleActivate()
+        public void ActivationsGetRefCounted()
         {
             var fixture = new ActivatingViewModel();
             Assert.Equal(0, fixture.IsActiveCount);
@@ -96,6 +96,10 @@ namespace ReactiveUI.Tests
             fixture.Activator.Activate();
             Assert.Equal(1, fixture.IsActiveCount);
 
+            fixture.Activator.Deactivate();
+            Assert.Equal(1, fixture.IsActiveCount);
+
+            // Refcount drops to zero
             fixture.Activator.Deactivate();
             Assert.Equal(0, fixture.IsActiveCount);
         }
@@ -112,6 +116,10 @@ namespace ReactiveUI.Tests
             Assert.Equal(1, fixture.IsActiveCountAlso);
 
             fixture.Activator.Activate();
+            Assert.Equal(1, fixture.IsActiveCount);
+            Assert.Equal(1, fixture.IsActiveCountAlso);
+
+            fixture.Activator.Deactivate();
             Assert.Equal(1, fixture.IsActiveCount);
             Assert.Equal(1, fixture.IsActiveCountAlso);
 
@@ -230,5 +238,37 @@ namespace ReactiveUI.Tests
                 Assert.Equal(0, vm.IsActiveCount);
             }
         }
+
+        [Fact]
+        public void CanUnloadAndLoadViewAgain()
+        {
+            var locator = new ModernDependencyResolver();
+            locator.InitializeSplat();
+            locator.InitializeReactiveUI();
+            locator.Register(() => new ActivatingViewFetcher(), typeof(IActivationForViewFetcher));
+
+            using (locator.WithResolver())
+            {
+                var vm = new ActivatingViewModel();
+                var fixture = new ActivatingView();
+
+                fixture.ViewModel = vm;
+                Assert.Equal(0, vm.IsActiveCount);
+                Assert.Equal(0, fixture.IsActiveCount);
+
+                fixture.Loaded.OnNext(Unit.Default);
+                Assert.Equal(1, vm.IsActiveCount);
+                Assert.Equal(1, fixture.IsActiveCount);
+
+                fixture.Unloaded.OnNext(Unit.Default);
+                Assert.Equal(0, vm.IsActiveCount);
+                Assert.Equal(0, fixture.IsActiveCount);
+
+                fixture.Loaded.OnNext(Unit.Default);
+                Assert.Equal(1, vm.IsActiveCount);
+                Assert.Equal(1, fixture.IsActiveCount);
+            }
+        }
+
     }
 }

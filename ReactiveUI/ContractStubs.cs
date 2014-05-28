@@ -1,6 +1,7 @@
 ﻿using System;
+using System.Collections.Specialized;
 
-#if IOS || PORTABLE
+#if UIKIT || PORTABLE || WINRT
 
 namespace ReactiveUI
 {
@@ -19,14 +20,21 @@ namespace ReactiveUI
     	PropertyChangingEventArgs e
     );
 
-    public interface INotifyPropertyChanging 
-    {
+    public interface INotifyPropertyChanging {
         event PropertyChangingEventHandler PropertyChanging;
     }
 }
+
 #endif
 
-#if PORTABLE
+namespace ReactiveUI
+{    
+    public interface INotifyCollectionChanging {
+        event NotifyCollectionChangedEventHandler CollectionChanging;
+    }
+}
+
+#if PORTABLE || WINRT
 namespace ReactiveUI
 {
     [AttributeUsage(AttributeTargets.All, Inherited = false, AllowMultiple = true)]

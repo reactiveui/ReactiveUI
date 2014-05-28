@@ -54,12 +54,6 @@
     <Reference Include="Mono.Cecil">
       <HintPath>..\ext\Mono.Cecil.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Threading.Tasks">
-      <HintPath>..\packages\Microsoft.Bcl.Async.1.0.16\lib\net45\Microsoft.Threading.Tasks.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Threading.Tasks.Extensions">
-      <HintPath>..\packages\Microsoft.Bcl.Async.1.0.16\lib\net45\Microsoft.Threading.Tasks.Extensions.dll</HintPath>
-    </Reference>
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\ext\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
@@ -117,6 +111,8 @@
     <Compile Include="AwaiterTest.cs" />
     <Compile Include="BindingTypeConvertersTest.cs" />
     <Compile Include="CommandBindingTests.cs" />
+    <Compile Include="WeakEventManagerTest.cs" />
+    <Compile Include="Winforms\ActivationTests.cs" />
     <Compile Include="Winforms\CommandBindingTests.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -151,21 +147,17 @@
       <Project>{7866b5b1-5457-43a2-976a-e784eb10f2da}</Project>
       <Name>ReactiveUI.Blend_Net45</Name>
     </ProjectReference>
-    <ProjectReference Include="..\ReactiveUI.Platforms\ReactiveUI.Winforms_Net45.csproj">
-      <Project>{f5ecbde5-e525-4482-b568-63217bcb0a0b}</Project>
-      <Name>ReactiveUI.Winforms_Net45</Name>
-    </ProjectReference>
     <ProjectReference Include="..\ReactiveUI.Testing\ReactiveUI.Testing_Net45.csproj">
       <Project>{dd99fd0f-82f6-4c30-930e-4a1d0df01d65}</Project>
       <Name>ReactiveUI.Testing_Net45</Name>
     </ProjectReference>
-    <ProjectReference Include="..\ReactiveUI.Platforms\ReactiveUI.Xaml_Net45.csproj">
-      <Project>{1ce2d235-8072-4649-ba5a-cfb1af8776e0}</Project>
-      <Name>ReactiveUI.Xaml_Net45</Name>
+    <ProjectReference Include="..\ReactiveUI.Winforms\ReactiveUI.Winforms_Net45.csproj">
+      <Project>{f5ecbde5-e525-4482-b568-63217bcb0a0b}</Project>
+      <Name>ReactiveUI.Winforms_Net45</Name>
     </ProjectReference>
-    <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj">
-      <Project>{464cb812-f99f-401b-be4c-e8f0515cd19d}</Project>
-      <Name>ReactiveUI</Name>
+    <ProjectReference Include="..\ReactiveUI\ReactiveUI_Net45.csproj">
+      <Project>{1ce2d235-8072-4649-ba5a-cfb1af8776e0}</Project>
+      <Name>ReactiveUI_Net45</Name>
     </ProjectReference>
     <ProjectReference Include="..\RxUIViewModelGenerator\RxUIViewModelGenerator.csproj">
       <Project>{ee7d7fd6-4475-4d1f-a000-9d684f8ec3c7}</Project>
@@ -176,13 +168,7 @@
     <Content Include="Xaml\TestInterface.cs.txt" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="nlog.config">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
