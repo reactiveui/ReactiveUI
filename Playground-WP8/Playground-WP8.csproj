@@ -179,8 +179,9 @@
     <Reference Include="Ninject.WP">
       <HintPath>.\Ninject.WP.dll</HintPath>
     </Reference>
-    <Reference Include="Splat">
-      <HintPath>..\ext\WP80\Splat.dll</HintPath>
+    <Reference Include="Splat, Version=1.3.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Splat.1.3.1\lib\wp8\Splat.dll</HintPath>
     </Reference>
     <Reference Include="System.Reactive.Core, Version=2.2.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
