@@ -84,7 +84,6 @@
     <VisualStudioVersion>11.0</VisualStudioVersion>
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v$(VisualStudioVersion)\Microsoft.Windows.UI.Xaml.CSharp.targets" />
-  <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
   <PropertyGroup>
     <PreBuildEvent>%25SystemRoot%25\Microsoft.NET\Framework\v4.0.30319\msbuild.exe /p:Configuration=Release "$(ProjectDir)EventBuilder.csproj"
 "$(ProjectDir)EventBuilder.exe" "$(ProjectDir)\WinMetadata.Win80\Windows.Foundation.winmd" "$(ProjectDir)\WinMetadata.Win80\Windows.Globalization.winmd" "$(ProjectDir)\WinMetadata.Win80\Windows.Graphics.winmd" "$(ProjectDir)\WinMetadata.Win80\Windows.Management.winmd" "$(ProjectDir)\WinMetadata.Win80\Windows.Media.winmd" "$(ProjectDir)\WinMetadata.Win80\Windows.Networking.winmd" "$(ProjectDir)\WinMetadata.Win80\Windows.Security.winmd" "$(ProjectDir)\WinMetadata.Win80\Windows.Storage.winmd" "$(ProjectDir)\WinMetadata.Win80\Windows.System.winmd" "$(ProjectDir)\WinMetadata.Win80\Windows.UI.winmd" "$(ProjectDir)\WinMetadata.Win80\Windows.UI.Xaml.winmd" "$(ProjectDir)\WinMetadata.Win80\Windows.Web.winmd" "$(ProjectDir)\WinMetadata.Win80\Windows.ApplicationModel.winmd" "$(ProjectDir)\WinMetadata.Win80\Windows.Data.winmd" "$(ProjectDir)\WinMetadata.Win80\Windows.Devices.winmd" "$(ProjectDir)Events.mustache" &gt; "$(ProjectDir)Events_WinRT80.cs"
