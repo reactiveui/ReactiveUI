@@ -151,6 +151,10 @@
     <Reference Include="System.Reactive.Windows.Threading">
       <HintPath>..\..\packages\Rx-XAML.2.2.4\lib\windows8\System.Reactive.Windows.Threading.dll</HintPath>
     </Reference>
+    <Reference Include="System.Reactive.WindowsRuntime">
+      <HintPath>..\..\packages\Rx-WinRT.2.2.4\lib\windows8\System.Reactive.WindowsRuntime.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\ReactiveUI\ReactiveUI_WinRT.csproj">
