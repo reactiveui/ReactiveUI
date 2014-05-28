@@ -1,6 +1,6 @@
 ﻿using System;
 using ReactiveUI;
-using Xamarin.QuickUI;
+using Xamarin.Forms;
 
 namespace ReactiveUI.QuickUI
 {
