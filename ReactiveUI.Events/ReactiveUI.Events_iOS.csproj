@@ -77,7 +77,7 @@
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.MonoTouch.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>%25SystemRoot%25\Microsoft.NET\Framework\v4.0.30319\msbuild.exe /p:Configuration=Release "$(ProjectDir)EventBuilder.csproj"
-"$(ProjectDir)EventBuilder.exe" "C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\MonoTouch\v4.0\monotouch.dll"  "$(ProjectDir)Events.mustache" &gt; "$(ProjectDir)Events_iOS.cs"
+"$(ProjectDir)EventBuilder.exe" "C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\MonoTouch\v1.0\monotouch.dll"  "$(ProjectDir)Events.mustache" &gt; "$(ProjectDir)Events_iOS.cs"
 del "$(ProjectDir)EventBuilder.exe"
 del "$(ProjectDir)EventBuilder.pdb"
 del "$(ProjectDir)Nustache.Core.dll"
