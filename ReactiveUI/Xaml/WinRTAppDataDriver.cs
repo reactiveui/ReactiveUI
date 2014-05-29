@@ -7,7 +7,7 @@ using System.Reactive.Linq;
 using System.Reactive.Windows.Foundation;
 using System.Text;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
+using System.Xml.Serialization;
 using Windows.Storage;
 using UnicodeEncoding = Windows.Storage.Streams.UnicodeEncoding;
 
@@ -15,43 +15,27 @@ namespace ReactiveUI.Mobile
 {
     public class WinRTAppDataDriver : ISuspensionDriver
     {
-        public JsonSerializerSettings SerializerSettings { get; set; }
-
-        public WinRTAppDataDriver() : this(null) { }
-        public WinRTAppDataDriver(JsonSerializerSettings settings)
-        {
-            SerializerSettings = settings ?? new JsonSerializerSettings() {
-                ObjectCreationHandling = ObjectCreationHandling.Replace,
-                ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
-                TypeNameHandling = TypeNameHandling.All,
-            };
-        }
-
         public IObservable<object> LoadState()
         {
-            var serializer = JsonSerializer.Create(SerializerSettings);
-
-            return ApplicationData.Current.RoamingFolder.GetFileAsync("appData.json").ToObservable()
+            return ApplicationData.Current.RoamingFolder.GetFileAsync("appData.xmlish").ToObservable()
                 .SelectMany(x => FileIO.ReadTextAsync(x, UnicodeEncoding.Utf8))
                 .SelectMany(x => {
-                    try {
-                        var reader = new JsonTextReader(new StringReader(x));
-                        var ret = serializer.Deserialize(reader);
-                        return Observable.Return(ret);
-                    } catch (Exception ex) {
-                        return Observable.Throw<object>(ex);
-                    }
+                    var line = x.IndexOf('\n');
+                    var typeName = x.Substring(0, line);
+                    var serializer = new XmlSerializer(Type.GetType(typeName));
+                    return Observable.Return(serializer.Deserialize(new StringReader(x.Substring(line + 1))));
                 });
         }
 
         public IObservable<Unit> SaveState(object state)
         {
-            var serializer = JsonSerializer.Create(SerializerSettings);
             try {
                 var writer = new StringWriter();
+                var serializer = new XmlSerializer(state.GetType());
+                writer.WriteLine(state.GetType().FullName);
                 serializer.Serialize(writer, state);
 
-                return ApplicationData.Current.RoamingFolder.CreateFileAsync("appData.json", CreationCollisionOption.ReplaceExisting).ToObservable()
+                return ApplicationData.Current.RoamingFolder.CreateFileAsync("appData.xmlish", CreationCollisionOption.ReplaceExisting).ToObservable()
                     .SelectMany(x => FileIO.WriteTextAsync(x, writer.GetStringBuilder().ToString(), UnicodeEncoding.Utf8).ToObservable());
             } catch (Exception ex) {
                 return Observable.Throw<Unit>(ex);
@@ -60,7 +44,7 @@ namespace ReactiveUI.Mobile
 
         public IObservable<Unit> InvalidateState()
         {
-            return ApplicationData.Current.RoamingFolder.GetFileAsync("appData.json").ToObservable()
+            return ApplicationData.Current.RoamingFolder.GetFileAsync("appData.xmlish").ToObservable()
                 .SelectMany(x => x.DeleteAsync().ToObservable());
         }
     }
