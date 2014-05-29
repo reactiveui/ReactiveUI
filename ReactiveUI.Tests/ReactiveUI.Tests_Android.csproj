@@ -78,9 +78,6 @@
     <Reference Include="System.Core" />
     <Reference Include="Mono.Android" />
     <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\ext\monodroid\Newtonsoft.Json.dll</HintPath>
-    </Reference>
     <Reference Include="Xamarin.Android.NUnitLite" />
     <Reference Include="Xamarin.Android.Support.v13">
       <HintPath>..\ext\monodroid\Xamarin.Android.Support.v13.dll</HintPath>

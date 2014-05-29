@@ -58,9 +58,6 @@
     <Reference Include="Splat">
       <HintPath>..\ext\mono\Splat.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\ext\mono\Newtonsoft.Json.dll</HintPath>
-    </Reference>
     <Reference Include="System.Reactive.Core">
       <HintPath>..\ext\Portable-Net45+WinRT45+WP8\System.Reactive.Core.dll</HintPath>
     </Reference>
