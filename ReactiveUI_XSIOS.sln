@@ -8,8 +8,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		TraceAndTestImpact.testsettings = TraceAndTestImpact.testsettings
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Mobile_iOS", "ReactiveUI.Mobile\ReactiveUI.Mobile_iOS.csproj", "{9091337A-9E94-4DBD-801E-15E10DB72FFC}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Events_Monotouch_XS", "ReactiveUI.Events\ReactiveUI.Events_Monotouch_XS.csproj", "{334E6DAC-0D70-4CE0-80CB-DFD3147DBE18}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Testing_iOS", "ReactiveUI.Testing\ReactiveUI.Testing_iOS.csproj", "{90913370-9E94-3DBD-8F1E-15E10DB72FFC}"
@@ -141,32 +139,6 @@ Global
 		{90913370-9E94-3DBD-8F1E-15E10DB72FFC}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{90913370-9E94-3DBD-8F1E-15E10DB72FFC}.Release|x86.ActiveCfg = Release|Any CPU
 		{90913370-9E94-3DBD-8F1E-15E10DB72FFC}.Release|x86.Build.0 = Release|Any CPU
-		{9091337A-9E94-4DBD-801E-15E10DB72FFC}.Ad-Hoc|iPhone.ActiveCfg = Release|Any CPU
-		{9091337A-9E94-4DBD-801E-15E10DB72FFC}.Ad-Hoc|iPhone.Build.0 = Release|Any CPU
-		{9091337A-9E94-4DBD-801E-15E10DB72FFC}.AppStore|Any CPU.ActiveCfg = Release|Any CPU
-		{9091337A-9E94-4DBD-801E-15E10DB72FFC}.AppStore|Any CPU.Build.0 = Release|Any CPU
-		{9091337A-9E94-4DBD-801E-15E10DB72FFC}.AppStore|iPhone.ActiveCfg = Release|Any CPU
-		{9091337A-9E94-4DBD-801E-15E10DB72FFC}.AppStore|iPhone.Build.0 = Release|Any CPU
-		{9091337A-9E94-4DBD-801E-15E10DB72FFC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9091337A-9E94-4DBD-801E-15E10DB72FFC}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9091337A-9E94-4DBD-801E-15E10DB72FFC}.Debug|iPhone.ActiveCfg = Debug|Any CPU
-		{9091337A-9E94-4DBD-801E-15E10DB72FFC}.Debug|iPhone.Build.0 = Debug|Any CPU
-		{9091337A-9E94-4DBD-801E-15E10DB72FFC}.Debug|iPhoneSimulator.ActiveCfg = Debug|Any CPU
-		{9091337A-9E94-4DBD-801E-15E10DB72FFC}.Debug|iPhoneSimulator.Build.0 = Debug|Any CPU
-		{9091337A-9E94-4DBD-801E-15E10DB72FFC}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{9091337A-9E94-4DBD-801E-15E10DB72FFC}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{9091337A-9E94-4DBD-801E-15E10DB72FFC}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{9091337A-9E94-4DBD-801E-15E10DB72FFC}.Debug|x86.Build.0 = Debug|Any CPU
-		{9091337A-9E94-4DBD-801E-15E10DB72FFC}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9091337A-9E94-4DBD-801E-15E10DB72FFC}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9091337A-9E94-4DBD-801E-15E10DB72FFC}.Release|iPhone.ActiveCfg = Release|Any CPU
-		{9091337A-9E94-4DBD-801E-15E10DB72FFC}.Release|iPhone.Build.0 = Release|Any CPU
-		{9091337A-9E94-4DBD-801E-15E10DB72FFC}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
-		{9091337A-9E94-4DBD-801E-15E10DB72FFC}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
-		{9091337A-9E94-4DBD-801E-15E10DB72FFC}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{9091337A-9E94-4DBD-801E-15E10DB72FFC}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{9091337A-9E94-4DBD-801E-15E10DB72FFC}.Release|x86.ActiveCfg = Release|Any CPU
-		{9091337A-9E94-4DBD-801E-15E10DB72FFC}.Release|x86.Build.0 = Release|Any CPU
 		{9091337A-9E94-4DBD-801E-15E1FDA78FFC}.Ad-Hoc|iPhone.ActiveCfg = Release|Any CPU
 		{9091337A-9E94-4DBD-801E-15E1FDA78FFC}.Ad-Hoc|iPhone.Build.0 = Release|Any CPU
 		{9091337A-9E94-4DBD-801E-15E1FDA78FFC}.AppStore|Any CPU.ActiveCfg = Release|Any CPU
@@ -249,7 +221,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
-		StartupItem = ReactiveUI.Mobile\ReactiveUI.Mobile_iOS.csproj
+		StartupItem = ReactiveUI.Events\ReactiveUI.Events_Monotouch_XS.csproj
 		Policies = $0
 		$0.TextStylePolicy = $1
 		$1.inheritsSet = null
