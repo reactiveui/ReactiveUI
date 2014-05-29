@@ -5,8 +5,10 @@ using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Windows.Foundation;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
 using System.Xml.Serialization;
 using Windows.Storage;
 using UnicodeEncoding = Windows.Storage.Streams.UnicodeEncoding;
@@ -21,22 +23,28 @@ namespace ReactiveUI.Mobile
                 .SelectMany(x => FileIO.ReadTextAsync(x, UnicodeEncoding.Utf8))
                 .SelectMany(x => {
                     var line = x.IndexOf('\n');
-                    var typeName = x.Substring(0, line);
-                    var serializer = new XmlSerializer(Type.GetType(typeName));
-                    return Observable.Return(serializer.Deserialize(new StringReader(x.Substring(line + 1))));
+                    var typeName = x.Substring(0, line-1); // -1 for CR
+                    var serializer = new DataContractSerializer(Type.GetType(typeName));
+
+                    // NB: WinRT is terrible
+                    var obj = serializer.ReadObject(new MemoryStream(Encoding.UTF8.GetBytes(x.Substring(line+1))));
+                    return Observable.Return(obj);
                 });
         }
 
         public IObservable<Unit> SaveState(object state)
         {
             try {
-                var writer = new StringWriter();
-                var serializer = new XmlSerializer(state.GetType());
-                writer.WriteLine(state.GetType().FullName);
-                serializer.Serialize(writer, state);
+                var ms = new MemoryStream();
+                var writer = new StreamWriter(ms, Encoding.UTF8);
+                var serializer = new DataContractSerializer(state.GetType());
+                writer.WriteLine(state.GetType().AssemblyQualifiedName);
+                writer.Flush();
+
+                serializer.WriteObject(ms, state);
 
                 return ApplicationData.Current.RoamingFolder.CreateFileAsync("appData.xmlish", CreationCollisionOption.ReplaceExisting).ToObservable()
-                    .SelectMany(x => FileIO.WriteTextAsync(x, writer.GetStringBuilder().ToString(), UnicodeEncoding.Utf8).ToObservable());
+                    .SelectMany(x => FileIO.WriteBytesAsync(x, ms.ToArray()).ToObservable());
             } catch (Exception ex) {
                 return Observable.Throw<Unit>(ex);
             }
