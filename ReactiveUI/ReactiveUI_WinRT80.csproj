@@ -32,7 +32,7 @@
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\WinRT45\</OutputPath>
     <IntermediateOutputPath>obj\Release\WinRT45</IntermediateOutputPath>
-    <DefineConstants>TRACE;WINRT; XAML</DefineConstants>
+    <DefineConstants>TRACE;WINRT; XAML;WINRT80</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>bin\Release\WinRT45\ReactiveUI.xml</DocumentationFile>
