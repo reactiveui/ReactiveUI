@@ -1,6 +1,6 @@
 ﻿Param([string]$version = $null)
 
-$Archs = {"Portable-Net45+WinRT45+WP8", "Net45", "WP8", "WinRT45", "WinRT451", "Mono", "Monoandroid", "Monotouch", "Monomac", "Portable-Win81+Wpa81"}
+$Archs = {"Portable-Net45+Win8+WP8", "Net45", "WP8", "WP81", "Win8", "Win81", "Mono", "Monoandroid", "Monotouch", "Monomac", "Portable-Win81+Wpa81"}
 $Projects = {
     "ReactiveUI", "ReactiveUI.Testing", "ReactiveUI.Blend", "ReactiveUI.Mobile", 
     "RxUIViewModelGenerator", "ReactiveUI.Events", "ReactiveUI.AndroidSupport"
@@ -114,7 +114,7 @@ foreach ($dir in $srcDirs) {
 }
 
 $stubs = ls -r -file .\NuGet-Release | ?{$_.Length -eq 0} | ?{!$_.FullName.Contains("src")}
-if ($stubs.Length -gt 0) {
+if ($stubs) {
     echo "*** BUILD FAILED ***"
     echo ""
     echo "*** There are still stubs in the NuGet output, did you fully build? ***"
