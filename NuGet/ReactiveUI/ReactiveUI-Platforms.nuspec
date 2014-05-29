@@ -10,8 +10,18 @@
     <language>en-us</language>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <dependencies>
-      <dependency id="reactiveui-core" version="[5.99.5-beta]" />
-	  <dependency id="reactiveui-blend" version="[5.99.5-beta]" />
+	  <group>
+        <dependency id="reactiveui-core" version="[5.99.5-beta]" />
+	  </group>
+	  <group targetFramework="wp8">
+	    <dependency id="reactiveui-blend" version="[5.99.5-beta]" />
+	  </group>
+	  <group targetFramework="net45">
+	    <dependency id="reactiveui-blend" version="[5.99.5-beta]" />
+	  </group>
+	  <group targetFramework="Portable-Win81+Wpa81">
+	    <dependency id="reactiveui-blend" version="[5.99.5-beta]" />
+	  </group>
     </dependencies>
   </metadata>
 </package>
