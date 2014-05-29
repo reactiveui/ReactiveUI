@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <package xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <metadata xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
-    <id>reactiveui-xaml</id>
+    <id>reactiveui-mobile</id>
     <version>5.99.5-beta</version>
     <description>Deprecated package that is no longer needed. You are looking for ReactiveUI-Core.</description>
     <authors>Paul Betts</authors>
@@ -10,7 +10,10 @@
     <language>en-us</language>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <dependencies>
-      <dependency id="reactiveui-core" version="[5.99.5-beta]" />
+      <group>
+        <dependency id="reactiveui-core" version="[5.99.5-beta]" />
+      </group>
     </dependencies>
   </metadata>
 </package>
+
