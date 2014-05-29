@@ -21,8 +21,8 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\WinRT45\</OutputPath>
-    <IntermediateOutputPath>obj\Debug\WinRT45</IntermediateOutputPath>
+    <OutputPath>bin\Debug\Win8\</OutputPath>
+    <IntermediateOutputPath>obj\Debug\Win8</IntermediateOutputPath>
     <DefineConstants>TRACE;DEBUG;WINRT; XAML;WINRT80</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -33,9 +33,12 @@
     <OutputPath>bin\Release\WinRT45\</OutputPath>
     <IntermediateOutputPath>obj\Release\WinRT45</IntermediateOutputPath>
     <DefineConstants>TRACE;WINRT; XAML;WINRT80</DefineConstants>
+    <OutputPath>bin\Release\Win8\</OutputPath>
+    <IntermediateOutputPath>obj\Release\Win8</IntermediateOutputPath>
+    <DefineConstants>TRACE;WINRT; XAML</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Release\WinRT45\ReactiveUI.xml</DocumentationFile>
+    <DocumentationFile>bin\Release\Win8\ReactiveUI.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Platform\Registrations.cs" />
