@@ -11,7 +11,6 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <dependencies>
       <dependency id="reactiveui-core" version="[5.99.5-beta]" />
-      <dependency id="reactiveui-platforms" version="[5.99.5-beta]" />
     </dependencies>
   </metadata>
 </package>
