@@ -12,15 +12,15 @@
     <dependencies>
       <group targetFramework="net45">
         <dependency id="reactiveui-core" version="[5.99.5-beta]" />
-        <dependency id="Rx-Testing" version="2.2.2" />
+        <dependency id="Rx-Testing" version="2.2.4" />
       </group>
       <group targetFramework="WP8">
         <dependency id="reactiveui-core" version="[5.99.5-beta]" />
-        <dependency id="Rx-Testing" version="2.2.2" />
+        <dependency id="Rx-Testing" version="2.2.4" />
       </group>
-      <group targetFramework="WinRT45">
+      <group targetFramework="Win8">
         <dependency id="reactiveui-core" version="[5.99.5-beta]" />
-        <dependency id="Rx-Testing" version="2.2.2" />
+        <dependency id="Rx-Testing" version="2.2.4" />
       </group>
       <group targetFramework="monoandroid">
         <dependency id="reactiveui-core" version="[5.99.5-beta]" />
