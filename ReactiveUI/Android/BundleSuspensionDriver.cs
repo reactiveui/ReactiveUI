@@ -1,23 +1,13 @@
 using System;
 using System.Reactive;
 using System.Reactive.Linq;
-using Newtonsoft.Json;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace ReactiveUI.Mobile
 {
     public class BundleSuspensionDriver : ISuspensionDriver
     {
-        public JsonSerializerSettings SerializerSettings { get; set; }
-
-        public BundleSuspensionDriver()
-        {
-            SerializerSettings = new JsonSerializerSettings() {
-                ObjectCreationHandling = ObjectCreationHandling.Replace,
-                ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
-                TypeNameHandling = TypeNameHandling.All,
-            };
-        }
-
         public IObservable<object> LoadState()
         {
             try {
@@ -26,9 +16,10 @@ namespace ReactiveUI.Mobile
                     return Observable.Return(default(object));
                 }
 
-                var ret = JsonConvert.DeserializeObject(
-                    AutoSuspendHelper.LatestBundle.GetString("__state"), SerializerSettings);
-                return Observable.Return(ret);
+                var serializer = new BinaryFormatter();
+                var st = new MemoryStream(AutoSuspendHelper.LatestBundle.GetByteArray("__state"));
+
+                return Observable.Return(serializer.Deserialize(st));
             } catch (Exception ex) {
                 return Observable.Throw<object>(ex);
             }
@@ -37,7 +28,10 @@ namespace ReactiveUI.Mobile
         public IObservable<Unit> SaveState(object state)
         {
             try {
-                AutoSuspendHelper.LatestBundle.PutString("__state", JsonConvert.SerializeObject(state, SerializerSettings));
+                var serializer = new BinaryFormatter();
+                var st = new MemoryStream();
+
+                AutoSuspendHelper.LatestBundle.PutByteArray("__state", st.ToArray());
                 return Observable.Return(Unit.Default);
             
             } catch(Exception ex) {
@@ -48,7 +42,7 @@ namespace ReactiveUI.Mobile
         public IObservable<Unit> InvalidateState()
         {
             try {
-                AutoSuspendHelper.LatestBundle.PutString("__state", "");
+                AutoSuspendHelper.LatestBundle.PutByteArray("__state", new byte[0]);
                 return Observable.Return(Unit.Default);
             
             } catch(Exception ex) {
