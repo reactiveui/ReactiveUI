@@ -3,7 +3,6 @@ using System.IO;
 using System.Reactive;
 using System.Reactive.Linq;
 using Microsoft.Phone.Shell;
-using Newtonsoft.Json;
 
 namespace ReactiveUI.Mobile
 {
