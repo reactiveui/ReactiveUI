@@ -14,6 +14,7 @@ if ($SlnFileExists -eq $False) {
     exit -1
 }
 
+& ".\.nuget\NuGet.exe" restore .\ReactiveUI.sln
 & "$MSBuildLocation\MSBuild.exe" /t:Rebuild /p:Configuration=Release /p:Platform="Any CPU" /maxcpucount:1 .\ReactiveUI.sln
 
 ###
