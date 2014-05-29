@@ -24,7 +24,8 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\WinRT45\</OutputPath>
+    <OutputPath>bin\Debug\Portable-Win81+WPA81\</OutputPath>
+    <IntermediateOutputPath>obj\Debug\Portable-Win81+WPA81\</IntermediateOutputPath>
     <DefineConstants>TRACE;DEBUG;NETFX_CORE;WINRT</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -32,11 +33,12 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\WinRT45\</OutputPath>
+    <OutputPath>bin\Release\Portable-Win81+WPA81\</OutputPath>
+    <IntermediateOutputPath>obj\Release\Portable-Win81+WPA81\</IntermediateOutputPath>
     <DefineConstants>TRACE;NETFX_CORE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Release\WinRT45\ReactiveUI.Testing.xml</DocumentationFile>
+    <DocumentationFile>bin\Release\Portable-Win81+WPA81\ReactiveUI.Testing.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />

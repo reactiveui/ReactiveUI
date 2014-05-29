@@ -21,8 +21,8 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\WinRT45\</OutputPath>
-    <IntermediateOutputPath>obj\Debug\WinRT45</IntermediateOutputPath>
+    <OutputPath>bin\Debug\Win8\</OutputPath>
+    <IntermediateOutputPath>obj\Debug\Win8\</IntermediateOutputPath>
     <DefineConstants>TRACE;DEBUG;WINRT</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -30,12 +30,12 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\WinRT45\</OutputPath>
-    <IntermediateOutputPath>obj\Release\WinRT45</IntermediateOutputPath>
+    <OutputPath>bin\Release\Win8\</OutputPath>
+    <IntermediateOutputPath>obj\Release\Win8\</IntermediateOutputPath>
     <DefineConstants>TRACE;WINRT</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>3</WarningLevel>
-    <DocumentationFile>bin\Release\WinRT45\ReactiveUI.Events.xml</DocumentationFile>
+    <DocumentationFile>bin\Release\Win8\ReactiveUI.Events.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="..\CommonAssemblyInfo.cs">

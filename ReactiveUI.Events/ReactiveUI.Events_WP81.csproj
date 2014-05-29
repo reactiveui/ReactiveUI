@@ -29,7 +29,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>Bin\Debug\WP81\</OutputPath>
-    <IntermediateOutputPath>obj\Debug\WP81</IntermediateOutputPath>
+    <IntermediateOutputPath>obj\Debug\WP81\</IntermediateOutputPath>
     <DefineConstants>DEBUG;TRACE;SILVERLIGHT;WP81</DefineConstants>
     <NoStdLib>true</NoStdLib>
     <NoConfig>true</NoConfig>
@@ -63,7 +63,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>Bin\Release\WP81\</OutputPath>
-    <IntermediateOutputPath>obj\Release\WP81</IntermediateOutputPath>
+    <IntermediateOutputPath>obj\Release\WP81\</IntermediateOutputPath>
     <DefineConstants>TRACE;SILVERLIGHT;WP81</DefineConstants>
     <NoStdLib>true</NoStdLib>
     <NoConfig>true</NoConfig>
