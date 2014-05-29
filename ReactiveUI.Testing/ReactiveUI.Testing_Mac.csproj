@@ -142,10 +142,6 @@
   </Target>
   -->
   <ItemGroup>
-    <ProjectReference Include="..\Microsoft.Reactive.Testing\Microsoft.Reactive.Testing_MonoMac.csproj">
-      <Project>{AA27F817-FAD2-4622-B68A-651A8AA9E076}</Project>
-      <Name>Microsoft.Reactive.Testing_MonoMac</Name>
-    </ProjectReference>
     <ProjectReference Include="..\ReactiveUI\ReactiveUI_Mac.csproj">
       <Project>{0913BF79-061F-4667-ADF9-8E6CDA6D1213}</Project>
       <Name>ReactiveUI_Mac</Name>
