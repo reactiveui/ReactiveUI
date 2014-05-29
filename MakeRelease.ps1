@@ -1,6 +1,6 @@
 ﻿Param([string]$version = $null)
 
-$Archs = {"Portable-Net45+Win8+WP8+WPA81", "Net45", "WP8", "WP81", "Win8", "Win81", "Mono", "Monoandroid", "Monotouch", "Monomac", "Portable-Win81+Wpa81"}
+$Archs = {"Portable-Net45+Win8+WP8+WPA81", "Net45", "WP8", "WP81", "Win8", "Win81", "Mono", "Monoandroid", "Monotouch", "Monomac", "Portable-Win81+Wpa81", "WPA81"}
 $Projects = {
     "ReactiveUI", "ReactiveUI.Testing", "ReactiveUI.Blend", "ReactiveUI.Winforms", 
     "RxUIViewModelGenerator", "ReactiveUI.Events", "ReactiveUI.AndroidSupport"
