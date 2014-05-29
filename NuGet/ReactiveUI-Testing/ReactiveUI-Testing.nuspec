@@ -2,7 +2,7 @@
 <package xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <metadata xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
     <id>reactiveui-testing</id>
-    <version>5.99.5-beta</version>
+    <version>5.99.6-beta</version>
     <description>A library to aid in writing unit tests for ReactiveUI projects</description>
     <authors>Paul Betts</authors>
     <projectUrl>http://www.reactiveui.net</projectUrl>
@@ -11,22 +11,22 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <dependencies>
       <group targetFramework="net45">
-        <dependency id="reactiveui-core" version="[5.99.5-beta]" />
+        <dependency id="reactiveui-core" version="[5.99.6-beta]" />
         <dependency id="Rx-Testing" version="2.2.4" />
       </group>
       <group targetFramework="WP8">
-        <dependency id="reactiveui-core" version="[5.99.5-beta]" />
+        <dependency id="reactiveui-core" version="[5.99.6-beta]" />
         <dependency id="Rx-Testing" version="2.2.4" />
       </group>
       <group targetFramework="Win8">
-        <dependency id="reactiveui-core" version="[5.99.5-beta]" />
+        <dependency id="reactiveui-core" version="[5.99.6-beta]" />
         <dependency id="Rx-Testing" version="2.2.4" />
       </group>
       <group targetFramework="monoandroid">
-        <dependency id="reactiveui-core" version="[5.99.5-beta]" />
+        <dependency id="reactiveui-core" version="[5.99.6-beta]" />
       </group>
       <group targetFramework="monotouch">
-        <dependency id="reactiveui-core" version="[5.99.5-beta]" />
+        <dependency id="reactiveui-core" version="[5.99.6-beta]" />
       </group>
     </dependencies>
   </metadata>
