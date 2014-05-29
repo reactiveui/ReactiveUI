@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <package xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <metadata xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
-    <id>reactiveui-platforms</id>
+    <id>reactiveui-blend</id>
     <version>5.99.5-beta</version>
-    <description>Platform specific extensions to ReactiveUI</description>
+    <description>Blend behaviors for ReactiveUI</description>
     <authors>Paul Betts</authors>
     <projectUrl>http://www.reactiveui.net</projectUrl>
     <licenseUrl>http://opensource.org/licenses/ms-pl.html</licenseUrl>
@@ -21,7 +21,7 @@
         <dependency id="reactiveui-core" version="[5.99.5-beta]" />
         <dependency id="Rx-Xaml" version="2.2.2" />
       </group>
-      <group targetFramework="winrt45">
+      <group targetFramework="Portable-Win81+WPA81">
         <dependency id="reactiveui-core" version="[5.99.5-beta]" />
         <dependency id="Rx-Xaml" version="2.2.2" />
       </group>
