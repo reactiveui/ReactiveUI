@@ -81,9 +81,6 @@
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\ext\monodroid\Newtonsoft.Json.dll</HintPath>
     </Reference>
-    <Reference Include="Xamarin.Mobile">
-      <HintPath>..\ext\monodroid\Xamarin.Mobile.dll</HintPath>
-    </Reference>
     <Reference Include="Xamarin.Android.NUnitLite" />
     <Reference Include="Xamarin.Android.Support.v13">
       <HintPath>..\ext\monodroid\Xamarin.Android.Support.v13.dll</HintPath>
