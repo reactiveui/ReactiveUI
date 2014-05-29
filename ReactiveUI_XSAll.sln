@@ -10,6 +10,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Events_iOS_XS", "ReactiveUI.Events\ReactiveUI.Events_iOS_XS.csproj", "{334E6DAC-0D70-4CE0-80CB-DFD3147DBE18}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Events_Mac", "ReactiveUI.Events\ReactiveUI.Events_Mac.csproj", "{292A477A-BB94-43C1-F841-E177EF9FEDB8}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Testing_iOS", "ReactiveUI.Testing\ReactiveUI.Testing_iOS.csproj", "{90913370-9E94-3DBD-8F1E-15E10DB72FFC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Testing_Android", "ReactiveUI.Testing\ReactiveUI.Testing_Android.csproj", "{1920477B-BB94-93CF-984E-E177EF9FEDB1}"
