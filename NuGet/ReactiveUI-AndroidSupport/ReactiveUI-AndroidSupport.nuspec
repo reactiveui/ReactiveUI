@@ -11,7 +11,7 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <dependencies>
       <dependency id="reactiveui-platforms" version="[5.99.5-beta]" />
-      <dependency id="xamstore-xamandroidsupportv13-18" version="19.1.0" />
+      <dependency id="Xamarin.Android.Support.v4" version="19.0.2" />
     </dependencies>
   </metadata>
 </package>
