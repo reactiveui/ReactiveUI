@@ -21,7 +21,7 @@ namespace ReactiveUI
         {
             var extraNs = new[] {
                 "ReactiveUI.Mobile", 
-                "ReactiveUI.QuickUI",
+                "ReactiveUI.XamForms",
                 "ReactiveUI.Winforms", 
             };
 
