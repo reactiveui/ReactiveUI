@@ -16,6 +16,8 @@
     <SynthesizeLinkMetadata>true</SynthesizeLinkMetadata>
     <ProjectTypeGuids>{BC8A1FFA-BEE3-4634-8014-F334798102B3};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <PackageCertificateKeyFile>Playground-Wpa81.Windows_TemporaryKey.pfx</PackageCertificateKeyFile>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -112,6 +114,7 @@
     <AppxManifest Include="Package.appxmanifest">
       <SubType>Designer</SubType>
     </AppxManifest>
+    <None Include="packages.config" />
     <None Include="Playground-Wpa81.Windows_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
@@ -127,32 +130,27 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\..\ext\winrt\Newtonsoft.Json.dll</HintPath>
-    </Reference>
     <Reference Include="Splat">
-      <HintPath>..\..\ext\Portable-Win81+Wpa81\Splat.dll</HintPath>
+      <HintPath>..\..\packages\Splat.1.3.1\lib\NetCore45\Splat.dll</HintPath>
     </Reference>
     <Reference Include="System.Reactive.Core">
-      <HintPath>..\..\ext\winrt\System.Reactive.Core.dll</HintPath>
+      <HintPath>..\..\packages\Rx-Core.2.2.4\lib\windows8\System.Reactive.Core.dll</HintPath>
     </Reference>
     <Reference Include="System.Reactive.Interfaces">
-      <HintPath>..\..\ext\winrt\System.Reactive.Interfaces.dll</HintPath>
+      <HintPath>..\..\packages\Rx-Interfaces.2.2.4\lib\windows8\System.Reactive.Interfaces.dll</HintPath>
     </Reference>
     <Reference Include="System.Reactive.Linq">
-      <HintPath>..\..\ext\winrt\System.Reactive.Linq.dll</HintPath>
+      <HintPath>..\..\packages\Rx-Linq.2.2.4\lib\windows8\System.Reactive.Linq.dll</HintPath>
     </Reference>
     <Reference Include="System.Reactive.PlatformServices">
-      <HintPath>..\..\ext\winrt\System.Reactive.PlatformServices.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Reactive.Providers">
-      <HintPath>..\..\ext\winrt\System.Reactive.Providers.dll</HintPath>
+      <HintPath>..\..\packages\Rx-PlatformServices.2.2.4\lib\windows8\System.Reactive.PlatformServices.dll</HintPath>
     </Reference>
     <Reference Include="System.Reactive.Windows.Threading">
-      <HintPath>..\..\ext\winrt\System.Reactive.Windows.Threading.dll</HintPath>
+      <HintPath>..\..\packages\Rx-XAML.2.2.4\lib\windows8\System.Reactive.Windows.Threading.dll</HintPath>
     </Reference>
     <Reference Include="System.Reactive.WindowsRuntime">
-      <HintPath>..\..\ext\winrt\System.Reactive.WindowsRuntime.dll</HintPath>
+      <HintPath>..\..\packages\Rx-WinRT.2.2.4\lib\windows8\System.Reactive.WindowsRuntime.dll</HintPath>
+      <Private>True</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
