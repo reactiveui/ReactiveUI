@@ -1,31 +1,26 @@
 using System;
 using System.Reactive.Linq;
-using Newtonsoft.Json;
 using MonoTouch.Foundation;
 using System.Reactive;
 using System.IO;
-using System.Text;
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace ReactiveUI.Mobile
 {
     public class AppSupportJsonSuspensionDriver : ISuspensionDriver
     {
-        public JsonSerializerSettings SerializerSettings { get; set; }
-
-        public AppSupportJsonSuspensionDriver()
-        {
-            SerializerSettings = new JsonSerializerSettings() {
-                ObjectCreationHandling = ObjectCreationHandling.Replace,
-                ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
-                TypeNameHandling = TypeNameHandling.All,
-            };
-        }
-
         public IObservable<object> LoadState()
         {
             try {
-                var target = Path.Combine(CreateAppDirectory(NSSearchPathDirectory.ApplicationSupportDirectory), "state.json");
-                return Observable.Return(JsonConvert.DeserializeObject(File.ReadAllText(target, Encoding.UTF8), SerializerSettings));
+                var serializer = new BinaryFormatter();
+                var target = Path.Combine(CreateAppDirectory(NSSearchPathDirectory.ApplicationSupportDirectory), "state.dat");
+
+                var result = default(object);
+                using (var st = File.OpenRead(target)) {
+                    result = serializer.Deserialize(st);
+                }
+                    
+                return Observable.Return(result);
             } catch (Exception ex) {
                 return Observable.Throw<object>(ex);
             }
@@ -34,8 +29,12 @@ namespace ReactiveUI.Mobile
         public IObservable<Unit> SaveState(object state)
         {
             try {
-                var target = Path.Combine(CreateAppDirectory(NSSearchPathDirectory.ApplicationSupportDirectory), "state.json");
-                File.WriteAllText(target, JsonConvert.SerializeObject(state, SerializerSettings));
+                var serializer = new BinaryFormatter();
+                var target = Path.Combine(CreateAppDirectory(NSSearchPathDirectory.ApplicationSupportDirectory), "state.dat");
+
+                using (var st = File.Open(target, FileMode.Create)) {
+                    serializer.Serialize(st, state);
+                }
 
                 return Observable.Return(Unit.Default);
                 
@@ -47,7 +46,7 @@ namespace ReactiveUI.Mobile
         public IObservable<Unit> InvalidateState()
         {
             try {
-                var target = Path.Combine(CreateAppDirectory(NSSearchPathDirectory.ApplicationSupportDirectory), "state.json");
+                var target = Path.Combine(CreateAppDirectory(NSSearchPathDirectory.ApplicationSupportDirectory), "state.dat");
                 File.Delete(target);
 
                 return Observable.Return(Unit.Default);
