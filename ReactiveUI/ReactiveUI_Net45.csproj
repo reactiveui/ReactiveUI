@@ -20,7 +20,6 @@
     </SccAuxPath>
     <SccProvider>
     </SccProvider>
-    <CodeContractsAssemblyMode>1</CodeContractsAssemblyMode>
     <Utf8Output>true</Utf8Output>
     <ExpressionBlendVersion>4.0.30816.0</ExpressionBlendVersion>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
@@ -35,32 +34,8 @@
     <DefineConstants>TRACE;DEBUG;NET_45; XAML</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <CodeContractsEnableRuntimeChecking>False</CodeContractsEnableRuntimeChecking>
-    <CodeContractsRuntimeOnlyPublicSurface>True</CodeContractsRuntimeOnlyPublicSurface>
-    <CodeContractsRuntimeThrowOnFailure>False</CodeContractsRuntimeThrowOnFailure>
-    <CodeContractsRuntimeCallSiteRequires>False</CodeContractsRuntimeCallSiteRequires>
-    <CodeContractsRunCodeAnalysis>False</CodeContractsRunCodeAnalysis>
-    <CodeContractsNonNullObligations>False</CodeContractsNonNullObligations>
-    <CodeContractsBoundsObligations>True</CodeContractsBoundsObligations>
-    <CodeContractsArithmeticObligations>False</CodeContractsArithmeticObligations>
-    <CodeContractsContainerAnalysis>False</CodeContractsContainerAnalysis>
-    <CodeContractsRedundantAssumptions>False</CodeContractsRedundantAssumptions>
-    <CodeContractsRunInBackground>True</CodeContractsRunInBackground>
-    <CodeContractsShowSquigglies>False</CodeContractsShowSquigglies>
-    <CodeContractsUseBaseLine>False</CodeContractsUseBaseLine>
-    <CodeContractsEmitXMLDocs>False</CodeContractsEmitXMLDocs>
-    <CodeContractsCustomRewriterAssembly />
-    <CodeContractsCustomRewriterClass />
-    <CodeContractsLibPaths />
-    <CodeContractsExtraRewriteOptions />
-    <CodeContractsExtraAnalysisOptions />
-    <CodeContractsBaseLineFile />
-    <CodeContractsCacheAnalysisResults>False</CodeContractsCacheAnalysisResults>
-    <CodeContractsRuntimeCheckingLevel>Full</CodeContractsRuntimeCheckingLevel>
-    <CodeContractsReferenceAssembly>%28none%29</CodeContractsReferenceAssembly>
     <CodeAnalysisRuleSet>ExtendedCorrectnessRules.ruleset</CodeAnalysisRuleSet>
     <RunCodeAnalysis>false</RunCodeAnalysis>
-    <CodeContractsPointerObligations>False</CodeContractsPointerObligations>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -70,29 +45,6 @@
     <DefineConstants>TRACE;NET_45; XAML</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <CodeContractsEnableRuntimeChecking>False</CodeContractsEnableRuntimeChecking>
-    <CodeContractsRuntimeOnlyPublicSurface>False</CodeContractsRuntimeOnlyPublicSurface>
-    <CodeContractsRuntimeThrowOnFailure>True</CodeContractsRuntimeThrowOnFailure>
-    <CodeContractsRuntimeCallSiteRequires>False</CodeContractsRuntimeCallSiteRequires>
-    <CodeContractsRunCodeAnalysis>True</CodeContractsRunCodeAnalysis>
-    <CodeContractsNonNullObligations>False</CodeContractsNonNullObligations>
-    <CodeContractsBoundsObligations>False</CodeContractsBoundsObligations>
-    <CodeContractsArithmeticObligations>False</CodeContractsArithmeticObligations>
-    <CodeContractsContainerAnalysis>False</CodeContractsContainerAnalysis>
-    <CodeContractsRedundantAssumptions>False</CodeContractsRedundantAssumptions>
-    <CodeContractsRunInBackground>True</CodeContractsRunInBackground>
-    <CodeContractsShowSquigglies>True</CodeContractsShowSquigglies>
-    <CodeContractsUseBaseLine>False</CodeContractsUseBaseLine>
-    <CodeContractsEmitXMLDocs>False</CodeContractsEmitXMLDocs>
-    <CodeContractsCustomRewriterAssembly />
-    <CodeContractsCustomRewriterClass />
-    <CodeContractsLibPaths />
-    <CodeContractsExtraRewriteOptions />
-    <CodeContractsExtraAnalysisOptions />
-    <CodeContractsBaseLineFile />
-    <CodeContractsCacheAnalysisResults>True</CodeContractsCacheAnalysisResults>
-    <CodeContractsRuntimeCheckingLevel>Full</CodeContractsRuntimeCheckingLevel>
-    <CodeContractsReferenceAssembly>%28none%29</CodeContractsReferenceAssembly>
     <DocumentationFile>bin\Release\Net45\ReactiveUI.xml</DocumentationFile>
     <NoWarn>1591, 1573, 1711, 1587, 1570, 1572</NoWarn>
   </PropertyGroup>
