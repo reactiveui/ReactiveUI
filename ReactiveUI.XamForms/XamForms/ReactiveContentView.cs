@@ -2,7 +2,7 @@
 using ReactiveUI;
 using Xamarin.Forms;
 
-namespace ReactiveUI.QuickUI
+namespace ReactiveUI.XamForms
 {
     public class ReactiveContentView<TViewModel> : ContentView, IViewFor<TViewModel>
         where TViewModel : class
