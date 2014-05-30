@@ -2,7 +2,7 @@
 using System.Collections.Specialized;
 using System.Reactive.Linq;
 
-namespace Xamarin.QuickUI
+namespace Xamarin.Forms
 {
     public class TableSectionBaseEvents
     {
