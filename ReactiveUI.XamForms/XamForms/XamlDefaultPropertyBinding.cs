@@ -3,7 +3,7 @@ using System.Linq;
 using System.Reflection;
 using Xamarin.Forms;
 
-namespace ReactiveUI.QuickUI
+namespace ReactiveUI.XamForms
 {
     public class XamlDefaultPropertyBinding : IDefaultPropertyBindingProvider
     {

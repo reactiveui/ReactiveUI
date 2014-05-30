@@ -6,7 +6,7 @@ using System.Windows;
 using Splat;
 using Xamarin.Forms;
 
-namespace ReactiveUI.QuickUI
+namespace ReactiveUI.XamForms
 {
     /// <summary>
     /// This content control will automatically load the View associated with

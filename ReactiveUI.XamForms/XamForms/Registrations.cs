@@ -8,7 +8,7 @@ using System.Windows;
 using ReactiveUI;
 using System.Reactive.Concurrency;
 
-namespace ReactiveUI.QuickUI
+namespace ReactiveUI.XamForms
 {
     /// <summary>
     /// Ignore me. This class is a secret handshake between RxUI and RxUI.Xaml
