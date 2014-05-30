@@ -64,19 +64,13 @@
     <Reference Include="Splat">
       <HintPath>..\ext\Portable-Net45+WinRT45+WP8\Splat.dll</HintPath>
     </Reference>
-    <Reference Include="Xamarin.QuickUI.Core">
-      <HintPath>..\ext\Portable-Net45+WinRT45+WP8\Xamarin.QuickUI.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="Xamarin.QuickUI.Xaml">
-      <HintPath>..\ext\Portable-Net45+WinRT45+WP8\Xamarin.QuickUI.Xaml.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\CommonAssemblyInfo.cs">
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Events.cs" />
-    <Compile Include="QuickUIShims.cs" />
+    <Compile Include="Shims.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
