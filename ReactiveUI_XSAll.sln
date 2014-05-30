@@ -26,9 +26,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Reactive.Testing_
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI", "ReactiveUI\ReactiveUI.csproj", "{464CB812-F99F-401B-BE4C-E8F0515CD19D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.QuickUI", "ReactiveUI.Platforms\ReactiveUI.QuickUI.csproj", "{864CB812-199F-401B-BE4C-E8F0515CD19D}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Events_QuickUI_XS", "ReactiveUI.Events\ReactiveUI.Events_QuickUI_XS.csproj", "{864CBF13-F9AF-401B-BE4C-E8F0515CD19D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Events_XamForms_XS", "ReactiveUI.Events\ReactiveUI.Events_XamForms_XS.csproj", "{864CBF13-F9AF-401B-BE4C-E8F0515CD19D}"
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.AndroidSupport", "ReactiveUI.AndroidSupport\ReactiveUI.AndroidSupport.csproj", "{F5A6E11B-B074-4A1C-B937-267D840E31DF}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI_Android", "ReactiveUI\ReactiveUI_Android.csproj", "{F5A6E11B-B074-4A0B-B937-267D840E31DF}"
@@ -42,6 +40,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Playground-iOS", "Playground-iOS\Playground-iOS.csproj", "{420CF325-38B9-4B30-8978-D519EC40B6A8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Events_Mac", "ReactiveUI.Events\ReactiveUI.Events_Mac.csproj", "{20A2477A-BB94-43C1-F841-E177EF9FEDB8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.XamForms", "ReactiveUI.XamForms\ReactiveUI.XamForms.csproj", "{864CB812-199F-401B-BE4C-E8F0515CD19D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
