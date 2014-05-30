@@ -29,7 +29,7 @@ namespace EventBuilder
             }
 
 	    // NB: Triple down on Laziness
-            if (targetAssemblyNames.Any(x => x.ToLowerInvariant().Contains("quickui"))) {
+            if (targetAssemblyNames.Any(x => x.ToLowerInvariant().Contains("xamarin.forms"))) {
                 targetAssemblyDirs.Add("/Library/Frameworks/Mono.framework/Versions/Current/lib/mono/xbuild-frameworks/.NETPortable/v4.5/Profile/Profile78");
             }
 
