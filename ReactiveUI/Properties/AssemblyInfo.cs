@@ -21,3 +21,4 @@ using System.Windows;
 [assembly: InternalsVisibleTo("ReactiveUI_Tests_iOS")] // NB: iOS apps can't have '.' in the name
 [assembly: InternalsVisibleTo("ReactiveUI.Tests_Android")]
 [assembly: InternalsVisibleTo("ReactiveUI.Winforms")]
+[assembly: InternalsVisibleTo("ReactiveUI.XamForms")]

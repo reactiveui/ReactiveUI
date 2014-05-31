@@ -49,6 +49,9 @@ namespace ReactiveUI.Android
         }
 
         public IDisposable BindCommandToObject<TEventArgs>(ICommand command, object target, IObservable<object> commandParameter, string eventName)
+#if MONO
+            where TEventArgs : EventArgs
+#endif
         {
             throw new NotImplementedException();
         }

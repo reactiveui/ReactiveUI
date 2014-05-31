@@ -19,6 +19,8 @@ namespace ReactiveUI
             registerFunction(() => new StringConverter(), typeof(IBindingTypeConverter));
             registerFunction(() => new DefaultViewLocator(), typeof(IViewLocator));
             registerFunction(() => new CanActivateViewFetcher(), typeof(IActivationForViewFetcher));
+            registerFunction(() => new CreatesCommandBindingViaEvent(), typeof(ICreatesCommandBinding));
+            registerFunction(() => new CreatesCommandBindingViaCommandParameter(), typeof(ICreatesCommandBinding));
         }
     }
 }
