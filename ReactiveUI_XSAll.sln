@@ -667,7 +667,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
-		StartupItem = Playground-XamForms.iOS\Playground-XamForms.iOS.csproj
+		StartupItem = Playground-XamForms.Android\Playground-XamForms.Android.csproj
 		Policies = $0
 		$0.TextStylePolicy = $1
 		$1.inheritsSet = null
