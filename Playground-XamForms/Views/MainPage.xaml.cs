@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reactive.Linq;
 using ReactiveUI;
 using Xamarin.Forms;
+using System.Diagnostics;
 
 namespace PlaygroundXamForms
 {    
@@ -13,6 +15,12 @@ namespace PlaygroundXamForms
             ViewModel = new MainPageViewModel();
 
             this.OneWayBind(ViewModel, x => x.SavedGuid, x => x.savedGuid.Text);
+            this.BindCommand(ViewModel, x => x.DoIt, x => x.doIt);
+
+            this.WhenAnyObservable(x => x.ViewModel.DoIt)
+                .Subscribe(_ => {
+                    Debug.WriteLine("Doin' it.");
+                });
         }
 
         public static readonly BindableProperty ViewModelProperty = BindableProperty.Create<MainPage, MainPageViewModel>(
