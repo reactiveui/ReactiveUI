@@ -23,19 +23,18 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\Portable-Net45+WinRT45+WP8\</OutputPath>
+    <OutputPath>bin\Debug\Portable-Net45+WinRT45+WP8+MonoAndroid10+MonoTouch10</OutputPath>
     <DefineConstants>TRACE;DEBUG;PORTABLE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\Portable-Net45+WinRT45+WP8\</OutputPath>
+    <OutputPath>bin\Release\Portable-Net45+WinRT45+WP8+MonoAndroid10+MonoTouch10</OutputPath>
     <DefineConstants>TRACE;PORTABLE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Release\Portable-Net45+WinRT45+WP8\ReactiveUI.XML</DocumentationFile>
+    <DocumentationFile>bin\Release\Portable-Net45+WinRT45+WP8\ReactiveUI.XamForms.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
