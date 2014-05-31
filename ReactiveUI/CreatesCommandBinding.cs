@@ -12,7 +12,7 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Input;
 #endif
 
-namespace ReactiveUI.Xaml
+namespace ReactiveUI
 {
     /// <summary>
     /// This binder is the default binder for connecting to arbitrary events
@@ -21,11 +21,11 @@ namespace ReactiveUI.Xaml
     {
         // NB: These are in priority order
         static readonly List<Tuple<string, Type>> defaultEventsToBind = new List<Tuple<string, Type>>() {
-#if !MONO
+#if !MONO && !PORTABLE
             Tuple.Create("Click", typeof (RoutedEventArgs)),
 #endif
             Tuple.Create("TouchUpInside", typeof (EventArgs)),
-#if !MONO && !WINRT
+#if !MONO && !WINRT && !PORTABLE
             Tuple.Create("MouseUp", typeof (MouseButtonEventArgs)),
 #elif WINRT
             Tuple.Create("PointerReleased", typeof(PointerRoutedEventArgs)),
@@ -64,6 +64,9 @@ namespace ReactiveUI.Xaml
         }
 
         public IDisposable BindCommandToObject<TEventArgs>(ICommand command, object target, IObservable<object> commandParameter, string eventName)
+#if MONO
+            where TEventArgs : EventArgs
+#endif
         {
             var ret = new CompositeDisposable();
 
@@ -127,6 +130,9 @@ namespace ReactiveUI.Xaml
         }
 
         public IDisposable BindCommandToObject<TEventArgs>(ICommand command, object target, IObservable<object> commandParameter, string eventName)
+#if MONO
+            where TEventArgs : EventArgs
+#endif
         {
             // NB: We should fall back to the generic Event-based handler if
             // an event target is specified
