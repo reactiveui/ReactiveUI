@@ -8,6 +8,8 @@ namespace PlaygroundXamForms
         public MainPageViewModel()
         {
             SavedGuid = Guid.NewGuid();
+
+            DoIt = ReactiveCommand.Create();
         }
 
         Guid savedGuid;
@@ -15,6 +17,8 @@ namespace PlaygroundXamForms
             get { return savedGuid; }
             set { this.RaiseAndSetIfChanged(ref savedGuid, value); }
         }
+
+        public ReactiveCommand<Object> DoIt { get; protected set; }
     }
 }
 
