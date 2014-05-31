@@ -140,6 +140,7 @@
     <Compile Include="WeakEventManager.cs" />
     <Compile Include="Cocoa\AppKitAutoSuspendHelper.cs" />
     <Compile Include="Cocoa\AutoLayoutViewModelViewHost.cs" />
+    <Compile Include="CreatesCommandBinding.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Cocoa\" />

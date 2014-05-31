@@ -95,7 +95,6 @@
     <Compile Include="Platform\Registrations.cs" />
     <Compile Include="Xaml\AutoDataTemplateBindingHook.cs" />
     <Compile Include="Xaml\BindingTypeConverters.cs" />
-    <Compile Include="Xaml\CreatesCommandBinding.cs" />
     <Compile Include="Xaml\RoutedViewHost.cs" />
     <Compile Include="Xaml\TransitioningContentControl.cs" />
     <Compile Include="Xaml\ViewModelViewHost.cs" />
@@ -111,6 +110,7 @@
     <Compile Include="CommandBinding.cs" />
     <Compile Include="CompatMixins.cs" />
     <Compile Include="ContractStubs.cs" />
+    <Compile Include="CreatesCommandBinding.cs" />
     <Compile Include="DefaultPropertyBinding.cs" />
     <Compile Include="Errors.cs" />
     <Compile Include="IDependencyResolver.cs" />

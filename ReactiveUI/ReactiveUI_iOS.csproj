@@ -109,6 +109,7 @@
     <Compile Include="CommandBinding.cs" />
     <Compile Include="CompatMixins.cs" />
     <Compile Include="ContractStubs.cs" />
+    <Compile Include="CreatesCommandBinding.cs" />
     <Compile Include="DefaultPropertyBinding.cs" />
     <Compile Include="Errors.cs" />
     <Compile Include="IDependencyResolver.cs" />
