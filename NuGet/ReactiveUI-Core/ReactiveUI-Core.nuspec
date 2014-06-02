@@ -15,19 +15,27 @@
         <dependency id="Splat" version="1.3.1" />
       </group>
       <group targetFramework="win8">
+        <dependency id="Rx-Main" version="2.2.4" />
+        <dependency id="Splat" version="1.3.1" />
         <dependency id="Rx-Xaml" version="2.2.4" />
-		<dependency id="Rx-WinRT" version="2.2.4" />
+        <dependency id="Rx-WinRT" version="2.2.4" />
       </group>
 	  <group targetFramework="wp8">
+        <dependency id="Rx-Main" version="2.2.4" />
+        <dependency id="Splat" version="1.3.1" />
         <dependency id="Rx-Xaml" version="2.2.4" />
-		<dependency id="Rx-WinRT" version="2.2.4" />
+        <dependency id="Rx-WinRT" version="2.2.4" />
       </group>
 	  <group targetFramework="net45">
+        <dependency id="Rx-Main" version="2.2.4" />
+        <dependency id="Splat" version="1.3.1" />
         <dependency id="Rx-Xaml" version="2.2.4" />
       </group>
 	  <group targetFramework="Portable-Win81+Wpa81">
+        <dependency id="Rx-Main" version="2.2.4" />
+        <dependency id="Splat" version="1.3.1" />
         <dependency id="Rx-Xaml" version="2.2.4" />
-		<dependency id="Rx-WinRT" version="2.2.4" />
+        <dependency id="Rx-WinRT" version="2.2.4" />
       </group>	  
     </dependencies>
   </metadata>
