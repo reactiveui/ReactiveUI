@@ -89,6 +89,7 @@ namespace ReactiveUI
             <# } #>
         }
 
+		
         /// <summary>
         /// WhenAny allows you to observe whenever one or more properties on an
         /// object have changed, providing an initial value when the Observable
@@ -98,7 +99,7 @@ namespace ReactiveUI
         /// </summary>
         public static IObservable<TRet> WhenAnyDynamic<TSender, TRet>(this TSender This, 
             <# for(int i=1; i <= length; i++) { #>
-                string[] property<#=i#>, 
+                Expression property<#=i#>, 
             <# } #>
                 Func<<#= dynamicSelectorTypeParams #>, TRet> selector)
         {
@@ -115,7 +116,6 @@ namespace ReactiveUI
             );
             <# } #>
         }
-
     <# } #>
     }
 

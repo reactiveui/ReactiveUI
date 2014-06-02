@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Windows.Forms;
@@ -21,6 +22,8 @@ namespace ReactiveUI.Winforms
             Tuple.Create("Click", typeof (EventArgs)),
             Tuple.Create("MouseUp", typeof (MouseEventArgs)),
         };
+
+        static readonly PropertyInfo enabledProperty = typeof(Control).GetRuntimeProperty("Enabled");
 
         public int GetAffinityForObject(Type type, bool hasEventTarget)
         {
@@ -73,10 +76,9 @@ namespace ReactiveUI.Winforms
                     command.Execute(useEventArgsInstead ? ea : latestParameter);
                 }
             }));
-
-            var enabledSetter = Reflection.GetValueSetterForProperty(target.GetType(), "Enabled");
-
-            if (enabledSetter != null) {
+             
+            //only controls have Enabled           
+            if (typeof(Control).IsAssignableFrom(target.GetType())) {
                 object latestParam = null;
                 commandParameter.Subscribe(x => latestParam = x);
 
@@ -84,7 +86,7 @@ namespace ReactiveUI.Winforms
                     .Select(_ => command.CanExecute(latestParam))
                     .StartWith(command.CanExecute(latestParam))
                     .Subscribe(x => {
-                        enabledSetter(target, x);
+                        enabledProperty.SetValue(target, x, null);
                     }));
             }
 

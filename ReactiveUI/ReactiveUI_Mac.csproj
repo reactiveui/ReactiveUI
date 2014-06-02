@@ -141,6 +141,8 @@
     <Compile Include="Cocoa\AppKitAutoSuspendHelper.cs" />
     <Compile Include="Cocoa\AutoLayoutViewModelViewHost.cs" />
     <Compile Include="CreatesCommandBinding.cs" />
+    <Compile Include="ExpressionRewriter.cs" />
+    <Compile Include="ExpressionMixins.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Cocoa\" />

@@ -148,11 +148,11 @@ namespace ReactiveUI.Tests
             Assert.Equal(2, output.Count);
 
             Assert.Equal(fixture, output[0].Sender);
-            Assert.Equal("IsNotNullString", output[0].PropertyName);
+            Assert.Equal("IsNotNullString", output[0].GetPropertyName());
             Assert.Equal("Bar", output[0].Value);
 
             Assert.Equal(fixture, output[1].Sender);
-            Assert.Equal("IsNotNullString", output[1].PropertyName);
+            Assert.Equal("IsNotNullString", output[1].GetPropertyName());
             Assert.Equal("Baz", output[1].Value);
         }
 

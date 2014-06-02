@@ -93,7 +93,7 @@ namespace ReactiveUI.Android
             get { return _ViewModel; }
             set { this.RaiseAndSetIfChanged(ref _ViewModel, value); }
         }
-        
+
         object IViewFor.ViewModel {
             get { return _ViewModel; }
             set { _ViewModel = (TViewModel)value; }
@@ -123,7 +123,7 @@ namespace ReactiveUI.Android
         /// be changed.         
         /// </summary>
         [IgnoreDataMember]
-        public IObservable<IObservedChange<ReactiveViewHost<TViewModel>, object>> Changing {
+        public IObservable<IReactivePropertyChangedEventArgs<ReactiveViewHost<TViewModel>>> Changing {
             get { return this.getChangingObservable(); }
         }
 
@@ -131,7 +131,7 @@ namespace ReactiveUI.Android
         /// Represents an Observable that fires *after* a property has changed.
         /// </summary>
         [IgnoreDataMember]
-        public IObservable<IObservedChange<ReactiveViewHost<TViewModel>, object>> Changed {
+        public IObservable<IReactivePropertyChangedEventArgs<ReactiveViewHost<TViewModel>>> Changed {
             get { return this.getChangedObservable(); }
         }
 
