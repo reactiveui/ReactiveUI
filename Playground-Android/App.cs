@@ -1,40 +1,25 @@
-using System;
+﻿using System;
+using Android.App;
 using ReactiveUI;
-using System.Collections.Generic;
-using System.Linq;
 using ReactiveUI.Mobile;
-using Splat;
+using Android.Runtime;
 
 namespace MobileSample_Android
 {
-    public class App
+    [Application(Label = "AndroidPlayground")]
+    public class App : Application
     {
-        static App _Current;
-        public static App Current {
-            get { return (_Current = _Current ?? new App()); }
-        }
+        AutoSuspendHelper suspendHelper;
 
-        protected App()
+        App(IntPtr handle, JniHandleOwnership owner) : base(handle, owner) { }
+
+        public override void OnCreate()
         {
-            // TODO: Fix Me
-            //RxApp.ConfigureServiceLocator(
-            //    (t, s) => locator.GetAllServices(t, s).FirstOrDefault(),
-            //    (t, s) => locator.GetAllServices(t, s).ToArray(),
-            //    (c, t, s) => locator.Register(() => Activator.CreateInstance(c), t, s));
-
-            Locator.CurrentMutable.Register(() => typeof(MainView), typeof(IViewFor<MainViewModel>));
-            Locator.CurrentMutable.Register(() => typeof(SecondaryView), typeof(IViewFor<SecondaryViewModel>));
-
+            base.OnCreate();
+                        
+            suspendHelper = new AutoSuspendHelper(this);
             RxApp.SuspensionHost.CreateNewAppState = () => new AppBootstrapper();
             RxApp.SuspensionHost.SetupDefaultSuspendResume();
-
-            // TODO: Fix Me
-            //RxApp.Register(typeof(AppBootstrapper), typeof(IApplicationRootState));
-        }
-
-        public static void EnsureInitialized()
-        {
-            Current.ToString();
         }
     }
 }

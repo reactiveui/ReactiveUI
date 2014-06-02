@@ -50,11 +50,11 @@ namespace ReactiveUI.Mobile
         public SuspensionHost()
         {
 #if COCOA
-            var message = "Your AppDelegate class needs to derive from AutoSuspendAppDelegate";
+            var message = "Your AppDelegate class needs to use AutoSuspendHelper";
 #elif ANDROID
-            var message = "Your Activities need to instantiate AutoSuspendActivityHelper";
+            var message = "You need to create an App class and use AutoSuspendHelper";
 #else
-            var message = "Your App class needs to derive from AutoSuspendApplication";
+            var message = "Your App class needs to use AutoSuspendHelper";
 #endif
 
             IsLaunchingNew = IsResuming = IsUnpausing = ShouldInvalidateState =
