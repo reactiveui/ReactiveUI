@@ -23,31 +23,6 @@ namespace MobileSample_Android
 
         public SecondaryView()
         {
-            // NB: Super Dumb
-            Console.WriteLine(App.Current);
-            RxApp.MainThreadScheduler = new WaitForDispatcherScheduler(() => new AndroidUIScheduler(this));
-
-            suspendHelper = new AutoSuspendHelper(this);
-        }
-
-        protected override void OnCreate(Bundle bundle)
-        {
-            base.OnCreate(bundle);
-            suspendHelper.OnCreate(bundle);
-
-            SetContentView(Resource.Layout.Secondary);
-        }
-                
-        protected override void OnSaveInstanceState(Bundle outState)
-        {
-            base.OnSaveInstanceState(outState);
-            suspendHelper.OnSaveInstanceState(outState);
-        }
-
-        protected override void OnRestart()
-        {
-            base.OnRestart();
-            suspendHelper.OnRestart();
         }
     }
     
