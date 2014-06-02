@@ -43,7 +43,8 @@ namespace ReactiveUI
             #else
             return (DataTemplate) XamlReader.Parse(
             #endif
-                template.Replace("__ASSEMBLYNAME__", assemblyName));           
+
+            template.Replace("__ASSEMBLYNAME__", assemblyName));
         });
 
         public bool ExecuteHook(object source, object target, Func<IObservedChange<object, object>[]> getCurrentViewModelProperties, Func<IObservedChange<object, object>[]> getCurrentViewProperties, BindingDirection direction)

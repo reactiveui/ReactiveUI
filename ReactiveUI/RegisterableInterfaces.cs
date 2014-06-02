@@ -215,10 +215,19 @@ namespace ReactiveUI
             BindingDirection direction);
     }
 
+    /// <summary>
+    ///
+    /// </summary>
     public interface IActivatable { }
 
+    /// <summary>
+    ///
+    /// </summary>
     public interface IViewFor : IActivatable
     {
+        /// <summary>
+        ///
+        /// </summary>
         object ViewModel { get; set; }
     }
 

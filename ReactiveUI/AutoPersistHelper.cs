@@ -26,12 +26,30 @@ namespace ReactiveUI
             return t.GetTypeInfo().GetCustomAttributes(typeof(DataContractAttribute), true).Any();
         }, RxApp.SmallCacheLimit);
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="This"></param>
+        /// <param name="doPersist"></param>
+        /// <param name="interval"></param>
+        /// <returns></returns>
         public static IDisposable AutoPersist<T>(this T This, Func<T, IObservable<Unit>> doPersist, TimeSpan? interval = null)
             where T : IReactiveObject
         {
             return This.AutoPersist(doPersist, Observable.Never<Unit>(), interval);
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="TDontCare"></typeparam>
+        /// <param name="This"></param>
+        /// <param name="doPersist"></param>
+        /// <param name="manualSaveSignal"></param>
+        /// <param name="interval"></param>
+        /// <returns></returns>
         public static IDisposable AutoPersist<T, TDontCare>(this T This, Func<T, IObservable<Unit>> doPersist, IObservable<TDontCare> manualSaveSignal, TimeSpan? interval = null)
             where T : IReactiveObject
         {
@@ -68,12 +86,30 @@ namespace ReactiveUI
             return ret;
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="This"></param>
+        /// <param name="doPersist"></param>
+        /// <param name="interval"></param>
+        /// <returns></returns>
         public static IDisposable AutoPersistCollection<T>(this ReactiveList<T> This, Func<T, IObservable<Unit>> doPersist, TimeSpan? interval = null)
             where T : IReactiveObject
         {
             return AutoPersistCollection(This, doPersist, Observable.Never<Unit>(), interval);
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="TDontCare"></typeparam>
+        /// <param name="This"></param>
+        /// <param name="doPersist"></param>
+        /// <param name="manualSaveSignal"></param>
+        /// <param name="interval"></param>
+        /// <returns></returns>
         public static IDisposable AutoPersistCollection<T, TDontCare>(this ReactiveList<T> This, Func<T, IObservable<Unit>> doPersist, IObservable<TDontCare> manualSaveSignal, TimeSpan? interval = null)
             where T : IReactiveObject
         {
@@ -95,6 +131,14 @@ namespace ReactiveUI
             });
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="This"></param>
+        /// <param name="onAdd"></param>
+        /// <param name="onRemove"></param>
+        /// <returns></returns>
         public static IDisposable ActOnEveryObject<T>(this ReactiveList<T> This, Action<T> onAdd, Action<T> onRemove)
             where T : IReactiveObject
         {
