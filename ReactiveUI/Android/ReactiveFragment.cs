@@ -37,7 +37,7 @@ namespace ReactiveUI.Android
             get { return _ViewModel; }
             set { this.RaiseAndSetIfChanged(ref _ViewModel, value); }
         }
-        
+
         object IViewFor.ViewModel {
             get { return _ViewModel; }
             set { _ViewModel = (TViewModel)value; }
@@ -76,14 +76,14 @@ namespace ReactiveUI.Android
         /// Represents an Observable that fires *before* a property is about to
         /// be changed.         
         /// </summary>
-        public IObservable<IObservedChange<ReactiveFragment, object>> Changing {
+        public IObservable<IReactivePropertyChangedEventArgs<ReactiveFragment>> Changing {
             get { return this.getChangingObservable(); }
         }
 
         /// <summary>
         /// Represents an Observable that fires *after* a property has changed.
         /// </summary>
-        public IObservable<IObservedChange<ReactiveFragment, object>> Changed {
+        public IObservable<IReactivePropertyChangedEventArgs<ReactiveFragment>> Changed {
             get { return this.getChangedObservable(); }
         }
 
@@ -100,7 +100,7 @@ namespace ReactiveUI.Android
         }
 
         public IObservable<Exception> ThrownExceptions { get { return this.getThrownExceptionsObservable(); } }
-       
+
         readonly Subject<Unit> activated = new Subject<Unit>();
         public IObservable<Unit> Activated { get { return activated; } }
 
@@ -112,7 +112,7 @@ namespace ReactiveUI.Android
             base.OnPause();
             deactivated.OnNext(Unit.Default);
         }
-                
+
         public override void OnResume()
         {
             base.OnResume();

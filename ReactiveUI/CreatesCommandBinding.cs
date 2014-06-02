@@ -103,7 +103,7 @@ namespace ReactiveUI
             };
 
             return propsToFind.All(x => {
-                var pi = Reflection.GetValueFetcherForProperty(type, x.Name);
+                var pi = type.GetRuntimeProperty(x.Name);
                 return pi != null;
             }) ? 5 : 0;
         }

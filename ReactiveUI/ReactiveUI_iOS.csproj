@@ -78,6 +78,8 @@
     <Compile Include="Cocoa\RoutedViewHost.cs" />
     <Compile Include="Cocoa\TargetActionCommandBinder.cs" />
     <Compile Include="Cocoa\ViewModelViewHost.cs" />
+    <Compile Include="ExpressionMixins.cs" />
+    <Compile Include="ExpressionRewriter.cs" />
     <Compile Include="Platform\FlexibleCommandBinder.cs" />
     <Compile Include="Platform\ComponentModelTypeConverter.cs" />
     <Compile Include="Platform\Registrations.cs" />
