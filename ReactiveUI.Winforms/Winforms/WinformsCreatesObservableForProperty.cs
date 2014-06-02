@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reflection;
@@ -26,14 +27,12 @@ namespace ReactiveUI.Winforms
             }
         }
 
-        public IObservable<IObservedChange<object, object>> GetNotificationForProperty(object sender, string propertyName, bool beforeChanged = false)
+        public IObservable<IObservedChange<object, object>> GetNotificationForProperty(object sender, Expression expression, bool beforeChanged = false)
         {
-            var type = sender.GetType();
             var ei = default(EventInfo);
-            var getter = Reflection.GetValueFetcherOrThrow(type, propertyName);
 
             lock (eventInfoCache) {
-                ei = eventInfoCache.Get(Tuple.Create(type, propertyName));
+                ei = eventInfoCache.Get(Tuple.Create(sender.GetType(), expression.GetMemberInfo().Name));
             }
 
             return Observable.Create<IObservedChange<object, object>>(subj => {
@@ -41,7 +40,7 @@ namespace ReactiveUI.Winforms
                 var handler = new EventHandler((o, e) => {
                     if (completed) return;
                     try {
-                        subj.OnNext(new ObservedChange<object, object>(sender, propertyName, getter(sender)));
+                        subj.OnNext(new ObservedChange<object, object>(sender, expression));
                     } catch (Exception ex) {
                         subj.OnError(ex);
                         completed = true;

@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
@@ -65,16 +66,17 @@ namespace ReactiveUI.Cocoa
             }
         }
 
-        public IObservable<IObservedChange<object, object>> GetNotificationForProperty(object sender, string propertyName, bool beforeChanged = false)
+        public IObservable<IObservedChange<object, object>> GetNotificationForProperty(object sender, Expression expression, bool beforeChanged = false)
         {
             var obj = sender as NSObject;
             if (obj == null) {
                 throw new ArgumentException("Sender isn't an NSObject");
             }
+            var propertyName = expression.GetMemberInfo().Name;
 
             return Observable.Create<IObservedChange<object, object>>(subj => {
                 var bobs = new BlockObserveValueDelegate((key,s,_) => {
-                    subj.OnNext(new ObservedChange<object, object>(s, propertyName));
+                    subj.OnNext(new ObservedChange<object, object>(s, expression));
                 });
                 var pin = GCHandle.Alloc(bobs);
 

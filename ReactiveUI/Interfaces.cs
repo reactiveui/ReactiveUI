@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Linq.Expressions;
 using System.Reactive;
 using System.Windows.Input;
 using Splat;
@@ -10,11 +11,9 @@ using Splat;
 namespace ReactiveUI
 {
     /// <summary>
-    /// IObservedChange is a generic interface that replaces the non-generic
-    /// PropertyChangedEventArgs. Note that it is used for both Changing (i.e.
-    /// 'before change') and Changed Observables. In the future, this interface
-    /// will be Covariant which will allow simpler casting between specific and
-    /// generic changes.
+    /// IObservedChange is a generic interface that is returned from WhenAny()
+    /// Note that it is used for both Changing (i.e.'before change') 
+    /// and Changed Observables.
     /// </summary>
     public interface IObservedChange<out TSender, out TValue>
     {
@@ -24,9 +23,9 @@ namespace ReactiveUI
         TSender Sender { get; }
 
         /// <summary>
-        /// The name of the property that has changed on Sender.
+        /// The expression of the member that has changed on Sender.
         /// </summary>
-        string PropertyName { get; }
+        Expression Expression { get; }
 
         /// <summary>
         /// The value of the property that has changed. IMPORTANT NOTE: This
@@ -47,18 +46,18 @@ namespace ReactiveUI
         /// Initializes a new instance of the <see cref="ObservedChange{TSender, TValue}"/> class.
         /// </summary>
         /// <param name="sender">The sender.</param>
-        /// <param name="propertyName">Name of the property.</param>
+        /// <param name="expression">Expression describing the member.</param>
         /// <param name="value">The value.</param>
-        public ObservedChange(TSender sender, string propertyName, TValue value = default(TValue))
+        public ObservedChange(TSender sender, Expression expression, TValue value = default(TValue))
         {
             this.Sender = sender;
-            this.PropertyName = propertyName;
+            this.Expression = expression;
             this.Value = value;
         }
 
         public TSender Sender { get; private set; }
 
-        public string PropertyName { get; private set; }
+        public Expression Expression { get; private set; }
 
         public TValue Value { get; private set; }
     }
@@ -118,6 +117,59 @@ namespace ReactiveUI
     }
 
     /// <summary>
+    /// IReactivePropertyChangedEventArgs is a generic interface that 
+    /// is used to wrap the NotifyPropertyChangedEventArgs and gives 
+    /// information about changed properties. It includes also 
+    /// the sender of the notification.
+    /// Note that it is used for both Changing (i.e.'before change') 
+    /// and Changed Observables.
+    /// </summary>
+    public interface IReactivePropertyChangedEventArgs<out TSender>
+    {
+        /// <summary>
+        /// The name of the property that has changed on Sender.
+        /// </summary>
+        string PropertyName { get; }
+
+        /// <summary>
+        /// The object that has raised the change.
+        /// </summary>
+        TSender Sender { get; }
+    }
+
+    public class ReactivePropertyChangingEventArgs<TSender> : PropertyChangingEventArgs, IReactivePropertyChangedEventArgs<TSender>
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactivePropertyChangingEventArgs{TSender}"/> class.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="propertyName">Name of the property.</param>
+        public ReactivePropertyChangingEventArgs(TSender sender, string propertyName)
+            : base(propertyName)
+        {
+            this.Sender = sender;
+        }
+
+        public TSender Sender { get; private set; }
+    }
+
+    public class ReactivePropertyChangedEventArgs<TSender> : PropertyChangedEventArgs, IReactivePropertyChangedEventArgs<TSender>
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactivePropertyChangedEventArgs{TSender}"/> class.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="propertyName">Name of the property.</param>
+        public ReactivePropertyChangedEventArgs(TSender sender, string propertyName)
+            : base(propertyName)
+        {
+            this.Sender = sender;
+        }
+
+        public TSender Sender { get; private set; }
+    }
+
+    /// <summary>
     /// IReactiveNotifyPropertyChanged represents an extended version of
     /// INotifyPropertyChanged that also exposes typed Observables.
     /// </summary>
@@ -128,14 +180,14 @@ namespace ReactiveUI
         /// be changed. Note that this should not fire duplicate change notifications if a
         /// property is set to the same value multiple times.
         /// </summary>
-        IObservable<IObservedChange<TSender, object>> Changing { get; }
+        IObservable<IReactivePropertyChangedEventArgs<TSender>> Changing { get; }
 
         /// <summary>
         /// Represents an Observable that fires *after* a property has changed.
         /// Note that this should not fire duplicate change notifications if a
         /// property is set to the same value multiple times.
         /// </summary>
-        IObservable<IObservedChange<TSender, object>> Changed { get; }
+        IObservable<IReactivePropertyChangedEventArgs<TSender>> Changed { get; }
 
         /// <summary>
         /// When this method is called, an object will not fire change
@@ -158,14 +210,14 @@ namespace ReactiveUI
         /// implements IReactiveNotifyPropertyChanged. This is only enabled when
         /// ChangeTrackingEnabled is set to True.
         /// </summary>
-        IObservable<IObservedChange<TSender, object>> ItemChanging { get; }
+        IObservable<IReactivePropertyChangedEventArgs<TSender>> ItemChanging { get; }
 
         /// <summary>
         /// Provides Item Changed notifications for any item in collection that
         /// implements IReactiveNotifyPropertyChanged. This is only enabled when
         /// ChangeTrackingEnabled is set to True.
         /// </summary>
-        IObservable<IObservedChange<TSender, object>> ItemChanged { get; }
+        IObservable<IReactivePropertyChangedEventArgs<TSender>> ItemChanged { get; }
 
         /// <summary>
         /// Enables the ItemChanging and ItemChanged properties; when this is

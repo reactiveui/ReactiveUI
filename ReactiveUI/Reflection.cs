@@ -5,6 +5,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reactive.Linq;
 using System.Reflection;
+using System.Text;
 using ReactiveUI;
 using Splat;
 
@@ -12,191 +13,108 @@ namespace ReactiveUI
 {
     public static class Reflection 
     {
-        static readonly MemoizingMRUCache<Tuple<Type, string>, Func<object, object>> propReaderCache = 
-            new MemoizingMRUCache<Tuple<Type, string>, Func<object, object>>((x,_) => {
-                var fi = x.Item1.GetRuntimeFields()
-                    .FirstOrDefault(y => !y.IsStatic && y.Name == x.Item2);
-                if (fi != null) {
-                    return (fi.GetValue);
-                }
-
-                var pi = x.Item1.GetRuntimeProperties()
-                    .FirstOrDefault(y => !y.IsStatic() && y.Name == x.Item2);
-
-                if (pi != null) {
-                    return (y => pi.GetValue(y, null));
-                }
-
-                return null;
-            }, RxApp.BigCacheLimit);
-
-        static readonly MemoizingMRUCache<Tuple<Type, string>, Action<object, object>> propWriterCache = 
-            new MemoizingMRUCache<Tuple<Type, string>, Action<object, object>>((x,_) => {
-                var fi = x.Item1.GetRuntimeFields()
-                    .FirstOrDefault(y => y.IsPublic && !y.IsStatic && y.Name == x.Item2);
-
-                if (fi != null) {
-                    return (fi.SetValue);
-                }
-
-                var pi =  x.Item1.GetRuntimeProperties()
-                    .FirstOrDefault(y => !y.IsStatic() && y.Name == x.Item2);
-
-                if (pi != null) {
-                    return ((y,v) => pi.SetValue(y, v, null));
-                }
-
-                return null;
-            }, RxApp.BigCacheLimit);
-
-        public static string SimpleExpressionToPropertyName<TObj, TRet>(Expression<Func<TObj, TRet>> property)
+        static ExpressionRewriter expressionRewriter = new ExpressionRewriter();        
+        
+        public static Expression Rewrite(Expression expression)
         {
-            Contract.Requires(property != null);
+            return expressionRewriter.Visit(expression);
+        }
 
-            string propName = null;
+        public static string ExpressionToPropertyNames(Expression expression)
+        {
+            Contract.Requires(expression != null);
 
-            try {
-                var propExpr = property.Body as MemberExpression;
-                if (propExpr.Expression.NodeType != ExpressionType.Parameter) {
-                    throw new ArgumentException("Property expression must be of the form 'x => x.SomeProperty'");
+            StringBuilder sb = new StringBuilder();
+
+            foreach (var exp in expression.GetExpressionChain()) {
+                if (exp.NodeType != ExpressionType.Parameter) {
+                    // Indexer expression
+                    if (exp.NodeType == ExpressionType.Index) {
+                        var ie = (IndexExpression)exp;
+                        sb.Append(ie.Indexer.Name);
+                        sb.Append('[');
+
+                        foreach (var argument in ie.Arguments) {
+                            sb.Append(((ConstantExpression)argument).Value);
+                            sb.Append(',');
+                        }
+                        sb.Replace(',', ']', sb.Length - 1, 1);
+                    } else if (exp.NodeType == ExpressionType.MemberAccess) {
+                        var me = (MemberExpression)exp;
+                        sb.Append(me.Member.Name);
+                    }
                 }
 
-                propName = propExpr.Member.Name;
-            } catch (NullReferenceException) {
-                throw new ArgumentException("Property expression must be of the form 'x => x.SomeProperty'");
+                sb.Append('.');
             }
 
-            return propName;
+            sb.Remove(sb.Length - 1, 1);
+            return sb.ToString();
         }
 
-        public static string[] ExpressionToPropertyNames<TObj, TRet>(Expression<Func<TObj, TRet>> property)
+        public static Func<object, object[], object> GetValueFetcherForProperty(MemberInfo member)
         {
-            var ret = new List<string>();
-
-            var current = property.Body;
-            while(current.NodeType != ExpressionType.Parameter) {
-
-                // This happens when a value type gets boxed
-                if (current.NodeType == ExpressionType.Convert || current.NodeType == ExpressionType.ConvertChecked) {
-                    var ue = (UnaryExpression) current;
-                    current = ue.Operand;
-                    continue;
-                }
-
-                if (current.NodeType != ExpressionType.MemberAccess) {
-                    throw new ArgumentException("Property expression must be of the form 'x => x.SomeProperty.SomeOtherProperty'");
-                }
-
-                var me = (MemberExpression)current;
-                ret.Insert(0, me.Member.Name);
-                current = me.Expression;
+            Contract.Requires(member != null);
+            
+            FieldInfo field = member as FieldInfo;
+            if (field != null) {
+                return (obj, args) => field.GetValue(obj);
             }
 
-            return ret.ToArray();
-        }
-
-        public static Type[] ExpressionToPropertyTypes<TObj, TRet>(Expression<Func<TObj, TRet>> property)
-        {
-            var current = property.Body;
-
-            while(current.NodeType != ExpressionType.Parameter) {
-                // This happens when a value type gets boxed
-                if (current.NodeType == ExpressionType.Convert || current.NodeType == ExpressionType.ConvertChecked) {
-                    var ue = (UnaryExpression) current;
-                    current = ue.Operand;
-                    continue;
-                }
-
-                if (current.NodeType != ExpressionType.MemberAccess) {
-                    throw new ArgumentException("Property expression must be of the form 'x => x.SomeProperty.SomeOtherProperty'");
-                }
-
-                var me = (MemberExpression)current;
-                current = me.Expression;
+            PropertyInfo property = member as PropertyInfo;
+            if (property != null) {
+                return property.GetValue;
             }
 
-            var startingType = ((ParameterExpression) current).Type;
-            var propNames = ExpressionToPropertyNames(property);
-
-            return GetTypesForPropChain(startingType, propNames);
+            return null;
         }
 
-        public static Type[] GetTypesForPropChain(Type startingType, string[] propNames)
+        public static Func<object, object[], object> GetValueFetcherOrThrow(MemberInfo member)
         {
-            return propNames.Aggregate(new List<Type>(new[] {startingType}), (acc, x) => {
-                var type = acc.Last();
-
-                var pi = type.GetRuntimeProperties().FirstOrDefault(y => y.Name == x);
-                if (pi != null) {
-                    acc.Add(pi.PropertyType);
-                    return acc;
-                }
-
-                var fi = type.GetRuntimeFields().FirstOrDefault(y => y.Name == x);
-                if (fi != null) {
-                    acc.Add(fi.FieldType);
-                    return acc;
-                }
-
-                throw new ArgumentException("Property expression must be of the form 'x => x.SomeProperty.SomeOtherProperty'");
-            }).Skip(1).ToArray();
-        }        
-
-        public static Func<TObj, object> GetValueFetcherForProperty<TObj>(string propName)
-        {
-            var ret = GetValueFetcherForProperty(typeof(TObj), propName);
-            return x => (TObj) ret(x);
-        }
-
-        public static Func<object, object> GetValueFetcherForProperty(Type type, string propName)
-        {
-            Contract.Requires(type != null);
-            Contract.Requires(propName != null);
-
-            lock (propReaderCache) {
-                return propReaderCache.Get(Tuple.Create(type, propName));
-            }
-        }
-
-        public static Func<object, object> GetValueFetcherOrThrow(Type type, string propName)
-        {
-            var ret = GetValueFetcherForProperty(type, propName);
+            var ret = GetValueFetcherForProperty(member);
 
             if (ret == null) {
-                throw new ArgumentException(String.Format("Type '{0}' must have a property '{1}'", type, propName));
+                throw new ArgumentException(String.Format("Type '{0}' must have a property '{1}'", member.DeclaringType, member.Name));
             }
             return ret;
         }
 
-        public static Action<object, object> GetValueSetterForProperty(Type type, string propName)
+        public static Action<object, object, object[]> GetValueSetterForProperty(MemberInfo member)
         {
-            Contract.Requires(type != null);
-            Contract.Requires(propName != null);
+            Contract.Requires(member != null);
 
-            lock (propReaderCache) {
-                return propWriterCache.Get(Tuple.Create(type, propName));
+            FieldInfo field = member as FieldInfo;
+            if(field != null) {
+                return (obj, val, args) => field.SetValue(obj, val);
             }
+
+            PropertyInfo property = member as PropertyInfo;
+            if (property != null) {
+                return property.SetValue;
+            }
+
+            return null;
         }
 
-        public static Action<object, object> GetValueSetterOrThrow(Type type, string propName)
+        public static Action<object, object, object[]> GetValueSetterOrThrow(MemberInfo member)
         {
-            var ret = GetValueSetterForProperty(type, propName);
+            var ret = GetValueSetterForProperty(member);
 
             if (ret == null) {
-                throw new ArgumentException(String.Format("Type '{0}' must have a property '{1}'", type, propName));
+                throw new ArgumentException(String.Format("Type '{0}' must have a property '{1}'", member.DeclaringType, member.Name));
             }
             return ret;
         }
 
-        public static bool TryGetValueForPropertyChain<TValue>(out TValue changeValue, object current, string[] propNames)
+        public static bool TryGetValueForPropertyChain<TValue>(out TValue changeValue, object current, IEnumerable<Expression> expressionChain)
         {
-            foreach (var propName in propNames.SkipLast(1)) {
+            foreach (var expression in expressionChain.SkipLast(1)) {
                 if (current == null) {
                     changeValue = default(TValue);
                     return false;
                 }
 
-                current = GetValueFetcherOrThrow(current.GetType(), propName)(current);
+                current = GetValueFetcherOrThrow(expression.GetMemberInfo())(current, expression.GetArgumentsArray());
             }
 
             if (current == null) {
@@ -204,24 +122,25 @@ namespace ReactiveUI
                 return false;
             }
 
-            changeValue = (TValue) GetValueFetcherOrThrow(current.GetType(), propNames.Last())(current);
+            Expression lastExpression = expressionChain.Last();
+            changeValue = (TValue) GetValueFetcherOrThrow(lastExpression.GetMemberInfo())(current, lastExpression.GetArgumentsArray());
             return true;
         }
 
-        public static bool TryGetAllValuesForPropertyChain(out IObservedChange<object, object>[] changeValues, object current, string[] propNames)
+        public static bool TryGetAllValuesForPropertyChain(out IObservedChange<object, object>[] changeValues, object current, IEnumerable<Expression> expressionChain)
         {
             int currentIndex = 0;
-            changeValues = new IObservedChange<object,object>[propNames.Length];
+            changeValues = new IObservedChange<object,object>[expressionChain.Count()];
 
-            foreach (var propName in propNames.SkipLast(1)) {
+            foreach (var expression in expressionChain.SkipLast(1)) {
                 if (current == null) {
                     changeValues[currentIndex] = null;
                     return false;
                 }
 
                 var sender = current;
-                current = GetValueFetcherOrThrow(current.GetType(), propName)(current);
-                var box = new ObservedChange<object, object>(sender, propName, current);
+                current = GetValueFetcherOrThrow(expression.GetMemberInfo())(current, expression.GetArgumentsArray());
+                var box = new ObservedChange<object, object>(sender, expression, current);
 
                 changeValues[currentIndex] = box;
                 currentIndex++;
@@ -232,29 +151,31 @@ namespace ReactiveUI
                 return false;
             }
 
-            changeValues[currentIndex] = new ObservedChange<object, object>(current, propNames.Last(), GetValueFetcherOrThrow(current.GetType(), propNames.Last())(current));
+            Expression lastExpression = expressionChain.Last();
+            changeValues[currentIndex] = new ObservedChange<object, object>(current, lastExpression, GetValueFetcherOrThrow(lastExpression.GetMemberInfo())(current, lastExpression.GetArgumentsArray()));
 
             return true;
         }
 
-        public static bool TrySetValueToPropertyChain<TValue>(object target, string[] propNames, TValue value, bool shouldThrow = true)
+        public static bool TrySetValueToPropertyChain<TValue>(object target, IEnumerable<Expression> expressionChain, TValue value, bool shouldThrow = true)
         {
-            foreach (var propName in propNames.SkipLast(1)) {
+            foreach (var expression in expressionChain.SkipLast(1)) {
                 var getter = shouldThrow ?
-                    GetValueFetcherOrThrow(target.GetType(), propName) :
-                    GetValueFetcherForProperty(target.GetType(), propName);
+                    GetValueFetcherOrThrow(expression.GetMemberInfo()) :
+                    GetValueFetcherForProperty(expression.GetMemberInfo());
 
-                target = getter(target);
+                target = getter(target, expression.GetArgumentsArray());
             }
 
             if (target == null) return false;
 
+            Expression lastExpression = expressionChain.Last();
             var setter = shouldThrow ?
-                GetValueSetterOrThrow(target.GetType(), propNames.Last()) :
-                GetValueSetterForProperty(target.GetType(), propNames.Last());
+                GetValueSetterOrThrow(lastExpression.GetMemberInfo()) :
+                GetValueSetterForProperty(lastExpression.GetMemberInfo());
 
             if (setter == null) return false;
-            setter(target, value);
+            setter(target, value, lastExpression.GetArgumentsArray());
             return true;
         }
 
@@ -298,55 +219,43 @@ namespace ReactiveUI
             }
         }
 
-        internal static IObservable<TProp> ViewModelWhenAnyValue<TView, TViewModel, TProp>(TViewModel viewModel, TView view, Expression<Func<TViewModel, TProp>> property)
+        internal static IObservable<object> ViewModelWhenAnyValue<TView, TViewModel>(TViewModel viewModel, TView view, Expression expression)
             where TView : IViewFor
             where TViewModel : class
         {
             return view.WhenAnyValue(x => x.ViewModel)
                 .Where(x => x != null)
-                .Select(x => ((TViewModel)x).WhenAnyValue(property))
+                .Select(x => ((TViewModel)x).WhenAnyDynamic(expression, y => y.Value))
                 .Switch();
         }
 
-        internal static IObservable<object> ViewModelWhenAnyValueDynamic<TView, TViewModel>(TViewModel viewModel, TView view, string[] property)
-            where TView : IViewFor
-            where TViewModel : class
+        internal static Expression getViewExpression(object view, Expression vmExpression)
         {
-            return view.WhenAny(x => x.ViewModel, x => x.Value)
-                .Where(x => x != null)
-                .Select(x => property.Length == 0 ? Observable.Return(x) : ((TViewModel)x).WhenAnyDynamic(property, y => y.Value))
-                .Switch();
-        }
-
-        internal static string getViewPropChain(object view, string[] vmPropChain)
-        {
-            var vmPropertyName = vmPropChain.Last();
-            var getter = GetValueFetcherForProperty(view.GetType(), vmPropertyName);
-            if (getter == null)
-            {
+            var controlProperty = (MemberInfo)view.GetType().GetRuntimeField(vmExpression.GetMemberInfo().Name)
+                ?? view.GetType().GetRuntimeProperty(vmExpression.GetMemberInfo().Name);
+            if (controlProperty == null) {
                 throw new Exception(String.Format("Tried to bind to control but it wasn't present on the object: {0}.{1}",
-                    view.GetType().FullName, vmPropertyName));
+                    view.GetType().FullName, vmExpression.GetMemberInfo().Name));
             }
 
-            return vmPropertyName;
+            return Expression.MakeMemberAccess(Expression.Parameter(view.GetType()), controlProperty);
         }
 
-        internal static string[] getViewPropChainWithDefault(object view, string[] vmPropChain)
+        internal static Expression getViewExpressionWithProperty(object view, Expression vmExpression)
         {
-            var viewPropChain = getViewPropChain(view, vmPropChain);
+            var controlExpression = getViewExpression(view, vmExpression);
 
-            var control = GetValueFetcherForProperty(view.GetType(), viewPropChain)(view);
-
+            var control = GetValueFetcherForProperty(controlExpression.GetMemberInfo())(view, controlExpression.GetArgumentsArray());
             if (control == null) {
                 throw new Exception(String.Format("Tried to bind to control but it was null: {0}.{1}", view.GetType().FullName,
-                    viewPropChain));
+                    controlExpression.GetMemberInfo().Name));
             }
 
             var defaultProperty = DefaultPropertyBinding.GetPropertyForControl(control);
             if (defaultProperty == null) {
                 throw new Exception(String.Format("Couldn't find a default property for type {0}", control.GetType()));
             }
-            return new[] { viewPropChain, defaultProperty};
+            return Expression.MakeMemberAccess(controlExpression, control.GetType().GetRuntimeProperty(defaultProperty));
         }
     }
 

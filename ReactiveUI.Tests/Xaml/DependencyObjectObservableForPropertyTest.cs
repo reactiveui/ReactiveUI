@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -41,8 +42,9 @@ namespace ReactiveUI.Tests
             Assert.Equal(0, binder.GetAffinityForObject(typeof (DepObjFixture), "DoesntExist"));
 
             var results = new List<IObservedChange<object, object>>();
-            var disp1 = binder.GetNotificationForProperty(fixture, "TestString").Subscribe(results.Add);
-            var disp2 = binder.GetNotificationForProperty(fixture, "TestString").Subscribe(results.Add);
+            Expression<Func<DepObjFixture, object>> expression = x => x.TestString;
+            var disp1 = binder.GetNotificationForProperty(fixture, expression.Body).Subscribe(results.Add);
+            var disp2 = binder.GetNotificationForProperty(fixture, expression.Body).Subscribe(results.Add);
 
             fixture.TestString = "Foo";
             fixture.TestString = "Bar";
@@ -62,8 +64,9 @@ namespace ReactiveUI.Tests
             Assert.Equal(0, binder.GetAffinityForObject(typeof (DerivedDepObjFixture), "DoesntExist"));
 
             var results = new List<IObservedChange<object, object>>();
-            var disp1 = binder.GetNotificationForProperty(fixture, "TestString").Subscribe(results.Add);
-            var disp2 = binder.GetNotificationForProperty(fixture, "TestString").Subscribe(results.Add);
+            Expression<Func<DerivedDepObjFixture, object>> expression = x => x.TestString;
+            var disp1 = binder.GetNotificationForProperty(fixture, expression.Body).Subscribe(results.Add);
+            var disp2 = binder.GetNotificationForProperty(fixture, expression.Body).Subscribe(results.Add);
 
             fixture.TestString = "Foo";
             fixture.TestString = "Bar";

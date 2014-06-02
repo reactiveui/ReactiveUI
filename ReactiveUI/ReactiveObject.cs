@@ -49,7 +49,7 @@ namespace ReactiveUI
         /// be changed.         
         /// </summary>
         [IgnoreDataMember]
-        public IObservable<IObservedChange<ReactiveObject, object>> Changing {
+        public IObservable<IReactivePropertyChangedEventArgs<ReactiveObject>> Changing {
             get { return this.getChangingObservable(); }
         }
 
@@ -57,7 +57,7 @@ namespace ReactiveUI
         /// Represents an Observable that fires *after* a property has changed.
         /// </summary>
         [IgnoreDataMember]
-        public IObservable<IObservedChange<ReactiveObject, object>> Changed {
+        public IObservable<IReactivePropertyChangedEventArgs<ReactiveObject>> Changed {
             get { return this.getChangedObservable(); }
         }
 
@@ -74,62 +74,6 @@ namespace ReactiveUI
 
         public bool AreChangeNotificationsEnabled() {
             return this.areChangeNotificationsEnabled();
-        }
-    }
-}
-
-namespace ReactiveUI.Testing
-{
-    public static class ReactiveObjectTestMixin
-    {
-        /// <summary>
-        /// RaisePropertyChanging is a helper method intended for test / mock
-        /// scenarios to manually fake a property change. 
-        /// </summary>
-        /// <param name="target">The ReactiveObject to invoke
-        /// raisePropertyChanging on.</param>
-        /// <param name="property">The property that will be faking a change.</param>
-        public static void RaisePropertyChanging(ReactiveObject target, string property)
-        {
-            target.raisePropertyChanging(property);
-        }
-
-        /// <summary>
-        /// RaisePropertyChanging is a helper method intended for test / mock
-        /// scenarios to manually fake a property change. 
-        /// </summary>
-        /// <param name="target">The ReactiveObject to invoke
-        /// raisePropertyChanging on.</param>
-        /// <param name="property">The property that will be faking a change.</param>
-        public static void RaisePropertyChanging<TSender, TValue>(TSender target, Expression<Func<TSender, TValue>> property)
-            where TSender : ReactiveObject
-        {
-            RaisePropertyChanging(target, Reflection.SimpleExpressionToPropertyName(property));
-        }
-
-        /// <summary>
-        /// RaisePropertyChanged is a helper method intended for test / mock
-        /// scenarios to manually fake a property change. 
-        /// </summary>
-        /// <param name="target">The ReactiveObject to invoke
-        /// raisePropertyChanging on.</param>
-        /// <param name="property">The property that will be faking a change.</param>
-        public static void RaisePropertyChanged(ReactiveObject target, string property)
-        {
-            target.raisePropertyChanged(property);
-        }
-
-        /// <summary>
-        /// RaisePropertyChanged is a helper method intended for test / mock
-        /// scenarios to manually fake a property change. 
-        /// </summary>
-        /// <param name="target">The ReactiveObject to invoke
-        /// raisePropertyChanging on.</param>
-        /// <param name="property">The property that will be faking a change.</param>
-        public static void RaisePropertyChanged<TSender, TValue>(TSender target, Expression<Func<TSender, TValue>> property)
-            where TSender : ReactiveObject
-        {
-            RaisePropertyChanged(target, Reflection.SimpleExpressionToPropertyName(property));
         }
     }
 }
