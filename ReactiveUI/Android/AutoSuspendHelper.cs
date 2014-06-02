@@ -3,11 +3,13 @@ using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using Java.Lang;
 using Android.App;
 using Android.OS;
 using System.Reflection;
 using Splat;
 using System.Reactive.Disposables;
+using ReactiveUI.Android;
 
 namespace ReactiveUI.Mobile
 {
@@ -27,10 +29,9 @@ namespace ReactiveUI.Mobile
             AppDomain.CurrentDomain.UnhandledException += (o, e) => untimelyDemise.OnNext(Unit.Default);
         }
 
-        public AutoSuspendHelper(Activity hostActivity)
+        public AutoSuspendHelper(Application hostApplication)
         {
-            Reflection.ThrowIfMethodsNotOverloaded("AutoSuspendHelper", hostActivity,
-                "OnRestart", "OnSaveInstanceState", "OnCreate");
+            hostApplication.RegisterActivityLifecycleCallbacks(new ObservableLifecycle(this));
 
             Observable.Merge(onCreate, onSaveInstanceState).Subscribe(x => LatestBundle = x);
 
@@ -43,23 +44,38 @@ namespace ReactiveUI.Mobile
 
             RxApp.SuspensionHost.ShouldInvalidateState = untimelyDemise;
         }
-
-        public void OnCreate(Bundle bundle)
+            
+        class ObservableLifecycle : Java.Lang.Object, Application.IActivityLifecycleCallbacks
         {
-            onCreate.OnNext(bundle);
-        }
+            readonly AutoSuspendHelper This;
+            public ObservableLifecycle(AutoSuspendHelper This)
+            {
+                this.This = This;
+            }
 
-        public void OnRestart()
-        {
-            onRestart.OnNext(Unit.Default);
-        }
+            public void OnActivityCreated(Activity activity, Bundle savedInstanceState)
+            {
+                This.onCreate.OnNext(savedInstanceState);
+                RxApp.MainThreadScheduler = new WaitForDispatcherScheduler(() => new AndroidUIScheduler(activity));
+            }
 
-        public void OnSaveInstanceState(Bundle outState)
-        {
-            // NB: This is so that we always have a bundle on OnCreate, so that
-            // we can tell the difference between created from scratch and resume.
-            outState.PutString("___dummy_value_please_create_a_bundle", "VeryYes");
-            onSaveInstanceState.OnNext(outState);
+            public void OnActivityResumed(Activity activity)
+            {
+                This.onRestart.OnNext(Unit.Default);
+            }
+
+            public void OnActivitySaveInstanceState(Activity activity, Bundle outState)
+            {
+                // NB: This is so that we always have a bundle on OnCreate, so that
+                // we can tell the difference between created from scratch and resume.
+                outState.PutString("___dummy_value_please_create_a_bundle", "VeryYes");
+                This.onSaveInstanceState.OnNext(outState);
+            }
+
+            public void OnActivityDestroyed(Activity activity) { }
+            public void OnActivityPaused(Activity activity) { }
+            public void OnActivityStarted(Activity activity) { }
+            public void OnActivityStopped(Activity activity) { }
         }
     }
 }

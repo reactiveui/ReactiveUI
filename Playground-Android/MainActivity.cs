@@ -18,22 +18,16 @@ namespace MobileSample_Android
     public class MainView : ReactiveActivity<MainViewModel> 
     {
         int count = 1;
-        readonly AutoSuspendHelper suspendHelper;
-
         public TextView SavedGuid { get; set; }
 
         public MainView()
         {
-            suspendHelper = new AutoSuspendHelper(this);
         }
 
         protected override void OnCreate(Bundle bundle)
         {
             base.OnCreate(bundle);
-
-            App.EnsureInitialized();
-            suspendHelper.OnCreate(bundle);
-
+        
             // Set our view from the "main" layout resource
             SetContentView(Resource.Layout.Main);
                         
@@ -45,18 +39,6 @@ namespace MobileSample_Android
                     Console.WriteLine(x);
                 })
                 .BindTo(this, x => x.SavedGuid.Text);
-        }
-
-        protected override void OnSaveInstanceState(Bundle outState)
-        {
-            base.OnSaveInstanceState(outState);
-            suspendHelper.OnSaveInstanceState(outState);
-        }
-
-        protected override void OnRestart()
-        {
-            base.OnRestart();
-            suspendHelper.OnRestart();
         }
 
         protected override void OnDestroy()
