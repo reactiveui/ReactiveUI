@@ -14,12 +14,15 @@
         <dependency id="reactiveui-core" version="[5.99.6-beta]" />
       </group>
       <group targetFramework="wp8">
+        <dependency id="reactiveui-core" version="[5.99.6-beta]" />
         <dependency id="reactiveui-blend" version="[5.99.6-beta]" />
       </group>
       <group targetFramework="net45">
+        <dependency id="reactiveui-core" version="[5.99.6-beta]" />
         <dependency id="reactiveui-blend" version="[5.99.6-beta]" />
       </group>
       <group targetFramework="Portable-Win81+Wpa81">
+        <dependency id="reactiveui-core" version="[5.99.6-beta]" />
         <dependency id="reactiveui-blend" version="[5.99.6-beta]" />
       </group>
     </dependencies>
