@@ -61,6 +61,9 @@ namespace ReactiveUI
             get { return this.getChangedObservable(); }
         }
 
+        /// <summary>
+        ///
+        /// </summary>
         [IgnoreDataMember]
         public IObservable<Exception> ThrownExceptions { get { return this.getThrownExceptionsObservable(); } }
         
@@ -68,10 +71,18 @@ namespace ReactiveUI
         {
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <returns></returns>
         public IDisposable SuppressChangeNotifications() {
             return this.suppressChangeNotifications();
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <returns></returns>
         public bool AreChangeNotificationsEnabled() {
             return this.areChangeNotificationsEnabled();
         }

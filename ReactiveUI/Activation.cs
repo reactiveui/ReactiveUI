@@ -12,6 +12,10 @@ using Splat;
 
 namespace ReactiveUI
 {
+
+    /// <summary>
+    ///
+    /// </summary>
     public sealed class ViewModelActivator
     {
         readonly List<Func<IEnumerable<IDisposable>>> blocks;
@@ -28,6 +32,10 @@ namespace ReactiveUI
             blocks.Add(block);
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <returns></returns>
         public IDisposable Activate()
         {
             if (Interlocked.Increment(ref refCount) == 1) {
@@ -38,6 +46,10 @@ namespace ReactiveUI
             return Disposable.Create(() => Deactivate());
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="ignoreRefCount"></param>
         public void Deactivate(bool ignoreRefCount = false)
         {
             if (Interlocked.Decrement(ref refCount) == 0 || ignoreRefCount) {
@@ -53,11 +65,21 @@ namespace ReactiveUI
             RxApp.EnsureInitialized();
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="This"></param>
+        /// <param name="block"></param>
         public static void WhenActivated(this ISupportsActivation This, Func<IEnumerable<IDisposable>> block)
         {
             This.Activator.addActivationBlock(block);
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="This"></param>
+        /// <param name="block"></param>
         public static void WhenActivated(this ISupportsActivation This, Action<Action<IDisposable>> block)
         {
             This.Activator.addActivationBlock(() => {
@@ -67,12 +89,23 @@ namespace ReactiveUI
             });
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="This"></param>
+        /// <returns></returns>
         public static IDisposable WithActivation(this ISupportsActivation This)
         {
             This.Activator.Activate();
             return Disposable.Create(() => This.Activator.Deactivate());
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="This"></param>
+        /// <param name="block"></param>
+        /// <returns></returns>
         public static IDisposable WhenActivated(this IActivatable This, Func<IEnumerable<IDisposable>> block)
         {
             var activationFetcher = activationFetcherCache.Get(This.GetType());
@@ -136,6 +169,12 @@ namespace ReactiveUI
                 vmDisposable);
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="This"></param>
+        /// <param name="block"></param>
+        /// <returns></returns>
         public static IDisposable WhenActivated(this IActivatable This, Action<Action<IDisposable>> block)
         {
             return This.WhenActivated(() => {
@@ -155,6 +194,9 @@ namespace ReactiveUI
             }, RxApp.SmallCacheLimit);
     }
 
+    /// <summary>
+    ///
+    /// </summary>
     public class CanActivateViewFetcher : IActivationForViewFetcher
     {
         public int GetAffinityForView(Type view)

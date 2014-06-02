@@ -151,6 +151,9 @@ namespace ReactiveUI
         [ThreadStatic] static ISuspensionHost _UnitTestSuspensionHost;
         static ISuspensionHost _SuspensionHost;
 
+        /// <summary>
+        ///
+        /// </summary>
         public static ISuspensionHost SuspensionHost {
             get { 
                 var host = _UnitTestSuspensionHost ?? _SuspensionHost;
@@ -169,6 +172,9 @@ namespace ReactiveUI
         [ThreadStatic] static bool? _UnitTestSupportsRangeNotifications;
         static bool _SupportsRangeNotifications;
 
+        /// <summary>
+        ///
+        /// </summary>
         public static bool SupportsRangeNotifications  {
             get {
                 return _UnitTestSupportsRangeNotifications ?? _SupportsRangeNotifications;
