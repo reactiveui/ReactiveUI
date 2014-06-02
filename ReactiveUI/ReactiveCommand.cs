@@ -107,6 +107,9 @@ namespace ReactiveUI
         }
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
     public class ReactiveCommand<T> : IReactiveCommand<T>, IReactiveCommand
     {
         readonly Subject<T> executeResults = new Subject<T>();
@@ -120,6 +123,12 @@ namespace ReactiveUI
         IDisposable canExecuteDisp;
         int inflightCount = 0;
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="canExecute"></param>
+        /// <param name="executeAsync"></param>
+        /// <param name="scheduler"></param>
         public ReactiveCommand(IObservable<bool> canExecute, Func<object, IObservable<T>> executeAsync, IScheduler scheduler = null)
         {
             this.scheduler = scheduler ?? RxApp.MainThreadScheduler;
@@ -143,6 +152,11 @@ namespace ReactiveUI
             ThrownExceptions = exceptions = new ScheduledSubject<Exception>(CurrentThreadScheduler.Instance, RxApp.DefaultExceptionHandler);
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <returns></returns>
+        /// <param name="parameter"></param>
         public IObservable<T> ExecuteAsync(object parameter = null)
         {
             var ret = Observable.Create<T>(subj => {
@@ -174,6 +188,12 @@ namespace ReactiveUI
             return ret.Publish().RefCount();
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <returns></returns>
+        /// <param name="parameter"></param>
+        /// <param name="ct"></param>
         public Task<T> ExecuteAsyncTask(object parameter = null, CancellationToken ct = default(CancellationToken))
         {
             return ExecuteAsync(parameter).ToTask(ct);
@@ -186,6 +206,9 @@ namespace ReactiveUI
         /// <value>The thrown exceptions.</value>
         public IObservable<Exception> ThrownExceptions { get; protected set; }
 
+        /// <summary>
+        ///
+        /// </summary>
         public IObservable<bool> CanExecuteObservable {
             get {
                 var ret = canExecute.StartWith(canExecuteLatest).DistinctUntilChanged();

@@ -55,10 +55,19 @@ namespace ReactiveUI
             this.Value = value;
         }
 
+        /// <summary>
+        ///
+        /// </summary>
         public TSender Sender { get; private set; }
 
+        /// <summary>
+        ///
+        /// </summary>
         public Expression Expression { get; private set; }
 
+        /// <summary>
+        ///
+        /// </summary>
         public TValue Value { get; private set; }
     }
 
@@ -137,6 +146,10 @@ namespace ReactiveUI
         TSender Sender { get; }
     }
 
+    /// <summary>
+    ///
+    /// </summary>
+    /// <typeparam name="TSender"></typeparam>
     public class ReactivePropertyChangingEventArgs<TSender> : PropertyChangingEventArgs, IReactivePropertyChangedEventArgs<TSender>
     {
         /// <summary>
@@ -150,9 +163,16 @@ namespace ReactiveUI
             this.Sender = sender;
         }
 
+        /// <summary>
+        ///
+        /// </summary>
         public TSender Sender { get; private set; }
     }
 
+    /// <summary>
+    ///
+    /// </summary>
+    /// <typeparam name="TSender"></typeparam>
     public class ReactivePropertyChangedEventArgs<TSender> : PropertyChangedEventArgs, IReactivePropertyChangedEventArgs<TSender>
     {
         /// <summary>
@@ -166,6 +186,9 @@ namespace ReactiveUI
             this.Sender = sender;
         }
 
+        /// <summary>
+        ///
+        /// </summary>
         public TSender Sender { get; private set; }
     }
 
@@ -318,6 +341,9 @@ namespace ReactiveUI
     /// the collection or any of its items have changed, in any way".
     public interface IReactiveCollection<out T> : IReactiveNotifyCollectionChanged<T>, IReactiveNotifyCollectionItemChanged<T>, IEnumerable<T>, INotifyCollectionChanged, INotifyCollectionChanging, IReactiveObject
     {
+        /// <summary>
+        ///
+        /// </summary>
         void Reset();
     }
 
@@ -403,11 +429,17 @@ namespace ReactiveUI
         IScreen HostScreen { get; }
     }
 
+    /// <summary>
+    ///
+    /// </summary>
     public interface ISupportsActivation
     {
         ViewModelActivator Activator { get; }
     }
 
+    /// <summary>
+    ///
+    /// </summary>
     public interface ICanActivate
     {
         IObservable<Unit> Activated { get; }

@@ -6,6 +6,9 @@ using Splat;
 
 namespace ReactiveUI
 {
+    /// <summary>
+    ///
+    /// </summary>
     public class DefaultPropertyBinding
     {
         static DefaultPropertyBinding()

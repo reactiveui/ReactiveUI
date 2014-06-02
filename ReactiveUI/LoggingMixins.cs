@@ -6,6 +6,16 @@ namespace ReactiveUI
 {
     public static class ObservableLoggingMixin
     {
+        /// <summary>
+        ///
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="TObj"></typeparam>
+        /// <param name="This"></param>
+        /// <param name="klass"></param>
+        /// <param name="message"></param>
+        /// <param name="stringifier"></param>
+        /// <returns></returns>
         public static IObservable<T> Log<T, TObj>(this IObservable<T> This, 
             TObj klass, 
             string message = null,
@@ -27,6 +37,16 @@ namespace ReactiveUI
             }
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="TObj"></typeparam>
+        /// <param name="This"></param>
+        /// <param name="klass"></param>
+        /// <param name="next"></param>
+        /// <param name="message"></param>
+        /// <returns></returns>
         public static IObservable<T> LoggedCatch<T, TObj>(this IObservable<T> This, TObj klass, IObservable<T> next = null, string message = null)
             where TObj : IEnableLogger
         {
@@ -37,6 +57,17 @@ namespace ReactiveUI
             });
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="TObj"></typeparam>
+        /// <typeparam name="TException"></typeparam>
+        /// <param name="This"></param>
+        /// <param name="klass"></param>
+        /// <param name="next"></param>
+        /// <param name="message"></param>
+        /// <returns></returns>
         public static IObservable<T> LoggedCatch<T, TObj, TException>(this IObservable<T> This, TObj klass, Func<TException, IObservable<T>> next, string message = null)
             where TObj : IEnableLogger
             where TException : Exception
