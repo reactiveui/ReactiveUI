@@ -10,7 +10,7 @@ using System.Reactive.Disposables;
 using ReactiveUI;
 using Splat;
 
-namespace ReactiveUI.Mobile
+namespace ReactiveUI
 {
     /// <summary>
     /// AutoSuspend-based App Delegate. To use AutoSuspend with iOS, change your
