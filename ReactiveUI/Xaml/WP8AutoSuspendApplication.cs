@@ -12,7 +12,7 @@ using Microsoft.Phone.Controls;
 using Microsoft.Phone.Shell;
 using Splat;
 
-namespace ReactiveUI.Mobile
+namespace ReactiveUI
 {
     public class AutoSuspendHelper : IEnableLogger
     {

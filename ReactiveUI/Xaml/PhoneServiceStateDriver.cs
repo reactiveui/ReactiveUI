@@ -5,7 +5,7 @@ using System.Reactive.Linq;
 using System.Runtime.Serialization;
 using Microsoft.Phone.Shell;
 
-namespace ReactiveUI.Mobile
+namespace ReactiveUI
 {
     public class PhoneServiceStateDriver : ISuspensionDriver
     {
