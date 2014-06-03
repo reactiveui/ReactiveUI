@@ -65,6 +65,7 @@ namespace ReactiveUI.Xaml
                     .Where(x => x == sender)
                     .Select(x => new ObservedChange<object, object>(x, expression))
                     .Subscribe(obs);
+
                 // ClearBinding calls ClearValue http://stackoverflow.com/questions/1639219/clear-binding-in-silverlight-remove-data-binding-from-setbinding
                 return new CompositeDisposable(Disposable.Create(() => (sender as DependencyObject).ClearValue(dpAndSubj.Item1)), disp);
             });
