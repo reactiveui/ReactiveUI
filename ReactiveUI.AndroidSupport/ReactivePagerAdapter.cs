@@ -8,9 +8,8 @@ using Android.Support.V4.View;
 using Android.Views;
 using Splat;
 using Object = Java.Lang.Object;
-using ReactiveUI.Android;
 
-namespace ReactiveUI.Android.Support
+namespace ReactiveUI
 {
     public class ReactivePagerAdapter<TViewModel> : PagerAdapter, IEnableLogger
         where TViewModel : class

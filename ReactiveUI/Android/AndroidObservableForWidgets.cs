@@ -10,7 +10,7 @@ using Android.Text;
 using Java.Util;
 using Observable = System.Reactive.Linq.Observable;
 
-namespace ReactiveUI.Android
+namespace ReactiveUI
 {
     /// <summary>
     /// Android view objects are not Generally Observable™, so hard-code some
