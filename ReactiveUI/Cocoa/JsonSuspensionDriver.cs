@@ -5,7 +5,7 @@ using System.Reactive;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 
-namespace ReactiveUI.Mobile
+namespace ReactiveUI
 {
     public class AppSupportJsonSuspensionDriver : ISuspensionDriver
     {
