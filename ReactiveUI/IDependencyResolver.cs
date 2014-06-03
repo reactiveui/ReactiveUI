@@ -20,7 +20,6 @@ namespace ReactiveUI
         public static void InitializeReactiveUI(this IMutableDependencyResolver resolver)
         {
             var extraNs = new[] {
-                "ReactiveUI.Mobile", 
                 "ReactiveUI.XamForms",
                 "ReactiveUI.Winforms", 
             };
