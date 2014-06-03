@@ -12,7 +12,7 @@ using MonoTouch.UIKit;
 
 namespace ReactiveUI
 #else
-namespace ReactiveUI.Android
+namespace ReactiveUI
 #endif
 {
     public abstract class FlexibleCommandBinder : ICreatesCommandBinding

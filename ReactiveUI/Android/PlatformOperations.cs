@@ -3,7 +3,7 @@ using Android.App;
 using Android.Content;
 using Android.Views;
 
-namespace ReactiveUI.Android
+namespace ReactiveUI
 {
     public class PlatformOperations : IPlatformOperations
     {
