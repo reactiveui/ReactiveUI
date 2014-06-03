@@ -10,7 +10,7 @@ using System.Linq.Expressions;
 #if UIKIT
 using MonoTouch.UIKit;
 
-namespace ReactiveUI.Cocoa
+namespace ReactiveUI
 #else
 namespace ReactiveUI.Android
 #endif

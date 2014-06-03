@@ -10,7 +10,7 @@ using NSViewController = MonoTouch.UIKit.UIViewController;
 using MonoMac.AppKit;
 #endif
 
-namespace ReactiveUI.Cocoa
+namespace ReactiveUI
 {
     /// <summary>
     /// ViewModelViewHost is a helper class that will connect a ViewModel

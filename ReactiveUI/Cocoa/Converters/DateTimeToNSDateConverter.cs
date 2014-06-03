@@ -4,7 +4,7 @@ using System.Linq;
 using MonoTouch.Foundation;
 using ReactiveUI;
 
-namespace ReactiveUI.Cocoa
+namespace ReactiveUI
 {
     public class DateTimeNSDateConverter :
         IBindingTypeConverter
