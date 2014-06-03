@@ -11,7 +11,7 @@ using Splat;
 namespace ReactiveUI.Winforms
 {
     [DefaultProperty("ViewModel")]
-    public partial class ViewModelViewHost : UserControl, IReactiveObject, IViewFor
+    public partial class ViewModelControlHost : UserControl, IReactiveObject, IViewFor
     {
         readonly CompositeDisposable disposables = new CompositeDisposable();
 
@@ -23,7 +23,7 @@ namespace ReactiveUI.Winforms
         public static bool DefaultCacheViewsEnabled { get; set; }
 
 
-        public ViewModelViewHost()
+        public ViewModelControlHost()
         {
             this.InitializeComponent();
             this.cacheViews = DefaultCacheViewsEnabled;

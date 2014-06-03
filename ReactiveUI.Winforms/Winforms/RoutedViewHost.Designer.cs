@@ -1,6 +1,6 @@
 ﻿namespace ReactiveUI.Winforms
 {
-    partial class RoutedViewHost
+    partial class RoutedControlHost
     {
         /// <summary> 
         /// Required designer variable.
