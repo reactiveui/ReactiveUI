@@ -19,7 +19,7 @@ using MonoTouch.Foundation;
 using MonoTouch.UIKit;
 
 
-namespace ReactiveUI.Cocoa
+namespace ReactiveUI
 {
     public abstract class ReactiveTableView : UITableView, IReactiveNotifyPropertyChanged<ReactiveTableView>, IHandleObservableErrors, IReactiveObject, ICanActivate
     {

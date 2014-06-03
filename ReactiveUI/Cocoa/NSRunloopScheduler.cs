@@ -15,7 +15,7 @@ using MonoMac.Foundation;
 using MonoMac.CoreFoundation;
 #endif
 
-namespace ReactiveUI.Cocoa
+namespace ReactiveUI
 {
     /// <summary>
     /// Provides a scheduler which will use the Cocoa main loop to schedule

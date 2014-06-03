@@ -23,7 +23,7 @@ using MonoMac.AppKit;
 using MonoMac.Foundation;
 #endif
 
-namespace ReactiveUI.Cocoa
+namespace ReactiveUI
 {
     /// <summary>
     /// This is an View that is both an NSViewController and has ReactiveObject powers 
