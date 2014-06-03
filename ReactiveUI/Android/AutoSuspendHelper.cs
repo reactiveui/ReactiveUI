@@ -71,9 +71,13 @@ namespace ReactiveUI.Mobile
                 outState.PutString("___dummy_value_please_create_a_bundle", "VeryYes");
                 This.onSaveInstanceState.OnNext(outState);
             }
+                        
+            public void OnActivityPaused(Activity activity) 
+            { 
+                This.onPause.OnNext(Unit.Default);
+            }
 
             public void OnActivityDestroyed(Activity activity) { }
-            public void OnActivityPaused(Activity activity) { }
             public void OnActivityStarted(Activity activity) { }
             public void OnActivityStopped(Activity activity) { }
         }
