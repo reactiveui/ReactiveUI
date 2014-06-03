@@ -9,7 +9,7 @@ using System.ComponentModel;
 using System.Reactive.Linq;
 using System.Reactive.Disposables;
 
-namespace ReactiveUI.Xaml
+namespace ReactiveUI
 {
     public class DependencyObjectObservableForProperty : ICreatesObservableForProperty
     {
