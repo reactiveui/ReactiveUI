@@ -9,7 +9,6 @@ using Android.OS;
 using System.Reflection;
 using Splat;
 using System.Reactive.Disposables;
-using ReactiveUI.Android;
 
 namespace ReactiveUI
 {
