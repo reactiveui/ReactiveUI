@@ -8,7 +8,7 @@ using ReactiveUI;
 using Android.App;
 using Splat;
 
-namespace ReactiveUI.Android
+namespace ReactiveUI
 {
     /// <summary>
     /// AndroidUIScheduler is a scheduler that schedules items on a running 

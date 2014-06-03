@@ -6,7 +6,7 @@ using Android.Views;
 using Android.Widget;
 using Splat;
 
-namespace ReactiveUI.Android
+namespace ReactiveUI
 {
     public class ReactiveListAdapter<TViewModel> : BaseAdapter<TViewModel>, IEnableLogger
         where TViewModel : class

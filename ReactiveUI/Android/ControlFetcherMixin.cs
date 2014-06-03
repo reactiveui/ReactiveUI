@@ -8,7 +8,7 @@ using Android.App;
 using Android.Views;
 using Java.Interop;
 
-namespace ReactiveUI.Android
+namespace ReactiveUI
 {
     public static class ControlFetcherMixin
     {
