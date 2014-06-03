@@ -6,7 +6,7 @@ using System.Text;
 using MonoTouch.Foundation;
 using MonoTouch.UIKit;
 
-namespace ReactiveUI.Cocoa.Cocoa
+namespace ReactiveUI.Cocoa
 {
 #if UIKIT
     

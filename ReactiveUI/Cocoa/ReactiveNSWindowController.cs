@@ -5,7 +5,7 @@ using System.ComponentModel;
 using System.Reactive.Subjects;
 using System.Reactive;
 
-namespace ReactiveUI.Cocoa
+namespace ReactiveUI
 {
     public class ReactiveWindowController : NSWindowController, IReactiveNotifyPropertyChanged<ReactiveWindowController>, IHandleObservableErrors, IReactiveObject, ICanActivate
     {

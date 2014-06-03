@@ -17,7 +17,7 @@ using MonoMac.AppKit;
 using MonoMac.Foundation;
 #endif
 
-namespace ReactiveUI.Cocoa
+namespace ReactiveUI
 {
     /// <summary>
     /// This class provides notifications for Cocoa Framework objects based on

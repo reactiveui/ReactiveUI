@@ -9,7 +9,7 @@ using System.Reactive.Linq;
 using System.Runtime.InteropServices;
 using System.Reactive.Disposables;
 
-namespace ReactiveUI.Cocoa
+namespace ReactiveUI
 {
     public class UIKitCommandBinders : FlexibleCommandBinder
     {
