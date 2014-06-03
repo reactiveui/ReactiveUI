@@ -4,7 +4,6 @@ using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Runtime.CompilerServices;
 using Splat;
-using ReactiveUI.Mobile;
 
 namespace ReactiveUI
 {
