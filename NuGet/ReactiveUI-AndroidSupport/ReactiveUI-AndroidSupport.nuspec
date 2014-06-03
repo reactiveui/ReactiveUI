@@ -2,7 +2,7 @@
 <package xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <metadata xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
     <id>reactiveui-androidsupport</id>
-    <version>5.99.5-beta</version>
+    <version>5.99.6-beta</version>
     <description>ReactiveUI extensions for the Android Support Library</description>
     <authors>Paul Betts</authors>
     <projectUrl>http://www.reactiveui.net</projectUrl>
@@ -10,8 +10,8 @@
     <language>en-us</language>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <dependencies>
-      <dependency id="reactiveui-platforms" version="[5.99.5-beta]" />
-      <dependency id="xamstore-xamandroidsupportv13-18" version="19.1.0" />
+      <dependency id="reactiveui-platforms" version="[5.99.6-beta]" />
+      <dependency id="Xamarin.Android.Support.v4" version="19.0.2" />
     </dependencies>
   </metadata>
 </package>

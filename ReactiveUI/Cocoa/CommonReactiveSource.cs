@@ -224,7 +224,6 @@ namespace ReactiveUI.Cocoa
         void resetupAll(IReadOnlyList<TSectionInfo> newSectionInfo) 
         {
             this.Log().Debug("SectionInfo changed to {0}, resetup data and bindings...", newSectionInfo);
-            UIApplication.EnsureUIThread();
 
             if (newSectionInfo == null) {
                 this.Log().Debug("Null SectionInfo, done!");
@@ -241,7 +240,7 @@ namespace ReactiveUI.Cocoa
             disp.Add(subscrDisp);
 
             // Decide when we should check for section changes.
-            var reactiveSectionInfo = newSectionInfo as IReactiveNotifyCollectionChanged<TSource>;
+            var reactiveSectionInfo = newSectionInfo as IReactiveNotifyCollectionChanged<TSectionInfo>;
 
             var sectionChanging = reactiveSectionInfo == null ? Observable.Never<Unit>() : reactiveSectionInfo
                 .Changing
@@ -268,9 +267,8 @@ namespace ReactiveUI.Cocoa
                 subscrDisp.Disposable = Disposable.Empty;
             }));
 
-            disp.Add(sectionChanged.Subscribe(_ => {
+            disp.Add(sectionChanged.ObserveOn(RxApp.MainThreadScheduler).Subscribe(_ => {
                 this.Log().Debug("{0} is changed, resetup section data and bindings...", newSectionInfo);
-                UIApplication.EnsureUIThread();
 
                 var disp2 = new CompositeDisposable();
                 subscrDisp.Disposable = disp2;

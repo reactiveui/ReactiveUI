@@ -34,6 +34,7 @@ namespace ReactiveUI.Cocoa
                 new { Type = typeof(NSLevelIndicator), Property = "DoubleValue" },
                 new { Type = typeof(NSProgressIndicator), Property = "DoubleValue" },
                 new { Type = typeof(NSButton), Property = "Title" },
+                new { Type = typeof(NSMenuItem), Property = "Title" },
                 new { Type = typeof(NSImageView), Property = "Image" },
             };
 #endif

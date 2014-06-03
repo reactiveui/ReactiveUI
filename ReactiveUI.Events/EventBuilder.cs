@@ -19,13 +19,18 @@ namespace EventBuilder
             // NB: I'm too lazy to fix this properly
             var monoDroidDir = targetAssemblyDirs.FirstOrDefault(x => x.ToLowerInvariant().Contains("monoandroid"));
             if (monoDroidDir != null) {
-                targetAssemblyDirs.Add(Path.Combine(monoDroidDir, "..", "..", "..", "mono", "2.1"));
+                targetAssemblyDirs.Add(Path.Combine(monoDroidDir, "..", "v1.0"));
             }
 
             // NB: Double down on Laziness
             var xamMacDir = targetAssemblyDirs.FirstOrDefault(x => x.ToLowerInvariant().Contains("xamarin.mac"));
             if (xamMacDir != null) {
                 targetAssemblyDirs.Add("/Library/Frameworks/Mono.framework/Versions/Current/lib/mono/4.5");
+            }
+
+	    // NB: Triple down on Laziness
+            if (targetAssemblyNames.Any(x => x.ToLowerInvariant().Contains("xamarin.forms"))) {
+                targetAssemblyDirs.Add("/Library/Frameworks/Mono.framework/Versions/Current/lib/mono/xbuild-frameworks/.NETPortable/v4.5/Profile/Profile78");
             }
 
             var rp = new ReaderParameters() { AssemblyResolver = new PathSearchAssemblyResolver(targetAssemblyDirs.ToArray()) };

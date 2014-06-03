@@ -188,6 +188,9 @@ FakesAssemblies/
 Release
 NuGet-Release
 
+# Ensure all files in the NuGet directory are tracked.
+!NuGet/**
+
 *.nupkg
 *.userprefs
 
@@ -198,8 +201,10 @@ ReactiveUI.Events/Events_*.cs
 
 ReactiveUI.Events/EventBuilder.exe
 ReactiveUI.Events/EventBuilder.exe.mdb
-ReactiveUI.Events/Mono.Cecil.dll
-ReactiveUI.Events/Nustache.Core.dll
+ReactiveUI.Events/Mono.*
+ReactiveUI.Events/Nustache.*
 
 ext/monodroid/18
+
+
 

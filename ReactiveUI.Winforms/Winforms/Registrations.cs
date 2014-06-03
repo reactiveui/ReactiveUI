@@ -28,6 +28,7 @@ namespace ReactiveUI.Winforms
             registerFunction(() => new WinformsDefaultPropertyBinding(), typeof(IDefaultPropertyBindingProvider));
             registerFunction(() => new CreatesWinformsCommandBinding(), typeof(ICreatesCommandBinding));
             registerFunction(() => new WinformsCreatesObservableForProperty(), typeof(ICreatesObservableForProperty));
+            registerFunction(() => new ActivationForViewFetcher(), typeof(IActivationForViewFetcher));
 
             if (!ModeDetector.InUnitTestRunner()) {
                 WindowsFormsSynchronizationContext.AutoInstall = true;

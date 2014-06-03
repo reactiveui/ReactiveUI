@@ -36,10 +36,8 @@ namespace ReactiveUI.Winforms
                 }
                 break;
             case NotifyCollectionChangedAction.Move:
-                //this one is actually not supported by the default BindingList<T> implementation
-                //maybe we should do a reset instead?
-		yield return new ListChangedEventArgs(ListChangedType.ItemDeleted, ea.OldStartingIndex);
-		yield return new ListChangedEventArgs(ListChangedType.ItemAdded, ea.NewStartingIndex);
+                // http://msdn.microsoft.com/en-us/library/acskc6xz(v=vs.110).aspx
+                yield return new ListChangedEventArgs(ListChangedType.ItemMoved, ea.NewStartingIndex, ea.OldStartingIndex);
                 break;
             }
         }

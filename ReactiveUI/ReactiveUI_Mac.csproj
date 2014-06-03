@@ -55,12 +55,6 @@
     <Reference Include="System.Drawing" />
     <Reference Include="XamMac" />
     <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="Splat">
-      <HintPath>..\ext\mono\Splat.dll</HintPath>
-    </Reference>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\ext\Portable-Net45+WinRT45+WP8\Newtonsoft.Json.dll</HintPath>
-    </Reference>
     <Reference Include="System.Reactive.Core">
       <HintPath>..\ext\Portable-Net45+WinRT45+WP8\System.Reactive.Core.dll</HintPath>
     </Reference>
@@ -73,6 +67,9 @@
     <Reference Include="System.Reactive.PlatformServices">
       <HintPath>..\ext\Portable-Net45+WinRT45+WP8\System.Reactive.PlatformServices.dll</HintPath>
     </Reference>
+    <Reference Include="Splat">
+      <HintPath>..\packages\Splat.1.3.1\lib\MonoMac\Splat.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -82,7 +79,6 @@
     <Compile Include="Cocoa\RoutedViewHost.cs" />
     <Compile Include="Cocoa\TargetActionCommandBinder.cs" />
     <Compile Include="Cocoa\ViewModelViewHost.cs" />
-    <Compile Include="Cocoa\Properties\AssemblyInfo.cs" />
     <Compile Include="Platform\ComponentModelTypeConverter.cs" />
     <Compile Include="Platform\Registrations.cs" />
     <Compile Include="Cocoa\PlatformOperations.cs" />
@@ -103,13 +99,13 @@
     <Compile Include="CompatMixins.cs" />
     <Compile Include="ContractStubs.cs" />
     <Compile Include="DefaultPropertyBinding.cs" />
-    <Compile Include="DummySuspension.cs" />
     <Compile Include="Errors.cs" />
     <Compile Include="IDependencyResolver.cs" />
     <Compile Include="INPCObservableForProperty.cs" />
     <Compile Include="Interfaces.cs" />
     <Compile Include="IROObservableForProperty.cs" />
     <Compile Include="MessageBus.cs" />
+    <Compile Include="MobileLifecycle.cs" />
     <Compile Include="NullDefaultPropertyBindingProvider.cs" />
     <Compile Include="ObservableAsPropertyHelper.cs" />
     <Compile Include="ObservedChangedMixin.cs" />
@@ -142,6 +138,11 @@
     <Compile Include="LoggingMixins.cs" />
     <Compile Include="IReactiveObject.cs" />
     <Compile Include="WeakEventManager.cs" />
+    <Compile Include="Cocoa\AppKitAutoSuspendHelper.cs" />
+    <Compile Include="Cocoa\AutoLayoutViewModelViewHost.cs" />
+    <Compile Include="CreatesCommandBinding.cs" />
+    <Compile Include="ExpressionRewriter.cs" />
+    <Compile Include="ExpressionMixins.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Cocoa\" />

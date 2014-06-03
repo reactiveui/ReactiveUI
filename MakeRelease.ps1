@@ -1,9 +1,11 @@
 ﻿Param([string]$version = $null)
 
-$Archs = {"Portable-Net45+WinRT45+WP8", "Net45", "WP8", "WinRT45", "WinRT451", "Mono", "Monoandroid", "Monotouch", "Monomac"}
+$Archs = {"Portable-Net45+WinRT45+WP8+MonoAndroid10+MonoTouch10", "Portable-Net45+Win8+WP8+WPA81", "Net45", "WP8", "WP81", "Win8", "Win81", "Mono", "Monoandroid", "Monotouch", "Monomac", "Portable-Win81+Wpa81", "WPA81"}
+
 $Projects = {
-    "ReactiveUI", "ReactiveUI.Testing", "ReactiveUI.Platforms", "ReactiveUI.Blend", 
-    "ReactiveUI.Mobile", "RxUIViewModelGenerator", "ReactiveUI.Events", "ReactiveUI.AndroidSupport"
+    "ReactiveUI", "ReactiveUI.Testing", "ReactiveUI.Blend", "ReactiveUI.Winforms", 
+    "RxUIViewModelGenerator", "ReactiveUI.Events", "ReactiveUI.AndroidSupport",
+    "ReactiveUI.XamForms"
 }
 
 $MSBuildLocation = "C:\Program Files (x86)\MSBuild\12.0\bin"
@@ -14,6 +16,7 @@ if ($SlnFileExists -eq $False) {
     exit -1
 }
 
+& ".\.nuget\NuGet.exe" restore .\ReactiveUI.sln
 & "$MSBuildLocation\MSBuild.exe" /t:Rebuild /p:Configuration=Release /p:Platform="Any CPU" /maxcpucount:1 .\ReactiveUI.sln
 
 ###
@@ -114,7 +117,7 @@ foreach ($dir in $srcDirs) {
 }
 
 $stubs = ls -r -file .\NuGet-Release | ?{$_.Length -eq 0} | ?{!$_.FullName.Contains("src")}
-if ($stubs.Length -gt 0) {
+if ($stubs) {
     echo "*** BUILD FAILED ***"
     echo ""
     echo "*** There are still stubs in the NuGet output, did you fully build? ***"

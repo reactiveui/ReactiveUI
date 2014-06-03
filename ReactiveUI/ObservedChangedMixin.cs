@@ -14,11 +14,21 @@ namespace ReactiveUI
         /// it has changed.
         /// </summary>
         /// <returns>The current value of the property</returns>
+        public static string GetPropertyName<TSender, TValue>(this IObservedChange<TSender, TValue> This)
+        {
+            return Reflection.ExpressionToPropertyNames(This.Expression);
+        }
+
+        /// <summary>
+        /// Returns the current value of a property given a notification that
+        /// it has changed.
+        /// </summary>
+        /// <returns>The current value of the property</returns>
         public static TValue GetValue<TSender, TValue>(this IObservedChange<TSender, TValue> This)
         {
             TValue ret;
             if (!This.TryGetValue(out ret)) {
-                throw new Exception(String.Format("One of the properties in the expression '{0}' was null", This.PropertyName));
+                throw new Exception(String.Format("One of the properties in the expression '{0}' was null", This.GetPropertyName()));
             }
             return ret;
         }
@@ -39,10 +49,7 @@ namespace ReactiveUI
                 return true;
             }
 
-            object current = This.Sender;
-            string fullPropName = This.PropertyName;
-
-            return Reflection.TryGetValueForPropertyChain(out changeValue, current, fullPropName.Split('.'));
+            return Reflection.TryGetValueForPropertyChain(out changeValue, This.Sender, This.Expression.GetExpressionChain());
         }
 
         /// <summary>
@@ -58,7 +65,7 @@ namespace ReactiveUI
             TTarget target,
             Expression<Func<TTarget, TValue>> property)
         {
-            Reflection.TrySetValueToPropertyChain(target, Reflection.ExpressionToPropertyNames(property), This.GetValue());
+            Reflection.TrySetValueToPropertyChain(target, Reflection.Rewrite(property.Body).GetExpressionChain(), This.GetValue());
         }
 
         /// <summary>

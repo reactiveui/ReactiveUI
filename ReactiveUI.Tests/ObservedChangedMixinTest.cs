@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Reactive.Concurrency;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reactive.Subjects;
 using Xunit;
 using ReactiveUI.Testing;
@@ -41,7 +42,8 @@ namespace ReactiveUI.Tests
                 Child = new TestFixture() {IsNotNullString = "Foo"},
             };
 
-            var fixture = new ObservedChange<HostTestFixture, string>(input, "Child.IsNotNullString");
+            Expression<Func<HostTestFixture, string>> expression = x => x.Child.IsNotNullString;
+            var fixture = new ObservedChange<HostTestFixture, string>(input, expression.Body);
 
             Assert.Equal("Foo", fixture.GetValue());
         }
@@ -53,7 +55,8 @@ namespace ReactiveUI.Tests
                 Child = new TestFixture() {IsNotNullString = "Foo"},
             };
 
-            var fixture = new ObservedChange<TestFixture, string>(new TestFixture() { IsOnlyOneWord = "Bar" }, "IsOnlyOneWord");
+            Expression<Func<TestFixture, string>> expression = x => x.IsOnlyOneWord;
+            var fixture = new ObservedChange<TestFixture, string>(new TestFixture() { IsOnlyOneWord = "Bar" }, expression.Body);
 
             fixture.SetValueToProperty(output, x => x.Child.IsNotNullString);
             Assert.Equal("Bar", output.Child.IsNotNullString);

@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Reactive;
 using Splat;
+using System.Linq.Expressions;
 
 namespace ReactiveUI
 {
@@ -131,8 +132,9 @@ namespace ReactiveUI
         /// object and a property name.
         /// </summary>
         /// <param name="sender">The object to observe.</param>
-        /// <param name="propertyName">The property on the object to observe. 
-        /// This property will not be a dotted property, only a simple name.
+        /// <param name="expression">The expression on the object to observe. 
+        /// This will be either a MemberExpression or an IndexExpression
+        /// dependending on the property.
         /// </param>
         /// <param name="beforeChanged">If true, signal just before the 
         /// property value actually changes. If false, signal after the 
@@ -140,7 +142,7 @@ namespace ReactiveUI
         /// <returns>An IObservable which is signalled whenever the specified
         /// property on the object changes. If this cannot be done for a 
         /// specified value of beforeChanged, return Observable.Never</returns>
-        IObservable<IObservedChange<object, object>> GetNotificationForProperty(object sender, string propertyName, bool beforeChanged = false);
+        IObservable<IObservedChange<object, object>> GetNotificationForProperty(object sender, Expression expression, bool beforeChanged = false);
     }
 
     /// <summary>
@@ -295,7 +297,12 @@ namespace ReactiveUI
         /// <returns></returns>
         /// <returns>An IDisposable which will disconnect the binding when 
         /// disposed.</returns>
-        IDisposable BindCommandToObject<TEventArgs>(ICommand command, object target, IObservable<object> commandParameter, string eventName);
+        IDisposable BindCommandToObject<TEventArgs>(ICommand command, object target, IObservable<object> commandParameter, string eventName)
+#if MONO
+            where TEventArgs : EventArgs
+#endif
+        ;
+
     }
 
     /// <summary>
@@ -350,47 +357,43 @@ namespace ReactiveUI.Mobile
     /// host operating system publishes. Subscribe to these events in order to
     /// handle app suspend / resume.
     /// </summary>
-    public interface ISuspensionHost
+    public interface ISuspensionHost : IReactiveObject
     {
         /// <summary>
         /// Signals when the application is launching new. This can happen when
-        /// an app has recently crashed, as well as the firs time the app has
+        /// an app has recently crashed, as well as the first time the app has
         /// been launched. Apps should create their state from scratch.
         /// </summary>
-        IObservable<Unit> IsLaunchingNew { get; }
+        IObservable<Unit> IsLaunchingNew { get; set; }
 
         /// <summary>
         /// Signals when the application is resuming from suspended state (i.e. 
         /// it was previously running but its process was destroyed). 
         /// </summary>
-        IObservable<Unit> IsResuming { get; }
+        IObservable<Unit> IsResuming { get; set; }
 
         /// <summary>
         /// Signals when the application is activated. Note that this may mean 
         /// that your process was not actively running before this signal.
         /// </summary>
-        IObservable<Unit> IsUnpausing { get; }
+        IObservable<Unit> IsUnpausing { get; set; }
 
         /// <summary>
         /// Signals when the application should persist its state to disk.
         /// </summary>
         /// <value>Returns an IDisposable that should be disposed once the 
         /// application finishes persisting its state</value>
-        IObservable<IDisposable> ShouldPersistState { get; }
+        IObservable<IDisposable> ShouldPersistState { get; set; }
 
         /// <summary>
         /// Signals that the saved application state should be deleted, this
         /// usually is called after an app has crashed
         /// </summary>
-        IObservable<Unit> ShouldInvalidateState { get; }
+        IObservable<Unit> ShouldInvalidateState { get; set; }
 
-        /// <summary>
-        /// Sets up the default suspend resume behavior, which is to use the
-        /// ISuspensionDriver to save / reload application state. Using this also
-        /// requires you to register an IApplicationRootState that will create a
-        /// new application root state from scratch.
-        /// </summary>
-        void SetupDefaultSuspendResume(ISuspensionDriver driver = null);
+        Func<object> CreateNewAppState { get; set; }
+
+        object AppState { get; set; }
     }
 
     /// <summary>
@@ -403,18 +406,16 @@ namespace ReactiveUI.Mobile
         /// <summary>
         /// Loads the application state from persistent storage
         /// </summary>
-        IObservable<T> LoadState<T>() where T : class, IApplicationRootState;
+        IObservable<object> LoadState();
 
         /// <summary>
         /// Saves the application state to disk.
         /// </summary>
-        IObservable<Unit> SaveState<T>(T state) where T : class, IApplicationRootState;
+        IObservable<Unit> SaveState(object state);
 
         /// <summary>
         /// Invalidates the application state (i.e. deletes it from disk)
         /// </summary>
         IObservable<Unit> InvalidateState();
     }
-
-    public interface IApplicationRootState : IScreen { }
 }

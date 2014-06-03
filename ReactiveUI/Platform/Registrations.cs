@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Windows;
 using ReactiveUI;
+using ReactiveUI.Mobile;
 using System.Reactive.Concurrency;
 
 #if COCOA
@@ -36,7 +37,7 @@ namespace ReactiveUI
         {
             registerFunction(() => new PlatformOperations(), typeof(IPlatformOperations));
 
-#if !WINRT && !WP8
+#if !WINRT && !WP8 && !WP81
             registerFunction(() => new ComponentModelTypeConverter(), typeof(IBindingTypeConverter));
 #endif
 
@@ -44,8 +45,6 @@ namespace ReactiveUI
             registerFunction(() => new ActivationForViewFetcher(), typeof(IActivationForViewFetcher));
             registerFunction(() => new DependencyObjectObservableForProperty(), typeof(ICreatesObservableForProperty));
             registerFunction(() => new XamlDefaultPropertyBinding(), typeof(IDefaultPropertyBindingProvider));
-            registerFunction(() => new CreatesCommandBindingViaCommandParameter(), typeof(ICreatesCommandBinding));
-            registerFunction(() => new CreatesCommandBindingViaEvent(), typeof(ICreatesCommandBinding));
             registerFunction(() => new BooleanToVisibilityTypeConverter(), typeof(IBindingTypeConverter));
             registerFunction(() => new AutoDataTemplateBindingHook(), typeof(IPropertyBindingHook));
 #endif
@@ -83,6 +82,16 @@ namespace ReactiveUI
 
 #if WINRT
             RxApp.MainThreadScheduler = new WaitForDispatcherScheduler(() => CoreDispatcherScheduler.Current);
+#endif
+
+#if WP8
+            registerFunction(() => new PhoneServiceStateDriver(), typeof (ISuspensionDriver));
+#elif WINRT
+            registerFunction(() => new WinRTAppDataDriver(), typeof(ISuspensionDriver));
+#elif UIKIT
+            registerFunction(() => new AppSupportJsonSuspensionDriver(), typeof(ISuspensionDriver));
+#elif ANDROID
+            registerFunction(() => new BundleSuspensionDriver(), typeof(ISuspensionDriver));
 #endif
         }
     }

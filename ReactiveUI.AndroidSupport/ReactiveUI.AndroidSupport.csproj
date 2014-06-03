@@ -9,8 +9,9 @@
     <ProjectTypeGuids>{EFBA0AD7-5A72-4C68-AF49-83D382785DCF};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
+    <FileAlignment>512</FileAlignment>
     <RootNamespace>ReactiveUI.Android.Support</RootNamespace>
-    <AssemblyName>ReactiveUI.Android.Support</AssemblyName>
+    <AssemblyName>ReactiveUI.AndroidSupport</AssemblyName>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkVersion>v4.0.3</TargetFrameworkVersion>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
@@ -39,7 +40,7 @@
     <AndroidUseSharedRuntime>False</AndroidUseSharedRuntime>
     <DefineConstants>MONO;ANDROID</DefineConstants>
     <DebugSymbols>true</DebugSymbols>
-    <DocumentationFile>bin\Release\Monoandroid\ReactiveUI.Android.XML</DocumentationFile>
+    <DocumentationFile>bin\Release\Monoandroid\ReactiveUI.AndroidSupport.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -47,23 +48,23 @@
     <Reference Include="System.Core" />
     <Reference Include="Mono.Android" />
     <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="Splat">
+      <HintPath>..\packages\Splat.1.3.1\lib\monoandroid\Splat.dll</HintPath>
+    </Reference>
     <Reference Include="System.Reactive.Core">
-      <HintPath>..\ext\monodroid\System.Reactive.Core.dll</HintPath>
+      <HintPath>..\packages\Rx-Core.2.2.4\lib\portable-windows8+net45+wp8\System.Reactive.Core.dll</HintPath>
     </Reference>
     <Reference Include="System.Reactive.Interfaces">
-      <HintPath>..\ext\monodroid\System.Reactive.Interfaces.dll</HintPath>
+      <HintPath>..\packages\Rx-Interfaces.2.2.4\lib\portable-windows8+net45+wp8\System.Reactive.Interfaces.dll</HintPath>
     </Reference>
     <Reference Include="System.Reactive.Linq">
-      <HintPath>..\ext\monodroid\System.Reactive.Linq.dll</HintPath>
+      <HintPath>..\packages\Rx-Linq.2.2.4\lib\portable-windows8+net45+wp8\System.Reactive.Linq.dll</HintPath>
     </Reference>
     <Reference Include="System.Reactive.PlatformServices">
-      <HintPath>..\ext\monodroid\System.Reactive.PlatformServices.dll</HintPath>
+      <HintPath>..\packages\Rx-PlatformServices.2.2.4\lib\portable-windows8+net45+wp8\System.Reactive.PlatformServices.dll</HintPath>
     </Reference>
-    <Reference Include="Splat">
-      <HintPath>..\ext\monodroid\Splat.dll</HintPath>
-    </Reference>
-    <Reference Include="Xamarin.Android.Support.v13">
-      <HintPath>..\ext\monodroid\Xamarin.Android.Support.v13.dll</HintPath>
+    <Reference Include="Xamarin.Android.Support.v4">
+      <HintPath>..\packages\Xamarin.Android.Support.v4.19.0.2\lib\MonoAndroid10\Xamarin.Android.Support.v4.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -73,7 +74,7 @@
     <Compile Include="ReactivePagerAdapter.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Properties\" />
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
