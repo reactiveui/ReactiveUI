@@ -1,6 +1,6 @@
 ﻿namespace ReactiveUI.Winforms
 {
-    partial class ViewModelViewHost
+    partial class ViewModelControlHost
     {
         /// <summary> 
         /// Required designer variable.
