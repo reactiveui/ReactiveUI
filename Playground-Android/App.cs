@@ -1,8 +1,7 @@
 ﻿using System;
 using Android.App;
-using ReactiveUI;
-using ReactiveUI.Mobile;
 using Android.Runtime;
+using ReactiveUI;
 
 namespace MobileSample_Android
 {
