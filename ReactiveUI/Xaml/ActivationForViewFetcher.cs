@@ -12,7 +12,7 @@ using System.Reflection;
 using Windows.UI.Xaml;
 #endif
 
-namespace ReactiveUI.Xaml
+namespace ReactiveUI
 {
     public class ActivationForViewFetcher : IActivationForViewFetcher
     {

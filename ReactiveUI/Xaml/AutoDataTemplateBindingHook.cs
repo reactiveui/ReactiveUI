@@ -14,7 +14,7 @@ using System.Windows.Controls;
 using System.Windows.Markup;
 #endif
 
-namespace ReactiveUI.Xaml
+namespace ReactiveUI
 {
     /// <summary>
     /// AutoDataTemplateBindingHook is a binding hook that checks ItemsControls
