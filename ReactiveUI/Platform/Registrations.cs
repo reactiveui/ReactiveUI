@@ -5,7 +5,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Windows;
-using ReactiveUI;
 using System.Reactive.Concurrency;
 
 #if UIKIT

@@ -6,7 +6,7 @@ using System.Reactive;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using ReactiveUI.Xaml;
+using ReactiveUI;
 using Xunit;
 
 namespace ReactiveUI.Tests

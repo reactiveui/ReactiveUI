@@ -5,10 +5,7 @@ using System.Reactive.Concurrency;
 using System.Text;
 using Xunit;
 using Splat;
-
-#if !MONO
-using ReactiveUI.Xaml;
-#endif
+using ReactiveUI;
 
 namespace ReactiveUI.Tests
 {
