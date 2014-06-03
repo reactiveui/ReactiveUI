@@ -4,7 +4,7 @@ using System.Windows.Forms;
 using ReactiveUI.Winforms;
 using Xunit;
 
-using WinFormsViewModelViewHost = ReactiveUI.Winforms.ViewModelViewHost;
+using WinFormsViewModelViewHost = ReactiveUI.Winforms.ViewModelControlHost;
 
 namespace ReactiveUI.Tests.Winforms
 {

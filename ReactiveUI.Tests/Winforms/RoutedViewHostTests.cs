@@ -4,7 +4,7 @@ using ReactiveUI;
 using ReactiveUI.Winforms;
 using Xunit;
 
-using WinFormsRoutedViewHost = ReactiveUI.Winforms.RoutedViewHost;
+using WinFormsRoutedViewHost = ReactiveUI.Winforms.RoutedControlHost;
 
 namespace ReactiveUI.Tests.Winforms
 {
