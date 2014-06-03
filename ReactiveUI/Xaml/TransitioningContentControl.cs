@@ -9,7 +9,7 @@ using System.Windows.Media.Animation;
 // This control is gratefully borrowed from http://blog.landdolphin.net/?p=17
 // Thanks guys!
 
-namespace ReactiveUI.Xaml
+namespace ReactiveUI
 {
     /// <summary>
     /// A ContentControl that animates the transition when its content is changed.
