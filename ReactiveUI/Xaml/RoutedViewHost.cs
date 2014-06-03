@@ -6,7 +6,6 @@ using System.Reactive.Subjects;
 using System.Text;
 using System.Windows;
 using ReactiveUI;
-using ReactiveUI.Xaml;
 using Splat;
 
 #if WINRT
