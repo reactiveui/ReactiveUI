@@ -54,6 +54,10 @@ namespace ReactiveUI
 
         public ViewModelViewHost()
         {
+#if WINRT
+            this.DefaultStyleKey = typeof(ViewModelViewHost);
+#endif
+
             // NB: InUnitTestRunner also returns true in Design Mode
             if (ModeDetector.InUnitTestRunner()) {
                 ViewContractObservable = Observable.Never<string>();
