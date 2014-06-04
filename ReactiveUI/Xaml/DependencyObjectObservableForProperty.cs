@@ -20,7 +20,7 @@ using System.Windows;
 using System.Windows.Data;
 #endif
 
-namespace ReactiveUI.Xaml
+namespace ReactiveUI
 {
     public class DependencyObjectObservableForProperty : ICreatesObservableForProperty
     {

@@ -17,7 +17,7 @@ using MonoMac.AppKit;
 using MonoMac.ObjCRuntime;
 #endif
 
-namespace ReactiveUI.Cocoa
+namespace ReactiveUI
 {
     /// <summary>
     /// TargetActionCommandBinder is an implementation of command binding that

@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using ReactiveUI;
 using ReactiveUI.Testing;
 using Xunit;
 
@@ -16,7 +17,6 @@ using Microsoft.Reactive.Testing;
 
 #if !MONO
 using System.Windows.Controls;
-using ReactiveUI.Xaml;
 #endif
 
 namespace ReactiveUI.Tests

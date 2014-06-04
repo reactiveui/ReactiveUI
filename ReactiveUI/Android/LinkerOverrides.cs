@@ -10,7 +10,7 @@ using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 
-namespace ReactiveUI.Android
+namespace ReactiveUI
 {
     [Preserve(AllMembers = true)]
     class LinkerOverrides

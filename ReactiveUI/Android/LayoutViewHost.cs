@@ -15,7 +15,7 @@ using Splat;
 using Android.Views;
 using Android.App;
 
-namespace ReactiveUI.Android
+namespace ReactiveUI
 {
     public interface ILayoutViewHost
     {

@@ -1,8 +1,7 @@
 using System;
-using ReactiveUI;
-using ReactiveUI.Mobile;
-using Splat;
 using System.Runtime.Serialization;
+using ReactiveUI;
+using Splat;
 
 namespace MobileSample_Android
 {

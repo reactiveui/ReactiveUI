@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,9 +10,6 @@ using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 using ReactiveUI;
-using ReactiveUI.Android;
-using ReactiveUI.Mobile;
-using System.ComponentModel;
 using Splat;
 
 namespace MobileSample_Android

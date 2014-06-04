@@ -6,7 +6,6 @@ using System.Reactive.Subjects;
 using System.Text;
 using System.Windows;
 using ReactiveUI;
-using ReactiveUI.Xaml;
 using Splat;
 
 #if WINRT
@@ -16,7 +15,7 @@ using Windows.UI.Xaml.Controls;
 using System.Windows.Controls;
 #endif
 
-namespace ReactiveUI.Xaml
+namespace ReactiveUI
 {
     /// <summary>
     /// This control hosts the View associated with a Router, and will display

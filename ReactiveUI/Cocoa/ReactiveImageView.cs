@@ -26,7 +26,7 @@ using MonoMac.AppKit;
 #endif
 
 
-namespace ReactiveUI.Cocoa
+namespace ReactiveUI
 {
     public abstract class ReactiveImageView : NSImageView, IReactiveNotifyPropertyChanged<ReactiveImageView>, IHandleObservableErrors, IReactiveObject, ICanActivate
     {
