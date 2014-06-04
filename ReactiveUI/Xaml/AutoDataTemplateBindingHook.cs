@@ -46,20 +46,8 @@ namespace ReactiveUI
                 template.Replace("__ASSEMBLYNAME__", assemblyName));           
         });
 
-        static Lazy<bool> areWeOnWindowsPhone81 = new Lazy<bool>(() => {
-            // NB: Loading the auto data template in WPA81 doesn't work, disable
-            // it until we can fix it
-            //
-            // NBNB: This is the sanest way to figure out if you're running in 
-            // Windows Phone context. Yes, I think that's dumb too.
-            var type = "Windows.Phone.UI.Input.BackPressedEventArgs, Windows, Version=255.255.255.255, Culture=neutral, PublicKeyToken=null, ContentType=WindowsRuntime";
-            return Type.GetType(type) != null;
-        });
-
         public bool ExecuteHook(object source, object target, Func<IObservedChange<object, object>[]> getCurrentViewModelProperties, Func<IObservedChange<object, object>[]> getCurrentViewProperties, BindingDirection direction)
         {
-            if (areWeOnWindowsPhone81.Value) return true;
-
             var viewProperties = getCurrentViewProperties();
             var lastViewProperty = viewProperties.LastOrDefault();
             if (lastViewProperty == null) return true;

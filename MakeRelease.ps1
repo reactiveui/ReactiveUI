@@ -33,6 +33,10 @@ foreach-object $Archs | %{
     $currentArch = $_
     
     foreach-object $Projects | %{cp -r -fo ".\$_\bin\Release\$currentArch\*" ".\Release\$currentArch"}
+	# WinRT projects need to have the Themes folder in a special sub folder named as the project name
+	foreach-object $Projects | %{cp -r -fo ".\$_\bin\Release\$currentArch\Themes" ".\Release\$currentArch\$_\Themes"}
+	# WinRT projects need this .xr.xml file in a special sub folder named as the project name
+	foreach-object $Projects | %{cp -r -fo ".\$_\bin\Release\$currentArch\$_.xr.xml" ".\Release\$currentArch\$_"}
     
     #ls -r | ?{$_.FullName.Contains("bin\Release\$currentArch") -and $_.Length} | %{echo cp $_.FullName ".\Release\$currentArch"}
 }
@@ -82,16 +86,8 @@ $nugetReleaseDir = Resolve-Path ".\NuGet-Release"
 
 # copy binaries
 foreach ($dir in $libDirs) {
-    $arches = ls $dir.FullName
-    
-    foreach ($arch in $arches) {
-        $files = ls $arch.FullName
-
-        foreach ($file in $files) {
-            $src =  ".\Release\" + $arch.Name + "\\" + $file.Name
-            cp -fo $src $file.FullName
-        }        
-    }
+	# only copy binaries which have a matching file in the destination folder
+	robocopy ".\Release" $dir.FullName /S /XL
 }
 
 # copy tools
