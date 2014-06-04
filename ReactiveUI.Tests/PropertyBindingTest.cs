@@ -300,7 +300,8 @@ namespace ReactiveUI.Tests
             view.ViewModel = vm;
             Assert.Equal(vm.JustADouble.ToString(), view.FakeControl.NullHatingString);
         }
-        
+
+#if !MONO
         [Fact]
         public void TwoWayBindToSelectedItemOfItemsControl()
         {
@@ -320,7 +321,6 @@ namespace ReactiveUI.Tests
         	Assert.Equal("bbb", view.FakeItemsControl.SelectedItem);
         }
 
-#if !MONO
         [Fact]
         public void ItemsControlShouldGetADataTemplate()
         {

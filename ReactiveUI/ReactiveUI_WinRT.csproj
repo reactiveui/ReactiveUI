@@ -141,6 +141,13 @@
   <ItemGroup>
     <None Include="packages.ReactiveUI_WinRT.config" />
   </ItemGroup>
+  <ItemGroup>
+    <Page Include="Themes\generic-winrt.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Page>
+  </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '12.0' ">
     <VisualStudioVersion>12.0</VisualStudioVersion>
   </PropertyGroup>

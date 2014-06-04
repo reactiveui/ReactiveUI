@@ -266,12 +266,4 @@ namespace ReactiveUI
             return (This.GetMethod ?? This.SetMethod).IsStatic;
         }
     }
-
-    public static class ReflectionExtensions
-    {
-        public static bool IsStatic(this PropertyInfo This)
-        {
-            return (This.GetMethod ?? This.SetMethod).IsStatic;
-        }
-    }
 }
