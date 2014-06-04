@@ -18,7 +18,7 @@ using MonoTouch.UIKit;
 using Splat;
 using ReactiveUI;
 
-namespace ReactiveUI.Cocoa
+namespace ReactiveUI
 {
     public abstract class ReactiveCollectionViewCell : UICollectionViewCell, IReactiveNotifyPropertyChanged<ReactiveCollectionViewCell>, IHandleObservableErrors, IReactiveObject, ICanActivate
     {

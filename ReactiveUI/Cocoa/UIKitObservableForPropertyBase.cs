@@ -8,7 +8,7 @@ using System.Linq;
 using System.Reactive.Linq;
 using System.Linq.Expressions;
 
-namespace ReactiveUI.Cocoa
+namespace ReactiveUI
 {
     public abstract class UIKitObservableForPropertyBase :
         ICreatesObservableForProperty

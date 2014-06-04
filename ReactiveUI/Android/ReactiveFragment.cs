@@ -21,7 +21,7 @@ using System.Runtime.CompilerServices;
 using Splat;
 using System.Reactive;
 
-namespace ReactiveUI.Android
+namespace ReactiveUI
 {
     /// <summary>
     /// This is a Fragment that is both an Activity and has ReactiveObject powers 

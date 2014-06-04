@@ -4,7 +4,7 @@ using NSView = MonoTouch.UIKit.UIView;
 using MonoMac.AppKit;
 #endif
 
-namespace ReactiveUI.Cocoa
+namespace ReactiveUI
 {
     /// <summary>
     ///     Use this class instead of <see cref="ViewModelViewHost"/> when

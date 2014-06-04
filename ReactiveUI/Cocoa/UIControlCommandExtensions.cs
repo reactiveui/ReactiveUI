@@ -3,7 +3,7 @@ using System.Windows.Input;
 using MonoTouch.UIKit;
 using System.Reactive.Disposables;
 
-namespace ReactiveUI.Cocoa
+namespace ReactiveUI
 {
     public static class UIControlCommandExtensions
     {

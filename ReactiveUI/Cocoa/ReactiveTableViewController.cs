@@ -20,7 +20,7 @@ using NSTableViewController = MonoTouch.UIKit.UITableViewController;
 using NSTableViewStyle = MonoTouch.UIKit.UITableViewStyle;
 using System.Reactive;
 
-namespace ReactiveUI.Cocoa
+namespace ReactiveUI
 {
     public abstract class ReactiveTableViewController : NSTableViewController, 
 	IReactiveNotifyPropertyChanged<ReactiveTableViewController>, IHandleObservableErrors, IReactiveObject, ICanActivate

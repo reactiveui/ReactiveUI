@@ -5,7 +5,7 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using ReactiveUI.Xaml;
+using ReactiveUI;
 using Xunit;
 
 namespace ReactiveUI.Tests

@@ -10,7 +10,7 @@ using ReactiveUI;
 namespace ReactiveUI.Winforms
 {
     [DefaultProperty("ViewModel")]
-    public partial class RoutedViewHost : UserControl, IReactiveObject
+    public partial class RoutedControlHost : UserControl, IReactiveObject
     {
         readonly CompositeDisposable disposables = new CompositeDisposable();
 
@@ -19,7 +19,7 @@ namespace ReactiveUI.Winforms
         IObservable<string> viewContractObservable;
         object viewModel;
 
-        public RoutedViewHost()
+        public RoutedControlHost()
         {
             this.InitializeComponent();
 

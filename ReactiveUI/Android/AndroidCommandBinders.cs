@@ -3,7 +3,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using Android.Views;
 
-namespace ReactiveUI.Android
+namespace ReactiveUI
 {
     public class AndroidCommandBinders : FlexibleCommandBinder
     {

@@ -13,7 +13,7 @@ using System.Xml.Serialization;
 using Windows.Storage;
 using UnicodeEncoding = Windows.Storage.Streams.UnicodeEncoding;
 
-namespace ReactiveUI.Mobile
+namespace ReactiveUI
 {
     public class WinRTAppDataDriver : ISuspensionDriver
     {

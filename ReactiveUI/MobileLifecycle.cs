@@ -5,7 +5,7 @@ using Splat;
 using System.Reactive.Disposables;
 using System.Reactive.Subjects;
 
-namespace ReactiveUI.Mobile
+namespace ReactiveUI
 {
     internal class SuspensionHost : ReactiveObject, ISuspensionHost
     {
