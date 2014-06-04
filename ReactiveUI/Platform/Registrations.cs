@@ -5,23 +5,15 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Windows;
-using ReactiveUI;
-using ReactiveUI.Mobile;
 using System.Reactive.Concurrency;
-
-#if COCOA
-using ReactiveUI.Cocoa;
-#endif
 
 #if UIKIT
 using MonoTouch.UIKit;
 using NSApplication = MonoTouch.UIKit.UIApplication;
-#elif COCOA && !UIKIT
+#endif 
+
+#if COCOA && !UIKIT
 using MonoMac.AppKit;
-#elif ANDROID
-using ReactiveUI.Android;
-#elif XAML
-using ReactiveUI.Xaml;
 #endif
 
 namespace ReactiveUI

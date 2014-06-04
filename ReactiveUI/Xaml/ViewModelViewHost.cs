@@ -3,7 +3,6 @@ using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Windows;
-using ReactiveUI.Xaml;
 using Splat;
 
 #if WINRT
@@ -13,7 +12,7 @@ using Windows.UI.Xaml.Controls;
 using System.Windows.Controls;
 #endif
 
-namespace ReactiveUI.Xaml
+namespace ReactiveUI
 {
     /// <summary>
     /// This content control will automatically load the View associated with

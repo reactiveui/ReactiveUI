@@ -4,7 +4,7 @@ using System.Reactive.Linq;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 
-namespace ReactiveUI.Mobile
+namespace ReactiveUI
 {
     public class BundleSuspensionDriver : ISuspensionDriver
     {

@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Windows.UI.Xaml.Controls;
 
-namespace ReactiveUI.Xaml
+namespace ReactiveUI
 {
     public class TransitioningContentControl : ContentControl
     {

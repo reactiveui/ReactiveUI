@@ -11,7 +11,7 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Splat;
 
-namespace ReactiveUI.Mobile
+namespace ReactiveUI
 {
     public class AutoSuspendHelper : IEnableLogger
     {

@@ -6,7 +6,7 @@ using System.Text;
 using System.Windows.Input;
 using Android.Views;
 
-namespace ReactiveUI.Android
+namespace ReactiveUI
 {
     public static class ViewCommandExtensions
     {

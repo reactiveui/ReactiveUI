@@ -14,7 +14,7 @@ using System.Windows.Controls;
 using System.Windows.Markup;
 #endif
 
-namespace ReactiveUI.Xaml
+namespace ReactiveUI
 {
     /// <summary>
     /// AutoDataTemplateBindingHook is a binding hook that checks ItemsControls
@@ -25,13 +25,13 @@ namespace ReactiveUI.Xaml
     {
         public static Lazy<DataTemplate> DefaultItemTemplate = new Lazy<DataTemplate>(() => {
 #if WINRT
-            const string template = "<DataTemplate xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation' xmlns:xaml='using:ReactiveUI.Xaml'>" +
+            const string template = "<DataTemplate xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation' xmlns:xaml='using:ReactiveUI'>" +
                 "<xaml:ViewModelViewHost ViewModel=\"{Binding}\" VerticalContentAlignment=\"Stretch\" HorizontalContentAlignment=\"Stretch\" IsTabStop=\"False\" />" +
             "</DataTemplate>";
             var assemblyName = "";
 #else
             const string template = "<DataTemplate xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation' " +
-                    "xmlns:xaml='clr-namespace:ReactiveUI.Xaml;assembly=__ASSEMBLYNAME__'> " +
+                    "xmlns:xaml='clr-namespace:ReactiveUI;assembly=__ASSEMBLYNAME__'> " +
                 "<xaml:ViewModelViewHost ViewModel=\"{Binding}\" VerticalContentAlignment=\"Stretch\" HorizontalContentAlignment=\"Stretch\" IsTabStop=\"False\" />" +
             "</DataTemplate>";
             var assemblyName = typeof(AutoDataTemplateBindingHook).Assembly.FullName;

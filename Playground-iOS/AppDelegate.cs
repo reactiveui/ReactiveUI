@@ -4,7 +4,6 @@ using System.Linq;
 using MonoTouch.Foundation;
 using MonoTouch.UIKit;
 using ReactiveUI;
-using ReactiveUI.Mobile;
 
 namespace PlaygroundiOS
 {

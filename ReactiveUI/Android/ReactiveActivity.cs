@@ -23,7 +23,7 @@ using System.Runtime.CompilerServices;
 using Splat;
 using System.Reactive;
 
-namespace ReactiveUI.Android
+namespace ReactiveUI
 {
     /// <summary>
     /// This is an Activity that is both an Activity and has ReactiveObject powers 

@@ -1,10 +1,9 @@
 using System;
 using System.Drawing;
+using System.Runtime.Serialization;
 using MonoTouch.Foundation;
 using MonoTouch.UIKit;
 using ReactiveUI;
-using ReactiveUI.Mobile;
-using System.Runtime.Serialization;
 
 namespace PlaygroundiOS
 {

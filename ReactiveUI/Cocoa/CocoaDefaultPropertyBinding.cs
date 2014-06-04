@@ -7,7 +7,7 @@ using MonoTouch.UIKit;
 using MonoMac.AppKit;
 #endif
 
-namespace ReactiveUI.Cocoa
+namespace ReactiveUI
 {
     /// <summary>
     /// Provides default property bindings for a number of common Cocoa controls.

@@ -17,7 +17,7 @@ using MonoTouch.UIKit;
 using ReactiveUI;
 using Splat;
 
-namespace ReactiveUI.Cocoa
+namespace ReactiveUI
 {
     public class TableSectionInformation<TSource> : ISectionInformation<TSource, UITableView, UITableViewCell>
     {

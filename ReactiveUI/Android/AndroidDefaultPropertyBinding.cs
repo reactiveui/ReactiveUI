@@ -3,7 +3,7 @@ using System.Linq;
 using ReactiveUI;
 using Android.Widget;
 
-namespace ReactiveUI.Android
+namespace ReactiveUI
 {
     /// <summary>
     /// Default property bindings for common Android widgets

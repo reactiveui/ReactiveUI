@@ -11,7 +11,7 @@ using MonoTouch.UIKit;
 using System.Reactive.Subjects;
 using Splat;
 
-namespace ReactiveUI.Cocoa
+namespace ReactiveUI
 {
     /// <summary>
     /// Interface used to extract a common API between <see cref="MonoTouch.UIKit.UITableView"/>

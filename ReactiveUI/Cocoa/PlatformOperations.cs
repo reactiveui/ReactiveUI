@@ -1,6 +1,6 @@
 using System;
 
-namespace ReactiveUI.Cocoa
+namespace ReactiveUI
 {
     /// <summary>
     /// Returns the current orientation of the device on iOS.
