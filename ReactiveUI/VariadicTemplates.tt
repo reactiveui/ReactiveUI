@@ -46,6 +46,26 @@ namespace ReactiveUI
         <# string dynamicSelectorTypeParams = String.Join(", ", templParams.Select(x => "IObservedChange<TSender, object>")); #>
         <# string selectorCall = "selector(" + String.Join(", ", Enumerable.Range(1, length).Select(x => "islot" + x.ToString())) + ")"; #>
 
+        <# if (length != 1 && length <= 7) { #>
+        /// <summary>
+        /// WhenAnyValue allows you to observe whenever the value of one or more
+        /// properties on an object have changed, providing an initial value when
+        /// the Observable is set up, unlike ObservableForProperty(). Use this
+        /// method in constructors to set up bindings between properties that also
+        /// need an initial setup.
+        /// </summary>
+        public static IObservable<Tuple<<#= String.Join(",", templParams) #>>> WhenAnyValue<TSender, <#= String.Join(",", templParams) #>>(this TSender This, 
+            <# for(int i=1; i <= length; i++) { #>
+                Expression<Func<TSender, T<#=i#>>> property<#=i#><# if (i != length) { #>,<# } #>
+
+            <# } #>)
+        {
+            return This.WhenAny(<#= valuePropertyParams #>,
+                                (<#= valueSelectorParams #>) =>
+                                    Tuple.Create(<#= valueSelectorArgs #>));
+        }
+        <# } #>
+
         /// <summary>
         /// WhenAnyValue allows you to observe whenever the value of one or more
         /// properties on an object have changed, providing an initial value when
