@@ -174,6 +174,11 @@ namespace ReactiveUI
             return ret.Publish().RefCount();
         }
 
+        public Task<T> ExecuteAsyncTask(object parameter = null, CancellationToken ct = default(CancellationToken))
+        {
+            return ExecuteAsync(parameter).ToTask(ct);
+        }
+
         /// <summary>
         /// Fires whenever an exception would normally terminate ReactiveUI 
         /// internal state.
