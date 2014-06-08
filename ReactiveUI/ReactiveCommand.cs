@@ -75,6 +75,26 @@ namespace ReactiveUI
             return new ReactiveCommand<Unit>(canExecute, x => executeAsync(x).ToObservable(), scheduler);
         }
 
+        public static ReactiveCommand<T> CreateAsyncTask<T>(IObservable<bool> canExecute, Func<object, CancellationToken, Task<T>> executeAsync, IScheduler scheduler = null)
+        {
+            return new ReactiveCommand<T>(canExecute, x => Observable.StartAsync(ct => executeAsync(x, ct)), scheduler);
+        }
+
+        public static ReactiveCommand<T> CreateAsyncTask<T>(Func<object, CancellationToken, Task<T>> executeAsync, IScheduler scheduler = null)
+        {
+            return new ReactiveCommand<T>(Observable.Return(true), x => Observable.StartAsync(ct => executeAsync(x,ct)), scheduler);
+        }
+
+        public static ReactiveCommand<Unit> CreateAsyncTask(Func<object, CancellationToken, Task> executeAsync, IScheduler scheduler = null)
+        {
+            return new ReactiveCommand<Unit>(Observable.Return(true), x => Observable.StartAsync(ct => executeAsync(x,ct)), scheduler);
+        }
+
+        public static ReactiveCommand<Unit> CreateAsyncTask(IObservable<bool> canExecute, Func<object, CancellationToken, Task> executeAsync, IScheduler scheduler = null)
+        {
+            return new ReactiveCommand<Unit>(canExecute, x => Observable.StartAsync(ct => executeAsync(x,ct)), scheduler);
+        }
+
 
         /// <summary>
         /// This creates a ReactiveCommand that calls several child 
