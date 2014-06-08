@@ -75,6 +75,10 @@ namespace ReactiveUI
         public bool AreChangeNotificationsEnabled() {
             return this.areChangeNotificationsEnabled();
         }
+
+        public IDisposable DelayChangeNotifications() {
+            return this.delayChangeNotifications();
+        }
     }
 }
 
