@@ -229,7 +229,7 @@ namespace ReactiveUI
 
             public bool areChangeNotificationsDelayed()
             {
-                return (Interlocked.Read(ref changeNotificationsDelayed) == 0);
+                return (Interlocked.Read(ref changeNotificationsDelayed) > 0);
             }
 
             /// <summary>
