@@ -140,6 +140,7 @@
     <Compile Include="WeakEventManager.cs" />
     <Compile Include="Android\BundleSuspensionDriver.cs" />
     <Compile Include="Android\AutoSuspendHelper.cs" />
+    <Compile Include="Legacy\ReactiveCommand.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.ReactiveUI_Android.config" />

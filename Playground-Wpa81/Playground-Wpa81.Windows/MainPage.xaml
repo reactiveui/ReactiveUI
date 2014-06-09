@@ -14,6 +14,9 @@
 
             <TextBlock Text="Your saved state GUID is:" FontSize="24" Margin="0,16,0,0"/>
             <TextBlock x:Name="SavedGuid" FontSize="16" />
+
+            <Button x:Name="threadedDoIt" Content="Click me Async!" />
+            <TextBlock x:Name="threadedResult" FontSize="24"  />
         </StackPanel>
     </Grid>
 </Page>

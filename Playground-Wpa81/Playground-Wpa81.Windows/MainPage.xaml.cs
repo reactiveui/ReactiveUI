@@ -38,6 +38,9 @@ namespace Playground_Wpa81
             });
 
             this.OneWayBind(ViewModel, x => x.SavedGuid, x => x.SavedGuid.Text);
+
+            this.BindCommand(ViewModel, x => x.ThreadedDoIt, x => x.threadedDoIt);
+            this.OneWayBind(ViewModel, x => x.ThreadedResult, x => x.threadedResult.Text);
         }
 
         public MainPageViewModel ViewModel {
