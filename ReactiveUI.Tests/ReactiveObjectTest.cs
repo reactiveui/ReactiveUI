@@ -199,5 +199,36 @@ namespace ReactiveUI.Tests
             fixture.IsOnlyOneWord = "Bar";
             Assert.Equal(1, exceptionList.Count);
         }
+
+        [Fact]
+        public void DeferringNotificationsDontShowUpUntilUndeferred()
+        {
+            var fixture = new TestFixture();
+            var output = fixture.Changed.CreateCollection();
+
+            Assert.Equal(0, output.Count);
+            fixture.NullableInt = 4;
+            Assert.Equal(1, output.Count);
+
+            var stopDelaying = fixture.DelayChangeNotifications();
+
+            fixture.NullableInt = 5;
+            Assert.Equal(1, output.Count);
+
+            fixture.IsNotNullString = "Bar";
+            Assert.Equal(1, output.Count);
+
+            fixture.NullableInt = 6;
+            Assert.Equal(1, output.Count);
+
+            fixture.IsNotNullString = "Baz";
+            Assert.Equal(1, output.Count);
+
+            // NB: Because we debounce queued up notifications, we should only
+            // see a notification from the latest NullableInt and the latest
+            // IsNotNullableString
+            stopDelaying.Dispose();
+            Assert.Equal(3, output.Count);
+        }
     }
 }
