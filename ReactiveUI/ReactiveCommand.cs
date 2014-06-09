@@ -213,7 +213,7 @@ namespace ReactiveUI
             return executeResults.Subscribe(observer);
         }
 
-        bool ICommand.CanExecute(object parameter)
+        public bool CanExecute(object parameter)
         {
             if (canExecuteDisp == null) canExecuteDisp = canExecute.Connect();
             return canExecuteLatest;
@@ -228,7 +228,7 @@ namespace ReactiveUI
             remove { CanExecuteChangedEventManager.RemoveHandler(this, value); }
         }
 
-        void ICommand.Execute(object parameter)
+        public void Execute(object parameter)
         {
             ExecuteAsync(parameter).Subscribe();
         }

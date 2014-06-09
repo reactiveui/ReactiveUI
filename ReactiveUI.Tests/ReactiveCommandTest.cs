@@ -11,7 +11,6 @@ using System.Threading.Tasks;
 using ReactiveUI.Testing;
 using Microsoft.Reactive.Testing;
 using Xunit;
-using System.Windows.Input;
 
 namespace ReactiveUI.Tests
 {
@@ -259,23 +258,6 @@ namespace ReactiveUI.Tests
                 Assert.Equal(3, results.Count);
                 Assert.Equal(false, latestExecuting);
             });
-        }
-
-        [Fact]
-        public async Task RAFShouldActuallyRunOnTheTaskpool()
-        {
-            var fixture = ReactiveCommand.CreateAsyncTask(
-                _ => Task.Run(() => Thread.CurrentThread.ManagedThreadId));
-
-            var threadId = fixture.CreateCollection();
-
-            Assert.Equal(0, threadId.Count);
-
-            var tid = fixture.ExecuteAsync(1).ToTask().Result;
-
-            Assert.Equal(1, threadId.Count);
-
-            Assert.NotEqual(Thread.CurrentThread.ManagedThreadId, threadId[0]);
         }
 
         [Fact]
@@ -556,19 +538,5 @@ namespace ReactiveUI.Tests
                 Assert.Equal(0, result);
             });
         }
-    }
-
-    public static class FixTheTestsBecauseImTooLazy
-    {
-        public static bool CanExecute<T>(this ReactiveCommand<T> This, object dontcare = null)
-        {
-            return ((ICommand)This).CanExecute(dontcare);
-        }
-
-        public static void Execute<T>(this ReactiveCommand<T> This, object dontcare = null)
-        {
-            ((ICommand)This).Execute(dontcare);
-        }
-
     }
 }
