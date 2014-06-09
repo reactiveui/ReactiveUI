@@ -143,6 +143,7 @@
     <Compile Include="CreatesCommandBinding.cs" />
     <Compile Include="ExpressionRewriter.cs" />
     <Compile Include="ExpressionMixins.cs" />
+    <Compile Include="Legacy\ReactiveCommand.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Cocoa\" />
