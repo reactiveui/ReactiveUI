@@ -35,26 +35,6 @@ namespace ReactiveUI
             return new ReactiveCommand<T>(Observable.Return(true), executeAsync, scheduler);
         }
 
-        public static ReactiveCommand<Unit> CreateAsyncFunction(IObservable<bool> canExecute, Action<object> executeAsync, IScheduler scheduler = null)
-        {
-            return new ReactiveCommand<Unit>(canExecute, x => Observable.Start(() => executeAsync(x), RxApp.TaskpoolScheduler), scheduler);
-        }
-
-        public static ReactiveCommand<T> CreateAsyncFunction<T>(IObservable<bool> canExecute, Func<object, T> executeAsync, IScheduler scheduler = null)
-        {
-            return new ReactiveCommand<T>(canExecute, x => Observable.Start(() => executeAsync(x), RxApp.TaskpoolScheduler), scheduler);
-        }
-
-        public static ReactiveCommand<T> CreateAsyncFunction<T>(Func<object, T> executeAsync, IScheduler scheduler = null)
-        {
-            return new ReactiveCommand<T>(Observable.Return(true), x => Observable.Start(() => executeAsync(x), RxApp.TaskpoolScheduler), scheduler);
-        }
-
-        public static ReactiveCommand<Unit> CreateAsyncFunction(Action<object> executeAsync, IScheduler scheduler = null)
-        {
-            return new ReactiveCommand<Unit>(Observable.Return(true), x => Observable.Start(() => executeAsync(x), RxApp.TaskpoolScheduler), scheduler);
-        }
-
         public static ReactiveCommand<T> CreateAsyncTask<T>(IObservable<bool> canExecute, Func<object, Task<T>> executeAsync, IScheduler scheduler = null)
         {
             return new ReactiveCommand<T>(canExecute, x => executeAsync(x).ToObservable(), scheduler);
@@ -73,6 +53,26 @@ namespace ReactiveUI
         public static ReactiveCommand<Unit> CreateAsyncTask(IObservable<bool> canExecute, Func<object, Task> executeAsync, IScheduler scheduler = null)
         {
             return new ReactiveCommand<Unit>(canExecute, x => executeAsync(x).ToObservable(), scheduler);
+        }
+
+        public static ReactiveCommand<T> CreateAsyncTask<T>(IObservable<bool> canExecute, Func<object, CancellationToken, Task<T>> executeAsync, IScheduler scheduler = null)
+        {
+            return new ReactiveCommand<T>(canExecute, x => Observable.StartAsync(ct => executeAsync(x, ct)), scheduler);
+        }
+
+        public static ReactiveCommand<T> CreateAsyncTask<T>(Func<object, CancellationToken, Task<T>> executeAsync, IScheduler scheduler = null)
+        {
+            return new ReactiveCommand<T>(Observable.Return(true), x => Observable.StartAsync(ct => executeAsync(x,ct)), scheduler);
+        }
+
+        public static ReactiveCommand<Unit> CreateAsyncTask(Func<object, CancellationToken, Task> executeAsync, IScheduler scheduler = null)
+        {
+            return new ReactiveCommand<Unit>(Observable.Return(true), x => Observable.StartAsync(ct => executeAsync(x,ct)), scheduler);
+        }
+
+        public static ReactiveCommand<Unit> CreateAsyncTask(IObservable<bool> canExecute, Func<object, CancellationToken, Task> executeAsync, IScheduler scheduler = null)
+        {
+            return new ReactiveCommand<Unit>(canExecute, x => Observable.StartAsync(ct => executeAsync(x,ct)), scheduler);
         }
 
 
@@ -174,6 +174,11 @@ namespace ReactiveUI
             return ret.Publish().RefCount();
         }
 
+        public Task<T> ExecuteAsyncTask(object parameter = null, CancellationToken ct = default(CancellationToken))
+        {
+            return ExecuteAsync(parameter).ToTask(ct);
+        }
+
         /// <summary>
         /// Fires whenever an exception would normally terminate ReactiveUI 
         /// internal state.
@@ -208,7 +213,7 @@ namespace ReactiveUI
             return executeResults.Subscribe(observer);
         }
 
-        public bool CanExecute(object parameter)
+        bool ICommand.CanExecute(object parameter)
         {
             if (canExecuteDisp == null) canExecuteDisp = canExecute.Connect();
             return canExecuteLatest;
@@ -223,7 +228,7 @@ namespace ReactiveUI
             remove { CanExecuteChangedEventManager.RemoveHandler(this, value); }
         }
 
-        public void Execute(object parameter)
+        void ICommand.Execute(object parameter)
         {
             ExecuteAsync(parameter).Subscribe();
         }
@@ -288,6 +293,22 @@ namespace ReactiveUI
 
                     x.cmd.Execute(x.val);
                 });
+        }
+
+        /// <summary>
+        /// A convenience method for subscribing and creating ReactiveCommands 
+        /// in the same call. Equivalent to Subscribing to the command, except
+        /// there's no way to release your Subscription but that's probably fine.
+        /// </summary>
+        public static ReactiveCommand<T> OnExecuteCompleted<T>(this ReactiveCommand<T> This, Action<T> onNext, Action<Exception> onError = null) 
+        {
+            if (onError != null) {
+                This.Subscribe(onNext, onError);
+                return This;
+            } else {
+                This.Subscribe(onNext);
+                return This;
+            }
         }
     }
 }
