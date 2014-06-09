@@ -317,14 +317,17 @@ namespace ReactiveUI
 
         /// <summary>
         /// A convenience method for subscribing and creating ReactiveCommands 
-        /// in the same call. Equivalent to Subscribing to the command.
+        /// in the same call. Equivalent to Subscribing to the command, except
+        /// there's no way to release your Subscription but that's probably fine.
         /// </summary>
-        public static IDisposable OnExecuteCompleted<T>(this ReactiveCommand<T> This, Action<T> onNext, Action<Exception> onError = null) 
+        public static ReactiveCommand<T> OnExecuteCompleted<T>(this ReactiveCommand<T> This, Action<T> onNext, Action<Exception> onError = null) 
         {
             if (onError != null) {
-                return This.Subscribe(onNext, onError);
+                This.Subscribe(onNext, onError);
+                return This;
             } else {
-                return This.Subscribe(onNext);
+                This.Subscribe(onNext);
+                return This;
             }
         }
     }
