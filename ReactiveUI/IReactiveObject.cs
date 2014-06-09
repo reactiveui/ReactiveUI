@@ -144,7 +144,7 @@ namespace ReactiveUI
         }
 
         // Filter a list of change notifications, returning the last change for each PropertyName in original order.
-        static IEnumerable<IReactivePropertyChangedEventArgs<TSender>> Dedup<TSender>(IList<IReactivePropertyChangedEventArgs<TSender>> batch) {
+        static IEnumerable<IReactivePropertyChangedEventArgs<TSender>> dedup<TSender>(IList<IReactivePropertyChangedEventArgs<TSender>> batch) {
             if (batch.Count <= 1) {
                 return batch;
             }
@@ -163,16 +163,16 @@ namespace ReactiveUI
 
         class ExtensionState<TSender> : IExtensionState<TSender> where TSender : IReactiveObject
         {
-            private long changeNotificationsSuppressed;
-            private long changeNotificationsDelayed;
-            private ISubject<IReactivePropertyChangedEventArgs<TSender>> changingSubject;
-            private IObservable<IReactivePropertyChangedEventArgs<TSender>> changingObservable;
-            private ISubject<IReactivePropertyChangedEventArgs<TSender>> changedSubject;
-            private IObservable<IReactivePropertyChangedEventArgs<TSender>> changedObservable;
-            private ISubject<IReactivePropertyChangedEventArgs<TSender>> fireChangedBatchSubject;
-            private ISubject<Exception> thrownExceptions;
+            long changeNotificationsSuppressed;
+            long changeNotificationsDelayed;
+            ISubject<IReactivePropertyChangedEventArgs<TSender>> changingSubject;
+            IObservable<IReactivePropertyChangedEventArgs<TSender>> changingObservable;
+            ISubject<IReactivePropertyChangedEventArgs<TSender>> changedSubject;
+            IObservable<IReactivePropertyChangedEventArgs<TSender>> changedObservable;
+            ISubject<IReactivePropertyChangedEventArgs<TSender>> fireChangedBatchSubject;
+            ISubject<Exception> thrownExceptions;
 
-            private TSender sender;
+            TSender sender;
 
             /// <summary>
             /// Initializes a new instance of the <see cref="ExtensionState{TSender}"/> class.
@@ -195,7 +195,7 @@ namespace ReactiveUI
 
                         return changedSource;
                     })
-                    .SelectMany(batch => Dedup(batch));
+                    .SelectMany(batch => dedup(batch));
 
                 var changingSource = changingSubject.Publish().RefCount();
 
@@ -207,7 +207,7 @@ namespace ReactiveUI
 
                         return changingSource;
                     })
-                    .SelectMany(batch => Dedup(batch));
+                    .SelectMany(batch => dedup(batch));
             }
 
             public IObservable<IReactivePropertyChangedEventArgs<TSender>> Changing {
