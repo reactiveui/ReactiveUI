@@ -4,6 +4,7 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics.Contracts;
 using System.Reactive;
+using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 
 namespace ReactiveUI.Winforms
@@ -16,7 +17,7 @@ namespace ReactiveUI.Winforms
     public interface IReactiveDerivedBindingList<T> : IReactiveDerivedList<T>, IBindingList {}
 
     class ReactiveDerivedBindingList<TSource, TValue> : 
-	ReactiveDerivedCollection<TSource, TValue>, IReactiveDerivedBindingList<TValue>
+	    ReactiveDerivedCollection<TSource, TValue>, IReactiveDerivedBindingList<TValue>
     {
         public ReactiveDerivedBindingList(
             IEnumerable<TSource> source,
@@ -24,7 +25,7 @@ namespace ReactiveUI.Winforms
             Func<TSource, bool> filter,
             Func<TValue, TValue, int> orderer,
             IObservable<Unit> signalReset)
-            : base(source, selector, filter, orderer, signalReset) {}
+            : base(source, selector, filter, orderer, signalReset, Scheduler.Immediate) {}
 
         protected override void raiseCollectionChanged(NotifyCollectionChangedEventArgs e)
         {
