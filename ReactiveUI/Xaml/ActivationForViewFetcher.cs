@@ -32,7 +32,7 @@ namespace ReactiveUI
                 x => fe.Loaded -= x).Select(_ => Unit.Default);
             var viewHitTestVisible = fe.WhenAnyValue(v => v.IsHitTestVisible);
 
-            var viewActivated = viewLoaded.Zip(viewHitTestVisible, (l, h) => h)
+            var viewActivated = viewLoaded.CombineLatest(viewHitTestVisible, (l, h) => h)
                 .Where(v => v)
                 .Select(_ => Unit.Default);
 
