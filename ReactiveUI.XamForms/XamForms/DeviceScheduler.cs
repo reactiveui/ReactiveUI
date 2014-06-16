@@ -11,11 +11,8 @@ using Splat;
 namespace ReactiveUI
 {
     /// <summary>
-    /// AndroidUIScheduler is a scheduler that schedules items on a running 
-    /// Activity's main thread. This is the moral equivalent of 
-    /// DispatcherScheduler, but since every Activity runs separately, you must
-    /// assign RxApp.MainThreadScheduler to an instance of this at the start of
-    /// every activity.
+    /// Scheduler that uses the Device static class to schedule items to the 
+    /// UI thread
     /// </summary>
     public class DeviceScheduler : IScheduler, IEnableLogger
     {
