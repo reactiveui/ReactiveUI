@@ -20,20 +20,6 @@ namespace ReactiveUI
         }
 
         /// <summary>
-        /// Returns the current value of a property given a notification that
-        /// it has changed.
-        /// </summary>
-        /// <returns>The current value of the property</returns>
-        internal static TValue GetValue<TSender, TValue>(this IObservedChange<TSender, TValue> This)
-        {
-            TValue ret;
-            if (!This.TryGetValue(out ret)) {
-                throw new Exception(String.Format("One of the properties in the expression '{0}' was null", This.GetPropertyName()));
-            }
-            return ret;
-        }
-
-        /// <summary>
         /// Attempts to return the current value of a property given a 
         /// notification that it has changed. If any property in the
         /// property expression is null, false is returned.
@@ -60,7 +46,7 @@ namespace ReactiveUI
             TTarget target,
             Expression<Func<TTarget, TValue>> property)
         {
-            Reflection.TrySetValueToPropertyChain(target, Reflection.Rewrite(property.Body).GetExpressionChain(), This.GetValue());
+            Reflection.TrySetValueToPropertyChain(target, Reflection.Rewrite(property.Body).GetExpressionChain(), This.Value);
         }
 
         /// <summary>
