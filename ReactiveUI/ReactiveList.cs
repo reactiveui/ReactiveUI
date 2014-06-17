@@ -123,15 +123,15 @@ namespace ReactiveUI
             // NB: ObservableCollection has a Secret Handshake with WPF where 
             // they fire an INPC notification with the token "Item[]". Emulate 
             // it here
-            CountChanging.Where(_ => this.areChangeNotificationsEnabled()).Subscribe(_ => this.RaisePropertyChanging("Count"));
+            CountChanging.Where(_ => this.areChangeNotificationsEnabled()).Subscribe(value => this.RaisePropertyChanging(value, "Count"));
 
-            CountChanged.Where(_ => this.areChangeNotificationsEnabled()).Subscribe(_ => this.RaisePropertyChanged("Count"));
+            CountChanged.Where(_ => this.areChangeNotificationsEnabled()).Subscribe(value => this.RaisePropertyChanged(value, "Count"));
 
-            IsEmptyChanged.Where(_ => this.areChangeNotificationsEnabled()).Subscribe(_ => this.RaisePropertyChanged("IsEmpty"));
+            IsEmptyChanged.Where(_ => this.areChangeNotificationsEnabled()).Subscribe(value => this.RaisePropertyChanged(value, "IsEmpty"));
 
-            Changing.Where(_ => this.areChangeNotificationsEnabled()).Subscribe(_ => this.RaisePropertyChanging("Item[]"));
+            Changing.Where(_ => this.areChangeNotificationsEnabled()).Subscribe(value => this.RaisePropertyChanging(value, "Item[]"));
 
-            Changed.Where(_ => this.areChangeNotificationsEnabled()).Subscribe(_ => this.RaisePropertyChanged("Item[]"));
+            Changed.Where(_ => this.areChangeNotificationsEnabled()).Subscribe(value => this.RaisePropertyChanged(value, "Item[]"));
         }
 
         public bool IsEmpty
