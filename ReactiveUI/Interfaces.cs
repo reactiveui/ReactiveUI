@@ -135,6 +135,11 @@ namespace ReactiveUI
         /// The object that has raised the change.
         /// </summary>
         TSender Sender { get; }
+
+        /// <summary>
+        /// Gets the value that is changed.
+        /// </summary>
+        object Value { get; }
     }
 
     public class ReactivePropertyChangingEventArgs<TSender> : PropertyChangingEventArgs, IReactivePropertyChangedEventArgs<TSender>
@@ -144,13 +149,16 @@ namespace ReactiveUI
         /// </summary>
         /// <param name="sender">The sender.</param>
         /// <param name="propertyName">Name of the property.</param>
-        public ReactivePropertyChangingEventArgs(TSender sender, string propertyName)
+        public ReactivePropertyChangingEventArgs(TSender sender, object value, string propertyName)
             : base(propertyName)
         {
             this.Sender = sender;
+            this.Value = value;
         }
 
         public TSender Sender { get; private set; }
+
+        public object Value { get; private set; }
     }
 
     public class ReactivePropertyChangedEventArgs<TSender> : PropertyChangedEventArgs, IReactivePropertyChangedEventArgs<TSender>
@@ -160,13 +168,16 @@ namespace ReactiveUI
         /// </summary>
         /// <param name="sender">The sender.</param>
         /// <param name="propertyName">Name of the property.</param>
-        public ReactivePropertyChangedEventArgs(TSender sender, string propertyName)
+        public ReactivePropertyChangedEventArgs(TSender sender, object value, string propertyName)
             : base(propertyName)
         {
             this.Sender = sender;
+            this.Value = value;
         }
 
         public TSender Sender { get; private set; }
+
+        public object Value { get; private set; }
     }
 
     /// <summary>
