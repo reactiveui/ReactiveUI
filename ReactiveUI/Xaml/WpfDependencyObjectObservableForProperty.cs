@@ -27,7 +27,7 @@ namespace ReactiveUI
 
             return Observable.Create<IObservedChange<object, object>>(subj => {
                 var handler = new EventHandler((o, e) => {
-                    subj.OnNext(new ObservedChange<object, object>(sender, expression));
+                    subj.OnNext(new ObservedChange<object, object>(sender, expression, dpd.GetValue(sender)));
                 });
 
                 dpd.AddValueChanged(sender, handler);
