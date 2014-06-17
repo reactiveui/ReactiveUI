@@ -11,7 +11,7 @@ namespace ReactiveUI.Tests.Winforms
         [Fact]
         public void ActivationForViewFetcherSupportsDefaultWinformsComponents()
         {
-            var target = new ActivationForViewFetcher();
+            var target = new ReactiveUI.Winforms.ActivationForViewFetcher();
             var supportedComponents = new[] { typeof(Control), typeof(UserControl), typeof(Form) };
 
             foreach (var c in supportedComponents) {
@@ -23,7 +23,7 @@ namespace ReactiveUI.Tests.Winforms
         public void CanFetchActivatorForForm()
         {
             var form = new TestForm();
-            var target = new ActivationForViewFetcher();
+            var target = new ReactiveUI.Winforms.ActivationForViewFetcher();
             var formActivator = target.GetActivationForView(form);
 
             Assert.NotNull(formActivator);
@@ -36,7 +36,7 @@ namespace ReactiveUI.Tests.Winforms
         public void CanFetchActivatorForControl()
         {
             var control = new TestControl();
-            var target = new ActivationForViewFetcher();
+            var target = new ReactiveUI.Winforms.ActivationForViewFetcher();
             var activator = target.GetActivationForView(control);
 
             Assert.NotNull(activator);
@@ -47,7 +47,7 @@ namespace ReactiveUI.Tests.Winforms
         [Fact]
         public void SmokeTestWindowsForm()
         {
-            var target = new ActivationForViewFetcher();
+            var target = new ReactiveUI.Winforms.ActivationForViewFetcher();
             using (var form = new TestForm()) {
                 var formActivator = target.GetActivationForView(form);
 
@@ -76,7 +76,7 @@ namespace ReactiveUI.Tests.Winforms
         [Fact]
         public void SmokeTestUserControl()
         {
-            var target = new ActivationForViewFetcher();
+            var target = new ReactiveUI.Winforms.ActivationForViewFetcher();
             using(var userControl = new TestControl())
             using (var parent = new TestForm()) {
                 var userControlActivator = target.GetActivationForView(userControl);
