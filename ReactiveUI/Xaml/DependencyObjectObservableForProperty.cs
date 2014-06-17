@@ -116,15 +116,15 @@ namespace ReactiveUI
             return null;
         }
 
-        static readonly Dictionary<Tuple<Type, string>, Tuple<DependencyProperty, Subject<object>>> attachedListener =
-            new Dictionary<Tuple<Type, string>, Tuple<DependencyProperty, Subject<object>>>();
+        static readonly Dictionary<Tuple<Type, string>, Tuple<DependencyProperty, Subject<Tuple<object, object>>>> attachedListener =
+            new Dictionary<Tuple<Type, string>, Tuple<DependencyProperty, Subject<Tuple<object, object>>>>();
 
-        Tuple<DependencyProperty, Subject<object>> createAttachedProperty(Type type, string propertyName)
+        Tuple<DependencyProperty, Subject<Tuple<object, object>>> createAttachedProperty(Type type, string propertyName)
         {
             var pair = Tuple.Create(type, propertyName);
             if (attachedListener.ContainsKey(pair)) return attachedListener[pair];
 
-            var subj = new Subject<object>();
+            var subj = new Subject<Tuple<object, object>>();
 
             // NB: There is no way to unregister an attached property, 
             // we just have to leak it. Luckily it's per-type, so it's
@@ -132,7 +132,7 @@ namespace ReactiveUI
             var dp = DependencyProperty.RegisterAttached(
                 "ListenAttached" + propertyName + this.GetHashCode().ToString("{0:x}"),
                 typeof(object), type,
-                new PropertyMetadata(null, (o, e) => subj.OnNext(o)));
+                new PropertyMetadata(null, (o, e) => subj.OnNext(Tuple.Create((object)o, e.NewValue))));
 
             var ret = Tuple.Create(dp, subj);
             attachedListener[pair] = ret;
