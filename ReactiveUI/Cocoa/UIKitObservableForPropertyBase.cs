@@ -84,11 +84,14 @@ namespace ReactiveUI
         /// <summary>
         /// Creates an Observable for a UIControl Event
         /// </summary>
-        /// <returns>An observable</returns>
         /// <param name="sender">The sender</param>
-        /// <param name="propertyName">The property name </param>
+        /// <param name="expression">The expression.</param>
         /// <param name="evt">The control event to listen for</param>
-        protected static IObservable<IObservedChange<object, object>> ObservableFromUIControlEvent(NSObject sender, Expression expression, UIControlEvent evt)
+        /// <param name="value">The value.</param>
+        /// <returns>
+        /// An observable.
+        /// </returns>
+        protected static IObservable<IObservedChange<object, object>> ObservableFromUIControlEvent(NSObject sender, Expression expression, UIControlEvent evt, Func<NSObject, object> value)
         {
             return Observable.Create<IObservedChange<object, object>>(subj =>
             {
@@ -96,7 +99,7 @@ namespace ReactiveUI
 
                 EventHandler handler = (s,e)=>
                 {
-                    subj.OnNext(new ObservedChange<object, object>(sender, expression));
+                    subj.OnNext(new ObservedChange<object, object>(sender, expression, value(sender)));
                 };
 
                 control.AddTarget(handler, evt);
@@ -111,17 +114,20 @@ namespace ReactiveUI
         /// <summary>
         /// Creates an Observable for a NSNotificationCenter notification
         /// </summary>
-        /// <returns>The from notification.</returns>
         /// <param name="sender">Sender.</param>
-        /// <param name="propertyName">Property name.</param>
+        /// <param name="expression">The expression.</param>
         /// <param name="notification">Notification.</param>
-        protected static IObservable<IObservedChange<object, object>> ObservableFromNotification(NSObject sender, Expression expression, NSString notification)
+        /// <param name="value">The value.</param>
+        /// <returns>
+        /// The from notification.
+        /// </returns>
+        protected static IObservable<IObservedChange<object, object>> ObservableFromNotification(NSObject sender, Expression expression, NSString notification, Func<NSObject, object> value)
         {
             return Observable.Create<IObservedChange<object, object>>(subj =>
             {
                 var handle = NSNotificationCenter.DefaultCenter.AddObserver (notification, (e)=>
                 {
-                    subj.OnNext(new ObservedChange<object, object>(sender, expression));
+                    subj.OnNext(new ObservedChange<object, object>(sender, expression, value(sender)));
                 }, sender);
 
                 return Disposable.Create(() =>
@@ -134,17 +140,20 @@ namespace ReactiveUI
         /// <summary>
         /// Creates an Observable for a NSNotificationCenter notification
         /// </summary>
-        /// <returns>The from notification.</returns>
         /// <param name="sender">Sender.</param>
-        /// <param name="propertyName">Property name.</param>
-        /// <param name="notification">Notification.</param>
-        protected static IObservable<IObservedChange<object, object>> ObservableFromEvent(NSObject sender, Expression expression, string eventName)
+        /// <param name="expression">The expression.</param>
+        /// <param name="eventName">Name of the event.</param>
+        /// <param name="value">The value.</param>
+        /// <returns>
+        /// The from notification.
+        /// </returns>
+        protected static IObservable<IObservedChange<object, object>> ObservableFromEvent(NSObject sender, Expression expression, string eventName, Func<NSObject, object> value)
         {
             return Observable.Create<IObservedChange<object, object>>(subj =>
             {
                 return Observable.FromEventPattern(sender, eventName).Subscribe((e) =>
                 {
-                    subj.OnNext(new ObservedChange<object, object>(sender, expression));
+                    subj.OnNext(new ObservedChange<object, object>(sender, expression, value(sender)));
                 });
             });
         }
