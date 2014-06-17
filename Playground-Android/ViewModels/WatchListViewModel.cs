@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using ReactiveUI;
 
@@ -31,18 +32,18 @@ namespace MobileSample_Android.ViewModels
 
         public WatchListViewModel()
         {
-            var openCmd = ReactiveCommand.CreateAsyncFunction(this.WhenAnyValue(vm => vm.MarketState, m => m == MarketState.Closed),
-                _ => OpenMarket(), RxApp.MainThreadScheduler);
+            var openCmd = ReactiveCommand.CreateAsyncTask(this.WhenAnyValue(vm => vm.MarketState, m => m == MarketState.Closed),
+                _ => Task.Run((Action)OpenMarket), RxApp.MainThreadScheduler);
             OpenMarketCommand = openCmd;
 
-            var closeCmd = ReactiveCommand.CreateAsyncFunction(
+            var closeCmd = ReactiveCommand.CreateAsyncTask(
                 this.WhenAnyValue(vm => vm.MarketState, m => m == MarketState.Open),
-                _ => CloseMarket(), RxApp.MainThreadScheduler);
+                _ => Task.Run((Action)CloseMarket), RxApp.MainThreadScheduler);
             CloseMarketCommand = closeCmd;
 
-            var resetCmd = ReactiveCommand.CreateAsyncFunction(
+            var resetCmd = ReactiveCommand.CreateAsyncTask(
                 this.WhenAnyValue(vm => vm.MarketState, m => m == MarketState.Closed),
-                _ => Reset(), RxApp.MainThreadScheduler);
+                _ => Task.Run((Action)Reset), RxApp.MainThreadScheduler);
             ResetCommand = resetCmd;
 
             LoadDefaultStocks();
@@ -59,7 +60,7 @@ namespace MobileSample_Android.ViewModels
             private set
             {
                 marketState = value;
-                this.RaisePropertyChanged(); // can't use ref as it's volatile
+                this.RaisePropertyChanged(value); // can't use ref as it's volatile
             }
         }
 

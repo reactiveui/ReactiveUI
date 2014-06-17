@@ -96,7 +96,7 @@ namespace MobileSample_Android.ViewModels
                     DayHigh = price;
                 }
 
-                this.RaisePropertyChanged();
+                this.RaisePropertyChanged(value);
             }
         }
 

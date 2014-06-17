@@ -9,7 +9,6 @@ using Android;
 using Android.App;
 using Android.Widget;
 using Android.Content;
-using ReactiveUI.Android;
 using Xunit;
 
 namespace ReactiveUI.Tests
