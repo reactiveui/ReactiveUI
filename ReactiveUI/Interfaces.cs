@@ -81,8 +81,7 @@ namespace ReactiveUI
             get
             {
                 if (!hasValue) {
-                    value = this.GetValue();
-                    hasValue = true;
+                    hasValue = this.TryGetValue(out value);
                 }
                 return value;
             }
