@@ -127,10 +127,9 @@ namespace ReactiveUI
         /// properties where raiseAndSetIfChanged doesn't suffice.
         /// </summary>
         /// <param name="This">The instance of ReactiveObject on which the property has changed.</param>
-        /// <param name="propertyName">
-        /// A string representing the name of the property that has been changed.
-        /// Leave <c>null</c> to let the runtime set to caller member name.
-        /// </param>
+        /// <param name="value">The value.</param>
+        /// <param name="propertyName">A string representing the name of the property that has been changed.
+        /// Leave <c>null</c> to let the runtime set to caller member name.</param>
         public static void RaisePropertyChanging(this IReactiveObject This, object value, [CallerMemberName] string propertyName = null)
         {
             This.raisePropertyChanging(propertyName, value);
