@@ -44,11 +44,6 @@ namespace ReactiveUI
         /// false otherwise</returns>
         internal static bool TryGetValue<TSender, TValue>(this IObservedChange<TSender, TValue> This, out TValue changeValue)
         {
-            if (!Equals(This.Value, default(TValue))) {
-                changeValue = This.Value;
-                return true;
-            }
-
             return Reflection.TryGetValueForPropertyChain(out changeValue, This.Sender, This.Expression.GetExpressionChain());
         }
 
