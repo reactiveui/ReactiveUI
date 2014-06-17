@@ -31,7 +31,9 @@ namespace ReactiveUI
             if (beforeChanged) {
                 if (expression.NodeType == ExpressionType.Index) {
                     return obs.Where(x => x.PropertyName.Equals(memberInfo.Name + "[]"))
-                        .Select(x => new ObservedChange<object, object>(sender, expression, x.Value));
+                        // indexers do not know the exact position we want to get notified for,
+                        // so indexers do not fill in the value
+                        .Select(x => new ObservedChange<object, object>(sender, expression));
                 } else {
                     return obs.Where(x => x.PropertyName.Equals(memberInfo.Name))
                         .Select(x => new ObservedChange<object, object>(sender, expression, x.Value));
@@ -39,7 +41,9 @@ namespace ReactiveUI
             } else {
                 if (expression.NodeType == ExpressionType.Index) {
                     return obs.Where(x => x.PropertyName.Equals(memberInfo.Name + "[]"))
-                        .Select(x => new ObservedChange<object, object>(sender, expression, x.Value));
+                        // indexers do not know the exact position we want to get notified for,
+                        // so indexers do not fill in the value
+                        .Select(x => new ObservedChange<object, object>(sender, expression));
                 } else {
                     return obs.Where(x => x.PropertyName.Equals(memberInfo.Name))
                         .Select(x => new ObservedChange<object, object>(sender, expression, x.Value));
