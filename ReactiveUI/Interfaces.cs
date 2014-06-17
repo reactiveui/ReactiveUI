@@ -69,6 +69,7 @@ namespace ReactiveUI
             this.Sender = sender;
             this.Expression = expression;
             this.value = value;
+            this.hasValue = true;
         }
 
         public TSender Sender { get; private set; }
