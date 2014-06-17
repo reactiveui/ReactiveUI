@@ -42,24 +42,50 @@ namespace ReactiveUI
     /// </summary>
     public class ObservedChange<TSender, TValue> : IObservedChange<TSender, TValue>
     {
+        private bool hasValue;
+        private TValue value;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ObservedChange{TSender, TValue}"/> class.
         /// </summary>
         /// <param name="sender">The sender.</param>
         /// <param name="expression">Expression describing the member.</param>
         /// <param name="value">The value.</param>
-        public ObservedChange(TSender sender, Expression expression, TValue value = default(TValue))
+        public ObservedChange(TSender sender, Expression expression)
         {
             this.Sender = sender;
             this.Expression = expression;
-            this.Value = value;
+            this.hasValue = false;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ObservedChange{TSender, TValue}"/> class.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="expression">Expression describing the member.</param>
+        /// <param name="value">The value.</param>
+        public ObservedChange(TSender sender, Expression expression, TValue value)
+        {
+            this.Sender = sender;
+            this.Expression = expression;
+            this.value = value;
         }
 
         public TSender Sender { get; private set; }
 
         public Expression Expression { get; private set; }
 
-        public TValue Value { get; private set; }
+        public TValue Value
+        {
+            get
+            {
+                if (!hasValue) {
+                    value = this.GetValue();
+                    hasValue = true;
+                }
+                return value;
+            }
+        }
     }
 
     /// <summary>

@@ -24,7 +24,7 @@ namespace ReactiveUI
         /// it has changed.
         /// </summary>
         /// <returns>The current value of the property</returns>
-        public static TValue GetValue<TSender, TValue>(this IObservedChange<TSender, TValue> This)
+        internal static TValue GetValue<TSender, TValue>(this IObservedChange<TSender, TValue> This)
         {
             TValue ret;
             if (!This.TryGetValue(out ret)) {
@@ -77,7 +77,7 @@ namespace ReactiveUI
         public static IObservable<TValue> Value<TSender, TValue>(
 		    this IObservable<IObservedChange<TSender, TValue>> This)
         {
-            return This.Select(GetValue);
+            return This.Select(x => x.Value);
         }
     }
 }
