@@ -44,22 +44,22 @@ namespace ReactiveUI
             return s.ThrownExceptions;
         }
 
-        internal static void raisePropertyChanging<TSender>(this TSender This, string propertyName) where TSender : IReactiveObject 
+        internal static void raisePropertyChanging<TSender>(this TSender This, string propertyName, object value) where TSender : IReactiveObject 
         {
             Contract.Requires(propertyName != null);
 
             var s = state.GetValue(This, key => (IExtensionState<IReactiveObject>)new ExtensionState<TSender>(This));
 
-            s.raisePropertyChanging(propertyName);
+            s.raisePropertyChanging(propertyName, value);
         }
 
-        internal static void raisePropertyChanged<TSender>(this TSender This, string propertyName) where TSender : IReactiveObject 
+        internal static void raisePropertyChanged<TSender>(this TSender This, string propertyName, object value) where TSender : IReactiveObject 
         {
             Contract.Requires(propertyName != null);
 
             var s = state.GetValue(This, key => (IExtensionState<IReactiveObject>)new ExtensionState<TSender>(This));
             
-            s.raisePropertyChanged(propertyName);
+            s.raisePropertyChanged(propertyName, value);
         }
 
         internal static IDisposable suppressChangeNotifications<TSender>(this TSender This) where TSender : IReactiveObject
@@ -102,9 +102,9 @@ namespace ReactiveUI
                 return newValue;
             }
 
-            This.raisePropertyChanging(propertyName);
+            This.raisePropertyChanging(propertyName, newValue);
             backingField = newValue;
-            This.raisePropertyChanged(propertyName);
+            This.raisePropertyChanged(propertyName, newValue);
             return newValue;
         }
 
@@ -117,9 +117,9 @@ namespace ReactiveUI
         /// A string representing the name of the property that has been changed.
         /// Leave <c>null</c> to let the runtime set to caller member name.
         /// </param>
-        public static void RaisePropertyChanged(this IReactiveObject This, [CallerMemberName] string propertyName = null)
+        public static void RaisePropertyChanged(this IReactiveObject This, object value, [CallerMemberName] string propertyName = null)
         {
-            This.raisePropertyChanged(propertyName);
+            This.raisePropertyChanged(propertyName, value);
         }
 
         /// <summary>
@@ -131,9 +131,9 @@ namespace ReactiveUI
         /// A string representing the name of the property that has been changed.
         /// Leave <c>null</c> to let the runtime set to caller member name.
         /// </param>
-        public static void RaisePropertyChanging(this IReactiveObject This, [CallerMemberName] string propertyName = null)
+        public static void RaisePropertyChanging(this IReactiveObject This, object value, [CallerMemberName] string propertyName = null)
         {
-            This.raisePropertyChanging(propertyName);
+            This.raisePropertyChanging(propertyName, value);
         }
 
         class ExtensionState<TSender> : IExtensionState<TSender> where TSender : IReactiveObject
@@ -186,23 +186,23 @@ namespace ReactiveUI
                 return Disposable.Create(() => Interlocked.Decrement(ref changeNotificationsSuppressed));
             }
 
-            public void raisePropertyChanging(string propertyName)
+            public void raisePropertyChanging(string propertyName, object value)
             {
                 if (!this.areChangeNotificationsEnabled())
                     return;
 
-                var changing = new ReactivePropertyChangingEventArgs<TSender>(sender, propertyName);
+                var changing = new ReactivePropertyChangingEventArgs<TSender>(sender, value, propertyName);
                 sender.RaisePropertyChanging(changing);
 
                 this.notifyObservable(sender, changing, this.changingSubject);
             }
 
-            public void raisePropertyChanged(string propertyName)
+            public void raisePropertyChanged(string propertyName, object value)
             {
                 if (!this.areChangeNotificationsEnabled())
                     return;
 
-                var changed = new ReactivePropertyChangedEventArgs<TSender>(sender, propertyName);
+                var changed = new ReactivePropertyChangedEventArgs<TSender>(sender, value, propertyName);
                 sender.RaisePropertyChanged(changed);
 
                 this.notifyObservable(sender, changed, this.changedSubject);
@@ -225,9 +225,9 @@ namespace ReactiveUI
 
             IObservable<IReactivePropertyChangedEventArgs<TSender>> Changed { get; }
 
-            void raisePropertyChanging(string propertyName);
+            void raisePropertyChanging(string propertyName, object value);
 
-            void raisePropertyChanged(string propertyName);
+            void raisePropertyChanged(string propertyName, object value);
 
             IObservable<Exception> ThrownExceptions { get; }
 

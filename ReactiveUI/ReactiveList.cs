@@ -586,15 +586,15 @@ namespace ReactiveUI
             this.Log().Info("Item hash: 0x{0:x}", toTrack.GetHashCode());
             var ro = toTrack as IReactiveObject;
             if (ro != null) {
-                changing = ro.getChangingObservable().Select(i => new ReactivePropertyChangingEventArgs<T>(toTrack, i.PropertyName));
-                changed = ro.getChangedObservable().Select(i => new ReactivePropertyChangedEventArgs<T>(toTrack, i.PropertyName));
+                changing = ro.getChangingObservable().Select(i => new ReactivePropertyChangingEventArgs<T>(toTrack, i.Value, i.PropertyName));
+                changed = ro.getChangedObservable().Select(i => new ReactivePropertyChangedEventArgs<T>(toTrack, i.Value, i.PropertyName));
                 goto isSetup;
             }
 
             var inpc = toTrack as INotifyPropertyChanged;
             if (inpc != null) {
                 changed = Observable.FromEventPattern<PropertyChangedEventHandler, PropertyChangedEventArgs>(x => inpc.PropertyChanged += x, x => inpc.PropertyChanged -= x)
-                    .Select(x => new ReactivePropertyChangedEventArgs<T>(toTrack, x.EventArgs.PropertyName));
+                    .Select(x => new ReactivePropertyChangedEventArgs<T>(toTrack, null, x.EventArgs.PropertyName));
                 goto isSetup;
             }
 
