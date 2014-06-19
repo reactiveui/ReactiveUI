@@ -127,7 +127,7 @@ namespace ReactiveUI
             }
 
             var ret = new ObservableAsPropertyHelper<TRet>(observable, 
-                _ => This.raisePropertyChanged(expression.GetMemberInfo().Name), 
+                value => This.raisePropertyChanged(expression.GetMemberInfo().Name, value), 
                 initialValue, scheduler);
 
             return ret;

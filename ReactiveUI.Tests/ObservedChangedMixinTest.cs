@@ -14,7 +14,7 @@ namespace ReactiveUI.Tests
     public class ObservedChangedMixinTest
     {
         [Fact]
-        public void GetValueShouldActuallyReturnTheValue()
+        public void ValueShouldActuallyReturnTheValue()
         {
             var input = new[] {"Foo", "Bar", "Baz"};
             var output = new List<string>();
@@ -24,7 +24,7 @@ namespace ReactiveUI.Tests
                 
                 // ...whereas ObservableForProperty *is* guaranteed to.
                 fixture.ObservableForProperty(x => x.IsOnlyOneWord).Subscribe(x => {
-                    output.Add(x.GetValue());
+                    output.Add(x.Value);
                 });
 
                 foreach (var v in input) { fixture.IsOnlyOneWord = v; }
@@ -45,7 +45,7 @@ namespace ReactiveUI.Tests
             Expression<Func<HostTestFixture, string>> expression = x => x.Child.IsNotNullString;
             var fixture = new ObservedChange<HostTestFixture, string>(input, expression.Body);
 
-            Assert.Equal("Foo", fixture.GetValue());
+            Assert.Equal("Foo", fixture.Value);
         }
 
         [Fact]

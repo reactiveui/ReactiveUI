@@ -99,9 +99,9 @@ namespace ReactiveUI
             set {
                 if (commonSource.SectionInfo == value)  return;
 
-                this.raisePropertyChanging("Data");
+                this.raisePropertyChanging("Data", value);
                 commonSource.SectionInfo = value;
-                this.raisePropertyChanged("Data");
+                this.raisePropertyChanged("Data", value);
             }
         }
 

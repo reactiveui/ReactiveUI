@@ -123,15 +123,15 @@ namespace ReactiveUI
             // NB: ObservableCollection has a Secret Handshake with WPF where 
             // they fire an INPC notification with the token "Item[]". Emulate 
             // it here
-            CountChanging.Where(_ => this.areChangeNotificationsEnabled()).Subscribe(_ => this.RaisePropertyChanging("Count"));
+            CountChanging.Where(_ => this.areChangeNotificationsEnabled()).Subscribe(value => this.RaisePropertyChanging(value, "Count"));
 
-            CountChanged.Where(_ => this.areChangeNotificationsEnabled()).Subscribe(_ => this.RaisePropertyChanged("Count"));
+            CountChanged.Where(_ => this.areChangeNotificationsEnabled()).Subscribe(value => this.RaisePropertyChanged(value, "Count"));
 
-            IsEmptyChanged.Where(_ => this.areChangeNotificationsEnabled()).Subscribe(_ => this.RaisePropertyChanged("IsEmpty"));
+            IsEmptyChanged.Where(_ => this.areChangeNotificationsEnabled()).Subscribe(value => this.RaisePropertyChanged(value, "IsEmpty"));
 
-            Changing.Where(_ => this.areChangeNotificationsEnabled()).Subscribe(_ => this.RaisePropertyChanging("Item[]"));
+            Changing.Where(_ => this.areChangeNotificationsEnabled()).Subscribe(value => this.RaisePropertyChanging(value, "Item[]"));
 
-            Changed.Where(_ => this.areChangeNotificationsEnabled()).Subscribe(_ => this.RaisePropertyChanged("Item[]"));
+            Changed.Where(_ => this.areChangeNotificationsEnabled()).Subscribe(value => this.RaisePropertyChanged(value, "Item[]"));
         }
 
         public bool IsEmpty
@@ -586,15 +586,15 @@ namespace ReactiveUI
             this.Log().Info("Item hash: 0x{0:x}", toTrack.GetHashCode());
             var ro = toTrack as IReactiveObject;
             if (ro != null) {
-                changing = ro.getChangingObservable().Select(i => new ReactivePropertyChangingEventArgs<T>(toTrack, i.PropertyName));
-                changed = ro.getChangedObservable().Select(i => new ReactivePropertyChangedEventArgs<T>(toTrack, i.PropertyName));
+                changing = ro.getChangingObservable().Select(i => new ReactivePropertyChangingEventArgs<T>(toTrack, i.Value, i.PropertyName));
+                changed = ro.getChangedObservable().Select(i => new ReactivePropertyChangedEventArgs<T>(toTrack, i.Value, i.PropertyName));
                 goto isSetup;
             }
 
             var inpc = toTrack as INotifyPropertyChanged;
             if (inpc != null) {
                 changed = Observable.FromEventPattern<PropertyChangedEventHandler, PropertyChangedEventArgs>(x => inpc.PropertyChanged += x, x => inpc.PropertyChanged -= x)
-                    .Select(x => new ReactivePropertyChangedEventArgs<T>(toTrack, x.EventArgs.PropertyName));
+                    .Select(x => new ReactivePropertyChangedEventArgs<T>(toTrack, null, x.EventArgs.PropertyName));
                 goto isSetup;
             }
 

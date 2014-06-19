@@ -20,20 +20,6 @@ namespace ReactiveUI
         }
 
         /// <summary>
-        /// Returns the current value of a property given a notification that
-        /// it has changed.
-        /// </summary>
-        /// <returns>The current value of the property</returns>
-        public static TValue GetValue<TSender, TValue>(this IObservedChange<TSender, TValue> This)
-        {
-            TValue ret;
-            if (!This.TryGetValue(out ret)) {
-                throw new Exception(String.Format("One of the properties in the expression '{0}' was null", This.GetPropertyName()));
-            }
-            return ret;
-        }
-
-        /// <summary>
         /// Attempts to return the current value of a property given a 
         /// notification that it has changed. If any property in the
         /// property expression is null, false is returned.
@@ -44,11 +30,6 @@ namespace ReactiveUI
         /// false otherwise</returns>
         internal static bool TryGetValue<TSender, TValue>(this IObservedChange<TSender, TValue> This, out TValue changeValue)
         {
-            if (!Equals(This.Value, default(TValue))) {
-                changeValue = This.Value;
-                return true;
-            }
-
             return Reflection.TryGetValueForPropertyChain(out changeValue, This.Sender, This.Expression.GetExpressionChain());
         }
 
@@ -65,7 +46,7 @@ namespace ReactiveUI
             TTarget target,
             Expression<Func<TTarget, TValue>> property)
         {
-            Reflection.TrySetValueToPropertyChain(target, Reflection.Rewrite(property.Body).GetExpressionChain(), This.GetValue());
+            Reflection.TrySetValueToPropertyChain(target, Reflection.Rewrite(property.Body).GetExpressionChain(), This.Value);
         }
 
         /// <summary>
@@ -77,7 +58,7 @@ namespace ReactiveUI
         public static IObservable<TValue> Value<TSender, TValue>(
 		    this IObservable<IObservedChange<TSender, TValue>> This)
         {
-            return This.Select(GetValue);
+            return This.Select(x => x.Value);
         }
     }
 }

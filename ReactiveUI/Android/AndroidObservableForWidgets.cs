@@ -21,15 +21,23 @@ namespace ReactiveUI
         static readonly IDictionary<Tuple<Type, string>, Func<object, Expression, IObservable<IObservedChange<object, object>>>> dispatchTable;
         static AndroidObservableForWidgets()
         {
-            dispatchTable = new[] { 
-                createFromWidget<TextView, TextChangedEventArgs>(v => v.Text, (v, h) => v.TextChanged += h, (v, h) => v.TextChanged -= h),
-                createFromWidget<NumberPicker, NumberPicker.ValueChangeEventArgs>(v => v.Value, (v, h) => v.ValueChanged += h, (v, h) => v.ValueChanged -= h),
-                createFromWidget<RatingBar, RatingBar.RatingBarChangeEventArgs>(v => v.Rating, (v, h) => v.RatingBarChange += h, (v, h) => v.RatingBarChange -= h),
-                createFromWidget<CompoundButton, CompoundButton.CheckedChangeEventArgs>(v => v.Checked, (v, h) => v.CheckedChange += h, (v, h) => v.CheckedChange -= h),
-                createFromWidget<CalendarView, CalendarView.DateChangeEventArgs>(v => v.Date, (v, h) => v.DateChange += h, (v, h) => v.DateChange -= h),
-                createFromWidget<TabHost, TabHost.TabChangeEventArgs>(v => v.CurrentTab, (v, h) => v.TabChanged += h, (v, h) => v.TabChanged -= h),
-                createFromWidget<TimePicker, TimePicker.TimeChangedEventArgs>(v => v.CurrentHour, (v, h) => v.TimeChanged += h, (v, h) => v.TimeChanged -= h),
-                createFromWidget<TimePicker, TimePicker.TimeChangedEventArgs>(v => v.CurrentMinute, (v, h) => v.TimeChanged += h, (v, h) => v.TimeChanged -= h),
+            dispatchTable = new[] {
+                createFromWidget<TextView, TextChangedEventArgs>(v => v.Text, 
+                    v => Observable.FromEventPattern<TextChangedEventArgs>(h => v.TextChanged += h, h => v.TextChanged -= h).Select(_ => v.Text)),
+                createFromWidget<NumberPicker, NumberPicker.ValueChangeEventArgs>(v => v.Value, 
+                    v => Observable.FromEventPattern<NumberPicker.ValueChangeEventArgs>(h => v.ValueChanged += h, h => v.ValueChanged -= h).Select(ep => (object)ep.EventArgs.NewVal)),
+                createFromWidget<RatingBar, RatingBar.RatingBarChangeEventArgs>(v => v.Rating, 
+                    v => Observable.FromEventPattern<RatingBar.RatingBarChangeEventArgs>(h => v.RatingBarChange += h, h => v.RatingBarChange -= h).Select(ep => (object)ep.EventArgs.Rating)),
+                createFromWidget<CompoundButton, CompoundButton.CheckedChangeEventArgs>(v => v.Checked, 
+                    v => Observable.FromEventPattern<CompoundButton.CheckedChangeEventArgs>(h => v.CheckedChange += h, h => v.CheckedChange -= h).Select(ep => (object)ep.EventArgs.IsChecked)),
+                createFromWidget<CalendarView, CalendarView.DateChangeEventArgs>(v => v.Date, 
+                    v => Observable.FromEventPattern<CalendarView.DateChangeEventArgs>(h => v.DateChange += h, h => v.DateChange -= h).Select(_ => (object)v.Date)),
+                createFromWidget<TabHost, TabHost.TabChangeEventArgs>(v => v.CurrentTab, 
+                    v => Observable.FromEventPattern<TabHost.TabChangeEventArgs>(h => v.TabChanged += h, h => v.TabChanged -= h).Select(_ => (object)v.CurrentTab)),
+                createFromWidget<TimePicker, TimePicker.TimeChangedEventArgs>(v => v.CurrentHour, 
+                    v => Observable.FromEventPattern<TimePicker.TimeChangedEventArgs>(h => v.TimeChanged += h, h => v.TimeChanged -= h).Select(ep => (object)ep.EventArgs.HourOfDay)),
+                createFromWidget<TimePicker, TimePicker.TimeChangedEventArgs>(v => v.CurrentMinute, 
+                    v => Observable.FromEventPattern<TimePicker.TimeChangedEventArgs>(h => v.TimeChanged += h, h => v.TimeChanged -= h).Select(ep => (object)ep.EventArgs.Minute)),
                 createFromAdapterView(),
             }.ToDictionary(k => Tuple.Create(k.Type, k.Property), v => v.Func);
         }
@@ -71,15 +79,15 @@ namespace ReactiveUI
 
                     return Observable.Merge(
                         Observable.FromEventPattern<AdapterView.ItemSelectedEventArgs>(h => v.ItemSelected += h, h => v.ItemSelected -=h)
-                            .Select(_ => new ObservedChange<object, object>(v, ex)),
+                            .Select(_ => new ObservedChange<object, object>(v, ex, v.SelectedItem)),
                         Observable.FromEventPattern<AdapterView.NothingSelectedEventArgs>(h => v.NothingSelected += h, h => v.NothingSelected -= h)
-                            .Select(_ => new ObservedChange<object, object>(v, ex))
+                            .Select(_ => new ObservedChange<object, object>(v, ex, v.SelectedItem))
                     );
                 }
             };
         }
 
-        static DispatchTuple createFromWidget<TView, TEventArgs>(Expression<Func<TView, object>> property, Action<TView, EventHandler<TEventArgs>> addHandler, Action<TView, EventHandler<TEventArgs>> removeHandler)
+        static DispatchTuple createFromWidget<TView, TEventArgs>(Expression<Func<TView, object>> property, Func<TView, IObservable<object>> valueChanged)
             where TView : View
             where TEventArgs : EventArgs
         {
@@ -93,8 +101,7 @@ namespace ReactiveUI
                 Func = (x, ex) => {
                     var v = (TView)x;
 
-                    return Observable.FromEventPattern<TEventArgs>(h => addHandler(v, h) , h => removeHandler(v, h))
-                        .Select(_ => new ObservedChange<object, object>(v, ex)); 
+                    return valueChanged(v).Select(value => new ObservedChange<object, object>(v, ex, value)); 
                 }
             };
         }

@@ -100,8 +100,8 @@ namespace ReactiveUI
                 Observable.Return(new ObservedChange<object, object>(null, null, source));
 
             IEnumerable<Expression> chain = Reflection.Rewrite(expression).GetExpressionChain();
-            notifier = chain.Aggregate(notifier, (n, expr) => n
-                .Select(y => nestedObservedChanges(expr, y, beforeChange))
+            notifier = chain.Aggregate(notifier, 
+                (n, expr) => n.Select(y => nestedObservedChanges(expr, y, beforeChange))
                 .Switch());
             
             if (skipInitial) {
@@ -110,28 +110,27 @@ namespace ReactiveUI
 
             notifier = notifier.Where(x => x.Sender != null);
 
-            var r = notifier.Select(x => new ObservedChange<TSender, TValue>(source, expression, (TValue)x.GetValue()));
+            var r = notifier.Select(x => new ObservedChange<TSender, TValue>(source, expression, (TValue)x.Value));
 
             return r.DistinctUntilChanged(x=>x.Value);
         }
 
-        static IObservedChange<object, object> observedChangeFor(Expression expression, IObservedChange<object, object> sourceChange)
+        static IObservedChange<object, object> observedChangeFor(Expression expression, object sender)
         {
-            var propertyName = expression.GetMemberInfo().Name;
-            if (sourceChange.Value == null) {
-                return new ObservedChange<object, object>(sourceChange.Value, expression); ;
+            if(sender == null) {
+                return new ObservedChange<object, object>(sender, expression);
             } else {
                 object value;
                 // expression is always a simple expression
-                Reflection.TryGetValueForPropertyChain(out value, sourceChange.Value, new[] { expression });
-                return new ObservedChange<object, object>(sourceChange.Value, expression, value);
-            }
+                Reflection.TryGetValueForPropertyChain(out value, sender, new[] { expression });
+                return new ObservedChange<object, object>(sender, expression, value);
+            }            
         }
 
         static IObservable<IObservedChange<object, object>> nestedObservedChanges(Expression expression, IObservedChange<object, object> sourceChange, bool beforeChange)
         {
             // Make sure a change at a root node propogates events down
-            var kicker = observedChangeFor(expression, sourceChange);
+            var kicker = observedChangeFor(expression, sourceChange.Value);
 
             // Handle null values in the chain
             if (sourceChange.Value == null) {
@@ -139,9 +138,7 @@ namespace ReactiveUI
             }
 
             // Handle non null values in the chain
-            return notifyForProperty(sourceChange.Value, expression, beforeChange)
-                .Select(x => new ObservedChange<object, object>(x.Sender, expression, x.GetValue()))
-                .StartWith(kicker);
+            return notifyForProperty(sourceChange.Value, expression, beforeChange).StartWith(kicker);
         }
 
         static readonly MemoizingMRUCache<Tuple<Type, string, bool>, ICreatesObservableForProperty> notifyFactoryCache =

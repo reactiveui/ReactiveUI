@@ -42,24 +42,50 @@ namespace ReactiveUI
     /// </summary>
     public class ObservedChange<TSender, TValue> : IObservedChange<TSender, TValue>
     {
+        private bool hasValue;
+        private TValue value;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ObservedChange{TSender, TValue}"/> class.
         /// </summary>
         /// <param name="sender">The sender.</param>
         /// <param name="expression">Expression describing the member.</param>
         /// <param name="value">The value.</param>
-        public ObservedChange(TSender sender, Expression expression, TValue value = default(TValue))
+        public ObservedChange(TSender sender, Expression expression)
         {
             this.Sender = sender;
             this.Expression = expression;
-            this.Value = value;
+            this.hasValue = false;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ObservedChange{TSender, TValue}"/> class.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="expression">Expression describing the member.</param>
+        /// <param name="value">The value.</param>
+        public ObservedChange(TSender sender, Expression expression, TValue value)
+        {
+            this.Sender = sender;
+            this.Expression = expression;
+            this.value = value;
+            this.hasValue = true;
         }
 
         public TSender Sender { get; private set; }
 
         public Expression Expression { get; private set; }
 
-        public TValue Value { get; private set; }
+        public TValue Value
+        {
+            get
+            {
+                if (!hasValue) {
+                    hasValue = this.TryGetValue(out value);
+                }
+                return value;
+            }
+        }
     }
 
     /// <summary>
@@ -135,6 +161,11 @@ namespace ReactiveUI
         /// The object that has raised the change.
         /// </summary>
         TSender Sender { get; }
+
+        /// <summary>
+        /// Gets the value that is changed.
+        /// </summary>
+        object Value { get; }
     }
 
     public class ReactivePropertyChangingEventArgs<TSender> : PropertyChangingEventArgs, IReactivePropertyChangedEventArgs<TSender>
@@ -144,13 +175,16 @@ namespace ReactiveUI
         /// </summary>
         /// <param name="sender">The sender.</param>
         /// <param name="propertyName">Name of the property.</param>
-        public ReactivePropertyChangingEventArgs(TSender sender, string propertyName)
+        public ReactivePropertyChangingEventArgs(TSender sender, object value, string propertyName)
             : base(propertyName)
         {
             this.Sender = sender;
+            this.Value = value;
         }
 
         public TSender Sender { get; private set; }
+
+        public object Value { get; private set; }
     }
 
     public class ReactivePropertyChangedEventArgs<TSender> : PropertyChangedEventArgs, IReactivePropertyChangedEventArgs<TSender>
@@ -160,13 +194,16 @@ namespace ReactiveUI
         /// </summary>
         /// <param name="sender">The sender.</param>
         /// <param name="propertyName">Name of the property.</param>
-        public ReactivePropertyChangedEventArgs(TSender sender, string propertyName)
+        public ReactivePropertyChangedEventArgs(TSender sender, object value, string propertyName)
             : base(propertyName)
         {
             this.Sender = sender;
+            this.Value = value;
         }
 
         public TSender Sender { get; private set; }
+
+        public object Value { get; private set; }
     }
 
     /// <summary>

@@ -75,8 +75,8 @@ namespace ReactiveUI
             var propertyName = expression.GetMemberInfo().Name;
 
             return Observable.Create<IObservedChange<object, object>>(subj => {
-                var bobs = new BlockObserveValueDelegate((key,s,_) => {
-                    subj.OnNext(new ObservedChange<object, object>(s, expression));
+                var bobs = new BlockObserveValueDelegate((key,s,change) => {
+                    subj.OnNext(new ObservedChange<object, object>(s, expression, beforeChanged ? change[NSDictionary.ChangeOldKey] : change[NSDictionary.ChangeNewKey]));
                 });
                 var pin = GCHandle.Alloc(bobs);
 
