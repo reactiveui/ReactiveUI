@@ -9,6 +9,7 @@ using System.Diagnostics.Contracts;
 using System.ComponentModel;
 using Splat;
 using System.Collections.Generic;
+using System.Reactive;
 
 namespace ReactiveUI 
 {
@@ -171,6 +172,7 @@ namespace ReactiveUI
             IObservable<IReactivePropertyChangedEventArgs<TSender>> changedObservable;
             ISubject<IReactivePropertyChangedEventArgs<TSender>> fireChangedBatchSubject;
             ISubject<Exception> thrownExceptions;
+            ISubject<Unit> startDelayNotifications;
 
             TSender sender;
 
@@ -182,32 +184,41 @@ namespace ReactiveUI
                 this.sender = sender;
                 this.changingSubject = new Subject<IReactivePropertyChangedEventArgs<TSender>>();
                 this.changedSubject = new Subject<IReactivePropertyChangedEventArgs<TSender>>();
-                this.fireChangedBatchSubject = new Subject<IReactivePropertyChangedEventArgs<TSender>>();
+                this.startDelayNotifications = new Subject<Unit>();
                 this.thrownExceptions = new ScheduledSubject<Exception>(Scheduler.Immediate, RxApp.DefaultExceptionHandler);
 
-                var changedSource = changedSubject.Publish().RefCount();
+                var changedSource = changedSubject;
 
                 this.changedObservable = changedSource
                     .Buffer(() => {
                         if (areChangeNotificationsDelayed()) {
-                            return fireChangedBatchSubject;
+                            return startDelayNotifications;
                         }
 
-                        return changedSource;
+                        return Observable.Merge(
+                            changedSubject.Select(_ => Unit.Default),
+                            startDelayNotifications);
                     })
-                    .SelectMany(batch => dedup(batch));
+                    .SelectMany(batch => dedup(batch))
+                    .Publish()
+                    .RefCount();
 
-                var changingSource = changingSubject.Publish().RefCount();
+                var changingSource = changingSubject;
 
                 this.changingObservable = changingSource
                     .Buffer(() => {
                         if (areChangeNotificationsDelayed()) {
-                            return fireChangedBatchSubject;
+                            return startDelayNotifications;
                         }
 
-                        return changingSource;
+                        return Observable.Merge(
+                            changingSubject.Select(_ => Unit.Default),
+                            startDelayNotifications);
                     })
-                    .SelectMany(batch => dedup(batch));
+                    .SelectMany(batch => dedup(batch))
+                    .Publish()
+                    .RefCount();
+
             }
 
             public IObservable<IReactivePropertyChangedEventArgs<TSender>> Changing {
