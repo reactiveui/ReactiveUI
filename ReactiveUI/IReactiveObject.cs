@@ -258,10 +258,13 @@ namespace ReactiveUI
 
             public IDisposable delayChangeNotifications()
             {
-                Interlocked.Increment(ref changeNotificationsDelayed);
+                if (Interlocked.Increment(ref changeNotificationsDelayed) == 1) {
+                    startDelayNotifications.OnNext(Unit.Default);
+                }
+
                 return Disposable.Create(() => {
                     if (Interlocked.Decrement(ref changeNotificationsDelayed) == 0) {
-                        fireChangedBatchSubject.OnNext(new ReactivePropertyChangedEventArgs<TSender>(default(TSender), String.Empty));
+                        startDelayNotifications.OnNext(Unit.Default);
                     };
                 });
             }
