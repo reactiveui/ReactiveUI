@@ -224,10 +224,20 @@ namespace ReactiveUI.Tests
             fixture.IsNotNullString = "Baz";
             Assert.Equal(1, output.Count);
 
+            var stopDelayingMore = fixture.DelayChangeNotifications();
+
+            fixture.IsNotNullString = "Bamf";
+            Assert.Equal(1, output.Count);
+
+            stopDelaying.Dispose();
+
+            fixture.IsNotNullString = "Blargh";
+            Assert.Equal(1, output.Count);
+
             // NB: Because we debounce queued up notifications, we should only
             // see a notification from the latest NullableInt and the latest
             // IsNotNullableString
-            stopDelaying.Dispose();
+            stopDelayingMore.Dispose();
             Assert.Equal(3, output.Count);
         }
     }
