@@ -9,6 +9,7 @@ using System.Diagnostics.Contracts;
 using System.ComponentModel;
 using Splat;
 using System.Collections.Generic;
+using System.Reactive;
 
 namespace ReactiveUI 
 {
@@ -76,6 +77,13 @@ namespace ReactiveUI
             return s.areChangeNotificationsEnabled();
         }
 
+        internal static IDisposable delayChangeNotifications<TSender>(this TSender This) where TSender : IReactiveObject
+        {
+            var s = state.GetValue(This, key => (IExtensionState<IReactiveObject>)new ExtensionState<TSender>(This));
+
+            return s.delayChangeNotifications();
+        }
+
         /// <summary>
         /// RaiseAndSetIfChanged fully implements a Setter for a read-write
         /// property on a ReactiveObject, using CallerMemberName to raise the notification
@@ -136,14 +144,37 @@ namespace ReactiveUI
             This.raisePropertyChanging(propertyName);
         }
 
+        // Filter a list of change notifications, returning the last change for each PropertyName in original order.
+        static IEnumerable<IReactivePropertyChangedEventArgs<TSender>> dedup<TSender>(IList<IReactivePropertyChangedEventArgs<TSender>> batch) {
+            if (batch.Count <= 1) {
+                return batch;
+            }
+
+            var seen = new HashSet<string>();
+            var unique = new LinkedList<IReactivePropertyChangedEventArgs<TSender>>();
+
+            for (int i = batch.Count - 1; i >= 0; i--) {
+                if (seen.Add(batch[i].PropertyName)) {
+                    unique.AddFirst(batch[i]);
+                }
+            }
+
+            return unique;
+        }
+
         class ExtensionState<TSender> : IExtensionState<TSender> where TSender : IReactiveObject
         {
-            private long changeNotificationsSuppressed;
-            private ISubject<IReactivePropertyChangedEventArgs<TSender>> changingSubject;
-            private ISubject<IReactivePropertyChangedEventArgs<TSender>> changedSubject;
-            private ISubject<Exception> thrownExceptions;
+            long changeNotificationsSuppressed;
+            long changeNotificationsDelayed;
+            ISubject<IReactivePropertyChangedEventArgs<TSender>> changingSubject;
+            IObservable<IReactivePropertyChangedEventArgs<TSender>> changingObservable;
+            ISubject<IReactivePropertyChangedEventArgs<TSender>> changedSubject;
+            IObservable<IReactivePropertyChangedEventArgs<TSender>> changedObservable;
+            ISubject<IReactivePropertyChangedEventArgs<TSender>> fireChangedBatchSubject;
+            ISubject<Exception> thrownExceptions;
+            ISubject<Unit> startDelayNotifications;
 
-            private TSender sender;
+            TSender sender;
 
             /// <summary>
             /// Initializes a new instance of the <see cref="ExtensionState{TSender}"/> class.
@@ -153,15 +184,49 @@ namespace ReactiveUI
                 this.sender = sender;
                 this.changingSubject = new Subject<IReactivePropertyChangedEventArgs<TSender>>();
                 this.changedSubject = new Subject<IReactivePropertyChangedEventArgs<TSender>>();
+                this.startDelayNotifications = new Subject<Unit>();
                 this.thrownExceptions = new ScheduledSubject<Exception>(Scheduler.Immediate, RxApp.DefaultExceptionHandler);
+
+                var changedSource = changedSubject;
+
+                this.changedObservable = changedSource
+                    .Buffer(() => {
+                        if (areChangeNotificationsDelayed()) {
+                            return startDelayNotifications;
+                        }
+
+                        return Observable.Merge(
+                            changedSubject.Select(_ => Unit.Default),
+                            startDelayNotifications);
+                    })
+                    .SelectMany(batch => dedup(batch))
+                    .Publish()
+                    .RefCount();
+
+                var changingSource = changingSubject;
+
+                this.changingObservable = changingSource
+                    .Buffer(() => {
+                        if (areChangeNotificationsDelayed()) {
+                            return startDelayNotifications;
+                        }
+
+                        return Observable.Merge(
+                            changingSubject.Select(_ => Unit.Default),
+                            startDelayNotifications);
+                    })
+                    .SelectMany(batch => dedup(batch))
+                    .Publish()
+                    .RefCount();
+
             }
 
             public IObservable<IReactivePropertyChangedEventArgs<TSender>> Changing {
-                get { return this.changingSubject; }
+                get { return this.changingObservable; }
             }           
 
             public IObservable<IReactivePropertyChangedEventArgs<TSender>> Changed {
-                get { return this.changedSubject; }
+                get { return this.changedObservable; }
             }
 
             public IObservable<Exception> ThrownExceptions {
@@ -172,6 +237,11 @@ namespace ReactiveUI
             {
                 return (Interlocked.Read(ref changeNotificationsSuppressed) == 0);
             }            
+
+            public bool areChangeNotificationsDelayed()
+            {
+                return (Interlocked.Read(ref changeNotificationsDelayed) > 0);
+            }
 
             /// <summary>
             /// When this method is called, an object will not fire change
@@ -184,6 +254,19 @@ namespace ReactiveUI
             {
                 Interlocked.Increment(ref changeNotificationsSuppressed);
                 return Disposable.Create(() => Interlocked.Decrement(ref changeNotificationsSuppressed));
+            }
+
+            public IDisposable delayChangeNotifications()
+            {
+                if (Interlocked.Increment(ref changeNotificationsDelayed) == 1) {
+                    startDelayNotifications.OnNext(Unit.Default);
+                }
+
+                return Disposable.Create(() => {
+                    if (Interlocked.Decrement(ref changeNotificationsDelayed) == 0) {
+                        startDelayNotifications.OnNext(Unit.Default);
+                    };
+                });
             }
 
             public void raisePropertyChanging(string propertyName)
@@ -234,6 +317,10 @@ namespace ReactiveUI
             bool areChangeNotificationsEnabled();
 
             IDisposable suppressChangeNotifications();
+
+            bool areChangeNotificationsDelayed();
+
+            IDisposable delayChangeNotifications();
         }
     }
 }
