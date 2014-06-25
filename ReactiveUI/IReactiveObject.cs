@@ -188,28 +188,24 @@ namespace ReactiveUI
                 this.thrownExceptions = new ScheduledSubject<Exception>(Scheduler.Immediate, RxApp.DefaultExceptionHandler);
 
                 this.changedObservable = changedSubject
-                    .Buffer(() => {
-                        if (areChangeNotificationsDelayed()) {
-                            return startDelayNotifications;
-                        }
-
-                        return Observable.Merge(
-                            changedSubject.Select(_ => Unit.Default),
-                            startDelayNotifications);
-                    })
-                    .SelectMany(batch => dedup(batch));
+                    .Buffer(
+                        Observable.Merge(
+                            changedSubject.Where(_ => !areChangeNotificationsDelayed()).Select(_ => Unit.Default),
+                            startDelayNotifications)
+                    )
+                    .SelectMany(batch => dedup(batch))
+                    .Publish()
+                    .RefCount();
 
                 this.changingObservable = changingSubject
-                    .Buffer(() => {
-                        if (areChangeNotificationsDelayed()) {
-                            return startDelayNotifications;
-                        }
-
-                        return Observable.Merge(
-                            changingSubject.Select(_ => Unit.Default),
-                            startDelayNotifications);
-                    })
-                    .SelectMany(batch => dedup(batch));
+                    .Buffer(
+                        Observable.Merge(
+                            changingSubject.Where(_ => !areChangeNotificationsDelayed()).Select(_ => Unit.Default),
+                            startDelayNotifications)
+                    )
+                    .SelectMany(batch => dedup(batch))
+                    .Publish()
+                    .RefCount();
             }
 
             public IObservable<IReactivePropertyChangedEventArgs<TSender>> Changing {
