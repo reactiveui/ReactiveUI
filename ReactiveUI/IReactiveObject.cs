@@ -187,9 +187,7 @@ namespace ReactiveUI
                 this.startDelayNotifications = new Subject<Unit>();
                 this.thrownExceptions = new ScheduledSubject<Exception>(Scheduler.Immediate, RxApp.DefaultExceptionHandler);
 
-                var changedSource = changedSubject;
-
-                this.changedObservable = changedSource
+                this.changedObservable = changedSubject
                     .Buffer(() => {
                         if (areChangeNotificationsDelayed()) {
                             return startDelayNotifications;
@@ -199,13 +197,9 @@ namespace ReactiveUI
                             changedSubject.Select(_ => Unit.Default),
                             startDelayNotifications);
                     })
-                    .SelectMany(batch => dedup(batch))
-                    .Publish()
-                    .RefCount();
+                    .SelectMany(batch => dedup(batch));
 
-                var changingSource = changingSubject;
-
-                this.changingObservable = changingSource
+                this.changingObservable = changingSubject
                     .Buffer(() => {
                         if (areChangeNotificationsDelayed()) {
                             return startDelayNotifications;
@@ -215,10 +209,7 @@ namespace ReactiveUI
                             changingSubject.Select(_ => Unit.Default),
                             startDelayNotifications);
                     })
-                    .SelectMany(batch => dedup(batch))
-                    .Publish()
-                    .RefCount();
-
+                    .SelectMany(batch => dedup(batch));
             }
 
             public IObservable<IReactivePropertyChangedEventArgs<TSender>> Changing {
