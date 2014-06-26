@@ -640,6 +640,25 @@ namespace ReactiveUI
         }
 
         #region Super Boring IList crap
+
+        // The BinarySearch methods aren't technically on IList<T>, they're implemented straight on List<T>
+        // but by proxying this call we can make use of the nice built in methods that operate on the internal
+        // array of the inner list instead of jumping around proxying through the index.
+        public int BinarySearch(T item)
+        {
+            return _inner.BinarySearch(item);
+        }
+
+        public int BinarySearch(T item, IComparer<T> comparer)
+        {
+            return _inner.BinarySearch(item, comparer);
+        }
+
+        public int BinarySearch(int index, int count, T item, IComparer<T> comparer)
+        {
+            return _inner.BinarySearch(index, count, item, comparer);
+        }
+
         public IEnumerator<T> GetEnumerator()
         {
             return _inner.GetEnumerator();
