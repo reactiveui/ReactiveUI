@@ -187,38 +187,25 @@ namespace ReactiveUI
                 this.startDelayNotifications = new Subject<Unit>();
                 this.thrownExceptions = new ScheduledSubject<Exception>(Scheduler.Immediate, RxApp.DefaultExceptionHandler);
 
-                var changedSource = changedSubject;
-
-                this.changedObservable = changedSource
-                    .Buffer(() => {
-                        if (areChangeNotificationsDelayed()) {
-                            return startDelayNotifications;
-                        }
-
-                        return Observable.Merge(
-                            changedSubject.Select(_ => Unit.Default),
-                            startDelayNotifications);
-                    })
+                this.changedObservable = changedSubject
+                    .Buffer(
+                        Observable.Merge(
+                            changedSubject.Where(_ => !areChangeNotificationsDelayed()).Select(_ => Unit.Default),
+                            startDelayNotifications)
+                    )
                     .SelectMany(batch => dedup(batch))
                     .Publish()
                     .RefCount();
 
-                var changingSource = changingSubject;
-
-                this.changingObservable = changingSource
-                    .Buffer(() => {
-                        if (areChangeNotificationsDelayed()) {
-                            return startDelayNotifications;
-                        }
-
-                        return Observable.Merge(
-                            changingSubject.Select(_ => Unit.Default),
-                            startDelayNotifications);
-                    })
+                this.changingObservable = changingSubject
+                    .Buffer(
+                        Observable.Merge(
+                            changingSubject.Where(_ => !areChangeNotificationsDelayed()).Select(_ => Unit.Default),
+                            startDelayNotifications)
+                    )
                     .SelectMany(batch => dedup(batch))
                     .Publish()
                     .RefCount();
-
             }
 
             public IObservable<IReactivePropertyChangedEventArgs<TSender>> Changing {
