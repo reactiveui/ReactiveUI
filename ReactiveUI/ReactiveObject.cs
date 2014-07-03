@@ -29,7 +29,7 @@ namespace ReactiveUI
             remove { PropertyChangingEventManager.RemoveHandler(this, value); }
         }
 
-        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args) 
+        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args)
         {
             PropertyChangingEventManager.DeliverEvent(this, args);
         }
@@ -39,14 +39,14 @@ namespace ReactiveUI
             remove { PropertyChangedEventManager.RemoveHandler(this, value); }
         }
 
-        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args) 
+        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args)
         {
             PropertyChangedEventManager.DeliverEvent(this, args);
         }
 
         /// <summary>
         /// Represents an Observable that fires *before* a property is about to
-        /// be changed.         
+        /// be changed.
         /// </summary>
         [IgnoreDataMember]
         public IObservable<IReactivePropertyChangedEventArgs<ReactiveObject>> Changing {
@@ -66,7 +66,7 @@ namespace ReactiveUI
         /// </summary>
         [IgnoreDataMember]
         public IObservable<Exception> ThrownExceptions { get { return this.getThrownExceptionsObservable(); } }
-        
+
         protected ReactiveObject()
         {
         }
