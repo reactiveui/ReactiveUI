@@ -266,7 +266,7 @@ namespace ReactiveUI
         public static IDisposable InvokeCommand<T>(this IObservable<T> This, ICommand command)
         {
             return This.ObserveOn(RxApp.MainThreadScheduler)
-                .Throttle(x => Observable.FromEventPattern(h => command.CanExecuteChanged += h, h => command.CanExecuteChanged -= h).Where(_ => command.CanExecute(x)).Select(_ => x))
+                .Throttle(x => Observable.FromEventPattern(h => command.CanExecuteChanged += h, h => command.CanExecuteChanged -= h).Where(_ => command.CanExecute(x)))
                 .Subscribe(x => {
                     command.Execute(x);
                 });
@@ -283,7 +283,7 @@ namespace ReactiveUI
         public static IDisposable InvokeCommand<T>(this IObservable<T> This, IReactiveCommand command)
         {
             return This.ObserveOn(RxApp.MainThreadScheduler)
-                .Throttle(x => command.CanExecuteObservable.Where(b => b).Select(_ => x))
+                .Throttle(x => command.CanExecuteObservable.Where(b => b))
                 .Subscribe(x =>
                 {
                     command.Execute(x);
@@ -303,7 +303,7 @@ namespace ReactiveUI
         {
             return This.CombineLatest(target.WhenAnyValue(commandProperty), (val, cmd) => new { val, cmd })
                 .ObserveOn(RxApp.MainThreadScheduler)
-                .Throttle(x => Observable.FromEventPattern(h => x.cmd.CanExecuteChanged += h, h => x.cmd.CanExecuteChanged -= h).Where(_ => x.cmd.CanExecute(x.val)).Select(_ => x))
+                .Throttle(x => Observable.FromEventPattern(h => x.cmd.CanExecuteChanged += h, h => x.cmd.CanExecuteChanged -= h).Where(_ => x.cmd.CanExecute(x.val)))
                 .Subscribe(x => {
                     x.cmd.Execute(x.val);
                 });
@@ -322,7 +322,7 @@ namespace ReactiveUI
         {
             return This.CombineLatest(target.WhenAnyValue(commandProperty), (val, cmd) => new { val, cmd })
                 .ObserveOn(RxApp.MainThreadScheduler)
-                .Throttle(x => x.cmd.CanExecuteObservable.Where(b => b).Select(_ => x))
+                .Throttle(x => x.cmd.CanExecuteObservable.Where(b => b))
                 .Subscribe(x =>
                 {
                     x.cmd.Execute(x.val);
