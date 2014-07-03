@@ -876,7 +876,7 @@ namespace ReactiveUI
 
             var source = Reflection.ViewModelWhenAnyValue(viewModel, view, vmExpression).Select(x => (TProp)x).Select(selector);
 
-            IDisposable disp = bindToDirect(source, view, viewProperty, fallbackValue);
+            IDisposable disp = bindToDirect(source, view, viewExpression, fallbackValue);
 
             return new ReactiveBinding<TView, TViewModel, TOut>(view, viewModel, viewExpression, vmExpression, source, BindingDirection.OneWay, disp);
         }
