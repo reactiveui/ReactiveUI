@@ -7,19 +7,16 @@ namespace ReactiveUI
     public static class ObservableLoggingMixin
     {
         /// <summary>
-        ///
+        /// Logs an Observable to Splat's Logger
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <typeparam name="TObj"></typeparam>
-        /// <param name="This"></param>
-        /// <param name="klass"></param>
-        /// <param name="message"></param>
-        /// <param name="stringifier"></param>
-        /// <returns></returns>
-        public static IObservable<T> Log<T, TObj>(this IObservable<T> This, 
-            TObj klass, 
-            string message = null,
-            Func<T, string> stringifier = null)
+        /// <param name="klass">The hosting class, usually 'this'</param>
+        /// <param name="message">An optional method</param>
+        /// <param name="stringifier">An optional Func to convert Ts to strings.</param>
+        /// <returns>The same Observable</returns>
+        public static IObservable<T> Log<T, TObj>(this IObservable<T> This,
+                TObj klass,
+                string message = null,
+                Func<T, string> stringifier = null)
             where TObj : IEnableLogger
         {
             message = message ?? "";
@@ -38,15 +35,12 @@ namespace ReactiveUI
         }
 
         /// <summary>
-        ///
+        /// Like Catch, but also prints a message and the error to the log.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <typeparam name="TObj"></typeparam>
-        /// <param name="This"></param>
-        /// <param name="klass"></param>
-        /// <param name="next"></param>
-        /// <param name="message"></param>
-        /// <returns></returns>
+        /// <param name="klass">The hosting class, usually 'this'</param>
+        /// <param name="next">The Observable to replace the current one OnError.</param>
+        /// <param name="message">An error message to print.</param>
+        /// <returns>The same Observable</returns>
         public static IObservable<T> LoggedCatch<T, TObj>(this IObservable<T> This, TObj klass, IObservable<T> next = null, string message = null)
             where TObj : IEnableLogger
         {
@@ -58,16 +52,13 @@ namespace ReactiveUI
         }
 
         /// <summary>
-        ///
+        /// Like Catch, but also prints a message and the error to the log.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <typeparam name="TObj"></typeparam>
-        /// <typeparam name="TException"></typeparam>
-        /// <param name="This"></param>
-        /// <param name="klass"></param>
-        /// <param name="next"></param>
-        /// <param name="message"></param>
-        /// <returns></returns>
+        /// <param name="klass">The hosting class, usually 'this'</param>
+        /// <param name="next">A Func to create an Observable to replace the
+        /// current one OnError.</param>
+        /// <param name="message">An error message to print.</param>
+        /// <returns>The same Observable</returns>
         public static IObservable<T> LoggedCatch<T, TObj, TException>(this IObservable<T> This, TObj klass, Func<TException, IObservable<T>> next, string message = null)
             where TObj : IEnableLogger
             where TException : Exception
