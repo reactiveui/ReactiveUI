@@ -10,6 +10,9 @@ using Java.Interop;
 
 namespace ReactiveUI
 {
+    /// <summary>
+    ///
+    /// </summary>
     public static class ControlFetcherMixin
     {
         static readonly Dictionary<string, int> controlIds;
@@ -34,6 +37,10 @@ namespace ReactiveUI
             getControlView = type.GetMethod("GetControl", new[] { typeof(View), typeof(string) });
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <returns></returns>
         public static T GetControl<T>(this Activity This, [CallerMemberName]string propertyName = null)
             where T : View
         {
@@ -41,6 +48,10 @@ namespace ReactiveUI
                 () => This.FindViewById(controlIds[propertyName.ToLowerInvariant()]).JavaCast<T>());
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <returns></returns>
         public static T GetControl<T>(this View This, [CallerMemberName]string propertyName = null)
             where T : View
         {
@@ -48,12 +59,19 @@ namespace ReactiveUI
                 () => This.FindViewById(controlIds[propertyName.ToLowerInvariant()]).JavaCast<T>());
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <returns></returns>
         public static T GetControl<T>(this Fragment This, [CallerMemberName]string propertyName = null)
             where T : View
         {
             return GetControl<T>(This.View, propertyName);
         }
 
+        /// <summary>
+        ///
+        /// </summary>
         public static void WireUpControls(this ILayoutViewHost This)
         {
             var members = This.GetType().GetRuntimeProperties()
@@ -73,7 +91,9 @@ namespace ReactiveUI
             });
         }
 
-
+        /// <summary>
+        ///
+        /// </summary>
         public static void WireUpControls(this View This)
         {
             var members = This.GetType().GetRuntimeProperties()
@@ -117,6 +137,9 @@ namespace ReactiveUI
             });
         }
 
+        /// <summary>
+        ///
+        /// </summary>
         public static void WireUpControls(this Activity This)
         {
             var members = This.GetType().GetRuntimeProperties()
@@ -163,5 +186,4 @@ namespace ReactiveUI
             return ret;
         }
     }
-
 }
