@@ -265,12 +265,29 @@ namespace ReactiveUI
         /// from the command.</returns>
         public static IDisposable InvokeCommand<T>(this IObservable<T> This, ICommand command)
         {
-            return This.ObserveOn(RxApp.MainThreadScheduler).Subscribe(x => {
-                if (!command.CanExecute(x)) {
-                    return;
-                }
-                command.Execute(x);
-            });
+            return This.Throttle(x => Observable.FromEventPattern(h => command.CanExecuteChanged += h, h => command.CanExecuteChanged -= h)
+                    .StartWith((EventPattern<object>)null)
+                    .Where(_ => command.CanExecute(x)))
+                .Subscribe(x => {
+                    command.Execute(x);
+                });
+        }
+
+        /// <summary>
+        /// A utility method that will pipe an Observable to an ICommand (i.e.
+        /// it will first call its CanExecute with the provided value, then if
+        /// the command can be executed, Execute() will be called)
+        /// </summary>
+        /// <param name="command">The command to be executed.</param>
+        /// <returns>An object that when disposes, disconnects the Observable
+        /// from the command.</returns>
+        public static IDisposable InvokeCommand<T>(this IObservable<T> This, IReactiveCommand command)
+        {
+            return This.Throttle(x => command.CanExecuteObservable.StartWith(command.CanExecute(x)).Where(b => b))
+                .Subscribe(x =>
+                {
+                    command.Execute(x);
+                });
         }
 
         /// <summary>
@@ -285,12 +302,29 @@ namespace ReactiveUI
         public static IDisposable InvokeCommand<T, TTarget>(this IObservable<T> This, TTarget target, Expression<Func<TTarget, ICommand>> commandProperty)
         {
             return This.CombineLatest(target.WhenAnyValue(commandProperty), (val, cmd) => new { val, cmd })
-                .ObserveOn(RxApp.MainThreadScheduler)
+                .Throttle(x => Observable.FromEventPattern(h => x.cmd.CanExecuteChanged += h, h => x.cmd.CanExecuteChanged -= h)
+                    .StartWith((EventPattern<object>)null)
+                    .Where(_ => x.cmd.CanExecute(x.val)))
                 .Subscribe(x => {
-                    if (!x.cmd.CanExecute(x.val)) {
-                        return;
-                    }
+                    x.cmd.Execute(x.val);
+                });
+        }
 
+        /// <summary>
+        /// A utility method that will pipe an Observable to an ICommand (i.e.
+        /// it will first call its CanExecute with the provided value, then if
+        /// the command can be executed, Execute() will be called)
+        /// </summary>
+        /// <param name="target">The root object which has the Command.</param>
+        /// <param name="commandProperty">The expression to reference the Command.</param>
+        /// <returns>An object that when disposes, disconnects the Observable
+        /// from the command.</returns>
+        public static IDisposable InvokeCommand<T, TTarget>(this IObservable<T> This, TTarget target, Expression<Func<TTarget, IReactiveCommand>> commandProperty)
+        {
+            return This.CombineLatest(target.WhenAnyValue(commandProperty), (val, cmd) => new { val, cmd })
+                .Throttle(x => x.cmd.CanExecuteObservable.StartWith(x.cmd.CanExecute(x.val)).Where(b => b))
+                .Subscribe(x =>
+                {
                     x.cmd.Execute(x.val);
                 });
         }
