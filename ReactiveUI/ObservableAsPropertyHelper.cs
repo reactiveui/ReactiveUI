@@ -6,6 +6,8 @@ using System.Linq.Expressions;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using Splat;
+using System.Reactive.Disposables;
 
 namespace ReactiveUI
 {
@@ -15,15 +17,11 @@ namespace ReactiveUI
     /// Observable. The property will be read-only, but will still fire change
     /// notifications. This class can be created directly, but is more often created via the
     /// ToProperty and ObservableToProperty extension methods.
-    ///
-    /// This class is also an Observable itself, so that output properties can
-    /// be chained - for example a "Path" property and a chained
-    /// "PathFileNameOnly" property.
     /// </summary>
-    public sealed class ObservableAsPropertyHelper<T> : IObservable<T>, IHandleObservableErrors, IDisposable, IEnableLogger
+    public sealed class ObservableAsPropertyHelper<T> : IHandleObservableErrors, IDisposable, IEnableLogger
     {
         T _lastValue;
-        readonly IObservable<T> _source;
+        readonly IConnectableObservable<T> _source;
         IDisposable _inner;
 
         /// <summary>
@@ -46,11 +44,11 @@ namespace ReactiveUI
             Contract.Requires(observable != null);
             Contract.Requires(onChanged != null);
 
-            scheduler = scheduler ?? RxApp.MainThreadScheduler;
+            scheduler = scheduler ?? CurrentThreadScheduler.Instance;
             _lastValue = initialValue;
 
             var subj = new ScheduledSubject<T>(scheduler);
-            var exSubject = new ScheduledSubject<Exception>(Scheduler.Immediate, RxApp.DefaultExceptionHandler);
+            var exSubject = new ScheduledSubject<Exception>(CurrentThreadScheduler.Instance, RxApp.DefaultExceptionHandler);
 
             bool firedInitial = false;
             subj.Subscribe(x => {
@@ -58,7 +56,6 @@ namespace ReactiveUI
                 // from a Subscribe
                 if (firedInitial && EqualityComparer<T>.Default.Equals(x, _lastValue)) return;
 
-                this.Log().Debug("Property helper {0:X} changed", this.GetHashCode());
                 _lastValue = x;
                 onChanged(x);
                 firedInitial = true;
@@ -69,17 +66,17 @@ namespace ReactiveUI
             // Fire off an initial RaisePropertyChanged to make sure bindings
             // have a value
             subj.OnNext(initialValue);
-
-            var src = observable.DistinctUntilChanged().Multicast(subj);
-            _inner = src.Connect();
-            _source = src;
+            _source = observable.DistinctUntilChanged().Multicast(subj);
         }
 
         /// <summary>
         /// The last provided value from the Observable. 
         /// </summary>
         public T Value {
-            get { return _lastValue; }
+            get { 
+                _inner = _inner ?? _source.Connect();
+                return _lastValue; 
+            }
         }
 
         /// <summary>
@@ -88,14 +85,9 @@ namespace ReactiveUI
         /// </summary>
         public IObservable<Exception> ThrownExceptions { get; private set; }
 
-        public IDisposable Subscribe(IObserver<T> observer)
-        {
-            return _source.Subscribe(observer);
-        }
-
         public void Dispose()
         {
-            _inner.Dispose();
+            (_inner ?? Disposable.Empty).Dispose();
             _inner = null;
         }
 
@@ -128,12 +120,16 @@ namespace ReactiveUI
             Contract.Requires(observable != null);
             Contract.Requires(property != null);
 
-            string prop_name = Reflection.SimpleExpressionToPropertyName(property);
+            Expression expression = Reflection.Rewrite(property.Body);
+
+            if (expression.GetParent().NodeType != ExpressionType.Parameter) {
+                throw new ArgumentException("Property expression must be of the form 'x => x.SomeProperty'");
+            }
+
             var ret = new ObservableAsPropertyHelper<TRet>(observable, 
-                _ => This.raisePropertyChanged(prop_name), 
+                _ => This.raisePropertyChanged(expression.GetMemberInfo().Name), 
                 initialValue, scheduler);
 
-            LogHost.Default.Debug("OAPH {0:X} is for {1}", ret, prop_name);
             return ret;
         }
 

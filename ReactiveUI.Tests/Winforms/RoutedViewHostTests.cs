@@ -1,18 +1,21 @@
 ﻿using System.Linq;
 using System.Windows.Forms;
+using ReactiveUI;
 using ReactiveUI.Winforms;
 using Xunit;
 
+using WinFormsRoutedViewHost = ReactiveUI.Winforms.RoutedControlHost;
+
 namespace ReactiveUI.Tests.Winforms
 {
-    public class RoutedViewHostTests
+    public class WinFormsRoutedViewHostTests
     {
         [Fact]
         public void ShouldDisposePreviousView()
         {
             var viewLocator = new FakeViewLocator { LocatorFunc = t => new FakeWinformsView() };
             var router = new RoutingState();
-            var target = new RoutedViewHost { Router = router, ViewLocator = viewLocator };
+            var target = new WinFormsRoutedViewHost { Router = router, ViewLocator = viewLocator };
             router.Navigate.Execute(new FakeWinformViewModel());
 
             FakeWinformsView currentView = target.Controls.OfType<FakeWinformsView>().Single();
@@ -31,7 +34,7 @@ namespace ReactiveUI.Tests.Winforms
             var defaultContent = new Control();
             var viewLocator = new FakeViewLocator { LocatorFunc = t => new FakeWinformsView() };
             var router = new RoutingState();
-            var target = new RoutedViewHost
+            var target = new WinFormsRoutedViewHost
             {
                 Router = router,
                 ViewLocator = viewLocator,
@@ -46,7 +49,7 @@ namespace ReactiveUI.Tests.Winforms
         {
             var viewLocator = new FakeViewLocator { LocatorFunc = t => new FakeWinformsView() };
             var router = new RoutingState();
-            var target = new RoutedViewHost { Router = router, ViewLocator = viewLocator };
+            var target = new WinFormsRoutedViewHost { Router = router, ViewLocator = viewLocator };
             router.Navigate.Execute(new FakeWinformViewModel());
 
             Assert.Equal(1, target.Controls.OfType<FakeWinformsView>().Count());

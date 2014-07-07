@@ -5,6 +5,7 @@ using System.Text;
 using ReactiveUI;
 using ReactiveUI.Routing;
 using Xunit;
+using Splat;
 
 namespace Foobar.ViewModels
 {
@@ -65,7 +66,9 @@ namespace ReactiveUI.Routing.Tests
         public void ResolveExplicitViewType()
         {
             var resolver = new ModernDependencyResolver();
-            resolver.InitializeResolver();
+
+            resolver.InitializeSplat();
+            resolver.InitializeReactiveUI();
             resolver.Register(() => new BazView(), typeof(IBazView));
 
             using (resolver.WithResolver()) {
