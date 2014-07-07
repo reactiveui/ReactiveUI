@@ -21,7 +21,7 @@ using System.Reactive;
 namespace ReactiveUI
 {
     public abstract class ReactiveCollectionViewController : UICollectionViewController,
-    IReactiveNotifyPropertyChanged<ReactiveCollectionViewController>, IHandleObservableErrors, IReactiveObject, ICanActivate
+        IReactiveNotifyPropertyChanged<ReactiveCollectionViewController>, IHandleObservableErrors, IReactiveObject, ICanActivate
     {
         protected ReactiveCollectionViewController(UICollectionViewLayout withLayout) : base(withLayout) { setupRxObj(); }
         protected ReactiveCollectionViewController(string nibName, NSBundle bundle) : base(nibName, bundle) { setupRxObj(); }

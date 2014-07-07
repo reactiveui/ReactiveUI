@@ -7,10 +7,10 @@ using MonoMac.AppKit;
 namespace ReactiveUI
 {
     /// <summary>
-    ///     Use this class instead of <see cref="ViewModelViewHost"/> when
-    ///     taking advantage of Auto Layout. This will automatically wire
-    ///     up edge constraints for you from the parent view (the target)
-    ///     to the child subview.
+    /// Use this class instead of <see cref="ViewModelViewHost"/> when
+    /// taking advantage of Auto Layout. This will automatically wire
+    /// up edge constraints for you from the parent view (the target)
+    /// to the child subview.
     /// </summary>
     public class AutoLayoutViewModelViewHost : ViewModelViewHost
     {
