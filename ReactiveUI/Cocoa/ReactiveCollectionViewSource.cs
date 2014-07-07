@@ -63,6 +63,12 @@ namespace ReactiveUI
         }
     }
 
+    /// <summary>
+    /// ReactiveCollectionViewSource is a Collection View Source that is
+    /// connected to a ReactiveList that automatically updates the View based
+    /// on the contents of the list. The collection changes are buffered and
+    /// View items are animated in and out as items are added.
+    /// </summary>
     public class ReactiveCollectionViewSource<TSource> : UICollectionViewSource, IEnableLogger, IDisposable, IReactiveNotifyPropertyChanged<ReactiveCollectionViewSource<TSource>>, IHandleObservableErrors, IReactiveObject
     {
         readonly CommonReactiveSource<TSource, UICollectionView, UICollectionViewCell, CollectionViewSectionInformation<TSource>> commonSource;

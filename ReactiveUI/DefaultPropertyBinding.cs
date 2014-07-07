@@ -6,6 +6,10 @@ using Splat;
 
 namespace ReactiveUI
 {
+    /// <summary>
+    /// Helper class used by ReactiveUI to determine the default property in an
+    /// implicit binding.
+    /// </summary>
     public class DefaultPropertyBinding
     {
         static DefaultPropertyBinding()

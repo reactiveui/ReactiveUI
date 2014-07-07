@@ -10,6 +10,11 @@ namespace ReactiveUI
 {
     public static class ExpressionMixins
     {
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="This"></param>
+        /// <returns></returns>
         public static IEnumerable<Expression> GetExpressionChain(this Expression This)
         {
             var expressions = new List<Expression>();
@@ -44,6 +49,11 @@ namespace ReactiveUI
             return expressions;
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="expression"></param>
+        /// <returns></returns>
         public static MemberInfo GetMemberInfo(this Expression expression)
         {
             MemberInfo info = null;
@@ -61,6 +71,11 @@ namespace ReactiveUI
             return info;
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="expression"></param>
+        /// <returns></returns>
         public static Expression GetParent(this Expression expression)
         {
             switch (expression.NodeType) {
@@ -73,6 +88,11 @@ namespace ReactiveUI
             }
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="expression"></param>
+        /// <returns></returns>
         public static object[] GetArgumentsArray(this Expression expression)
         {
             if (expression.NodeType == ExpressionType.Index) {

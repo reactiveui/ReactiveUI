@@ -12,7 +12,7 @@ namespace ReactiveUI
 {
     /// <summary>
     /// IObservedChange is a generic interface that is returned from WhenAny()
-    /// Note that it is used for both Changing (i.e.'before change') 
+    /// Note that it is used for both Changing (i.e.'before change')
     /// and Changed Observables.
     /// </summary>
     public interface IObservedChange<out TSender, out TValue>
@@ -55,20 +55,29 @@ namespace ReactiveUI
             this.Value = value;
         }
 
+        /// <summary>
+        ///
+        /// </summary>
         public TSender Sender { get; private set; }
 
+        /// <summary>
+        ///
+        /// </summary>
         public Expression Expression { get; private set; }
 
+        /// <summary>
+        ///
+        /// </summary>
         public TValue Value { get; private set; }
     }
 
     /// <summary>
-    /// This interface is implemented by RxUI objects which are given 
-    /// IObservables as input - when the input IObservables OnError, instead of 
+    /// This interface is implemented by RxUI objects which are given
+    /// IObservables as input - when the input IObservables OnError, instead of
     /// disabling the RxUI object, we catch the IObservable and pipe it into
     /// this property.
-    /// 
-    /// Normally this IObservable is implemented with a ScheduledSubject whose 
+    ///
+    /// Normally this IObservable is implemented with a ScheduledSubject whose
     /// default Observer is RxApp.DefaultExceptionHandler - this means, that if
     /// you aren't listening to ThrownExceptions and one appears, the exception
     /// will appear on the UI thread and crash the application.
@@ -76,7 +85,7 @@ namespace ReactiveUI
     public interface IHandleObservableErrors
     {
         /// <summary>
-        /// Fires whenever an exception would normally terminate ReactiveUI 
+        /// Fires whenever an exception would normally terminate ReactiveUI
         /// internal state.
         /// </summary>
         IObservable<Exception> ThrownExceptions { get; }
@@ -91,7 +100,7 @@ namespace ReactiveUI
         IObservable<bool> CanExecuteObservable { get; }
 
         /// <summary>
-        /// Gets a value indicating whether this instance is executing. This 
+        /// Gets a value indicating whether this instance is executing. This
         /// Observable is guaranteed to always return a value immediately (i.e.
         /// it is backed by a BehaviorSubject), meaning it is safe to determine
         /// the current state of the command via IsExecuting.First()
@@ -105,7 +114,7 @@ namespace ReactiveUI
     /// executed (i.e. when Execute is called) via IObservable. Conceptually,
     /// this represents an Event, so as a result this IObservable should never
     /// OnComplete or OnError.
-    /// 
+    ///
     /// In previous versions of ReactiveUI, this interface was split into two
     /// separate interfaces, one to handle async methods and one for "standard"
     /// commands, but these have now been merged - every ReactiveCommand is now
@@ -117,11 +126,11 @@ namespace ReactiveUI
     }
 
     /// <summary>
-    /// IReactivePropertyChangedEventArgs is a generic interface that 
-    /// is used to wrap the NotifyPropertyChangedEventArgs and gives 
-    /// information about changed properties. It includes also 
+    /// IReactivePropertyChangedEventArgs is a generic interface that
+    /// is used to wrap the NotifyPropertyChangedEventArgs and gives
+    /// information about changed properties. It includes also
     /// the sender of the notification.
-    /// Note that it is used for both Changing (i.e.'before change') 
+    /// Note that it is used for both Changing (i.e.'before change')
     /// and Changed Observables.
     /// </summary>
     public interface IReactivePropertyChangedEventArgs<out TSender>
@@ -137,6 +146,10 @@ namespace ReactiveUI
         TSender Sender { get; }
     }
 
+    /// <summary>
+    ///
+    /// </summary>
+    /// <typeparam name="TSender"></typeparam>
     public class ReactivePropertyChangingEventArgs<TSender> : PropertyChangingEventArgs, IReactivePropertyChangedEventArgs<TSender>
     {
         /// <summary>
@@ -150,9 +163,16 @@ namespace ReactiveUI
             this.Sender = sender;
         }
 
+        /// <summary>
+        ///
+        /// </summary>
         public TSender Sender { get; private set; }
     }
 
+    /// <summary>
+    ///
+    /// </summary>
+    /// <typeparam name="TSender"></typeparam>
     public class ReactivePropertyChangedEventArgs<TSender> : PropertyChangedEventArgs, IReactivePropertyChangedEventArgs<TSender>
     {
         /// <summary>
@@ -166,6 +186,9 @@ namespace ReactiveUI
             this.Sender = sender;
         }
 
+        /// <summary>
+        ///
+        /// </summary>
         public TSender Sender { get; private set; }
     }
 
@@ -254,7 +277,7 @@ namespace ReactiveUI
 
         /// <summary>
         /// Fires before an item will be removed from a collection, providing
-        /// the item that will be removed. 
+        /// the item that will be removed.
         /// </summary>
         IObservable<T> BeforeItemsRemoved { get; }
 
@@ -300,7 +323,7 @@ namespace ReactiveUI
         /// This Observable is fired when a ShouldReset fires on the collection. This
         /// means that you should forget your previous knowledge of the state
         /// of the collection and reread it.
-        /// 
+        ///
         /// This does *not* mean Clear, and if you interpret it as such, you are
         /// Doing It Wrong.
         /// </summary>
@@ -318,6 +341,9 @@ namespace ReactiveUI
     /// the collection or any of its items have changed, in any way".
     public interface IReactiveCollection<out T> : IReactiveNotifyCollectionChanged<T>, IReactiveNotifyCollectionItemChanged<T>, IEnumerable<T>, INotifyCollectionChanged, INotifyCollectionChanging, IReactiveObject
     {
+        /// <summary>
+        ///
+        /// </summary>
         void Reset();
     }
 
@@ -345,7 +371,7 @@ namespace ReactiveUI
     /// </summary>
     public interface IReadOnlyReactiveList<out T> : IReadOnlyReactiveCollection<T>, IReadOnlyList<T>
     {
-        bool IsEmpty { get; } 
+        bool IsEmpty { get; }
     }
 
     /// <summary>
@@ -368,7 +394,7 @@ namespace ReactiveUI
     /// </summary>
     public interface IReactiveList<T> : IReactiveCollection<T>, IList<T>
     {
-        bool IsEmpty { get; } 
+        bool IsEmpty { get; }
 
         void AddRange(IEnumerable<T> collection);
 
@@ -403,11 +429,23 @@ namespace ReactiveUI
         IScreen HostScreen { get; }
     }
 
+    /// <summary>
+    /// Implementing this interface on a ViewModel indicates that the ViewModel
+    /// is interested in Activation events. Instantiate the Activator, then call
+    /// WhenActivated on your class to register what you want to happen when
+    /// the View is activated. See the documentation for ViewModelActivator to
+    /// read more about Activation.
+    /// </summary>
     public interface ISupportsActivation
     {
         ViewModelActivator Activator { get; }
     }
 
+    /// <summary>
+    /// This Interface is used by the framework to explicitly provide activation
+    /// events. Usually you can ignore this unless you are porting RxUI to a new
+    /// UI Toolkit.
+    /// </summary>
     public interface ICanActivate
     {
         IObservable<Unit> Activated { get; }
@@ -415,7 +453,8 @@ namespace ReactiveUI
     }
 
     /// <summary>
-    /// Allows an additional string to make view resolution more specific than just a type.
+    /// Allows an additional string to make view resolution more specific than
+    /// just a type.
     /// </summary>
     public class ViewContractAttribute : Attribute
     {
