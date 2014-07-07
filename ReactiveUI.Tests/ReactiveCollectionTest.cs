@@ -13,6 +13,7 @@ using System.Collections.Specialized;
 using System.Reactive.Subjects;
 using System.Reactive;
 using System.Diagnostics;
+using System.Threading;
 
 namespace ReactiveUI.Tests
 {
@@ -46,6 +47,49 @@ namespace ReactiveUI.Tests
 
             this.WhenAny(x => x.Model.SomeNumber, x => x.Value.ToString())
                 .ToProperty(this, x => x.NumberAsString, out numberAsString);
+        }
+    }
+
+    class NestedTextModel : ReactiveObject 
+    {
+        string text;
+        public string Text {
+            get { return text; }
+            set { this.RaiseAndSetIfChanged(ref text, value); }
+        }
+
+        bool hasData;
+        public bool HasData {
+            get { return hasData; }
+            set { this.RaiseAndSetIfChanged(ref hasData, value); }
+        }
+    }
+
+    class TextModel : ReactiveObject 
+    {
+        NestedTextModel value;
+        public NestedTextModel Value {
+            get {
+                if (value != null) return value;
+                var newValue = 
+                    value = new NestedTextModel() {
+                        Text = "text",
+                        HasData = true
+                    };
+
+                this.RaiseAndSetIfChanged(ref value, newValue);
+                return value;
+            }
+        }
+
+        public bool HasData {
+            get { return Value.HasData; }
+        }
+
+        public TextModel()
+        {
+            this.WhenAnyValue(x => x.Value.HasData)
+                        .Subscribe(_ => this.RaisePropertyChanged("HasData"));
         }
     }
 
@@ -1565,6 +1609,50 @@ namespace ReactiveUI.Tests
 
             models[0].IsHidden = false;
             Assert.Equal(4, viewModels.Count);
+        }
+
+                
+        ReactiveList<TextModel> makeAsyncCollection(int maxSize) 
+        {
+            return new ReactiveList<TextModel>(Enumerable.Repeat(Unit.Default, maxSize)
+                .Select(_ => new TextModel()));
+        }
+
+        [Fact]
+        public void TestDelayNotifications() 
+        {
+            var maxSize = 10;
+            var data = makeAsyncCollection(maxSize);
+
+            var list = new ReactiveList<TextModel>(data) {
+                ChangeTrackingEnabled = true
+            };
+
+            var derivedList = list.CreateDerivedCollection(
+                m => m.Value, m => m.HasData, (a, b) => a.Text.CompareTo(b.Text), 
+                list.ShouldReset, 
+                scheduler: RxApp.MainThreadScheduler);
+
+            derivedList.CountChanged
+                .StartWith(derivedList.Count)
+                .Subscribe(count => {
+                    Console.WriteLine(count);
+                    Assert.True(count <= maxSize);
+                });
+
+            data = makeAsyncCollection(maxSize);
+                
+            Observable.Delay(Observable.Return(Unit.Default), TimeSpan.FromMilliseconds(100))
+                .ObserveOn(RxApp.MainThreadScheduler)
+                .Subscribe(_ => {
+                    using (list.SuppressChangeNotifications()) {
+                        list.Clear();
+                        list.AddRange(data);
+                    }
+                });
+
+            var done = new EventWaitHandle(false, EventResetMode.ManualReset);
+            done.WaitOne(5000);
         }
 
         [Fact]
