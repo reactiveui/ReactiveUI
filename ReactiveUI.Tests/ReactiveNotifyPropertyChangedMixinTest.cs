@@ -7,7 +7,9 @@ using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
+using ReactiveUI;
 using ReactiveUI.Testing;
 using Xunit;
 
@@ -15,20 +17,25 @@ using Microsoft.Reactive.Testing;
 
 #if !MONO
 using System.Windows.Controls;
-using ReactiveUI.Xaml;
 #endif
 
 namespace ReactiveUI.Tests
 {
     public class TestWhenAnyObsViewModel : ReactiveObject
     {
-        public ReactiveCommand Command1 { get; protected set; }
-        public ReactiveCommand Command2 { get; protected set; }
+        public ReactiveCommand<object> Command1 { get; protected set; }
+        public ReactiveCommand<object> Command2 { get; protected set; }
+
+        ReactiveList<int> myListOfInts;
+        public ReactiveList<int> MyListOfInts {
+            get { return myListOfInts; }
+            set { this.RaiseAndSetIfChanged(ref myListOfInts, value); }
+        }
 
         public TestWhenAnyObsViewModel()
         {
-            Command1 = new ReactiveCommand();
-            Command2 = new ReactiveCommand();
+            Command1 = ReactiveCommand.Create();
+            Command2 = ReactiveCommand.Create();
         }
     }
 
@@ -131,7 +138,7 @@ namespace ReactiveUI.Tests
                 Assert.Equal(3, changes.Count);
 
                 Assert.True(changes.All(x => x.Sender == fixture));
-                Assert.True(changes.All(x => x.PropertyName == "IsOnlyOneWord"));
+                Assert.True(changes.All(x => x.GetPropertyName() == "IsOnlyOneWord"));
                 changes.Select(x => x.Value).AssertAreEqual(new[] {"Foo", "Bar", "Baz"});
             });
         }
@@ -160,7 +167,7 @@ namespace ReactiveUI.Tests
                 Assert.Equal(3, changes.Count);
 
                 Assert.True(changes.All(x => x.Sender == fixture));
-                Assert.True(changes.All(x => x.PropertyName == "Child.IsOnlyOneWord"));
+                Assert.True(changes.All(x => x.GetPropertyName() == "Child.IsOnlyOneWord"));
                 changes.Select(x => x.Value).AssertAreEqual(new[] {"Foo", "Bar", "Baz"});
             });
         }
@@ -200,7 +207,7 @@ namespace ReactiveUI.Tests
                 Assert.Equal(4, changes.Count);
 
                 Assert.True(changes.All(x => x.Sender == fixture));
-                Assert.True(changes.All(x => x.PropertyName == "Child.IsOnlyOneWord"));
+                Assert.True(changes.All(x => x.GetPropertyName() == "Child.IsOnlyOneWord"));
                 changes.Select(x => x.Value).AssertAreEqual(new[] {"Foo", "Bar", null, "Baz"});
             });           
         }
@@ -233,7 +240,7 @@ namespace ReactiveUI.Tests
                 Assert.Equal(3, changes.Count);
 
                 Assert.True(changes.All(x => x.Sender == fixture));
-                Assert.True(changes.All(x => x.PropertyName == "Child.IsOnlyOneWord"));
+                Assert.True(changes.All(x => x.GetPropertyName() == "Child.IsOnlyOneWord"));
                 changes.Select(x => x.Value).AssertAreEqual(new[] {"Foo", "Bar", null});
             });
         }
@@ -333,17 +340,17 @@ namespace ReactiveUI.Tests
                 {x => x.Child.IsOnlyOneWord.Length, new[] {typeof(TestFixture), typeof(string), typeof(int) }},
                 {x => x.SomeOtherParam, new[] { typeof(int) }},
                 {x => x.Child.IsNotNullString, new[] {typeof(TestFixture), typeof(string)}},
-                {x => x.Child.Changed, new[] {typeof(TestFixture), typeof(IObservable<IObservedChange<object, object>>)}},
+                {x => x.Child.Changed, new[] {typeof(TestFixture), typeof(IObservable<IReactivePropertyChangedEventArgs<ReactiveObject>>)}},
             };
 
-            var results = data.Keys.Select(x => new {input = x, output = Reflection.ExpressionToPropertyNames(x)}).ToArray();
-            var resultTypes = dataTypes.Keys.Select(x => new {input = x, output = Reflection.ExpressionToPropertyTypes(x)}).ToArray();
+            var results = data.Keys.Select(x => new { input = x, output = Reflection.Rewrite(x.Body).GetExpressionChain() }).ToArray();
+            var resultTypes = dataTypes.Keys.Select(x => new {input = x, output = Reflection.Rewrite(x.Body).GetExpressionChain() }).ToArray();
 
             foreach(var x in results) {
-                data[x.input].AssertAreEqual(x.output);
+                data[x.input].AssertAreEqual(x.output.Select(y => y.GetMemberInfo().Name));
             }
             foreach (var x in resultTypes) {
-                dataTypes[x.input].AssertAreEqual(x.output);
+                dataTypes[x.input].AssertAreEqual(x.output.Select(y => y.Type));
             }
         }
 
@@ -398,14 +405,27 @@ namespace ReactiveUI.Tests
             fixture.WhenAny(x => x.PocoProperty, x => x).Subscribe(output.Add);
             var output2 = new List<string>();
             fixture.WhenAnyValue(x => x.PocoProperty).Subscribe(output2.Add);
+            var output3 = new List<IObservedChange<TestFixture, int?>>();
+            fixture.WhenAny(x => x.NullableInt, x => x).Subscribe(output3.Add);
 
+            var output4 = new List<int?>();
+            fixture.WhenAnyValue(x => x.NullableInt).Subscribe(output4.Add);
+           
             Assert.Equal(1, output.Count);
             Assert.Equal(fixture, output[0].Sender);
-            Assert.Equal("PocoProperty", output[0].PropertyName);
+            Assert.Equal("PocoProperty", output[0].GetPropertyName());
             Assert.Equal("Bamf", output[0].Value);
 
             Assert.Equal(1, output2.Count);
             Assert.Equal("Bamf", output2[0]);
+
+            Assert.Equal(1, output3.Count);
+            Assert.Equal(fixture, output3[0].Sender);
+            Assert.Equal("NullableInt", output3[0].GetPropertyName());
+            Assert.Equal(null, output3[0].Value);
+
+            Assert.Equal(1, output4.Count);
+            Assert.Equal(null, output4[0]);
         }
 
         [Fact]
@@ -486,7 +506,7 @@ namespace ReactiveUI.Tests
         {
             (new TestScheduler()).With(sched => {
                 var fixture = new TestFixture();
-                var changes = fixture.ObservableForProperty<TestFixture, string>("IsOnlyOneWord").CreateCollection();
+                var changes = fixture.ObservableForProperty<TestFixture, string>(x => x.IsOnlyOneWord).CreateCollection();
 
                 fixture.IsOnlyOneWord = "Foo";
                 sched.Start();
@@ -505,7 +525,7 @@ namespace ReactiveUI.Tests
                 Assert.Equal(3, changes.Count);
 
                 Assert.True(changes.All(x => x.Sender == fixture));
-                Assert.True(changes.All(x => x.PropertyName == "IsOnlyOneWord"));
+                Assert.True(changes.All(x => x.GetPropertyName() == "IsOnlyOneWord"));
                 changes.Select(x => x.Value).AssertAreEqual(new[] { "Foo", "Bar", "Baz" });
             });
         }
@@ -515,7 +535,7 @@ namespace ReactiveUI.Tests
         {
             (new TestScheduler()).With(sched => {
                 var fixture = new TestFixture() { IsOnlyOneWord = "Pre" };
-                var changes = fixture.ObservableForProperty<TestFixture, string>("IsOnlyOneWord", skipInitial: false).CreateCollection();
+                var changes = fixture.ObservableForProperty<TestFixture, string>(x => x.IsOnlyOneWord, skipInitial: false).CreateCollection();
 
                 sched.Start();
                 Assert.Equal(1, changes.Count);
@@ -525,7 +545,7 @@ namespace ReactiveUI.Tests
                 Assert.Equal(2, changes.Count);
 
                 Assert.True(changes.All(x => x.Sender == fixture));
-                Assert.True(changes.All(x => x.PropertyName == "IsOnlyOneWord"));
+                Assert.True(changes.All(x => x.GetPropertyName() == "IsOnlyOneWord"));
                 changes.Select(x => x.Value).AssertAreEqual(new[] { "Pre", "Foo" });
             });
         }
@@ -535,7 +555,7 @@ namespace ReactiveUI.Tests
         {
             (new TestScheduler()).With(sched => {
                 var fixture = new TestFixture() { IsOnlyOneWord = "Pre" };
-                var changes = fixture.ObservableForProperty<TestFixture, string>("IsOnlyOneWord", beforeChange: true).CreateCollection();
+                var changes = fixture.ObservableForProperty<TestFixture, string>(x => x.IsOnlyOneWord, beforeChange: true).CreateCollection();
 
                 sched.Start();
                 Assert.Equal(0, changes.Count);
@@ -549,7 +569,7 @@ namespace ReactiveUI.Tests
                 Assert.Equal(2, changes.Count);
 
                 Assert.True(changes.All(x => x.Sender == fixture));
-                Assert.True(changes.All(x => x.PropertyName == "IsOnlyOneWord"));
+                Assert.True(changes.All(x => x.GetPropertyName() == "IsOnlyOneWord"));
                 changes.Select(x => x.Value).AssertAreEqual(new[] { "Pre", "Foo" });
             });
         }
@@ -559,7 +579,7 @@ namespace ReactiveUI.Tests
         {
             (new TestScheduler()).With(sched => {
                 var fixture = new TestFixture();
-                var changes = fixture.ObservableForProperty<TestFixture, string>("IsOnlyOneWord").CreateCollection();
+                var changes = fixture.ObservableForProperty<TestFixture, string>(x => x.IsOnlyOneWord).CreateCollection();
 
                 fixture.IsOnlyOneWord = "Foo";
                 sched.Start();
@@ -578,7 +598,7 @@ namespace ReactiveUI.Tests
                 Assert.Equal(3, changes.Count);
 
                 Assert.True(changes.All(x => x.Sender == fixture));
-                Assert.True(changes.All(x => x.PropertyName == "IsOnlyOneWord"));
+                Assert.True(changes.All(x => x.GetPropertyName() == "IsOnlyOneWord"));
                 changes.Select(x => x.Value).AssertAreEqual(new[] { "Foo", "Bar", "Foo" });
             });
         }
@@ -587,7 +607,7 @@ namespace ReactiveUI.Tests
     public class WhenAnyObservableTests
     {
         [Fact]
-        public void WhenAnyObservableSmokeTest()
+        public async Task WhenAnyObservableSmokeTest()
         {
             var fixture = new TestWhenAnyObsViewModel();
 
@@ -597,18 +617,36 @@ namespace ReactiveUI.Tests
 
             Assert.Equal(0, list.Count);
 
-            fixture.Command1.Execute(1);
+            await fixture.Command1.ExecuteAsync(1);
             Assert.Equal(1, list.Count);
 
-            fixture.Command2.Execute(2);
+            await fixture.Command2.ExecuteAsync(2);
             Assert.Equal(2, list.Count);
 
-            fixture.Command1.Execute(1);
+            await fixture.Command1.ExecuteAsync(1);
             Assert.Equal(3, list.Count);
 
             Assert.True(
                 new[] {1, 2, 1,}.Zip(list, (expected, actual) => new {expected, actual})
                                 .All(x => x.expected == x.actual));
+        }
+
+        [Fact]
+        public void WhenAnyWithNullObjectShouldUpdateWhenObjectIsntNullAnymore()
+        {
+            var fixture = new TestWhenAnyObsViewModel();
+            var output = fixture.WhenAnyObservable(x => x.MyListOfInts.CountChanged).CreateCollection();
+
+            Assert.Equal(0, output.Count);
+
+            fixture.MyListOfInts = new ReactiveList<int>();
+            Assert.Equal(0, output.Count);
+
+            fixture.MyListOfInts.Add(1);
+            Assert.Equal(1, output.Count);
+
+            fixture.MyListOfInts = null;
+            Assert.Equal(1, output.Count);
         }
     }
 

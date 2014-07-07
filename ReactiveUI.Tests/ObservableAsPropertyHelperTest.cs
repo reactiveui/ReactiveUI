@@ -25,6 +25,8 @@ namespace ReactiveUI.Tests
 
                 sched.Start();
 
+                Assert.Equal(input.Last(), fixture.Value);
+
                 // Note: Why doesn't the list match the above one? We're supposed
                 // to suppress duplicate notifications, of course :)
                 (new[] { -5, 1, 2, 3, 4 }).AssertAreEqual(output);
@@ -98,30 +100,6 @@ namespace ReactiveUI.Tests
     
                 Assert.False(failed);
                 Assert.Equal(4, fixture.Value);
-            });
-        }
-
-
-        [Fact]
-        public void OAPHShouldBeObservable()
-        {
-            (new TestScheduler()).With(sched => {
-                var input = sched.CreateHotObservable(
-                    sched.OnNextAt(100, 5),
-                    sched.OnNextAt(200, 10),
-                    sched.OnNextAt(300, 15),
-                    sched.OnNextAt(400, 20)
-                );
-
-                var result = new List<string>();
-
-                var inputOaph = new ObservableAsPropertyHelper<int>(input, x => { }, 0);
-                var fixture = new ObservableAsPropertyHelper<string>(inputOaph.Select(x => x.ToString()),
-                    result.Add, "0");
-
-                sched.AdvanceToMs(500);
-
-                new[] {"0", "5", "10", "15", "20"}.AssertAreEqual(result);
             });
         }
     }
