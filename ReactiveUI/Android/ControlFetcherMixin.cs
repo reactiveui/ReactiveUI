@@ -10,17 +10,23 @@ using Java.Interop;
 
 namespace ReactiveUI
 {
+    /// <summary>
+    /// ControlFetcherMixin helps you automatically wire-up Activities and
+    /// Fragments via property names, similar to Butter Knife, as well as allows
+    /// you to fetch controls manually.
+    /// </summary>
     public static class ControlFetcherMixin
     {
         static readonly Dictionary<string, int> controlIds;
-        static readonly ConditionalWeakTable<object, Dictionary<string, View>> viewCache = new ConditionalWeakTable<object, Dictionary<string, View>>();
+        static readonly ConditionalWeakTable<object, Dictionary<string, View>> viewCache =
+            new ConditionalWeakTable<object, Dictionary<string, View>>();
 
         static readonly MethodInfo getControlActivity;
         static readonly MethodInfo getControlView;
 
         static ControlFetcherMixin()
         {
-            // NB: This is some hacky shit, but on Xamarin.Android at the moment, 
+            // NB: This is some hacky shit, but on Xamarin.Android at the moment,
             // this is always the entry assembly.
             var assm = AppDomain.CurrentDomain.GetAssemblies()[1];
             var resources = assm.GetModules().SelectMany(x => x.GetTypes()).First(x => x.Name == "Resource");
@@ -34,6 +40,10 @@ namespace ReactiveUI
             getControlView = type.GetMethod("GetControl", new[] { typeof(View), typeof(string) });
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <returns></returns>
         public static T GetControl<T>(this Activity This, [CallerMemberName]string propertyName = null)
             where T : View
         {
@@ -41,6 +51,10 @@ namespace ReactiveUI
                 () => This.FindViewById(controlIds[propertyName.ToLowerInvariant()]).JavaCast<T>());
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <returns></returns>
         public static T GetControl<T>(this View This, [CallerMemberName]string propertyName = null)
             where T : View
         {
@@ -48,12 +62,19 @@ namespace ReactiveUI
                 () => This.FindViewById(controlIds[propertyName.ToLowerInvariant()]).JavaCast<T>());
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <returns></returns>
         public static T GetControl<T>(this Fragment This, [CallerMemberName]string propertyName = null)
             where T : View
         {
             return GetControl<T>(This.View, propertyName);
         }
 
+        /// <summary>
+        ///
+        /// </summary>
         public static void WireUpControls(this ILayoutViewHost This)
         {
             var members = This.GetType().GetRuntimeProperties()
@@ -73,7 +94,9 @@ namespace ReactiveUI
             });
         }
 
-
+        /// <summary>
+        ///
+        /// </summary>
         public static void WireUpControls(this View This)
         {
             var members = This.GetType().GetRuntimeProperties()
@@ -117,6 +140,9 @@ namespace ReactiveUI
             });
         }
 
+        /// <summary>
+        ///
+        /// </summary>
         public static void WireUpControls(this Activity This)
         {
             var members = This.GetType().GetRuntimeProperties()
@@ -163,5 +189,4 @@ namespace ReactiveUI
             return ret;
         }
     }
-
 }

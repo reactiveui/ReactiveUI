@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ReactiveUI
 {
-    public class ExpressionRewriter : ExpressionVisitor
+    internal class ExpressionRewriter : ExpressionVisitor
     {
         public override Expression Visit(Expression node)
         {

@@ -9,24 +9,20 @@ using MonoTouch.UIKit;
 namespace ReactiveUI.Cocoa
 {
 #if UIKIT
-    
     /// <summary>
     /// This class exists to force the MT linker to include properties called by RxUI via reflection
     /// </summary>
     [Preserve(AllMembers = true)]
     class LinkerOverrides
     {
-
-        private void KeepMe()
+        public void KeepMe()
         {
            // UIButon
             var btn = new UIButton();
             var title = btn.Title(UIControlState.Disabled);
             btn.SetTitle("foo", UIControlState.Disabled);
             btn.TitleLabel.Text = btn.TitleLabel.Text;
-            
 
-            
             // UISlider
             var slider = new UISlider();
             slider.Value = slider.Value; // Get and set
@@ -68,9 +64,7 @@ namespace ReactiveUI.Cocoa
             bbi.Clicked -= eh;
 
             eh.Invoke(null, null);
-
         }
     }
-
 #endif
 }

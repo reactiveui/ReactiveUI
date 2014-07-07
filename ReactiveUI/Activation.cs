@@ -12,6 +12,28 @@ using Splat;
 
 namespace ReactiveUI
 {
+    /// <summary>
+    /// ViewModelActivator is a helper class that you instantiate in your
+    /// ViewModel classes in order to help with Activation. Views will internally
+    /// call this class when the corresponding View comes on screen. This means
+    /// you can set up resources such as subscriptions to global objects that
+    /// should be cleaned up on exit. Once you instantiate this class, use the
+    /// WhenActivated method to register what to do when activated.
+    ///
+    /// View Activation is  **not** the same as being loaded / unloaded; Views
+    /// are Activated when they *enter* the Visual Tree, and are Deactivated when
+    /// they *leave* the Visual Tree. This is a critical difference when it comes
+    /// to views that are recycled, such as UITableViews or Virtualizing
+    /// ScrollViews.
+    ///
+    /// Create this class solely in the **Base Class** of any classes that inherit
+    /// from this class (i.e. if you create a FooViewModel that supports activation,
+    /// the instance should be protected and a child BarViewModel should use the
+    /// existing ViewModelActivator).
+    ///
+    /// NOTE: You **must** set up Activation in the corresponding View when using
+    /// ViewModel Activation.
+    /// </summary>
     public sealed class ViewModelActivator
     {
         readonly List<Func<IEnumerable<IDisposable>>> blocks;
@@ -28,6 +50,12 @@ namespace ReactiveUI
             blocks.Add(block);
         }
 
+        /// <summary>
+        /// This method is called by the framework when the corresponding View
+        /// is activated. Call this method in unit tests to simulate a ViewModel
+        /// being activated.
+        /// </summary>
+        /// <returns>A Disposable that calls Deactivate when disposed.</returns>
         public IDisposable Activate()
         {
             if (Interlocked.Increment(ref refCount) == 1) {
@@ -38,6 +66,12 @@ namespace ReactiveUI
             return Disposable.Create(() => Deactivate());
         }
 
+        /// <summary>
+        /// This method is called by the framework when the corresponding View
+        /// is deactivated.
+        /// </summary>
+        /// <param name="ignoreRefCount">Force the VM to be deactivated, even
+        /// if more than one person called Activate.</param>
         public void Deactivate(bool ignoreRefCount = false)
         {
             if (Interlocked.Decrement(ref refCount) == 0 || ignoreRefCount) {
@@ -53,11 +87,26 @@ namespace ReactiveUI
             RxApp.EnsureInitialized();
         }
 
+        /// <summary>
+        /// WhenActivated allows you to register a Func to be called when a
+        /// ViewModel's View is Activated.
+        /// </summary>
+        /// <param name="block">The method to be called when the corresponding
+        /// View is activated. It returns a list of Disposables that will be
+        /// cleaned up when the View is deactivated.</param>
         public static void WhenActivated(this ISupportsActivation This, Func<IEnumerable<IDisposable>> block)
         {
             This.Activator.addActivationBlock(block);
         }
 
+        /// <summary>
+        /// WhenActivated allows you to register a Func to be called when a
+        /// ViewModel's View is Activated.
+        /// </summary>
+        /// <param name="block">The method to be called when the corresponding
+        /// View is activated. The Action parameter (usually called 'd') allows
+        /// you to register Disposables to be cleaned up when the View is
+        /// deactivated (i.e. "d(someObservable.Subscribe());")</param>
         public static void WhenActivated(this ISupportsActivation This, Action<Action<IDisposable>> block)
         {
             This.Activator.addActivationBlock(() => {
@@ -67,12 +116,14 @@ namespace ReactiveUI
             });
         }
 
-        public static IDisposable WithActivation(this ISupportsActivation This)
-        {
-            This.Activator.Activate();
-            return Disposable.Create(() => This.Activator.Deactivate());
-        }
-
+        /// <summary>
+        /// WhenActivated allows you to register a Func to be called when a
+        /// View is Activated.
+        /// </summary>
+        /// <param name="block">The method to be called when the corresponding
+        /// View is activated. It returns a list of Disposables that will be
+        /// cleaned up when the View is deactivated.</param>
+        /// <returns>A Disposable that deactivates this registration.</returns>
         public static IDisposable WhenActivated(this IActivatable This, Func<IEnumerable<IDisposable>> block)
         {
             var activationFetcher = activationFetcherCache.Get(This.GetType());
@@ -90,6 +141,24 @@ namespace ReactiveUI
 
             var viewDisposable = handleViewActivation(block, activationEvents);
             return new CompositeDisposable(vmDisposable, viewDisposable);
+        }
+
+        /// <summary>
+        /// WhenActivated allows you to register a Func to be called when a
+        /// View is Activated.
+        /// </summary>
+        /// <param name="block">The method to be called when the corresponding
+        /// View is activated. The Action parameter (usually called 'd') allows
+        /// you to register Disposables to be cleaned up when the View is
+        /// deactivated (i.e. "d(someObservable.Subscribe());")</param>
+        /// <returns>A Disposable that deactivates this registration.</returns>
+        public static IDisposable WhenActivated(this IActivatable This, Action<Action<IDisposable>> block)
+        {
+            return This.WhenActivated(() => {
+                var ret = new List<IDisposable>();
+                block(ret.Add);
+                return ret;
+            });
         }
 
         static IDisposable handleViewActivation(Func<IEnumerable<IDisposable>> block, Tuple<IObservable<Unit>, IObservable<Unit>> activation)
@@ -136,16 +205,7 @@ namespace ReactiveUI
                 vmDisposable);
         }
 
-        public static IDisposable WhenActivated(this IActivatable This, Action<Action<IDisposable>> block)
-        {
-            return This.WhenActivated(() => {
-                var ret = new List<IDisposable>();
-                block(ret.Add);
-                return ret;
-            });
-        }
-
-        static readonly MemoizingMRUCache<Type, IActivationForViewFetcher> activationFetcherCache = 
+        static readonly MemoizingMRUCache<Type, IActivationForViewFetcher> activationFetcherCache =
             new MemoizingMRUCache<Type, IActivationForViewFetcher>((t, _) => {
                 return Locator.Current.GetServices<IActivationForViewFetcher>()
                     .Aggregate(Tuple.Create(0, default(IActivationForViewFetcher)), (acc, x) => {
@@ -155,6 +215,10 @@ namespace ReactiveUI
             }, RxApp.SmallCacheLimit);
     }
 
+    /// <summary>
+    /// This class implements View Activation for classes that explicitly describe
+    /// their activation via ICanActivate. This class is used by the framework.
+    /// </summary>
     public class CanActivateViewFetcher : IActivationForViewFetcher
     {
         public int GetAffinityForView(Type view)

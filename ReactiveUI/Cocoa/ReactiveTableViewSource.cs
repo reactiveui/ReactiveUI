@@ -121,6 +121,12 @@ namespace ReactiveUI
         }
     }
 
+    /// <summary>
+    /// ReactiveTableViewSource is a Table View Source that is connected to 
+    /// a ReactiveList that automatically updates the View based on the 
+    /// contents of the list. The collection changes are buffered and View 
+    /// items are animated in and out as items are added.
+    /// </summary>
     public class ReactiveTableViewSource<TSource> : UITableViewSource, IEnableLogger, IDisposable, IReactiveNotifyPropertyChanged<ReactiveTableViewSource<TSource>>, IHandleObservableErrors, IReactiveObject
     {
         readonly CommonReactiveSource<TSource, UITableView, UITableViewCell, TableSectionInformation<TSource>> commonSource;
