@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Windows;
-using ReactiveUI.Xaml;
+using System.Windows.Controls;
+using ReactiveUI;
 using Xunit;
 
 namespace ReactiveUI.Tests
@@ -40,8 +42,9 @@ namespace ReactiveUI.Tests
             Assert.Equal(0, binder.GetAffinityForObject(typeof (DepObjFixture), "DoesntExist"));
 
             var results = new List<IObservedChange<object, object>>();
-            var disp1 = binder.GetNotificationForProperty(fixture, "TestString").Subscribe(results.Add);
-            var disp2 = binder.GetNotificationForProperty(fixture, "TestString").Subscribe(results.Add);
+            Expression<Func<DepObjFixture, object>> expression = x => x.TestString;
+            var disp1 = binder.GetNotificationForProperty(fixture, expression.Body).Subscribe(results.Add);
+            var disp2 = binder.GetNotificationForProperty(fixture, expression.Body).Subscribe(results.Add);
 
             fixture.TestString = "Foo";
             fixture.TestString = "Bar";
@@ -61,8 +64,9 @@ namespace ReactiveUI.Tests
             Assert.Equal(0, binder.GetAffinityForObject(typeof (DerivedDepObjFixture), "DoesntExist"));
 
             var results = new List<IObservedChange<object, object>>();
-            var disp1 = binder.GetNotificationForProperty(fixture, "TestString").Subscribe(results.Add);
-            var disp2 = binder.GetNotificationForProperty(fixture, "TestString").Subscribe(results.Add);
+            Expression<Func<DerivedDepObjFixture, object>> expression = x => x.TestString;
+            var disp1 = binder.GetNotificationForProperty(fixture, expression.Body).Subscribe(results.Add);
+            var disp2 = binder.GetNotificationForProperty(fixture, expression.Body).Subscribe(results.Add);
 
             fixture.TestString = "Foo";
             fixture.TestString = "Bar";
@@ -72,8 +76,6 @@ namespace ReactiveUI.Tests
             disp1.Dispose();
             disp2.Dispose();
         }
-
-
 
         [Fact]
         public void WhenAnyWithDependencyObjectTest()
@@ -87,6 +89,24 @@ namespace ReactiveUI.Tests
             Assert.Null(outputs.First());
             Assert.Equal(4, outputs.Count);
             Assert.True(inputs.Zip(outputs.Skip(1), (expected, actual) => expected == actual).All(x => x));
+        }
+
+        [Fact]
+        public void ListBoxSelectedItemTest()
+        {
+            var input = new ListBox();
+            input.Items.Add("Foo");
+            input.Items.Add("Bar");
+            input.Items.Add("Baz");
+
+            var output = input.WhenAnyValue(x => x.SelectedItem).CreateCollection();
+            Assert.Equal(1, output.Count);
+
+            input.SelectedIndex = 1;
+            Assert.Equal(2, output.Count);
+
+            input.SelectedIndex = 2;
+            Assert.Equal(3, output.Count);
         }
     }
 }

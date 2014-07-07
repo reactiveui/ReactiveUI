@@ -9,6 +9,8 @@ using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Runtime.CompilerServices;
 using System.Threading;
+using Splat;
+using System.Reactive.Concurrency;
 
 namespace ReactiveUI
 {
@@ -183,6 +185,7 @@ namespace ReactiveUI
         readonly Func<TSource, bool> filter;
         readonly Func<TValue, TValue, int> orderer;
         readonly IObservable<Unit> signalReset;
+        readonly IScheduler scheduler;
 
         // This list maps indices in this collection to their corresponding indices in the source collection.
         List<int> indexToSourceIndexMap;
@@ -194,7 +197,8 @@ namespace ReactiveUI
             Func<TSource, TValue> selector,
             Func<TSource, bool> filter,
             Func<TValue, TValue, int> orderer,
-            IObservable<Unit> signalReset)
+            IObservable<Unit> signalReset,
+            IScheduler scheduler)
         {
             Contract.Requires(source != null);
             Contract.Requires(selector != null);
@@ -207,6 +211,7 @@ namespace ReactiveUI
             this.filter = filter;
             this.orderer = orderer;
             this.signalReset = signalReset;
+            this.scheduler = scheduler;
 
             this.inner = new CompositeDisposable();
             this.indexToSourceIndexMap = new List<int>();
@@ -235,7 +240,7 @@ namespace ReactiveUI
                     }
                 }
             } else {
-                var irncc = source as IReactiveNotifyCollectionChanged;
+                var irncc = source as IReactiveNotifyCollectionChanged<TSource>;
                 var eventObs = irncc != null
                     ? irncc.Changed
                     : Observable
@@ -243,17 +248,17 @@ namespace ReactiveUI
                             x => incc.CollectionChanged += x,
                             x => incc.CollectionChanged -= x)
                         .Select(x => x.EventArgs);
-                inner.Add(eventObs.Subscribe(onSourceCollectionChanged));
+                inner.Add(eventObs.ObserveOn(scheduler).Subscribe(onSourceCollectionChanged));
             }
 
-            var irc = source as IReactiveCollection;
+            var irc = source as IReactiveCollection<TSource>;
 
             if (irc != null) {
-                inner.Add(irc.ItemChanged.Select(x => (TSource)x.Sender).Subscribe(onItemChanged));
+                inner.Add(irc.ItemChanged.Select(x => x.Sender).ObserveOn(scheduler).Subscribe(onItemChanged));
             }
 
             if (signalReset != null) {
-                inner.Add(signalReset.Subscribe(x => this.Reset()));
+                inner.Add(signalReset.ObserveOn(scheduler).Subscribe(x => this.Reset()));
             }
         }
 
@@ -867,7 +872,8 @@ namespace ReactiveUI
             Func<T, TNew> selector,
             Func<T, bool> filter = null,
             Func<TNew, TNew, int> orderer = null,
-            IObservable<TDontCare> signalReset = null)
+            IObservable<TDontCare> signalReset = null,
+            IScheduler scheduler = null)
         {
             Contract.Requires(selector != null);
 
@@ -877,7 +883,11 @@ namespace ReactiveUI
                 reset = signalReset.Select(_ => Unit.Default);
             }
 
-            return new ReactiveDerivedCollection<T, TNew>(This, selector, filter, orderer, reset);
+            if (scheduler == null) {
+                scheduler = Scheduler.Immediate;
+            }
+
+            return new ReactiveDerivedCollection<T, TNew>(This, selector, filter, orderer, reset, scheduler);
         }
 
         /// <summary>
@@ -904,9 +914,10 @@ namespace ReactiveUI
             this IEnumerable<T> This,
             Func<T, TNew> selector,
             Func<T, bool> filter = null,
-            Func<TNew, TNew, int> orderer = null)
+            Func<TNew, TNew, int> orderer = null,
+            IScheduler scheduler = null)
         {
-            return This.CreateDerivedCollection(selector, filter, orderer, (IObservable<Unit>)null);
+            return This.CreateDerivedCollection(selector, filter, orderer, (IObservable<Unit>)null, scheduler);
         }
     }
 }

@@ -1,9 +1,11 @@
 ﻿Param([string]$version = $null)
 
-$Archs = {"Portable-Net45+WinRT45+WP8", "Net45", "WP8", "WinRT45", "Mono", "Monoandroid", "Monotouch", "Monomac"}
+$Archs = {"Portable-Net45+WinRT45+WP8+MonoAndroid10+MonoTouch10", "Portable-Net45+Win8+WP8+WPA81", "Net45", "WP8", "WP81", "Win8", "Win81", "Mono", "Monoandroid", "Monotouch", "Monomac", "Portable-Win81+Wpa81", "WPA81"}
+
 $Projects = {
-    "ReactiveUI", "ReactiveUI.Testing", "ReactiveUI.Platforms", "ReactiveUI.Blend", 
-    "ReactiveUI.NLog", "ReactiveUI.Mobile", "RxUIViewModelGenerator", "ReactiveUI.Events"
+    "ReactiveUI", "ReactiveUI.Testing", "ReactiveUI.Blend", "ReactiveUI.Winforms", 
+    "RxUIViewModelGenerator", "ReactiveUI.Events", "ReactiveUI.AndroidSupport",
+    "ReactiveUI.XamForms"
 }
 
 $MSBuildLocation = "C:\Program Files (x86)\MSBuild\12.0\bin"
@@ -14,6 +16,7 @@ if ($SlnFileExists -eq $False) {
     exit -1
 }
 
+& ".\.nuget\NuGet.exe" restore .\ReactiveUI.sln
 & "$MSBuildLocation\MSBuild.exe" /t:Rebuild /p:Configuration=Release /p:Platform="Any CPU" /maxcpucount:1 .\ReactiveUI.sln
 
 ###
@@ -30,6 +33,10 @@ foreach-object $Archs | %{
     $currentArch = $_
     
     foreach-object $Projects | %{cp -r -fo ".\$_\bin\Release\$currentArch\*" ".\Release\$currentArch"}
+	# WinRT projects need to have the Themes folder in a special sub folder named as the project name
+	foreach-object $Projects | %{cp -r -fo ".\$_\bin\Release\$currentArch\Themes" ".\Release\$currentArch\$_\Themes"}
+	# WinRT projects need this .xr.xml file in a special sub folder named as the project name
+	foreach-object $Projects | %{cp -r -fo ".\$_\bin\Release\$currentArch\$_.xr.xml" ".\Release\$currentArch\$_"}
     
     #ls -r | ?{$_.FullName.Contains("bin\Release\$currentArch") -and $_.Length} | %{echo cp $_.FullName ".\Release\$currentArch"}
 }
@@ -58,12 +65,12 @@ if($version) {
         $nsMgr.AddNamespace("ns", "http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd")
 
         # PowerShell makes editing XML docs so easy!
-        $xml.package.metadata.version = $version
+        $xml.package.metadata.version = "$version-beta"
 
         # get the rxui dependencies and update them
         $deps = $xml.SelectNodes("//ns:dependency[contains(@id, 'reactiveui')]", $nsMgr) 
         foreach($dep in $deps) {
-            $dep.version = "[" + $version + "]"
+            $dep.version = "[" + $version + "-beta]"
         }
         
         $xml.Save($nuspec)
@@ -79,16 +86,8 @@ $nugetReleaseDir = Resolve-Path ".\NuGet-Release"
 
 # copy binaries
 foreach ($dir in $libDirs) {
-    $arches = ls $dir.FullName
-    
-    foreach ($arch in $arches) {
-        $files = ls $arch.FullName
-
-        foreach ($file in $files) {
-            $src =  ".\Release\" + $arch.Name + "\\" + $file.Name
-            cp -fo $src $file.FullName
-        }        
-    }
+	# only copy binaries which have a matching file in the destination folder
+	robocopy ".\Release" $dir.FullName /S /XL
 }
 
 # copy tools
@@ -114,7 +113,7 @@ foreach ($dir in $srcDirs) {
 }
 
 $stubs = ls -r -file .\NuGet-Release | ?{$_.Length -eq 0} | ?{!$_.FullName.Contains("src")}
-if ($stubs.Length -gt 0) {
+if ($stubs) {
     echo "*** BUILD FAILED ***"
     echo ""
     echo "*** There are still stubs in the NuGet output, did you fully build? ***"
