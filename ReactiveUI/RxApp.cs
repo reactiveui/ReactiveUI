@@ -9,20 +9,20 @@ namespace ReactiveUI
 {
     /*
      * N.B. Why we have this evil global class
-     * 
-     * In a WPF or Silverlight application, most commands must have the Dispatcher 
+     *
+     * In a WPF or Silverlight application, most commands must have the Dispatcher
      * scheduler set, because notifications will end up being run on another thread;
      * this happens most often in a CanExecute observable. Unfortunately, in a Unit
      * Test framework, while the MS Test Unit runner will *set* the Dispatcher (so
      * we can't even use the lack of its presence to determine whether we're in a
-     * test runner or not), none of the items queued to it will ever be executed 
+     * test runner or not), none of the items queued to it will ever be executed
      * during the unit test.
-     * 
+     *
      * Initially, I tried to plumb the ability to set the scheduler throughout the
      * classes, but when you start building applications on top of that, having to
-     * have *every single* class have a default Scheduler property is really 
+     * have *every single* class have a default Scheduler property is really
      * irritating, with either default making life difficult.
-     * 
+     *
      * This class also initializes a whole bunch of other stuff, including the IoC container,
      * logging and error handling.
      */
@@ -48,9 +48,9 @@ namespace ReactiveUI
             });
 
             DefaultExceptionHandler = Observer.Create<Exception>(ex => {
-                // NB: If you're seeing this, it means that an 
-                // ObservableAsPropertyHelper or the CanExecute of a 
-                // ReactiveCommand ended in an OnError. Instead of silently 
+                // NB: If you're seeing this, it means that an
+                // ObservableAsPropertyHelper or the CanExecute of a
+                // ReactiveCommand ended in an OnError. Instead of silently
                 // breaking, ReactiveUI will halt here if a debugger is attached.
                 if (Debugger.IsAttached) {
                     Debugger.Break();
@@ -117,7 +117,7 @@ namespace ReactiveUI
         /// Task Pool (or the normal Threadpool on Silverlight).
         /// </summary>
         public static IScheduler TaskpoolScheduler {
-            get { 
+            get {
                 var scheduler = _UnitTestTaskpoolScheduler ?? _TaskpoolScheduler;
                 return _UnitTestTaskpoolScheduler ?? _TaskpoolScheduler;
             }
@@ -134,7 +134,7 @@ namespace ReactiveUI
         static IObserver<Exception> _DefaultExceptionHandler;
 
         /// <summary>
-        /// This Observer is signalled whenever an object that has a 
+        /// This Observer is signalled whenever an object that has a
         /// ThrownExceptions property doesn't Subscribe to that Observable. Use
         /// Observer.Create to set up what will happen - the default is to crash
         /// the application with an error message.
@@ -151,8 +151,13 @@ namespace ReactiveUI
         [ThreadStatic] static ISuspensionHost _UnitTestSuspensionHost;
         static ISuspensionHost _SuspensionHost;
 
+        /// <summary>
+        /// This returns / allows you to override the current SuspensionHost, a
+        /// class which provides events for process lifetime events, especially
+        /// on mobile devices.
+        /// </summary>
         public static ISuspensionHost SuspensionHost {
-            get { 
+            get {
                 var host = _UnitTestSuspensionHost ?? _SuspensionHost;
                 return host;
             }
@@ -169,6 +174,10 @@ namespace ReactiveUI
         [ThreadStatic] static bool? _UnitTestSupportsRangeNotifications;
         static bool _SupportsRangeNotifications;
 
+        /// <summary>
+        /// Returns whether your UI framework is brain-dead or not and will blow
+        /// up if a INotifyCollectionChanged object returns a ranged Add
+        /// </summary>
         public static bool SupportsRangeNotifications  {
             get {
                 return _UnitTestSupportsRangeNotifications ?? _SupportsRangeNotifications;
@@ -201,7 +210,7 @@ namespace ReactiveUI
         public const int SmallCacheLimit = 64;
         public const int BigCacheLimit = 256;
 #endif
-    }    
+    }
 }
 
 // vim: tw=120 ts=4 sw=4 et :

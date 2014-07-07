@@ -39,9 +39,16 @@ namespace ReactiveUI
             set { shouldInvalidateState.OnNext(value); }
         }
 
+        /// <summary>
+        ///
+        /// </summary>
         public Func<object> CreateNewAppState { get; set; }
 
         object appState;
+
+        /// <summary>
+        ///
+        /// </summary>
         public object AppState {
             get { return appState; }
             set { this.RaiseAndSetIfChanged(ref appState, value); }
@@ -66,17 +73,35 @@ namespace ReactiveUI
 
     public static class SuspensionHostExtensions
     {
+        /// <summary>
+        ///
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="This"></param>
+        /// <returns></returns>
         public static IObservable<T> ObserveAppState<T>(this ISuspensionHost This)
         {
             return This.WhenAny(x => x.AppState, x => (T)x.Value)
                 .Where(x => x != null);
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="This"></param>
+        /// <returns></returns>
         public static T GetAppState<T>(this ISuspensionHost This)
         {
             return (T)This.AppState;
         }
                 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="This"></param>
+        /// <param name="driver"></param>
+        /// <returns></returns>
         public static IDisposable SetupDefaultSuspendResume(this ISuspensionHost This, ISuspensionDriver driver = null)
         {
             var ret = new CompositeDisposable();
@@ -104,6 +129,9 @@ namespace ReactiveUI
         }
     }
 
+    /// <summary>
+    ///
+    /// </summary>
     public class DummySuspensionDriver : ISuspensionDriver
     {
         public IObservable<object> LoadState()

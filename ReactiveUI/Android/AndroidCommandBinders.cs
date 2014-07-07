@@ -5,6 +5,9 @@ using Android.Views;
 
 namespace ReactiveUI
 {
+    /// <summary>
+    ///
+    /// </summary>
     public class AndroidCommandBinders : FlexibleCommandBinder
     {
         public static Lazy<AndroidCommandBinders> Instance = new Lazy<AndroidCommandBinders>();

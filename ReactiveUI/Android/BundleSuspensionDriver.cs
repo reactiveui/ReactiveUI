@@ -6,6 +6,9 @@ using System.Runtime.Serialization.Formatters.Binary;
 
 namespace ReactiveUI
 {
+    /// <summary>
+    ///
+    /// </summary>
     public class BundleSuspensionDriver : ISuspensionDriver
     {
         public IObservable<object> LoadState()
