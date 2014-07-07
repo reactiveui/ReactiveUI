@@ -26,6 +26,11 @@ namespace ReactiveUI
     {
         internal const int viewHostTag = -4222;
 
+        /// <summary>
+        /// Gets the ViewHost associated with a given View by accessing the
+        /// Tag of the View
+        /// </summary>
+        /// <returns>The view host.</returns>
         public static T GetViewHost<T>(this View This) where T : ILayoutViewHost
         {
             var tagData = This.GetTag(viewHostTag);
@@ -33,7 +38,12 @@ namespace ReactiveUI
 
             return default(T);
         }
-
+                
+        /// <summary>
+        /// Gets the ViewHost associated with a given View by accessing the
+        /// Tag of the View
+        /// </summary>
+        /// <returns>The view host.</returns>
         public static ILayoutViewHost GetViewHost(this View This)
         {
             var tagData = This.GetTag(viewHostTag);
@@ -43,6 +53,10 @@ namespace ReactiveUI
         }
     }
 
+    /// <summary>
+    /// A class that implements the Android ViewHolder pattern. Use it along 
+    /// with GetViewHost.
+    /// </summary>
     public abstract class LayoutViewHost : ILayoutViewHost, IEnableLogger
     {
         View view;
@@ -73,10 +87,13 @@ namespace ReactiveUI
         }
     }
 
+    /// <summary>
+    /// A class that implements the Android ViewHolder pattern with a 
+    /// ViewModel. Use it along with GetViewHost.
+    /// </summary>
     public abstract class ReactiveViewHost<TViewModel> : LayoutViewHost, IViewFor<TViewModel>, IReactiveNotifyPropertyChanged<ReactiveViewHost<TViewModel>>, IReactiveObject
         where TViewModel : class, IReactiveObject
     {
-
         protected ReactiveViewHost(Context ctx, int layoutId, ViewGroup parent, bool attachToRoot = false, bool performAutoWireup = true)
             : base(ctx, layoutId, parent, attachToRoot, performAutoWireup)
         {

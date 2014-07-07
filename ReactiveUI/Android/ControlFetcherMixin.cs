@@ -11,19 +11,22 @@ using Java.Interop;
 namespace ReactiveUI
 {
     /// <summary>
-    ///
+    /// ControlFetcherMixin helps you automatically wire-up Activities and
+    /// Fragments via property names, similar to Butter Knife, as well as allows
+    /// you to fetch controls manually.
     /// </summary>
     public static class ControlFetcherMixin
     {
         static readonly Dictionary<string, int> controlIds;
-        static readonly ConditionalWeakTable<object, Dictionary<string, View>> viewCache = new ConditionalWeakTable<object, Dictionary<string, View>>();
+        static readonly ConditionalWeakTable<object, Dictionary<string, View>> viewCache =
+            new ConditionalWeakTable<object, Dictionary<string, View>>();
 
         static readonly MethodInfo getControlActivity;
         static readonly MethodInfo getControlView;
 
         static ControlFetcherMixin()
         {
-            // NB: This is some hacky shit, but on Xamarin.Android at the moment, 
+            // NB: This is some hacky shit, but on Xamarin.Android at the moment,
             // this is always the entry assembly.
             var assm = AppDomain.CurrentDomain.GetAssemblies()[1];
             var resources = assm.GetModules().SelectMany(x => x.GetTypes()).First(x => x.Name == "Resource");
