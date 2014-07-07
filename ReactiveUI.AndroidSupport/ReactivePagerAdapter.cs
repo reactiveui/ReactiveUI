@@ -11,6 +11,10 @@ using Object = Java.Lang.Object;
 
 namespace ReactiveUI
 {
+    /// <summary>
+    /// ReactivePagerAdapter is a PagerAdapter that will interface with a
+    /// ReactiveList, in a similar fashion to ReactiveTableViewSource.
+    /// </summary>
     public class ReactivePagerAdapter<TViewModel> : PagerAdapter, IEnableLogger
         where TViewModel : class
     {
