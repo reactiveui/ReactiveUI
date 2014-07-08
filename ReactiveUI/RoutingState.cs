@@ -88,10 +88,11 @@ namespace ReactiveUI
             });
 
             NavigateAndReset = new ReactiveCommand<object>(Observable.Return(true), x => Observable.Return(x));
-            NavigateAndReset.Subscribe(x => {
-                NavigationStack.Clear();
-                Navigate.ExecuteAsync(x);
-            });
+            NavigateAndReset
+                .SelectMany(x => {
+                    NavigationStack.Clear();
+                    return Navigate.ExecuteAsync(x);
+                }).Subscribe();
 
             CurrentViewModel = Observable.Concat(
                 Observable.Defer(() => Observable.Return(NavigationStack.LastOrDefault())),
