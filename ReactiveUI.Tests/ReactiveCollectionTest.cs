@@ -441,15 +441,20 @@ namespace ReactiveUI.Tests
         [Fact]
         public void GetSingleItemNotificationWhenWeAddAListOfItemsAndRangeIsFalse()
         {
-            RxApp.SupportsRangeNotifications = false;
-            var fixture = new ReactiveList<int> { 1, 2, 3, 4, 5 };
-            var changed = fixture.Changed.CreateCollection();
-            Assert.Equal(0, changed.Count);
+            try {
+                RxApp.SupportsRangeNotifications = false;
 
-            fixture.AddRange(new[] { 6, 7 });
-            Assert.Equal(2, changed.Count);
-            Assert.Equal(NotifyCollectionChangedAction.Add, changed[0].Action);
-            Assert.Equal(NotifyCollectionChangedAction.Add, changed[1].Action);
+                var fixture = new ReactiveList<int> { 1, 2, 3, 4, 5 };
+                var changed = fixture.Changed.CreateCollection();
+                Assert.Equal(0, changed.Count);
+
+                fixture.AddRange(new[] { 6, 7 });
+                Assert.Equal(2, changed.Count);
+                Assert.Equal(NotifyCollectionChangedAction.Add, changed[0].Action);
+                Assert.Equal(NotifyCollectionChangedAction.Add, changed[1].Action);
+            } finally {
+                RxApp.SupportsRangeNotifications = true;
+            }
         }
 
         [Fact]
@@ -1629,8 +1634,8 @@ namespace ReactiveUI.Tests
             };
 
             var derivedList = list.CreateDerivedCollection(
-                m => m.Value, m => m.HasData, (a, b) => a.Text.CompareTo(b.Text), 
-                list.ShouldReset, 
+                m => m.Value, m => m.HasData, (a, b) => a.Text.CompareTo(b.Text),
+                Observable.Never(4) /*list.ShouldReset*/, 
                 scheduler: RxApp.MainThreadScheduler);
 
             derivedList.CountChanged
