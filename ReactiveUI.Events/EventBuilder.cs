@@ -19,7 +19,11 @@ namespace EventBuilder
             // NB: I'm too lazy to fix this properly
             var monoDroidDir = targetAssemblyDirs.FirstOrDefault(x => x.ToLowerInvariant().Contains("monoandroid"));
             if (monoDroidDir != null) {
-                targetAssemblyDirs.Add(Path.Combine(monoDroidDir, "..", "v1.0"));
+                // /Developer/MonoAndroid/lib/mandroid/platforms/android-15 => 
+                // /Developer/MonoAndroid/lib/xbuild-frameworks/MonoAndroid/v1.0
+                targetAssemblyDirs.Add(Path.Combine(monoDroidDir, 
+                    "..", "..", "..",
+                    "xbuild-frameworks", "MonoAndroid", "v1.0"));
             }
 
             // NB: Double down on Laziness
