@@ -23,7 +23,7 @@ namespace ReactiveUI
         {
             var type = sender.GetType();
             if (!hasWarned.ContainsKey(type)) {
-                this.Log().Warn(
+                this.Log().Debug(
                     "{0} is a POCO type and won't send change notifications, WhenAny will only return a single value!",
                     type.FullName);
                 hasWarned[type] = true;
