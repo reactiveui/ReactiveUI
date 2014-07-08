@@ -466,7 +466,8 @@ namespace ReactiveUI
         public static IDisposable InvokeCommand<T>(this IObservable<T> This, ICommand command)
         {
             return This.Throttle(x => Observable.FromEventPattern(h => command.CanExecuteChanged += h, h => command.CanExecuteChanged -= h)
-                    .StartWith((EventPattern<object>)null)
+                    .Select(_ => Unit.Default)
+                    .StartWith(Unit.Default)
                     .Where(_ => command.CanExecute(x)))
                 .Subscribe(x => {
                     command.Execute(x);
@@ -484,8 +485,7 @@ namespace ReactiveUI
         public static IDisposable InvokeCommand<T>(this IObservable<T> This, IReactiveCommand command)
         {
             return This.Throttle(x => command.CanExecuteObservable.StartWith(command.CanExecute(x)).Where(b => b))
-                .Subscribe(x =>
-                {
+                .Subscribe(x => {
                     command.Execute(x);
                 });
         }
@@ -503,7 +503,8 @@ namespace ReactiveUI
         {
             return This.CombineLatest(target.WhenAnyValue(commandProperty), (val, cmd) => new { val, cmd })
                 .Throttle(x => Observable.FromEventPattern(h => x.cmd.CanExecuteChanged += h, h => x.cmd.CanExecuteChanged -= h)
-                    .StartWith((EventPattern<object>)null)
+                    .Select(_ => Unit.Default)
+                    .StartWith(Unit.Default)
                     .Where(_ => x.cmd.CanExecute(x.val)))
                 .Subscribe(x => {
                     x.cmd.Execute(x.val);
