@@ -46,6 +46,7 @@
     <DefineConstants>MONO; COCOA</DefineConstants>
     <DebugSymbols>true</DebugSymbols>
     <GenerateDocumentation>True</GenerateDocumentation>
+    <DocumentationFile>bin\Release\MonoMac\ReactiveUI.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
