@@ -39,6 +39,7 @@
     <DocumentationFile>bin\Release\Monotouch\ReactiveUI.xml</DocumentationFile>
     <GenerateDocumentation>True</GenerateDocumentation>
     <CodesignKey>iPhone Developer</CodesignKey>
+    <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
