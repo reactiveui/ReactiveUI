@@ -10,7 +10,7 @@ namespace MobileSample_Android
     {
         AutoSuspendHelper suspendHelper;
 
-        //App(IntPtr handle, JniHandleOwnership owner) : base(handle, owner) { }
+        App(IntPtr handle, JniHandleOwnership owner) : base(handle, owner) { }
 
         public override void OnCreate()
         {
