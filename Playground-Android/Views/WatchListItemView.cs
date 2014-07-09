@@ -7,7 +7,6 @@ using Android.Views;
 using Android.Widget;
 using MobileSample_Android.ViewModels;
 using ReactiveUI;
-using ReactiveUI.Android;
 
 namespace MobileSample_Android.Views
 {
