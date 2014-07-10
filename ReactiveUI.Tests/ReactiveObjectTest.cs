@@ -59,6 +59,16 @@ namespace ReactiveUI.Tests
             set { this.RaiseAndSetIfChanged(ref _NotSerialized, value); }
         }
 
+        [IgnoreDataMember]
+        int? _nullableInt;
+
+        [DataMember]
+        public int? NullableInt
+        {
+            get { return _nullableInt; }
+            set { this.RaiseAndSetIfChanged(ref _nullableInt, value); }
+        }
+
         public TestFixture()
         {
             TestCollection = new ReactiveList<int>() {ChangeTrackingEnabled = true};
@@ -98,10 +108,10 @@ namespace ReactiveUI.Tests
             string json = JSONHelper.Serialize(fixture);
 
             // Should look something like:
-            // "{"TestCollection":[],"_IsNotNullString":"Foo","_IsOnlyOneWord":"Baz","_PocoProperty":null,"_StackOverflowTrigger":null,"_UsesExprRaiseSet":null}"
-            Assert.True(json.Count(x => x == ',') == 5);
-            Assert.True(json.Count(x => x == ':') == 6);
-            Assert.True(json.Count(x => x == '"') == 16);
+            // {"IsNotNullString":"Foo","IsOnlyOneWord":"Baz","NullableInt":null,"PocoProperty":null,"StackOverflowTrigger":null,"TestCollection":[],"UsesExprRaiseSet":null}
+            Assert.True(json.Count(x => x == ',') == 6);
+            Assert.True(json.Count(x => x == ':') == 7);
+            Assert.True(json.Count(x => x == '"') == 18);
         }
 
         [Fact]
@@ -138,11 +148,11 @@ namespace ReactiveUI.Tests
             Assert.Equal(2, output.Count);
 
             Assert.Equal(fixture, output[0].Sender);
-            Assert.Equal("IsNotNullString", output[0].PropertyName);
+            Assert.Equal("IsNotNullString", output[0].GetPropertyName());
             Assert.Equal("Bar", output[0].Value);
 
             Assert.Equal(fixture, output[1].Sender);
-            Assert.Equal("IsNotNullString", output[1].PropertyName);
+            Assert.Equal("IsNotNullString", output[1].GetPropertyName());
             Assert.Equal("Baz", output[1].Value);
         }
 
@@ -188,6 +198,47 @@ namespace ReactiveUI.Tests
 
             fixture.IsOnlyOneWord = "Bar";
             Assert.Equal(1, exceptionList.Count);
+        }
+
+        [Fact]
+        public void DeferringNotificationsDontShowUpUntilUndeferred()
+        {
+            var fixture = new TestFixture();
+            var output = fixture.Changed.CreateCollection();
+
+            Assert.Equal(0, output.Count);
+            fixture.NullableInt = 4;
+            Assert.Equal(1, output.Count);
+
+            var stopDelaying = fixture.DelayChangeNotifications();
+
+            fixture.NullableInt = 5;
+            Assert.Equal(1, output.Count);
+
+            fixture.IsNotNullString = "Bar";
+            Assert.Equal(1, output.Count);
+
+            fixture.NullableInt = 6;
+            Assert.Equal(1, output.Count);
+
+            fixture.IsNotNullString = "Baz";
+            Assert.Equal(1, output.Count);
+
+            var stopDelayingMore = fixture.DelayChangeNotifications();
+
+            fixture.IsNotNullString = "Bamf";
+            Assert.Equal(1, output.Count);
+
+            stopDelaying.Dispose();
+
+            fixture.IsNotNullString = "Blargh";
+            Assert.Equal(1, output.Count);
+
+            // NB: Because we debounce queued up notifications, we should only
+            // see a notification from the latest NullableInt and the latest
+            // IsNotNullableString
+            stopDelayingMore.Dispose();
+            Assert.Equal(3, output.Count);
         }
     }
 }

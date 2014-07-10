@@ -27,6 +27,7 @@ namespace ReactiveUI
         }
 
                                                                 
+        
         /// <summary>
         /// WhenAnyValue allows you to observe whenever the value of one or more
         /// properties on an object have changed, providing an initial value when
@@ -57,6 +58,7 @@ namespace ReactiveUI
                             return This.ObservableForProperty(property1, false, false).Select(selector); 
                     }
 
+		
         /// <summary>
         /// WhenAny allows you to observe whenever one or more properties on an
         /// object have changed, providing an initial value when the Observable
@@ -65,14 +67,30 @@ namespace ReactiveUI
         /// initial setup.
         /// </summary>
         public static IObservable<TRet> WhenAnyDynamic<TSender, TRet>(this TSender This, 
-                            string[] property1, 
+                            Expression property1, 
                             Func<IObservedChange<TSender, object>, TRet> selector)
         {
                             return ReactiveNotifyPropertyChangedMixin
                     .SubscribeToExpressionChain<TSender,object>(This, property1, false, false).Select(selector); 
                     }
-
                                                             
+                /// <summary>
+        /// WhenAnyValue allows you to observe whenever the value of one or more
+        /// properties on an object have changed, providing an initial value when
+        /// the Observable is set up, unlike ObservableForProperty(). Use this
+        /// method in constructors to set up bindings between properties that also
+        /// need an initial setup.
+        /// </summary>
+        public static IObservable<Tuple<T1,T2>> WhenAnyValue<TSender, T1,T2>(this TSender This, 
+                            Expression<Func<TSender, T1>> property1,
+                            Expression<Func<TSender, T2>> property2
+            )
+        {
+            return This.WhenAny(property1, property2,
+                                (c1, c2) =>
+                                    Tuple.Create(c1.Value, c2.Value));
+        }
+        
         /// <summary>
         /// WhenAnyValue allows you to observe whenever the value of one or more
         /// properties on an object have changed, providing an initial value when
@@ -109,6 +127,7 @@ namespace ReactiveUI
             );
                     }
 
+		
         /// <summary>
         /// WhenAny allows you to observe whenever one or more properties on an
         /// object have changed, providing an initial value when the Observable
@@ -117,8 +136,8 @@ namespace ReactiveUI
         /// initial setup.
         /// </summary>
         public static IObservable<TRet> WhenAnyDynamic<TSender, TRet>(this TSender This, 
-                            string[] property1, 
-                            string[] property2, 
+                            Expression property1, 
+                            Expression property2, 
                             Func<IObservedChange<TSender, object>, IObservedChange<TSender, object>, TRet> selector)
         {
                         return Observable.CombineLatest(
@@ -129,8 +148,25 @@ namespace ReactiveUI
                                 selector
             );
                     }
-
                                                             
+                /// <summary>
+        /// WhenAnyValue allows you to observe whenever the value of one or more
+        /// properties on an object have changed, providing an initial value when
+        /// the Observable is set up, unlike ObservableForProperty(). Use this
+        /// method in constructors to set up bindings between properties that also
+        /// need an initial setup.
+        /// </summary>
+        public static IObservable<Tuple<T1,T2,T3>> WhenAnyValue<TSender, T1,T2,T3>(this TSender This, 
+                            Expression<Func<TSender, T1>> property1,
+                            Expression<Func<TSender, T2>> property2,
+                            Expression<Func<TSender, T3>> property3
+            )
+        {
+            return This.WhenAny(property1, property2, property3,
+                                (c1, c2, c3) =>
+                                    Tuple.Create(c1.Value, c2.Value, c3.Value));
+        }
+        
         /// <summary>
         /// WhenAnyValue allows you to observe whenever the value of one or more
         /// properties on an object have changed, providing an initial value when
@@ -170,6 +206,7 @@ namespace ReactiveUI
             );
                     }
 
+		
         /// <summary>
         /// WhenAny allows you to observe whenever one or more properties on an
         /// object have changed, providing an initial value when the Observable
@@ -178,9 +215,9 @@ namespace ReactiveUI
         /// initial setup.
         /// </summary>
         public static IObservable<TRet> WhenAnyDynamic<TSender, TRet>(this TSender This, 
-                            string[] property1, 
-                            string[] property2, 
-                            string[] property3, 
+                            Expression property1, 
+                            Expression property2, 
+                            Expression property3, 
                             Func<IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, TRet> selector)
         {
                         return Observable.CombineLatest(
@@ -193,8 +230,26 @@ namespace ReactiveUI
                                 selector
             );
                     }
-
                                                             
+                /// <summary>
+        /// WhenAnyValue allows you to observe whenever the value of one or more
+        /// properties on an object have changed, providing an initial value when
+        /// the Observable is set up, unlike ObservableForProperty(). Use this
+        /// method in constructors to set up bindings between properties that also
+        /// need an initial setup.
+        /// </summary>
+        public static IObservable<Tuple<T1,T2,T3,T4>> WhenAnyValue<TSender, T1,T2,T3,T4>(this TSender This, 
+                            Expression<Func<TSender, T1>> property1,
+                            Expression<Func<TSender, T2>> property2,
+                            Expression<Func<TSender, T3>> property3,
+                            Expression<Func<TSender, T4>> property4
+            )
+        {
+            return This.WhenAny(property1, property2, property3, property4,
+                                (c1, c2, c3, c4) =>
+                                    Tuple.Create(c1.Value, c2.Value, c3.Value, c4.Value));
+        }
+        
         /// <summary>
         /// WhenAnyValue allows you to observe whenever the value of one or more
         /// properties on an object have changed, providing an initial value when
@@ -237,6 +292,7 @@ namespace ReactiveUI
             );
                     }
 
+		
         /// <summary>
         /// WhenAny allows you to observe whenever one or more properties on an
         /// object have changed, providing an initial value when the Observable
@@ -245,10 +301,10 @@ namespace ReactiveUI
         /// initial setup.
         /// </summary>
         public static IObservable<TRet> WhenAnyDynamic<TSender, TRet>(this TSender This, 
-                            string[] property1, 
-                            string[] property2, 
-                            string[] property3, 
-                            string[] property4, 
+                            Expression property1, 
+                            Expression property2, 
+                            Expression property3, 
+                            Expression property4, 
                             Func<IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, TRet> selector)
         {
                         return Observable.CombineLatest(
@@ -263,8 +319,27 @@ namespace ReactiveUI
                                 selector
             );
                     }
-
                                                             
+                /// <summary>
+        /// WhenAnyValue allows you to observe whenever the value of one or more
+        /// properties on an object have changed, providing an initial value when
+        /// the Observable is set up, unlike ObservableForProperty(). Use this
+        /// method in constructors to set up bindings between properties that also
+        /// need an initial setup.
+        /// </summary>
+        public static IObservable<Tuple<T1,T2,T3,T4,T5>> WhenAnyValue<TSender, T1,T2,T3,T4,T5>(this TSender This, 
+                            Expression<Func<TSender, T1>> property1,
+                            Expression<Func<TSender, T2>> property2,
+                            Expression<Func<TSender, T3>> property3,
+                            Expression<Func<TSender, T4>> property4,
+                            Expression<Func<TSender, T5>> property5
+            )
+        {
+            return This.WhenAny(property1, property2, property3, property4, property5,
+                                (c1, c2, c3, c4, c5) =>
+                                    Tuple.Create(c1.Value, c2.Value, c3.Value, c4.Value, c5.Value));
+        }
+        
         /// <summary>
         /// WhenAnyValue allows you to observe whenever the value of one or more
         /// properties on an object have changed, providing an initial value when
@@ -310,6 +385,7 @@ namespace ReactiveUI
             );
                     }
 
+		
         /// <summary>
         /// WhenAny allows you to observe whenever one or more properties on an
         /// object have changed, providing an initial value when the Observable
@@ -318,11 +394,11 @@ namespace ReactiveUI
         /// initial setup.
         /// </summary>
         public static IObservable<TRet> WhenAnyDynamic<TSender, TRet>(this TSender This, 
-                            string[] property1, 
-                            string[] property2, 
-                            string[] property3, 
-                            string[] property4, 
-                            string[] property5, 
+                            Expression property1, 
+                            Expression property2, 
+                            Expression property3, 
+                            Expression property4, 
+                            Expression property5, 
                             Func<IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, TRet> selector)
         {
                         return Observable.CombineLatest(
@@ -339,8 +415,28 @@ namespace ReactiveUI
                                 selector
             );
                     }
-
                                                             
+                /// <summary>
+        /// WhenAnyValue allows you to observe whenever the value of one or more
+        /// properties on an object have changed, providing an initial value when
+        /// the Observable is set up, unlike ObservableForProperty(). Use this
+        /// method in constructors to set up bindings between properties that also
+        /// need an initial setup.
+        /// </summary>
+        public static IObservable<Tuple<T1,T2,T3,T4,T5,T6>> WhenAnyValue<TSender, T1,T2,T3,T4,T5,T6>(this TSender This, 
+                            Expression<Func<TSender, T1>> property1,
+                            Expression<Func<TSender, T2>> property2,
+                            Expression<Func<TSender, T3>> property3,
+                            Expression<Func<TSender, T4>> property4,
+                            Expression<Func<TSender, T5>> property5,
+                            Expression<Func<TSender, T6>> property6
+            )
+        {
+            return This.WhenAny(property1, property2, property3, property4, property5, property6,
+                                (c1, c2, c3, c4, c5, c6) =>
+                                    Tuple.Create(c1.Value, c2.Value, c3.Value, c4.Value, c5.Value, c6.Value));
+        }
+        
         /// <summary>
         /// WhenAnyValue allows you to observe whenever the value of one or more
         /// properties on an object have changed, providing an initial value when
@@ -389,6 +485,7 @@ namespace ReactiveUI
             );
                     }
 
+		
         /// <summary>
         /// WhenAny allows you to observe whenever one or more properties on an
         /// object have changed, providing an initial value when the Observable
@@ -397,12 +494,12 @@ namespace ReactiveUI
         /// initial setup.
         /// </summary>
         public static IObservable<TRet> WhenAnyDynamic<TSender, TRet>(this TSender This, 
-                            string[] property1, 
-                            string[] property2, 
-                            string[] property3, 
-                            string[] property4, 
-                            string[] property5, 
-                            string[] property6, 
+                            Expression property1, 
+                            Expression property2, 
+                            Expression property3, 
+                            Expression property4, 
+                            Expression property5, 
+                            Expression property6, 
                             Func<IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, TRet> selector)
         {
                         return Observable.CombineLatest(
@@ -421,8 +518,29 @@ namespace ReactiveUI
                                 selector
             );
                     }
-
                                                             
+                /// <summary>
+        /// WhenAnyValue allows you to observe whenever the value of one or more
+        /// properties on an object have changed, providing an initial value when
+        /// the Observable is set up, unlike ObservableForProperty(). Use this
+        /// method in constructors to set up bindings between properties that also
+        /// need an initial setup.
+        /// </summary>
+        public static IObservable<Tuple<T1,T2,T3,T4,T5,T6,T7>> WhenAnyValue<TSender, T1,T2,T3,T4,T5,T6,T7>(this TSender This, 
+                            Expression<Func<TSender, T1>> property1,
+                            Expression<Func<TSender, T2>> property2,
+                            Expression<Func<TSender, T3>> property3,
+                            Expression<Func<TSender, T4>> property4,
+                            Expression<Func<TSender, T5>> property5,
+                            Expression<Func<TSender, T6>> property6,
+                            Expression<Func<TSender, T7>> property7
+            )
+        {
+            return This.WhenAny(property1, property2, property3, property4, property5, property6, property7,
+                                (c1, c2, c3, c4, c5, c6, c7) =>
+                                    Tuple.Create(c1.Value, c2.Value, c3.Value, c4.Value, c5.Value, c6.Value, c7.Value));
+        }
+        
         /// <summary>
         /// WhenAnyValue allows you to observe whenever the value of one or more
         /// properties on an object have changed, providing an initial value when
@@ -474,6 +592,7 @@ namespace ReactiveUI
             );
                     }
 
+		
         /// <summary>
         /// WhenAny allows you to observe whenever one or more properties on an
         /// object have changed, providing an initial value when the Observable
@@ -482,13 +601,13 @@ namespace ReactiveUI
         /// initial setup.
         /// </summary>
         public static IObservable<TRet> WhenAnyDynamic<TSender, TRet>(this TSender This, 
-                            string[] property1, 
-                            string[] property2, 
-                            string[] property3, 
-                            string[] property4, 
-                            string[] property5, 
-                            string[] property6, 
-                            string[] property7, 
+                            Expression property1, 
+                            Expression property2, 
+                            Expression property3, 
+                            Expression property4, 
+                            Expression property5, 
+                            Expression property6, 
+                            Expression property7, 
                             Func<IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, TRet> selector)
         {
                         return Observable.CombineLatest(
@@ -509,8 +628,8 @@ namespace ReactiveUI
                                 selector
             );
                     }
-
                                                             
+        
         /// <summary>
         /// WhenAnyValue allows you to observe whenever the value of one or more
         /// properties on an object have changed, providing an initial value when
@@ -565,6 +684,7 @@ namespace ReactiveUI
             );
                     }
 
+		
         /// <summary>
         /// WhenAny allows you to observe whenever one or more properties on an
         /// object have changed, providing an initial value when the Observable
@@ -573,14 +693,14 @@ namespace ReactiveUI
         /// initial setup.
         /// </summary>
         public static IObservable<TRet> WhenAnyDynamic<TSender, TRet>(this TSender This, 
-                            string[] property1, 
-                            string[] property2, 
-                            string[] property3, 
-                            string[] property4, 
-                            string[] property5, 
-                            string[] property6, 
-                            string[] property7, 
-                            string[] property8, 
+                            Expression property1, 
+                            Expression property2, 
+                            Expression property3, 
+                            Expression property4, 
+                            Expression property5, 
+                            Expression property6, 
+                            Expression property7, 
+                            Expression property8, 
                             Func<IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, TRet> selector)
         {
                         return Observable.CombineLatest(
@@ -603,8 +723,8 @@ namespace ReactiveUI
                                 selector
             );
                     }
-
                                                             
+        
         /// <summary>
         /// WhenAnyValue allows you to observe whenever the value of one or more
         /// properties on an object have changed, providing an initial value when
@@ -662,6 +782,7 @@ namespace ReactiveUI
             );
                     }
 
+		
         /// <summary>
         /// WhenAny allows you to observe whenever one or more properties on an
         /// object have changed, providing an initial value when the Observable
@@ -670,15 +791,15 @@ namespace ReactiveUI
         /// initial setup.
         /// </summary>
         public static IObservable<TRet> WhenAnyDynamic<TSender, TRet>(this TSender This, 
-                            string[] property1, 
-                            string[] property2, 
-                            string[] property3, 
-                            string[] property4, 
-                            string[] property5, 
-                            string[] property6, 
-                            string[] property7, 
-                            string[] property8, 
-                            string[] property9, 
+                            Expression property1, 
+                            Expression property2, 
+                            Expression property3, 
+                            Expression property4, 
+                            Expression property5, 
+                            Expression property6, 
+                            Expression property7, 
+                            Expression property8, 
+                            Expression property9, 
                             Func<IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, TRet> selector)
         {
                         return Observable.CombineLatest(
@@ -703,8 +824,8 @@ namespace ReactiveUI
                                 selector
             );
                     }
-
                                                             
+        
         /// <summary>
         /// WhenAnyValue allows you to observe whenever the value of one or more
         /// properties on an object have changed, providing an initial value when
@@ -765,6 +886,7 @@ namespace ReactiveUI
             );
                     }
 
+		
         /// <summary>
         /// WhenAny allows you to observe whenever one or more properties on an
         /// object have changed, providing an initial value when the Observable
@@ -773,16 +895,16 @@ namespace ReactiveUI
         /// initial setup.
         /// </summary>
         public static IObservable<TRet> WhenAnyDynamic<TSender, TRet>(this TSender This, 
-                            string[] property1, 
-                            string[] property2, 
-                            string[] property3, 
-                            string[] property4, 
-                            string[] property5, 
-                            string[] property6, 
-                            string[] property7, 
-                            string[] property8, 
-                            string[] property9, 
-                            string[] property10, 
+                            Expression property1, 
+                            Expression property2, 
+                            Expression property3, 
+                            Expression property4, 
+                            Expression property5, 
+                            Expression property6, 
+                            Expression property7, 
+                            Expression property8, 
+                            Expression property9, 
+                            Expression property10, 
                             Func<IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, TRet> selector)
         {
                         return Observable.CombineLatest(
@@ -809,8 +931,8 @@ namespace ReactiveUI
                                 selector
             );
                     }
-
                                                             
+        
         /// <summary>
         /// WhenAnyValue allows you to observe whenever the value of one or more
         /// properties on an object have changed, providing an initial value when
@@ -874,6 +996,7 @@ namespace ReactiveUI
             );
                     }
 
+		
         /// <summary>
         /// WhenAny allows you to observe whenever one or more properties on an
         /// object have changed, providing an initial value when the Observable
@@ -882,17 +1005,17 @@ namespace ReactiveUI
         /// initial setup.
         /// </summary>
         public static IObservable<TRet> WhenAnyDynamic<TSender, TRet>(this TSender This, 
-                            string[] property1, 
-                            string[] property2, 
-                            string[] property3, 
-                            string[] property4, 
-                            string[] property5, 
-                            string[] property6, 
-                            string[] property7, 
-                            string[] property8, 
-                            string[] property9, 
-                            string[] property10, 
-                            string[] property11, 
+                            Expression property1, 
+                            Expression property2, 
+                            Expression property3, 
+                            Expression property4, 
+                            Expression property5, 
+                            Expression property6, 
+                            Expression property7, 
+                            Expression property8, 
+                            Expression property9, 
+                            Expression property10, 
+                            Expression property11, 
                             Func<IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, TRet> selector)
         {
                         return Observable.CombineLatest(
@@ -921,8 +1044,8 @@ namespace ReactiveUI
                                 selector
             );
                     }
-
                                                             
+        
         /// <summary>
         /// WhenAnyValue allows you to observe whenever the value of one or more
         /// properties on an object have changed, providing an initial value when
@@ -989,6 +1112,7 @@ namespace ReactiveUI
             );
                     }
 
+		
         /// <summary>
         /// WhenAny allows you to observe whenever one or more properties on an
         /// object have changed, providing an initial value when the Observable
@@ -997,18 +1121,18 @@ namespace ReactiveUI
         /// initial setup.
         /// </summary>
         public static IObservable<TRet> WhenAnyDynamic<TSender, TRet>(this TSender This, 
-                            string[] property1, 
-                            string[] property2, 
-                            string[] property3, 
-                            string[] property4, 
-                            string[] property5, 
-                            string[] property6, 
-                            string[] property7, 
-                            string[] property8, 
-                            string[] property9, 
-                            string[] property10, 
-                            string[] property11, 
-                            string[] property12, 
+                            Expression property1, 
+                            Expression property2, 
+                            Expression property3, 
+                            Expression property4, 
+                            Expression property5, 
+                            Expression property6, 
+                            Expression property7, 
+                            Expression property8, 
+                            Expression property9, 
+                            Expression property10, 
+                            Expression property11, 
+                            Expression property12, 
                             Func<IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, IObservedChange<TSender, object>, TRet> selector)
         {
                         return Observable.CombineLatest(
@@ -1039,7 +1163,6 @@ namespace ReactiveUI
                                 selector
             );
                     }
-
         }
 
     public static class WhenAnyObservableMixin
