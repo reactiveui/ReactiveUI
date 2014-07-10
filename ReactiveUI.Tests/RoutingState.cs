@@ -26,8 +26,8 @@ namespace ReactiveUI.Routing.Tests
 
     public class TestScreen : ReactiveObject, IScreen
     {
-        IRoutingState _Router;
-        public IRoutingState Router {
+        RoutingState _Router;
+        public RoutingState Router {
             get { return _Router; }
             set { this.RaiseAndSetIfChanged(ref _Router, value); }
         }
@@ -96,6 +96,21 @@ namespace ReactiveUI.Routing.Tests
             fixture.Router.NavigateBack.Execute(null);
             Assert.Equal(4, output.Count);
             Assert.Equal("A", ((TestViewModel)output.Last()).SomeProp);
+        }
+        
+        [Fact]
+        public void NavigateAndResetCheckNavigationStack()
+        {
+            var fixture = new TestScreen();
+            fixture.Router = new RoutingState();
+            var viewModel = new TestViewModel();
+
+            Assert.False(fixture.Router.NavigationStack.Any());
+
+            fixture.Router.NavigateAndReset.Execute(viewModel);
+
+            Assert.True(fixture.Router.NavigationStack.Count == 1);
+            Assert.True(object.ReferenceEquals(fixture.Router.NavigationStack.First(), viewModel));
         }
     }
 }

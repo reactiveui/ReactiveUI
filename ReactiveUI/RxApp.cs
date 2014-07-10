@@ -1,39 +1,28 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Reactive;
 using System.Reactive.Concurrency;
-using System.Diagnostics.Contracts;
-using System.Linq;      
-using System.Linq.Expressions;
-using System.Reactive.Linq;
-using System.Reactive.Subjects;
-using System.Reflection;
-using System.Runtime.InteropServices;
-using System.Text.RegularExpressions;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Runtime.CompilerServices;
+using Splat;
 
 namespace ReactiveUI
 {
     /*
      * N.B. Why we have this evil global class
-     * 
-     * In a WPF or Silverlight application, most commands must have the Dispatcher 
+     *
+     * In a WPF or Silverlight application, most commands must have the Dispatcher
      * scheduler set, because notifications will end up being run on another thread;
      * this happens most often in a CanExecute observable. Unfortunately, in a Unit
      * Test framework, while the MS Test Unit runner will *set* the Dispatcher (so
      * we can't even use the lack of its presence to determine whether we're in a
-     * test runner or not), none of the items queued to it will ever be executed 
+     * test runner or not), none of the items queued to it will ever be executed
      * during the unit test.
-     * 
+     *
      * Initially, I tried to plumb the ability to set the scheduler throughout the
      * classes, but when you start building applications on top of that, having to
-     * have *every single* class have a default Scheduler property is really 
+     * have *every single* class have a default Scheduler property is really
      * irritating, with either default making life difficult.
-     * 
+     *
      * This class also initializes a whole bunch of other stuff, including the IoC container,
      * logging and error handling.
      */
@@ -41,15 +30,27 @@ namespace ReactiveUI
     {
         static RxApp()
         {
-#if PORTABLE
-            _TaskpoolScheduler = Scheduler.Default;
-#else
+#if !PORTABLE
             _TaskpoolScheduler = TaskPoolScheduler.Default;
 #endif
+
+            // Initialize this to false as most platforms do not support
+            // range notification for INotifyCollectionChanged
+#if WP8 || WINRT
+            SupportsRangeNotifications = false;
+#else
+            SupportsRangeNotifications = true;
+#endif
+
+            Locator.RegisterResolverCallbackChanged(() => {
+                if (Locator.CurrentMutable == null) return;
+                Locator.CurrentMutable.InitializeReactiveUI();
+            });
+
             DefaultExceptionHandler = Observer.Create<Exception>(ex => {
-                // NB: If you're seeing this, it means that an 
-                // ObservableAsPropertyHelper or the CanExecute of a 
-                // ReactiveCommand ended in an OnError. Instead of silently 
+                // NB: If you're seeing this, it means that an
+                // ObservableAsPropertyHelper or the CanExecute of a
+                // ReactiveCommand ended in an OnError. Instead of silently
                 // breaking, ReactiveUI will halt here if a debugger is attached.
                 if (Debugger.IsAttached) {
                     Debugger.Break();
@@ -62,11 +63,7 @@ namespace ReactiveUI
                 });
             });
 
-            var r = new ModernDependencyResolver();
-            r.InitializeResolver();
-            _DependencyResolver = r;
-
-            if (InUnitTestRunner()) {
+            if (ModeDetector.InUnitTestRunner()) {
                 LogHost.Default.Warn("*** Detected Unit Test Runner, setting MainThreadScheduler to CurrentThread ***");
                 LogHost.Default.Warn("If we are not actually in a test runner, please file a bug\n");
                 _MainThreadScheduler = CurrentThreadScheduler.Instance;
@@ -76,58 +73,10 @@ namespace ReactiveUI
             }
 
             if (_MainThreadScheduler == null) {
-#if !ANDROID
-                // NB: We can't initialize a scheduler automatically on Android
-                // because it is intrinsically tied to the current Activity, 
-                // so devs have to set it up by hand :-/
-                LogHost.Default.Error("*** ReactiveUI Platform DLL reference not added - using Default scheduler *** ");
-                LogHost.Default.Error("Add a reference to ReactiveUI.{Xaml / Cocoa / etc}.");
-                LogHost.Default.Error("or consider explicitly setting RxApp.MainThreadScheduler if not");
-#endif
                 _MainThreadScheduler = DefaultScheduler.Instance;
             }
-        }
 
-        [ThreadStatic] static IDependencyResolver _UnitTestDependencyResolver;
-        static IDependencyResolver _DependencyResolver;
-
-        /// <summary>
-        /// Gets or sets the dependency resolver. This class is used throughout
-        /// ReactiveUI for many internal operations as well as for general use
-        /// by applications. If this isn't assigned on startup, a default, highly
-        /// capable implementation will be used, and it is advised for most people
-        /// to simply use the default implementation.
-        /// 
-        /// Note that to create your own and assign it to the global dependency
-        /// resolver, you must initialize it via calling InitializeResolver(), or
-        /// else ReactiveUI internal classes will not be registered and Bad Things™
-        /// will happen.
-        /// </summary>
-        /// <value>The dependency resolver.</value>
-        public static IDependencyResolver DependencyResolver {
-            get {
-                var resolver = _UnitTestDependencyResolver ?? _DependencyResolver;
-                return _UnitTestDependencyResolver ?? _DependencyResolver;
-            }
-            set {
-                if (InUnitTestRunner()) {
-                    _UnitTestDependencyResolver = value;
-                    _DependencyResolver = _DependencyResolver ?? value;
-                } else {
-                    _DependencyResolver = value;
-                }
-            }
-        }
-
-        /// <summary>
-        /// Convenience property to return the DependencyResolver cast to a
-        /// MutableDependencyResolver. The default resolver is also a mutable
-        /// resolver, so this will be non-null. Use this to register new types
-        /// on startup if you are using the default resolver
-        /// </summary>
-        public static IMutableDependencyResolver MutableResolver {
-            get { return DependencyResolver as IMutableDependencyResolver; }
-            set { DependencyResolver = value; }
+            SuspensionHost = new SuspensionHost();
         }
 
         [ThreadStatic] static IScheduler _UnitTestMainThreadScheduler;
@@ -150,7 +99,7 @@ namespace ReactiveUI
                 // own TestScheduler, and if this wasn't ThreadStatic, they would
                 // stomp on each other, causing test cases to randomly fail,
                 // then pass when you rerun them.
-                if (InUnitTestRunner()) {
+                if (ModeDetector.InUnitTestRunner()) {
                     _UnitTestMainThreadScheduler = value;
                     _MainThreadScheduler = _MainThreadScheduler ?? value;
                 } else {
@@ -168,12 +117,12 @@ namespace ReactiveUI
         /// Task Pool (or the normal Threadpool on Silverlight).
         /// </summary>
         public static IScheduler TaskpoolScheduler {
-            get { 
+            get {
                 var scheduler = _UnitTestTaskpoolScheduler ?? _TaskpoolScheduler;
                 return _UnitTestTaskpoolScheduler ?? _TaskpoolScheduler;
             }
             set {
-                if (InUnitTestRunner()) {
+                if (ModeDetector.InUnitTestRunner()) {
                     _UnitTestTaskpoolScheduler = value;
                     _TaskpoolScheduler = _TaskpoolScheduler ?? value;
                 } else {
@@ -185,7 +134,7 @@ namespace ReactiveUI
         static IObserver<Exception> _DefaultExceptionHandler;
 
         /// <summary>
-        /// This Observer is signalled whenever an object that has a 
+        /// This Observer is signalled whenever an object that has a
         /// ThrownExceptions property doesn't Subscribe to that Observable. Use
         /// Observer.Create to set up what will happen - the default is to crash
         /// the application with an error message.
@@ -199,68 +148,60 @@ namespace ReactiveUI
             }
         }
 
-        static bool? _InUnitTestRunnerOverride;
-        static bool? _InUnitTestRunner;
+        [ThreadStatic] static ISuspensionHost _UnitTestSuspensionHost;
+        static ISuspensionHost _SuspensionHost;
 
         /// <summary>
-        /// This method allows you to override the return value of 
-        /// RxApp.InUnitTestRunner - a null value means that InUnitTestRunner
-        /// will determine this using its normal logic.
+        /// This returns / allows you to override the current SuspensionHost, a
+        /// class which provides events for process lifetime events, especially
+        /// on mobile devices.
         /// </summary>
-        public static bool? InUnitTestRunnerOverride 
-        {
-            get { return _InUnitTestRunnerOverride; }
+        public static ISuspensionHost SuspensionHost {
+            get {
+                var host = _UnitTestSuspensionHost ?? _SuspensionHost;
+                return host;
+            }
             set {
-                _InUnitTestRunnerOverride = value;
-
-                if(value.HasValue && !value.Value) {
-                    _UnitTestMainThreadScheduler = null;
-                    _UnitTestTaskpoolScheduler = null;
+                if (ModeDetector.InUnitTestRunner()) {
+                    _UnitTestSuspensionHost = value;
+                    _SuspensionHost = _SuspensionHost ?? value;
+                } else {
+                    _SuspensionHost = value;
                 }
             }
         }
 
-        /// <summary>
-        /// InUnitTestRunner attempts to determine heuristically if the current
-        /// application is running in a unit test framework
-        /// </summary>
-        /// <returns>True if we have determined that a unit test framework is
-        /// currently running.</returns>
-        public static bool InUnitTestRunner()
-        {
-            if (InUnitTestRunnerOverride.HasValue) {
-                return InUnitTestRunnerOverride.Value;
-            }
-
-            if (!_InUnitTestRunner.HasValue) {
-                // NB: This is in a separate static ctor to avoid a deadlock on 
-                // the static ctor lock when blocking on async methods 
-                _InUnitTestRunner = UnitTestDetector.IsInUnitTestRunner() || DesignModeDetector.IsInDesignMode();
-            }
-
-            return _InUnitTestRunner.Value;
-        }
+        [ThreadStatic] static bool? _UnitTestSupportsRangeNotifications;
+        static bool _SupportsRangeNotifications;
 
         /// <summary>
-        /// This method will initialize your custom service locator with the 
-        /// built-in RxUI types. Use this to help initialize containers that
-        /// don't conform easily to IMutableDependencyResolver.
+        /// Returns whether your UI framework is brain-dead or not and will blow
+        /// up if a INotifyCollectionChanged object returns a ranged Add
         /// </summary>
-        /// <param name="registerMethod">Create a method here that will 
-        /// register a constant. For example, the NInject version of
-        /// this method might look like:
-        /// 
-        /// (obj, type) => kernel.Bind(type).ToConstant(obj)
-        /// </param>
-        public static void InitializeCustomResolver(Action<object, Type> registerMethod)
-        {
-            var fakeResolver = new FuncDependencyResolver(null,
-                (fac, type, str) => registerMethod(fac(), type));
-
-            fakeResolver.InitializeResolver();
+        public static bool SupportsRangeNotifications  {
+            get {
+                return _UnitTestSupportsRangeNotifications ?? _SupportsRangeNotifications;
+            }
+            set {
+                // N.B. The ThreadStatic dance here is for the unit test case -
+                // often, each test will override MainThreadScheduler with their
+                // own TestScheduler, and if this wasn't ThreadStatic, they would
+                // stomp on each other, causing test cases to randomly fail,
+                // then pass when you rerun them.
+                if (ModeDetector.InUnitTestRunner()) {
+                    _UnitTestSupportsRangeNotifications = value;
+                    _SupportsRangeNotifications = value;
+                } else {
+                    _SupportsRangeNotifications = value;
+                }
+            }
         }
 
-        static internal bool suppressLogging { get; set; }
+        [MethodImpl(MethodImplOptions.NoOptimization)]
+        internal static void EnsureInitialized()
+        {
+            // NB: This method only exists to invoke the static constructor
+        }
 
 #if ANDROID || SILVERLIGHT || IOS
         public const int SmallCacheLimit = 32;
@@ -269,7 +210,7 @@ namespace ReactiveUI
         public const int SmallCacheLimit = 64;
         public const int BigCacheLimit = 256;
 #endif
-    }    
+    }
 }
 
 // vim: tw=120 ts=4 sw=4 et :

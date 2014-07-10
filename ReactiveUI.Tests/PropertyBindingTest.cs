@@ -240,6 +240,40 @@ namespace ReactiveUI.Tests
         }
 
         [Fact]
+        public void ViewModelIndexerToView()
+        {
+            var vm = new PropertyBindViewModel();
+            var view = new PropertyBindView() { ViewModel = vm };
+
+            view.OneWayBind(view.ViewModel, x => x.SomeCollectionOfStrings[0], x => x.SomeTextBox.Text);
+            Assert.Equal("Foo", view.SomeTextBox.Text);
+        }
+
+        [Fact]
+        public void ViewModelIndexerToViewChanges()
+        {
+            var vm = new PropertyBindViewModel();
+            var view = new PropertyBindView() { ViewModel = vm };
+
+            view.OneWayBind(view.ViewModel, x => x.SomeCollectionOfStrings[0], x => x.SomeTextBox.Text);
+            Assert.Equal("Foo", view.SomeTextBox.Text);
+
+            vm.SomeCollectionOfStrings[0] = "Bar";
+
+            Assert.Equal("Bar", view.SomeTextBox.Text);
+        }
+
+        [Fact]
+        public void ViewModelIndexerPropertyToView()
+        {
+            var vm = new PropertyBindViewModel();
+            var view = new PropertyBindView() { ViewModel = vm };
+
+            view.OneWayBind(view.ViewModel, x => x.SomeCollectionOfStrings[0].Length, x => x.SomeTextBox.Text);
+            Assert.Equal("3", view.SomeTextBox.Text);
+        }
+
+        [Fact]
         public void BindToShouldntInitiallySetToNull()
         {
             var vm = new PropertyBindViewModel();
@@ -268,6 +302,25 @@ namespace ReactiveUI.Tests
         }
 
 #if !MONO
+        [Fact]
+        public void TwoWayBindToSelectedItemOfItemsControl()
+        {
+        	var vm = new PropertyBindViewModel();
+        	var view = new PropertyBindView() { ViewModel = vm };
+        	view.FakeItemsControl.ItemsSource = new ReactiveList<string>(new[] { "aaa", "bbb", "ccc" });
+        
+        	view.Bind(view.ViewModel, x => x.Property1, x => x.FakeItemsControl.SelectedItem);
+        
+        	Assert.Null(view.FakeItemsControl.SelectedItem);
+        	Assert.Null(vm.Property1);
+        
+        	view.FakeItemsControl.SelectedItem = "aaa";
+        	Assert.Equal("aaa", vm.Property1); // fail
+        
+        	vm.Property1 = "bbb";
+        	Assert.Equal("bbb", view.FakeItemsControl.SelectedItem);
+        }
+
         [Fact]
         public void ItemsControlShouldGetADataTemplate()
         {

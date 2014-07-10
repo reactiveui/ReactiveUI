@@ -19,13 +19,22 @@ namespace EventBuilder
             // NB: I'm too lazy to fix this properly
             var monoDroidDir = targetAssemblyDirs.FirstOrDefault(x => x.ToLowerInvariant().Contains("monoandroid"));
             if (monoDroidDir != null) {
-                targetAssemblyDirs.Add(Path.Combine(monoDroidDir, "..", "..", "..", "mono", "2.1"));
+                // /Developer/MonoAndroid/lib/mandroid/platforms/android-15 => 
+                // /Developer/MonoAndroid/lib/xbuild-frameworks/MonoAndroid/v1.0
+                targetAssemblyDirs.Add(Path.Combine(monoDroidDir, 
+                    "..", "..", "..",
+                    "xbuild-frameworks", "MonoAndroid", "v1.0"));
             }
 
             // NB: Double down on Laziness
             var xamMacDir = targetAssemblyDirs.FirstOrDefault(x => x.ToLowerInvariant().Contains("xamarin.mac"));
             if (xamMacDir != null) {
                 targetAssemblyDirs.Add("/Library/Frameworks/Mono.framework/Versions/Current/lib/mono/4.5");
+            }
+
+	    // NB: Triple down on Laziness
+            if (targetAssemblyNames.Any(x => x.ToLowerInvariant().Contains("xamarin.forms"))) {
+                targetAssemblyDirs.Add("/Library/Frameworks/Mono.framework/Versions/Current/lib/mono/xbuild-frameworks/.NETPortable/v4.5/Profile/Profile78");
             }
 
             var rp = new ReaderParameters() { AssemblyResolver = new PathSearchAssemblyResolver(targetAssemblyDirs.ToArray()) };
@@ -307,6 +316,12 @@ namespace EventBuilder
                 fullPath = targetAssemblyDirs.Select(x => Path.Combine(x, dllName)).FirstOrDefault(x => File.Exists(x));
             }
 
+            // NB: This hacks WinRT's weird mscorlib to just use the regular one
+            if (fullName.Contains("mscorlib") && fullName.Contains("255"))
+            {
+                fullPath = Environment.ExpandEnvironmentVariables(@"%SystemRoot%\Microsoft.NET\Framework\v4.0.30319\mscorlib.dll");
+            }
+
             if (fullPath == null)
             {
                 var err = String.Format("Failed to resolve!!! {0}", fullName);
@@ -326,6 +341,12 @@ namespace EventBuilder
             {
                 dllName = fullName.Split(',')[0] + ".winmd";
                 fullPath = targetAssemblyDirs.Select(x => Path.Combine(x, dllName)).FirstOrDefault(x => File.Exists(x));
+            }
+
+            // NB: This hacks WinRT's weird mscorlib to just use the regular one
+            if (fullName.Contains("mscorlib") && fullName.Contains("255"))
+            {
+                fullPath = Environment.ExpandEnvironmentVariables(@"%SystemRoot%\Microsoft.NET\Framework\v4.0.30319\mscorlib.dll");
             }
 
             if (fullPath == null)
