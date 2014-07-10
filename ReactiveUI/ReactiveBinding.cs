@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -25,24 +26,14 @@ namespace ReactiveUI
         TViewModel ViewModel { get; }
 
         /// <summary>
-        /// An array representing the property names on the viewmodel bound to the view.
-        /// This can be a child property, for example x.Foo.Bar.Baz</c> in which case
-        /// the path will contain "Foo","Bar","Baz".
+        /// An expression representing the propertyon the viewmodel bound to the view.
+        /// This can be a child property, for example x.Foo.Bar.Baz in which case
+        /// that will be the expression.
         /// </summary>
         /// <value>
-        /// The property names of the path.
+        /// The expression.
         /// </value>
-        string[] ViewModelPath { get; }
-
-        /// <summary>
-        /// An enumerable representing the properties on the viewmodel bound to the view.
-        /// This can contain child properties, for example x.Foo.Bar.Baz</c> in which case
-        /// it will contain the Foo, Bar and Baz properties.
-        /// </summary>
-        /// <value>
-        /// The properties of the path.
-        /// </value>
-        IObservedChange<object, object>[] ViewModelPathProperties { get; }
+        Expression ViewModelExpression { get; }
 
         /// <summary>
         /// The instance of the view this binding is applied to.
@@ -53,24 +44,14 @@ namespace ReactiveUI
         TView View { get; }
 
         /// <summary>
-        /// An array representing the property names on the view bound to the viewmodel.
-        /// This can be a child property, for example x.Foo.Bar.Baz</c> in which case
-        /// the path will contain "Foo","Bar","Baz".
+        /// An expression representing the property on the view bound to the viewmodel.
+        /// This can be a child property, for example x.Foo.Bar.Baz in which case
+        /// that will be the expression.
         /// </summary>
         /// <value>
-        /// The property names of the path.
+        /// The expression.
         /// </value>
-        string[] ViewPath { get; }
-
-        /// <summary>
-        /// An enumerable representing the properties on the view bound to the viewmodel.
-        /// This can contain child properties, for example x.Foo.Bar.Baz</c> in which case
-        /// it will contain the Foo, Bar and Baz properties.
-        /// </summary>
-        /// <value>
-        /// The properties of the path.
-        /// </value>
-        IObservedChange<object, object>[] ViewPathProperties { get; }
+        Expression ViewExpression { get; }
 
         /// <summary>
         /// An observable representing changed values for the binding.
@@ -104,13 +85,13 @@ namespace ReactiveUI
         /// <param name="viewModelPath">The view model path.</param>
         /// <param name="direction">The direction.</param>
         /// <param name="bindingDisposable">The binding disposable.</param>
-        public ReactiveBinding(TView view, TViewModel viewModel, string[] viewPath, string[] viewModelPath, 
+        public ReactiveBinding(TView view, TViewModel viewModel, Expression viewExpression, Expression viewModelExpression, 
             IObservable<TValue> changed, BindingDirection direction, IDisposable bindingDisposable)
         {
             this.View = view;
             this.ViewModel = viewModel;
-            this.ViewPath = viewPath;
-            this.ViewModelPath = viewModelPath;
+            this.ViewExpression = viewExpression;
+            this.ViewModelExpression = viewModelExpression;
             this.Direction = direction;
             this.Changed = changed;
 
@@ -126,31 +107,14 @@ namespace ReactiveUI
         public TViewModel ViewModel { get; private set; }
 
         /// <summary>
-        /// An array representing the property names on the viewmodel bound to the view.
-        /// This can be a child property, for example x.Foo.Bar.Baz</c> in which case
-        /// the path will contain "Foo","Bar","Baz".
+        /// An expression representing the propertyon the viewmodel bound to the view.
+        /// This can be a child property, for example x.Foo.Bar.Baz in which case
+        /// that will be the expression.
         /// </summary>
         /// <value>
-        /// The property names of the path.
+        /// The expression.
         /// </value>
-        public string[] ViewModelPath { get; private set; }
-
-        /// <summary>
-        /// An enumerable representing the properties on the viewmodel bound to the view.
-        /// This can contain child properties, for example x.Foo.Bar.Baz</c> in which case
-        /// it will contain the Foo, Bar and Baz properties.
-        /// </summary>
-        /// <value>
-        /// The properties of the path.
-        /// </value>
-        public IObservedChange<object, object>[] ViewModelPathProperties
-        {
-            get {
-                IObservedChange<object, object>[] fetchedValues;
-                Reflection.TryGetAllValuesForPropertyChain(out fetchedValues, ViewModel, ViewModelPath);
-                return fetchedValues;
-            }
-        }
+        public Expression ViewModelExpression { get; private set; }
 
         /// <summary>
         /// The instance of the view this binding is applied to.
@@ -161,31 +125,14 @@ namespace ReactiveUI
         public TView View { get; private set; }
 
         /// <summary>
-        /// An array representing the property names on the view bound to the viewmodel.
-        /// This can be a child property, for example x.Foo.Bar.Baz</c> in which case
-        /// the path will contain "Foo","Bar","Baz".
+        /// An expression representing the property on the view bound to the viewmodel.
+        /// This can be a child property, for example x.Foo.Bar.Baz in which case
+        /// that will be the expression.
         /// </summary>
         /// <value>
-        /// The property names of the path.
+        /// The expression.
         /// </value>
-        public string[] ViewPath { get; private set;}
-
-        /// <summary>
-        /// An enumerable representing the properties on the view bound to the viewmodel.
-        /// This can contain child properties, for example x.Foo.Bar.Baz</c> in which case
-        /// it will contain the Foo, Bar and Baz properties.
-        /// </summary>
-        /// <value>
-        /// The properties of the path.
-        /// </value>
-        public IObservedChange<object, object>[] ViewPathProperties
-        {
-            get {
-                IObservedChange<object, object>[] fetchedValues;
-                Reflection.TryGetAllValuesForPropertyChain(out fetchedValues, View, ViewPath);
-                return fetchedValues;
-            }
-        }
+        public Expression ViewExpression { get; private set; }
 
         /// <summary>
         /// An observable representing changed values for the binding.

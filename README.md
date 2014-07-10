@@ -1,7 +1,16 @@
 # ReactiveUI
 
-Use the Reactive Extensions for .NET along with Silverlight, WPF, or 
-Windows Phone to create elegant, testable User Interfaces.
+Use the Reactive Extensions for .NET to create elegant, testable User 
+Interfaces that run on any mobile or desktop platform.
+
+### Supported Platforms
+
+* Xamarin.iOS
+* Xamarin.Android
+* Xamarin.Mac
+* WPF
+* Windows Phone 8
+* Windows Store Apps
 
 This library is organized into several high-level assemblies:
 
@@ -64,7 +73,7 @@ public class ColorChooserThatDoesntLikeGreen : ReactiveObject
     var finalColor = this.WhenAny(x => x.Red, x => x.Green, x => x.Blue, 
         (r,g,b) => Color.FromRGB(r.Value, g.Value, b.Value));
 
-    finalColor.ToProperty(this, x => x.Color);
+    finalColor.ToProperty(this, x => x.Color, out _Color);
 
     // When the finalColor has full green, the Ok button is disabled
     OkButton = new ReactiveCommand(finalColor.Select(x => x.Green != 255));

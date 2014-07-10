@@ -21,9 +21,9 @@ namespace ReactiveUI
         {
             _schedulerFactory = schedulerFactory;
 
-            // NB: Creating a scheduler will fail on WinRT if we attempt to do 
+            // NB: Creating a scheduler will fail on WinRT if we attempt to do
             // so on a non-UI thread, even if the underlying Dispatcher exists.
-            // We assume (hope?) that WaitForDispatcherScheduler will be created 
+            // We assume (hope?) that WaitForDispatcherScheduler will be created
             // early enough that this won't be the case.
             attemptToCreateScheduler();
         }
@@ -55,7 +55,7 @@ namespace ReactiveUI
                 return _innerScheduler;
             } catch (Exception) {
                 // NB: Dispatcher's not ready yet. Keep using CurrentThread
-                return Scheduler.CurrentThread;
+                return CurrentThreadScheduler.Instance;
             }
         }
     }

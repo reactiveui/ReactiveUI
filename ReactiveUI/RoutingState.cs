@@ -6,6 +6,7 @@ using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Runtime.Serialization;
 using System.Windows.Input;
+using Splat;
 
 namespace ReactiveUI
 {
@@ -14,8 +15,13 @@ namespace ReactiveUI
     /// navigate to other ViewModels.
     /// </summary>
     [DataContract]
-    public class RoutingState : ReactiveObject, IRoutingState
+    public class RoutingState : ReactiveObject
     {
+        static RoutingState()
+        {
+            RxApp.EnsureInitialized();
+        }
+
         [DataMember] ReactiveList<IRoutableViewModel> _NavigationStack;
 
         /// <summary>
@@ -32,14 +38,14 @@ namespace ReactiveUI
         /// Navigates back to the previous element in the stack.
         /// </summary>
         [IgnoreDataMember]
-        public IReactiveCommand NavigateBack { get; protected set; }
+        public ReactiveCommand<Unit> NavigateBack { get; protected set; }
 
         /// <summary>
         /// Navigates to the a new element in the stack - the Execute parameter
         /// must be a ViewModel that implements IRoutableViewModel.
         /// </summary>
         [IgnoreDataMember]
-        public INavigateCommand Navigate { get; protected set; }
+        public ReactiveCommand<object> Navigate { get; protected set; }
 
         /// <summary>
         /// Navigates to a new element and resets the navigation stack (i.e. the
@@ -48,7 +54,7 @@ namespace ReactiveUI
         /// IRoutableViewModel.
         /// </summary>
         [IgnoreDataMember]
-        public INavigateCommand NavigateAndReset { get; protected set; }
+        public ReactiveCommand<object> NavigateAndReset { get; protected set; }
 
         [IgnoreDataMember]
         public IObservable<IRoutableViewModel> CurrentViewModel { get; protected set; }
@@ -64,12 +70,14 @@ namespace ReactiveUI
 
         void setupRx()
         {
-            NavigateBack = new ReactiveCommand(
-                NavigationStack.CountChanged.StartWith(_NavigationStack.Count).Select(x => x > 1));
+            NavigateBack = ReactiveCommand.CreateAsyncObservable(
+                NavigationStack.CountChanged.StartWith(_NavigationStack.Count).Select(x => x > 1),
+                _ => Observable.Return(Unit.Default));
+
             NavigateBack.Subscribe(_ =>
                 NavigationStack.RemoveAt(NavigationStack.Count - 1));
 
-            Navigate = new NavigationReactiveCommand();
+            Navigate = new ReactiveCommand<object>(Observable.Return(true), x => Observable.Return(x));
             Navigate.Subscribe(x => {
                 var vm = x as IRoutableViewModel;
                 if (vm == null) {
@@ -79,11 +87,12 @@ namespace ReactiveUI
                 NavigationStack.Add(vm);
             });
 
-            NavigateAndReset = new NavigationReactiveCommand();
-            NavigateAndReset.Subscribe(x => {
-                NavigationStack.Clear();
-                Navigate.Execute(x);
-            });
+            NavigateAndReset = new ReactiveCommand<object>(Observable.Return(true), x => Observable.Return(x));
+            NavigateAndReset
+                .SelectMany(x => {
+                    NavigationStack.Clear();
+                    return Navigate.ExecuteAsync(x);
+                }).Subscribe();
 
             CurrentViewModel = Observable.Concat(
                 Observable.Defer(() => Observable.Return(NavigationStack.LastOrDefault())),
@@ -91,15 +100,13 @@ namespace ReactiveUI
         }
     }
 
-    class NavigationReactiveCommand : ReactiveCommand, INavigateCommand { }
-
     public static class RoutingStateMixins
     {
         /// <summary>
         /// Locate the first ViewModel in the stack that matches a certain Type.
         /// </summary>
         /// <returns>The matching ViewModel or null if none exists.</returns>
-        public static T FindViewModelInStack<T>(this IRoutingState This)
+        public static T FindViewModelInStack<T>(this RoutingState This)
             where T : IRoutableViewModel
         {
             return This.NavigationStack.Reverse().OfType<T>().FirstOrDefault();
@@ -108,7 +115,7 @@ namespace ReactiveUI
         /// <summary>
         /// Returns the currently visible ViewModel
         /// </summary>
-        public static IRoutableViewModel GetCurrentViewModel(this IRoutingState This)
+        public static IRoutableViewModel GetCurrentViewModel(this RoutingState This)
         {
             return This.NavigationStack.LastOrDefault();
         }
@@ -118,12 +125,13 @@ namespace ReactiveUI
         /// type specified by the type parameter via looking it up in the
         /// Dependency Resolver.
         /// </summary>
-        public static IReactiveCommand NavigateCommandFor<T>(this IRoutingState This)
+        public static IReactiveCommand NavigateCommandFor<T>(this RoutingState This)
             where T : IRoutableViewModel
         {
-            var ret = new ReactiveCommand(This.Navigate.CanExecuteObservable);
-                ret.Select(_ => (IRoutableViewModel)RxApp.DependencyResolver.GetService<T>()).InvokeCommand(This.Navigate);
-                return ret;
+            var ret = new ReactiveCommand<object>(This.Navigate.CanExecuteObservable, x => Observable.Return(x));
+            ret.Select(_ => (IRoutableViewModel)Locator.Current.GetService<T>()).InvokeCommand(This.Navigate);
+                
+            return ret;
         }
     }
 }

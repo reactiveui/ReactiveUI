@@ -30,6 +30,11 @@ namespace Xunit
             N.Assert.AreNotEqual(lhs, rhs);
         }
 
+        public static void Same(object lhs, object rhs)
+        {
+            N.Assert.AreSame(lhs, rhs);
+        }
+
         public static void Throws<T>(Action block) where T : Exception
         {
             bool didntThrow = true;

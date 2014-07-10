@@ -2,9 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive;
+using System.Reflection;
 using System.Reactive.Linq;
 using System.Text;
 using ReactiveUI;
+using Splat;
 
 namespace ReactiveUI
 {
@@ -12,7 +14,7 @@ namespace ReactiveUI
     {
         public static IViewLocator Current {
             get {
-                var ret = RxApp.DependencyResolver.GetService<IViewLocator>();
+                var ret = Locator.Current.GetService<IViewLocator>();
                 if (ret == null) {
                     throw new Exception("Could not find a default ViewLocator. This should never happen, your dependency resolver is broken");
                 }
@@ -48,7 +50,7 @@ namespace ReactiveUI
             // * IViewFor<IFooBarViewModel>
             // * IViewFor<FooBarViewModel> (the original behavior in RxUI 3.1)
 
-            var attrs = viewModel.GetType().GetCustomAttributes(typeof (ViewContractAttribute), true);
+            var attrs = viewModel.GetType().GetTypeInfo().GetCustomAttributes(typeof (ViewContractAttribute), true);
 
             if (attrs.Any()) {
                 contract = contract ?? ((ViewContractAttribute) attrs.First()).Contract;
@@ -72,7 +74,7 @@ namespace ReactiveUI
             var ret = default(IViewFor);
 
             try {
-                ret = (IViewFor)RxApp.DependencyResolver.GetService(type, contract);
+                ret = (IViewFor)Locator.Current.GetService(type, contract);
             } catch (Exception ex) {
                 this.Log().ErrorException("Failed to instantiate view: " + type.FullName, ex);
                 throw;
