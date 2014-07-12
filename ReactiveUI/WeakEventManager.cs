@@ -257,8 +257,9 @@ namespace ReactiveUI
 
         protected class WeakHandler
         {
-            WeakReference source;
-            WeakReference originalHandler;
+            readonly WeakReference originalHandler;
+            readonly WeakReference source;
+            TEventHandler hardReference;
 
             public bool IsActive {
                 get { return this.source != null && this.source.IsAlive && this.originalHandler != null && this.originalHandler.IsAlive; }
@@ -278,6 +279,25 @@ namespace ReactiveUI
             {
                 this.source = new WeakReference(source);
                 this.originalHandler = new WeakReference(originalHandler);
+                var handler = originalHandler as Delegate;
+
+                if (TargetIsWeak(handler))
+                    this.hardReference = originalHandler;
+            }
+
+            /// <summary>
+            /// Dirty workaround for WeakEventManagers not keeping a hard reference to the delegate, ending up being garbage collected
+            /// </summary>
+            /// <param name="handler"></param>
+            /// <returns></returns>
+            static bool TargetIsWeak(Delegate handler)
+            {
+                var type = handler.Target.GetType();
+                while ((type = type.GetTypeInfo().BaseType) != null) {
+                    if (type.FullName == "System.Windows.WeakEventManager")
+                        return true;
+                }
+                return false;
             }
 
             public bool Matches(object source, TEventHandler handler)
