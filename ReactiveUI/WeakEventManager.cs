@@ -281,8 +281,9 @@ namespace ReactiveUI
                 this.originalHandler = new WeakReference(originalHandler);
                 var handler = originalHandler as Delegate;
 
-                if (TargetIsWeak(handler))
+                if (TargetIsWeak(handler)) {
                     this.hardReference = originalHandler;
+                }
             }
 
             /// <summary>
@@ -294,8 +295,9 @@ namespace ReactiveUI
             {
                 var type = handler.Target.GetType();
                 while ((type = type.GetTypeInfo().BaseType) != null) {
-                    if (type.FullName == "System.Windows.WeakEventManager")
+                    if (type.FullName == "System.Windows.WeakEventManager") {
                         return true;
+                    }
                 }
                 return false;
             }
