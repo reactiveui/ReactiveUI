@@ -64,6 +64,9 @@ namespace ReactiveUI
             case ExpressionType.MemberAccess:
                 info = ((MemberExpression)expression).Member;
                 break;
+            case ExpressionType.Convert:
+            case ExpressionType.ConvertChecked:
+                return GetMemberInfo(((UnaryExpression)expression).Operand);
             default:
                 throw new NotSupportedException(string.Format("Unsupported expression type: '{0}'", expression.NodeType));
             }
