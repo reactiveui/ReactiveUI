@@ -133,6 +133,9 @@
     <Compile Include="Xaml\RxUIViewModelGeneratorTest.cs" />
     <Compile Include="TestLogger.cs" />
     <Compile Include="Utility.cs" />
+    <Compile Include="Xaml\TestUserControl.xaml.cs">
+      <DependentUpon>TestUserControl.xaml</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ReactiveUI.Blend\ReactiveUI.Blend_Net45.csproj">
@@ -164,6 +167,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.ReactiveUI.Tests_Net45.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="Xaml\TestUserControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
