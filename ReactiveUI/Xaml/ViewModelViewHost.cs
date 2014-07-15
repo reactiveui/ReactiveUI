@@ -19,7 +19,7 @@ namespace ReactiveUI
     /// the ViewModel property and display it. This control is very useful
     /// inside a DataTemplate to display the View associated with a ViewModel.
     /// </summary>
-    public class ViewModelViewHost : TransitioningContentControl, IViewFor
+    public class ViewModelViewHost : TransitioningContentControl, IViewFor, IEnableLogger
     {
         /// <summary>
         /// The ViewModel to display
@@ -70,14 +70,20 @@ namespace ReactiveUI
                 (vm, contract) => new { ViewModel = vm, Contract = contract, });
 
             var platform = Locator.Current.GetService<IPlatformOperations>();
+            Func<string> platformGetter = () => default(string);
+
             if (platform == null) {
-                throw new Exception("Couldn't find an IPlatformOperations. This should never happen, your dependency resolver is broken");
+                // NB: This used to be an error but WPF design mode can't read
+                // good or do other stuff good.
+                this.Log().Error("Couldn't find an IPlatformOperations. This should never happen, your dependency resolver is broken");
+            } else {
+                platformGetter = () => platform.GetOrientation();
             }
 
             ViewContractObservable = Observable.FromEventPattern<SizeChangedEventHandler, SizeChangedEventArgs>(x => SizeChanged += x, x => SizeChanged -= x)
-                .Select(_ => platform.GetOrientation())
+                .Select(_ => platformGetter())
                 .DistinctUntilChanged()
-                .StartWith(platform.GetOrientation())
+                .StartWith(platformGetter())
                 .Select(x => x != null ? x.ToString() : default(string));
 
             this.WhenActivated(d => {
