@@ -44,13 +44,13 @@ namespace ReactiveUI
 #if ANDROID
             registerFunction(() => new AndroidDefaultPropertyBinding(), typeof(IDefaultPropertyBindingProvider));
             registerFunction(() => new AndroidObservableForWidgets(), typeof(ICreatesObservableForProperty));
-            registerFunction(() => AndroidCommandBinders.Instance.Value, typeof(ICreatesCommandBinding));
+            registerFunction(() => new AndroidCommandBinders(), typeof(ICreatesCommandBinding));
 #endif
 
 #if UIKIT
-            registerFunction(() => UIKitObservableForProperty.Instance.Value, typeof(ICreatesObservableForProperty));
-            registerFunction(() => UIKitCommandBinders.Instance.Value, typeof(ICreatesCommandBinding));
-            registerFunction(() => DateTimeNSDateConverter.Instance.Value, typeof(IBindingTypeConverter));
+            registerFunction(() => new UIKitObservableForProperty(), typeof(ICreatesObservableForProperty));
+            registerFunction(() => new UIKitCommandBinders(), typeof(ICreatesCommandBinding));
+            registerFunction(() => new DateTimeNSDateConverter(), typeof(IBindingTypeConverter));
 #endif
 
 #if COCOA

@@ -10,6 +10,7 @@ using System.Reactive.Disposables;
 
 namespace ReactiveUI
 {
+    [Preserve]
     public class UIKitObservableForProperty : UIKitObservableForPropertyBase
     {
         public static Lazy<UIKitObservableForProperty> Instance = new Lazy<UIKitObservableForProperty>();
