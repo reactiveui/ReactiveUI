@@ -22,7 +22,7 @@ namespace ReactiveUI
     /// Changing and Changed Observables to monitor object changes.
     /// </summary>
     [DataContract]
-    public class ReactiveObject : IReactiveNotifyPropertyChanged<IReactiveObject>, IHandleObservableErrors, IReactiveObject
+    public class ReactiveObject : IReactiveNotifyPropertyChanged<ReactiveObject>, IHandleObservableErrors, IReactiveObject
     {
         public event PropertyChangingEventHandler PropertyChanging {
             add { PropertyChangingEventManager.AddHandler(this, value); }
@@ -49,7 +49,7 @@ namespace ReactiveUI
         /// be changed.
         /// </summary>
         [IgnoreDataMember]
-        public IObservable<IReactivePropertyChangedEventArgs<IReactiveObject>> Changing {
+        public IObservable<IReactivePropertyChangedEventArgs<ReactiveObject>> Changing {
             get { return this.getChangingObservable(); }
         }
 
@@ -57,7 +57,7 @@ namespace ReactiveUI
         /// Represents an Observable that fires *after* a property has changed.
         /// </summary>
         [IgnoreDataMember]
-        public IObservable<IReactivePropertyChangedEventArgs<IReactiveObject>> Changed {
+        public IObservable<IReactivePropertyChangedEventArgs<ReactiveObject>> Changed {
             get { return this.getChangedObservable(); }
         }
 

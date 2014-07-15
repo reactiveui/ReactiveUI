@@ -26,17 +26,17 @@ namespace ReactiveUI
     public static class IReactiveObjectExtensions
     {
         static ConditionalWeakTable<IReactiveObject, IExtensionState<IReactiveObject>> state = new ConditionalWeakTable<IReactiveObject, IExtensionState<IReactiveObject>>();
-
-        internal static IObservable<IReactivePropertyChangedEventArgs<IReactiveObject>> getChangedObservable<TSender>(this TSender This) where TSender : IReactiveObject
+        
+        internal static IObservable<IReactivePropertyChangedEventArgs<TSender>> getChangedObservable<TSender>(this TSender This) where TSender : IReactiveObject
         {
             var val = state.GetValue(This, key => (IExtensionState<IReactiveObject>)new ExtensionState<TSender>(This));
-            return val.Changed;
+            return val.Changed.Cast<IReactivePropertyChangedEventArgs<TSender>>();
         }
 
-        internal static IObservable<IReactivePropertyChangedEventArgs<IReactiveObject>> getChangingObservable<TSender>(this TSender This) where TSender : IReactiveObject 
+        internal static IObservable<IReactivePropertyChangedEventArgs<TSender>> getChangingObservable<TSender>(this TSender This) where TSender : IReactiveObject 
         {
             var val = state.GetValue(This, key => (IExtensionState<IReactiveObject>)new ExtensionState<TSender>(This));
-            return val.Changing;
+            return val.Changing.Cast<IReactivePropertyChangedEventArgs<TSender>>();
         }
 
         internal static IObservable<Exception> getThrownExceptionsObservable<TSender>(this TSender This) where TSender : IReactiveObject 
