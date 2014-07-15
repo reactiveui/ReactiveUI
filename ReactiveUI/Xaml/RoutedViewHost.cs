@@ -22,7 +22,7 @@ namespace ReactiveUI
     /// the View and wire up the ViewModel whenever a new ViewModel is
     /// navigated to. Put this control as the only control in your Window.
     /// </summary>
-    public class RoutedViewHost : TransitioningContentControl, IActivatable
+    public class RoutedViewHost : TransitioningContentControl, IActivatable, IEnableLogger
     {
         IDisposable _inner = null;
 
@@ -70,14 +70,20 @@ namespace ReactiveUI
             }
 
             var platform = Locator.Current.GetService<IPlatformOperations>();
+            Func<string> platformGetter = () => default(string);
+
             if (platform == null) {
-                throw new Exception("Couldn't find an IPlatformOperations. This should never happen, your dependency resolver is broken");
+                // NB: This used to be an error but WPF design mode can't read
+                // good or do other stuff good.
+                this.Log().Error("Couldn't find an IPlatformOperations. This should never happen, your dependency resolver is broken");
+            } else {
+                platformGetter = () => platform.GetOrientation();
             }
 
             ViewContractObservable = Observable.FromEventPattern<SizeChangedEventHandler, SizeChangedEventArgs>(x => SizeChanged += x, x => SizeChanged -= x)
-                .Select(_ => platform.GetOrientation())
+                .Select(_ => platformGetter())
                 .DistinctUntilChanged()
-                .StartWith(platform.GetOrientation())
+                .StartWith(platformGetter())
                 .Select(x => x != null ? x.ToString() : default(string));
 
             var vmAndContract = Observable.CombineLatest(
