@@ -223,7 +223,9 @@ namespace ReactiveUI
 
         protected virtual void DeliverEventToList(object sender, TEventArgs args, List<WeakHandler> list)
         {
-            foreach (var handler in list) {
+            // NB: The ToArray here is to prevent reentrant calls from modifying
+            // the handler list and blowing up the enumeration
+            foreach (var handler in list.ToArray()) {
                 if (handler.IsActive) {
                     var @delegate = handler.Handler as Delegate;
                     @delegate.DynamicInvoke(sender, args);
