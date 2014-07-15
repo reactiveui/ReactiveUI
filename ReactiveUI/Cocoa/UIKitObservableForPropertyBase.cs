@@ -10,6 +10,7 @@ using System.Linq.Expressions;
 
 namespace ReactiveUI
 {
+    [Preserve]
     public abstract class UIKitObservableForPropertyBase :
         ICreatesObservableForProperty
     {
