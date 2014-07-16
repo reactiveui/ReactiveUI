@@ -12,7 +12,7 @@
 
     <dependencies>
       <dependency id="reactiveui-platforms" version="[6.0.1]" />
-      <dependency id="Xamarin.Android.Support.v4" version="19.1.0" />
+      <dependency id="Xamarin.Android.Support.v4" version="20.0.0" />
     </dependencies>
   </metadata>
 </package>
