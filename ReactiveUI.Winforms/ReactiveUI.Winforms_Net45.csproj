@@ -105,6 +105,7 @@
     <Compile Include="Winforms\ViewModelViewHost.Designer.cs">
       <DependentUpon>ViewModelViewHost.cs</DependentUpon>
     </Compile>
+    <Compile Include="Winforms\WeakEventManagerShims.cs" />
     <Compile Include="Winforms\WinformsCreatesObservableForProperty.cs" />
     <Compile Include="Winforms\WinformsDefaultPropertyBinding.cs" />
   </ItemGroup>
