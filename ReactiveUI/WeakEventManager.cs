@@ -11,25 +11,27 @@ using System.Windows.Input;
 
 namespace ReactiveUI
 {
-    public class CanExecuteChangedEventManager : WeakEventManager<ICommand, EventHandler, EventArgs>
+#if !NET_45
+    internal class CanExecuteChangedEventManager : WeakEventManager<ICommand, EventHandler, EventArgs>
     {
     }
 
-    public class PropertyChangingEventManager : WeakEventManager<INotifyPropertyChanging, PropertyChangingEventHandler, PropertyChangingEventArgs>
+    internal class PropertyChangingEventManager : WeakEventManager<INotifyPropertyChanging, PropertyChangingEventHandler, PropertyChangingEventArgs>
     {
     }
 
-    public class PropertyChangedEventManager : WeakEventManager<INotifyPropertyChanged, PropertyChangedEventHandler, PropertyChangedEventArgs>
+    internal class PropertyChangedEventManager : WeakEventManager<INotifyPropertyChanged, PropertyChangedEventHandler, PropertyChangedEventArgs>
     {
     }
 
-    public class CollectionChangingEventManager : WeakEventManager<INotifyCollectionChanging, NotifyCollectionChangedEventHandler, NotifyCollectionChangedEventArgs>
+    internal class CollectionChangingEventManager : WeakEventManager<INotifyCollectionChanging, NotifyCollectionChangedEventHandler, NotifyCollectionChangedEventArgs>
     {
     }
 
-    public class CollectionChangedEventManager : WeakEventManager<INotifyCollectionChanged, NotifyCollectionChangedEventHandler, NotifyCollectionChangedEventArgs>
+    internal class CollectionChangedEventManager : WeakEventManager<INotifyCollectionChanged, NotifyCollectionChangedEventHandler, NotifyCollectionChangedEventArgs>
     {
     }
+#endif
 
     /// <summary>
     /// WeakEventManager base class. Inspired by the WPF WeakEventManager class and the code in 
