@@ -23,6 +23,47 @@ namespace ReactiveUI
     [DebuggerTypeProxy(typeof(CollectionDebugView<>))]
     public class ReactiveList<T> : IReactiveList<T>, IReadOnlyReactiveList<T>, IList
     {
+#if NET_45
+        public event NotifyCollectionChangedEventHandler CollectionChanging;
+
+        protected virtual void raiseCollectionChanging(NotifyCollectionChangedEventArgs args)
+        {
+            var handler = this.CollectionChanging;
+            if (handler != null) {
+                handler(this, args);
+            }
+        }
+
+        public event NotifyCollectionChangedEventHandler CollectionChanged;
+
+        protected virtual void raiseCollectionChanged(NotifyCollectionChangedEventArgs args)
+        {
+            var handler = this.CollectionChanged;
+            if (handler != null) {
+                handler(this, args);
+            }
+        }
+
+        public event PropertyChangingEventHandler PropertyChanging;
+
+        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args)
+        {
+            var handler = this.PropertyChanging;
+            if (handler != null) {
+                handler(this, args);
+            }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args)
+        {
+            var handler = this.PropertyChanged;
+            if (handler != null) {
+                handler(this, args);
+            }
+        }
+#else
         public event NotifyCollectionChangedEventHandler CollectionChanging {
             add { CollectionChangingEventManager.AddHandler(this, value); }
             remove { CollectionChangingEventManager.RemoveHandler(this, value); }
@@ -31,6 +72,16 @@ namespace ReactiveUI
         public event NotifyCollectionChangedEventHandler CollectionChanged {
             add { CollectionChangedEventManager.AddHandler(this, value); }
             remove { CollectionChangedEventManager.RemoveHandler(this, value); }
+        }
+        
+        protected virtual void raiseCollectionChanging(NotifyCollectionChangedEventArgs e)
+        {
+            CollectionChangingEventManager.DeliverEvent(this, e);
+        }
+
+        protected virtual void raiseCollectionChanged(NotifyCollectionChangedEventArgs e)
+        {
+            CollectionChangedEventManager.DeliverEvent(this, e);
         }
 
         public event PropertyChangingEventHandler PropertyChanging
@@ -53,6 +104,7 @@ namespace ReactiveUI
         {
             PropertyChangedEventManager.DeliverEvent(this, args);
         }
+#endif
 
         [IgnoreDataMember] Subject<NotifyCollectionChangedEventArgs> _changing;
         [IgnoreDataMember] Subject<NotifyCollectionChangedEventArgs> _changed;
@@ -632,16 +684,6 @@ namespace ReactiveUI
                     input.Subscribe(subj),
                     Disposable.Create(() => block(-1)));
             });
-        }
-
-        protected virtual void raiseCollectionChanging(NotifyCollectionChangedEventArgs e)
-        {
-            CollectionChangingEventManager.DeliverEvent(this, e);
-        }
-
-        protected virtual void raiseCollectionChanged(NotifyCollectionChangedEventArgs e)
-        {
-            CollectionChangedEventManager.DeliverEvent(this, e);
         }
 
         #region Super Boring IList crap
