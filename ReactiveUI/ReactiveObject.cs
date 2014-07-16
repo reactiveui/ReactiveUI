@@ -24,6 +24,27 @@ namespace ReactiveUI
     [DataContract]
     public class ReactiveObject : IReactiveNotifyPropertyChanged<ReactiveObject>, IHandleObservableErrors, IReactiveObject
     {
+#if NET_45        
+        public event PropertyChangingEventHandler PropertyChanging;
+
+        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args)
+        {
+            var handler = this.PropertyChanging;
+            if(handler != null) {
+                handler(this, args);
+            }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args)
+        {
+            var handler = this.PropertyChanged;
+            if (handler != null) {
+                handler(this, args);
+            }
+        }
+#else
         public event PropertyChangingEventHandler PropertyChanging {
             add { PropertyChangingEventManager.AddHandler(this, value); }
             remove { PropertyChangingEventManager.RemoveHandler(this, value); }
@@ -43,6 +64,7 @@ namespace ReactiveUI
         {
             PropertyChangedEventManager.DeliverEvent(this, args);
         }
+#endif
 
         /// <summary>
         /// Represents an Observable that fires *before* a property is about to
