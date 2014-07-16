@@ -281,6 +281,31 @@ namespace ReactiveUI
     /// </summary>
     public class ReactiveCommand<T> : IReactiveCommand<T>, IReactiveCommand
     {
+#if NET_45
+        public event EventHandler CanExecuteChanged;
+
+        protected virtual void raiseCanExecuteChanged(EventArgs args)
+        {
+            var handler = this.CanExecuteChanged;
+            if (handler != null) {
+                handler(this, args);
+            }
+        }
+#else
+        public event EventHandler CanExecuteChanged
+        {
+            add {
+                if (canExecuteDisp == null) canExecuteDisp = canExecute.Connect();
+                CanExecuteChangedEventManager.AddHandler(this, value);
+            }
+            remove { CanExecuteChangedEventManager.RemoveHandler(this, value); }
+        }
+
+        protected virtual void raiseCanExecuteChanged(EventArgs args)
+        {
+            CanExecuteChangedEventManager.DeliverEvent(this, args);
+        }
+#endif
         readonly Subject<T> executeResults = new Subject<T>();
         readonly Subject<bool> isExecuting = new Subject<bool>();
         readonly Func<object, IObservable<T>> executeAsync;
@@ -310,7 +335,7 @@ namespace ReactiveUI
                     canExecuteLatest = x;
 
                     if (fireCanExecuteChanged) {
-                        CanExecuteChangedEventManager.DeliverEvent(this, EventArgs.Empty);
+                        this.raiseCanExecuteChanged(EventArgs.Empty);
                     }
                 })
                 .Publish();
@@ -417,15 +442,6 @@ namespace ReactiveUI
         {
             if (canExecuteDisp == null) canExecuteDisp = canExecute.Connect();
             return canExecuteLatest;
-        }
-
-        public event EventHandler CanExecuteChanged
-        {
-            add {
-                if (canExecuteDisp == null) canExecuteDisp = canExecute.Connect();
-                CanExecuteChangedEventManager.AddHandler(this, value);
-            }
-            remove { CanExecuteChangedEventManager.RemoveHandler(this, value); }
         }
 
         public void Execute(object parameter)
