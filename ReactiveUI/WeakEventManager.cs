@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
+using System.Reactive.Disposables;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
@@ -53,7 +55,7 @@ namespace ReactiveUI
         /// <summary>
         /// Mapping from the source of the event to the list of handlers. This is a CWT to ensure it does not leak the source of the event.
         /// </summary>
-        ConditionalWeakTable<object, List<WeakHandler>> sourceToWeakHandlers = new ConditionalWeakTable<object, List<WeakHandler>>();
+        ConditionalWeakTable<object, WeakHandlerList> sourceToWeakHandlers = new ConditionalWeakTable<object, WeakHandlerList>();
 
         static Lazy<WeakEventManager<TEventSource, TEventHandler, TEventArgs>> current = 
             new Lazy<WeakEventManager<TEventSource, TEventHandler, TEventArgs>>(() => new WeakEventManager<TEventSource, TEventHandler, TEventArgs>());
@@ -80,8 +82,7 @@ namespace ReactiveUI
             if (source == null) throw new ArgumentNullException("source");
             if (handler == null) throw new ArgumentNullException("handler");
 
-            if (!typeof(TEventHandler).GetTypeInfo().IsSubclassOf(typeof(Delegate)))
-            {
+            if (!typeof(TEventHandler).GetTypeInfo().IsSubclassOf(typeof(Delegate))) {
                 throw new ArgumentException("Handler must be Delegate type");
             }
 
@@ -98,8 +99,7 @@ namespace ReactiveUI
             if (source == null) throw new ArgumentNullException("source");
             if (handler == null) throw new ArgumentNullException("handler");
 
-            if (!typeof(TEventHandler).GetTypeInfo().IsSubclassOf(typeof(Delegate)))
-            {
+            if (!typeof(TEventHandler).GetTypeInfo().IsSubclassOf(typeof(Delegate))) {
                 throw new ArgumentException("handler must be Delegate type");
             }
 
@@ -140,17 +140,23 @@ namespace ReactiveUI
 
         void AddWeakHandler(TEventSource source, TEventHandler handler)
         {
-            WeakHandler handlerSink = new WeakHandler(source, handler);
-            List<WeakHandler> weakHandlers;
+            WeakHandlerList weakHandlers;
             if (this.sourceToWeakHandlers.TryGetValue(source, out weakHandlers)) {
-                weakHandlers.Add(handlerSink);
+                // clone list if we are currently delivering an event
+                if (weakHandlers.IsDeliverActive) {
+                    weakHandlers = weakHandlers.Clone();
+                    this.sourceToWeakHandlers.Add(source, weakHandlers);
+                }
+                weakHandlers.AddWeakHandler(source, handler);
             } else {
-                weakHandlers = new List<WeakHandler>();
-                weakHandlers.Add(handlerSink);
+                weakHandlers = new WeakHandlerList();
+                weakHandlers.AddWeakHandler(source, handler);
 
                 this.sourceToWeakHandlers.Add(source, weakHandlers);
                 this.StartListening(source);
             }
+
+            this.Purge(source);
         }
 
         void AddTargetHandler(TEventHandler handler)
@@ -159,12 +165,9 @@ namespace ReactiveUI
             object key = @delegate.Target ?? WeakEventManager<TEventSource, TEventHandler, TEventArgs>.StaticSource;
             List<Delegate> delegates;
 
-            if (this.targetToEventHandler.TryGetValue(key, out delegates))
-            {
+            if (this.targetToEventHandler.TryGetValue(key, out delegates)) {
                 delegates.Add(@delegate);
-            }
-            else
-            {
+            } else {
                 delegates = new List<Delegate>();
                 delegates.Add(@delegate);
 
@@ -180,21 +183,19 @@ namespace ReactiveUI
 
         void RemoveWeakHandler(TEventSource source, TEventHandler handler)
         {
-            var weakHandlers = default(List<WeakHandler>);
+            var weakHandlers = default(WeakHandlerList);
 
-            if (!this.sourceToWeakHandlers.TryGetValue(source, out weakHandlers)) return;
+            if (this.sourceToWeakHandlers.TryGetValue(source, out weakHandlers)) {
+                // clone list if we are currently delivering an event
+                if (weakHandlers.IsDeliverActive) {
+                    weakHandlers = weakHandlers.Clone();
+                    this.sourceToWeakHandlers.Add(source, weakHandlers);
+                }
 
-            foreach (var weakHandler in weakHandlers) {
-                if (!weakHandler.Matches(source, handler)) continue;
-
-                weakHandlers.Remove(weakHandler);
-
-                if (weakHandlers.Count == 0) {
+                if (weakHandlers.RemoveWeakHandler(source, handler) && weakHandlers.Count == 0) {
                     this.sourceToWeakHandlers.Remove(source);
                     this.StopListening(source);
                 }
-
-                break;
             }
         }
 
@@ -216,48 +217,36 @@ namespace ReactiveUI
         void PrivateDeliverEvent(object sender, TEventArgs args)
         {
             object source = sender != null ? sender : WeakEventManager<TEventSource, TEventHandler, TEventArgs>.StaticSource;
-            var weakHandlers = default(List<WeakHandler>);
+            var weakHandlers = default(WeakHandlerList);
+
+            bool hasStaleEntries = false;
 
             if (this.sourceToWeakHandlers.TryGetValue(source, out weakHandlers)) {
-                this.DeliverEventToList(source, args, weakHandlers);
+                using (weakHandlers.DeliverActive()) {
+                    hasStaleEntries = weakHandlers.DeliverEvent(source, args);
+                }
+            }
+
+            if (hasStaleEntries) {
+                this.Purge(source);
             }
         }
 
-        protected virtual void DeliverEventToList(object sender, TEventArgs args, List<WeakHandler> list)
+        void Purge(object source)
         {
-            foreach (var handler in list) {
-                if (handler.IsActive) {
-                    var @delegate = handler.Handler as Delegate;
-                    @delegate.DynamicInvoke(sender, args);
-                }
-            }
+            var weakHandlers = default(WeakHandlerList);
 
-            this.Purge(sender, list);
-        }
-
-        protected virtual void Purge(object sender, List<WeakHandler> list)
-        {
-            var inActive = default(List<WeakHandler>);
-
-            foreach (var handler in list) {
-                if (!handler.IsActive) {
-                    if (inActive == null) inActive = new List<WeakHandler>();
-                    inActive.Add(handler);
-                }
-            }
-
-            if (inActive != null) {
-                foreach (var handler in inActive) {
-                    list.Remove(handler);
-                }
-
-                if (list.Count == 0) {
-                    this.sourceToWeakHandlers.Remove(sender);
+            if (this.sourceToWeakHandlers.TryGetValue(source, out weakHandlers)) {
+                if (weakHandlers.IsDeliverActive) {
+                    weakHandlers = weakHandlers.Clone();
+                    this.sourceToWeakHandlers.Add(source, weakHandlers);
+                } else {
+                    weakHandlers.Purge();
                 }
             }
         }
 
-        protected class WeakHandler
+        internal class WeakHandler
         {
             WeakReference source;
             WeakReference originalHandler;
@@ -284,8 +273,86 @@ namespace ReactiveUI
 
             public bool Matches(object source, TEventHandler handler)
             {
-                return this.source != null && object.ReferenceEquals(this.source.Target, source)
-                    && this.originalHandler != null && object.ReferenceEquals(this.originalHandler.Target, handler);
+                return this.source != null && 
+                    Object.ReferenceEquals(this.source.Target, source) && 
+                    this.originalHandler != null && 
+                    Object.ReferenceEquals(this.originalHandler.Target, handler);
+            }
+        }
+
+        internal class WeakHandlerList
+        {
+            int deliveries = 0;
+            List<WeakHandler> handlers;
+
+            public WeakHandlerList()
+            {
+                handlers = new List<WeakHandler>();
+            }
+
+            public void AddWeakHandler(TEventSource source, TEventHandler handler)
+            {
+                WeakHandler handlerSink = new WeakHandler(source, handler);
+                handlers.Add(handlerSink);
+            }
+
+            public bool RemoveWeakHandler(TEventSource source, TEventHandler handler)
+            {
+                foreach (var weakHandler in handlers) {
+                    if (weakHandler.Matches(source, handler)) {
+                        return handlers.Remove(weakHandler);
+                    }
+                }
+
+                return false;
+            }
+
+            public WeakHandlerList Clone()
+            {
+                WeakHandlerList newList = new WeakHandlerList();
+                newList.handlers.AddRange(this.handlers.Where(h => h.IsActive));
+
+                return newList;
+            }
+
+            public int Count {
+                get { return this.handlers.Count; }
+            }
+
+            public bool IsDeliverActive {
+                get { return this.deliveries > 0; }
+            }
+
+            public IDisposable DeliverActive()
+            {
+                Interlocked.Increment(ref this.deliveries);
+
+                return Disposable.Create(() => Interlocked.Decrement(ref this.deliveries));
+            }
+
+            public virtual bool DeliverEvent(object sender, TEventArgs args)
+            {
+                bool hasStaleEntries = false;
+
+                foreach (var handler in handlers) {
+                    if (handler.IsActive) {
+                        var @delegate = handler.Handler as Delegate;
+                        @delegate.DynamicInvoke(sender, args);
+                    } else {
+                        hasStaleEntries = true;
+                    }
+                }
+
+                return hasStaleEntries;
+            }
+
+            public void Purge()
+            {
+                for (int i = handlers.Count - 1; i >= 0; i--) {
+                    if(!handlers[i].IsActive) {
+                        handlers.RemoveAt(i);
+                    }
+                }
             }
         }
     }
