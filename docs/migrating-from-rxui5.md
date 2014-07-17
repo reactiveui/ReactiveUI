@@ -108,6 +108,9 @@ that your app provides.
 
 * MemoizingMRUCache is now in Splat
 
+* The `Router` property on `IScreen` is now of type `RoutingState` instead of
+  `IRoutingState`.
+
 ### Find-and-replace changes
 
 * RxApp.DependencyResolver => Locator.Current
