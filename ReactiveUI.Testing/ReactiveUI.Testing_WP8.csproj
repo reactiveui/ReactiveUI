@@ -90,9 +90,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.Reactive.Testing, Version=2.2.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Rx-Testing.2.2.4\lib\windowsphone8\Microsoft.Reactive.Testing.dll</HintPath>
+    <Reference Include="Microsoft.Reactive.Testing">
+      <HintPath>..\packages\Rx-Testing.2.2.5\lib\windowsphone8\Microsoft.Reactive.Testing.dll</HintPath>
     </Reference>
     <Reference Include="mscorlib.Extensions" />
     <Reference Include="Splat, Version=1.3.3.0, Culture=neutral, processorArchitecture=MSIL">
