@@ -20,7 +20,7 @@ namespace ReactiveUI
     interface IUICollViewAdapter<TUIView, TUIViewCell>
     {
         void ReloadData();
-        void PerformBatchUpdates(Action updates);
+        void PerformBatchUpdates(Action updates, Action completion);
         void InsertItems(NSIndexPath[] paths);
         void DeleteItems(NSIndexPath[] paths);
         void ReloadItems(NSIndexPath[] paths);
@@ -377,7 +377,7 @@ namespace ReactiveUI
                         break;
                     }
                 }
-
+            }, () => {
                 this.Log().Debug("Ending update");
                 didPerformUpdates.OnNext(eas);
             });
