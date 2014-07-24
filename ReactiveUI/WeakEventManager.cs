@@ -145,6 +145,7 @@ namespace ReactiveUI
                 // clone list if we are currently delivering an event
                 if (weakHandlers.IsDeliverActive) {
                     weakHandlers = weakHandlers.Clone();
+                    this.sourceToWeakHandlers.Remove(source);
                     this.sourceToWeakHandlers.Add(source, weakHandlers);
                 }
                 weakHandlers.AddWeakHandler(source, handler);
@@ -189,6 +190,7 @@ namespace ReactiveUI
                 // clone list if we are currently delivering an event
                 if (weakHandlers.IsDeliverActive) {
                     weakHandlers = weakHandlers.Clone();
+                    this.sourceToWeakHandlers.Remove(source);
                     this.sourceToWeakHandlers.Add(source, weakHandlers);
                 }
 
@@ -239,6 +241,7 @@ namespace ReactiveUI
             if (this.sourceToWeakHandlers.TryGetValue(source, out weakHandlers)) {
                 if (weakHandlers.IsDeliverActive) {
                     weakHandlers = weakHandlers.Clone();
+                    this.sourceToWeakHandlers.Remove(source);
                     this.sourceToWeakHandlers.Add(source, weakHandlers);
                 } else {
                     weakHandlers.Purge();
