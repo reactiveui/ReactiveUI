@@ -62,11 +62,15 @@ namespace ReactiveUI
         readonly UITableView view;
         internal UITableViewAdapter(UITableView view) { this.view = view; }
         public void ReloadData() { view.ReloadData(); }
-        public void PerformBatchUpdates(Action updates)
+        public void PerformBatchUpdates(Action updates, Action completion)
         {
             view.BeginUpdates();
-            try { updates(); }
-            finally { view.EndUpdates(); }
+            try {
+                updates();
+            } finally {
+                view.EndUpdates();
+                completion();
+            }
         }
         public void InsertItems(NSIndexPath[] paths) { view.InsertRows(paths, UITableViewRowAnimation.Automatic); }
         public void DeleteItems(NSIndexPath[] paths) { view.DeleteRows(paths, UITableViewRowAnimation.Automatic); }
