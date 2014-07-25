@@ -2,7 +2,7 @@
 
 proj_dir = File.dirname(__FILE__)
 
-`xbuild /p:Configuration=Debug "#{proj_dir}/EventBuilder.csproj"`
+puts `xbuild /p:Configuration=Debug "#{proj_dir}/EventBuilder.csproj"`
 
 dlls = ARGV.to_a.map {|x| "\"#{x}\"" }.join ","
 puts dlls
