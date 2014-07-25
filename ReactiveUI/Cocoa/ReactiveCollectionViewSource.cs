@@ -51,7 +51,7 @@ namespace ReactiveUI
         internal UICollectionViewAdapter(UICollectionView view) { this.view = view; }
 
         public void ReloadData() { view.ReloadData(); }
-        public void PerformBatchUpdates(Action updates) { view.PerformBatchUpdates(new NSAction(updates), null); }
+        public void PerformBatchUpdates(Action updates, Action completion) { view.PerformBatchUpdates(new NSAction(updates), (completed) => completion()); }
         public void InsertItems(NSIndexPath[] paths) { view.InsertItems(paths); }
         public void DeleteItems(NSIndexPath[] paths) { view.DeleteItems(paths); }
         public void ReloadItems(NSIndexPath[] paths) { view.ReloadItems(paths); }
