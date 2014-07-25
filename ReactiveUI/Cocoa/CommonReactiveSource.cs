@@ -339,11 +339,19 @@ namespace ReactiveUI
             // Detect if we're changing the same cell more than
             // once - if so, issue a reset and be done
             if (allChangedIndexes.Count != allChangedIndexes.Distinct().Count()) {
-                this.Log().Debug("Detected a dupe in the changelist. Issuing Reset");
-                adapter.ReloadData();
+                // before doing a reset, try to see if this is actually a series of inserts that can be converted into ranges
+                if (allChangedIndexes.Distinct().Count() == 1 && eas.All(x => x.Action == NotifyCollectionChangedAction.Add)) {
+                    this.Log().Debug("Converted adds to the same index into a large range Add");
+                    var newEA = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, eas.SelectMany(ea => ea.NewItems.Cast<object>().ToList()).ToList(), eas[0].NewStartingIndex);
+                    updates = new List<Tuple<NotifyCollectionChangedEventArgs, IEnumerable<int>>>() { Tuple.Create(newEA, getChangedIndexes(newEA)) };
+                    eas = new List<NotifyCollectionChangedEventArgs>() { newEA };
+                } else {
+                    this.Log().Debug("Detected a dupe in the changelist. Issuing Reset");
+                    adapter.ReloadData();
 
-                didPerformUpdates.OnNext(resetOnlyNotification);
-                return;
+                    didPerformUpdates.OnNext(resetOnlyNotification);
+                    return;
+                }
             }
 
             this.Log().Debug("Beginning update");
