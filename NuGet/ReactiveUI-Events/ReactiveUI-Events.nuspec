@@ -10,7 +10,7 @@
     <language>en-us</language>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <dependencies>
-	  <dependency id="Rx-Main" version="2.2.4" />
+	  <dependency id="Rx-Main" version="2.2.5" />
     </dependencies>
   </metadata>
 </package>
