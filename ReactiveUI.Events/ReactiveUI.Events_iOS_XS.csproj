@@ -124,4 +124,5 @@ del "$(ProjectDir)Mono.Cecil.dll"
 del "$(ProjectDir)Mono.Cecil.pdb"</PreBuildEvent>
   </PropertyGroup>
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
+  <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.MonoTouch.CSharp.targets" />
 </Project>
