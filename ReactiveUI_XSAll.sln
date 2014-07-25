@@ -557,7 +557,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
-		StartupItem = ReactiveUI.Events\ReactiveUI.Events_iOS_XS.csproj
+		StartupItem = ReactiveUI.Tests\ReactiveUI.Tests_Android.csproj
 		Policies = $0
 		$0.TextStylePolicy = $1
 		$1.inheritsSet = null
