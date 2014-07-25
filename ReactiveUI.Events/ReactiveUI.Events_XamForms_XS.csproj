@@ -20,7 +20,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <CustomCommands>
       <CustomCommands>
-        <Command type="BeforeBuild" command="/usr/bin/env ruby ${ProjectDir}/generate_events.rb ${ProjectDir}/../packages/Xamarin.Forms.1.0.6188/lib/portable-win+net45+wp80+MonoAndroid10+MonoTouch10/Xamarin.Forms.Core.dll" workingdir="${ProjectDir}" />
+        <Command type="BeforeBuild" command="/usr/bin/env ruby ${ProjectDir}/generate_events.rb ${ProjectDir}/../packages/Xamarin.Forms.1.2.1.6229/lib/portable-win+net45+wp80+MonoAndroid10+MonoTouch10/Xamarin.Forms.Core.dll" workingdir="${ProjectDir}" />
       </CustomCommands>
     </CustomCommands>
   </PropertyGroup>
