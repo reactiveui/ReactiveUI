@@ -110,7 +110,15 @@ namespace ReactiveUI
 
             notifier = notifier.Where(x => x.Sender != null);
 
-            var r = notifier.Select(x => new ObservedChange<TSender, TValue>(source, expression, (TValue)x.GetValue()));
+            var r = notifier.Select(x => {
+                // ensure cast to TValue will succeed, throw useful exception otherwise
+                var val = x.GetValue();
+                if (val != null && ! (val is TValue)) {
+                    throw new InvalidCastException(string.Format("Unable to cast from {0} to {1}.", val.GetType(), typeof(TValue)));
+                }
+
+                return new ObservedChange<TSender, TValue>(source, expression, (TValue) val);
+            });
 
             return r.DistinctUntilChanged(x=>x.Value);
         }
