@@ -374,7 +374,7 @@ namespace ReactiveUI
                     .Do(x => executeResults.OnNext(x))
                     .Catch<T, Exception>(ex => {
                         exceptions.OnNext(ex);
-                        return Observable.Empty<T>();
+                        return Observable.Throw<T>(ex);
                     })
                     .Subscribe(subj);
 
@@ -446,7 +446,7 @@ namespace ReactiveUI
 
         public void Execute(object parameter)
         {
-            ExecuteAsync(parameter).Subscribe();
+            ExecuteAsync(parameter).Catch(Observable.Empty<T>()).Subscribe();
         }
 
         public void Dispose()

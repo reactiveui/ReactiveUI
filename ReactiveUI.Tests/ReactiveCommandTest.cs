@@ -180,6 +180,37 @@ namespace ReactiveUI.Tests
                 Assert.False(failed);
             });
         }
+
+        [Fact]
+        public async Task ExecuteAsyncThrowsExceptionOnError()
+        {
+            var command = ReactiveCommand.CreateAsyncObservable(_ =>
+                Observable.Throw<Unit>(new Exception("Aieeeee!")));
+
+            var exceptions = command.ThrownExceptions.CreateCollection();
+
+            bool failed = false;
+            try {
+                await command.ExecuteAsync();
+            } catch (Exception ex) {
+                failed = ex.Message == "Aieeeee!";
+            }
+
+            Assert.True(failed);
+            Assert.Equal(1, exceptions.Count);
+            Assert.Equal("Aieeeee!", exceptions[0].Message);
+        }
+
+        [Fact]
+        public void ExecuteDoesntThrowOnError()
+        {
+            var command = ReactiveCommand.CreateAsyncObservable(_ =>
+            Observable.Throw<Unit>(new Exception("Aieeeee!")));
+
+            command.ThrownExceptions.Subscribe();
+
+            command.Execute(null);
+        }
     }
 
     public class ReactiveAsyncCommandTest
