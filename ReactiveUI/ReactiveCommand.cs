@@ -371,11 +371,7 @@ namespace ReactiveUI
                 var disp = executeAsync(parameter)
                     .ObserveOn(scheduler)
                     .Finally(() => decrement.Disposable = Disposable.Empty)
-                    .Do(x => executeResults.OnNext(x))
-                    .Catch<T, Exception>(ex => {
-                        exceptions.OnNext(ex);
-                        return Observable.Empty<T>();
-                    })
+                    .Do(x => executeResults.OnNext(x), ex => exceptions.OnNext(ex))
                     .Subscribe(subj);
 
                 return new CompositeDisposable(disp, decrement);
@@ -446,7 +442,7 @@ namespace ReactiveUI
 
         public void Execute(object parameter)
         {
-            ExecuteAsync(parameter).Subscribe();
+            ExecuteAsync(parameter).Catch(Observable.Empty<T>()).Subscribe();
         }
 
         public void Dispose()
