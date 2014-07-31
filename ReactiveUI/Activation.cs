@@ -189,15 +189,15 @@ namespace ReactiveUI
                 // Activation
                 activation.Item1.Subscribe(_ =>
                     viewVmDisposable.Disposable = view.WhenAnyValue(x => x.ViewModel)
-                    .Select(x => x as ISupportsActivation)
-                    .Subscribe(x => {
-                        // NB: We need to make sure to respect ordering so that the cleanup
-                        // happens before we activate again
-                        vmDisposable.Disposable = Disposable.Empty;
-                        if(x != null) {
-                            vmDisposable.Disposable = x.Activator.Activate();
-                        }
-                    })
+                        .Select(x => x as ISupportsActivation)
+                        .Subscribe(x => {
+                            // NB: We need to make sure to respect ordering so that the cleanup
+                            // happens before we activate again
+                            vmDisposable.Disposable = Disposable.Empty;
+                            if(x != null) {
+                                vmDisposable.Disposable = x.Activator.Activate();
+                            }
+                        })
                 ),
                 // Deactivation
                 activation.Item2.Subscribe(_ => {
