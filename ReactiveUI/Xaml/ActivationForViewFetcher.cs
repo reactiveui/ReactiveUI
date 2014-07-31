@@ -36,7 +36,7 @@ namespace ReactiveUI
 
             var viewActivated = viewLoaded.Select(_ => true)
                 .Merge(viewUnloaded.Select(_ => false))
-                .Select(b => b ? fe.WhenAnyValue(x => x.IsHitTestVisible).Select(hv => hv && b) : Observable.Empty<bool>())
+                .Select(b => b ? fe.WhenAnyValue(x => x.IsHitTestVisible).Where(hv => hv && b) : Observable.Empty<bool>())
                 .Switch()
                 .Select(_ => Unit.Default);
 
