@@ -125,7 +125,8 @@ namespace ReactiveUI
         /// A string representing the name of the property that has been changed.
         /// Leave <c>null</c> to let the runtime set to caller member name.
         /// </param>
-        public static void RaisePropertyChanged(this IReactiveObject This, [CallerMemberName] string propertyName = null)
+        public static void RaisePropertyChanged<TSender>(this TSender This, [CallerMemberName] string propertyName = null)
+            where TSender : IReactiveObject
         {
             This.raisePropertyChanged(propertyName);
         }
@@ -139,7 +140,8 @@ namespace ReactiveUI
         /// A string representing the name of the property that has been changed.
         /// Leave <c>null</c> to let the runtime set to caller member name.
         /// </param>
-        public static void RaisePropertyChanging(this IReactiveObject This, [CallerMemberName] string propertyName = null)
+        public static void RaisePropertyChanging<TSender>(this TSender This, [CallerMemberName] string propertyName = null)
+            where TSender : IReactiveObject
         {
             This.raisePropertyChanging(propertyName);
         }
