@@ -30,14 +30,15 @@ namespace ReactiveUI
 
             var viewLoaded = Observable.FromEventPattern<RoutedEventHandler, RoutedEventArgs>(x => fe.Loaded += x,
                 x => fe.Loaded -= x).Select(_ => Unit.Default);
-            var viewHitTestVisible = fe.WhenAnyValue(v => v.IsHitTestVisible);
-
-            var viewActivated = viewLoaded.CombineLatest(viewHitTestVisible, (l, h) => h)
-                .Where(v => v)
-                .Select(_ => Unit.Default);
 
             var viewUnloaded = Observable.FromEventPattern<RoutedEventHandler, RoutedEventArgs>(x => fe.Unloaded += x,
                 x => fe.Unloaded -= x).Select(_ => Unit.Default);
+
+            var viewActivated = viewLoaded.Select(_ => true)
+                .Merge(viewUnloaded.Select(_ => false))
+                .Select(b => b ? fe.WhenAnyValue(x => x.IsHitTestVisible).Select(hv => hv && b) : Observable.Empty<bool>())
+                .Switch()
+                .Select(_ => Unit.Default);
 
             return Tuple.Create(viewActivated, viewUnloaded);
         }
