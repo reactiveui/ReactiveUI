@@ -36,8 +36,7 @@ namespace ReactiveUI.Winforms
             var controlActive = Observable.Merge(controlVisible, handleDestroyed, handleCreated)
                 .DistinctUntilChanged();
 
-            var controlActivated = controlActive.Where(x => x).Select(_ => Unit.Default);
-            var controlDeactivated = controlActive.Where(x => !x).Select(_ => Unit.Default);
+            
 
             var form = view as Form;
             if (form != null) {
