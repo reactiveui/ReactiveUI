@@ -12,6 +12,7 @@ using ReactiveUI.Tests;
 using System.Threading;
 
 using Microsoft.Reactive.Testing;
+using System.Threading.Tasks;
 
 namespace ReactiveUI.Tests
 {
@@ -113,6 +114,24 @@ namespace ReactiveUI.Tests
             source2.OnNext(2);
             Assert.True(recieved_message1);
             Assert.True(recieved_message2);
+        }
+
+        [Fact]
+        public void MessageBusThreadingTest()
+        {
+            var mb = new MessageBus();
+            int? listenedThread = null;
+            int? otherThread = null;
+            int thisThread = Thread.CurrentThread.ManagedThreadId;
+
+            Task.Run(() => {
+                otherThread = Thread.CurrentThread.ManagedThreadId;
+                mb.Listen<int>().Subscribe(_ => listenedThread = Thread.CurrentThread.ManagedThreadId);
+                mb.SendMessage<int>(42);
+            }).Wait();
+
+            Assert.NotEqual(listenedThread.Value, thisThread);
+            Assert.Equal(listenedThread.Value, otherThread.Value);
         }
     }
 }
