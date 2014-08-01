@@ -15,13 +15,13 @@ namespace ReactiveUI.Winforms
             return (typeof(Control).GetTypeInfo().IsAssignableFrom(view.GetTypeInfo())) ? 10 : 0;
         }
 
-        public Tuple<IObservable<Unit>, IObservable<Unit>> GetActivationForView(IActivatable view)
+        public IObservable<bool> GetActivationForView(IActivatable view)
         {
             var control = view as Control;
             if (control == null) {
                 // Show a friendly warning in the log that this view will never be activated
                 this.Log().Warn("Expected a view of type System.Windows.Forms.Control but it is {0}.\r\nYou need to implement your own IActivationForViewFetcher for {0}.", view.GetType());
-                return Tuple.Create(Observable.Empty<Unit>(), Observable.Empty<Unit>());
+                return Observable.Empty<bool>();
             }
 
             // Create an observable stream of booleans
@@ -36,18 +36,15 @@ namespace ReactiveUI.Winforms
             var controlActive = Observable.Merge(controlVisible, handleDestroyed, handleCreated)
                 .DistinctUntilChanged();
 
-            var controlActivated = controlActive.Where(x => x).Select(_ => Unit.Default);
-            var controlDeactivated = controlActive.Where(x => !x).Select(_ => Unit.Default);
+            
 
             var form = view as Form;
             if (form != null) {
                 var formActive = Observable.FromEventPattern(form, "Closed").Select(_ => false);
-                var formDeactivated = controlActive.Merge(formActive).DistinctUntilChanged().Where(x => !x).Select(_ => Unit.Default);
-
-                return Tuple.Create(controlActivated, formDeactivated);
+                return controlActive.Merge(formActive).DistinctUntilChanged();
             }
 
-            return Tuple.Create(controlActivated, controlDeactivated);
+            return controlActive;
         }
     }
 }

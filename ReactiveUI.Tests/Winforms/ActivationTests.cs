@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
-using ReactiveUI.Winforms;
 using Xunit;
 
 namespace ReactiveUI.Tests.Winforms
@@ -11,7 +10,7 @@ namespace ReactiveUI.Tests.Winforms
         [Fact]
         public void ActivationForViewFetcherSupportsDefaultWinformsComponents()
         {
-            var target = new ActivationForViewFetcher();
+            var target = new ReactiveUI.Winforms.ActivationForViewFetcher();
             var supportedComponents = new[] { typeof(Control), typeof(UserControl), typeof(Form) };
 
             foreach (var c in supportedComponents) {
@@ -23,12 +22,10 @@ namespace ReactiveUI.Tests.Winforms
         public void CanFetchActivatorForForm()
         {
             var form = new TestForm();
-            var target = new ActivationForViewFetcher();
+            var target = new ReactiveUI.Winforms.ActivationForViewFetcher();
             var formActivator = target.GetActivationForView(form);
 
             Assert.NotNull(formActivator);
-            Assert.NotNull(formActivator.Item1);
-            Assert.NotNull(formActivator.Item2);
         }
       
 
@@ -36,24 +33,27 @@ namespace ReactiveUI.Tests.Winforms
         public void CanFetchActivatorForControl()
         {
             var control = new TestControl();
-            var target = new ActivationForViewFetcher();
+            var target = new ReactiveUI.Winforms.ActivationForViewFetcher();
             var activator = target.GetActivationForView(control);
 
             Assert.NotNull(activator);
-            Assert.NotNull(activator.Item1);
-            Assert.NotNull(activator.Item2);
         }
 
         [Fact]
         public void SmokeTestWindowsForm()
         {
-            var target = new ActivationForViewFetcher();
+            var target = new ReactiveUI.Winforms.ActivationForViewFetcher();
             using (var form = new TestForm()) {
                 var formActivator = target.GetActivationForView(form);
 
                 int formActivateCount = 0, formDeActivateCount = 0;
-                formActivator.Item1.Subscribe(_ => formActivateCount++);
-                formActivator.Item2.Subscribe(_ => formDeActivateCount++);
+                formActivator.Subscribe(activated => {
+                    if (activated) {
+                        formActivateCount++;
+                    } else {
+                        formDeActivateCount++;
+                    }
+                });
 
                 Assert.Equal(0, formActivateCount);
                 Assert.Equal(0, formDeActivateCount);
@@ -76,15 +76,19 @@ namespace ReactiveUI.Tests.Winforms
         [Fact]
         public void SmokeTestUserControl()
         {
-            var target = new ActivationForViewFetcher();
+            var target = new ReactiveUI.Winforms.ActivationForViewFetcher();
             using(var userControl = new TestControl())
             using (var parent = new TestForm()) {
                 var userControlActivator = target.GetActivationForView(userControl);
 
                 int userControlActivateCount = 0, userControlDeActivateCount = 0;
-                userControlActivator.Item1.Subscribe(_ => userControlActivateCount++);
-                userControlActivator.Item2.Subscribe(_ => userControlDeActivateCount++);
-
+                userControlActivator.Subscribe(activated => {
+                    if (activated) {
+                        userControlActivateCount++;
+                    } else {
+                        userControlDeActivateCount++;
+                    }
+                });
 
                 parent.Visible = true;
                 parent.Controls.Add(userControl);
