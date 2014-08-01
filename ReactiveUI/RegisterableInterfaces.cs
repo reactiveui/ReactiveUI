@@ -340,7 +340,7 @@ namespace ReactiveUI
     public interface IActivationForViewFetcher
     {
         int GetAffinityForView(Type view);
-        Tuple<IObservable<Unit>, IObservable<Unit>> GetActivationForView(IActivatable view);
+        IObservable<bool> GetActivationForView(IActivatable view);
     }
 
     internal interface IPlatformOperations
