@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Text;
 using System.Threading.Tasks;
@@ -75,10 +76,10 @@ namespace ReactiveUI.Tests
             return view == typeof(ActivatingView) ? 100 : 0;
         }
 
-        public Tuple<IObservable<Unit>, IObservable<Unit>> GetActivationForView(IActivatable view)
+        public IObservable<bool> GetActivationForView(IActivatable view)
         {
             var av = view as ActivatingView;
-            return Tuple.Create<IObservable<Unit>, IObservable<Unit>>(av.Loaded, av.Unloaded);
+            return av.Loaded.Select(_ => true).Merge(av.Unloaded.Select(_ => false));
         }
     }
 
