@@ -161,48 +161,50 @@ namespace ReactiveUI
             });
         }
 
-        static IDisposable handleViewActivation(Func<IEnumerable<IDisposable>> block, Tuple<IObservable<Unit>, IObservable<Unit>> activation)
+        static IDisposable handleViewActivation(Func<IEnumerable<IDisposable>> block, IObservable<bool> activation)
         {
             var viewDisposable = new SerialDisposable();
 
             return new CompositeDisposable(
                 // Activation
-                activation.Item1.Subscribe(_ => {
+                activation.Subscribe(activated => {
                     // NB: We need to make sure to respect ordering so that the cleanup
                     // happens before we invoke block again
                     viewDisposable.Disposable = Disposable.Empty;
-                    viewDisposable.Disposable = new CompositeDisposable(block());
-                }),
-                // Deactivation
-                activation.Item2.Subscribe(_ => {
-                    viewDisposable.Disposable = Disposable.Empty;
+                    if(activated) {
+                        viewDisposable.Disposable = new CompositeDisposable(block());
+                    }
                 }),
                 viewDisposable);
         }
 
-        static IDisposable handleViewModelActivation(IViewFor view, Tuple<IObservable<Unit>, IObservable<Unit>> activation)
+        static IDisposable handleViewModelActivation(IViewFor view, IObservable<bool> activation)
         {
             var vmDisposable = new SerialDisposable();
+            var viewVmDisposable = new SerialDisposable();
 
             return new CompositeDisposable(
                 // Activation
-                activation.Item1
-                    .Select(_ => view.WhenAnyValue(x => x.ViewModel))
-                    .Switch()
-                    .Select(x => x as ISupportsActivation)
-                    .Subscribe(x => {
-                        // NB: We need to make sure to respect ordering so that the cleanup
-                        // happens before we activate again
+                activation.Subscribe(activated => {                    
+                    if (activated) {
+                        viewVmDisposable.Disposable = view.WhenAnyValue(x => x.ViewModel)
+                            .Select(x => x as ISupportsActivation)
+                            .Subscribe(x =>
+                            {
+                                // NB: We need to make sure to respect ordering so that the cleanup
+                                // happens before we activate again
+                                vmDisposable.Disposable = Disposable.Empty;
+                                if (x != null) {
+                                    vmDisposable.Disposable = x.Activator.Activate();
+                                }
+                            });
+                    } else {
+                        viewVmDisposable.Disposable = Disposable.Empty;
                         vmDisposable.Disposable = Disposable.Empty;
-                        if(x != null) {
-                            vmDisposable.Disposable = x.Activator.Activate();
-                        }
-                    }),
-                // Deactivation
-                activation.Item2.Subscribe(_ => {
-                    vmDisposable.Disposable = Disposable.Empty;
+                    }
                 }),
-                vmDisposable);
+                vmDisposable,
+                viewVmDisposable);
         }
 
         static readonly MemoizingMRUCache<Type, IActivationForViewFetcher> activationFetcherCache =
@@ -227,10 +229,10 @@ namespace ReactiveUI
                 10 : 0;
         }
 
-        public Tuple<IObservable<Unit>, IObservable<Unit>> GetActivationForView(IActivatable view)
+        public IObservable<bool> GetActivationForView(IActivatable view)
         {
             var ca = view as ICanActivate;
-            return Tuple.Create(ca.Activated, ca.Deactivated);
+            return ca.Activated.Select(_ => true).Merge(ca.Deactivated.Select(_ => false));
         }
     }
 }

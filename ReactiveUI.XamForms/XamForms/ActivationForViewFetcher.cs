@@ -18,13 +18,15 @@ namespace ReactiveUI.XamForms
             return (typeof(Page).GetTypeInfo().IsAssignableFrom(view.GetTypeInfo())) ? 10 : 0;
         }
 
-        public Tuple<IObservable<Unit>, IObservable<Unit>> GetActivationForView(IActivatable view)
+        public IObservable<bool> GetActivationForView(IActivatable view)
         {
             var fe = view as Page;
 
-            return Tuple.Create(
-                Observable.FromEventPattern<EventHandler, EventArgs>(x => fe.Appearing += x, x => fe.Disappearing -= x).Select(_ => Unit.Default),
-                Observable.FromEventPattern<EventHandler, EventArgs>(x => fe.Appearing += x, x => fe.Disappearing -= x).Select(_ => Unit.Default));
+            var ret = Observable.Merge(
+                Observable.FromEventPattern<EventHandler, EventArgs>(x => fe.Appearing += x, x => fe.Appearing -= x).Select(_ => true),
+                Observable.FromEventPattern<EventHandler, EventArgs>(x => fe.Disappearing += x, x => fe.Disappearing -= x).Select(_ => false));
+
+            return ret.DistinctUntilChanged();
         }
     }
 }
