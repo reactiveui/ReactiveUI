@@ -340,7 +340,7 @@ namespace ReactiveUI.Tests
                 {x => x.Child.IsOnlyOneWord.Length, new[] {typeof(TestFixture), typeof(string), typeof(int) }},
                 {x => x.SomeOtherParam, new[] { typeof(int) }},
                 {x => x.Child.IsNotNullString, new[] {typeof(TestFixture), typeof(string)}},
-                {x => x.Child.Changed, new[] {typeof(TestFixture), typeof(IObservable<IReactivePropertyChangedEventArgs<ReactiveObject>>)}},
+                {x => x.Child.Changed, new[] {typeof(TestFixture), typeof(IObservable<IReactivePropertyChangedEventArgs<IReactiveObject>>)}},
             };
 
             var results = data.Keys.Select(x => new { input = x, output = Reflection.Rewrite(x.Body).GetExpressionChain() }).ToArray();
