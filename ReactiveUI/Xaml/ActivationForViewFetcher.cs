@@ -21,26 +21,24 @@ namespace ReactiveUI
             return (typeof(FrameworkElement).GetTypeInfo().IsAssignableFrom(view.GetTypeInfo())) ? 10 : 0;
         }
 
-        public Tuple<IObservable<Unit>, IObservable<Unit>> GetActivationForView(IActivatable view)
+        public IObservable<bool> GetActivationForView(IActivatable view)
         {
             var fe = view as FrameworkElement;
 
             if (fe == null)
-                return Tuple.Create(Observable.Empty<Unit>(), Observable.Empty<Unit>());
+                return Observable.Empty<bool>();
 
             var viewLoaded = Observable.FromEventPattern<RoutedEventHandler, RoutedEventArgs>(x => fe.Loaded += x,
-                x => fe.Loaded -= x).Select(_ => Unit.Default);
+                x => fe.Loaded -= x).Select(_ => true);
 
             var viewUnloaded = Observable.FromEventPattern<RoutedEventHandler, RoutedEventArgs>(x => fe.Unloaded += x,
-                x => fe.Unloaded -= x).Select(_ => Unit.Default);
+                x => fe.Unloaded -= x).Select(_ => false);
 
-            var viewActivated = viewLoaded.Select(_ => true)
-                .Merge(viewUnloaded.Select(_ => false))
+            return viewLoaded
+                .Merge(viewUnloaded)
                 .Select(b => b ? fe.WhenAnyValue(x => x.IsHitTestVisible).Where(hv => hv && b) : Observable.Empty<bool>())
                 .Switch()
-                .Select(_ => Unit.Default);
-
-            return Tuple.Create(viewActivated, viewUnloaded);
+                .DistinctUntilChanged();
         }
     }
 }
