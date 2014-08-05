@@ -94,5 +94,39 @@ namespace ReactiveUI.Tests
 
             new[] { true, false }.AssertAreEqual(activated);
         }
+
+        [Fact]
+        public void FrameworkElementIsActivatedAndDeactivatedWithHitTest()
+        {
+            var uc = new TestUserControl();
+            var activation = new ActivationForViewFetcher();
+
+            var obs = activation.GetActivationForView(uc);
+            var activated = obs.CreateCollection();
+
+            RoutedEventArgs loaded = new RoutedEventArgs();
+            loaded.RoutedEvent = FrameworkElement.LoadedEvent;
+
+            uc.RaiseEvent(loaded);
+
+            new[] { true }.AssertAreEqual(activated);
+
+            // this should deactivate it
+            uc.IsHitTestVisible = false;
+
+            new[] { true, false }.AssertAreEqual(activated);
+
+            // this should activate it
+            uc.IsHitTestVisible = true;
+
+            new[] { true, false, true }.AssertAreEqual(activated);
+
+            RoutedEventArgs unloaded = new RoutedEventArgs();
+            unloaded.RoutedEvent = FrameworkElement.UnloadedEvent;
+
+            uc.RaiseEvent(unloaded);
+
+            new[] { true, false, true, false }.AssertAreEqual(activated);
+        }
     }
 }
