@@ -36,7 +36,7 @@ namespace ReactiveUI
 
             return viewLoaded
                 .Merge(viewUnloaded)
-                .Select(b => b ? fe.WhenAnyValue(x => x.IsHitTestVisible).Where(hv => hv && b) : Observable.Empty<bool>())
+                .Select(b => b ? fe.WhenAnyValue(x => x.IsHitTestVisible).Select(hv => hv && b).SkipWhile(x => !x) : Observable.Return(b))
                 .Switch()
                 .DistinctUntilChanged();
         }
