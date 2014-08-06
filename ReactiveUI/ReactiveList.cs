@@ -268,12 +268,12 @@ namespace ReactiveUI
         protected void SetItem(int index, T item)
         {
             if (!this.areChangeNotificationsEnabled()) {
-                _inner[index] = item;
-
+                
                 if (ChangeTrackingEnabled) {
                     removeItemFromPropertyTracking(_inner[index]);
                     addItemToPropertyTracking(item);
                 }
+                _inner[index] = item;
 
                 return;
             }
