@@ -416,6 +416,49 @@ namespace ReactiveUI.Tests
         }
 
         [Fact]
+        public void ChangeTrackingShouldStopWhenAnObjectIsReplacedAndChangeNotificationIsSurpressed()
+        {
+            var fixture = new ReactiveList<TestFixture>() { ChangeTrackingEnabled = true };
+
+            var before_output = new List<Tuple<TestFixture, string>>();
+            var output = new List<Tuple<TestFixture, string>>();
+            var item1 = new TestFixture() { IsOnlyOneWord = "Foo" };
+            var item2 = new TestFixture() { IsOnlyOneWord = "Bar" };
+
+            fixture.ItemChanging.Subscribe(x =>
+            {
+                before_output.Add(new Tuple<TestFixture, string>((TestFixture)x.Sender, x.PropertyName));
+            });
+
+            fixture.ItemChanged.Subscribe(x =>
+            {
+                output.Add(new Tuple<TestFixture, string>((TestFixture)x.Sender, x.PropertyName));
+            });
+
+            fixture.Add(item1);
+
+            item1.IsOnlyOneWord = "Baz";
+            Assert.Equal(1, output.Count);
+            item2.IsNotNullString = "FooBar";
+            Assert.Equal(1, output.Count);
+
+            using (var subscription = fixture.suppressChangeNotifications())
+            {
+                fixture[0] = item2;
+            }
+
+            item1.IsOnlyOneWord = "FooAgain";
+            Assert.Equal(1, output.Count);
+            item2.IsNotNullString = "FooBarBaz";
+            Assert.Equal(2, output.Count);
+
+            new[] { item1, item2 }.AssertAreEqual(output.Select(x => x.Item1));
+            new[] { item1, item2 }.AssertAreEqual(before_output.Select(x => x.Item1));
+            new[] { "IsOnlyOneWord", "IsNotNullString" }.AssertAreEqual(output.Select(x => x.Item2));
+
+        }
+
+        [Fact]
         public void GetAResetWhenWeAddALotOfItems()
         {
             var fixture = new ReactiveList<int> { 1, };
