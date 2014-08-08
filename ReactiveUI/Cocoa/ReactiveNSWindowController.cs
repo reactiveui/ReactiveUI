@@ -83,7 +83,7 @@ namespace ReactiveUI
             // notification to support (de)activation
             NSNotificationCenter
                 .DefaultCenter
-                .AddObserver(NSWindow.WillCloseNotification, _ => deactivated.OnNext(Unit.Default));
+                .AddObserver(NSWindow.WillCloseNotification, _ => deactivated.OnNext(Unit.Default), this.Window);
 
             activated.OnNext(Unit.Default);
         }
