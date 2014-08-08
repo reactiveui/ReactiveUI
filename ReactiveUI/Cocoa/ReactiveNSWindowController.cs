@@ -70,21 +70,22 @@ namespace ReactiveUI
             return this.suppressChangeNotifications();
         }
 
-        Subject<Unit> activated = new Subject<Unit>();
+        readonly Subject<Unit> activated = new Subject<Unit>();
         public IObservable<Unit> Activated { get { return activated; } }
-        Subject<Unit> deactivated = new Subject<Unit>();
+        readonly Subject<Unit> deactivated = new Subject<Unit>();
         public IObservable<Unit> Deactivated { get { return deactivated; } }
 
         public override void WindowDidLoad()
         {
             base.WindowDidLoad();
-            activated.OnNext(Unit.Default);
-        }
 
-        public override void WindowWillLoad()
-        {
-            base.WindowWillLoad();
-            deactivated.OnNext(Unit.Default);
+            // subscribe to listen to window closing
+            // notification to support (de)activation
+            NSNotificationCenter
+                .DefaultCenter
+                .AddObserver(NSWindow.WillCloseNotification, _ => deactivated.OnNext(Unit.Default), this.Window);
+
+            activated.OnNext(Unit.Default);
         }
     }
 }
