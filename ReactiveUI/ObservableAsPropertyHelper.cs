@@ -44,7 +44,6 @@ namespace ReactiveUI
             IScheduler scheduler = null)
         {
             Contract.Requires(observable != null);
-            Contract.Requires(onNewValue != null);
 
             scheduler = scheduler ?? CurrentThreadScheduler.Instance;
             onNewValue = onNewValue ?? new RefAction<T>((ref T field, T value) => field = value);
