@@ -21,7 +21,7 @@ namespace ReactiveUI.Tests
 
             (new TestScheduler()).With(sched => {
                 var fixture = new ObservableAsPropertyHelper<int>(input,
-                    x => output.Add(x), -5);
+                    (ref int field, int x) => { field = x; output.Add(x); }, -5);
 
                 sched.Start();
 
@@ -40,7 +40,7 @@ namespace ReactiveUI.Tests
             var input = new Subject<int>();
 
             var fixture = new ObservableAsPropertyHelper<int>(input,
-                _ => { }, -5, sched);
+                null, -5, sched);
 
             Assert.Equal(-5, fixture.Value);
             (new[] { 1, 2, 3, 4 }).Run(x => input.OnNext(x));
@@ -59,7 +59,7 @@ namespace ReactiveUI.Tests
             var input = new Subject<int>();
             var sched = new TestScheduler();
 
-            var fixture = new ObservableAsPropertyHelper<int>(input, _ => { }, -5, sched);
+            var fixture = new ObservableAsPropertyHelper<int>(input, null, -5, sched);
             var errors = new List<Exception>();
 
             Assert.Equal(-5, fixture.Value);
@@ -84,7 +84,7 @@ namespace ReactiveUI.Tests
         {
             (new TestScheduler()).With(sched => {
                 var input = new Subject<int>();
-                var fixture = new ObservableAsPropertyHelper<int>(input, _ => { }, -5);
+                var fixture = new ObservableAsPropertyHelper<int>(input, null, -5);
     
                 Assert.Equal(-5, fixture.Value);
                 (new[] { 1, 2, 3, 4 }).Run(x => input.OnNext(x));
