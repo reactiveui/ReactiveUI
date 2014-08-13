@@ -11,6 +11,8 @@ using System.Reactive.Disposables;
 
 namespace ReactiveUI
 {
+    public delegate void RefAction<T1>(ref T1 backingField, T1 value);
+
     /// <summary>
     /// ObservableAsPropertyHelper is a class to help ViewModels implement
     /// "output properties", that is, a property that is backed by an
@@ -28,43 +30,31 @@ namespace ReactiveUI
         /// Constructs an ObservableAsPropertyHelper object.
         /// </summary>
         /// <param name="observable">The Observable to base the property on.</param>
-        /// <param name="onChanged">The action to take when the property
+        /// <param name="onNewValue">The action to take when the property
         /// changes, typically this will call the ViewModel's
         /// RaisePropertyChanged method.</param>
         /// <param name="initialValue">The initial value of the property.</param>
         /// <param name="scheduler">The scheduler that the notifications will be
-        /// provided on - this should normally be a Dispatcher-based scheduler
-        /// (and is by default)</param>
+        /// provided on - this is by default the CurrentThreadScheduler.</param>
         public ObservableAsPropertyHelper(
-            IObservable<T> observable, 
-            Action<T> onChanged, 
+            IObservable<T> observable,
+            RefAction<T> onNewValue = null, 
             T initialValue = default(T), 
             IScheduler scheduler = null)
         {
             Contract.Requires(observable != null);
-            Contract.Requires(onChanged != null);
 
             scheduler = scheduler ?? CurrentThreadScheduler.Instance;
-            _lastValue = initialValue;
+            onNewValue = onNewValue ?? new RefAction<T>((ref T field, T value) => field = value);
 
             var subj = new ScheduledSubject<T>(scheduler);
             var exSubject = new ScheduledSubject<Exception>(CurrentThreadScheduler.Instance, RxApp.DefaultExceptionHandler);
 
-            bool firedInitial = false;
-            subj.Subscribe(x => {
-                // Suppress a non-change between initialValue and the first value
-                // from a Subscribe
-                if (firedInitial && EqualityComparer<T>.Default.Equals(x, _lastValue)) return;
-
-                _lastValue = x;
-                onChanged(x);
-                firedInitial = true;
-            }, exSubject.OnNext);
+            subj.Subscribe(x => onNewValue(ref _lastValue, x), exSubject.OnNext);
 
             ThrownExceptions = exSubject;
 
-            // Fire off an initial RaisePropertyChanged to make sure bindings
-            // have a value
+            // Push the initial value
             subj.OnNext(initialValue);
             _source = observable.DistinctUntilChanged().Multicast(subj);
         }
@@ -102,7 +92,7 @@ namespace ReactiveUI
         /// (and is by default)</param>
         public static ObservableAsPropertyHelper<T> Default(T initialValue = default(T), IScheduler scheduler = null)
         {
-            return new ObservableAsPropertyHelper<T>(Observable.Never<T>(), _ => {}, initialValue, scheduler);
+            return new ObservableAsPropertyHelper<T>(Observable.Never<T>(), null, initialValue, scheduler);
         }
     }
 
@@ -127,7 +117,7 @@ namespace ReactiveUI
             }
 
             var ret = new ObservableAsPropertyHelper<TRet>(observable, 
-                _ => This.raisePropertyChanged(expression.GetMemberInfo().Name), 
+                (ref TRet field, TRet value) => This.RaiseAndSetIfChanged(ref field, value, expression.GetMemberInfo().Name), 
                 initialValue, scheduler);
 
             return ret;
