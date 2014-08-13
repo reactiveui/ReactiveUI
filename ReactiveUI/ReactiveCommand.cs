@@ -494,12 +494,12 @@ namespace ReactiveUI
         /// <param name="command">The command to be executed.</param>
         /// <returns>An object that when disposes, disconnects the Observable
         /// from the command.</returns>
-        public static IDisposable InvokeCommand<T>(this IObservable<T> This, IReactiveCommand command)
+        public static IDisposable InvokeCommand<T, TResult>(this IObservable<T> This, IReactiveCommand<TResult> command)
         {
             return This.Throttle(x => command.CanExecuteObservable.StartWith(command.CanExecute(x)).Where(b => b))
-                .Subscribe(x => {
-                    command.Execute(x);
-                });
+                .Select(x => command.ExecuteAsync(x))
+                .Switch()
+                .Subscribe();
         }
 
         /// <summary>
@@ -532,14 +532,13 @@ namespace ReactiveUI
         /// <param name="commandProperty">The expression to reference the Command.</param>
         /// <returns>An object that when disposes, disconnects the Observable
         /// from the command.</returns>
-        public static IDisposable InvokeCommand<T, TTarget>(this IObservable<T> This, TTarget target, Expression<Func<TTarget, IReactiveCommand>> commandProperty)
+        public static IDisposable InvokeCommand<T, TResult, TTarget>(this IObservable<T> This, TTarget target, Expression<Func<TTarget, IReactiveCommand<TResult>>> commandProperty)
         {
             return This.CombineLatest(target.WhenAnyValue(commandProperty), (val, cmd) => new { val, cmd })
                 .Throttle(x => x.cmd.CanExecuteObservable.StartWith(x.cmd.CanExecute(x.val)).Where(b => b))
-                .Subscribe(x =>
-                {
-                    x.cmd.Execute(x.val);
-                });
+                .Select(x => x.cmd.ExecuteAsync(x.val))
+                .Switch()
+                .Subscribe();
         }
 
         /// <summary>
