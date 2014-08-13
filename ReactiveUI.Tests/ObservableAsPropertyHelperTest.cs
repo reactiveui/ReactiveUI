@@ -42,7 +42,9 @@ namespace ReactiveUI.Tests
             var fixture = new ObservableAsPropertyHelper<int>(input,
                 null, -5, sched);
 
+            sched.Start();
             Assert.Equal(-5, fixture.Value);
+
             (new[] { 1, 2, 3, 4 }).Run(x => input.OnNext(x));
 
             sched.Start();
@@ -62,7 +64,9 @@ namespace ReactiveUI.Tests
             var fixture = new ObservableAsPropertyHelper<int>(input, null, -5, sched);
             var errors = new List<Exception>();
 
+            sched.Start();
             Assert.Equal(-5, fixture.Value);
+
             (new[] { 1, 2, 3, 4 }).Run(x => input.OnNext(x));
 
             fixture.ThrownExceptions.Subscribe(errors.Add);
