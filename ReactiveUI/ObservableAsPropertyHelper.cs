@@ -35,8 +35,7 @@ namespace ReactiveUI
         /// RaisePropertyChanged method.</param>
         /// <param name="initialValue">The initial value of the property.</param>
         /// <param name="scheduler">The scheduler that the notifications will be
-        /// provided on - this should normally be a Dispatcher-based scheduler
-        /// (and is by default)</param>
+        /// provided on - this is by default the CurrentThreadScheduler.</param>
         public ObservableAsPropertyHelper(
             IObservable<T> observable,
             RefAction<T> onNewValue = null, 
@@ -47,25 +46,15 @@ namespace ReactiveUI
 
             scheduler = scheduler ?? CurrentThreadScheduler.Instance;
             onNewValue = onNewValue ?? new RefAction<T>((ref T field, T value) => field = value);
-            _lastValue = initialValue;
 
             var subj = new ScheduledSubject<T>(scheduler);
             var exSubject = new ScheduledSubject<Exception>(CurrentThreadScheduler.Instance, RxApp.DefaultExceptionHandler);
 
-            bool firedInitial = false;
-            subj.Subscribe(x => {
-                // Suppress a non-change between initialValue and the first value
-                // from a Subscribe
-                if (firedInitial && EqualityComparer<T>.Default.Equals(x, _lastValue)) return;
-
-                onNewValue(ref _lastValue, x);
-                firedInitial = true;
-            }, exSubject.OnNext);
+            subj.Subscribe(x => onNewValue(ref _lastValue, x), exSubject.OnNext);
 
             ThrownExceptions = exSubject;
 
-            // Fire off an initial RaisePropertyChanged to make sure bindings
-            // have a value
+            // Push the initial value
             subj.OnNext(initialValue);
             _source = observable.DistinctUntilChanged().Multicast(subj);
         }
