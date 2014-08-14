@@ -26,7 +26,7 @@ IObservable is the command parameter given to the `Execute` method of
 `ICommand`:
 
 ```cs
-var command = new ReactiveCommand();
+var command = ReactiveCommand.Create();
 
 command.Subscribe(x => this.Log().Info("The number is {0}", x));
 
@@ -81,7 +81,7 @@ hand. Here's how it works:
 
 ```cs
 var commandCanExecute = new Subject<bool>();
-var command = new ReactiveCommand(commandCanExecute);
+var command = ReactiveCommand.Create(commandCanExecute);
 
 commandCanExecute.OnNext(false);
 command.CanExecute(null);
@@ -103,13 +103,13 @@ it into a boolean value. For example:
 ```cs
 // Whether we can post a Tweet, is based on whether the user has typed any
 // text and whether it is short enough.
-PostTweet = new ReactiveCommand(
+PostTweet = ReactiveCommand.Create(
     this.WhenAnyValue(x => x.TweetContents)
         .Select(x => !String.IsNullOrWhitespace(x) && x.Length < 140));
 
 // You can often leave off the extra Select by using the selector built into
 // WhenAny
-OkButton = new ReactiveCommand(
+OkButton = ReactiveCommand.Create(
     this.WhenAny(x => x.Red, x => x.Green, x => x.Blue,
         (r,g,b) => r.Value != null && g.Value != null && b.Value != null));
 ```

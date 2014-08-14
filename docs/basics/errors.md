@@ -82,9 +82,7 @@ clean code:
 // Note: We are in a ViewModel here
 //
 
-LoadTweetsCommand = new ReactiveCommand();
-
-LoadTweetsCommand.RegisterAsyncTask(() => LoadTweets())
+LoadTweetsCommand = ReactiveCommand.CreateAsyncTask(() => LoadTweets());
     .Subscribe(x => TheTweets = x);
 
 var errorMessage = "The Tweets could not be loaded";

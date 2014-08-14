@@ -23,15 +23,11 @@ every time**.
 
 ### Objects that care about scheduling
 
-* **ReactiveCommand** - RegisterAsync will always schedule RegisterAsync on
-  RxApp.TaskpoolScheduler and return results on RxApp.MainThreadScheduler.
+* **ReactiveCommand** - CreateAsyncXYZ return results on
+  RxApp.MainThreadScheduler.
 
 * **MessageBus** - Message bus can optionally schedule messages to an
   arbitrary scheduler.
-
-* **ObservableAsPropertyHelper / ToProperty** - OAPH automatically ensures
-  that notifications are delivered on RxApp.MainThreadScheduler, since the
-  result is almost always going to be bound to the UI.
 
 ### When should *I* care about scheduling
 

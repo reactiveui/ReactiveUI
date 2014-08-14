@@ -11,7 +11,8 @@ Location pattern. Put thought into how you use this API, as it can either be
 used effectively to make code more testable, or when used poorly, makes code
 more difficult to test and understand, as the [Resolver itself can effectively
 become part of the class's
-state](http://blog.ploeh.dk/2010/02/03/ServiceLocatorisanAnti-Pattern/), but in an implicit and non-obvious way.
+state](http://blog.ploeh.dk/2010/02/03/ServiceLocatorisanAnti-Pattern/), but
+in an implicit and non-obvious way.
 
 ### Using Dependency Resolution
 
@@ -93,7 +94,7 @@ Now this interface can be used in a ViewModel:
 ```cs
 public class MainViewModel
 {
-    public ReactiveCommand DeleteData { get; protected set; }
+    public ReactiveCommand<Object> DeleteData { get; protected set; }
 
     public MainViewModel(IYesNoDialog dialogFactory = null)
     {
@@ -101,7 +102,7 @@ public class MainViewModel
         // use one from the resolver. This makes it easy to test DeleteData
         // via providing a dummy implementation.
         dialogFactory = dialogFactory ?? RxApp.DependencyResolver.GetService<IYesNoDialog>();
-        DeleteData = new ReactiveCommand();
+        DeleteData = ReactiveCommand.Create();
 
         var title = "Delete the data?";
         var desc = "Should we delete your important Data?";
