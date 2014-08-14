@@ -31,9 +31,7 @@ throw an exception (and most can!), you **must** Subscribe to
 Here's a simple example:
 
 ```cs
-LoadUsersAndAvatars = new ReactiveCommand();
-
-var usersAndAvatarResults = LoadUsersAndAvatars.RegisterAsyncTask(async _ => {
+LoadUsersAndAvatars = ReactiveCommand.CreateAsyncTask(async _ => {
     var users = await LoadUsers();
 
     foreach(var u in users) {
@@ -43,13 +41,13 @@ var usersAndAvatarResults = LoadUsersAndAvatars.RegisterAsyncTask(async _ => {
     return users;
 });
 
-usersAndAvatarResults.ToProperty(this, x => x.Users, ref users);
+LoadUsersAndAvatars.ToProperty(this, x => x.Users, ref users);
 
 LoadUsersAndAvatars.ThrownExceptions
     .Subscribe(ex => this.Log().WarnException("Failed to load users", ex));
 ```
 
-### Why RegisterAsync?
+### Why CreateAsyncTask?
 
 Since ReactiveCommand itself is an Observable, it's quite easy to invoke async
 actions based on a ReactiveCommand. Something like:
@@ -77,13 +75,13 @@ This example from UserError also illustrates the canonical usage of
 RegisterAsync:
 
 ```cs
-LoadTweetsCommand = new ReactiveCommand();
 
 // When LoadTweetsCommand is invoked, LoadTweets will be run in the
 // background, the result will be Observed on the Main thread, and
 // ToProperty will then store it in an Output Property
-LoadTweetsCommand.RegisterAsyncTask(() => LoadTweets())
-    .ToProperty(this, x => x.TheTweets, ref theTweets);
+LoadTweetsCommand = ReactiveCommand.CreateAsyncTask(() => LoadTweets())
+
+LoadTweetsCommand.ToProperty(this, x => x.TheTweets, ref theTweets);
 
 var errorMessage = "The Tweets could not be loaded";
 var errorResolution = "Check your Internet connection";
