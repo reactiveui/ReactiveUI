@@ -102,17 +102,15 @@ public class MainViewModel
         // use one from the resolver. This makes it easy to test DeleteData
         // via providing a dummy implementation.
         dialogFactory = dialogFactory ?? RxApp.DependencyResolver.GetService<IYesNoDialog>();
-        DeleteData = ReactiveCommand.Create();
 
         var title = "Delete the data?";
         var desc = "Should we delete your important Data?";
 
-        DeleteData.RegisterAsync(() => dialogFactory.Prompt(title, desc))
+        DeleteData = ReactiveCommand.CreateAsyncObservable(() => dialogFactory.Prompt(title, desc)
             .Where(x => x == true)
-            .SelectMany(async x => DeleteTheData())
-            .Subscribe(
-                x => this.Log().Info("Deleted the Data"), 
-                ex => this.Log().WarnException(ex, "Couldn't delete the data"));
+            .SelectMany(async x => DeleteTheData()));
+
+	DeleteData.ThrownExceptions(ex => this.Log().WarnException(ex, "Couldn't delete the data"));
     }
 }
 ```
