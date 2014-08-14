@@ -72,14 +72,14 @@ more elegant way.
 ```cs
 public class DocumentViewModel : ReactiveObject
 {
-    public ReactiveCommand Close { get; set; }
+    public ReactiveCommand<Object> Close { get; set; }
 
     public DocumentViewModel() 
     {
         // Note that we don't actually *subscribe* to Close here or implement
         // anything in DocumentViewModel, because Closing is a responsibility
         // of the document list.
-        Close = new ReactiveCommand();
+        Close = ReactiveCommand.Create();
     }
 }
 

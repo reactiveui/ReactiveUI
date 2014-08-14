@@ -95,11 +95,11 @@ normal properties:
 ```cs
 // Since Commands should almost always be initialized in the constructor and
 // never change, they are good candidates for this pattern
-public ReactiveCommand PostTweet { get; protected set; }
+public ReactiveCommand<Object> PostTweet { get; protected set; }
 
 public PostViewModel()
 {
-    PostTweet = new ReactiveCommand(/*...*/);
+    PostTweet = ReactiveCommand.Create(/*...*/);
 }
 ```
 
