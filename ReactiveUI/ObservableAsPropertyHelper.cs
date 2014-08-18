@@ -23,7 +23,7 @@ namespace ReactiveUI
         T _lastValue;
         readonly IConnectableObservable<T> _source;
         IDisposable _inner;
-
+                
         /// <summary>
         /// Constructs an ObservableAsPropertyHelper object.
         /// </summary>
@@ -39,12 +39,34 @@ namespace ReactiveUI
             IObservable<T> observable, 
             Action<T> onChanged, 
             T initialValue = default(T), 
+            IScheduler scheduler = null) : this(observable, onChanged, null, initialValue, scheduler) {}
+
+        /// <summary>
+        /// Constructs an ObservableAsPropertyHelper object.
+        /// </summary>
+        /// <param name="observable">The Observable to base the property on.</param>
+        /// <param name="onChanged">The action to take when the property
+        /// changes, typically this will call the ViewModel's
+        /// RaisePropertyChanged method.</param>
+        /// <param name="onChanging">The action to take when the property
+        /// changes, typically this will call the ViewModel's
+        /// RaisePropertyChanging method.</param>
+        /// <param name="initialValue">The initial value of the property.</param>
+        /// <param name="scheduler">The scheduler that the notifications will be
+        /// provided on - this should normally be a Dispatcher-based scheduler
+        /// (and is by default)</param>
+        public ObservableAsPropertyHelper(
+            IObservable<T> observable, 
+            Action<T> onChanged, 
+            Action<T> onChanging = null,
+            T initialValue = default(T), 
             IScheduler scheduler = null)
         {
             Contract.Requires(observable != null);
             Contract.Requires(onChanged != null);
 
             scheduler = scheduler ?? CurrentThreadScheduler.Instance;
+            onChanging = onChanging ?? (_ => {});
             _lastValue = initialValue;
 
             var subj = new ScheduledSubject<T>(scheduler);
@@ -56,6 +78,7 @@ namespace ReactiveUI
                 // from a Subscribe
                 if (firedInitial && EqualityComparer<T>.Default.Equals(x, _lastValue)) return;
 
+                onChanging(x);
                 _lastValue = x;
                 onChanged(x);
                 firedInitial = true;
@@ -126,8 +149,10 @@ namespace ReactiveUI
                 throw new ArgumentException("Property expression must be of the form 'x => x.SomeProperty'");
             }
 
+            var name = expression.GetMemberInfo().Name;
             var ret = new ObservableAsPropertyHelper<TRet>(observable, 
-                _ => This.raisePropertyChanged(expression.GetMemberInfo().Name), 
+                _ => This.raisePropertyChanged(name), 
+                _ => This.raisePropertyChanging(name),
                 initialValue, scheduler);
 
             return ret;
