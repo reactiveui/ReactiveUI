@@ -497,7 +497,7 @@ namespace ReactiveUI
         public static IDisposable InvokeCommand<T, TResult>(this IObservable<T> This, IReactiveCommand<TResult> command)
         {
             return This.Throttle(x => command.CanExecuteObservable.StartWith(command.CanExecute(x)).Where(b => b))
-                .Select(x => command.ExecuteAsync(x))
+		.Select(x => command.ExecuteAsync(x).Catch(Observable.Empty<TResult>()))
                 .Switch()
                 .Subscribe();
         }
@@ -536,7 +536,7 @@ namespace ReactiveUI
         {
             return This.CombineLatest(target.WhenAnyValue(commandProperty), (val, cmd) => new { val, cmd })
                 .Throttle(x => x.cmd.CanExecuteObservable.StartWith(x.cmd.CanExecute(x.val)).Where(b => b))
-                .Select(x => x.cmd.ExecuteAsync(x.val))
+		.Select(x => x.cmd.ExecuteAsync(x.val).Catch(Observable.Empty<TResult>()))
                 .Switch()
                 .Subscribe();
         }
