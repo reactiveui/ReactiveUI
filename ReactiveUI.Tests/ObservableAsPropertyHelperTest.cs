@@ -102,5 +102,34 @@ namespace ReactiveUI.Tests
                 Assert.Equal(4, fixture.Value);
             });
         }
+
+        [Fact]
+        public void ToPropertyShouldFireBothChangingAndChanged()
+        {
+            var fixture = new TestFixture();
+
+            // NB: This is a hack to connect up the OAPH
+            var dontcare = (fixture.FirstThreeLettersOfOneWord ?? "").Substring(0,0);
+
+            var resultChanging = fixture.ObservableForProperty(x => x.FirstThreeLettersOfOneWord, beforeChange: true)
+                .CreateCollection();
+            var resultChanged = fixture.ObservableForProperty(x => x.FirstThreeLettersOfOneWord, beforeChange: false)
+                .CreateCollection();
+
+            Assert.Empty(resultChanging);
+            Assert.Empty(resultChanged);
+
+            fixture.IsOnlyOneWord = "FooBar";
+            Assert.Equal(1, resultChanging.Count);
+            Assert.Equal(1, resultChanged.Count);
+            Assert.Equal("", resultChanging[0].Value);
+            Assert.Equal("Foo", resultChanged[0].Value);
+
+            fixture.IsOnlyOneWord = "Bazz";
+            Assert.Equal(2, resultChanging.Count);
+            Assert.Equal(2, resultChanged.Count);
+            Assert.Equal("Foo", resultChanging[1].Value);
+            Assert.Equal("Baz", resultChanged[1].Value);
+        }
     }
 }
