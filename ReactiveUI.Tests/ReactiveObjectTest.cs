@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Reactive.Linq;
 using System.Runtime.Serialization;
 using Xunit;
 
@@ -69,9 +70,20 @@ namespace ReactiveUI.Tests
             set { this.RaiseAndSetIfChanged(ref _nullableInt, value); }
         }
 
+        [IgnoreDataMember]
+        ObservableAsPropertyHelper<string> _FirstThreeLettersOfOneWord;
+        [IgnoreDataMember]
+        public string FirstThreeLettersOfOneWord {
+            get { return _FirstThreeLettersOfOneWord.Value; }
+        }
+
         public TestFixture()
         {
             TestCollection = new ReactiveList<int>() {ChangeTrackingEnabled = true};
+
+            this.WhenAnyValue(x => x.IsOnlyOneWord)
+                .Select(x => (x ?? "")).Select(x => x.Length >= 3 ? x.Substring(0, 3) : x)
+                .ToProperty(this, x => x.FirstThreeLettersOfOneWord, out _FirstThreeLettersOfOneWord);
         }
     }
 
