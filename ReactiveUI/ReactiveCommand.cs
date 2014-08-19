@@ -340,6 +340,10 @@ namespace ReactiveUI
                 })
                 .Publish();
 
+            if (ModeDetector.InUnitTestRunner()) {
+                this.canExecute.Connect();
+            }
+
             ThrownExceptions = exceptions = new ScheduledSubject<Exception>(CurrentThreadScheduler.Instance, RxApp.DefaultExceptionHandler);
         }
 
