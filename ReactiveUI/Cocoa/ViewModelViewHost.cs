@@ -58,7 +58,7 @@ namespace ReactiveUI
                     var message = String.Format("Unable to resolve view for \"{0}\"", x.ViewModel.GetType());
 
                     if (x.Contract != null) {
-                        message += String.Format(" and contract \"{1}\"", x.Contract.GetType());
+                        message += String.Format(" and contract \"{0}\"", x.Contract.GetType());
                     }
 
                     message += ".";
