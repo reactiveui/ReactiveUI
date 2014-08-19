@@ -106,7 +106,7 @@ namespace ReactiveUI.Tests
         [Fact]
         public void ToPropertyShouldFireBothChangingAndChanged()
         {
-            var fixture = new TestFixture();
+            var fixture = new OaphTestFixture();
 
             // NB: This is a hack to connect up the OAPH
             var dontcare = (fixture.FirstThreeLettersOfOneWord ?? "").Substring(0,0);

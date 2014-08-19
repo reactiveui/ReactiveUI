@@ -340,6 +340,10 @@ namespace ReactiveUI
                 })
                 .Publish();
 
+            if (ModeDetector.InUnitTestRunner()) {
+                this.canExecute.Connect();
+            }
+
             ThrownExceptions = exceptions = new ScheduledSubject<Exception>(CurrentThreadScheduler.Instance, RxApp.DefaultExceptionHandler);
         }
 
@@ -371,7 +375,7 @@ namespace ReactiveUI
                 var disp = executeAsync(parameter)
                     .ObserveOn(scheduler)
                     .Finally(() => decrement.Disposable = Disposable.Empty)
-                    .Do(x => executeResults.OnNext(x), ex => exceptions.OnNext(ex))
+                    .Do(executeResults.OnNext, exceptions.OnNext)
                     .Subscribe(subj);
 
                 return new CompositeDisposable(disp, decrement);

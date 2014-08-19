@@ -70,6 +70,14 @@ namespace ReactiveUI.Tests
             set { this.RaiseAndSetIfChanged(ref _nullableInt, value); }
         }
 
+        public TestFixture()
+        {
+            TestCollection = new ReactiveList<int>() {ChangeTrackingEnabled = true};
+        }
+    }
+
+    public class OaphTestFixture : TestFixture
+    {
         [IgnoreDataMember]
         ObservableAsPropertyHelper<string> _FirstThreeLettersOfOneWord;
         [IgnoreDataMember]
@@ -77,10 +85,8 @@ namespace ReactiveUI.Tests
             get { return _FirstThreeLettersOfOneWord.Value; }
         }
 
-        public TestFixture()
+        public OaphTestFixture()
         {
-            TestCollection = new ReactiveList<int>() {ChangeTrackingEnabled = true};
-
             this.WhenAnyValue(x => x.IsOnlyOneWord)
                 .Select(x => (x ?? "")).Select(x => x.Length >= 3 ? x.Substring(0, 3) : x)
                 .ToProperty(this, x => x.FirstThreeLettersOfOneWord, out _FirstThreeLettersOfOneWord);

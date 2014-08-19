@@ -65,7 +65,10 @@ namespace ReactiveUI
 
             if (ModeDetector.InUnitTestRunner()) {
                 LogHost.Default.Warn("*** Detected Unit Test Runner, setting MainThreadScheduler to CurrentThread ***");
-                LogHost.Default.Warn("If we are not actually in a test runner, please file a bug\n");
+                LogHost.Default.Warn("If we are not actually in a test runner, please file a bug\n\n");
+                LogHost.Default.Warn("ReactiveUI acts differently under a test runner, see the docs\n");
+                LogHost.Default.Warn("for more info about what to expect");
+
                 _MainThreadScheduler = CurrentThreadScheduler.Instance;
                 return;
             } else {
