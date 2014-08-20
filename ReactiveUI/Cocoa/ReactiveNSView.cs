@@ -114,9 +114,45 @@ namespace ReactiveUI
 #if UIKIT
             base.WillMoveToSuperview(newsuper);
 #else
-            base.ViewWillMoveToSuperview(newsuper);
+            // Xamarin throws ArgumentNullException if newsuper is null
+            if (newsuper != null)
+            {
+                base.ViewWillMoveToSuperview(newsuper);
+            }
 #endif
             RxApp.MainThreadScheduler.Schedule(() => (newsuper != null ? activated : deactivated).OnNext(Unit.Default));
         }
+
+#if !UIKIT
+//        public override void ViewWillMoveToWindow(NSWindow newWindow)
+//        {
+//			var isNew = (newWindow != this.Window);
+//
+//            // Xamarin throws ArgumentNullException if newsuper is null
+//            if (newWindow != null) {
+//                base.ViewWillMoveToWindow(newWindow);
+//            }
+//
+//            if (Superview == null || !isNew) return;
+//
+//            var observable = (newWindow != null ? activated : deactivated);
+//            RxApp.MainThreadScheduler.Schedule(() => observable.OnNext(Unit.Default));
+//        }
+
+        public override void ViewDidMoveToWindow()
+        {
+            base.ViewDidMoveToWindow();
+
+            Subject<Unit> observable = null;
+            if (Window == null && Superview == null) {
+                observable = deactivated;
+            } else if (Window != null && Superview != null) {
+                observable = activated;
+            }
+
+            if (observable == null) return;
+            RxApp.MainThreadScheduler.Schedule(() => observable.OnNext(Unit.Default));
+        }
+#endif
     }
 }
