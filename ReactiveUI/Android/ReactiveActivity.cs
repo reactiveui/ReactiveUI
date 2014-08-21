@@ -54,7 +54,7 @@ namespace ReactiveUI
     {
         protected ReactiveActivity()
         {
-            RxApp.MainThreadScheduler = new WaitForDispatcherScheduler(() => new AndroidUIScheduler(this));
+            RxApp.MainThreadScheduler = new WaitForDispatcherScheduler(() => AndroidScheduler.UIScheduler());
         }
 
         public event PropertyChangingEventHandler PropertyChanging {
