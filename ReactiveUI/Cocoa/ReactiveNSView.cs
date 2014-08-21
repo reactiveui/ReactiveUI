@@ -115,8 +115,7 @@ namespace ReactiveUI
             base.WillMoveToSuperview(newsuper);
 #else
             // Xamarin throws ArgumentNullException if newsuper is null
-            if (newsuper != null)
-            {
+            if (newsuper != null) {
                 base.ViewWillMoveToSuperview(newsuper);
             }
 #endif
