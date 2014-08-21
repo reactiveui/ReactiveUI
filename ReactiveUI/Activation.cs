@@ -123,8 +123,11 @@ namespace ReactiveUI
         /// <param name="block">The method to be called when the corresponding
         /// View is activated. It returns a list of Disposables that will be
         /// cleaned up when the View is deactivated.</param>
+        /// <param name="view">The IActivatable will ordinarily also host the View
+        /// Model, but in the event it is not, a class implementing <see cref="IViewFor" />
+        /// can be supplied here.
         /// <returns>A Disposable that deactivates this registration.</returns>
-        public static IDisposable WhenActivated(this IActivatable This, Func<IEnumerable<IDisposable>> block)
+        public static IDisposable WhenActivated(this IActivatable This, Func<IEnumerable<IDisposable>> block, IViewFor view = null)
         {
             var activationFetcher = activationFetcherCache.Get(This.GetType());
             if (activationFetcher == null) {
@@ -135,8 +138,9 @@ namespace ReactiveUI
             var activationEvents = activationFetcher.GetActivationForView(This);
 
             var vmDisposable = Disposable.Empty;
-            if (This is IViewFor) {
-                vmDisposable = handleViewModelActivation(This as IViewFor, activationEvents);
+            var v = view ?? This;
+            if (v is IViewFor) {
+                vmDisposable = handleViewModelActivation(v as IViewFor, activationEvents);
             }
 
             var viewDisposable = handleViewActivation(block, activationEvents);
@@ -151,14 +155,17 @@ namespace ReactiveUI
         /// View is activated. The Action parameter (usually called 'd') allows
         /// you to register Disposables to be cleaned up when the View is
         /// deactivated (i.e. "d(someObservable.Subscribe());")</param>
+        /// <param name="view">The IActivatable will ordinarily also host the View
+        /// Model, but in the event it is not, a class implementing <see cref="IViewFor" />
+        /// can be supplied here.
         /// <returns>A Disposable that deactivates this registration.</returns>
-        public static IDisposable WhenActivated(this IActivatable This, Action<Action<IDisposable>> block)
+        public static IDisposable WhenActivated(this IActivatable This, Action<Action<IDisposable>> block, IViewFor view = null)
         {
             return This.WhenActivated(() => {
                 var ret = new List<IDisposable>();
                 block(ret.Add);
                 return ret;
-            });
+            }, view);
         }
 
         static IDisposable handleViewActivation(Func<IEnumerable<IDisposable>> block, IObservable<bool> activation)
