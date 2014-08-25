@@ -123,11 +123,24 @@ namespace ReactiveUI
         /// <param name="block">The method to be called when the corresponding
         /// View is activated. It returns a list of Disposables that will be
         /// cleaned up when the View is deactivated.</param>
+        /// <returns>A Disposable that deactivates this registration.</returns>
+        public static IDisposable WhenActivated(this IActivatable This, Func<IEnumerable<IDisposable>> block)
+        {
+            return This.WhenActivated(block, null);
+        }
+
+        /// <summary>
+        /// WhenActivated allows you to register a Func to be called when a
+        /// View is Activated.
+        /// </summary>
+        /// <param name="block">The method to be called when the corresponding
+        /// View is activated. It returns a list of Disposables that will be
+        /// cleaned up when the View is deactivated.</param>
         /// <param name="view">The IActivatable will ordinarily also host the View
         /// Model, but in the event it is not, a class implementing <see cref="IViewFor" />
         /// can be supplied here.
         /// <returns>A Disposable that deactivates this registration.</returns>
-        public static IDisposable WhenActivated(this IActivatable This, Func<IEnumerable<IDisposable>> block, IViewFor view = null)
+        public static IDisposable WhenActivated(this IActivatable This, Func<IEnumerable<IDisposable>> block, IViewFor view)
         {
             var activationFetcher = activationFetcherCache.Get(This.GetType());
             if (activationFetcher == null) {
@@ -155,11 +168,25 @@ namespace ReactiveUI
         /// View is activated. The Action parameter (usually called 'd') allows
         /// you to register Disposables to be cleaned up when the View is
         /// deactivated (i.e. "d(someObservable.Subscribe());")</param>
+        /// <returns>A Disposable that deactivates this registration.</returns>
+        public static IDisposable WhenActivated(this IActivatable This, Action<Action<IDisposable>> block)
+        {
+            return This.WhenActivated(block, null);
+        }
+
+        /// <summary>
+        /// WhenActivated allows you to register a Func to be called when a
+        /// View is Activated.
+        /// </summary>
+        /// <param name="block">The method to be called when the corresponding
+        /// View is activated. The Action parameter (usually called 'd') allows
+        /// you to register Disposables to be cleaned up when the View is
+        /// deactivated (i.e. "d(someObservable.Subscribe());")</param>
         /// <param name="view">The IActivatable will ordinarily also host the View
         /// Model, but in the event it is not, a class implementing <see cref="IViewFor" />
         /// can be supplied here.
         /// <returns>A Disposable that deactivates this registration.</returns>
-        public static IDisposable WhenActivated(this IActivatable This, Action<Action<IDisposable>> block, IViewFor view = null)
+        public static IDisposable WhenActivated(this IActivatable This, Action<Action<IDisposable>> block, IViewFor view)
         {
             return This.WhenActivated(() => {
                 var ret = new List<IDisposable>();
