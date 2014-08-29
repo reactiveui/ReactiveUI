@@ -10,8 +10,7 @@ namespace ReactiveUI
     public static class ObservedChangedMixin
     {
         /// <summary>
-        /// Returns the current value of a property given a notification that
-        /// it has changed.
+        /// Returns the name of a property which has been changed.
         /// </summary>
         /// <returns>The current value of the property</returns>
         public static string GetPropertyName<TSender, TValue>(this IObservedChange<TSender, TValue> This)
