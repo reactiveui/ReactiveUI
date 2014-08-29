@@ -12,7 +12,7 @@ namespace ReactiveUI
         /// <summary>
         /// Returns the name of a property which has been changed.
         /// </summary>
-        /// <returns>The current value of the property</returns>
+        /// <returns>The name of the property which has change</returns>
         public static string GetPropertyName<TSender, TValue>(this IObservedChange<TSender, TValue> This)
         {
             return Reflection.ExpressionToPropertyNames(This.Expression);
