@@ -354,6 +354,9 @@ namespace ReactiveUI
         ///
         /// Note that you **must** Subscribe to the Observable returned by
         /// ExecuteAsync or else nothing will happen (i.e. ExecuteAsync is lazy)
+        ///
+        /// Note also that the command will be executed, irrespective of the current value
+        /// of the command's canExecute observable.
         /// </summary>
         /// <returns>An Observable representing a single invocation of the Command.</returns>
         /// <param name="parameter">Don't use this.</param>
@@ -444,6 +447,10 @@ namespace ReactiveUI
             return canExecuteLatest;
         }
 
+        /// <summary>
+        /// Executes a Command. Note that the command will be executed, irrespective of the current value
+        /// of the command's canExecute observable.
+        /// </summary>
         public void Execute(object parameter)
         {
             ExecuteAsync(parameter).Catch(Observable.Empty<T>()).Subscribe();
