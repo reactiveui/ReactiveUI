@@ -377,7 +377,10 @@ namespace ReactiveUI
 
                 var disp = executeAsync(parameter)
                     .ObserveOn(scheduler)
-                    .Finally(() => decrement.Disposable = Disposable.Empty)
+                    .Do(
+                        _ => { },
+                        e => decrement.Disposable = Disposable.Empty,
+                        () => decrement.Disposable = Disposable.Empty)
                     .Do(executeResults.OnNext, exceptions.OnNext)
                     .Subscribe(subj);
 
