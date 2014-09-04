@@ -72,7 +72,6 @@
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Android\AndroidCommandBinders.cs" />
-    <Compile Include="Android\AndroidUIScheduler.cs" />
     <Compile Include="Android\ControlFetcherMixin.cs" />
     <Compile Include="Android\LinkerOverrides.cs" />
     <Compile Include="Android\ObjectExtension.cs" />
@@ -141,6 +140,7 @@
     <Compile Include="Android\BundleSuspensionDriver.cs" />
     <Compile Include="Android\AutoSuspendHelper.cs" />
     <Compile Include="Legacy\ReactiveCommand.cs" />
+    <Compile Include="Android\AndroidScheduler.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.ReactiveUI_Android.config" />
