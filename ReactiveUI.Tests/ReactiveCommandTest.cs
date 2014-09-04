@@ -569,5 +569,20 @@ namespace ReactiveUI.Tests
                 Assert.Equal(0, result);
             });
         }
+
+        [Fact]
+        public async Task IsExecutingIsFalseAfterAwaitingCommand()
+        {
+            var command = ReactiveCommand.CreateAsyncTask(_ => Task.Run(() => Thread.Sleep(10)));
+            var isExecutingStates = new List<bool>();
+            command.IsExecuting.Subscribe(isExecutingStates.Add);
+
+            await command.ExecuteAsync();
+
+            Assert.Equal(3, isExecutingStates.Count);
+            Assert.Equal(false, isExecutingStates[0]);
+            Assert.Equal(true, isExecutingStates[1]);
+            Assert.Equal(false, isExecutingStates[2]);
+        }
     }
 }
