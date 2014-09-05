@@ -22,10 +22,6 @@ namespace ReactiveUI.XamForms
         {
             registerFunction(() => new ActivationForViewFetcher(), typeof(IActivationForViewFetcher));
             registerFunction(() => new XamlDefaultPropertyBinding(), typeof(IDefaultPropertyBindingProvider));
-
-            if (ModeDetector.InDesignMode() || ModeDetector.InUnitTestRunner()) return;
-
-            RxApp.MainThreadScheduler = new DeviceScheduler();
         }
     }
 }
