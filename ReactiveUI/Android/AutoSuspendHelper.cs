@@ -55,7 +55,6 @@ namespace ReactiveUI
             public void OnActivityCreated(Activity activity, Bundle savedInstanceState)
             {
                 This.onCreate.OnNext(savedInstanceState);
-                RxApp.MainThreadScheduler = new WaitForDispatcherScheduler(() => new AndroidUIScheduler(activity));
             }
 
             public void OnActivityResumed(Activity activity)
