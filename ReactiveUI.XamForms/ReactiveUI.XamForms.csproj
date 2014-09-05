@@ -80,7 +80,6 @@
     <Compile Include="XamForms\ReactiveContentView.cs" />
     <Compile Include="XamForms\Registrations.cs" />
     <Compile Include="XamForms\ReactiveContentPage.cs" />
-    <Compile Include="XamForms\DeviceScheduler.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <Import Project="..\packages\Xamarin.Forms.1.2.1.6229\build\portable-win+net45+wp80+MonoAndroid10+MonoTouch10\Xamarin.Forms.targets" Condition="Exists('..\packages\Xamarin.Forms.1.2.1.6229\build\portable-win+net45+wp80+MonoAndroid10+MonoTouch10\Xamarin.Forms.targets')" />
