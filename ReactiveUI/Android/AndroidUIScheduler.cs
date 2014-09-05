@@ -7,69 +7,65 @@ using System.Reactive.Disposables;
 using ReactiveUI;
 using Android.App;
 using Splat;
+using Android.OS;
 
 namespace ReactiveUI
 {
     /// <summary>
-    /// AndroidUIScheduler is a scheduler that schedules items on a running 
+    /// HandlerScheduler is a scheduler that schedules items on a running 
     /// Activity's main thread. This is the moral equivalent of 
-    /// DispatcherScheduler, but since every Activity runs separately, you must
-    /// assign RxApp.MainThreadScheduler to an instance of this at the start of
-    /// every activity.
-    /// </summary>
-    public class AndroidUIScheduler : IScheduler, IEnableLogger
+    /// DispatcherScheduler.
+    public class HandlerScheduler : IScheduler, IEnableLogger
     {
-        Activity activity;
-        
-        public AndroidUIScheduler(Activity activity)
+        public static IScheduler MainThreadScheduler = new HandlerScheduler(new Handler(Looper.MainLooper));
+
+        Handler handler;
+        public HandlerScheduler(Handler handler)
         {
-            this.activity = activity;
+            this.handler = handler;
         }
-    
-        public DateTimeOffset Now {
-            get { return DateTimeOffset.Now; }
-        }
-        
+
         public IDisposable Schedule<TState>(TState state, Func<IScheduler, TState, IDisposable> action)
         {
-            IDisposable innerDisp = Disposable.Empty;
-            activity.RunOnUiThread(new Action(() => innerDisp = action(this, state)));
-            
-            return innerDisp;
+            bool isCancelled = false;
+            var innerDisp = new SerialDisposable() { Disposable = Disposable.Empty };
+
+            handler.Post(() => {
+                if (isCancelled) return;
+                innerDisp.Disposable = action(this, state);
+            });
+
+            return new CompositeDisposable(
+                Disposable.Create(() => isCancelled = true),
+                innerDisp);
         }
-        
+
+        public IDisposable Schedule<TState>(TState state, TimeSpan dueTime, Func<IScheduler, TState, IDisposable> action)
+        {
+            bool isCancelled = false;
+            var innerDisp = new SerialDisposable() { Disposable = Disposable.Empty };
+
+            handler.PostDelayed(() => {
+                if (isCancelled) return;
+                innerDisp.Disposable = action(this, state);
+            }, dueTime.Ticks / 10 / 1000);
+
+            return new CompositeDisposable(
+                Disposable.Create(() => isCancelled = true),
+                innerDisp);
+        }
+
         public IDisposable Schedule<TState>(TState state, DateTimeOffset dueTime, Func<IScheduler, TState, IDisposable> action)
         {
             if (dueTime <= Now) {
                 return Schedule(state, action);
             }
-            
+
             return Schedule(state, dueTime - Now, action);
         }
-        
-        public IDisposable Schedule<TState>(TState state, TimeSpan dueTime, Func<IScheduler, TState, IDisposable> action)
-        {
-            bool isCancelled = false;
-            
-            var disp = Scheduler.TaskPool.Schedule(state, dueTime, (sched, st) => {
-                IDisposable innerDisp = Disposable.Empty;
-                
-                if (!isCancelled) { 
-                    activity.RunOnUiThread(() => {
-                        if (!isCancelled) innerDisp = action(this, state);
-                    });
-                }
-               
-                return Disposable.Create(() => {
-                    isCancelled = true;
-                    innerDisp.Dispose();
-                });    
-            });
-            
-            return Disposable.Create(() => {
-                isCancelled = true;
-                disp.Dispose();
-            });
+
+        public DateTimeOffset Now {
+            get { return DateTimeOffset.Now; }
         }
     }
 }
