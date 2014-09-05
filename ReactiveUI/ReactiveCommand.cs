@@ -459,7 +459,7 @@ namespace ReactiveUI
             ExecuteAsync(parameter).Catch(Observable.Empty<T>()).Subscribe();
         }
 
-        public void Dispose()
+        public virtual void Dispose()
         {
             var disp = Interlocked.Exchange(ref canExecuteDisp, null);
             if (disp != null) disp.Dispose();
