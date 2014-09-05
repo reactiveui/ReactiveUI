@@ -76,6 +76,10 @@ namespace ReactiveUI
             RxApp.MainThreadScheduler = new WaitForDispatcherScheduler(() => CoreDispatcherScheduler.Current);
 #endif
 
+#if ANDROID
+            RxApp.MainThreadScheduler = HandlerScheduler.MainThreadScheduler;
+#endif
+
 #if WP8
             registerFunction(() => new PhoneServiceStateDriver(), typeof (ISuspensionDriver));
 #elif WINRT
