@@ -33,6 +33,30 @@ namespace ReactiveUI.Tests.Winforms
         }
 
         [Fact]
+        public void WinformsCreatesObservableForPropertyWorksForComponents()
+        {
+            var input = new ToolStripButton(); // ToolStripButton is a Component, not a Control
+            var fixture = new WinformsCreatesObservableForProperty();
+
+            Assert.NotEqual(0, fixture.GetAffinityForObject(typeof(ToolStripButton), "Checked"));
+
+            Expression<Func<ToolStripButton, bool>> expression = x => x.Checked;
+            var output = fixture.GetNotificationForProperty(input, expression.Body).CreateCollection();
+            Assert.Equal(0, output.Count);
+
+            input.Checked = true;
+            Assert.Equal(1, output.Count);
+            Assert.Equal(input, output[0].Sender);
+            Assert.Equal("Checked", output[0].GetPropertyName());
+
+            output.Dispose();
+
+            // Since we disposed the derived list, we should no longer receive updates
+            input.Checked = false;
+            Assert.Equal(1, output.Count);
+        }
+
+        [Fact]
         public void WinformsCreatesObservableForPropertyWorksForThirdPartyControls()
         {
             var input = new AThirdPartyNamespace.ThirdPartyControl();
