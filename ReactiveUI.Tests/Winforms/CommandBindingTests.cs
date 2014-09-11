@@ -4,6 +4,7 @@ using System.Reactive.Subjects;
 using System.Windows.Forms;
 using ReactiveUI.Winforms;
 using Xunit;
+using System.ComponentModel;
 
 namespace ReactiveUI.Tests.Winforms
 {
@@ -25,14 +26,12 @@ namespace ReactiveUI.Tests.Winforms
                 commandExecuted = true;
             });
 
-            var disp = fixture.BindCommandToObject(cmd, input, Observable.Return((object)5));
+            using (var disp = fixture.BindCommandToObject(cmd, input, Observable.Return((object)5))) {
+                input.PerformClick();
 
-            input.PerformClick();
-
-            Assert.True(commandExecuted);
-            Assert.NotNull(ea);
-            disp.Dispose();
-
+                Assert.True(commandExecuted);
+                Assert.NotNull(ea);
+            }
         }
 
         [Fact]
@@ -51,14 +50,36 @@ namespace ReactiveUI.Tests.Winforms
                 commandExecuted = true;
             });
 
-            var disp = fixture.BindCommandToObject(cmd, input, Observable.Return((object)5));
+            using (var disp = fixture.BindCommandToObject(cmd, input, Observable.Return((object)5))) {
+                input.PerformClick();
 
-            input.PerformClick();
+                Assert.True(commandExecuted);
+                Assert.NotNull(ea);
+            }
+        }
 
-            Assert.True(commandExecuted);
-            Assert.NotNull(ea);
-            disp.Dispose();
+        [Fact]
+        public void CommandBinderBindsToCustomComponent()
+        {
+            var fixture = new CreatesWinformsCommandBinding();
+            var cmd = ReactiveCommand.Create();
+            var input = new CustomClickableComponent { };
 
+            Assert.True(fixture.GetAffinityForObject(input.GetType(), true) > 0);
+            Assert.True(fixture.GetAffinityForObject(input.GetType(), false) > 0);
+            bool commandExecuted = false;
+            object ea = null;
+            cmd.Subscribe(o => {
+                ea = o;
+                commandExecuted = true;
+            });
+
+            using (var disp = fixture.BindCommandToObject(cmd, input, Observable.Return((object)5))) {
+                input.PerformClick();
+
+                Assert.True(commandExecuted);
+                Assert.NotNull(ea);
+            }
         }
 
         [Fact]
@@ -73,13 +94,41 @@ namespace ReactiveUI.Tests.Winforms
 
             using (var disp = fixture.BindCommandToObject(cmd, input, Observable.Return((object)5))) {
                 canExecute.OnNext(true);
-
                 Assert.True(input.Enabled);
 
                 canExecute.OnNext(false);
-
                 Assert.False(input.Enabled);
             }
+        }
+
+        [Fact]
+        public void CommandBinderAffectsEnabledStateForComponents()
+        {
+            var fixture = new CreatesWinformsCommandBinding();
+            var canExecute = new Subject<bool>();
+            canExecute.OnNext(true);
+
+            var cmd = ReactiveCommand.Create(canExecute);
+            var input = new ToolStripButton { }; // ToolStripButton is a Component, not a Control
+
+            using (var disp = fixture.BindCommandToObject(cmd, input, Observable.Return((object)5))) {
+                canExecute.OnNext(true);
+                Assert.True(input.Enabled);
+
+                canExecute.OnNext(false);
+                Assert.False(input.Enabled);
+            }
+        }
+    }
+
+    public class CustomClickableComponent : Component
+    {
+        public event EventHandler Click;
+
+        public void PerformClick()
+        {
+            if (Click != null)
+                Click(this, EventArgs.Empty);
         }
     }
 
@@ -99,7 +148,6 @@ namespace ReactiveUI.Tests.Winforms
         {
             this.OnMouseUp(args);
         }
-
     }
 
     public class CommandBindingImplementationTests
