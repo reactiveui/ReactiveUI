@@ -8,6 +8,7 @@ using System.Windows.Forms;
 using System.Windows.Input;
 using ReactiveUI;
 using System.Reflection;
+using System.ComponentModel;
 
 namespace ReactiveUI.Winforms
 {
@@ -23,8 +24,6 @@ namespace ReactiveUI.Winforms
             Tuple.Create("MouseUp", typeof (MouseEventArgs)),
         };
 
-        static readonly PropertyInfo enabledProperty = typeof(Control).GetRuntimeProperty("Enabled");
-
         public int GetAffinityForObject(Type type, bool hasEventTarget)
         {
             bool isWinformControl = typeof(Control).IsAssignableFrom(type);
@@ -33,7 +32,7 @@ namespace ReactiveUI.Winforms
 
             if (hasEventTarget) return 6;
 
-            return defaultEventsToBind.Any(x =>{
+            return defaultEventsToBind.Any(x => {
                 var ei = type.GetEvent(x.Item1, BindingFlags.Public | BindingFlags.FlattenHierarchy | BindingFlags.Instance);
                 return ei != null;
             }) ? 4 : 0;
@@ -76,18 +75,27 @@ namespace ReactiveUI.Winforms
                     command.Execute(useEventArgsInstead ? ea : latestParameter);
                 }
             }));
-             
-            //only controls have Enabled           
-            if (typeof(Control).IsAssignableFrom(target.GetType())) {
-                object latestParam = null;
-                commandParameter.Subscribe(x => latestParam = x);
 
-                ret.Add(Observable.FromEventPattern<EventHandler, EventArgs>(x => command.CanExecuteChanged += x, x => command.CanExecuteChanged -= x)
-                    .Select(_ => command.CanExecute(latestParam))
-                    .StartWith(command.CanExecute(latestParam))
-                    .Subscribe(x => {
-                        enabledProperty.SetValue(target, x, null);
-                    }));
+            Type targetType = target.GetType();
+
+            // We initially only accepted Controls here, but this is too restrictive:
+            // there are a number of Components that can trigger Commands and also
+            // have an Enabled property, just like Controls.
+            // For example: System.Windows.Forms.ToolStripButton.
+            if (typeof(Component).IsAssignableFrom(targetType)) {
+                PropertyInfo enabledProperty = targetType.GetRuntimeProperty("Enabled");
+
+                if (enabledProperty != null) {
+                    object latestParam = null;
+                    commandParameter.Subscribe(x => latestParam = x);
+
+                    ret.Add(Observable.FromEventPattern<EventHandler, EventArgs>(x => command.CanExecuteChanged += x, x => command.CanExecuteChanged -= x)
+                        .Select(_ => command.CanExecute(latestParam))
+                        .StartWith(command.CanExecute(latestParam))
+                        .Subscribe(x => {
+                            enabledProperty.SetValue(target, x, null);
+                        }));
+                }
             }
 
             return ret;
