@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reactive.Disposables;
@@ -18,7 +19,7 @@ namespace ReactiveUI.Winforms
 
         public int GetAffinityForObject(Type type, string propertyName, bool beforeChanged = false)
         {
-            bool supportsTypeBinding = typeof(Control).IsAssignableFrom(type);
+            bool supportsTypeBinding = typeof(Component).IsAssignableFrom(type);
             if (!supportsTypeBinding) return 0;
 
             lock (eventInfoCache) {
