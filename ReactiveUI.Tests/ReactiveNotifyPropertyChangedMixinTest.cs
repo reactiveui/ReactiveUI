@@ -17,6 +17,7 @@ using Microsoft.Reactive.Testing;
 
 #if !MONO
 using System.Windows.Controls;
+using System.Diagnostics;
 #endif
 
 namespace ReactiveUI.Tests
@@ -601,6 +602,128 @@ namespace ReactiveUI.Tests
                 Assert.True(changes.All(x => x.GetPropertyName() == "IsOnlyOneWord"));
                 changes.Select(x => x.Value).AssertAreEqual(new[] { "Foo", "Bar", "Foo" });
             });
+        }
+
+        [Fact]
+        public void WhenAnyCreationPerfTest()
+        {
+            // NB: Try to eliminate class load time from the test
+            var fixture = new HostTestFixture();
+            fixture.WhenAnyValue(x => x.Child.IsNotNullString).Subscribe();
+
+            var st = new Stopwatch();
+            st.Start();
+            for (int i = 0; i < 100000; i++) {
+                fixture = new HostTestFixture();
+                fixture.WhenAnyValue(x => x.Child.IsNotNullString).Subscribe();
+            }
+
+            st.Stop();
+            Console.WriteLine("Elapsed Time: {0}", st.Elapsed);
+        }
+    }
+
+    public class OFPArrayObservableTests
+    {
+        [Fact]
+        public void ObservablesWithConstantValue()
+        {
+            var input = new ListTestFixture();
+            input.TestFixtures.AddRange(Enumerable.Range(0, 3).Select(_ => new TestFixture()));
+
+            var coll = input.ObservableForProperty(x => x.TestFixtures[0].IsNotNullString).CreateCollection();
+            Assert.Equal(0, coll.Count);
+
+            input.TestFixtures[0].IsNotNullString = "Bar";
+            Assert.Equal(1, coll.Count);
+
+            input.TestFixtures[1].IsNotNullString = "Bar";
+            Assert.Equal(1, coll.Count);
+
+            input.TestFixtures[0] = new TestFixture() { IsNotNullString = "Baz", };
+            Assert.Equal(2, coll.Count);
+
+            input.TestFixtures.RemoveAt(0);
+            Assert.Equal(3, coll.Count);
+        }
+
+        [Fact]
+        public void ObservablesWithConstantProperty()
+        {
+            var input = new ListTestFixture();
+            input.TestFixtures.AddRange(Enumerable.Range(0, 3).Select(_ => new TestFixture()));
+
+            var coll = input.ObservableForProperty(x => x.TestFixtures[x.AnIndex].IsNotNullString).CreateCollection();
+            Assert.Equal(0, coll.Count);
+
+            input.TestFixtures[0].IsNotNullString = "Bar";
+            Assert.Equal(1, coll.Count);
+
+            input.TestFixtures[1].IsNotNullString = "Bar";
+            Assert.Equal(1, coll.Count);
+
+            input.TestFixtures[0] = new TestFixture() { IsNotNullString = "Baz", };
+            Assert.Equal(2, coll.Count);
+
+            input.TestFixtures.RemoveAt(0);
+            Assert.Equal(3, coll.Count);
+        }
+
+        [Fact]
+        public void ObservablesWithChangingProperty()
+        {
+            var input = new ListTestFixture();
+            input.TestFixtures.AddRange(Enumerable.Range(0, 3).Select(_ => new TestFixture()));
+
+            var coll = input.ObservableForProperty(x => x.TestFixtures[x.AnIndex].IsNotNullString).CreateCollection();
+            Assert.Equal(0, coll.Count);
+
+            input.TestFixtures[0].IsNotNullString = "Bar";
+            Assert.Equal(1, coll.Count);
+
+            input.TestFixtures[1].IsNotNullString = "Bar";
+            input.TestFixtures[2].IsNotNullString = "Bar";
+            Assert.Equal(1, coll.Count);
+
+            input.TestFixtures[0] = new TestFixture() { IsNotNullString = "Baz", };
+            Assert.Equal(2, coll.Count);
+
+            input.TestFixtures.RemoveAt(0);
+            Assert.Equal(3, coll.Count);
+
+            input.AnIndex = 1;
+            Assert.Equal(3, coll.Count);
+
+            input.TestFixtures[0].IsNotNullString = "Baz";
+            input.AnIndex = 0;
+            Assert.Equal(4, coll.Count);
+        }
+
+        [Fact]
+        public void ObservablesWithHashTables()
+        {
+            var input = new ListTestFixture();
+            new[] { 
+                new { Key = "Foo", Value = new TestFixture() { IsNotNullString = "Foo" }, },
+                new { Key = "Bar", Value = new TestFixture() { IsNotNullString = "Bar" }, },
+                new { Key = "Baz", Value = new TestFixture() { IsNotNullString = "Bar" }, },
+            }.ForEach(x => input.TestFixtureHash[x.Key] = x.Value);
+            input.SomeOtherString = "Foo";
+
+            var coll = input.ObservableForProperty(x => x.TestFixtureHash[x.SomeOtherString].IsNotNullString).CreateCollection();
+            Assert.Equal(0, coll.Count);
+
+            input.SomeOtherString = "Bar";
+            Assert.Equal(1, coll.Count);
+
+            input.SomeOtherString = "Baz";
+            Assert.Equal(1, coll.Count);
+
+            input.SomeOtherString = "Foo";
+            Assert.Equal(2, coll.Count);
+
+            input.TestFixtureHash["Foo"].IsNotNullString = "Bat";
+            Assert.Equal(3, coll.Count);
         }
     }
 

@@ -9,6 +9,40 @@ using Xunit;
 namespace ReactiveUI.Tests
 {
     [DataContract]
+    public class ListTestFixture : ReactiveObject
+    {
+        [IgnoreDataMember]
+        string _SomeOtherString;
+        
+        [DataMember]
+        public string SomeOtherString {
+            get { return _SomeOtherString; }
+            set { this.RaiseAndSetIfChanged(ref _SomeOtherString, value); }
+        }
+
+        [IgnoreDataMember]
+        int _AnIndex;
+
+        [DataMember]
+        public int AnIndex {
+            get { return _AnIndex; }
+            set { this.RaiseAndSetIfChanged(ref _AnIndex, value); }
+        }
+
+        [DataMember]
+        public ReactiveList<TestFixture> TestFixtures { get; protected set; }
+
+        [DataMember]
+        public Dictionary<string, TestFixture> TestFixtureHash { get; protected set; }
+
+        public ListTestFixture()
+        {
+            TestFixtures = new ReactiveList<TestFixture>();
+            TestFixtureHash = new Dictionary<string, TestFixture>();
+        }
+    }
+
+    [DataContract]
     public class TestFixture : ReactiveObject
     {
         [IgnoreDataMember]
@@ -146,7 +180,6 @@ namespace ReactiveUI.Tests
             Assert.Equal(1, output.Count);
             Assert.Equal("UsesExprRaiseSet", output[0]);
         }
-
 
         [Fact]
         public void ObservableForPropertyUsingExpression()
