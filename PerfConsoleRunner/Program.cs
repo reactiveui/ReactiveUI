@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ReactiveUI.Tests;
 
 namespace PerfConsoleRunner
 {
@@ -12,6 +13,14 @@ namespace PerfConsoleRunner
     {
         public static int Main(string[] args)
         {
+            var tests = new ReactiveNotifyPropertyChangedMixinTest();
+            tests.WhenAnyCreationPerfTest();
+            tests.WhenAnyCreationPerfTest();
+            tests.WhenAnyCreationPerfTest();
+            tests.WhenAnyCreationPerfTest();
+            tests.WhenAnyCreationPerfTest();
+            return 0;
+
             var file = (new StackTrace(true).GetFrame(0)).GetFileName();
             var solutionDir = new DirectoryInfo(Path.Combine(Path.GetDirectoryName(file), "..")).FullName;
 
