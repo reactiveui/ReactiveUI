@@ -59,7 +59,7 @@ namespace ReactiveUI
             var ctlDelegate = new ControlDelegate(x => {
                 if (command.CanExecute(latestParam))
                     command.Execute(latestParam);
-            });
+            }) { IsEnabled = command.CanExecute(latestParam) };
 
             var sel = new Selector("theAction:");
             // TODO how does this work? Is there an Action property?
@@ -80,13 +80,15 @@ namespace ReactiveUI
                 commandParameter.Subscribe(x => latestParam = x),
                 Observable.FromEventPattern<EventHandler, EventArgs>(x => command.CanExecuteChanged += x, x => command.CanExecuteChanged -= x)
                     .Select(_ => command.CanExecute(latestParam))
-                    .Subscribe(x => { enabledSetter(target, x, null); }));
+                    .Subscribe(x => { enabledSetter(target, x, null); ctlDelegate.IsEnabled = x; }));
 
             return compDisp;
         }
 
         class ControlDelegate : NSObject
         {
+            public bool IsEnabled { get; set; }
+
             readonly Action<NSObject> block;
             public ControlDelegate(Action<NSObject> block)
             {
@@ -97,6 +99,12 @@ namespace ReactiveUI
             public void TheAction(NSObject sender)
             {
                 block(sender);
+            }
+
+            [Export("validateMenuItem:")]
+            public bool ValidateMenuItem(NSMenuItem menuItem)
+            {
+                return IsEnabled;
             }
         }
 
