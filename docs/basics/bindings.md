@@ -75,6 +75,31 @@ ReactiveUI has an extensible system for coercing between types.
 See the details about Binding Type Converters in the "Customization" section
 for more information about how to extend property type conversion.
 
+### Choosing when to update the source
+
+By default, the source of a binding will be updated when the target changes,
+which is equivalent to setting `UpdateSourceTrigger = PropertyChanged` on a WPF
+binding. Sometimes it is desirable to have more fine-grained control over when
+the source will be updated (for example, the binding updating will trigger
+some expensive work which isn't necessary on every keystroke).
+
+One common requirement is to update the source when a user interface control
+loses keyboard (or logical) focus - WPF even provides `UpdateSourceTrigger = 
+LostFocus` for this.
+
+ReactiveUI bindings allow this by providing an IObservable as a parameter to
+the binding, which disables the default behavior and causes the source to
+update whenever the observable fires. The observable (`SignalViewUpdate`) can
+be of any type, meaning that any event on a user interface control is capable
+of causing the binding to update.
+
+For example, to have a binding update when a control loses keyboard focus, the
+following binding setup can be used:
+
+```cs
+this.Bind(ViewModel, vm => vm.SomeProperty, v => v.SomeTextBox, SomeTextBox.Events().LostKeyboardFocus);
+```
+
 ### "Hack" bindings and BindTo
 
 Should you find that direct one and two-way bindings aren't enough to get the
