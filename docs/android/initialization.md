@@ -1,0 +1,1 @@
+# Android Scheduler / Initialization Trickery
