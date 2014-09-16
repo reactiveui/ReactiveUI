@@ -100,12 +100,13 @@ namespace ReactiveUI
             {
                 block(sender);
             }
-
+#if !UIKIT
             [Export("validateMenuItem:")]
             public bool ValidateMenuItem(NSMenuItem menuItem)
             {
                 return IsEnabled;
             }
+#endif
         }
 
         public IDisposable BindCommandToObject<TEventArgs>(ICommand command, object target, IObservable<object> commandParameter, string eventName) 
