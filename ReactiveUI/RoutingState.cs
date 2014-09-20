@@ -70,8 +70,12 @@ namespace ReactiveUI
 
         void setupRx()
         {
+            var countAsBehavior = Observable.Concat(
+                Observable.Defer(() => Observable.Return(_NavigationStack.Count)),
+                NavigationStack.CountChanged);
+
             NavigateBack = ReactiveCommand.CreateAsyncObservable(
-                NavigationStack.CountChanged.StartWith(_NavigationStack.Count).Select(x => x > 1),
+                countAsBehavior.Select(x => x > 1),
                 _ => Observable.Return(Unit.Default));
 
             NavigateBack.Subscribe(_ =>
