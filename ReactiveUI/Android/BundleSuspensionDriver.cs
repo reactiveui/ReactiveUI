@@ -16,7 +16,7 @@ namespace ReactiveUI
             try {
                 // NB: Sometimes OnCreate gives us a null bundle
                 if (AutoSuspendHelper.LatestBundle == null) {
-                    return Observable.Return(default(object));
+                    return Observable.Throw<object>(new Exception("New bundle, start from scratch"));
                 }
 
                 var serializer = new BinaryFormatter();
