@@ -122,7 +122,6 @@ namespace ReactiveUI
                 .LoggedCatch(This,
                     Observable.Defer(() => Observable.Return(This.CreateNewAppState())),
                     "Failed to restore app state from storage, creating from scratch")
-                .ObserveOn(RxApp.MainThreadScheduler)
                 .Subscribe(x => This.AppState = x ?? This.CreateNewAppState()));
 
             return ret;
