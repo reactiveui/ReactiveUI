@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Specialized;
 
-#if UIKIT || PORTABLE || WINRT
+#if UIKIT || PORTABLE || WINRT || ANDROID
 
 namespace ReactiveUI
 {
