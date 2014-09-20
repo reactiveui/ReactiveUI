@@ -9,6 +9,7 @@ Interfaces that run on any mobile or desktop platform.
 * Xamarin.Android
 * Xamarin.Mac
 * WPF
+* Windows Forms
 * Windows Phone 8
 * Windows Store Apps
 
