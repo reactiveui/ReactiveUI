@@ -126,10 +126,10 @@ namespace ReactiveUI
         /// Dependency Resolver.
         /// </summary>
         public static IReactiveCommand NavigateCommandFor<T>(this RoutingState This)
-            where T : IRoutableViewModel
+            where T : IRoutableViewModel,new()
         {
             var ret = new ReactiveCommand<object>(This.Navigate.CanExecuteObservable, x => Observable.Return(x));
-            ret.Select(_ => (IRoutableViewModel)Locator.Current.GetService<T>()).InvokeCommand(This.Navigate);
+            ret.Select(_ => (IRoutableViewModel)Locator.Current.GetService<T>() ?? new T()).InvokeCommand(This.Navigate);
                 
             return ret;
         }
