@@ -57,17 +57,25 @@ namespace ReactiveUI.XamForms
             screen.Router.NavigationStack.ToObservable()
                 .Select(x => (Page)ViewLocator.Current.ResolveView(x))
                 .SelectMany(x => this.PushAsync(x).ToObservable())
-                .Finally(() => ((IViewFor)this.CurrentPage).ViewModel = screen.Router.GetCurrentViewModel())
+                .Finally(() => {
+                    var vm = screen.Router.GetCurrentViewModel();
+                    if (vm == null) return;
+
+                    ((IViewFor)this.CurrentPage).ViewModel = vm;
+                    this.CurrentPage.Title = vm.UrlPathSegment;
+                })
                 .Subscribe();
         }
 
-        Page pageForViewModel(IRoutableViewModel vm)
+        Page pageForViewModel(IRoutableViewModel vm) 
         {
             var ret = ViewLocator.Current.ResolveView(vm);
             ret.ViewModel = vm;
 
-            this.Title = vm.UrlPathSegment;
-            return (Page)ret;
+            var pg = (Page)ret;
+            pg.Title = vm.UrlPathSegment;
+            return pg;
         }
     }
 }
+
