@@ -2,7 +2,7 @@
 using ReactiveUI;
 using Splat;
 using Xamarin.Forms;
-using Starter.Core.Views;
+using ReactiveUI.XamForms;
 
 namespace PlaygroundXamForms
 {
@@ -18,8 +18,8 @@ namespace PlaygroundXamForms
             Locator.CurrentMutable.Register(() => new TestView(), typeof(IViewFor<TestViewModel>));
             Locator.CurrentMutable.Register(() => new DifferentView(), typeof(IViewFor<DifferentViewModel>));
 
-            //Router.Navigate.Execute(new TestViewModel(this));
-            Router.NavigationStack.Add(new TestViewModel(this));
+            Router.Navigate.Execute(new TestViewModel(this));
+           // Router.NavigationStack.Add(new TestViewModel(this));
         }
 
         public Page CreateMainView()
