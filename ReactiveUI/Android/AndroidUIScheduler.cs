@@ -17,18 +17,25 @@ namespace ReactiveUI
     /// DispatcherScheduler.
     public class HandlerScheduler : IScheduler, IEnableLogger
     {
-        public static IScheduler MainThreadScheduler = new HandlerScheduler(new Handler(Looper.MainLooper));
+        public static IScheduler MainThreadScheduler = new HandlerScheduler(new Handler(Looper.MainLooper), Looper.MainLooper.Thread.Id);
 
         Handler handler;
-        public HandlerScheduler(Handler handler)
+        long looperId;
+
+        public HandlerScheduler(Handler handler, long? threadIdAssociatedWithHandler)
         {
             this.handler = handler;
+            looperId = threadIdAssociatedWithHandler ?? -1;
         }
 
         public IDisposable Schedule<TState>(TState state, Func<IScheduler, TState, IDisposable> action)
         {
             bool isCancelled = false;
             var innerDisp = new SerialDisposable() { Disposable = Disposable.Empty };
+
+            if (looperId > 0 && looperId == Java.Lang.Thread.CurrentThread().Id) {
+                return action(this, state);
+            }
 
             handler.Post(() => {
                 if (isCancelled) return;

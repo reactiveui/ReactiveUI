@@ -70,8 +70,12 @@ namespace ReactiveUI
 
         void setupRx()
         {
+            var countAsBehavior = Observable.Concat(
+                Observable.Defer(() => Observable.Return(_NavigationStack.Count)),
+                NavigationStack.CountChanged);
+
             NavigateBack = ReactiveCommand.CreateAsyncObservable(
-                NavigationStack.CountChanged.StartWith(_NavigationStack.Count).Select(x => x > 1),
+                countAsBehavior.Select(x => x > 1),
                 _ => Observable.Return(Unit.Default));
 
             NavigateBack.Subscribe(_ =>
@@ -126,10 +130,10 @@ namespace ReactiveUI
         /// Dependency Resolver.
         /// </summary>
         public static IReactiveCommand NavigateCommandFor<T>(this RoutingState This)
-            where T : IRoutableViewModel
+            where T : IRoutableViewModel,new()
         {
             var ret = new ReactiveCommand<object>(This.Navigate.CanExecuteObservable, x => Observable.Return(x));
-            ret.Select(_ => (IRoutableViewModel)Locator.Current.GetService<T>()).InvokeCommand(This.Navigate);
+            ret.Select(_ => (IRoutableViewModel)Locator.Current.GetService<T>() ?? new T()).InvokeCommand(This.Navigate);
                 
             return ret;
         }
