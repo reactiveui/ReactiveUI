@@ -10,36 +10,45 @@ namespace ReactiveUI.XamForms
 {
     public class RoutedViewHost : NavigationPage, IActivatable
     {
+        public static readonly BindableProperty RouterProperty = BindableProperty.Create<RoutedViewHost, RoutingState>(
+            x => x.Router, null, BindingMode.OneWay);
+
+        public RoutingState Router {
+            get { return (RoutingState)GetValue(RouterProperty); }
+            set { SetValue(RouterProperty, value); }
+        }
+
         public RoutedViewHost()
         {
-            var screen = Locator.Current.GetService<IScreen>();
+            this.WhenActivated(new Action<Action<IDisposable>>(d => {
+                bool currentlyPopping = false;
 
-            this.WhenActivated(d => {
-                d(screen.Router.Navigate
-                    .Select(_ => screen.Router.GetCurrentViewModel())
-                    .Select(x => pageForViewModel(x))
+                d(this.WhenAnyObservable(x => x.Router.Navigate)
+                    .SelectMany(_ => pageForViewModel(Router.GetCurrentViewModel()))
                     .SelectMany(x => this.PushAsync(x).ToObservable())
                     .Subscribe());
 
-                d(screen.Router.NavigateAndReset
-                    .Select(_ => pageForViewModel(screen.Router.GetCurrentViewModel()))
+                d(this.WhenAnyObservable(x => x.Router.NavigateAndReset)
+                    .SelectMany(_ => pageForViewModel(Router.GetCurrentViewModel()))
                     .SelectMany(async x => {
+                        currentlyPopping = true;
                         await this.PopToRootAsync();
                         await this.PushAsync(x);
+                        currentlyPopping = false;
+
                         return x;
                     })
                     .Subscribe());
 
-                bool popping = false;
-                d(screen.Router.NavigateBack
+                d(this.WhenAnyObservable(x => x.Router.NavigateBack)
                     .SelectMany(async x => {
-                        popping = true;
+                        currentlyPopping = true;
                         await this.PopAsync();
-                        popping = false;
+                        currentlyPopping = false;
 
                         return x;
                     })
-                    .Do(_ => ((IViewFor)this.CurrentPage).ViewModel = screen.Router.GetCurrentViewModel())
+                    .Do(_ => ((IViewFor)this.CurrentPage).ViewModel = Router.GetCurrentViewModel())
                     .Subscribe());
 
                 var poppingEvent = Observable.FromEventPattern<NavigationEventArgs>(x => this.Popped += x, x => this.Popped -= x);
@@ -47,34 +56,51 @@ namespace ReactiveUI.XamForms
                 // NB: Catch when the user hit back as opposed to the application
                 // requesting Back via NavigateBack
                 d(poppingEvent
-                    .Where(_ => !popping)
+                    .Where(_ => !currentlyPopping && Router != null)
                     .Subscribe(_ => {
-                        screen.Router.NavigationStack.RemoveAt(screen.Router.NavigationStack.Count - 1);
-                        ((IViewFor)this.CurrentPage).ViewModel = screen.Router.GetCurrentViewModel();
+                        Router.NavigationStack.RemoveAt(Router.NavigationStack.Count - 1);
+                        ((IViewFor)this.CurrentPage).ViewModel = Router.GetCurrentViewModel();
                     }));
-            });
+            }));
 
-            screen.Router.NavigationStack.ToObservable()
-                .Select(x => (Page)ViewLocator.Current.ResolveView(x))
-                .SelectMany(x => this.PushAsync(x).ToObservable())
-                .Finally(() => {
-                    var vm = screen.Router.GetCurrentViewModel();
-                    if (vm == null) return;
+            Router = Locator.Current.GetService<IScreen>().Router;
+            if (Router == null) throw new Exception("You *must* register an IScreen class representing your App's main Screen");
 
-                    ((IViewFor)this.CurrentPage).ViewModel = vm;
-                    this.CurrentPage.Title = vm.UrlPathSegment;
+            this.WhenAnyValue(x => x.Router)
+                .SelectMany(router => {
+                    return router.NavigationStack.ToObservable()
+                            .Select(x => (Page)ViewLocator.Current.ResolveView(x))
+                            .SelectMany(x => this.PushAsync(x).ToObservable())
+                            .Finally(() => {
+
+                        var vm = router.GetCurrentViewModel();
+                        if (vm == null) return;
+
+                        ((IViewFor)this.CurrentPage).ViewModel = vm;
+                        this.CurrentPage.Title = vm.UrlPathSegment;
+                    });
                 })
                 .Subscribe();
         }
 
-        Page pageForViewModel(IRoutableViewModel vm) 
+        IObservable<Page> pageForViewModel(IRoutableViewModel vm) 
         {
+            if (vm == null) return Observable.Empty<Page>();
+
             var ret = ViewLocator.Current.ResolveView(vm);
+            if (ret == null) {
+                var msg = String.Format(
+                    "Couldn't find a View for ViewModel. You probably need to register an IViewFor<{0}>",
+                    vm.GetType().Name);
+
+                return Observable.Throw<Page>(new Exception(msg));
+            }
+
             ret.ViewModel = vm;
 
             var pg = (Page)ret;
             pg.Title = vm.UrlPathSegment;
-            return pg;
+            return Observable.Return(pg);
         }
     }
 }
