@@ -5,6 +5,7 @@ using System.Threading;
 using ReactiveUI;
 using System.Reactive.Concurrency;
 using Microsoft.Reactive.Testing;
+using System.Threading.Tasks;
 
 
 namespace ReactiveUI.Testing
@@ -82,6 +83,25 @@ namespace ReactiveUI.Testing
 
         /// <summary>
         /// With is an extension method that uses the given scheduler as the
+        /// default Deferred and Taskpool schedulers for the given Func. Use
+        /// this to initialize objects that store the default scheduler (most
+        /// RxXaml objects).
+        /// </summary>
+        /// <param name="sched">The scheduler to use.</param>
+        /// <param name="block">The function to execute.</param>
+        /// <returns>The return value of the function.</returns>
+        public static async Task<TRet> WithAsync<T, TRet>(this T sched, Func<T, Task<TRet>> block)
+            where T : IScheduler
+        {
+            TRet ret;
+            using (WithScheduler(sched)) {
+                ret = await block(sched);
+            }
+            return ret;
+        }
+
+        /// <summary>
+        /// With is an extension method that uses the given scheduler as the
         /// default Deferred and Taskpool schedulers for the given Action. 
         /// </summary>
         /// <param name="sched">The scheduler to use.</param>
@@ -90,6 +110,18 @@ namespace ReactiveUI.Testing
             where T : IScheduler
         {
             sched.With(x => { block(x); return 0; });
+        }
+
+        /// <summary>
+        /// With is an extension method that uses the given scheduler as the
+        /// default Deferred and Taskpool schedulers for the given Action. 
+        /// </summary>
+        /// <param name="sched">The scheduler to use.</param>
+        /// <param name="block">The action to execute.</param>
+        public static Task WithAsync<T>(this T sched, Func<T, Task> block)
+            where T : IScheduler
+        {
+            return sched.WithAsync(async x => { await block(x); return 0; });
         }
 
         /// <summary>
