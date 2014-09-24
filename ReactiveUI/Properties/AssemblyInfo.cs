@@ -22,3 +22,4 @@ using System.Windows;
 [assembly: InternalsVisibleTo("ReactiveUI.Tests_Android")]
 [assembly: InternalsVisibleTo("ReactiveUI.Winforms")]
 [assembly: InternalsVisibleTo("ReactiveUI.XamForms")]
+[assembly: InternalsVisibleTo("ReactiveUI.AndroidSupport")]
