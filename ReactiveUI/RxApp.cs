@@ -93,7 +93,6 @@ namespace ReactiveUI
         /// </summary>
         public static IScheduler MainThreadScheduler {
             get {
-                var scheduler = _UnitTestMainThreadScheduler ?? _MainThreadScheduler;
                 return _UnitTestMainThreadScheduler ?? _MainThreadScheduler;
             }
             set {
@@ -121,7 +120,6 @@ namespace ReactiveUI
         /// </summary>
         public static IScheduler TaskpoolScheduler {
             get {
-                var scheduler = _UnitTestTaskpoolScheduler ?? _TaskpoolScheduler;
                 return _UnitTestTaskpoolScheduler ?? _TaskpoolScheduler;
             }
             set {
