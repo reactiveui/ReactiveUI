@@ -15,9 +15,6 @@ namespace ReactiveUI
 {
     public interface IReactiveObject : INotifyPropertyChanged, INotifyPropertyChanging, IEnableLogger 
     {
-        event PropertyChangingEventHandler PropertyChanging;
-        event PropertyChangedEventHandler PropertyChanged;
-
         void RaisePropertyChanging(PropertyChangingEventArgs args);
         void RaisePropertyChanged(PropertyChangedEventArgs args);
     }
