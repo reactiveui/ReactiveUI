@@ -19,9 +19,9 @@ system, which is particularly important on mobile platforms.
 
 ### Where is Routing supported?
 
-ViewModel-based routing is supported on WinRT, WP8, and WPF Desktop
-applications. While preliminary support also exists for iOS and Android,
-the OS is too opinionated about how Views are created on these platforms.
+ViewModel-based routing is supported for Xamarin.Forms, WinRT, WP8, and WPF
+Desktop applications. Routing is also possible on iOS and Android without
+Xamarin.Forms, but support is very preliminary and probably broken.
 
 ### tl;dr on how to set up routing
 
