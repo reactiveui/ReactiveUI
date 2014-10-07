@@ -133,12 +133,20 @@ namespace ReactiveUI
             return commonSource.GetCell(indexPath);
         }
 
+#if UNIFIED
+        public override nint NumberOfSections(UICollectionView collectionView)
+#else
         public override int NumberOfSections(UICollectionView collectionView)
+#endif
         {
             return commonSource.NumberOfSections();
         }
 
+#if UNIFIED
+        public override nint GetItemsCount(UICollectionView collectionView, nint section)
+#else
         public override int GetItemsCount(UICollectionView collectionView, int section)
+#endif
         {
             return commonSource.RowsInSection(section);
         }
