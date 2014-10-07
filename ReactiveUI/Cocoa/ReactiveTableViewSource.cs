@@ -195,12 +195,20 @@ namespace ReactiveUI
             return commonSource.GetCell(indexPath);
         }
 
+#if UNIFIED
+        public override nint NumberOfSections(UITableView tableView)
+#else
         public override int NumberOfSections(UITableView tableView)
+#endif
         {
             return commonSource.NumberOfSections();
         }
 
+#if UNIFIED
+        public override nint RowsInSection(UITableView tableview, nint section)
+#else
         public override int RowsInSection(UITableView tableview, int section)
+#endif
         {
             return commonSource.RowsInSection(section);
         }
@@ -226,42 +234,72 @@ namespace ReactiveUI
             base.Dispose(disposing);
         }
 
+#if UNIFIED
+        public override nfloat GetHeightForRow(UITableView tableView, NSIndexPath indexPath)
+#else
         public override float GetHeightForRow(UITableView tableView, NSIndexPath indexPath)
+#endif
         {
             return commonSource.SectionInfo[indexPath.Section].SizeHint;
         }
 
+#if UNIFIED
+        public override nfloat GetHeightForHeader(UITableView tableView, nint section)
+#else
         public override float GetHeightForHeader(UITableView tableView, int section)
+#endif
         {
             var header = commonSource.SectionInfo[section].Header;
-            return header == null || header.View == null ? -1 : header.Height; // -1 is a magic # that causes iOS to use the regular height. go figure.
+
+            // NB: -1 is a magic # that causes iOS to use the regular height. go figure.
+            return header == null || header.View == null ? -1 : header.Height; 
         }
 
+#if UNIFIED
+        public override nfloat GetHeightForFooter(UITableView tableView, nint section)
+#else
         public override float GetHeightForFooter(UITableView tableView, int section)
+#endif
         {
             var footer = commonSource.SectionInfo[section].Footer;
             return footer == null || footer.View == null ? -1 : footer.Height;
         }
 
+#if UNIFIED
+        public override string TitleForHeader(UITableView tableView, nint section)
+#else
         public override string TitleForHeader(UITableView tableView, int section)
+#endif
         {
             var header = commonSource.SectionInfo[section].Header;
             return header == null || header.Title == null ? null : header.Title;
         }
 
+#if UNIFIED
+        public override string TitleForFooter(UITableView tableView, nint section)
+#else
         public override string TitleForFooter(UITableView tableView, int section)
+#endif
         {
             var footer = commonSource.SectionInfo [section].Footer;
             return footer == null || footer.Title == null ? null : footer.Title;
         }
 
+#if UNIFIED
+        public override UIView GetViewForHeader(UITableView tableView, nint section)
+#else
         public override UIView GetViewForHeader(UITableView tableView, int section)
+#endif
         {
             var header = commonSource.SectionInfo[section].Header;
             return header == null || header.View == null ? null : header.View.Invoke();
         }
 
+#if UNIFIED
+        public override UIView GetViewForFooter(UITableView tableView, nint section)
+#else
         public override UIView GetViewForFooter(UITableView tableView, int section)
+#endif
         {
             var footer = commonSource.SectionInfo[section].Footer;
             return footer == null || footer.View == null ? null : footer.View.Invoke();
