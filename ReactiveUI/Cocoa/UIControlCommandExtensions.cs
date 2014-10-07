@@ -1,7 +1,12 @@
 using System;
 using System.Windows.Input;
-using MonoTouch.UIKit;
 using System.Reactive.Disposables;
+
+#if UNIFIED
+using UIKit;
+#else
+using MonoTouch.UIKit;
+#endif
 
 namespace ReactiveUI
 {

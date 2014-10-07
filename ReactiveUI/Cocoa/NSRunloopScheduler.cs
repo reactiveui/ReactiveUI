@@ -5,7 +5,11 @@ using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
 
-#if UIKIT
+#if UNIFIED
+using UIKit;
+using Foundation;
+using CoreFoundation;
+#elif UIKIT
 using MonoTouch.UIKit;
 using MonoTouch.Foundation;
 using MonoTouch.CoreFoundation;

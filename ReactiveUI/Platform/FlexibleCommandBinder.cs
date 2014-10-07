@@ -7,13 +7,12 @@ using System.Reflection;
 using System.Windows.Input;
 using System.Linq.Expressions;
 
-#if UIKIT
+#if UNIFIED
+using UIKit;
+#elif UIKIT
 using MonoTouch.UIKit;
-
-namespace ReactiveUI
-#else
-namespace ReactiveUI
 #endif
+namespace ReactiveUI
 {
     public abstract class FlexibleCommandBinder : ICreatesCommandBinding
     {
