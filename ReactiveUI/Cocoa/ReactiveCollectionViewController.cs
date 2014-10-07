@@ -92,12 +92,14 @@ namespace ReactiveUI
         {
             base.ViewDidAppear(animated);
             activated.OnNext(Unit.Default);
+            this.ActivateSubviews(true);
         }
 
         public override void ViewDidDisappear(bool animated)
         {
             base.ViewDidDisappear(animated);
             deactivated.OnNext(Unit.Default);
+            this.ActivateSubviews(false);
         }
     }
 }

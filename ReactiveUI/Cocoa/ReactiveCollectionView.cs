@@ -21,7 +21,7 @@ using System.Reactive;
 namespace ReactiveUI
 {
     public abstract class ReactiveCollectionView : UICollectionView, 
-        IReactiveNotifyPropertyChanged<ReactiveCollectionView>, IHandleObservableErrors, IReactiveObject, ICanActivate
+        IReactiveNotifyPropertyChanged<ReactiveCollectionView>, IHandleObservableErrors, IReactiveObject, ICanActivate, ICanActivateView
     {
         protected ReactiveCollectionView(RectangleF frame, UICollectionViewLayout layout) : base(frame, layout) { setupRxObj(); }
         protected ReactiveCollectionView(IntPtr handle) : base(handle) { setupRxObj(); }
@@ -96,6 +96,10 @@ namespace ReactiveUI
         {
             base.RemoveFromSuperview();
             deactivated.OnNext(Unit.Default);
+        }
+
+        void ICanActivateView.Activate(bool activate) {
+            RxApp.MainThreadScheduler.Schedule(() => (activate ? activated : deactivated).OnNext(Unit.Default));
         }
     }
 }
