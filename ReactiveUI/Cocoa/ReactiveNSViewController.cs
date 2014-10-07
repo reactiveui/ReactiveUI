@@ -114,13 +114,32 @@ namespace ReactiveUI
         {
             base.ViewDidAppear(animated);
             activated.OnNext(Unit.Default);
+            this.ActivateSubviews(true);
         }
 
         public override void ViewDidDisappear(bool animated)
         {
             base.ViewDidDisappear(animated);
             deactivated.OnNext(Unit.Default);
+            this.ActivateSubviews(false);
         }
 #endif
+    }
+
+    static class UIViewControllerMixins {
+        internal static void ActivateSubviews(this UIViewController This, bool activate) {
+            This.View.ActivateSubviews(activate);
+        }
+
+        private static void ActivateSubviews(this UIView This, bool activate) {
+            foreach (var view in This.Subviews) {
+                var subview = view as ICanActivateView;
+                if (subview != null) {
+                    subview.Activate(activate);
+                }
+
+                view.ActivateSubviews(activate);
+            }
+        }
     }
 }
