@@ -12,10 +12,16 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 using System.Threading;
-using MonoTouch.Foundation;
-using MonoTouch.UIKit;
 using ReactiveUI;
 using Splat;
+
+#if UNIFIED
+using Foundation;
+using UIKit;
+#else
+using MonoTouch.Foundation;
+using MonoTouch.UIKit;
+#endif
 
 namespace ReactiveUI
 {

@@ -9,7 +9,10 @@ using ReactiveUI;
 using System.Runtime.InteropServices;
 using Splat;
 
-#if UIKIT
+#if UNIFIED
+using Foundation;
+using UIKit;
+#elif UIKIT
 using MonoTouch.UIKit;
 using MonoTouch.Foundation;
 #else

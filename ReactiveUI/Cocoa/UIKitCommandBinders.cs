@@ -2,12 +2,18 @@ using System;
 using System.Reflection;
 using ReactiveUI;
 using System.Collections.Generic;
-using MonoTouch.UIKit;
 using System.Linq;
-using MonoTouch.Foundation;
 using System.Reactive.Linq;
 using System.Runtime.InteropServices;
 using System.Reactive.Disposables;
+
+#if UNIFIED
+using Foundation;
+using UIKit;
+#else
+using MonoTouch.Foundation;
+using MonoTouch.UIKit;
+#endif
 
 namespace ReactiveUI
 {
