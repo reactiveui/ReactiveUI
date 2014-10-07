@@ -127,11 +127,13 @@ namespace ReactiveUI
     }
 
     static class UIViewControllerMixins {
-        internal static void ActivateSubviews(this UIViewController This, bool activate) {
+        internal static void ActivateSubviews(this UIViewController This, bool activate) 
+        {
             This.View.ActivateSubviews(activate);
         }
 
-        private static void ActivateSubviews(this UIView This, bool activate) {
+        private static void ActivateSubviews(this UIView This, bool activate) 
+        {
             foreach (var view in This.Subviews) {
                 var subview = view as ICanActivateView;
                 if (subview != null) {
