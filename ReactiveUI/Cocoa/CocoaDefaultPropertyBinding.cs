@@ -1,7 +1,9 @@
 using System;
 using System.Linq;
 
-#if UIKIT
+#if UNIFIED
+using UIKit;
+#elif UIKIT
 using MonoTouch.UIKit;
 #else
 using MonoMac.AppKit;
