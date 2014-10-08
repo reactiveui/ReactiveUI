@@ -28,7 +28,7 @@ using MonoMac.AppKit;
 
 namespace ReactiveUI
 {
-    public abstract class ReactiveImageView : NSImageView, IReactiveNotifyPropertyChanged<ReactiveImageView>, IHandleObservableErrors, IReactiveObject, ICanActivate, ICanActivateView
+    public abstract class ReactiveImageView : NSImageView, IReactiveNotifyPropertyChanged<ReactiveImageView>, IHandleObservableErrors, IReactiveObject, ICanActivate, ICanForceManualActivation
     {
         public ReactiveImageView(RectangleF frame) : base(frame) { }
         public ReactiveImageView(IntPtr handle) : base(handle) { }
@@ -101,7 +101,7 @@ namespace ReactiveUI
             RxApp.MainThreadScheduler.Schedule(() => (newsuper != null ? activated : deactivated).OnNext(Unit.Default));
         }
 
-        void ICanActivateView.Activate(bool activate) {
+        void ICanForceManualActivation.Activate(bool activate) {
             RxApp.MainThreadScheduler.Schedule(() => (activate ? activated : deactivated).OnNext(Unit.Default));
         }
     }
