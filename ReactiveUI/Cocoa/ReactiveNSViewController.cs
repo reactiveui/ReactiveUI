@@ -135,7 +135,7 @@ namespace ReactiveUI
         private static void ActivateSubviews(this UIView This, bool activate) 
         {
             foreach (var view in This.Subviews) {
-                var subview = view as ICanActivateView;
+                var subview = view as ICanForceManualActivation;
                 if (subview != null) {
                     subview.Activate(activate);
                 }
