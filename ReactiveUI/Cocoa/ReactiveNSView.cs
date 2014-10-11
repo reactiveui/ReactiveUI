@@ -29,7 +29,7 @@ namespace ReactiveUI
     /// This is an View that is both an NSView and has ReactiveObject powers 
     /// (i.e. you can call RaiseAndSetIfChanged)
     /// </summary>
-    public class ReactiveView : NSView, IReactiveNotifyPropertyChanged<ReactiveView>, IHandleObservableErrors, IReactiveObject, ICanActivate
+    public class ReactiveView : NSView, IReactiveNotifyPropertyChanged<ReactiveView>, IHandleObservableErrors, IReactiveObject, ICanActivate, ICanForceManualActivation
     {
         protected ReactiveView() : base()
         {
@@ -120,6 +120,12 @@ namespace ReactiveUI
             }
 #endif
             RxApp.MainThreadScheduler.Schedule(() => (newsuper != null ? activated : deactivated).OnNext(Unit.Default));
+        }
+
+        void ICanForceManualActivation.Activate(bool activate) 
+        {
+            RxApp.MainThreadScheduler.Schedule(() => 
+                (activate ? activated : deactivated).OnNext(Unit.Default));
         }
     }
 }

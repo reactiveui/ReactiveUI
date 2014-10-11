@@ -16,7 +16,7 @@ using MonoTouch.UIKit;
 
 namespace ReactiveUI
 {
-    public class ReactiveControl : UIControl, IReactiveNotifyPropertyChanged<ReactiveControl>, IHandleObservableErrors, IReactiveObject, ICanActivate
+    public class ReactiveControl : UIControl, IReactiveNotifyPropertyChanged<ReactiveControl>, IHandleObservableErrors, IReactiveObject, ICanActivate, ICanForceManualActivation
     {
         protected ReactiveControl() : base()
         {
@@ -104,6 +104,12 @@ namespace ReactiveUI
             base.ViewWillMoveToSuperview(newsuper);
             #endif
             RxApp.MainThreadScheduler.Schedule(() => (newsuper != null ? activated : deactivated).OnNext(Unit.Default));
+        }
+
+        void ICanForceManualActivation.Activate(bool activate) 
+        {
+            RxApp.MainThreadScheduler.Schedule(() => 
+                (activate ? activated : deactivated).OnNext(Unit.Default));
         }
     }
 }
