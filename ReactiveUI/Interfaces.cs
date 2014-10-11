@@ -452,6 +452,11 @@ namespace ReactiveUI
         IObservable<Unit> Deactivated { get; }
     }
 
+    internal interface ICanForceManualActivation 
+    {
+        void Activate(bool activate);
+    }
+
     /// <summary>
     /// Allows an additional string to make view resolution more specific than
     /// just a type.
