@@ -21,7 +21,7 @@ using MonoTouch.UIKit;
 
 namespace ReactiveUI
 {
-    public abstract class ReactiveTableView : UITableView, IReactiveNotifyPropertyChanged<ReactiveTableView>, IHandleObservableErrors, IReactiveObject, ICanActivate
+    public abstract class ReactiveTableView : UITableView, IReactiveNotifyPropertyChanged<ReactiveTableView>, IHandleObservableErrors, IReactiveObject, ICanActivate, ICanForceManualActivation
     {
         public ReactiveTableView(RectangleF frame) : base(frame) { }
         public ReactiveTableView(IntPtr handle) : base(handle) { }
@@ -81,6 +81,12 @@ namespace ReactiveUI
         {
             base.WillMoveToSuperview(newsuper);
             RxApp.MainThreadScheduler.Schedule(() => (newsuper != null ? activated : deactivated).OnNext(Unit.Default));
+        }
+
+        void ICanForceManualActivation.Activate(bool activate) 
+        {
+            RxApp.MainThreadScheduler.Schedule(() => 
+                (activate ? activated : deactivated).OnNext(Unit.Default));
         }
     }
 }
