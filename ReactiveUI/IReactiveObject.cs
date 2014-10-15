@@ -18,6 +18,8 @@ namespace ReactiveUI
         event PropertyChangingEventHandler PropertyChanging;
         event PropertyChangedEventHandler PropertyChanged;
 
+        void Validate();
+
         void RaisePropertyChanging(PropertyChangingEventArgs args);
         void RaisePropertyChanged(PropertyChangedEventArgs args);
     }
@@ -112,6 +114,7 @@ namespace ReactiveUI
 
             This.raisePropertyChanging(propertyName);
             backingField = newValue;
+            This.Validate();
             This.raisePropertyChanged(propertyName);
             return newValue;
         }
@@ -128,6 +131,7 @@ namespace ReactiveUI
         public static void RaisePropertyChanged<TSender>(this TSender This, [CallerMemberName] string propertyName = null)
             where TSender : IReactiveObject
         {
+            This.Validate();
             This.raisePropertyChanged(propertyName);
         }
 
