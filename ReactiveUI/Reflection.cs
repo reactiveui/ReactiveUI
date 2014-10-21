@@ -48,7 +48,10 @@ namespace ReactiveUI
                 sb.Append('.');
             }
 
-            sb.Remove(sb.Length - 1, 1);
+            if (sb.Length > 0) {
+                sb.Remove(sb.Length - 1, 1);
+            }
+
             return sb.ToString();
         }
 
