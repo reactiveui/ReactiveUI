@@ -184,6 +184,7 @@ namespace ReactiveUI
         readonly Func<TSource, TValue> selector;
         readonly Func<TSource, bool> filter;
         readonly Func<TValue, TValue, int> orderer;
+        readonly Action<TValue> onRemoved;
         readonly IObservable<Unit> signalReset;
         readonly IScheduler scheduler;
 
@@ -197,6 +198,7 @@ namespace ReactiveUI
             Func<TSource, TValue> selector,
             Func<TSource, bool> filter,
             Func<TValue, TValue, int> orderer,
+            Action<TValue> onRemoved,
             IObservable<Unit> signalReset,
             IScheduler scheduler)
         {
@@ -210,6 +212,7 @@ namespace ReactiveUI
             this.selector = selector;
             this.filter = filter;
             this.orderer = orderer;
+            this.onRemoved = onRemoved;
             this.signalReset = signalReset;
             this.scheduler = scheduler;
 
@@ -217,6 +220,17 @@ namespace ReactiveUI
             this.indexToSourceIndexMap = new List<int>();
             this.sourceCopy = new List<TSource>();
 
+            if (this.onRemoved != null)
+            {
+               this.inner.Add(Disposable.Create(() =>
+               {
+                   foreach (var item in this)
+                   {
+                       this.onRemoved(item);
+                   }
+               }));
+            }
+           
             this.addAllItemsFromSourceCollection();
             this.wireUpChangeNotifications();
         }
@@ -366,7 +380,12 @@ namespace ReactiveUI
 
         void internalReplace(int destinationIndex, TValue newItem)
         {
+            var item = this[destinationIndex];
             base.SetItem(destinationIndex, newItem);
+            if (this.onRemoved != null)
+            {
+               onRemoved(item);
+            }
         }
 
         /// <summary>
@@ -572,6 +591,14 @@ namespace ReactiveUI
             indexToSourceIndexMap.Clear();
             sourceCopy.Clear();
 
+            if (this.onRemoved != null)
+            {
+               foreach (var item in this)
+               {
+                  onRemoved(item);
+               }
+            }
+
             base.internalClear();
         }
 
@@ -586,7 +613,12 @@ namespace ReactiveUI
         protected override void internalRemoveAt(int destinationIndex)
         {
             indexToSourceIndexMap.RemoveAt(destinationIndex);
+            var item = this[destinationIndex];
             base.internalRemoveAt(destinationIndex);
+            if (this.onRemoved != null)
+            {
+               onRemoved(item);
+            }
         }
 
         /// <summary>
@@ -872,6 +904,7 @@ namespace ReactiveUI
             Func<T, TNew> selector,
             Func<T, bool> filter = null,
             Func<TNew, TNew, int> orderer = null,
+            Action<TNew> onRemoved = null,
             IObservable<TDontCare> signalReset = null,
             IScheduler scheduler = null)
         {
@@ -887,7 +920,7 @@ namespace ReactiveUI
                 scheduler = Scheduler.Immediate;
             }
 
-            return new ReactiveDerivedCollection<T, TNew>(This, selector, filter, orderer, reset, scheduler);
+            return new ReactiveDerivedCollection<T, TNew>(This, selector, filter, orderer, onRemoved, reset, scheduler);
         }
 
         /// <summary>
@@ -915,9 +948,10 @@ namespace ReactiveUI
             Func<T, TNew> selector,
             Func<T, bool> filter = null,
             Func<TNew, TNew, int> orderer = null,
+            Action<TNew> onRemoved = null,
             IScheduler scheduler = null)
         {
-            return This.CreateDerivedCollection(selector, filter, orderer, (IObservable<Unit>)null, scheduler);
+            return This.CreateDerivedCollection(selector, filter, orderer, onRemoved, (IObservable<Unit>)null, scheduler);
         }
     }
 }
