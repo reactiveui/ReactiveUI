@@ -24,8 +24,9 @@ namespace ReactiveUI.Winforms
             Func<TSource, TValue> selector,
             Func<TSource, bool> filter,
             Func<TValue, TValue, int> orderer,
+            Action<TValue> removed,
             IObservable<Unit> signalReset)
-            : base(source, selector, filter, orderer, signalReset, Scheduler.Immediate) {}
+            : base(source, selector, filter, orderer, removed, signalReset, Scheduler.Immediate) {}
 
         protected override void raiseCollectionChanged(NotifyCollectionChangedEventArgs e)
         {
@@ -119,6 +120,7 @@ namespace ReactiveUI.Winforms
             Func<T, TNew> selector,
             Func<T, bool> filter = null,
             Func<TNew, TNew, int> orderer = null,
+            Action<TNew> removed = null,
             IObservable<TDontCare> signalReset = null)
         {
             Contract.Requires(selector != null);
@@ -129,7 +131,7 @@ namespace ReactiveUI.Winforms
                 reset = signalReset.Select(_ => Unit.Default);
             }
 
-            return new ReactiveDerivedBindingList<T, TNew>(This, selector, filter, orderer, reset);
+            return new ReactiveDerivedBindingList<T, TNew>(This, selector, filter, orderer, removed, reset);
         }
 
         /// <summary>
@@ -156,9 +158,10 @@ namespace ReactiveUI.Winforms
             this IEnumerable<T> This,
             Func<T, TNew> selector,
             Func<T, bool> filter = null,
+            Action<TNew> removed = null,
             Func<TNew, TNew, int> orderer = null)
         {
-            return This.CreateDerivedBindingList(selector, filter, orderer, (IObservable<Unit>)null);
+            return This.CreateDerivedBindingList(selector, filter, orderer, removed, (IObservable<Unit>)null);
         }
     }
 }
