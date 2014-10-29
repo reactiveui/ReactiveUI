@@ -14,6 +14,7 @@ using System.Reactive.Subjects;
 using System.Reactive;
 using System.Diagnostics;
 using System.Threading;
+using System.Reactive.Disposables;
 
 namespace ReactiveUI.Tests
 {
@@ -958,6 +959,35 @@ namespace ReactiveUI.Tests
             Assert.True(derived.SequenceEqual(new[] { 'D' }));
         }
 
+        [Fact]
+        public void DerviedCollectionShouldHandleItemsRemoved()
+        {
+           var input = new[] { "Foo", "Bar", "Baz", "Bamf" };
+           var disposed = new List<TestFixture>();
+           var fixture = new ReactiveList<TestFixture>(
+               input.Select(x => new TestFixture() { IsOnlyOneWord = x }));
+
+           var output = fixture.CreateDerivedCollection(new Func<TestFixture, IDisposable>(x => Disposable.Create(() => disposed.Add(x))),
+              onRemoved: item => item.Dispose());
+
+           fixture.Add(new TestFixture() { IsOnlyOneWord = "Hello" });
+           Assert.Equal(5, output.Count);
+
+           fixture.RemoveAt(3);
+           Assert.Equal(4, output.Count);
+           Assert.Equal(1, disposed.Count);
+           Assert.Equal("Bamf", disposed[0].IsOnlyOneWord);
+
+           fixture[1] = new TestFixture() { IsOnlyOneWord = "Goodbye" };
+           Assert.Equal(4, output.Count);
+           Assert.Equal(2, disposed.Count);
+           Assert.Equal("Bar", disposed[1].IsOnlyOneWord);
+
+           var count = output.Count;
+           output.Dispose();
+           Assert.Equal(disposed.Count, 2 + count);
+        }
+
         public class DerivedCollectionLogging
         {
             // We need a sentinel class to make sure no test has triggered the warnings before
@@ -1678,6 +1708,7 @@ namespace ReactiveUI.Tests
 
             var derivedList = list.CreateDerivedCollection(
                 m => m.Value, m => m.HasData, (a, b) => a.Text.CompareTo(b.Text),
+                null,
                 Observable.Never(4) /*list.ShouldReset*/, 
                 scheduler: RxApp.MainThreadScheduler);
 
