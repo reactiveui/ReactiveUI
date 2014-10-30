@@ -967,8 +967,7 @@ namespace ReactiveUI.Tests
            var fixture = new ReactiveList<TestFixture>(
                input.Select(x => new TestFixture() { IsOnlyOneWord = x }));
 
-           var output = fixture.CreateDerivedCollection(new Func<TestFixture, IDisposable>(x => Disposable.Create(() => disposed.Add(x))),
-              onRemoved: item => item.Dispose());
+           var output = fixture.CreateDerivedCollection(x => Disposable.Create(() => disposed.Add(x)), item => item.Dispose());
 
            fixture.Add(new TestFixture() { IsOnlyOneWord = "Hello" });
            Assert.Equal(5, output.Count);
@@ -1697,8 +1696,7 @@ namespace ReactiveUI.Tests
         }
 
         [Fact]
-        public void TestDelayNotifications() 
-        {
+        public void TestDelayNotifications()  {
             var maxSize = 10;
             var data = makeAsyncCollection(maxSize);
 
@@ -1708,7 +1706,6 @@ namespace ReactiveUI.Tests
 
             var derivedList = list.CreateDerivedCollection(
                 m => m.Value, m => m.HasData, (a, b) => a.Text.CompareTo(b.Text),
-                null,
                 Observable.Never(4) /*list.ShouldReset*/, 
                 scheduler: RxApp.MainThreadScheduler);
 
