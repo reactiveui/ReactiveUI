@@ -29,8 +29,6 @@ namespace ReactiveUI
 
         public IDisposable Schedule<TState>(TState state, Func<IScheduler, TState, IDisposable> action)
         {
-            if (NSThread.IsMain) return action(this, state);
-
             var innerDisp = new SingleAssignmentDisposable();
 
             DispatchQueue.MainQueue.DispatchAsync(new NSAction(() => {
