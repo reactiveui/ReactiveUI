@@ -11,6 +11,7 @@ using Splat;
 #if UNIFIED
 using Foundation;
 using UIKit;
+using NSAction = System.Action;
 #else
 using MonoTouch.Foundation;
 using MonoTouch.UIKit;

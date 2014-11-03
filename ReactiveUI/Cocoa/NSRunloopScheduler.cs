@@ -9,6 +9,7 @@ using System.Reactive.Disposables;
 using UIKit;
 using Foundation;
 using CoreFoundation;
+using NSAction = System.Action;
 #elif UIKIT
 using MonoTouch.UIKit;
 using MonoTouch.Foundation;
@@ -57,8 +58,12 @@ namespace ReactiveUI
         {
             var innerDisp = Disposable.Empty;
             bool isCancelled = false;
-            
+
+#if UNIFIED
+            var timer = NSTimer.CreateScheduledTimer(dueTime, _ => {
+#else
             var timer = NSTimer.CreateScheduledTimer(dueTime, () => {
+#endif
                 if (!isCancelled) innerDisp = action(this, state);
             });
             
