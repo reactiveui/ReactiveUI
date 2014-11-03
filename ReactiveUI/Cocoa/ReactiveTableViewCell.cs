@@ -12,10 +12,16 @@ using System.Reactive.Disposables;
 using System.Diagnostics.Contracts;
 using System.Runtime.CompilerServices;
 using System.Collections.Generic;
-using MonoTouch.Foundation;
-using MonoTouch.UIKit;
 using Splat;
 using System.Reactive;
+
+#if UNIFIED
+using Foundation;
+using UIKit;
+#else
+using MonoTouch.Foundation;
+using MonoTouch.UIKit;
+#endif
 
 namespace ReactiveUI
 {

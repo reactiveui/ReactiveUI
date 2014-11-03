@@ -1,18 +1,23 @@
 using System;
 using ReactiveUI;
-using MonoTouch.Foundation;
-using MonoTouch.UIKit;
 using System.Reactive.Disposables;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Linq.Expressions;
 
+#if UNIFIED
+using Foundation;
+using UIKit;
+#else
+using MonoTouch.Foundation;
+using MonoTouch.UIKit;
+#endif
+
 namespace ReactiveUI
 {
     [Preserve]
-    public abstract class UIKitObservableForPropertyBase :
-        ICreatesObservableForProperty
+    public abstract class UIKitObservableForPropertyBase : ICreatesObservableForProperty
     {
         public int GetAffinityForObject(Type type, string propertyName, bool beforeChanged = false)
         {

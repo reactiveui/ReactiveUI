@@ -7,7 +7,10 @@ using System.Text;
 using System.Windows;
 using System.Reactive.Concurrency;
 
-#if UIKIT
+#if UNIFIED
+using UIKit;
+using NSApplication = UIKit.UIApplication;
+#elif UIKIT
 using MonoTouch.UIKit;
 using NSApplication = MonoTouch.UIKit.UIApplication;
 #endif 

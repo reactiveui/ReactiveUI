@@ -14,7 +14,11 @@ using System.Collections.Generic;
 using Splat;
 using System.Reactive;
 
-#if UIKIT
+#if UNIFIED
+using UIKit;
+using Foundation;
+using NSView = UIKit.UIView;
+#elif UIKIT
 using MonoTouch.UIKit;
 using MonoTouch.Foundation;
 using NSView = MonoTouch.UIKit.UIView;
