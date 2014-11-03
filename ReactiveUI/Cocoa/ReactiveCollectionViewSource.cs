@@ -148,7 +148,7 @@ namespace ReactiveUI
         public override int GetItemsCount(UICollectionView collectionView, int section)
 #endif
         {
-            return commonSource.RowsInSection(section);
+            return commonSource.RowsInSection((int)section);
         }
 
         public override void ItemSelected(UICollectionView collectionView, NSIndexPath indexPath)
