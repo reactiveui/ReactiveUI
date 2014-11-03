@@ -210,7 +210,7 @@ namespace ReactiveUI
         public override int RowsInSection(UITableView tableview, int section)
 #endif
         {
-            return commonSource.RowsInSection(section);
+            return commonSource.RowsInSection((int)section);
         }
 
         public override bool CanEditRow(UITableView tableView, NSIndexPath indexPath)
@@ -249,7 +249,7 @@ namespace ReactiveUI
         public override float GetHeightForHeader(UITableView tableView, int section)
 #endif
         {
-            var header = commonSource.SectionInfo[section].Header;
+            var header = commonSource.SectionInfo[(int)section].Header;
 
             // NB: -1 is a magic # that causes iOS to use the regular height. go figure.
             return header == null || header.View == null ? -1 : header.Height; 
@@ -261,7 +261,7 @@ namespace ReactiveUI
         public override float GetHeightForFooter(UITableView tableView, int section)
 #endif
         {
-            var footer = commonSource.SectionInfo[section].Footer;
+            var footer = commonSource.SectionInfo[(int)section].Footer;
             return footer == null || footer.View == null ? -1 : footer.Height;
         }
 
@@ -271,7 +271,7 @@ namespace ReactiveUI
         public override string TitleForHeader(UITableView tableView, int section)
 #endif
         {
-            var header = commonSource.SectionInfo[section].Header;
+            var header = commonSource.SectionInfo[(int)section].Header;
             return header == null || header.Title == null ? null : header.Title;
         }
 
@@ -281,7 +281,7 @@ namespace ReactiveUI
         public override string TitleForFooter(UITableView tableView, int section)
 #endif
         {
-            var footer = commonSource.SectionInfo [section].Footer;
+            var footer = commonSource.SectionInfo[(int)section].Footer;
             return footer == null || footer.Title == null ? null : footer.Title;
         }
 
@@ -291,7 +291,7 @@ namespace ReactiveUI
         public override UIView GetViewForHeader(UITableView tableView, int section)
 #endif
         {
-            var header = commonSource.SectionInfo[section].Header;
+            var header = commonSource.SectionInfo[(int)section].Header;
             return header == null || header.View == null ? null : header.View.Invoke();
         }
 
@@ -301,7 +301,7 @@ namespace ReactiveUI
         public override UIView GetViewForFooter(UITableView tableView, int section)
 #endif
         {
-            var footer = commonSource.SectionInfo[section].Footer;
+            var footer = commonSource.SectionInfo[(int)section].Footer;
             return footer == null || footer.View == null ? null : footer.View.Invoke();
         }
 
