@@ -1,6 +1,8 @@
 ﻿Param([string]$version = $null)
 
-$Archs = {"Portable-Net45+WinRT45+WP8+MonoAndroid10+MonoTouch10", "Portable-Net45+Win8+WP8+WPA81", "Net45", "WP8", "WP81", "Win8", "Win81", "Mono", "Monoandroid", "Monotouch", "Monomac", "Portable-Win81+Wpa81", "WPA81"}
+$Archs = {"Portable-Net45+WinRT45+WP8+MonoAndroid10+MonoTouch10", "Portable-Net45+Win8+WP8+WPA81", "Net45", "WP8",
+    "WP81", "Win8", "Win81", "Mono", "Monoandroid", "Monotouch", "Monomac", "Portable-Win81+Wpa81", "WPA81",
+    "Xamarin.iOS10"}
 
 $Projects = {
     "ReactiveUI", "ReactiveUI.Testing", "ReactiveUI.Blend", "ReactiveUI.Winforms", 
@@ -33,10 +35,12 @@ foreach-object $Archs | %{
     $currentArch = $_
     
     foreach-object $Projects | %{cp -r -fo ".\$_\bin\Release\$currentArch\*" ".\Release\$currentArch"}
-	# WinRT projects need to have the Themes folder in a special sub folder named as the project name
-	foreach-object $Projects | %{cp -r -fo ".\$_\bin\Release\$currentArch\Themes" ".\Release\$currentArch\$_\Themes"}
-	# WinRT projects need this .xr.xml file in a special sub folder named as the project name
-	foreach-object $Projects | %{cp -r -fo ".\$_\bin\Release\$currentArch\$_.xr.xml" ".\Release\$currentArch\$_"}
+
+    # WinRT projects need to have the Themes folder in a special sub folder named as the project name
+    foreach-object $Projects | %{cp -r -fo ".\$_\bin\Release\$currentArch\Themes" ".\Release\$currentArch\$_\Themes"}
+
+    # WinRT projects need this .xr.xml file in a special sub folder named as the project name
+    foreach-object $Projects | %{cp -r -fo ".\$_\bin\Release\$currentArch\$_.xr.xml" ".\Release\$currentArch\$_"}
     
     #ls -r | ?{$_.FullName.Contains("bin\Release\$currentArch") -and $_.Length} | %{echo cp $_.FullName ".\Release\$currentArch"}
 }
@@ -86,8 +90,8 @@ $nugetReleaseDir = Resolve-Path ".\NuGet-Release"
 
 # copy binaries
 foreach ($dir in $libDirs) {
-	# only copy binaries which have a matching file in the destination folder
-	robocopy ".\Release" $dir.FullName /S /XL
+    # only copy binaries which have a matching file in the destination folder
+    robocopy ".\Release" $dir.FullName /S /XL
 }
 
 # copy tools
