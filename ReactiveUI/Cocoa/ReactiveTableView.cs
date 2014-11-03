@@ -15,9 +15,13 @@ using System.Drawing;
 using Splat;
 using System.Reactive;
 
+#if UNIFIED
+using Foundation;
+using UIKit;
+#else
 using MonoTouch.Foundation;
 using MonoTouch.UIKit;
-
+#endif
 
 namespace ReactiveUI
 {

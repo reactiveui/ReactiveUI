@@ -3,7 +3,12 @@ using ReactiveUI;
 using System.Linq;
 using System.Reactive.Linq;
 
-#if UIKIT
+#if UNIFIED
+using UIKit;
+
+using NSView = UIKit.UIView;
+using NSViewController = UIKit.UIViewController;
+#elif UIKIT
 using MonoTouch.UIKit;
 
 using NSView = MonoTouch.UIKit.UIView;

@@ -7,7 +7,11 @@ using ReactiveUI;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 
-#if UIKIT
+#if UNIFIED
+using Foundation;
+using ObjCRuntime;
+using UIKit;
+#elif UIKIT
 using MonoTouch.Foundation;
 using MonoTouch.ObjCRuntime;
 using MonoTouch.UIKit;

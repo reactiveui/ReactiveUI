@@ -1,4 +1,6 @@
-﻿#if UIKIT
+﻿#if UNIFIED && UIKIT
+using NSView = UIKit.UIView;
+#elif UIKIT
 using NSView = MonoTouch.UIKit.UIView;
 #else
 using MonoMac.AppKit;

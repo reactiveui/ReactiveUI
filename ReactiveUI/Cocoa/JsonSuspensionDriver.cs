@@ -1,9 +1,14 @@
 using System;
 using System.Reactive.Linq;
-using MonoTouch.Foundation;
 using System.Reactive;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
+
+#if UNIFIED
+using Foundation;
+#else
+using MonoTouch.Foundation;
+#endif
 
 namespace ReactiveUI
 {

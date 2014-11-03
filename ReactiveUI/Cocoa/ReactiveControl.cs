@@ -5,13 +5,16 @@ using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Subjects;
 
-#if !UIKIT
+#if UNIFIED
+using Foundation;
+using UIKit;
+#elif UIKIT
+using MonoTouch.Foundation;
+using MonoTouch.UIKit;
+#else
 using MonoMac.Foundation;
 using MonoMac.AppKit;
 using UIControl = MonoMac.AppKit.NSControl;
-#else
-using MonoTouch.Foundation;
-using MonoTouch.UIKit;
 #endif
 
 namespace ReactiveUI

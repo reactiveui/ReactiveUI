@@ -12,10 +12,17 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 using System.Threading;
+
+using Splat;
+
+#if UNIFIED
+using Foundation;
+using UIKit;
+using NSAction = System.Action;
+#else
 using MonoTouch.Foundation;
 using MonoTouch.UIKit;
-using ReactiveUI;
-using Splat;
+#endif
 
 namespace ReactiveUI
 {
@@ -127,14 +134,22 @@ namespace ReactiveUI
             return commonSource.GetCell(indexPath);
         }
 
+#if UNIFIED
+        public override nint NumberOfSections(UICollectionView collectionView)
+#else
         public override int NumberOfSections(UICollectionView collectionView)
+#endif
         {
             return commonSource.NumberOfSections();
         }
 
+#if UNIFIED
+        public override nint GetItemsCount(UICollectionView collectionView, nint section)
+#else
         public override int GetItemsCount(UICollectionView collectionView, int section)
+#endif
         {
-            return commonSource.RowsInSection(section);
+            return commonSource.RowsInSection((int)section);
         }
 
         public override void ItemSelected(UICollectionView collectionView, NSIndexPath indexPath)
