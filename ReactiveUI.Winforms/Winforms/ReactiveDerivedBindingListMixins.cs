@@ -24,8 +24,9 @@ namespace ReactiveUI.Winforms
             Func<TSource, TValue> selector,
             Func<TSource, bool> filter,
             Func<TValue, TValue, int> orderer,
+            Action<TValue> removed,
             IObservable<Unit> signalReset)
-            : base(source, selector, filter, orderer, signalReset, Scheduler.Immediate) {}
+            : base(source, selector, filter, orderer, removed, signalReset, Scheduler.Immediate) {}
 
         protected override void raiseCollectionChanged(NotifyCollectionChangedEventArgs e)
         {
@@ -104,6 +105,51 @@ namespace ReactiveUI.Winforms
         /// </summary>
         /// <param name="selector">A Select function that will be run on each
         /// item.</param>
+        /// <param name="onRemoved">An action that is called on each item when
+        /// it is removed.</param>
+        /// <param name="filter">A filter to determine whether to exclude items 
+        /// in the derived collection.</param>
+        /// <param name="orderer">A comparator method to determine the ordering of
+        /// the resulting collection.</param>
+        /// <param name="signalReset">When this Observable is signalled, 
+        /// the derived collection will be manually 
+        /// reordered/refiltered.</param>
+        /// <returns>A new collection whose items are equivalent to
+        /// Collection.Select().Where().OrderBy() and will mirror changes 
+        /// in the initial collection.</returns>
+        public static IReactiveDerivedBindingList<TNew> CreateDerivedBindingList<T, TNew, TDontCare>(
+            this IEnumerable<T> This,
+            Func<T, TNew> selector,
+            Action<TNew> removed,
+            Func<T, bool> filter = null,
+            Func<TNew, TNew, int> orderer = null,
+            IObservable<TDontCare> signalReset = null)
+        {
+            Contract.Requires(selector != null);
+
+            IObservable<Unit> reset = null;
+
+            if (signalReset != null) {
+                reset = signalReset.Select(_ => Unit.Default);
+            }
+
+            return new ReactiveDerivedBindingList<T, TNew>(This, selector, filter, orderer, removed, reset);
+        }
+
+        /// <summary>
+        /// Creates a collection whose contents will "follow" another
+        /// collection; this method is useful for creating ViewModel collections
+        /// that are automatically updated when the respective Model collection
+        /// is updated.
+        ///
+        /// Note that even though this method attaches itself to any 
+        /// IEnumerable, it will only detect changes from objects implementing
+        /// INotifyCollectionChanged (like ReactiveList). If your source
+        /// collection doesn't implement this, signalReset is the way to signal
+        /// the derived collection to reorder/refilter itself.
+        /// </summary>
+        /// <param name="selector">A Select function that will be run on each
+        /// item.</param>
         /// <param name="filter">A filter to determine whether to exclude items 
         /// in the derived collection.</param>
         /// <param name="orderer">A comparator method to determine the ordering of
@@ -121,15 +167,39 @@ namespace ReactiveUI.Winforms
             Func<TNew, TNew, int> orderer = null,
             IObservable<TDontCare> signalReset = null)
         {
-            Contract.Requires(selector != null);
+            return This.CreateDerivedBindingList(selector, null, filter, orderer, signalReset);
+        }
 
-            IObservable<Unit> reset = null;
-
-            if (signalReset != null) {
-                reset = signalReset.Select(_ => Unit.Default);
-            }
-
-            return new ReactiveDerivedBindingList<T, TNew>(This, selector, filter, orderer, reset);
+        /// <summary>
+        /// Creates a collection whose contents will "follow" another
+        /// collection; this method is useful for creating ViewModel collections
+        /// that are automatically updated when the respective Model collection
+        /// is updated.
+        /// 
+        /// Be aware that this overload will result in a collection that *only* 
+        /// updates if the source implements INotifyCollectionChanged. If your
+        /// list changes but isn't a ReactiveList/ObservableCollection,
+        /// you probably want to use the other overload.
+        /// </summary>
+        /// <param name="selector">A Select function that will be run on each
+        /// item.</param>
+        /// /// <param name="onRemoved">An action that is called on each item when
+        /// it is removed.</param>
+        /// <param name="filter">A filter to determine whether to exclude items 
+        /// in the derived collection.</param>
+        /// <param name="orderer">A comparator method to determine the ordering of
+        /// the resulting collection.</param>
+        /// <returns>A new collection whose items are equivalent to
+        /// Collection.Select().Where().OrderBy() and will mirror changes 
+        /// in the initial collection.</returns>
+        public static IReactiveDerivedBindingList<TNew> CreateDerivedBindingList<T, TNew>(
+            this IEnumerable<T> This,
+            Func<T, TNew> selector,
+            Action<TNew> removed,
+            Func<T, bool> filter = null,
+            Func<TNew, TNew, int> orderer = null)
+        {
+            return This.CreateDerivedBindingList(selector, removed, filter, orderer, (IObservable<Unit>)null);
         }
 
         /// <summary>
@@ -158,7 +228,7 @@ namespace ReactiveUI.Winforms
             Func<T, bool> filter = null,
             Func<TNew, TNew, int> orderer = null)
         {
-            return This.CreateDerivedBindingList(selector, filter, orderer, (IObservable<Unit>)null);
+            return This.CreateDerivedBindingList(selector, null, filter, orderer, (IObservable<Unit>)null);
         }
     }
 }
