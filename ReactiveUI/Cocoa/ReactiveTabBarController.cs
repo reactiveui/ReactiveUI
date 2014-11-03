@@ -3,6 +3,7 @@ using ReactiveUI;
 using System.Runtime.Serialization;
 using System.ComponentModel;
 using System.Reflection;
+using System.Reactive;
 using System.Reactive.Subjects;
 using System.Reactive.Concurrency;
 using System.Linq;
@@ -14,9 +15,13 @@ using System.Collections.Generic;
 using System.Drawing;
 using Splat;
 
+#if UNIFIED
+using Foundation;
+using UIKit;
+#else
 using MonoTouch.Foundation;
 using MonoTouch.UIKit;
-using System.Reactive;
+#endif
 
 namespace ReactiveUI
 {

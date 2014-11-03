@@ -15,7 +15,13 @@ using System.Drawing;
 using Splat;
 using System.Reactive;
 
-#if UIKIT
+#if UNIFIED
+using Foundation;
+using UIKit;
+using NSImageView = UIKit.UIImageView;
+using NSImage = UIKit.UIImage;
+using NSView = UIKit.UIView;
+#elif UIKIT
 using MonoTouch.Foundation;
 using MonoTouch.UIKit;
 using NSImageView = MonoTouch.UIKit.UIImageView;

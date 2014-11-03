@@ -1,8 +1,13 @@
 ﻿using System;
 using System.Globalization;
 using System.Linq;
-using MonoTouch.Foundation;
 using ReactiveUI;
+
+#if UNIFIED
+using Foundation;
+#else
+using MonoTouch.Foundation;
+#endif
 
 namespace ReactiveUI
 {
