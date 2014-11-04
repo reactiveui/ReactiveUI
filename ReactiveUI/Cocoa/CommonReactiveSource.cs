@@ -152,6 +152,18 @@ namespace ReactiveUI
         readonly ISubject<IEnumerable<NotifyCollectionChangedEventArgs>> didPerformUpdates =
             new Subject<IEnumerable<NotifyCollectionChangedEventArgs>>();
 
+		/// <summary>
+		/// While updating sections, updates from all sections should be batched together
+		/// while invoking PerformBatchUpdates. sectionUpdatesSubject emits updates from
+		/// each section, which are buffered to get updates from all sections before making 
+		/// call to PerformBatchUpdates.
+		/// </summary>
+		/// <value>List of tuples with section index, changes and an IEnumerable containing
+		/// change indexes
+		/// </value>
+		Subject<Tuple<int, NotifyCollectionChangedEventArgs, IEnumerable<int>>> sectionUpdatesSubject = 
+			new Subject<Tuple<int, NotifyCollectionChangedEventArgs, IEnumerable<int>>>();
+
         public CommonReactiveSource(IUICollViewAdapter<TUIView, TUIViewCell> adapter) 
         {
             this.adapter = adapter;
@@ -287,7 +299,7 @@ namespace ReactiveUI
                     disp2.Add(current
                         .Changed
                         .Select(timestamped)
-                        .Buffer(TimeSpan.FromMilliseconds(250), RxApp.MainThreadScheduler)
+                        .Buffer(TimeSpan.FromMilliseconds(125), RxApp.MainThreadScheduler)
                         .Where(b => b.Count > 0)
                         .Subscribe(
                             xs => sectionCollectionChanged(section, xs),
@@ -300,6 +312,52 @@ namespace ReactiveUI
                 this.Log().Debug("Calling ReloadData()...", newSectionInfo);
                 adapter.ReloadData();
             }));
+
+			disp.Add(sectionUpdatesSubject
+				.Buffer(TimeSpan.FromMilliseconds(125), RxApp.MainThreadScheduler)
+				.Where(updates => updates.Count > 0)
+				.Subscribe(updates => {
+					List<NotifyCollectionChangedEventArgs> eas = new List<NotifyCollectionChangedEventArgs>();
+
+					this.Log().Debug("Beginning update");
+					adapter.PerformBatchUpdates(() => {
+						foreach (var update in updates.AsEnumerable().Reverse()) {
+							var ea = update.Item2;
+							var section = update.Item1;
+							var changeAction = ea.Action;
+							var changedIndexes = update.Item3;
+							eas.Add(ea);
+
+							switch (changeAction) {
+								case NotifyCollectionChangedAction.Add:
+									doUpdate(adapter.InsertItems, changedIndexes, section);
+									break;
+								case NotifyCollectionChangedAction.Remove:
+									doUpdate(adapter.DeleteItems, changedIndexes, section);
+									break;
+								case NotifyCollectionChangedAction.Replace:
+									doUpdate(adapter.ReloadItems, changedIndexes, section);
+									break;
+								case NotifyCollectionChangedAction.Move:
+									// NB: ReactiveList currently only supports single-item
+									// moves
+
+									this.Log().Debug("Calling MoveRow: {0}-{1} => {0}{2}", section, ea.OldStartingIndex, ea.NewStartingIndex);
+
+									adapter.MoveItem(
+										NSIndexPath.FromRowSection(ea.OldStartingIndex, section),
+										NSIndexPath.FromRowSection(ea.NewStartingIndex, section));
+									break;
+								default:
+									this.Log().Debug("Unknown Action: {0}", changeAction);
+									break;
+							}
+						}
+					}, () => {
+						this.Log().Debug("Ending update");
+						didPerformUpdates.OnNext(eas);
+					});
+				}));
 
             this.Log().Debug("Done resetuping all bindings!");
         }
@@ -339,8 +397,8 @@ namespace ReactiveUI
                 return;
             }
 
-            var updates = eas.Select(ea => Tuple.Create(ea, getChangedIndexes(ea))).ToList();
-            var allChangedIndexes = updates.SelectMany(u => u.Item2).ToList();
+            var updates = eas.Select(ea => Tuple.Create(section, ea, getChangedIndexes(ea))).ToList();
+            var allChangedIndexes = updates.SelectMany(u => u.Item3).ToList();
 
             // Detect if we're changing the same cell more than
             // once - if so, issue a reset and be done
@@ -356,7 +414,7 @@ namespace ReactiveUI
                             .ToList(), 
                         eas[0].NewStartingIndex);
 
-                    updates = new List<Tuple<NotifyCollectionChangedEventArgs, IEnumerable<int>>>() { Tuple.Create(newEa, getChangedIndexes(newEa)) };
+                    updates = new List<Tuple<int, NotifyCollectionChangedEventArgs, IEnumerable<int>>>() { Tuple.Create(section, newEa, getChangedIndexes(newEa)) };
                     eas = new List<NotifyCollectionChangedEventArgs>() { newEa };
                 } else {
                     this.Log().Debug("Detected a dupe in the changelist. Issuing Reset");
@@ -367,41 +425,9 @@ namespace ReactiveUI
                 }
             }
 
-            this.Log().Debug("Beginning update");
-            adapter.PerformBatchUpdates(() => {
-                foreach (var update in updates.AsEnumerable().Reverse()) {
-                    var changeAction = update.Item1.Action;
-                    var changedIndexes = update.Item2;
-
-                    switch (changeAction) {
-                    case NotifyCollectionChangedAction.Add:
-                        doUpdate(adapter.InsertItems, changedIndexes, section);
-                        break;
-                    case NotifyCollectionChangedAction.Remove:
-                        doUpdate(adapter.DeleteItems, changedIndexes, section);
-                        break;
-                    case NotifyCollectionChangedAction.Replace:
-                        doUpdate(adapter.ReloadItems, changedIndexes, section);
-                        break;
-                    case NotifyCollectionChangedAction.Move:
-                        // NB: ReactiveList currently only supports single-item
-                        // moves
-                        var ea = update.Item1;
-                        this.Log().Debug("Calling MoveRow: {0}-{1} => {0}{2}", section, ea.OldStartingIndex, ea.NewStartingIndex);
-
-                        adapter.MoveItem(
-                            NSIndexPath.FromRowSection(ea.OldStartingIndex, section),
-                            NSIndexPath.FromRowSection(ea.NewStartingIndex, section));
-                        break;
-                    default:
-                        this.Log().Debug("Unknown Action: {0}", changeAction);
-                        break;
-                    }
-                }
-            }, () => {
-                this.Log().Debug("Ending update");
-                didPerformUpdates.OnNext(eas);
-            });
+			foreach (var update in updates.AsEnumerable().Reverse()) {
+				sectionUpdatesSubject.OnNext(update);
+			}
         }
 
         static IEnumerable<int> getChangedIndexes(NotifyCollectionChangedEventArgs ea)
