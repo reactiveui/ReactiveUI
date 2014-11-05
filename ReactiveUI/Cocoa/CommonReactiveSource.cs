@@ -299,8 +299,6 @@ namespace ReactiveUI
                     disp2.Add(current
                         .Changed
                         .Select(timestamped)
-                        .Buffer(TimeSpan.FromMilliseconds(125), RxApp.MainThreadScheduler)
-                        .Where(b => b.Count > 0)
                         .Subscribe(
                             xs => sectionCollectionChanged(section, xs),
                             ex => this.Log().ErrorException("Error while watching section " + section + "'s Collection.", ex)));
@@ -314,120 +312,113 @@ namespace ReactiveUI
             }));
 
 			disp.Add(sectionUpdatesSubject
-				.Buffer(TimeSpan.FromMilliseconds(125), RxApp.MainThreadScheduler)
+				.Buffer(TimeSpan.FromMilliseconds(250), RxApp.MainThreadScheduler)
 				.Where(updates => updates.Count > 0)
-				.Subscribe(updates => {
-					List<NotifyCollectionChangedEventArgs> eas = new List<NotifyCollectionChangedEventArgs>();
-
-					this.Log().Debug("Beginning update");
-					adapter.PerformBatchUpdates(() => {
-						foreach (var update in updates.AsEnumerable().Reverse()) {
-							var ea = update.Item2;
-							var section = update.Item1;
-							var changeAction = ea.Action;
-							var changedIndexes = update.Item3;
-							eas.Add(ea);
-
-							switch (changeAction) {
-								case NotifyCollectionChangedAction.Add:
-									doUpdate(adapter.InsertItems, changedIndexes, section);
-									break;
-								case NotifyCollectionChangedAction.Remove:
-									doUpdate(adapter.DeleteItems, changedIndexes, section);
-									break;
-								case NotifyCollectionChangedAction.Replace:
-									doUpdate(adapter.ReloadItems, changedIndexes, section);
-									break;
-								case NotifyCollectionChangedAction.Move:
-									// NB: ReactiveList currently only supports single-item
-									// moves
-
-									this.Log().Debug("Calling MoveRow: {0}-{1} => {0}{2}", section, ea.OldStartingIndex, ea.NewStartingIndex);
-
-									adapter.MoveItem(
-										NSIndexPath.FromRowSection(ea.OldStartingIndex, section),
-										NSIndexPath.FromRowSection(ea.NewStartingIndex, section));
-									break;
-								default:
-									this.Log().Debug("Unknown Action: {0}", changeAction);
-									break;
-							}
-						}
-					}, () => {
-						this.Log().Debug("Ending update");
-						didPerformUpdates.OnNext(eas);
-					});
-				}));
+				.Subscribe(updates => performSectionUpdates(updates)));
 
             this.Log().Debug("Done resetuping all bindings!");
         }
 
-        void sectionCollectionChanged(int section, IList<Timestamped<NotifyCollectionChangedEventArgs>> teas) 
+		void performSectionUpdates(IList<Tuple<int, NotifyCollectionChangedEventArgs, IEnumerable<int>>> updates) {
+			var resetOnlyNotification = new [] { new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset) };
+
+			if (updates.Any(x => x.Item2.Action == NotifyCollectionChangedAction.Reset)) {
+				this.Log().Debug("About to call ReloadData");
+				adapter.ReloadData();
+
+				didPerformUpdates.OnNext(resetOnlyNotification);
+				return;
+			}
+				
+			var batchUpdates = new List<Tuple<int, NotifyCollectionChangedEventArgs, IEnumerable<int>>>(); 
+
+			foreach(IEnumerable<Tuple<int, NotifyCollectionChangedEventArgs, IEnumerable<int>>> sectionUpdate in updates.GroupBy(u => u.Item1)) {
+				var eas = sectionUpdate.Select(u => u.Item2).ToList();
+				var allChangedIndexes = sectionUpdate.SelectMany(u => u.Item3).ToList();
+				var section = sectionUpdate.ToList()[0].Item1;
+
+				// Detect if we're changing the same cell more than
+				// once - if so, issue a reset and be done
+				if (allChangedIndexes.Count != allChangedIndexes.Distinct().Count()) {
+					// Before doing a reset, try to see if this is actually a
+					// series of inserts that can be converted into ranges
+					if (allChangedIndexes.Distinct().Count() == 1 && eas.All(x => x.Action == NotifyCollectionChangedAction.Add)) {
+						this.Log().Debug("Converted adds to the same index into a large range Add");
+
+						var newEa = new NotifyCollectionChangedEventArgs(
+							NotifyCollectionChangedAction.Add, 
+							eas.SelectMany(ea => ea.NewItems.Cast<object>().ToList())
+							.ToList(), 
+							eas[0].NewStartingIndex);
+
+						batchUpdates.Add(Tuple.Create(section, newEa, getChangedIndexes(newEa)));
+					} else {
+						this.Log().Debug("Detected a dupe in the changelist. Issuing Reset");
+						adapter.ReloadData();
+
+						didPerformUpdates.OnNext(resetOnlyNotification);
+						return;
+					}
+				} else {
+					batchUpdates.AddRange(sectionUpdate);
+				}
+			}
+
+			List<NotifyCollectionChangedEventArgs> allEventArgs = new List<NotifyCollectionChangedEventArgs>();
+
+			this.Log().Debug("Beginning update");
+			adapter.PerformBatchUpdates(() => {
+				foreach (var update in batchUpdates.AsEnumerable().Reverse()) {
+					var ea = update.Item2;
+					var section = update.Item1;
+					var changeAction = ea.Action;
+					var changedIndexes = update.Item3;
+					allEventArgs.Add(ea);
+
+					switch (changeAction) {
+					case NotifyCollectionChangedAction.Add:
+						doUpdate(adapter.InsertItems, changedIndexes, section);
+						break;
+					case NotifyCollectionChangedAction.Remove:
+						doUpdate(adapter.DeleteItems, changedIndexes, section);
+						break;
+					case NotifyCollectionChangedAction.Replace:
+						doUpdate(adapter.ReloadItems, changedIndexes, section);
+						break;
+					case NotifyCollectionChangedAction.Move:
+						// NB: ReactiveList currently only supports single-item
+						// moves
+
+						this.Log().Debug("Calling MoveRow: {0}-{1} => {0}{2}", section, ea.OldStartingIndex, ea.NewStartingIndex);
+
+						adapter.MoveItem(
+							NSIndexPath.FromRowSection(ea.OldStartingIndex, section),
+							NSIndexPath.FromRowSection(ea.NewStartingIndex, section));
+						break;
+					default:
+						this.Log().Debug("Unknown Action: {0}", changeAction);
+						break;
+					}
+				}
+			}, () => {
+				this.Log().Debug("Ending update");
+				didPerformUpdates.OnNext(allEventArgs);
+			});
+		}
+
+        void sectionCollectionChanged(int section, Timestamped<NotifyCollectionChangedEventArgs> tea) 
         {
-            if (teas.Count == 0)
-                return;
-
-            var resetOnlyNotification = new [] { new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset) };
-
             this.Log().Debug(
                 "Changed contents: [{0}] (from {1})",
-                String.Join(",", teas.Select(x => x.Value.Action.ToString())),
+                String.Join(",", tea.Value.Action.ToString()),
                 SectionInfo);
-
-            IList<NotifyCollectionChangedEventArgs> eas;
-            if (teas[0].Timestamp < lastCallToNumberOfSections) {
-                var toDiscard = teas.TakeWhile(x => x.Timestamp < lastCallToNumberOfSections).Count();
-                this.Log().Warn("Ignoring {0} changes that ocurred before the last call to NumberOfSections() from {1}.", toDiscard, SectionInfo);
-
-                if (toDiscard == teas.Count) {
-                    this.Log().Warn("Nothing remains!");
-                    return;
-                }
-
-                eas = teas.Skip(toDiscard).Select(x => x.Value).ToList();
-            } else {
-                eas = teas.Select(x => x.Value).ToList();
-            }
-
-            if (eas.Any(x => x.Action == NotifyCollectionChangedAction.Reset)) {
-                this.Log().Debug("About to call ReloadData");
-                adapter.ReloadData();
-
-                didPerformUpdates.OnNext(resetOnlyNotification);
+				
+            if (tea.Timestamp < lastCallToNumberOfSections) {
+				this.Log().Warn("Ignoring change that ocurred before the last call to NumberOfSections() from {0}.", SectionInfo);
                 return;
-            }
-
-            var updates = eas.Select(ea => Tuple.Create(section, ea, getChangedIndexes(ea))).ToList();
-            var allChangedIndexes = updates.SelectMany(u => u.Item3).ToList();
-
-            // Detect if we're changing the same cell more than
-            // once - if so, issue a reset and be done
-            if (allChangedIndexes.Count != allChangedIndexes.Distinct().Count()) {
-                // Before doing a reset, try to see if this is actually a
-                // series of inserts that can be converted into ranges
-                if (allChangedIndexes.Distinct().Count() == 1 && eas.All(x => x.Action == NotifyCollectionChangedAction.Add)) {
-                    this.Log().Debug("Converted adds to the same index into a large range Add");
-
-                    var newEa = new NotifyCollectionChangedEventArgs(
-                        NotifyCollectionChangedAction.Add, 
-                        eas.SelectMany(ea => ea.NewItems.Cast<object>().ToList())
-                            .ToList(), 
-                        eas[0].NewStartingIndex);
-
-                    updates = new List<Tuple<int, NotifyCollectionChangedEventArgs, IEnumerable<int>>>() { Tuple.Create(section, newEa, getChangedIndexes(newEa)) };
-                    eas = new List<NotifyCollectionChangedEventArgs>() { newEa };
-                } else {
-                    this.Log().Debug("Detected a dupe in the changelist. Issuing Reset");
-                    adapter.ReloadData();
-
-                    didPerformUpdates.OnNext(resetOnlyNotification);
-                    return;
-                }
-            }
-
-			foreach (var update in updates.AsEnumerable().Reverse()) {
-				sectionUpdatesSubject.OnNext(update);
-			}
+            } 
+				
+			sectionUpdatesSubject.OnNext(Tuple.Create(section, tea.Value, getChangedIndexes(tea.Value)));
         }
 
         static IEnumerable<int> getChangedIndexes(NotifyCollectionChangedEventArgs ea)
