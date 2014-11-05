@@ -317,9 +317,10 @@ namespace ReactiveUI
 				.Subscribe(updates => performSectionUpdates(updates)));
 
             this.Log().Debug("Done resetuping all bindings!");
-        }
+		}
 
-		void performSectionUpdates(IList<Tuple<int, NotifyCollectionChangedEventArgs, IEnumerable<int>>> updates) {
+		void performSectionUpdates(IList<Tuple<int, NotifyCollectionChangedEventArgs, IEnumerable<int>>> updates) 
+		{
 			var resetOnlyNotification = new [] { new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset) };
 
 			if (updates.Any(x => x.Item2.Action == NotifyCollectionChangedAction.Reset)) {
@@ -406,22 +407,20 @@ namespace ReactiveUI
 			});
 		}
 
-        void sectionCollectionChanged(int section, Timestamped<NotifyCollectionChangedEventArgs> tea) 
-        {
-            this.Log().Debug(
+		void sectionCollectionChanged(int section, Timestamped<NotifyCollectionChangedEventArgs> tea) 
+		{
+			this.Log().Debug(
                 "Changed contents: [{0}] (from {1})",
                 String.Join(",", tea.Value.Action.ToString()),
                 SectionInfo);
-				
-            if (tea.Timestamp < lastCallToNumberOfSections) {
+			if (tea.Timestamp < lastCallToNumberOfSections) {
 				this.Log().Warn("Ignoring change that ocurred before the last call to NumberOfSections() from {0}.", SectionInfo);
                 return;
-            } 
-				
+            }
 			sectionUpdatesSubject.OnNext(Tuple.Create(section, tea.Value, getChangedIndexes(tea.Value)));
-        }
+		}
 
-        static IEnumerable<int> getChangedIndexes(NotifyCollectionChangedEventArgs ea)
+		static IEnumerable<int> getChangedIndexes(NotifyCollectionChangedEventArgs ea)
         {
             switch (ea.Action) {
             case NotifyCollectionChangedAction.Add:
