@@ -83,7 +83,7 @@ public class TweetsListViewModel : ReactiveObject
         TweetTiles = Tweets.CreateDerivedCollection(
             x => new TweetTileViewModel() { Model = x },
             x => true,
-            x => x.CreatedAt);
+            (x, y) => x.CreatedAt.CompareTo(y.CreatedAt));
 
         VisibleTiles = TweetTiles.CreateDerivedCollection(
             x => x,
