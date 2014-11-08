@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
@@ -23,3 +24,7 @@ using System.Windows;
 [assembly: InternalsVisibleTo("ReactiveUI.Winforms")]
 [assembly: InternalsVisibleTo("ReactiveUI.XamForms")]
 [assembly: InternalsVisibleTo("ReactiveUI.AndroidSupport")]
+
+#if NET_45 || WP8 || MONO
+[assembly: TypeForwardedTo(typeof(INotifyPropertyChanging))]
+#endif
