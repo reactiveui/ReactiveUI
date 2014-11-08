@@ -3,7 +3,7 @@ using System.Collections.Specialized;
 
 #if UIKIT || PORTABLE || WINRT || ANDROID
 
-namespace ReactiveUI
+namespace System.ComponentModel
 {
     public class PropertyChangingEventArgs : EventArgs
     {
