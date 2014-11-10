@@ -130,6 +130,8 @@ namespace ReactiveUI
 #endif
     }
 
+    // TODO: Update this once we support 64-bit Xamarin.Mac
+#if UIKIT || UNIFIED
     static class UIViewControllerMixins 
     {
         internal static void ActivateSubviews(this UIViewController This, bool activate) 
@@ -150,4 +152,5 @@ namespace ReactiveUI
             }
         }
     }
+#endif
 }
