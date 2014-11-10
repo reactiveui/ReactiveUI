@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Specialized;
 
-#if UIKIT || PORTABLE || WINRT || ANDROID
-
 namespace ReactiveUI
 {
     public class PropertyChangingEventArgs : EventArgs
@@ -24,8 +22,6 @@ namespace ReactiveUI
         event PropertyChangingEventHandler PropertyChanging;
     }
 }
-
-#endif
 
 namespace ReactiveUI
 {    
