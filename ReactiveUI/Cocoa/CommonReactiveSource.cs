@@ -323,14 +323,6 @@ namespace ReactiveUI
         {
             var resetOnlyNotification = new [] { new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset) };
 
-            if (updates.Any(x => x.Item2.Action == NotifyCollectionChangedAction.Reset)) {
-                this.Log().Debug("About to call ReloadData");
-                adapter.ReloadData();
-
-                didPerformUpdates.OnNext(resetOnlyNotification);
-                return;
-            }
-
             var batchUpdates = new List<Tuple<int, NotifyCollectionChangedEventArgs, IEnumerable<int>>>(); 
 
             foreach(IEnumerable<Tuple<int, NotifyCollectionChangedEventArgs, IEnumerable<int>>> sectionUpdate in updates.GroupBy(u => u.Item1)) {
@@ -418,6 +410,15 @@ namespace ReactiveUI
                 this.Log().Warn("Ignoring change that ocurred before the last call to NumberOfSections() from {0}.", SectionInfo);
                 return;
             }
+
+            var resetOnlyNotification = new [] { new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset) };
+            if (tea.Value.Action == NotifyCollectionChangedAction.Reset) {
+                this.Log().Debug("About to call ReloadData");
+                adapter.ReloadData();
+
+                didPerformUpdates.OnNext(resetOnlyNotification);
+                return;
+            }                
 
             sectionUpdatesSubject.OnNext(Tuple.Create(section, tea.Value, getChangedIndexes(tea.Value)));
         }
