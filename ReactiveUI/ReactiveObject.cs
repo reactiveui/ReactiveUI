@@ -72,7 +72,7 @@ namespace ReactiveUI
         /// </summary>
         [IgnoreDataMember]
         public IObservable<IReactivePropertyChangedEventArgs<IReactiveObject>> Changing {
-            get { return (this as IReactiveObject).getChangingObservable(); }
+            get { return ((IReactiveObject) this).getChangingObservable(); }
         }
 
         /// <summary>
@@ -80,7 +80,7 @@ namespace ReactiveUI
         /// </summary>
         [IgnoreDataMember]
         public IObservable<IReactivePropertyChangedEventArgs<IReactiveObject>> Changed {
-            get { return (this as IReactiveObject).getChangedObservable(); }
+            get { return ((IReactiveObject) this).getChangedObservable(); }
         }
 
         /// <summary>
