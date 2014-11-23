@@ -74,30 +74,26 @@ namespace ReactiveUI
                 Observable.Defer(() => Observable.Return(_NavigationStack.Count)),
                 NavigationStack.CountChanged);
 
-            NavigateBack = ReactiveCommand.CreateAsyncObservable(
-                countAsBehavior.Select(x => x > 1),
-                _ => Observable.Return(Unit.Default));
+            NavigateBack = ReactiveCommand.CreateAsyncObservable (countAsBehavior.Select (x => x > 1), _ => {
+                NavigationStack.RemoveAt(NavigationStack.Count - 1);
+                return Observable.Return(Unit.Default);
+            });
 
-            NavigateBack.Subscribe(_ =>
-                NavigationStack.RemoveAt(NavigationStack.Count - 1));
-
-            Navigate = new ReactiveCommand<object>(Observable.Return(true), x => Observable.Return(x));
-            Navigate.Subscribe(x => {
+            Navigate = new ReactiveCommand<object>(Observable.Return(true), x => {
                 var vm = x as IRoutableViewModel;
                 if (vm == null) {
                     throw new Exception("Navigate must be called on an IRoutableViewModel");
                 }
 
                 NavigationStack.Add(vm);
+                return Observable.Return(x);
             });
 
-            NavigateAndReset = new ReactiveCommand<object>(Observable.Return(true), x => Observable.Return(x));
-            NavigateAndReset
-                .SelectMany(x => {
-                    NavigationStack.Clear();
-                    return Navigate.ExecuteAsync(x);
-                }).Subscribe();
-
+            NavigateAndReset = new ReactiveCommand<object> (Observable.Return (true), x => {
+                NavigationStack.Clear();
+                return Navigate.ExecuteAsync(x);
+            });
+            
             CurrentViewModel = Observable.Concat(
                 Observable.Defer(() => Observable.Return(NavigationStack.LastOrDefault())),
                 NavigationStack.Changed.Select(_ => NavigationStack.LastOrDefault()));
