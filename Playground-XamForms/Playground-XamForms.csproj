@@ -75,10 +75,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj">
-      <Project>{464CB812-F99F-401B-BE4C-E8F0515CD19D}</Project>
-      <Name>ReactiveUI</Name>
-    </ProjectReference>
     <ProjectReference Include="..\ReactiveUI.Events\ReactiveUI.Events_XamForms_XS.csproj">
       <Project>{864CBF13-F9AF-401B-BE4C-E8F0515CD19D}</Project>
       <Name>ReactiveUI.Events_XamForms_XS</Name>
@@ -86,6 +82,10 @@
     <ProjectReference Include="..\ReactiveUI.XamForms\ReactiveUI.XamForms.csproj">
       <Project>{864CB812-199F-401B-BE4C-E8F0515CD19D}</Project>
       <Name>ReactiveUI.XamForms</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj">
+      <Project>{464CB812-F99F-401B-BE4C-E8F0515CD19D}</Project>
+      <Name>ReactiveUI</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
