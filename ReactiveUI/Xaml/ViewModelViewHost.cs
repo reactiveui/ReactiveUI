@@ -82,9 +82,8 @@ namespace ReactiveUI
 
             ViewContractObservable = Observable.FromEventPattern<SizeChangedEventHandler, SizeChangedEventArgs>(x => SizeChanged += x, x => SizeChanged -= x)
                 .Select(_ => platformGetter())
-                .DistinctUntilChanged()
                 .StartWith(platformGetter())
-                .Select(x => x != null ? x.ToString() : default(string));
+                .DistinctUntilChanged();
 
             this.WhenActivated(d => {
                 d(vmAndContract.Subscribe(x => {
