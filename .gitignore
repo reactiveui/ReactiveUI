@@ -206,5 +206,6 @@ ReactiveUI.Events/Nustache.*
 
 ext/monodroid/18
 
-
+# Exlcude compiled versions of the documentation
+docs/_build/**
 
