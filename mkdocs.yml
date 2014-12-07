@@ -1,0 +1,81 @@
+site_name: ReactiveUI Documentation
+site_url: http://docs.reactiveui.net/
+site_url: /
+site_description: A MVVM framework that integrates with the Reactive Extensions for .NET to create elegant, testable User Interfaces that run on any mobile or desktop platform. Supports Xamarin.iOS, Xamarin.Android, Xamarin.Mac, WPF, Windows Forms, Windows Phone 8 and Windows Store apps.
+site_favicon: img/favicon.png
+
+dev_addr: '0.0.0.0:8000'
+
+repo_url: https://github.com/reactiveui/reactiveui/
+
+docs_dir: docs/sources
+
+include_search: true
+
+use_absolute_urls: true
+
+theme: readthedocs
+#theme_dir: ./theme/mkdocs/
+#theme_center_lead: false
+
+copyright: Copyright &copy; 2014, ReactiveUI, Inc.
+google_analytics: ['UA-6096819-11', 'ReactiveUI.io']
+
+pages:
+
+# About:
+- ['index.md', 'About', 'ReactiveUI']
+- ['release-notes.md', 'About', 'Release Notes']
+
+# Concepts:
+- ['concepts/reactive-extensions.md', 'Concepts', 'Reactive Extensions']
+- ['concepts/functional-reactive-programming.md', 'Concepts', 'Functional Reactive Programming']
+- ['concepts/model-view-viewmodel.md', 'Concepts', 'Model View ViewModel']
+- ['concepts/commands.md', 'Concepts', 'Commands']
+- ['concepts/binding.md', 'Concepts', 'Data & Command Binding']
+
+# Getting Started:
+- ['getting-started/solution-layout.md', 'Getting Started', 'Solution Layout']
+
+# ViewModel:
+
+# Commands:
+
+# Routing:
+- ['routing/reactiveui.md', 'Routing', 'ReactiveUI']
+- ['routing/xamarin-forms.md', 'Routing', 'Xamarin Forms']
+- ['routing/caliburn-micro.md', 'Routing', 'Caliburn Micro']
+
+# Dependency Injection:
+- ['dependency-injection/index.md', 'Dependency Injection', 'Splat']
+- ['dependency-injection/autofac.md', 'Dependency Injection', 'Autofac']
+
+# Logging:
+- ['logging/index.md', 'Logging', 'Splat']
+- ['logging/nlog.md', 'Logging', 'NLog']
+
+# Error Handling:
+
+# Testing:
+
+# Caching:
+
+# Networking:
+
+#- ['introduction/index.md', '**HIDDEN**']
+#- ['introduction/understanding-ReactiveUI.md', 'About', 'Understanding ReactiveUI']
+
+# - ['static_files/README.md', 'static_files', 'README']
+#- ['terms/index.md', '**HIDDEN**']
+#- ['terms/layer.md', '**HIDDEN**']
+#- ['terms/index.md', '**HIDDEN**']
+#- ['terms/registry.md', '**HIDDEN**']
+#- ['terms/container.md', '**HIDDEN**']
+#- ['terms/repository.md', '**HIDDEN**']
+#- ['terms/filesystem.md', '**HIDDEN**']
+#- ['terms/image.md', '**HIDDEN**']
+
+# Contribute:
+#- ['contributing/index.md', '**HIDDEN**']
+- ['contributing/index.md', 'Contribute', 'Contributing']
+#- ['contributing/docs_style-guide.md', 'Contribute', 'Documentation style guide']
