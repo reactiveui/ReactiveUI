@@ -1,15 +1,9 @@
-# How to migrate from ReactiveUI 5.x
-
-Moving to ReactiveUI 6.0 is relatively straightforward, but there are a few things
-to know.
-
-
-## Changes that may be more difficult to deal with
+# Changes that may be more difficult to deal with
 
 These are the major changes that are likely to affect application developers
 in a way that may take more work to resolve.
 
-### ReactiveCommand is New And Different
+## ReactiveCommand is New And Different
 
 * ReactiveCommand is completely rewritten (again). To create ReactiveCommands,
   instead of using `new` you almost always want to use
@@ -37,7 +31,7 @@ New:
 As with previous versions, the old version of ReactiveCommand is provided in
 ReactiveUI.Legacy, to help with migration. 
 
-### Scheduling Changes
+## Scheduling Changes
 
 Many operations that were previously automatically scheduled to the UI thread
 now do not do so, such as `ToProperty`. While the old behavior made it easier
@@ -48,7 +42,7 @@ multiple times before being displayed.
 This means, you probably need to add some `ObserveOn(RxApp.MainThreadScheduler)` 
 calls to your application.
 
-### ToProperty / OAPH changes
+## ToProperty / OAPH changes
 
 * `ObservableAsPropertyHelper` no longer is itself an `IObservable`, use
   `WhenAny` to observe it.
@@ -59,7 +53,7 @@ calls to your application.
   work??" confusion. If you find that your ToProperty "isn't working", this
   may be why.
 
-### Suspension / ReactiveUI.Mobile
+## Suspension / ReactiveUI.Mobile
 
 The philosophy behind ReactiveUI.Mobile has been greatly simplified, and is no
 longer tied to routing in any way. The new goal of ReactiveUI.Mobile is, "The
@@ -80,7 +74,7 @@ that your app provides.
   routing is Generally Discouraged from being used in anything other than a
   WPF app.
 
-## Easy to handle changes
+# Easy to handle changes
 
 * Namespaces are much simpler now - everything is in `ReactiveUI` except for
   platform-specific functionality.
@@ -111,7 +105,7 @@ that your app provides.
 * The `Router` property on `IScreen` is now of type `RoutingState` instead of
   `IRoutingState`.
 
-## Find-and-replace changes
+# Find-and-replace changes
 
 * RxApp.DependencyResolver => Locator.Current
 * RxApp.MutableResolver => Locator.CurrentMutable

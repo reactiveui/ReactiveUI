@@ -1,9 +1,4 @@
-# How to migrate from ReactiveUI 4.x
-
-Moving to ReactiveUI 5.0 is usually straightforward, but there are a few things
-to know.
-
-## Changes that may be more difficult to deal with
+# Changes that may be more difficult to deal with
 
 * ReactiveUI 5.0 is .NET 4.5 only - this means that Silverlight 5, .NET 4.0, and
   WP7.x are all unsupported. If you want to use ReactiveUI with these platforms,
@@ -22,7 +17,7 @@ to know.
   need this, grab the old version of the class [from
   here](https://github.com/reactiveui/ReactiveUI/blob/4.6.4/ReactiveUI/Validation.cs)
 
-## Easy to handle changes
+# Easy to handle changes
 
 * `ReactiveCollection` is now `ReactiveList`
 
