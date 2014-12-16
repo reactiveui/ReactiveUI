@@ -1,1 +1,0 @@
-# State of Platform
