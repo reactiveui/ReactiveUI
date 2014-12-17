@@ -32,7 +32,7 @@ pages:
 - ['concepts/functional-reactive-programming.md', 'Concepts', 'Functional Reactive Programming']
 - ['concepts/model-view-viewmodel.md', 'Concepts', 'Model View ViewModel']
 - ['concepts/commands.md', 'Concepts', 'Commands']
-- ['concepts/binding.md', 'Concepts', 'Binding']
+- ['concepts/binding.md', 'Concepts', 'Data & Command Binding']
 
 # ViewModel:
 
