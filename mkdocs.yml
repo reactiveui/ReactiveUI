@@ -8,13 +8,13 @@ dev_addr: '0.0.0.0:8000'
 
 repo_url: https://github.com/reactiveui/reactiveui/
 
-docs_dir: sources
+docs_dir: docs/sources
 
-include_search: false
+include_search: true
 
 use_absolute_urls: true
 
-theme: simplex
+#theme: simplex
 #theme_dir: ./theme/mkdocs/
 #theme_center_lead: false
 
