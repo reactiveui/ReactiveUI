@@ -9,8 +9,7 @@ GitHub](https://github.com/ReactiveUI/ReactiveUI) thanks to post-commit hooks.
 
 ## Contributing
 
-Be sure to follow the [contribution guidelines](../CONTRIBUTING.md).
-In particular, [remember to sign your work!](../CONTRIBUTING.md#sign-your-work)
+Be sure to follow the [contribution guidelines]
 
 ## Getting Started
 
