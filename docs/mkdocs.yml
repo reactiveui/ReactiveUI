@@ -8,7 +8,7 @@ dev_addr: '0.0.0.0:8000'
 
 repo_url: https://github.com/reactiveui/reactiveui/
 
-docs_dir: docs/sources
+docs_dir: sources
 
 include_search: false
 
@@ -30,7 +30,7 @@ pages:
 # Concepts:
 - ['concepts/reactive-extensions.md', 'Concepts', 'Reactive Extensions']
 - ['concepts/functional-reactive-programming.md', 'Concepts', 'Functional Reactive Programming']
-- ['concepts/viewmodel.md', 'Concepts', 'ViewModel']
+- ['concepts/model-view-viewmodel.md', 'Concepts', 'Model View ViewModel']
 - ['concepts/commands.md', 'Concepts', 'Commands']
 - ['concepts/binding.md', 'Concepts', 'Binding']
 
@@ -53,10 +53,11 @@ pages:
 
 # Error Handling:
 
+# Testing:
+
 # Caching:
 
 # Networking:
-
 
 #- ['introduction/index.md', '**HIDDEN**']
 #- ['introduction/understanding-ReactiveUI.md', 'About', 'Understanding ReactiveUI']
