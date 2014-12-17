@@ -10,11 +10,11 @@ repo_url: https://github.com/reactiveui/reactiveui/
 
 docs_dir: sources
 
-include_search: true
+include_search: false
 
 use_absolute_urls: true
 
-# theme: ReactiveUI
+theme: simplex
 #theme_dir: ./theme/mkdocs/
 #theme_center_lead: false
 
@@ -23,9 +23,41 @@ google_analytics: ['UA-6096819-11', 'ReactiveUI.io']
 
 pages:
 
-# Introduction:
+# About:
 - ['index.md', 'About', 'ReactiveUI']
 - ['release-notes.md', 'About', 'Release Notes']
+
+# Concepts:
+- ['concepts/reactive-extensions.md', 'Concepts', 'Reactive Extensions']
+- ['concepts/functional-reactive-programming.md', 'Concepts', 'Functional Reactive Programming']
+- ['concepts/viewmodel.md', 'Concepts', 'ViewModel']
+- ['concepts/commands.md', 'Concepts', 'Commands']
+- ['concepts/binding.md', 'Concepts', 'Binding']
+
+# ViewModel:
+
+# Commands:
+
+# Routing:
+- ['routing/reactiveui.md', 'Routing', 'ReactiveUI']
+- ['routing/xamarin-forms.md', 'Routing', 'Xamarin Forms']
+- ['routing/caliburn-micro.md', 'Routing', 'Caliburn Micro']
+
+# Dependency Injection:
+- ['dependency-injection/index.md', 'Dependency Injection', 'Splat']
+- ['dependency-injection/autofac.md', 'Dependency Injection', 'Autofac']
+
+# Logging:
+- ['logging/index.md', 'Logging', 'Splat']
+- ['logging/nlog.md', 'Logging', 'NLog']
+
+# Error Handling:
+
+# Caching:
+
+# Networking:
+
+
 #- ['introduction/index.md', '**HIDDEN**']
 #- ['introduction/understanding-ReactiveUI.md', 'About', 'Understanding ReactiveUI']
 
@@ -41,6 +73,5 @@ pages:
 
 # Contribute:
 #- ['contributing/index.md', '**HIDDEN**']
-#- ['contributing/contributing.md', 'Contribute', 'Contributing']
-#- ['contributing/devenvironment.md', 'Contribute', 'Development environment']
+- ['contributing/index.md', 'Contribute', 'Contributing']
 #- ['contributing/docs_style-guide.md', 'Contribute', 'Documentation style guide']
