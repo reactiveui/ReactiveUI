@@ -14,7 +14,7 @@ include_search: true
 
 use_absolute_urls: true
 
-#theme: simplex
+theme: readthedocs
 #theme_dir: ./theme/mkdocs/
 #theme_center_lead: false
 
@@ -33,6 +33,9 @@ pages:
 - ['concepts/model-view-viewmodel.md', 'Concepts', 'Model View ViewModel']
 - ['concepts/commands.md', 'Concepts', 'Commands']
 - ['concepts/binding.md', 'Concepts', 'Data & Command Binding']
+
+# Getting Started:
+- ['getting-started/solution-layout.md', 'Getting Started', 'Solution Layout']
 
 # ViewModel:
 
