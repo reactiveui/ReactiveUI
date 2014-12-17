@@ -11,20 +11,25 @@ shared between and referenced in each specific platform application:
 # Core Application Library
 
 The portable class library will be the heart of your application and where you
-will spend most of your time. Profile78 or Profile259 is the recommended
+will spend most of your time. `Profile78` or `Profile259` is the recommended
 profile which should be used, you will need to select it when you create the
-project.
+project. Alternatively you can adjust the profile after creation by editing
+the `.csproj` but you will need to run some nuget commands to reinstall most
+of your packages.
 
 EndlessCatsApp.Core.csproj:
 
-    <TargetFrameworkProfile>Profile78</TargetFrameworkProfile>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+```xml
+<TargetFrameworkProfile>Profile78</TargetFrameworkProfile>
+<TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+```
 
 EndlessCatsApp.Core.csproj:
 
-    <TargetFrameworkProfile>Profile259</TargetFrameworkProfile>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-
+```xml
+<TargetFrameworkProfile>Profile259</TargetFrameworkProfile>
+<TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+```
 # Core Application Tests
 
 A standard class library that contains unit tests that confirm functionality
