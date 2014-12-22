@@ -1,6 +1,17 @@
 
 # Contributing
 
+## Contributing to the Documentation
+
+    ghuntley [3:57 PM]
+    ~/CONTRIBUTING.md is for how to contribute to entire project
+    
+    ghuntley [3:57 PM]
+    ~/docs/INDEX.md is for how to contribute to documentation (after we go 'live' it will be pull based) and how to get mkdocs running locally on a contributors system - mac and windows.
+    
+    ghuntley [3:58 PM]
+    ~/mkdocs.yml defines the page structure. There's a **HIDDEN** navigation-topic you'll see references to - what I'll be doing is putting conditionals in the theme to not include hidden docs in navigation but still build.
+
 ## Package Naming Conventions
 
     ghuntley [8:28 PM] So for community adding to RxUI was thinking of a single
