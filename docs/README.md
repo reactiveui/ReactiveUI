@@ -3,35 +3,33 @@
 The source for ReactiveUI documentation is here under `sources/` and uses extended
 Markdown, as implemented by [MkDocs](http://mkdocs.org).
 
-The HTML files are built and hosted on `http://docs.reactiveui.net`, and update
-automatically after each change to the master branch of [ReactiveUI on
-GitHub](https://github.com/ReactiveUI/ReactiveUI) thanks to post-commit hooks. 
+These files are built and deployed to [docs.reactiveui.net](http://docs.reactiveui.net)
+whenever `master` is updated.
 
 ## Contributing
 
-Be sure to follow the [contribution guidelines]
+### Pre-requisites
 
-## Getting Started
+On Windows, you should use
+[Chocolatey](http://chocolatey.org/) to setup your local environment:
 
-ReactiveUI documentation builds are done in a ReactiveUI container, which installs all
-the required tools, adds the local `docs/` directory and builds the HTML docs.
-It then starts a HTTP server on port 8000 so that you can connect and see your
-changes.
+> cinst python2
+> cinst pip
 
-In the root of the `ReactiveUI` source directory:
+On OS X, you should use [Homebrew](http://brew.sh/):
 
-    $ make docs
-    .... (lots of output) ....
-    $ ReactiveUI run --rm -it  -e AWS_S3_BUCKET -p 8000:8000 "ReactiveUI-docs:master" mkdocs serve
-    Running at: http://0.0.0.0:8000/
-    Live reload enabled.
-    Hold ctrl+c to quit.
+> brew install python
 
-If you have any issues you need to debug, you can use `make docs-shell` and then
-run `mkdocs serve`
+Once you've done that, install [MkDocs](http://mkdocs.org) from the command line:
 
-## Adding a new document
+> pip install mkdocs
 
-New document (`.md`) files are added to the documentation builds by adding them
-to the menu definition in the `docs/mkdocs.yml` file.
+### Build and Test
 
+Run this command from the root of the ReactiveUI repository:
+
+> mkdocs serve
+
+And point your browser to `http://localhost:8000` to view the documentation running
+locally. As files are changed, MkDocs will rebuild the documentation in the
+background.
