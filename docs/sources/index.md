@@ -20,6 +20,3 @@ reactiveui/
 
 Ask your question on
 [StackOverflow](http://stackoverflow.com/questions/tagged/reactiveui).
-
-reactiveui-evenets -> has ios delegates
-
