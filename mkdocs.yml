@@ -37,7 +37,8 @@ pages:
 # Getting Started:
 - ['getting-started/solution-layout.md', 'Getting Started', 'Solution Layout']
 
-# ViewModel:
+# Fundamentals:
+- ['fundamentals/reactive-object.md', 'ReactiveObject', 'Fundamentals']
 
 # Commands:
 
