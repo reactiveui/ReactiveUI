@@ -13,9 +13,8 @@ to simplify this dangerous activity and deliver a true 'fire-and-forget'
 multi-thread solution.
 
 
-http://whazzing.com/blog/2013/02/22/responsive-wpf-applications-with-
-reactiveui/
-
+[Blog Post - Responsive WPF Applications with ReactiveUI](http://whazzing.com/blog/2013/02/22/responsive-wpf-applications-with-
+reactiveui/)
 
 
 Ask your question on
