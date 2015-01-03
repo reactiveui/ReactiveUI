@@ -12,7 +12,7 @@ namespace ReactiveUI.Testing
 {
     public static class TestUtils
     {
-        static readonly object schedGate = 42;
+        static readonly AutoResetEvent schedGate = new AutoResetEvent(true);
         static readonly object mbGate = 42;
 
         /// <summary>
@@ -26,7 +26,7 @@ namespace ReactiveUI.Testing
         /// schedulers.</returns>
         public static IDisposable WithScheduler(IScheduler sched)
         {
-            Monitor.Enter(schedGate);
+            schedGate.WaitOne();
             var prevDef = RxApp.MainThreadScheduler;
             var prevTask = RxApp.TaskpoolScheduler;
 
@@ -36,7 +36,7 @@ namespace ReactiveUI.Testing
             return Disposable.Create(() => {
                 RxApp.MainThreadScheduler = prevDef;
                 RxApp.TaskpoolScheduler = prevTask;
-                Monitor.Exit(schedGate);
+                schedGate.Set();
             });
         }
 
