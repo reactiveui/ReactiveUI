@@ -91,9 +91,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="mscorlib.Extensions" />
-    <Reference Include="Splat, Version=1.5.1.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Splat, Version=1.6.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Splat.1.5.1\lib\wp8\Splat.dll</HintPath>
+      <HintPath>..\packages\Splat.1.6.0\lib\wp8\Splat.dll</HintPath>
     </Reference>
     <Reference Include="System.Observable" />
     <Reference Include="System.Reactive.Core, Version=2.2.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">

@@ -52,7 +52,7 @@
       <HintPath>..\packages\Rx-Testing.2.2.5\lib\windows8\Microsoft.Reactive.Testing.dll</HintPath>
     </Reference>
     <Reference Include="Splat">
-      <HintPath>..\packages\Splat.1.5.1\lib\Portable-Win81+Wpa81\Splat.dll</HintPath>
+      <HintPath>..\packages\Splat.1.6.0\lib\Portable-Win81+Wpa81\Splat.dll</HintPath>
     </Reference>
     <Reference Include="System.Reactive.Core">
       <HintPath>..\packages\Rx-Core.2.2.5\lib\portable-win81+wpa81\System.Reactive.Core.dll</HintPath>
