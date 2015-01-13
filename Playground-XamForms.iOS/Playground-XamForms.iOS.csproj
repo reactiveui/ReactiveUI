@@ -129,7 +129,6 @@
     </Reference>
     <Reference Include="Splat">
       <HintPath>..\packages\Splat.1.6.0\lib\Xamarin.iOS10\Splat.dll</HintPath>
-      <HintPath>..\packages\Splat.1.6.0\lib\monotouch\Splat.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
