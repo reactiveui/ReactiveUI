@@ -28,6 +28,7 @@
     <CreatePackage>False</CreatePackage>
     <CodeSigningKey>Mac Developer</CodeSigningKey>
     <UseSGen>False</UseSGen>
+    <UseRefCounting>false</UseRefCounting>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <Optimize>True</Optimize>
@@ -47,6 +48,7 @@
     <DebugSymbols>true</DebugSymbols>
     <GenerateDocumentation>True</GenerateDocumentation>
     <DocumentationFile>bin\Release\MonoMac\ReactiveUI.xml</DocumentationFile>
+    <UseRefCounting>false</UseRefCounting>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />

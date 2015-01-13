@@ -35,6 +35,7 @@
     <CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
     <DefineConstants>MONO</DefineConstants>
     <AssemblyName>ReactiveUI_Tests_iOS</AssemblyName>
+    <CodesignKey>iPhone Developer</CodesignKey>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|iPhone' ">
     <DebugSymbols>true</DebugSymbols>
