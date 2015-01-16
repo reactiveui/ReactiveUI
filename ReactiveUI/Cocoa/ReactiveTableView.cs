@@ -1,21 +1,22 @@
 ﻿using System;
-using ReactiveUI;
-using System.Runtime.Serialization;
-using System.ComponentModel;
-using System.Reflection;
-using System.Reactive.Subjects;
-using System.Reactive.Concurrency;
-using System.Linq;
-using System.Threading;
-using System.Reactive.Disposables;
-using System.Diagnostics.Contracts;
-using System.Runtime.CompilerServices;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Diagnostics.Contracts;
 using System.Drawing;
-using Splat;
+using System.Linq;
 using System.Reactive;
+using System.Reactive.Concurrency;
+using System.Reactive.Disposables;
+using System.Reactive.Subjects;
+using System.Reflection;
+using System.Runtime.CompilerServices;
+using System.Runtime.Serialization;
+using System.Threading;
+using ReactiveUI;
+using Splat;
 
 #if UNIFIED
+using CoreGraphics;
 using Foundation;
 using UIKit;
 #else
@@ -27,13 +28,19 @@ namespace ReactiveUI
 {
     public abstract class ReactiveTableView : UITableView, IReactiveNotifyPropertyChanged<ReactiveTableView>, IHandleObservableErrors, IReactiveObject, ICanActivate, ICanForceManualActivation
     {
+#if UNIFIED
+        public ReactiveTableView(CGRect frame) : base(frame) { }
+        public ReactiveTableView(CGRect frame, UITableViewStyle style) : base(frame, style) { }
+#else
         public ReactiveTableView(RectangleF frame) : base(frame) { }
-        public ReactiveTableView(IntPtr handle) : base(handle) { }
         public ReactiveTableView(RectangleF frame, UITableViewStyle style) : base(frame, style) { }
+#endif
 
         public ReactiveTableView(NSObjectFlag t) : base(t) { }
         public ReactiveTableView(NSCoder coder) : base(coder) { }
         public ReactiveTableView() { }
+
+        protected ReactiveTableView(IntPtr handle) : base(handle) { }
 
         public event PropertyChangingEventHandler PropertyChanging {
             add { PropertyChangingEventManager.AddHandler(this, value); }

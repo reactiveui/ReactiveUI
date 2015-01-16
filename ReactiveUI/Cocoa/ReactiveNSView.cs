@@ -1,26 +1,27 @@
 using System;
-using System.Drawing;
-using System.Runtime.Serialization;
-using System.Reactive.Subjects;
-using System.Reactive.Concurrency;
-using System.Reflection;
-using System.ComponentModel;
-using System.Linq;
-using System.Threading;
-using System.Reactive.Disposables;
-using System.Diagnostics.Contracts;
-using System.Runtime.CompilerServices;
 using System.Collections.Generic;
-using Splat;
+using System.ComponentModel;
+using System.Diagnostics.Contracts;
+using System.Drawing;
+using System.Linq;
 using System.Reactive;
+using System.Reactive.Concurrency;
+using System.Reactive.Disposables;
+using System.Reactive.Subjects;
+using System.Reflection;
+using System.Runtime.CompilerServices;
+using System.Runtime.Serialization;
+using System.Threading;
+using Splat;
 
 #if UNIFIED
-using UIKit;
+using CoreGraphics;
 using Foundation;
 using NSView = UIKit.UIView;
+using UIKit;
 #elif UIKIT
-using MonoTouch.UIKit;
 using MonoTouch.Foundation;
+using MonoTouch.UIKit;
 using NSView = MonoTouch.UIKit.UIView;
 #else
 using MonoMac.AppKit;
@@ -51,9 +52,15 @@ namespace ReactiveUI
         {
         }
 
+#if UNIFIED
+        protected ReactiveView(CGRect frame) : base(frame)
+        {
+        }
+#else
         protected ReactiveView(RectangleF size) : base(size)
         {
         }
+#endif
 
         public event PropertyChangingEventHandler PropertyChanging {
             add { PropertyChangingEventManager.AddHandler(this, value); }
