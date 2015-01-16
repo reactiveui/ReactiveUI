@@ -1,21 +1,22 @@
 using System;
-using System.Drawing;
-using ReactiveUI;
-using System.Runtime.Serialization;
-using System.ComponentModel;
-using System.Reflection;
-using System.Reactive.Subjects;
-using System.Reactive.Concurrency;
-using System.Linq;
-using System.Threading;
-using System.Reactive.Disposables;
-using System.Diagnostics.Contracts;
-using System.Runtime.CompilerServices;
 using System.Collections.Generic;
-using Splat;
+using System.ComponentModel;
+using System.Diagnostics.Contracts;
+using System.Drawing;
+using System.Linq;
 using System.Reactive;
+using System.Reactive.Concurrency;
+using System.Reactive.Disposables;
+using System.Reactive.Subjects;
+using System.Reflection;
+using System.Runtime.CompilerServices;
+using System.Runtime.Serialization;
+using System.Threading;
+using ReactiveUI;
+using Splat;
 
 #if UNIFIED
+using CoreGraphics;
 using Foundation;
 using UIKit;
 #else
@@ -27,13 +28,18 @@ namespace ReactiveUI
 {
     public abstract class ReactiveTableViewCell : UITableViewCell, IReactiveNotifyPropertyChanged<ReactiveTableViewCell>, IHandleObservableErrors, IReactiveObject, ICanActivate
     {
-        public ReactiveTableViewCell(IntPtr handle) : base (handle) { setupRxObj(); }
+#if UNIFIED
+        public ReactiveTableViewCell(CGRect frame) : base (frame) { setupRxObj(); }
+#else
+        public ReactiveTableViewCell(RectangleF frame) : base (frame) { setupRxObj(); }
+#endif
+
         public ReactiveTableViewCell(NSObjectFlag t) : base (t) { setupRxObj(); }
         public ReactiveTableViewCell(NSCoder coder) : base (NSObjectFlag.Empty) { setupRxObj(); }
         public ReactiveTableViewCell() : base() { setupRxObj(); }
         public ReactiveTableViewCell(UITableViewCellStyle style, string reuseIdentifier) : base(style, reuseIdentifier) { setupRxObj(); }
         public ReactiveTableViewCell(UITableViewCellStyle style, NSString reuseIdentifier) : base(style, reuseIdentifier) { setupRxObj(); }
-        public ReactiveTableViewCell(RectangleF frame) : base (frame) { setupRxObj(); }
+        protected ReactiveTableViewCell(IntPtr handle) : base (handle) { setupRxObj(); }
 
         public event PropertyChangingEventHandler PropertyChanging {
             add { PropertyChangingEventManager.AddHandler(this, value); }
