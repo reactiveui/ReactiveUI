@@ -1,21 +1,22 @@
 using System;
-using System.Drawing;
-using ReactiveUI;
-using System.Runtime.Serialization;
-using System.ComponentModel;
-using System.Reflection;
-using System.Reactive.Subjects;
-using System.Reactive.Concurrency;
-using System.Reactive;
-using System.Linq;
-using System.Threading;
-using System.Reactive.Disposables;
-using System.Diagnostics.Contracts;
-using System.Runtime.CompilerServices;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Diagnostics.Contracts;
+using System.Drawing;
+using System.Linq;
+using System.Reactive;
+using System.Reactive.Concurrency;
+using System.Reactive.Disposables;
+using System.Reactive.Subjects;
+using System.Reflection;
+using System.Runtime.CompilerServices;
+using System.Runtime.Serialization;
+using System.Threading;
+using ReactiveUI;
 using Splat;
 
 #if UNIFIED
+using CoreGraphics;
 using Foundation;
 using UIKit;
 #else
@@ -27,11 +28,17 @@ namespace ReactiveUI
 {
     public abstract class ReactiveCollectionViewCell : UICollectionViewCell, IReactiveNotifyPropertyChanged<ReactiveCollectionViewCell>, IHandleObservableErrors, IReactiveObject, ICanActivate
     {
-        public ReactiveCollectionViewCell(IntPtr handle) : base (handle) { setupRxObj(); }
+#if UNIFIED
+        public ReactiveCollectionViewCell(CGRect frame) : base (frame) { setupRxObj(); }
+#else
+        public ReactiveCollectionViewCell(RectangleF frame) : base (frame) { setupRxObj(); }
+#endif
+
         public ReactiveCollectionViewCell(NSObjectFlag t) : base (t) { setupRxObj(); }
         public ReactiveCollectionViewCell(NSCoder coder) : base (NSObjectFlag.Empty) { setupRxObj(); }
         public ReactiveCollectionViewCell() : base() { setupRxObj(); }
-        public ReactiveCollectionViewCell(RectangleF frame) : base (frame) { setupRxObj(); }
+
+        protected ReactiveCollectionViewCell(IntPtr handle) : base (handle) { setupRxObj(); }
 
         public event PropertyChangingEventHandler PropertyChanging {
             add { PropertyChangingEventManager.AddHandler(this, value); }

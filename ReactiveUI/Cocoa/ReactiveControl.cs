@@ -6,6 +6,7 @@ using System.Reactive.Concurrency;
 using System.Reactive.Subjects;
 
 #if UNIFIED
+using CoreGraphics;
 using Foundation;
 using UIKit;
 #elif UIKIT
@@ -21,25 +22,16 @@ namespace ReactiveUI
 {
     public class ReactiveControl : UIControl, IReactiveNotifyPropertyChanged<ReactiveControl>, IHandleObservableErrors, IReactiveObject, ICanActivate, ICanForceManualActivation
     {
-        protected ReactiveControl() : base()
-        {
-        }
+#if UNIFIED
+        protected ReactiveControl(CGRect frame) : base(frame) { }
+#else
+        protected ReactiveControl(RectangleF frame) : base(frame) { }
+#endif
 
-        protected ReactiveControl(NSCoder c) : base(c)
-        {
-        }
-
-        protected ReactiveControl(NSObjectFlag f) : base(f)
-        {
-        }
-
-        protected ReactiveControl(IntPtr handle) : base(handle)
-        {
-        }
-
-        protected ReactiveControl(RectangleF size) : base(size)
-        {
-        }
+        protected ReactiveControl() { }
+        protected ReactiveControl(NSCoder c) : base(c) { }
+        protected ReactiveControl(NSObjectFlag f) : base(f) { }
+        protected ReactiveControl(IntPtr handle) : base(handle) { }
 
         public event PropertyChangingEventHandler PropertyChanging {
             add { PropertyChangingEventManager.AddHandler(this, value); }

@@ -1,21 +1,22 @@
 ﻿using System;
-using ReactiveUI;
-using System.Runtime.Serialization;
-using System.ComponentModel;
-using System.Reflection;
-using System.Reactive;
-using System.Reactive.Subjects;
-using System.Reactive.Concurrency;
-using System.Linq;
-using System.Threading;
-using System.Reactive.Disposables;
-using System.Diagnostics.Contracts;
-using System.Runtime.CompilerServices;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Diagnostics.Contracts;
 using System.Drawing;
+using System.Linq;
+using System.Reactive;
+using System.Reactive.Concurrency;
+using System.Reactive.Disposables;
+using System.Reactive.Subjects;
+using System.Reflection;
+using System.Runtime.CompilerServices;
+using System.Runtime.Serialization;
+using System.Threading;
+using ReactiveUI;
 using Splat;
 
 #if UNIFIED
+using CoreGraphics;
 using Foundation;
 using UIKit;
 #else
@@ -28,7 +29,12 @@ namespace ReactiveUI
     public abstract class ReactiveCollectionView : UICollectionView, 
         IReactiveNotifyPropertyChanged<ReactiveCollectionView>, IHandleObservableErrors, IReactiveObject, ICanActivate, ICanForceManualActivation
     {
+#if UNIFIED
+        protected ReactiveCollectionView(CGRect frame, UICollectionViewLayout layout) : base(frame, layout) { setupRxObj(); }
+#else
         protected ReactiveCollectionView(RectangleF frame, UICollectionViewLayout layout) : base(frame, layout) { setupRxObj(); }
+#endif
+
         protected ReactiveCollectionView(IntPtr handle) : base(handle) { setupRxObj(); }
         protected ReactiveCollectionView(NSObjectFlag t) : base(t) { setupRxObj(); }
         protected ReactiveCollectionView(NSCoder coder) : base(coder) { setupRxObj(); }
