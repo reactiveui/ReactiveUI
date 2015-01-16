@@ -1,25 +1,26 @@
 using System;
-using ReactiveUI;
-using System.Runtime.Serialization;
-using System.ComponentModel;
-using System.Reflection;
-using System.Reactive.Subjects;
-using System.Reactive.Concurrency;
-using System.Linq;
-using System.Threading;
-using System.Reactive.Disposables;
-using System.Diagnostics.Contracts;
-using System.Runtime.CompilerServices;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Diagnostics.Contracts;
 using System.Drawing;
-using Splat;
+using System.Linq;
 using System.Reactive;
+using System.Reactive.Concurrency;
+using System.Reactive.Disposables;
+using System.Reactive.Subjects;
+using System.Reflection;
+using System.Runtime.CompilerServices;
+using System.Runtime.Serialization;
+using System.Threading;
+using ReactiveUI;
+using Splat;
 
 #if UNIFIED
+using CoreGraphics;
 using Foundation;
 using UIKit;
-using NSImageView = UIKit.UIImageView;
 using NSImage = UIKit.UIImage;
+using NSImageView = UIKit.UIImageView;
 using NSView = UIKit.UIView;
 #elif UIKIT
 using MonoTouch.Foundation;
@@ -36,8 +37,12 @@ namespace ReactiveUI
 {
     public abstract class ReactiveImageView : NSImageView, IReactiveNotifyPropertyChanged<ReactiveImageView>, IHandleObservableErrors, IReactiveObject, ICanActivate, ICanForceManualActivation
     {
+#if UNIFIED
+        public ReactiveImageView(CGRect frame) : base(frame) { }
+#else
         public ReactiveImageView(RectangleF frame) : base(frame) { }
-        public ReactiveImageView(IntPtr handle) : base(handle) { }
+#endif
+
         public ReactiveImageView() { }
 
 #if UIKIT
@@ -46,6 +51,8 @@ namespace ReactiveUI
         public ReactiveImageView(NSImage image, NSImage highlightedImage) : base(image, highlightedImage) { }
         public ReactiveImageView(NSCoder coder) : base(coder) { }
 #endif
+
+        protected ReactiveImageView(IntPtr handle) : base(handle) { }
 
         public event PropertyChangingEventHandler PropertyChanging {
             add { PropertyChangingEventManager.AddHandler(this, value); }
