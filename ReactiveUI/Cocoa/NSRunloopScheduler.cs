@@ -1,21 +1,16 @@
 using System;
-using System.Linq;
-using System.Collections.Generic;
-using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
 
 #if UNIFIED
-using UIKit;
-using Foundation;
 using CoreFoundation;
+using Foundation;
 using NSAction = System.Action;
 #elif UIKIT
 using MonoTouch.UIKit;
 using MonoTouch.Foundation;
 using MonoTouch.CoreFoundation;
 #else
-using MonoMac.AppKit;
 using MonoMac.Foundation;
 using MonoMac.CoreFoundation;
 #endif

@@ -1,9 +1,15 @@
-﻿using System;
-using MonoMac.AppKit;
-using MonoMac.Foundation;
+using System;
 using System.ComponentModel;
 using System.Reactive.Subjects;
 using System.Reactive;
+
+#if UNIFIED
+using AppKit;
+using Foundation;
+#else
+using MonoMac.AppKit;
+using MonoMac.Foundation;
+#endif
 
 namespace ReactiveUI
 {

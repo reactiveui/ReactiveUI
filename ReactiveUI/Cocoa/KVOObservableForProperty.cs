@@ -1,22 +1,22 @@
 using System;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reflection;
-using ReactiveUI;
 using System.Runtime.InteropServices;
+using ReactiveUI;
 using Splat;
 
-#if UNIFIED
-using Foundation;
+#if UNIFIED && UIKIT
 using UIKit;
+using Foundation;
+#elif UNIFIED && COCOA
+using Foundation;
 #elif UIKIT
 using MonoTouch.UIKit;
 using MonoTouch.Foundation;
 #else
-using MonoMac.AppKit;
 using MonoMac.Foundation;
 #endif
 
