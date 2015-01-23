@@ -142,7 +142,4 @@
       <Name>ReactiveUI_Android</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Android\" />
-  </ItemGroup>
 </Project>
