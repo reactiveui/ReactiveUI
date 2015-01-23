@@ -1,12 +1,18 @@
-﻿using System;
+using System;
 using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Subjects;
 using System.Reactive.Linq;
-using MonoMac.Foundation;
-using MonoMac.AppKit;
 using System.Reactive.Disposables;
 using Splat;
+
+#if UNIFIED
+using AppKit;
+using Foundation;
+#else
+using MonoMac.AppKit;
+using MonoMac.Foundation;
+#endif
 
 namespace ReactiveUI
 {

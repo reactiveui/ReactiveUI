@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.Reactive;
@@ -6,17 +6,24 @@ using System.Reactive.Concurrency;
 using System.Reactive.Subjects;
 
 #if UNIFIED
-using CoreGraphics;
 using Foundation;
-using UIKit;
+using CoreGraphics;
 #elif UIKIT
 using MonoTouch.Foundation;
 using MonoTouch.UIKit;
 #else
-using MonoMac.Foundation;
 using MonoMac.AppKit;
+using MonoMac.Foundation;
 using UIControl = MonoMac.AppKit.NSControl;
 #endif
+
+#if UNIFIED && UIKIT
+using UIKit;
+#elif UNIFIED && COCOA
+using AppKit;
+using UIControl = AppKit.NSControl;
+#endif
+
 
 namespace ReactiveUI
 {

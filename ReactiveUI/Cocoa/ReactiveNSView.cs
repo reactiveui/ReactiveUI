@@ -1,24 +1,13 @@
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics.Contracts;
 using System.Drawing;
-using System.Linq;
 using System.Reactive;
 using System.Reactive.Concurrency;
-using System.Reactive.Disposables;
 using System.Reactive.Subjects;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Runtime.Serialization;
-using System.Threading;
-using Splat;
 
 #if UNIFIED
 using CoreGraphics;
 using Foundation;
-using NSView = UIKit.UIView;
-using UIKit;
 #elif UIKIT
 using MonoTouch.Foundation;
 using MonoTouch.UIKit;
@@ -26,6 +15,13 @@ using NSView = MonoTouch.UIKit.UIView;
 #else
 using MonoMac.AppKit;
 using MonoMac.Foundation;
+#endif
+
+#if UNIFIED && UIKIT
+using NSView = UIKit.UIView;
+using UIKit;
+#elif UNIFIED && COCOA
+using AppKit;
 #endif
 
 namespace ReactiveUI
