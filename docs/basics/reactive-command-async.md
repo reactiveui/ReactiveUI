@@ -46,7 +46,7 @@ LoadUsersAndAvatars = ReactiveCommand.CreateAsyncTask(async _ => {
     return users;
 });
 
-LoadUsersAndAvatars.ToProperty(this, x => x.Users, ref users);
+LoadUsersAndAvatars.ToProperty(this, x => x.Users, out users);
 
 LoadUsersAndAvatars.ThrownExceptions
     .Subscribe(ex => this.Log().WarnException("Failed to load users", ex));
