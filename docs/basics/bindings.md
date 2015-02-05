@@ -24,6 +24,35 @@ implement it differently:
   RaiseAndSetIfChanged, *or* implement `INotifyPropertyChanged` on your View and
   ensure that ViewModel signals changes.
 
+```csharp
+public partial class NotificationsListViewController : ReactiveTableViewController, IViewFor<NotificationsListViewModel>
+{
+    public NotificationsListViewController()
+    {
+    }
+
+    public override void ViewDidLoad()
+    {
+        base.ViewDidLoad();
+        ViewModel = new NotificationsListViewModel();
+        // ... view stuff
+    }
+
+    NotificationsListViewModel _ViewModel;
+    public NotificationsListViewModel ViewModel
+    {
+        get { return _ViewModel; }
+        set { this.RaiseAndSetIfChanged(ref _ViewModel, value); }
+    }
+
+    object IViewFor.ViewModel
+    {
+        get { return _ViewModel; }
+        set { ViewModel = (NotificationsListViewModel)value; }
+    }
+}
+```
+
 * **Android:** - change your base class to one of the Reactive Activity /
   Fragment classes (i.e. ReactiveActivity<T>), *or* implement
   `INotifyPropertyChanged` on your View and ensure that ViewModel signals
