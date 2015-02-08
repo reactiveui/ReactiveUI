@@ -1,5 +1,7 @@
-﻿#if UNIFIED && UIKIT
+#if UNIFIED && UIKIT
 using NSView = UIKit.UIView;
+#elif UNIFIED && COCOA
+using AppKit;
 #elif UIKIT
 using NSView = MonoTouch.UIKit.UIView;
 #else

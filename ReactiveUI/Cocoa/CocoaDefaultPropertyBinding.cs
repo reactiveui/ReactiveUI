@@ -1,8 +1,10 @@
 using System;
 using System.Linq;
 
-#if UNIFIED
+#if UNIFIED && UIKIT
 using UIKit;
+#elif UNIFIED && COCOA
+using AppKit;
 #elif UIKIT
 using MonoTouch.UIKit;
 #else
