@@ -2,10 +2,12 @@ using System;
 using System.Reactive.Linq;
 using ReactiveUI;
 
-#if UNIFIED
+#if UNIFIED && UIKIT
 using UIKit;
 using NSView = UIKit.UIView;
 using NSViewController = UIKit.UIViewController;
+#elif UNIFIED && COCOA
+using AppKit;
 #elif UIKIT
 using MonoTouch.UIKit;
 using NSView = MonoTouch.UIKit.UIView;

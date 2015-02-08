@@ -1,16 +1,14 @@
 using System;
 using System.Linq;
-using System.Linq.Expressions;
+using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using System.Reflection;
 using System.Windows.Input;
 using ReactiveUI;
-using System.Reactive.Disposables;
-using System.Reactive.Linq;
 
 #if UNIFIED
 using Foundation;
 using ObjCRuntime;
-using UIKit;
 #elif UIKIT
 using MonoTouch.Foundation;
 using MonoTouch.ObjCRuntime;
@@ -19,6 +17,12 @@ using MonoTouch.UIKit;
 using MonoMac.Foundation;
 using MonoMac.AppKit;
 using MonoMac.ObjCRuntime;
+#endif
+
+#if UNIFIED && UIKIT
+using UIKit;
+#elif UNIFIED && COCOA
+using AppKit;
 #endif
 
 namespace ReactiveUI
