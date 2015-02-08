@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Runtime.CompilerServices;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;

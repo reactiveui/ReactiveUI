@@ -1,30 +1,26 @@
 using System;
-using System.Drawing;
-using System.Runtime.Serialization;
-using System.Reactive.Subjects;
-using System.Reactive.Concurrency;
-using System.Reflection;
 using System.ComponentModel;
-using System.Linq;
-using System.Threading;
-using System.Reactive.Disposables;
-using System.Diagnostics.Contracts;
-using System.Runtime.CompilerServices;
-using System.Collections.Generic;
-using Splat;
 using System.Reactive;
+using System.Reactive.Subjects;
 
 #if UNIFIED
-using UIKit;
 using Foundation;
-using NSViewController = UIKit.UIViewController;
 #elif UIKIT
 using MonoTouch.UIKit;
 using MonoTouch.Foundation;
 using NSViewController = MonoTouch.UIKit.UIViewController;
+using NSView = MonoTouch.UIKit.UIView;
 #else
 using MonoMac.AppKit;
 using MonoMac.Foundation;
+#endif
+
+#if UNIFIED && UIKIT
+using UIKit;
+using NSViewController = UIKit.UIViewController;
+using NSView = UIKit.UIView;
+#elif UNIFIED && COCOA
+using AppKit;
 #endif
 
 namespace ReactiveUI
@@ -134,12 +130,12 @@ namespace ReactiveUI
 #if UIKIT || UNIFIED
     static class UIViewControllerMixins 
     {
-        internal static void ActivateSubviews(this UIViewController This, bool activate) 
+        internal static void ActivateSubviews(this NSViewController This, bool activate) 
         {
             This.View.ActivateSubviews(activate);
         }
 
-        static void ActivateSubviews(this UIView This, bool activate) 
+        static void ActivateSubviews(this NSView This, bool activate) 
         {
             foreach (var view in This.Subviews) {
                 var subview = view as ICanForceManualActivation;
