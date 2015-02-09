@@ -17,8 +17,8 @@
     <DebugSymbols>True</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>False</Optimize>
-    <OutputPath>bin\Debug\Xamarin.Mac</OutputPath>
-    <IntermediateOutputPath>obj\Debug\Xamarin.Mac</IntermediateOutputPath>
+    <OutputPath>bin\Debug\Xamarin.Mac10</OutputPath>
+    <IntermediateOutputPath>obj\Debug\Xamarin.Mac10</IntermediateOutputPath>
     <DefineConstants>DEBUG;MONO;COCOA;UNIFIED</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -33,8 +33,8 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <Optimize>True</Optimize>
-    <OutputPath>bin\Release\Xamarin.Mac</OutputPath>
-    <IntermediateOutputPath>obj\Release\Xamarin.Mac</IntermediateOutputPath>
+    <OutputPath>bin\Release\Xamarin.Mac10</OutputPath>
+    <IntermediateOutputPath>obj\Release\Xamarin.Mac10</IntermediateOutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <EnablePackageSigning>False</EnablePackageSigning>
@@ -48,7 +48,7 @@
     <DefineConstants>MONO;COCOA;UNIFIED</DefineConstants>
     <DebugSymbols>true</DebugSymbols>
     <GenerateDocumentation>True</GenerateDocumentation>
-    <DocumentationFile>bin\Release\Xamarin.Mac\ReactiveUI.xml</DocumentationFile>
+    <DocumentationFile>bin\Release\Xamarin.Mac10\ReactiveUI.xml</DocumentationFile>
     <UseRefCounting>false</UseRefCounting>
   </PropertyGroup>
   <ItemGroup>
@@ -58,7 +58,7 @@
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="Splat">
-      <HintPath>..\packages\Splat.1.6.0\lib\MonoMac\Splat.dll</HintPath>
+      <HintPath>..\packages\Splat.1.6.0\lib\Xamarin.Mac10\Splat.dll</HintPath>
     </Reference>
     <Reference Include="System.Reactive.Core">
       <HintPath>..\packages\Rx-Core.2.2.5\lib\net45\System.Reactive.Core.dll</HintPath>
