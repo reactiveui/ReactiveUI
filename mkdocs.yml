@@ -56,6 +56,17 @@ pages:
 - ['logging/nlog.md', 'Logging', 'NLog']
 
 # Error Handling:
+- ['error-handling/index.md', 'Error Handling', 'Introduction']
+- ['error-handling/user-errors.md', 'Error Handling', 'User Errors']
+- ['error-handling/recovery-options.md', 'Error Handling', 'Recovery Options']
+
+# ghuntley [11:52 AM] It should be split into UserErrors (recoverable
+# errors and how to handle them) and then BigBadErrors (i.e. Rx
+# OnErorr() and how to throw a recoverable error?)
+# 
+# ghuntley [11:53 AM] Introduction to Rx.OnError(), introduction to
+# userror, introduction to recoverycommands and then
+# production/consumption of all of the concepts
 
 # Testing:
 
