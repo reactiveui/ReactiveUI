@@ -18,7 +18,7 @@
     <DebugType>full</DebugType>
     <Optimize>False</Optimize>
     <OutputPath>bin\Debug\Xamarin.Mac</OutputPath>
-    <IntermediateOutputPath>obj\Debug\MonoMac</IntermediateOutputPath>
+    <IntermediateOutputPath>obj\Debug\Xamarin.Mac</IntermediateOutputPath>
     <DefineConstants>DEBUG;MONO;COCOA;UNIFIED</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -34,7 +34,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <Optimize>True</Optimize>
     <OutputPath>bin\Release\Xamarin.Mac</OutputPath>
-    <IntermediateOutputPath>obj\Release\MonoMac</IntermediateOutputPath>
+    <IntermediateOutputPath>obj\Release\Xamarin.Mac</IntermediateOutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <EnablePackageSigning>False</EnablePackageSigning>
@@ -48,7 +48,7 @@
     <DefineConstants>MONO;COCOA;UNIFIED</DefineConstants>
     <DebugSymbols>true</DebugSymbols>
     <GenerateDocumentation>True</GenerateDocumentation>
-    <DocumentationFile>bin\Release\MonoMac\ReactiveUI.xml</DocumentationFile>
+    <DocumentationFile>bin\Release\Xamarin.Mac\ReactiveUI.xml</DocumentationFile>
     <UseRefCounting>false</UseRefCounting>
   </PropertyGroup>
   <ItemGroup>
