@@ -31,16 +31,24 @@ pages:
 - ['concepts/reactive-extensions.md', 'Concepts', 'Reactive Extensions']
 - ['concepts/functional-reactive-programming.md', 'Concepts', 'Functional Reactive Programming']
 - ['concepts/model-view-viewmodel.md', 'Concepts', 'Model View ViewModel']
-- ['concepts/commands.md', 'Concepts', 'Commands']
+- ['concepts/commands.md', 'Concepts', 'Commands'] 
 - ['concepts/binding.md', 'Concepts', 'Data & Command Binding']
 
 # Getting Started:
 - ['getting-started/solution-layout.md', 'Getting Started', 'Solution Layout']
 
 # Fundamentals:
-- ['fundamentals/reactive-object.md', 'ReactiveObject', 'Fundamentals']
+- ['fundamentals/reactive-object.md', 'Fundamentals', 'ReactiveObject']
+- ['fundamentals/reactive-list.md', 'Fundamentals', 'ReactiveList']
+- ['fundamentals/reactive-list-create-derived-collection.md', 'Fundamentals', 'Creating Derived Lists']
 
-# Commands:
+# Commands: 
+- ['commands/reactive-command-async.md', 'Commands', 'Async Commands']
+
+
+# Binding:  
+- ['binding/wpf.md', 'Binding', 'WPF']
+- ['binding/ios.md', 'Binding', 'iOS']
 
 # Routing:
 - ['routing/reactiveui.md', 'Routing', 'ReactiveUI']
@@ -48,11 +56,11 @@ pages:
 - ['routing/caliburn-micro.md', 'Routing', 'Caliburn Micro']
 
 # Dependency Injection:
-- ['dependency-injection/index.md', 'Dependency Injection', 'Splat']
+- ['dependency-injection/splat.md', 'Dependency Injection', 'Splat']
 - ['dependency-injection/autofac.md', 'Dependency Injection', 'Autofac']
 
 # Logging:
-- ['logging/index.md', 'Logging', 'Splat']
+- ['logging/splat.md', 'Logging', 'Splat']
 - ['logging/nlog.md', 'Logging', 'NLog']
 
 # Error Handling:
