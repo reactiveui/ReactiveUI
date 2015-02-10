@@ -16,7 +16,7 @@ asynchronous callback procedures, and whatnot.
 That&apos;s right: your mouse is a database of mouse moves and clicks. In the world of Rx, such asynchronous data sources are composed using various combinators 
 in the LINQ sense, allowing things like filters, projections, joins, time-based operations, etc.
 
-Learning resources:
+### Learning resources
 
 * [Becoming a C# Time Lord](http://channel9.msdn.com/Events/TechEd/Australia/2013/DEV422)
 
