@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.30501.0
+VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Tests_Net45", "ReactiveUI.Tests\ReactiveUI.Tests_Net45.csproj", "{6FBDE6EA-2202-4A70-8EE4-7BA6D515952E}"
 EndProject
@@ -56,6 +56,11 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Events_WP81", "ReactiveUI.Events\ReactiveUI.Events_WP81.csproj", "{4F7CE962-4373-4D80-828F-C09FC880A539}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Events_WPA81", "ReactiveUI.Events\ReactiveUI.Events_WPA81.csproj", "{874074FB-21F7-4405-8238-04992B61621C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{0FC3F659-7EA9-4147-BB50-0E2DB7C3973D}"
+	ProjectSection(SolutionItems) = preProject
+		.nuget\packages.config = .nuget\packages.config
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
