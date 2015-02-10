@@ -12,7 +12,7 @@ Three core properties are reflected in here, all of which will be addressed thro
 In particular, the data flow of the operations involved in the problem is not clear at all, and code gets spread out throughout event handlers, 
 asynchronous callback procedures, and whatnot.
 
-* Observable collections By looking at asynchronous computations as data sources, we can leverage the active knowledge of LINQ&apos;s programming model. 
+* Observable collections - By looking at asynchronous computations as data sources, we can leverage the active knowledge of LINQ&apos;s programming model. 
 That&apos;s right: your mouse is a database of mouse moves and clicks. In the world of Rx, such asynchronous data sources are composed using various combinators 
 in the LINQ sense, allowing things like filters, projections, joins, time-based operations, etc.
 
