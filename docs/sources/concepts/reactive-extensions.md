@@ -66,3 +66,5 @@ Completed
 * [101 Rx Samples](http://rxwiki.wikidot.com/101samples)
 
 * [Programming Reactive Extensions and LINQ](http://www.apress.com/programming-reactive-extensions-and-linq?gtmf=s)
+
+* [Reactive Extensions and Your Mouse as Database](http://redsunsoft.com/2015/01/reactive-extensions-rx-mouse-database/)
