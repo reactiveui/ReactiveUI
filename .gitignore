@@ -4,6 +4,7 @@
 # User-specific files
 *.suo
 *.user
+*.bak
 *.sln.docstates
 
 # Build results
@@ -14,6 +15,7 @@
 x64/
 build/
 bld/
+site/
 [Bb]in/
 [Oo]bj/
 
