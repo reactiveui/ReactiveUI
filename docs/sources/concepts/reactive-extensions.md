@@ -16,6 +16,49 @@ asynchronous callback procedures, and whatnot.
 That&apos;s right: your mouse is a database of mouse moves and clicks. In the world of Rx, such asynchronous data sources are composed using various combinators 
 in the LINQ sense, allowing things like filters, projections, joins, time-based operations, etc.
 
+## Code Sample 
+
+1. Create a new Console Application
+
+2. Add the Reactive Extension using NuGet package manager
+```
+PM> Install-Package Rx-Main
+```
+
+3. Copy and paste this code
+```cs
+static void Main(string[] args)
+{
+    var blocker = new ManualResetEvent(false);
+    IObservable<long> observable = Observable.Interval(TimeSpan.FromSeconds(1));
+    var observer = observable
+       .Take(3)
+       .Subscribe(
+           value => { Console.WriteLine("{0:T} {1}", DateTime.UtcNow, value); }, 
+           exception => { Console.WriteLine(exception.Message); },
+           () => {
+               Console.WriteLine("Completed");
+               blocker.Set();
+           }
+       );
+    blocker.WaitOne(); 
+}
+```
+
+In the first line we declare a simple blocking mechanism. Than we proceed with a defition of interval based Observable, which will fire an event every second. 
+We follow with constructing an observer, instructing it to take only 3 published events, and during subscription, we specify what it needs to do with each value - display along with current time, 
+encountered exception - print an error message, as well as upon completion of the sequence it is subscribing to - print completion message and release blocker defined in line one.
+
+
+It will print
+```
+4:52:27 AM 0
+4:52:28 AM 1
+4:52:29 AM 2
+Completed
+```
+
+
 ### Learning resources
 
 * [Becoming a C# Time Lord](http://channel9.msdn.com/Events/TechEd/Australia/2013/DEV422)
