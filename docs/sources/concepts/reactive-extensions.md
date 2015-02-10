@@ -20,6 +20,6 @@ in the LINQ sense, allowing things like filters, projections, joins, time-based 
 
 * [Becoming a C# Time Lord](http://channel9.msdn.com/Events/TechEd/Australia/2013/DEV422)
 
-* [101 Rx Sample](http://rxwiki.wikidot.com/101samples)
+* [101 Rx Samples](http://rxwiki.wikidot.com/101samples)
 
 * [Programming Reactive Extensions and LINQ](http://www.apress.com/programming-reactive-extensions-and-linq?gtmf=s)
