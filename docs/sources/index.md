@@ -19,3 +19,5 @@ reactiveui/)
 
 Ask your question on
 [StackOverflow](http://stackoverflow.com/questions/tagged/reactiveui).
+
+Also see historical PDF which explains concept/origins of RxUI - http://web.archive.org/web/20120714082000/http://www.reactiveui.net/welcome/pdf
