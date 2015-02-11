@@ -35,6 +35,7 @@ pages:
 - ['concepts/binding.md', 'Concepts', 'Data & Command Binding']
 
 # Getting Started:
+- ['getting-started/ReactiveUI-101.md', 'Getting Started', 'ReactiveUI 101']
 - ['getting-started/solution-layout.md', 'Getting Started', 'Solution Layout']
 
 # Fundamentals:
