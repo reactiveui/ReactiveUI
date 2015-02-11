@@ -247,7 +247,7 @@ namespace RxUISample
         string _SearchTerm;
         public string SearchTerm {
             get { return _SearchTerm; }
-            set { this.RaiseAndSetIfChanged(x => x.SearchTerm, value); }
+            set { this.RaiseAndSetIfChanged(ref _SearchTerm, value); }
         }
 
         // We will describe this later, but ReactiveAsyncCommand is a Command
