@@ -191,6 +191,7 @@ Our ViewModel is now complete.
 
 ## MainWindow.xaml.cs (code behind)
 
+ 
 ```csharp
 using System;
 using System.Collections.Generic;
@@ -385,3 +386,4 @@ namespace RxUISample
     }
 }
 ```
+ 
