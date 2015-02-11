@@ -12,24 +12,24 @@ In Visual Studio create a new WPF application (Please not as of ReactiveUI v6.x 
 Our view has been already created for us, the MainWindow, so we will proceed with creating our ViewModel.
 Add a new field
 
-```cs
+```csharp
 public AppViewModel ViewModel { get; private set;} 
 ```
 
 Than assign it a new value inside the MainWindow constructor:
 
-```cs
+```csharp
 public MainWindow()
 {
   ViewModel = new AppViewModel();
   InitializeComponent();
-}
+}  
 ```
 
 To make thing simple, we will be breaking some cardinal rules here and place our ViewModel class in the same file as
 our MainWindow:
 
-```cs
+```csharp
 public class AppViewModel : ReactiveObject
 {
   string _searchTerm;
@@ -94,15 +94,15 @@ Otherwise we would not be able to know when it was changed.
 
 The ExecuteSearch is basically an asynchronous task, executing in the background.
   
-In cases when we don't need to provide for two-way binding between teh View and the ViewModel, we can utilize
+In cases when we don't need to provide for two-way binding between the View and the ViewModel, we can utilize
 one of many ReactiveUI Helpers, to notify Observers of a changing read-only value in the ViewModel. We use the
 ObservableAsPropertyHelper twice, once to turn a generic List<T> into an observable read-only collection,
 and then to change the visibility of an indicator to show that a request is currently executing.
 
 This also works in the opposite direction, when we take the SearchTerm property and turn it into an observable,
-so every time a change occurs in the UI, we get notify. Using Reactive Extensions, we trottle those events,
+so every time a change occurs in the UI, we get notified. Using Reactive Extensions, we trottle those events,
 and ensure that the search occurs no sooner than 800ms after the last keystroke. If the user did not change the
-last value, or if the search teram is blank, we ignore the event completely.
+last value, or if the search term is blank, we ignore the event completely.
 
 Using the ItemsInFlight property of ReactiveAsyncCommand, we derrive another observable to be able change the visibility
 of the "processing indicator".
@@ -110,7 +110,7 @@ of the "processing indicator".
 The GetSearchResultsFromFlickr method gets invoke every time there is a throttled change in the UI,
 so let's define what should happen when a user executes a new search.
 
-```cs
+```csharp
 public static List<FlickrPhoto>
     GetSearchResultsFromFlickr(string searchTerm)
 {
@@ -141,7 +141,7 @@ Our ViewModel is now complete.
 
 ## MainWindow.xaml
 
-```xaml
+```xml
 ﻿<Window x:Class="RxUISample.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -191,7 +191,7 @@ Our ViewModel is now complete.
 
 ## MainWindow.xaml.cs (code behind)
 
-```cs
+```csharp
 using System;
 using System.Collections.Generic;
 using System.Globalization;
