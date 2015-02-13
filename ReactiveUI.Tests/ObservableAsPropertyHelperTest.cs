@@ -11,6 +11,40 @@ using Microsoft.Reactive.Testing;
 
 namespace ReactiveUI.Tests
 {
+    public class OAPHViewModel : ReactiveObject
+    {
+        public OAPHViewModel(IObservable<Tuple<int, string>> obs1,
+            IObservable<int> obs2)
+        {
+            obs2.ToProperty(this, x => x.Property2, out _Property2);
+
+            obs1
+                .Where(x => x.Item1 == Property2)
+                .Select(x => x.Item2)
+                .Do(x => Console.WriteLine("Im gonna hit it with {0}!", x))
+                .ToProperty(this, x => x.Property1, out _Property1);
+
+            this.WhenAnyValue(x => x.Property2)
+                .Select(x =>
+                {
+                    return "SomeString";
+                })
+                .ToProperty(this, x => x.Property1, out _Property1);
+        }
+
+        private ObservableAsPropertyHelper<string> _Property1;
+        public string Property1
+        {
+            get { return _Property1.Value; }
+        }
+
+        private ObservableAsPropertyHelper<int> _Property2;
+        public int Property2
+        {
+            get { return _Property2.Value; }
+        }
+    }
+
     public class ObservableAsPropertyHelperTest
     {
         [Fact]
@@ -130,6 +164,20 @@ namespace ReactiveUI.Tests
             Assert.Equal(2, resultChanged.Count);
             Assert.Equal("Foo", resultChanging[1].Value);
             Assert.Equal("Baz", resultChanged[1].Value);
+        }
+
+        [Fact]
+        public void ToPropertyShouldFireInThePresenceOfWhenAny()
+        {
+            var sub1 = new Subject<Tuple<int, string>>();
+            var sub2 = new Subject<int>();
+            var sut = new OAPHViewModel(sub1, sub2);
+
+            sub2.OnNext(1);
+            sub1.OnNext(new Tuple<int, string>(1, "ExpectedString"));
+
+            Assert.Equal(1, sut.Property2);
+            Assert.Equal("ExpectedString", sut.Property1);
         }
     }
 }
