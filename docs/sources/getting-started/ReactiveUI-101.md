@@ -31,62 +31,82 @@ our MainWindow:
 
 ```csharp
 public class AppViewModel : ReactiveObject
-{
-  string _searchTerm;
-  public string SearchTerm {
-    get { return _searchTerm; }
-    set { this.RaiseAndSetIfChanged( ref _searchTerm, value); }
-  }
-  
-  public ReactiveAsyncCommand ExecuteSearch { get; protected set; }
-  
-  ObservableAsPropertyHelper<List<FlickrPhoto>> _searchResults;
-  public List<FlickrPhoto> SearchResults {
-    get { return _searchResults; }
-    set { this.RaiseAndSetIfChanged( ref _searchResults, value ); }
-  }
-  
-  ObservableAsPropertyHelper<Visibility> _SpinnerVisibility;
-  public Visibility SpinnerVisibility {
-    get { return _SpinnerVisibility.Value; }
-  }
-  
-  public AppViewModel(
-    ReactiveAsyncCommand testExecuteSearchCommand = null,
-    IObservable<List<FlickrPhoto>> testSearchResults = null)
-  {
-    ExecuteSearch = testExecuteSearchCommand ??
-        new ReactiveAsyncCommand();
-    
-    this.ObservableForProperty(x => x.SearchTerm)
-        .Throttle(TimeSpan.FromMilliseconds(800),
-           RxApp.DeferredScheduler)
-        .Select(x => x.Value)
-        .DistinctUntilChanged()
-        .Where(x => !String.IsNullOrWhiteSpace(x))
-        .InvokeCommand(ExecuteSearch);
-    
-    _SpinnerVisibility = ExecuteSearch.ItemsInflight
-        .Select(x => x > 0 ? Visibility.Visible :
-              Visibility.Collapsed)
-        .ToProperty(this, x => x.SpinnerVisibility,
-          Visibility.Hidden);
-    
-    IObservable<List<FlickrPhoto>> results;
-    
-    if (testSearchResults != null) {
-        results = testSearchResults;
-    } else {
-        results =
-            ExecuteSearch.RegisterAsyncFunction(
-            term => GetSearchResultsFromFlickr((string)term));
+    {
+        string _SearchTerm;
+        public string SearchTerm
+        {
+            get { return _SearchTerm; }
+            set { this.RaiseAndSetIfChanged(ref _SearchTerm, value); }
+        }
+
+        public ReactiveCommand<object> ExecuteSearch { get; protected set; }
+
+        ObservableAsPropertyHelper<List<FlickrPhoto>> _SearchResults;
+        public List<FlickrPhoto> SearchResults
+        {
+            get { return _SearchResults.Value; }
+        }
+
+        ObservableAsPropertyHelper<Visibility> _SpinnerVisibility;
+        public Visibility SpinnerVisibility
+        {
+            get { return _SpinnerVisibility.Value; }
+        }
+
+        public AppViewModel(ReactiveCommand<object> testExecuteSearchCommand = null, IObservable<List<FlickrPhoto>> testSearchResults = null)
+        {
+            ExecuteSearch = testExecuteSearchCommand ?? ReactiveCommand.Create();
+
+            this.ObservableForProperty(x => x.SearchTerm)
+                .Throttle(TimeSpan.FromMilliseconds(800), RxApp.TaskpoolScheduler)
+                .Select(x => x.Value)
+                .DistinctUntilChanged()
+                .Where(x => !String.IsNullOrWhiteSpace(x))
+                .InvokeCommand(ExecuteSearch);
+
+            _SpinnerVisibility = ExecuteSearch.IsExecuting.Select(x=> x? Visibility.Visible : Visibility.Collapsed)                
+                .ToProperty(this, x => x.SpinnerVisibility, Visibility.Hidden);
+
+
+            IObservable<List<FlickrPhoto>> results;
+            if (testSearchResults != null)
+            {
+                results = testSearchResults;
+            }
+            else
+            {
+                results = ExecuteSearch.Select(term => GetSearchResultsFromFlickr((string)term));
+            }
+
+            _SearchResults = results.ToProperty(this, x => x.SearchResults, new List<FlickrPhoto>());
+        }
+
+        public static List<FlickrPhoto> GetSearchResultsFromFlickr(string searchTerm)
+        {
+            var doc = XDocument.Load(String.Format(CultureInfo.InvariantCulture,
+                "http://api.flickr.com/services/feeds/photos_public.gne?tags={0}&format=rss_200",
+                HttpUtility.UrlEncode(searchTerm)));
+
+            if (doc.Root == null)
+                return null;
+
+            var titles = doc.Root.Descendants("{http://search.yahoo.com/mrss/}title")
+                .Select(x => x.Value);
+
+            var tagRegex = new Regex("<[^>]+>", RegexOptions.IgnoreCase);
+            var descriptions = doc.Root.Descendants("{http://search.yahoo.com/mrss/}description")
+                .Select(x => tagRegex.Replace(HttpUtility.HtmlDecode(x.Value), ""));
+
+            var items = titles.Zip(descriptions,
+                (t, d) => new FlickrPhoto { Title = t, Description = d }).ToArray();
+
+            var urls = doc.Root.Descendants("{http://search.yahoo.com/mrss/}thumbnail")
+                .Select(x => x.Attributes("url").First().Value);
+
+            var ret = items.Zip(urls, (item, url) => { item.Url = url; return item; }).ToList();
+            return ret;
+        }
     }
-    
-    _SearchResults = results.ToProperty(
-        this,
-        x => x.SearchResults,
-        new List<FlickrPhoto>());
-  }
 ```
 
 The goal of the syntax of ReactiveUI for read-write properties is to notify Observers that a property has changed. 
@@ -111,29 +131,30 @@ The GetSearchResultsFromFlickr method gets invoke every time there is a throttle
 so let's define what should happen when a user executes a new search.
 
 ```csharp
-public static List<FlickrPhoto>
-    GetSearchResultsFromFlickr(string searchTerm)
+public static List<FlickrPhoto> GetSearchResultsFromFlickr(string searchTerm)
 {
-  var doc =
-     XDocument.Load(String.Format(CultureInfo.InvariantCulture,
-        "http://api.flickr.com/services/feeds/photos_public.gne?
-          tags={0}&format=rss_200",
+    var doc = XDocument.Load(String.Format(CultureInfo.InvariantCulture,
+        "http://api.flickr.com/services/feeds/photos_public.gne?tags={0}&format=rss_200",
         HttpUtility.UrlEncode(searchTerm)));
-  if (doc.Root == null)
-                return null;
-            var titles = doc.Root.Descendants("{http://search.yahoo.com/mrss/}title")
-                .Select(x => x.Value);
-            var tagRegex = new Regex("<[^>]+>", RegexOptions.IgnoreCase);
-            var descriptions =
-  doc.Root.Descendants("{http://search.yahoo.com/mrss/}description")
-                .Select(x => tagRegex.Replace(HttpUtility.HtmlDecode(x.Value), ""));
-            var items = titles.Zip(descriptions,
-                (t, d) => new FlickrPhoto { Title = t, Description = d }).ToArray();
-            var urls = doc.Root.Descendants("{http://search.yahoo.com/mrss/}thumbnail")
-                .Select(x => x.Attributes("url").First().Value);
-            var ret = items.Zip(urls, (item, url) => { item.Url = url; return item;
-  }).ToList();
-  return ret; 
+
+    if (doc.Root == null)
+        return null;
+
+    var titles = doc.Root.Descendants("{http://search.yahoo.com/mrss/}title")
+        .Select(x => x.Value);
+
+    var tagRegex = new Regex("<[^>]+>", RegexOptions.IgnoreCase);
+    var descriptions = doc.Root.Descendants("{http://search.yahoo.com/mrss/}description")
+        .Select(x => tagRegex.Replace(HttpUtility.HtmlDecode(x.Value), ""));
+
+    var items = titles.Zip(descriptions,
+        (t, d) => new FlickrPhoto { Title = t, Description = d }).ToArray();
+
+    var urls = doc.Root.Descendants("{http://search.yahoo.com/mrss/}thumbnail")
+        .Select(x => x.Attributes("url").First().Value);
+
+    var ret = items.Zip(urls, (item, url) => { item.Url = url; return item; }).ToList();
+    return ret;
 }
 ```
 
@@ -142,46 +163,46 @@ Our ViewModel is now complete.
 ## MainWindow.xaml
 
 ```xml
-﻿<Window x:Class="RxUISample.MainWindow"
+﻿<Window x:Class="FlickrBrowser.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         x:Name="Window" Height="350" Width="525">
-	<Window.Resources>
-		<DataTemplate x:Key="PhotoDataTemplate">
-			<Grid MaxHeight="100">
-				<Grid.ColumnDefinitions>
-					<ColumnDefinition Width="Auto" />
-					<ColumnDefinition Width="*" />
-				</Grid.ColumnDefinitions>
-				
-				<Image Source="{Binding Url, IsAsync=True}" Margin="6" MaxWidth="128"
-					   HorizontalAlignment="Center" VerticalAlignment="Center" />
-				
-				<StackPanel Grid.Column="1" Margin="6">
-					<TextBlock FontSize="14" FontWeight="Bold" Text="{Binding Title}" />
-					<TextBlock FontStyle="Italic" Text="{Binding Description}" 
-							   TextWrapping="WrapWithOverflow" Margin="6" />
-				</StackPanel>
-			</Grid>
-		</DataTemplate>
-	</Window.Resources>
-    
+    <Window.Resources>
+        <DataTemplate x:Key="PhotoDataTemplate">
+            <Grid MaxHeight="100">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <Image Source="{Binding Url, IsAsync=True}" Margin="6" MaxWidth="128"
+                       HorizontalAlignment="Center" VerticalAlignment="Center" />
+
+                <StackPanel Grid.Column="1" Margin="6">
+                    <TextBlock FontSize="14" FontWeight="Bold" Text="{Binding Title}" />
+                    <TextBlock FontStyle="Italic" Text="{Binding Description}" 
+                               TextWrapping="WrapWithOverflow" Margin="6" />
+                </StackPanel>
+            </Grid>
+        </DataTemplate>
+    </Window.Resources>
+
     <Grid DataContext="{Binding ViewModel, ElementName=Window}" Margin="12">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="*" />
             <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
-        
+
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        
+
         <TextBlock FontSize="16" FontWeight="Bold" VerticalAlignment="Center">Search For:</TextBlock>
         <TextBox Grid.Column="1" Margin="6,0,0,0" Text="{Binding SearchTerm, UpdateSourceTrigger=PropertyChanged}"/>
         <TextBlock Grid.Column="2" Margin="6,0,0,0" FontSize="16" FontWeight="Bold" Text="..." Visibility="{Binding SpinnerVisibility}" />
-        
+
         <ListBox Grid.ColumnSpan="3" Grid.Row="1" Margin="0,6,0,0" 
                  ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                  ItemsSource="{Binding SearchResults}" ItemTemplate="{DynamicResource PhotoDataTemplate}"  />
@@ -203,9 +224,8 @@ using System.Web;
 using System.Windows;
 using System.Xml.Linq;
 using ReactiveUI;
-using ReactiveUI.Xaml;
 
-namespace RxUISample
+namespace FlickrBrowser
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -228,7 +248,7 @@ namespace RxUISample
     // Create a simple model class to store our Flickr results - since we will 
     // never update the properties once we create the object, we don't have to
     // use ReactiveObject, just good-old auto-properties.
-    public class FlickrPhoto 
+    public class FlickrPhoto
     {
         public string Title { get; set; }
         public string Description { get; set; }
@@ -246,7 +266,8 @@ namespace RxUISample
         // when it has changed!
 
         string _SearchTerm;
-        public string SearchTerm {
+        public string SearchTerm
+        {
             get { return _SearchTerm; }
             set { this.RaiseAndSetIfChanged(ref _SearchTerm, value); }
         }
@@ -255,7 +276,7 @@ namespace RxUISample
         // (like "Open", "Copy", "Delete", etc), that manages a task running
         // in the background.
 
-        public ReactiveAsyncCommand ExecuteSearch { get; protected set; }
+        public ReactiveCommand<object> ExecuteSearch { get; protected set; }
 
 
         /* ObservableAsPropertyHelper
@@ -271,7 +292,8 @@ namespace RxUISample
          */
 
         ObservableAsPropertyHelper<List<FlickrPhoto>> _SearchResults;
-        public List<FlickrPhoto> SearchResults {
+        public List<FlickrPhoto> SearchResults
+        {
             get { return _SearchResults.Value; }
         }
 
@@ -282,13 +304,14 @@ namespace RxUISample
         // some other property)
 
         ObservableAsPropertyHelper<Visibility> _SpinnerVisibility;
-        public Visibility SpinnerVisibility {
+        public Visibility SpinnerVisibility
+        {
             get { return _SpinnerVisibility.Value; }
         }
 
-        public AppViewModel(ReactiveAsyncCommand testExecuteSearchCommand = null, IObservable<List<FlickrPhoto>> testSearchResults = null)
+        public AppViewModel(ReactiveCommand<object> testExecuteSearchCommand = null, IObservable<List<FlickrPhoto>> testSearchResults = null)
         {
-            ExecuteSearch = testExecuteSearchCommand ?? new ReactiveAsyncCommand();
+            ExecuteSearch = testExecuteSearchCommand ?? ReactiveCommand.Create();
 
             /* Creating our UI declaratively
              * 
@@ -315,7 +338,7 @@ namespace RxUISample
             // and calls the Execute method on the ExecuteSearch Command, after 
             // making sure the Command can be executed via calling CanExecute.
             this.ObservableForProperty(x => x.SearchTerm)
-                .Throttle(TimeSpan.FromMilliseconds(800), RxApp.DeferredScheduler)
+                .Throttle(TimeSpan.FromMilliseconds(800), RxApp.TaskpoolScheduler)
                 .Select(x => x.Value)
                 .DistinctUntilChanged()
                 .Where(x => !String.IsNullOrWhiteSpace(x))
@@ -327,16 +350,13 @@ namespace RxUISample
             // the search is running". RxUI lets us write these kinds of 
             // statements in code.
             //
-            // ExecuteSearch has an IObservable<int> called ItemsInFlight that
-            // fires every time a new item starts or stops. We Select() that into
-            // a Visibility (0 = Collapsed, > 0 = Visible), then we will use RxUI's
+            // ExecuteSearch has an IObservable<bool> called IsExecuting that
+            // fires every time the command changes execution state. We Select() that into
+            // a Visibility then we will use RxUI's
             // ToProperty operator, which is a helper to create an 
             // ObservableAsPropertyHelper object.
-            //
-            // Essentially, we're saying here, "The value of SpinnerVisibility is
-            // the in-flight items Selected into a Visibility"
-            _SpinnerVisibility = ExecuteSearch.ItemsInflight
-                .Select(x => x > 0 ? Visibility.Visible : Visibility.Collapsed)
+
+            _SpinnerVisibility = ExecuteSearch.IsExecuting.Select(x=> x? Visibility.Visible : Visibility.Collapsed)                
                 .ToProperty(this, x => x.SpinnerVisibility, Visibility.Hidden);
 
             // Here, we're going to actually describe what happens when the Command
@@ -348,10 +368,13 @@ namespace RxUISample
             // calls Execute, we eventually end up with a new list.
 
             IObservable<List<FlickrPhoto>> results;
-            if (testSearchResults != null) {
+            if (testSearchResults != null)
+            {
                 results = testSearchResults;
-            } else {
-                results = ExecuteSearch.RegisterAsyncFunction(term => GetSearchResultsFromFlickr((string)term));
+            }
+            else
+            {
+                results = ExecuteSearch.Select(term => GetSearchResultsFromFlickr((string)term));
             }
 
             // ...which we then immediately put into the SearchResults Property.
