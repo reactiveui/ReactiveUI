@@ -141,6 +141,7 @@
     <None Include="packages.ReactiveUI.Tests_iOS.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IndexNormalizerTest.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="AppDelegate.cs" />
     <Compile Include="ActivationTest.cs" />
