@@ -82,6 +82,7 @@
     <Compile Include="Cocoa\ViewModelViewHost.cs" />
     <Compile Include="ExpressionMixins.cs" />
     <Compile Include="ExpressionRewriter.cs" />
+    <Compile Include="IndexNormalizer.cs" />
     <Compile Include="Platform\FlexibleCommandBinder.cs" />
     <Compile Include="Platform\ComponentModelTypeConverter.cs" />
     <Compile Include="Platform\Registrations.cs" />
