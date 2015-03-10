@@ -65,6 +65,12 @@
         }
     }
 
+    // takes a batch of updates in their natural order (i.e. the order they occurred in the client code) and normalizes them to
+    // something iOS can consume when performing batch updates to a table or collection view
+    // iOS requires that all deletes be specified first with indexes relative to the source data *before* any insertions are applied
+    // it then requires insertions be specified next relative to the source data *after* any deletions are applied
+    // this code also de-duplicates as necessary. The simplest possible scenario for this is adding and immediately deleting an
+    // item. iOS should never even be told about this set of updates because they cancel each other out.
     public static class IndexNormalizer
     {
         public static IList<Update> Normalize(IEnumerable<Update> updates)
@@ -78,6 +84,8 @@
                 .ToList();
         }
 
+        // find all updates that cancel each other out, and mark them as duplicates
+        // they're still required for subsequent index calculations, but ultimately they won't be returned from the Normalize method
         private static void MarkDuplicates(IList<Update> updates)
         {
             for (var updateIndex = 1; updateIndex < updates.Count; ++updateIndex)
@@ -111,6 +119,7 @@
             }
         }
 
+        // calculate the index for an update
         private static int CalculateUpdateIndex(IList<Update> updates, int updateIndex)
         {
             switch (updates[updateIndex].Type)
@@ -124,6 +133,14 @@
             }
         }
 
+        // calculate the index for an addition update
+        // the formula is:
+        //   Ia = Io + Na - Nd
+        // where:
+        //   Ia = addition index
+        //   Io = the addition's original index (as specified by client code)
+        //   Na = the number of subsequent addition updates whose original index is <= the running (calculated) index of the update whose index is being calculated
+        //   Nd = the number of subsequent deletion updates whose original index is < the running (calculated) index of the update whose index is being calculated
         private static int CalculateAdditionIndex(IList<Update> updates, int start, int count, int updateIndex)
         {
             var update = updates[updateIndex];
@@ -158,6 +175,14 @@
             return runningCalculation;
         }
 
+        // calculate the index for a deletion update
+        // the formula is:
+        //    Id = Io + Nd - Na
+        // where:
+        //    Id = deletion index
+        //    Io = the deletion's original index (as specified by client code)
+        //    Nd = the number of prior deletion updates whose original index is <= the running (calculated) index of the update whose index is being calculated
+        //    Na = the number of prior addition updates whose original index is <= the running (calculated) index of the update whose index is being calculated
         private static int CalculateDeletionIndex(IList<Update> updates, int start, int count, int deletionIndex, int originalIndex)
         {
             var runningCalculation = originalIndex;
