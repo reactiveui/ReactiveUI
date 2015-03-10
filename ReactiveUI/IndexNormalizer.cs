@@ -15,12 +15,13 @@
     {
         private readonly UpdateType type;
         private readonly int index;
-        private int? duplicateCounterpartIndex;
+        private readonly bool isDuplicate;
 
-        private Update(UpdateType type, int index)
+        private Update(UpdateType type, int index, bool isDuplicate = false)
         {
             this.type = type;
             this.index = index;
+            this.isDuplicate = isDuplicate;
         }
 
         public UpdateType Type
@@ -33,20 +34,19 @@
             get { return this.index; }
         }
 
-        public int? DuplicateCounterpartIndex
-        {
-            get { return this.duplicateCounterpartIndex; }
-            set { this.duplicateCounterpartIndex = value; }
-        }
-
         public bool IsDuplicate
         {
-            get { return this.duplicateCounterpartIndex.HasValue; }
+            get { return this.isDuplicate; }
         }
 
         public override string ToString()
         {
             return this.type.ToString()[0] + this.index.ToString();
+        }
+
+        public Update AsDuplicate()
+        {
+            return new Update(this.type, this.index, isDuplicate: true);
         }
 
         public static Update Create(UpdateType type, int index)
@@ -67,11 +67,20 @@
 
     public static class IndexNormalizer
     {
-        public static IList<Update> Normalize(IList<Update> updates)
+        public static IList<Update> Normalize(IEnumerable<Update> updates)
         {
-            var results = new List<Update>();
+            var updatesList = updates.ToList();
+            MarkDuplicates(updatesList);
 
-            for (var updateIndex = 0; updateIndex < updates.Count; ++updateIndex)
+            return updatesList
+                .Select((x, i) => x.IsDuplicate ? null : Update.Create(x.Type, CalculateUpdateIndex(updatesList, i)))
+                .Where(x => x != null)
+                .ToList();
+        }
+
+        private static void MarkDuplicates(IList<Update> updates)
+        {
+            for (var updateIndex = 1; updateIndex < updates.Count; ++updateIndex)
             {
                 var update = updates[updateIndex];
 
@@ -79,45 +88,37 @@
                 {
                     var deletionIndex = update.Index;
 
-                    for (var i = 0; i < results.Count; ++i)
+                    for (var i = 0; i < updateIndex; ++i)
                     {
-                        var priorUpdate = results[i];
+                        var priorUpdate = updates[i];
 
                         if (priorUpdate.Type != UpdateType.Add || priorUpdate.IsDuplicate)
                         {
                             continue;
                         }
 
-                        var additionDataIndex = CalculateAdditionIndex(results, 0, results.Count, i);
+                        var additionDataIndex = CalculateAdditionIndex(updates, 0, updateIndex, i);
 
                         if (deletionIndex == additionDataIndex)
                         {
-                            priorUpdate.DuplicateCounterpartIndex = updateIndex;
-                            update.DuplicateCounterpartIndex = i;
+                            updates[i] = priorUpdate.AsDuplicate();
+                            updates[updateIndex] = update.AsDuplicate();
+
                             break;
                         }
                     }
                 }
-
-                results.Add(update);
             }
-
-            results = results
-                .Select((x, i) => x.IsDuplicate ? null : Update.Create(x.Type, CalculateUpdateIndex(results, 0, results.Count, i)))
-                .Where(x => x != null)
-                .ToList();
-
-            return results;
         }
 
-        private static int CalculateUpdateIndex(IList<Update> updates, int start, int count, int updateIndex)
+        private static int CalculateUpdateIndex(IList<Update> updates, int updateIndex)
         {
             switch (updates[updateIndex].Type)
             {
                 case UpdateType.Add:
-                    return CalculateAdditionIndex(updates, start, count, updateIndex);
+                    return CalculateAdditionIndex(updates, 0, updates.Count, updateIndex);
                 case UpdateType.Delete:
-                    return CalculateDeletionIndex(updates, start, count, updateIndex, updates[updateIndex].Index);
+                    return CalculateDeletionIndex(updates, 0, updates.Count, updateIndex, updates[updateIndex].Index);
                 default:
                     throw new NotSupportedException();
             }
