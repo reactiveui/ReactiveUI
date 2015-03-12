@@ -11,8 +11,8 @@
     <AssemblyName>ReactiveUI</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
-    <TargetPlatformVersion>10.0.10010.0</TargetPlatformVersion>
-    <TargetPlatformMinVersion>10.0.10010.0</TargetPlatformMinVersion>
+    <TargetPlatformVersion>10.0.10030.0</TargetPlatformVersion>
+    <TargetPlatformMinVersion>10.0.10030.0</TargetPlatformMinVersion>
     <MinimumVisualStudioVersion>14</MinimumVisualStudioVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -40,7 +40,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Splat">
-      <HintPath>..\packages\Splat.1.6.0\lib\Portable-Win81+Wpa81\Splat.dll</HintPath>
+      <HintPath>..\packages\Splat.1.6.1\lib\NetCore45\Splat.dll</HintPath>
     </Reference>
     <Reference Include="System.Reactive.Core">
       <HintPath>..\packages\Rx-Core.2.2.5\lib\portable-win81+wpa81\System.Reactive.Core.dll</HintPath>
