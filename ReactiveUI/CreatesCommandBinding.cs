@@ -7,7 +7,7 @@ using System.Reflection;
 using System.Windows;
 using System.Windows.Input;
 
-#if WINRT
+#if NETFX_CORE
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Input;
 #endif
@@ -25,9 +25,9 @@ namespace ReactiveUI
             Tuple.Create("Click", typeof (RoutedEventArgs)),
 #endif
             Tuple.Create("TouchUpInside", typeof (EventArgs)),
-#if !MONO && !WINRT && !PORTABLE
+#if !MONO && !NETFX_CORE && !PORTABLE
             Tuple.Create("MouseUp", typeof (MouseButtonEventArgs)),
-#elif WINRT
+#elif NETFX_CORE
             Tuple.Create("PointerReleased", typeof(PointerRoutedEventArgs)),
             Tuple.Create("Tapped", typeof(TappedRoutedEventArgs)),
 #endif
