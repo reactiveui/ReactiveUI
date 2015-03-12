@@ -12,7 +12,7 @@ using System.Reflection;
 using System.Text;
 using Splat;
 
-#if WINRT
+#if NETFX_CORE
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Data;
 #else

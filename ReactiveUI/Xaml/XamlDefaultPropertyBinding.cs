@@ -4,7 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 
-#if WINRT
+#if NETFX_CORE
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -24,11 +24,11 @@ namespace ReactiveUI
             // NB: These are intentionally arranged in priority order from most
             // specific to least specific.
             var items = new[] {
-#if !WINRT
+#if !NETFX_CORE
                 new { Type = typeof(RichTextBox), Property = "Document" },
 #endif
                 new { Type = typeof(Slider), Property = "Value" },
-#if !SILVERLIGHT && !WINRT
+#if !SILVERLIGHT && !NETFX_CORE
                 new { Type = typeof(Expander), Property = "IsExpanded" },
 #endif 
                 new { Type = typeof(ToggleButton), Property = "IsChecked" },

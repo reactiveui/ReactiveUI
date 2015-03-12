@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Reflection;
 
-#if WINRT
+#if NETFX_CORE
 using Windows.UI.Xaml;
 #endif
 
