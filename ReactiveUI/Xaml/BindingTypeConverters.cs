@@ -12,7 +12,7 @@ namespace ReactiveUI
     {
         None = 0,
         Inverse = 1 << 1,
-#if !SILVERLIGHT && !WINRT
+#if !SILVERLIGHT && !NETFX_CORE
         UseHidden = 1 << 2,
 #endif
     }

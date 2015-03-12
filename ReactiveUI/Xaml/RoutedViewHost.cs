@@ -58,7 +58,7 @@ namespace ReactiveUI
 
         public RoutedViewHost()
         {
-#if WINRT
+#if NETFX_CORE
             this.DefaultStyleKey = typeof(RoutedViewHost);
 #endif
             HorizontalContentAlignment = HorizontalAlignment.Stretch;

@@ -54,7 +54,7 @@ namespace ReactiveUI
 
         public ViewModelViewHost()
         {
-#if WINRT
+#if NETFX_CORE
             this.DefaultStyleKey = typeof(ViewModelViewHost);
 #endif
 
