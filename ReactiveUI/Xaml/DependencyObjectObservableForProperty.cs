@@ -74,7 +74,7 @@ namespace ReactiveUI
         Func<DependencyProperty> getDependencyPropertyFetcher(Type type, string propertyName)
         {
             var typeInfo = type.GetTypeInfo();
-#if WINRT
+#if NETFX_CORE
             // Look for the DependencyProperty attached to this property name
             var pi = actuallyGetProperty(typeInfo, propertyName + "Property");
             if (pi != null) {
