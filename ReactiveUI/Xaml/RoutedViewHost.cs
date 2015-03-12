@@ -8,7 +8,7 @@ using System.Windows;
 using ReactiveUI;
 using Splat;
 
-#if WINRT
+#if NETFX_CORE
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 #else
