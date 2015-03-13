@@ -254,6 +254,13 @@ namespace ReactiveUI
         public override int RowsInSection(UITableView tableview, int section)
 #endif
         {
+            // iOS may call this method even when we have no sections, but only if we've overridden
+            // EstimatedHeight(UITableView, NSIndexPath) in our UITableViewSource
+            if (section >= commonSource.NumberOfSections())
+            {
+                return 0;
+            }
+
             return commonSource.RowsInSection((int)section);
         }
 
@@ -293,6 +300,13 @@ namespace ReactiveUI
         public override float GetHeightForHeader(UITableView tableView, int section)
 #endif
         {
+            // iOS may call this method even when we have no sections, but only if we've overridden
+            // EstimatedHeight(UITableView, NSIndexPath) in our UITableViewSource
+            if (section >= commonSource.NumberOfSections())
+            {
+                return 0;
+            }
+
             var header = commonSource.SectionInfo[(int)section].Header;
 
             // NB: -1 is a magic # that causes iOS to use the regular height. go figure.
@@ -305,6 +319,13 @@ namespace ReactiveUI
         public override float GetHeightForFooter(UITableView tableView, int section)
 #endif
         {
+            // iOS may call this method even when we have no sections, but only if we've overridden
+            // EstimatedHeight(UITableView, NSIndexPath) in our UITableViewSource
+            if (section >= commonSource.NumberOfSections())
+            {
+                return 0;
+            }
+
             var footer = commonSource.SectionInfo[(int)section].Footer;
             return footer == null || footer.View == null ? -1 : footer.Height;
         }
