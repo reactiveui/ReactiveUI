@@ -347,7 +347,17 @@ namespace ReactiveUI
 
                         this.Log().Debug("Processing updates for section {0}", section);
 
-                        var allSectionEas = sectionedUpdates.Select(x => x.Item2).ToList();
+                        var allSectionEas = sectionedUpdates
+                            .Select(x => x.Item2)
+                            .ToList();
+
+                        if (allSectionEas.Any(x => x.Action == NotifyCollectionChangedAction.Reset))
+                        {
+                            this.Log().Debug("Section {0} included a reset notification, so reloading that section.", section);
+                            adapter.ReloadSections(new NSIndexSet((nuint)section));
+                            continue;
+                        }
+
                         var updates = allSectionEas
                             .SelectMany(GetUpdatesForEvent)
                             .ToList();
