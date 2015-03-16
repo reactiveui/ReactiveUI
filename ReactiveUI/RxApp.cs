@@ -69,7 +69,7 @@ namespace ReactiveUI
                 LogHost.Default.Warn("ReactiveUI acts differently under a test runner, see the docs\n");
                 LogHost.Default.Warn("for more info about what to expect");
 
-                _MainThreadScheduler = CurrentThreadScheduler.Instance;
+                MainThreadScheduler = CurrentThreadScheduler.Instance;
                 return;
             } else {
                 LogHost.Default.Info("Initializing to normal mode");
