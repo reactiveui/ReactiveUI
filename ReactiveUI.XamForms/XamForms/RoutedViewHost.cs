@@ -23,21 +23,21 @@ namespace ReactiveUI.XamForms
             this.WhenActivated(new Action<Action<IDisposable>>(d => {
                 bool currentlyPopping = false;
 
-                d(this.WhenAnyObservable(x => x.Router.Navigate)
-                    .SelectMany(_ => pageForViewModel(Router.GetCurrentViewModel()))
-                    .SelectMany(x => this.PushAsync(x).ToObservable())
-                    .Subscribe());
-
-                d(this.WhenAnyObservable(x => x.Router.NavigateAndReset)
-                    .SelectMany(_ => pageForViewModel(Router.GetCurrentViewModel()))
-                    .SelectMany(async x => {
+                d (this.WhenAnyObservable (x => x.Router.NavigationStack.Changed)
+                    .Where(_ => Router.NavigationStack.IsEmpty)
+                    .SelectMany (_ => pageForViewModel (Router.GetCurrentViewModel ()))
+                    .SelectMany (async x => {
                         currentlyPopping = true;
-                        await this.PopToRootAsync();
-                        await this.PushAsync(x);
+                        await this.PopToRootAsync ();
                         currentlyPopping = false;
 
                         return x;
                     })
+                    .Subscribe ());
+
+                d(this.WhenAnyObservable(x => x.Router.Navigate)
+                    .SelectMany(_ => pageForViewModel(Router.GetCurrentViewModel()))
+                    .SelectMany(x => this.PushAsync(x).ToObservable())
                     .Subscribe());
 
                 d(this.WhenAnyObservable(x => x.Router.NavigateBack)
