@@ -165,3 +165,19 @@
     
     phil.cleveland [2:38 PM]
     the curlys and parens can cause a headache sometimes
+
+    kentcb [2:43 PM] 
+    yeah, could be a little neater with an extension method:
+    ```this.WhenActivated(
+        d => this
+                .WhenAnyValue(x => x.ViewModel.AnticipatedWortLossVolume)
+                .Subscribe(x => this.stpWortLoss.Value = x)
+                .AddTo(d));
+    ```
+    (just using `AddTo` as example name - might be able to come up with a better one) (edited)
+    
+    kentcb [2:45 PM]
+    am a little surprised that `WhenActivated` doesn't have an overload giving you a `CompositeDisposable`. That would make things a bit easier
+    
+    rdavisau [2:56 PM] 
+    ^ I have used that approach too, @kentcb
