@@ -113,3 +113,9 @@
     paulcbetts [2:26 PM] 
     ```this.WhenAnyValue(x => x.MyDisposableProp)
         .Subscribe(x => latestDisposableProp.Disposable = x != null ? x : Disposable.Empty);
+
+    kentcb [2:27 PM] 
+    nice
+    
+    phil.cleveland [2:27 PM] 
+    So would this be something you would do for instance VM1 has a ReactiveObject prop which changes based on state?
