@@ -181,3 +181,27 @@
     
     rdavisau [2:56 PM] 
     ^ I have used that approach too, @kentcb
+
+    paulcbetts [3:03 PM] 
+    So, the rule is, you only have to dispose subscriptions if the thing you're subscribing to outlives your own object, and your Observable never ends (edited)
+    
+    paulcbetts [3:04 PM]
+    If you're an item in a ListView, and you subscribe to something on MainWindow, you need to Dispose it
+    
+    paulcbetts [3:05 PM]
+    Unfortunately, DependencyObjects use static properties everywhere to back everything and they suck
+    
+    paulcbetts [3:05 PM]
+    So, _all_ subscriptions that go through DependencyProperties are effectively scoped to the same as App (i.e. forever)
+    
+    paulcbetts [3:06 PM]
+    So, Rule #2 is, if you WhenAny through a DependencyProperty, you need to Dispose it
+    
+    phil.cleveland [3:06 PM] 
+    So that makes sense why pretty much all the WhenAny's in the code behind require it
+    
+    paulcbetts [3:06 PM] 
+    Nailed it
+    
+    phil.cleveland [3:09 PM] 
+    Anyone know if there is there the equivelent of Break on Any Exception in Xam Studio.  Really hard to debug sometimes.  Just adding a StartsWith  is crashing me, but I am not sure why
