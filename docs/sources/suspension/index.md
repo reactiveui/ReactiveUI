@@ -119,3 +119,49 @@
     
     phil.cleveland [2:27 PM] 
     So would this be something you would do for instance VM1 has a ReactiveObject prop which changes based on state?
+    
+    kentcb [2:29 PM] 
+    is it disposable though?
+    
+    phil.cleveland [2:30 PM] 
+    The VM....I guess in this particular case no
+    
+    phil.cleveland [2:31 PM]2:31
+    I guess I don't impl IDisposable that often TBH.  Wonder if I am missing some leaks
+    
+    kentcb [2:34 PM] 
+    I've gotten into the practice of following *any* call to `Subscribe` or `Connect` or `Bind` et cetera with my own `AddTo` extension:
+    ```this.someProperty = this.WhenAnyValue(x => x.SomeProperty)
+    .Select(x => x == null)
+    .ToProperty(this, x => x.SomeOtherProperty)
+    .AddTo(this.disposables);
+    ```
+    (edited)
+    
+    kentcb [2:34 PM]
+    and `AddTo` is an extension method that adds any `IDisposable` to a `CompositeDisposable`
+    
+    kentcb [2:34 PM]
+    and it's the `CompositeDisposable` that I dispose of
+    
+    phil.cleveland [2:35 PM] 
+    Per a discussion with Paul the other day I think that is only necessary in the code behind
+    
+    kentcb [2:35 PM] 
+    in my `Dispose()`
+    
+    phil.cleveland [2:35 PM] 
+    Yea @kentcb I saw your DisposableReactiveObject in the excercise app.  I think that could be part of RxUI
+    
+    phil.cleveland [2:36 PM]
+    I actually think that looks cleaner than using the WhenActivated too.  Again I might be misunderstanding when each is appropriate
+    
+    phil.cleveland [2:37 PM]
+    this is what my CB WhenAny's look like
+    ```this.WhenActivated (d => {
+                d (this.WhenAnyValue (x => x.ViewModel.AnticipatedWortLossVolume).Subscribe (x => this.stpWortLoss.Value = x));
+            });
+    ```
+    
+    phil.cleveland [2:38 PM]
+    the curlys and parens can cause a headache sometimes
