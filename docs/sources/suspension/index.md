@@ -107,4 +107,9 @@
     hmm, very cool - different way of thinking about it
     
     paulcbetts [2:25 PM] 
-`this.WhenAnyValue(x => x.MyDisposableProp).Subscribe(x => latestDisposableProp.Disposable = x);  // Trashes the old one on assign
+    `this.WhenAnyValue(x => x.MyDisposableProp).Subscribe(x => latestDisposableProp.Disposable = x);  // Trashes the old one on assign
+
+
+    paulcbetts [2:26 PM] 
+    ```this.WhenAnyValue(x => x.MyDisposableProp)
+        .Subscribe(x => latestDisposableProp.Disposable = x != null ? x : Disposable.Empty);
