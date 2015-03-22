@@ -229,19 +229,22 @@ namespace ReactiveUI
                 this.Log().Warn("New section info {0} does not implement IReactiveNotifyCollectionChanged.", newSectionInfo);
             }
 
+            // NOTE: the implicit use of the immediate scheduler in various places below is intentional
+            //       without it, iOS can interject its own logic amongst ours and therefore could see an inconsistent view of the data
+
             // Add section change listeners.  Always will run once right away
             // due to sectionChanged's construction.
             //
             // TODO: Instead of listening to Changed events and then reseting,
             // we could listen to more specific events and avoid some reloads.
-            disp.Add(sectionChanging.ObserveOn(ImmediateScheduler.Instance).Subscribe(_ => {
+            disp.Add(sectionChanging.Subscribe(_ => {
                 // Dispose the old bindings.  Ensures that old events won't
                 // arrive while we morph into the new data.
                 this.Log().Debug("{0} is about to change, disposing section bindings...", newSectionInfo);
                 subscrDisp.Disposable = Disposable.Empty;
             }));
 
-            disp.Add(sectionChanged.ObserveOn(ImmediateScheduler.Instance).Subscribe(x => {
+            disp.Add(sectionChanged.Subscribe(x => {
                 var disp2 = new CompositeDisposable();
                 subscrDisp.Disposable = disp2;
 
@@ -256,13 +259,11 @@ namespace ReactiveUI
 
                     sectionChangedWhilstNotReloadingList.Add(adapter
                         .IsReloadingData
-                        .ObserveOn(ImmediateScheduler.Instance)
                         .DistinctUntilChanged()
                         .Do(y => this.Log().Debug("IsReloadingData: {0} (for section {1})", y, section))
                         .Select(y => y ? Observable.Empty<NotifyCollectionChangedEventArgs>() : current.Changed)
-                        .Switch()
-                        .ObserveOn(ImmediateScheduler.Instance));
-                    sectionChangedList.Add(current.Changed.ObserveOn(ImmediateScheduler.Instance));
+                        .Switch());
+                    sectionChangedList.Add(current.Changed);
                 }
 
                 var anySectionChangedWhilstNotReloading = Observable.Merge(sectionChangedWhilstNotReloadingList);
@@ -270,11 +271,9 @@ namespace ReactiveUI
 
                 disp2.Add(adapter
                     .IsReloadingData
-                    .ObserveOn(ImmediateScheduler.Instance)
                     .DistinctUntilChanged()
                     .Select(y => y ? anySectionChanged : Observable.Never<NotifyCollectionChangedEventArgs>())
                     .Switch()
-                    .ObserveOn(ImmediateScheduler.Instance)
                     .Subscribe(_ =>
                     {
                         adapter.ReloadData();
@@ -282,7 +281,6 @@ namespace ReactiveUI
                     }));
 
                 disp2.Add(anySectionChangedWhilstNotReloading
-                    .ObserveOn(ImmediateScheduler.Instance)
                     .Subscribe(_ =>
                     {
                         if (!isCollectingChanges)
@@ -354,7 +352,11 @@ namespace ReactiveUI
                         if (allSectionEas.Any(x => x.Action == NotifyCollectionChangedAction.Reset))
                         {
                             this.Log().Debug("Section {0} included a reset notification, so reloading that section.", section);
+#if UNIFIED
                             adapter.ReloadSections(new NSIndexSet((nuint)section));
+#else
+                            adapter.ReloadSections(new NSIndexSet((uint)section));
+#endif
                             continue;
                         }
 
