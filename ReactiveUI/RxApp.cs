@@ -69,7 +69,15 @@ namespace ReactiveUI
                 LogHost.Default.Warn("ReactiveUI acts differently under a test runner, see the docs\n");
                 LogHost.Default.Warn("for more info about what to expect");
 
+                // This sets _UnitTestMainThreadScheduler but only on the current thread. It doesn't set 
+                // _MainThreadScheduler if it's already been set. And the registration code generally sets this to a
+                // WaitForDispatcherScheduler _before_ we get to this line.
                 MainThreadScheduler = CurrentThreadScheduler.Instance;
+                // This is why we _also_ have to set this field so that the default scheduler while running in unit
+                // tests is the immediate scheduler. This is particularly important on xunit 2 where every test 
+                // might be run in its own thread. We found that in those cases, _UnitTestMainThreadScheduler was 
+                // null and we would get a bunch of tests using the WaitForDispatcherScheduler for major loss.
+                _MainThreadScheduler = MainThreadScheduler;
                 return;
             } else {
                 LogHost.Default.Info("Initializing to normal mode");
