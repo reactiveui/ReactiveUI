@@ -23,8 +23,8 @@ namespace ReactiveUI.Tests
 {
     public class TestWhenAnyObsViewModel : ReactiveObject
     {
-        public ReactiveCommand<object> Command1 { get; protected set; }
-        public ReactiveCommand<object> Command2 { get; protected set; }
+        public ReactiveCommand<object> Command1 { get; set; }
+        public ReactiveCommand<object> Command2 { get; set; }
 
         ReactiveList<int> myListOfInts;
         public ReactiveList<int> MyListOfInts {
@@ -647,6 +647,25 @@ namespace ReactiveUI.Tests
 
             fixture.MyListOfInts = null;
             Assert.Equal(1, output.Count);
+        }
+
+        [Fact]
+        public void NullObservablesDoNotCauseExceptions()
+        {
+            var fixture = new TestWhenAnyObsViewModel();
+            fixture.Command1 = null;
+
+            fixture.WhenAnyObservable(x => x.Command1).Subscribe();
+            fixture.WhenAnyObservable(x => x.Command1, x => x.Command1).Subscribe();
+            fixture.WhenAnyObservable(x => x.Command1, x => x.Command1, x => x.Command1).Subscribe();
+            fixture.WhenAnyObservable(x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1).Subscribe();
+            fixture.WhenAnyObservable(x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1).Subscribe();
+            fixture.WhenAnyObservable(x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1).Subscribe();
+            fixture.WhenAnyObservable(x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1).Subscribe();
+            fixture.WhenAnyObservable(x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1).Subscribe();
+            fixture.WhenAnyObservable(x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1).Subscribe();
+            fixture.WhenAnyObservable(x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1).Subscribe();
+            fixture.WhenAnyObservable(x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1).Subscribe();
         }
     }
 
