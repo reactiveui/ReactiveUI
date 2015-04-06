@@ -2,18 +2,14 @@ using System;
 using System.ComponentModel;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Runtime.Serialization;
-using System.Threading;
 
 using Splat;
+using System.Diagnostics;
 
 #if UNIFIED
 using Foundation;
@@ -55,10 +51,41 @@ namespace ReactiveUI
     class UICollectionViewAdapter : IUICollViewAdapter<UICollectionView, UICollectionViewCell>
     {
         readonly UICollectionView view;
-        internal UICollectionViewAdapter(UICollectionView view) { this.view = view; }
+        readonly BehaviorSubject<bool> isReloadingData;
+        int inFlightReloads;
 
-        public void ReloadData() { view.ReloadData(); }
+        internal UICollectionViewAdapter(UICollectionView view)
+        {
+            this.view = view;
+            this.isReloadingData = new BehaviorSubject<bool>(false);
+        }
+
+        public IObservable<bool> IsReloadingData
+        {
+            get { return this.isReloadingData; }
+        }
+
+        public void ReloadData()
+        {
+            ++inFlightReloads;
+            view.ReloadData();
+
+            // since ReloadData() queues the appropriate messages on the UI thread, we know we're done reloading
+            // when this subsequent message is processed (with one caveat - see FinishReloadData for details)
+            RxApp.MainThreadScheduler.Schedule(FinishReloadData);
+
+            if (inFlightReloads == 1)
+            {
+                Debug.Assert(!this.isReloadingData.Value);
+                this.isReloadingData.OnNext(true);
+            }
+        }
+
         public void PerformBatchUpdates(Action updates, Action completion) { view.PerformBatchUpdates(new NSAction(updates), (completed) => completion()); }
+        public void InsertSections(NSIndexSet indexes) { view.InsertSections(indexes); }
+        public void DeleteSections(NSIndexSet indexes) { view.DeleteSections(indexes); }
+        public void ReloadSections(NSIndexSet indexes) { view.ReloadSections(indexes); }
+        public void MoveSection(int fromIndex, int toIndex) { view.MoveSection(fromIndex, toIndex); }
         public void InsertItems(NSIndexPath[] paths) { view.InsertItems(paths); }
         public void DeleteItems(NSIndexPath[] paths) { view.DeleteItems(paths); }
         public void ReloadItems(NSIndexPath[] paths) { view.ReloadItems(paths); }
@@ -67,6 +94,22 @@ namespace ReactiveUI
         public UICollectionViewCell DequeueReusableCell(NSString cellKey, NSIndexPath path)
         {
             return (UICollectionViewCell)view.DequeueReusableCell(cellKey, path);
+        }
+
+        void FinishReloadData()
+        {
+            --inFlightReloads;
+
+            if (inFlightReloads == 0)
+            {
+                // this is required because sometimes iOS schedules further work that results in calls to GetCell
+                // that work could happen after FinishReloadData unless we force layout here
+                // of course, we can't have that work running after IsReloading ticks to false because otherwise
+                // some updates may occur before the calls to GetCell and thus the calls to GetCell could fail due to invalid indexes
+                this.view.LayoutIfNeeded();
+                Debug.Assert(this.isReloadingData.Value);
+                this.isReloadingData.OnNext(false);
+            }
         }
     }
 

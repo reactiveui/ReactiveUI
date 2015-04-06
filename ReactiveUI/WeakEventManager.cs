@@ -279,7 +279,11 @@ namespace ReactiveUI
                 return this.source != null && 
                     Object.ReferenceEquals(this.source.Target, source) && 
                     this.originalHandler != null && 
-                    Object.ReferenceEquals(this.originalHandler.Target, handler);
+                    (Object.ReferenceEquals(this.originalHandler.Target, handler) ||
+                    (this.originalHandler.Target is PropertyChangedEventHandler &&
+                    handler is PropertyChangedEventHandler &&
+                    object.Equals((this.originalHandler.Target as PropertyChangedEventHandler).Target,
+                        (handler as PropertyChangedEventHandler).Target)));
             }
         }
 

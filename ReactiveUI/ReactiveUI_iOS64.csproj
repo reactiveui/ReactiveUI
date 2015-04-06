@@ -72,6 +72,7 @@
     </Compile>
     <Compile Include="Cocoa\AutoLayoutViewModelViewHost.cs" />
     <Compile Include="Cocoa\CocoaDefaultPropertyBinding.cs" />
+    <Compile Include="Cocoa\IndexNormalizer.cs" />
     <Compile Include="Cocoa\KVOObservableForProperty.cs" />
     <Compile Include="Cocoa\LinkerOverrides.cs" />
     <Compile Include="Cocoa\NSRunloopScheduler.cs" />
