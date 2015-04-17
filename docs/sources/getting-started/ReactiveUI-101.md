@@ -1,4 +1,4 @@
-# Reacive UI 101
+# Reactive UI 101
 
 Let's create a simple application demostarting a number of ReactiveUI functionalities
 without getting into too many under-the-hood details. 
@@ -7,7 +7,7 @@ We will create a WPF application, which will allow us to search through
 Flickr public images. The full code of the application is shown at the end of this chapter, 
 and we will show relevant snippets as we go.
 
-In Visual Studio create a new WPF application (Please not as of ReactiveUI v6.x .Net 4.5 or above is required).
+In Visual Studio create a new WPF application (Please note as of ReactiveUI v6.x .Net 4.5 or above is required).
 
 Our view has been already created for us, the MainWindow, so we will proceed with creating our ViewModel.
 Add a new field
