@@ -66,7 +66,7 @@ a built-in logger, but a custom log level:
 ```cs
 // I only want to hear about errors
 var logger = new DebugLogger() { LogLevel = LogLevel.Error };
-RxApp.MutableResolver.RegisterConstant(logger, typeof(ILogger));
+Locator.CurrentMutable.RegisterConstant(logger, typeof(ILogger));
 ```
 
 If you really need to control how things are logged, you can implement

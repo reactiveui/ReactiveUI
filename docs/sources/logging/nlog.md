@@ -35,8 +35,8 @@
 1. Register NLogger at the start of your unit test with:
 
 ``` cs
-var logManager = RxApp.MutableResolver.GetService<ILogManager>();
-RxApp.MutableResolver.RegisterConstant(logManager.GetLogger<NLogLogger>(),typeof(IFullLogger));   
+var logManager = Locator.Current.GetService<ILogManager>();
+Locator.CurrentMutable.RegisterConstant(logManager.GetLogger<NLogLogger>(),typeof(IFullLogger));   
 ```
 
 *Hint: An easy way to filter the IntelliTrace view to only show ReactiveUI

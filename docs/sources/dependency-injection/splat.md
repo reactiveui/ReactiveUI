@@ -1,6 +1,4 @@
-# Needs to be made v6 compatible - splat, check for changes to ReactiveCommand?
-
-# Dependency Resolution
+# Dependency Resolution / Service Location
 
 Dependency resolution is a feature built into the core framework, which allows
 libraries and ReactiveUI itself to use classes that are in other libraries
@@ -8,7 +6,7 @@ without taking a direct reference to them. This is quite useful for
 cross-platform applications, as it allows portable code to use non-portable
 APIs, as long as they can be described via an Interface.
 
-ReactiveUI's Dependency Resolution can more properly be called the Service
+ReactiveUI's use of dependency resolution can more properly be called the Service
 Location pattern. Put thought into how you use this API, as it can either be
 used effectively to make code more testable, or when used poorly, makes code
 more difficult to test and understand, as the [Resolver itself can effectively
@@ -16,10 +14,43 @@ become part of the class's
 state](http://blog.ploeh.dk/2010/02/03/ServiceLocatorisanAnti-Pattern/), but
 in an implicit and non-obvious way.
 
-### Using Dependency Resolution
+Since ReactiveUI 6, [Splat](https://github.com/paulcbetts/splat) is used by ReactiveUI for service location and dependency injection.
+Earlier versions included a RxUI resolver. If you come across samples for RxUI versions earlier than 6, you should replace references to `RxApp.DependencyResolver` with `Locator.Current` and `RxApp.MutableResolver` with `Locator.CurrentMutable`.
 
-At its simplest, ReactiveUI provides the following methods to resolve
-services (note that this is the simplified version, not the actual definition):
+## Basic Usage
+
+For basic registration and resolution, the following samples provide a good introduction.
+In most cases, you need not go beyond this level of detail. 
+
+#### Resolution
+
+Splat provides methods to resolve dependencies to single or multiple instances. 
+ 
+```csharp
+var toaster = Locator.Current.GetService<IToaster>();
+var allToasterImpls = Locator.Current.GetServices<IToaster>();
+```
+
+#### Registration
+
+Splat supports on-demand new'ing, constant and lazy registration of dependencies. 
+
+```cs
+// Create a new Toaster any time someone asks
+Locator.CurrentMutable.Register(() => new Toaster(), typeof(IToaster));
+
+// Register a singleton instance
+Locator.CurrentMutable.RegisterConstant(new ExtraGoodToaster(), typeof(IToaster));
+
+// Register a singleton which won't get created until the first user accesses it
+Locator.CurrentMutable.RegisterLazySingleton(() => new LazyToaster(), typeof(IToaster));
+```
+
+## Splat's `Locator` in more depth
+
+#### Resolution
+
+Splat's dependency resolver, accessible using `Locator.Current` conceptually resembles the below:
 
 ```cs
 public interface IDependencyResolver
@@ -37,14 +68,14 @@ of T. If the T registered is very common ("string" for example), or you want
 to distinguish by a method other than type, you can use the "contract"
 parameter which is an arbitrary key that you provide.
 
-The current Resolver that ReactiveUI itself will use (as well as what your app
-should use as well), is provided at `RxApp.DependencyResolver`.
+The current resolver that ReactiveUI itself will use (as well as what your app
+should use as well), is provided by [Splat.ModernDependencyResolver](https://github.com/paulcbetts/splat/blob/b833718d1b7940d1d02403e86864d03d2af5cea7/Splat/ServiceLocation.cs).
 
-### Registering new dependencies
+#### Registration
 
-The default implementation of `RxApp.DependencyResolver` also implements
+The default implementation of `Locator.Current` also implements
 another interface (accessible via the convenience property
-`RxApp.MutableResolver`):
+`Locator.CurrentMutable`):
 
 ```cs
 public interface IMutableDependencyResolver : IDependencyResolver
@@ -59,24 +90,9 @@ is usually done on app startup (on Cocoa, in `AppDelegate`, or on WPF, in
 
 This design seems overly simplistic, but in fact, can represent most of the
 useful lifetime scopes that we would want to use in a desktop / mobile
-application. For example:
+application. 
 
-```cs
-var r = RxApp.MutableResolver;
-
-// Create a new instance every time
-r.Register(() => new FooBar(), typeof(IFooBar));
-
-// Return a singleton instance
-var foobar = new FooBar();
-r.Register(() => foobar, typeof(IFooBar));
-
-// Return a singleton instance but delay its creation until first requested.
-var foobar = new Lazy<FooBar>();
-r.Register(() => foobar.Value, typeof(IFooBar));
-```
-
-### Common Cross-Platform Patterns
+## Common Cross-Platform Patterns
 
 Dependency resolution is very useful for moving logic that would normally have
 to be in platform-specific code, into the shared platform code. First, we need
@@ -103,7 +119,7 @@ public class MainViewModel
         // If the constructor hasn't passed in its own implementation,
         // use one from the resolver. This makes it easy to test DeleteData
         // via providing a dummy implementation.
-        dialogFactory = dialogFactory ?? RxApp.DependencyResolver.GetService<IYesNoDialog>();
+        dialogFactory = dialogFactory ?? Locator.Current.GetService<IYesNoDialog>();
 
         var title = "Delete the data?";
         var desc = "Should we delete your important Data?";
@@ -136,9 +152,9 @@ public class AlertDialog : IYesNoDialog
 }
 ```
 
-### ModernDependencyResolver and Resolver Initialization
+## ModernDependencyResolver and Resolver Initialization
 
-The default implementation of `IDependencyResolver` in ReactiveUI is a public
+The default implementation of `IDependencyResolver` in Splat is a public
 class called `ModernDependencyResolver`. To initialize this class or any other
 `IMutableDependencyResolver` implementation with the implementations that
 ReactiveUI requires to function, call the `InitializeResolver` extension
