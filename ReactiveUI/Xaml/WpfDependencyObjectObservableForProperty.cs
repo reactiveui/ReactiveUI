@@ -8,6 +8,7 @@ using System.Reflection;
 using System.ComponentModel;
 using System.Reactive.Linq;
 using System.Reactive.Disposables;
+using Splat;
 
 namespace ReactiveUI
 {
@@ -24,6 +25,12 @@ namespace ReactiveUI
             var type = sender.GetType();
             var propertyName = expression.GetMemberInfo().Name;
             var dpd = DependencyPropertyDescriptor.FromProperty(getDependencyProperty(type, propertyName), type);
+
+            if (dpd == null)
+            {
+                this.Log().Error("Couldn't find dependency property " + propertyName + " on " + type.Name);
+                throw new NullReferenceException("Couldn't find dependency property " + propertyName + " on " + type.Name);
+            }
 
             return Observable.Create<IObservedChange<object, object>>(subj => {
                 var handler = new EventHandler((o, e) => {
