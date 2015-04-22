@@ -26,8 +26,7 @@ namespace ReactiveUI
             var propertyName = expression.GetMemberInfo().Name;
             var dpd = DependencyPropertyDescriptor.FromProperty(getDependencyProperty(type, propertyName), type);
 
-            if (dpd == null)
-            {
+            if (dpd == null) {
                 this.Log().Error("Couldn't find dependency property " + propertyName + " on " + type.Name);
                 throw new NullReferenceException("Couldn't find dependency property " + propertyName + " on " + type.Name);
             }
