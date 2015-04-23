@@ -941,7 +941,7 @@ namespace ReactiveUI
                 return This.Subscribe(
                     x => setter(target, x, viewExpression.GetArgumentsArray()),
                     ex => {
-                        this.Log().ErrorException("Binding recieved an Exception!", ex);
+                        this.Log().ErrorException(String.Format("{0} Binding received an Exception!", viewExpression), ex);
                         if (fallbackValue != null) setter(target, fallbackValue(), null);
                     });
             }
@@ -955,7 +955,7 @@ namespace ReactiveUI
                 .Subscribe(
                     x => setter(x.host, x.val, viewExpression.GetArgumentsArray()),
                     ex => {
-                        this.Log().ErrorException("Binding recieved an Exception!", ex);
+                        this.Log().ErrorException(String.Format("{0} Binding received an Exception!", viewExpression), ex);
                         if (fallbackValue != null) setter(target, fallbackValue(), viewExpression.GetArgumentsArray());
                     });
         }
