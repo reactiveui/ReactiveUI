@@ -45,6 +45,7 @@ pages:
 
 # Commands: 
 - ['commands/reactive-command-async.md', 'Commands', 'Async Commands']
+- ['commands/ireactivecommand.md', 'Commands', 'IReactiveCommand']
 
 
 # Binding:  
