@@ -112,7 +112,7 @@ CreateAsyncTask:
 // ToProperty will then store it in an Output Property
 LoadTweetsCommand = ReactiveCommand.CreateAsyncTask(() => LoadTweets())
 
-LoadTweetsCommand.ToProperty(this, x => x.TheTweets, ref theTweets);
+LoadTweetsCommand.ToProperty(this, x => x.TheTweets, out theTweets);
 
 var errorMessage = "The Tweets could not be loaded";
 var errorResolution = "Check your Internet connection";
