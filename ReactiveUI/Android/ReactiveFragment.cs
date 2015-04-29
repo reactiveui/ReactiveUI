@@ -32,6 +32,10 @@ namespace ReactiveUI
     {
         protected ReactiveFragment() { }
 
+        protected ReactiveFragment(IntPtr handle, JniHandleOwnership ownership) : base(handle, ownership)
+        {
+        }
+
         TViewModel _ViewModel;
         public TViewModel ViewModel {
             get { return _ViewModel; }
@@ -51,6 +55,10 @@ namespace ReactiveUI
     public class ReactiveFragment : Fragment, IReactiveNotifyPropertyChanged<ReactiveFragment>, IReactiveObject, IHandleObservableErrors
     {
         protected ReactiveFragment() { }
+
+        protected ReactiveFragment(IntPtr handle, JniHandleOwnership ownership) : base(handle, ownership)
+        {
+        }
 
         public event PropertyChangingEventHandler PropertyChanging {
             add { PropertyChangingEventManager.AddHandler(this, value); }
