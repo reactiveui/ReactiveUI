@@ -18,7 +18,7 @@ theme: readthedocs
 #theme_dir: ./theme/mkdocs/
 #theme_center_lead: false
 
-copyright: Copyright &copy; 2014, ReactiveUI, Inc.
+copyright: Copyright &copy; 2014, ReactiveUI, i.
 google_analytics: ['UA-6096819-11', 'ReactiveUI.io']
 
 pages:
@@ -49,6 +49,7 @@ pages:
 
 
 # Binding:  
+- ['binding/typeconverters.md', 'Binding', 'Type Converters']
 - ['binding/wpf.md', 'Binding', 'WPF']
 - ['binding/ios.md', 'Binding', 'iOS']
 
