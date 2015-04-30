@@ -49,7 +49,7 @@ pages:
 
 
 # Binding:  
-- ['binding/typeconverters.md', 'Binding', 'Type Converters']
+- ['binding/type-converters.md', 'Binding', 'Type Converters']
 - ['binding/wpf.md', 'Binding', 'WPF']
 - ['binding/ios.md', 'Binding', 'iOS']
 
