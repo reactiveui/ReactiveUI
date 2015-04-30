@@ -32,9 +32,13 @@
     {
         public class InverseStringIsNullEmptyOrWhitespaceToBoolTypeConverter : IBindingTypeConverter, IEnableLogger
         {
-            public int GetAffinityForObjects(System.Type fromType, System.Type toType)
+            public int GetAffinityForObjects(Type fromType, Type toType)
             {
-                throw new System.NotImplementedException();
+                if (fromType is string)
+                {
+                    return 100;
+                }
+                return 0;
             }
     
             public bool TryConvert(object from, Type toType, object conversionHint, out object result)
