@@ -20,6 +20,25 @@
     
     ghuntley [11:54 AM] 
     100 seems to be your favourite number https://github.com/reactiveui/ReactiveUI/blob/master/ReactiveUI/BindingTypeConverters.cs#L18
+    
+    ghuntley [12:10 PM] 
+    thus my interpretation is
+    
+    ghuntley [12:10 PM]
+    public int GetAffinityForObjects(Type fromType, Type toType)
+           {
+               if (fromType is string)
+               {
+                   return 100;
+               }
+               return 0;
+           }
+    
+    paulcbetts [12:11 PM] 
+    `fromType` is always `Type`
+    
+    ghuntley [12:16 PM] 
+    thus (if fromtype = typeof(System.String))
 
 ## Example - WIP
 
