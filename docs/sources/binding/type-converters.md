@@ -93,3 +93,5 @@
 
     Locator.CurrentMutable.RegisterConstant(
         new MyCoolTypeConverter(), typeof(IBindingTypeConverter));
+
+## Usage/Binding
