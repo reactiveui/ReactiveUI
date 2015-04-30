@@ -40,6 +40,10 @@
     ghuntley [12:16 PM] 
     thus (if fromtype = typeof(System.String))
 
+    paulcbetts [12:21 PM] 
+    :+1:
+
+
 ## Example - WIP
 
     using System;
