@@ -34,9 +34,9 @@
         {
             public int GetAffinityForObjects(Type fromType, Type toType)
             {
-                if (fromType is string)
+                if (fromType == typeof(string))
                 {
-                    return 100;
+                    return 100; // any number other than 0 signifies conversion is possible.
                 }
                 return 0;
             }
