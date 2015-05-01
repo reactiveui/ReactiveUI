@@ -104,3 +104,17 @@
     [redacted]: eureka https://github.com/reactiveui/ReactiveUI/blob/238524a922aed50f8141a1d26ff24b8f2b101b60/ReactiveUI/RegisterableInterfaces.cs#L155-L165
     [@ghuntley]: ah that explains some things as to why the binding converter was firing on each view model load even when the binding was not wired onto a view binding.
     [@ghuntley]: let’s say however theres a InverseStringIsWhitespaceEmpyOrNullToBoolConverter and a StringIsWhitespaceEmptyToNullToBoolConverter. ie. String.IsNullEmptyOrWhitespace(x) and !String.IsNullEmptyOrWhitespace(x) both registered into splat. How can I be specific as to which one should be used? Like both will return a compatible affinity but it will be the wrong one depending on the UI case use.
+
+
+    /// <summary>
+    /// Returns a positive integer when this class supports
+    /// TryConvert for this particular Type. If the method isn't supported at
+    /// all, return a non-positive integer. When multiple implementations
+    /// return a positive value, the host will use the one which returns
+    /// the highest value. When in doubt, return '2' or '0'.
+    /// </summary>
+    /// <param name="fromType">The source type to convert from</param>
+    /// <param name="toType">The target type to convert to</param>
+    /// <returns>A positive integer if TryConvert is supported,
+    /// zero or a negative value otherwise</returns>
+    int GetAffinityForObjects(Type fromType, Type toType);
