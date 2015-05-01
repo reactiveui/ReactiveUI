@@ -118,3 +118,6 @@
     /// <returns>A positive integer if TryConvert is supported,
     /// zero or a negative value otherwise</returns>
     int GetAffinityForObjects(Type fromType, Type toType);
+
+
+    I see you don't need to use a contract after all https://github.com/reactiveui/ReactiveUI/blob/9532a8df95bd4ed76f6fa9d9fd156edc0d973e98/ReactiveUI/PropertyBinding.cs#L1001 . `conversionHint` only needs to be set it if you use it in your `TryConvert` implementation
