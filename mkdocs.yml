@@ -9,8 +9,6 @@ repo_url: https://github.com/reactiveui/reactiveui/
 
 docs_dir: docs/sources
 
-use_absolute_urls: true
-
 theme: readthedocs
 #theme_dir: ./theme/mkdocs/
 #theme_center_lead: false
