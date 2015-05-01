@@ -8,6 +8,7 @@ dev_addr: '0.0.0.0:8000'
 repo_url: https://github.com/reactiveui/reactiveui/
 
 docs_dir: docs/sources
+site_dir: docs/_build/
 
 theme: readthedocs
 #theme_dir: ./theme/mkdocs/
