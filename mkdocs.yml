@@ -1,6 +1,5 @@
 site_name: ReactiveUI Documentation
 site_url: http://docs.reactiveui.net/
-site_url: /
 site_description: A MVVM framework that integrates with the Reactive Extensions for .NET to create elegant, testable User Interfaces that run on any mobile or desktop platform. Supports Xamarin.iOS, Xamarin.Android, Xamarin.Mac, WPF, Windows Forms, Windows Phone 8 and Windows Store apps.
 site_favicon: img/favicon.png
 
@@ -9,8 +8,6 @@ dev_addr: '0.0.0.0:8000'
 repo_url: https://github.com/reactiveui/reactiveui/
 
 docs_dir: docs/sources
-
-include_search: true
 
 use_absolute_urls: true
 
