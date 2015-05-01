@@ -99,8 +99,8 @@
         new MyCoolTypeConverter(), typeof(IBindingTypeConverter));
 
 ## Usage/Binding
-[redacted]: you never need to worry about specifying the converter in the binding. the GetAffinityForObjects is there for bindings to determine their priority when receiving certain types.
-[redacted]: let me see if i can understand what paul's magic rules for the result is - i'm pretty sure it's 0 - don't care, positive number - i can resolve this, and larger number wins
-[redacted]: eureka https://github.com/reactiveui/ReactiveUI/blob/238524a922aed50f8141a1d26ff24b8f2b101b60/ReactiveUI/RegisterableInterfaces.cs#L155-L165
-[@ghuntley]: ah that explains some things as to why the binding converter was firing on each view model load even when the binding was not wired onto a view binding.
-[@ghuntley]: let’s say however theres a InverseStringIsWhitespaceEmpyOrNullToBoolConverter and a StringIsWhitespaceEmptyToNullToBoolConverter. ie. String.IsNullEmptyOrWhitespace(x) and !String.IsNullEmptyOrWhitespace(x) both registered into splat. How can I be specific as to which one should be used? Like both will return a compatible affinity but it will be the wrong one depending on the UI case use.
+    [redacted]: you never need to worry about specifying the converter in the binding. the GetAffinityForObjects is there for bindings to determine their priority when receiving certain types.
+    [redacted]: let me see if i can understand what paul's magic rules for the result is - i'm pretty sure it's 0 - don't care, positive number - i can resolve this, and larger number wins
+    [redacted]: eureka https://github.com/reactiveui/ReactiveUI/blob/238524a922aed50f8141a1d26ff24b8f2b101b60/ReactiveUI/RegisterableInterfaces.cs#L155-L165
+    [@ghuntley]: ah that explains some things as to why the binding converter was firing on each view model load even when the binding was not wired onto a view binding.
+    [@ghuntley]: let’s say however theres a InverseStringIsWhitespaceEmpyOrNullToBoolConverter and a StringIsWhitespaceEmptyToNullToBoolConverter. ie. String.IsNullEmptyOrWhitespace(x) and !String.IsNullEmptyOrWhitespace(x) both registered into splat. How can I be specific as to which one should be used? Like both will return a compatible affinity but it will be the wrong one depending on the UI case use.
