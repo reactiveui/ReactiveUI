@@ -30,14 +30,14 @@ namespace ReactiveUI
                 .Where(x => x.PreviousExecutionState == ApplicationExecutionState.Terminated)
                 .Select(_ => Unit.Default);
 
-			var fastResuming = new Subject<ApplicationExecutionState>();
-			app.Resuming += (o, e) => fastResuming.OnNext(ApplicationExecutionState.Suspended);
-			var unpausing = new[] { ApplicationExecutionState.Suspended, ApplicationExecutionState.Running, };
-			RxApp.SuspensionHost.IsUnpausing = _launched
-				.Select(x => x.PreviousExecutionState)
-				.Merge(fastResuming)
-				.Where(x => unpausing.Contains(x))
-				.Select(_ => Unit.Default);
+            var fastResuming = new Subject<ApplicationExecutionState>();
+            app.Resuming += (o, e) => fastResuming.OnNext(ApplicationExecutionState.Suspended);
+            var unpausing = new[] { ApplicationExecutionState.Suspended, ApplicationExecutionState.Running, };
+            RxApp.SuspensionHost.IsUnpausing = _launched
+                .Select(x => x.PreviousExecutionState)
+                .Merge(fastResuming)
+                .Where(x => unpausing.Contains(x))
+                .Select(_ => Unit.Default);
 
             var shouldPersistState = new Subject<SuspendingEventArgs>();
             app.Suspending += (o, e) => shouldPersistState.OnNext(e);
