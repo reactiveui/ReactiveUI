@@ -128,7 +128,7 @@
       <HintPath>..\packages\Xamarin.Forms.1.4.0.6341\lib\MonoTouch10\Xamarin.Forms.Xaml.dll</HintPath>
     </Reference>
     <Reference Include="Splat">
-      <HintPath>..\packages\Splat.1.6.0\lib\Xamarin.iOS10\Splat.dll</HintPath>
+      <HintPath>..\packages\Splat.1.6.2\lib\Xamarin.iOS10\Splat.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
