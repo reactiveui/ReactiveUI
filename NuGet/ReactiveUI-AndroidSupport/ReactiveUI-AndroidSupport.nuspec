@@ -12,8 +12,8 @@
 
     <dependencies>
       <dependency id="reactiveui-core" version="[6.4.0.1]" />
-      <dependency id="Xamarin.Android.Support.v4" version="20.0.0.3" />
-      <dependency id="Xamarin.Android.Support.v7.AppCompat" version="21.0.3.0" />
+      <dependency id="Xamarin.Android.Support.v4" version="22.1.1.1" />
+      <dependency id="Xamarin.Android.Support.v7.AppCompat" version="22.1.1.1" />
     </dependencies>
   </metadata>
 </package>
