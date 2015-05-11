@@ -27,9 +27,13 @@ namespace ReactiveUI
 
             if (fe == null)
                 return Observable.Empty<bool>();
-
+#if WINDOWS_UAP
+            var viewLoaded = WindowsObservable.FromEventPattern<FrameworkElement, object>(x => fe.Loading += x,
+                x => fe.Loading -= x).Select(_ => true);
+#else
             var viewLoaded = Observable.FromEventPattern<RoutedEventHandler, RoutedEventArgs>(x => fe.Loaded += x,
                 x => fe.Loaded -= x).Select(_ => true);
+#endif
 
             var viewUnloaded = Observable.FromEventPattern<RoutedEventHandler, RoutedEventArgs>(x => fe.Unloaded += x,
                 x => fe.Unloaded -= x).Select(_ => false);
