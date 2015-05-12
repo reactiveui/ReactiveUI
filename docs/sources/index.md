@@ -23,4 +23,4 @@ Ask your question on
 Also see historical PDF which explains concept/origins of RxUI - http://web.archive.org/web/20120714082000/http://www.reactiveui.net/welcome/pdf
 
 
-Watch this https://www.youtube.com/watch?v=1XNATGjqM6U
+Watch this https://www.youtube.com/watch?v=1XNATGjqM6U and this https://www.youtube.com/watch?v=Agu6jipKfYw
