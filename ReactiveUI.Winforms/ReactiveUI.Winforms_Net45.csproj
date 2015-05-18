@@ -107,7 +107,6 @@
     </Compile>
     <Compile Include="Winforms\WeakEventManagerShims.cs" />
     <Compile Include="Winforms\WinformsCreatesObservableForProperty.cs" />
-    <Compile Include="Winforms\WinformsDefaultPropertyBinding.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
