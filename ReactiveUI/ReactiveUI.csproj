@@ -48,7 +48,7 @@
       <LastGenOutput>VariadicTemplates.cs</LastGenOutput>
     </None>
     <Reference Include="Splat">
-      <HintPath>..\packages\Splat.1.6.0\lib\Portable-net45+win+wpa81+wp80\Splat.dll</HintPath>
+      <HintPath>..\packages\Splat.1.6.2\lib\Portable-net45+win+wpa81+wp80\Splat.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -83,7 +83,6 @@
     <Compile Include="CommandBinding.cs" />
     <Compile Include="CompatMixins.cs" />
     <Compile Include="ContractStubs.cs" />
-    <Compile Include="DefaultPropertyBinding.cs" />
     <Compile Include="Errors.cs" />
     <Compile Include="IDependencyResolver.cs" />
     <Compile Include="INPCObservableForProperty.cs" />
@@ -91,7 +90,6 @@
     <Compile Include="IROObservableForProperty.cs" />
     <Compile Include="MessageBus.cs" />
     <Compile Include="MobileLifecycle.cs" />
-    <Compile Include="NullDefaultPropertyBindingProvider.cs" />
     <Compile Include="ObservableAsPropertyHelper.cs" />
     <Compile Include="ObservedChangedMixin.cs" />
     <Compile Include="OrderedComparer.cs" />
