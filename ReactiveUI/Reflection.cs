@@ -231,35 +231,6 @@ namespace ReactiveUI
                 .Select(x => ((TViewModel)x).WhenAnyDynamic(expression, y => y.Value))
                 .Switch();
         }
-
-        internal static Expression getViewExpression(object view, Expression vmExpression)
-        {
-            var controlProperty = (MemberInfo)view.GetType().GetRuntimeField(vmExpression.GetMemberInfo().Name)
-                ?? view.GetType().GetRuntimeProperty(vmExpression.GetMemberInfo().Name);
-            if (controlProperty == null) {
-                throw new Exception(String.Format("Tried to bind to control but it wasn't present on the object: {0}.{1}",
-                    view.GetType().FullName, vmExpression.GetMemberInfo().Name));
-            }
-
-            return Expression.MakeMemberAccess(Expression.Parameter(view.GetType()), controlProperty);
-        }
-
-        internal static Expression getViewExpressionWithProperty(object view, Expression vmExpression)
-        {
-            var controlExpression = getViewExpression(view, vmExpression);
-
-            var control = GetValueFetcherForProperty(controlExpression.GetMemberInfo())(view, controlExpression.GetArgumentsArray());
-            if (control == null) {
-                throw new Exception(String.Format("Tried to bind to control but it was null: {0}.{1}", view.GetType().FullName,
-                    controlExpression.GetMemberInfo().Name));
-            }
-
-            var defaultProperty = DefaultPropertyBinding.GetPropertyForControl(control);
-            if (defaultProperty == null) {
-                throw new Exception(String.Format("Couldn't find a default property for type {0}", control.GetType()));
-            }
-            return Expression.MakeMemberAccess(controlExpression, control.GetType().GetRuntimeProperty(defaultProperty));
-        }
     }
 
     public static class ReflectionExtensions
