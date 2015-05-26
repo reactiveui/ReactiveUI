@@ -22,5 +22,8 @@ Ask your question on
 
 Also see historical PDF which explains concept/origins of RxUI - http://web.archive.org/web/20120714082000/http://www.reactiveui.net/welcome/pdf
 
+# Recommended Watching
+* [Controlling Time and Space: understanding the many formulations of FRP by Evan Czaplicki](https://www.youtube.com/watch?v=Agu6jipKfYw)
+* [FRP In Practice: Taking a look at Reactive[UI/Cocoa] by Paul Betts](https://www.youtube.com/watch?v=1XNATGjqM6U)
+* [ANZ Coders 2015 - Reactive UI - It's pretty neat by Brendan Forster](https://www.youtube.com/watch?v=HPyKHxy7X0w)
 
-Watch this https://www.youtube.com/watch?v=1XNATGjqM6U and this https://www.youtube.com/watch?v=Agu6jipKfYw
