@@ -81,7 +81,11 @@ namespace ReactiveUI
             }
         }
 
-        public void PerformBatchUpdates(Action updates, Action completion) { view.PerformBatchUpdates(new NSAction(updates), (completed) => completion()); }
+        // UICollectionView no longer has these methods so these are no-ops
+        public void BeginUpdates() { }
+        public void EndUpdates() { }
+
+        public void PerformUpdates(Action updates, Action completion) { view.PerformBatchUpdates(new NSAction(updates), (completed) => completion()); }
         public void InsertSections(NSIndexSet indexes) { view.InsertSections(indexes); }
         public void DeleteSections(NSIndexSet indexes) { view.DeleteSections(indexes); }
         public void ReloadSections(NSIndexSet indexes) { view.ReloadSections(indexes); }
