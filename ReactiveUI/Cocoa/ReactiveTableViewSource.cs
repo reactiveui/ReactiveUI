@@ -91,7 +91,12 @@ namespace ReactiveUI
             }
         }
 
-        public void PerformBatchUpdates(Action updates, Action completion)
+        public void BeginUpdates()
+        {
+            view.BeginUpdates();
+        }
+
+        public void PerformUpdates(Action updates, Action completion)
         {
             view.BeginUpdates();
             try {
@@ -101,6 +106,12 @@ namespace ReactiveUI
                 completion();
             }
         }
+
+        public void EndUpdates()
+        {
+            view.EndUpdates();
+        }
+
         public void InsertSections(NSIndexSet indexes) { view.InsertSections(indexes, UITableViewRowAnimation.Automatic); }
         public void DeleteSections(NSIndexSet indexes) { view.DeleteSections(indexes, UITableViewRowAnimation.Automatic); }
         public void ReloadSections(NSIndexSet indexes) { view.ReloadSections(indexes, UITableViewRowAnimation.Automatic); }

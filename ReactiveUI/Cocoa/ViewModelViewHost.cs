@@ -1,6 +1,7 @@
 using System;
 using System.Reactive.Linq;
 using ReactiveUI;
+using System.Reactive.Disposables;
 
 #if UNIFIED && UIKIT
 using UIKit;
@@ -18,6 +19,141 @@ using MonoMac.AppKit;
 
 namespace ReactiveUI
 {
+    public class ViewModelViewHost : ReactiveViewController
+    {
+        private readonly SerialDisposable currentView;
+        private IViewLocator viewLocator;
+        private NSViewController defaultContent;
+        private IReactiveObject viewModel;
+        private IObservable<string> viewContractObservable;
+
+        public ViewModelViewHost()
+        {
+            this.currentView = new SerialDisposable();
+
+            this.Initialize();
+        }
+
+        public IViewLocator ViewLocator
+        {
+            get { return viewLocator; }
+            set { this.RaiseAndSetIfChanged(ref viewLocator, value); }
+        }
+
+        public NSViewController DefaultContent
+        {
+            get { return defaultContent; }
+            set { this.RaiseAndSetIfChanged(ref defaultContent, value); }
+        }
+
+        public IReactiveObject ViewModel
+        {
+            get { return viewModel; }
+            set { this.RaiseAndSetIfChanged(ref viewModel, value); }
+        }
+
+        public IObservable<string> ViewContractObservable
+        {
+            get { return viewContractObservable; }
+            set { this.RaiseAndSetIfChanged(ref viewContractObservable, value); }
+        }
+
+        private void Initialize()
+        {
+            var viewChange = Observable
+                .CombineLatest(
+                    this.WhenAnyValue(x => x.ViewModel),
+                    this.WhenAnyObservable(x => x.ViewContractObservable).StartWith((string)null),
+                    (vm, contract) => new { ViewModel = vm, Contract = contract })
+                .Where(x => x.ViewModel != null);
+
+            var defaultViewChange = Observable
+                .CombineLatest(
+                    this.WhenAnyValue(x => x.ViewModel),
+                    this.WhenAnyValue(x => x.DefaultContent),
+                    (vm, defaultContent) => new { ViewModel = vm, DefaultContent = defaultContent })
+                .Where(x => x.ViewModel == null && x.DefaultContent != null)
+                .Select(x => x.DefaultContent);
+
+            viewChange
+                .ObserveOn(RxApp.MainThreadScheduler)
+                .Subscribe(
+                    x =>
+                    {
+                        var viewLocator = ViewLocator ?? ReactiveUI.ViewLocator.Current;
+                        var view = viewLocator.ResolveView(x.ViewModel, x.Contract);
+
+                        if (view == null)
+                        {
+                            var message = string.Format("Unable to resolve view for \"{0}\"", x.ViewModel.GetType());
+
+                            if (x.Contract != null)
+                            {
+                                message += string.Format(" and contract \"{0}\"", x.Contract.GetType());
+                            }
+
+                            message += ".";
+                            throw new Exception(message);
+                        }
+
+                        var viewController = view as NSViewController;
+
+                        if (viewController == null)
+                        {
+                            throw new Exception(
+                                string.Format(
+                                    "Resolved view type '{0}' is not a '{1}'.", 
+                                    viewController.GetType().FullName,
+                                    typeof(NSViewController).FullName));
+                        }
+
+                        view.ViewModel = x.ViewModel;
+                        Adopt(this, viewController);
+
+                        var disposables = new CompositeDisposable();
+                        disposables.Add(viewController);
+                        disposables.Add(Disposable.Create(() => Disown(viewController)));
+                        currentView.Disposable = disposables;
+                    });
+
+            defaultViewChange
+                .ObserveOn(RxApp.MainThreadScheduler)
+                .Subscribe(x => Adopt(this, x));
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+
+            if (disposing)
+            {
+                this.currentView.Dispose();
+            }
+        }
+
+        private static void Adopt(UIViewController parent, UIViewController child)
+        {
+            parent.AddChildViewController(child);
+            parent.View.AddSubview(child.View);
+
+            // ensure the child view fills our entire frame
+            child.View.Frame = parent.View.Bounds;
+            child.View.AutoresizingMask = UIViewAutoresizing.FlexibleWidth | UIViewAutoresizing.FlexibleHeight;
+            child.View.TranslatesAutoresizingMaskIntoConstraints = true;
+
+            child.DidMoveToParentViewController(parent);
+        }
+
+        private static void Disown(UIViewController child)
+        {
+            child.WillMoveToParentViewController(null);
+            child.View.RemoveFromSuperview();
+            child.RemoveFromParentViewController();
+        }
+    }
+
+
+
     /// <summary>
     /// ViewModelViewHost is a helper class that will connect a ViewModel
     /// to an arbitrary NSView and attempt to load the View for the current
@@ -26,7 +162,8 @@ namespace ReactiveUI
     /// This is a bit different than the XAML's ViewModelViewHost in the sense
     /// that this isn't a Control itself, it only manipulates other Views.
     /// </summary>
-    public class ViewModelViewHost : ReactiveObject 
+    [Obsolete("Use ViewModelViewHost instead. This class will be removed in a later release.")]
+    public class ViewModelViewHostLegacy : ReactiveObject 
     {
         /// <summary>
         /// Gets or sets a value indicating whether this <see cref="ReactiveUI.Cocoa.ViewModelViewHost"/>
@@ -35,7 +172,7 @@ namespace ReactiveUI
         /// <value><c>true</c> if add layout contraints to sub view; otherwise, <c>false</c>.</value>
         public bool AddAutoLayoutConstraintsToSubView { get; set; } 
 
-        public ViewModelViewHost(NSView targetView)
+        public ViewModelViewHostLegacy(NSView targetView)
         {
             if (targetView == null) throw new ArgumentNullException("targetView");
 
