@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
+# Visual Studio 14
+VisualStudioVersion = 14.0.22823.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Tests_Net45", "ReactiveUI.Tests\ReactiveUI.Tests_Net45.csproj", "{6FBDE6EA-2202-4A70-8EE4-7BA6D515952E}"
 EndProject
@@ -58,6 +58,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Events_WPA81", "ReactiveUI.Events\ReactiveUI.Events_WPA81.csproj", "{874074FB-21F7-4405-8238-04992B61621C}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{AA2BDF98-2D28-4212-BFA6-8C5270065C06}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Events_Net40", "ReactiveUI.Events\ReactiveUI.Events_Net40.csproj", "{30207C29-E96E-4A6A-B94E-12CF3153A4BB}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
@@ -996,6 +998,42 @@ Global
 		{874074FB-21F7-4405-8238-04992B61621C}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{874074FB-21F7-4405-8238-04992B61621C}.Release|x64.ActiveCfg = Release|Any CPU
 		{874074FB-21F7-4405-8238-04992B61621C}.Release|x86.ActiveCfg = Release|Any CPU
+		{30207C29-E96E-4A6A-B94E-12CF3153A4BB}.Ad-Hoc|Any CPU.ActiveCfg = Release|Any CPU
+		{30207C29-E96E-4A6A-B94E-12CF3153A4BB}.Ad-Hoc|Any CPU.Build.0 = Release|Any CPU
+		{30207C29-E96E-4A6A-B94E-12CF3153A4BB}.Ad-Hoc|ARM.ActiveCfg = Release|Any CPU
+		{30207C29-E96E-4A6A-B94E-12CF3153A4BB}.Ad-Hoc|iPhone.ActiveCfg = Release|Any CPU
+		{30207C29-E96E-4A6A-B94E-12CF3153A4BB}.Ad-Hoc|iPhoneSimulator.ActiveCfg = Release|Any CPU
+		{30207C29-E96E-4A6A-B94E-12CF3153A4BB}.Ad-Hoc|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{30207C29-E96E-4A6A-B94E-12CF3153A4BB}.Ad-Hoc|Mixed Platforms.Build.0 = Release|Any CPU
+		{30207C29-E96E-4A6A-B94E-12CF3153A4BB}.Ad-Hoc|x64.ActiveCfg = Release|Any CPU
+		{30207C29-E96E-4A6A-B94E-12CF3153A4BB}.Ad-Hoc|x86.ActiveCfg = Release|Any CPU
+		{30207C29-E96E-4A6A-B94E-12CF3153A4BB}.AppStore|Any CPU.ActiveCfg = Release|Any CPU
+		{30207C29-E96E-4A6A-B94E-12CF3153A4BB}.AppStore|Any CPU.Build.0 = Release|Any CPU
+		{30207C29-E96E-4A6A-B94E-12CF3153A4BB}.AppStore|ARM.ActiveCfg = Release|Any CPU
+		{30207C29-E96E-4A6A-B94E-12CF3153A4BB}.AppStore|iPhone.ActiveCfg = Release|Any CPU
+		{30207C29-E96E-4A6A-B94E-12CF3153A4BB}.AppStore|iPhoneSimulator.ActiveCfg = Release|Any CPU
+		{30207C29-E96E-4A6A-B94E-12CF3153A4BB}.AppStore|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{30207C29-E96E-4A6A-B94E-12CF3153A4BB}.AppStore|Mixed Platforms.Build.0 = Release|Any CPU
+		{30207C29-E96E-4A6A-B94E-12CF3153A4BB}.AppStore|x64.ActiveCfg = Release|Any CPU
+		{30207C29-E96E-4A6A-B94E-12CF3153A4BB}.AppStore|x86.ActiveCfg = Release|Any CPU
+		{30207C29-E96E-4A6A-B94E-12CF3153A4BB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{30207C29-E96E-4A6A-B94E-12CF3153A4BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{30207C29-E96E-4A6A-B94E-12CF3153A4BB}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{30207C29-E96E-4A6A-B94E-12CF3153A4BB}.Debug|iPhone.ActiveCfg = Debug|Any CPU
+		{30207C29-E96E-4A6A-B94E-12CF3153A4BB}.Debug|iPhoneSimulator.ActiveCfg = Debug|Any CPU
+		{30207C29-E96E-4A6A-B94E-12CF3153A4BB}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{30207C29-E96E-4A6A-B94E-12CF3153A4BB}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{30207C29-E96E-4A6A-B94E-12CF3153A4BB}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{30207C29-E96E-4A6A-B94E-12CF3153A4BB}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{30207C29-E96E-4A6A-B94E-12CF3153A4BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{30207C29-E96E-4A6A-B94E-12CF3153A4BB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{30207C29-E96E-4A6A-B94E-12CF3153A4BB}.Release|ARM.ActiveCfg = Release|Any CPU
+		{30207C29-E96E-4A6A-B94E-12CF3153A4BB}.Release|iPhone.ActiveCfg = Release|Any CPU
+		{30207C29-E96E-4A6A-B94E-12CF3153A4BB}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
+		{30207C29-E96E-4A6A-B94E-12CF3153A4BB}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{30207C29-E96E-4A6A-B94E-12CF3153A4BB}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{30207C29-E96E-4A6A-B94E-12CF3153A4BB}.Release|x64.ActiveCfg = Release|Any CPU
+		{30207C29-E96E-4A6A-B94E-12CF3153A4BB}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -217,7 +217,7 @@ namespace EventBuilder
             // Find the EventArgs type parameter of the event via digging around via reflection
             var type = ei.EventType.Resolve();
             var invoke = type.Methods.First(x => x.Name == "Invoke");
-            if (invoke.Parameters.Count < 2) return null;
+            if (invoke.Parameters.Count != 2) return null;
 
             var param = invoke.Parameters[1];
             var ret = RenameBogusWinRTTypes(param.ParameterType.FullName);

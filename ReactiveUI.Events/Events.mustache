@@ -2,7 +2,6 @@
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
-using ReactiveUI.Events;
 
 {{#Namespaces}}
 using {{Name}};
@@ -42,7 +41,7 @@ namespace {{Name}}
 
 {{#Events}}
         public IObservable<{{EventArgsType}}> {{Name}} {
-            get { return Observable.FromEventPattern<{{EventHandlerType}}, {{EventArgsType}}>(x => This.{{Name}} += x, x => This.{{Name}} -= x).Select(x => x.EventArgs); }
+            get { return Observable.FromEvent<{{EventHandlerType}}, {{EventArgsType}}>(conversion => (sender, e) => conversion(e), x => This.{{Name}} += x, x => This.{{Name}} -= x); }
         }
 
 {{/Events}}
@@ -58,7 +57,7 @@ namespace {{Name}}.Rx
     public {{Abstract}} partial class {{Name}}Rx : {{Name}}
     {
 {{#ZeroParameterMethods}}
-        readonly SingleAwaitSubject<Unit> _{{Name}} = new SingleAwaitSubject<Unit>();
+        readonly Subject<Unit> _{{Name}} = new Subject<Unit>();
         public IObservable<Unit> {{Name}}Obs { get { return _{{Name}}; } }
         public override void {{Name}}()
         {
@@ -67,7 +66,7 @@ namespace {{Name}}.Rx
 
 {{/ZeroParameterMethods}}
 {{#SingleParameterMethods}}
-        readonly SingleAwaitSubject<{{ParameterType}}> _{{Name}} = new SingleAwaitSubject<{{ParameterType}}>();
+        readonly Subject<{{ParameterType}}> _{{Name}} = new Subject<{{ParameterType}}>();
         public IObservable<{{ParameterType}}> {{Name}}Obs { get { return _{{Name}}; } }
         public override void {{Name}}({{ParameterType}} {{ParameterName}})
         {
@@ -76,7 +75,7 @@ namespace {{Name}}.Rx
 
 {{/SingleParameterMethods}}
 {{#MultiParameterMethods}}
-        readonly SingleAwaitSubject<Tuple<{{ParameterTypeList}}>> _{{Name}} = new SingleAwaitSubject<Tuple<{{ParameterTypeList}}>>();
+        readonly Subject<Tuple<{{ParameterTypeList}}>> _{{Name}} = new Subject<Tuple<{{ParameterTypeList}}>>();
         public IObservable<Tuple<{{ParameterTypeList}}>> {{Name}}Obs { get { return _{{Name}}; } }
         public override void {{Name}}({{ParameterList}})
         {
