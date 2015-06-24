@@ -17,7 +17,7 @@
     <DebugSymbols>True</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>False</Optimize>
-    <OutputPath>bin\Debug\Xamarin.Mac10</OutputPath>
+    <OutputPath>bin\Debug\Xamarin.Mac20</OutputPath>
     <IntermediateOutputPath>obj\Debug\Xamarin.Mac10</IntermediateOutputPath>
     <DefineConstants>DEBUG;MONO;COCOA;UNIFIED</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
@@ -33,7 +33,7 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <Optimize>True</Optimize>
-    <OutputPath>bin\Release\Xamarin.Mac10</OutputPath>
+    <OutputPath>bin\Release\Xamarin.Mac20</OutputPath>
     <IntermediateOutputPath>obj\Release\Xamarin.Mac10</IntermediateOutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
