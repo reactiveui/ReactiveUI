@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.22823.1
+# Visual Studio 2013
+VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Tests_Net45", "ReactiveUI.Tests\ReactiveUI.Tests_Net45.csproj", "{6FBDE6EA-2202-4A70-8EE4-7BA6D515952E}"
 EndProject
@@ -60,6 +60,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{AA2BDF98-2D28-4212-BFA6-8C5270065C06}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Events_Net40", "ReactiveUI.Events\ReactiveUI.Events_Net40.csproj", "{30207C29-E96E-4A6A-B94E-12CF3153A4BB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI_Net40", "ReactiveUI\ReactiveUI_Net40.csproj", "{6D40D92B-5241-478E-8084-24CCF3C83BD6}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
@@ -1034,6 +1036,42 @@ Global
 		{30207C29-E96E-4A6A-B94E-12CF3153A4BB}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{30207C29-E96E-4A6A-B94E-12CF3153A4BB}.Release|x64.ActiveCfg = Release|Any CPU
 		{30207C29-E96E-4A6A-B94E-12CF3153A4BB}.Release|x86.ActiveCfg = Release|Any CPU
+		{6D40D92B-5241-478E-8084-24CCF3C83BD6}.Ad-Hoc|Any CPU.ActiveCfg = Release|Any CPU
+		{6D40D92B-5241-478E-8084-24CCF3C83BD6}.Ad-Hoc|Any CPU.Build.0 = Release|Any CPU
+		{6D40D92B-5241-478E-8084-24CCF3C83BD6}.Ad-Hoc|ARM.ActiveCfg = Release|Any CPU
+		{6D40D92B-5241-478E-8084-24CCF3C83BD6}.Ad-Hoc|iPhone.ActiveCfg = Release|Any CPU
+		{6D40D92B-5241-478E-8084-24CCF3C83BD6}.Ad-Hoc|iPhoneSimulator.ActiveCfg = Release|Any CPU
+		{6D40D92B-5241-478E-8084-24CCF3C83BD6}.Ad-Hoc|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{6D40D92B-5241-478E-8084-24CCF3C83BD6}.Ad-Hoc|Mixed Platforms.Build.0 = Release|Any CPU
+		{6D40D92B-5241-478E-8084-24CCF3C83BD6}.Ad-Hoc|x64.ActiveCfg = Release|Any CPU
+		{6D40D92B-5241-478E-8084-24CCF3C83BD6}.Ad-Hoc|x86.ActiveCfg = Release|Any CPU
+		{6D40D92B-5241-478E-8084-24CCF3C83BD6}.AppStore|Any CPU.ActiveCfg = Release|Any CPU
+		{6D40D92B-5241-478E-8084-24CCF3C83BD6}.AppStore|Any CPU.Build.0 = Release|Any CPU
+		{6D40D92B-5241-478E-8084-24CCF3C83BD6}.AppStore|ARM.ActiveCfg = Release|Any CPU
+		{6D40D92B-5241-478E-8084-24CCF3C83BD6}.AppStore|iPhone.ActiveCfg = Release|Any CPU
+		{6D40D92B-5241-478E-8084-24CCF3C83BD6}.AppStore|iPhoneSimulator.ActiveCfg = Release|Any CPU
+		{6D40D92B-5241-478E-8084-24CCF3C83BD6}.AppStore|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{6D40D92B-5241-478E-8084-24CCF3C83BD6}.AppStore|Mixed Platforms.Build.0 = Release|Any CPU
+		{6D40D92B-5241-478E-8084-24CCF3C83BD6}.AppStore|x64.ActiveCfg = Release|Any CPU
+		{6D40D92B-5241-478E-8084-24CCF3C83BD6}.AppStore|x86.ActiveCfg = Release|Any CPU
+		{6D40D92B-5241-478E-8084-24CCF3C83BD6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6D40D92B-5241-478E-8084-24CCF3C83BD6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6D40D92B-5241-478E-8084-24CCF3C83BD6}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{6D40D92B-5241-478E-8084-24CCF3C83BD6}.Debug|iPhone.ActiveCfg = Debug|Any CPU
+		{6D40D92B-5241-478E-8084-24CCF3C83BD6}.Debug|iPhoneSimulator.ActiveCfg = Debug|Any CPU
+		{6D40D92B-5241-478E-8084-24CCF3C83BD6}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{6D40D92B-5241-478E-8084-24CCF3C83BD6}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{6D40D92B-5241-478E-8084-24CCF3C83BD6}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{6D40D92B-5241-478E-8084-24CCF3C83BD6}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{6D40D92B-5241-478E-8084-24CCF3C83BD6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6D40D92B-5241-478E-8084-24CCF3C83BD6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6D40D92B-5241-478E-8084-24CCF3C83BD6}.Release|ARM.ActiveCfg = Release|Any CPU
+		{6D40D92B-5241-478E-8084-24CCF3C83BD6}.Release|iPhone.ActiveCfg = Release|Any CPU
+		{6D40D92B-5241-478E-8084-24CCF3C83BD6}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
+		{6D40D92B-5241-478E-8084-24CCF3C83BD6}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{6D40D92B-5241-478E-8084-24CCF3C83BD6}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{6D40D92B-5241-478E-8084-24CCF3C83BD6}.Release|x64.ActiveCfg = Release|Any CPU
+		{6D40D92B-5241-478E-8084-24CCF3C83BD6}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
