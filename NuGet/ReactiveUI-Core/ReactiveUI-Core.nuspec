@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <package xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <metadata xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
-    <id>reactiveui-core</id>
+    <id>reactiveui-core.Net40</id>
     <version>6.5.0</version>
     <description>An MVVM library for .NET that is deeply integrated with the Reactive Extensions</description>
     <authors>Paul Betts</authors>
@@ -11,32 +11,12 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <dependencies>
       <group>
+        <dependency id="Microsoft.Bcl" version="1.1.10" />
+        <dependency id="Microsoft.Bcl.Build" version="1.0.21" />
         <dependency id="Rx-Main" version="2.2.5" />
-        <dependency id="Splat" version="[1,2)" />
-      </group>
-      <group targetFramework="win8">
-        <dependency id="Rx-Main" version="2.2.5" />
-        <dependency id="Splat" version="[1,2)" />
         <dependency id="Rx-Xaml" version="2.2.5" />
-        <dependency id="Rx-WinRT" version="2.2.5" />
+        <dependency id="Splat.Net40" version="[1,2)" />
       </group>
-	  <group targetFramework="wp8">
-        <dependency id="Rx-Main" version="2.2.5" />
-        <dependency id="Splat" version="[1,2)" />
-        <dependency id="Rx-Xaml" version="2.2.5" />
-        <dependency id="Rx-WinRT" version="2.2.5" />
-      </group>
-	  <group targetFramework="net45">
-        <dependency id="Rx-Main" version="2.2.5" />
-        <dependency id="Splat" version="[1,2)" />
-        <dependency id="Rx-Xaml" version="2.2.5" />
-      </group>
-	  <group targetFramework="Portable-Win81+Wpa81">
-        <dependency id="Rx-Main" version="2.2.5" />
-        <dependency id="Splat" version="[1,2)" />
-        <dependency id="Rx-Xaml" version="2.2.5" />
-        <dependency id="Rx-WinRT" version="2.2.5" />
-      </group>	  
     </dependencies>
   </metadata>
 </package>
