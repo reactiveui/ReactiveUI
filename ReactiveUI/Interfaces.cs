@@ -356,7 +356,11 @@ namespace ReactiveUI
     /// IReactiveNotifyPropertyChanged semantically as "Fire when *anything* in
     /// the collection or any of its items have changed, in any way".
     /// </summary>
-    public interface IReadOnlyReactiveCollection<out T> : IReadOnlyCollection<T>, IReactiveCollection<T>
+    public interface IReadOnlyReactiveCollection<out T> :
+#if !NET_40
+        IReadOnlyCollection<T>,
+#endif
+        IReactiveCollection<T>
     {
     }
 
@@ -369,7 +373,11 @@ namespace ReactiveUI
     /// IReactiveNotifyPropertyChanged semantically as "Fire when *anything* in
     /// the collection or any of its items have changed, in any way".
     /// </summary>
-    public interface IReadOnlyReactiveList<out T> : IReadOnlyReactiveCollection<T>, IReadOnlyList<T>
+    public interface IReadOnlyReactiveList<out T> :
+#if !NET_40
+        IReadOnlyList<T>,
+#endif
+        IReadOnlyReactiveCollection<T>
     {
         bool IsEmpty { get; }
     }
