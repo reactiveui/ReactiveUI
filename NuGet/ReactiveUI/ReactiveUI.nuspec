@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <package xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <metadata xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
-    <id>reactiveui</id>
+    <id>reactiveui.Net40</id>
     <version>6.5.0</version>
     <description>An MVVM library for WPF and Silverlight that is deeply integrated with the Reactive Extensions</description>
     <authors>Paul Betts</authors>
@@ -10,7 +10,7 @@
     <language>en-us</language>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <dependencies>
-      <dependency id="reactiveui-core" version="[6.5.0]" />
+      <dependency id="reactiveui-core.Net40" version="[6.5.0]" />
     </dependencies>
   </metadata>
 </package>
