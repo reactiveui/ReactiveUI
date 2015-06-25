@@ -1,8 +1,8 @@
+using Splat;
 using System;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Reflection;
-using Splat;
 
 namespace ReactiveUI
 {
