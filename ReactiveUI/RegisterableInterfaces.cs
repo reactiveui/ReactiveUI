@@ -309,7 +309,7 @@ namespace ReactiveUI
         /// <returns>An IDisposable which will disconnect the binding when
         /// disposed.</returns>
         IDisposable BindCommandToObject<TEventArgs>(ICommand command, object target, IObservable<object> commandParameter, string eventName)
-#if MONO
+#if MONO || NET_40
             where TEventArgs : EventArgs
 #endif
         ;

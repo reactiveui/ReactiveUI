@@ -64,7 +64,7 @@ namespace ReactiveUI
         }
 
         public IDisposable BindCommandToObject<TEventArgs>(ICommand command, object target, IObservable<object> commandParameter, string eventName)
-#if MONO
+#if MONO || NET_40
             where TEventArgs : EventArgs
 #endif
         {
@@ -130,7 +130,7 @@ namespace ReactiveUI
         }
 
         public IDisposable BindCommandToObject<TEventArgs>(ICommand command, object target, IObservable<object> commandParameter, string eventName)
-#if MONO
+#if MONO || NET_40
             where TEventArgs : EventArgs
 #endif
         {
