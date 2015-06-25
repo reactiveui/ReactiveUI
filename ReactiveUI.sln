@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
+# Visual Studio 14
+VisualStudioVersion = 14.0.22823.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Tests_Net45", "ReactiveUI.Tests\ReactiveUI.Tests_Net45.csproj", "{6FBDE6EA-2202-4A70-8EE4-7BA6D515952E}"
 EndProject
@@ -66,6 +66,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Testing_Net40", "ReactiveUI.Testing\ReactiveUI.Testing_Net40.csproj", "{5AB12C0B-329A-4415-8C4E-19CF6564EC0C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Blend_Net40", "ReactiveUI.Blend\ReactiveUI.Blend_Net40.csproj", "{7866B5B1-5407-43A2-976A-E784EB10F2DA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Events.Winforms_Net40", "ReactiveUI.Events\ReactiveUI.Events.Winforms_Net40.csproj", "{AE72AB14-9ED2-44EB-93BB-B965F17D608E}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
@@ -1148,6 +1150,42 @@ Global
 		{7866B5B1-5407-43A2-976A-E784EB10F2DA}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{7866B5B1-5407-43A2-976A-E784EB10F2DA}.Release|x64.ActiveCfg = Release|Any CPU
 		{7866B5B1-5407-43A2-976A-E784EB10F2DA}.Release|x86.ActiveCfg = Release|Any CPU
+		{AE72AB14-9ED2-44EB-93BB-B965F17D608E}.Ad-Hoc|Any CPU.ActiveCfg = Release|Any CPU
+		{AE72AB14-9ED2-44EB-93BB-B965F17D608E}.Ad-Hoc|Any CPU.Build.0 = Release|Any CPU
+		{AE72AB14-9ED2-44EB-93BB-B965F17D608E}.Ad-Hoc|ARM.ActiveCfg = Release|Any CPU
+		{AE72AB14-9ED2-44EB-93BB-B965F17D608E}.Ad-Hoc|iPhone.ActiveCfg = Release|Any CPU
+		{AE72AB14-9ED2-44EB-93BB-B965F17D608E}.Ad-Hoc|iPhoneSimulator.ActiveCfg = Release|Any CPU
+		{AE72AB14-9ED2-44EB-93BB-B965F17D608E}.Ad-Hoc|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{AE72AB14-9ED2-44EB-93BB-B965F17D608E}.Ad-Hoc|Mixed Platforms.Build.0 = Release|Any CPU
+		{AE72AB14-9ED2-44EB-93BB-B965F17D608E}.Ad-Hoc|x64.ActiveCfg = Release|Any CPU
+		{AE72AB14-9ED2-44EB-93BB-B965F17D608E}.Ad-Hoc|x86.ActiveCfg = Release|Any CPU
+		{AE72AB14-9ED2-44EB-93BB-B965F17D608E}.AppStore|Any CPU.ActiveCfg = Release|Any CPU
+		{AE72AB14-9ED2-44EB-93BB-B965F17D608E}.AppStore|Any CPU.Build.0 = Release|Any CPU
+		{AE72AB14-9ED2-44EB-93BB-B965F17D608E}.AppStore|ARM.ActiveCfg = Release|Any CPU
+		{AE72AB14-9ED2-44EB-93BB-B965F17D608E}.AppStore|iPhone.ActiveCfg = Release|Any CPU
+		{AE72AB14-9ED2-44EB-93BB-B965F17D608E}.AppStore|iPhoneSimulator.ActiveCfg = Release|Any CPU
+		{AE72AB14-9ED2-44EB-93BB-B965F17D608E}.AppStore|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{AE72AB14-9ED2-44EB-93BB-B965F17D608E}.AppStore|Mixed Platforms.Build.0 = Release|Any CPU
+		{AE72AB14-9ED2-44EB-93BB-B965F17D608E}.AppStore|x64.ActiveCfg = Release|Any CPU
+		{AE72AB14-9ED2-44EB-93BB-B965F17D608E}.AppStore|x86.ActiveCfg = Release|Any CPU
+		{AE72AB14-9ED2-44EB-93BB-B965F17D608E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AE72AB14-9ED2-44EB-93BB-B965F17D608E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AE72AB14-9ED2-44EB-93BB-B965F17D608E}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{AE72AB14-9ED2-44EB-93BB-B965F17D608E}.Debug|iPhone.ActiveCfg = Debug|Any CPU
+		{AE72AB14-9ED2-44EB-93BB-B965F17D608E}.Debug|iPhoneSimulator.ActiveCfg = Debug|Any CPU
+		{AE72AB14-9ED2-44EB-93BB-B965F17D608E}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{AE72AB14-9ED2-44EB-93BB-B965F17D608E}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{AE72AB14-9ED2-44EB-93BB-B965F17D608E}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{AE72AB14-9ED2-44EB-93BB-B965F17D608E}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{AE72AB14-9ED2-44EB-93BB-B965F17D608E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AE72AB14-9ED2-44EB-93BB-B965F17D608E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AE72AB14-9ED2-44EB-93BB-B965F17D608E}.Release|ARM.ActiveCfg = Release|Any CPU
+		{AE72AB14-9ED2-44EB-93BB-B965F17D608E}.Release|iPhone.ActiveCfg = Release|Any CPU
+		{AE72AB14-9ED2-44EB-93BB-B965F17D608E}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
+		{AE72AB14-9ED2-44EB-93BB-B965F17D608E}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{AE72AB14-9ED2-44EB-93BB-B965F17D608E}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{AE72AB14-9ED2-44EB-93BB-B965F17D608E}.Release|x64.ActiveCfg = Release|Any CPU
+		{AE72AB14-9ED2-44EB-93BB-B965F17D608E}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
