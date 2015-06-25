@@ -1,4 +1,5 @@
 using ReactiveUI;
+using Splat;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -7,10 +8,9 @@ using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using System.Reflection;
 using System.Runtime.Serialization;
 using System.Text;
-using System.Reflection;
-using Splat;
 
 namespace ReactiveUI
 {
@@ -18,7 +18,7 @@ namespace ReactiveUI
     {
         static MemoizingMRUCache<Type, Dictionary<string, bool>> persistablePropertiesCache = new MemoizingMRUCache<Type, Dictionary<string, bool>>((type, _) => {
             return type.GetTypeInfo().DeclaredProperties
-                .Where(x => x.CustomAttributes.Any(y => typeof(DataMemberAttribute).GetTypeInfo().IsAssignableFrom(y.AttributeType.GetTypeInfo())))
+                .Where(x => x.GetCustomAttributesData().Any(y => typeof(DataMemberAttribute).GetTypeInfo().IsAssignableFrom(y.Constructor.DeclaringType.GetTypeInfo())))
                 .ToDictionary(k => k.Name, v => true);
         }, RxApp.SmallCacheLimit);
 
