@@ -2,7 +2,9 @@
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
+#if !NET_40
 using ReactiveUI.Events;
+#endif
 
 {{#Namespaces}}
 using {{Name}};
