@@ -42,7 +42,7 @@ namespace {{Name}}
 
 {{#Events}}
         public IObservable<{{EventArgsType}}> {{Name}} {
-            get { return Observable.FromEventPattern<{{EventHandlerType}}, {{EventArgsType}}>(x => This.{{Name}} += x, x => This.{{Name}} -= x).Select(x => x.EventArgs); }
+            get { return Observable.FromEvent<{{EventHandlerType}}, {{EventArgsType}}>(onNext => (sender, e) => onNext(e), x => This.{{Name}} += x, x => This.{{Name}} -= x); }
         }
 
 {{/Events}}
