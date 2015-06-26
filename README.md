@@ -1,4 +1,6 @@
-# ReactiveUI
+# ReactiveUI (for .Net 4.0)
+
+Note: this is a RxUI fork for .Net 4.0 support
 
 Use the Reactive Extensions for .NET to create elegant, testable User 
 Interfaces that run on any mobile or desktop platform.
