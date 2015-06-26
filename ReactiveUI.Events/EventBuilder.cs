@@ -94,7 +94,7 @@ namespace EventBuilder
 
 
             foreach (var type in namespaceData.SelectMany(x => x.Types)) {
-                var parentWithEvents = GetParents(type.Type).FirstOrDefault(x => publicTypesWithEvents.Select(t => t.Type).Contains(x));
+                var parentWithEvents = GetParents(type.Type).FirstOrDefault(x => Contains(publicTypesWithEvents.Select(t => t.Type), x));
                 if (parentWithEvents == null) continue;
 
                 type.Parent = new ParentInfo() { Name = parentWithEvents.FullName };
@@ -156,7 +156,12 @@ namespace EventBuilder
 
         public static EventDefinition[] GetPublicEvents(IEnumerable<TypeDefinition> group, TypeDefinition t)
         {
-            return new[] { t }.Concat(GetParents(t).TakeWhile(type => !group.Contains(type))).SelectMany(GetPublicEvents).ToArray();
+            return new[] { t }.Concat(GetParents(t).TakeWhile(type => !Contains(group, type))).SelectMany(GetPublicEvents).ToArray();
+        }
+
+        private static bool Contains(IEnumerable<TypeDefinition> ie, TypeDefinition type)
+        {
+            return ie.Any(t => t.FullName == type.FullName);
         }
 
         public static EventDefinition[] GetPublicEvents(TypeDefinition t)
