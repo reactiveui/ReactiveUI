@@ -1,16 +1,19 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <package xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <metadata xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
-    <id>reactiveui-winforms</id>
+    <id>reactiveui-winforms.Net40</id>
     <version>6.5.0</version>
-    <description>Windows Forms specific extensions to ReactiveUI</description>
+    <description>The .NET 4.0 package of reactiveui-winforms fork with .NET 4.0 support.
+      Windows Forms specific extensions to ReactiveUI</description>
     <authors>Paul Betts</authors>
     <projectUrl>http://www.reactiveui.net</projectUrl>
     <licenseUrl>http://opensource.org/licenses/ms-pl.html</licenseUrl>
     <language>en-us</language>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <dependencies>
-      <dependency id="reactiveui-core" version="[6.5.0]" />
+      <dependency id="Microsoft.Bcl" version="1.1.10" />
+      <dependency id="Microsoft.Bcl.Build" version="1.0.21" />
+      <dependency id="reactiveui-core.Net40" version="[6.5.0]" />
     </dependencies>
   </metadata>
 </package>

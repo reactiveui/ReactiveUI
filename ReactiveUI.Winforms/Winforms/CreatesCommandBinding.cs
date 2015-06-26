@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using System.Reflection;
 using System.Windows.Forms;
 using System.Windows.Input;
-using ReactiveUI;
-using System.Reflection;
-using System.ComponentModel;
+using MouseEventArgs = System.Windows.Forms.MouseEventArgs;
 
 namespace ReactiveUI.Winforms
 {
@@ -56,6 +55,9 @@ namespace ReactiveUI.Winforms
         }
 
         public IDisposable BindCommandToObject<TEventArgs>(ICommand command, object target, IObservable<object> commandParameter, string eventName)
+#if NET_40
+            where TEventArgs : EventArgs
+#endif
         {
             var ret = new CompositeDisposable();
 
