@@ -43,19 +43,19 @@ public class ColorChooserThatDoesntLikeGreen : ReactiveObject
   byte _Red;
   public byte Red {
     get { return _Red; }
-    set { this.RaiseAndSetIfChanged(value); }
+    set { this.RaiseAndSetIfChanged(ref _Red, value); }
   }
 
   byte _Green;
   public byte Green {
     get { return _Green; }
-    set { this.RaiseAndSetIfChanged(value); }
+    set { this.RaiseAndSetIfChanged(ref _Green, value); }
   }
 
   byte _Blue;
   public byte Blue {
     get { return _Blue; }
-    set { this.RaiseAndSetIfChanged(value); }
+    set { this.RaiseAndSetIfChanged(ref _Blue, value); }
   }
 
   //
@@ -67,17 +67,17 @@ public class ColorChooserThatDoesntLikeGreen : ReactiveObject
     get { return _Color.Value; }
   }
 
-  ReactiveCommand OkButton { get; protected set; }
+  public ReactiveCommand<object> OkButton { get; protected set; }
 
   public ColorChooserThatDoesntLikeGreen()
   {
-    var finalColor = this.WhenAny(x => x.Red, x => x.Green, x => x.Blue, 
-        (r,g,b) => Color.FromRGB(r.Value, g.Value, b.Value));
+    var finalColor = this.WhenAny(x => x.Red, x => x.Green, x => x.Blue,
+      (r,g,b) => Color.FromArgb(r.Value, g.Value, b.Value));
 
-    finalColor.ToProperty(this, x => x.Color, out _Color);
+    _Color = finalColor.ToProperty(this, x => x.Color);
 
     // When the finalColor has full green, the Ok button is disabled
-    OkButton = new ReactiveCommand(finalColor.Select(x => x.Green != 255));
+    OkButton = ReactiveCommand.Create(finalColor.Select(x => x.G != 255));
   }
 }
 ```
