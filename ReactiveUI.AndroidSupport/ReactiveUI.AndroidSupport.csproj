@@ -74,6 +74,7 @@
     <Compile Include="..\CommonAssemblyInfo.cs">
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="ControlFetcherMixin.cs" />
     <Compile Include="ReactiveFragmentActivity.cs" />
     <Compile Include="ReactivePagerAdapter.cs" />
     <Compile Include="ReactiveFragment.cs" />
