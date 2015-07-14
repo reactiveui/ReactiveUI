@@ -60,6 +60,11 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{AA2BDF98-2D28-4212-BFA6-8C5270065C06}"
 EndProject
 Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		Playground-Wpa81\Playground-Wpa81.Shared\Playground-Wpa81.Shared.projitems*{faf376b9-b829-4bf9-9da9-eaae2f491e65}*SharedItemsImports = 13
+		Playground-Wpa81\Playground-Wpa81.Shared\Playground-Wpa81.Shared.projitems*{87310a2d-d731-4daa-b930-7bce328a7b49}*SharedItemsImports = 4
+		Playground-Wpa81\Playground-Wpa81.Shared\Playground-Wpa81.Shared.projitems*{f27311c9-2ca2-45bf-b61c-e93445bd3261}*SharedItemsImports = 4
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Ad-Hoc|Any CPU = Ad-Hoc|Any CPU
 		Ad-Hoc|ARM = Ad-Hoc|ARM
