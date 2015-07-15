@@ -53,7 +53,7 @@ namespace ReactiveUI
             if (eventInfo == null) {
                 throw new Exception(
                     String.Format(
-                        "Couldn't find a default event to bind to on {0}, specify an event expicitly", 
+                        "Couldn't find a default event to bind to on {0}, specify an event explicitly", 
                         target.GetType().FullName));
             }
 

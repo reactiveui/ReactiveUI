@@ -346,7 +346,7 @@ namespace ReactiveUI
 
         /// <summary>
         /// Gets a value indicating whether or not the item fits (sort-wise) at the provided index. The determination
-        /// is made by checking whether or not it's considered larger than or equal to the preceeding item and if
+        /// is made by checking whether or not it's considered larger than or equal to the preceding item and if
         /// it's less than or equal to the succeeding item.
         /// </summary>
         bool canItemStayAtPosition(TValue item, int currentIndex)
@@ -693,7 +693,7 @@ namespace ReactiveUI
         {
             // Since the item changed is most likely a value type we must refrain from ever comparing it to itself.
             // We do this by figuring out how the updated item compares to its neighbors. By knowing if it's
-            // less than or greater than either one of its neighbors we can limit the search range to a range exlusive
+            // less than or greater than either one of its neighbors we can limit the search range to a range exclusive
             // of the current index.
 
             Debug.Assert(list.Count > 0);

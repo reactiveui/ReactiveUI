@@ -138,7 +138,7 @@ namespace ReactiveUI
 
         static IObservable<IObservedChange<object, object>> nestedObservedChanges(Expression expression, IObservedChange<object, object> sourceChange, bool beforeChange)
         {
-            // Make sure a change at a root node propogates events down
+            // Make sure a change at a root node propagates events down
             var kicker = observedChangeFor(expression, sourceChange);
 
             // Handle null values in the chain

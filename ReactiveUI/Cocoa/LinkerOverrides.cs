@@ -22,7 +22,7 @@ namespace ReactiveUI.Cocoa
     {
         public void KeepMe()
         {
-           // UIButon
+            // UIButton
             var btn = new UIButton();
             var title = btn.Title(UIControlState.Disabled);
             btn.SetTitle("foo", UIControlState.Disabled);

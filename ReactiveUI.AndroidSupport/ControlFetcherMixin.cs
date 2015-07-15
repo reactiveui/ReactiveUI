@@ -64,7 +64,7 @@ namespace ReactiveUI.AndroidSupport
         }
 
         /// <summary>
-        /// This should be called in the Fragement's OnCreateView, with the newly inflated layout
+        /// This should be called in the Fragment's OnCreateView, with the newly inflated layout
         /// </summary>
         /// <param name="This"></param>
         /// <param name="inflatedView"></param>
