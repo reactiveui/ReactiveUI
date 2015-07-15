@@ -11,9 +11,9 @@ using Splat;
 using System.Collections.Generic;
 using System.Reactive;
 
-namespace ReactiveUI 
+namespace ReactiveUI
 {
-    public interface IReactiveObject : INotifyPropertyChanged, INotifyPropertyChanging, IEnableLogger 
+    public interface IReactiveObject : INotifyPropertyChanged, INotifyPropertyChanging, IEnableLogger
     {
         event PropertyChangingEventHandler PropertyChanging;
         event PropertyChangedEventHandler PropertyChanged;
@@ -26,26 +26,26 @@ namespace ReactiveUI
     public static class IReactiveObjectExtensions
     {
         static ConditionalWeakTable<IReactiveObject, IExtensionState<IReactiveObject>> state = new ConditionalWeakTable<IReactiveObject, IExtensionState<IReactiveObject>>();
-        
+
         internal static IObservable<IReactivePropertyChangedEventArgs<TSender>> getChangedObservable<TSender>(this TSender This) where TSender : IReactiveObject
         {
             var val = state.GetValue(This, key => (IExtensionState<IReactiveObject>)new ExtensionState<TSender>(This));
             return val.Changed.Cast<IReactivePropertyChangedEventArgs<TSender>>();
         }
 
-        internal static IObservable<IReactivePropertyChangedEventArgs<TSender>> getChangingObservable<TSender>(this TSender This) where TSender : IReactiveObject 
+        internal static IObservable<IReactivePropertyChangedEventArgs<TSender>> getChangingObservable<TSender>(this TSender This) where TSender : IReactiveObject
         {
             var val = state.GetValue(This, key => (IExtensionState<IReactiveObject>)new ExtensionState<TSender>(This));
             return val.Changing.Cast<IReactivePropertyChangedEventArgs<TSender>>();
         }
 
-        internal static IObservable<Exception> getThrownExceptionsObservable<TSender>(this TSender This) where TSender : IReactiveObject 
+        internal static IObservable<Exception> getThrownExceptionsObservable<TSender>(this TSender This) where TSender : IReactiveObject
         {
             var s = state.GetValue(This, key => (IExtensionState<IReactiveObject>)new ExtensionState<TSender>(This));
             return s.ThrownExceptions;
         }
 
-        internal static void raisePropertyChanging<TSender>(this TSender This, string propertyName) where TSender : IReactiveObject 
+        internal static void raisePropertyChanging<TSender>(this TSender This, string propertyName) where TSender : IReactiveObject
         {
             Contract.Requires(propertyName != null);
 
@@ -54,12 +54,12 @@ namespace ReactiveUI
             s.raisePropertyChanging(propertyName);
         }
 
-        internal static void raisePropertyChanged<TSender>(this TSender This, string propertyName) where TSender : IReactiveObject 
+        internal static void raisePropertyChanged<TSender>(this TSender This, string propertyName) where TSender : IReactiveObject
         {
             Contract.Requires(propertyName != null);
 
             var s = state.GetValue(This, key => (IExtensionState<IReactiveObject>)new ExtensionState<TSender>(This));
-            
+
             s.raisePropertyChanged(propertyName);
         }
 
@@ -95,7 +95,7 @@ namespace ReactiveUI
         /// <param name="backingField">A Reference to the backing field for this
         /// property.</param>
         /// <param name="newValue">The new value.</param>
-        /// <param name="propertyName">The name of the property, usually 
+        /// <param name="propertyName">The name of the property, usually
         /// automatically provided through the CallerMemberName attribute.</param>
         /// <returns>The newly set value, normally discarded.</returns>
         public static TRet RaiseAndSetIfChanged<TObj, TRet>(
@@ -181,7 +181,7 @@ namespace ReactiveUI
             /// <summary>
             /// Initializes a new instance of the <see cref="ExtensionState{TSender}"/> class.
             /// </summary>
-            public ExtensionState(TSender sender) 
+            public ExtensionState(TSender sender)
             {
                 this.sender = sender;
                 this.changingSubject = new Subject<IReactivePropertyChangedEventArgs<TSender>>();
@@ -212,7 +212,7 @@ namespace ReactiveUI
 
             public IObservable<IReactivePropertyChangedEventArgs<TSender>> Changing {
                 get { return this.changingObservable; }
-            }           
+            }
 
             public IObservable<IReactivePropertyChangedEventArgs<TSender>> Changed {
                 get { return this.changedObservable; }
@@ -225,7 +225,7 @@ namespace ReactiveUI
             public bool areChangeNotificationsEnabled()
             {
                 return (Interlocked.Read(ref changeNotificationsSuppressed) == 0);
-            }            
+            }
 
             public bool areChangeNotificationsDelayed()
             {
@@ -266,7 +266,7 @@ namespace ReactiveUI
                 var changing = new ReactivePropertyChangingEventArgs<TSender>(sender, propertyName);
                 sender.RaisePropertyChanging(changing);
 
-                this.notifyObservable(sender, changing, this.changingSubject);
+                this.notifyObservable(changing, this.changingSubject);
             }
 
             public void raisePropertyChanged(string propertyName)
@@ -277,7 +277,7 @@ namespace ReactiveUI
                 var changed = new ReactivePropertyChangedEventArgs<TSender>(sender, propertyName);
                 sender.RaisePropertyChanged(changed);
 
-                this.notifyObservable(sender, changed, this.changedSubject);
+                this.notifyObservable(changed, this.changedSubject);
             }
 
             internal void notifyObservable<T>(TSender rxObj, T item, ISubject<T> subject)
@@ -285,7 +285,6 @@ namespace ReactiveUI
                 try {
                     subject.OnNext(item);
                 } catch (Exception ex) {
-                    rxObj.Log().ErrorException("ReactiveObject Subscriber threw exception", ex);
                     thrownExceptions.OnNext(ex);
                 }
             }
