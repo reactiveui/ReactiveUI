@@ -2,7 +2,7 @@
 <package xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <metadata xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
     <id>reactiveui-events-winforms</id>
-    <version>6.5.0.1</version>
+    <version>6.5.0.2</version>
     <description>ReactiveUI.Events.Winforms adds Observable-based events to UI controls and other appropriate places.</description>
     <authors>Paul Betts</authors>
     <projectUrl>http://www.reactiveui.net</projectUrl>
@@ -12,11 +12,12 @@
     <dependencies>
 	  <group targetFramework="net45">
         <dependency id="Rx-Main" version="2.2.5" />
-        <dependency id="Splat" version="[1,2)" />
       </group>
       <group targetFramework="net40">
         <dependency id="Rx-Main" version="2.2.5" />
-        <dependency id="Splat.Net40" version="[1,2)" />
+      </group>
+	  <group targetFramework="net35">
+        <dependency id="Rx_Experimental-Main" version="1.1.11111" />
       </group>
     </dependencies>
   </metadata>
