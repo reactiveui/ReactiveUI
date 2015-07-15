@@ -1,0 +1,180 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{6D670281-C283-48CC-A057-0C9A77137F82}</ProjectGuid>
+    <OutputType>library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>ReactiveUI.Events.DevExpress.WinForms</RootNamespace>
+    <AssemblyName>ReactiveUI.Events.DevExpress.10.2.5.WinForms</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <WarningLevel>4</WarningLevel>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\Net40\</OutputPath>
+    <IntermediateOutputPath>obj\Debug\Net40</IntermediateOutputPath>
+    <DefineConstants>TRACE;DEBUG;NET_40</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\Net40\</OutputPath>
+    <IntermediateOutputPath>obj\Release\Net40</IntermediateOutputPath>
+    <DefineConstants>TRACE;NET_40</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Release\Net40\ReactiveUI.Events.DevExpress.10.2.5.WinForms.xml</DocumentationFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="DevExpress.Charts.v10.2.Core, Version=10.2.5.0, Culture=neutral, PublicKeyToken=6935958ad4a06599, processorArchitecture=MSIL">
+      <HintPath>..\packages\DevExpress.10.2.5.WinForms.10.2.5.3\lib\net35\DevExpress.Charts.v10.2.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="DevExpress.Data.v10.2, Version=10.2.5.0, Culture=neutral, PublicKeyToken=6935958ad4a06599, processorArchitecture=MSIL">
+      <HintPath>..\packages\DevExpress.10.2.5.WinForms.10.2.5.3\lib\net35\DevExpress.Data.v10.2.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="DevExpress.PivotGrid.v10.2.Core, Version=10.2.5.0, Culture=neutral, PublicKeyToken=6935958ad4a06599, processorArchitecture=MSIL">
+      <HintPath>..\packages\DevExpress.10.2.5.WinForms.10.2.5.3\lib\net35\DevExpress.PivotGrid.v10.2.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="DevExpress.RichEdit.v10.2.Core, Version=10.2.5.0, Culture=neutral, PublicKeyToken=6935958ad4a06599, processorArchitecture=MSIL">
+      <HintPath>..\packages\DevExpress.10.2.5.WinForms.10.2.5.3\lib\net35\DevExpress.RichEdit.v10.2.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="DevExpress.Utils.v10.2, Version=10.2.5.0, Culture=neutral, PublicKeyToken=6935958ad4a06599, processorArchitecture=MSIL">
+      <HintPath>..\packages\DevExpress.10.2.5.WinForms.10.2.5.3\lib\net35\DevExpress.Utils.v10.2.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="DevExpress.XtraBars.v10.2, Version=10.2.5.0, Culture=neutral, PublicKeyToken=6935958ad4a06599, processorArchitecture=MSIL">
+      <HintPath>..\packages\DevExpress.10.2.5.WinForms.10.2.5.3\lib\net35\DevExpress.XtraBars.v10.2.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="DevExpress.XtraCharts.v10.2, Version=10.2.5.0, Culture=neutral, PublicKeyToken=6935958ad4a06599, processorArchitecture=MSIL">
+      <HintPath>..\packages\DevExpress.10.2.5.WinForms.10.2.5.3\lib\net35\DevExpress.XtraCharts.v10.2.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="DevExpress.XtraCharts.v10.2.UI, Version=10.2.5.0, Culture=neutral, PublicKeyToken=6935958ad4a06599, processorArchitecture=MSIL">
+      <HintPath>..\packages\DevExpress.10.2.5.WinForms.10.2.5.3\lib\net35\DevExpress.XtraCharts.v10.2.UI.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="DevExpress.XtraEditors.v10.2, Version=10.2.5.0, Culture=neutral, PublicKeyToken=6935958ad4a06599, processorArchitecture=MSIL">
+      <HintPath>..\packages\DevExpress.10.2.5.WinForms.10.2.5.3\lib\net35\DevExpress.XtraEditors.v10.2.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="DevExpress.XtraGrid.v10.2, Version=10.2.5.0, Culture=neutral, PublicKeyToken=6935958ad4a06599, processorArchitecture=MSIL">
+      <HintPath>..\packages\DevExpress.10.2.5.WinForms.10.2.5.3\lib\net35\DevExpress.XtraGrid.v10.2.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="DevExpress.XtraLayout.v10.2, Version=10.2.5.0, Culture=neutral, PublicKeyToken=6935958ad4a06599, processorArchitecture=MSIL">
+      <HintPath>..\packages\DevExpress.10.2.5.WinForms.10.2.5.3\lib\net35\DevExpress.XtraLayout.v10.2.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="DevExpress.XtraNavBar.v10.2, Version=10.2.5.0, Culture=neutral, PublicKeyToken=6935958ad4a06599, processorArchitecture=MSIL">
+      <HintPath>..\packages\DevExpress.10.2.5.WinForms.10.2.5.3\lib\net35\DevExpress.XtraNavBar.v10.2.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="DevExpress.XtraPivotGrid.v10.2, Version=10.2.5.0, Culture=neutral, PublicKeyToken=6935958ad4a06599, processorArchitecture=MSIL">
+      <HintPath>..\packages\DevExpress.10.2.5.WinForms.10.2.5.3\lib\net35\DevExpress.XtraPivotGrid.v10.2.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="DevExpress.XtraPrinting.v10.2, Version=10.2.5.0, Culture=neutral, PublicKeyToken=6935958ad4a06599, processorArchitecture=MSIL">
+      <HintPath>..\packages\DevExpress.10.2.5.WinForms.10.2.5.3\lib\net35\DevExpress.XtraPrinting.v10.2.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="DevExpress.XtraRichEdit.v10.2, Version=10.2.5.0, Culture=neutral, PublicKeyToken=6935958ad4a06599, processorArchitecture=MSIL">
+      <HintPath>..\packages\DevExpress.10.2.5.WinForms.10.2.5.3\lib\net35\DevExpress.XtraRichEdit.v10.2.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="DevExpress.XtraScheduler.v10.2, Version=10.2.5.0, Culture=neutral, PublicKeyToken=6935958ad4a06599, processorArchitecture=MSIL">
+      <HintPath>..\packages\DevExpress.10.2.5.WinForms.10.2.5.3\lib\net35\DevExpress.XtraScheduler.v10.2.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="DevExpress.XtraScheduler.v10.2.Core, Version=10.2.5.0, Culture=neutral, PublicKeyToken=6935958ad4a06599, processorArchitecture=MSIL">
+      <HintPath>..\packages\DevExpress.10.2.5.WinForms.10.2.5.3\lib\net35\DevExpress.XtraScheduler.v10.2.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="DevExpress.XtraTreeList.v10.2, Version=10.2.5.0, Culture=neutral, PublicKeyToken=6935958ad4a06599, processorArchitecture=MSIL">
+      <HintPath>..\packages\DevExpress.10.2.5.WinForms.10.2.5.3\lib\net35\DevExpress.XtraTreeList.v10.2.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="DevExpress.XtraVerticalGrid.v10.2, Version=10.2.5.0, Culture=neutral, PublicKeyToken=6935958ad4a06599, processorArchitecture=MSIL">
+      <HintPath>..\packages\DevExpress.10.2.5.WinForms.10.2.5.3\lib\net35\DevExpress.XtraVerticalGrid.v10.2.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="ReactiveUI.Events.Winforms, Version=6.5.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\reactiveui-events-winforms.6.5.0.2\lib\net40\ReactiveUI.Events.Winforms.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Reactive.Core, Version=2.2.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Rx-Core.2.2.5\lib\net40\System.Reactive.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Reactive.Interfaces, Version=2.2.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Rx-Interfaces.2.2.5\lib\net40\System.Reactive.Interfaces.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Reactive.Linq, Version=2.2.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Rx-Linq.2.2.5\lib\net40\System.Reactive.Linq.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Reactive.PlatformServices, Version=2.2.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Rx-PlatformServices.2.2.5\lib\net40\System.Reactive.PlatformServices.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Xaml">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\CommonAssemblyInfo.cs">
+      <Link>Properties\CommonAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="Events.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <AppDesigner Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.ReactiveUI.Events.Dx10.Winforms_Net40.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>%25SystemRoot%25\Microsoft.NET\Framework\v4.0.30319\msbuild.exe /p:Configuration=Release "$(ProjectDir)EventBuilder.csproj"
+"$(ProjectDir)EventBuilder.exe" "$(ProjectDir)..\packages\DevExpress.10.2.5.WinForms.10.2.5.3\lib\net35\DevExpress.*.dll" "C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0" "$(ProjectDir)Events.mustache" &gt; "$(ProjectDir)Events.cs"
+del "$(ProjectDir)EventBuilder.exe"
+del "$(ProjectDir)EventBuilder.pdb"
+del "$(ProjectDir)Nustache.Core.dll"
+del "$(ProjectDir)Mono.Cecil.dll"
+del "$(ProjectDir)Mono.Cecil.pdb"</PreBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

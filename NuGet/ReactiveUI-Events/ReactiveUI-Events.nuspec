@@ -2,8 +2,8 @@
 <package xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <metadata xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
     <id>reactiveui-events.Net40</id>
-    <version>6.5.0</version>
-    <description>The .NET 4.0 package of reactiveui-events fork with .NET 4.0 support.
+    <version>6.5.0.1</version>
+    <description>The .NET 4.0 package of reactiveui-events fork with .NET 4.0 / 3.5 support.
         ReactiveUI.Events adds Observable-based events to UI controls and other appropriate places.</description>
     <authors>Paul Betts</authors>
     <projectUrl>http://www.reactiveui.net</projectUrl>
@@ -11,7 +11,12 @@
     <language>en-us</language>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <dependencies>
-	  <dependency id="Rx-Main" version="2.2.5" />
+      <group targetFramework="net40">
+        <dependency id="Rx-Main" version="2.2.5" />
+      </group>
+	  <group targetFramework="net35">
+        <dependency id="Rx_Experimental-Main" version="1.1.11111" />
+      </group>
     </dependencies>
   </metadata>
 </package>

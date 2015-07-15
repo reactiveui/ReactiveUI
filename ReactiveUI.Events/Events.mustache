@@ -2,7 +2,7 @@
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
-#if !NET_40
+#if !NET_40 && !NET_35
 using ReactiveUI.Events;
 #endif
 
@@ -19,22 +19,23 @@ namespace {{Name}}
     public static class EventsMixin
     {
 {{#Types}}
-        public static {{Name}}Events Events(this {{Name}} This)
+        public static {{Name}}Events{{GenericArgs}} Events{{GenericArgs}}(this {{Name}}{{GenericArgs}} This){{GenericConstraints}}
         {
-            return new {{Name}}Events(This);
+            return new {{Name}}Events{{GenericArgs}}(This);
         }
 {{/Types}}
     }
 
 {{#Types}}
-    public class {{Name}}Events
+    public class {{Name}}Events{{GenericArgs}}
 {{#Parent}}
-        : {{Name}}Events
+        : {{Name}}Events{{GenericArgs}}
 {{/Parent}}
+{{GenericConstraints}}
     {
-        {{Name}} This;
+        {{Name}}{{GenericArgs}} This;
 
-        public {{Name}}Events({{Name}} This)
+        public {{Name}}Events({{Name}}{{GenericArgs}} This)
 {{#Parent}}
             : base(This)
 {{/Parent}}

@@ -6,15 +6,41 @@ using System.Linq;
 using Mono.Cecil;
 using System.Text;
 using System.Threading.Tasks;
+using System.Collections;
+using System.Reflection;
 
 namespace EventBuilder
 {
     class Program
     {
+        static IEnumerable<string> ResolveWildcards(string s)
+        {
+            if (!HasWildcard(s))
+                return new[] { s };
+            if (HasWildcard(Path.GetDirectoryName(s)))
+                throw new Exception("Invalid path: " + s);
+            string dir = Path.GetDirectoryName(s);
+            if (String.IsNullOrEmpty(dir)) dir = Directory.GetCurrentDirectory();
+            return Directory.GetFiles(Path.GetFullPath(dir), Path.GetFileName(s));
+        }
+
+        static bool HasWildcard(string path)
+        {
+            return path.IndexOfAny(new[] { '*', '?' }) != -1;
+        }
+
+        static bool IsDirectory(string path)
+        {
+            return !HasWildcard(path) && File.GetAttributes(path).HasFlag(FileAttributes.Directory);
+        }
+
         static void Main(string[] args)
         {
-            var targetAssemblyNames = args.TakeWhile(x => !x.EndsWith(".mustache"));
-            var targetAssemblyDirs = targetAssemblyNames.Select(x => Path.GetDirectoryName(x)).Distinct().ToList();
+            var templateFile = args.First(x => x.EndsWith(".mustache"));
+            var libDirs = args.Where(IsDirectory);
+            var targetAssemblyNames = args.Where(x => !x.EndsWith(".mustache") && !IsDirectory(x));
+            targetAssemblyNames = targetAssemblyNames.SelectMany(ResolveWildcards);
+            var targetAssemblyDirs = libDirs.Concat(targetAssemblyNames.Select(x => Path.GetDirectoryName(x))).Distinct().ToList();
 
             // NB: I'm too lazy to fix this properly
             var monoDroidDir = targetAssemblyDirs.FirstOrDefault(x => x.ToLowerInvariant().Contains("monoandroid"));
@@ -37,11 +63,12 @@ namespace EventBuilder
                 targetAssemblyDirs.Add("/Library/Frameworks/Mono.framework/Versions/Current/lib/mono/xbuild-frameworks/.NETPortable/v4.5/Profile/Profile78");
             }
 
-            var rp = new ReaderParameters() { AssemblyResolver = new PathSearchAssemblyResolver(targetAssemblyDirs.ToArray()) };
+            var resolver = new PathSearchAssemblyResolver(targetAssemblyDirs.ToArray());
+            var rp = new ReaderParameters() { AssemblyResolver = resolver };
             var targetAssemblies = targetAssemblyNames
                 .Select(x => AssemblyDefinition.ReadAssembly(x, rp)).ToArray();
-
-            var template = File.ReadAllText(args.Last(), Encoding.UTF8);
+            resolver.LoadedAssemblies = targetAssemblies.ToList();
+            var template = File.ReadAllText(templateFile, Encoding.UTF8);
 
             var namespaceData = CreateEventTemplateInformation(targetAssemblies);
             var delegateData = CreateDelegateTemplateInformation(targetAssemblies);
@@ -57,6 +84,11 @@ namespace EventBuilder
             Console.WriteLine(result);
         }
 
+        private static bool IsObsolete(Mono.Collections.Generic.Collection<CustomAttribute> attrs)
+        {
+            return attrs.Any(attr => attr.AttributeType.FullName == typeof(ObsoleteAttribute).FullName);
+        }
+
         public static NamespaceInfo[] CreateEventTemplateInformation(AssemblyDefinition[] targetAssemblies)
         {
             var garbageNamespaceList = new[] {
@@ -70,7 +102,7 @@ namespace EventBuilder
 
             var types = targetAssemblies
                 .SelectMany(x => SafeGetTypes(x))
-                .Where(x => x.IsPublic && !x.HasGenericParameters)
+                .Where(x => x.IsPublic && !IsObsolete(x.CustomAttributes))
                 .Where(x => !garbageNamespaceList.Contains(x.Namespace))
                 .ToArray();
             var publicTypesWithEvents = types
@@ -79,10 +111,13 @@ namespace EventBuilder
                 .ToArray();
             var namespaceData = publicTypesWithEvents
                 .GroupBy(x => x.Type.Namespace)
+                .Where(x => !string.IsNullOrEmpty(x.Key))
                 .Select(x => new NamespaceInfo() {
                     Name = x.Key,
                     Types = x.Select(y => new PublicTypeInfo() {
                         Name = y.Type.Name,
+                        GenericArgs = GetGenericArgs(y.Type),
+                        GenericConstraints = GetGenericConstraints(y.Type),
                         Type = y.Type,
                         Events = y.Events.Select(z => new PublicEventInfo() {
                             Name = z.Name,
@@ -94,13 +129,52 @@ namespace EventBuilder
 
 
             foreach (var type in namespaceData.SelectMany(x => x.Types)) {
-                var parentWithEvents = GetParents(type.Type).FirstOrDefault(x => Contains(publicTypesWithEvents.Select(t => t.Type), x));
+                var parentWithEvents = GetParentEventType(types, type.Type);
                 if (parentWithEvents == null) continue;
 
                 type.Parent = new ParentInfo() { Name = parentWithEvents.FullName };
+                if (parentWithEvents.HasGenericParameters)
+                {
+                    var remap = GetParentsGenericArgsRemap(type.Type).ToDictionary(x => x.Item1, x => x.Item2);
+                    Func<GenericParameter, string> ReMap = p =>
+                    {
+                        TypeReference ret = p;
+                        while (remap.TryGetValue(p, out ret))
+                        {
+                            p = ret as GenericParameter;
+                            if (p == null)
+                                return ret.FullName;
+                        }
+                        return ret.FullName;
+                    };
+                    type.Parent.GenericArgs = "<" + string.Join(",", parentWithEvents.GenericParameters.Select(ReMap)) + ">";
+                }
             }
 
             return namespaceData;
+        }
+
+        private static string GetGenericConstraints(TypeDefinition type)
+        {
+            if (GetGenericArgs(type).Length == 0)
+                return "";
+            return string.Join(" ", type.GenericParameters.Select(p =>
+            {
+                if (!p.HasConstraints && !p.HasDefaultConstructorConstraint) return "";
+                var constraints = p.Constraints.Select(t => {
+                    var ret = t.FullName;
+                    return ret == "System.ValueType" ? "struct" : ret;
+                }).ToList();
+                if (p.HasDefaultConstructorConstraint && !p.HasNotNullableValueTypeConstraint) constraints.Add("new()");
+                return " where " + p.Name + " : " + string.Join(", ", constraints);
+            }));
+        }
+
+        private static string GetGenericArgs(TypeDefinition type)
+        {
+            var genericArgIdx = string.IsNullOrEmpty(type.Namespace) ? 0 : type.Namespace.Length + 1;
+            genericArgIdx += type.Name.Length;
+            return GetRealTypeName(type).Substring(genericArgIdx);
         }
 
         public static NamespaceInfo[] CreateDelegateTemplateInformation(AssemblyDefinition[] targetAssemblies)
@@ -154,9 +228,41 @@ namespace EventBuilder
             return false;
         }
 
+        class ECMP : IEqualityComparer<EventDefinition>
+        {
+            public static ECMP Instance = new ECMP();
+
+            public bool Equals(EventDefinition x, EventDefinition y)
+            {
+                return x.Name == y.Name;
+            }
+
+            public int GetHashCode(EventDefinition obj)
+            {
+                return obj.Name.GetHashCode();
+            }
+        }
+
+        public static TypeDefinition GetParentEventType(IEnumerable<TypeDefinition> group, TypeDefinition t)
+        {
+            foreach (var parent in GetParents(t))
+            {
+                if (!GetPublicEvents(group, parent).Any()) continue;
+                if (Contains(group, parent)) return parent;
+                if (parent.Module.Assembly.Name.Name == "System.Windows.Forms") return parent;
+                if (parent.Module.Assembly.Name.Name == "WindowsBase") return parent;
+                if (parent.Module.Assembly.Name.Name == "PresentationCore") return parent;
+                if (parent.Module.Assembly.Name.Name == "PresentationFramework") return parent;
+            }
+            return null;
+        }
+
         public static EventDefinition[] GetPublicEvents(IEnumerable<TypeDefinition> group, TypeDefinition t)
         {
-            return new[] { t }.Concat(GetParents(t).TakeWhile(type => !Contains(group, type))).SelectMany(GetPublicEvents).ToArray();
+            var parentEventType = GetParentEventType(group, t);
+            var includedParents = GetParents(t);
+            if (parentEventType != null) includedParents = includedParents.TakeWhile(parent => parent.FullName != parentEventType.FullName);
+            return new[] { t }.Concat(includedParents).SelectMany(GetPublicEvents).Distinct(ECMP.Instance).ToArray();
         }
 
         private static bool Contains(IEnumerable<TypeDefinition> ie, TypeDefinition type)
@@ -166,7 +272,7 @@ namespace EventBuilder
 
         public static EventDefinition[] GetPublicEvents(TypeDefinition t)
         {
-            return t.Events.Where(x => x.AddMethod.IsPublic && !x.AddMethod.IsStatic && GetEventArgsTypeForEvent(x) != null).ToArray();
+            return t.Events.Where(x => !IsObsolete(x.CustomAttributes) && x.AddMethod.IsPublic && !x.AddMethod.IsStatic && GetEventArgsTypeForEvent(x) != null).ToArray();
         }
 
         public static MethodDefinition[] GetPublicDelegateMethods(TypeDefinition t)
@@ -191,7 +297,7 @@ namespace EventBuilder
 
             var ret = String.Format("{0}<{1}>",
                 RenameBogusWinRTTypes(t.Namespace + "." + t.Name),
-                String.Join(",", t.GenericParameters.Select(x => GetRealTypeName(x.Resolve()))));
+                String.Join(",", t.GenericParameters.Select(x => x is GenericParameter ? x.Name : GetRealTypeName(x.Resolve()))));
 
             // NB: Inner types in Mono.Cecil get reported as 'Foo/Bar'
             return ret.Replace('/', '.');
@@ -232,6 +338,7 @@ namespace EventBuilder
             if (invoke.Parameters.Count != 2) return null;
 
             var param = invoke.Parameters[1];
+            if (param.ParameterType.IsByReference) return null;
             var ret = RenameBogusWinRTTypes(param.ParameterType.FullName);
 
             var generic = ei.EventType as GenericInstanceType;
@@ -261,6 +368,24 @@ namespace EventBuilder
                     null;
             }
         }
+
+        public static IEnumerable<Tuple<GenericParameter,TypeReference>> GetParentsGenericArgsRemap(TypeDefinition type)
+        {
+            var current = type.BaseType;
+            while (current != null)
+            {
+                var currRes = current.Resolve();
+                var git = current as GenericInstanceType;
+                if (git != null && git.HasGenericArguments)
+                {
+                    for (int i = 0; i < git.GenericArguments.Count; i++)
+                    {
+                        yield return Tuple.Create(currRes.GenericParameters[i], git.GenericArguments[i]);
+                    }
+                }
+                current = currRes.BaseType;
+            }
+        }
     }
 
     class NamespaceInfo
@@ -272,6 +397,8 @@ namespace EventBuilder
     class PublicTypeInfo
     {
         public string Name { get; set; }
+        public string GenericArgs { get; set; }
+        public string GenericConstraints { get; set; }
         public string Abstract { get; set; } 
         public TypeDefinition Type { get; set; }
         public ParentInfo Parent { get; set; }
@@ -284,6 +411,7 @@ namespace EventBuilder
     class ParentInfo
     {
         public string Name { get; set; }
+        public string GenericArgs { get; set; }
     }
 
     class PublicEventInfo
@@ -311,7 +439,9 @@ namespace EventBuilder
     class PathSearchAssemblyResolver : IAssemblyResolver
     {
         string[] targetAssemblyDirs;
-        
+
+        internal IList<AssemblyDefinition> LoadedAssemblies { get; set; }
+
         public PathSearchAssemblyResolver(string[] targetAssemblyDirs)
         {
             this.targetAssemblyDirs = targetAssemblyDirs;
@@ -319,12 +449,16 @@ namespace EventBuilder
 
         public AssemblyDefinition Resolve(string fullName, ReaderParameters parameters)
         {
-            var dllName = fullName.Split(',')[0] + ".dll";
+            var simpleName = new AssemblyName(fullName).Name;
+            var ret = LoadedAssemblies.FirstOrDefault(a => a.Name.Name == simpleName);
+            if (ret != null)
+                return ret;
+            var dllName = simpleName + ".dll";
 
             var fullPath = targetAssemblyDirs.Select(x => Path.Combine(x, dllName)).FirstOrDefault(x => File.Exists(x));
             if (fullPath == null)
             {
-                dllName = fullName.Split(',')[0] + ".winmd";
+                dllName = simpleName + ".winmd";
                 fullPath = targetAssemblyDirs.Select(x => Path.Combine(x, dllName)).FirstOrDefault(x => File.Exists(x));
             }
 
@@ -341,17 +475,23 @@ namespace EventBuilder
                 throw new Exception(err);
             }
 
-            return AssemblyDefinition.ReadAssembly(fullPath, parameters);
+            ret = AssemblyDefinition.ReadAssembly(fullPath, parameters);
+            LoadedAssemblies.Add(ret);
+            return ret;
         }
 
         public AssemblyDefinition Resolve(string fullName)
         {
-            var dllName = fullName.Split(',')[0] + ".dll";
+            var simpleName = new AssemblyName(fullName).Name;
+            var ret = LoadedAssemblies.FirstOrDefault(a => a.Name.Name == simpleName);
+            if (ret != null)
+                return ret;
+            var dllName = simpleName + ".dll";
 
             var fullPath = targetAssemblyDirs.Select(x => Path.Combine(x, dllName)).FirstOrDefault(x => File.Exists(x));
             if (fullPath == null)
             {
-                dllName = fullName.Split(',')[0] + ".winmd";
+                dllName = simpleName + ".winmd";
                 fullPath = targetAssemblyDirs.Select(x => Path.Combine(x, dllName)).FirstOrDefault(x => File.Exists(x));
             }
 
@@ -367,8 +507,9 @@ namespace EventBuilder
                 Console.Error.WriteLine(err);
                 throw new Exception(err);
             }
-
-            return AssemblyDefinition.ReadAssembly(fullPath);
+            ret = AssemblyDefinition.ReadAssembly(fullPath);
+            LoadedAssemblies.Add(ret);
+            return ret;
         }
 
         public AssemblyDefinition Resolve(AssemblyNameReference name, ReaderParameters parameters)
