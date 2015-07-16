@@ -76,17 +76,17 @@ namespace ReactiveUI.Tests
         {
             var bus = new MessageBus();
 
-            bool recieved_message = false;
-            var dispose = bus.Listen<int>().Subscribe(x => recieved_message = true);
+            bool received_message = false;
+            var dispose = bus.Listen<int>().Subscribe(x => received_message = true);
             bus.SendMessage(1);
-            Assert.True(recieved_message);
+            Assert.True(received_message);
 
             GC.Collect();
             GC.WaitForPendingFinalizers();
 
-            recieved_message = false;
+            received_message = false;
             bus.SendMessage(2);
-            Assert.True(recieved_message);
+            Assert.True(received_message);
         }
 
         [Fact]
@@ -95,25 +95,25 @@ namespace ReactiveUI.Tests
             var bus = new MessageBus();
             var source1 = new Subject<int>();
             var source2 = new Subject<int>();
-            var recieved_message1 = false;
-            var recieved_message2 = false;
+            var received_message1 = false;
+            var received_message2 = false;
 
             bus.RegisterMessageSource(source1);
-            bus.Listen<int>().Subscribe(x => recieved_message1 = true);
+            bus.Listen<int>().Subscribe(x => received_message1 = true);
 
             bus.RegisterMessageSource(source2);
-            bus.Listen<int>().Subscribe(x => recieved_message2 = true);
+            bus.Listen<int>().Subscribe(x => received_message2 = true);
 
             source1.OnNext(1);
-            Assert.True(recieved_message1);
-            Assert.True(recieved_message2);
+            Assert.True(received_message1);
+            Assert.True(received_message2);
 
-            recieved_message1 = false;
-            recieved_message2 = false;
+            received_message1 = false;
+            received_message2 = false;
 
             source2.OnNext(2);
-            Assert.True(recieved_message1);
-            Assert.True(recieved_message2);
+            Assert.True(received_message1);
+            Assert.True(received_message2);
         }
 
         [Fact]

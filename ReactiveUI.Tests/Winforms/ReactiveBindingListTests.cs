@@ -160,7 +160,7 @@ namespace ReactiveUI.Tests.Winforms
         }
 
         [Fact]
-        public void RaisesResetEventWhenAboveTreshold()
+        public void RaisesResetEventWhenAboveThreshold()
         {
             var target = new ReactiveBindingList<string>(new string[] { "item1", "item2", "item3" });
             var capturedEvents = new List<ListChangedEventArgs>();

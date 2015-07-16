@@ -32,7 +32,7 @@ namespace ReactiveUI
         /// Gets or sets a value indicating whether this <see cref="ReactiveUI.Cocoa.ViewModelViewHost"/>
         /// will automatically create Auto Layout constraints tying the sub view to the parent view.
         /// </summary>
-        /// <value><c>true</c> if add layout contraints to sub view; otherwise, <c>false</c>.</value>
+        /// <value><c>true</c> if add layout constraints to sub view; otherwise, <c>false</c>.</value>
         public bool AddAutoLayoutConstraintsToSubView { get; set; } 
 
         public ViewModelViewHost(NSView targetView)

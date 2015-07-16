@@ -1033,7 +1033,7 @@ namespace ReactiveUI.Tests
             }
 
             [Fact]
-            public void DerivedCollectionsShouldNotTriggerSupressNotificationWarning()
+            public void DerivedCollectionsShouldNotTriggerSuppressNotificationWarning()
             {
                 var resolver = new ModernDependencyResolver();
                 var logger = new TestLogger();
