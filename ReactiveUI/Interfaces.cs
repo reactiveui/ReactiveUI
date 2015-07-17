@@ -468,6 +468,20 @@ namespace ReactiveUI
         /// </summary>
         public string Contract { get; set; }
     }
+
+    /// <summary>
+    /// Allows overriding the type information used for view resolution of a view 
+    /// model. This is useful if your view model is a generic type and you would 
+    /// prefer to resolve your view using an interface.
+    /// </summary>
+    public class ViewResolutionTypeOverrideAttribute : Attribute
+    {
+        /// <summary>
+        /// The type that will be used in view resolution instead of the owning 
+        /// view model type
+        /// </summary>
+        public Type Type { get; set; }
+    }
 }
 
 // vim: tw=120 ts=4 sw=4 et :
