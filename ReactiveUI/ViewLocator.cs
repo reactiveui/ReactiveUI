@@ -60,8 +60,7 @@ namespace ReactiveUI
 
             attrs = viewModelType.GetTypeInfo().GetCustomAttributes(typeof(ViewResolutionTypeOverrideAttribute), true);
 
-            if (attrs.Any())
-            {
+            if (attrs.Any()) {
                 viewModelType = ((ViewResolutionTypeOverrideAttribute)attrs.First()).Type;
             }
 
