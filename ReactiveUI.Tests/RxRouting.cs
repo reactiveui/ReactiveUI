@@ -34,6 +34,14 @@ namespace Foobar.ViewModels
             HostScreen = hostScreen;
         }
     }
+
+    [ViewResolutionTypeOverride(Type = typeof(BazViewModel))]
+    public class BazViewModel<T> : BazViewModel
+    {
+        public BazViewModel(IScreen hostScreen) : base(hostScreen)
+        {
+        }
+    }
 }
 
 namespace Foobar.Views
@@ -74,6 +82,26 @@ namespace ReactiveUI.Routing.Tests
             using (resolver.WithResolver()) {
                 var fixture = new DefaultViewLocator();
                 var vm = new BazViewModel(null);
+
+                var result = fixture.ResolveView(vm);
+                this.Log().Info(result.GetType().FullName);
+                Assert.True(result is BazView);
+            }
+        }
+
+        [Fact]
+        public void ResolveViewForGenericViewModelType()
+        {
+            var resolver = new ModernDependencyResolver();
+
+            resolver.InitializeSplat();
+            resolver.InitializeReactiveUI();
+            resolver.Register(() => new BazView(), typeof(IViewFor<BazViewModel>));
+
+            using (resolver.WithResolver())
+            {
+                var fixture = new DefaultViewLocator();
+                var vm = new BazViewModel<int>(null);
 
                 var result = fixture.ResolveView(vm);
                 this.Log().Info(result.GetType().FullName);
