@@ -58,6 +58,13 @@ namespace ReactiveUI
                 contract = contract ?? ((ViewContractAttribute) attrs.First()).Contract;
             }
 
+            attrs = viewModelType.GetTypeInfo().GetCustomAttributes(typeof(ViewResolutionTypeOverrideAttribute), true);
+
+            if (attrs.Any())
+            {
+                viewModelType = ((ViewResolutionTypeOverrideAttribute)attrs.First()).Type;
+            }
+
             // IFooBarView that implements IViewFor (or custom ViewModelToViewFunc)
             var typeToFind = ViewModelToViewFunc(viewModelType.AssemblyQualifiedName);
                 
