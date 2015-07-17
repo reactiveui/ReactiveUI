@@ -50,21 +50,23 @@ namespace ReactiveUI
             // * IViewFor<IFooBarViewModel>
             // * IViewFor<FooBarViewModel> (the original behavior in RxUI 3.1)
 
-            var attrs = viewModel.GetType().GetTypeInfo().GetCustomAttributes(typeof (ViewContractAttribute), true);
+            var viewModelType = viewModel.GetType();
+
+            var attrs = viewModelType.GetTypeInfo().GetCustomAttributes(typeof(ViewContractAttribute), true);
 
             if (attrs.Any()) {
                 contract = contract ?? ((ViewContractAttribute) attrs.First()).Contract;
             }
 
             // IFooBarView that implements IViewFor (or custom ViewModelToViewFunc)
-            var typeToFind = ViewModelToViewFunc(viewModel.GetType().AssemblyQualifiedName);
+            var typeToFind = ViewModelToViewFunc(viewModelType.AssemblyQualifiedName);
                 
             var ret = attemptToResolveView(Reflection.ReallyFindType(typeToFind, false), contract);
             if (ret != null) return ret;
 
             // IViewFor<FooBarViewModel> (the original behavior in RxUI 3.1)
             var viewType = typeof (IViewFor<>);
-            return attemptToResolveView(viewType.MakeGenericType(viewModel.GetType()), contract);
+            return attemptToResolveView(viewType.MakeGenericType(viewModelType), contract);
         }
 
         IViewFor attemptToResolveView(Type type, string contract)
