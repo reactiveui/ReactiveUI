@@ -203,8 +203,8 @@ namespace ReactiveUI
             IObservable<Unit> signalReset,
             IScheduler scheduler)
         {
-            Contract.Requires(source != null);
-            Contract.Requires(selector != null);
+            Contract.Requires<ArgumentNullException>(source != null, "source != null");
+            Contract.Requires<ArgumentNullException>(selector != null, "selector != null");
 
             if (filter == null)
                 filter = x => true;
@@ -870,6 +870,7 @@ namespace ReactiveUI
         /// collection doesn't implement this, signalReset is the way to signal
         /// the derived collection to reorder/refilter itself.
         /// </summary>
+        /// <param name="This">Collection to derive from</param>
         /// <param name="selector">A Select function that will be run on each
         /// item.</param>
         /// <param name="onRemoved">An action that is called on each item when
@@ -893,7 +894,8 @@ namespace ReactiveUI
             IObservable<TDontCare> signalReset = null,
             IScheduler scheduler = null)
         {
-            Contract.Requires(selector != null);
+            Contract.Requires<ArgumentNullException>(This != null, "This != null");
+            Contract.Requires<ArgumentNullException>(selector != null, "selector != null");
 
             IObservable<Unit> reset = null;
 
