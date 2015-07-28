@@ -38,7 +38,7 @@ There are several variants of WhenAny that are fairly useful:
 
 ```cs
 // Not This - Subscription is now on the *old* object, but we replaced it
-// so now it will never recieve items
+// so now it will never receive items
 this.ViewModel.SomeCommand
     .Subscribe(_ => Console.WriteLine("Hello"));
 ViewModel = new ToasterViewModel();
