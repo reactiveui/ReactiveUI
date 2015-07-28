@@ -91,8 +91,10 @@ namespace ReactiveUI
         /// The last provided value from the Observable. 
         /// </summary>
         public T Value {
-            get { 
-                _inner = _inner ?? _source.Connect();
+            get {
+                if (Interlocked.CompareExchange(ref _activated, 1, 0)==0) {
+                    _inner = _source.Connect();
+                }
                 return _lastValue; 
             }
         }
