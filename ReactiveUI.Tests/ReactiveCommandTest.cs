@@ -571,6 +571,29 @@ namespace ReactiveUI.Tests
         }
 
         [Fact]
+        public void TaskCreationExceptionsShouldBeMarshaledToThrownExceptions()
+        {
+            (new TestScheduler()).With(sched => {
+                var fixture = ReactiveCommand.CreateAsyncTask(Observable.Return(true), _ => {
+                    //var tcs = new TaskCompletionSource<bool>();
+                    //tcs.SetException(new Exception("Die"));
+                    //return tcs.Task;
+                    throw new Exception("Die");
+                }, sched);
+
+                var error = default(Exception);
+                fixture.ThrownExceptions.Subscribe(ex => error = ex);
+                fixture.Execute(null);
+
+                sched.AdvanceByMs(20);
+
+                bool canExecute = fixture.CanExecute(null);
+                Assert.NotNull(error);
+                Assert.True(canExecute);
+            });
+        }
+
+        [Fact]
         public async Task IsExecutingIsFalseAfterAwaitingCommand()
         {
             var command = ReactiveCommand.CreateAsyncTask(_ => Task.Run(() => Thread.Sleep(10)));
