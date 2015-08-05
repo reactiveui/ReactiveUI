@@ -2,7 +2,7 @@
 <package xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <metadata xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
     <id>reactiveui-events-devexpress-15.1.4-xpf</id>
-    <version>6.5.0</version>
+    <version>6.5.0.1</version>
     <description>Adds Observable-based events to DevExpress 15 WPF UI controls and other appropriate places.</description>
     <authors>Francois Valdy</authors>
     <projectUrl>http://www.reactiveui.net</projectUrl>
@@ -11,7 +11,7 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <dependencies>
       <dependency id="Rx-Main" version="2.2.5" />
-      <dependency id="DevExpress.15.1.4.Xpf" version="15.1.4.0" />
+      <dependency id="DevExpress.15.1.4.Xpf" version="15.1.4.1" />
       <dependency id="reactiveui-events.Net40" version="6.5.0" />
     </dependencies>
   </metadata>
