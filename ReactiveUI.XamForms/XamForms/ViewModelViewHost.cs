@@ -71,7 +71,7 @@ namespace ReactiveUI.XamForms
             (this as IViewFor).WhenActivated(() => {
                 return new[] { vmAndContract.Subscribe(x => {
                     if (x.ViewModel == null) {
-                        foreach (View v in this.Children) this.Children.Remove(v);
+                        this.Children.Clear();
                         if (DefaultContent != null) this.Children.Add(DefaultContent);
                         return;
                     }
@@ -85,7 +85,7 @@ namespace ReactiveUI.XamForms
 
                     view.ViewModel = x.ViewModel;
 
-                    foreach (View v in this.Children) this.Children.Remove(v);
+                    this.Children.Clear();
                     if (view != null) this.Children.Add(view as View);
                 })};
             });
