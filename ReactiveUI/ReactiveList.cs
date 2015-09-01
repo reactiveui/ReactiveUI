@@ -635,7 +635,11 @@ namespace ReactiveUI
             var changing = Observable.Never<IReactivePropertyChangedEventArgs<T>>();
             var changed = Observable.Never<IReactivePropertyChangedEventArgs<T>>();
 
-            this.Log().Info("Item hash: 0x{0:x}", toTrack.GetHashCode());
+            if (this.Log().Level <= LogLevel.Debug)
+            {
+                this.Log().Debug("Item hash: 0x{0:x}", toTrack.GetHashCode());
+            }
+
             var ro = toTrack as IReactiveObject;
             if (ro != null) {
                 changing = ro.getChangingObservable().Select(i => new ReactivePropertyChangingEventArgs<T>(toTrack, i.PropertyName));
