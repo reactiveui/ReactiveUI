@@ -143,6 +143,7 @@
     <Compile Include="ExpressionRewriter.cs" />
     <Compile Include="ExpressionMixins.cs" />
     <Compile Include="Legacy\ReactiveCommand.cs" />
+    <Compile Include="Cocoa\ReactiveSplitViewController.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Cocoa\" />
