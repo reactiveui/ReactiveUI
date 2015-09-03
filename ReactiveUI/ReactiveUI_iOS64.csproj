@@ -155,6 +155,7 @@
     <Compile Include="Cocoa\AutoSuspendHelper.cs" />
     <Compile Include="Legacy\ReactiveCommand.cs" />
     <Compile Include="Cocoa\ReactiveTabBarController.cs" />
+    <Compile Include="Cocoa\ReactiveSplitViewController.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.ReactiveUI_iOS.config" />
