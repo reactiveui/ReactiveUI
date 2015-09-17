@@ -142,22 +142,30 @@ namespace ReactiveUI
             }
         }
 
-        private static void Adopt(UIViewController parent, UIViewController child)
+        private static void Adopt(NSViewController parent, NSViewController child)
         {
             parent.AddChildViewController(child);
             parent.View.AddSubview(child.View);
 
             // ensure the child view fills our entire frame
             child.View.Frame = parent.View.Bounds;
+#if UIKIT
             child.View.AutoresizingMask = UIViewAutoresizing.FlexibleWidth | UIViewAutoresizing.FlexibleHeight;
+#else
+            child.View.AutoresizingMask = NSViewResizingMask.WidthSizable | NSViewResizingMask.HeightSizable;
+#endif
             child.View.TranslatesAutoresizingMaskIntoConstraints = true;
 
+#if UIKIT
             child.DidMoveToParentViewController(parent);
+#endif
         }
 
-        private static void Disown(UIViewController child)
+        private static void Disown(NSViewController child)
         {
+#if UIKIT
             child.WillMoveToParentViewController(null);
+#endif
             child.View.RemoveFromSuperview();
             child.RemoveFromParentViewController();
         }
