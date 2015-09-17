@@ -25,7 +25,7 @@ namespace ReactiveUI.XamForms
 
                 d (this.WhenAnyObservable (x => x.Router.NavigationStack.Changed)
                     .Where(_ => Router.NavigationStack.IsEmpty)
-                    .SelectMany (_ => pageForViewModel (Router.GetCurrentViewModel ()))
+                    .SelectMany (_ => PageForViewModel (Router.GetCurrentViewModel ()))
                     .SelectMany (async x => {
                         currentlyPopping = true;
                         await this.PopToRootAsync ();
@@ -36,7 +36,7 @@ namespace ReactiveUI.XamForms
                     .Subscribe ());
 
                 d(this.WhenAnyObservable(x => x.Router.Navigate)
-                    .SelectMany(_ => pageForViewModel(Router.GetCurrentViewModel()))
+                    .SelectMany(_ => PageForViewModel(Router.GetCurrentViewModel()))
                     .SelectMany(x => this.PushAsync(x).ToObservable())
                     .Subscribe());
 
@@ -85,7 +85,7 @@ namespace ReactiveUI.XamForms
                 .Subscribe();
         }
 
-        IObservable<Page> pageForViewModel(IRoutableViewModel vm) 
+        protected IObservable<Page> PageForViewModel(IRoutableViewModel vm) 
         {
             if (vm == null) return Observable.Empty<Page>();
 
