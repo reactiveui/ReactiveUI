@@ -142,9 +142,6 @@ namespace ReactiveUI
         /// This can be a chain of properties of the form <code>view => view.Foo.Bar.Baz</code>
         /// and the binder will attempt to set the last one each time the view model property is updated.
         /// </param>
-        /// <param name="fallbackValue">
-        /// A function providing a fallback value. 
-        /// </param>
         /// <param name="conversionHint">
         /// An object that can provide a hint for the converter.
         /// The semantics of this object is defined by the converter used.
@@ -158,13 +155,12 @@ namespace ReactiveUI
                 TViewModel viewModel,
                 Expression<Func<TViewModel, TVMProp>> vmProperty,
                 Expression<Func<TView, TVProp>> viewProperty,
-                Func<TVMProp> fallbackValue = null,
                 object conversionHint = null,
                 IBindingTypeConverter vmToViewConverterOverride = null)
             where TViewModel : class
             where TView : IViewFor
         {
-            return binderImplementation.OneWayBind(viewModel, view, vmProperty, viewProperty, fallbackValue, conversionHint,
+            return binderImplementation.OneWayBind(viewModel, view, vmProperty, viewProperty, conversionHint,
                 vmToViewConverterOverride);
         }
 
@@ -194,9 +190,6 @@ namespace ReactiveUI
         /// A function that will be used to transform the values of the property on the view model
         /// before being bound to the view property.
         /// </param>
-        /// <param name="fallbackValue">
-        /// A function that provides a fallback value. Note that this property is IGNORED in this implementation.
-        /// </param>
         /// <returns>
         /// An instance of <see cref="IDisposable"/> that, when disposed,
         /// disconnects the binding.
@@ -206,12 +199,11 @@ namespace ReactiveUI
                 TViewModel viewModel,
                 Expression<Func<TViewModel, TProp>> vmProperty,
                 Expression<Func<TView, TOut>> viewProperty,
-                Func<TProp, TOut> selector,
-                Func<TOut> fallbackValue = null)
+                Func<TProp, TOut> selector)
             where TViewModel : class
             where TView : IViewFor
         {
-            return binderImplementation.OneWayBind(viewModel, view, vmProperty, viewProperty, selector, fallbackValue);
+            return binderImplementation.OneWayBind(viewModel, view, vmProperty, viewProperty, selector);
         }
 
         /// <summary>
@@ -223,9 +215,6 @@ namespace ReactiveUI
         /// <param name="target">The target object whose property will be set.</param>
         /// <param name="property">An expression representing the target
         /// property to set. This can be a child property (i.e. x.Foo.Bar.Baz).</param>
-        /// <param name="fallbackValue">
-        /// A function that provides a fallback value.
-        /// </param>
         /// <param name="conversionHint">
         /// An object that can provide a hint for the converter.
         /// The semantics of this object is defined by the converter used.
@@ -235,11 +224,10 @@ namespace ReactiveUI
             this IObservable<TValue> This,
             TTarget target,
             Expression<Func<TTarget, TTValue>> property,
-            Func<TValue> fallbackValue = null,
             object conversionHint = null,
             IBindingTypeConverter vmToViewConverterOverride = null)
         {
-            return binderImplementation.BindTo(This, target, property, fallbackValue, conversionHint,
+            return binderImplementation.BindTo(This, target, property, conversionHint,
                 vmToViewConverterOverride);
         }
     }
@@ -327,9 +315,6 @@ namespace ReactiveUI
         /// the binding will attempt to subscribe recursively to updates in order to
         /// always set the correct property.
         /// </param>
-        /// <param name="fallbackValue">
-        /// A function that provides a fallback value. Note that this property is IGNORED in this implementation.
-        /// </param>
         /// <param name="conversionHint">
         /// An object that can provide a hint for the converter.
         /// The semantics of this object is defined by the converter used.
@@ -346,7 +331,6 @@ namespace ReactiveUI
                 TView view,
                 Expression<Func<TViewModel, TVMProp>> vmProperty,
                 Expression<Func<TView, TVProp>> viewProperty,
-                Func<TVMProp> fallbackValue,
                 object conversionHint,
                 IBindingTypeConverter vmToViewConverterOverride = null)
             where TViewModel : class
@@ -379,9 +363,6 @@ namespace ReactiveUI
         /// A function that will be used to transform the values of the property on the view model
         /// before being bound to the view property.
         /// </param>
-        /// <param name="fallbackValue">
-        /// A function that provides a fallback value. Note that this property is IGNORED in this implementation.
-        /// </param>
         /// <returns>
         /// An instance of <see cref="IDisposable"/> that, when disposed,
         /// disconnects the binding.
@@ -391,8 +372,7 @@ namespace ReactiveUI
                 TView view,
                 Expression<Func<TViewModel, TProp>> vmProperty,
                 Expression<Func<TView, TOut>> viewProperty,
-                Func<TProp, TOut> selector,
-                Func<TOut> fallbackValue)
+                Func<TProp, TOut> selector)
             where TViewModel : class
             where TView : IViewFor;
 
@@ -410,7 +390,6 @@ namespace ReactiveUI
             IObservable<TValue> This,
             TTarget target,
             Expression<Func<TTarget, TTValue>> property,
-            Func<TValue> fallbackValue,
             object conversionHint,
             IBindingTypeConverter vmToViewConverterOverride = null);
     }
@@ -573,9 +552,6 @@ namespace ReactiveUI
         /// the control and property that is to be bound, by looking for a control of the
         /// same name as the <see cref="vmProperty"/>, and its most natural property.
         /// </param>
-        /// <param name="fallbackValue">
-        /// A function that provides a fallback value. Note that this property is IGNORED in this implementation.
-        /// </param>
         /// <param name="conversionHint">
         /// An object that can provide a hint for the converter.
         /// The semantics of this object is defined by the converter used.
@@ -592,7 +568,6 @@ namespace ReactiveUI
                 TView view,
                 Expression<Func<TViewModel, TVMProp>> vmProperty,
                 Expression<Func<TView, TVProp>> viewProperty,
-                Func<TVMProp> fallbackValue = null,
                 object conversionHint = null,
                 IBindingTypeConverter vmToViewConverterOverride = null)
             where TViewModel : class
@@ -600,7 +575,6 @@ namespace ReactiveUI
         {
             var vmExpression = Reflection.Rewrite(vmProperty.Body);
             var viewExpression = Reflection.Rewrite(viewProperty.Body);
-            var fallbackWrapper = default(Func<TVProp>);
             var viewType = viewExpression.Type;
             var converter = vmToViewConverterOverride ?? getConverterForTypes(typeof(TVMProp), viewType);
 
@@ -619,12 +593,7 @@ namespace ReactiveUI
                         return Observable.Return(tmp == null ? default(TVProp) : (TVProp)tmp);
                     });
 
-            fallbackWrapper = () => {
-                object tmp;
-                return converter.TryConvert(fallbackValue(), typeof(TVProp), conversionHint, out tmp) ? (TVProp)tmp : default(TVProp);
-            };
-
-            IDisposable disp = bindToDirect(source, view, viewExpression, fallbackWrapper);
+            IDisposable disp = bindToDirect(source, view, viewExpression);
 
             return new ReactiveBinding<TView, TViewModel, TVProp>(view, viewModel, viewExpression, vmExpression, source, BindingDirection.OneWay, disp);
         }
@@ -660,9 +629,6 @@ namespace ReactiveUI
         /// A function that will be used to transform the values of the property on the view model
         /// before being bound to the view property.
         /// </param>
-        /// <param name="fallbackValue">
-        /// A function that provides a fallback value. Note that this property is IGNORED in this implementation.
-        /// </param>
         /// <returns>
         /// An instance of <see cref="IDisposable"/> that, when disposed,
         /// disconnects the binding.
@@ -672,8 +638,7 @@ namespace ReactiveUI
                 TView view,
                 Expression<Func<TViewModel, TProp>> vmProperty,
                 Expression<Func<TView, TOut>> viewProperty,
-                Func<TProp, TOut> selector,
-                Func<TOut> fallbackValue = null)
+                Func<TProp, TOut> selector)
             where TViewModel : class
             where TView : IViewFor
         {
@@ -684,7 +649,7 @@ namespace ReactiveUI
 
             var source = Reflection.ViewModelWhenAnyValue(viewModel, view, vmExpression).Select(x => (TProp)x).Select(selector);
 
-            IDisposable disp = bindToDirect(source, view, viewExpression, fallbackValue);
+            IDisposable disp = bindToDirect(source, view, viewExpression);
 
             return new ReactiveBinding<TView, TViewModel, TOut>(view, viewModel, viewExpression, vmExpression, source, BindingDirection.OneWay, disp);
         }
@@ -700,7 +665,6 @@ namespace ReactiveUI
         /// property to set. This can be a child property (i.e. x.Foo.Bar.Baz).</param>
         /// <returns>An object that when disposed, disconnects the binding.</returns>
         /// <param name="This">This.</param>
-        /// <param name="fallbackValue">Fallback value.</param>
         /// <param name="conversionHint">Conversion hint.</param>
         /// <param name="vmToViewConverterOverride">Vm to view converter override.</param>
         /// <typeparam name="TValue">The 1st type parameter.</typeparam>
@@ -710,7 +674,6 @@ namespace ReactiveUI
             IObservable<TValue> This,
             TTarget target,
             Expression<Func<TTarget, TTValue>> property,
-            Func<TValue> fallbackValue = null,
             object conversionHint = null,
             IBindingTypeConverter vmToViewConverterOverride = null)
         {
@@ -731,18 +694,13 @@ namespace ReactiveUI
                 return Observable.Return(tmp == null ? default(TTValue) : (TTValue)tmp);
             });
 
-            return bindToDirect(source, target, viewExpression, fallbackValue == null ? default(Func<TTValue>) : new Func<TTValue>(() => {
-                object tmp;
-                if (!converter.TryConvert(fallbackValue(), typeof(TTValue), conversionHint, out tmp)) return default(TTValue);
-                return tmp == null ? default(TTValue) : (TTValue)tmp;
-            }));
+            return bindToDirect(source, target, viewExpression);
         }
 
         IDisposable bindToDirect<TTarget, TValue>(
             IObservable<TValue> This,
             TTarget target,
-            Expression viewExpression,
-            Func<TValue> fallbackValue = null)
+            Expression viewExpression)
         {
             var setter = Reflection.GetValueSetterOrThrow(viewExpression.GetMemberInfo());
             if (viewExpression.GetParent().NodeType == ExpressionType.Parameter) { 
@@ -750,7 +708,6 @@ namespace ReactiveUI
                     x => setter(target, x, viewExpression.GetArgumentsArray()),
                     ex => {
                         this.Log().ErrorException(String.Format("{0} Binding received an Exception!", viewExpression), ex);
-                        if (fallbackValue != null) setter(target, fallbackValue(), null);
                     });
             }
 
@@ -764,7 +721,6 @@ namespace ReactiveUI
                     x => setter(x.host, x.val, viewExpression.GetArgumentsArray()),
                     ex => {
                         this.Log().ErrorException(String.Format("{0} Binding received an Exception!", viewExpression), ex);
-                        if (fallbackValue != null) setter(target, fallbackValue(), viewExpression.GetArgumentsArray());
                     });
         }
 

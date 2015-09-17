@@ -319,6 +319,19 @@ namespace ReactiveUI.Tests
         }
 
         [Fact]
+        public void ItemsControlWithDisplayMemberPathSetShouldNotGetADataTemplate()
+        {
+            var vm = new PropertyBindViewModel();
+            var view = new PropertyBindView() { ViewModel = vm };
+            view.FakeItemsControl.DisplayMemberPath = "Bla";
+
+            Assert.Null(view.FakeItemsControl.ItemTemplate);
+            view.OneWayBind(vm, x => x.SomeCollectionOfStrings, x => x.FakeItemsControl.ItemsSource);
+
+            Assert.Null(view.FakeItemsControl.ItemTemplate);
+        }
+
+        [Fact]
         public void ItemsControlShouldGetADataTemplateInBindTo()
         {
             var vm = new PropertyBindViewModel();
