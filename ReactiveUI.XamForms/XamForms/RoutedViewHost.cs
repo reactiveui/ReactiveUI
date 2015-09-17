@@ -63,8 +63,10 @@ namespace ReactiveUI.XamForms
                     }));
             }));
 
-            Router = Locator.Current.GetService<IScreen>().Router;
-            if (Router == null) throw new Exception("You *must* register an IScreen class representing your App's main Screen");
+            var screen = Locator.Current.GetService<IScreen>();
+            if (screen == null) throw new Exception("You *must* register an IScreen class representing your App's main Screen");
+
+            Router = screen.Router;
 
             this.WhenAnyValue(x => x.Router)
                 .SelectMany(router => {
