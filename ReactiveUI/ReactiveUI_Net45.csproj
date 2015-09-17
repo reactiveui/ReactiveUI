@@ -83,6 +83,7 @@
     <Compile Include="ExpressionRewriter.cs" />
     <Compile Include="Platform\ComponentModelTypeConverter.cs" />
     <Compile Include="Xaml\ReactiveUserControl.cs" />
+    <Compile Include="Xaml\Attributes.cs" />
     <Compile Include="Xaml\WpfAutoSuspendHelper.cs" />
     <Compile Include="Xaml\WpfDependencyObjectObservableForProperty.cs" />
     <Compile Include="Xaml\ActivationForViewFetcher.cs" />

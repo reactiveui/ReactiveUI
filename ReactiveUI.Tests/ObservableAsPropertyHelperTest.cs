@@ -34,6 +34,37 @@ namespace ReactiveUI.Tests
         }
 
         [Fact]
+        public void OAPHShouldSkipFirstValueIfItMatchesTheInitialValue()
+        {
+            var input = new[] { 1, 2, 3 }.ToObservable();
+            var output = new List<int>();
+
+            (new TestScheduler()).With(sched => {
+                var fixture = new ObservableAsPropertyHelper<int>(input,
+                    x => output.Add(x), 1);
+
+                sched.Start();
+
+                Assert.Equal(input.Last(), fixture.Value);
+
+                (new[] { 1, 2, 3 }).AssertAreEqual(output);
+            });
+        }
+
+        [Fact]
+        public void OAPHShouldProvideInitialValueImmediatelyRegardlessOfScheduler()
+        {
+            var output = new List<int>();
+
+            (new TestScheduler()).With(sched => {
+                var fixture = new ObservableAsPropertyHelper<int>(Observable.Never<int>(),
+                    x => output.Add(x), 32);
+
+                Assert.Equal(32, fixture.Value);
+            });
+        }
+
+        [Fact]
         public void OAPHShouldProvideLatestValue()
         {
             var sched = new TestScheduler();
