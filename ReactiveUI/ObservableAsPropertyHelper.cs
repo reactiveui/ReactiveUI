@@ -66,32 +66,23 @@ namespace ReactiveUI
             Contract.Requires(onChanged != null);
 
             scheduler = scheduler ?? CurrentThreadScheduler.Instance;
-            onChanging = onChanging ?? (_ => {});
-            _lastValue = initialValue;
+            onChanging = onChanging ?? (_ => { });
 
             var subj = new ScheduledSubject<T>(scheduler);
             var exSubject = new ScheduledSubject<Exception>(CurrentThreadScheduler.Instance, RxApp.DefaultExceptionHandler);
 
-            bool firedInitial = false;
             subj.Subscribe(x => {
-                // Suppress a non-change between initialValue and the first value
-                // from a Subscribe
-                if (firedInitial && EqualityComparer<T>.Default.Equals(x, _lastValue)) return;
-
                 onChanging(x);
                 _lastValue = x;
                 onChanged(x);
-                firedInitial = true;
             }, exSubject.OnNext);
 
             ThrownExceptions = exSubject;
 
-            // Fire off an initial RaisePropertyChanged to make sure bindings
-            // have a value
-            subj.OnNext(initialValue);
-            _source = observable.DistinctUntilChanged().Multicast(subj);
-
-            if (ModeDetector.InUnitTestRunner()) {
+            _lastValue = initialValue;
+            _source = observable.StartWith(initialValue).DistinctUntilChanged().Multicast(subj);
+            if (ModeDetector.InUnitTestRunner())
+            {
                 _inner = _source.Connect();
             }
         }
