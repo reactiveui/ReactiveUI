@@ -22,22 +22,35 @@ namespace ReactiveUI.XamForms
         {
             this.WhenActivated(new Action<Action<IDisposable>>(d => {
                 bool currentlyPopping = false;
+                bool popToRootPending = false;
 
                 d (this.WhenAnyObservable (x => x.Router.NavigationStack.Changed)
                     .Where(_ => Router.NavigationStack.IsEmpty)
-                    .SelectMany (_ => PageForViewModel (Router.GetCurrentViewModel ()))
                     .SelectMany (async x => {
-                        currentlyPopping = true;
-                        await this.PopToRootAsync ();
-                        currentlyPopping = false;
-
+                        // Xamarin Forms does not let us completely clear down the navigation stack
+                        // instead, we have to delay this request momentarily until we receive the new root view
+                        // then, we can insert the new root view first, and then pop to it
+                        popToRootPending = true;
                         return x;
                     })
                     .Subscribe ());
 
                 d(this.WhenAnyObservable(x => x.Router.Navigate)
                     .SelectMany(_ => PageForViewModel(Router.GetCurrentViewModel()))
-                    .SelectMany(x => this.PushAsync(x).ToObservable())
+                    .SelectMany(async x => {
+                        if (popToRootPending)
+                        {
+                            this.Navigation.InsertPageBefore(x, this.Navigation.NavigationStack[0]);
+                            await this.PopToRootAsync();
+                            popToRootPending = false;
+                        }
+                        else
+                        {
+                            await this.PushAsync(x);
+                        }
+
+                        return x;
+                    })
                     .Subscribe());
 
                 d(this.WhenAnyObservable(x => x.Router.NavigateBack)
