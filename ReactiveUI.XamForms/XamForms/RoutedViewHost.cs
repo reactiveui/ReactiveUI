@@ -22,22 +22,35 @@ namespace ReactiveUI.XamForms
         {
             this.WhenActivated(new Action<Action<IDisposable>>(d => {
                 bool currentlyPopping = false;
+                bool popToRootPending = false;
 
                 d (this.WhenAnyObservable (x => x.Router.NavigationStack.Changed)
                     .Where(_ => Router.NavigationStack.IsEmpty)
-                    .SelectMany (_ => pageForViewModel (Router.GetCurrentViewModel ()))
                     .SelectMany (async x => {
-                        currentlyPopping = true;
-                        await this.PopToRootAsync ();
-                        currentlyPopping = false;
-
+                        // Xamarin Forms does not let us completely clear down the navigation stack
+                        // instead, we have to delay this request momentarily until we receive the new root view
+                        // then, we can insert the new root view first, and then pop to it
+                        popToRootPending = true;
                         return x;
                     })
                     .Subscribe ());
 
                 d(this.WhenAnyObservable(x => x.Router.Navigate)
-                    .SelectMany(_ => pageForViewModel(Router.GetCurrentViewModel()))
-                    .SelectMany(x => this.PushAsync(x).ToObservable())
+                    .SelectMany(_ => PageForViewModel(Router.GetCurrentViewModel()))
+                    .SelectMany(async x => {
+                        if (popToRootPending)
+                        {
+                            this.Navigation.InsertPageBefore(x, this.Navigation.NavigationStack[0]);
+                            await this.PopToRootAsync();
+                            popToRootPending = false;
+                        }
+                        else
+                        {
+                            await this.PushAsync(x);
+                        }
+
+                        return x;
+                    })
                     .Subscribe());
 
                 d(this.WhenAnyObservable(x => x.Router.NavigateBack)
@@ -63,8 +76,10 @@ namespace ReactiveUI.XamForms
                     }));
             }));
 
-            Router = Locator.Current.GetService<IScreen>().Router;
-            if (Router == null) throw new Exception("You *must* register an IScreen class representing your App's main Screen");
+            var screen = Locator.Current.GetService<IScreen>();
+            if (screen == null) throw new Exception("You *must* register an IScreen class representing your App's main Screen");
+
+            Router = screen.Router;
 
             this.WhenAnyValue(x => x.Router)
                 .SelectMany(router => {
@@ -83,7 +98,7 @@ namespace ReactiveUI.XamForms
                 .Subscribe();
         }
 
-        IObservable<Page> pageForViewModel(IRoutableViewModel vm) 
+        protected IObservable<Page> PageForViewModel(IRoutableViewModel vm) 
         {
             if (vm == null) return Observable.Empty<Page>();
 
