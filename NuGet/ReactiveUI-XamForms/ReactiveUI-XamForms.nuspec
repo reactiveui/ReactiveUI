@@ -12,7 +12,7 @@
 
     <dependencies>
       <dependency id="reactiveui-core" version="[6.5.0]" />
-      <dependency id="Xamarin.Forms" version="1.4.2.6359" />
+      <dependency id="Xamarin.Forms" version="1.5.0.6446" />
     </dependencies>
   </metadata>
 </package>
