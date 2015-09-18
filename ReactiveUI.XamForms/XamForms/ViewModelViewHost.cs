@@ -13,7 +13,7 @@ namespace ReactiveUI.XamForms
     /// the ViewModel property and display it. This control is very useful
     /// inside a DataTemplate to display the View associated with a ViewModel.
     /// </summary>
-    public class ViewModelViewHost : StackLayout, IViewFor
+    public class ViewModelViewHost : ContentView, IViewFor
     {
         /// <summary>
         /// The ViewModel to display
@@ -71,8 +71,7 @@ namespace ReactiveUI.XamForms
             (this as IViewFor).WhenActivated(() => {
                 return new[] { vmAndContract.Subscribe(x => {
                     if (x.ViewModel == null) {
-                        this.Children.Clear();
-                        if (DefaultContent != null) this.Children.Add(DefaultContent);
+                        this.Content = this.DefaultContent;
                         return;
                     }
 
@@ -85,8 +84,7 @@ namespace ReactiveUI.XamForms
 
                     view.ViewModel = x.ViewModel;
 
-                    this.Children.Clear();
-                    if (view != null) this.Children.Add(view as View);
+                    this.Content = (View)view;
                 })};
             });
         }
