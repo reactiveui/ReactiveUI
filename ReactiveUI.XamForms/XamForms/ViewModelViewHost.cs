@@ -82,9 +82,15 @@ namespace ReactiveUI.XamForms
                         throw new Exception(String.Format("Couldn't find view for '{0}'.", x.ViewModel));
                     }
 
+                    var castView = view as View;
+
+                    if (castView == null) {
+                        throw new Exception(String.Format("View '{0}' is not a subclass of '{1}'.", view.GetType().FullName, typeof(View).FullName));
+                    }
+
                     view.ViewModel = x.ViewModel;
 
-                    this.Content = (View)view;
+                    this.Content = castView;
                 })};
             });
         }
