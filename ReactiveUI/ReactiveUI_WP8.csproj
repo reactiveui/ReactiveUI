@@ -90,6 +90,7 @@
     <Compile Include="Xaml\DependencyObjectObservableForProperty.cs" />
     <Compile Include="Xaml\PhoneServiceStateDriver.cs" />
     <Compile Include="Xaml\PlatformOperations.cs" />
+    <Compile Include="Xaml\ReactiveUserControl.cs" />
     <Compile Include="Xaml\RoutedViewHost.cs" />
     <Compile Include="Xaml\TransitioningContentControl.cs" />
     <Compile Include="Xaml\ViewModelViewHost.cs" />
