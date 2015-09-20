@@ -65,7 +65,7 @@ namespace ReactiveUI
                 return ret.GetNotificationForProperty(sender, expression, beforeChanged);
             }
 
-#if WINDOWS_UAP
+#if WINDOWS_UWP
             return Observable.Create<IObservedChange<object, object>>(subj => {
                 var handler = new DependencyPropertyChangedCallback((o, e) => {
                     subj.OnNext(new ObservedChange<object, object>(sender, expression));
@@ -137,7 +137,7 @@ namespace ReactiveUI
             return null;
         }
 
-#if !WINDOWS_UAP
+#if !WINDOWS_UWP
         static readonly Dictionary<Tuple<Type, string>, Tuple<DependencyProperty, Subject<object>>> attachedListener =
             new Dictionary<Tuple<Type, string>, Tuple<DependencyProperty, Subject<object>>>();
 
