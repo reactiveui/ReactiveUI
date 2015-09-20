@@ -49,6 +49,7 @@
     <Compile Include="Xaml\BindingTypeConverters.cs" />
     <Compile Include="Xaml\DependencyObjectObservableForProperty.cs" />
     <Compile Include="Xaml\PlatformOperations.cs" />
+    <Compile Include="Xaml\ReactiveUserControl.cs" />
     <Compile Include="Xaml\RoutedViewHost.cs" />
     <Compile Include="Xaml\TransitioningContentControl.WinRT.cs" />
     <Compile Include="Xaml\ViewModelViewHost.cs" />
