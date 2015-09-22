@@ -32,7 +32,7 @@ namespace ReactiveUI
         {
             registerFunction(() => new PlatformOperations(), typeof(IPlatformOperations));
 
-#if !WINRT && !WP8 && !WP81
+#if !WINRT && !WP81
             registerFunction(() => new ComponentModelTypeConverter(), typeof(IBindingTypeConverter));
 #endif
 
@@ -80,9 +80,7 @@ namespace ReactiveUI
             RxApp.MainThreadScheduler = HandlerScheduler.MainThreadScheduler;
 #endif
 
-#if WP8
-            registerFunction(() => new PhoneServiceStateDriver(), typeof (ISuspensionDriver));
-#elif WINRT
+#if WINRT
             registerFunction(() => new WinRTAppDataDriver(), typeof(ISuspensionDriver));
 #elif UIKIT
             registerFunction(() => new AppSupportJsonSuspensionDriver(), typeof(ISuspensionDriver));
