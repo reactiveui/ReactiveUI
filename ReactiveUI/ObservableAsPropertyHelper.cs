@@ -8,6 +8,7 @@ using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using Splat;
 using System.Reactive.Disposables;
+using System.Threading;
 
 namespace ReactiveUI
 {
@@ -24,6 +25,7 @@ namespace ReactiveUI
         readonly IConnectableObservable<T> _source;
         IDisposable _inner;
                 
+        private int _activated;
         /// <summary>
         /// Constructs an ObservableAsPropertyHelper object.
         /// </summary>

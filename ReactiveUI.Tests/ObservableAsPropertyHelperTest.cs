@@ -7,7 +7,9 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 
+using System.Reactive.Disposables;
 using Microsoft.Reactive.Testing;
+using Splat;
 
 namespace ReactiveUI.Tests
 {
@@ -231,5 +233,6 @@ namespace ReactiveUI.Tests
 
 
         }
+    }
 
 }
