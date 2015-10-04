@@ -7,7 +7,9 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 
+using System.Reactive.Disposables;
 using Microsoft.Reactive.Testing;
+using Splat;
 
 namespace ReactiveUI.Tests
 {
@@ -161,6 +163,67 @@ namespace ReactiveUI.Tests
             Assert.Equal(2, resultChanged.Count);
             Assert.Equal("Foo", resultChanging[1].Value);
             Assert.Equal("Baz", resultChanged[1].Value);
+        }
+
+        [Fact]
+        public void ToPropertyShouldSubscribeOnlyOnce()
+        {
+            using (ProductionMode.Set()) {
+                var f = new RaceConditionFixture();
+                // This line is important because it triggers connect to
+                // be called recursively thus cause the subscription
+                // to be called twice. Not sure if this is a reactive UI
+                // or RX bug.
+                f.PropertyChanged += (e, s) => Console.WriteLine(f.A);
+
+                // Trigger subscription to the underlying observable.
+                Assert.Equal(true, f.A);
+
+                Assert.Equal(1, f.Count);
+            }
+        }
+    }
+
+    class ProductionMode : IModeDetector
+    {
+        public bool? InUnitTestRunner()
+        {
+            return false;
+        }
+
+        public bool? InDesignMode()
+        {
+            return false;
+        }
+
+        public static IDisposable Set()
+        {
+            ModeDetector.OverrideModeDetector(new ProductionMode());
+            return Disposable.Create(() => ModeDetector.OverrideModeDetector(new PlatformModeDetector()));
+        }
+    }
+
+    public class RaceConditionFixture : ReactiveObject
+    {
+        public ObservableAsPropertyHelper<bool> _A;
+        public int Count;
+
+        public bool A
+        {
+            get { return _A.Value; }
+        }
+
+        public RaceConditionFixture()
+        {
+            // We need to generate a value on subscription
+            // which is different than the default value.
+            // This triggers the property change firing
+            // upon subscription in the ObservableAsPropertyHelper
+            // constructor.
+            Observable
+                .Return(true)
+                .Do(_ => Count++)
+                .ToProperty(this, x => x.A, out _A);
         }
     }
 }
