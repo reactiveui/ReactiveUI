@@ -8,6 +8,7 @@ using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using Splat;
 using System.Reactive.Disposables;
+using System.Threading;
 
 namespace ReactiveUI
 {
@@ -23,7 +24,8 @@ namespace ReactiveUI
         T _lastValue;
         readonly IConnectableObservable<T> _source;
         IDisposable _inner;
-                
+        private int _activated;
+
         /// <summary>
         /// Constructs an ObservableAsPropertyHelper object.
         /// </summary>
@@ -91,9 +93,12 @@ namespace ReactiveUI
         /// The last provided value from the Observable. 
         /// </summary>
         public T Value {
-            get { 
-                _inner = _inner ?? _source.Connect();
-                return _lastValue; 
+            get {
+                if (Interlocked.CompareExchange(ref _activated, 1, 0) == 0) {
+                    _inner = _source.Connect();
+                }
+
+                return _lastValue;
             }
         }
 
