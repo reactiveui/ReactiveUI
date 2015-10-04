@@ -1,6 +1,5 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Reflection;
@@ -21,52 +20,62 @@ namespace ReactiveUI.XamForms
 
         public IObservable<bool> GetActivationForView(IActivatable view)
         {
-            var ret = Observable.Never<bool>();
-            
+            var activation =
+                GetActivationFor(view as Page) ??
+                GetActivationFor(view as View) ??
+                GetActivationFor(view as Cell) ??
+                Observable.Never<bool>();
 
-            var page = view as Page;
+            return activation.DistinctUntilChanged();
+        }
 
-            if (page != null) {
-                ret = Observable.Merge(
-                    Observable.FromEventPattern<EventHandler, EventArgs>(x => page.Appearing += x, x => page.Appearing -= x).Select(_ => true),
-                    Observable.FromEventPattern<EventHandler, EventArgs>(x => page.Disappearing += x, x => page.Disappearing -= x).Select(_ => false));
-            } else {
-                var xfView = view as View;
-
-                if (xfView != null) {
-                    var propertyChanged = Observable.FromEventPattern<PropertyChangedEventHandler, PropertyChangedEventArgs>(
-                        x => xfView.PropertyChanged += x,
-                        x => xfView.PropertyChanged -= x);
-                    var parentChanged = propertyChanged
-                        .Where(x => x.EventArgs.PropertyName == "Parent")
-                        .Select(_ => Unit.Default);
-
-                    return parentChanged
-                        .StartWith(Unit.Default)
-                        .Select(_ => GetPageFor(xfView))
-                        .Select(x =>
-                            x == null ?
-                                Observable.Return(false) :
-                                Observable
-                                    .Merge(
-                                        Observable.FromEventPattern<EventHandler, EventArgs>(y => x.Appearing += y, y => x.Appearing -= y).Select(_ => true),
-                                        Observable.FromEventPattern<EventHandler, EventArgs>(y => x.Disappearing += y, y => x.Disappearing -= y).Select(_ => false))
-                                    .StartWith(true))
-                        .Switch();
-                } else {
-                    var cell = view as Cell;
-
-                    if (cell != null)
-                    {
-                        ret = Observable
-                            .Merge(
-                                Observable.FromEventPattern<EventHandler, EventArgs>(x => cell.Appearing += x, x => cell.Appearing -= x).Select(_ => true),
-                                Observable.FromEventPattern<EventHandler, EventArgs>(x => cell.Disappearing += x, x => cell.Disappearing -= x).Select(_ => false));
-                    }
-                }
+        private static IObservable<bool> GetActivationFor(Page page)
+        {
+            if (page == null) {
+                return null;
             }
 
-            return ret.DistinctUntilChanged();
+            return Observable.Merge(
+                Observable.FromEventPattern<EventHandler, EventArgs>(x => page.Appearing += x, x => page.Appearing -= x).Select(_ => true),
+                Observable.FromEventPattern<EventHandler, EventArgs>(x => page.Disappearing += x, x => page.Disappearing -= x).Select(_ => false));
+        }
+
+        private static IObservable<bool> GetActivationFor(View view)
+        {
+            if (view == null) {
+                return null;
+            }
+
+            var propertyChanged = Observable.FromEventPattern<PropertyChangedEventHandler, PropertyChangedEventArgs>(
+                x => view.PropertyChanged += x,
+                x => view.PropertyChanged -= x);
+            var parentChanged = propertyChanged
+                .Where(x => x.EventArgs.PropertyName == "Parent")
+                .Select(_ => Unit.Default);
+
+            return parentChanged
+                .StartWith(Unit.Default)
+                .Select(_ => GetPageFor(view))
+                .Select(x =>
+                    x == null ?
+                    Observable.Return(false) :
+                    Observable
+                    .Merge(
+                        Observable.FromEventPattern<EventHandler, EventArgs>(y => x.Appearing += y, y => x.Appearing -= y).Select(_ => true),
+                        Observable.FromEventPattern<EventHandler, EventArgs>(y => x.Disappearing += y, y => x.Disappearing -= y).Select(_ => false))
+                    .StartWith(true))
+                .Switch();
+        }
+
+        private static IObservable<bool> GetActivationFor(Cell cell)
+        {
+            if (cell == null) {
+                return null;
+            }
+
+            return Observable.Merge(
+                Observable.FromEventPattern<EventHandler, EventArgs>(x => cell.Appearing += x, x => cell.Appearing -= x).Select(_ => true),
+                Observable.FromEventPattern<EventHandler, EventArgs>(x => cell.Disappearing += x, x => cell.Disappearing -= x).Select(_ => false));
         }
 
         private static Page GetPageFor(Element element)
