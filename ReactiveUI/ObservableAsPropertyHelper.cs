@@ -24,8 +24,8 @@ namespace ReactiveUI
         T _lastValue;
         readonly IConnectableObservable<T> _source;
         IDisposable _inner;
-                
         private int _activated;
+
         /// <summary>
         /// Constructs an ObservableAsPropertyHelper object.
         /// </summary>
@@ -94,10 +94,11 @@ namespace ReactiveUI
         /// </summary>
         public T Value {
             get {
-                if (Interlocked.CompareExchange(ref _activated, 1, 0)==0) {
+                if (Interlocked.CompareExchange(ref _activated, 1, 0) == 0) {
                     _inner = _source.Connect();
                 }
-                return _lastValue; 
+
+                return _lastValue;
             }
         }
 
