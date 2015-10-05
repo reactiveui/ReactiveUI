@@ -1,6 +1,6 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Reactive.Linq;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace ReactiveUI.Tests
@@ -8,18 +8,18 @@ namespace ReactiveUI.Tests
     public class InteractionsTest
     {
         [Fact]
-        public void UnhandledInteractionsShouldDie()
+        public void UnhandledPropagatedInteractionsShouldCauseException()
         {
             var sut = new UserInteraction<bool>();
             Assert.Throws<UnhandledUserInteractionException>(() => sut.Propagate().First());
         }
 
         [Fact]
-        public void HandledUserInteractionsShouldNotThrow()
+        public void HandledPropagatedInteractionsShouldNotCauseException()
         {
             var sut = new UserInteraction<bool>();
 
-            using (UserInteraction.PropagatedInteractions.OfType<UserInteraction<bool>>().Subscribe(x => x.SetResult(true)))
+            using (UserInteraction.RegisterHandler<UserInteraction<bool>>(x => x.SetResult(true)))
             {
                 var result = sut.Propagate().First();
                 Assert.True(result);
@@ -31,19 +31,15 @@ namespace ReactiveUI.Tests
         [Fact]
         public void NestedHandlersAreExecutedInReverseOrderOfSubscription()
         {
-            var interactions = UserInteraction
-                .PropagatedInteractions
-                .OfType<UserInteraction<string>>();
-
-            using (interactions.Subscribe(x => x.SetResult("A")))
+            using (UserInteraction.RegisterHandler<UserInteraction<string>>(x => x.SetResult("A")))
             {
                 Assert.Equal("A", new UserInteraction<string>().Propagate().First());
 
-                using (interactions.Subscribe(x => x.SetResult("B")))
+                using (UserInteraction.RegisterHandler<UserInteraction<string>>(x => x.SetResult("B")))
                 {
                     Assert.Equal("B", new UserInteraction<string>().Propagate().First());
 
-                    using (interactions.Subscribe(x => x.SetResult("C")))
+                    using (UserInteraction.RegisterHandler<UserInteraction<string>>(x => x.SetResult("C")))
                     {
                         Assert.Equal("C", new UserInteraction<string>().Propagate().First());
                     }
@@ -58,23 +54,17 @@ namespace ReactiveUI.Tests
         [Fact]
         public void HandlersCanOptNotToHandleTheInteraction()
         {
-            var interactions = UserInteraction
-                .PropagatedInteractions
-                .OfType<CustomInteraction>();
-            var handlerA = interactions
-                .Subscribe(x => x.SetResult("A"));
-            var handlerB = interactions
-                .Subscribe(
-                    x =>
+            var handlerA = UserInteraction.RegisterHandler<CustomInteraction>(x => x.SetResult("A"));
+            var handlerB = UserInteraction.RegisterHandler<CustomInteraction>(
+                x =>
+                {
+                    // only handle if the interaction is Super Important
+                    if (x.IsSuperImportant)
                     {
-                        // only handle if the interaction is Super Important
-                        if (x.IsSuperImportant)
-                        {
-                            x.SetResult("B");
-                        }
-                    });
-            var handlerC = interactions
-                .Subscribe(x => x.SetResult("C"));
+                        x.SetResult("B");
+                    }
+                });
+            var handlerC = UserInteraction.RegisterHandler<CustomInteraction>(x => x.SetResult("C"));
 
             using (handlerA)
             {
@@ -93,6 +83,33 @@ namespace ReactiveUI.Tests
                 Assert.Equal("A", new CustomInteraction(false).Propagate().First());
                 Assert.Equal("A", new CustomInteraction(true).Propagate().First());
             }
+        }
+
+        [Fact]
+        public void HandlersCanContainAsynchronousCode()
+        {
+            // even though handler B is "slow" (i.e. mimicks waiting for the user), it takes precedence over A, so we expect A to never even be called
+            var handlerAWasCalled = false;
+            var handlerA = UserInteraction.RegisterHandler<UserInteraction<string>>(
+                x =>
+                {
+                    x.SetResult("A");
+                    handlerAWasCalled = true;
+                });
+            var handlerB = UserInteraction.RegisterHandler<UserInteraction<string>>(
+                async x =>
+                {
+                    await Task.Delay(10);
+                    x.SetResult("B");
+                });
+
+            using (handlerA)
+            using (handlerB)
+            {
+                Assert.Equal("B", new UserInteraction<string>().Propagate().First());
+            }
+
+            Assert.False(handlerAWasCalled);
         }
 
         private class CustomInteraction : UserInteraction<string>
