@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using System.Reactive.Threading.Tasks;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace ReactiveUI
 {
@@ -14,7 +17,8 @@ namespace ReactiveUI
     /// <remarks>
     /// <para>
     /// User interactions are used when view models need the user to answer some question before they can continue their work.
-    /// For example, prior to deleting a file the user may be required to acquiesce.
+    /// For example, prior to deleting a file the user may be required to acquiesce. Naturally, this question needs to be
+    /// answered in an asynchronous fashion, so that no blocking occurs while the view model waits for an answer.
     /// </para>
     /// <para>
     /// User interactions may be either propagated or not. Non-propagated interactions are typically exposed as properties on
@@ -24,17 +28,17 @@ namespace ReactiveUI
     /// the patiently-waiting view model will pick up its work.
     /// </para>
     /// <para>
-    /// It's important to understand that non-propagated exceptions will not tick through the <see cref="PropagatedInteractions"/>
-    /// observable. Therefore, such interactions can only be handled by those components that have access to the interactions.
-    /// Usually this means that the related view is responsible for handling the interaction. Any views further up the hierarchy
-    /// are unlikely to hook into properties in a lower-level view model.
+    /// Propagated interactions, on the other hand, can be handled by any handler registered via the <see cref="RegisterHandler"/>
+    /// methods. Each registered handler is given the opportunity to handle the interaction, but later subscribers are given
+    /// priority over earlier subscribers. This means that it is possible to set up one or more "root" handlers to deal with common
+    /// situations (such as recovering from errors), and temporary subscriptions from higher-level components can take precedence
+    /// over the root handlers.
     /// </para>
     /// <para>
-    /// Propagated interactions, on the other hand, do tick through <see cref="PropagatedInteractions"/> and so can be handled
-    /// anywhere in the application. Every subscriber of the <see cref="PropagatedInteractions"/> observable is given the
-    /// opportunity to handle the interaction. Later subscribers are given priority over earlier subscribers. This means that it
-    /// is possible to set up one or more "root" handlers to deal with common situations, such as recovering from errors. And
-    /// temporary subscriptions from higher-level components can take precedence over the root handlers.
+    /// It's important to understand that non-propagated exceptions will not result in any handlers being invoked. Therefore, such
+    /// interactions can only be handled by those components that have access to the interaction instances. Usually this means that
+    /// the related view is responsible for handling the interaction. Any views further up the hierarchy are unlikely to hook into
+    /// properties in a lower-level view model.
     /// </para>
     /// <para>
     /// The advantage of propagated exceptions is that any application component can handle them, and handlers are queried in a
@@ -44,7 +48,7 @@ namespace ReactiveUI
     /// </remarks>
     public abstract class UserInteraction
     {
-        private static readonly PropagatedInteractionsObservable propagatedInteractionsObservable = new PropagatedInteractionsObservable();
+        private static readonly IList<Func<UserInteraction, IObservable<Unit>>> handlers = new List<Func<UserInteraction, IObservable<Unit>>>();
         private readonly AsyncSubject<object> result;
         private int resultSet;
 
@@ -54,15 +58,77 @@ namespace ReactiveUI
         }
 
         /// <summary>
-        /// An observable of all propagated user interactions.
+        /// Registers an observable-based asynchronous handler for the specified interaction type.
+        /// </summary>
+        /// <typeparam name="TInteraction">
+        /// The type of interaction being handled.
+        /// </typeparam>
+        /// <param name="handler">
+        /// The handler.
+        /// </param>
+        /// <returns>
+        /// A disposable instance that, when disposed, will unregister the handler.
+        /// </returns>
+        public static IDisposable RegisterHandler<TInteraction>(Func<TInteraction, IObservable<Unit>> handler)
+            where TInteraction : UserInteraction
+        {
+            var selectiveHandler = (Func<UserInteraction, IObservable<Unit>>)(interaction =>
+            {
+                var castInteraction = interaction as TInteraction;
+
+                if (castInteraction == null)
+                {
+                    return Observable.Return(Unit.Default);
+                }
+
+                return handler(castInteraction);
+            });
+
+            handlers.Add(selectiveHandler);
+            return Disposable.Create(() => handlers.Remove(selectiveHandler));
+        }
+
+        /// <summary>
+        /// Registers a task-based asynchronous handler for the specified interaction type.
+        /// </summary>
+        /// <typeparam name="TInteraction">
+        /// The type of interaction being handled.
+        /// </typeparam>
+        /// <param name="handler">
+        /// The handler.
+        /// </param>
+        /// <returns>
+        /// A disposable instance that, when disposed, will unregister the handler.
+        /// </returns>
+        public static IDisposable RegisterHandler<TInteraction>(Func<TInteraction, Task> handler)
+            where TInteraction : UserInteraction
+        {
+            return RegisterHandler<TInteraction>(interaction => handler(interaction).ToObservable());
+        }
+
+        /// <summary>
+        /// Registers a synchronous handler for the specified interaction type.
         /// </summary>
         /// <remarks>
-        /// Any user interaction that is propagated will tick through this observable. Typically, handlers will use <c>OfType</c> to filter
-        /// to only those interactions they potentially wish to handle.
+        /// Synchronous handlers cannot await user interactions. It is more likely you want to use an asynchronous handler.
         /// </remarks>
-        public static IObservable<UserInteraction> PropagatedInteractions
+        /// <typeparam name="TInteraction">
+        /// The type of interaction being handled.
+        /// </typeparam>
+        /// <param name="handler">
+        /// The handler.
+        /// </param>
+        /// <returns>
+        /// A disposable instance that, when disposed, will unregister the handler.
+        /// </returns>
+        public static IDisposable RegisterHandler<TInteraction>(Action<TInteraction> handler)
+            where TInteraction : UserInteraction
         {
-            get { return propagatedInteractionsObservable.ObserveOn(RxApp.MainThreadScheduler); }
+            return RegisterHandler<TInteraction>(interaction =>
+            {
+                handler(interaction);
+                return Observable.Return(Unit.Default);
+            });
         }
 
         /// <summary>
@@ -127,99 +193,85 @@ namespace ReactiveUI
         /// </returns>
         protected IObservable<object> Propagate()
         {
-            return propagatedInteractionsObservable.Propagate(this);
-        }
+            return Observable
+                .StartAsync(
+                    async () =>
+                    {
+                        var handlers = UserInteraction.handlers.Reverse().ToArray();
 
-        // a custom implementation of IObservable<UserIntraction> that visits observers in reverse order, and ceases
-        // visiting observers if any prior observer handles the interaction
-        private sealed class PropagatedInteractionsObservable : IObservable<UserInteraction>
-        {
-            private readonly IList<IObserver<UserInteraction>> observers;
-            private readonly object sync;
-
-            public PropagatedInteractionsObservable()
-            {
-                this.observers = new List<IObserver<UserInteraction>>();
-                this.sync = new object();
-            }
-
-            public IDisposable Subscribe(IObserver<UserInteraction> observer)
-            {
-                lock (this.sync)
-                {
-                    this.observers.Add(observer);
-                }
-
-                return Disposable.Create(() => this.Unsubscribe(observer));
-            }
-
-            private void Unsubscribe(IObserver<UserInteraction> observer)
-            {
-                lock (this.sync)
-                {
-                    this.observers.Remove(observer);
-                }
-            }
-
-            public IObservable<object> Propagate(UserInteraction userInteraction)
-            {
-                IObserver<UserInteraction>[] handlers = null;
-
-                lock (this.sync)
-                {
-                    handlers = this
-                        .observers
-                        .Reverse()
-                        .ToArray();
-                }
-
-                // AAAAAAGGGGGGGGGGGGHHHHHHHHHHHHHHHHHHHHHHH!!!!!!!!!!!!!!!!!!!
-                // need to wait for the handler to do its thing before checking if interaction is handled
-                // but there's no way of achieving that with current design because handlers are not asynchronous
-                return Observable
-                    .StartAsync(
-                        async () =>
+                        foreach (var handler in handlers)
                         {
-                            foreach (var handler in handlers)
+                            await handler(this);
+
+                            if (this.IsHandled)
                             {
-                                handler.OnNext(userInteraction);
-
-                                if (userInteraction.IsHandled)
-                                {
-                                    return await userInteraction.GetResult();
-                                }
+                                return this.result.GetResult();
                             }
+                        }
 
-                            throw new UnhandledUserInteractionException(userInteraction);
-                        });
-            }
+                        throw new UnhandledUserInteractionException(this);
+                    });
         }
     }
 
+    /// <summary>
+    /// Implements a <see cref="UserInteraction"/> with a specific result type.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// This class provides a means of interacting with users and obtaining a strongly-typed result. Typically, you will either
+    /// use this class directly (e.g. a <c>UserInteraction&lt;bool&gt;</c> will allow you to obtain a yes/no answer from the user)
+    /// or indirectly (by either subclassing or using an existing subclass).
+    /// </para>
+    /// </remarks>
+    /// <typeparam name="TResult">
+    /// The type of the interaction's result.
+    /// </typeparam>
     public class UserInteraction<TResult> : UserInteraction
     {
+        /// <summary>
+        /// Gets the result of the interaction.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// View models using non-propagated interactions would typically await a call to this method after making the interaction
+        /// available for views to handle. If a propagated interaction is being used, you'd instead await the <see cref="Propagate"/>
+        /// method.
+        /// </para>
+        /// </remarks>
+        /// <returns>
+        /// An observable that immediately ticks the interaction result if it is already known, otherwise later when it is.
+        /// </returns>
         public new IObservable<TResult> GetResult()
         {
             return base.GetResult().Cast<TResult>();
         }
 
+        /// <summary>
+        /// Assigns a result to the user interaction.
+        /// </summary>
+        /// <remarks>
+        /// Handlers (be they for propagated or non-propagated interactions) call this method to assign a result to the interaction.
+        /// </remarks>
+        /// <param name="result">
+        /// The interaction result.
+        /// </param>
         public void SetResult(TResult result)
         {
             base.SetResult(result);
         }
-
+        
         /// <summary>
         /// Propagate this user interaction.
         /// </summary>
         /// <remarks>
         /// <para>
-        /// This method propagates this user interaction until one of the <see cref="PropagatedInteractions"/> observers handles it.
-        /// If any observer handles the interaction, no subsequent observers receive it. Observers are traversed in reverse order.
-        /// That is, earlier subscribers are given the opportunity to handle the interaction only if later subscribers have not
-        /// already handled it.
+        /// This method propagates this user interaction until one of the registered handlers handles it. If any handler handles the
+        /// interaction, no subsequent handler receive it. Handlers are traversed in reverse order. That is, earlier handlers are given
+        /// the opportunity to handle the interaction only if later handlers have not already done so.
         /// </para>
         /// <para>
-        /// If no observer handles the interaction, an <see cref="UnhandledUserInteractionException{TResult}"/> is thrown.
+        /// If no handler handles the interaction, an <see cref="UnhandledUserInteractionException{TResult}"/> is thrown.
         /// </para>
         /// </remarks>
         public new IObservable<TResult> Propagate()
@@ -228,6 +280,12 @@ namespace ReactiveUI
         }
     }
 
+    /// <summary>
+    /// An implementation of <see cref="UserInteraction{TResult}"/> that adds exception information.
+    /// </summary>
+    /// <typeparam name="TResult">
+    /// The interaction result type.
+    /// </typeparam>
     public class UserErrorInteraction<TResult> : UserInteraction<TResult>
     {
         private readonly Exception error;
