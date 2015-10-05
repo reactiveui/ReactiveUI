@@ -75,6 +75,7 @@
     <Compile Include="Activation.cs" />
     <Compile Include="ExpressionMixins.cs" />
     <Compile Include="ExpressionRewriter.cs" />
+    <Compile Include="Interactions.cs" />
     <Compile Include="PortableLibraryStubs.cs" />
     <Compile Include="ReactiveBinding.cs" />
     <Compile Include="AutoPersistHelper.cs" />
