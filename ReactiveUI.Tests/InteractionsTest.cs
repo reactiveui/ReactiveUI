@@ -8,54 +8,54 @@ namespace ReactiveUI.Tests
     public class InteractionsTest
     {
         [Fact]
-        public void UnhandledPropagatedInteractionsShouldCauseException()
+        public void UnhandledGlobalInteractionsShouldCauseException()
         {
             var sut = new UserInteraction<bool>();
-            Assert.Throws<UnhandledUserInteractionException>(() => sut.Propagate().First());
+            Assert.Throws<UnhandledUserInteractionException>(() => sut.RaiseGlobal().First());
         }
 
         [Fact]
-        public void HandledPropagatedInteractionsShouldNotCauseException()
+        public void HandledGlobalInteractionsShouldNotCauseException()
         {
             var sut = new UserInteraction<bool>();
 
-            using (UserInteraction.RegisterHandler<UserInteraction<bool>>(x => x.SetResult(true)))
+            using (UserInteraction.RegisterGlobalHandler<UserInteraction<bool>>(x => x.SetResult(true)))
             {
-                var result = sut.Propagate().First();
+                var result = sut.RaiseGlobal().First();
                 Assert.True(result);
             }
 
-            Assert.Throws<UnhandledUserInteractionException>(() => sut.Propagate().First());
+            Assert.Throws<UnhandledUserInteractionException>(() => sut.RaiseGlobal().First());
         }
 
         [Fact]
-        public void NestedHandlersAreExecutedInReverseOrderOfSubscription()
+        public void NestedGlobalHandlersAreExecutedInReverseOrderOfSubscription()
         {
-            using (UserInteraction.RegisterHandler<UserInteraction<string>>(x => x.SetResult("A")))
+            using (UserInteraction.RegisterGlobalHandler<UserInteraction<string>>(x => x.SetResult("A")))
             {
-                Assert.Equal("A", new UserInteraction<string>().Propagate().First());
+                Assert.Equal("A", new UserInteraction<string>().RaiseGlobal().First());
 
-                using (UserInteraction.RegisterHandler<UserInteraction<string>>(x => x.SetResult("B")))
+                using (UserInteraction.RegisterGlobalHandler<UserInteraction<string>>(x => x.SetResult("B")))
                 {
-                    Assert.Equal("B", new UserInteraction<string>().Propagate().First());
+                    Assert.Equal("B", new UserInteraction<string>().RaiseGlobal().First());
 
-                    using (UserInteraction.RegisterHandler<UserInteraction<string>>(x => x.SetResult("C")))
+                    using (UserInteraction.RegisterGlobalHandler<UserInteraction<string>>(x => x.SetResult("C")))
                     {
-                        Assert.Equal("C", new UserInteraction<string>().Propagate().First());
+                        Assert.Equal("C", new UserInteraction<string>().RaiseGlobal().First());
                     }
 
-                    Assert.Equal("B", new UserInteraction<string>().Propagate().First());
+                    Assert.Equal("B", new UserInteraction<string>().RaiseGlobal().First());
                 }
 
-                Assert.Equal("A", new UserInteraction<string>().Propagate().First());
+                Assert.Equal("A", new UserInteraction<string>().RaiseGlobal().First());
             }
         }
 
         [Fact]
-        public void HandlersCanOptNotToHandleTheInteraction()
+        public void GlobalHandlersCanOptNotToHandleTheInteraction()
         {
-            var handlerA = UserInteraction.RegisterHandler<CustomInteraction>(x => x.SetResult("A"));
-            var handlerB = UserInteraction.RegisterHandler<CustomInteraction>(
+            var handlerA = UserInteraction.RegisterGlobalHandler<CustomInteraction>(x => x.SetResult("A"));
+            var handlerB = UserInteraction.RegisterGlobalHandler<CustomInteraction>(
                 x =>
                 {
                     // only handle if the interaction is Super Important
@@ -64,7 +64,7 @@ namespace ReactiveUI.Tests
                         x.SetResult("B");
                     }
                 });
-            var handlerC = UserInteraction.RegisterHandler<CustomInteraction>(x => x.SetResult("C"));
+            var handlerC = UserInteraction.RegisterGlobalHandler<CustomInteraction>(x => x.SetResult("C"));
 
             using (handlerA)
             {
@@ -72,31 +72,31 @@ namespace ReactiveUI.Tests
                 {
                     using (handlerC)
                     {
-                        Assert.Equal("C", new CustomInteraction(false).Propagate().First());
-                        Assert.Equal("C", new CustomInteraction(true).Propagate().First());
+                        Assert.Equal("C", new CustomInteraction(false).RaiseGlobal().First());
+                        Assert.Equal("C", new CustomInteraction(true).RaiseGlobal().First());
                     }
 
-                    Assert.Equal("A", new CustomInteraction(false).Propagate().First());
-                    Assert.Equal("B", new CustomInteraction(true).Propagate().First());
+                    Assert.Equal("A", new CustomInteraction(false).RaiseGlobal().First());
+                    Assert.Equal("B", new CustomInteraction(true).RaiseGlobal().First());
                 }
 
-                Assert.Equal("A", new CustomInteraction(false).Propagate().First());
-                Assert.Equal("A", new CustomInteraction(true).Propagate().First());
+                Assert.Equal("A", new CustomInteraction(false).RaiseGlobal().First());
+                Assert.Equal("A", new CustomInteraction(true).RaiseGlobal().First());
             }
         }
 
         [Fact]
-        public void HandlersCanContainAsynchronousCode()
+        public void GlobalHandlersCanContainAsynchronousCode()
         {
             // even though handler B is "slow" (i.e. mimicks waiting for the user), it takes precedence over A, so we expect A to never even be called
             var handlerAWasCalled = false;
-            var handlerA = UserInteraction.RegisterHandler<UserInteraction<string>>(
+            var handlerA = UserInteraction.RegisterGlobalHandler<UserInteraction<string>>(
                 x =>
                 {
                     x.SetResult("A");
                     handlerAWasCalled = true;
                 });
-            var handlerB = UserInteraction.RegisterHandler<UserInteraction<string>>(
+            var handlerB = UserInteraction.RegisterGlobalHandler<UserInteraction<string>>(
                 async x =>
                 {
                     await Task.Delay(10);
@@ -106,7 +106,7 @@ namespace ReactiveUI.Tests
             using (handlerA)
             using (handlerB)
             {
-                Assert.Equal("B", new UserInteraction<string>().Propagate().First());
+                Assert.Equal("B", new UserInteraction<string>().RaiseGlobal().First());
             }
 
             Assert.False(handlerAWasCalled);

@@ -21,29 +21,29 @@ namespace ReactiveUI
     /// answered in an asynchronous fashion, so that no blocking occurs while the view model waits for an answer.
     /// </para>
     /// <para>
-    /// User interactions may be either propagated or not. Non-propagated interactions are typically exposed as properties on
-    /// a view model. When the view model needs an answer to a question, it creates a new instance of the interaction and assigns
-    /// it to the property. The corresponding view monitors that property for changes and, when a change is detected, prompts the
-    /// user for their answer. When the user responds, the answer is pushed to the result of the user interaction, at which point
-    /// the patiently-waiting view model will pick up its work.
+    /// User interactions may be either local or global. Local interactions are typically exposed as properties on a view model.
+    /// When the view model needs an answer to a question, it creates a new instance of the interaction and assigns it to the
+    /// property. The corresponding view monitors that property for changes and, when a change is detected, prompts the user for
+    /// their answer. When the user responds, the answer is pushed to the result of the user interaction, at which point the
+    /// patiently-waiting view model will pick up its work.
     /// </para>
     /// <para>
-    /// Propagated interactions, on the other hand, can be handled by any handler registered via the <see cref="RegisterHandler"/>
-    /// methods. Each registered handler is given the opportunity to handle the interaction, but later subscribers are given
-    /// priority over earlier subscribers. This means that it is possible to set up one or more "root" handlers to deal with common
-    /// situations (such as recovering from errors), and temporary subscriptions from higher-level components can take precedence
-    /// over the root handlers.
+    /// Global interactions, on the other hand, can be handled by any handler registered via the <see cref="RegisterGlobalHandler"/>
+    /// methods. Each registered handler is given the opportunity to handle the interaction, but later handlers are given
+    /// priority over handlers that are registered earlier. This means that it is possible to set up one or more "root" handlers
+    /// to deal with common situations (such as recovering from errors), and temporary handlers registered by higher-level
+    /// components can take precedence over the root handlers.
     /// </para>
     /// <para>
-    /// It's important to understand that non-propagated exceptions will not result in any handlers being invoked. Therefore, such
+    /// It's important to understand that local interactions will not result in any handlers being invoked. Therefore, such
     /// interactions can only be handled by those components that have access to the interaction instances. Usually this means that
     /// the related view is responsible for handling the interaction. Any views further up the hierarchy are unlikely to hook into
     /// properties in a lower-level view model.
     /// </para>
     /// <para>
-    /// The advantage of propagated exceptions is that any application component can handle them, and handlers are queried in a
-    /// logical order. The disadvantage is that they can make application logic harder to follow. Non-propagated interactions are
-    /// therefore recommended wherever possible.
+    /// The advantage of global interactions is that any application component can handle them, and handlers are queried in a
+    /// logical order. The disadvantage is that they can make application logic harder to follow. Local interactions are therefore
+    /// recommended wherever possible.
     /// </para>
     /// </remarks>
     public abstract class UserInteraction
@@ -58,7 +58,7 @@ namespace ReactiveUI
         }
 
         /// <summary>
-        /// Registers an observable-based asynchronous handler for the specified interaction type.
+        /// Registers an observable-based asynchronous global handler for the specified interaction type.
         /// </summary>
         /// <typeparam name="TInteraction">
         /// The type of interaction being handled.
@@ -67,9 +67,9 @@ namespace ReactiveUI
         /// The handler.
         /// </param>
         /// <returns>
-        /// A disposable instance that, when disposed, will unregister the handler.
+        /// A disposable instance that, when disposed, will unregister the global handler.
         /// </returns>
-        public static IDisposable RegisterHandler<TInteraction>(Func<TInteraction, IObservable<Unit>> handler)
+        public static IDisposable RegisterGlobalHandler<TInteraction>(Func<TInteraction, IObservable<Unit>> handler)
             where TInteraction : UserInteraction
         {
             var selectiveHandler = (Func<UserInteraction, IObservable<Unit>>)(interaction =>
@@ -89,7 +89,7 @@ namespace ReactiveUI
         }
 
         /// <summary>
-        /// Registers a task-based asynchronous handler for the specified interaction type.
+        /// Registers a task-based asynchronous global handler for the specified interaction type.
         /// </summary>
         /// <typeparam name="TInteraction">
         /// The type of interaction being handled.
@@ -98,19 +98,19 @@ namespace ReactiveUI
         /// The handler.
         /// </param>
         /// <returns>
-        /// A disposable instance that, when disposed, will unregister the handler.
+        /// A disposable instance that, when disposed, will unregister the global handler.
         /// </returns>
-        public static IDisposable RegisterHandler<TInteraction>(Func<TInteraction, Task> handler)
+        public static IDisposable RegisterGlobalHandler<TInteraction>(Func<TInteraction, Task> handler)
             where TInteraction : UserInteraction
         {
-            return RegisterHandler<TInteraction>(interaction => handler(interaction).ToObservable());
+            return RegisterGlobalHandler<TInteraction>(interaction => handler(interaction).ToObservable());
         }
 
         /// <summary>
-        /// Registers a synchronous handler for the specified interaction type.
+        /// Registers a synchronous global handler for the specified interaction type.
         /// </summary>
         /// <remarks>
-        /// Synchronous handlers cannot await user interactions. It is more likely you want to use an asynchronous handler.
+        /// Synchronous handlers cannot await user interactions. It is therefore more likely you want to use an asynchronous handler.
         /// </remarks>
         /// <typeparam name="TInteraction">
         /// The type of interaction being handled.
@@ -119,12 +119,12 @@ namespace ReactiveUI
         /// The handler.
         /// </param>
         /// <returns>
-        /// A disposable instance that, when disposed, will unregister the handler.
+        /// A disposable instance that, when disposed, will unregister the global handler.
         /// </returns>
-        public static IDisposable RegisterHandler<TInteraction>(Action<TInteraction> handler)
+        public static IDisposable RegisterGlobalHandler<TInteraction>(Action<TInteraction> handler)
             where TInteraction : UserInteraction
         {
-            return RegisterHandler<TInteraction>(interaction =>
+            return RegisterGlobalHandler<TInteraction>(interaction =>
             {
                 handler(interaction);
                 return Observable.Return(Unit.Default);
@@ -144,7 +144,7 @@ namespace ReactiveUI
         }
 
         /// <summary>
-        /// Gets the result of the interaction. That is, the "answer" provided by the user.
+        /// Raises the interaction locally.
         /// </summary>
         /// <remarks>
         /// The result is untyped. Strong typing is introduced by the <see cref="UserInteraction{TResult}"/> class.
@@ -152,9 +152,40 @@ namespace ReactiveUI
         /// <returns>
         /// An observable that immediately ticks the result if it is already known, otherwise later when it is.
         /// </returns>
-        protected IObservable<object> GetResult()
+        protected IObservable<object> Raise()
         {
             return this.result;
+        }
+
+        /// <summary>
+        /// Raises the interaction globally.
+        /// </summary>
+        /// <remarks>
+        /// The result is untyped. Strong typing is introduced by the <see cref="UserInteraction{TResult}"/> class.
+        /// </remarks>
+        /// <returns>
+        /// The result obtained from global interaction handlers.
+        /// </returns>
+        protected IObservable<object> RaiseGlobal()
+        {
+            return Observable
+                .StartAsync(
+                    async () =>
+                    {
+                        var handlers = UserInteraction.handlers.Reverse().ToArray();
+
+                        foreach (var handler in handlers)
+                        {
+                            await handler(this);
+
+                            if (this.IsHandled)
+                            {
+                                return this.result.GetResult();
+                            }
+                        }
+
+                        throw new UnhandledUserInteractionException(this);
+                    });
         }
 
         /// <summary>
@@ -181,37 +212,6 @@ namespace ReactiveUI
             this.result.OnNext(result);
             this.result.OnCompleted();
         }
-
-        /// <summary>
-        /// Propagates this interaction.
-        /// </summary>
-        /// <remarks>
-        /// The result is untyped. Strong typing is introduced by the <see cref="UserInteraction{TResult}"/> class.
-        /// </remarks>
-        /// <returns>
-        /// The result obtained from propagated interaction handlers.
-        /// </returns>
-        protected IObservable<object> Propagate()
-        {
-            return Observable
-                .StartAsync(
-                    async () =>
-                    {
-                        var handlers = UserInteraction.handlers.Reverse().ToArray();
-
-                        foreach (var handler in handlers)
-                        {
-                            await handler(this);
-
-                            if (this.IsHandled)
-                            {
-                                return this.result.GetResult();
-                            }
-                        }
-
-                        throw new UnhandledUserInteractionException(this);
-                    });
-        }
     }
 
     /// <summary>
@@ -230,28 +230,46 @@ namespace ReactiveUI
     public class UserInteraction<TResult> : UserInteraction
     {
         /// <summary>
-        /// Gets the result of the interaction.
+        /// Raises the interaction locally.
         /// </summary>
         /// <remarks>
         /// <para>
-        /// View models using non-propagated interactions would typically await a call to this method after making the interaction
-        /// available for views to handle. If a propagated interaction is being used, you'd instead await the <see cref="Propagate"/>
-        /// method.
+        /// View models using local interactions would typically await a call to this method after making the interaction available
+        /// for views to handle. If a global interaction is being used, you'd instead await the <see cref="RaiseGlobal"/> method.
         /// </para>
         /// </remarks>
         /// <returns>
         /// An observable that immediately ticks the interaction result if it is already known, otherwise later when it is.
         /// </returns>
-        public new IObservable<TResult> GetResult()
+        public new IObservable<TResult> Raise()
         {
-            return base.GetResult().Cast<TResult>();
+            return base.Raise().Cast<TResult>();
+        }
+
+        /// <summary>
+        /// Raises the interaction globally.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// This method passes the interaction through to all registered global handlers in reverse order of their registration.
+        /// As soon as any handler supplies a result for the interaction, subsequent handlers are not called. That is, handlers 
+        /// that are registered earlier are given the opportunity to handle the interaction only if handlers registered later
+        /// have not already done so.
+        /// </para>
+        /// <para>
+        /// If no handler handles the interaction, an <see cref="UnhandledUserInteractionException{TResult}"/> is thrown.
+        /// </para>
+        /// </remarks>
+        public new IObservable<TResult> RaiseGlobal()
+        {
+            return base.RaiseGlobal().Cast<TResult>();
         }
 
         /// <summary>
         /// Assigns a result to the user interaction.
         /// </summary>
         /// <remarks>
-        /// Handlers (be they for propagated or non-propagated interactions) call this method to assign a result to the interaction.
+        /// Handlers (be they for local or global interactions) call this method to assign a result to the interaction.
         /// </remarks>
         /// <param name="result">
         /// The interaction result.
@@ -259,24 +277,6 @@ namespace ReactiveUI
         public void SetResult(TResult result)
         {
             base.SetResult(result);
-        }
-        
-        /// <summary>
-        /// Propagate this user interaction.
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        /// This method propagates this user interaction until one of the registered handlers handles it. If any handler handles the
-        /// interaction, no subsequent handler receive it. Handlers are traversed in reverse order. That is, earlier handlers are given
-        /// the opportunity to handle the interaction only if later handlers have not already done so.
-        /// </para>
-        /// <para>
-        /// If no handler handles the interaction, an <see cref="UnhandledUserInteractionException{TResult}"/> is thrown.
-        /// </para>
-        /// </remarks>
-        public new IObservable<TResult> Propagate()
-        {
-            return base.Propagate().Cast<TResult>();
         }
     }
 
