@@ -46,7 +46,7 @@ namespace ReactiveUI
     /// recommended wherever possible.
     /// </para>
     /// </remarks>
-    public abstract class UserInteraction
+    public abstract class UserInteraction : ReactiveObject
     {
         private static readonly IList<Func<UserInteraction, IObservable<Unit>>> handlers = new List<Func<UserInteraction, IObservable<Unit>>>();
         private readonly AsyncSubject<object> result;
