@@ -144,6 +144,7 @@
     <Compile Include="ExpressionRewriter.cs" />
     <Compile Include="ExpressionMixins.cs" />
     <Compile Include="Legacy\ReactiveCommand.cs" />
+    <Compile Include="Legacy\Errors.cs" />
     <Compile Include="Cocoa\ReactiveSplitViewController.cs" />
   </ItemGroup>
   <ItemGroup>
