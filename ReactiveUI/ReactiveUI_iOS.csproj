@@ -114,7 +114,7 @@
     <Compile Include="CompatMixins.cs" />
     <Compile Include="ContractStubs.cs" />
     <Compile Include="CreatesCommandBinding.cs" />
-    <Compile Include="Errors.cs" />
+    <Compile Include="Interactions.cs" />
     <Compile Include="IDependencyResolver.cs" />
     <Compile Include="INPCObservableForProperty.cs" />
     <Compile Include="Interfaces.cs" />
@@ -156,6 +156,7 @@
     <Compile Include="Cocoa\ReactiveTableView.cs" />
     <Compile Include="Cocoa\AutoSuspendHelper.cs" />
     <Compile Include="Legacy\ReactiveCommand.cs" />
+    <Compile Include="Legacy\Errors.cs" />
     <Compile Include="Cocoa\ReactiveTabBarController.cs" />
     <Compile Include="Cocoa\ReactiveNavigationController.cs" />
     <Compile Include="Cocoa\ReactiveSplitViewController.cs" />
