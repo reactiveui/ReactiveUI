@@ -3,7 +3,7 @@
   <metadata xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
     <id>reactiveui</id>
     <version>6.5.0</version>
-    <description>An MVVM library for WPF and Silverlight that is deeply integrated with the Reactive Extensions</description>
+    <description>A reactive MVVM library for Xamarin and Windows applications.</description>
     <authors>Paul Betts</authors>
     <projectUrl>http://www.reactiveui.net</projectUrl>
     <licenseUrl>http://opensource.org/licenses/ms-pl.html</licenseUrl>
