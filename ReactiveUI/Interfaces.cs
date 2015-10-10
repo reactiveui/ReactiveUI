@@ -91,40 +91,6 @@ namespace ReactiveUI
         IObservable<Exception> ThrownExceptions { get; }
     }
 
-    public interface IReactiveCommand : IHandleObservableErrors, ICommand, IDisposable, IEnableLogger
-    {
-        /// <summary>
-        /// Gets a value indicating whether this instance can execute observable.
-        /// </summary>
-        /// <value><c>true</c> if this instance can execute observable; otherwise, <c>false</c>.</value>
-        IObservable<bool> CanExecuteObservable { get; }
-
-        /// <summary>
-        /// Gets a value indicating whether this instance is executing. This
-        /// Observable is guaranteed to always return a value immediately (i.e.
-        /// it is backed by a BehaviorSubject), meaning it is safe to determine
-        /// the current state of the command via IsExecuting.First()
-        /// </summary>
-        /// <value><c>true</c> if this instance is executing; otherwise, <c>false</c>.</value>
-        IObservable<bool> IsExecuting { get; }
-    }
-
-    /// <summary>
-    /// IReactiveCommand represents an ICommand which also notifies when it is
-    /// executed (i.e. when Execute is called) via IObservable. Conceptually,
-    /// this represents an Event, so as a result this IObservable should never
-    /// OnComplete or OnError.
-    ///
-    /// In previous versions of ReactiveUI, this interface was split into two
-    /// separate interfaces, one to handle async methods and one for "standard"
-    /// commands, but these have now been merged - every ReactiveCommand is now
-    /// a ReactiveAsyncCommand.
-    /// </summary>
-    public interface IReactiveCommand<T> : IObservable<T>, IReactiveCommand
-    {
-        IObservable<T> ExecuteAsync(object parameter = null);
-    }
-
     /// <summary>
     /// IReactivePropertyChangedEventArgs is a generic interface that
     /// is used to wrap the NotifyPropertyChangedEventArgs and gives
