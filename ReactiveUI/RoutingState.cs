@@ -125,7 +125,7 @@ namespace ReactiveUI
         /// type specified by the type parameter via looking it up in the
         /// Dependency Resolver.
         /// </summary>
-        public static IReactiveCommand NavigateCommandFor<T>(this RoutingState This)
+        public static ReactiveCommand<object> NavigateCommandFor<T>(this RoutingState This)
             where T : IRoutableViewModel,new()
         {
             var ret = new ReactiveCommand<object>(This.Navigate.CanExecuteObservable, x => Observable.Return(x));
