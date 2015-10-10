@@ -234,6 +234,11 @@ namespace ReactiveUI
             return new ReactiveCommand<Unit>(canExecute, x => Observable.StartAsync(ct => executeAsync(x,ct)), scheduler);
         }
 
+        public static ReactiveCommand<IList<T>> CreateCombined<T>(IObservable<bool> canExecute, params ReactiveCommand<T>[] commands)
+        {
+            return CreateCombined<T>(canExecute, null, commands);
+        }
+
         /// <summary>
         /// This creates a ReactiveCommand that calls several child
         /// ReactiveCommands when invoked. Its CanExecute will match the
@@ -243,7 +248,7 @@ namespace ReactiveUI
         /// <param name="canExecute">An Observable that determines whether the
         /// parent command can execute</param>
         /// <param name="commands">The commands to combine.</param>
-        public static ReactiveCommand<object> CreateCombined(IObservable<bool> canExecute, params IReactiveCommand[] commands)
+        public static ReactiveCommand<IList<T>> CreateCombined<T>(IObservable<bool> canExecute, IScheduler SCHEDULER_HACK, params ReactiveCommand<T>[] commands)
         {
             var childrenCanExecute = commands
                 .Select(x => x.CanExecuteObservable)
@@ -254,9 +259,29 @@ namespace ReactiveUI
                 childrenCanExecute,
                 (parent, child) => parent && child);
 
-            var ret = ReactiveCommand.Create(canExecuteSum);
-            ret.Subscribe(x => commands.ForEach(cmd => cmd.Execute(x)));
-            return ret;
+            var combinedCommand = ReactiveCommand.CreateAsyncObservable(
+                canExecuteSum,
+                o =>
+                    Observable.StartAsync(
+                        async _ =>
+                        {
+                            T[] result = new T[commands.Length];
+
+                            for (var i = 0; i < commands.Length; ++i)
+                            {
+                                result[i] = await commands[i].ExecuteAsync(o);
+                            }
+
+                            return (IList<T>)result.ToList();
+                        }),
+                null);
+
+            return combinedCommand;
+        }
+
+        public static ReactiveCommand<IList<T>> CreateCombined<T>(params ReactiveCommand<T>[] commands)
+        {
+            return CreateCombined<T>((IScheduler)null, commands);
         }
 
         /// <summary>
@@ -266,11 +291,30 @@ namespace ReactiveUI
         /// commands cannot execute, neither can the parent)
         /// </summary>
         /// <param name="commands">The commands to combine.</param>
-        public static ReactiveCommand<object> CreateCombined(params IReactiveCommand[] commands)
+        public static ReactiveCommand<IList<T>> CreateCombined<T>(IScheduler s, params ReactiveCommand<T>[] commands)
         {
-            return CreateCombined(Observable.Return(true), commands);
+            return CreateCombined(Observable.Return(true), s, commands);
         }
     }
+
+    // just so we can get to some command members when we don't know T
+    internal interface IReactiveCommand : ICommand
+    {
+        IObservable<bool> CanExecuteObservable
+        {
+            get;
+        }
+    }
+
+public static class IdGen
+{
+    static int nextId;
+
+    public static int GetNextId()
+    {
+        return Interlocked.Increment(ref nextId);
+    }
+}
 
     /// <summary>
     /// This class represents a Command that can optionally do a background task.
@@ -279,7 +323,7 @@ namespace ReactiveUI
     /// ReactiveCommand is itself an Observable. The results of individual
     /// invocations can be retrieved via the ExecuteAsync method.
     /// </summary>
-    public class ReactiveCommand<T> : IReactiveCommand<T>, IReactiveCommand
+    public class ReactiveCommand<T> : IReactiveCommand, IObservable<T>
     {
 #if NET_45
         public event EventHandler CanExecuteChanged;
@@ -294,10 +338,7 @@ namespace ReactiveUI
 #else
         public event EventHandler CanExecuteChanged
         {
-            add {
-                if (canExecuteDisp == null) canExecuteDisp = canExecute.Connect();
-                CanExecuteChangedEventManager.AddHandler(this, value);
-            }
+            add { CanExecuteChangedEventManager.AddHandler(this, value); }
             remove { CanExecuteChangedEventManager.RemoveHandler(this, value); }
         }
 
@@ -306,43 +347,43 @@ namespace ReactiveUI
             CanExecuteChangedEventManager.DeliverEvent(this, args);
         }
 #endif
+        readonly BehaviorSubject<bool> canExecute = new BehaviorSubject<bool>(false);
         readonly Subject<T> executeResults = new Subject<T>();
         readonly Subject<bool> isExecuting = new Subject<bool>();
         readonly Func<object, IObservable<T>> executeAsync;
         readonly IScheduler scheduler;
         readonly ScheduledSubject<Exception> exceptions;
+        readonly IDisposable canExecuteDisp;
 
-        IConnectableObservable<bool> canExecute;
-        bool canExecuteLatest = false;
-        IDisposable canExecuteDisp;
         int inflightCount = 0;
+
+int id;
 
         /// <summary>
         /// Don't use this, use ReactiveCommand.CreateXYZ instead
         /// </summary>
         public ReactiveCommand(IObservable<bool> canExecute, Func<object, IObservable<T>> executeAsync, IScheduler scheduler = null)
         {
+            this.id = IdGen.GetNextId();
+
             this.scheduler = scheduler ?? RxApp.MainThreadScheduler;
             this.executeAsync = executeAsync;
 
-            this.canExecute = canExecute.CombineLatest(isExecuting.StartWith(false), (ce, ie) => ce && !ie)
+            canExecuteDisp = canExecute
+                .CombineLatest(isExecuting.StartWith(false), (ce, ie) => ce && !ie)
                 .Catch<bool, Exception>(ex => {
                     exceptions.OnNext(ex);
                     return Observable.Return(false);
                 })
                 .Do(x => {
-                    var fireCanExecuteChanged = (canExecuteLatest != x);
-                    canExecuteLatest = x;
+                    var fireCanExecuteChanged = (this.canExecute.Value != x);
 
                     if (fireCanExecuteChanged) {
+                        this.canExecute.OnNext(x);
                         this.raiseCanExecuteChanged(EventArgs.Empty);
                     }
                 })
-                .Publish();
-
-            if (ModeDetector.InUnitTestRunner()) {
-                this.canExecute.Connect();
-            }
+                .Subscribe();
 
             ThrownExceptions = exceptions = new ScheduledSubject<Exception>(CurrentThreadScheduler.Instance, RxApp.DefaultExceptionHandler);
         }
@@ -418,21 +459,7 @@ namespace ReactiveUI
         /// state.
         /// </summary>
         public IObservable<bool> CanExecuteObservable {
-            get {
-                var ret = canExecute.StartWith(canExecuteLatest).DistinctUntilChanged();
-
-                if (canExecuteDisp != null) return ret;
-
-                return Observable.Create<bool>(subj => {
-                    var disp = ret.Subscribe(subj);
-
-                    // NB: We intentionally leak the CanExecute disconnect, it's
-                    // cleaned up by the global Dispose. This is kind of a
-                    // "Lazy Subscription" to CanExecute by the command itself.
-                    canExecuteDisp = canExecute.Connect();
-                    return disp;
-                });
-            }
+            get { return this.canExecute.DistinctUntilChanged(); }
         }
 
         public IObservable<bool> IsExecuting {
@@ -446,8 +473,7 @@ namespace ReactiveUI
 
         public bool CanExecute(object parameter)
         {
-            if (canExecuteDisp == null) canExecuteDisp = canExecute.Connect();
-            return canExecuteLatest;
+            return this.canExecute.Value;
         }
 
         /// <summary>
@@ -456,13 +482,16 @@ namespace ReactiveUI
         /// </summary>
         public void Execute(object parameter)
         {
-            ExecuteAsync(parameter).Catch(Observable.Empty<T>()).Subscribe();
+            ExecuteAsync(parameter).Catch((Exception ex) => Observable.Empty<T>()).Subscribe(
+                x =>
+                {
+                    System.Diagnostics.Debug.WriteLine("#{0}: EXECUTE COMPLETED: {1}", this.id, x);
+                });
         }
 
         public virtual void Dispose()
         {
-            var disp = Interlocked.Exchange(ref canExecuteDisp, null);
-            if (disp != null) disp.Dispose();
+            canExecuteDisp.Dispose();
         }
     }
 
@@ -508,7 +537,7 @@ namespace ReactiveUI
         /// <param name="command">The command to be executed.</param>
         /// <returns>An object that when disposes, disconnects the Observable
         /// from the command.</returns>
-        public static IDisposable InvokeCommand<T, TResult>(this IObservable<T> This, IReactiveCommand<TResult> command)
+        public static IDisposable InvokeCommand<T, TResult>(this IObservable<T> This, ReactiveCommand<TResult> command)
         {
             return This.Throttle(x => command.CanExecuteObservable.StartWith(command.CanExecute(x)).Where(b => b))
 		.Select(x => command.ExecuteAsync(x).Catch(Observable.Empty<TResult>()))
@@ -546,7 +575,7 @@ namespace ReactiveUI
         /// <param name="commandProperty">The expression to reference the Command.</param>
         /// <returns>An object that when disposes, disconnects the Observable
         /// from the command.</returns>
-        public static IDisposable InvokeCommand<T, TResult, TTarget>(this IObservable<T> This, TTarget target, Expression<Func<TTarget, IReactiveCommand<TResult>>> commandProperty)
+        public static IDisposable InvokeCommand<T, TResult, TTarget>(this IObservable<T> This, TTarget target, Expression<Func<TTarget, ReactiveCommand<TResult>>> commandProperty)
         {
             return This.CombineLatest(target.WhenAnyValue(commandProperty), (val, cmd) => new { val, cmd })
                 .Throttle(x => x.cmd.CanExecuteObservable.StartWith(x.cmd.CanExecute(x.val)).Where(b => b))
