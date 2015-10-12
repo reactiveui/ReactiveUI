@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Reactive;
 using System.Reactive.Linq;
@@ -46,14 +47,7 @@ namespace ReactiveUI.XamForms
                 return null;
             }
 
-            var propertyChanged = Observable.FromEventPattern<PropertyChangedEventHandler, PropertyChangedEventArgs>(
-                x => view.PropertyChanged += x,
-                x => view.PropertyChanged -= x);
-            var parentChanged = propertyChanged
-                .Where(x => x.EventArgs.PropertyName == "Parent")
-                .Select(_ => Unit.Default);
-
-            return parentChanged
+            return GetAnyParentChangedFor(view)
                 .StartWith(Unit.Default)
                 .Select(_ => GetPageFor(view))
                 .Select(x =>
@@ -64,6 +58,36 @@ namespace ReactiveUI.XamForms
                         Observable.FromEventPattern<EventHandler, EventArgs>(y => x.Appearing += y, y => x.Appearing -= y).Select(_ => true),
                         Observable.FromEventPattern<EventHandler, EventArgs>(y => x.Disappearing += y, y => x.Disappearing -= y).Select(_ => false))
                     .StartWith(true))
+                .Switch();
+        }
+
+        private static IObservable<Element> GetParentChangedFor(Element element)
+        {
+            var propertyChanged = Observable.FromEventPattern<PropertyChangedEventHandler, PropertyChangedEventArgs>(
+                x => element.PropertyChanged += x,
+                x => element.PropertyChanged -= x);
+            return propertyChanged
+                .Where(x => x.EventArgs.PropertyName == "Parent")
+                .Select(_ => element.Parent);
+        }
+
+        private static IObservable<Unit> GetParentChangedForRecursive(Element element)
+        {
+            var observables = new List<IObservable<Unit>>();
+
+            while (element != null)
+            {
+                observables.Add(GetParentChangedFor(element).Select(_ => Unit.Default));
+                element = element.Parent;
+            }
+
+            return Observable.Merge(observables);
+        }
+
+        private static IObservable<Unit> GetAnyParentChangedFor(Element element)
+        {
+            return GetParentChangedForRecursive(element)
+                .Select(_ => GetParentChangedForRecursive(element).StartWith(Unit.Default))
                 .Switch();
         }
 
@@ -91,7 +115,7 @@ namespace ReactiveUI.XamForms
                     return page;
                 }
 
-                element = element.Parent;
+                element = element.ParentView;
             }
 
             return null;
