@@ -46,19 +46,35 @@ namespace ReactiveUI.XamForms
             if (view == null) {
                 return null;
             }
+            
+            var propertyChanged = Observable.FromEventPattern<PropertyChangedEventHandler, PropertyChangedEventArgs>(
+                x => view.PropertyChanged += x,
+                x => view.PropertyChanged -= x);
+            return propertyChanged
+                .Where(x => x.EventArgs.PropertyName == "IsVisible")
+                .Select(_ => view.IsVisible)
+                .StartWith(view.IsVisible);
 
-            return GetAnyParentChangedFor(view)
-                .StartWith(Unit.Default)
-                .Select(_ => GetPageFor(view))
-                .Select(x =>
-                    x == null ?
-                    Observable.Return(false) :
-                    Observable
-                    .Merge(
-                        Observable.FromEventPattern<EventHandler, EventArgs>(y => x.Appearing += y, y => x.Appearing -= y).Select(_ => true),
-                        Observable.FromEventPattern<EventHandler, EventArgs>(y => x.Disappearing += y, y => x.Disappearing -= y).Select(_ => false))
-                    .StartWith(true))
-                .Switch();
+            //return GetAnyParentChangedFor(view)
+            //    .StartWith(Unit.Default)
+            //    .Select(_ => GetPageFor(view))
+            //    .Select(x =>
+            //        x == null ?
+            //        Observable.Return(false) :
+            //        Observable
+            //        .Merge(
+            //            Observable
+            //                .FromEventPattern<EventHandler, EventArgs>(y => x.Appearing += y, y => x.Appearing -= y)
+            //                .Do(_ => System.Diagnostics.Debug.WriteLine("{0} APPEARING", view))
+            //                .Select(_ => true),
+            //            Observable
+            //                .FromEventPattern<EventHandler, EventArgs>(y => x.Disappearing += y, y => x.Disappearing -= y)
+            //                .Do(_ => System.Diagnostics.Debug.WriteLine("{0} DISAPPEARING", view))
+            //                .Select(_ => false))
+            //        .Do(_ => System.Diagnostics.Debug.WriteLine("PAGE FOUND FOR {0}, IS VISIBLE: {1}", view, x.IsVisible))
+            //        .StartWith(x.IsVisible))
+            //    .Switch()
+            //    .Do(x => System.Diagnostics.Debug.WriteLine("{0} ACTIVATED: {1}", view, x));
         }
 
         private static IObservable<Element> GetParentChangedFor(Element element)
