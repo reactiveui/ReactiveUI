@@ -9,8 +9,14 @@ namespace ReactiveUI
     // DO AN IDEAL IMPLEMENTATION FIRST, THEN SCALE BACK AS REQUIRED
     // too much type explosion?
 
-    public abstract class NewReactiveCommand
+    public abstract class NewReactiveCommand : IDisposable
     {
+        public void Dispose()
+        {
+            this.Dispose(true);
+        }
+
+        protected abstract void Dispose(bool disposing);
     }
 
     public abstract class NewReactiveCommand<TResult> : NewReactiveCommand, IObservable<TResult>
@@ -20,9 +26,94 @@ namespace ReactiveUI
 
     public class SynchronousReactiveCommand<TParam, TResult> : NewReactiveCommand<TResult>
     {
-        public override IDisposable Subscribe(IObserver<TResult> observer)
+        private readonly Func<TParam, TResult> execute;
+        private readonly BehaviorSubject<bool> canExecute;
+        private readonly BehaviorSubject<bool> isExecuting;
+        private readonly Subject<TResult> results = new Subject<TResult>();
+        private readonly ScheduledSubject<Exception> exceptions;
+        private readonly IDisposable canExecuteSubscription;
+
+        public SynchronousReactiveCommand(
+                Func<TParam, TResult> execute)
+            : this(Observable.Return(true), execute)
         {
-            throw new NotImplementedException();
+        }
+
+        public SynchronousReactiveCommand(
+            IObservable<bool> canExecute,
+            Func<TParam, TResult> execute)
+        {
+            if (canExecute == null)
+            {
+                throw new ArgumentNullException("canExecute");
+            }
+
+            if (execute == null)
+            {
+                throw new ArgumentNullException("execute");
+            }
+
+            this.execute = execute;
+            this.canExecute = new BehaviorSubject<bool>(true);
+            this.isExecuting = new BehaviorSubject<bool>(false);
+            this.results = new Subject<TResult>();
+
+            this.canExecuteSubscription = canExecute
+                .Catch<bool, Exception>(
+                    ex =>
+                    {
+                        exceptions.OnNext(ex);
+                        return Observable.Return(false);
+                    })
+                .DistinctUntilChanged()
+                .Subscribe(x => this.canExecute.OnNext(x));
+
+            this.ThrownExceptions = this.exceptions = new ScheduledSubject<Exception>(CurrentThreadScheduler.Instance, RxApp.DefaultExceptionHandler);
+        }
+
+        public IObservable<bool> CanExecute => this.canExecute;
+
+        public IObservable<bool> IsExecuting => this.isExecuting;
+
+        public IObservable<Exception> ThrownExceptions
+        {
+            get;
+            protected set;
+        }
+
+        public override IDisposable Subscribe(IObserver<TResult> observer) =>
+            results.Subscribe(observer);
+
+        public void Execute(TParam parameter = default(TParam))
+        {
+            if (!this.canExecute.Value)
+            {
+                this.exceptions.OnNext(new InvalidOperationException("Command cannot currently execute."));
+                return;
+            }
+
+            try
+            {
+                this.isExecuting.OnNext(true);
+                var result = this.execute(parameter);
+                this.results.OnNext(result);
+            }
+            catch (Exception ex)
+            {
+                this.exceptions.OnNext(ex);
+            }
+            finally
+            {
+                this.isExecuting.OnNext(false);
+            }
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                this.canExecuteSubscription.Dispose();
+            }
         }
     }
 
@@ -116,16 +207,22 @@ namespace ReactiveUI
                     {
                         var inFlightExecutions = this.inFlightExecutions.Value;
 
-                        if (inFlightExecutions < this.maxInFlightExecutions)
+                        if (inFlightExecutions >= this.maxInFlightExecutions)
                         {
-                            ++inFlightExecutions;
-                            this.inFlightExecutions.OnNext(inFlightExecutions);
-                            return this.ExecuteCoreAsync(parameter);
+                            return Observable.Throw<TResult>(
+                                new InvalidOperationException(
+                                    string.Format("No more executions can be performed because the maximum number of in-flight executions ({0}) has been reached.", this.maxInFlightExecutions)));
                         }
 
-                        return Observable.Throw<TResult>(
-                            new InvalidOperationException(
-                                string.Format("No more executions can be performed because the maximum number of in-flight executions ({0}) has been reached.", this.maxInFlightExecutions)));
+                        if (!this.canExecute.Value)
+                        {
+                            return Observable.Throw<TResult>(
+                                new InvalidOperationException("Command cannot currently execute."));
+                        }
+
+                        ++inFlightExecutions;
+                        this.inFlightExecutions.OnNext(inFlightExecutions);
+                        return this.ExecuteCoreAsync(parameter);
                     },
                     this.scheduler)
                 .Switch()
@@ -151,5 +248,13 @@ namespace ReactiveUI
                         --inFlightExecutions;
                         this.inFlightExecutions.OnNext(inFlightExecutions);
                     });
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                this.canExecuteSubscription.Dispose();
+            }
+        }
     }
 }
