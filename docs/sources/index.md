@@ -1,7 +1,7 @@
-ReacitveUI is a [MVVM](https://en.wikipedia.org/wiki/Model_View_ViewModel)
-framework that allows you to the [Reactive Extensions](https://rx.codeplex.com/)
+ReactiveUI is a [MVVM](https://en.wikipedia.org/wiki/Model_View_ViewModel)
+framework that allows you to use the [Reactive Extensions](https://rx.codeplex.com/)
 for .NET to create elegant, testable User Interfaces that run on any mobile or
-desktop platform. Supports Xamarin.iOS, Xamarin.Android, Xamarin.Mac, WPF, 
+desktop platform. Supports: Xamarin.iOS, Xamarin.Android, Xamarin.Mac, WPF,
 Windows Forms, Windows Phone 8 and Windows Store apps.
 
 
@@ -26,4 +26,3 @@ Also see historical PDF which explains concept/origins of RxUI - http://web.arch
 * [Controlling Time and Space: understanding the many formulations of FRP by Evan Czaplicki](https://www.youtube.com/watch?v=Agu6jipKfYw)
 * [FRP In Practice: Taking a look at Reactive[UI/Cocoa] by Paul Betts](https://www.youtube.com/watch?v=1XNATGjqM6U)
 * [ANZ Coders 2015 - Reactive UI - It's pretty neat by Brendan Forster](https://www.youtube.com/watch?v=HPyKHxy7X0w)
-
