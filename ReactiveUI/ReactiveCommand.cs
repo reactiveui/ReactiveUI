@@ -306,16 +306,6 @@ namespace ReactiveUI
         }
     }
 
-public static class IdGen
-{
-    static int nextId;
-
-    public static int GetNextId()
-    {
-        return Interlocked.Increment(ref nextId);
-    }
-}
-
     /// <summary>
     /// This class represents a Command that can optionally do a background task.
     /// The results of the background task (or a signal that the Command has been
@@ -347,27 +337,30 @@ public static class IdGen
             CanExecuteChangedEventManager.DeliverEvent(this, args);
         }
 #endif
+        readonly ScheduledSubject<object> executeRequest;
+        readonly BehaviorSubject<bool> isExecuting;
+        readonly ScheduledSubject<Exception> exceptions;
+
         readonly BehaviorSubject<bool> canExecute = new BehaviorSubject<bool>(false);
         readonly Subject<T> executeResults = new Subject<T>();
-        readonly Subject<bool> isExecuting = new Subject<bool>();
         readonly Func<object, IObservable<T>> executeAsync;
         readonly IScheduler scheduler;
-        readonly ScheduledSubject<Exception> exceptions;
         readonly IDisposable canExecuteDisp;
 
         int inflightCount = 0;
-
-int id;
 
         /// <summary>
         /// Don't use this, use ReactiveCommand.CreateXYZ instead
         /// </summary>
         public ReactiveCommand(IObservable<bool> canExecute, Func<object, IObservable<T>> executeAsync, IScheduler scheduler = null)
         {
-            this.id = IdGen.GetNextId();
-
             this.scheduler = scheduler ?? RxApp.MainThreadScheduler;
             this.executeAsync = executeAsync;
+            this.executeRequest = new ScheduledSubject<object>(scheduler);
+            this.isExecuting = new BehaviorSubject<bool>(false);
+
+            var execute = executeRequest
+                .CombineLatest(isExecuting, (_, isExecuting) => !isExecuting);
 
             canExecuteDisp = canExecute
                 .CombineLatest(isExecuting.StartWith(false), (ce, ie) => ce && !ie)
@@ -462,8 +455,9 @@ int id;
             get { return this.canExecute.DistinctUntilChanged(); }
         }
 
-        public IObservable<bool> IsExecuting {
-            get { return isExecuting.StartWith(inflightCount > 0); }
+        public IObservable<bool> IsExecuting
+        {
+            get { return isExecuting; }
         }
 
         public IDisposable Subscribe(IObserver<T> observer)
@@ -482,11 +476,7 @@ int id;
         /// </summary>
         public void Execute(object parameter)
         {
-            ExecuteAsync(parameter).Catch((Exception ex) => Observable.Empty<T>()).Subscribe(
-                x =>
-                {
-                    System.Diagnostics.Debug.WriteLine("#{0}: EXECUTE COMPLETED: {1}", this.id, x);
-                });
+            ExecuteAsync(parameter).Catch((Exception ex) => Observable.Empty<T>());
         }
 
         public virtual void Dispose()
