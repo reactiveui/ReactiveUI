@@ -1,16 +1,60 @@
 ﻿using System;
 using System.Linq;
+using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 
 namespace ReactiveUI
 {
-    // DO AN IDEAL IMPLEMENTATION FIRST, THEN SCALE BACK AS REQUIRED
-    // too much type explosion?
-
-    public abstract class NewReactiveCommand : IDisposable
+    // static factory methods
+    public abstract partial class NewReactiveCommand
     {
+        public static SynchronousReactiveCommand<Unit, TResult> CreateSynchronous<TResult>(Func<TResult> execute, IObservable<bool> canExecute = null)
+        {
+            if (execute == null)
+            {
+                throw new ArgumentNullException(nameof(execute));
+            }
+
+            return new SynchronousReactiveCommand<Unit, TResult>(canExecute ?? Observable.Return(true), _ => execute());
+        }
+
+        public static SynchronousReactiveCommand<TParam, TResult> CreateSynchronous<TParam, TResult>(Func<TParam, TResult> execute, IObservable<bool> canExecute = null) =>
+            new SynchronousReactiveCommand<TParam, TResult>(canExecute ?? Observable.Return(true), execute);
+
+        public static AsynchronousReactiveCommand<Unit, TResult> CreateAsynchronous<TResult>(Func<IObservable<TResult>> executeAsync, IObservable<bool> canExecute = null, IScheduler scheduler = null, int maxInFlightExecutions = 1)
+        {
+            if (executeAsync == null)
+            {
+                throw new ArgumentNullException(nameof(executeAsync));
+            }
+
+            return new AsynchronousReactiveCommand<Unit, TResult>(canExecute ?? Observable.Return(true), _ => executeAsync(), scheduler, maxInFlightExecutions);
+        }
+
+        public static AsynchronousReactiveCommand<TParam, TResult> CreateAsynchronous<TParam, TResult>(Func<TParam, IObservable<TResult>> executeAsync, IObservable<bool> canExecute = null, IScheduler scheduler = null, int maxInFlightExecutions = 1) =>
+            new AsynchronousReactiveCommand<TParam, TResult>(canExecute ?? Observable.Return(true), executeAsync, scheduler, maxInFlightExecutions);
+    }
+
+    // common functionality amongst all reactive commands
+    public abstract partial class NewReactiveCommand : IDisposable
+    {
+        public abstract IObservable<bool> CanExecute
+        {
+            get;
+        }
+
+        public abstract IObservable<bool> IsExecuting
+        {
+            get;
+        }
+
+        public abstract IObservable<Exception> ThrownExceptions
+        {
+            get;
+        }
+
         public void Dispose()
         {
             this.Dispose(true);
@@ -19,11 +63,13 @@ namespace ReactiveUI
         protected abstract void Dispose(bool disposing);
     }
 
+    // common functionality to all reactive commands that return a value of type TResult
     public abstract class NewReactiveCommand<TResult> : NewReactiveCommand, IObservable<TResult>
     {
         public abstract IDisposable Subscribe(IObserver<TResult> observer);
     }
 
+    // a reactive command that executes synchronously
     public class SynchronousReactiveCommand<TParam, TResult> : NewReactiveCommand<TResult>
     {
         private readonly Func<TParam, TResult> execute;
@@ -33,24 +79,18 @@ namespace ReactiveUI
         private readonly ScheduledSubject<Exception> exceptions;
         private readonly IDisposable canExecuteSubscription;
 
-        public SynchronousReactiveCommand(
-                Func<TParam, TResult> execute)
-            : this(Observable.Return(true), execute)
-        {
-        }
-
-        public SynchronousReactiveCommand(
+        internal protected SynchronousReactiveCommand(
             IObservable<bool> canExecute,
             Func<TParam, TResult> execute)
         {
             if (canExecute == null)
             {
-                throw new ArgumentNullException("canExecute");
+                throw new ArgumentNullException(nameof(canExecute));
             }
 
             if (execute == null)
             {
-                throw new ArgumentNullException("execute");
+                throw new ArgumentNullException(nameof(execute));
             }
 
             this.execute = execute;
@@ -59,6 +99,7 @@ namespace ReactiveUI
             this.results = new Subject<TResult>();
 
             this.canExecuteSubscription = canExecute
+                .CombineLatest(this.isExecuting, (canEx, isEx) => canEx && !isEx)
                 .Catch<bool, Exception>(
                     ex =>
                     {
@@ -68,18 +109,14 @@ namespace ReactiveUI
                 .DistinctUntilChanged()
                 .Subscribe(x => this.canExecute.OnNext(x));
 
-            this.ThrownExceptions = this.exceptions = new ScheduledSubject<Exception>(CurrentThreadScheduler.Instance, RxApp.DefaultExceptionHandler);
+            this.exceptions = new ScheduledSubject<Exception>(CurrentThreadScheduler.Instance, RxApp.DefaultExceptionHandler);
         }
 
-        public IObservable<bool> CanExecute => this.canExecute;
+        public override IObservable<bool> CanExecute => this.canExecute;
 
-        public IObservable<bool> IsExecuting => this.isExecuting;
+        public override IObservable<bool> IsExecuting => this.isExecuting;
 
-        public IObservable<Exception> ThrownExceptions
-        {
-            get;
-            protected set;
-        }
+        public override IObservable<Exception> ThrownExceptions => this.exceptions;
 
         public override IDisposable Subscribe(IObserver<TResult> observer) =>
             results.Subscribe(observer);
@@ -117,10 +154,7 @@ namespace ReactiveUI
         }
     }
 
-    // incorporates a given reactive pipeline into each call to ExecuteAsync
-    // if the number of in-flight executions is maxInFlightExecutions, an exception is thrown instead
-    // 
-    // will have SynchronousReactiveCommand counterpart
+    // a reactive command that executes asynchronously
     public class AsynchronousReactiveCommand<TParam, TResult> : NewReactiveCommand<TResult>
     {
         private readonly Func<TParam, IObservable<TResult>> executeAsync;
@@ -132,33 +166,25 @@ namespace ReactiveUI
         private readonly ScheduledSubject<Exception> exceptions;
         private readonly IDisposable canExecuteSubscription;
 
-        public AsynchronousReactiveCommand(
-                Func<TParam, IObservable<TResult>> executeAsync,
-                IScheduler scheduler = null,
-                int maxInFlightExecutions = 1)
-            : this(Observable.Return(true), executeAsync, scheduler, maxInFlightExecutions)
-        {
-        }
-
-        public AsynchronousReactiveCommand(
+        internal protected AsynchronousReactiveCommand(
             IObservable<bool> canExecute,
             Func<TParam, IObservable<TResult>> executeAsync,
-            IScheduler scheduler = null,
-            int maxInFlightExecutions = 1)
+            IScheduler scheduler,
+            int maxInFlightExecutions)
         {
             if (canExecute == null)
             {
-                throw new ArgumentNullException("canExecute");
+                throw new ArgumentNullException(nameof(canExecute));
             }
 
             if (executeAsync == null)
             {
-                throw new ArgumentNullException("executeAsync");
+                throw new ArgumentNullException(nameof(executeAsync));
             }
 
             if (maxInFlightExecutions < 1)
             {
-                throw new ArgumentException("maxInFlightExecutions must be greater than zero.");
+                throw new ArgumentException("maxInFlightExecutions must be greater than zero.", nameof(maxInFlightExecutions));
             }
 
             this.executeAsync = executeAsync;
@@ -179,22 +205,18 @@ namespace ReactiveUI
                 .DistinctUntilChanged()
                 .Subscribe(x => this.canExecute.OnNext(x));
 
-            this.ThrownExceptions = this.exceptions = new ScheduledSubject<Exception>(CurrentThreadScheduler.Instance, RxApp.DefaultExceptionHandler);
+            this.exceptions = new ScheduledSubject<Exception>(CurrentThreadScheduler.Instance, RxApp.DefaultExceptionHandler);
         }
 
         public int MaxInFlightExecutions => this.maxInFlightExecutions;
 
-        public IObservable<bool> CanExecute => this.canExecute;
+        public override IObservable<bool> CanExecute => this.canExecute;
 
         public IObservable<int> InFlightExecutions => this.inFlightExecutions;
 
-        public IObservable<bool> IsExecuting => this.inFlightExecutions.Select(x => x > 0).DistinctUntilChanged();
+        public override IObservable<bool> IsExecuting => this.inFlightExecutions.Select(x => x > 0).DistinctUntilChanged();
 
-        public IObservable<Exception> ThrownExceptions
-        {
-            get;
-            protected set;
-        }
+        public override IObservable<Exception> ThrownExceptions => this.exceptions;
 
         public override IDisposable Subscribe(IObserver<TResult> observer) =>
             results.Subscribe(observer);
