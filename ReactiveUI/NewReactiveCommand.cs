@@ -10,18 +10,18 @@ namespace ReactiveUI
     // static factory methods
     public abstract partial class NewReactiveCommand
     {
-        public static SynchronousReactiveCommand<Unit, TResult> CreateSynchronous<TResult>(Func<TResult> execute, IObservable<bool> canExecute = null)
+        public static SynchronousReactiveCommand<Unit, TResult> CreateSynchronous<TResult>(Func<TResult> execute, IObservable<bool> canExecute = null, IScheduler scheduler = null)
         {
             if (execute == null)
             {
                 throw new ArgumentNullException(nameof(execute));
             }
 
-            return new SynchronousReactiveCommand<Unit, TResult>(canExecute ?? Observable.Return(true), _ => execute());
+            return new SynchronousReactiveCommand<Unit, TResult>(_ => execute(), canExecute ?? Observable.Return(true), scheduler ?? RxApp.MainThreadScheduler);
         }
 
-        public static SynchronousReactiveCommand<TParam, TResult> CreateSynchronous<TParam, TResult>(Func<TParam, TResult> execute, IObservable<bool> canExecute = null) =>
-            new SynchronousReactiveCommand<TParam, TResult>(canExecute ?? Observable.Return(true), execute);
+        public static SynchronousReactiveCommand<TParam, TResult> CreateSynchronous<TParam, TResult>(Func<TParam, TResult> execute, IObservable<bool> canExecute = null, IScheduler scheduler = null) =>
+            new SynchronousReactiveCommand<TParam, TResult>(execute, canExecute ?? Observable.Return(true), scheduler ?? RxApp.MainThreadScheduler);
 
         public static AsynchronousReactiveCommand<Unit, TResult> CreateAsynchronous<TResult>(Func<IObservable<TResult>> executeAsync, IObservable<bool> canExecute = null, IScheduler scheduler = null, int maxInFlightExecutions = 1)
         {
@@ -73,43 +73,63 @@ namespace ReactiveUI
     public class SynchronousReactiveCommand<TParam, TResult> : NewReactiveCommand<TResult>
     {
         private readonly Func<TParam, TResult> execute;
-        private readonly BehaviorSubject<bool> canExecute;
-        private readonly BehaviorSubject<bool> isExecuting;
-        private readonly Subject<TResult> results = new Subject<TResult>();
+        private readonly Subject<ExecutionInfo> executionInfo;
+        private readonly IObservable<bool> isExecuting;
+        private readonly IObservable<bool> canExecute;
+        private readonly IObservable<TResult> results;
         private readonly ScheduledSubject<Exception> exceptions;
         private readonly IDisposable canExecuteSubscription;
 
         internal protected SynchronousReactiveCommand(
+            Func<TParam, TResult> execute,
             IObservable<bool> canExecute,
-            Func<TParam, TResult> execute)
+            IScheduler scheduler)
         {
-            if (canExecute == null)
-            {
-                throw new ArgumentNullException(nameof(canExecute));
-            }
-
             if (execute == null)
             {
                 throw new ArgumentNullException(nameof(execute));
             }
 
-            this.execute = execute;
-            this.canExecute = new BehaviorSubject<bool>(true);
-            this.isExecuting = new BehaviorSubject<bool>(false);
-            this.results = new Subject<TResult>();
+            if (canExecute == null)
+            {
+                throw new ArgumentNullException(nameof(canExecute));
+            }
 
-            this.canExecuteSubscription = canExecute
-                .CombineLatest(this.isExecuting, (canEx, isEx) => canEx && !isEx)
+            if (scheduler == null)
+            {
+                throw new ArgumentNullException(nameof(scheduler));
+            }
+
+            this.execute = execute;
+            this.executionInfo = new Subject<ExecutionInfo>();
+            this.isExecuting = this
+                .executionInfo
+                .Select(x => x.Demarcation == ExecutionDemarcation.Begin)
+                .StartWith(false)
+                .DistinctUntilChanged()
+                .Replay(1)
+                .RefCount();
+            this.canExecute = canExecute
                 .Catch<bool, Exception>(
                     ex =>
                     {
-                        exceptions.OnNext(ex);
+                        this.exceptions.OnNext(ex);
                         return Observable.Return(false);
                     })
+                .StartWith(true)
+                .CombineLatest(this.isExecuting, (canEx, isEx) => canEx && !isEx)
                 .DistinctUntilChanged()
-                .Subscribe(x => this.canExecute.OnNext(x));
+                .Replay(1)
+                .RefCount();
+            this.results = this
+                .executionInfo
+                .Where(x => x.Demarcation == ExecutionDemarcation.EndWithResult)
+                .Select(x => x.Result)
+                .ObserveOn(scheduler);
 
             this.exceptions = new ScheduledSubject<Exception>(CurrentThreadScheduler.Instance, RxApp.DefaultExceptionHandler);
+
+            this.canExecuteSubscription = this.canExecute.Subscribe();
         }
 
         public override IObservable<bool> CanExecute => this.canExecute;
@@ -123,7 +143,8 @@ namespace ReactiveUI
 
         public void Execute(TParam parameter = default(TParam))
         {
-            if (!this.canExecute.Value)
+            // TODO: would be good if we could remove this obsolete synchronous call, but not really sure of a sensible way to do that
+            if (!this.canExecute.First())
             {
                 this.exceptions.OnNext(new InvalidOperationException("Command cannot currently execute."));
                 return;
@@ -131,17 +152,14 @@ namespace ReactiveUI
 
             try
             {
-                this.isExecuting.OnNext(true);
+                this.executionInfo.OnNext(ExecutionInfo.CreateBegin());
                 var result = this.execute(parameter);
-                this.results.OnNext(result);
+                this.executionInfo.OnNext(ExecutionInfo.CreateResult(result));
             }
             catch (Exception ex)
             {
+                this.executionInfo.OnNext(ExecutionInfo.CreateFail());
                 this.exceptions.OnNext(ex);
-            }
-            finally
-            {
-                this.isExecuting.OnNext(false);
             }
         }
 
@@ -149,8 +167,42 @@ namespace ReactiveUI
         {
             if (disposing)
             {
+                this.executionInfo.Dispose();
                 this.canExecuteSubscription.Dispose();
+                this.exceptions.Dispose();
             }
+        }
+
+        private enum ExecutionDemarcation
+        {
+            Begin,
+            EndWithResult,
+            EndWithException
+        }
+
+        private struct ExecutionInfo
+        {
+            private readonly ExecutionDemarcation demarcation;
+            private readonly TResult result;
+
+            private ExecutionInfo(ExecutionDemarcation demarcation, TResult result)
+            {
+                this.demarcation = demarcation;
+                this.result = result;
+            }
+
+            public ExecutionDemarcation Demarcation => this.demarcation;
+
+            public TResult Result => this.result;
+
+            public static ExecutionInfo CreateBegin() =>
+                new ExecutionInfo(ExecutionDemarcation.Begin, default(TResult));
+
+            public static ExecutionInfo CreateResult(TResult result) =>
+                new ExecutionInfo(ExecutionDemarcation.EndWithResult, result);
+
+            public static ExecutionInfo CreateFail() =>
+                new ExecutionInfo(ExecutionDemarcation.EndWithException, default(TResult));
         }
     }
 
@@ -162,7 +214,7 @@ namespace ReactiveUI
         private readonly int maxInFlightExecutions;
         private readonly BehaviorSubject<int> inFlightExecutions;
         private readonly BehaviorSubject<bool> canExecute;
-        private readonly Subject<TResult> results = new Subject<TResult>();
+        private readonly Subject<TResult> results;
         private readonly ScheduledSubject<Exception> exceptions;
         private readonly IDisposable canExecuteSubscription;
 
@@ -193,6 +245,7 @@ namespace ReactiveUI
             this.inFlightExecutions = new BehaviorSubject<int>(0);
             this.canExecute = new BehaviorSubject<bool>(true);
             this.results = new Subject<TResult>();
+            this.exceptions = new ScheduledSubject<Exception>(CurrentThreadScheduler.Instance, RxApp.DefaultExceptionHandler);
 
             this.canExecuteSubscription = canExecute
                 .CombineLatest(this.inFlightExecutions, (canEx, inFlight) => canEx && inFlight < this.maxInFlightExecutions)
@@ -204,8 +257,6 @@ namespace ReactiveUI
                     })
                 .DistinctUntilChanged()
                 .Subscribe(x => this.canExecute.OnNext(x));
-
-            this.exceptions = new ScheduledSubject<Exception>(CurrentThreadScheduler.Instance, RxApp.DefaultExceptionHandler);
         }
 
         public int MaxInFlightExecutions => this.maxInFlightExecutions;
@@ -276,6 +327,10 @@ namespace ReactiveUI
             if (disposing)
             {
                 this.canExecuteSubscription.Dispose();
+                this.canExecute.Dispose();
+                this.inFlightExecutions.Dispose();
+                this.results.Dispose();
+                this.exceptions.Dispose();
             }
         }
     }
