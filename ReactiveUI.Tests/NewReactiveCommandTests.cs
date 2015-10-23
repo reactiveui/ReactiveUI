@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reactive;
+using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using System.Threading;
 using Microsoft.Reactive.Testing;
 using ReactiveUI.Testing;
 using Xunit;
@@ -67,7 +69,7 @@ namespace ReactiveUI.Tests
             Assert.True(canExecute[0]);
             Assert.False(canExecute[1]);
         }
-
+        
         [Fact]
         public void CanExecuteTicksFailuresThroughThrownExceptions()
         {
@@ -93,6 +95,31 @@ namespace ReactiveUI.Tests
 
             Assert.Equal(1, isExecuting.Count);
             Assert.False(isExecuting[0]);
+        }
+
+        [Fact]
+        public void IsExecutingIsCorrectForLateSubscriber()
+        {
+            using (var inFlightHandle = new ManualResetEventSlim())
+            using (var waitHandle = new ManualResetEventSlim())
+            {
+                var fixture = NewReactiveCommand.CreateSynchronous(
+                    () =>
+                    {
+                        inFlightHandle.Set();
+                        waitHandle.Wait(TimeSpan.FromSeconds(3));
+                        return Unit.Default;
+                    });
+
+                TaskPoolScheduler.Default.Schedule(() => fixture.Execute());
+                inFlightHandle.Wait(TimeSpan.FromSeconds(3));
+                var isExecuting = fixture
+                    .IsExecuting
+                    .CreateCollection();
+
+                Assert.Equal(1, isExecuting.Count);
+                Assert.True(isExecuting[0]);
+            }
         }
 
         [Fact]
@@ -166,6 +193,23 @@ namespace ReactiveUI.Tests
             Assert.Equal(1, results[0]);
             Assert.Equal(10, results[1]);
             Assert.Equal(30, results[2]);
+        }
+
+        [Fact]
+        public void ResultIsTickedThroughSpecifiedScheduler()
+        {
+            (new TestScheduler()).With(sched =>
+            {
+                var fixture = NewReactiveCommand.CreateSynchronous(() => Unit.Default, scheduler: sched);
+                var results = fixture
+                    .CreateCollection();
+
+                fixture.Execute();
+                Assert.Empty(results);
+
+                sched.AdvanceByMs(1);
+                Assert.Equal(1, results.Count);
+            });
         }
 
         [Fact]
