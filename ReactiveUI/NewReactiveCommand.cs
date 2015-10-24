@@ -5,6 +5,7 @@ using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using System.Windows.Input;
 
 namespace ReactiveUI
 {
@@ -408,6 +409,11 @@ namespace ReactiveUI
 
             var childCommandsArray = childCommands.ToArray();
 
+            if (childCommandsArray.Length == 0)
+            {
+                throw new ArgumentException("No child commands provided.", nameof(childCommands));
+            }
+
             if (childCommandsArray.Any(x => maxInFlightExecutions > x.MaxInFlightExecutions))
             {
                 throw new ArgumentException("All child commands must have equal or higher MaxInFlightExecutions."); ;
@@ -472,5 +478,104 @@ namespace ReactiveUI
                 this.exceptionsSubscription.Dispose();
             }
         }
+    }
+
+    public static class NewReactiveCommandMixins
+    {
+        // TODO: might want to rename "platform commands" to something else?
+        public static ICommand ToPlatform<TParam, TResult>(this SynchronousReactiveCommand<TParam, TResult> @this)
+        {
+            if (@this == null)
+            {
+                throw new ArgumentNullException(nameof(@this));
+            }
+
+            return new PlatformCommand<TParam>(@this.CanExecute, param => @this.Execute(param));
+        }
+
+        public static ICommand ToPlatform<TParam, TResult>(this AsynchronousReactiveCommand<TParam, TResult> @this)
+        {
+            if (@this == null)
+            {
+                throw new ArgumentNullException(nameof(@this));
+            }
+
+            return new PlatformCommand<TParam>(@this.CanExecute, param => @this.ExecuteAsync(param));
+        }
+
+        public static ICommand ToPlatform<TParam, TResult>(this CombinedAsynchronousReactiveCommand<TParam, TResult> @this)
+        {
+            if (@this == null)
+            {
+                throw new ArgumentNullException(nameof(@this));
+            }
+
+            return new PlatformCommand<TParam>(@this.CanExecute, param => @this.ExecuteAsync(param));
+        }
+
+        // TODO: other mixins that are deemed useful
+    }
+
+    public sealed class PlatformCommand<TParam> : ICommand, IDisposable
+    {
+        private readonly Action<TParam> execute;
+        private readonly IDisposable canExecuteSubscription;
+        private bool latestCanExecute;
+
+        public PlatformCommand(
+            IObservable<bool> canExecute,
+            Action<TParam> execute)
+        {
+            if (canExecute == null)
+            {
+                throw new ArgumentNullException(nameof(canExecute));
+            }
+
+            if (execute == null)
+            {
+                throw new ArgumentNullException(nameof(execute));
+            }
+
+            this.execute = execute;
+            this.canExecuteSubscription = canExecute
+                .Subscribe(x => this.LatestCanExecute = x);
+        }
+
+        public event EventHandler CanExecuteChanged;
+
+        private bool LatestCanExecute
+        {
+            get { return this.latestCanExecute; }
+            set
+            {
+                if (this.latestCanExecute == value)
+                {
+                    return;
+                }
+
+                this.latestCanExecute = value;
+                this.OnCanExecuteChanged();
+            }
+        }
+
+        public bool CanExecute(object parameter) =>
+            this.latestCanExecute;
+
+        public void Execute(object parameter)
+        {
+            // if TParam is a value type, we need to make sure it defaults to its default value because otherwise casting from null to TParam below will fail
+            if (parameter == null)
+            {
+                parameter = default(TParam);
+            }
+
+            this.execute((TParam)parameter);
+        }
+
+        private void OnCanExecuteChanged() =>
+            this.CanExecuteChanged?.Invoke(this, EventArgs.Empty);
+
+        public void Dispose() =>
+            this.canExecuteSubscription.Dispose();
     }
 }
