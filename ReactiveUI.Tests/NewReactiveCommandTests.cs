@@ -830,4 +830,164 @@ namespace ReactiveUI.Tests
             Assert.Equal("oops", thrownExceptions[0].Message);
         }
     }
+
+    public class ReactiveCommandMixinsTests
+    {
+        [Fact]
+        public void ToPlatformThrowsIfCommandIsNull()
+        {
+            Assert.Throws<ArgumentNullException>(() => ((SynchronousReactiveCommand<Unit, Unit>)null).ToPlatform());
+            Assert.Throws<ArgumentNullException>(() => ((AsynchronousReactiveCommand<Unit, Unit>)null).ToPlatform());
+            Assert.Throws<ArgumentNullException>(() => ((CombinedAsynchronousReactiveCommand<Unit, Unit>)null).ToPlatform());
+        }
+
+        [Fact]
+        public void ToPlatformAdaptsSynchronousCommandExecution()
+        {
+            var value = 0;
+            var command = NewReactiveCommand.CreateSynchronous<int, Unit>(
+                param =>
+                {
+                    value = param;
+                    return Unit.Default;
+                });
+            var fixture = command.ToPlatform();
+
+            fixture.Execute(5);
+            Assert.Equal(5, value);
+
+            // null will convert to default(TParam)
+            fixture.Execute(null);
+            Assert.Equal(0, value);
+        }
+
+        [Fact]
+        public void ToPlatformAdaptsSynchronousCommandCanExecute()
+        {
+            var canExecuteSubject = new Subject<bool>();
+            var command = NewReactiveCommand.CreateSynchronous<Unit>(() => Unit.Default, canExecuteSubject);
+            var fixture = command.ToPlatform();
+            var canExecuteChanged = Observable
+                .FromEventPattern(fixture, nameof(fixture.CanExecuteChanged))
+                .Select(_ => Unit.Default)
+                .CreateCollection();
+
+            Assert.True(fixture.CanExecute(null));
+            Assert.Empty(canExecuteChanged);
+
+            canExecuteSubject.OnNext(false);
+            Assert.False(fixture.CanExecute(null));
+            Assert.Equal(1, canExecuteChanged.Count);
+
+            canExecuteSubject.OnNext(false);
+            canExecuteSubject.OnNext(false);
+            canExecuteSubject.OnNext(false);
+            Assert.False(fixture.CanExecute(null));
+            Assert.Equal(1, canExecuteChanged.Count);
+
+            canExecuteSubject.OnNext(true);
+            Assert.True(fixture.CanExecute(null));
+            Assert.Equal(2, canExecuteChanged.Count);
+        }
+
+        [Fact]
+        public void ToPlatformAdaptsAsynchronousCommandExecution()
+        {
+            var value = 0;
+            var command = NewReactiveCommand.CreateAsynchronous<int, Unit>(
+                param =>
+                {
+                    value = param;
+                    return Observable.Return(Unit.Default);
+                });
+            var fixture = command.ToPlatform();
+
+            fixture.Execute(5);
+            Assert.Equal(5, value);
+
+            // null will convert to default(TParam)
+            fixture.Execute(null);
+            Assert.Equal(0, value);
+        }
+
+        [Fact]
+        public void ToPlatformAdaptsAsynchronousCommandCanExecute()
+        {
+            var canExecuteSubject = new Subject<bool>();
+            var command = NewReactiveCommand.CreateAsynchronous<Unit>(() => Observable.Return(Unit.Default), canExecuteSubject);
+            var fixture = command.ToPlatform();
+            var canExecuteChanged = Observable
+                .FromEventPattern(fixture, nameof(fixture.CanExecuteChanged))
+                .Select(_ => Unit.Default)
+                .CreateCollection();
+
+            Assert.True(fixture.CanExecute(null));
+            Assert.Empty(canExecuteChanged);
+
+            canExecuteSubject.OnNext(false);
+            Assert.False(fixture.CanExecute(null));
+            Assert.Equal(1, canExecuteChanged.Count);
+
+            canExecuteSubject.OnNext(false);
+            canExecuteSubject.OnNext(false);
+            canExecuteSubject.OnNext(false);
+            Assert.False(fixture.CanExecute(null));
+            Assert.Equal(1, canExecuteChanged.Count);
+
+            canExecuteSubject.OnNext(true);
+            Assert.True(fixture.CanExecute(null));
+            Assert.Equal(2, canExecuteChanged.Count);
+        }
+
+        [Fact]
+        public void ToPlatformAdaptsCombinedAsynchronousCommandExecution()
+        {
+            var value = 0;
+            var child = NewReactiveCommand.CreateAsynchronous<int, Unit>(
+                param =>
+                {
+                    value = param;
+                    return Observable.Return(Unit.Default);
+                });
+            var command = NewReactiveCommand.CreateCombined(new[]{ child });
+            var fixture = command.ToPlatform();
+
+            fixture.Execute(5);
+            Assert.Equal(5, value);
+
+            // null will convert to default(TParam)
+            fixture.Execute(null);
+            Assert.Equal(0, value);
+        }
+
+        [Fact]
+        public void ToPlatformAdaptsCombinedAsynchronousCommandCanExecute()
+        {
+            var canExecuteSubject = new Subject<bool>();
+            var child = NewReactiveCommand.CreateAsynchronous(() => Observable.Return(Unit.Default));
+            var command = NewReactiveCommand.CreateCombined(new[] { child }, canExecuteSubject);
+            var fixture = command.ToPlatform();
+            var canExecuteChanged = Observable
+                .FromEventPattern(fixture, nameof(fixture.CanExecuteChanged))
+                .Select(_ => Unit.Default)
+                .CreateCollection();
+
+            Assert.True(fixture.CanExecute(null));
+            Assert.Empty(canExecuteChanged);
+
+            canExecuteSubject.OnNext(false);
+            Assert.False(fixture.CanExecute(null));
+            Assert.Equal(1, canExecuteChanged.Count);
+
+            canExecuteSubject.OnNext(false);
+            canExecuteSubject.OnNext(false);
+            canExecuteSubject.OnNext(false);
+            Assert.False(fixture.CanExecute(null));
+            Assert.Equal(1, canExecuteChanged.Count);
+
+            canExecuteSubject.OnNext(true);
+            Assert.True(fixture.CanExecute(null));
+            Assert.Equal(2, canExecuteChanged.Count);
+        }
+    }
 }
