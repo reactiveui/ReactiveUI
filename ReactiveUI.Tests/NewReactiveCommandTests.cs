@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
@@ -69,7 +70,7 @@ namespace ReactiveUI.Tests
             Assert.True(canExecute[0]);
             Assert.False(canExecute[1]);
         }
-        
+
         [Fact]
         public void CanExecuteTicksFailuresThroughThrownExceptions()
         {
@@ -527,7 +528,7 @@ namespace ReactiveUI.Tests
 
                 Assert.Equal(1, thrownExceptions.Count);
                 Assert.IsType<InvalidOperationException>(thrownExceptions[0]);
-                Assert.Equal("No more executions can be performed because the maximum number of in-flight executions (2) has been reached.", thrownExceptions[0].Message);
+                Assert.Equal("Command cannot currently execute.", thrownExceptions[0].Message);
             });
         }
 
@@ -598,6 +599,23 @@ namespace ReactiveUI.Tests
         }
 
         [Fact]
+        public void ResultIsTickedThroughSpecifiedScheduler()
+        {
+            (new TestScheduler()).With(sched =>
+            {
+                var fixture = NewReactiveCommand.CreateAsynchronous(() => Observable.Return(Unit.Default), scheduler: sched);
+                var results = fixture
+                    .CreateCollection();
+
+                fixture.ExecuteAsync();
+                Assert.Empty(results);
+
+                sched.AdvanceByMs(1);
+                Assert.Equal(1, results.Count);
+            });
+        }
+
+        [Fact]
         public void ExecuteAsyncTicksErrorsThroughThrownExceptions()
         {
             var fixture = NewReactiveCommand.CreateAsynchronous(() => Observable.Throw<Unit>(new InvalidOperationException("oops")));
@@ -631,6 +649,185 @@ namespace ReactiveUI.Tests
             Assert.True(canExecute[0]);
             Assert.False(canExecute[1]);
             Assert.True(canExecute[2]);
+        }
+    }
+
+    public class CombinedAsynchronousReactiveCommandTests
+    {
+        [Fact]
+        public void ConstructorThrowsIfAnyChildCommandHasLowerMaxInFlightExecutionsThanRequired()
+        {
+            var child1 = NewReactiveCommand.CreateAsynchronous(() => Observable.Return(Unit.Default), maxInFlightExecutions: 3);
+            var child2 = NewReactiveCommand.CreateAsynchronous(() => Observable.Return(Unit.Default), maxInFlightExecutions: 10);
+            var childCommands = new[] { child1, child2 };
+            Assert.Throws<ArgumentException>(() => NewReactiveCommand.CreateCombined(childCommands, maxInFlightExecutions: 4));
+        }
+
+        [Fact]
+        public void CanExecuteIsFalseIfAnyChildCannotExecute()
+        {
+            var child1 = NewReactiveCommand.CreateAsynchronous(() => Observable.Return(Unit.Default));
+            var child2 = NewReactiveCommand.CreateAsynchronous(() => Observable.Return(Unit.Default), Observable.Return(false));
+            var childCommands = new[] { child1, child2 };
+            var fixture = NewReactiveCommand.CreateCombined(childCommands);
+            var canExecute = fixture
+                .CanExecute
+                .CreateCollection();
+
+            Assert.Equal(1, canExecute.Count);
+            Assert.False(canExecute[0]);
+        }
+
+        [Fact]
+        public void CanExecuteIsFalseIfParentCanExecuteIsFalse()
+        {
+            var child1 = NewReactiveCommand.CreateAsynchronous(() => Observable.Return(Unit.Default));
+            var child2 = NewReactiveCommand.CreateAsynchronous(() => Observable.Return(Unit.Default));
+            var childCommands = new[] { child1, child2 };
+            var fixture = NewReactiveCommand.CreateCombined(childCommands, Observable.Return(false));
+            var canExecute = fixture
+                .CanExecute
+                .CreateCollection();
+
+            Assert.Equal(1, canExecute.Count);
+            Assert.False(canExecute[0]);
+        }
+
+        [Fact]
+        public void CanExecuteTicksFailuresThroughThrownExceptions()
+        {
+            var canExecuteSubject = new Subject<bool>();
+            var child1 = NewReactiveCommand.CreateAsynchronous(() => Observable.Return(Unit.Default));
+            var child2 = NewReactiveCommand.CreateAsynchronous(() => Observable.Return(Unit.Default));
+            var childCommands = new[] { child1, child2 };
+            var fixture = NewReactiveCommand.CreateCombined(childCommands, canExecuteSubject);
+            var thrownExceptions = fixture
+                .ThrownExceptions
+                .CreateCollection();
+
+            canExecuteSubject.OnError(new InvalidOperationException("oops"));
+
+            Assert.Equal(1, thrownExceptions.Count);
+            Assert.Equal("oops", thrownExceptions[0].Message);
+        }
+
+        [Fact]
+        public void CanExecuteTicksFailuresInChildCanExecuteThroughThrownExceptions()
+        {
+            var canExecuteSubject = new Subject<bool>();
+            var child1 = NewReactiveCommand.CreateAsynchronous(() => Observable.Return(Unit.Default));
+            var child2 = NewReactiveCommand.CreateAsynchronous(() => Observable.Return(Unit.Default), canExecuteSubject);
+            var childCommands = new[] { child1, child2 };
+            var fixture = NewReactiveCommand.CreateCombined(childCommands);
+            var thrownExceptions = fixture
+                .ThrownExceptions
+                .CreateCollection();
+
+            canExecuteSubject.OnError(new InvalidOperationException("oops"));
+
+            Assert.Equal(1, thrownExceptions.Count);
+            Assert.Equal("oops", thrownExceptions[0].Message);
+        }
+
+        [Fact]
+        public void ExecuteAsyncExecutesAllChildCommands()
+        {
+            var child1 = NewReactiveCommand.CreateAsynchronous(() => Observable.Return(Unit.Default));
+            var child2 = NewReactiveCommand.CreateAsynchronous(() => Observable.Return(Unit.Default));
+            var child3 = NewReactiveCommand.CreateAsynchronous(() => Observable.Return(Unit.Default));
+            var childCommands = new[] { child1, child2, child3 };
+            var fixture = NewReactiveCommand.CreateCombined(childCommands);
+
+            var isExecuting = fixture
+                .IsExecuting
+                .CreateCollection();
+            var child1IsExecuting = child1
+                .IsExecuting
+                .CreateCollection();
+            var child2IsExecuting = child2
+                .IsExecuting
+                .CreateCollection();
+            var child3IsExecuting = child3
+                .IsExecuting
+                .CreateCollection();
+
+            fixture.ExecuteAsync();
+
+            Assert.Equal(3, isExecuting.Count);
+            Assert.False(isExecuting[0]);
+            Assert.True(isExecuting[1]);
+            Assert.False(isExecuting[2]);
+
+            Assert.Equal(3, child1IsExecuting.Count);
+            Assert.False(child1IsExecuting[0]);
+            Assert.True(child1IsExecuting[1]);
+            Assert.False(child1IsExecuting[2]);
+
+            Assert.Equal(3, child2IsExecuting.Count);
+            Assert.False(child2IsExecuting[0]);
+            Assert.True(child2IsExecuting[1]);
+            Assert.False(child2IsExecuting[2]);
+
+            Assert.Equal(3, child3IsExecuting.Count);
+            Assert.False(child3IsExecuting[0]);
+            Assert.True(child3IsExecuting[1]);
+            Assert.False(child3IsExecuting[2]);
+        }
+
+        [Fact]
+        public void ExecuteAsyncTicksThroughTheResults()
+        {
+            var child1 = NewReactiveCommand.CreateAsynchronous(() => Observable.Return(1));
+            var child2 = NewReactiveCommand.CreateAsynchronous(() => Observable.Return(2));
+            var childCommands = new[] { child1, child2 };
+            var fixture = NewReactiveCommand.CreateCombined(childCommands);
+
+            var results = fixture
+                .CreateCollection();
+
+            fixture.ExecuteAsync();
+
+            Assert.Equal(1, results.Count);
+            Assert.Equal(2, results[0].Count);
+            Assert.Equal(1, results[0][0]);
+            Assert.Equal(2, results[0][1]);
+        }
+
+        [Fact]
+        public void ResultIsTickedThroughSpecifiedScheduler()
+        {
+            (new TestScheduler()).With(sched =>
+            {
+                var child1 = NewReactiveCommand.CreateAsynchronous(() => Observable.Return(1));
+                var child2 = NewReactiveCommand.CreateAsynchronous(() => Observable.Return(2));
+                var childCommands = new[] { child1, child2 };
+                var fixture = NewReactiveCommand.CreateCombined(childCommands, scheduler: sched);
+                var results = fixture
+                    .CreateCollection();
+
+                fixture.ExecuteAsync();
+                Assert.Empty(results);
+
+                sched.AdvanceByMs(1);
+                Assert.Equal(1, results.Count);
+            });
+        }
+
+        [Fact]
+        public void ExecuteAsyncTicksErrorsInAnyChildCommandThroughThrownExceptions()
+        {
+            var child1 = NewReactiveCommand.CreateAsynchronous(() => Observable.Return(Unit.Default));
+            var child2 = NewReactiveCommand.CreateAsynchronous(() => Observable.Throw<Unit>(new InvalidOperationException("oops")));
+            var childCommands = new[] { child1, child2 };
+            var fixture = NewReactiveCommand.CreateCombined(childCommands);
+            var thrownExceptions = fixture
+                .ThrownExceptions
+                .CreateCollection();
+
+            fixture.ExecuteAsync();
+
+            Assert.Equal(1, thrownExceptions.Count);
+            Assert.Equal("oops", thrownExceptions[0].Message);
         }
     }
 }
