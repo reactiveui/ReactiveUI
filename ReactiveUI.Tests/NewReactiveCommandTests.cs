@@ -2,10 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive;
-using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
-using System.Threading;
 using Microsoft.Reactive.Testing;
 using ReactiveUI.Testing;
 using Xunit;
@@ -19,14 +17,6 @@ namespace ReactiveUI.Tests
         {
             Assert.Throws<ArgumentNullException>(() => NewReactiveCommand.Create<Unit>(null));
             Assert.Throws<ArgumentNullException>(() => NewReactiveCommand.Create<Unit, Unit>(null));
-        }
-
-        [Fact]
-        public void ConstructorThrowsIfMaxInFlightExecutionsIsInvalid()
-        {
-            Assert.Throws<ArgumentException>(() => NewReactiveCommand.Create(() => Observable.Return(Unit.Default), maxInFlightExecutions: 0));
-            Assert.Throws<ArgumentException>(() => NewReactiveCommand.Create(() => Observable.Return(Unit.Default), maxInFlightExecutions: -1));
-            Assert.Throws<ArgumentException>(() => NewReactiveCommand.Create(() => Observable.Return(Unit.Default), maxInFlightExecutions: -21));
         }
 
         [Fact]
@@ -80,12 +70,12 @@ namespace ReactiveUI.Tests
         }
 
         [Fact]
-        public void CanExecuteIsFalseIfMaxInFlightExecutionsIsReached()
+        public void CanExecuteIsFalseIfAlreadyExecuting()
         {
             (new TestScheduler()).With(sched =>
             {
                 var execute = Observable.Return(Unit.Default).Delay(TimeSpan.FromSeconds(1), sched);
-                var fixture = NewReactiveCommand.Create(() => execute, scheduler: sched, maxInFlightExecutions: 2);
+                var fixture = NewReactiveCommand.Create(() => execute, scheduler: sched);
                 var canExecute = fixture
                     .CanExecute
                     .CreateCollection();
@@ -93,16 +83,10 @@ namespace ReactiveUI.Tests
                 fixture.ExecuteAsync();
                 sched.AdvanceByMs(100);
 
-                Assert.Equal(1, canExecute.Count);
-                Assert.True(canExecute[0]);
-
-                fixture.ExecuteAsync();
-                sched.AdvanceByMs(100);
-
                 Assert.Equal(2, canExecute.Count);
                 Assert.False(canExecute[1]);
 
-                sched.AdvanceByMs(900);
+                sched.AdvanceByMs(901);
 
                 Assert.Equal(3, canExecute.Count);
                 Assert.True(canExecute[2]);
@@ -125,61 +109,6 @@ namespace ReactiveUI.Tests
         }
 
         [Fact]
-        public void MaxInFlightExecutionsDefaultsToOne()
-        {
-            var fixture = NewReactiveCommand.Create(() => Observable.Return(Unit.Default));
-            Assert.Equal(1, fixture.MaxInFlightExecutions);
-        }
-
-        [Fact]
-        public void InFlightExecutionsIsBehavioral()
-        {
-            var fixture = NewReactiveCommand.Create(() => Observable.Return(Unit.Default));
-            var inFlightExecutions = fixture
-                .InFlightExecutions
-                .CreateCollection();
-
-            Assert.Equal(1, inFlightExecutions.Count);
-            Assert.Equal(0, inFlightExecutions[0]);
-        }
-
-        [Fact]
-        public void InFlightExecutionsTicksAsExecutionsStartAndEnd()
-        {
-            (new TestScheduler()).With(sched =>
-            {
-                var execute = Observable.Return(Unit.Default).Delay(TimeSpan.FromSeconds(1), sched);
-                var fixture = NewReactiveCommand.Create(() => execute, scheduler: sched, maxInFlightExecutions: 2);
-                var inFlightExecutions = fixture
-                    .InFlightExecutions
-                    .CreateCollection();
-
-                fixture.ExecuteAsync();
-                sched.AdvanceByMs(100);
-
-                Assert.Equal(2, inFlightExecutions.Count);
-                Assert.Equal(0, inFlightExecutions[0]);
-                Assert.Equal(1, inFlightExecutions[1]);
-
-                fixture.ExecuteAsync();
-                sched.AdvanceByMs(100);
-
-                Assert.Equal(3, inFlightExecutions.Count);
-                Assert.Equal(2, inFlightExecutions[2]);
-
-                sched.AdvanceByMs(900);
-
-                Assert.Equal(4, inFlightExecutions.Count);
-                Assert.Equal(1, inFlightExecutions[3]);
-
-                sched.AdvanceByMs(900);
-
-                Assert.Equal(5, inFlightExecutions.Count);
-                Assert.Equal(0, inFlightExecutions[4]);
-            });
-        }
-
-        [Fact]
         public void IsExecutingIsBehavioral()
         {
             var fixture = NewReactiveCommand.Create(() => Observable.Return(Unit.Default));
@@ -197,7 +126,7 @@ namespace ReactiveUI.Tests
             (new TestScheduler()).With(sched =>
             {
                 var execute = Observable.Return(Unit.Default).Delay(TimeSpan.FromSeconds(1), sched);
-                var fixture = NewReactiveCommand.Create(() => execute, scheduler: sched, maxInFlightExecutions: 2);
+                var fixture = NewReactiveCommand.Create(() => execute, scheduler: sched);
                 var isExecuting = fixture
                     .IsExecuting
                     .CreateCollection();
@@ -209,16 +138,7 @@ namespace ReactiveUI.Tests
                 Assert.False(isExecuting[0]);
                 Assert.True(isExecuting[1]);
 
-                fixture.ExecuteAsync();
-                sched.AdvanceByMs(100);
-
-                Assert.Equal(2, isExecuting.Count);
-
-                sched.AdvanceByMs(900);
-
-                Assert.Equal(2, isExecuting.Count);
-
-                sched.AdvanceByMs(900);
+                sched.AdvanceByMs(901);
 
                 Assert.Equal(3, isExecuting.Count);
                 Assert.False(isExecuting[2]);
@@ -267,18 +187,15 @@ namespace ReactiveUI.Tests
         }
 
         [Fact]
-        public void ExecuteAsyncFailsIfThereAreTooManyExecutionsInFlight()
+        public void ExecuteAsyncFailsIfAlreadyExecuting()
         {
             (new TestScheduler()).With(sched =>
             {
                 var execute = Observable.Return(Unit.Default).Delay(TimeSpan.FromSeconds(1), sched);
-                var fixture = NewReactiveCommand.Create(() => execute, scheduler: sched, maxInFlightExecutions: 2);
+                var fixture = NewReactiveCommand.Create(() => execute, scheduler: sched);
                 var thrownExceptions = fixture
                     .ThrownExceptions
                     .CreateCollection();
-
-                fixture.ExecuteAsync();
-                sched.AdvanceByMs(100);
 
                 fixture.ExecuteAsync();
                 sched.AdvanceByMs(100);
@@ -416,15 +333,6 @@ namespace ReactiveUI.Tests
 
     public class CombinedReactiveCommandTests
     {
-        [Fact]
-        public void ConstructorThrowsIfAnyChildCommandHasLowerMaxInFlightExecutionsThanRequired()
-        {
-            var child1 = NewReactiveCommand.Create(() => Observable.Return(Unit.Default), maxInFlightExecutions: 3);
-            var child2 = NewReactiveCommand.Create(() => Observable.Return(Unit.Default), maxInFlightExecutions: 10);
-            var childCommands = new[] { child1, child2 };
-            Assert.Throws<ArgumentException>(() => NewReactiveCommand.CreateCombined(childCommands, maxInFlightExecutions: 4));
-        }
-
         [Fact]
         public void CanExecuteIsFalseIfAnyChildCannotExecute()
         {
