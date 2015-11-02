@@ -15,30 +15,27 @@ namespace ReactiveUI
         public static NewReactiveCommand<Unit, TResult> Create<TResult>(
             Func<IObservable<TResult>> executeAsync,
             IObservable<bool> canExecute = null,
-            IScheduler scheduler = null,
-            int maxInFlightExecutions = 1)
+            IScheduler scheduler = null)
         {
             if (executeAsync == null)
             {
                 throw new ArgumentNullException(nameof(executeAsync));
             }
 
-            return new NewReactiveCommand<Unit, TResult>(canExecute ?? Observable.Return(true), _ => executeAsync(), scheduler ?? RxApp.MainThreadScheduler, maxInFlightExecutions);
+            return new NewReactiveCommand<Unit, TResult>(canExecute ?? Observable.Return(true), _ => executeAsync(), scheduler ?? RxApp.MainThreadScheduler);
         }
 
         public static NewReactiveCommand<TParam, TResult> Create<TParam, TResult>(
                 Func<TParam, IObservable<TResult>> executeAsync,
                 IObservable<bool> canExecute = null,
-                IScheduler scheduler = null,
-                int maxInFlightExecutions = 1) =>
-            new NewReactiveCommand<TParam, TResult>(canExecute ?? Observable.Return(true), executeAsync, scheduler ?? RxApp.MainThreadScheduler, maxInFlightExecutions);
+                IScheduler scheduler = null) =>
+            new NewReactiveCommand<TParam, TResult>(canExecute ?? Observable.Return(true), executeAsync, scheduler ?? RxApp.MainThreadScheduler);
 
         public static CombinedReactiveCommand<TParam, TResult> CreateCombined<TParam, TResult>(
                 IEnumerable<NewReactiveCommand<TParam, TResult>> childCommands,
                 IObservable<bool> canExecute = null,
-                IScheduler scheduler = null,
-                int maxInFlightExecutions = 1) =>
-            new CombinedReactiveCommand<TParam, TResult>(childCommands, canExecute ?? Observable.Return(true), scheduler ?? RxApp.MainThreadScheduler, maxInFlightExecutions);
+                IScheduler scheduler = null) =>
+            new CombinedReactiveCommand<TParam, TResult>(childCommands, canExecute ?? Observable.Return(true), scheduler ?? RxApp.MainThreadScheduler);
     }
 
     // non-generic reactive command functionality
@@ -78,9 +75,7 @@ namespace ReactiveUI
     {
         private readonly Func<TParam, IObservable<TResult>> executeAsync;
         private readonly IScheduler scheduler;
-        private readonly int maxInFlightExecutions;
         private readonly Subject<ExecutionInfo> executionInfo;
-        private readonly IObservable<int> inFlightExecutions;
         private readonly IObservable<bool> isExecuting;
         private readonly IObservable<bool> canExecute;
         private readonly IObservable<TResult> results;
@@ -90,8 +85,7 @@ namespace ReactiveUI
         internal protected NewReactiveCommand(
             IObservable<bool> canExecute,
             Func<TParam, IObservable<TResult>> executeAsync,
-            IScheduler scheduler,
-            int maxInFlightExecutions)
+            IScheduler scheduler)
         {
             if (canExecute == null)
             {
@@ -108,24 +102,13 @@ namespace ReactiveUI
                 throw new ArgumentNullException(nameof(scheduler));
             }
 
-            if (maxInFlightExecutions < 1)
-            {
-                throw new ArgumentException("maxInFlightExecutions must be greater than zero.", nameof(maxInFlightExecutions));
-            }
-
             this.executeAsync = executeAsync;
             this.scheduler = scheduler;
-            this.maxInFlightExecutions = maxInFlightExecutions;
             this.executionInfo = new Subject<ExecutionInfo>();
-            this.inFlightExecutions = this
-                .executionInfo
-                .Scan(0, (running, next) => running + (next.Demarcation == ExecutionDemarcation.Begin ? 1 : -1))
-                .StartWith(0)
-                .Replay(1)
-                .RefCount();
             this.isExecuting = this
-                .inFlightExecutions
-                .Select(x => x > 0)
+                .executionInfo
+                .Select(x => x.Demarcation == ExecutionDemarcation.Begin)
+                .StartWith(false)
                 .DistinctUntilChanged()
                 .Replay(1)
                 .RefCount();
@@ -137,7 +120,7 @@ namespace ReactiveUI
                         return Observable.Return(false);
                     })
                 .StartWith(true)
-                .CombineLatest(this.inFlightExecutions, (canEx, inFlight) => canEx && inFlight < this.maxInFlightExecutions)
+                .CombineLatest(this.isExecuting, (canEx, isEx) => canEx && !isEx)
                 .DistinctUntilChanged()
                 .Replay(1)
                 .RefCount();
@@ -150,13 +133,9 @@ namespace ReactiveUI
 
             this.canExecuteSubscription = this.canExecute.Subscribe();
         }
-
-        public int MaxInFlightExecutions => this.maxInFlightExecutions;
-
+        
         public override IObservable<bool> CanExecute => this.canExecute;
-
-        public IObservable<int> InFlightExecutions => this.inFlightExecutions;
-
+        
         public override IObservable<bool> IsExecuting => this.isExecuting;
 
         public override IObservable<Exception> ThrownExceptions => this.exceptions;
@@ -243,7 +222,6 @@ namespace ReactiveUI
     // a reactive command that combines the execution of multiple child commands
     public class CombinedReactiveCommand<TParam, TResult> : NewReactiveCommand<IList<TResult>>
     {
-        private readonly int maxInFlightExecutions;
         private readonly NewReactiveCommand<TParam, IList<TResult>> innerCommand;
         private readonly ScheduledSubject<Exception> exceptions;
         private readonly IDisposable exceptionsSubscription;
@@ -251,8 +229,7 @@ namespace ReactiveUI
         internal protected CombinedReactiveCommand(
             IEnumerable<NewReactiveCommand<TParam, TResult>> childCommands,
             IObservable<bool> canExecute,
-            IScheduler scheduler,
-            int maxInFlightExecutions)
+            IScheduler scheduler)
         {
             if (childCommands == null)
             {
@@ -275,14 +252,7 @@ namespace ReactiveUI
             {
                 throw new ArgumentException("No child commands provided.", nameof(childCommands));
             }
-
-            if (childCommandsArray.Any(x => maxInFlightExecutions > x.MaxInFlightExecutions))
-            {
-                throw new ArgumentException("All child commands must have equal or higher MaxInFlightExecutions."); ;
-            }
-
-            this.maxInFlightExecutions = maxInFlightExecutions;
-
+            
             var canChildrenExecute = Observable
                 .CombineLatest(childCommandsArray.Select(x => x.CanExecute))
                 .Select(x => x.All(y => y));
@@ -309,17 +279,12 @@ namespace ReactiveUI
                         .CombineLatest(
                             childCommandsArray
                                 .Select(x => x.ExecuteAsync(param))),
-                scheduler,
-                maxInFlightExecutions);
+                scheduler);
 
             this.exceptions = new ScheduledSubject<Exception>(CurrentThreadScheduler.Instance, RxApp.DefaultExceptionHandler);
         }
 
-        public int MaxInFlightExecutions => this.maxInFlightExecutions;
-
         public override IObservable<bool> CanExecute => this.innerCommand.CanExecute;
-
-        public IObservable<int> InFlightExecutions => this.innerCommand.InFlightExecutions;
 
         public override IObservable<bool> IsExecuting => this.innerCommand.IsExecuting;
 
