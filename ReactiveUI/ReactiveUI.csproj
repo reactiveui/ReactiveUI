@@ -77,6 +77,7 @@
     <Compile Include="ExpressionRewriter.cs" />
     <Compile Include="Interactions.cs" />
     <Compile Include="Legacy\Errors.cs" />
+    <Compile Include="NewReactiveCommand.cs" />
     <Compile Include="PortableLibraryStubs.cs" />
     <Compile Include="ReactiveBinding.cs" />
     <Compile Include="AutoPersistHelper.cs" />
