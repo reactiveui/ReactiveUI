@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using System.Windows.Input;
 using Microsoft.Reactive.Testing;
 using ReactiveUI.Testing;
 using Xunit;
@@ -106,6 +106,37 @@ namespace ReactiveUI.Tests
 
             Assert.Equal(1, thrownExceptions.Count);
             Assert.Equal("oops", thrownExceptions[0].Message);
+        }
+
+        [Fact]
+        public void CanExecuteIsAvailableViaICommand()
+        {
+            var canExecuteSubject = new Subject<bool>();
+            ICommand fixture = NewReactiveCommand.Create(() => Observable.Return(Unit.Default), canExecuteSubject);
+
+            Assert.True(fixture.CanExecute(null));
+
+            canExecuteSubject.OnNext(false);
+
+            Assert.False(fixture.CanExecute(null));
+        }
+
+        [Fact]
+        public void CanExecuteChangedIsAvailableViaICommand()
+        {
+            var canExecuteSubject = new Subject<bool>();
+            ICommand fixture = NewReactiveCommand.Create(() => Observable.Return(Unit.Default), canExecuteSubject);
+            var canExecuteChanged = new List<bool>();
+            fixture.CanExecuteChanged += (s, e) => canExecuteChanged.Add(fixture.CanExecute(null));
+
+            canExecuteSubject.OnNext(false);
+            canExecuteSubject.OnNext(true);
+            canExecuteSubject.OnNext(false);
+
+            Assert.Equal(3, canExecuteChanged.Count);
+            Assert.False(canExecuteChanged[0]);
+            Assert.True(canExecuteChanged[1]);
+            Assert.False(canExecuteChanged[2]);
         }
 
         [Fact]
@@ -275,6 +306,21 @@ namespace ReactiveUI.Tests
             Assert.Equal(1, results[0]);
             Assert.Equal(10, results[1]);
             Assert.Equal(30, results[2]);
+        }
+
+        [Fact]
+        public void ExecuteIsAvailableViaICommand()
+        {
+            var executed = false;
+            ICommand fixture = NewReactiveCommand.Create(
+                () =>
+                {
+                    executed = true;
+                    return Observable.Return(Unit.Default);
+                });
+
+            fixture.Execute(null);
+            Assert.True(executed);
         }
 
         [Fact]
@@ -498,116 +544,6 @@ namespace ReactiveUI.Tests
 
             Assert.Equal(1, thrownExceptions.Count);
             Assert.Equal("oops", thrownExceptions[0].Message);
-        }
-    }
-
-    public class ReactiveCommandMixinsTests
-    {
-        [Fact]
-        public void ToPlatformThrowsIfCommandIsNull()
-        {
-            Assert.Throws<ArgumentNullException>(() => ((NewReactiveCommand<Unit, Unit>)null).ToPlatform());
-            Assert.Throws<ArgumentNullException>(() => ((CombinedReactiveCommand<Unit, Unit>)null).ToPlatform());
-        }
-
-        [Fact]
-        public void ToPlatformAdaptsExecute()
-        {
-            var value = 0;
-            var command = NewReactiveCommand.Create<int, Unit>(
-                param =>
-                {
-                    value = param;
-                    return Observable.Return(Unit.Default);
-                });
-            var fixture = command.ToPlatform();
-
-            fixture.Execute(5);
-            Assert.Equal(5, value);
-
-            // null will convert to default(TParam)
-            fixture.Execute(null);
-            Assert.Equal(0, value);
-        }
-
-        [Fact]
-        public void ToPlatformAdaptsCanExecute()
-        {
-            var canExecuteSubject = new Subject<bool>();
-            var command = NewReactiveCommand.Create<Unit>(() => Observable.Return(Unit.Default), canExecuteSubject);
-            var fixture = command.ToPlatform();
-            var canExecuteChanged = Observable
-                .FromEventPattern(fixture, nameof(fixture.CanExecuteChanged))
-                .Select(_ => Unit.Default)
-                .CreateCollection();
-
-            Assert.True(fixture.CanExecute(null));
-            Assert.Empty(canExecuteChanged);
-
-            canExecuteSubject.OnNext(false);
-            Assert.False(fixture.CanExecute(null));
-            Assert.Equal(1, canExecuteChanged.Count);
-
-            canExecuteSubject.OnNext(false);
-            canExecuteSubject.OnNext(false);
-            canExecuteSubject.OnNext(false);
-            Assert.False(fixture.CanExecute(null));
-            Assert.Equal(1, canExecuteChanged.Count);
-
-            canExecuteSubject.OnNext(true);
-            Assert.True(fixture.CanExecute(null));
-            Assert.Equal(2, canExecuteChanged.Count);
-        }
-
-        [Fact]
-        public void ToPlatformAdaptsCombinedExecute()
-        {
-            var value = 0;
-            var child = NewReactiveCommand.Create<int, Unit>(
-                param =>
-                {
-                    value = param;
-                    return Observable.Return(Unit.Default);
-                });
-            var command = NewReactiveCommand.CreateCombined(new[]{ child });
-            var fixture = command.ToPlatform();
-
-            fixture.Execute(5);
-            Assert.Equal(5, value);
-
-            // null will convert to default(TParam)
-            fixture.Execute(null);
-            Assert.Equal(0, value);
-        }
-
-        [Fact]
-        public void ToPlatformAdaptsCombinedCanExecute()
-        {
-            var canExecuteSubject = new Subject<bool>();
-            var child = NewReactiveCommand.Create(() => Observable.Return(Unit.Default));
-            var command = NewReactiveCommand.CreateCombined(new[] { child }, canExecuteSubject);
-            var fixture = command.ToPlatform();
-            var canExecuteChanged = Observable
-                .FromEventPattern(fixture, nameof(fixture.CanExecuteChanged))
-                .Select(_ => Unit.Default)
-                .CreateCollection();
-
-            Assert.True(fixture.CanExecute(null));
-            Assert.Empty(canExecuteChanged);
-
-            canExecuteSubject.OnNext(false);
-            Assert.False(fixture.CanExecute(null));
-            Assert.Equal(1, canExecuteChanged.Count);
-
-            canExecuteSubject.OnNext(false);
-            canExecuteSubject.OnNext(false);
-            canExecuteSubject.OnNext(false);
-            Assert.False(fixture.CanExecute(null));
-            Assert.Equal(1, canExecuteChanged.Count);
-
-            canExecuteSubject.OnNext(true);
-            Assert.True(fixture.CanExecute(null));
-            Assert.Equal(2, canExecuteChanged.Count);
         }
     }
 }
