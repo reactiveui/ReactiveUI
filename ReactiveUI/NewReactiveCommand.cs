@@ -186,12 +186,6 @@ namespace ReactiveUI
                 .Start(
                     () =>
                     {
-                        if (!this.canExecute.First())
-                        {
-                            return Observable.Throw<TResult>(
-                                new InvalidOperationException("Command cannot currently execute."));
-                        }
-
                         this.executionInfo.OnNext(ExecutionInfo.CreateBegin());
                         return this.executeAsync(parameter);
                     },
