@@ -12,37 +12,36 @@ namespace ReactiveUI
     // static factory methods
     public abstract partial class NewReactiveCommand
     {
-        public static SynchronousReactiveCommand<Unit, TResult> CreateSynchronous<TResult>(Func<TResult> execute, IObservable<bool> canExecute = null, IScheduler scheduler = null)
-        {
-            if (execute == null)
-            {
-                throw new ArgumentNullException(nameof(execute));
-            }
-
-            return new SynchronousReactiveCommand<Unit, TResult>(_ => execute(), canExecute ?? Observable.Return(true), scheduler ?? RxApp.MainThreadScheduler);
-        }
-
-        public static SynchronousReactiveCommand<TParam, TResult> CreateSynchronous<TParam, TResult>(Func<TParam, TResult> execute, IObservable<bool> canExecute = null, IScheduler scheduler = null) =>
-            new SynchronousReactiveCommand<TParam, TResult>(execute, canExecute ?? Observable.Return(true), scheduler ?? RxApp.MainThreadScheduler);
-
-        public static AsynchronousReactiveCommand<Unit, TResult> CreateAsynchronous<TResult>(Func<IObservable<TResult>> executeAsync, IObservable<bool> canExecute = null, IScheduler scheduler = null, int maxInFlightExecutions = 1)
+        public static NewReactiveCommand<Unit, TResult> Create<TResult>(
+            Func<IObservable<TResult>> executeAsync,
+            IObservable<bool> canExecute = null,
+            IScheduler scheduler = null,
+            int maxInFlightExecutions = 1)
         {
             if (executeAsync == null)
             {
                 throw new ArgumentNullException(nameof(executeAsync));
             }
 
-            return new AsynchronousReactiveCommand<Unit, TResult>(canExecute ?? Observable.Return(true), _ => executeAsync(), scheduler ?? RxApp.MainThreadScheduler, maxInFlightExecutions);
+            return new NewReactiveCommand<Unit, TResult>(canExecute ?? Observable.Return(true), _ => executeAsync(), scheduler ?? RxApp.MainThreadScheduler, maxInFlightExecutions);
         }
 
-        public static AsynchronousReactiveCommand<TParam, TResult> CreateAsynchronous<TParam, TResult>(Func<TParam, IObservable<TResult>> executeAsync, IObservable<bool> canExecute = null, IScheduler scheduler = null, int maxInFlightExecutions = 1) =>
-            new AsynchronousReactiveCommand<TParam, TResult>(canExecute ?? Observable.Return(true), executeAsync, scheduler ?? RxApp.MainThreadScheduler, maxInFlightExecutions);
+        public static NewReactiveCommand<TParam, TResult> Create<TParam, TResult>(
+                Func<TParam, IObservable<TResult>> executeAsync,
+                IObservable<bool> canExecute = null,
+                IScheduler scheduler = null,
+                int maxInFlightExecutions = 1) =>
+            new NewReactiveCommand<TParam, TResult>(canExecute ?? Observable.Return(true), executeAsync, scheduler ?? RxApp.MainThreadScheduler, maxInFlightExecutions);
 
-        public static CombinedAsynchronousReactiveCommand<TParam, TResult> CreateCombined<TParam, TResult>(IEnumerable<AsynchronousReactiveCommand<TParam, TResult>> childCommands, IObservable<bool> canExecute = null, IScheduler scheduler = null, int maxInFlightExecutions = 1) =>
-            new CombinedAsynchronousReactiveCommand<TParam, TResult>(childCommands, canExecute ?? Observable.Return(true), scheduler ?? RxApp.MainThreadScheduler, maxInFlightExecutions);
+        public static CombinedReactiveCommand<TParam, TResult> CreateCombined<TParam, TResult>(
+                IEnumerable<NewReactiveCommand<TParam, TResult>> childCommands,
+                IObservable<bool> canExecute = null,
+                IScheduler scheduler = null,
+                int maxInFlightExecutions = 1) =>
+            new CombinedReactiveCommand<TParam, TResult>(childCommands, canExecute ?? Observable.Return(true), scheduler ?? RxApp.MainThreadScheduler, maxInFlightExecutions);
     }
 
-    // common functionality amongst all reactive commands
+    // non-generic reactive command functionality
     public abstract partial class NewReactiveCommand : IDisposable
     {
         public abstract IObservable<bool> CanExecute
@@ -74,145 +73,8 @@ namespace ReactiveUI
         public abstract IDisposable Subscribe(IObserver<TResult> observer);
     }
 
-    // a reactive command that executes synchronously
-    public class SynchronousReactiveCommand<TParam, TResult> : NewReactiveCommand<TResult>
-    {
-        private readonly Func<TParam, TResult> execute;
-        private readonly Subject<ExecutionInfo> executionInfo;
-        private readonly IObservable<bool> isExecuting;
-        private readonly IObservable<bool> canExecute;
-        private readonly IObservable<TResult> results;
-        private readonly ScheduledSubject<Exception> exceptions;
-        private readonly IDisposable canExecuteSubscription;
-
-        internal protected SynchronousReactiveCommand(
-            Func<TParam, TResult> execute,
-            IObservable<bool> canExecute,
-            IScheduler scheduler)
-        {
-            if (execute == null)
-            {
-                throw new ArgumentNullException(nameof(execute));
-            }
-
-            if (canExecute == null)
-            {
-                throw new ArgumentNullException(nameof(canExecute));
-            }
-
-            if (scheduler == null)
-            {
-                throw new ArgumentNullException(nameof(scheduler));
-            }
-
-            this.execute = execute;
-            this.executionInfo = new Subject<ExecutionInfo>();
-            this.isExecuting = this
-                .executionInfo
-                .Select(x => x.Demarcation == ExecutionDemarcation.Begin)
-                .StartWith(false)
-                .DistinctUntilChanged()
-                .Replay(1)
-                .RefCount();
-            this.canExecute = canExecute
-                .Catch<bool, Exception>(
-                    ex =>
-                    {
-                        this.exceptions.OnNext(ex);
-                        return Observable.Return(false);
-                    })
-                .StartWith(true)
-                .CombineLatest(this.isExecuting, (canEx, isEx) => canEx && !isEx)
-                .DistinctUntilChanged()
-                .Replay(1)
-                .RefCount();
-            this.results = this
-                .executionInfo
-                .Where(x => x.Demarcation == ExecutionDemarcation.EndWithResult)
-                .Select(x => x.Result)
-                .ObserveOn(scheduler);
-
-            this.exceptions = new ScheduledSubject<Exception>(CurrentThreadScheduler.Instance, RxApp.DefaultExceptionHandler);
-
-            this.canExecuteSubscription = this.canExecute.Subscribe();
-        }
-
-        public override IObservable<bool> CanExecute => this.canExecute;
-
-        public override IObservable<bool> IsExecuting => this.isExecuting;
-
-        public override IObservable<Exception> ThrownExceptions => this.exceptions;
-
-        public override IDisposable Subscribe(IObserver<TResult> observer) =>
-            results.Subscribe(observer);
-
-        public void Execute(TParam parameter = default(TParam))
-        {
-            // TODO: would be good if we could remove this obsolete synchronous call, but not really sure of a sensible way to do that
-            if (!this.canExecute.First())
-            {
-                this.exceptions.OnNext(new InvalidOperationException("Command cannot currently execute."));
-                return;
-            }
-
-            try
-            {
-                this.executionInfo.OnNext(ExecutionInfo.CreateBegin());
-                var result = this.execute(parameter);
-                this.executionInfo.OnNext(ExecutionInfo.CreateResult(result));
-            }
-            catch (Exception ex)
-            {
-                this.executionInfo.OnNext(ExecutionInfo.CreateFail());
-                this.exceptions.OnNext(ex);
-            }
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                this.executionInfo.Dispose();
-                this.canExecuteSubscription.Dispose();
-                this.exceptions.Dispose();
-            }
-        }
-
-        private enum ExecutionDemarcation
-        {
-            Begin,
-            EndWithResult,
-            EndWithException
-        }
-
-        private struct ExecutionInfo
-        {
-            private readonly ExecutionDemarcation demarcation;
-            private readonly TResult result;
-
-            private ExecutionInfo(ExecutionDemarcation demarcation, TResult result)
-            {
-                this.demarcation = demarcation;
-                this.result = result;
-            }
-
-            public ExecutionDemarcation Demarcation => this.demarcation;
-
-            public TResult Result => this.result;
-
-            public static ExecutionInfo CreateBegin() =>
-                new ExecutionInfo(ExecutionDemarcation.Begin, default(TResult));
-
-            public static ExecutionInfo CreateResult(TResult result) =>
-                new ExecutionInfo(ExecutionDemarcation.EndWithResult, result);
-
-            public static ExecutionInfo CreateFail() =>
-                new ExecutionInfo(ExecutionDemarcation.EndWithException, default(TResult));
-        }
-    }
-
     // a reactive command that executes asynchronously
-    public class AsynchronousReactiveCommand<TParam, TResult> : NewReactiveCommand<TResult>
+    public class NewReactiveCommand<TParam, TResult> : NewReactiveCommand<TResult>
     {
         private readonly Func<TParam, IObservable<TResult>> executeAsync;
         private readonly IScheduler scheduler;
@@ -225,7 +87,7 @@ namespace ReactiveUI
         private readonly ScheduledSubject<Exception> exceptions;
         private readonly IDisposable canExecuteSubscription;
 
-        internal protected AsynchronousReactiveCommand(
+        internal protected NewReactiveCommand(
             IObservable<bool> canExecute,
             Func<TParam, IObservable<TResult>> executeAsync,
             IScheduler scheduler,
@@ -379,15 +241,15 @@ namespace ReactiveUI
     }
 
     // a reactive command that combines the execution of multiple child commands
-    public class CombinedAsynchronousReactiveCommand<TParam, TResult> : NewReactiveCommand<IList<TResult>>
+    public class CombinedReactiveCommand<TParam, TResult> : NewReactiveCommand<IList<TResult>>
     {
         private readonly int maxInFlightExecutions;
-        private readonly AsynchronousReactiveCommand<TParam, IList<TResult>> innerCommand;
+        private readonly NewReactiveCommand<TParam, IList<TResult>> innerCommand;
         private readonly ScheduledSubject<Exception> exceptions;
         private readonly IDisposable exceptionsSubscription;
 
-        internal protected CombinedAsynchronousReactiveCommand(
-            IEnumerable<AsynchronousReactiveCommand<TParam, TResult>> childCommands,
+        internal protected CombinedReactiveCommand(
+            IEnumerable<NewReactiveCommand<TParam, TResult>> childCommands,
             IObservable<bool> canExecute,
             IScheduler scheduler,
             int maxInFlightExecutions)
@@ -440,7 +302,7 @@ namespace ReactiveUI
                 .Merge(childCommandsArray.Select(x => x.ThrownExceptions))
                 .Subscribe(ex => this.exceptions.OnNext(ex));
 
-            this.innerCommand = new AsynchronousReactiveCommand<TParam, IList<TResult>>(
+            this.innerCommand = new NewReactiveCommand<TParam, IList<TResult>>(
                 combinedCanExecute,
                 param =>
                     Observable
@@ -483,17 +345,7 @@ namespace ReactiveUI
     public static class NewReactiveCommandMixins
     {
         // TODO: might want to rename "platform commands" to something else?
-        public static ICommand ToPlatform<TParam, TResult>(this SynchronousReactiveCommand<TParam, TResult> @this)
-        {
-            if (@this == null)
-            {
-                throw new ArgumentNullException(nameof(@this));
-            }
-
-            return new PlatformCommand<TParam>(@this.CanExecute, param => @this.Execute(param));
-        }
-
-        public static ICommand ToPlatform<TParam, TResult>(this AsynchronousReactiveCommand<TParam, TResult> @this)
+        public static ICommand ToPlatform<TParam, TResult>(this NewReactiveCommand<TParam, TResult> @this)
         {
             if (@this == null)
             {
@@ -503,7 +355,7 @@ namespace ReactiveUI
             return new PlatformCommand<TParam>(@this.CanExecute, param => @this.ExecuteAsync(param));
         }
 
-        public static ICommand ToPlatform<TParam, TResult>(this CombinedAsynchronousReactiveCommand<TParam, TResult> @this)
+        public static ICommand ToPlatform<TParam, TResult>(this CombinedReactiveCommand<TParam, TResult> @this)
         {
             if (@this == null)
             {

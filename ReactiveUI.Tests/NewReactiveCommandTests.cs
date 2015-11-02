@@ -12,265 +12,27 @@ using Xunit;
 
 namespace ReactiveUI.Tests
 {
-    public class SynchronousReactiveCommandTests
-    {
-        [Fact]
-        public void ConstructorThrowsIfExecuteIsNull()
-        {
-            Assert.Throws<ArgumentNullException>(() => NewReactiveCommand.CreateSynchronous<Unit>(null));
-            Assert.Throws<ArgumentNullException>(() => NewReactiveCommand.CreateSynchronous<Unit, Unit>(null));
-        }
-
-        [Fact]
-        public void CanExecuteIsBehavioral()
-        {
-            var fixture = NewReactiveCommand.CreateSynchronous(() => Unit.Default);
-            var canExecute = fixture
-                .CanExecute
-                .CreateCollection();
-
-            Assert.Equal(1, canExecute.Count);
-            Assert.True(canExecute[0]);
-        }
-
-        [Fact]
-        public void CanExecuteOnlyTicksDistinctValues()
-        {
-            var canExecuteSubject = new Subject<bool>();
-            var fixture = NewReactiveCommand.CreateSynchronous(() => Unit.Default, canExecuteSubject);
-            var canExecute = fixture
-                .CanExecute
-                .CreateCollection();
-
-            canExecuteSubject.OnNext(false);
-            canExecuteSubject.OnNext(false);
-            canExecuteSubject.OnNext(false);
-            canExecuteSubject.OnNext(false);
-            canExecuteSubject.OnNext(true);
-            canExecuteSubject.OnNext(true);
-
-            Assert.Equal(3, canExecute.Count);
-            Assert.True(canExecute[0]);
-            Assert.False(canExecute[1]);
-            Assert.True(canExecute[2]);
-        }
-
-        [Fact]
-        public void CanExecuteIsFalseIfCallerDictatesAsSuch()
-        {
-            var canExecuteSubject = new Subject<bool>();
-            var fixture = NewReactiveCommand.CreateSynchronous(() => Unit.Default, canExecuteSubject);
-            var canExecute = fixture
-                .CanExecute
-                .CreateCollection();
-
-            canExecuteSubject.OnNext(false);
-
-            Assert.Equal(2, canExecute.Count);
-            Assert.True(canExecute[0]);
-            Assert.False(canExecute[1]);
-        }
-
-        [Fact]
-        public void CanExecuteTicksFailuresThroughThrownExceptions()
-        {
-            var canExecuteSubject = new Subject<bool>();
-            var fixture = NewReactiveCommand.CreateSynchronous(() => Unit.Default, canExecuteSubject);
-            var thrownExceptions = fixture
-                .ThrownExceptions
-                .CreateCollection();
-
-            canExecuteSubject.OnError(new InvalidOperationException("oops"));
-
-            Assert.Equal(1, thrownExceptions.Count);
-            Assert.Equal("oops", thrownExceptions[0].Message);
-        }
-
-        [Fact]
-        public void IsExecutingIsBehavioral()
-        {
-            var fixture = NewReactiveCommand.CreateSynchronous(() => Unit.Default);
-            var isExecuting = fixture
-                .IsExecuting
-                .CreateCollection();
-
-            Assert.Equal(1, isExecuting.Count);
-            Assert.False(isExecuting[0]);
-        }
-
-        [Fact]
-        public void IsExecutingIsCorrectForLateSubscriber()
-        {
-            using (var inFlightHandle = new ManualResetEventSlim())
-            using (var waitHandle = new ManualResetEventSlim())
-            {
-                var fixture = NewReactiveCommand.CreateSynchronous(
-                    () =>
-                    {
-                        inFlightHandle.Set();
-                        waitHandle.Wait(TimeSpan.FromSeconds(3));
-                        return Unit.Default;
-                    });
-
-                TaskPoolScheduler.Default.Schedule(() => fixture.Execute());
-                inFlightHandle.Wait(TimeSpan.FromSeconds(3));
-                var isExecuting = fixture
-                    .IsExecuting
-                    .CreateCollection();
-
-                Assert.Equal(1, isExecuting.Count);
-                Assert.True(isExecuting[0]);
-            }
-        }
-
-        [Fact]
-        public void IsExecutingTicksBeforeAndAfterExecution()
-        {
-            var fixture = NewReactiveCommand.CreateSynchronous(() => Unit.Default);
-            var isExecuting = fixture
-                .IsExecuting
-                .CreateCollection();
-
-            fixture.Execute();
-
-            Assert.Equal(3, isExecuting.Count);
-            Assert.False(isExecuting[0]);
-            Assert.True(isExecuting[1]);
-            Assert.False(isExecuting[2]);
-        }
-
-        [Fact]
-        public void ExecutePassesThroughParameter()
-        {
-            var parameters = new List<int>();
-            var fixture = NewReactiveCommand.CreateSynchronous<int, Unit>(
-                param =>
-                {
-                    parameters.Add(param);
-                    return Unit.Default;
-                });
-
-            fixture.Execute(1);
-            fixture.Execute(42);
-            fixture.Execute(348);
-
-            Assert.Equal(3, parameters.Count);
-            Assert.Equal(1, parameters[0]);
-            Assert.Equal(42, parameters[1]);
-            Assert.Equal(348, parameters[2]);
-        }
-
-        [Fact]
-        public void ExecuteFailsIfCanExecuteIsFalse()
-        {
-            var fixture = NewReactiveCommand.CreateSynchronous(() => Unit.Default, Observable.Return(false));
-            var thrownExceptions = fixture
-                .ThrownExceptions
-                .CreateCollection();
-
-            fixture.Execute();
-
-            Assert.Equal(1, thrownExceptions.Count);
-            Assert.IsType<InvalidOperationException>(thrownExceptions[0]);
-            Assert.Equal("Command cannot currently execute.", thrownExceptions[0].Message);
-        }
-
-        [Fact]
-        public void ExecuteTicksThroughTheResult()
-        {
-            var num = 0;
-            var fixture = NewReactiveCommand.CreateSynchronous(() => num);
-            var results = fixture
-                .CreateCollection();
-
-            num = 1;
-            fixture.Execute();
-            num = 10;
-            fixture.Execute();
-            num = 30;
-            fixture.Execute();
-
-            Assert.Equal(3, results.Count);
-            Assert.Equal(1, results[0]);
-            Assert.Equal(10, results[1]);
-            Assert.Equal(30, results[2]);
-        }
-
-        [Fact]
-        public void ResultIsTickedThroughSpecifiedScheduler()
-        {
-            (new TestScheduler()).With(sched =>
-            {
-                var fixture = NewReactiveCommand.CreateSynchronous(() => Unit.Default, scheduler: sched);
-                var results = fixture
-                    .CreateCollection();
-
-                fixture.Execute();
-                Assert.Empty(results);
-
-                sched.AdvanceByMs(1);
-                Assert.Equal(1, results.Count);
-            });
-        }
-
-        [Fact]
-        public void ExecuteTicksErrorsThroughThrownExceptions()
-        {
-            var fixture = NewReactiveCommand.CreateSynchronous<Unit>(() => { throw new InvalidOperationException("oops"); });
-            var thrownExceptions = fixture
-                .ThrownExceptions
-                .CreateCollection();
-
-            fixture.Execute();
-
-            Assert.Equal(1, thrownExceptions.Count);
-            Assert.Equal("oops", thrownExceptions[0].Message);
-        }
-
-        [Fact]
-        public void ExecuteReenablesExecutionEvenAfterFailure()
-        {
-            var fixture = NewReactiveCommand.CreateSynchronous<Unit>(() => { throw new InvalidOperationException("oops"); });
-            var canExecute = fixture
-                .CanExecute
-                .CreateCollection();
-            var thrownExceptions = fixture
-                .ThrownExceptions
-                .CreateCollection();
-
-            fixture.Execute();
-
-            Assert.Equal(1, thrownExceptions.Count);
-            Assert.Equal("oops", thrownExceptions[0].Message);
-
-            Assert.Equal(3, canExecute.Count);
-            Assert.True(canExecute[0]);
-            Assert.False(canExecute[1]);
-            Assert.True(canExecute[2]);
-        }
-    }
-
-    public class AsynchronousReactiveCommandTests
+    public class NewReactiveCommandTests
     {
         [Fact]
         public void ConstructorThrowsIfExecuteAsyncIsNull()
         {
-            Assert.Throws<ArgumentNullException>(() => NewReactiveCommand.CreateAsynchronous<Unit>(null));
-            Assert.Throws<ArgumentNullException>(() => NewReactiveCommand.CreateAsynchronous<Unit, Unit>(null));
+            Assert.Throws<ArgumentNullException>(() => NewReactiveCommand.Create<Unit>(null));
+            Assert.Throws<ArgumentNullException>(() => NewReactiveCommand.Create<Unit, Unit>(null));
         }
 
         [Fact]
         public void ConstructorThrowsIfMaxInFlightExecutionsIsInvalid()
         {
-            Assert.Throws<ArgumentException>(() => NewReactiveCommand.CreateAsynchronous(() => Observable.Return(Unit.Default), maxInFlightExecutions: 0));
-            Assert.Throws<ArgumentException>(() => NewReactiveCommand.CreateAsynchronous(() => Observable.Return(Unit.Default), maxInFlightExecutions: -1));
-            Assert.Throws<ArgumentException>(() => NewReactiveCommand.CreateAsynchronous(() => Observable.Return(Unit.Default), maxInFlightExecutions: -21));
+            Assert.Throws<ArgumentException>(() => NewReactiveCommand.Create(() => Observable.Return(Unit.Default), maxInFlightExecutions: 0));
+            Assert.Throws<ArgumentException>(() => NewReactiveCommand.Create(() => Observable.Return(Unit.Default), maxInFlightExecutions: -1));
+            Assert.Throws<ArgumentException>(() => NewReactiveCommand.Create(() => Observable.Return(Unit.Default), maxInFlightExecutions: -21));
         }
 
         [Fact]
         public void CanExecuteIsBehavioral()
         {
-            var fixture = NewReactiveCommand.CreateAsynchronous(() => Observable.Return(Unit.Default));
+            var fixture = NewReactiveCommand.Create(() => Observable.Return(Unit.Default));
             var canExecute = fixture
                 .CanExecute
                 .CreateCollection();
@@ -283,7 +45,7 @@ namespace ReactiveUI.Tests
         public void CanExecuteOnlyTicksDistinctValues()
         {
             var canExecuteSubject = new Subject<bool>();
-            var fixture = NewReactiveCommand.CreateAsynchronous(() => Observable.Return(Unit.Default), canExecuteSubject);
+            var fixture = NewReactiveCommand.Create(() => Observable.Return(Unit.Default), canExecuteSubject);
             var canExecute = fixture
                 .CanExecute
                 .CreateCollection();
@@ -305,7 +67,7 @@ namespace ReactiveUI.Tests
         public void CanExecuteIsFalseIfCallerDictatesAsSuch()
         {
             var canExecuteSubject = new Subject<bool>();
-            var fixture = NewReactiveCommand.CreateAsynchronous(() => Observable.Return(Unit.Default), canExecuteSubject);
+            var fixture = NewReactiveCommand.Create(() => Observable.Return(Unit.Default), canExecuteSubject);
             var canExecute = fixture
                 .CanExecute
                 .CreateCollection();
@@ -323,7 +85,7 @@ namespace ReactiveUI.Tests
             (new TestScheduler()).With(sched =>
             {
                 var execute = Observable.Return(Unit.Default).Delay(TimeSpan.FromSeconds(1), sched);
-                var fixture = NewReactiveCommand.CreateAsynchronous(() => execute, scheduler: sched, maxInFlightExecutions: 2);
+                var fixture = NewReactiveCommand.Create(() => execute, scheduler: sched, maxInFlightExecutions: 2);
                 var canExecute = fixture
                     .CanExecute
                     .CreateCollection();
@@ -351,7 +113,7 @@ namespace ReactiveUI.Tests
         public void CanExecuteTicksFailuresThroughThrownExceptions()
         {
             var canExecuteSubject = new Subject<bool>();
-            var fixture = NewReactiveCommand.CreateAsynchronous(() => Observable.Return(Unit.Default), canExecuteSubject);
+            var fixture = NewReactiveCommand.Create(() => Observable.Return(Unit.Default), canExecuteSubject);
             var thrownExceptions = fixture
                 .ThrownExceptions
                 .CreateCollection();
@@ -365,14 +127,14 @@ namespace ReactiveUI.Tests
         [Fact]
         public void MaxInFlightExecutionsDefaultsToOne()
         {
-            var fixture = NewReactiveCommand.CreateAsynchronous(() => Observable.Return(Unit.Default));
+            var fixture = NewReactiveCommand.Create(() => Observable.Return(Unit.Default));
             Assert.Equal(1, fixture.MaxInFlightExecutions);
         }
 
         [Fact]
         public void InFlightExecutionsIsBehavioral()
         {
-            var fixture = NewReactiveCommand.CreateAsynchronous(() => Observable.Return(Unit.Default));
+            var fixture = NewReactiveCommand.Create(() => Observable.Return(Unit.Default));
             var inFlightExecutions = fixture
                 .InFlightExecutions
                 .CreateCollection();
@@ -387,7 +149,7 @@ namespace ReactiveUI.Tests
             (new TestScheduler()).With(sched =>
             {
                 var execute = Observable.Return(Unit.Default).Delay(TimeSpan.FromSeconds(1), sched);
-                var fixture = NewReactiveCommand.CreateAsynchronous(() => execute, scheduler: sched, maxInFlightExecutions: 2);
+                var fixture = NewReactiveCommand.Create(() => execute, scheduler: sched, maxInFlightExecutions: 2);
                 var inFlightExecutions = fixture
                     .InFlightExecutions
                     .CreateCollection();
@@ -420,7 +182,7 @@ namespace ReactiveUI.Tests
         [Fact]
         public void IsExecutingIsBehavioral()
         {
-            var fixture = NewReactiveCommand.CreateAsynchronous(() => Observable.Return(Unit.Default));
+            var fixture = NewReactiveCommand.Create(() => Observable.Return(Unit.Default));
             var isExecuting = fixture
                 .IsExecuting
                 .CreateCollection();
@@ -435,7 +197,7 @@ namespace ReactiveUI.Tests
             (new TestScheduler()).With(sched =>
             {
                 var execute = Observable.Return(Unit.Default).Delay(TimeSpan.FromSeconds(1), sched);
-                var fixture = NewReactiveCommand.CreateAsynchronous(() => execute, scheduler: sched, maxInFlightExecutions: 2);
+                var fixture = NewReactiveCommand.Create(() => execute, scheduler: sched, maxInFlightExecutions: 2);
                 var isExecuting = fixture
                     .IsExecuting
                     .CreateCollection();
@@ -467,7 +229,7 @@ namespace ReactiveUI.Tests
         public void ExecuteAsyncPassesThroughParameter()
         {
             var parameters = new List<int>();
-            var fixture = NewReactiveCommand.CreateAsynchronous<int, Unit>(
+            var fixture = NewReactiveCommand.Create<int, Unit>(
                 param =>
                 {
                     parameters.Add(param);
@@ -490,7 +252,7 @@ namespace ReactiveUI.Tests
             (new TestScheduler()).With(sched =>
             {
                 var execute = Observable.Return(Unit.Default);
-                var fixture = NewReactiveCommand.CreateAsynchronous(() => execute, Observable.Return(false), sched);
+                var fixture = NewReactiveCommand.Create(() => execute, Observable.Return(false), sched);
                 var thrownExceptions = fixture
                     .ThrownExceptions
                     .CreateCollection();
@@ -510,7 +272,7 @@ namespace ReactiveUI.Tests
             (new TestScheduler()).With(sched =>
             {
                 var execute = Observable.Return(Unit.Default).Delay(TimeSpan.FromSeconds(1), sched);
-                var fixture = NewReactiveCommand.CreateAsynchronous(() => execute, scheduler: sched, maxInFlightExecutions: 2);
+                var fixture = NewReactiveCommand.Create(() => execute, scheduler: sched, maxInFlightExecutions: 2);
                 var thrownExceptions = fixture
                     .ThrownExceptions
                     .CreateCollection();
@@ -538,7 +300,7 @@ namespace ReactiveUI.Tests
             (new TestScheduler()).With(sched =>
             {
                 var execute = Observable.Return(Unit.Default).Delay(TimeSpan.FromSeconds(1), sched);
-                var fixture = NewReactiveCommand.CreateAsynchronous(() => execute, scheduler: sched);
+                var fixture = NewReactiveCommand.Create(() => execute, scheduler: sched);
                 var isExecuting = fixture
                     .IsExecuting
                     .CreateCollection();
@@ -563,7 +325,7 @@ namespace ReactiveUI.Tests
             (new TestScheduler()).With(sched =>
             {
                 var execute = Observable.Return(Unit.Default).Delay(TimeSpan.FromSeconds(1), sched);
-                var fixture = NewReactiveCommand.CreateAsynchronous(() => execute, scheduler: sched);
+                var fixture = NewReactiveCommand.Create(() => execute, scheduler: sched);
                 var isExecuting = fixture
                     .IsExecuting
                     .CreateCollection();
@@ -581,7 +343,7 @@ namespace ReactiveUI.Tests
         public void ExecuteAsyncTicksThroughTheResult()
         {
             var num = 0;
-            var fixture = NewReactiveCommand.CreateAsynchronous(() => Observable.Return(num));
+            var fixture = NewReactiveCommand.Create(() => Observable.Return(num));
             var results = fixture
                 .CreateCollection();
 
@@ -603,7 +365,7 @@ namespace ReactiveUI.Tests
         {
             (new TestScheduler()).With(sched =>
             {
-                var fixture = NewReactiveCommand.CreateAsynchronous(() => Observable.Return(Unit.Default), scheduler: sched);
+                var fixture = NewReactiveCommand.Create(() => Observable.Return(Unit.Default), scheduler: sched);
                 var results = fixture
                     .CreateCollection();
 
@@ -618,7 +380,7 @@ namespace ReactiveUI.Tests
         [Fact]
         public void ExecuteAsyncTicksErrorsThroughThrownExceptions()
         {
-            var fixture = NewReactiveCommand.CreateAsynchronous(() => Observable.Throw<Unit>(new InvalidOperationException("oops")));
+            var fixture = NewReactiveCommand.Create(() => Observable.Throw<Unit>(new InvalidOperationException("oops")));
             var thrownExceptions = fixture
                 .ThrownExceptions
                 .CreateCollection();
@@ -632,7 +394,7 @@ namespace ReactiveUI.Tests
         [Fact]
         public void ExecuteAsyncReenablesExecutionEvenAfterFailure()
         {
-            var fixture = NewReactiveCommand.CreateAsynchronous(() => Observable.Throw<Unit>(new InvalidOperationException("oops")));
+            var fixture = NewReactiveCommand.Create(() => Observable.Throw<Unit>(new InvalidOperationException("oops")));
             var canExecute = fixture
                 .CanExecute
                 .CreateCollection();
@@ -652,13 +414,13 @@ namespace ReactiveUI.Tests
         }
     }
 
-    public class CombinedAsynchronousReactiveCommandTests
+    public class CombinedReactiveCommandTests
     {
         [Fact]
         public void ConstructorThrowsIfAnyChildCommandHasLowerMaxInFlightExecutionsThanRequired()
         {
-            var child1 = NewReactiveCommand.CreateAsynchronous(() => Observable.Return(Unit.Default), maxInFlightExecutions: 3);
-            var child2 = NewReactiveCommand.CreateAsynchronous(() => Observable.Return(Unit.Default), maxInFlightExecutions: 10);
+            var child1 = NewReactiveCommand.Create(() => Observable.Return(Unit.Default), maxInFlightExecutions: 3);
+            var child2 = NewReactiveCommand.Create(() => Observable.Return(Unit.Default), maxInFlightExecutions: 10);
             var childCommands = new[] { child1, child2 };
             Assert.Throws<ArgumentException>(() => NewReactiveCommand.CreateCombined(childCommands, maxInFlightExecutions: 4));
         }
@@ -666,8 +428,8 @@ namespace ReactiveUI.Tests
         [Fact]
         public void CanExecuteIsFalseIfAnyChildCannotExecute()
         {
-            var child1 = NewReactiveCommand.CreateAsynchronous(() => Observable.Return(Unit.Default));
-            var child2 = NewReactiveCommand.CreateAsynchronous(() => Observable.Return(Unit.Default), Observable.Return(false));
+            var child1 = NewReactiveCommand.Create(() => Observable.Return(Unit.Default));
+            var child2 = NewReactiveCommand.Create(() => Observable.Return(Unit.Default), Observable.Return(false));
             var childCommands = new[] { child1, child2 };
             var fixture = NewReactiveCommand.CreateCombined(childCommands);
             var canExecute = fixture
@@ -681,8 +443,8 @@ namespace ReactiveUI.Tests
         [Fact]
         public void CanExecuteIsFalseIfParentCanExecuteIsFalse()
         {
-            var child1 = NewReactiveCommand.CreateAsynchronous(() => Observable.Return(Unit.Default));
-            var child2 = NewReactiveCommand.CreateAsynchronous(() => Observable.Return(Unit.Default));
+            var child1 = NewReactiveCommand.Create(() => Observable.Return(Unit.Default));
+            var child2 = NewReactiveCommand.Create(() => Observable.Return(Unit.Default));
             var childCommands = new[] { child1, child2 };
             var fixture = NewReactiveCommand.CreateCombined(childCommands, Observable.Return(false));
             var canExecute = fixture
@@ -697,8 +459,8 @@ namespace ReactiveUI.Tests
         public void CanExecuteTicksFailuresThroughThrownExceptions()
         {
             var canExecuteSubject = new Subject<bool>();
-            var child1 = NewReactiveCommand.CreateAsynchronous(() => Observable.Return(Unit.Default));
-            var child2 = NewReactiveCommand.CreateAsynchronous(() => Observable.Return(Unit.Default));
+            var child1 = NewReactiveCommand.Create(() => Observable.Return(Unit.Default));
+            var child2 = NewReactiveCommand.Create(() => Observable.Return(Unit.Default));
             var childCommands = new[] { child1, child2 };
             var fixture = NewReactiveCommand.CreateCombined(childCommands, canExecuteSubject);
             var thrownExceptions = fixture
@@ -715,8 +477,8 @@ namespace ReactiveUI.Tests
         public void CanExecuteTicksFailuresInChildCanExecuteThroughThrownExceptions()
         {
             var canExecuteSubject = new Subject<bool>();
-            var child1 = NewReactiveCommand.CreateAsynchronous(() => Observable.Return(Unit.Default));
-            var child2 = NewReactiveCommand.CreateAsynchronous(() => Observable.Return(Unit.Default), canExecuteSubject);
+            var child1 = NewReactiveCommand.Create(() => Observable.Return(Unit.Default));
+            var child2 = NewReactiveCommand.Create(() => Observable.Return(Unit.Default), canExecuteSubject);
             var childCommands = new[] { child1, child2 };
             var fixture = NewReactiveCommand.CreateCombined(childCommands);
             var thrownExceptions = fixture
@@ -732,9 +494,9 @@ namespace ReactiveUI.Tests
         [Fact]
         public void ExecuteAsyncExecutesAllChildCommands()
         {
-            var child1 = NewReactiveCommand.CreateAsynchronous(() => Observable.Return(Unit.Default));
-            var child2 = NewReactiveCommand.CreateAsynchronous(() => Observable.Return(Unit.Default));
-            var child3 = NewReactiveCommand.CreateAsynchronous(() => Observable.Return(Unit.Default));
+            var child1 = NewReactiveCommand.Create(() => Observable.Return(Unit.Default));
+            var child2 = NewReactiveCommand.Create(() => Observable.Return(Unit.Default));
+            var child3 = NewReactiveCommand.Create(() => Observable.Return(Unit.Default));
             var childCommands = new[] { child1, child2, child3 };
             var fixture = NewReactiveCommand.CreateCombined(childCommands);
 
@@ -777,8 +539,8 @@ namespace ReactiveUI.Tests
         [Fact]
         public void ExecuteAsyncTicksThroughTheResults()
         {
-            var child1 = NewReactiveCommand.CreateAsynchronous(() => Observable.Return(1));
-            var child2 = NewReactiveCommand.CreateAsynchronous(() => Observable.Return(2));
+            var child1 = NewReactiveCommand.Create(() => Observable.Return(1));
+            var child2 = NewReactiveCommand.Create(() => Observable.Return(2));
             var childCommands = new[] { child1, child2 };
             var fixture = NewReactiveCommand.CreateCombined(childCommands);
 
@@ -798,8 +560,8 @@ namespace ReactiveUI.Tests
         {
             (new TestScheduler()).With(sched =>
             {
-                var child1 = NewReactiveCommand.CreateAsynchronous(() => Observable.Return(1));
-                var child2 = NewReactiveCommand.CreateAsynchronous(() => Observable.Return(2));
+                var child1 = NewReactiveCommand.Create(() => Observable.Return(1));
+                var child2 = NewReactiveCommand.Create(() => Observable.Return(2));
                 var childCommands = new[] { child1, child2 };
                 var fixture = NewReactiveCommand.CreateCombined(childCommands, scheduler: sched);
                 var results = fixture
@@ -816,8 +578,8 @@ namespace ReactiveUI.Tests
         [Fact]
         public void ExecuteAsyncTicksErrorsInAnyChildCommandThroughThrownExceptions()
         {
-            var child1 = NewReactiveCommand.CreateAsynchronous(() => Observable.Return(Unit.Default));
-            var child2 = NewReactiveCommand.CreateAsynchronous(() => Observable.Throw<Unit>(new InvalidOperationException("oops")));
+            var child1 = NewReactiveCommand.Create(() => Observable.Return(Unit.Default));
+            var child2 = NewReactiveCommand.Create(() => Observable.Throw<Unit>(new InvalidOperationException("oops")));
             var childCommands = new[] { child1, child2 };
             var fixture = NewReactiveCommand.CreateCombined(childCommands);
             var thrownExceptions = fixture
@@ -836,65 +598,15 @@ namespace ReactiveUI.Tests
         [Fact]
         public void ToPlatformThrowsIfCommandIsNull()
         {
-            Assert.Throws<ArgumentNullException>(() => ((SynchronousReactiveCommand<Unit, Unit>)null).ToPlatform());
-            Assert.Throws<ArgumentNullException>(() => ((AsynchronousReactiveCommand<Unit, Unit>)null).ToPlatform());
-            Assert.Throws<ArgumentNullException>(() => ((CombinedAsynchronousReactiveCommand<Unit, Unit>)null).ToPlatform());
+            Assert.Throws<ArgumentNullException>(() => ((NewReactiveCommand<Unit, Unit>)null).ToPlatform());
+            Assert.Throws<ArgumentNullException>(() => ((CombinedReactiveCommand<Unit, Unit>)null).ToPlatform());
         }
 
         [Fact]
-        public void ToPlatformAdaptsSynchronousCommandExecution()
+        public void ToPlatformAdaptsExecute()
         {
             var value = 0;
-            var command = NewReactiveCommand.CreateSynchronous<int, Unit>(
-                param =>
-                {
-                    value = param;
-                    return Unit.Default;
-                });
-            var fixture = command.ToPlatform();
-
-            fixture.Execute(5);
-            Assert.Equal(5, value);
-
-            // null will convert to default(TParam)
-            fixture.Execute(null);
-            Assert.Equal(0, value);
-        }
-
-        [Fact]
-        public void ToPlatformAdaptsSynchronousCommandCanExecute()
-        {
-            var canExecuteSubject = new Subject<bool>();
-            var command = NewReactiveCommand.CreateSynchronous<Unit>(() => Unit.Default, canExecuteSubject);
-            var fixture = command.ToPlatform();
-            var canExecuteChanged = Observable
-                .FromEventPattern(fixture, nameof(fixture.CanExecuteChanged))
-                .Select(_ => Unit.Default)
-                .CreateCollection();
-
-            Assert.True(fixture.CanExecute(null));
-            Assert.Empty(canExecuteChanged);
-
-            canExecuteSubject.OnNext(false);
-            Assert.False(fixture.CanExecute(null));
-            Assert.Equal(1, canExecuteChanged.Count);
-
-            canExecuteSubject.OnNext(false);
-            canExecuteSubject.OnNext(false);
-            canExecuteSubject.OnNext(false);
-            Assert.False(fixture.CanExecute(null));
-            Assert.Equal(1, canExecuteChanged.Count);
-
-            canExecuteSubject.OnNext(true);
-            Assert.True(fixture.CanExecute(null));
-            Assert.Equal(2, canExecuteChanged.Count);
-        }
-
-        [Fact]
-        public void ToPlatformAdaptsAsynchronousCommandExecution()
-        {
-            var value = 0;
-            var command = NewReactiveCommand.CreateAsynchronous<int, Unit>(
+            var command = NewReactiveCommand.Create<int, Unit>(
                 param =>
                 {
                     value = param;
@@ -911,10 +623,10 @@ namespace ReactiveUI.Tests
         }
 
         [Fact]
-        public void ToPlatformAdaptsAsynchronousCommandCanExecute()
+        public void ToPlatformAdaptsCanExecute()
         {
             var canExecuteSubject = new Subject<bool>();
-            var command = NewReactiveCommand.CreateAsynchronous<Unit>(() => Observable.Return(Unit.Default), canExecuteSubject);
+            var command = NewReactiveCommand.Create<Unit>(() => Observable.Return(Unit.Default), canExecuteSubject);
             var fixture = command.ToPlatform();
             var canExecuteChanged = Observable
                 .FromEventPattern(fixture, nameof(fixture.CanExecuteChanged))
@@ -940,10 +652,10 @@ namespace ReactiveUI.Tests
         }
 
         [Fact]
-        public void ToPlatformAdaptsCombinedAsynchronousCommandExecution()
+        public void ToPlatformAdaptsCombinedExecute()
         {
             var value = 0;
-            var child = NewReactiveCommand.CreateAsynchronous<int, Unit>(
+            var child = NewReactiveCommand.Create<int, Unit>(
                 param =>
                 {
                     value = param;
@@ -961,10 +673,10 @@ namespace ReactiveUI.Tests
         }
 
         [Fact]
-        public void ToPlatformAdaptsCombinedAsynchronousCommandCanExecute()
+        public void ToPlatformAdaptsCombinedCanExecute()
         {
             var canExecuteSubject = new Subject<bool>();
-            var child = NewReactiveCommand.CreateAsynchronous(() => Observable.Return(Unit.Default));
+            var child = NewReactiveCommand.Create(() => Observable.Return(Unit.Default));
             var command = NewReactiveCommand.CreateCombined(new[] { child }, canExecuteSubject);
             var fixture = command.ToPlatform();
             var canExecuteChanged = Observable
