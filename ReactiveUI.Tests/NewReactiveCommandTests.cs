@@ -198,51 +198,6 @@ namespace ReactiveUI.Tests
         }
 
         [Fact]
-        public void ExecuteAsyncFailsIfCanExecuteIsFalse()
-        {
-            (new TestScheduler()).With(sched =>
-            {
-                var execute = Observable.Return(Unit.Default);
-                var fixture = NewReactiveCommand.Create(() => execute, Observable.Return(false), sched);
-                var thrownExceptions = fixture
-                    .ThrownExceptions
-                    .CreateCollection();
-
-                fixture.ExecuteAsync();
-                sched.AdvanceByMs(1);
-
-                Assert.Equal(1, thrownExceptions.Count);
-                Assert.IsType<InvalidOperationException>(thrownExceptions[0]);
-                Assert.Equal("Command cannot currently execute.", thrownExceptions[0].Message);
-            });
-        }
-
-        [Fact]
-        public void ExecuteAsyncFailsIfAlreadyExecuting()
-        {
-            (new TestScheduler()).With(sched =>
-            {
-                var execute = Observable.Return(Unit.Default).Delay(TimeSpan.FromSeconds(1), sched);
-                var fixture = NewReactiveCommand.Create(() => execute, scheduler: sched);
-                var thrownExceptions = fixture
-                    .ThrownExceptions
-                    .CreateCollection();
-
-                fixture.ExecuteAsync();
-                sched.AdvanceByMs(100);
-
-                Assert.Empty(thrownExceptions);
-
-                fixture.ExecuteAsync();
-                sched.AdvanceByMs(1);
-
-                Assert.Equal(1, thrownExceptions.Count);
-                Assert.IsType<InvalidOperationException>(thrownExceptions[0]);
-                Assert.Equal("Command cannot currently execute.", thrownExceptions[0].Message);
-            });
-        }
-
-        [Fact]
         public void ExecuteAsyncExecutesOnTheSpecifiedScheduler()
         {
             (new TestScheduler()).With(sched =>
