@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Runtime.Serialization;
-using System.Windows;
+using System.Reactive;
 using System.Windows.Controls;
 using Xunit;
 
@@ -11,11 +7,11 @@ namespace ReactiveUI.Tests
 {
     public class WeakEventManagerTest
     {
-        [Fact]        
+        [Fact]
         public void ButtonDoesNotLeakTest()
         {
             Button button = new Button();
-            ReactiveCommand<object> command = ReactiveCommand.Create();
+            NewReactiveCommand<Unit, Unit> command = NewReactiveCommand.Create(() => { });
             button.Command = command;
 
             WeakReference buttonRef = new WeakReference(button);

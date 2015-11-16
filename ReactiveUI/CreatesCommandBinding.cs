@@ -71,19 +71,14 @@ namespace ReactiveUI
             var ret = new CompositeDisposable();
 
             object latestParameter = null;
-            bool useEventArgsInstead = false;
-
-            // NB: This is a bit of a hack - if commandParameter isn't specified,
-            // it will default to Observable.Empty. We're going to use termination
-            // of the commandParameter as a signal to use EventArgs.
-            ret.Add(commandParameter.Subscribe(
-                x => latestParameter = x,
-                () => useEventArgsInstead = true));
-
             var evt = Observable.FromEventPattern<TEventArgs>(target, eventName);
+
+            ret.Add(commandParameter.Subscribe(
+                x => latestParameter = x));
+
             ret.Add(evt.Subscribe(ea => {
-                if (command.CanExecute(useEventArgsInstead ? ea : latestParameter)) {
-                    command.Execute(useEventArgsInstead ? ea : latestParameter);
+                if (command.CanExecute(latestParameter)) {
+                    command.Execute(latestParameter);
                 }
             }));
 
