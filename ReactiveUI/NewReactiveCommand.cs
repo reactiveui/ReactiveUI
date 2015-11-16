@@ -5,6 +5,7 @@ using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using System.Threading;
 using System.Windows.Input;
 
 namespace ReactiveUI
@@ -12,6 +13,46 @@ namespace ReactiveUI
     // static factory methods
     public abstract partial class NewReactiveCommand
     {
+        public static NewReactiveCommand<Unit, Unit> Create(
+            Action executeAsync,
+            IObservable<bool> canExecute = null,
+            IScheduler scheduler = null)
+        {
+            if (executeAsync == null)
+            {
+                throw new ArgumentNullException(nameof(executeAsync));
+            }
+
+            return new NewReactiveCommand<Unit, Unit>(
+                canExecute ?? Observable.Return(true),
+                _ =>
+                {
+                    executeAsync();
+                    return Observable.Return(Unit.Default);
+                },
+                scheduler ?? RxApp.MainThreadScheduler);
+        }
+
+        public static NewReactiveCommand<TParam, Unit> Create<TParam>(
+            Action<TParam> executeAsync,
+            IObservable<bool> canExecute = null,
+            IScheduler scheduler = null)
+        {
+            if (executeAsync == null)
+            {
+                throw new ArgumentNullException(nameof(executeAsync));
+            }
+
+            return new NewReactiveCommand<TParam, Unit>(
+                canExecute ?? Observable.Return(true),
+                param =>
+                {
+                    executeAsync(param);
+                    return Observable.Return(Unit.Default);
+                },
+                scheduler ?? RxApp.MainThreadScheduler);
+        }
+
         public static NewReactiveCommand<Unit, TResult> Create<TResult>(
             Func<IObservable<TResult>> executeAsync,
             IObservable<bool> canExecute = null,
@@ -39,8 +80,10 @@ namespace ReactiveUI
     }
 
     // non-generic reactive command functionality
-    public abstract partial class NewReactiveCommand : IDisposable
+    public abstract partial class NewReactiveCommand : IDisposable, ICommand
     {
+        private EventHandler canExecuteChanged;
+
         public abstract IObservable<bool> CanExecute
         {
             get;
@@ -62,12 +105,6 @@ namespace ReactiveUI
         }
 
         protected abstract void Dispose(bool disposing);
-    }
-
-    // common functionality to all reactive commands that return a value of type TResult
-    public abstract class NewReactiveCommandBase<TParam, TResult> : NewReactiveCommand, IObservable<TResult>, ICommand
-    {
-        private EventHandler canExecuteChanged;
 
         event EventHandler ICommand.CanExecuteChanged
         {
@@ -75,22 +112,15 @@ namespace ReactiveUI
             remove { this.canExecuteChanged -= value; }
         }
 
-        public abstract IDisposable Subscribe(IObserver<TResult> observer);
-
-        public abstract IObservable<TResult> ExecuteAsync(TParam parameter = default(TParam));
-
         bool ICommand.CanExecute(object parameter) =>
-            this.CanExecute.First();
+            this.ICommandCanExecute(parameter);
 
-        void ICommand.Execute(object parameter)
-        {
-            if (parameter == null)
-            {
-                parameter = default(TParam);
-            }
+        void ICommand.Execute(object parameter) =>
+            this.ICommandExecute(parameter);
 
-            this.ExecuteAsync((TParam)parameter);
-        }
+        protected abstract bool ICommandCanExecute(object parameter);
+
+        protected abstract void ICommandExecute(object parameter);
 
         protected void OnCanExecuteChanged()
         {
@@ -103,12 +133,34 @@ namespace ReactiveUI
         }
     }
 
+    // common functionality to all reactive commands that return a value of type TResult
+    public abstract class NewReactiveCommandBase<TParam, TResult> : NewReactiveCommand, IObservable<TResult>
+    {
+        public abstract IDisposable Subscribe(IObserver<TResult> observer);
+
+        public abstract IObservable<TResult> ExecuteAsync(TParam parameter = default(TParam));
+
+        protected override bool ICommandCanExecute(object parameter) =>
+            this.CanExecute.First();
+
+        protected override void ICommandExecute(object parameter)
+        {
+            if (parameter == null)
+            {
+                parameter = default(TParam);
+            }
+
+            this.ExecuteAsync((TParam)parameter);
+        }
+    }
+
     // a reactive command that executes asynchronously
     public class NewReactiveCommand<TParam, TResult> : NewReactiveCommandBase<TParam, TResult>
     {
         private readonly Func<TParam, IObservable<TResult>> executeAsync;
         private readonly IScheduler scheduler;
         private readonly Subject<ExecutionInfo> executionInfo;
+        private readonly ISubject<ExecutionInfo, ExecutionInfo> synchronizedExecutionInfo;
         private readonly IObservable<bool> isExecuting;
         private readonly IObservable<bool> canExecute;
         private readonly IObservable<TResult> results;
@@ -138,8 +190,9 @@ namespace ReactiveUI
             this.executeAsync = executeAsync;
             this.scheduler = scheduler;
             this.executionInfo = new Subject<ExecutionInfo>();
+            this.synchronizedExecutionInfo = Subject.Synchronize(this.executionInfo, scheduler);
             this.isExecuting = this
-                .executionInfo
+                .synchronizedExecutionInfo
                 .Select(x => x.Demarcation == ExecutionDemarcation.Begin)
                 .StartWith(false)
                 .DistinctUntilChanged()
@@ -158,7 +211,7 @@ namespace ReactiveUI
                 .Replay(1)
                 .RefCount();
             this.results = this
-                .executionInfo
+                .synchronizedExecutionInfo
                 .Where(x => x.Demarcation == ExecutionDemarcation.EndWithResult)
                 .Select(x => x.Result);
 
@@ -182,29 +235,20 @@ namespace ReactiveUI
 
         public override IObservable<TResult> ExecuteAsync(TParam parameter = default(TParam))
         {
-            var execution = Observable
-                .Start(
-                    () =>
-                    {
-                        this.executionInfo.OnNext(ExecutionInfo.CreateBegin());
-                        return this.executeAsync(parameter);
-                    },
-                    this.scheduler)
-                .Switch()
-                .Do(result => this.executionInfo.OnNext(ExecutionInfo.CreateResult(result)))
+            this.synchronizedExecutionInfo.OnNext(ExecutionInfo.CreateBegin());
+
+            return this
+                .executeAsync(parameter)
+                .Do(result => this.synchronizedExecutionInfo.OnNext(ExecutionInfo.CreateResult(result)))
                 .Catch<TResult, Exception>(
                     ex =>
                     {
-                        this.executionInfo.OnNext(ExecutionInfo.CreateFail());
+                        this.synchronizedExecutionInfo.OnNext(ExecutionInfo.CreateFail());
                         exceptions.OnNext(ex);
                         return Observable.Empty<TResult>();
                     })
-                .Publish()
-                .RefCount();
-
-            execution.Subscribe();
-
-            return execution;
+                .FirstOrDefaultAsync()
+                .RunAsync(CancellationToken.None);
         }
 
         protected override void Dispose(bool disposing)

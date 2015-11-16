@@ -60,23 +60,17 @@ namespace ReactiveUI.Winforms
             var ret = new CompositeDisposable();
 
             object latestParameter = null;
-            bool useEventArgsInstead = false;
+            Type targetType = target.GetType();
 
-            // NB: This is a bit of a hack - if commandParameter isn't specified,
-            // it will default to Observable.Empty. We're going to use termination
-            // of the commandParameter as a signal to use EventArgs.
             ret.Add(commandParameter.Subscribe(
-                x => latestParameter = x,
-                () => useEventArgsInstead = true));
+                x => latestParameter = x));
 
             var evt = Observable.FromEventPattern<TEventArgs>(target, eventName);
             ret.Add(evt.Subscribe(ea => {
-                if (command.CanExecute(useEventArgsInstead ? ea : latestParameter)) {
-                    command.Execute(useEventArgsInstead ? ea : latestParameter);
+                if (command.CanExecute(latestParameter)) {
+                    command.Execute(latestParameter);
                 }
             }));
-
-            Type targetType = target.GetType();
 
             // We initially only accepted Controls here, but this is too restrictive:
             // there are a number of Components that can trigger Commands and also
@@ -87,7 +81,7 @@ namespace ReactiveUI.Winforms
 
                 if (enabledProperty != null) {
                     object latestParam = null;
-                    commandParameter.Subscribe(x => latestParam = x);
+                    ret.Add(commandParameter.Subscribe(x => latestParam = x));
 
                     ret.Add(Observable.FromEventPattern<EventHandler, EventArgs>(x => command.CanExecuteChanged += x, x => command.CanExecuteChanged -= x)
                         .Select(_ => command.CanExecute(latestParam))

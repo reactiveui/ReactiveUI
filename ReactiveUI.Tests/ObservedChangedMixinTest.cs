@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Reactive.Concurrency;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
-using Xunit;
-using ReactiveUI.Testing;
-
 using Microsoft.Reactive.Testing;
+using ReactiveUI.Testing;
+using Xunit;
 
 namespace ReactiveUI.Tests
 {
@@ -169,7 +168,7 @@ namespace ReactiveUI.Tests
         {
             foreach (var i in Enumerable.Range(1, 7)) {
                 viewmodel.NewPlayerName = "Player" + i;
-                viewmodel.AddPlayer.Execute(null);
+                viewmodel.AddPlayer.ExecuteAsync();
                 Assert.Equal(i, viewmodel.Players.Count);
             }
         }
@@ -178,10 +177,10 @@ namespace ReactiveUI.Tests
     public class NewGameViewModel : ReactiveObject
     {
         public ReactiveList<string> Players { get; private set; }
-        public ReactiveCommand<Object> AddPlayer { get; private set; }
-        public ReactiveCommand<Object> RemovePlayer { get; private set; }
-        public ReactiveCommand<Object> StartGame { get; private set; }
-        public ReactiveCommand<Object> RandomizeOrder { get; private set; }
+        public NewReactiveCommand<Unit, Unit> AddPlayer { get; private set; }
+        public NewReactiveCommand<string, Unit> RemovePlayer { get; private set; }
+        public NewReactiveCommand<Unit, Unit> StartGame { get; private set; }
+        public NewReactiveCommand<Unit, Unit> RandomizeOrder { get; private set; }
 
 
         string newPlayerName;
@@ -196,31 +195,30 @@ namespace ReactiveUI.Tests
             Players = new ReactiveList<string>();
 
             var canStart = this.Players.CountChanged.Select(count => count >= 3);
-            StartGame = canStart.ToCommand();
-            RandomizeOrder = canStart.ToCommand();
+            StartGame = NewReactiveCommand.Create(() => { }, canStart);
+            RandomizeOrder = NewReactiveCommand.Create(
+                () =>
+                {
+                    using (Players.SuppressChangeNotifications())
+                    {
+                        var r = new Random();
+                        var newOrder = Players.OrderBy(x => r.NextDouble()).ToList();
+                        Players.Clear();
+                        Players.AddRange(newOrder);
+                    }
+                },
+                canStart);
 
-            RemovePlayer = ReactiveCommand.Create();
-            AddPlayer = this.WhenAnyValue(x => x.Players.Count, x => x.NewPlayerName,
-                (count, newPlayerName) => count < 7 && !string.IsNullOrWhiteSpace(newPlayerName) && !this.Players.Contains(newPlayerName))
-                .ToCommand();
-
-            RandomizeOrder.Subscribe(_ => {
-                using (Players.SuppressChangeNotifications()) {
-                    var r = new Random();
-                    var newOrder = Players.OrderBy(x => r.NextDouble()).ToList();
-                    Players.Clear();
-                    Players.AddRange(newOrder);
-                }
-            });
-
-            RemovePlayer.Subscribe(player => {
-                this.Players.Remove((string)player);
-            });
-
-            AddPlayer.Subscribe(_ => {
-                Players.Add(NewPlayerName.Trim());
-                NewPlayerName = string.Empty;
-            });
+            RemovePlayer = NewReactiveCommand.Create<string>(player => this.Players.Remove(player));
+            var canAddPlayer = this.WhenAnyValue(x => x.Players.Count, x => x.NewPlayerName,
+                (count, newPlayerName) => count < 7 && !string.IsNullOrWhiteSpace(newPlayerName) && !this.Players.Contains(newPlayerName));
+            AddPlayer = NewReactiveCommand.Create(
+                () =>
+                {
+                    Players.Add(NewPlayerName.Trim());
+                    NewPlayerName = string.Empty;
+                },
+                canAddPlayer);
         }
     }
 }
