@@ -149,7 +149,7 @@
     <Compile Include="AutoPersistHelperTest.cs" />
     <Compile Include="AwaiterTest.cs" />
     <Compile Include="BindingTypeConvertersTest.cs" />
-    <Compile Include="ErrorsTest.cs" />
+    <Compile Include="InteractionsTest.cs" />
     <Compile Include="INPCObservableForPropertyTests.cs" />
     <Compile Include="MessageBusTest.cs" />
     <Compile Include="ObservableAsPropertyHelperTest.cs" />

@@ -102,21 +102,17 @@
     <Compile Include="BindingTypeConvertersTest.cs" />
     <Compile Include="CommandBindingTests.cs" />
     <Compile Include="INPCObservableForPropertyTests.cs" />
+    <Compile Include="InteractionsTest.cs" />
     <Compile Include="TestUtilsTest.cs" />
     <Compile Include="WeakEventManagerTest.cs" />
     <Compile Include="Winforms\ActivationTests.cs" />
-    <Compile Include="Winforms\CommandBindingTests.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Winforms\DefaultPropertyBindingTests.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="Winforms\CommandBindingTests.cs" />
+    <Compile Include="Winforms\DefaultPropertyBindingTests.cs" />
     <Compile Include="Winforms\ReactiveBindingListTests.cs" />
     <Compile Include="Winforms\RoutedViewHostTests.cs" />
     <Compile Include="Winforms\ViewModelViewHostTests.cs" />
     <Compile Include="Xaml\ActivationForViewFetcherTest.cs" />
     <Compile Include="Xaml\DependencyObjectObservableForPropertyTest.cs" />
-    <Compile Include="ErrorsTest.cs" />
     <Compile Include="MessageBusTest.cs" />
     <Compile Include="ObservableAsPropertyHelperTest.cs" />
     <Compile Include="ObservedChangedMixinTest.cs" />

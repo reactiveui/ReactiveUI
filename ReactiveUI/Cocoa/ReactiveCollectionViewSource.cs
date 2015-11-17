@@ -70,18 +70,22 @@ namespace ReactiveUI
             ++inFlightReloads;
             view.ReloadData();
 
-            // since ReloadData() queues the appropriate messages on the UI thread, we know we're done reloading
-            // when this subsequent message is processed (with one caveat - see FinishReloadData for details)
-            RxApp.MainThreadScheduler.Schedule(FinishReloadData);
-
             if (inFlightReloads == 1)
             {
                 Debug.Assert(!this.isReloadingData.Value);
                 this.isReloadingData.OnNext(true);
             }
+
+            // since ReloadData() queues the appropriate messages on the UI thread, we know we're done reloading
+            // when this subsequent message is processed (with one caveat - see FinishReloadData for details)
+            RxApp.MainThreadScheduler.Schedule(FinishReloadData);
         }
 
-        public void PerformBatchUpdates(Action updates, Action completion) { view.PerformBatchUpdates(new NSAction(updates), (completed) => completion()); }
+        // UICollectionView no longer has these methods so these are no-ops
+        public void BeginUpdates() { }
+        public void EndUpdates() { }
+
+        public void PerformUpdates(Action updates, Action completion) { view.PerformBatchUpdates(new NSAction(updates), (completed) => completion()); }
         public void InsertSections(NSIndexSet indexes) { view.InsertSections(indexes); }
         public void DeleteSections(NSIndexSet indexes) { view.DeleteSections(indexes); }
         public void ReloadSections(NSIndexSet indexes) { view.ReloadSections(indexes); }
@@ -166,10 +170,6 @@ namespace ReactiveUI
         /// </summary>
         public IObservable<object> ElementSelected {
             get { return elementSelected; }
-        }
-
-        public IObservable<IEnumerable<NotifyCollectionChangedEventArgs>> DidPerformUpdates {
-            get { return commonSource.DidPerformUpdates; }
         }
 
         public override UICollectionViewCell GetCell(UICollectionView collectionView, NSIndexPath indexPath)
