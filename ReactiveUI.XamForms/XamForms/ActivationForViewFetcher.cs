@@ -1,6 +1,5 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Reactive;
 using System.Reactive.Linq;
 using System.Reflection;
 using Xamarin.Forms;
@@ -45,26 +44,14 @@ namespace ReactiveUI.XamForms
             if (view == null) {
                 return null;
             }
-
+            
             var propertyChanged = Observable.FromEventPattern<PropertyChangedEventHandler, PropertyChangedEventArgs>(
                 x => view.PropertyChanged += x,
                 x => view.PropertyChanged -= x);
-            var parentChanged = propertyChanged
-                .Where(x => x.EventArgs.PropertyName == "Parent")
-                .Select(_ => Unit.Default);
-
-            return parentChanged
-                .StartWith(Unit.Default)
-                .Select(_ => GetPageFor(view))
-                .Select(x =>
-                    x == null ?
-                    Observable.Return(false) :
-                    Observable
-                    .Merge(
-                        Observable.FromEventPattern<EventHandler, EventArgs>(y => x.Appearing += y, y => x.Appearing -= y).Select(_ => true),
-                        Observable.FromEventPattern<EventHandler, EventArgs>(y => x.Disappearing += y, y => x.Disappearing -= y).Select(_ => false))
-                    .StartWith(true))
-                .Switch();
+            return propertyChanged
+                .Where(x => x.EventArgs.PropertyName == "IsVisible")
+                .Select(_ => view.IsVisible)
+                .StartWith(view.IsVisible);
         }
 
         private static IObservable<bool> GetActivationFor(Cell cell)
@@ -91,7 +78,7 @@ namespace ReactiveUI.XamForms
                     return page;
                 }
 
-                element = element.Parent;
+                element = element.ParentView;
             }
 
             return null;
