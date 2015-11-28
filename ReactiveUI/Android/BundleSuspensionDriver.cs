@@ -33,6 +33,7 @@ namespace ReactiveUI
             try {
                 var serializer = new BinaryFormatter();
                 var st = new MemoryStream();
+                serializer.Serialize(st, state);
 
                 AutoSuspendHelper.LatestBundle.PutByteArray("__state", st.ToArray());
                 return Observable.Return(Unit.Default);
