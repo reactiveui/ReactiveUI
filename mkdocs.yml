@@ -67,6 +67,10 @@ pages:
 - ['error-handling/user-errors.md', 'Error Handling', 'User Errors']
 - ['error-handling/recovery-options.md', 'Error Handling', 'Recovery Options']
 
+# Troubleshooting:
+- ['troubleshooting/threading.md', 'Troubleshooting', 'Threading']
+- ['troubleshooting/apple-ios.md', 'Troubleshooting', 'Apple iOS']
+
 # ghuntley [11:52 AM] It should be split into UserErrors (recoverable
 # errors and how to handle them) and then BigBadErrors (i.e. Rx
 # OnErorr() and how to throw a recoverable error?)
