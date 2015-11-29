@@ -5,7 +5,7 @@ site_favicon: img/favicon.png
 
 dev_addr: '0.0.0.0:8000'
 
-repo_url: https://github.com/reactiveui/reactiveui/
+repo_url: https://github.com/ghuntley/reactiveui/
 
 docs_dir: docs/sources
 site_dir: docs/_build/
@@ -14,7 +14,7 @@ theme: readthedocs
 #theme_dir: ./theme/mkdocs/
 #theme_center_lead: false
 
-copyright: Copyright &copy; 2014, ReactiveUI, i.
+copyright: Copyright &copy; 2015, ReactiveUI, i.
 google_analytics: ['UA-6096819-11', 'ReactiveUI.io']
 
 pages:
