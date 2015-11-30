@@ -69,10 +69,7 @@ public class AppViewModel : ReactiveObject
      */
 
     ObservableAsPropertyHelper<List<FlickrPhoto>> _SearchResults;
-    public List<FlickrPhoto> SearchResults
-    {
-        get { return _SearchResults.Value; }
-    }
+    public List<FlickrPhoto> SearchResults => _SearchResults.Value;
 
     // Here, we want to create a property to represent when the application 
     // is performing a search (i.e. when to show the "spinner" control that 
@@ -81,10 +78,7 @@ public class AppViewModel : ReactiveObject
     // some other property)
 
     ObservableAsPropertyHelper<Visibility> _SpinnerVisibility;
-    public Visibility SpinnerVisibility
-    {
-        get { return _SpinnerVisibility.Value; }
-    }
+    public Visibility SpinnerVisibility => _SpinnerVisibility.Value;
 
     public AppViewModel()
     {
