@@ -9,8 +9,9 @@ of advantages compared to platform-specific implementations such as XAML-based
 bindings.
 
 * Bindings work on **all platforms** and operate the same.
-* Bindings are written via Expressions. This means that renaming a
-  control in the UI layout without updating a binding, the build will fail.
+* Bindings are written via Expressions. This means that they are strongly typed, 
+  and renaming a ViewModel property, or a control in the UI layout without 
+  updating the binding, the build will fail.
 * Controlling how types bind to properties is flexible and can be customized.
 
 ### Getting Started
@@ -20,17 +21,19 @@ In order to use bindings in the View, you must first implement
 implement it differently:
 
 * **iOS** - change your base class to one of the Reactive UIKit classes (i.e.
-  ReactiveUIViewController) and implement `ViewModel` using
-  RaiseAndSetIfChanged, *or* implement `INotifyPropertyChanged` on your View and
+  `ReactiveUIViewController`) and implement `ViewModel` using
+  `RaiseAndSetIfChanged`, *or* implement `INotifyPropertyChanged` on your View and
   ensure that ViewModel signals changes.
 
 * **Android:** - change your base class to one of the Reactive Activity /
-  Fragment classes (i.e. ReactiveActivity<T>), *or* implement
-  `INotifyPropertyChanged` on your View and ensure that ViewModel signals
+  Fragment classes (i.e. `ReactiveActivity<T>`), *or* implement
+  `IViewFor<T>` on your View and ensure that your ViewModel signals
   changes.
 
 * **Xaml-based:** - Implement `IViewFor<T>` by hand and ensure that ViewModel
-  is a DependencyProperty.
+  is a `DependencyProperty`.
+  
+For a detailed overview of the bindings on each platform, see the "Binding" section.
 
 ### Types of Bindings
 
@@ -58,7 +61,9 @@ this.Bind(ViewModel, x => x.Name, x => x.Name.Text);
   on that control (how this is implemented depends on the UI framework):
 
 ```cs
-// Bind the OK command to the button
+// Bind the OK command to the button. 
+// This uses the default "Click" event on XAML-based platforms and equivalent 
+// events on Android and iOS.
 this.BindCommand(ViewModel, x => x.OkCommand, x => x.OkButton);
 
 // Bind the OK command to when the user presses a key
@@ -69,11 +74,20 @@ this.BindCommand(ViewModel, x => x.OkCommand, x => x.RootView, "KeyUp");
 
 Direct bindings between properties are convenient, but often the two types are
 not assignable to each other. For example, binding an "Age" property to a
-TextBox would normally fail, because TextBox expects a string value. Instead,
+TextBox would normally fail, because the TextBox expects a string value. Instead,
 ReactiveUI has an extensible system for coercing between types.
 
-See the details about Binding Type Converters in the "Customization" section
-for more information about how to extend property type conversion.
+For simple one-way bindings, you can use the conversion parameter in the 
+`OneWayBind` method.
+
+```cs
+
+// Note: Age is an integer
+this.OneWayBind(ViewModel, x => x.Age, x => x.Name.Text, x => x.ToString()); // In the last parameter, we .ToString() the integer
+```
+
+For type conversion on two-way bindings, see the details about Binding Type Converters 
+in the "Customization" section for more information about how to extend property type conversion.
 
 ### Choosing when to update the source
 
@@ -87,7 +101,7 @@ One common requirement is to update the source when a user interface control
 loses keyboard (or logical) focus - WPF even provides `UpdateSourceTrigger = 
 LostFocus` for this.
 
-ReactiveUI bindings allow this by providing an IObservable as a parameter to
+ReactiveUI bindings allow this by providing an `IObservable` as a parameter to
 the binding, which disables the default behavior and causes the source to
 update whenever the observable fires. The observable (`SignalViewUpdate`) can
 be of any type, meaning that any event on a user interface control is capable
@@ -104,7 +118,7 @@ this.Bind(ViewModel, vm => vm.SomeProperty, v => v.SomeTextBox, SomeTextBox.Even
 
 Should you find that direct one and two-way bindings aren't enough to get the
 job done (or should you want View => ViewModel bindings), a flexible, Rx-based
-approach is also available, via combining `WhenAny` with the `BindTo`
+approach is also available, via combining `WhenAnyValue` with the `BindTo`
 operator, which allows you to bind an arbitrary `IObservable` to a property on
 an object.
 
@@ -115,19 +129,19 @@ a ViewModel:
 public MainView()
 {
     // Bind the View's SelectedItem to the ViewModel
-    this.WhenAny(x => x.SomeList.SelectedItem)
+    this.WhenAnyValue(x => x.SomeList.SelectedItem)
         .BindTo(this, x => x.ViewModel.SelectedItem);
 
     // Bind ViewModel's IsSelected via SelectedItem. Note that this
     // is only for illustrative purposes, it'd be better to bind this
-    // at the ViewModel layer (i.e. WhenAny + ToProperty)
-    this.WhenAny(x => x.SomeList.SelectedItem)
+    // at the ViewModel layer (i.e. WhenAnyValue + ToProperty)
+    this.WhenAnyValue(x => x.SomeList.SelectedItem)
         .Select(x => x != null)
         .BindTo(this, x => x.ViewModel.IsSelected);
 }
 ```
 
-BindTo applies the same binding hooks and type conversion that other property
+`BindTo` applies the same binding hooks and type conversion that other property
 binding methods do, so the types don't necessarily have to match between the
 source and the target property.
 
