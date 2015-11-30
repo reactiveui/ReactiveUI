@@ -49,7 +49,7 @@ public class AppViewModel : ReactiveObject
         set { this.RaiseAndSetIfChanged(ref _SearchTerm, value); }
     }
 
-    // We will describe this later, but ReactiveAsyncCommand is a Command
+    // We will describe this later, but ReactiveCommand is a Command
     // (like "Open", "Copy", "Delete", etc), that manages a task running
     // in the background.
 
