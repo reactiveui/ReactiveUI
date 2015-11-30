@@ -48,7 +48,9 @@ public class TestActivity : ReactiveActivity,
 
         ViewModel = new TheViewModel();
         
-        // Wire up the controls defined in our layout file, to the control properties in this class
+        // WireUpControls looks through your layout file, finds all controls 
+        // with an id defined, and binds them to the controls defined in this class
+        // This is basically the same functionality as http://jakewharton.github.io/butterknife/ provides
         this.WireUpControls();
         
         this.Bind(this.ViewModel, x => x.TheText, x => x.TheEditText.Text);
