@@ -1,8 +1,8 @@
 # Android
 
 Change your base class to one of the Reactive Activity / Fragment classes 
-(i.e. ReactiveActivity<T>), *or* implement `INotifyPropertyChanged` on your View 
-and ensure that ViewModel signals changes.
+(i.e. ReactiveActivity<T>), *or* implement `IViewFor` on your View 
+and ensure that your ViewModel signals changes.
   
 ```csharp
 public class TheViewModel : ReactiveObject
