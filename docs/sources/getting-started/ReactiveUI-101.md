@@ -108,9 +108,9 @@ public class AppViewModel : ReactiveObject
         // Finally, we use RxUI's InvokeCommand operator, which takes the String 
         // and calls the Execute method on the ExecuteSearch Command, after 
         // making sure the Command can be executed via calling CanExecute.
-        this.ObservableForProperty(x => x.SearchTerm)
+        this.WhenAnyValue(x => x.SearchTerm)
             .Throttle(TimeSpan.FromMilliseconds(800), RxApp.MainThreadScheduler)
-            .Select(x => x.Value)
+            .Select(x => x.Trim())
             .DistinctUntilChanged()
             .Where(x => !String.IsNullOrWhiteSpace(x))
             .InvokeCommand(ExecuteSearch);
