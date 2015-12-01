@@ -35,9 +35,9 @@ public class TheViewModel : ReactiveObject
 ```
 
 ```csharp
+// You can derive from ReactiveActivity<T> if you don't want to re-implement IViewFor<T>
 [Activity (Label = "RxUISample-Android", MainLauncher = true)]
-public class TestActivity : ReactiveActivity, 
-  IViewFor<TheViewModel> // Or use ReactiveActivity<TheViewModel>, which implements IViewFor<TheViewModel>
+public class TestActivity : ReactiveActivity, IViewFor<TheViewModel> 
 {    
     protected override void OnCreate(Bundle bundle)
     {
