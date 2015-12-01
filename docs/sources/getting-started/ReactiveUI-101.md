@@ -126,7 +126,8 @@ public class AppViewModel : ReactiveObject
         // ToProperty operator, which is a helper to create an 
         // ObservableAsPropertyHelper object.
 
-        _SpinnerVisibility = ExecuteSearch.IsExecuting.Select(x=> x ? Visibility.Visible : Visibility.Collapsed)                
+        _SpinnerVisibility = ExecuteSearch.IsExecuting
+            .Select(x => x ? Visibility.Visible : Visibility.Collapsed)                
             .ToProperty(this, x => x.SpinnerVisibility, Visibility.Hidden);
 
         // Here, we're going to actually describe what happens when the Command
