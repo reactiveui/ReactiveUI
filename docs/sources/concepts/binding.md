@@ -78,11 +78,14 @@ TextBox would normally fail, because the TextBox expects a string value. Instead
 ReactiveUI has an extensible system for coercing between types.
 
 For simple one-way bindings, you can use the conversion parameter in the 
-`OneWayBind` method.
+`OneWayBind` method. This parameter is a `Func<TIn, TOut>`, so if the ViewModel property
+is of type `int` and the view property is of type `string`, it's a `Func<int, string>`
+which means that you don't have to write custom converter classes, like in 
+standard WPF bindings, and can just write a simple, statically typed, conversion function.
 
 ```cs
 
-// Note: Age is an integer
+// Note: Age is an integer, Text is a string
 this.OneWayBind(ViewModel, x => x.Age, x => x.Name.Text, x => x.ToString()); // In the last parameter, we .ToString() the integer
 ```
 
