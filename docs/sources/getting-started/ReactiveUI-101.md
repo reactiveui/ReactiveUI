@@ -129,6 +129,12 @@ public class AppViewModel : ReactiveObject
         _SpinnerVisibility = ExecuteSearch.IsExecuting
             .Select(x => x ? Visibility.Visible : Visibility.Collapsed)                
             .ToProperty(this, x => x.SpinnerVisibility, Visibility.Hidden);
+        
+        // We subscribe to the "ThrownExceptions" property of our ReactiveCommand,
+        // where ReactiveUI pipes any exceptions that are thrown in 
+        // "GetSearchResultsFromFlickr" into. See the "Error Handling" section
+        // for more information about this.
+        ExecuteSearch.ThrownExceptions.Subscribe(ex => {/* Handle errors here */})
 
         // Here, we're going to actually describe what happens when the Command
         // gets invoked - we're going to run the GetSearchResultsFromFlickr every
