@@ -14,7 +14,7 @@ concept via the [Target Action
 Framework](https://developer.apple.com/library/ios/documentation/general/conceptual/CocoaEncyclopedia/Target-Action/Target-Action.html).
 
 Many Commands are invoked directly by the user, but some operations are also
-useful to model via Commands despite being primarily invoked progmatically.
+useful to model via Commands despite being primarily invoked programatically.
 For example, many code paths involving periodically loading or refreshing
 resources (i.e. "LoadTweets") can be modeled well using Commands.
 
@@ -22,7 +22,7 @@ resources (i.e. "LoadTweets") can be modeled well using Commands.
 
 Since the act of invoking a Command represents an Event, ReactiveCommand
 itself is an `IObservable<object>`. The object that is passed along via the
-IObservable is the command parameter given to the `Execute` method of
+`IObservable` is the command parameter given to the `Execute` method of
 `ICommand`:
 
 ```cs
@@ -35,7 +35,7 @@ command.Execute(4);
 ```
 
 While ReactiveCommand supports the Command parameter, it is recommended to not
-use it, and simply always pass `null` to the Execute method. Instead of using
+use it, and simply always pass `null` to the `Execute` method. Instead of using
 the parameter, you should be using properties that are on the ViewModel.
 
 Since ReactiveCommand is an Observable, all of the Rx operators can be used
@@ -75,7 +75,7 @@ because it is fundamentally incompatible with the notion of
 `CanExecuteChanged` - if `CanExecute(bar)` is `true` and `CanExecute(baz)` is
 `false`, when should we fire `CanExecuteChanged`?
 
-The simplest thing we can possibly do to pass along CanExecute information, is
+The simplest thing we can possibly do to pass along `CanExecute` information, is
 to use a `Subject<bool>`, which is an Observable that you control yourself by
 hand. Here's how it works:
 
@@ -92,12 +92,12 @@ command.CanExecute(null);
 >>> true
 ```
 
-### Combining WhenAny and CanExecute
+### Combining WhenAnyValue and CanExecute
 
 While a Subject might be the easiest thing to understand, it certainly isn't
 the most effective. Oftentimes, a far more appropriate `CanExecute` is one
 that is based on other properties on the ViewModel. Since we want to be
-notified when a Property changes, we use the `WhenAny` method, and we `Select`
+notified when a Property changes, we use the `WhenAnyValue` method, and we `Select`
 it into a boolean value. For example:
 
 ```cs
@@ -108,10 +108,10 @@ PostTweet = ReactiveCommand.Create(
         .Select(x => !String.IsNullOrWhitespace(x) && x.Length < 140));
 
 // You can often leave off the extra Select by using the selector built into
-// WhenAny
+// WhenAnyValue
 OkButton = ReactiveCommand.Create(
-    this.WhenAny(x => x.Red, x => x.Green, x => x.Blue,
-        (r,g,b) => r.Value != null && g.Value != null && b.Value != null));
+    this.WhenAnyValue(x => x.Red, x => x.Green, x => x.Blue,
+        (r,g,b) => r != null && g != null && b != null));
 ```
 
 Nearly all of your Commands will use this pattern to define when they can be
@@ -182,11 +182,11 @@ directly from `IObservable<bool>`. The above `CanExecute` examples could be
 more tersely written:
 
 ```cs
-PostTweet = this.WhenAny(x => x.TweetContents, 
-        x => !String.IsNullOrWhitespace(x.Value) && x.Value.Length < 140)
+PostTweet = this.WhenAnyValue(x => x.TweetContents, 
+        x => !String.IsNullOrWhitespace(x) && x.Length < 140)
     .ToCommand();
 
-OkButton = this.WhenAny(x => x.Red, x => x.Green, x => x.Blue,
-        (r,g,b) => r.Value != null && g.Value != null && b.Value != null)
+OkButton = this.WhenAnyValue(x => x.Red, x => x.Green, x => x.Blue,
+        (r,g,b) => r != null && g != null && b != null)
     .ToCommand();
 ```

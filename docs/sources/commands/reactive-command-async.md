@@ -22,8 +22,8 @@ your Command will be `ReactiveCommand<String>`). This means, that Subscribing
 to the Command itself returns the results of the async method as an
 Observable.
 
-ReactiveCommand itself guarantees that its results will *always* be delivered
-on the UI thread, so extra `ObserveOn`s are unnecessary.
+ReactiveCommand itself doesn't guarantee that its results will be delivered
+on the UI thread, so extra `ObserveOn`s may be necessary.
 
 It is important to know, that ReactiveCommand itself as an `IObservable` will
 never complete or OnError - errors that happen in the async method will
@@ -93,7 +93,7 @@ searchButton
 However, while this pattern is approachable if you're handy with Rx, one thing
 that ends up being Difficult™ is to disable the Command itself when the search
 is running (i.e. to prevent more than one search from running at the same
-time). CreateAsyncTask does the work to make this happen for you.
+time). `CreateAsyncTask` does the work to make this happen for you.
 
 Another difficult aspect of this code is that it can't handle exceptions - if
 `executeSearch` ever fails once, it will never signal again because of the Rx
