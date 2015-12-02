@@ -44,7 +44,6 @@ created.
 
 ```cs
 var disp = this.OneWayBind(ViewModel, x => x.Name, x => x.Name.Text);
-disp.Dispose();   // Disconnect the binding early.
 ```
 
 * **Bind:** - Sets up a two-way binding between a property on the ViewModel to
@@ -64,6 +63,11 @@ this.BindCommand(ViewModel, x => x.OkCommand, x => x.OkButton);
 // Bind the OK command to when the user presses a key
 this.BindCommand(ViewModel, x => x.OkCommand, x => x.RootView, "KeyUp");
 ```
+
+`OneWayBind`, `Bind`, and `BindCommand` return an `IDisposable`.  
+In general, you shouldn't care about this return value, except if you want to 
+break a binding manually, or you're on a XAML-based platform, where bindings can 
+leak memory (Look in the "Binding" section under "XAML" for more on this).
 
 ### Converting between types
 
@@ -87,16 +91,19 @@ One common requirement is to update the source when a user interface control
 loses keyboard (or logical) focus - WPF even provides `UpdateSourceTrigger = 
 LostFocus` for this.
 
-ReactiveUI bindings allow this by providing an IObservable as a parameter to
+ReactiveUI bindings allow this by providing an `IObservable` as a parameter to
 the binding, which disables the default behavior and causes the source to
-update whenever the observable fires. The observable (`SignalViewUpdate`) can
-be of any type, meaning that any event on a user interface control is capable
-of causing the binding to update.
+update whenever the observable fires. The parameter (`SignalViewUpdate`) can
+be of any `IObservable<object>`, meaning that any event on a user interface 
+control is capable of causing the binding to update.
 
 For example, to have a binding update when a control loses keyboard focus, the
 following binding setup can be used:
 
 ```cs
+// Note: We're using the ReactiveUI.Events NuGet package here, which wraps 
+// traditional .NET events on UI controls into IObservables and exposes them 
+// via the Events() extension method
 this.Bind(ViewModel, vm => vm.SomeProperty, v => v.SomeTextBox, SomeTextBox.Events().LostKeyboardFocus);
 ```
 
