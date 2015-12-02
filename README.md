@@ -12,6 +12,7 @@ Interfaces that run on any mobile or desktop platform.
 * Windows Forms
 * Windows Phone 8
 * Windows Store Apps
+* Universal Windows Platform (UWP)
 
 This library is organized into several high-level assemblies:
 
