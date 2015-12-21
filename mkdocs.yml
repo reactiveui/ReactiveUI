@@ -36,6 +36,7 @@ pages:
 
 # Fundamentals:
 - ['fundamentals/reactive-object.md', 'Fundamentals', 'ReactiveObject']
+- ['fundamentals/when-activated.md', 'Fundamentals', 'WhenActivated']
 - ['fundamentals/reactive-list.md', 'Fundamentals', 'ReactiveList']
 - ['fundamentals/reactive-list-create-derived-collection.md', 'Fundamentals', 'Creating Derived Lists']
 
