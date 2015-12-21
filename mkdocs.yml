@@ -82,6 +82,7 @@ pages:
 # Testing:
 
 # Caching:
+- ['caching/index.md', 'Caching', 'Caching']
 
 # Networking:
 
