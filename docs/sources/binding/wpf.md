@@ -2,6 +2,16 @@
 
 Super important to use the `WhenActivated` method on WPF to avoid leaking memory  -> https://codereview.stackexchange.com/questions/74642/a-viewmodel-using-reactiveui-6-that-loads-and-sends-data
 
+
+    the XAML DependencyProperty system causes memory leaks if you don't use `WhenActivated`
+    there's a few rules, but the number one rule is: if you do a `WhenAny` on anything other
+    than `this`, then you need to put it inside a `WhenActivated`
+
+    this.WhenActivated(d =>
+    {
+       d(ViewModel.WhenAnyValue(x => x.Something).Subscribe(...));
+    });
+
 # Binding via Codebehind
 
 # Static Binding via {x:Bind}
