@@ -1,3 +1,16 @@
+# Windows Presentation Framework
+
+Super important to use the `WhenActivated` method on WPF to avoid leaking memory  -> https://codereview.stackexchange.com/questions/74642/a-viewmodel-using-reactiveui-6-that-loads-and-sends-data
+
+# Binding via Codebehind
+
+# Static Binding via {x:Bind}
+
+# Reflection based binding via {Binding}
+
+
+# Chatlog
+
 is it still impossible to use RXUI binding inside ItemTemplate?
 
 paulcbetts [5:35 AM] 
