@@ -58,6 +58,10 @@ pages:
 - ['routing/xamarin-forms.md', 'Routing', 'Xamarin Forms']
 - ['routing/caliburn-micro.md', 'Routing', 'Caliburn Micro']
 
+# Events:
+- ['events/index.md', 'Events', 'Introduction']
+- ['events/windows-forms.md', 'Events', 'Windows Forms']
+
 # Dependency Injection:
 - ['dependency-injection/splat.md', 'Dependency Injection', 'Splat']
 - ['dependency-injection/autofac.md', 'Dependency Injection', 'Autofac']
