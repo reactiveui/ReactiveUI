@@ -39,12 +39,14 @@ pages:
 - ['fundamentals/reactive-list.md', 'Fundamentals', 'ReactiveList']
 - ['fundamentals/reactive-list-create-derived-collection.md', 'Fundamentals', 'Creating Derived Lists']
 
+# Design Time:  
+- ['design-time/index.md', 'Design Time', 'Design Time']
+
 # Commands: 
 - ['commands/reactive-command-async.md', 'Commands', 'Async Commands']
 - ['commands/ireactivecommand.md', 'Commands', 'IReactiveCommand']
 - ['commands/automatic-execution.md', 'Commands', 'Automatic Execution']
 - ['commands/exception-handling.md', 'Commands', 'Exception Handling']
-
 
 # Binding:  
 - ['binding/type-converters.md', 'Binding', 'Type Converters']
