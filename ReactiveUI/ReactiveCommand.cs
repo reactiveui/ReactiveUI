@@ -375,7 +375,7 @@ namespace ReactiveUI
                     })
                 };
 
-                var disp = executeAsync(parameter)
+                var disp = executeAsyncSafe(parameter)
                     .ObserveOn(scheduler)
                     .Do(
                         _ => { },
@@ -390,6 +390,19 @@ namespace ReactiveUI
             return ret.Publish().RefCount();
         }
 
+        private IObservable<T> executeAsyncSafe(object parameter)
+        {
+            IObservable<T> ret;
+
+            try {
+                ret = executeAsync(parameter);
+            }
+            catch (Exception ex) {
+                ret = Observable.Throw<T>(ex);
+            }
+
+            return ret;
+        }
 
         /// <summary>
         /// Executes a Command and returns the result as a Task. This method

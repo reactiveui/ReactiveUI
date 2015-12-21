@@ -184,32 +184,101 @@ namespace ReactiveUI.Tests
         [Fact]
         public async Task ExecuteAsyncThrowsExceptionOnError()
         {
-            var command = ReactiveCommand.CreateAsyncObservable(_ =>
-                Observable.Throw<Unit>(new Exception("Aieeeee!")));
+            var exception = new Exception("Aieeeee!");
 
-            var exceptions = command.ThrownExceptions.CreateCollection();
+            var command = ReactiveCommand.CreateAsyncObservable(_ => throwSync(exception));
 
-            bool failed = false;
-            try {
-                await command.ExecuteAsync();
-            } catch (Exception ex) {
-                failed = ex.Message == "Aieeeee!";
-            }
-
-            Assert.True(failed);
-            Assert.Equal(1, exceptions.Count);
-            Assert.Equal("Aieeeee!", exceptions[0].Message);
+            await assertThrowsOnExecuteAsync(command, exception);
         }
 
         [Fact]
-        public void ExecuteDoesntThrowOnError()
+        public async Task ExecuteAsyncThrowsExceptionOnAsyncError()
+        {
+            var exception = new Exception("Aieeeee!");
+
+            var command = ReactiveCommand.CreateAsyncObservable(_ => throwAsync(exception));
+
+            await assertThrowsOnExecuteAsync(command, exception);
+        }
+
+        private static async Task assertThrowsOnExecuteAsync(IReactiveCommand<Unit> command, Exception exception)
+        {
+            command.ThrownExceptions.Subscribe();
+
+            var failed = false;
+
+            try {
+                await command.ExecuteAsync();
+            }
+            catch (Exception ex) {
+                failed = ex == exception;
+            }
+
+            Assert.True(failed);
+        }
+
+        [Fact]
+        public async Task ExecuteAsyncForwardsExceptionsToThrownExceptions()
+        {
+            var exception = new Exception("Aieeeee!");
+
+            var command = ReactiveCommand.CreateAsyncObservable(_ => throwSync(exception));
+
+            await assertExceptionForwardedToThrownExceptions(command, exception);
+        }
+
+        [Fact]
+        public async Task ExecuteAsyncForwardsAsyncExceptionsToThrownExceptions()
+        {
+            var exception = new Exception("Aieeeee!");
+
+            var command = ReactiveCommand.CreateAsyncObservable(_ => throwAsync(exception));
+
+            await assertExceptionForwardedToThrownExceptions(command, exception);
+        }
+
+        private static async Task assertExceptionForwardedToThrownExceptions(IReactiveCommand<Unit> command, Exception exception)
+        {
+            var exceptions = command.ThrownExceptions.CreateCollection();
+
+            await command.ExecuteAsync()
+                         .Catch(Observable.Empty<Unit>())
+                         .DefaultIfEmpty(Unit.Default);
+
+            Assert.Equal(1, exceptions.Count);
+            Assert.Contains(exception, exceptions);
+        }
+
+        [Fact]
+        public void ExecuteDoesNotThrowOnError()
         {
             var command = ReactiveCommand.CreateAsyncObservable(_ =>
-            Observable.Throw<Unit>(new Exception("Aieeeee!")));
+                throwSync(new Exception("Aieeeee!")));
 
             command.ThrownExceptions.Subscribe();
 
             command.Execute(null);
+        }
+
+        [Fact]
+        public void ExecuteDoesNotThrowOnAsyncError()
+        {
+            var command = ReactiveCommand.CreateAsyncObservable(_ =>
+                throwAsync(new Exception("Aieeeee!")));
+
+            command.ThrownExceptions.Subscribe();
+
+            command.Execute(null);
+        }
+
+        private static IObservable<Unit> throwAsync(Exception ex)
+        {
+            return Observable.Throw<Unit>(ex);
+        }
+
+        private static IObservable<Unit> throwSync(Exception ex)
+        {
+            throw ex;            
         }
     }
 
