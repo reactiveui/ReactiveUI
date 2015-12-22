@@ -95,3 +95,18 @@
 
     paulcbetts [10:39 AM] Yep
 
+    grokys [11:56 AM] 
+    regarding DP leaks, what exactly causes the problem with rxui? is it `AddValueChanged`
+    as in http://sharpfellows.com/post/Memory-Leaks-and-Dependency-Properties ?
+
+    i'd like to know so we can avoid it in perspex
+
+    paulcbetts [12:11 PM] 
+    So the problem is, normally when there was a "ValueChanged" event, and you add a handler to it,
+    the lifetime of the handler is tied to the lifetime of the object
+
+    So even if you don't free ValueChanged's handler, if the object goes away, you're fine
+
+    In XAML, if you hook change events on the "Value" property
+    ​_Even when the object goes way_​, you have leaked the event
+    Because it's tied to the static property ValueProperty
