@@ -2,7 +2,7 @@
 
 [![Release Version](https://img.shields.io/github/release/reactiveui/reactiveui.svg)](https://github.com/reactiveui/reactiveui/releases) [![NuGet Stats](https://img.shields.io/nuget/dt/reactiveui-core.svg)](https://www.nuget.org/packages/reactiveui) [![Issue Stats](http://www.issuestats.com/github/reactiveui/reactiveui/badge/issue?style=flat)](http://www.issuestats.com/github/reactiveui/reactiveui) [![Pull Request Stats](http://www.issuestats.com/github/reactiveui/reactiveui/badge/pr?style=flat)](http://www.issuestats.com/github/reactiveui/reactiveui)
 
-[![Join us in Slack!](https://img.shields.io/badge/slack-reactivex.slack.com-020031.svg)](https://ghuntley.typeform.com/to/gpZTAG) [![Follow us on Twitter](https://img.shields.io/badge/twitter-%40reactivexui-020031.svg)](https://twitter.com/reactivexui) [![Visit our website](https://img.shields.io/badge/website-reactiveui.net-020031.svg) ](http://www.reactiveui.net/)
+[![Follow us on Twitter](https://img.shields.io/badge/twitter-%40reactivexui-020031.svg)](https://twitter.com/reactivexui) [![Visit our website](https://img.shields.io/badge/website-reactiveui.net-020031.svg) ](http://www.reactiveui.net/)
 
 Use the Reactive Extensions for .NET to create elegant, testable User Interfaces that run on any mobile or desktop platform. Supports Xamarin.iOS, Xamarin.Android, Xamarin.Mac, Xamarin Forms, WPF, Windows Forms, Windows Phone 8, Windows Store and Universal Windows Platform (UWP).
 
@@ -100,7 +100,12 @@ this.WhenAnyValue(x => x.SearchQuery)
     .InvokeCommand(this, x => x.Search);
 ```
 
+# Slack Team
+
+ReactiveUI has a Slack Team that many of the core developers hang out at, and everyone is welcome to join. Send an Email to [paul@paulbetts.org](mailto:paul@paulbetts.org) with the Email address you'd like to be invited, and we'll send you an invite.
+
 # Support
+
 ReactiveUI is an open source project that is community supported by people just like you. We keep [a bunch of curated tasks specifically for new contributors](https://github.com/reactiveui/reactiveui/labels/up-for-grabs) which are [a great way to get started with open source](https://yourfirstpr.github.io/). They also provide a fantastic avenue for getting to know the ReactiveUI maintainers.
 
 If you have a question, please see if any discussions in our [GitHub issues](github.com/reactiveui/ReactiveUI/issues) or [Stack Overflow](https://stackoverflow.com/questions/tagged/reactiveui) have already answered it. If not, please [feel free to file your own](https://github.com/reactiveui/ReactiveUI/issues/new)! 
