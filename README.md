@@ -41,7 +41,7 @@ Let’s say you have a text field, and whenever the user types something into it
 
 ![](http://i.giphy.com/xTka02wR2HiFOFACoE.gif)
 
-```cs
+```csharp
 public interface ISearchViewModel
 {
     ReactiveList<SearchResults> SearchResults { get; }
@@ -60,7 +60,7 @@ public interface ISearchViewModel
 var canSearch = this.WhenAny(x => x.SearchQuery, x => !String.IsNullOrWhiteSpace(x.Value));
 ```
 ### Make the network connection
-```
+```csharp
 // ReactiveCommand has built-in support for background operations and
 // guarantees that this block will only run exactly once at a time, and
 // that the CanExecute will auto-disable and that property IsExecuting will
