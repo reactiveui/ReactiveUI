@@ -10,7 +10,7 @@ If you’re already familiar with [functional reactive programming](https://en.w
 
 If you have a question, please see if any discussions in our [GitHub issues](github.com/reactiveui/ReactiveUI/issues) or [Stack Overflow](https://stackoverflow.com/questions/tagged/reactiveui) have already answered it. If not, please [feel free to file your own](https://github.com/reactiveui/ReactiveUI/issues/new)! 
 
-We have our very own [Slack organization](https://reactivex.slack.com/) which contains some of the best user interface/reactive extension developers in the industry. All software engineers, young and old, regardless of experience are welcome to join our campfire but you'll need to send us a [quick email to obtain an invitation](https://ghuntley.typeform.com/to/gpZTAG) as we actively strive to keep the recruiters out. The invitation process is manually reviewed by humans and approvals are usually processesed within a of couple days. Sit tight, it's worth it.
+We have our very own [Slack organization](https://reactivex.slack.com/) which contains some of the best user interface/reactive extension developers in the industry. All software engineers, young and old, regardless of experience are welcome to join our campfire but you'll need to send an email to [paul@paulbetts.org](mailto:paul@paulbetts.org) with the email address you'd like to be invited, and we'll send you an invite. Sit tight, it's worth it.
 
 # Introduction
 
@@ -101,9 +101,9 @@ this.WhenAnyValue(x => x.SearchQuery)
     .InvokeCommand(this, x => x.Search);
 ```
 
-# Slack Team
+# Slack
 
-ReactiveUI has a Slack Team that many of the core developers hang out at, and everyone is welcome to join. Send an Email to [paul@paulbetts.org](mailto:paul@paulbetts.org) with the Email address you'd like to be invited, and we'll send you an invite.
+We have our very own [Slack organization](https://reactivex.slack.com/) which contains some of the best user interface/reactive extension developers in the industry. All software engineers, young and old, regardless of experience are welcome to join our campfire but you'll need to send an email to [paul@paulbetts.org](mailto:paul@paulbetts.org) with the Email address you'd like to be invited, and we'll send you an invite. Sit tight, it's worth it.
 
 # Support
 
