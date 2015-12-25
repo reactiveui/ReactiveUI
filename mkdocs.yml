@@ -51,7 +51,8 @@ pages:
 
 # Binding:  
 - ['binding/type-converters.md', 'Binding', 'Type Converters']
-- ['binding/wpf.md', 'Binding', 'WPF']
+- ['binding/wpf.md', 'Binding', 'WPF'] 
+- ['binding/uwp.md', 'Binding', 'UWP']
 - ['binding/ios.md', 'Binding', 'iOS']
 
 # Routing:
