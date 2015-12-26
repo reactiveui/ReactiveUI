@@ -4,6 +4,7 @@ using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using ReactiveUI.Events;
 
+#pragma warning disable 1591
 {{#Namespaces}}
 using {{Name}};
 {{/Namespaces}}
@@ -87,4 +88,5 @@ namespace {{Name}}.Rx
     }
 {{/Types}}
 }
+#pragma warning restore 1591
 {{/DelegateNamespaces}}
