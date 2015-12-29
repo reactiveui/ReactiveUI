@@ -11,6 +11,7 @@ using {{Name}};
 using {{Name}};
 {{/DelegateNamespaces}}
 
+#pragma warning disable 1591
 {{#Namespaces}}
 namespace {{Name}}
 {
@@ -87,4 +88,5 @@ namespace {{Name}}.Rx
     }
 {{/Types}}
 }
+#pragma warning restore 1591
 {{/DelegateNamespaces}}
