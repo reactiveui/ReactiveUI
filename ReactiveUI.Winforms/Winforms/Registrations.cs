@@ -25,7 +25,6 @@ namespace ReactiveUI.Winforms
 
             registerFunction(() => new ComponentModelTypeConverter(), typeof(IBindingTypeConverter));
           
-            registerFunction(() => new WinformsDefaultPropertyBinding(), typeof(IDefaultPropertyBindingProvider));
             registerFunction(() => new CreatesWinformsCommandBinding(), typeof(ICreatesCommandBinding));
             registerFunction(() => new WinformsCreatesObservableForProperty(), typeof(ICreatesObservableForProperty));
             registerFunction(() => new ActivationForViewFetcher(), typeof(IActivationForViewFetcher));

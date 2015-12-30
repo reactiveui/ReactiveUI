@@ -8,13 +8,16 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using Splat;
+using System.Reactive.Concurrency;
+using System.Text;
+using System.Diagnostics;
+using System.Threading;
 
 #if UNIFIED
 using Foundation;
 using UIKit;
 #else
 using MonoTouch.Foundation;
-using MonoTouch.UIKit;
 #endif
 
 namespace ReactiveUI
@@ -25,8 +28,15 @@ namespace ReactiveUI
     /// </summary>
     interface IUICollViewAdapter<TUIView, TUIViewCell>
     {
+        IObservable<bool> IsReloadingData { get; }
         void ReloadData();
-        void PerformBatchUpdates(Action updates, Action completion);
+        void BeginUpdates();
+        void PerformUpdates(Action updates, Action completion);
+        void EndUpdates();
+        void InsertSections(NSIndexSet indexes);
+        void DeleteSections(NSIndexSet indexes);
+        void ReloadSections(NSIndexSet indexes);
+        void MoveSection(int fromIndex, int toIndex);
         void InsertItems(NSIndexPath[] paths);
         void DeleteItems(NSIndexPath[] paths);
         void ReloadItems(NSIndexPath[] paths);
@@ -41,429 +51,484 @@ namespace ReactiveUI
         Action<TUIViewCell> InitializeCellAction { get; }
     }
 
-    /// <summary>
-    /// Internal class containing the common code between <see cref="ReactiveTableViewSource"/>
-    /// and <see cref="ReactiveCollectionViewSource"/>.
-    /// </summary>
+    internal static class SectionInfoIdGenerator
+    {
+        private static int nextSectionInfoId;
+
+        public static int Generate()
+        {
+            return nextSectionInfoId++;
+        }
+    }
+
     sealed class CommonReactiveSource<TSource, TUIView, TUIViewCell, TSectionInfo> : ReactiveObject, IDisposable, IEnableLogger
         where TSectionInfo : ISectionInformation<TSource, TUIView, TUIViewCell>
     {
-        /// <summary>
-        /// Main disposable which is disposed when this object is disposed.
-        /// </summary>
-        readonly CompositeDisposable mainDisp = new CompositeDisposable();
+        private readonly IUICollViewAdapter<TUIView, TUIViewCell> adapter;
+        private readonly int mainThreadId;
+        private readonly CompositeDisposable mainDisposables;
+        private readonly SerialDisposable sectionInfoDisposable;
+        private readonly IList<Tuple<int, PendingChange>> pendingChanges;
+        private bool isCollectingChanges;
+        private IReadOnlyList<TSectionInfo> sectionInfo;
 
-        /// <summary>
-        /// Disposable used by the setup procedure.
-        /// </summary>
-        readonly SerialDisposable setupDisp = new SerialDisposable();
+        public CommonReactiveSource(IUICollViewAdapter<TUIView, TUIViewCell> adapter)
+        {
+            this.adapter = adapter;
+            this.mainThreadId = Thread.CurrentThread.ManagedThreadId;
+            this.mainDisposables = new CompositeDisposable();
+            this.sectionInfoDisposable = new SerialDisposable();
+            this.mainDisposables.Add(this.sectionInfoDisposable);
+            this.pendingChanges = new List<Tuple<int, PendingChange>>();
+            this.sectionInfo = new TSectionInfo[0];
 
-        /// <summary>
-        /// The adapter of the UIKit view.
-        /// </summary>
-        readonly IUICollViewAdapter<TUIView, TUIViewCell> adapter;
+            this.mainDisposables.Add(
+                this
+                .ObservableForProperty(
+                    x => x.SectionInfo,
+                    beforeChange: true,
+                    skipInitial: true)
+                .Subscribe(
+                    _ => this.SectionInfoChanging(),
+                    ex => this.Log().ErrorException("Error occurred whilst SectionInfo changing.", ex)));
 
-        // <summary>
-        // These UI{Table,Collection}Views are tricky.  Calling ReloadData
-        // won't immediately cause the data to be reloaded [1], contrary
-        // to popular belief.  If we setup these bindings right here,
-        // it is possible that *before* the table really reloads its data,
-        // we'll already put some changes on the queue to be processed.
-        // For example:
-        //
-        //  (a) ReloadData() is called.
-        //  (b) A change on the source is buffered.
-        //  (c) ReloadData() is processed.
-        //  (d) The change is processed.
-        //
-        // The problem here is that step (d) assumes that (b) came after
-        // (c), but it doesn't.  This leads the view into an inconsistent
-        // state, probably triggering an iOS assertion.
-        //
-        // In order to avoid this problem, we setup the change bindings
-        // only after the ReloadData() process has started.  And this
-        // is where things get even trickier!  We don't have any means
-        // to reliably know this!  Instead we assume that a call to
-        // NumberOfSections() after a ReloadData() means that the
-        // reload process has started.  Assuming that just one ReloadData()
-        // is in flight, I don't know if there is any other way
-        // NumberOfSections() would be called otherwise.
-        //
-        // And this is where we get to the last of our tricky problems:
-        // it is possible to call ReloadData() multiple times before
-        // the view gets the chance to process any of them [1]!
-        //
-        // So here's the current solution:
-        //
-        //  - Everytime NumberOfSections() is called,
-        //    we save the time when it occurred.
-        //
-        //  - Everytime a collection is changed,
-        //    we save the time it did so.
-        //
-        //  - When processing collection changes, we discard
-        //    everything that comes *before* the latest call to
-        //    NumberOfSections().
-        //
-        // Nasty!  Yes, I feel dirty!  But I'm not able to come up
-        // with a scenario that breaks this code.
-        //
-        // Instead of using DateTime.Now, which has bad performance and
-        // smells, we keep a counter that is incremented everytime
-        // NumberOfSections() is called.  You can't reset your table
-        // more than 2^64 times due to this solution, though.
-        //
-        // [1] http://stackoverflow.com/a/20115479
-        // </summary>
-        UInt64 lastCallToNumberOfSections = 0;
+            this.mainDisposables.Add(
+                this
+                .WhenAnyValue(x => x.SectionInfo)
+                .Subscribe(
+                    this.SectionInfoChanged,
+                    ex => this.Log().ErrorException("Error occurred when SectionInfo changed.", ex)));
+        }
 
-        /// <summary>
-        /// Gets or sets the list of sections that this <see cref="CommonReactiveSource"/>
-        /// should display.  Setting a new value always causes the table view to be reloaded.
-        /// If the list implements <see cref="IReactiveNotifyCollectionChanged"/>,
-        /// then the source will react to changes to the contents of the list as well.
-        /// </summary>
-        public IReadOnlyList<TSectionInfo> SectionInfo {
+        private bool IsDebugEnabled
+        {
+            get { return this.Log().Level <= LogLevel.Debug; }
+        }
+
+        public IReadOnlyList<TSectionInfo> SectionInfo
+        {
             get { return sectionInfo; }
             set { this.RaiseAndSetIfChanged(ref sectionInfo, value); }
         }
 
-        /// <summary>
-        /// Field backing <see cref="SectionInfo"/>.  Initialized to an empty
-        /// array in order to avoid null reference exceptions if the source is
-        /// used before a real section info has been set.
-        /// </summary>
-        IReadOnlyList<TSectionInfo> sectionInfo = new TSectionInfo[] {};
-
-        /// <summary>
-        /// IObservable that pushes a new value after the corresponding IUICollViewAdapter
-        /// finishes processing changes from the underlying collection. Due to the buffered
-        /// nature of the processing, the value is an IEnumerable of the changes.
-        /// </summary>
-        /// <value>An IEnumerable containing all the changes processed. Note that in
-        /// some cases those can be different than the change events published by the
-        /// underlying collection (for example the return value will contain a single
-        /// Reset event arg even though the collection did not send a Reset, but the adapter
-        /// performed a Reload nevertheless)</value>
-        public IObservable<IEnumerable<NotifyCollectionChangedEventArgs>> DidPerformUpdates {
-            get { return didPerformUpdates; }
-        }
-
-        readonly ISubject<IEnumerable<NotifyCollectionChangedEventArgs>> didPerformUpdates =
-            new Subject<IEnumerable<NotifyCollectionChangedEventArgs>>();
-
-		/// <summary>
-		/// While updating sections, updates from all sections should be batched together
-		/// while invoking PerformBatchUpdates. sectionUpdatesSubject emits updates from
-		/// each section, which are buffered to get updates from all sections before making 
-		/// call to PerformBatchUpdates.
-		/// </summary>
-		/// <value>List of tuples with section index, changes and an IEnumerable containing
-		/// change indexes
-		/// </value>
-		Subject<Tuple<int, NotifyCollectionChangedEventArgs, IEnumerable<int>>> sectionUpdatesSubject = 
-			new Subject<Tuple<int, NotifyCollectionChangedEventArgs, IEnumerable<int>>>();
-
-        public CommonReactiveSource(IUICollViewAdapter<TUIView, TUIViewCell> adapter) 
+        public int NumberOfSections()
         {
-            this.adapter = adapter;
+            Debug.Assert(Thread.CurrentThread.ManagedThreadId == this.mainThreadId);
 
-            mainDisp.Add(setupDisp);
-            mainDisp.Add(this
-                .ObservableForProperty(
-                    x => x.SectionInfo,
-                    true /* beforeChange */,
-                    true /* skipInitial */)
-                .Subscribe(
-                    _ => unsetupAll(),
-                    ex => this.Log().ErrorException("Error while SectionInfo was changing.", ex)));
-
-            mainDisp.Add(this
-                .WhenAnyValue(x => x.SectionInfo)
-                .Subscribe(resetupAll, ex => this.Log().ErrorException("Error while watching for SectionInfo.", ex)));
-        }
-
-        public TUIViewCell GetCell(NSIndexPath indexPath) 
-        {
-            var section = SectionInfo[indexPath.Section];
-            var vm = ((IList)section.Collection) [indexPath.Row];
-            var cell = adapter.DequeueReusableCell(section.CellKeySelector(vm), indexPath);
-            var view = cell as IViewFor;
-
-            if (view != null) {
-                this.Log().Debug("GetCell: Setting vm for Row: " + indexPath.Row);
-                view.ViewModel = vm;
-            }
-
-            (section.InitializeCellAction ?? (_ => {}))(cell);
-            return cell;
-        }
-
-        public int NumberOfSections() 
-        {
             var count = SectionInfo.Count;
-            this.Log().Debug(string.Format("NumberOfSections: {0} (from {1})", count, SectionInfo));
-            this.lastCallToNumberOfSections++;
+            this.Log().Debug("Reporting number of sections = {0}", count);
 
             return count;
         }
 
-        public int RowsInSection(int section) 
+        public int RowsInSection(int section)
         {
+            Debug.Assert(Thread.CurrentThread.ManagedThreadId == this.mainThreadId);
+
             var list = (IList)SectionInfo[section].Collection;
             var count = list.Count;
-            this.Log().Debug(string.Format("RowsInSection: {0}-{1} (from {2} / {3})", section, count, SectionInfo, list));
+            this.Log().Debug("Reporting rows in section {0} = {1}", section, count);
 
             return count;
         }
 
-        public object ItemAt(NSIndexPath path) 
+        public object ItemAt(NSIndexPath path)
         {
+            Debug.Assert(Thread.CurrentThread.ManagedThreadId == this.mainThreadId);
+
             var list = (IList)SectionInfo[path.Section].Collection;
-            this.Log().Debug(string.Format("ItemAt: {0}.{1} (from {2} / {3})", path.Section, path.Row, SectionInfo, list));
+            this.Log().Debug("Returning item at {0}-{1}", path.Section, path.Row);
 
             return list[path.Row];
         }
 
-        public void Dispose() 
+        public TUIViewCell GetCell(NSIndexPath indexPath)
         {
-            mainDisp.Dispose();
+            Debug.Assert(Thread.CurrentThread.ManagedThreadId == this.mainThreadId);
+
+            this.Log().Debug("Getting cell for index path {0}-{1}", indexPath.Section, indexPath.Row);
+            var section = SectionInfo[indexPath.Section];
+            var vm = ((IList)section.Collection)[indexPath.Row];
+            var cell = adapter.DequeueReusableCell(section.CellKeySelector(vm), indexPath);
+            var view = cell as IViewFor;
+
+            if (view != null)
+            {
+                this.Log().Debug("Setting VM for index path {0}-{1}", indexPath.Section, indexPath.Row);
+                view.ViewModel = vm;
+            }
+
+            var initializeCellAction = section.InitializeCellAction ?? (_ => { });
+            initializeCellAction(cell);
+
+            return cell;
         }
 
-        void unsetupAll() 
+        public void Dispose()
         {
-            // Dispose every binding.  Ensures that no matter what,
-            // we won't let events from the old data reach us while
-            // we morph into the new data.
-            this.Log().Debug("SectionInfo about to change, disposing all bindings...");
-            setupDisp.Disposable = Disposable.Empty;
+            this.mainDisposables.Dispose();
         }
 
-        void resetupAll(IReadOnlyList<TSectionInfo> newSectionInfo) 
+        private void SectionInfoChanging()
         {
-            this.Log().Debug("SectionInfo changed to {0}, resetup data and bindings...", newSectionInfo);
+            this.VerifyOnMainThread();
 
-            if (newSectionInfo == null) {
-                this.Log().Debug("Null SectionInfo, done!");
-                setupDisp.Disposable = Disposable.Empty;
+            this.Log().Debug("SectionInfo about to change, disposing of any subscriptions for previous SectionInfo.");
+            this.sectionInfoDisposable.Disposable = null;
+        }
+
+        private void SectionInfoChanged(IReadOnlyList<TSectionInfo> sectionInfo)
+        {
+            this.VerifyOnMainThread();
+
+            // this ID just makes it possible to correlate log messages with a specific SectionInfo
+            var sectionInfoId = SectionInfoIdGenerator.Generate();
+            this.Log().Debug("[#{0}] SectionInfo changed to {1}.", sectionInfoId, sectionInfo);
+
+            if (sectionInfo == null)
+            {
+                this.sectionInfoDisposable.Disposable = null;
                 return;
             }
 
-            // Disposable that holds garbage from this method.
-            var disp = new CompositeDisposable();
-            setupDisp.Disposable = disp;
+            var reactiveSectionInfo = sectionInfo as IReactiveNotifyCollectionChanged<TSectionInfo>;
 
-            // Disposable that holds the subscriptions to individual sections.
-            var subscrDisp = new SerialDisposable();
-            disp.Add(subscrDisp);
+            if (reactiveSectionInfo == null)
+            {
+                this.Log().Warn("[#{0}] SectionInfo {1} does not implement IReactiveNotifyCollectionChanged - any added or removed sections will not be reflected in the UI.", sectionInfoId, sectionInfo);
+            }
 
-            // Decide when we should check for section changes.
-            var reactiveSectionInfo = newSectionInfo as IReactiveNotifyCollectionChanged<TSectionInfo>;
-
-            var sectionChanging = reactiveSectionInfo == null ? Observable.Never<Unit>() : reactiveSectionInfo
+            var sectionChanging = reactiveSectionInfo == null
+                ? Observable.Never<Unit>()
+                : reactiveSectionInfo
                 .Changing
                 .Select(_ => Unit.Default);
 
-            var sectionChanged = reactiveSectionInfo == null ? Observable.Return(Unit.Default) : reactiveSectionInfo
-                .Changed
-                .Select(_ => Unit.Default)
-                .StartWith(Unit.Default);
+            var sectionChanged =
+                (reactiveSectionInfo == null
+                    ? Observable.Never<Unit>()
+                    : reactiveSectionInfo
+                    .Changed
+                    .Select(_ => Unit.Default))
+                    .StartWith(Unit.Default);
 
-            if (reactiveSectionInfo == null) {
-                this.Log().Warn("New section info {0} does not implement IReactiveNotifyCollectionChanged.", newSectionInfo);
-            }
-
-            // Add section change listeners.  Always will run once right away
-            // due to sectionChanged's construction.
-            //
-            // TODO: Instead of listening to Changed events and then reseting,
-            // we could listen to more specific events and avoid some reloads.
-            disp.Add(sectionChanging.Subscribe(_ => {
-                // Dispose the old bindings.  Ensures that old events won't
-                // arrive while we morph into the new data.
-                this.Log().Debug("{0} is about to change, disposing section bindings...", newSectionInfo);
-                subscrDisp.Disposable = Disposable.Empty;
-            }));
-
-            disp.Add(sectionChanged.ObserveOn(RxApp.MainThreadScheduler).Subscribe(_ => {
-                this.Log().Debug("{0} is changed, resetup section data and bindings...", newSectionInfo);
-
-                var disp2 = new CompositeDisposable();
-                subscrDisp.Disposable = disp2;
-
-                for (int i = 0; i < newSectionInfo.Count; i++) {
-                    var section = i;
-                    var current = newSectionInfo[i].Collection;
-                    this.Log().Debug("Setting up section {0} binding...", section);
-
-                    disp2.Add(current
-                        .Changed
-                        .Select(timestamped)
-                        .Subscribe(
-                            xs => sectionCollectionChanged(section, xs),
-                            ex => this.Log().ErrorException("Error while watching section " + section + "'s Collection.", ex)));
-                }
-
-                this.Log().Debug("Done resetuping section data and bindings!");
-
-                // Tell the view that the data needs to be reloaded.
-                this.Log().Debug("Calling ReloadData()...", newSectionInfo);
-                adapter.ReloadData();
-            }));
-
-            disp.Add(sectionUpdatesSubject
-                .Buffer(TimeSpan.FromMilliseconds(250), RxApp.MainThreadScheduler)
-                .Where(updates => updates.Count > 0)
-                .Subscribe(updates => performSectionUpdates(updates)));
-
-            this.Log().Debug("Done resetuping all bindings!");
+            var disposables = new CompositeDisposable();
+            disposables.Add(Disposable.Create(() => this.Log().Debug("[#{0}] Disposed of section info", sectionInfoId)));
+            this.sectionInfoDisposable.Disposable = disposables;
+            this.SubscribeToSectionInfoChanges(sectionInfoId, sectionInfo, sectionChanging, sectionChanged, disposables);
         }
 
-        void performSectionUpdates(IList<Tuple<int, NotifyCollectionChangedEventArgs, IEnumerable<int>>> updates) 
+        private void SubscribeToSectionInfoChanges(int sectionInfoId, IReadOnlyList<TSectionInfo> sectionInfo, IObservable<Unit> sectionChanging, IObservable<Unit> sectionChanged, CompositeDisposable disposables)
         {
-            var resetOnlyNotification = new [] { new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset) };
+            // holds a single disposable representing the monitoring of sectionInfo.
+            // once disposed, any changes to sectionInfo will no longer trigger any of the logic below
+            var sectionInfoDisposable = new SerialDisposable();
+            disposables.Add(sectionInfoDisposable);
 
-            var batchUpdates = new List<Tuple<int, NotifyCollectionChangedEventArgs, IEnumerable<int>>>(); 
+            disposables.Add(
+                sectionChanging.Subscribe(_ =>
+                    {
+                        this.VerifyOnMainThread();
 
-            foreach(IEnumerable<Tuple<int, NotifyCollectionChangedEventArgs, IEnumerable<int>>> sectionUpdate in updates.GroupBy(u => u.Item1)) {
-                var eas = sectionUpdate.Select(u => u.Item2).ToList();
-                var allChangedIndexes = sectionUpdate.SelectMany(u => u.Item3).ToList();
-                var section = sectionUpdate.ToList()[0].Item1;
+                        this.Log().Debug("[#{0}] SectionInfo is changing.", sectionInfoId);
+                        sectionInfoDisposable.Disposable = Disposable.Empty;
+                    }));
 
-                // Detect if we're changing the same cell more than
-                // once - if so, issue a reset and be done
-                if (allChangedIndexes.Count != allChangedIndexes.Distinct().Count()) {
-                    // Before doing a reset, try to see if this is actually a
-                    // series of inserts that can be converted into ranges
-                    if (allChangedIndexes.Distinct().Count() == 1 && eas.All(x => x.Action == NotifyCollectionChangedAction.Add)) {
-                        this.Log().Debug("Converted adds to the same index into a large range Add");
+            disposables.Add(
+                sectionChanged.Subscribe(x =>
+                    {
+                        this.VerifyOnMainThread();
 
-                        var newEa = new NotifyCollectionChangedEventArgs(
-                            NotifyCollectionChangedAction.Add, 
-                            eas.SelectMany(ea => ea.NewItems.Cast<object>().ToList())
-                            .ToList(), 
-                            eas[0].NewStartingIndex);
+                        this.Log().Debug("[#{0}] Calling ReloadData()", sectionInfoId);
+                        this.adapter.ReloadData();
 
-                        batchUpdates.Add(Tuple.Create(section, newEa, getChangedIndexes(newEa)));
-                    } else {
-                        this.Log().Debug("Detected a dupe in the changelist. Issuing Reset");
-                        adapter.ReloadData();
+                        // holds all the disposables created to monitor stuff inside the section
+                        var sectionDisposables = new CompositeDisposable();
+                        sectionInfoDisposable.Disposable = sectionDisposables;
 
-                        didPerformUpdates.OnNext(resetOnlyNotification);
-                        return;
-                    }
-                } else {
-                    batchUpdates.AddRange(sectionUpdate);
-                }
-            }
+                        // holds a single disposable for any outstanding request to apply pending changes
+                        var applyPendingChangesDisposable = new SerialDisposable();
+                        sectionDisposables.Add(applyPendingChangesDisposable);
 
-            List<NotifyCollectionChangedEventArgs> allEventArgs = new List<NotifyCollectionChangedEventArgs>();
+                        var isReloading = adapter
+                            .IsReloadingData
+                            .DistinctUntilChanged()
+                            .Do(y => this.Log().Debug("[#{0}] IsReloadingData = {1}", sectionInfoId, y))
+                            .Publish();
 
-            this.Log().Debug("Beginning update");
-            adapter.PerformBatchUpdates(() => {
-                foreach (var update in batchUpdates.AsEnumerable().Reverse()) {
-                    var ea = update.Item2;
-                    var section = update.Item1;
-                    var changeAction = ea.Action;
-                    var changedIndexes = update.Item3;
-                    allEventArgs.Add(ea);
+                        var anySectionChanged = Observable
+                            .Merge(
+                                sectionInfo
+                                .Select((y, index) => y.Collection.Changed.Select(z => new { Section = index, Change = z })))
+                            .Publish();
 
-                    switch (changeAction) {
-                    case NotifyCollectionChangedAction.Add:
-                        doUpdate(adapter.InsertItems, changedIndexes, section);
-                        break;
-                    case NotifyCollectionChangedAction.Remove:
-                        doUpdate(adapter.DeleteItems, changedIndexes, section);
-                        break;
-                    case NotifyCollectionChangedAction.Replace:
-                        doUpdate(adapter.ReloadItems, changedIndexes, section);
-                        break;
-                    case NotifyCollectionChangedAction.Move:
-                        // NB: ReactiveList currently only supports single-item
-                        // moves
+                        // since reloads are applied asynchronously, it is possible for data to change whilst the reload is occuring
+                        // thus, we need to ensure any such changes result in another reload
+                        sectionDisposables.Add(
+                            isReloading
+                            .Where(y => y)
+                            .Join(
+                                anySectionChanged,
+                                _ => isReloading,
+                                _ => Observable.Empty<Unit>(),
+                                (_, __) => Unit.Default)
+                            .Subscribe(_ =>
+                                {
+                                    this.VerifyOnMainThread();
+                                    this.Log().Debug("[#{0}] A section changed whilst a reload is in progress - forcing another reload.", sectionInfoId);
 
-                        this.Log().Debug("Calling MoveRow: {0}-{1} => {0}{2}", section, ea.OldStartingIndex, ea.NewStartingIndex);
+                                    adapter.ReloadData();
+                                    this.pendingChanges.Clear();
+                                    isCollectingChanges = false;
+                                }));
 
-                        adapter.MoveItem(
-                            NSIndexPath.FromRowSection(ea.OldStartingIndex, section),
-                            NSIndexPath.FromRowSection(ea.NewStartingIndex, section));
-                        break;
-                    default:
-                        this.Log().Debug("Unknown Action: {0}", changeAction);
-                        break;
-                    }
-                }
-            }, () => {
-                this.Log().Debug("Ending update");
-                didPerformUpdates.OnNext(allEventArgs);
-            });
+                        sectionDisposables.Add(
+                            isReloading
+                            .Where(y => !y)
+                            .Join(
+                                anySectionChanged,
+                                _ => isReloading,
+                                _ => Observable.Empty<Unit>(),
+                                (reloading, changeDetails) => new { Change = changeDetails.Change, Section = changeDetails.Section })
+                            .Subscribe(y =>
+                                {
+                                    this.VerifyOnMainThread();
+
+                                    if (this.IsDebugEnabled)
+                                    {
+                                        this.Log().Debug(
+                                            "[#{0}] Change detected in section {1} : Action = {2}, OldStartingIndex = {3}, NewStartingIndex = {4}, OldItems.Count = {5}, NewItems.Count = {6}",
+                                            sectionInfoId,
+                                            y.Section,
+                                            y.Change.Action,
+                                            y.Change.OldStartingIndex,
+                                            y.Change.NewStartingIndex,
+                                            y.Change.OldItems == null ? "null" : y.Change.OldItems.Count.ToString(),
+                                            y.Change.NewItems == null ? "null" : y.Change.NewItems.Count.ToString());
+                                    }
+
+                                    if (!this.isCollectingChanges)
+                                    {
+                                        this.Log().Debug("[#{0}] A section changed whilst no reload is in progress - instigating collection of updates for later application.", sectionInfoId);
+                                        this.isCollectingChanges = true;
+
+                                        // immediately indicate to the view that there are changes underway, even though we don't apply them immediately
+                                        // this ensures that if application code itself calls BeginUpdates/EndUpdates on the view before the changes have been applied, those inconsistencies
+                                        // between what's in the data source versus what the view believes is in the data source won't trigger any errors because of the outstanding
+                                        // BeginUpdates call (calls to BeginUpdates/EndUpdates can be nested)
+                                        this.Log().Debug("[#{0}] BeginUpdates", sectionInfoId);
+                                        adapter.BeginUpdates();
+
+                                        applyPendingChangesDisposable.Disposable = RxApp.MainThreadScheduler.Schedule(
+                                            () =>
+                                            {
+                                                this.ApplyPendingChanges(sectionInfoId);
+                                                this.Log().Debug("[#{0}] EndUpdates", sectionInfoId);
+                                                adapter.EndUpdates();
+                                                isCollectingChanges = false;
+                                                applyPendingChangesDisposable.Disposable = null;
+                                            });
+                                    }
+
+                                    this.pendingChanges.Add(Tuple.Create(y.Section, new PendingChange(y.Change)));
+                                },
+                                ex => this.Log().Error("[#{0}] Error while watching section collection: {1}", sectionInfoId, ex)));
+
+                        sectionDisposables.Add(isReloading.Connect());
+                        sectionDisposables.Add(anySectionChanged.Connect());
+                    }));
         }
 
-        void sectionCollectionChanged(int section, Timestamped<NotifyCollectionChangedEventArgs> tea) 
+        private void ApplyPendingChanges(int sectionInfoId)
         {
-            this.Log().Debug(
-                "Changed contents: [{0}] (from {1})",
-                String.Join(",", tea.Value.Action.ToString()),
-                SectionInfo);
+            Debug.Assert(Thread.CurrentThread.ManagedThreadId == this.mainThreadId);
+            Debug.Assert(this.isCollectingChanges);
+            this.Log().Debug("[#{0}] Applying pending changes", sectionInfoId);
 
-            if (tea.Timestamp < lastCallToNumberOfSections) {
-                this.Log().Warn("Ignoring change that ocurred before the last call to NumberOfSections() from {0}.", SectionInfo);
-                return;
+            try
+            {
+                adapter.PerformUpdates(
+                    () =>
+                    {
+                        if (this.IsDebugEnabled)
+                        {
+                            this.Log().Debug("[#{0}] The pending changes (in order received) are:", sectionInfoId);
+
+                            foreach (var pendingChange in pendingChanges)
+                            {
+                                this.Log().Debug(
+                                    "[#{0}] Section {1}: Action = {2}, OldStartingIndex = {3}, NewStartingIndex = {4}, OldItems.Count = {5}, NewItems.Count = {6}",
+                                    sectionInfoId,
+                                    pendingChange.Item1,
+                                    pendingChange.Item2.Action,
+                                    pendingChange.Item2.OldStartingIndex,
+                                    pendingChange.Item2.NewStartingIndex,
+                                    pendingChange.Item2.OldItems == null ? "null" : pendingChange.Item2.OldItems.Count.ToString(),
+                                    pendingChange.Item2.NewItems == null ? "null" : pendingChange.Item2.NewItems.Count.ToString());
+                            }
+                        }
+
+                        foreach (var sectionedUpdates in pendingChanges.GroupBy(x => x.Item1))
+                        {
+                            var section = sectionedUpdates.First().Item1;
+
+                            this.Log().Debug("[#{0}] Processing updates for section {1}", sectionInfoId, section);
+
+                            var allSectionChanges = sectionedUpdates
+                                .Select(x => x.Item2)
+                                .ToList();
+
+                            if (allSectionChanges.Any(x => x.Action == NotifyCollectionChangedAction.Reset))
+                            {
+                                this.Log().Debug("[#{0}] Section {1} included a reset notification, so reloading that section.", sectionInfoId, section);
+#if UNIFIED
+                                adapter.ReloadSections(new NSIndexSet((nuint)section));
+#else
+                                adapter.ReloadSections(new NSIndexSet((uint)section));
+#endif
+                                continue;
+                            }
+
+                            var updates = allSectionChanges
+                                .SelectMany(GetUpdatesForEvent)
+                                .ToList();
+                            var normalizedUpdates = IndexNormalizer.Normalize(updates);
+
+                            if (this.IsDebugEnabled)
+                            {
+                                this.Log().Debug(
+                                    "[#{0}] Updates for section {1}: {2}",
+                                    sectionInfoId,
+                                    section,
+                                    string.Join(":", updates));
+
+                                this.Log().Debug(
+                                    "[#{0}] Normalized updates for section {1}: {2}",
+                                    sectionInfoId,
+                                    section,
+                                    string.Join(":", normalizedUpdates));
+                            }
+
+                            foreach (var normalizedUpdate in normalizedUpdates)
+                            {
+                                switch (normalizedUpdate.Type)
+                                {
+                                case UpdateType.Add:
+                                    DoUpdate(adapter.InsertItems, new[] { normalizedUpdate.Index }, section);
+                                    break;
+                                case UpdateType.Delete:
+                                    DoUpdate(adapter.DeleteItems, new[] { normalizedUpdate.Index }, section);
+                                    break;
+                                default:
+                                    throw new NotSupportedException();
+                                }
+                            }
+                        }
+                    },
+                    () => this.Log().Debug("[#{0}] Pending changes applied", sectionInfoId));
             }
-
-            var resetOnlyNotification = new [] { new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset) };
-            if (tea.Value.Action == NotifyCollectionChangedAction.Reset) {
-                this.Log().Debug("About to call ReloadData");
-                adapter.ReloadData();
-
-                didPerformUpdates.OnNext(resetOnlyNotification);
-                return;
-            }                
-
-            sectionUpdatesSubject.OnNext(Tuple.Create(section, tea.Value, getChangedIndexes(tea.Value)));
+            finally
+            {
+                pendingChanges.Clear();
+            }
         }
 
-        static IEnumerable<int> getChangedIndexes(NotifyCollectionChangedEventArgs ea)
+        private static IEnumerable<Update> GetUpdatesForEvent(PendingChange pendingChange)
         {
-            switch (ea.Action) {
+            switch (pendingChange.Action)
+            {
             case NotifyCollectionChangedAction.Add:
-            case NotifyCollectionChangedAction.Replace:
-                return Enumerable.Range(ea.NewStartingIndex, ea.NewItems != null ? ea.NewItems.Count : 1);
-            case NotifyCollectionChangedAction.Move:
-                return new[] { ea.OldStartingIndex, ea.NewStartingIndex };
+                return Enumerable
+                    .Range(pendingChange.NewStartingIndex, pendingChange.NewItems == null ? 1 : pendingChange.NewItems.Count)
+                    .Select(x => Update.CreateAdd(x));
             case NotifyCollectionChangedAction.Remove:
-                return Enumerable.Range(ea.OldStartingIndex, ea.OldItems != null ? ea.OldItems.Count : 1);
+                return Enumerable
+                    .Range(pendingChange.OldStartingIndex, pendingChange.OldItems == null ? 1 : pendingChange.OldItems.Count)
+                    .Select(x => Update.CreateDelete(x));
+            case NotifyCollectionChangedAction.Move:
+                return Enumerable
+                    .Range(pendingChange.OldStartingIndex, pendingChange.OldItems == null ? 1 : pendingChange.OldItems.Count)
+                    .Select(x => Update.CreateDelete(x))
+                    .Concat(
+                        Enumerable
+                        .Range(pendingChange.NewStartingIndex, pendingChange.NewItems == null ? 1 : pendingChange.NewItems.Count)
+                        .Select(x => Update.CreateAdd(x)));
+            case NotifyCollectionChangedAction.Replace:
+                return Enumerable
+                    .Range(pendingChange.NewStartingIndex, pendingChange.NewItems == null ? 1 : pendingChange.NewItems.Count)
+                    .SelectMany(x => new[] { Update.CreateDelete(x), Update.CreateAdd(x) });
             default:
-                throw new ArgumentException("Don't know how to deal with " + ea.Action);
+                throw new NotSupportedException("Don't know how to deal with " + pendingChange.Action);
             }
         }
 
-        void doUpdate(Action<NSIndexPath[]> method, IEnumerable<int> update, int section)
+        private void DoUpdate(Action<NSIndexPath[]> method, IEnumerable<int> update, int section)
         {
             var toChange = update
-                 .Select(x => NSIndexPath.FromRowSection(x, section))
-                 .ToArray();
+                .Select(x => NSIndexPath.FromRowSection(x, section))
+                .ToArray();
 
-            this.Log().Debug("Calling {0}: [{1}]", method.Method.Name,
-                String.Join(",", toChange.Select(x => x.Section + "-" + x.Row)));
+            if (this.IsDebugEnabled)
+            {
+                this.Log().Debug(
+                    "Calling {0}: [{1}]",
+                    method.Method.Name,
+                    string.Join(",", toChange.Select(x => x.Section + "-" + x.Row)));
+            }
 
             method(toChange);
         }
 
-        Timestamped<T> timestamped<T>(T newValue) 
+        private void VerifyOnMainThread()
         {
-            return new Timestamped<T>(this.lastCallToNumberOfSections, newValue);
+            if (Thread.CurrentThread.ManagedThreadId != this.mainThreadId)
+            {
+                throw new InvalidOperationException("An operation has occurred off the main thread that must be performed on it. Be sure to schedule changes to the underlying data correctly.");
+            }
         }
 
-        class Timestamped<T> 
+        // rather than storing NotifyCollectionChangeEventArgs instances, we store instances of this class instead
+        // storing NotifyCollectionChangeEventArgs doesn't always work because external code can mutate the instance before we get a chance to apply it
+        private sealed class PendingChange
         {
-            public readonly UInt64 Timestamp;
-            public readonly T Value;
+            private readonly NotifyCollectionChangedAction action;
+            private readonly IList oldItems;
+            private readonly IList newItems;
+            private readonly int oldStartingIndex;
+            private readonly int newStartingIndex;
 
-            public Timestamped(UInt64 timestamp, T newValue) 
+            public PendingChange(NotifyCollectionChangedEventArgs ea)
             {
-                Timestamp = timestamp;
-                Value = newValue;
+                this.action = ea.Action;
+                this.oldItems = ea.OldItems == null ? null : ea.OldItems.Cast<object>().ToList();
+                this.newItems = ea.NewItems == null ? null : ea.NewItems.Cast<object>().ToList();
+                this.oldStartingIndex = ea.OldStartingIndex;
+                this.newStartingIndex = ea.NewStartingIndex;
+            }
+
+            public NotifyCollectionChangedAction Action
+            {
+                get { return this.action; }
+            }
+
+            public IList OldItems
+            {
+                get { return this.oldItems; }
+            }
+
+            public IList NewItems
+            {
+                get { return this.newItems; }
+            }
+
+            public int OldStartingIndex
+            {
+                get { return this.oldStartingIndex; }
+            }
+
+            public int NewStartingIndex
+            {
+                get { return this.newStartingIndex; }
             }
         }
     }

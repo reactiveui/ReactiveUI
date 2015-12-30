@@ -21,7 +21,6 @@ namespace ReactiveUI.XamForms
         public void Register(Action<Func<object>, Type> registerFunction)
         {
             registerFunction(() => new ActivationForViewFetcher(), typeof(IActivationForViewFetcher));
-            registerFunction(() => new XamlDefaultPropertyBinding(), typeof(IDefaultPropertyBindingProvider));
         }
     }
 }
