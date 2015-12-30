@@ -12,12 +12,13 @@ using System.Reactive.Subjects;
 using System.Reactive.Threading.Tasks;
 using System.Threading.Tasks;
 
-namespace ReactiveUI
+namespace ReactiveUI.Legacy
 {
     /// <summary>
     /// Describes a stock error icon situation - it is up to the UI to decide
     /// how to interpret these icons.
     /// </summary>
+    [Obsolete("This type is obsolete and will be removed in a future version of ReactiveUI. Please switch to using user interactions instead.")]
     public enum StockUserErrorIcon {
         Critical,
         Error, 
@@ -30,6 +31,7 @@ namespace ReactiveUI
     /// A command that represents a recovery from an error. These commands
     /// will typically be displayed as buttons in the error dialog.
     /// </summary>
+    [Obsolete("This type is obsolete and will be removed in a future version of ReactiveUI. Please switch to using user interactions instead.")]
     public interface IRecoveryCommand : IReactiveCommand
     {
         /// <summary>
@@ -49,6 +51,7 @@ namespace ReactiveUI
     /// RecoveryOptionResult describes to the code throwing the UserError what
     /// to do once the error is resolved.
     /// </summary>
+    [Obsolete("This type is obsolete and will be removed in a future version of ReactiveUI. Please switch to using user interactions instead.")]
     public enum RecoveryOptionResult {
 
         /// <summary>
@@ -79,6 +82,7 @@ namespace ReactiveUI
     /// example an "Out of Disk Space" error might have an "Open Explorer"
     /// recovery option.
     /// </summary>
+    [Obsolete("This type is obsolete and will be removed in a future version of ReactiveUI. Please switch to using user interactions instead.")]
     public class UserError : ReactiveObject
     {
         public UserError(
@@ -353,6 +357,7 @@ namespace ReactiveUI
     /// (usually in the form of a button) that will help resolve or mitigate a
     /// UserError.
     /// </summary>
+    [Obsolete("This type is obsolete and will be removed in a future version of ReactiveUI. Please switch to using user interactions instead.")]
     public class RecoveryCommand : ReactiveCommand<Unit>, IRecoveryCommand
     {
         public bool IsDefault { get; set; }
