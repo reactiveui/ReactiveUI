@@ -100,23 +100,6 @@ namespace ReactiveUI.Tests.Winforms
 
             Assert.Equal(vm.SomeDouble.ToString(), view.Property3.Text);
         }
-         
-        [Fact]
-        public void CanAutoBindViewModelToWinformView()
-        {
-            var vm = new FakeWinformViewModel();
-            var view = new FakeWinformsView() { ViewModel = vm };
-
-            vm.SomeDouble = 1234.4;
-            Assert.NotEqual(vm.SomeDouble.ToString(), view.SomeDouble.Text);
-
-            view.Bind(vm, x => x.SomeDouble);
-            Assert.Equal(vm.SomeDouble.ToString(), view.SomeDouble.Text);
-
-            view.SomeDouble.Text = (2347746.44).ToString();
-            Assert.Equal(vm.SomeDouble.ToString(), view.SomeDouble.Text);
-
-        }
 
         [Fact]
         public void SmokeTestWinformControls()
@@ -125,8 +108,11 @@ namespace ReactiveUI.Tests.Winforms
             var view = new FakeWinformsView() { ViewModel = vm };
 
             var disp = new CompositeDisposable(new[] {
-                view.Bind(vm, x => x.Property1), view.Bind(vm, x => x.Property2), view.Bind(vm, x => x.Property3),
-                view.Bind(vm, x => x.Property4), view.Bind(vm, x => x.BooleanProperty),
+                view.Bind(vm, x => x.Property1, x => x.Property1.Text),
+                view.Bind(vm, x => x.Property2, x => x.Property2.Text),
+                view.Bind(vm, x => x.Property3, x => x.Property3.Text),
+                view.Bind(vm, x => x.Property4, x => x.Property4.Text),
+                view.Bind(vm, x => x.BooleanProperty, x => x.BooleanProperty.Checked),
             });
 
             vm.Property1 = "FOOO";

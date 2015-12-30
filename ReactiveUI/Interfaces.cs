@@ -456,18 +456,6 @@ namespace ReactiveUI
     {
         void Activate(bool activate);
     }
-
-    /// <summary>
-    /// Allows an additional string to make view resolution more specific than
-    /// just a type.
-    /// </summary>
-    public class ViewContractAttribute : Attribute
-    {
-        /// <summary>
-        /// A unique string that will be used along with the type to resolve a View
-        /// </summary>
-        public string Contract { get; set; }
-    }
 }
 
 // vim: tw=120 ts=4 sw=4 et :

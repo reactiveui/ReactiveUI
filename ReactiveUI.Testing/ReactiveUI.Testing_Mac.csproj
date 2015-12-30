@@ -51,7 +51,7 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Xml" />
     <Reference Include="Splat">
-      <HintPath>..\packages\Splat.1.6.0\lib\MonoMac\Splat.dll</HintPath>
+      <HintPath>..\packages\Splat.1.6.2\lib\MonoMac\Splat.dll</HintPath>
     </Reference>
     <Reference Include="System.Reactive.Core">
       <HintPath>..\packages\Rx-Core.2.2.5\lib\net45\System.Reactive.Core.dll</HintPath>
