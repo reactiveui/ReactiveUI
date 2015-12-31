@@ -14,10 +14,16 @@ namespace ReactiveUI.Tests
     public class ReactiveCommandTests
     {
         [Fact]
-        public void ConstructorThrowsIfExecuteAsyncIsNull()
+        public void CreateThrowsIfExecutionParameterIsNull()
         {
-            Assert.Throws<ArgumentNullException>(() => ReactiveCommand.Create<Unit>(null));
-            Assert.Throws<ArgumentNullException>(() => ReactiveCommand.Create<Unit, Unit>(null));
+            Assert.Throws<ArgumentNullException>(() => ReactiveCommand.Create((Action)null));
+            Assert.Throws<ArgumentNullException>(() => ReactiveCommand.Create((Func<Unit>)null));
+            Assert.Throws<ArgumentNullException>(() => ReactiveCommand.Create((Action<Unit>)null));
+            Assert.Throws<ArgumentNullException>(() => ReactiveCommand.Create((Func<Unit, Unit>)null));
+            Assert.Throws<ArgumentNullException>(() => ReactiveCommand.Create((Func<IObservable<Unit>>)null));
+            Assert.Throws<ArgumentNullException>(() => ReactiveCommand.Create((Func<Task<Unit>>)null));
+            Assert.Throws<ArgumentNullException>(() => ReactiveCommand.Create((Func<Unit, IObservable<Unit>>)null));
+            Assert.Throws<ArgumentNullException>(() => ReactiveCommand.Create((Func<Unit, Task<Unit>>)null));
         }
 
         [Fact]
