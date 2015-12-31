@@ -73,7 +73,7 @@ namespace ReactiveUI
                     return null;
                 }
 
-                if (targetType.IsInstanceOfType(from)) {
+                if (isInstanceOfType(from, targetType)) {
                     return from;
                 }
 
@@ -91,32 +91,21 @@ namespace ReactiveUI
             }
 
             var converted = Convert.ChangeType(from, backingNullableType, null);
-            if(!targetType.IsAssignableFrom(converted.GetType())) {
+            if(!isInstanceOfType(targetType, converted.GetType())) {
                 throw new InvalidCastException();
             }
 
             return converted;
         }
 
-        //public static object DoReferenceCast<T>(object from)
-        //{
-        //    var targetType = typeof (T);
-        //    var backingNullableType = Nullable.GetUnderlyingType(targetType);
-
-        //    if (backingNullableType == null) {
-        //        return (T) from;
-        //    }
-
-        //    if (from == null) {
-        //        var ut = Nullable.GetUnderlyingType(targetType);
-        //        if (ut == null) {
-        //            throw new Exception("Can't convert from nullable-type which is null to non-nullable type");
-        //        }
-        //        return default(T);
-        //    }
-
-        //    return (T) Convert.ChangeType(from, backingNullableType, null);
-        //}
+        static bool isInstanceOfType(object from, Type targetType)
+        {
+#if WINRT || PORTABLE
+            return targetType.GetTypeInfo().IsAssignableFrom(from.GetType().GetTypeInfo());
+#else
+            return targetType.IsInstanceOfType(from);
+#endif
+        }
     }
 
     /// <summary>
