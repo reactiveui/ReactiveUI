@@ -15,7 +15,7 @@ namespace ReactiveUI.Tests.Winforms
         public void CommandBinderBindsToButton()
         {
             var fixture = new CreatesWinformsCommandBinding();
-            var cmd = NewReactiveCommand.Create<int>(_ => { });
+            var cmd = ReactiveCommand.Create<int>(_ => { });
             var input = new Button { };
 
             Assert.True(fixture.GetAffinityForObject(input.GetType(), true) > 0);
@@ -39,7 +39,7 @@ namespace ReactiveUI.Tests.Winforms
         public void CommandBinderBindsToCustomControl()
         {
             var fixture = new CreatesWinformsCommandBinding();
-            var cmd = NewReactiveCommand.Create<int>(_ => { });
+            var cmd = ReactiveCommand.Create<int>(_ => { });
             var input = new CustomClickableControl { };
 
             Assert.True(fixture.GetAffinityForObject(input.GetType(), true) > 0);
@@ -63,7 +63,7 @@ namespace ReactiveUI.Tests.Winforms
         public void CommandBinderBindsToCustomComponent()
         {
             var fixture = new CreatesWinformsCommandBinding();
-            var cmd = NewReactiveCommand.Create<int>(_ => { });
+            var cmd = ReactiveCommand.Create<int>(_ => { });
             var input = new CustomClickableComponent { };
 
             Assert.True(fixture.GetAffinityForObject(input.GetType(), true) > 0);
@@ -90,7 +90,7 @@ namespace ReactiveUI.Tests.Winforms
             var canExecute = new Subject<bool>();
             canExecute.OnNext(true);
 
-            var cmd = NewReactiveCommand.Create(() => { }, canExecute);
+            var cmd = ReactiveCommand.Create(() => { }, canExecute);
             var input = new Button { };
 
             using (var disp = fixture.BindCommandToObject(cmd, input, Observable.Return((object)5))) {
@@ -109,7 +109,7 @@ namespace ReactiveUI.Tests.Winforms
             var canExecute = new Subject<bool>();
             canExecute.OnNext(true);
 
-            var cmd = NewReactiveCommand.Create(() => { }, canExecute);
+            var cmd = ReactiveCommand.Create(() => { }, canExecute);
             var input = new ToolStripButton { }; // ToolStripButton is a Component, not a Control
 
             using (var disp = fixture.BindCommandToObject(cmd, input, Observable.Return((object)5))) {
@@ -168,7 +168,7 @@ namespace ReactiveUI.Tests.Winforms
             view.Command1.PerformClick(); ;
             Assert.Equal(1, invokeCount);
 
-            var newCmd = NewReactiveCommand.Create(() => { });
+            var newCmd = ReactiveCommand.Create(() => { });
             vm.Command1 = newCmd;
 
             view.Command1.PerformClick();
@@ -201,11 +201,11 @@ namespace ReactiveUI.Tests.Winforms
 
     public class FakeViewModel : ReactiveObject
     {
-        public NewReactiveCommand<Unit, Unit> Cmd { get; protected set; }
+        public ReactiveCommand<Unit, Unit> Cmd { get; protected set; }
 
         public FakeViewModel()
         {
-            Cmd = NewReactiveCommand.Create(() => { });
+            Cmd = ReactiveCommand.Create(() => { });
         }
     }
 
@@ -230,15 +230,15 @@ namespace ReactiveUI.Tests.Winforms
 
     public class WinformCommandBindViewModel : ReactiveObject
     {
-        NewReactiveCommand<Unit, Unit> _Command1;
-        public NewReactiveCommand<Unit, Unit> Command1
+        ReactiveCommand<Unit, Unit> _Command1;
+        public ReactiveCommand<Unit, Unit> Command1
         {
             get { return _Command1; }
             set { this.RaiseAndSetIfChanged(ref _Command1, value); }
         }
 
-        NewReactiveCommand<Unit, Unit> _Command2;
-        public NewReactiveCommand<Unit, Unit> Command2
+        ReactiveCommand<Unit, Unit> _Command2;
+        public ReactiveCommand<Unit, Unit> Command2
         {
             get { return _Command2; }
             set { this.RaiseAndSetIfChanged(ref _Command2, value); }
@@ -246,8 +246,8 @@ namespace ReactiveUI.Tests.Winforms
 
         public WinformCommandBindViewModel()
         {
-            Command1 = NewReactiveCommand.Create(() => { });
-            Command2 = NewReactiveCommand.Create(() => { });
+            Command1 = ReactiveCommand.Create(() => { });
+            Command2 = ReactiveCommand.Create(() => { });
         }
     }
 
