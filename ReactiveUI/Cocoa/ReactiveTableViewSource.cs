@@ -2,18 +2,13 @@ using System;
 using System.ComponentModel;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Runtime.Serialization;
-using System.Threading;
-using ReactiveUI;
 using Splat;
+using System.Diagnostics;
 
 #if UNIFIED
 using Foundation;
@@ -66,9 +61,42 @@ namespace ReactiveUI
     class UITableViewAdapter : IUICollViewAdapter<UITableView, UITableViewCell>
     {
         readonly UITableView view;
-        internal UITableViewAdapter(UITableView view) { this.view = view; }
-        public void ReloadData() { view.ReloadData(); }
-        public void PerformBatchUpdates(Action updates, Action completion)
+        readonly BehaviorSubject<bool> isReloadingData;
+        int inFlightReloads;
+
+        internal UITableViewAdapter(UITableView view)
+        {
+            this.view = view;
+            this.isReloadingData = new BehaviorSubject<bool>(false);
+        }
+
+        public IObservable<bool> IsReloadingData
+        {
+            get { return this.isReloadingData; }
+        }
+
+        public void ReloadData()
+        {
+            ++inFlightReloads;
+            view.ReloadData();
+
+            if (inFlightReloads == 1)
+            {
+                Debug.Assert(!this.isReloadingData.Value);
+                this.isReloadingData.OnNext(true);
+            }
+
+            // since ReloadData() queues the appropriate messages on the UI thread, we know we're done reloading
+            // when this subsequent message is processed (with one caveat - see FinishReloadData for details)
+            RxApp.MainThreadScheduler.Schedule(FinishReloadData);
+        }
+
+        public void BeginUpdates()
+        {
+            view.BeginUpdates();
+        }
+
+        public void PerformUpdates(Action updates, Action completion)
         {
             view.BeginUpdates();
             try {
@@ -78,13 +106,40 @@ namespace ReactiveUI
                 completion();
             }
         }
+
+        public void EndUpdates()
+        {
+            view.EndUpdates();
+        }
+
+        public void InsertSections(NSIndexSet indexes) { view.InsertSections(indexes, UITableViewRowAnimation.Automatic); }
+        public void DeleteSections(NSIndexSet indexes) { view.DeleteSections(indexes, UITableViewRowAnimation.Automatic); }
+        public void ReloadSections(NSIndexSet indexes) { view.ReloadSections(indexes, UITableViewRowAnimation.Automatic); }
+        public void MoveSection(int fromIndex, int toIndex) { view.MoveSection(fromIndex, toIndex); }
         public void InsertItems(NSIndexPath[] paths) { view.InsertRows(paths, UITableViewRowAnimation.Automatic); }
         public void DeleteItems(NSIndexPath[] paths) { view.DeleteRows(paths, UITableViewRowAnimation.Automatic); }
         public void ReloadItems(NSIndexPath[] paths) { view.ReloadRows(paths, UITableViewRowAnimation.Automatic); }
         public void MoveItem(NSIndexPath path, NSIndexPath newPath) { view.MoveRow(path, newPath); }
+
         public UITableViewCell DequeueReusableCell(NSString cellKey, NSIndexPath path)
         {
             return view.DequeueReusableCell(cellKey, path);
+        }
+
+        void FinishReloadData()
+        {
+            --inFlightReloads;
+
+            if (inFlightReloads == 0)
+            {
+                // this is required because sometimes iOS schedules further work that results in calls to GetCell
+                // that work could happen after FinishReloadData unless we force layout here
+                // of course, we can't have that work running after IsReloading ticks to false because otherwise
+                // some updates may occur before the calls to GetCell and thus the calls to GetCell could fail due to invalid indexes
+                this.view.LayoutIfNeeded();
+                Debug.Assert(this.isReloadingData.Value);
+                this.isReloadingData.OnNext(false);
+            }
         }
     }
 
@@ -186,10 +241,6 @@ namespace ReactiveUI
             get { return elementSelected; }
         }
 
-        public IObservable<IEnumerable<NotifyCollectionChangedEventArgs>> DidPerformUpdates {
-            get { return commonSource.DidPerformUpdates; }
-        }
-
         public override UITableViewCell GetCell(UITableView tableView, NSIndexPath indexPath)
         {
             return commonSource.GetCell(indexPath);
@@ -210,6 +261,13 @@ namespace ReactiveUI
         public override int RowsInSection(UITableView tableview, int section)
 #endif
         {
+            // iOS may call this method even when we have no sections, but only if we've overridden
+            // EstimatedHeight(UITableView, NSIndexPath) in our UITableViewSource
+            if (section >= commonSource.NumberOfSections())
+            {
+                return 0;
+            }
+
             return commonSource.RowsInSection((int)section);
         }
 
@@ -249,6 +307,13 @@ namespace ReactiveUI
         public override float GetHeightForHeader(UITableView tableView, int section)
 #endif
         {
+            // iOS may call this method even when we have no sections, but only if we've overridden
+            // EstimatedHeight(UITableView, NSIndexPath) in our UITableViewSource
+            if (section >= commonSource.NumberOfSections())
+            {
+                return 0;
+            }
+
             var header = commonSource.SectionInfo[(int)section].Header;
 
             // NB: -1 is a magic # that causes iOS to use the regular height. go figure.
@@ -261,6 +326,13 @@ namespace ReactiveUI
         public override float GetHeightForFooter(UITableView tableView, int section)
 #endif
         {
+            // iOS may call this method even when we have no sections, but only if we've overridden
+            // EstimatedHeight(UITableView, NSIndexPath) in our UITableViewSource
+            if (section >= commonSource.NumberOfSections())
+            {
+                return 0;
+            }
+
             var footer = commonSource.SectionInfo[(int)section].Footer;
             return footer == null || footer.View == null ? -1 : footer.Height;
         }

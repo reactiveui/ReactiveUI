@@ -23,8 +23,8 @@ namespace ReactiveUI.Tests
 {
     public class TestWhenAnyObsViewModel : ReactiveObject
     {
-        public ReactiveCommand<object> Command1 { get; protected set; }
-        public ReactiveCommand<object> Command2 { get; protected set; }
+        public ReactiveCommand<object> Command1 { get; set; }
+        public ReactiveCommand<object> Command2 { get; set; }
 
         ReactiveList<int> myListOfInts;
         public ReactiveList<int> MyListOfInts {
@@ -67,7 +67,6 @@ namespace ReactiveUI.Tests
 
     public class NonReactiveINPCObject : INotifyPropertyChanged
     {
-        public event PropertyChangingEventHandler PropertyChanging;
         public event PropertyChangedEventHandler PropertyChanged;
 
         TestFixture _InpcProperty;
@@ -485,7 +484,7 @@ namespace ReactiveUI.Tests
         {
             var tid = Thread.CurrentThread.ManagedThreadId;
 
-            (Scheduler.TaskPool).With(sched => {
+            (TaskPoolScheduler.Default).With(sched => {
                 int whenAnyTid = 0;
                 var fixture = new TestFixture() { IsNotNullString = "Foo", IsOnlyOneWord = "Baz", PocoProperty = "Bamf" };
 
@@ -647,6 +646,25 @@ namespace ReactiveUI.Tests
 
             fixture.MyListOfInts = null;
             Assert.Equal(1, output.Count);
+        }
+
+        [Fact]
+        public void NullObservablesDoNotCauseExceptions()
+        {
+            var fixture = new TestWhenAnyObsViewModel();
+            fixture.Command1 = null;
+
+            fixture.WhenAnyObservable(x => x.Command1).Subscribe();
+            fixture.WhenAnyObservable(x => x.Command1, x => x.Command1).Subscribe();
+            fixture.WhenAnyObservable(x => x.Command1, x => x.Command1, x => x.Command1).Subscribe();
+            fixture.WhenAnyObservable(x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1).Subscribe();
+            fixture.WhenAnyObservable(x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1).Subscribe();
+            fixture.WhenAnyObservable(x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1).Subscribe();
+            fixture.WhenAnyObservable(x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1).Subscribe();
+            fixture.WhenAnyObservable(x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1).Subscribe();
+            fixture.WhenAnyObservable(x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1).Subscribe();
+            fixture.WhenAnyObservable(x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1).Subscribe();
+            fixture.WhenAnyObservable(x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1).Subscribe();
         }
     }
 

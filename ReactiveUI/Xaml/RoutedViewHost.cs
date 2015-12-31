@@ -24,8 +24,6 @@ namespace ReactiveUI
     /// </summary>
     public class RoutedViewHost : TransitioningContentControl, IActivatable, IEnableLogger
     {
-        IDisposable _inner = null;
-
         /// <summary>
         /// The Router associated with this View Host.
         /// </summary>

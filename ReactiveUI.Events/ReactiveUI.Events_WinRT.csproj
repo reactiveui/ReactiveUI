@@ -52,9 +52,9 @@
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Splat, Version=1.6.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Splat, Version=1.6.2.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Splat.1.6.0\lib\NetCore45\Splat.dll</HintPath>
+      <HintPath>..\packages\Splat.1.6.2\lib\NetCore45\Splat.dll</HintPath>
     </Reference>
     <Reference Include="System.Reactive.Core, Version=2.2.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -89,13 +89,14 @@
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v$(VisualStudioVersion)\Microsoft.Windows.UI.Xaml.CSharp.targets" />
   <PropertyGroup>
-    <PreBuildEvent>%25SystemRoot%25\Microsoft.NET\Framework\v4.0.30319\msbuild.exe /p:Configuration=Release "$(ProjectDir)EventBuilder.csproj"
+    <PreBuildEvent>%25SystemRoot%25\Microsoft.NET\Framework\v4.0.30319\msbuild.exe /nologo /v:q /p:Configuration=Release "$(ProjectDir)EventBuilder.csproj"
 "$(ProjectDir)EventBuilder.exe" "$(ProjectDir)\WinMetadata.Win81\Windows.winmd" "$(ProjectDir)Events.mustache" &gt; "$(ProjectDir)Events_WinRT.cs"
-del "$(ProjectDir)EventBuilder.exe"
-del "$(ProjectDir)EventBuilder.pdb"
-del "$(ProjectDir)Nustache.Core.dll"
-del "$(ProjectDir)Mono.Cecil.dll"
-del "$(ProjectDir)Mono.Cecil.pdb"</PreBuildEvent>
+del "$(ProjectDir)EventBuilder.exe" 1&gt; nul 2&gt;&amp;1
+del "$(ProjectDir)EventBuilder.pdb" 1&gt; nul 2&gt;&amp;1
+del "$(ProjectDir)Nustache.Core.dll" 1&gt; nul 2&gt;&amp;1
+del "$(ProjectDir)Mono.Cecil.dll" 1&gt; nul 2&gt;&amp;1
+del "$(ProjectDir)Mono.Cecil.pdb" 1&gt; nul 2&gt;&amp;1
+    </PreBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
