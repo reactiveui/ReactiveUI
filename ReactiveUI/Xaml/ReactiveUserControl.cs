@@ -1,6 +1,6 @@
 ﻿namespace ReactiveUI
 {
-#if WINRT
+#if WINRT || WINDOWS_UWP
     using Windows.UI.Xaml;
     using Windows.UI.Xaml.Controls;
 #else
