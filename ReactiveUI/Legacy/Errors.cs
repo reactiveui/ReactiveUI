@@ -1,14 +1,9 @@
 using System;
-using System.Reactive;
-using System.Reactive.Concurrency;
-using System.Reactive.Disposables;
-using System.Reactive.Linq;
-using System.Reflection;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Windows.Input;
-using System.Reactive.Subjects;
+using System.Reactive;
+using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using System.Reactive.Threading.Tasks;
 using System.Threading.Tasks;
 
@@ -337,6 +332,7 @@ namespace ReactiveUI.Legacy
         }
     }
 
+#pragma warning disable 618
     /// <summary>
     /// This Exception will be thrown when a UserError is not handled by any
     /// of the registered handlers.
@@ -350,6 +346,7 @@ namespace ReactiveUI.Legacy
 
         public UserError ReportedError { get; protected set; }
     }
+#pragma warning restore 618
 
     /// <summary>
     /// RecoveryCommand is a straightforward implementation of a recovery
