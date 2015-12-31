@@ -35,6 +35,21 @@ namespace ReactiveUI
                 scheduler ?? RxApp.MainThreadScheduler);
         }
 
+        public static ReactiveCommand<Unit, TResult> Create<TResult>(
+            Func<TResult> execute,
+            IObservable<bool> canExecute = null,
+            IScheduler scheduler = null)
+        {
+            if (execute == null)
+            {
+                throw new ArgumentNullException("execute");
+            }
+
+            return new ReactiveCommand<Unit, TResult>(
+                canExecute ?? Observable.Return(true),
+                _ => Observable.Return(execute()),
+                scheduler ?? RxApp.MainThreadScheduler);
+        }
         public static ReactiveCommand<TParam, Unit> Create<TParam>(
             Action<TParam> execute,
             IObservable<bool> canExecute = null,
@@ -55,6 +70,21 @@ namespace ReactiveUI
                 scheduler ?? RxApp.MainThreadScheduler);
         }
 
+        public static ReactiveCommand<TParam, TResult> Create<TParam, TResult>(
+            Func<TParam, TResult> execute,
+            IObservable<bool> canExecute = null,
+            IScheduler scheduler = null)
+        {
+            if (execute == null)
+            {
+                throw new ArgumentNullException("execute");
+            }
+
+            return new ReactiveCommand<TParam, TResult>(
+                canExecute ?? Observable.Return(true),
+                param => Observable.Return(execute(param)),
+                scheduler ?? RxApp.MainThreadScheduler);
+        }
         public static ReactiveCommand<Unit, TResult> Create<TResult>(
             Func<IObservable<TResult>> executeAsync,
             IObservable<bool> canExecute = null,
