@@ -78,13 +78,14 @@
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.MonoTouch.CSharp.targets" />
   <PropertyGroup>
-    <PreBuildEvent>%25SystemRoot%25\Microsoft.NET\Framework\v4.0.30319\msbuild.exe /p:Configuration=Release "$(ProjectDir)EventBuilder.csproj"
+    <PreBuildEvent>%25SystemRoot%25\Microsoft.NET\Framework\v4.0.30319\msbuild.exe /nologo /v:q /p:Configuration=Release "$(ProjectDir)EventBuilder.csproj"
 "$(ProjectDir)EventBuilder.exe" "C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\MonoTouch\v1.0\monotouch.dll"  "$(ProjectDir)Events.mustache" &gt; "$(ProjectDir)Events_iOS.cs"
-del "$(ProjectDir)EventBuilder.exe"
-del "$(ProjectDir)EventBuilder.pdb"
-del "$(ProjectDir)Nustache.Core.dll"
-del "$(ProjectDir)Mono.Cecil.dll"
-del "$(ProjectDir)Mono.Cecil.pdb"</PreBuildEvent>
+del "$(ProjectDir)EventBuilder.exe" 1&gt; nul 2&gt;&amp;1
+del "$(ProjectDir)EventBuilder.pdb" 1&gt; nul 2&gt;&amp;1
+del "$(ProjectDir)Nustache.Core.dll" 1&gt; nul 2&gt;&amp;1
+del "$(ProjectDir)Mono.Cecil.dll" 1&gt; nul 2&gt;&amp;1
+del "$(ProjectDir)Mono.Cecil.pdb" 1&gt; nul 2&gt;&amp;1
+    </PreBuildEvent>
   </PropertyGroup>
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
 </Project>
