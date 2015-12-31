@@ -95,7 +95,7 @@
     <Compile Include="Xaml\PlatformOperations.cs" />
     <Compile Include="Xaml\ReactiveUserControl.cs" />
     <Compile Include="Xaml\RoutedViewHost.cs" />
-    <Compile Include="Xaml\TransitioningContentControl.WinRT.cs" />
+    <Compile Include="Xaml\TransitioningContentControl.Empty.cs" />
     <Compile Include="Xaml\ViewModelViewHost.cs" />
     <Compile Include="Xaml\WinRTAppDataDriver.cs" />
     <Compile Include="Xaml\WinRTAutoSuspendApplication.cs" />
