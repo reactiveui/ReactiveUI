@@ -20,8 +20,8 @@ namespace ReactiveUI.Tests
 {
     public class TestWhenAnyObsViewModel : ReactiveObject
     {
-        public NewReactiveCommand<int, int> Command1 { get; set; }
-        public NewReactiveCommand<int, int> Command2 { get; set; }
+        public ReactiveCommand<int, int> Command1 { get; set; }
+        public ReactiveCommand<int, int> Command2 { get; set; }
 
         ReactiveList<int> myListOfInts;
         public ReactiveList<int> MyListOfInts {
@@ -31,8 +31,8 @@ namespace ReactiveUI.Tests
 
         public TestWhenAnyObsViewModel()
         {
-            Command1 = NewReactiveCommand.Create<int, int>(val => Observable.Return(val));
-            Command2 = NewReactiveCommand.Create<int, int>(val => Observable.Return(val));
+            Command1 = ReactiveCommand.Create<int, int>(val => Observable.Return(val));
+            Command2 = ReactiveCommand.Create<int, int>(val => Observable.Return(val));
         }
     }
 
