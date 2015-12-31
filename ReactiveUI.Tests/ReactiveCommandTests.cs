@@ -279,6 +279,18 @@ namespace ReactiveUI.Tests
         }
 
         [Fact]
+        public void ExecuteViaICommandThrowsIfParameterTypeIsIncorrect()
+        {
+            ICommand fixture = ReactiveCommand.Create<int>(_ => { });
+            var ex = Assert.Throws<InvalidOperationException>(() => fixture.Execute("foo"));
+            Assert.Equal("Command requires parameters of type System.Int32, but received parameter of type System.String.", ex.Message);
+
+            fixture = ReactiveCommand.Create<string>(_ => { });
+            ex = Assert.Throws<InvalidOperationException>(() => fixture.Execute(13));
+            Assert.Equal("Command requires parameters of type System.String, but received parameter of type System.Int32.", ex.Message);
+        }
+
+        [Fact]
         public void ResultIsTickedThroughSpecifiedScheduler()
         {
             (new TestScheduler()).With(sched =>

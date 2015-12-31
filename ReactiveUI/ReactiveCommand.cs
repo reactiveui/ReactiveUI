@@ -145,9 +145,19 @@ namespace ReactiveUI
 
         protected override void ICommandExecute(object parameter)
         {
+            // ensure that null is coerced to default(TParam) so that commands taking value types will use a sensible default if no parameter is supplied
             if (parameter == null)
             {
                 parameter = default(TParam);
+            }
+
+            if (!(parameter is TParam))
+            {
+                throw new InvalidOperationException(
+                    String.Format(
+                        "Command requires parameters of type {0}, but received parameter of type {1}.",
+                        typeof(TParam).FullName,
+                        parameter.GetType().FullName));
             }
 
             this.ExecuteAsync((TParam)parameter);
