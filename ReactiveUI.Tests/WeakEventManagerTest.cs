@@ -11,7 +11,7 @@ namespace ReactiveUI.Tests
         public void ButtonDoesNotLeakTest()
         {
             Button button = new Button();
-            NewReactiveCommand<Unit, Unit> command = NewReactiveCommand.Create(() => { });
+            ReactiveCommand<Unit, Unit> command = ReactiveCommand.Create(() => { });
             button.Command = command;
 
             WeakReference buttonRef = new WeakReference(button);

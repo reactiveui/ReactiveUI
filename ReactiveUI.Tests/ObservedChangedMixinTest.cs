@@ -177,10 +177,10 @@ namespace ReactiveUI.Tests
     public class NewGameViewModel : ReactiveObject
     {
         public ReactiveList<string> Players { get; private set; }
-        public NewReactiveCommand<Unit, Unit> AddPlayer { get; private set; }
-        public NewReactiveCommand<string, Unit> RemovePlayer { get; private set; }
-        public NewReactiveCommand<Unit, Unit> StartGame { get; private set; }
-        public NewReactiveCommand<Unit, Unit> RandomizeOrder { get; private set; }
+        public ReactiveCommand<Unit, Unit> AddPlayer { get; private set; }
+        public ReactiveCommand<string, Unit> RemovePlayer { get; private set; }
+        public ReactiveCommand<Unit, Unit> StartGame { get; private set; }
+        public ReactiveCommand<Unit, Unit> RandomizeOrder { get; private set; }
 
 
         string newPlayerName;
@@ -195,8 +195,8 @@ namespace ReactiveUI.Tests
             Players = new ReactiveList<string>();
 
             var canStart = this.Players.CountChanged.Select(count => count >= 3);
-            StartGame = NewReactiveCommand.Create(() => { }, canStart);
-            RandomizeOrder = NewReactiveCommand.Create(
+            StartGame = ReactiveCommand.Create(() => { }, canStart);
+            RandomizeOrder = ReactiveCommand.Create(
                 () =>
                 {
                     using (Players.SuppressChangeNotifications())
@@ -209,10 +209,10 @@ namespace ReactiveUI.Tests
                 },
                 canStart);
 
-            RemovePlayer = NewReactiveCommand.Create<string>(player => this.Players.Remove(player));
+            RemovePlayer = ReactiveCommand.Create<string>(player => this.Players.Remove(player));
             var canAddPlayer = this.WhenAnyValue(x => x.Players.Count, x => x.NewPlayerName,
                 (count, newPlayerName) => count < 7 && !string.IsNullOrWhiteSpace(newPlayerName) && !this.Players.Contains(newPlayerName));
-            AddPlayer = NewReactiveCommand.Create(
+            AddPlayer = ReactiveCommand.Create(
                 () =>
                 {
                     Players.Add(NewPlayerName.Trim());

@@ -82,7 +82,6 @@
     <Compile Include="ExpressionMixins.cs" />
     <Compile Include="ExpressionRewriter.cs" />
     <Compile Include="Interactions.cs" />
-    <Compile Include="NewReactiveCommand.cs" />
     <Compile Include="Platform\ComponentModelTypeConverter.cs" />
     <Compile Include="Xaml\ReactiveUserControl.cs" />
     <Compile Include="Xaml\Attributes.cs" />

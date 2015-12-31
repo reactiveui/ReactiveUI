@@ -177,12 +177,12 @@ namespace ReactiveUI
             var source = Reflection.ViewModelWhenAnyValue(viewModel, view, vmExpression).Cast<TProp>();
 
             IDisposable bindingDisposable = bindCommandInternal(source, view, controlExpression, Observable.Empty<object>(), toEvent, cmd => {
-                var rc = cmd as NewReactiveCommand;
+                var rc = cmd as ReactiveCommand;
                 if (rc == null) {
                     return new RelayCommand(cmd.CanExecute, _ => cmd.Execute(withParameter()));
                 }
 
-                var ret = NewReactiveCommand.Create(() => ((ICommand)rc).Execute(null), rc.CanExecute);
+                var ret = ReactiveCommand.Create(() => ((ICommand)rc).Execute(null), rc.CanExecute);
                 return ret;
             });
 

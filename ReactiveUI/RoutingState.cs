@@ -35,14 +35,14 @@ namespace ReactiveUI
         /// Navigates back to the previous element in the stack.
         /// </summary>
         [IgnoreDataMember]
-        public NewReactiveCommand<Unit, Unit> NavigateBack { get; protected set; }
+        public ReactiveCommand<Unit, Unit> NavigateBack { get; protected set; }
 
         /// <summary>
         /// Navigates to the a new element in the stack - the Execute parameter
         /// must be a ViewModel that implements IRoutableViewModel.
         /// </summary>
         [IgnoreDataMember]
-        public NewReactiveCommand<IRoutableViewModel, IRoutableViewModel> Navigate { get; protected set; }
+        public ReactiveCommand<IRoutableViewModel, IRoutableViewModel> Navigate { get; protected set; }
 
         /// <summary>
         /// Navigates to a new element and resets the navigation stack (i.e. the
@@ -51,7 +51,7 @@ namespace ReactiveUI
         /// IRoutableViewModel.
         /// </summary>
         [IgnoreDataMember]
-        public NewReactiveCommand<IRoutableViewModel, IRoutableViewModel> NavigateAndReset { get; protected set; }
+        public ReactiveCommand<IRoutableViewModel, IRoutableViewModel> NavigateAndReset { get; protected set; }
 
         [IgnoreDataMember]
         public IObservable<IRoutableViewModel> CurrentViewModel { get; protected set; }
@@ -72,13 +72,13 @@ namespace ReactiveUI
                 NavigationStack.CountChanged);
 
             NavigateBack = 
-                NewReactiveCommand.Create(() => {
+                ReactiveCommand.Create(() => {
                     NavigationStack.RemoveAt(NavigationStack.Count - 1);
                     return Observable.Return(Unit.Default);
                 },
                 countAsBehavior.Select(x => x > 1));
 
-            Navigate = NewReactiveCommand.Create<IRoutableViewModel, IRoutableViewModel>(x => {
+            Navigate = ReactiveCommand.Create<IRoutableViewModel, IRoutableViewModel>(x => {
                 var vm = x as IRoutableViewModel;
                 if (vm == null) {
                     throw new Exception("Navigate must be called on an IRoutableViewModel");
@@ -88,7 +88,7 @@ namespace ReactiveUI
                 return Observable.Return(x);
             });
 
-            NavigateAndReset = NewReactiveCommand.Create<IRoutableViewModel, IRoutableViewModel>(x => {
+            NavigateAndReset = ReactiveCommand.Create<IRoutableViewModel, IRoutableViewModel>(x => {
                 NavigationStack.Clear();
                 return Navigate.ExecuteAsync(x);
             });
