@@ -8,6 +8,7 @@ using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using Splat;
 using System.Reactive.Disposables;
+using System.Threading;
 
 namespace ReactiveUI
 {
@@ -23,7 +24,8 @@ namespace ReactiveUI
         T _lastValue;
         readonly IConnectableObservable<T> _source;
         IDisposable _inner;
-                
+        private int _activated;
+
         /// <summary>
         /// Constructs an ObservableAsPropertyHelper object.
         /// </summary>
@@ -66,32 +68,23 @@ namespace ReactiveUI
             Contract.Requires(onChanged != null);
 
             scheduler = scheduler ?? CurrentThreadScheduler.Instance;
-            onChanging = onChanging ?? (_ => {});
-            _lastValue = initialValue;
+            onChanging = onChanging ?? (_ => { });
 
             var subj = new ScheduledSubject<T>(scheduler);
             var exSubject = new ScheduledSubject<Exception>(CurrentThreadScheduler.Instance, RxApp.DefaultExceptionHandler);
 
-            bool firedInitial = false;
             subj.Subscribe(x => {
-                // Suppress a non-change between initialValue and the first value
-                // from a Subscribe
-                if (firedInitial && EqualityComparer<T>.Default.Equals(x, _lastValue)) return;
-
                 onChanging(x);
                 _lastValue = x;
                 onChanged(x);
-                firedInitial = true;
             }, exSubject.OnNext);
 
             ThrownExceptions = exSubject;
 
-            // Fire off an initial RaisePropertyChanged to make sure bindings
-            // have a value
-            subj.OnNext(initialValue);
-            _source = observable.DistinctUntilChanged().Multicast(subj);
-
-            if (ModeDetector.InUnitTestRunner()) {
+            _lastValue = initialValue;
+            _source = observable.StartWith(initialValue).DistinctUntilChanged().Multicast(subj);
+            if (ModeDetector.InUnitTestRunner())
+            {
                 _inner = _source.Connect();
             }
         }
@@ -100,9 +93,12 @@ namespace ReactiveUI
         /// The last provided value from the Observable. 
         /// </summary>
         public T Value {
-            get { 
-                _inner = _inner ?? _source.Connect();
-                return _lastValue; 
+            get {
+                if (Interlocked.CompareExchange(ref _activated, 1, 0) == 0) {
+                    _inner = _source.Connect();
+                }
+
+                return _lastValue;
             }
         }
 
@@ -141,7 +137,7 @@ namespace ReactiveUI
                 Expression<Func<TObj, TRet>> property,
                 TRet initialValue = default(TRet),
                 IScheduler scheduler = null)
-            where TObj : ReactiveObject
+            where TObj : IReactiveObject
         {
             Contract.Requires(This != null);
             Contract.Requires(observable != null);
@@ -182,7 +178,7 @@ namespace ReactiveUI
             Expression<Func<TObj, TRet>> property,
             TRet initialValue = default(TRet),
             IScheduler scheduler = null)
-            where TObj : ReactiveObject
+            where TObj : IReactiveObject
         {
             return source.observableToProperty(This, property, initialValue, scheduler);
         }
@@ -208,7 +204,7 @@ namespace ReactiveUI
             out ObservableAsPropertyHelper<TRet> result,
             TRet initialValue = default(TRet),
             IScheduler scheduler = null)
-            where TObj : ReactiveObject
+            where TObj : IReactiveObject
         {
             var ret = source.observableToProperty(This, property, initialValue, scheduler);
 

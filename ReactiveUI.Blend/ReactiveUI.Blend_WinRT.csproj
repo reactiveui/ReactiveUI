@@ -26,7 +26,7 @@
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\Portable-Win81+WPA81\</OutputPath>
     <IntermediateOutputPath>obj\Debug\Portable-Win81+WPA81\</IntermediateOutputPath>
-    <DefineConstants>TRACE;DEBUG;WINRT</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;NETFX_CORE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -35,7 +35,7 @@
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\Portable-Win81+WPA81\</OutputPath>
     <IntermediateOutputPath>obj\Debug\Portable-Win81+WPA81\</IntermediateOutputPath>
-    <DefineConstants>TRACE;WINRT</DefineConstants>
+    <DefineConstants>TRACE;NETFX_CORE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>bin\Release\Portable-Win81+WPA81\ReactiveUI.Blend.xml</DocumentationFile>
@@ -51,7 +51,7 @@
       <HintPath>C:\Program Files (x86)\Microsoft SDKs\Windows\v8.1\ExtensionSDKs\BehaviorsXamlSDKManaged\12.0\References\CommonConfiguration\Neutral\Microsoft.Xaml.Interactivity.dll</HintPath>
     </Reference>
     <Reference Include="Splat">
-      <HintPath>..\packages\Splat.1.6.0\lib\Portable-Win81+Wpa81\Splat.dll</HintPath>
+      <HintPath>..\packages\Splat.1.6.2\lib\Portable-Win81+Wpa81\Splat.dll</HintPath>
     </Reference>
     <Reference Include="System.Reactive.Core">
       <HintPath>..\packages\Rx-Core.2.2.5\lib\portable-win81+wpa81\System.Reactive.Core.dll</HintPath>

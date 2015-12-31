@@ -32,8 +32,6 @@ namespace ReactiveUI
     public class ReactiveActivity<TViewModel> : ReactiveActivity, IViewFor<TViewModel>, ICanActivate
         where TViewModel : class
     {
-        protected ReactiveActivity() { }
-
         TViewModel _ViewModel;
         public TViewModel ViewModel {
             get { return _ViewModel; }
@@ -43,6 +41,12 @@ namespace ReactiveUI
         object IViewFor.ViewModel {
             get { return _ViewModel; }
             set { _ViewModel = (TViewModel)value; }
+        }
+
+        protected ReactiveActivity() { }
+
+        protected ReactiveActivity(IntPtr handle, JniHandleOwnership ownership) : base(handle, ownership)
+        {
         }
     }
 
@@ -85,6 +89,14 @@ namespace ReactiveUI
         /// </summary>
         public IObservable<IReactivePropertyChangedEventArgs<ReactiveActivity>> Changed {
             get { return this.getChangedObservable(); }
+        }
+
+        protected ReactiveActivity()
+        {
+        }
+
+        protected ReactiveActivity(IntPtr handle, JniHandleOwnership ownership) : base(handle, ownership)
+        {
         }
 
         /// <summary>

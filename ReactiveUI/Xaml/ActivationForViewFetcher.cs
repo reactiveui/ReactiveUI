@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Reactive;
 using System.Reactive.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Reflection;
 
@@ -27,7 +23,7 @@ namespace ReactiveUI
 
             if (fe == null)
                 return Observable.Empty<bool>();
-#if WINDOWS_UAP
+#if WINDOWS_UWP
             var viewLoaded = WindowsObservable.FromEventPattern<FrameworkElement, object>(x => fe.Loading += x,
                 x => fe.Loading -= x).Select(_ => true);
 #else
