@@ -56,6 +56,8 @@ namespace ReactiveUI
             var itemsControl = lastViewProperty.Sender as ItemsControl;
             if (itemsControl == null) return true;
 
+            if (!String.IsNullOrEmpty(itemsControl.DisplayMemberPath)) return true;
+
             if (viewProperties.Last().GetPropertyName() != "ItemsSource") return true;
 
             if (itemsControl.ItemTemplate != null) return true;

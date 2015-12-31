@@ -541,7 +541,9 @@ namespace ReactiveUI.Tests
                 var fixture = ReactiveCommand.CreateAsyncTask(Observable.Return(true), async _ => {
                     await Observable.Timer(TimeSpan.FromMilliseconds(50), RxApp.TaskpoolScheduler);
                     throw new Exception("Die");
+#pragma warning disable 162
                     return 5;
+#pragma warning restore 162
                 }, sched);
 
                 int result = 0;

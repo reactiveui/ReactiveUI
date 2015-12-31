@@ -1,23 +1,19 @@
 using System;
-using System.Reactive;
-using System.Reactive.Concurrency;
-using System.Reactive.Disposables;
-using System.Reactive.Linq;
-using System.Reflection;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Windows.Input;
-using System.Reactive.Subjects;
+using System.Reactive;
+using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using System.Reactive.Threading.Tasks;
 using System.Threading.Tasks;
 
-namespace ReactiveUI
+namespace ReactiveUI.Legacy
 {
     /// <summary>
     /// Describes a stock error icon situation - it is up to the UI to decide
     /// how to interpret these icons.
     /// </summary>
+    [Obsolete("This type is obsolete and will be removed in a future version of ReactiveUI. Please switch to using user interactions instead.")]
     public enum StockUserErrorIcon {
         Critical,
         Error, 
@@ -30,6 +26,7 @@ namespace ReactiveUI
     /// A command that represents a recovery from an error. These commands
     /// will typically be displayed as buttons in the error dialog.
     /// </summary>
+    [Obsolete("This type is obsolete and will be removed in a future version of ReactiveUI. Please switch to using user interactions instead.")]
     public interface IRecoveryCommand : IReactiveCommand
     {
         /// <summary>
@@ -49,6 +46,7 @@ namespace ReactiveUI
     /// RecoveryOptionResult describes to the code throwing the UserError what
     /// to do once the error is resolved.
     /// </summary>
+    [Obsolete("This type is obsolete and will be removed in a future version of ReactiveUI. Please switch to using user interactions instead.")]
     public enum RecoveryOptionResult {
 
         /// <summary>
@@ -79,6 +77,7 @@ namespace ReactiveUI
     /// example an "Out of Disk Space" error might have an "Open Explorer"
     /// recovery option.
     /// </summary>
+    [Obsolete("This type is obsolete and will be removed in a future version of ReactiveUI. Please switch to using user interactions instead.")]
     public class UserError : ReactiveObject
     {
         public UserError(
@@ -333,6 +332,7 @@ namespace ReactiveUI
         }
     }
 
+#pragma warning disable 618
     /// <summary>
     /// This Exception will be thrown when a UserError is not handled by any
     /// of the registered handlers.
@@ -346,6 +346,7 @@ namespace ReactiveUI
 
         public UserError ReportedError { get; protected set; }
     }
+#pragma warning restore 618
 
     /// <summary>
     /// RecoveryCommand is a straightforward implementation of a recovery
@@ -353,6 +354,7 @@ namespace ReactiveUI
     /// (usually in the form of a button) that will help resolve or mitigate a
     /// UserError.
     /// </summary>
+    [Obsolete("This type is obsolete and will be removed in a future version of ReactiveUI. Please switch to using user interactions instead.")]
     public class RecoveryCommand : ReactiveCommand<Unit>, IRecoveryCommand
     {
         public bool IsDefault { get; set; }

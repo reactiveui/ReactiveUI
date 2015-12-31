@@ -25,29 +25,6 @@ namespace ReactiveUI
             binderImplementation = Locator.Current.GetService<ICommandBinderImplementation>() ?? 
                 new CommandBinderImplementation();
         }
-
-        /// <summary>
-        /// Bind a command from the ViewModel to the control on the View of the
-        /// same name.
-        /// </summary>
-        /// <returns>A class representing the binding. Dispose it to disconnect
-        /// the binding</returns>
-        /// <param name="view">The View</param>
-        /// <param name="viewModel">The View model</param>
-        /// <param name="propertyName">The ViewModel command to Bind.</param>
-        /// <param name="toEvent">If specified, bind to the specific event 
-        /// instead of the default.</param>
-        public static IReactiveBinding<TView, TViewModel, TProp> BindCommand<TView, TViewModel, TProp>(
-                this TView view, 
-                TViewModel viewModel, 
-                Expression<Func<TViewModel, TProp>> propertyName,
-                string toEvent = null)
-            where TViewModel : class
-            where TView : class, IViewFor<TViewModel>
-            where TProp : ICommand
-        {
-            return binderImplementation.BindCommand<TView, TViewModel, TProp, Unit>(viewModel, view, propertyName, null, toEvent);
-        }
                 
         /// <summary>
         /// Bind a command from the ViewModel to an explicitly specified control
@@ -196,14 +173,7 @@ namespace ReactiveUI
             where TProp : ICommand
         {
             var vmExpression = Reflection.Rewrite(vmProperty.Body);
-            var controlExpression = default(Expression);
-
-            if (controlProperty == null) {
-                controlExpression = Reflection.getViewExpression(view, vmExpression);
-            } else {
-                controlExpression = Reflection.Rewrite(controlProperty.Body);
-            }
-
+            var controlExpression = Reflection.Rewrite(controlProperty.Body);
             var source = Reflection.ViewModelWhenAnyValue(viewModel, view, vmExpression).Cast<TProp>();
 
             IDisposable bindingDisposable = bindCommandInternal(source, view, controlExpression, Observable.Empty<object>(), toEvent, cmd => {
@@ -233,14 +203,7 @@ namespace ReactiveUI
             where TProp : ICommand
         {
             var vmExpression = Reflection.Rewrite(vmProperty.Body);
-            var controlExpression = default(Expression);
-
-            if (controlProperty == null) {
-                controlExpression = Reflection.getViewExpression(view, vmExpression);
-            } else {
-                controlExpression = Reflection.Rewrite(controlProperty.Body);
-            }
-
+            var controlExpression = Reflection.Rewrite(controlProperty.Body);
             var source = Reflection.ViewModelWhenAnyValue(viewModel, view, vmExpression).Cast<TProp>();
 
             IDisposable bindingDisposable = bindCommandInternal(source, view, controlExpression, withParameter, toEvent);

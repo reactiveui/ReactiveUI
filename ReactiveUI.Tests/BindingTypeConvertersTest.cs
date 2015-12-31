@@ -7,16 +7,17 @@ namespace ReactiveUI.Tests
         [Fact]
         public void EqualityTypeConverterDoReferenceCastShouldConvertNullableValues()
         {
-            double? nullableDouble = 0.0;
-            var result = EqualityTypeConverter.DoReferenceCast<double?>(nullableDouble);
-            Assert.Equal(nullableDouble, result);
+            double? nullDouble = null;
+            double? expected = 0.0;
+            var result = EqualityTypeConverter.DoReferenceCast(nullDouble, typeof(double));
+            Assert.Equal(expected, result);
         }
 
         [Fact]
         public void EqualityTypeConverterDoReferenceCastShouldConvertValueTypes()
         {
             double doubleValue = 0.0;
-            var result = EqualityTypeConverter.DoReferenceCast<double>(doubleValue);
+            var result = EqualityTypeConverter.DoReferenceCast(doubleValue, typeof(double));
             Assert.Equal(doubleValue, result);
         }
     }
