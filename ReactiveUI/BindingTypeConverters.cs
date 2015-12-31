@@ -100,7 +100,7 @@ namespace ReactiveUI
 
         static bool isInstanceOfType(object from, Type targetType)
         {
-#if WINRT || PORTABLE
+#if NETFX_CORE || PORTABLE
             return targetType.GetTypeInfo().IsAssignableFrom(from.GetType().GetTypeInfo());
 #else
             return targetType.IsInstanceOfType(from);
