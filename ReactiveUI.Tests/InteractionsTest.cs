@@ -11,7 +11,7 @@ namespace ReactiveUI.Tests
         public void UnhandledGlobalInteractionsShouldCauseException()
         {
             var sut = new UserInteraction<bool>();
-            Assert.Throws<UnhandledUserInteractionException>(() => sut.RaiseGlobal().First());
+            Assert.Throws<UnhandledUserInteractionException>(() => sut.RaiseGlobal().FirstAsync().Wait());
         }
 
         [Fact]
@@ -21,11 +21,11 @@ namespace ReactiveUI.Tests
 
             using (UserInteraction.RegisterGlobalHandler<UserInteraction<bool>>(x => x.SetResult(true)))
             {
-                var result = sut.RaiseGlobal().First();
+                var result = sut.RaiseGlobal().FirstAsync().Wait();
                 Assert.True(result);
             }
 
-            Assert.Throws<UnhandledUserInteractionException>(() => sut.RaiseGlobal().First());
+            Assert.Throws<UnhandledUserInteractionException>(() => sut.RaiseGlobal().FirstAsync().Wait());
         }
 
         [Fact]
@@ -33,21 +33,21 @@ namespace ReactiveUI.Tests
         {
             using (UserInteraction.RegisterGlobalHandler<UserInteraction<string>>(x => x.SetResult("A")))
             {
-                Assert.Equal("A", new UserInteraction<string>().RaiseGlobal().First());
+                Assert.Equal("A", new UserInteraction<string>().RaiseGlobal().FirstAsync().Wait());
 
                 using (UserInteraction.RegisterGlobalHandler<UserInteraction<string>>(x => x.SetResult("B")))
                 {
-                    Assert.Equal("B", new UserInteraction<string>().RaiseGlobal().First());
+                    Assert.Equal("B", new UserInteraction<string>().RaiseGlobal().FirstAsync().Wait());
 
                     using (UserInteraction.RegisterGlobalHandler<UserInteraction<string>>(x => x.SetResult("C")))
                     {
-                        Assert.Equal("C", new UserInteraction<string>().RaiseGlobal().First());
+                        Assert.Equal("C", new UserInteraction<string>().RaiseGlobal().FirstAsync().Wait());
                     }
 
-                    Assert.Equal("B", new UserInteraction<string>().RaiseGlobal().First());
+                    Assert.Equal("B", new UserInteraction<string>().RaiseGlobal().FirstAsync().Wait());
                 }
 
-                Assert.Equal("A", new UserInteraction<string>().RaiseGlobal().First());
+                Assert.Equal("A", new UserInteraction<string>().RaiseGlobal().FirstAsync().Wait());
             }
         }
 
@@ -72,16 +72,16 @@ namespace ReactiveUI.Tests
                 {
                     using (handlerC)
                     {
-                        Assert.Equal("C", new CustomInteraction(false).RaiseGlobal().First());
-                        Assert.Equal("C", new CustomInteraction(true).RaiseGlobal().First());
+                        Assert.Equal("C", new CustomInteraction(false).RaiseGlobal().FirstAsync().Wait());
+                        Assert.Equal("C", new CustomInteraction(true).RaiseGlobal().FirstAsync().Wait());
                     }
 
-                    Assert.Equal("A", new CustomInteraction(false).RaiseGlobal().First());
-                    Assert.Equal("B", new CustomInteraction(true).RaiseGlobal().First());
+                    Assert.Equal("A", new CustomInteraction(false).RaiseGlobal().FirstAsync().Wait());
+                    Assert.Equal("B", new CustomInteraction(true).RaiseGlobal().FirstAsync().Wait());
                 }
 
-                Assert.Equal("A", new CustomInteraction(false).RaiseGlobal().First());
-                Assert.Equal("A", new CustomInteraction(true).RaiseGlobal().First());
+                Assert.Equal("A", new CustomInteraction(false).RaiseGlobal().FirstAsync().Wait());
+                Assert.Equal("A", new CustomInteraction(true).RaiseGlobal().FirstAsync().Wait());
             }
         }
 
@@ -106,7 +106,7 @@ namespace ReactiveUI.Tests
             using (handlerA)
             using (handlerB)
             {
-                Assert.Equal("B", new UserInteraction<string>().RaiseGlobal().First());
+                Assert.Equal("B", new UserInteraction<string>().RaiseGlobal().FirstAsync().Wait());
             }
 
             Assert.False(handlerAWasCalled);

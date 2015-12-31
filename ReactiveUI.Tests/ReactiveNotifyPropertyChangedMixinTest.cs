@@ -67,7 +67,6 @@ namespace ReactiveUI.Tests
 
     public class NonReactiveINPCObject : INotifyPropertyChanged
     {
-        public event PropertyChangingEventHandler PropertyChanging;
         public event PropertyChangedEventHandler PropertyChanged;
 
         TestFixture _InpcProperty;
@@ -485,7 +484,7 @@ namespace ReactiveUI.Tests
         {
             var tid = Thread.CurrentThread.ManagedThreadId;
 
-            (Scheduler.TaskPool).With(sched => {
+            (TaskPoolScheduler.Default).With(sched => {
                 int whenAnyTid = 0;
                 var fixture = new TestFixture() { IsNotNullString = "Foo", IsOnlyOneWord = "Baz", PocoProperty = "Bamf" };
 
