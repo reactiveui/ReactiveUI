@@ -5,7 +5,9 @@ using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using System.Reactive.Threading.Tasks;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace ReactiveUI
@@ -14,40 +16,40 @@ namespace ReactiveUI
     public abstract partial class ReactiveCommand
     {
         public static ReactiveCommand<Unit, Unit> Create(
-            Action executeAsync,
+            Action execute,
             IObservable<bool> canExecute = null,
             IScheduler scheduler = null)
         {
-            if (executeAsync == null)
+            if (execute == null)
             {
-                throw new ArgumentNullException(nameof(executeAsync));
+                throw new ArgumentNullException(nameof(execute));
             }
 
             return new ReactiveCommand<Unit, Unit>(
                 canExecute ?? Observable.Return(true),
                 _ =>
                 {
-                    executeAsync();
+                    execute();
                     return Observable.Return(Unit.Default);
                 },
                 scheduler ?? RxApp.MainThreadScheduler);
         }
 
         public static ReactiveCommand<TParam, Unit> Create<TParam>(
-            Action<TParam> executeAsync,
+            Action<TParam> execute,
             IObservable<bool> canExecute = null,
             IScheduler scheduler = null)
         {
-            if (executeAsync == null)
+            if (execute == null)
             {
-                throw new ArgumentNullException(nameof(executeAsync));
+                throw new ArgumentNullException(nameof(execute));
             }
 
             return new ReactiveCommand<TParam, Unit>(
                 canExecute ?? Observable.Return(true),
                 param =>
                 {
-                    executeAsync(param);
+                    execute(param);
                     return Observable.Return(Unit.Default);
                 },
                 scheduler ?? RxApp.MainThreadScheduler);
@@ -66,11 +68,31 @@ namespace ReactiveUI
             return new ReactiveCommand<Unit, TResult>(canExecute ?? Observable.Return(true), _ => executeAsync(), scheduler ?? RxApp.MainThreadScheduler);
         }
 
+        public static ReactiveCommand<Unit, TResult> CreateTask<TResult>(
+            Func<Task<TResult>> executeAsync,
+            IObservable<bool> canExecute = null,
+            IScheduler scheduler = null)
+        {
+            return Create(
+                () => executeAsync().ToObservable(),
+                canExecute,
+                scheduler);
+        }
+
         public static ReactiveCommand<TParam, TResult> Create<TParam, TResult>(
                 Func<TParam, IObservable<TResult>> executeAsync,
                 IObservable<bool> canExecute = null,
                 IScheduler scheduler = null) =>
             new ReactiveCommand<TParam, TResult>(canExecute ?? Observable.Return(true), executeAsync, scheduler ?? RxApp.MainThreadScheduler);
+
+        public static ReactiveCommand<TParam, TResult> CreateTask<TParam, TResult>(
+                Func<TParam, Task<TResult>> executeAsync,
+                IObservable<bool> canExecute = null,
+                IScheduler scheduler = null) =>
+            Create<TParam, TResult>(
+                param => executeAsync(param).ToObservable(),
+                canExecute,
+                scheduler);
 
         public static CombinedReactiveCommand<TParam, TResult> CreateCombined<TParam, TResult>(
                 IEnumerable<ReactiveCommandBase<TParam, TResult>> childCommands,

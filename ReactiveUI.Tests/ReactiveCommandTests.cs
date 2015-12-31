@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using Microsoft.Reactive.Testing;
 using ReactiveUI.Testing;
@@ -341,6 +342,34 @@ namespace ReactiveUI.Tests
             Assert.True(canExecute[0]);
             Assert.False(canExecute[1]);
             Assert.True(canExecute[2]);
+        }
+
+        [Fact]
+        public void CreateTaskFacilitatesTPLIntegration()
+        {
+            var fixture = ReactiveCommand.CreateTask(() => Task.FromResult(13));
+            var results = fixture
+                .CreateCollection();
+
+            fixture.ExecuteAsync();
+
+            Assert.Equal(1, results.Count);
+            Assert.Equal(13, results[0]);
+        }
+
+        [Fact]
+        public void CreateTaskFacilitatesTPLIntegrationWithParameter()
+        {
+            var fixture = ReactiveCommand.CreateTask<int, int>(param => Task.FromResult(param + 1));
+            var results = fixture
+                .CreateCollection();
+
+            fixture.ExecuteAsync(3);
+            fixture.ExecuteAsync(41);
+
+            Assert.Equal(2, results.Count);
+            Assert.Equal(4, results[0]);
+            Assert.Equal(42, results[1]);
         }
     }
 
