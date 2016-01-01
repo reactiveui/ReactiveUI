@@ -31,8 +31,8 @@ namespace ReactiveUI.Tests
 
         public TestWhenAnyObsViewModel()
         {
-            Command1 = ReactiveCommand.Create<int, int>(val => Observable.Return(val));
-            Command2 = ReactiveCommand.Create<int, int>(val => Observable.Return(val));
+            Command1 = ReactiveCommand.CreateAsyncObservable<int, int>(val => Observable.Return(val));
+            Command2 = ReactiveCommand.CreateAsyncObservable<int, int>(val => Observable.Return(val));
         }
     }
 
