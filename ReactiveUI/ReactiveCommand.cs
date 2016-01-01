@@ -222,7 +222,7 @@ namespace ReactiveUI
         /// <typeparam name="TResult">
         /// The type of the command's result.
         /// </typeparam>
-        public static ReactiveCommand<Unit, TResult> Create<TResult>(
+        public static ReactiveCommand<Unit, TResult> CreateAsyncObservable<TResult>(
             Func<IObservable<TResult>> executeAsync,
             IObservable<bool> canExecute = null,
             IScheduler scheduler = null)
@@ -253,12 +253,12 @@ namespace ReactiveUI
         /// <typeparam name="TResult">
         /// The type of the command's result.
         /// </typeparam>
-        public static ReactiveCommand<Unit, TResult> CreateTask<TResult>(
+        public static ReactiveCommand<Unit, TResult> CreateAsyncTask<TResult>(
             Func<Task<TResult>> executeAsync,
             IObservable<bool> canExecute = null,
             IScheduler scheduler = null)
         {
-            return Create(
+            return CreateAsyncObservable(
                 () => executeAsync().ToObservable(),
                 canExecute,
                 scheduler);
@@ -285,7 +285,7 @@ namespace ReactiveUI
         /// <typeparam name="TResult">
         /// The type of the command's result.
         /// </typeparam>
-        public static ReactiveCommand<TParam, TResult> Create<TParam, TResult>(
+        public static ReactiveCommand<TParam, TResult> CreateAsyncObservable<TParam, TResult>(
                 Func<TParam, IObservable<TResult>> executeAsync,
                 IObservable<bool> canExecute = null,
                 IScheduler scheduler = null)
@@ -314,12 +314,12 @@ namespace ReactiveUI
         /// <typeparam name="TResult">
         /// The type of the command's result.
         /// </typeparam>
-        public static ReactiveCommand<TParam, TResult> CreateTask<TParam, TResult>(
+        public static ReactiveCommand<TParam, TResult> CreateAsyncTask<TParam, TResult>(
                 Func<TParam, Task<TResult>> executeAsync,
                 IObservable<bool> canExecute = null,
                 IScheduler scheduler = null)
         {
-            return Create<TParam, TResult>(
+            return CreateAsyncObservable<TParam, TResult>(
                 param => executeAsync(param).ToObservable(),
                 canExecute,
                 scheduler);
@@ -587,7 +587,7 @@ namespace ReactiveUI
                         this.exceptions.OnNext(ex);
                         return Observable.Return(false);
                     })
-                .StartWith(true)
+                .StartWith(false)
                 .CombineLatest(this.isExecuting, (canEx, isEx) => canEx && !isEx)
                 .DistinctUntilChanged()
                 .Replay(1)
