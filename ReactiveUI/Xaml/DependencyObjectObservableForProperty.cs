@@ -1,18 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics.Contracts;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Reflection;
-using System.Text;
 using Splat;
 
-#if WINRT
+#if NETFX_CORE
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Data;
 #else
@@ -37,6 +33,16 @@ namespace ReactiveUI
             Contract.Requires(sender != null && sender is DependencyObject);
             var type = sender.GetType();
             var propertyName = expression.GetMemberInfo().Name;
+            var depSender = sender as DependencyObject;
+
+            if (depSender == null)
+            {
+                this.Log().Warn("Tried to bind DP on a non-DependencyObject. Binding as POCO object",
+                    type.FullName, propertyName);
+
+                var ret = new POCOObservableForProperty();
+                return ret.GetNotificationForProperty(sender, expression, beforeChanged);
+            }
 
             if (beforeChanged == true) {
                 this.Log().Warn("Tried to bind DO {0}.{1}, but DPs can't do beforeChanged. Binding as POCO object",
@@ -55,11 +61,21 @@ namespace ReactiveUI
                 return ret.GetNotificationForProperty(sender, expression, beforeChanged);
             }
 
+#if WINDOWS_UWP
+            return Observable.Create<IObservedChange<object, object>>(subj => {
+                var handler = new DependencyPropertyChangedCallback((o, e) => {
+                    subj.OnNext(new ObservedChange<object, object>(sender, expression));
+                });
+                var dependencyProperty = dpFetcher();
+                var token = depSender.RegisterPropertyChangedCallback(dependencyProperty, handler);
+                return Disposable.Create(() => depSender.UnregisterPropertyChangedCallback(dependencyProperty, token));
+            });
+#else
             var dpAndSubj = createAttachedProperty(type, propertyName);
 
             return Observable.Create<IObservedChange<object, object>>(obs => {
-                BindingOperations.SetBinding(sender as DependencyObject, dpAndSubj.Item1,
-                    new Binding() { Source = sender as DependencyObject, Path = new PropertyPath(propertyName) });
+                BindingOperations.SetBinding(depSender, dpAndSubj.Item1,
+                    new Binding() { Source = depSender, Path = new PropertyPath(propertyName) });
 
                 var disp = dpAndSubj.Item2
                     .Where(x => x == sender)
@@ -67,14 +83,15 @@ namespace ReactiveUI
                     .Subscribe(obs);
 
                 // ClearBinding calls ClearValue http://stackoverflow.com/questions/1639219/clear-binding-in-silverlight-remove-data-binding-from-setbinding
-                return new CompositeDisposable(Disposable.Create(() => (sender as DependencyObject).ClearValue(dpAndSubj.Item1)), disp);
+                return new CompositeDisposable(Disposable.Create(() => depSender.ClearValue(dpAndSubj.Item1)), disp);
             });
+#endif
         }
 
         Func<DependencyProperty> getDependencyPropertyFetcher(Type type, string propertyName)
         {
             var typeInfo = type.GetTypeInfo();
-#if WINRT
+#if NETFX_CORE
             // Look for the DependencyProperty attached to this property name
             var pi = actuallyGetProperty(typeInfo, propertyName + "Property");
             if (pi != null) {
@@ -116,6 +133,7 @@ namespace ReactiveUI
             return null;
         }
 
+#if !WINDOWS_UWP
         static readonly Dictionary<Tuple<Type, string>, Tuple<DependencyProperty, Subject<object>>> attachedListener =
             new Dictionary<Tuple<Type, string>, Tuple<DependencyProperty, Subject<object>>>();
 
@@ -138,5 +156,6 @@ namespace ReactiveUI
             attachedListener[pair] = ret;
             return ret;
         }
+#endif
     }
 }

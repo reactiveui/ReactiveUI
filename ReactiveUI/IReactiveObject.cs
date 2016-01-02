@@ -1,23 +1,20 @@
 using System;
-using System.Runtime.CompilerServices;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Diagnostics.Contracts;
+using System.Reactive;
+using System.Reactive.Concurrency;
+using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
-using System.Reactive.Concurrency;
+using System.Runtime.CompilerServices;
 using System.Threading;
-using System.Reactive.Disposables;
-using System.Diagnostics.Contracts;
-using System.ComponentModel;
 using Splat;
-using System.Collections.Generic;
-using System.Reactive;
 
 namespace ReactiveUI 
 {
     public interface IReactiveObject : INotifyPropertyChanged, INotifyPropertyChanging, IEnableLogger 
     {
-        event PropertyChangingEventHandler PropertyChanging;
-        event PropertyChangedEventHandler PropertyChanged;
-
         void RaisePropertyChanging(PropertyChangingEventArgs args);
         void RaisePropertyChanged(PropertyChangedEventArgs args);
     }
@@ -172,7 +169,6 @@ namespace ReactiveUI
             IObservable<IReactivePropertyChangedEventArgs<TSender>> changingObservable;
             ISubject<IReactivePropertyChangedEventArgs<TSender>> changedSubject;
             IObservable<IReactivePropertyChangedEventArgs<TSender>> changedObservable;
-            ISubject<IReactivePropertyChangedEventArgs<TSender>> fireChangedBatchSubject;
             ISubject<Exception> thrownExceptions;
             ISubject<Unit> startDelayNotifications;
 

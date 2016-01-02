@@ -5,7 +5,7 @@ using System.Reactive.Subjects;
 using System.Windows;
 using Splat;
 
-#if WINRT
+#if NETFX_CORE
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 #else
@@ -50,11 +50,19 @@ namespace ReactiveUI
         public static readonly DependencyProperty ViewContractObservableProperty =
             DependencyProperty.Register("ViewContractObservable", typeof(IObservable<string>), typeof(ViewModelViewHost), new PropertyMetadata(Observable.Return(default(string))));
 
+        private string viewContract;
+
+        public string ViewContract
+        {
+            get { return this.viewContract; }
+            set { ViewContractObservable = Observable.Return(value); }
+        }
+
         public IViewLocator ViewLocator { get; set; }
 
         public ViewModelViewHost()
         {
-#if WINRT
+#if NETFX_CORE
             this.DefaultStyleKey = typeof(ViewModelViewHost);
 #endif
 
@@ -103,6 +111,11 @@ namespace ReactiveUI
                     Content = view;
                 }));
             });
+
+            this
+                .WhenAnyObservable(x => x.ViewContractObservable)
+                .ObserveOn(RxApp.MainThreadScheduler)
+                .Subscribe(x => this.viewContract = x);
         }
 
         static void somethingChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs dependencyPropertyChangedEventArgs)

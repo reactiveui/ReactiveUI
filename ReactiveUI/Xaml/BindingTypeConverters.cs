@@ -1,5 +1,5 @@
 ﻿using System;
-#if WINRT
+#if NETFX_CORE
 using Windows.UI.Xaml;
 #else
 using System.Windows;
@@ -12,7 +12,7 @@ namespace ReactiveUI
     {
         None = 0,
         Inverse = 1 << 1,
-#if !SILVERLIGHT && !WINRT
+#if !SILVERLIGHT && !NETFX_CORE
         UseHidden = 1 << 2,
 #endif
     }
@@ -38,7 +38,7 @@ namespace ReactiveUI
 
             if (toType == typeof (Visibility)) {
                 var fromAsBool = hint.HasFlag(BooleanToVisibilityHint.Inverse) ? !((bool) from) : (bool) from;
-#if !SILVERLIGHT && !WINRT
+#if !SILVERLIGHT && !NETFX_CORE
                 var notVisible = hint.HasFlag(BooleanToVisibilityHint.UseHidden) ? Visibility.Hidden : Visibility.Collapsed;
 #else
                 var notVisible = Visibility.Collapsed;

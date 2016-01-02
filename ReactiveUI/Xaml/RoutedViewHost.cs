@@ -8,7 +8,7 @@ using System.Windows;
 using ReactiveUI;
 using Splat;
 
-#if WINRT
+#if NETFX_CORE
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 #else
@@ -24,8 +24,6 @@ namespace ReactiveUI
     /// </summary>
     public class RoutedViewHost : TransitioningContentControl, IActivatable, IEnableLogger
     {
-        IDisposable _inner = null;
-
         /// <summary>
         /// The Router associated with this View Host.
         /// </summary>
@@ -58,7 +56,7 @@ namespace ReactiveUI
 
         public RoutedViewHost()
         {
-#if WINRT
+#if NETFX_CORE
             this.DefaultStyleKey = typeof(RoutedViewHost);
 #endif
             HorizontalContentAlignment = HorizontalAlignment.Stretch;

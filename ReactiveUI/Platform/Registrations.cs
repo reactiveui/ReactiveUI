@@ -32,20 +32,18 @@ namespace ReactiveUI
         {
             registerFunction(() => new PlatformOperations(), typeof(IPlatformOperations));
 
-#if !WINRT && !WP8 && !WP81
+#if !NETFX_CORE && !WP8 && !WP81
             registerFunction(() => new ComponentModelTypeConverter(), typeof(IBindingTypeConverter));
 #endif
 
 #if !MONO
             registerFunction(() => new ActivationForViewFetcher(), typeof(IActivationForViewFetcher));
             registerFunction(() => new DependencyObjectObservableForProperty(), typeof(ICreatesObservableForProperty));
-            registerFunction(() => new XamlDefaultPropertyBinding(), typeof(IDefaultPropertyBindingProvider));
             registerFunction(() => new BooleanToVisibilityTypeConverter(), typeof(IBindingTypeConverter));
             registerFunction(() => new AutoDataTemplateBindingHook(), typeof(IPropertyBindingHook));
 #endif
 
 #if ANDROID
-            registerFunction(() => new AndroidDefaultPropertyBinding(), typeof(IDefaultPropertyBindingProvider));
             registerFunction(() => new AndroidObservableForWidgets(), typeof(ICreatesObservableForProperty));
             registerFunction(() => new AndroidCommandBinders(), typeof(ICreatesCommandBinding));
 #endif
@@ -58,7 +56,6 @@ namespace ReactiveUI
 
 #if COCOA
             registerFunction(() => new KVOObservableForProperty(), typeof(ICreatesObservableForProperty));
-            registerFunction(() => new CocoaDefaultPropertyBinding(), typeof(IDefaultPropertyBindingProvider));
 #endif
 
 #if COCOA && !UIKIT
@@ -71,11 +68,11 @@ namespace ReactiveUI
             RxApp.MainThreadScheduler = new WaitForDispatcherScheduler(() => new NSRunloopScheduler());
 #endif
 
-#if !MONO && !WINRT
+#if !MONO && !NETFX_CORE
             RxApp.MainThreadScheduler = new WaitForDispatcherScheduler(() => DispatcherScheduler.Current);
 #endif
 
-#if WINRT
+#if NETFX_CORE
             RxApp.MainThreadScheduler = new WaitForDispatcherScheduler(() => CoreDispatcherScheduler.Current);
 #endif
 
@@ -85,7 +82,7 @@ namespace ReactiveUI
 
 #if WP8
             registerFunction(() => new PhoneServiceStateDriver(), typeof (ISuspensionDriver));
-#elif WINRT
+#elif NETFX_CORE
             registerFunction(() => new WinRTAppDataDriver(), typeof(ISuspensionDriver));
 #elif UIKIT
             registerFunction(() => new AppSupportJsonSuspensionDriver(), typeof(ISuspensionDriver));

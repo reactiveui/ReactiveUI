@@ -50,12 +50,6 @@ namespace ReactiveUI
             // * IViewFor<IFooBarViewModel>
             // * IViewFor<FooBarViewModel> (the original behavior in RxUI 3.1)
 
-            var attrs = viewModel.GetType().GetTypeInfo().GetCustomAttributes(typeof (ViewContractAttribute), true);
-
-            if (attrs.Any()) {
-                contract = contract ?? ((ViewContractAttribute) attrs.First()).Contract;
-            }
-
             // IFooBarView that implements IViewFor (or custom ViewModelToViewFunc)
             var typeToFind = ViewModelToViewFunc(viewModel.GetType().AssemblyQualifiedName);
                 
