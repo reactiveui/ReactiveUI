@@ -610,7 +610,7 @@ namespace ReactiveUI.Tests
 
             var list = new List<int>();
             fixture.WhenAnyObservable(x => x.Command1, x => x.Command2)
-                   .Subscribe(x => list.Add(x));
+                   .Subscribe(list.Add);
 
             Assert.Equal(0, list.Count);
 

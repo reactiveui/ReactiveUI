@@ -118,19 +118,5 @@ namespace ReactiveUI
         {
             return This.NavigationStack.LastOrDefault();
         }
-
-        /////// <summary>
-        /////// Creates a ReactiveCommand which will, when invoked, navigate to the 
-        /////// type specified by the type parameter via looking it up in the
-        /////// Dependency Resolver.
-        /////// </summary>
-        ////public static NewReactiveCommand<object, IRoutableViewModel> NavigateCommandFor<T>(this RoutingState This)
-        ////    where T : IRoutableViewModel, new()
-        ////{
-        ////    var ret = new ReactiveCommand<object>(This.Navigate.CanExecute, x => Observable.Return(x));
-        ////    ret.Select(_ => (IRoutableViewModel)Locator.Current.GetService<T>() ?? new T()).InvokeCommand(This.Navigate);
-                
-        ////    return ret;
-        ////}
     }
 }

@@ -196,11 +196,8 @@ namespace ReactiveUI.Tests
 
             var canStart = this.Players.CountChanged.Select(count => count >= 3);
             StartGame = ReactiveCommand.Create(() => { }, canStart);
-            RandomizeOrder = ReactiveCommand.Create(
-                () =>
-                {
-                    using (Players.SuppressChangeNotifications())
-                    {
+            RandomizeOrder = ReactiveCommand.Create(() => {
+                    using (Players.SuppressChangeNotifications()) {
                         var r = new Random();
                         var newOrder = Players.OrderBy(x => r.NextDouble()).ToList();
                         Players.Clear();
@@ -212,9 +209,7 @@ namespace ReactiveUI.Tests
             RemovePlayer = ReactiveCommand.Create<string>(player => this.Players.Remove(player));
             var canAddPlayer = this.WhenAnyValue(x => x.Players.Count, x => x.NewPlayerName,
                 (count, newPlayerName) => count < 7 && !string.IsNullOrWhiteSpace(newPlayerName) && !this.Players.Contains(newPlayerName));
-            AddPlayer = ReactiveCommand.Create(
-                () =>
-                {
+            AddPlayer = ReactiveCommand.Create(() => {
                     Players.Add(NewPlayerName.Trim());
                     NewPlayerName = string.Empty;
                 },

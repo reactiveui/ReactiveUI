@@ -73,8 +73,7 @@ namespace ReactiveUI
             object latestParameter = null;
             var evt = Observable.FromEventPattern<TEventArgs>(target, eventName);
 
-            ret.Add(commandParameter.Subscribe(
-                x => latestParameter = x));
+            ret.Add(commandParameter.Subscribe(x => latestParameter = x));
 
             ret.Add(evt.Subscribe(ea => {
                 if (command.CanExecute(latestParameter)) {

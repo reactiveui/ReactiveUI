@@ -62,8 +62,7 @@ namespace ReactiveUI.Winforms
             object latestParameter = null;
             Type targetType = target.GetType();
 
-            ret.Add(commandParameter.Subscribe(
-                x => latestParameter = x));
+            ret.Add(commandParameter.Subscribe(x => latestParameter = x));
 
             var evt = Observable.FromEventPattern<TEventArgs>(target, eventName);
             ret.Add(evt.Subscribe(ea => {
