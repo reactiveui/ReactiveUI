@@ -358,7 +358,7 @@ namespace ReactiveUI.Legacy
     /// UserError.
     /// </summary>
     [Obsolete("This type is obsolete and will be removed in a future version of ReactiveUI. Please switch to using user interactions instead.")]
-    public class RecoveryCommand : ReactiveCommand<Unit, Unit>, IRecoveryCommand
+    public class RecoveryCommand : ReactiveCommand<Unit>, IRecoveryCommand
     {
         public bool IsDefault { get; set; }
         public bool IsCancel { get; set; }
@@ -372,7 +372,7 @@ namespace ReactiveUI.Legacy
         /// <param name="handler">A convenience handler - equivalent to
         /// Subscribing to the command and setting the RecoveryResult.</param>
         public RecoveryCommand(string commandName, Func<object, RecoveryOptionResult> handler = null)
-            : base(_ => Observable.Return(Unit.Default), Observable.Return(true), RxApp.MainThreadScheduler)
+            : base(Observable.Return(true), _ => Observable.Return(Unit.Default))
         {
             CommandName = commandName;
 
@@ -380,11 +380,7 @@ namespace ReactiveUI.Legacy
                 this.Subscribe(x => RecoveryResult = handler(x));
             }
         }
-
-        public IObservable<bool> CanExecuteObservable {
-            get { return base.CanExecute; }
-        }
-
+        
         /// <summary>
         /// A default command whose caption is "Ok"
         /// </summary>

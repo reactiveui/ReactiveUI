@@ -19,7 +19,7 @@ These are the major changes that are likely to affect application developers in 
     * `CanExecuteObservable` is now simply called `CanExecute`
 * execution of a command occurs when you invoke `ExecuteAsync`. You no longer have to subscribe to the returned observable for the execution logic to occur. Late subscribers will still receive the result of the execution.
 * observables such as `CanExecute` and `IsExecuting` are now behavioral. That is, they will always provide the last known value to subscribers.
-* supporting types (such as `RoutingState`) that use reactive commands have been updated to use the new implementation. Consequently, any use of those commands will be affected per the above.
+* `RoutingState` has been updated to use the new implementation. Consequently, any use of its commands will be affected per the above.
 
 Old:
 
@@ -75,4 +75,4 @@ var scheduler = ...;
 ReactiveCommand.Create(() => {}, canExecute, scheduler);
 ```
 
-To enable you to ease into the migration, all previous types are available under the `ReactiveUI.Legacy` namespace. Note, however, that there is no legacy version of consuming types. For example, `RoutingState` uses the new `ReactiveCommand` implementation and there is no alternative.
+To enable you to ease into the migration, all previous types are available under the `ReactiveUI.Legacy` namespace. Note, however, that there is no legacy version of `RoutingState`, so any code you have that interacts with its command may require minor updates.
