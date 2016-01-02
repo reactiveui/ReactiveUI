@@ -380,7 +380,7 @@ namespace ReactiveUI.Legacy
                 this.Subscribe(x => RecoveryResult = handler(x));
             }
         }
-        
+
         /// <summary>
         /// A default command whose caption is "Ok"
         /// </summary>
