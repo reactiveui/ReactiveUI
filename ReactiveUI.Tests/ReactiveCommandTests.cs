@@ -80,8 +80,7 @@ namespace ReactiveUI.Tests
         [Fact]
         public void CanExecuteIsFalseIfAlreadyExecuting()
         {
-            (new TestScheduler()).With(sched =>
-            {
+            (new TestScheduler()).With(sched => {
                 var execute = Observable.Return(Unit.Default).Delay(TimeSpan.FromSeconds(1), sched);
                 var fixture = ReactiveCommand.CreateAsyncObservable(() => execute, scheduler: sched);
                 var canExecute = fixture
@@ -162,8 +161,7 @@ namespace ReactiveUI.Tests
         [Fact]
         public void IsExecutingTicksAsExecutionsProgress()
         {
-            (new TestScheduler()).With(sched =>
-            {
+            (new TestScheduler()).With(sched => {
                 var execute = Observable.Return(Unit.Default).Delay(TimeSpan.FromSeconds(1), sched);
                 var fixture = ReactiveCommand.CreateAsyncObservable(() => execute, scheduler: sched);
                 var isExecuting = fixture
@@ -188,9 +186,7 @@ namespace ReactiveUI.Tests
         public void ExecuteAsyncPassesThroughParameter()
         {
             var parameters = new List<int>();
-            var fixture = ReactiveCommand.CreateAsyncObservable<int, Unit>(
-                param =>
-                {
+            var fixture = ReactiveCommand.CreateAsyncObservable<int, Unit>(param => {
                     parameters.Add(param);
                     return Observable.Return(Unit.Default);
                 });
@@ -208,8 +204,7 @@ namespace ReactiveUI.Tests
         [Fact]
         public void ExecuteAsyncExecutesOnTheSpecifiedScheduler()
         {
-            (new TestScheduler()).With(sched =>
-            {
+            (new TestScheduler()).With(sched => {
                 var execute = Observable.Return(Unit.Default).Delay(TimeSpan.FromSeconds(1), sched);
                 var fixture = ReactiveCommand.CreateAsyncObservable(() => execute, scheduler: sched);
                 var isExecuting = fixture
@@ -233,8 +228,7 @@ namespace ReactiveUI.Tests
         [Fact]
         public void ExecuteAsyncExecutesEvenWithoutASubscription()
         {
-            (new TestScheduler()).With(sched =>
-            {
+            (new TestScheduler()).With(sched => {
                 var execute = Observable.Return(Unit.Default).Delay(TimeSpan.FromSeconds(1), sched);
                 var fixture = ReactiveCommand.CreateAsyncObservable(() => execute, scheduler: sched);
                 var isExecuting = fixture
@@ -275,9 +269,7 @@ namespace ReactiveUI.Tests
         public void ExecuteIsAvailableViaICommand()
         {
             var executed = false;
-            ICommand fixture = ReactiveCommand.Create(
-                () =>
-                {
+            ICommand fixture = ReactiveCommand.Create(() => {
                     executed = true;
                     return Observable.Return(Unit.Default);
                 });
@@ -301,8 +293,7 @@ namespace ReactiveUI.Tests
         [Fact]
         public void ResultIsTickedThroughSpecifiedScheduler()
         {
-            (new TestScheduler()).With(sched =>
-            {
+            (new TestScheduler()).With(sched => {
                 var fixture = ReactiveCommand.Create(() => Observable.Return(Unit.Default), scheduler: sched);
                 var results = fixture
                     .CreateCollection();
@@ -515,8 +506,7 @@ namespace ReactiveUI.Tests
         [Fact]
         public void ResultIsTickedThroughSpecifiedScheduler()
         {
-            (new TestScheduler()).With(sched =>
-            {
+            (new TestScheduler()).With(sched => {
                 var child1 = ReactiveCommand.Create(() => Observable.Return(1));
                 var child2 = ReactiveCommand.Create(() => Observable.Return(2));
                 var childCommands = new[] { child1, child2 };

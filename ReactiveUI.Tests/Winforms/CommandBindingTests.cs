@@ -201,7 +201,7 @@ namespace ReactiveUI.Tests.Winforms
 
     public class FakeViewModel : ReactiveObject
     {
-        public ReactiveCommand<Unit, Unit> Cmd { get; protected set; }
+        public ReactiveCommand Cmd { get; protected set; }
 
         public FakeViewModel()
         {

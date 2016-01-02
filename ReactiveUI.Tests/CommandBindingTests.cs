@@ -1,23 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
-using System.Reflection;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using ReactiveUI;
 using Xunit;
 
 namespace ReactiveUI.Tests
 {
     public class FakeViewModel : ReactiveObject
     {
-        public ReactiveCommand<Unit, Unit> Cmd { get; protected set; }
+        public ReactiveCommand Cmd { get; protected set; }
 
         public FakeViewModel()
         {
@@ -152,7 +147,7 @@ namespace ReactiveUI.Tests
             NestedCommand = ReactiveCommand.Create(() => { });
         }
 
-        public ReactiveCommand<Unit, Unit> NestedCommand { get; protected set; }
+        public ReactiveCommand NestedCommand { get; protected set; }
     }
 
 
