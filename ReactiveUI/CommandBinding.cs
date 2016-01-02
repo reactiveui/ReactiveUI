@@ -20,7 +20,7 @@ namespace ReactiveUI
             binderImplementation = Locator.Current.GetService<ICommandBinderImplementation>() ?? 
                 new CommandBinderImplementation();
         }
-        
+                
         /// <summary>
         /// Bind a command from the ViewModel to an explicitly specified control
         /// on the View.
@@ -100,7 +100,7 @@ namespace ReactiveUI
         {
             return binderImplementation.BindCommand(viewModel, view, propertyName, controlName, toEvent);
         }
-        
+                
         /// <summary>
         /// Bind a command from the ViewModel to an explicitly specified control
         /// on the View.
@@ -154,7 +154,7 @@ namespace ReactiveUI
             where TProp : ICommand;
     }
 
-    public class CommandBinderImplementation : ICommandBinderImplementation
+    public class CommandBinderImplementation : ICommandBinderImplementation 
     {
         public IReactiveBinding<TView, TViewModel, TProp> BindCommand<TView, TViewModel, TProp, TControl, TParam>(
                 TViewModel viewModel, 
