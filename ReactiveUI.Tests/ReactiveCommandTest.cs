@@ -11,7 +11,7 @@ using Xunit;
 
 namespace ReactiveUI.Tests
 {
-    public class ReactiveCommandTests
+    public class ReactiveCommandTest
     {
         [Fact]
         public void CreateThrowsIfExecutionParameterIsNull()
@@ -371,7 +371,7 @@ namespace ReactiveUI.Tests
         }
     }
 
-    public class CombinedReactiveCommandTests
+    public class CombinedReactiveCommandTest
     {
         [Fact]
         public void CanExecuteIsFalseIfAnyChildCannotExecute()

@@ -34,6 +34,22 @@ namespace ReactiveUI.Legacy
     }
 
     /// <summary>
+    /// IReactiveCommand represents an ICommand which also notifies when it is
+    /// executed (i.e. when Execute is called) via IObservable. Conceptually,
+    /// this represents an Event, so as a result this IObservable should never
+    /// OnComplete or OnError.
+    ///
+    /// In previous versions of ReactiveUI, this interface was split into two
+    /// separate interfaces, one to handle async methods and one for "standard"
+    /// commands, but these have now been merged - every ReactiveCommand is now
+    /// a ReactiveAsyncCommand.
+    /// </summary>
+    public interface IReactiveCommand<T> : IObservable<T>, IReactiveCommand
+    {
+        IObservable<T> ExecuteAsync(object parameter = null);
+    }
+
+    /// <summary>
     /// ReactiveCommand is the default Command implementation in ReactiveUI, which
     /// conforms to the spec described in IReactiveCommand. 
     /// </summary>
