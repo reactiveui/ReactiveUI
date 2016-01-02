@@ -138,6 +138,7 @@
     <Compile Include="Android\BundleSuspensionDriver.cs" />
     <Compile Include="Android\AutoSuspendHelper.cs" />
     <Compile Include="Legacy\ReactiveCommand.cs" />
+    <Compile Include="Legacy\Errors.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.ReactiveUI_Android.config" />
