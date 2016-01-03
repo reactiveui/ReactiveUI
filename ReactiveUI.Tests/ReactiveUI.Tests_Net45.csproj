@@ -101,6 +101,7 @@
     <Compile Include="AwaiterTest.cs" />
     <Compile Include="BindingTypeConvertersTest.cs" />
     <Compile Include="CommandBindingTests.cs" />
+    <Compile Include="DependencyResolverTests.cs" />
     <Compile Include="INPCObservableForPropertyTests.cs" />
     <Compile Include="InteractionsTest.cs" />
     <Compile Include="TestUtilsTest.cs" />
