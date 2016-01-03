@@ -16,6 +16,7 @@ using LegacyRxCmd = ReactiveUI.Legacy.ReactiveCommand;
 
 namespace ReactiveUI.Legacy
 {
+    [Obsolete("This type is obsolete and will be removed in a future version of ReactiveUI. Please switch to using ReactiveUI.ReactiveCommand instead.")]
     public interface IReactiveCommand : IHandleObservableErrors, ICommand, IDisposable, IEnableLogger
     {
         /// <summary>
@@ -45,11 +46,13 @@ namespace ReactiveUI.Legacy
     /// commands, but these have now been merged - every ReactiveCommand is now
     /// a ReactiveAsyncCommand.
     /// </summary>
+    [Obsolete("This type is obsolete and will be removed in a future version of ReactiveUI. Please switch to using ReactiveUI.ReactiveCommand instead.")]
     public interface IReactiveCommand<T> : IObservable<T>, IReactiveCommand
     {
         IObservable<T> ExecuteAsync(object parameter = null);
     }
 
+    [Obsolete("This type is obsolete and will be removed in a future version of ReactiveUI. Please switch to using ReactiveUI.ReactiveCommand instead.")]
     public static class ReactiveCommand
     {
         /// <summary>
@@ -312,6 +315,7 @@ namespace ReactiveUI.Legacy
     /// ReactiveCommand is itself an Observable. The results of individual
     /// invocations can be retrieved via the ExecuteAsync method.
     /// </summary>
+    [Obsolete("This type is obsolete and will be removed in a future version of ReactiveUI. Please switch to using ReactiveUI.ReactiveCommand instead.")]
     public class ReactiveCommand<T> : IReactiveCommand<T>, IReactiveCommand
     {
 #if NET_45
@@ -499,6 +503,7 @@ namespace ReactiveUI.Legacy
         }
     }
 
+    [Obsolete("This type is obsolete and will be removed in a future version of ReactiveUI. Please switch to using ReactiveUI.ReactiveCommand instead.")]
     public static class ReactiveCommandMixins
     {
         /// <summary>
