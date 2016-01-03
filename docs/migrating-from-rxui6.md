@@ -20,6 +20,7 @@ These are the major changes that are likely to affect application developers in 
 * execution of a command occurs when you invoke `ExecuteAsync`. You no longer have to subscribe to the returned observable for the execution logic to occur. Late subscribers will still receive the result of the execution.
 * observables such as `CanExecute` and `IsExecuting` are now behavioral. That is, they will always provide the last known value to subscribers.
 * `RoutingState` has been updated to use the new implementation. Consequently, any use of its commands will be affected per the above.
+* the `ToCommand` extension method has been removed. This was a simple convenience to take an `IObservable<bool>` and use it as the `canExecute` pipeline for a new command. If you're using `ToCommand`, you can just replace it with a call to one of the creation methods on `ReactiveCommand`.
 
 Old:
 
