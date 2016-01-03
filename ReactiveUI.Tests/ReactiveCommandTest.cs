@@ -369,6 +369,38 @@ namespace ReactiveUI.Tests
             Assert.Equal(4, results[0]);
             Assert.Equal(42, results[1]);
         }
+
+        [Fact]
+        public void InvokeCommandInvokesTheCommand()
+        {
+            var executionCount = 0;
+            var fixture = ReactiveCommand.Create(() => ++executionCount);
+            var source = new Subject<Unit>();
+            source.InvokeCommand(fixture);
+
+            source.OnNext(Unit.Default);
+            Assert.Equal(1, executionCount);
+
+            source.OnNext(Unit.Default);
+            Assert.Equal(2, executionCount);
+        }
+
+        [Fact]
+        public void InvokeCommandRespectsCanExecute()
+        {
+            var executed = false;
+            var canExecute = new BehaviorSubject<bool>(false);
+            var fixture = ReactiveCommand.Create(() => executed = true, canExecute);
+            var source = new Subject<Unit>();
+            source.InvokeCommand(fixture);
+
+            source.OnNext(Unit.Default);
+            Assert.False(executed);
+
+            canExecute.OnNext(true);
+            source.OnNext(Unit.Default);
+            Assert.True(executed);
+        }
     }
 
     public class CombinedReactiveCommandTest
