@@ -1,17 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using ReactiveUI;
-using ReactiveUI.Routing;
-using Xunit;
+﻿using ReactiveUI;
 using Splat;
+using Xunit;
 
 namespace Foobar.ViewModels
 {
     public interface IFooBarViewModel : IRoutableViewModel {}
 
     public interface IBazViewModel : IRoutableViewModel {}
+
+    public interface IQuxViewModel : IRoutableViewModel { }
 
     public class FooBarViewModel : ReactiveObject, IFooBarViewModel 
     {
@@ -30,6 +27,17 @@ namespace Foobar.ViewModels
         public IScreen HostScreen { get; private set; }
 
         public BazViewModel(IScreen hostScreen)
+        {
+            HostScreen = hostScreen;
+        }
+    }
+
+    public class QuxViewModel : ReactiveObject, IQuxViewModel
+    {
+        public string UrlPathSegment { get { return "foo"; } }
+        public IScreen HostScreen { get; private set; }
+
+        public QuxViewModel(IScreen hostScreen)
         {
             HostScreen = hostScreen;
         }
@@ -53,17 +61,23 @@ namespace Foobar.Views
         object IViewFor.ViewModel { get { return ViewModel; } set { ViewModel = (IBazViewModel)value; } }
         public IBazViewModel ViewModel { get; set; }
     }
+
+    public class QuxView : IViewFor<QuxViewModel>
+    {
+        object IViewFor.ViewModel { get { return ViewModel; } set { ViewModel = (QuxViewModel)value; } }
+        public QuxViewModel ViewModel { get; set; }
+    }
 }
 
 namespace ReactiveUI.Routing.Tests
 {
-    using Foobar.Views;
     using Foobar.ViewModels;
+    using Foobar.Views;
 
     public class RxRoutingTests : IEnableLogger
     {
         [Fact]
-        public void ResolveExplicitViewType()
+        public void ResolveByInterfaceName()
         {
             var resolver = new ModernDependencyResolver();
 
@@ -77,7 +91,45 @@ namespace ReactiveUI.Routing.Tests
 
                 var result = fixture.ResolveView(vm);
                 this.Log().Info(result.GetType().FullName);
-                Assert.True(result is BazView);
+                Assert.IsType<BazView>(result);
+            }
+        }
+
+        [Fact]
+        public void ResolveByInterfaceType()
+        {
+            var resolver = new ModernDependencyResolver();
+
+            resolver.InitializeSplat();
+            resolver.InitializeReactiveUI();
+            resolver.Register(() => new FooBarView(), typeof(IViewFor<IFooBarViewModel>));
+
+            using (resolver.WithResolver()) {
+                var fixture = new DefaultViewLocator();
+                var vm = new FooBarViewModel(null);
+
+                var result = fixture.ResolveView(vm);
+                this.Log().Info(result.GetType().FullName);
+                Assert.IsType<FooBarView>(result);
+            }
+        }
+
+        [Fact]
+        public void ResolveByConcreteViewFor()
+        {
+            var resolver = new ModernDependencyResolver();
+
+            resolver.InitializeSplat();
+            resolver.InitializeReactiveUI();
+            resolver.Register(() => new QuxView(), typeof(IViewFor<QuxViewModel>));
+
+            using (resolver.WithResolver()) {
+                var fixture = new DefaultViewLocator();
+                var vm = new QuxViewModel(null);
+
+                var result = fixture.ResolveView(vm);
+                this.Log().Info(result.GetType().FullName);
+                Assert.IsType<QuxView>(result);
             }
         }
     }
