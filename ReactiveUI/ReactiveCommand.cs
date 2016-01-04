@@ -83,10 +83,11 @@ namespace ReactiveUI
                 throw new ArgumentNullException("execute");
             }
 
-            return new ReactiveCommand<Unit, Unit>(_ => {
-                execute();
-                return Observable.Return(Unit.Default);
-            },
+            return new ReactiveCommand<Unit, Unit>(
+                _ => {
+                    execute();
+                    return Observable.Return(Unit.Default);
+                },
                 canExecute ?? Observable.Return(true),
                 scheduler ?? RxApp.MainThreadScheduler);
         }
@@ -152,10 +153,11 @@ namespace ReactiveUI
                 throw new ArgumentNullException("execute");
             }
 
-            return new ReactiveCommand<TParam, Unit>(param => {
-                execute(param);
-                return Observable.Return(Unit.Default);
-            },
+            return new ReactiveCommand<TParam, Unit>(
+                param => {
+                    execute(param);
+                    return Observable.Return(Unit.Default);
+                },
                 canExecute ?? Observable.Return(true),
                 scheduler ?? RxApp.MainThreadScheduler);
         }
