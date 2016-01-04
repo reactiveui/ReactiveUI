@@ -79,13 +79,11 @@ namespace ReactiveUI
             IObservable<bool> canExecute = null,
             IScheduler scheduler = null)
         {
-            if (execute == null)
-            {
+            if (execute == null) {
                 throw new ArgumentNullException("execute");
             }
 
-            return new ReactiveCommand<Unit, Unit>(_ =>
-            {
+            return new ReactiveCommand<Unit, Unit>(_ => {
                 execute();
                 return Observable.Return(Unit.Default);
             },
@@ -117,8 +115,7 @@ namespace ReactiveUI
             IObservable<bool> canExecute = null,
             IScheduler scheduler = null)
         {
-            if (execute == null)
-            {
+            if (execute == null) {
                 throw new ArgumentNullException("execute");
             }
 
@@ -151,13 +148,11 @@ namespace ReactiveUI
             IObservable<bool> canExecute = null,
             IScheduler scheduler = null)
         {
-            if (execute == null)
-            {
+            if (execute == null) {
                 throw new ArgumentNullException("execute");
             }
 
-            return new ReactiveCommand<TParam, Unit>(param =>
-            {
+            return new ReactiveCommand<TParam, Unit>(param => {
                 execute(param);
                 return Observable.Return(Unit.Default);
             },
@@ -192,8 +187,7 @@ namespace ReactiveUI
             IObservable<bool> canExecute = null,
             IScheduler scheduler = null)
         {
-            if (execute == null)
-            {
+            if (execute == null) {
                 throw new ArgumentNullException("execute");
             }
 
@@ -226,8 +220,7 @@ namespace ReactiveUI
             IObservable<bool> canExecute = null,
             IScheduler scheduler = null)
         {
-            if (executeAsync == null)
-            {
+            if (executeAsync == null) {
                 throw new ArgumentNullException("executeAsync");
             }
 
@@ -257,6 +250,32 @@ namespace ReactiveUI
         /// </typeparam>
         public static ReactiveCommand<Unit, TResult> CreateAsyncTask<TResult>(
             Func<Task<TResult>> executeAsync,
+            IObservable<bool> canExecute = null,
+            IScheduler scheduler = null)
+        {
+            return CreateAsyncObservable(
+                () => executeAsync().ToObservable(),
+                canExecute,
+                scheduler);
+        }
+
+        /// <summary>
+        /// Creates a parameterless <see cref="ReactiveCommand{TParam, TResult}"/> with asynchronous execution logic.
+        /// </summary>
+        /// <param name="executeAsync">
+        /// Provides a <see cref="Task"/> representing the command's asynchronous execution logic.
+        /// </param>
+        /// <param name="canExecute">
+        /// An optional observable that dictates the availability of the command for execution.
+        /// </param>
+        /// <param name="scheduler">
+        /// An optional scheduler that is used to surface the results of command execution.
+        /// </param>
+        /// <returns>
+        /// The <c>ReactiveCommand</c> instance.
+        /// </returns>
+        public static ReactiveCommand<Unit, Unit> CreateAsyncTask(
+            Func<Task> executeAsync,
             IObservable<bool> canExecute = null,
             IScheduler scheduler = null)
         {
@@ -325,6 +344,35 @@ namespace ReactiveUI
                 IScheduler scheduler = null)
         {
             return CreateAsyncObservable<TParam, TResult>(
+                param => executeAsync(param).ToObservable(),
+                canExecute,
+                scheduler);
+        }
+
+        /// <summary>
+        /// Creates a <see cref="ReactiveCommand{TParam, TResult}"/> with asynchronous execution logic that takes a parameter of type <typeparamref name="TParam"/>.
+        /// </summary>
+        /// <param name="executeAsync">
+        /// Provides a <see cref="Task"/> representing the command's asynchronous execution logic.
+        /// </param>
+        /// <param name="canExecute">
+        /// An optional observable that dictates the availability of the command for execution.
+        /// </param>
+        /// <param name="scheduler">
+        /// An optional scheduler that is used to surface the results of command execution.
+        /// </param>
+        /// <returns>
+        /// The <c>ReactiveCommand</c> instance.
+        /// </returns>
+        /// <typeparam name="TParam">
+        /// The type of the parameter passed through to command execution.
+        /// </typeparam>
+        public static ReactiveCommand<TParam, Unit> CreateAsyncTask<TParam>(
+                Func<TParam, Task> executeAsync,
+                IObservable<bool> canExecute = null,
+                IScheduler scheduler = null)
+        {
+            return CreateAsyncObservable<TParam, Unit>(
                 param => executeAsync(param).ToObservable(),
                 canExecute,
                 scheduler);
@@ -438,8 +486,7 @@ namespace ReactiveUI
         {
             var handler = this.canExecuteChanged;
 
-            if (handler != null)
-            {
+            if (handler != null) {
                 handler(this, EventArgs.Empty);
             }
         }
@@ -508,13 +555,11 @@ namespace ReactiveUI
         protected override void ICommandExecute(object parameter)
         {
             // ensure that null is coerced to default(TParam) so that commands taking value types will use a sensible default if no parameter is supplied
-            if (parameter == null)
-            {
+            if (parameter == null) {
                 parameter = default(TParam);
             }
 
-            if (!(parameter is TParam))
-            {
+            if (!(parameter is TParam)) {
                 throw new InvalidOperationException(
                     String.Format(
                         "Command requires parameters of type {0}, but received parameter of type {1}.",
@@ -559,18 +604,15 @@ namespace ReactiveUI
             IObservable<bool> canExecute,
             IScheduler scheduler)
         {
-            if (executeAsync == null)
-            {
+            if (executeAsync == null) {
                 throw new ArgumentNullException("executeAsync");
             }
 
-            if (canExecute == null)
-            {
+            if (canExecute == null) {
                 throw new ArgumentNullException("canExecute");
             }
 
-            if (scheduler == null)
-            {
+            if (scheduler == null) {
                 throw new ArgumentNullException("scheduler");
             }
 
@@ -586,8 +628,7 @@ namespace ReactiveUI
                 .Replay(1)
                 .RefCount();
             this.canExecute = canExecute
-                .Catch<bool, Exception>(ex =>
-                {
+                .Catch<bool, Exception>(ex => {
                     this.exceptions.OnNext(ex);
                     return Observable.Return(false);
                 })
@@ -642,8 +683,7 @@ namespace ReactiveUI
             return this
                 .executeAsync(parameter)
                 .Do(result => this.synchronizedExecutionInfo.OnNext(ExecutionInfo.CreateResult(result)))
-                .Catch<TResult, Exception>(ex =>
-                {
+                .Catch<TResult, Exception>(ex => {
                     this.synchronizedExecutionInfo.OnNext(ExecutionInfo.CreateFail());
                     exceptions.OnNext(ex);
                     return Observable.Empty<TResult>();
@@ -654,8 +694,7 @@ namespace ReactiveUI
 
         protected override void Dispose(bool disposing)
         {
-            if (disposing)
-            {
+            if (disposing) {
                 this.executionInfo.Dispose();
                 this.exceptions.Dispose();
                 this.canExecuteSubscription.Dispose();
@@ -743,25 +782,21 @@ namespace ReactiveUI
             IObservable<bool> canExecute,
             IScheduler scheduler)
         {
-            if (childCommands == null)
-            {
+            if (childCommands == null) {
                 throw new ArgumentNullException("childCommands");
             }
 
-            if (canExecute == null)
-            {
+            if (canExecute == null) {
                 throw new ArgumentNullException("canExecute");
             }
 
-            if (scheduler == null)
-            {
+            if (scheduler == null) {
                 throw new ArgumentNullException("scheduler");
             }
 
             var childCommandsArray = childCommands.ToArray();
 
-            if (childCommandsArray.Length == 0)
-            {
+            if (childCommandsArray.Length == 0) {
                 throw new ArgumentException("No child commands provided.", "childCommands");
             }
 
@@ -769,8 +804,7 @@ namespace ReactiveUI
                 .CombineLatest(childCommandsArray.Select(x => x.CanExecute))
                 .Select(x => x.All(y => y));
             var combinedCanExecute = canExecute
-                .Catch<bool, Exception>(ex =>
-                {
+                .Catch<bool, Exception>(ex => {
                     this.exceptions.OnNext(ex);
                     return Observable.Return(false);
                 })
@@ -831,8 +865,7 @@ namespace ReactiveUI
 
         protected override void Dispose(bool disposing)
         {
-            if (disposing)
-            {
+            if (disposing) {
                 this.innerCommand.Dispose();
                 this.exceptions.Dispose();
                 this.exceptionsSubscription.Dispose();
@@ -856,8 +889,7 @@ namespace ReactiveUI
                 .Select(_ => Unit.Default)
                 .StartWith(Unit.Default)
                 .Where(_ => command.CanExecute(x)))
-                .Subscribe(x =>
-                {
+                .Subscribe(x => {
                     command.Execute(x);
                 });
         }
@@ -894,8 +926,7 @@ namespace ReactiveUI
                 .Select(_ => Unit.Default)
                 .StartWith(Unit.Default)
                 .Where(_ => x.cmd.CanExecute(x.val)))
-                .Subscribe(x =>
-                {
+                .Subscribe(x => {
                     x.cmd.Execute(x.val);
                 });
         }
