@@ -13,6 +13,8 @@
         public class NeverUsedViewModel : ReactiveObject { }
 
         public class SingleInstanceExampleViewModel : ReactiveObject { }
+
+        public class ViewModelWithWeirdName : ReactiveObject { }
     }
 
     namespace TestViews
@@ -58,6 +60,8 @@
                 Instances++;
             }
         }
+
+        public class ViewWithoutMatchingName : ReactiveUserControl<ViewModelWithWeirdName> { }
     }
 
     public class DependencyResolverTests
@@ -78,7 +82,7 @@
             using (resolver.WithResolver()) {
                 Assert.Single(resolver.GetServices<IViewFor<ExampleViewModel>>());
                 Assert.Single(resolver.GetServices<IViewFor<AnotherViewModel>>());
-                Assert.Single(resolver.GetServices<IViewFor<NeverUsedViewModel>>());
+                Assert.Single(resolver.GetServices<IViewFor<ViewModelWithWeirdName>>());
             }
         }
 
