@@ -21,11 +21,14 @@ namespace ReactiveUI
     /// This non-generic base class defines the base behavior for all reactive commands.
     /// </para>
     /// <para>
+    /// Reactive commands encapsulate the behavior of running some execution logic and then surfacing the results on the UI
+    /// thread. Importantly, no scheduling is performed against input observables (the <c>canExecute</c> and execution pipelines).
+    /// </para>
+    /// <para>
     /// To create an instance of <c>ReactiveCommand</c>, call one of the static creation methods defined by this class.
     /// You must provide either asynchronous execution logic via a <c>Func</c> that returns an observable (or <see cref="Task"/>),
     /// or synchronous execution logic via an <c>Action</c>. Optionally, you can provide an observable that governs the
-    /// availability of the command for execution, as well as a scheduler on which to surface the results of command
-    /// execution.
+    /// availability of the command for execution, as well as a scheduler to which events will be delivered.
     /// </para>
     /// <para>
     /// The <see cref="CanExecute"/> property provides an observable that can be used to determine whether the command is
@@ -68,8 +71,8 @@ namespace ReactiveUI
         /// <param name="canExecute">
         /// An optional observable that dictates the availability of the command for execution.
         /// </param>
-        /// <param name="scheduler">
-        /// An optional scheduler that is used to surface the results of command execution.
+        /// <param name="outputScheduler">
+        /// An optional scheduler that is used to surface events. Defaults to <c>RxApp.MainThreadScheduler</c>.
         /// </param>
         /// <returns>
         /// The <c>ReactiveCommand</c> instance.
@@ -77,7 +80,7 @@ namespace ReactiveUI
         public static ReactiveCommand<Unit, Unit> Create(
             Action execute,
             IObservable<bool> canExecute = null,
-            IScheduler scheduler = null)
+            IScheduler outputScheduler = null)
         {
             if (execute == null) {
                 throw new ArgumentNullException("execute");
@@ -89,7 +92,7 @@ namespace ReactiveUI
                     return Observable.Return(Unit.Default);
                 },
                 canExecute ?? Observable.Return(true),
-                scheduler ?? RxApp.MainThreadScheduler);
+                outputScheduler ?? RxApp.MainThreadScheduler);
         }
 
         /// <summary>
@@ -102,8 +105,8 @@ namespace ReactiveUI
         /// <param name="canExecute">
         /// An optional observable that dictates the availability of the command for execution.
         /// </param>
-        /// <param name="scheduler">
-        /// An optional scheduler that is used to surface the results of command execution.
+        /// <param name="outputScheduler">
+        /// An optional scheduler that is used to surface events. Defaults to <c>RxApp.MainThreadScheduler</c>.
         /// </param>
         /// <returns>
         /// The <c>ReactiveCommand</c> instance.
@@ -114,7 +117,7 @@ namespace ReactiveUI
         public static ReactiveCommand<Unit, TResult> Create<TResult>(
             Func<TResult> execute,
             IObservable<bool> canExecute = null,
-            IScheduler scheduler = null)
+            IScheduler outputScheduler = null)
         {
             if (execute == null) {
                 throw new ArgumentNullException("execute");
@@ -123,7 +126,7 @@ namespace ReactiveUI
             return new ReactiveCommand<Unit, TResult>(
                 _ => Observable.Return(execute()),
                 canExecute ?? Observable.Return(true),
-                scheduler ?? RxApp.MainThreadScheduler);
+                outputScheduler ?? RxApp.MainThreadScheduler);
         }
 
         /// <summary>
@@ -135,8 +138,8 @@ namespace ReactiveUI
         /// <param name="canExecute">
         /// An optional observable that dictates the availability of the command for execution.
         /// </param>
-        /// <param name="scheduler">
-        /// An optional scheduler that is used to surface the results of command execution.
+        /// <param name="outputScheduler">
+        /// An optional scheduler that is used to surface events. Defaults to <c>RxApp.MainThreadScheduler</c>.
         /// </param>
         /// <returns>
         /// The <c>ReactiveCommand</c> instance.
@@ -147,7 +150,7 @@ namespace ReactiveUI
         public static ReactiveCommand<TParam, Unit> Create<TParam>(
             Action<TParam> execute,
             IObservable<bool> canExecute = null,
-            IScheduler scheduler = null)
+            IScheduler outputScheduler = null)
         {
             if (execute == null) {
                 throw new ArgumentNullException("execute");
@@ -159,7 +162,7 @@ namespace ReactiveUI
                     return Observable.Return(Unit.Default);
                 },
                 canExecute ?? Observable.Return(true),
-                scheduler ?? RxApp.MainThreadScheduler);
+                outputScheduler ?? RxApp.MainThreadScheduler);
         }
 
         /// <summary>
@@ -172,8 +175,8 @@ namespace ReactiveUI
         /// <param name="canExecute">
         /// An optional observable that dictates the availability of the command for execution.
         /// </param>
-        /// <param name="scheduler">
-        /// An optional scheduler that is used to surface the results of command execution.
+        /// <param name="outputScheduler">
+        /// An optional scheduler that is used to surface events. Defaults to <c>RxApp.MainThreadScheduler</c>.
         /// </param>
         /// <returns>
         /// The <c>ReactiveCommand</c> instance.
@@ -187,7 +190,7 @@ namespace ReactiveUI
         public static ReactiveCommand<TParam, TResult> Create<TParam, TResult>(
             Func<TParam, TResult> execute,
             IObservable<bool> canExecute = null,
-            IScheduler scheduler = null)
+            IScheduler outputScheduler = null)
         {
             if (execute == null) {
                 throw new ArgumentNullException("execute");
@@ -196,7 +199,7 @@ namespace ReactiveUI
             return new ReactiveCommand<TParam, TResult>(
                 param => Observable.Return(execute(param)),
                 canExecute ?? Observable.Return(true),
-                scheduler ?? RxApp.MainThreadScheduler);
+                outputScheduler ?? RxApp.MainThreadScheduler);
         }
 
         /// <summary>
@@ -208,8 +211,8 @@ namespace ReactiveUI
         /// <param name="canExecute">
         /// An optional observable that dictates the availability of the command for execution.
         /// </param>
-        /// <param name="scheduler">
-        /// An optional scheduler that is used to surface the results of command execution.
+        /// <param name="outputScheduler">
+        /// An optional scheduler that is used to surface events. Defaults to <c>RxApp.MainThreadScheduler</c>.
         /// </param>
         /// <returns>
         /// The <c>ReactiveCommand</c> instance.
@@ -220,7 +223,7 @@ namespace ReactiveUI
         public static ReactiveCommand<Unit, TResult> CreateAsyncObservable<TResult>(
             Func<IObservable<TResult>> executeAsync,
             IObservable<bool> canExecute = null,
-            IScheduler scheduler = null)
+            IScheduler outputScheduler = null)
         {
             if (executeAsync == null) {
                 throw new ArgumentNullException("executeAsync");
@@ -229,7 +232,7 @@ namespace ReactiveUI
             return new ReactiveCommand<Unit, TResult>(
                 _ => executeAsync(),
                 canExecute ?? Observable.Return(true),
-                scheduler ?? RxApp.MainThreadScheduler);
+                outputScheduler ?? RxApp.MainThreadScheduler);
         }
 
         /// <summary>
@@ -241,8 +244,8 @@ namespace ReactiveUI
         /// <param name="canExecute">
         /// An optional observable that dictates the availability of the command for execution.
         /// </param>
-        /// <param name="scheduler">
-        /// An optional scheduler that is used to surface the results of command execution.
+        /// <param name="outputScheduler">
+        /// An optional scheduler that is used to surface events. Defaults to <c>RxApp.MainThreadScheduler</c>.
         /// </param>
         /// <returns>
         /// The <c>ReactiveCommand</c> instance.
@@ -253,12 +256,12 @@ namespace ReactiveUI
         public static ReactiveCommand<Unit, TResult> CreateAsyncTask<TResult>(
             Func<Task<TResult>> executeAsync,
             IObservable<bool> canExecute = null,
-            IScheduler scheduler = null)
+            IScheduler outputScheduler = null)
         {
             return CreateAsyncObservable(
                 () => executeAsync().ToObservable(),
                 canExecute,
-                scheduler);
+                outputScheduler);
         }
 
         /// <summary>
@@ -270,8 +273,8 @@ namespace ReactiveUI
         /// <param name="canExecute">
         /// An optional observable that dictates the availability of the command for execution.
         /// </param>
-        /// <param name="scheduler">
-        /// An optional scheduler that is used to surface the results of command execution.
+        /// <param name="outputScheduler">
+        /// An optional scheduler that is used to surface events. Defaults to <c>RxApp.MainThreadScheduler</c>.
         /// </param>
         /// <returns>
         /// The <c>ReactiveCommand</c> instance.
@@ -279,12 +282,12 @@ namespace ReactiveUI
         public static ReactiveCommand<Unit, Unit> CreateAsyncTask(
             Func<Task> executeAsync,
             IObservable<bool> canExecute = null,
-            IScheduler scheduler = null)
+            IScheduler outputScheduler = null)
         {
             return CreateAsyncObservable(
                 () => executeAsync().ToObservable(),
                 canExecute,
-                scheduler);
+                outputScheduler);
         }
 
         /// <summary>
@@ -296,8 +299,8 @@ namespace ReactiveUI
         /// <param name="canExecute">
         /// An optional observable that dictates the availability of the command for execution.
         /// </param>
-        /// <param name="scheduler">
-        /// An optional scheduler that is used to surface the results of command execution.
+        /// <param name="outputScheduler">
+        /// An optional scheduler that is used to surface events. Defaults to <c>RxApp.MainThreadScheduler</c>.
         /// </param>
         /// <returns>
         /// The <c>ReactiveCommand</c> instance.
@@ -311,12 +314,12 @@ namespace ReactiveUI
         public static ReactiveCommand<TParam, TResult> CreateAsyncObservable<TParam, TResult>(
                 Func<TParam, IObservable<TResult>> executeAsync,
                 IObservable<bool> canExecute = null,
-                IScheduler scheduler = null)
+                IScheduler outputScheduler = null)
         {
             return new ReactiveCommand<TParam, TResult>(
                 executeAsync,
                 canExecute ?? Observable.Return(true),
-                scheduler ?? RxApp.MainThreadScheduler);
+                outputScheduler ?? RxApp.MainThreadScheduler);
         }
 
         /// <summary>
@@ -328,8 +331,8 @@ namespace ReactiveUI
         /// <param name="canExecute">
         /// An optional observable that dictates the availability of the command for execution.
         /// </param>
-        /// <param name="scheduler">
-        /// An optional scheduler that is used to surface the results of command execution.
+        /// <param name="outputScheduler">
+        /// An optional scheduler that is used to surface events. Defaults to <c>RxApp.MainThreadScheduler</c>.
         /// </param>
         /// <returns>
         /// The <c>ReactiveCommand</c> instance.
@@ -343,12 +346,12 @@ namespace ReactiveUI
         public static ReactiveCommand<TParam, TResult> CreateAsyncTask<TParam, TResult>(
                 Func<TParam, Task<TResult>> executeAsync,
                 IObservable<bool> canExecute = null,
-                IScheduler scheduler = null)
+                IScheduler outputScheduler = null)
         {
             return CreateAsyncObservable<TParam, TResult>(
                 param => executeAsync(param).ToObservable(),
                 canExecute,
-                scheduler);
+                outputScheduler);
         }
 
         /// <summary>
@@ -360,8 +363,8 @@ namespace ReactiveUI
         /// <param name="canExecute">
         /// An optional observable that dictates the availability of the command for execution.
         /// </param>
-        /// <param name="scheduler">
-        /// An optional scheduler that is used to surface the results of command execution.
+        /// <param name="outputScheduler">
+        /// An optional scheduler that is used to surface events. Defaults to <c>RxApp.MainThreadScheduler</c>.
         /// </param>
         /// <returns>
         /// The <c>ReactiveCommand</c> instance.
@@ -372,12 +375,12 @@ namespace ReactiveUI
         public static ReactiveCommand<TParam, Unit> CreateAsyncTask<TParam>(
                 Func<TParam, Task> executeAsync,
                 IObservable<bool> canExecute = null,
-                IScheduler scheduler = null)
+                IScheduler outputScheduler = null)
         {
             return CreateAsyncObservable<TParam, Unit>(
                 param => executeAsync(param).ToObservable(),
                 canExecute,
-                scheduler);
+                outputScheduler);
         }
 
         /// <summary>
@@ -390,8 +393,8 @@ namespace ReactiveUI
         /// An optional observable that dictates the availability of the command for execution (in addition to the availability specified
         /// by each individual child command).
         /// </param>
-        /// <param name="scheduler">
-        /// An optional scheduler that is used to surface the results of command execution.
+        /// <param name="outputScheduler">
+        /// An optional scheduler that is used to surface events. Defaults to <c>RxApp.MainThreadScheduler</c>.
         /// </param>
         /// <returns>
         /// The <c>CombinedReactiveCommand</c> instance.
@@ -405,9 +408,9 @@ namespace ReactiveUI
         public static CombinedReactiveCommand<TParam, TResult> CreateCombined<TParam, TResult>(
                 IEnumerable<ReactiveCommandBase<TParam, TResult>> childCommands,
                 IObservable<bool> canExecute = null,
-                IScheduler scheduler = null)
+                IScheduler outputScheduler = null)
         {
-            return new CombinedReactiveCommand<TParam, TResult>(childCommands, canExecute ?? Observable.Return(true), scheduler ?? RxApp.MainThreadScheduler);
+            return new CombinedReactiveCommand<TParam, TResult>(childCommands, canExecute ?? Observable.Return(true), outputScheduler ?? RxApp.MainThreadScheduler);
         }
     }
 
@@ -592,7 +595,7 @@ namespace ReactiveUI
     public class ReactiveCommand<TParam, TResult> : ReactiveCommandBase<TParam, TResult>
     {
         private readonly Func<TParam, IObservable<TResult>> executeAsync;
-        private readonly IScheduler scheduler;
+        private readonly IScheduler outputScheduler;
         private readonly Subject<ExecutionInfo> executionInfo;
         private readonly ISubject<ExecutionInfo, ExecutionInfo> synchronizedExecutionInfo;
         private readonly IObservable<bool> isExecuting;
@@ -604,7 +607,7 @@ namespace ReactiveUI
         internal protected ReactiveCommand(
             Func<TParam, IObservable<TResult>> executeAsync,
             IObservable<bool> canExecute,
-            IScheduler scheduler)
+            IScheduler outputScheduler)
         {
             if (executeAsync == null) {
                 throw new ArgumentNullException("executeAsync");
@@ -614,14 +617,14 @@ namespace ReactiveUI
                 throw new ArgumentNullException("canExecute");
             }
 
-            if (scheduler == null) {
-                throw new ArgumentNullException("scheduler");
+            if (outputScheduler == null) {
+                throw new ArgumentNullException("outputScheduler");
             }
 
             this.executeAsync = executeAsync;
-            this.scheduler = scheduler;
+            this.outputScheduler = outputScheduler;
             this.executionInfo = new Subject<ExecutionInfo>();
-            this.synchronizedExecutionInfo = Subject.Synchronize(this.executionInfo, scheduler);
+            this.synchronizedExecutionInfo = Subject.Synchronize(this.executionInfo, outputScheduler);
             this.isExecuting = this
                 .synchronizedExecutionInfo
                 .Select(x => x.Demarcation == ExecutionDemarcation.Begin)
@@ -688,9 +691,8 @@ namespace ReactiveUI
                 .Catch<TResult, Exception>(ex => {
                     this.synchronizedExecutionInfo.OnNext(ExecutionInfo.CreateFail());
                     exceptions.OnNext(ex);
-                    return Observable.Empty<TResult>();
+                    return Observable.Throw<TResult>(ex);
                 })
-                .FirstOrDefaultAsync()
                 .RunAsync(CancellationToken.None);
         }
 
@@ -782,7 +784,7 @@ namespace ReactiveUI
         internal protected CombinedReactiveCommand(
             IEnumerable<ReactiveCommandBase<TParam, TResult>> childCommands,
             IObservable<bool> canExecute,
-            IScheduler scheduler)
+            IScheduler outputScheduler)
         {
             if (childCommands == null) {
                 throw new ArgumentNullException("childCommands");
@@ -792,8 +794,8 @@ namespace ReactiveUI
                 throw new ArgumentNullException("canExecute");
             }
 
-            if (scheduler == null) {
-                throw new ArgumentNullException("scheduler");
+            if (outputScheduler == null) {
+                throw new ArgumentNullException("outputScheduler");
             }
 
             var childCommandsArray = childCommands.ToArray();
@@ -826,7 +828,7 @@ namespace ReactiveUI
                             childCommandsArray
                                 .Select(x => x.ExecuteAsync(param))),
                 combinedCanExecute,
-                scheduler);
+                outputScheduler);
 
             this.exceptions = new ScheduledSubject<Exception>(CurrentThreadScheduler.Instance, RxApp.DefaultExceptionHandler);
 

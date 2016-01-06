@@ -266,6 +266,24 @@ namespace ReactiveUI.Tests
         }
 
         [Fact]
+        public void ExecuteAsyncTicksAnyException()
+        {
+            var fixture = ReactiveCommand.CreateAsyncObservable(() => Observable.Throw<Unit>(new InvalidOperationException()));
+            fixture
+                .ThrownExceptions
+                .Subscribe();
+            Exception exception = null;
+            fixture
+                .ExecuteAsync()
+                .Subscribe(
+                    _ => { },
+                    ex => exception = ex,
+                    () => { });
+
+            Assert.IsType<InvalidOperationException>(exception);
+        }
+
+        [Fact]
         public void ExecuteIsAvailableViaICommand()
         {
             var executed = false;
@@ -294,7 +312,7 @@ namespace ReactiveUI.Tests
         public void ResultIsTickedThroughSpecifiedScheduler()
         {
             (new TestScheduler()).With(sched => {
-                var fixture = ReactiveCommand.Create(() => Observable.Return(Unit.Default), scheduler: sched);
+                var fixture = ReactiveCommand.Create(() => Observable.Return(Unit.Default), outputScheduler: sched);
                 var results = fixture
                     .CreateCollection();
 
