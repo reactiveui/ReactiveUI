@@ -908,7 +908,7 @@ namespace ReactiveUI
         {
 
             if (target == null) {
-                throw new ArgumentNullException("target", "Can't bind to a property on null.  To fix this, you probably want BindTo(this, ...) isntead. ");
+                throw new ArgumentNullException("target");
             }
 
             var viewExpression = Reflection.Rewrite(property.Body);
