@@ -83,6 +83,7 @@
     <Compile Include="ExpressionMixins.cs" />
     <Compile Include="ExpressionRewriter.cs" />
     <Compile Include="Platform\Registrations.cs" />
+    <Compile Include="ViewAttributes.cs" />
     <Compile Include="Xaml\ActivationForViewFetcher.cs" />
     <Compile Include="Xaml\Attributes.cs" />
     <Compile Include="Xaml\AutoDataTemplateBindingHook.cs" />
