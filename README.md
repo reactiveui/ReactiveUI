@@ -6,7 +6,7 @@
 
 Use the Reactive Extensions for .NET to create elegant, testable User Interfaces that run on any mobile or desktop platform. Supports Xamarin.iOS, Xamarin.Android, Xamarin.Mac, Xamarin Forms, WPF, Windows Forms, Windows Phone 8, Windows Store and Universal Windows Platform (UWP).
 
-If you’re already familiar with [functional reactive programming](https://en.wikipedia.org/wiki/Functional_reactive_programming) or what ReactiveUI is about, check out the [documentation](http://docs.reactiveui.net/) for more in-depth information about how it all works or our comprehensive [collection of samples](https://github.com/reactiveui/samples).
+If you’re already familiar with [functional reactive programming](http://docs.reactiveui.net/en/fundamentals/history.html) or what ReactiveUI is about, check out the [documentation](http://docs.reactiveui.net/en/index.html) for more in-depth information about how it all works or our comprehensive [collection of samples](https://github.com/reactiveui/samples).
 
 If you have a question, please see if any discussions in our [GitHub issues](github.com/reactiveui/ReactiveUI/issues) or [Stack Overflow](https://stackoverflow.com/questions/tagged/reactiveui) have already answered it. If not, please [feel free to file your own](https://github.com/reactiveui/ReactiveUI/issues/new)! 
 
@@ -26,13 +26,13 @@ If you are new to these concepts then we highly recommend watching the following
 
 # Fundamentals 
 
-One of the most confusing aspects of the Reactive Extensions is that of ["hot", "cold", and "warm" observables](http://www.introtorx.com/content/v1.0.10621.0/14_HotAndColdObservables.html) (event streams). In short, given just a method or function declaration like this:
+One of the most confusing aspects of the Reactive Extensions is that of ["hot" and "cold" observables](http://www.introtorx.com/content/v1.0.10621.0/14_HotAndColdObservables.html) (event streams). In short, given just a method or function declaration like this:
 
 	IObservable<string> Search(string query)
 
 It is impossible to tell whether subscribing to (observing) that `IObservable` will involve side effects. If it does involve side effects, it’s also impossible to tell whether each subscription has a side effect, or if only the first one does. Whilst this example is contrived, it demonstrates a real, pervasive problem that makes it harder  at first for new comers to understand Rx code at first glance. 
 
-As such we also recommend [watching this video](https://www.youtube.com/watch?v=IDy21J75eyU), reading [this article](http://www.introtorx.com/content/v1.0.10621.0/14_HotAndColdObservables.html) and [playing with the marbles](http://rxmarbles.com/) to familiarize yourself with the fundamentals.
+As such we also recommend [watching this video](https://www.youtube.com/watch?v=IDy21J75eyU), reading [our documentation](http://docs.reactiveui.net/en/fundamentals/reactive-extensions.html) and [playing with the marbles](http://rxmarbles.com/) to familiarize yourself with the fundamentals.
 
 
 # A Compelling Example
