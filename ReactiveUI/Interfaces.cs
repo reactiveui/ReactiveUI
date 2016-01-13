@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
@@ -418,7 +417,7 @@ namespace ReactiveUI
         IObservable<Unit> Deactivated { get; }
     }
 
-    internal interface ICanForceManualActivation 
+    interface ICanForceManualActivation 
     {
         void Activate(bool activate);
     }
