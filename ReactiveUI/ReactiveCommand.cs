@@ -26,9 +26,9 @@ namespace ReactiveUI
     /// </para>
     /// <para>
     /// To create an instance of <c>ReactiveCommand</c>, call one of the static creation methods defined by this class.
-    /// You must provide either asynchronous execution logic via a <c>Func</c> that returns an observable (or <see cref="Task"/>),
-    /// or synchronous execution logic via an <c>Action</c>. Optionally, you can provide an observable that governs the
-    /// availability of the command for execution, as well as a scheduler to which events will be delivered.
+    /// <see cref="Create"/> can be used when your execution logic is synchronous. <see cref="CreateFromObservable"/> and
+    /// <see cref="CreateFromTask"/> can be used for asynchronous execution logic. Optionally, you can provide an observable that
+    /// governs the availability of the command for execution, as well as a scheduler to which events will be delivered.
     /// </para>
     /// <para>
     /// The <see cref="CanExecute"/> property provides an observable that can be used to determine whether the command is
@@ -220,7 +220,7 @@ namespace ReactiveUI
         /// <typeparam name="TResult">
         /// The type of the command's result.
         /// </typeparam>
-        public static ReactiveCommand<Unit, TResult> CreateAsyncObservable<TResult>(
+        public static ReactiveCommand<Unit, TResult> CreateFromObservable<TResult>(
             Func<IObservable<TResult>> executeAsync,
             IObservable<bool> canExecute = null,
             IScheduler outputScheduler = null)
@@ -253,12 +253,12 @@ namespace ReactiveUI
         /// <typeparam name="TResult">
         /// The type of the command's result.
         /// </typeparam>
-        public static ReactiveCommand<Unit, TResult> CreateAsyncTask<TResult>(
+        public static ReactiveCommand<Unit, TResult> CreateFromTask<TResult>(
             Func<Task<TResult>> executeAsync,
             IObservable<bool> canExecute = null,
             IScheduler outputScheduler = null)
         {
-            return CreateAsyncObservable(
+            return CreateFromObservable(
                 () => executeAsync().ToObservable(),
                 canExecute,
                 outputScheduler);
@@ -279,12 +279,12 @@ namespace ReactiveUI
         /// <returns>
         /// The <c>ReactiveCommand</c> instance.
         /// </returns>
-        public static ReactiveCommand<Unit, Unit> CreateAsyncTask(
+        public static ReactiveCommand<Unit, Unit> CreateFromTask(
             Func<Task> executeAsync,
             IObservable<bool> canExecute = null,
             IScheduler outputScheduler = null)
         {
-            return CreateAsyncObservable(
+            return CreateFromObservable(
                 () => executeAsync().ToObservable(),
                 canExecute,
                 outputScheduler);
@@ -311,7 +311,7 @@ namespace ReactiveUI
         /// <typeparam name="TResult">
         /// The type of the command's result.
         /// </typeparam>
-        public static ReactiveCommand<TParam, TResult> CreateAsyncObservable<TParam, TResult>(
+        public static ReactiveCommand<TParam, TResult> CreateFromObservable<TParam, TResult>(
                 Func<TParam, IObservable<TResult>> executeAsync,
                 IObservable<bool> canExecute = null,
                 IScheduler outputScheduler = null)
@@ -343,12 +343,12 @@ namespace ReactiveUI
         /// <typeparam name="TResult">
         /// The type of the command's result.
         /// </typeparam>
-        public static ReactiveCommand<TParam, TResult> CreateAsyncTask<TParam, TResult>(
+        public static ReactiveCommand<TParam, TResult> CreateFromTask<TParam, TResult>(
                 Func<TParam, Task<TResult>> executeAsync,
                 IObservable<bool> canExecute = null,
                 IScheduler outputScheduler = null)
         {
-            return CreateAsyncObservable<TParam, TResult>(
+            return CreateFromObservable<TParam, TResult>(
                 param => executeAsync(param).ToObservable(),
                 canExecute,
                 outputScheduler);
@@ -372,12 +372,12 @@ namespace ReactiveUI
         /// <typeparam name="TParam">
         /// The type of the parameter passed through to command execution.
         /// </typeparam>
-        public static ReactiveCommand<TParam, Unit> CreateAsyncTask<TParam>(
+        public static ReactiveCommand<TParam, Unit> CreateFromTask<TParam>(
                 Func<TParam, Task> executeAsync,
                 IObservable<bool> canExecute = null,
                 IScheduler outputScheduler = null)
         {
-            return CreateAsyncObservable<TParam, Unit>(
+            return CreateFromObservable<TParam, Unit>(
                 param => executeAsync(param).ToObservable(),
                 canExecute,
                 outputScheduler);
@@ -812,7 +812,7 @@ namespace ReactiveUI
                     this.exceptions.OnNext(ex);
                     return Observable.Return(false);
                 })
-                .StartWith(true)
+                .StartWith(false)
                 .CombineLatest(canChildrenExecute, (ce, cce) => ce && cce)
                 .DistinctUntilChanged()
                 .Replay(1)
@@ -829,6 +829,13 @@ namespace ReactiveUI
                                 .Select(x => x.ExecuteAsync(param))),
                 combinedCanExecute,
                 outputScheduler);
+
+            // we already handle exceptions on individual child commands above, but the same exception
+            // will tick through innerCommand. Therefore, we need to ensure we ignore it or the default
+            // handler will execute and the process will be torn down
+            this.innerCommand
+                .ThrownExceptions
+                .Subscribe();
 
             this.exceptions = new ScheduledSubject<Exception>(CurrentThreadScheduler.Instance, RxApp.DefaultExceptionHandler);
 
