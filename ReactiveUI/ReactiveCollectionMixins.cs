@@ -761,19 +761,21 @@ namespace ReactiveUI
         public ReactiveDerivedCollectionFromObservable(
             IObservable<T> observable,
             TimeSpan? withDelay = null,
-            Action<Exception> onError = null)
+            Action<Exception> onError = null,
+            IScheduler scheduler = null)
         {
+            scheduler = scheduler ?? RxApp.MainThreadScheduler;
             this.inner = new SingleAssignmentDisposable();
 
             onError = onError ?? (ex => RxApp.DefaultExceptionHandler.OnNext(ex));
             if (withDelay == null) {
-                inner.Disposable = observable.ObserveOn(RxApp.MainThreadScheduler).Subscribe(internalAdd, onError);
+                inner.Disposable = observable.ObserveOn(scheduler).Subscribe(internalAdd, onError);
                 return;
             }
 
             // On a timer, dequeue items from queue if they are available
             var queue = new Queue<T>();
-            var disconnect = Observable.Timer(withDelay.Value, withDelay.Value, RxApp.MainThreadScheduler)
+            var disconnect = Observable.Timer(withDelay.Value, withDelay.Value, scheduler)
                 .Subscribe(_ => {
                     if (queue.Count > 0) { 
                         this.internalAdd(queue.Dequeue());
@@ -783,9 +785,7 @@ namespace ReactiveUI
             inner.Disposable = disconnect;
 
             // When new items come in from the observable, stuff them in the queue.
-            // Using the MainThreadScheduler guarantees we'll always access the queue
-            // from the same thread.
-            observable.ObserveOn(RxApp.MainThreadScheduler).Subscribe(queue.Enqueue, onError);
+            observable.ObserveOn(scheduler).Subscribe(queue.Enqueue, onError);
 
             // This is a bit clever - keep a running count of the items actually 
             // added and compare them to the final count of items provided by the
@@ -821,14 +821,17 @@ namespace ReactiveUI
         /// not specified, an error will go to DefaultExceptionHandler.</param>
         /// <param name="withDelay">If set, items will be populated in the
         /// collection no faster than the delay provided.</param>
+        /// <param name="scheduler">Optionally specifies the scheduler on which
+        /// the collection will be populated. Defaults to the main scheduler.</param>
         /// <returns>A new collection which will be populated with the
         /// Observable.</returns>
         public static IReactiveDerivedList<T> CreateCollection<T>(
             this IObservable<T> fromObservable, 
             TimeSpan? withDelay = null,
-            Action<Exception> onError = null)
+            Action<Exception> onError = null,
+            IScheduler scheduler = null)
         {
-            return new ReactiveDerivedCollectionFromObservable<T>(fromObservable, withDelay, onError);
+            return new ReactiveDerivedCollectionFromObservable<T>(fromObservable, withDelay, onError, scheduler);
         }
 
         /// <summary>
@@ -844,15 +847,18 @@ namespace ReactiveUI
         /// item.</param>
         /// <param name="withDelay">If set, items will be populated in the
         /// collection no faster than the delay provided.</param>
+        /// <param name="scheduler">Optionally specifies the scheduler on which
+        /// the collection will be populated. Defaults to the main scheduler.</param>
         /// <returns>A new collection which will be populated with the
         /// Observable.</returns>
         public static IReactiveDerivedList<TRet> CreateCollection<T, TRet>(
             this IObservable<T> fromObservable,
             Func<T, TRet> selector,
-            TimeSpan? withDelay = null)
+            TimeSpan? withDelay = null,
+            IScheduler scheduler = null)
         {
             Contract.Requires(selector != null);
-            return fromObservable.Select(selector).CreateCollection(withDelay);
+            return fromObservable.Select(selector).CreateCollection(withDelay, scheduler: scheduler);
         }
     }
 

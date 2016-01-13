@@ -286,6 +286,16 @@ namespace ReactiveUI.Tests
             Assert.Equal(vm.JustADouble.ToString(), view.FakeControl.NullHatingString);
         }
 
+        [Fact]
+        public void BindToNullShouldThrowHelpfulError() {
+            var view = new PropertyBindView() {ViewModel = null};
+
+            Assert.Throws<ArgumentNullException>(() =>
+                 view.WhenAnyValue(x => x.FakeControl.NullHatingString)
+                     .BindTo(view.ViewModel, x => x.Property1));
+
+        }
+
 #if !MONO
         [Fact]
         public void TwoWayBindToSelectedItemOfItemsControl()
