@@ -82,7 +82,7 @@ namespace ReactiveUI.Tests
         {
             (new TestScheduler()).With(sched => {
                 var execute = Observable.Return(Unit.Default).Delay(TimeSpan.FromSeconds(1), sched);
-                var fixture = ReactiveCommand.CreateAsyncObservable(() => execute, scheduler: sched);
+                var fixture = ReactiveCommand.CreateFromObservable(() => execute, outputScheduler: sched);
                 var canExecute = fixture
                     .CanExecute
                     .CreateCollection();
@@ -163,7 +163,7 @@ namespace ReactiveUI.Tests
         {
             (new TestScheduler()).With(sched => {
                 var execute = Observable.Return(Unit.Default).Delay(TimeSpan.FromSeconds(1), sched);
-                var fixture = ReactiveCommand.CreateAsyncObservable(() => execute, scheduler: sched);
+                var fixture = ReactiveCommand.CreateFromObservable(() => execute, outputScheduler: sched);
                 var isExecuting = fixture
                     .IsExecuting
                     .CreateCollection();
@@ -186,7 +186,7 @@ namespace ReactiveUI.Tests
         public void ExecuteAsyncPassesThroughParameter()
         {
             var parameters = new List<int>();
-            var fixture = ReactiveCommand.CreateAsyncObservable<int, Unit>(param => {
+            var fixture = ReactiveCommand.CreateFromObservable<int, Unit>(param => {
                     parameters.Add(param);
                     return Observable.Return(Unit.Default);
                 });
@@ -206,7 +206,7 @@ namespace ReactiveUI.Tests
         {
             (new TestScheduler()).With(sched => {
                 var execute = Observable.Return(Unit.Default).Delay(TimeSpan.FromSeconds(1), sched);
-                var fixture = ReactiveCommand.CreateAsyncObservable(() => execute, scheduler: sched);
+                var fixture = ReactiveCommand.CreateFromObservable(() => execute, outputScheduler: sched);
                 var isExecuting = fixture
                     .IsExecuting
                     .CreateCollection();
@@ -230,7 +230,7 @@ namespace ReactiveUI.Tests
         {
             (new TestScheduler()).With(sched => {
                 var execute = Observable.Return(Unit.Default).Delay(TimeSpan.FromSeconds(1), sched);
-                var fixture = ReactiveCommand.CreateAsyncObservable(() => execute, scheduler: sched);
+                var fixture = ReactiveCommand.CreateFromObservable(() => execute, outputScheduler: sched);
                 var isExecuting = fixture
                     .IsExecuting
                     .CreateCollection();
@@ -248,7 +248,7 @@ namespace ReactiveUI.Tests
         public void ExecuteAsyncTicksThroughTheResult()
         {
             var num = 0;
-            var fixture = ReactiveCommand.CreateAsyncObservable(() => Observable.Return(num));
+            var fixture = ReactiveCommand.CreateFromObservable(() => Observable.Return(num));
             var results = fixture
                 .CreateCollection();
 
@@ -268,7 +268,7 @@ namespace ReactiveUI.Tests
         [Fact]
         public void ExecuteAsyncTicksAnyException()
         {
-            var fixture = ReactiveCommand.CreateAsyncObservable(() => Observable.Throw<Unit>(new InvalidOperationException()));
+            var fixture = ReactiveCommand.CreateFromObservable(() => Observable.Throw<Unit>(new InvalidOperationException()));
             fixture
                 .ThrownExceptions
                 .Subscribe();
@@ -327,7 +327,7 @@ namespace ReactiveUI.Tests
         [Fact]
         public void ExecuteAsyncTicksErrorsThroughThrownExceptions()
         {
-            var fixture = ReactiveCommand.CreateAsyncObservable(() => Observable.Throw<Unit>(new InvalidOperationException("oops")));
+            var fixture = ReactiveCommand.CreateFromObservable(() => Observable.Throw<Unit>(new InvalidOperationException("oops")));
             var thrownExceptions = fixture
                 .ThrownExceptions
                 .CreateCollection();
@@ -341,7 +341,7 @@ namespace ReactiveUI.Tests
         [Fact]
         public void ExecuteAsyncReenablesExecutionEvenAfterFailure()
         {
-            var fixture = ReactiveCommand.CreateAsyncObservable(() => Observable.Throw<Unit>(new InvalidOperationException("oops")));
+            var fixture = ReactiveCommand.CreateFromObservable(() => Observable.Throw<Unit>(new InvalidOperationException("oops")));
             var canExecute = fixture
                 .CanExecute
                 .CreateCollection();
@@ -363,7 +363,7 @@ namespace ReactiveUI.Tests
         [Fact]
         public void CreateTaskFacilitatesTPLIntegration()
         {
-            var fixture = ReactiveCommand.CreateAsyncTask(() => Task.FromResult(13));
+            var fixture = ReactiveCommand.CreateFromTask(() => Task.FromResult(13));
             var results = fixture
                 .CreateCollection();
 
@@ -376,7 +376,7 @@ namespace ReactiveUI.Tests
         [Fact]
         public void CreateTaskFacilitatesTPLIntegrationWithParameter()
         {
-            var fixture = ReactiveCommand.CreateAsyncTask<int, int>(param => Task.FromResult(param + 1));
+            var fixture = ReactiveCommand.CreateFromTask<int, int>(param => Task.FromResult(param + 1));
             var results = fixture
                 .CreateCollection();
 
@@ -537,8 +537,8 @@ namespace ReactiveUI.Tests
         [Fact]
         public void ExecuteAsyncTicksThroughTheResults()
         {
-            var child1 = ReactiveCommand.CreateAsyncObservable(() => Observable.Return(1));
-            var child2 = ReactiveCommand.CreateAsyncObservable(() => Observable.Return(2));
+            var child1 = ReactiveCommand.CreateFromObservable(() => Observable.Return(1));
+            var child2 = ReactiveCommand.CreateFromObservable(() => Observable.Return(2));
             var childCommands = new[] { child1, child2 };
             var fixture = ReactiveCommand.CreateCombined(childCommands);
 
@@ -560,7 +560,7 @@ namespace ReactiveUI.Tests
                 var child1 = ReactiveCommand.Create(() => Observable.Return(1));
                 var child2 = ReactiveCommand.Create(() => Observable.Return(2));
                 var childCommands = new[] { child1, child2 };
-                var fixture = ReactiveCommand.CreateCombined(childCommands, scheduler: sched);
+                var fixture = ReactiveCommand.CreateCombined(childCommands, outputScheduler: sched);
                 var results = fixture
                     .CreateCollection();
 
@@ -575,8 +575,8 @@ namespace ReactiveUI.Tests
         [Fact]
         public void ExecuteAsyncTicksErrorsInAnyChildCommandThroughThrownExceptions()
         {
-            var child1 = ReactiveCommand.CreateAsyncObservable(() => Observable.Return(Unit.Default));
-            var child2 = ReactiveCommand.CreateAsyncObservable(() => Observable.Throw<Unit>(new InvalidOperationException("oops")));
+            var child1 = ReactiveCommand.CreateFromObservable(() => Observable.Return(Unit.Default));
+            var child2 = ReactiveCommand.CreateFromObservable(() => Observable.Throw<Unit>(new InvalidOperationException("oops")));
             var childCommands = new[] { child1, child2 };
             var fixture = ReactiveCommand.CreateCombined(childCommands);
             var thrownExceptions = fixture
