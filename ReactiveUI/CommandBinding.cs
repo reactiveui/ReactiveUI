@@ -1,16 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
-using System.Reactive.Subjects;
 using System.Reflection;
-using System.Text;
 using System.Windows.Input;
 using Splat;
-using ReactiveUI;
-using System.Reactive;
 
 namespace ReactiveUI
 {
@@ -177,13 +172,12 @@ namespace ReactiveUI
             var source = Reflection.ViewModelWhenAnyValue(viewModel, view, vmExpression).Cast<TProp>();
 
             IDisposable bindingDisposable = bindCommandInternal(source, view, controlExpression, Observable.Empty<object>(), toEvent, cmd => {
-                var rc = cmd as IReactiveCommand;
+                var rc = cmd as ReactiveCommand;
                 if (rc == null) {
                     return new RelayCommand(cmd.CanExecute, _ => cmd.Execute(withParameter()));
                 } 
 
-                var ret = ReactiveCommand.Create(rc.CanExecuteObservable);
-                ret.Subscribe(_ => rc.Execute(withParameter()));
+                var ret = ReactiveCommand.Create(() => ((ICommand)rc).Execute(null), rc.CanExecute);
                 return ret;
             });
 

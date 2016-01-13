@@ -1,11 +1,8 @@
 using System;
 using System.Linq;
 using System.Reactive;
-using System.Reactive.Concurrency;
 using System.Reactive.Linq;
-using System.Reactive.Subjects;
 using System.Runtime.Serialization;
-using System.Windows.Input;
 using Splat;
 
 namespace ReactiveUI
@@ -38,14 +35,14 @@ namespace ReactiveUI
         /// Navigates back to the previous element in the stack.
         /// </summary>
         [IgnoreDataMember]
-        public ReactiveCommand<Unit> NavigateBack { get; protected set; }
+        public ReactiveCommand<Unit, Unit> NavigateBack { get; protected set; }
 
         /// <summary>
         /// Navigates to the a new element in the stack - the Execute parameter
         /// must be a ViewModel that implements IRoutableViewModel.
         /// </summary>
         [IgnoreDataMember]
-        public ReactiveCommand<object> Navigate { get; protected set; }
+        public ReactiveCommand<IRoutableViewModel, IRoutableViewModel> Navigate { get; protected set; }
 
         /// <summary>
         /// Navigates to a new element and resets the navigation stack (i.e. the
@@ -54,7 +51,7 @@ namespace ReactiveUI
         /// IRoutableViewModel.
         /// </summary>
         [IgnoreDataMember]
-        public ReactiveCommand<object> NavigateAndReset { get; protected set; }
+        public ReactiveCommand<IRoutableViewModel, IRoutableViewModel> NavigateAndReset { get; protected set; }
 
         [IgnoreDataMember]
         public IObservable<IRoutableViewModel> CurrentViewModel { get; protected set; }
@@ -74,12 +71,14 @@ namespace ReactiveUI
                 Observable.Defer(() => Observable.Return(_NavigationStack.Count)),
                 NavigationStack.CountChanged);
 
-            NavigateBack = ReactiveCommand.CreateAsyncObservable (countAsBehavior.Select (x => x > 1), _ => {
-                NavigationStack.RemoveAt(NavigationStack.Count - 1);
-                return Observable.Return(Unit.Default);
-            });
+            NavigateBack = 
+                ReactiveCommand.CreateFromObservable(() => {
+                    NavigationStack.RemoveAt(NavigationStack.Count - 1);
+                    return Observable.Return(Unit.Default);
+                },
+                countAsBehavior.Select(x => x > 1));
 
-            Navigate = new ReactiveCommand<object>(Observable.Return(true), x => {
+            Navigate = ReactiveCommand.CreateFromObservable<IRoutableViewModel, IRoutableViewModel>(x => {
                 var vm = x as IRoutableViewModel;
                 if (vm == null) {
                     throw new Exception("Navigate must be called on an IRoutableViewModel");
@@ -89,7 +88,7 @@ namespace ReactiveUI
                 return Observable.Return(x);
             });
 
-            NavigateAndReset = new ReactiveCommand<object> (Observable.Return (true), x => {
+            NavigateAndReset = ReactiveCommand.CreateFromObservable<IRoutableViewModel, IRoutableViewModel>(x => {
                 NavigationStack.Clear();
                 return Navigate.ExecuteAsync(x);
             });
@@ -118,20 +117,6 @@ namespace ReactiveUI
         public static IRoutableViewModel GetCurrentViewModel(this RoutingState This)
         {
             return This.NavigationStack.LastOrDefault();
-        }
-
-        /// <summary>
-        /// Creates a ReactiveCommand which will, when invoked, navigate to the 
-        /// type specified by the type parameter via looking it up in the
-        /// Dependency Resolver.
-        /// </summary>
-        public static IReactiveCommand NavigateCommandFor<T>(this RoutingState This)
-            where T : IRoutableViewModel,new()
-        {
-            var ret = new ReactiveCommand<object>(This.Navigate.CanExecuteObservable, x => Observable.Return(x));
-            ret.Select(_ => (IRoutableViewModel)Locator.Current.GetService<T>() ?? new T()).InvokeCommand(This.Navigate);
-                
-            return ret;
         }
     }
 }
