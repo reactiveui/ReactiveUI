@@ -1,486 +1,891 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reactive;
 using System.Reactive.Concurrency;
-using System.Reactive.Threading.Tasks;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
-using System.Text;
+using System.Reactive.Threading.Tasks;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using System.Linq.Expressions;
-using System.Reactive.Disposables;
-using Splat;
 
 namespace ReactiveUI
 {
-    public static class ReactiveCommand
+    /// <summary>
+    /// Encapsulates a user interaction behind a reactive interface.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// This non-generic base class defines the base behavior for all reactive commands.
+    /// </para>
+    /// <para>
+    /// Reactive commands encapsulate the behavior of running some execution logic and then surfacing the results on the UI
+    /// thread. Importantly, no scheduling is performed against input observables (the <c>canExecute</c> and execution pipelines).
+    /// </para>
+    /// <para>
+    /// To create an instance of <c>ReactiveCommand</c>, call one of the static creation methods defined by this class.
+    /// <see cref="Create"/> can be used when your execution logic is synchronous. <see cref="CreateFromObservable"/> and
+    /// <see cref="CreateFromTask"/> can be used for asynchronous execution logic. Optionally, you can provide an observable that
+    /// governs the availability of the command for execution, as well as a scheduler to which events will be delivered.
+    /// </para>
+    /// <para>
+    /// The <see cref="CanExecute"/> property provides an observable that can be used to determine whether the command is
+    /// eligible for execution. The value of this observable is determined by both the <c>canExecute</c> observable provided
+    /// during command creation, and the current execution status of the command. A command that is already executing will
+    /// yield <c>false</c> from its <see cref="CanExecute"/> observable regardless of the <c>canExecute</c> observable provided
+    /// during command creation.
+    /// </para>
+    /// <para>
+    /// The <see cref="IsExecuting"/> property provides an observable whose value indicates whether the command is currently
+    /// executing. This can be a useful means of triggering UI, such as displaying an activity indicator whilst a command is
+    /// executing.
+    /// </para>
+    /// <para>
+    /// As discussed above, you are under no obligation to somehow incorporate this into your <c>canExecute</c> observable
+    /// because that is taken care of for you. That is, if the value of <c>IsExecuting</c> is <c>true</c>, the value of
+    /// <c>CanExecute</c> will be <c>false</c>. However, if the value of <c>CanExecute</c> is <c>false</c>, that does not imply
+    /// the value of <c>IsExecuting</c> is <c>true</c>.
+    /// </para>
+    /// <para>
+    /// Any errors in your command's execution logic (including any <c>canExecute</c> observable you choose to provide) will be
+    /// surfaced via the <see cref="ThrownExceptions"/> observable. This gives you the opportunity to handle the error before
+    /// it triggers a default handler that tears down the application. For example, you might use this as a means of alerting
+    /// the user that something has gone wrong executing the command.
+    /// </para>
+    /// <para>
+    /// For the sake of convenience, all <c>ReactiveCommand</c> instances are also implementations of <see cref="ICommand"/>.
+    /// This allows you to easily integrate instances of <c>ReactiveCommand</c> into platforms that understands <c>ICommand</c>
+    /// natively (such as WPF and UWP).
+    /// </para>
+    /// </remarks>
+    public abstract partial class ReactiveCommand
     {
         /// <summary>
-        /// Creates a default ReactiveCommand that has no background action. This
-        /// is probably what you want if you were calling the constructor in
-        /// previous versions of ReactiveUI
+        /// Creates a parameterless <see cref="ReactiveCommand{TParam, TResult}"/> with synchronous execution logic.
         /// </summary>
-        /// <param name="canExecute">An Observable that determines when the
-        /// Command can Execute. WhenAny is a great way to create this!</param>
-        /// <param name="scheduler">The scheduler to deliver events on.
-        /// Defaults to RxApp.MainThreadScheduler.</param>
-        /// <returns>A ReactiveCommand whose ExecuteAsync just returns the
-        /// CommandParameter immediately. Which you should ignore!</returns>
-        public static ReactiveCommand<object> Create(IObservable<bool> canExecute = null, IScheduler scheduler = null)
+        /// <param name="execute">
+        /// The action to execute whenever the command is executed.
+        /// </param>
+        /// <param name="canExecute">
+        /// An optional observable that dictates the availability of the command for execution.
+        /// </param>
+        /// <param name="outputScheduler">
+        /// An optional scheduler that is used to surface events. Defaults to <c>RxApp.MainThreadScheduler</c>.
+        /// </param>
+        /// <returns>
+        /// The <c>ReactiveCommand</c> instance.
+        /// </returns>
+        public static ReactiveCommand<Unit, Unit> Create(
+            Action execute,
+            IObservable<bool> canExecute = null,
+            IScheduler outputScheduler = null)
         {
-            canExecute = canExecute ?? Observable.Return(true);
-            return new ReactiveCommand<object>(canExecute, x => Observable.Return(x), scheduler);
+            if (execute == null) {
+                throw new ArgumentNullException("execute");
+            }
+
+            return new ReactiveCommand<Unit, Unit>(
+                _ => {
+                    execute();
+                    return Observable.Return(Unit.Default);
+                },
+                canExecute ?? Observable.Return(true),
+                outputScheduler ?? RxApp.MainThreadScheduler);
         }
 
         /// <summary>
-        /// Creates a ReactiveCommand typed to the given executeAsync Observable
-        /// method. Use this method if your background method returns IObservable.
+        /// Creates a parameterless <see cref="ReactiveCommand{TParam, TResult}"/> with synchronous execution logic that returns a value
+        /// of type <typeparamref name="TResult"/>.
         /// </summary>
-        /// <param name="canExecute">An Observable that determines when the
-        /// Command can Execute. WhenAny is a great way to create this!</param>
-        /// <param name="executeAsync">Method to call that creates an Observable
-        /// representing an operation to execute in the background. The Command's
-        /// CanExecute will be false until this Observable completes. If this
-        /// Observable terminates with OnError, the Exception is marshaled to
-        /// ThrownExceptions.</param>
-        /// <param name="scheduler">The scheduler to deliver events on.
-        /// Defaults to RxApp.MainThreadScheduler.</param>
-        /// <returns>A ReactiveCommand which returns all items that are created via
-        /// calling executeAsync as a single stream.</returns>
-        public static ReactiveCommand<T> CreateAsyncObservable<T>(IObservable<bool> canExecute, Func<object, IObservable<T>> executeAsync, IScheduler scheduler = null)
+        /// <param name="execute">
+        /// The function to execute whenever the command is executed.
+        /// </param>
+        /// <param name="canExecute">
+        /// An optional observable that dictates the availability of the command for execution.
+        /// </param>
+        /// <param name="outputScheduler">
+        /// An optional scheduler that is used to surface events. Defaults to <c>RxApp.MainThreadScheduler</c>.
+        /// </param>
+        /// <returns>
+        /// The <c>ReactiveCommand</c> instance.
+        /// </returns>
+        /// <typeparam name="TResult">
+        /// The type of value returned by command executions.
+        /// </typeparam>
+        public static ReactiveCommand<Unit, TResult> Create<TResult>(
+            Func<TResult> execute,
+            IObservable<bool> canExecute = null,
+            IScheduler outputScheduler = null)
         {
-            return new ReactiveCommand<T>(canExecute, executeAsync, scheduler);
+            if (execute == null) {
+                throw new ArgumentNullException("execute");
+            }
+
+            return new ReactiveCommand<Unit, TResult>(
+                _ => Observable.Return(execute()),
+                canExecute ?? Observable.Return(true),
+                outputScheduler ?? RxApp.MainThreadScheduler);
         }
 
         /// <summary>
-        /// Creates a ReactiveCommand typed to the given executeAsync Observable
-        /// method. Use this method if your background method returns IObservable.
+        /// Creates a <see cref="ReactiveCommand{TParam, TResult}"/> with synchronous execution logic that takes a parameter of type <typeparamref name="TParam"/>.
         /// </summary>
-        /// <param name="executeAsync">Method to call that creates an Observable
-        /// representing an operation to execute in the background. The Command's
-        /// CanExecute will be false until this Observable completes. If this
-        /// Observable terminates with OnError, the Exception is marshaled to
-        /// ThrownExceptions.</param>
-        /// <param name="scheduler">The scheduler to deliver events on.
-        /// Defaults to RxApp.MainThreadScheduler.</param>
-        /// <returns>A ReactiveCommand which returns all items that are created via
-        /// calling executeAsync as a single stream.</returns>
-        public static ReactiveCommand<T> CreateAsyncObservable<T>(Func<object, IObservable<T>> executeAsync, IScheduler scheduler = null)
+        /// <param name="execute">
+        /// The action to execute whenever the command is executed.
+        /// </param>
+        /// <param name="canExecute">
+        /// An optional observable that dictates the availability of the command for execution.
+        /// </param>
+        /// <param name="outputScheduler">
+        /// An optional scheduler that is used to surface events. Defaults to <c>RxApp.MainThreadScheduler</c>.
+        /// </param>
+        /// <returns>
+        /// The <c>ReactiveCommand</c> instance.
+        /// </returns>
+        /// <typeparam name="TParam">
+        /// The type of the parameter passed through to command execution.
+        /// </typeparam>
+        public static ReactiveCommand<TParam, Unit> Create<TParam>(
+            Action<TParam> execute,
+            IObservable<bool> canExecute = null,
+            IScheduler outputScheduler = null)
         {
-            return new ReactiveCommand<T>(Observable.Return(true), executeAsync, scheduler);
+            if (execute == null) {
+                throw new ArgumentNullException("execute");
+            }
+
+            return new ReactiveCommand<TParam, Unit>(
+                param => {
+                    execute(param);
+                    return Observable.Return(Unit.Default);
+                },
+                canExecute ?? Observable.Return(true),
+                outputScheduler ?? RxApp.MainThreadScheduler);
         }
 
         /// <summary>
-        /// Creates a ReactiveCommand typed to the given executeAsync Task-based
-        /// method. Use this method if your background method returns Task or uses
-        /// async/await.
+        /// Creates a <see cref="ReactiveCommand{TParam, TResult}"/> with synchronous execution logic that takes a parameter of type <typeparamref name="TParam"/>
+        /// and returns a value of type <typeparamref name="TResult"/>.
         /// </summary>
-        /// <param name="canExecute">An Observable that determines when the
-        /// Command can Execute. WhenAny is a great way to create this!</param>
-        /// <param name="executeAsync">Method to call that creates a Task
-        /// representing an operation to execute in the background. The Command's
-        /// CanExecute will be false until this Task completes. If this
-        /// Task terminates with an Exception, the Exception is marshaled to
-        /// ThrownExceptions.</param>
-        /// <param name="scheduler">The scheduler to deliver events on.
-        /// Defaults to RxApp.MainThreadScheduler.</param>
-        /// <returns>A ReactiveCommand which returns all items that are created via
-        /// calling executeAsync as a single stream.</returns>
-        public static ReactiveCommand<T> CreateAsyncTask<T>(IObservable<bool> canExecute, Func<object, Task<T>> executeAsync, IScheduler scheduler = null)
+        /// <param name="execute">
+        /// The function to execute whenever the command is executed.
+        /// </param>
+        /// <param name="canExecute">
+        /// An optional observable that dictates the availability of the command for execution.
+        /// </param>
+        /// <param name="outputScheduler">
+        /// An optional scheduler that is used to surface events. Defaults to <c>RxApp.MainThreadScheduler</c>.
+        /// </param>
+        /// <returns>
+        /// The <c>ReactiveCommand</c> instance.
+        /// </returns>
+        /// <typeparam name="TParam">
+        /// The type of the parameter passed through to command execution.
+        /// </typeparam>
+        /// <typeparam name="TResult">
+        /// The type of value returned by command executions.
+        /// </typeparam>
+        public static ReactiveCommand<TParam, TResult> Create<TParam, TResult>(
+            Func<TParam, TResult> execute,
+            IObservable<bool> canExecute = null,
+            IScheduler outputScheduler = null)
         {
-            return new ReactiveCommand<T>(canExecute, x => executeAsync(x).ToObservable(), scheduler);
+            if (execute == null) {
+                throw new ArgumentNullException("execute");
+            }
+
+            return new ReactiveCommand<TParam, TResult>(
+                param => Observable.Return(execute(param)),
+                canExecute ?? Observable.Return(true),
+                outputScheduler ?? RxApp.MainThreadScheduler);
         }
 
         /// <summary>
-        /// Creates a ReactiveCommand typed to the given executeAsync Task-based
-        /// method. Use this method if your background method returns Task or uses
-        /// async/await.
+        /// Creates a parameterless <see cref="ReactiveCommand{TParam, TResult}"/> with asynchronous execution logic.
         /// </summary>
-        /// <param name="executeAsync">Method to call that creates a Task
-        /// representing an operation to execute in the background. The Command's
-        /// CanExecute will be false until this Task completes. If this
-        /// Task terminates with an Exception, the Exception is marshaled to
-        /// ThrownExceptions.</param>
-        /// <param name="scheduler">The scheduler to deliver events on.
-        /// Defaults to RxApp.MainThreadScheduler.</param>
-        /// <returns>A ReactiveCommand which returns all items that are created via
-        /// calling executeAsync as a single stream.</returns>
-        public static ReactiveCommand<T> CreateAsyncTask<T>(Func<object, Task<T>> executeAsync, IScheduler scheduler = null)
+        /// <param name="executeAsync">
+        /// Provides an observable representing the command's asynchronous execution logic.
+        /// </param>
+        /// <param name="canExecute">
+        /// An optional observable that dictates the availability of the command for execution.
+        /// </param>
+        /// <param name="outputScheduler">
+        /// An optional scheduler that is used to surface events. Defaults to <c>RxApp.MainThreadScheduler</c>.
+        /// </param>
+        /// <returns>
+        /// The <c>ReactiveCommand</c> instance.
+        /// </returns>
+        /// <typeparam name="TResult">
+        /// The type of the command's result.
+        /// </typeparam>
+        public static ReactiveCommand<Unit, TResult> CreateFromObservable<TResult>(
+            Func<IObservable<TResult>> executeAsync,
+            IObservable<bool> canExecute = null,
+            IScheduler outputScheduler = null)
         {
-            return new ReactiveCommand<T>(Observable.Return(true), x => executeAsync(x).ToObservable(), scheduler);
+            if (executeAsync == null) {
+                throw new ArgumentNullException("executeAsync");
+            }
+
+            return new ReactiveCommand<Unit, TResult>(
+                _ => executeAsync(),
+                canExecute ?? Observable.Return(true),
+                outputScheduler ?? RxApp.MainThreadScheduler);
         }
 
         /// <summary>
-        /// Creates a ReactiveCommand typed to the given executeAsync Task-based
-        /// method. Use this method if your background method returns Task or uses
-        /// async/await.
+        /// Creates a parameterless <see cref="ReactiveCommand{TParam, TResult}"/> with asynchronous execution logic.
         /// </summary>
-        /// <param name="executeAsync">Method to call that creates a Task
-        /// representing an operation to execute in the background. The Command's
-        /// CanExecute will be false until this Task completes. If this
-        /// Task terminates with an Exception, the Exception is marshaled to
-        /// ThrownExceptions.</param>
-        /// <param name="scheduler">The scheduler to deliver events on.
-        /// Defaults to RxApp.MainThreadScheduler.</param>
-        /// <returns>A ReactiveCommand which returns all items that are created via
-        /// calling executeAsync as a single stream.</returns>
-        public static ReactiveCommand<Unit> CreateAsyncTask(Func<object, Task> executeAsync, IScheduler scheduler = null)
+        /// <param name="executeAsync">
+        /// Provides a <see cref="Task"/> representing the command's asynchronous execution logic.
+        /// </param>
+        /// <param name="canExecute">
+        /// An optional observable that dictates the availability of the command for execution.
+        /// </param>
+        /// <param name="outputScheduler">
+        /// An optional scheduler that is used to surface events. Defaults to <c>RxApp.MainThreadScheduler</c>.
+        /// </param>
+        /// <returns>
+        /// The <c>ReactiveCommand</c> instance.
+        /// </returns>
+        /// <typeparam name="TResult">
+        /// The type of the command's result.
+        /// </typeparam>
+        public static ReactiveCommand<Unit, TResult> CreateFromTask<TResult>(
+            Func<Task<TResult>> executeAsync,
+            IObservable<bool> canExecute = null,
+            IScheduler outputScheduler = null)
         {
-            return new ReactiveCommand<Unit>(Observable.Return(true), x => executeAsync(x).ToObservable(), scheduler);
+            return CreateFromObservable(
+                () => executeAsync().ToObservable(),
+                canExecute,
+                outputScheduler);
         }
 
         /// <summary>
-        /// Creates a ReactiveCommand typed to the given executeAsync Task-based
-        /// method. Use this method if your background method returns Task or uses
-        /// async/await.
+        /// Creates a parameterless <see cref="ReactiveCommand{TParam, TResult}"/> with asynchronous execution logic.
         /// </summary>
-        /// <param name="canExecute">An Observable that determines when the
-        /// Command can Execute. WhenAny is a great way to create this!</param>
-        /// <param name="executeAsync">Method to call that creates a Task
-        /// representing an operation to execute in the background. The Command's
-        /// CanExecute will be false until this Task completes. If this
-        /// Task terminates with an Exception, the Exception is marshaled to
-        /// ThrownExceptions.</param>
-        /// <param name="scheduler">The scheduler to deliver events on.
-        /// Defaults to RxApp.MainThreadScheduler.</param>
-        /// <returns>A ReactiveCommand which returns all items that are created via
-        /// calling executeAsync as a single stream.</returns>
-        public static ReactiveCommand<Unit> CreateAsyncTask(IObservable<bool> canExecute, Func<object, Task> executeAsync, IScheduler scheduler = null)
+        /// <param name="executeAsync">
+        /// Provides a <see cref="Task"/> representing the command's asynchronous execution logic.
+        /// </param>
+        /// <param name="canExecute">
+        /// An optional observable that dictates the availability of the command for execution.
+        /// </param>
+        /// <param name="outputScheduler">
+        /// An optional scheduler that is used to surface events. Defaults to <c>RxApp.MainThreadScheduler</c>.
+        /// </param>
+        /// <returns>
+        /// The <c>ReactiveCommand</c> instance.
+        /// </returns>
+        public static ReactiveCommand<Unit, Unit> CreateFromTask(
+            Func<Task> executeAsync,
+            IObservable<bool> canExecute = null,
+            IScheduler outputScheduler = null)
         {
-            return new ReactiveCommand<Unit>(canExecute, x => executeAsync(x).ToObservable(), scheduler);
+            return CreateFromObservable(
+                () => executeAsync().ToObservable(),
+                canExecute,
+                outputScheduler);
         }
 
         /// <summary>
-        /// Creates a ReactiveCommand typed to the given executeAsync Task-based
-        /// method that supports cancellation. Use this method if your background
-        /// method returns Task or uses async/await.
+        /// Creates a <see cref="ReactiveCommand{TParam, TResult}"/> with asynchronous execution logic that takes a parameter of type <typeparamref name="TParam"/>.
         /// </summary>
-        /// <param name="canExecute">An Observable that determines when the
-        /// Command can Execute. WhenAny is a great way to create this!</param>
-        /// <param name="executeAsync">Method to call that creates a Task
-        /// representing an operation to execute in the background. The Command's
-        /// CanExecute will be false until this Task completes. If this
-        /// Task terminates with an Exception, the Exception is marshaled to
-        /// ThrownExceptions.</param>
-        /// <param name="scheduler">The scheduler to deliver events on.
-        /// Defaults to RxApp.MainThreadScheduler.</param>
-        /// <returns>A ReactiveCommand which returns all items that are created via
-        /// calling executeAsync as a single stream.</returns>
-        public static ReactiveCommand<T> CreateAsyncTask<T>(IObservable<bool> canExecute, Func<object, CancellationToken, Task<T>> executeAsync, IScheduler scheduler = null)
+        /// <param name="executeAsync">
+        /// Provides an observable representing the command's asynchronous execution logic.
+        /// </param>
+        /// <param name="canExecute">
+        /// An optional observable that dictates the availability of the command for execution.
+        /// </param>
+        /// <param name="outputScheduler">
+        /// An optional scheduler that is used to surface events. Defaults to <c>RxApp.MainThreadScheduler</c>.
+        /// </param>
+        /// <returns>
+        /// The <c>ReactiveCommand</c> instance.
+        /// </returns>
+        /// <typeparam name="TParam">
+        /// The type of the parameter passed through to command execution.
+        /// </typeparam>
+        /// <typeparam name="TResult">
+        /// The type of the command's result.
+        /// </typeparam>
+        public static ReactiveCommand<TParam, TResult> CreateFromObservable<TParam, TResult>(
+                Func<TParam, IObservable<TResult>> executeAsync,
+                IObservable<bool> canExecute = null,
+                IScheduler outputScheduler = null)
         {
-            return new ReactiveCommand<T>(canExecute, x => Observable.StartAsync(ct => executeAsync(x, ct)), scheduler);
+            return new ReactiveCommand<TParam, TResult>(
+                executeAsync,
+                canExecute ?? Observable.Return(true),
+                outputScheduler ?? RxApp.MainThreadScheduler);
         }
 
         /// <summary>
-        /// Creates a ReactiveCommand typed to the given executeAsync Task-based
-        /// method that supports cancellation. Use this method if your background
-        /// method returns Task or uses async/await.
+        /// Creates a <see cref="ReactiveCommand{TParam, TResult}"/> with asynchronous execution logic that takes a parameter of type <typeparamref name="TParam"/>.
         /// </summary>
-        /// <param name="executeAsync">Method to call that creates a Task
-        /// representing an operation to execute in the background. The Command's
-        /// CanExecute will be false until this Task completes. If this
-        /// Task terminates with an Exception, the Exception is marshaled to
-        /// ThrownExceptions.</param>
-        /// <param name="scheduler">The scheduler to deliver events on.
-        /// Defaults to RxApp.MainThreadScheduler.</param>
-        /// <returns>A ReactiveCommand which returns all items that are created via
-        /// calling executeAsync as a single stream.</returns>
-        public static ReactiveCommand<T> CreateAsyncTask<T>(Func<object, CancellationToken, Task<T>> executeAsync, IScheduler scheduler = null)
+        /// <param name="executeAsync">
+        /// Provides a <see cref="Task"/> representing the command's asynchronous execution logic.
+        /// </param>
+        /// <param name="canExecute">
+        /// An optional observable that dictates the availability of the command for execution.
+        /// </param>
+        /// <param name="outputScheduler">
+        /// An optional scheduler that is used to surface events. Defaults to <c>RxApp.MainThreadScheduler</c>.
+        /// </param>
+        /// <returns>
+        /// The <c>ReactiveCommand</c> instance.
+        /// </returns>
+        /// <typeparam name="TParam">
+        /// The type of the parameter passed through to command execution.
+        /// </typeparam>
+        /// <typeparam name="TResult">
+        /// The type of the command's result.
+        /// </typeparam>
+        public static ReactiveCommand<TParam, TResult> CreateFromTask<TParam, TResult>(
+                Func<TParam, Task<TResult>> executeAsync,
+                IObservable<bool> canExecute = null,
+                IScheduler outputScheduler = null)
         {
-            return new ReactiveCommand<T>(Observable.Return(true), x => Observable.StartAsync(ct => executeAsync(x,ct)), scheduler);
+            return CreateFromObservable<TParam, TResult>(
+                param => executeAsync(param).ToObservable(),
+                canExecute,
+                outputScheduler);
         }
 
         /// <summary>
-        /// Creates a ReactiveCommand typed to the given executeAsync Task-based
-        /// method that supports cancellation. Use this method if your background
-        /// method returns Task or uses async/await.
+        /// Creates a <see cref="ReactiveCommand{TParam, TResult}"/> with asynchronous execution logic that takes a parameter of type <typeparamref name="TParam"/>.
         /// </summary>
-        /// <param name="canExecute">An Observable that determines when the
-        /// Command can Execute. WhenAny is a great way to create this!</param>
-        /// <param name="executeAsync">Method to call that creates a Task
-        /// representing an operation to execute in the background. The Command's
-        /// CanExecute will be false until this Task completes. If this
-        /// Task terminates with an Exception, the Exception is marshaled to
-        /// ThrownExceptions.</param>
-        /// <param name="scheduler">The scheduler to deliver events on.
-        /// Defaults to RxApp.MainThreadScheduler.</param>
-        /// <returns>A ReactiveCommand which returns all items that are created via
-        /// calling executeAsync as a single stream.</returns>
-        public static ReactiveCommand<Unit> CreateAsyncTask(Func<object, CancellationToken, Task> executeAsync, IScheduler scheduler = null)
+        /// <param name="executeAsync">
+        /// Provides a <see cref="Task"/> representing the command's asynchronous execution logic.
+        /// </param>
+        /// <param name="canExecute">
+        /// An optional observable that dictates the availability of the command for execution.
+        /// </param>
+        /// <param name="outputScheduler">
+        /// An optional scheduler that is used to surface events. Defaults to <c>RxApp.MainThreadScheduler</c>.
+        /// </param>
+        /// <returns>
+        /// The <c>ReactiveCommand</c> instance.
+        /// </returns>
+        /// <typeparam name="TParam">
+        /// The type of the parameter passed through to command execution.
+        /// </typeparam>
+        public static ReactiveCommand<TParam, Unit> CreateFromTask<TParam>(
+                Func<TParam, Task> executeAsync,
+                IObservable<bool> canExecute = null,
+                IScheduler outputScheduler = null)
         {
-            return new ReactiveCommand<Unit>(Observable.Return(true), x => Observable.StartAsync(ct => executeAsync(x,ct)), scheduler);
+            return CreateFromObservable<TParam, Unit>(
+                param => executeAsync(param).ToObservable(),
+                canExecute,
+                outputScheduler);
         }
 
         /// <summary>
-        /// Creates a ReactiveCommand typed to the given executeAsync Task-based
-        /// method that supports cancellation. Use this method if your background
-        /// method returns Task or uses async/await.
+        /// Creates a <see cref="CombinedReactiveCommand{TParam, TResult}"/> that composes all the provided child commands.
         /// </summary>
-        /// <param name="executeAsync">Method to call that creates a Task
-        /// representing an operation to execute in the background. The Command's
-        /// CanExecute will be false until this Task completes. If this
-        /// Task terminates with an Exception, the Exception is marshaled to
-        /// ThrownExceptions.</param>
-        /// <param name="scheduler">The scheduler to deliver events on.
-        /// Defaults to RxApp.MainThreadScheduler.</param>
-        /// <returns>A ReactiveCommand which returns all items that are created via
-        /// calling executeAsync as a single stream.</returns>
-        public static ReactiveCommand<Unit> CreateAsyncTask(IObservable<bool> canExecute, Func<object, CancellationToken, Task> executeAsync, IScheduler scheduler = null)
+        /// <param name="childCommands">
+        /// The child commands that the combined command will compose.
+        /// </param>
+        /// <param name="canExecute">
+        /// An optional observable that dictates the availability of the command for execution (in addition to the availability specified
+        /// by each individual child command).
+        /// </param>
+        /// <param name="outputScheduler">
+        /// An optional scheduler that is used to surface events. Defaults to <c>RxApp.MainThreadScheduler</c>.
+        /// </param>
+        /// <returns>
+        /// The <c>CombinedReactiveCommand</c> instance.
+        /// </returns>
+        /// <typeparam name="TParam">
+        /// The type of the parameter passed through to command execution.
+        /// </typeparam>
+        /// <typeparam name="TResult">
+        /// The type of the command's result.
+        /// </typeparam>
+        public static CombinedReactiveCommand<TParam, TResult> CreateCombined<TParam, TResult>(
+                IEnumerable<ReactiveCommandBase<TParam, TResult>> childCommands,
+                IObservable<bool> canExecute = null,
+                IScheduler outputScheduler = null)
         {
-            return new ReactiveCommand<Unit>(canExecute, x => Observable.StartAsync(ct => executeAsync(x,ct)), scheduler);
+            return new CombinedReactiveCommand<TParam, TResult>(childCommands, canExecute ?? Observable.Return(true), outputScheduler ?? RxApp.MainThreadScheduler);
+        }
+    }
+
+    // non-generic reactive command functionality
+    public abstract partial class ReactiveCommand : IDisposable, ICommand
+    {
+        private EventHandler canExecuteChanged;
+
+        /// <summary>
+        /// An observable whose value indicates whether the command can currently execute.
+        /// </summary>
+        /// <remarks>
+        /// The value provided by this observable is governed both by any <c>canExecute</c> observable provided during
+        /// command creation, as well as the current execution status of the command. A command that is currently executing
+        /// will always yield <c>false</c> from this observable, even if the <c>canExecute</c> pipeline is currently <c>true</c>.
+        /// </remarks>
+        public abstract IObservable<bool> CanExecute
+        {
+            get;
         }
 
         /// <summary>
-        /// This creates a ReactiveCommand that calls several child
-        /// ReactiveCommands when invoked. Its CanExecute will match the
-        /// combined result of the child CanExecutes (i.e. if any child
-        /// commands cannot execute, neither can the parent)
+        /// An observable whose value indicates whether the command is currently executing.
         /// </summary>
-        /// <param name="canExecute">An Observable that determines whether the
-        /// parent command can execute</param>
-        /// <param name="commands">The commands to combine.</param>
-        public static ReactiveCommand<object> CreateCombined(IObservable<bool> canExecute, params IReactiveCommand[] commands)
+        /// <remarks>
+        /// This observable can be particularly useful for updating UI, such as showing an activity indicator whilst a command
+        /// is executing.
+        /// </remarks>
+        public abstract IObservable<bool> IsExecuting
         {
-            var childrenCanExecute = commands
-                .Select(x => x.CanExecuteObservable)
-                .CombineLatest(latestCanExecute => latestCanExecute.All(x => x != false));
-
-            var canExecuteSum = Observable.CombineLatest(
-                canExecute.StartWith(true),
-                childrenCanExecute,
-                (parent, child) => parent && child);
-
-            var ret = ReactiveCommand.Create(canExecuteSum);
-            ret.Subscribe(x => commands.ForEach(cmd => cmd.Execute(x)));
-            return ret;
+            get;
         }
 
         /// <summary>
-        /// This creates a ReactiveCommand that calls several child
-        /// ReactiveCommands when invoked. Its CanExecute will match the
-        /// combined result of the child CanExecutes (i.e. if any child
-        /// commands cannot execute, neither can the parent)
+        /// An observable that ticks any exceptions in command execution logic.
         /// </summary>
-        /// <param name="commands">The commands to combine.</param>
-        public static ReactiveCommand<object> CreateCombined(params IReactiveCommand[] commands)
+        /// <remarks>
+        /// Any exceptions that are not observed via this observable will propagate out and cause the application to be torn
+        /// down. Therefore, you will always want to subscribe to this observable if you expect errors could occur (e.g. if
+        /// your command execution includes network activity).
+        /// </remarks>
+        public abstract IObservable<Exception> ThrownExceptions
         {
-            return CreateCombined(Observable.Return(true), commands);
+            get;
+        }
+
+        /// <summary>
+        /// Disposes of this <c>ReactiveCommand</c>.
+        /// </summary>
+        public void Dispose()
+        {
+            this.Dispose(true);
+        }
+
+        protected abstract void Dispose(bool disposing);
+
+        event EventHandler ICommand.CanExecuteChanged
+        {
+            add { this.canExecuteChanged += value; }
+            remove { this.canExecuteChanged -= value; }
+        }
+
+        bool ICommand.CanExecute(object parameter)
+        {
+            return this.ICommandCanExecute(parameter);
+        }
+
+        void ICommand.Execute(object parameter)
+        {
+            this.ICommandExecute(parameter);
+        }
+
+        protected abstract bool ICommandCanExecute(object parameter);
+
+        protected abstract void ICommandExecute(object parameter);
+
+        protected void OnCanExecuteChanged()
+        {
+            var handler = this.canExecuteChanged;
+
+            if (handler != null) {
+                handler(this, EventArgs.Empty);
+            }
         }
     }
 
     /// <summary>
-    /// This class represents a Command that can optionally do a background task.
-    /// The results of the background task (or a signal that the Command has been
-    /// invoked) are delivered by Subscribing to the command itself, since
-    /// ReactiveCommand is itself an Observable. The results of individual
-    /// invocations can be retrieved via the ExecuteAsync method.
+    /// A base class for generic reactive commands.
     /// </summary>
-    public class ReactiveCommand<T> : IReactiveCommand<T>, IReactiveCommand
+    /// <remarks>
+    /// <para>
+    /// This class extends <see cref="ReactiveCommand"/> and adds generic type parameters for the parameter values passed
+    /// into command execution, and the return values of command execution.
+    /// </para>
+    /// <para>
+    /// Because the result type is known by this class, it can implement <see cref="IObservable{T}"/>. However, the implementation
+    /// is defined as abstract, so subclasses must provide it.
+    /// </para>
+    /// </remarks>
+    /// <typeparam name="TParam">
+    /// The type of parameter values passed in during command execution.
+    /// </typeparam>
+    /// <typeparam name="TResult">
+    /// The type of the values that are the result of command execution.
+    /// </typeparam>
+    public abstract class ReactiveCommandBase<TParam, TResult> : ReactiveCommand, IObservable<TResult>
     {
-#if NET_45
-        public event EventHandler CanExecuteChanged;
-
-        protected virtual void raiseCanExecuteChanged(EventArgs args)
-        {
-            var handler = this.CanExecuteChanged;
-            if (handler != null) {
-                handler(this, args);
-            }
-        }
-#else
-        public event EventHandler CanExecuteChanged
-        {
-            add {
-                if (canExecuteDisp == null) canExecuteDisp = canExecute.Connect();
-                CanExecuteChangedEventManager.AddHandler(this, value);
-            }
-            remove { CanExecuteChangedEventManager.RemoveHandler(this, value); }
-        }
-
-        protected virtual void raiseCanExecuteChanged(EventArgs args)
-        {
-            CanExecuteChangedEventManager.DeliverEvent(this, args);
-        }
-#endif
-        readonly Subject<T> executeResults = new Subject<T>();
-        readonly Subject<bool> isExecuting = new Subject<bool>();
-        readonly Func<object, IObservable<T>> executeAsync;
-        readonly IScheduler scheduler;
-        readonly ScheduledSubject<Exception> exceptions;
-
-        IConnectableObservable<bool> canExecute;
-        bool canExecuteLatest = false;
-        IDisposable canExecuteDisp;
-        int inflightCount = 0;
+        /// <summary>
+        /// Subscribes to execution results from this command.
+        /// </summary>
+        /// <param name="observer">
+        /// The observer.
+        /// </param>
+        /// <returns>
+        /// An <see cref="IDisposable"/> that, when disposed, will unsubscribe the observer.
+        /// </returns>
+        public abstract IDisposable Subscribe(IObserver<TResult> observer);
 
         /// <summary>
-        /// Don't use this, use ReactiveCommand.CreateXYZ instead
+        /// Asynchronously executes this command.
         /// </summary>
-        public ReactiveCommand(IObservable<bool> canExecute, Func<object, IObservable<T>> executeAsync, IScheduler scheduler = null)
-        {
-            this.scheduler = scheduler ?? RxApp.MainThreadScheduler;
-            this.executeAsync = executeAsync;
+        /// <remarks>
+        /// <para>
+        /// Invoking this method will execute the logic encapsulated by the command. If no parameter value is provided,
+        /// a default value of type <typeparamref name="TParam"/> will be passed into the execution logic.
+        /// </para>
+        /// <para>
+        /// There is no requirement to subscribe to the returned observable in order to kick start the execution. And
+        /// late subscribers are guaranteed to still receive the execution result value if there is one. In those cases
+        /// where execution fails, there will be no result value. Instead, the failure will tick through the
+        /// <see cref="ThrownExceptions"/> observable.
+        /// </para>
+        /// </remarks>
+        /// <param name="parameter">
+        /// The parameter to pass into command execution.
+        /// </param>
+        /// <returns>
+        /// An observable that will tick the single result value if and when it becomes available.
+        /// </returns>
+        public abstract IObservable<TResult> ExecuteAsync(TParam parameter = default(TParam));
 
-            this.canExecute = canExecute.CombineLatest(isExecuting.StartWith(false), (ce, ie) => ce && !ie)
+        protected override bool ICommandCanExecute(object parameter)
+        {
+            return this.CanExecute.First();
+        }
+
+        protected override void ICommandExecute(object parameter)
+        {
+            // ensure that null is coerced to default(TParam) so that commands taking value types will use a sensible default if no parameter is supplied
+            if (parameter == null) {
+                parameter = default(TParam);
+            }
+
+            if (!(parameter is TParam)) {
+                throw new InvalidOperationException(
+                    String.Format(
+                        "Command requires parameters of type {0}, but received parameter of type {1}.",
+                        typeof(TParam).FullName,
+                        parameter.GetType().FullName));
+            }
+
+            this.ExecuteAsync((TParam)parameter);
+        }
+    }
+
+    /// <summary>
+    /// Encapsulates a user interaction behind a reactive interface.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// This class provides the bulk of the actual implementation for reactive commands. You should not create instances
+    /// of this class directly, but rather via the static creation methods on the non-generic <see cref="ReactiveCommand"/>
+    /// class.
+    /// </para>
+    /// </remarks>
+    /// <typeparam name="TParam">
+    /// The type of parameter values passed in during command execution.
+    /// </typeparam>
+    /// <typeparam name="TResult">
+    /// The type of the values that are the result of command execution.
+    /// </typeparam>
+    public class ReactiveCommand<TParam, TResult> : ReactiveCommandBase<TParam, TResult>
+    {
+        private readonly Func<TParam, IObservable<TResult>> executeAsync;
+        private readonly IScheduler outputScheduler;
+        private readonly Subject<ExecutionInfo> executionInfo;
+        private readonly ISubject<ExecutionInfo, ExecutionInfo> synchronizedExecutionInfo;
+        private readonly IObservable<bool> isExecuting;
+        private readonly IObservable<bool> canExecute;
+        private readonly IObservable<TResult> results;
+        private readonly ScheduledSubject<Exception> exceptions;
+        private readonly IDisposable canExecuteSubscription;
+
+        internal protected ReactiveCommand(
+            Func<TParam, IObservable<TResult>> executeAsync,
+            IObservable<bool> canExecute,
+            IScheduler outputScheduler)
+        {
+            if (executeAsync == null) {
+                throw new ArgumentNullException("executeAsync");
+            }
+
+            if (canExecute == null) {
+                throw new ArgumentNullException("canExecute");
+            }
+
+            if (outputScheduler == null) {
+                throw new ArgumentNullException("outputScheduler");
+            }
+
+            this.executeAsync = executeAsync;
+            this.outputScheduler = outputScheduler;
+            this.executionInfo = new Subject<ExecutionInfo>();
+            this.synchronizedExecutionInfo = Subject.Synchronize(this.executionInfo, outputScheduler);
+            this.isExecuting = this
+                .synchronizedExecutionInfo
+                .Select(x => x.Demarcation == ExecutionDemarcation.Begin)
+                .StartWith(false)
+                .DistinctUntilChanged()
+                .Replay(1)
+                .RefCount();
+            this.canExecute = canExecute
                 .Catch<bool, Exception>(ex => {
-                    exceptions.OnNext(ex);
+                    this.exceptions.OnNext(ex);
                     return Observable.Return(false);
                 })
-                .Do(x => {
-                    var fireCanExecuteChanged = (canExecuteLatest != x);
-                    canExecuteLatest = x;
+                .StartWith(false)
+                .CombineLatest(this.isExecuting, (canEx, isEx) => canEx && !isEx)
+                .DistinctUntilChanged()
+                .Replay(1)
+                .RefCount();
+            this.results = this
+                .synchronizedExecutionInfo
+                .Where(x => x.Demarcation == ExecutionDemarcation.EndWithResult)
+                .Select(x => x.Result);
 
-                    if (fireCanExecuteChanged) {
-                        this.raiseCanExecuteChanged(EventArgs.Empty);
-                    }
+            this.exceptions = new ScheduledSubject<Exception>(CurrentThreadScheduler.Instance, RxApp.DefaultExceptionHandler);
+
+            this
+                .canExecute
+                .Subscribe(_ => this.OnCanExecuteChanged());
+
+            this.canExecuteSubscription = this.canExecute.Subscribe();
+        }
+
+        /// <inheritdoc/>
+        public override IObservable<bool> CanExecute
+        {
+            get { return this.canExecute; }
+        }
+
+        /// <inheritdoc/>
+        public override IObservable<bool> IsExecuting
+        {
+            get { return this.isExecuting; }
+        }
+
+        /// <inheritdoc/>
+        public override IObservable<Exception> ThrownExceptions
+        {
+            get { return this.exceptions; }
+        }
+
+        /// <inheritdoc/>
+        public override IDisposable Subscribe(IObserver<TResult> observer)
+        {
+            return results.Subscribe(observer);
+        }
+
+        /// <inheritdoc/>
+        public override IObservable<TResult> ExecuteAsync(TParam parameter = default(TParam))
+        {
+            this.synchronizedExecutionInfo.OnNext(ExecutionInfo.CreateBegin());
+
+            return this
+                .executeAsync(parameter)
+                .Do(result => this.synchronizedExecutionInfo.OnNext(ExecutionInfo.CreateResult(result)))
+                .Catch<TResult, Exception>(ex => {
+                    this.synchronizedExecutionInfo.OnNext(ExecutionInfo.CreateFail());
+                    exceptions.OnNext(ex);
+                    return Observable.Throw<TResult>(ex);
                 })
-                .Publish();
-
-            if (ModeDetector.InUnitTestRunner()) {
-                this.canExecute.Connect();
-            }
-
-            ThrownExceptions = exceptions = new ScheduledSubject<Exception>(CurrentThreadScheduler.Instance, RxApp.DefaultExceptionHandler);
+                .RunAsync(CancellationToken.None);
         }
 
-        /// <summary>
-        /// Executes a Command and returns the result asynchronously. This method
-        /// makes it *much* easier to test ReactiveCommand, as well as create
-        /// ReactiveCommands who invoke inferior commands and wait on their results.
-        ///
-        /// Note that you **must** Subscribe to the Observable returned by
-        /// ExecuteAsync or else nothing will happen (i.e. ExecuteAsync is lazy)
-        ///
-        /// Note also that the command will be executed, irrespective of the current value
-        /// of the command's canExecute observable.
-        /// </summary>
-        /// <returns>An Observable representing a single invocation of the Command.</returns>
-        /// <param name="parameter">Don't use this.</param>
-        public IObservable<T> ExecuteAsync(object parameter = null)
+        protected override void Dispose(bool disposing)
         {
-            var ret = Observable.Create<T>(subj => {
-                if (Interlocked.Increment(ref inflightCount) == 1) {
-                    isExecuting.OnNext(true);
-                }
-
-                var decrement = new SerialDisposable() {
-                    Disposable = Disposable.Create(() => {
-                        if (Interlocked.Decrement(ref inflightCount) == 0) {
-                            isExecuting.OnNext(false);
-                        }
-                    })
-                };
-
-                var disp = executeAsync(parameter)
-                    .ObserveOn(scheduler)
-                    .Do(
-                        _ => { },
-                        e => decrement.Disposable = Disposable.Empty,
-                        () => decrement.Disposable = Disposable.Empty)
-                    .Do(executeResults.OnNext, exceptions.OnNext)
-                    .Subscribe(subj);
-
-                return new CompositeDisposable(disp, decrement);
-            });
-
-            return ret.Publish().RefCount();
-        }
-
-
-        /// <summary>
-        /// Executes a Command and returns the result as a Task. This method
-        /// makes it *much* easier to test ReactiveCommand, as well as create
-        /// ReactiveCommands who invoke inferior commands and wait on their results.
-        /// </summary>
-        /// <returns>A Task representing a single invocation of the Command.</returns>
-        /// <param name="parameter">Don't use this.</param>
-        /// <param name="ct">An optional token that can cancel the operation, if
-        /// the operation supports it.</param>
-        public Task<T> ExecuteAsyncTask(object parameter = null, CancellationToken ct = default(CancellationToken))
-        {
-            return ExecuteAsync(parameter).ToTask(ct);
-        }
-
-        /// <summary>
-        /// Fires whenever an exception would normally terminate ReactiveUI
-        /// internal state.
-        /// </summary>
-        /// <value>The thrown exceptions.</value>
-        public IObservable<Exception> ThrownExceptions { get; protected set; }
-
-        /// <summary>
-        /// Returns a BehaviorSubject (i.e. an Observable which is guaranteed to
-        /// return at least one value immediately) representing the CanExecute
-        /// state.
-        /// </summary>
-        public IObservable<bool> CanExecuteObservable {
-            get {
-                var ret = canExecute.StartWith(canExecuteLatest).DistinctUntilChanged();
-
-                if (canExecuteDisp != null) return ret;
-
-                return Observable.Create<bool>(subj => {
-                    var disp = ret.Subscribe(subj);
-
-                    // NB: We intentionally leak the CanExecute disconnect, it's
-                    // cleaned up by the global Dispose. This is kind of a
-                    // "Lazy Subscription" to CanExecute by the command itself.
-                    canExecuteDisp = canExecute.Connect();
-                    return disp;
-                });
+            if (disposing) {
+                this.executionInfo.Dispose();
+                this.exceptions.Dispose();
+                this.canExecuteSubscription.Dispose();
             }
         }
 
-        public IObservable<bool> IsExecuting {
-            get { return isExecuting.StartWith(inflightCount > 0); }
+        private enum ExecutionDemarcation
+        {
+            Begin,
+            EndWithResult,
+            EndWithException
         }
 
-        public IDisposable Subscribe(IObserver<T> observer)
+        private struct ExecutionInfo
         {
-            return executeResults.Subscribe(observer);
+            private readonly ExecutionDemarcation demarcation;
+            private readonly TResult result;
+
+            private ExecutionInfo(ExecutionDemarcation demarcation, TResult result)
+            {
+                this.demarcation = demarcation;
+                this.result = result;
+            }
+
+            public ExecutionDemarcation Demarcation
+            {
+                get { return this.demarcation; }
+            }
+
+            public TResult Result
+            {
+                get { return this.result; }
+            }
+
+            public static ExecutionInfo CreateBegin()
+            {
+                return new ExecutionInfo(ExecutionDemarcation.Begin, default(TResult));
+            }
+
+            public static ExecutionInfo CreateResult(TResult result)
+            {
+                return new ExecutionInfo(ExecutionDemarcation.EndWithResult, result);
+            }
+
+            public static ExecutionInfo CreateFail()
+            {
+                return new ExecutionInfo(ExecutionDemarcation.EndWithException, default(TResult));
+            }
+        }
+    }
+
+    /// <summary>
+    /// Encapsulates a composite user interaction.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// This class provides the bulk of the actual implementation for combined reactive commands. You should not
+    /// create instances of this class directly, but rather via the static creation methods on the non-generic
+    /// <see cref="ReactiveCommand"/> class.
+    /// </para>
+    /// <para>
+    /// A <c>CombinedReactiveCommand</c> combines multiple reactive commands into a single command. Executing
+    /// the combined command executes all child commands. Since all child commands will receive the same execution
+    /// parameter, all child commands must accept a parameter of the same type.
+    /// </para>
+    /// <para>
+    /// In order for the combined command to be executable, all child commands must themselves be executable.
+    /// In addition, any <c>canExecute</c> observable passed in during construction must also yield <c>true</c>.
+    /// </para>
+    /// </remarks>
+    /// <typeparam name="TParam">
+    /// The type of parameter values passed in during command execution.
+    /// </typeparam>
+    /// <typeparam name="TResult">
+    /// The type of the values that are the result of command execution.
+    /// </typeparam>
+    public class CombinedReactiveCommand<TParam, TResult> : ReactiveCommandBase<TParam, IList<TResult>>
+    {
+        private readonly ReactiveCommand<TParam, IList<TResult>> innerCommand;
+        private readonly ScheduledSubject<Exception> exceptions;
+        private readonly IDisposable exceptionsSubscription;
+
+        internal protected CombinedReactiveCommand(
+            IEnumerable<ReactiveCommandBase<TParam, TResult>> childCommands,
+            IObservable<bool> canExecute,
+            IScheduler outputScheduler)
+        {
+            if (childCommands == null) {
+                throw new ArgumentNullException("childCommands");
+            }
+
+            if (canExecute == null) {
+                throw new ArgumentNullException("canExecute");
+            }
+
+            if (outputScheduler == null) {
+                throw new ArgumentNullException("outputScheduler");
+            }
+
+            var childCommandsArray = childCommands.ToArray();
+
+            if (childCommandsArray.Length == 0) {
+                throw new ArgumentException("No child commands provided.", "childCommands");
+            }
+
+            var canChildrenExecute = Observable
+                .CombineLatest(childCommandsArray.Select(x => x.CanExecute))
+                .Select(x => x.All(y => y));
+            var combinedCanExecute = canExecute
+                .Catch<bool, Exception>(ex => {
+                    this.exceptions.OnNext(ex);
+                    return Observable.Return(false);
+                })
+                .StartWith(false)
+                .CombineLatest(canChildrenExecute, (ce, cce) => ce && cce)
+                .DistinctUntilChanged()
+                .Replay(1)
+                .RefCount();
+            this.exceptionsSubscription = Observable
+                .Merge(childCommandsArray.Select(x => x.ThrownExceptions))
+                .Subscribe(ex => this.exceptions.OnNext(ex));
+
+            this.innerCommand = new ReactiveCommand<TParam, IList<TResult>>(
+                param =>
+                    Observable
+                        .CombineLatest(
+                            childCommandsArray
+                                .Select(x => x.ExecuteAsync(param))),
+                combinedCanExecute,
+                outputScheduler);
+
+            // we already handle exceptions on individual child commands above, but the same exception
+            // will tick through innerCommand. Therefore, we need to ensure we ignore it or the default
+            // handler will execute and the process will be torn down
+            this.innerCommand
+                .ThrownExceptions
+                .Subscribe();
+
+            this.exceptions = new ScheduledSubject<Exception>(CurrentThreadScheduler.Instance, RxApp.DefaultExceptionHandler);
+
+            this
+                .CanExecute
+                .Subscribe(_ => this.OnCanExecuteChanged());
         }
 
-        public bool CanExecute(object parameter)
+        /// <inheritdoc/>
+        public override IObservable<bool> CanExecute
         {
-            if (canExecuteDisp == null) canExecuteDisp = canExecute.Connect();
-            return canExecuteLatest;
+            get { return this.innerCommand.CanExecute; }
         }
 
-        /// <summary>
-        /// Executes a Command. Note that the command will be executed, irrespective of the current value
-        /// of the command's canExecute observable.
-        /// </summary>
-        public void Execute(object parameter)
+        /// <inheritdoc/>
+        public override IObservable<bool> IsExecuting
         {
-            ExecuteAsync(parameter).Catch(Observable.Empty<T>()).Subscribe();
+            get { return this.innerCommand.IsExecuting; }
         }
 
-        public virtual void Dispose()
+        /// <inheritdoc/>
+        public override IObservable<Exception> ThrownExceptions
         {
-            var disp = Interlocked.Exchange(ref canExecuteDisp, null);
-            if (disp != null) disp.Dispose();
+            get { return this.exceptions; }
+        }
+
+        /// <inheritdoc/>
+        public override IDisposable Subscribe(IObserver<IList<TResult>> observer)
+        {
+            return innerCommand.Subscribe(observer);
+        }
+
+        /// <inheritdoc/>
+        public override IObservable<IList<TResult>> ExecuteAsync(TParam parameter = default(TParam))
+        {
+            return this.innerCommand.ExecuteAsync(parameter);
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing) {
+                this.innerCommand.Dispose();
+                this.exceptions.Dispose();
+                this.exceptionsSubscription.Dispose();
+            }
         }
     }
 
     public static class ReactiveCommandMixins
     {
-        /// <summary>
-        /// ToCommand is a convenience method for returning a new
-        /// ReactiveCommand based on an existing Observable chain.
-        /// </summary>
-        /// <param name="scheduler">The scheduler to publish events on - default
-        /// is RxApp.MainThreadScheduler.</param>
-        /// <returns>A new ReactiveCommand whose CanExecute Observable is the
-        /// current object.</returns>
-        public static ReactiveCommand<object> ToCommand(this IObservable<bool> This, IScheduler scheduler = null)
-        {
-            return ReactiveCommand.Create(This, scheduler);
-        }
-
         /// <summary>
         /// A utility method that will pipe an Observable to an ICommand (i.e.
         /// it will first call its CanExecute with the provided value, then if
@@ -492,9 +897,9 @@ namespace ReactiveUI
         public static IDisposable InvokeCommand<T>(this IObservable<T> This, ICommand command)
         {
             return This.Throttle(x => Observable.FromEventPattern(h => command.CanExecuteChanged += h, h => command.CanExecuteChanged -= h)
-                    .Select(_ => Unit.Default)
-                    .StartWith(Unit.Default)
-                    .Where(_ => command.CanExecute(x)))
+                .Select(_ => Unit.Default)
+                .StartWith(Unit.Default)
+                .Where(_ => command.CanExecute(x)))
                 .Subscribe(x => {
                     command.Execute(x);
                 });
@@ -508,10 +913,10 @@ namespace ReactiveUI
         /// <param name="command">The command to be executed.</param>
         /// <returns>An object that when disposes, disconnects the Observable
         /// from the command.</returns>
-        public static IDisposable InvokeCommand<T, TResult>(this IObservable<T> This, IReactiveCommand<TResult> command)
+        public static IDisposable InvokeCommand<T, TResult>(this IObservable<T> This, ReactiveCommand<T, TResult> command)
         {
-            return This.Throttle(x => command.CanExecuteObservable.StartWith(command.CanExecute(x)).Where(b => b))
-		.Select(x => command.ExecuteAsync(x).Catch(Observable.Empty<TResult>()))
+            return This.Throttle(x => command.CanExecute.Where(b => b))
+                .Select(x => command.ExecuteAsync(x).Catch(Observable.Empty<TResult>()))
                 .Switch()
                 .Subscribe();
         }
@@ -529,9 +934,9 @@ namespace ReactiveUI
         {
             return This.CombineLatest(target.WhenAnyValue(commandProperty), (val, cmd) => new { val, cmd })
                 .Throttle(x => Observable.FromEventPattern(h => x.cmd.CanExecuteChanged += h, h => x.cmd.CanExecuteChanged -= h)
-                    .Select(_ => Unit.Default)
-                    .StartWith(Unit.Default)
-                    .Where(_ => x.cmd.CanExecute(x.val)))
+                .Select(_ => Unit.Default)
+                .StartWith(Unit.Default)
+                .Where(_ => x.cmd.CanExecute(x.val)))
                 .Subscribe(x => {
                     x.cmd.Execute(x.val);
                 });
@@ -546,29 +951,13 @@ namespace ReactiveUI
         /// <param name="commandProperty">The expression to reference the Command.</param>
         /// <returns>An object that when disposes, disconnects the Observable
         /// from the command.</returns>
-        public static IDisposable InvokeCommand<T, TResult, TTarget>(this IObservable<T> This, TTarget target, Expression<Func<TTarget, IReactiveCommand<TResult>>> commandProperty)
+        public static IDisposable InvokeCommand<T, TResult, TTarget>(this IObservable<T> This, TTarget target, Expression<Func<TTarget, ReactiveCommand<T, TResult>>> commandProperty)
         {
             return This.CombineLatest(target.WhenAnyValue(commandProperty), (val, cmd) => new { val, cmd })
-                .Throttle(x => x.cmd.CanExecuteObservable.StartWith(x.cmd.CanExecute(x.val)).Where(b => b))
-		.Select(x => x.cmd.ExecuteAsync(x.val).Catch(Observable.Empty<TResult>()))
+                .Throttle(x => x.cmd.CanExecute.Where(b => b))
+                .Select(x => x.cmd.ExecuteAsync(x.val).Catch(Observable.Empty<TResult>()))
                 .Switch()
                 .Subscribe();
-        }
-
-        /// <summary>
-        /// A convenience method for subscribing and creating ReactiveCommands
-        /// in the same call. Equivalent to Subscribing to the command, except
-        /// there's no way to release your Subscription but that's probably fine.
-        /// </summary>
-        public static ReactiveCommand<T> OnExecuteCompleted<T>(this ReactiveCommand<T> This, Action<T> onNext, Action<Exception> onError = null)
-        {
-            if (onError != null) {
-                This.Subscribe(onNext, onError);
-                return This;
-            } else {
-                This.Subscribe(onNext);
-                return This;
-            }
         }
     }
 }
