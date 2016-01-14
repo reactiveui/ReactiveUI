@@ -1,12 +1,10 @@
-﻿using ReactiveUI.Tests.RoutableViewMixinTests;
+using System;
+using System.Reactive.Disposables;
+using ReactiveUI.Tests.RoutableViewMixinTests;
 using Xunit;
 
 namespace ReactiveUI.Tests
 {
-    using System;
-    using System.Reactive.Disposables;
-    using Assert = Xunit.Assert;
-
     namespace RoutableViewMixinTests
     {
         public class TestScreen : IScreen
@@ -42,7 +40,7 @@ namespace ReactiveUI.Tests
                 return Disposable.Empty;
             });
 
-            screen.Router.Navigate.Execute(vm);
+            screen.Router.Navigate.ExecuteAsync(vm);
 
             Assert.Equal(1, count);
         }
@@ -62,9 +60,9 @@ namespace ReactiveUI.Tests
                 return Disposable.Empty;
             });
 
-            screen.Router.Navigate.Execute(vm);
-            screen.Router.Navigate.Execute(vm2);
-            screen.Router.Navigate.Execute(vm);
+            screen.Router.Navigate.ExecuteAsync(vm);
+            screen.Router.Navigate.ExecuteAsync(vm2);
+            screen.Router.Navigate.ExecuteAsync(vm);
 
             Assert.Equal(2, count);
         }
@@ -82,11 +80,11 @@ namespace ReactiveUI.Tests
                 return Disposable.Create(() => count++);
             });
 
-            screen.Router.Navigate.Execute(vm);
+            screen.Router.Navigate.ExecuteAsync(vm);
 
             Assert.Equal(0, count);
 
-            screen.Router.Navigate.Execute(vm2);
+            screen.Router.Navigate.ExecuteAsync(vm2);
 
             Assert.Equal(1, count);
         }
@@ -103,7 +101,7 @@ namespace ReactiveUI.Tests
                 count++;
             });
 
-            screen.Router.Navigate.Execute(vm);
+            screen.Router.Navigate.ExecuteAsync(vm);
 
             Assert.Equal(1, count);
         }
@@ -121,9 +119,9 @@ namespace ReactiveUI.Tests
                 count++;
             });
 
-            screen.Router.Navigate.Execute(vm);
-            screen.Router.Navigate.Execute(vm2);
-            screen.Router.Navigate.Execute(vm);
+            screen.Router.Navigate.ExecuteAsync(vm);
+            screen.Router.Navigate.ExecuteAsync(vm2);
+            screen.Router.Navigate.ExecuteAsync(vm);
 
             Assert.Equal(2, count);
         }
@@ -140,8 +138,8 @@ namespace ReactiveUI.Tests
                 _ => {},
                 () => { count++; });
 
-            screen.Router.Navigate.Execute(vm);
-            screen.Router.NavigateBack.Execute(null);
+            screen.Router.Navigate.ExecuteAsync(vm);
+            screen.Router.NavigateBack.ExecuteAsync();
 
             Assert.Equal(1, count);
         }
@@ -158,8 +156,8 @@ namespace ReactiveUI.Tests
                 count++;
             });
 
-            screen.Router.Navigate.Execute(vm);
-            screen.Router.Navigate.Execute(vm2);
+            screen.Router.Navigate.ExecuteAsync(vm);
+            screen.Router.Navigate.ExecuteAsync(vm2);
 
             Assert.Equal(1, count);
         }
@@ -176,8 +174,8 @@ namespace ReactiveUI.Tests
                 _ => {},
                 () => { count++; });
 
-            screen.Router.Navigate.Execute(vm);
-            screen.Router.NavigateBack.Execute(null);
+            screen.Router.Navigate.ExecuteAsync(vm);
+            screen.Router.NavigateBack.ExecuteAsync();
 
             Assert.Equal(1, count);
         }
