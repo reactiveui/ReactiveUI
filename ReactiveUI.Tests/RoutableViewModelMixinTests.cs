@@ -1,12 +1,10 @@
-﻿using ReactiveUI.Tests.RoutableViewMixinTests;
+using System;
+using System.Reactive.Disposables;
+using ReactiveUI.Tests.RoutableViewMixinTests;
 using Xunit;
 
 namespace ReactiveUI.Tests
 {
-    using System;
-    using System.Reactive.Disposables;
-    using Assert = Xunit.Assert;
-
     namespace RoutableViewMixinTests
     {
         public class TestScreen : IScreen
