@@ -131,8 +131,8 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Splat, Version=1.6.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\Splat.1.6.2\lib\NetCore45\Splat.dll</HintPath>
+      <HintPath>..\..\packages\Splat.1.6.2\lib\Portable-Win81+Wpa81\Splat.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System.Reactive.Core, Version=2.2.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
