@@ -5,14 +5,11 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using ReactiveUI;
 using ReactiveUI.Testing;
 using Xunit;
-
 using Microsoft.Reactive.Testing;
 
 #if !MONO
@@ -23,8 +20,8 @@ namespace ReactiveUI.Tests
 {
     public class TestWhenAnyObsViewModel : ReactiveObject
     {
-        public ReactiveCommand<object> Command1 { get; set; }
-        public ReactiveCommand<object> Command2 { get; set; }
+        public ReactiveCommand<int, int> Command1 { get; set; }
+        public ReactiveCommand<int, int> Command2 { get; set; }
 
         ReactiveList<int> myListOfInts;
         public ReactiveList<int> MyListOfInts {
@@ -34,8 +31,8 @@ namespace ReactiveUI.Tests
 
         public TestWhenAnyObsViewModel()
         {
-            Command1 = ReactiveCommand.Create();
-            Command2 = ReactiveCommand.Create();
+            Command1 = ReactiveCommand.CreateFromObservable<int, int>(val => Observable.Return(val));
+            Command2 = ReactiveCommand.CreateFromObservable<int, int>(val => Observable.Return(val));
         }
     }
 
@@ -613,7 +610,7 @@ namespace ReactiveUI.Tests
 
             var list = new List<int>();
             fixture.WhenAnyObservable(x => x.Command1, x => x.Command2)
-                   .Subscribe(x => list.Add((int)x));
+                   .Subscribe(list.Add);
 
             Assert.Equal(0, list.Count);
 
