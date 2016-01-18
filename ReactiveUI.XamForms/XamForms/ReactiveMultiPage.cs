@@ -4,7 +4,8 @@ using Xamarin.Forms;
 
 namespace ReactiveUI.XamForms
 {
-    public class ReactiveMultiPage<TViewModel> : MultiPage<TViewModel>, IViewFor<TViewModel>
+    public abstract class ReactiveMultiPage<TPage, TViewModel> : MultiPage<TPage>, IViewFor<TViewModel>
+        where TPage : Page
         where TViewModel : class
     {
         /// <summary>
