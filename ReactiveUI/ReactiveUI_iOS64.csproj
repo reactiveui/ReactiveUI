@@ -137,6 +137,7 @@
     <Compile Include="RegisterableInterfaces.cs" />
     <Compile Include="Registrations.cs" />
     <Compile Include="RoutableViewModelMixin.cs" />
+    <Compile Include="ViewAttributes.cs" />
     <Compile Include="RoutingState.cs" />
     <Compile Include="RxApp.cs" />
     <Compile Include="ViewLocator.cs" />
