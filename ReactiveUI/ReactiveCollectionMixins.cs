@@ -810,10 +810,28 @@ namespace ReactiveUI
     {
         /// <summary>
         /// Creates a collection based on an an Observable by adding items
+        /// provided until the Observable completes. This method guarantees that
+        /// items are always added in the context of the provided scheduler.
+        /// </summary>
+        /// <param name="fromObservable">The Observable whose items will be put
+        /// into the new collection.</param>
+        /// <param name="scheduler">Optionally specifies the scheduler on which
+        /// the collection will be populated. Defaults to the main scheduler.</param>
+        /// <returns>A new collection which will be populated with the
+        /// Observable.</returns>
+        public static IReactiveDerivedList<T> CreateCollection<T>(
+            this IObservable<T> fromObservable,
+            IScheduler scheduler)
+        {
+            return new ReactiveDerivedCollectionFromObservable<T>(fromObservable, scheduler: scheduler);
+        }
+
+        /// <summary>
+        /// Creates a collection based on an an Observable by adding items
         /// provided until the Observable completes, optionally ensuring a
         /// delay. Note that if the Observable never completes and withDelay is
         /// set, this method will leak a Timer. This method also guarantees that
-        /// items are always added via the UI thread.
+        /// items are always added in the context of the provided scheduler.
         /// </summary>
         /// <param name="fromObservable">The Observable whose items will be put
         /// into the new collection.</param>
@@ -832,33 +850,6 @@ namespace ReactiveUI
             IScheduler scheduler = null)
         {
             return new ReactiveDerivedCollectionFromObservable<T>(fromObservable, withDelay, onError, scheduler);
-        }
-
-        /// <summary>
-        /// Creates a collection based on an an Observable by adding items
-        /// provided until the Observable completes, optionally ensuring a
-        /// delay. Note that if the Observable never completes and withDelay is
-        /// set, this method will leak a Timer. This method also guarantees that
-        /// items are always added via the UI thread.
-        /// </summary>
-        /// <param name="fromObservable">The Observable whose items will be put
-        /// into the new collection.</param>
-        /// <param name="selector">A Select function that will be run on each
-        /// item.</param>
-        /// <param name="withDelay">If set, items will be populated in the
-        /// collection no faster than the delay provided.</param>
-        /// <param name="scheduler">Optionally specifies the scheduler on which
-        /// the collection will be populated. Defaults to the main scheduler.</param>
-        /// <returns>A new collection which will be populated with the
-        /// Observable.</returns>
-        public static IReactiveDerivedList<TRet> CreateCollection<T, TRet>(
-            this IObservable<T> fromObservable,
-            Func<T, TRet> selector,
-            TimeSpan? withDelay = null,
-            IScheduler scheduler = null)
-        {
-            Contract.Requires(selector != null);
-            return fromObservable.Select(selector).CreateCollection(withDelay, scheduler: scheduler);
         }
     }
 
