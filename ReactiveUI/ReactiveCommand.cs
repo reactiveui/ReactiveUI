@@ -685,15 +685,20 @@ namespace ReactiveUI
         {
             this.synchronizedExecutionInfo.OnNext(ExecutionInfo.CreateBegin());
 
-            return this
-                .executeAsync(parameter)
-                .Do(result => this.synchronizedExecutionInfo.OnNext(ExecutionInfo.CreateResult(result)))
-                .Catch<TResult, Exception>(ex => {
-                    this.synchronizedExecutionInfo.OnNext(ExecutionInfo.CreateFail());
-                    exceptions.OnNext(ex);
-                    return Observable.Throw<TResult>(ex);
-                })
-                .RunAsync(CancellationToken.None);
+            try {
+                return this
+                    .executeAsync(parameter)
+                    .Do(result => this.synchronizedExecutionInfo.OnNext(ExecutionInfo.CreateResult(result)))
+                    .Catch<TResult, Exception>(ex => {
+                        this.synchronizedExecutionInfo.OnNext(ExecutionInfo.CreateFail());
+                        exceptions.OnNext(ex);
+                        return Observable.Throw<TResult>(ex);
+                    })
+                    .RunAsync(CancellationToken.None);
+            } catch (Exception ex) {
+                this.exceptions.OnNext(ex);
+                return Observable.Throw<TResult>(ex);
+            }
         }
 
         protected override void Dispose(bool disposing)
