@@ -284,6 +284,24 @@ namespace ReactiveUI.Tests
         }
 
         [Fact]
+        public void ExecuteAsyncTicksAnyLambdaException()
+        {
+            var fixture = ReactiveCommand.CreateFromObservable<Unit>(() => { throw new InvalidOperationException(); });
+            fixture
+                .ThrownExceptions
+                .Subscribe();
+            Exception exception = null;
+            fixture
+                .ExecuteAsync()
+                .Subscribe(
+                    _ => { },
+                    ex => exception = ex,
+                    () => { });
+
+            Assert.IsType<InvalidOperationException>(exception);
+        }
+
+        [Fact]
         public void ExecuteIsAvailableViaICommand()
         {
             var executed = false;
@@ -328,6 +346,20 @@ namespace ReactiveUI.Tests
         public void ExecuteAsyncTicksErrorsThroughThrownExceptions()
         {
             var fixture = ReactiveCommand.CreateFromObservable(() => Observable.Throw<Unit>(new InvalidOperationException("oops")));
+            var thrownExceptions = fixture
+                .ThrownExceptions
+                .CreateCollection();
+
+            fixture.ExecuteAsync();
+
+            Assert.Equal(1, thrownExceptions.Count);
+            Assert.Equal("oops", thrownExceptions[0].Message);
+        }
+
+        [Fact]
+        public void ExecuteAsyncTicksLambdaErrorsThroughThrownExceptions()
+        {
+            var fixture = ReactiveCommand.CreateFromObservable<Unit>(() => { throw new InvalidOperationException("oops"); });
             var thrownExceptions = fixture
                 .ThrownExceptions
                 .CreateCollection();
