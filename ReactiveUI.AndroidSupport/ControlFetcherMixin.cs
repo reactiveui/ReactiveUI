@@ -68,7 +68,7 @@ namespace ReactiveUI.AndroidSupport
         /// </summary>
         /// <param name="This"></param>
         /// <param name="inflatedView"></param>
-        public static void WireUpControls(this Android.Support.V4.App.Fragment This, View inflatedView)
+        public static void WireUpControls(this global::Android.Support.V4.App.Fragment This, View inflatedView)
 		{
 			var members = This.GetType().GetRuntimeProperties()
 				.Where(m => m.PropertyType.IsSubclassOf(typeof(View)));
