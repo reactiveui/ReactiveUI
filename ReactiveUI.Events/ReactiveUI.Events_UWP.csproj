@@ -22,7 +22,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>bin\Debug\UWP\</OutputPath>
     <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -31,7 +31,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\WinUAP\</OutputPath>
+    <OutputPath>bin\Release\UWP\</OutputPath>
     <DefineConstants>TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -40,7 +40,7 @@
     <Compile Include="..\CommonAssemblyInfo.cs">
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Events_WinUAP.cs" />
+    <Compile Include="Events_UWP.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SingleAwaitSubject.cs" />
     <Content Include="Properties\ReactiveUI.Events.rd.xml" />
@@ -65,7 +65,7 @@
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v$(VisualStudioVersion)\Microsoft.Windows.UI.Xaml.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>%25SystemRoot%25\Microsoft.NET\Framework\v4.0.30319\msbuild.exe /nologo /v:q /p:Configuration=Release "$(ProjectDir)EventBuilder.csproj"
-"$(ProjectDir)EventBuilder.exe" "$(ProjectDir)\WinMetadata.UWP\Windows.winmd" "$(ProjectDir)Events.mustache" &gt; "$(ProjectDir)Events_WinUAP.cs"
+"$(ProjectDir)EventBuilder.exe" "$(ProjectDir)\WinMetadata.UWP\Windows.winmd" "$(ProjectDir)Events.mustache" &gt; "$(ProjectDir)Events_UWP.cs"
 del "$(ProjectDir)EventBuilder.exe" 1&gt; nul 2&gt;&amp;1
 del "$(ProjectDir)EventBuilder.pdb" 1&gt; nul 2&gt;&amp;1
 del "$(ProjectDir)Nustache.Core.dll" 1&gt; nul 2&gt;&amp;1
