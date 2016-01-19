@@ -67,7 +67,7 @@ namespace ReactiveUI
             if (backingNullableType == null) {
                 if (from == null) {
                     if (targetType.GetTypeInfo().IsValueType) {
-                        throw new InvalidCastException();
+                        throw new InvalidCastException("Can't convert from nullable-type which is null to non-nullable type");
                     }
 
                     return null;
@@ -82,16 +82,11 @@ namespace ReactiveUI
 
             if (from == null)
             {
-                var ut = Nullable.GetUnderlyingType(targetType);
-                if (ut == null) {
-                    throw new Exception("Can't convert from nullable-type which is null to non-nullable type");
-                }
-
                 return null;
             }
 
             var converted = Convert.ChangeType(from, backingNullableType, null);
-            if(!isInstanceOfType(targetType, converted.GetType())) {
+            if(!isInstanceOfType(converted, targetType)) {
                 throw new InvalidCastException();
             }
 
