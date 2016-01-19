@@ -29,6 +29,7 @@
     <CodeSigningKey>Mac Developer</CodeSigningKey>
     <UseSGen>False</UseSGen>
     <UseRefCounting>false</UseRefCounting>
+    <Profiling>false</Profiling>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <Optimize>True</Optimize>
@@ -49,6 +50,7 @@
     <GenerateDocumentation>True</GenerateDocumentation>
     <DocumentationFile>bin\Release\MonoMac\ReactiveUI.xml</DocumentationFile>
     <UseRefCounting>false</UseRefCounting>
+    <Profiling>false</Profiling>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -146,6 +148,7 @@
     <Compile Include="Legacy\ReactiveCommand.cs" />
     <Compile Include="Legacy\Errors.cs" />
     <Compile Include="Cocoa\ReactiveSplitViewController.cs" />
+    <Compile Include="ViewAttributes.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Cocoa\" />

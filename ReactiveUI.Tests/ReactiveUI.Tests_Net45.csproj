@@ -101,8 +101,11 @@
     <Compile Include="AwaiterTest.cs" />
     <Compile Include="BindingTypeConvertersTest.cs" />
     <Compile Include="CommandBindingTests.cs" />
+    <Compile Include="DependencyResolverTests.cs" />
     <Compile Include="INPCObservableForPropertyTests.cs" />
     <Compile Include="InteractionsTest.cs" />
+    <Compile Include="ReactiveCommandTest.cs" />
+    <Compile Include="RoutableViewModelMixinTests.cs" />
     <Compile Include="TestUtilsTest.cs" />
     <Compile Include="WeakEventManagerTest.cs" />
     <Compile Include="Winforms\ActivationTests.cs" />
@@ -120,7 +123,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PropertyBindingTest.cs" />
     <Compile Include="ReactiveCollectionTest.cs" />
-    <Compile Include="ReactiveCommandTest.cs" />
     <Compile Include="ReactiveNotifyPropertyChangedMixinTest.cs" />
     <Compile Include="ReactiveObjectTest.cs" />
     <Compile Include="RoutingState.cs" />
