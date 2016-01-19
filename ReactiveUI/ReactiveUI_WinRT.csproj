@@ -35,7 +35,7 @@
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\Portable-Win81+Wpa81\</OutputPath>
     <IntermediateOutputPath>obj\Release\Portable-Win81+Wpa81</IntermediateOutputPath>
-    <DefineConstants>TRACE;WINRT; XAML</DefineConstants>
+    <DefineConstants>TRACE;NETFX_CORE;XAML</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>bin\Release\Portable-Win81+Wpa81\ReactiveUI.xml</DocumentationFile>
