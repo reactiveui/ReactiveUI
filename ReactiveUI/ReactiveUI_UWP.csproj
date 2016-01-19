@@ -85,6 +85,7 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
+    <Compile Include="ViewAttributes.cs" />
     <Compile Include="ViewLocator.cs" />
     <Compile Include="WaitForDispatcherScheduler.cs" />
     <Compile Include="WeakEventManager.cs" />

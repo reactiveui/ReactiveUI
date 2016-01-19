@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Runtime.Serialization;
-using System.Windows;
+using System.Reactive;
 using System.Windows.Controls;
 using Xunit;
 
@@ -15,7 +11,7 @@ namespace ReactiveUI.Tests
         public void ButtonDoesNotLeakTest()
         {
             Button button = new Button();
-            ReactiveCommand<object> command = ReactiveCommand.Create();
+            ReactiveCommand command = ReactiveCommand.Create(() => { });
             button.Command = command;
 
             WeakReference buttonRef = new WeakReference(button);

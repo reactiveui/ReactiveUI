@@ -68,7 +68,7 @@ namespace ReactiveUI.Android.Support
 
         public View View
         {
-            get { return this.ItemView };
+            get { return this.ItemView; }
         }
 
         TViewModel _ViewModel;
