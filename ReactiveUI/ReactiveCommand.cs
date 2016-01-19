@@ -554,7 +554,7 @@ namespace ReactiveUI
 
         protected override bool ICommandCanExecute(object parameter)
         {
-            return this.CanExecute.First();
+            return this.CanExecute.FirstAsync().Wait();
         }
 
         protected override void ICommandExecute(object parameter)
