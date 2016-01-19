@@ -135,9 +135,11 @@
     <Compile Include="LoggingMixins.cs" />
     <Compile Include="IReactiveObject.cs" />
     <Compile Include="WeakEventManager.cs" />
+    <Compile Include="ViewAttributes.cs" />
     <Compile Include="Android\BundleSuspensionDriver.cs" />
     <Compile Include="Android\AutoSuspendHelper.cs" />
     <Compile Include="Legacy\ReactiveCommand.cs" />
+    <Compile Include="Legacy\Errors.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.ReactiveUI_Android.config" />

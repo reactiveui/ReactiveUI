@@ -86,6 +86,7 @@ namespace ReactiveUI
             if (ModeDetector.InUnitTestRunner())
             {
                 _inner = _source.Connect();
+                _activated = 1;
             }
         }
 

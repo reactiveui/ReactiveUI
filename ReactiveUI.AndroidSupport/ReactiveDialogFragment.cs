@@ -32,7 +32,7 @@ namespace ReactiveUI.AndroidSupport
     /// This is a Fragment that is both an Activity and has ReactiveObject powers 
     /// (i.e. you can call RaiseAndSetIfChanged)
     /// </summary>
-    public class ReactiveDialogFragment : Android.Support.V4.App.DialogFragment, IReactiveNotifyPropertyChanged<ReactiveDialogFragment>, IReactiveObject, IHandleObservableErrors
+    public class ReactiveDialogFragment : global::Android.Support.V4.App.DialogFragment, IReactiveNotifyPropertyChanged<ReactiveDialogFragment>, IReactiveObject, IHandleObservableErrors
     {
         protected ReactiveDialogFragment() { }
 
