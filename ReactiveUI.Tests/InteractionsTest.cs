@@ -1,6 +1,7 @@
-﻿using System.Linq;
+﻿using System;
+using System.Reactive;
 using System.Reactive.Linq;
-using System.Threading.Tasks;
+using Microsoft.Reactive.Testing;
 using Xunit;
 
 namespace ReactiveUI.Tests
@@ -8,111 +9,204 @@ namespace ReactiveUI.Tests
     public class InteractionsTest
     {
         [Fact]
-        public void UnhandledGlobalInteractionsShouldCauseException()
+        public void UnhandledInteractionsShouldCauseException()
         {
-            var sut = new UserInteraction<bool>();
-            Assert.Throws<UnhandledUserInteractionException>(() => sut.RaiseGlobal().First());
+            var source1 = Interaction.CreateSource();
+            Assert.Throws<UnhandledInteractionException>(() => source1.Raise(new Interaction<string>()).FirstAsync().Wait());
+
+            source1.RegisterHandler<Interaction<string>>(_ => { });
+            source1.RegisterHandler<Interaction<string>>(_ => { });
+            Assert.Throws<UnhandledInteractionException>(() => source1.Raise(new Interaction<string>()).FirstAsync().Wait());
+
+            var source2 = Interaction<bool>.CreateSource();
+            Assert.Throws<UnhandledInteractionException>(() => source2.Raise(new Interaction<bool>()).FirstAsync().Wait());
+
+            source2.RegisterHandler(_ => { });
+            source2.RegisterHandler(_ => { });
+            Assert.Throws<UnhandledInteractionException>(() => source2.Raise(new Interaction<bool>()).FirstAsync().Wait());
         }
 
         [Fact]
-        public void HandledGlobalInteractionsShouldNotCauseException()
+        public void HandledInteractionsShouldNotCauseException()
         {
-            var sut = new UserInteraction<bool>();
+            var source1 = Interaction.CreateSource();
+            source1.RegisterHandler<Interaction<bool>>(interaction => interaction.SetResult(true));
 
-            using (UserInteraction.RegisterGlobalHandler<UserInteraction<bool>>(x => x.SetResult(true)))
-            {
-                var result = sut.RaiseGlobal().First();
-                Assert.True(result);
-            }
+            var interaction1 = new Interaction<bool>();
+            Assert.True(source1.Raise(interaction1).FirstAsync().Wait());
 
-            Assert.Throws<UnhandledUserInteractionException>(() => sut.RaiseGlobal().First());
+            var source2 = Interaction<bool>.CreateSource();
+            source2.RegisterHandler(interaction => interaction.SetResult(true));
+
+            var interaction2 = new Interaction<bool>();
+            Assert.True(source2.Raise(interaction2).FirstAsync().Wait());
         }
 
         [Fact]
-        public void NestedGlobalHandlersAreExecutedInReverseOrderOfSubscription()
+        public void NestedHandlersAreExecutedInReverseOrderOfSubscription()
         {
-            using (UserInteraction.RegisterGlobalHandler<UserInteraction<string>>(x => x.SetResult("A")))
-            {
-                Assert.Equal("A", new UserInteraction<string>().RaiseGlobal().First());
+            var source1 = Interaction.CreateSource();
 
-                using (UserInteraction.RegisterGlobalHandler<UserInteraction<string>>(x => x.SetResult("B")))
-                {
-                    Assert.Equal("B", new UserInteraction<string>().RaiseGlobal().First());
+            using (source1.RegisterHandler<Interaction<string>>(x => x.SetResult("A"))) {
+                Assert.Equal("A", source1.Raise(new Interaction<string>()).FirstAsync().Wait());
 
-                    using (UserInteraction.RegisterGlobalHandler<UserInteraction<string>>(x => x.SetResult("C")))
-                    {
-                        Assert.Equal("C", new UserInteraction<string>().RaiseGlobal().First());
+                using (source1.RegisterHandler<Interaction<string>>(x => x.SetResult("B"))) {
+                    Assert.Equal("B", source1.Raise(new Interaction<string>()).FirstAsync().Wait());
+
+                    using (source1.RegisterHandler<Interaction<string>>(x => x.SetResult("C"))) {
+                        Assert.Equal("C", source1.Raise(new Interaction<string>()).FirstAsync().Wait());
                     }
 
-                    Assert.Equal("B", new UserInteraction<string>().RaiseGlobal().First());
+                    Assert.Equal("B", source1.Raise(new Interaction<string>()).FirstAsync().Wait());
                 }
 
-                Assert.Equal("A", new UserInteraction<string>().RaiseGlobal().First());
+                Assert.Equal("A", source1.Raise(new Interaction<string>()).FirstAsync().Wait());
+            }
+
+            var source2 = Interaction<string>.CreateSource();
+
+            using (source2.RegisterHandler(x => x.SetResult("A"))) {
+                Assert.Equal("A", source2.Raise(new Interaction<string>()).FirstAsync().Wait());
+
+                using (source2.RegisterHandler(x => x.SetResult("B"))) {
+                    Assert.Equal("B", source2.Raise(new Interaction<string>()).FirstAsync().Wait());
+
+                    using (source2.RegisterHandler(x => x.SetResult("C"))) {
+                        Assert.Equal("C", source2.Raise(new Interaction<string>()).FirstAsync().Wait());
+                    }
+
+                    Assert.Equal("B", source2.Raise(new Interaction<string>()).FirstAsync().Wait());
+                }
+
+                Assert.Equal("A", source2.Raise(new Interaction<string>()).FirstAsync().Wait());
             }
         }
 
         [Fact]
-        public void GlobalHandlersCanOptNotToHandleTheInteraction()
+        public void HandlersCanOptNotToHandleTheInteraction()
         {
-            var handlerA = UserInteraction.RegisterGlobalHandler<CustomInteraction>(x => x.SetResult("A"));
-            var handlerB = UserInteraction.RegisterGlobalHandler<CustomInteraction>(
-                x =>
-                {
+            var source1 = Interaction.CreateSource();
+
+            var handler1A = source1.RegisterHandler<CustomInteraction>(x => x.SetResult("A"));
+            var handler1B = source1.RegisterHandler<CustomInteraction>(
+                x => {
                     // only handle if the interaction is Super Important
-                    if (x.IsSuperImportant)
-                    {
+                    if (x.IsSuperImportant) {
                         x.SetResult("B");
                     }
                 });
-            var handlerC = UserInteraction.RegisterGlobalHandler<CustomInteraction>(x => x.SetResult("C"));
+            var handler1C = source1.RegisterHandler<CustomInteraction>(x => x.SetResult("C"));
 
-            using (handlerA)
-            {
-                using (handlerB)
-                {
-                    using (handlerC)
-                    {
-                        Assert.Equal("C", new CustomInteraction(false).RaiseGlobal().First());
-                        Assert.Equal("C", new CustomInteraction(true).RaiseGlobal().First());
+            using (handler1A) {
+                using (handler1B) {
+                    using (handler1C) {
+                        Assert.Equal("C", source1.Raise(new CustomInteraction(false)).FirstAsync().Wait());
+                        Assert.Equal("C", source1.Raise(new CustomInteraction(true)).FirstAsync().Wait());
                     }
 
-                    Assert.Equal("A", new CustomInteraction(false).RaiseGlobal().First());
-                    Assert.Equal("B", new CustomInteraction(true).RaiseGlobal().First());
+                    Assert.Equal("A", source1.Raise(new CustomInteraction(false)).FirstAsync().Wait());
+                    Assert.Equal("B", source1.Raise(new CustomInteraction(true)).FirstAsync().Wait());
                 }
 
-                Assert.Equal("A", new CustomInteraction(false).RaiseGlobal().First());
-                Assert.Equal("A", new CustomInteraction(true).RaiseGlobal().First());
+                Assert.Equal("A", source1.Raise(new CustomInteraction(false)).FirstAsync().Wait());
+                Assert.Equal("A", source1.Raise(new CustomInteraction(true)).FirstAsync().Wait());
+            }
+
+            var source2 = CustomInteraction.CreateSource();
+
+            var handler2A = source2.RegisterHandler(x => x.SetResult("A"));
+            var handler2B = source2.RegisterHandler(
+                x => {
+                    // only handle if the interaction is Super Important
+                    if (x.IsSuperImportant) {
+                        x.SetResult("B");
+                    }
+                });
+            var handler2C = source2.RegisterHandler(x => x.SetResult("C"));
+
+            using (handler2A) {
+                using (handler2B) {
+                    using (handler2C) {
+                        Assert.Equal("C", source2.Raise(new CustomInteraction(false)).FirstAsync().Wait());
+                        Assert.Equal("C", source2.Raise(new CustomInteraction(true)).FirstAsync().Wait());
+                    }
+
+                    Assert.Equal("A", source2.Raise(new CustomInteraction(false)).FirstAsync().Wait());
+                    Assert.Equal("B", source2.Raise(new CustomInteraction(true)).FirstAsync().Wait());
+                }
+
+                Assert.Equal("A", source2.Raise(new CustomInteraction(false)).FirstAsync().Wait());
+                Assert.Equal("A", source2.Raise(new CustomInteraction(true)).FirstAsync().Wait());
             }
         }
 
         [Fact]
-        public void GlobalHandlersCanContainAsynchronousCode()
+        public void HandlersCanContainAsynchronousCode()
         {
-            // even though handler B is "slow" (i.e. mimicks waiting for the user), it takes precedence over A, so we expect A to never even be called
-            var handlerAWasCalled = false;
-            var handlerA = UserInteraction.RegisterGlobalHandler<UserInteraction<string>>(
-                x =>
-                {
-                    x.SetResult("A");
-                    handlerAWasCalled = true;
-                });
-            var handlerB = UserInteraction.RegisterGlobalHandler<UserInteraction<string>>(
-                async x =>
-                {
-                    await Task.Delay(10);
-                    x.SetResult("B");
-                });
+            var scheduler = new TestScheduler();
 
-            using (handlerA)
-            using (handlerB)
-            {
-                Assert.Equal("B", new UserInteraction<string>().RaiseGlobal().First());
+            var source1 = Interaction.CreateSource();
+
+            // even though handler B is "slow" (i.e. mimicks waiting for the user), it takes precedence over A, so we expect A to never even be called
+            var handler1AWasCalled = false;
+            var handler1A = source1.RegisterHandler<Interaction<string>>(
+                x => {
+                    x.SetResult("A");
+                    handler1AWasCalled = true;
+                });
+            var handler1B = source1.RegisterHandler<Interaction<string>>(
+                x =>
+                    Observable
+                        .Return(Unit.Default)
+                        .Delay(TimeSpan.FromSeconds(1), scheduler)
+                        .Do(_ => x.SetResult("B")));
+
+            using (handler1A)
+            using (handler1B) {
+                string result = null;
+                source1.Raise(new Interaction<string>()).Subscribe(x => result = x);
+
+                Assert.Null(result);
+                scheduler.AdvanceBy(TimeSpan.FromSeconds(0.5).Ticks);
+                Assert.Null(result);
+                scheduler.AdvanceBy(TimeSpan.FromSeconds(0.6).Ticks);
+                Assert.Equal("B", result);
             }
 
-            Assert.False(handlerAWasCalled);
+            Assert.False(handler1AWasCalled);
+
+            var source2 = Interaction<string>.CreateSource();
+
+            // even though handler B is "slow" (i.e. mimicks waiting for the user), it takes precedence over A, so we expect A to never even be called
+            var handler2AWasCalled = false;
+            var handler2A = source2.RegisterHandler(
+                x => {
+                    x.SetResult("A");
+                    handler1AWasCalled = true;
+                });
+            var handler2B = source2.RegisterHandler(
+                x =>
+                    Observable
+                        .Return(Unit.Default)
+                        .Delay(TimeSpan.FromSeconds(1), scheduler)
+                        .Do(_ => x.SetResult("B")));
+
+            using (handler2A)
+            using (handler2B) {
+                string result = null;
+                source2.Raise(new Interaction<string>()).Subscribe(x => result = x);
+
+                Assert.Null(result);
+                scheduler.AdvanceBy(TimeSpan.FromSeconds(0.5).Ticks);
+                Assert.Null(result);
+                scheduler.AdvanceBy(TimeSpan.FromSeconds(0.6).Ticks);
+                Assert.Equal("B", result);
+            }
+
+            Assert.False(handler2AWasCalled);
         }
 
-        private class CustomInteraction : UserInteraction<string>
+        private class CustomInteraction : Interaction<string>
         {
             public CustomInteraction(bool isSuperImportant)
             {
@@ -123,6 +217,11 @@ namespace ReactiveUI.Tests
             {
                 get;
                 set;
+            }
+
+            public new static InteractionSource<CustomInteraction, string> CreateSource()
+            {
+                return new InteractionSource<CustomInteraction, string>();
             }
         }
     }

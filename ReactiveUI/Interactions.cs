@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Disposables;
@@ -11,17 +12,197 @@ using System.Threading.Tasks;
 
 namespace ReactiveUI
 {
+    public abstract class Interaction
+    {
+        private readonly AsyncSubject<object> result;
+        private int resultSet;
+
+        protected Interaction()
+        {
+            this.result = new AsyncSubject<object>();
+        }
+
+        public bool IsHandled
+        {
+            get { return this.resultSet == 1; }
+        }
+
+        protected void SetResult(object result)
+        {
+            if (Interlocked.CompareExchange(ref this.resultSet, 1, 0) != 0) {
+                throw new InvalidOperationException("Result has already been set.");
+            }
+
+            this.result.OnNext(result);
+            this.result.OnCompleted();
+        }
+
+        internal object GetResult()
+        {
+            Debug.Assert(this.IsHandled);
+            return this.result.GetResult();
+        }
+
+        public static InteractionSource CreateSource()
+        {
+            return new InteractionSource();
+        }
+    }
+
+    public class Interaction<TResult> : Interaction
+    {
+        public void SetResult(TResult result)
+        {
+            base.SetResult(result);
+        }
+
+        internal new TResult GetResult()
+        {
+            return (TResult)base.GetResult();
+        }
+
+        public static new InteractionSource<Interaction<TResult>, TResult> CreateSource()
+        {
+            return new InteractionSource<Interaction<TResult>, TResult>();
+        }
+    }
+
+    // an interaction source that doesn't care about the type of the interactions
+    public class InteractionSource
+    {
+        // convenient broker that any component can hook into
+        public static readonly InteractionSource Global = Interaction.CreateSource();
+
+        private readonly IList<Func<Interaction, IObservable<Unit>>> handlers;
+
+        public InteractionSource()
+        {
+            this.handlers = new List<Func<Interaction, IObservable<Unit>>>();
+        }
+
+        // normally only useful from unit tests
+        public IDisposable RegisterHandler<TInteraction>(Action<TInteraction> handler)
+            where TInteraction : Interaction
+        {
+            return RegisterHandler<TInteraction>(interaction => {
+                handler(interaction);
+                return Observable.Return(Unit.Default);
+            });
+        }
+
+        public IDisposable RegisterHandler<TInteraction>(Func<TInteraction, Task> handler)
+            where TInteraction : Interaction
+        {
+            return RegisterHandler<TInteraction>(interaction => handler(interaction).ToObservable());
+        }
+
+        public IDisposable RegisterHandler<TInteraction>(Func<TInteraction, IObservable<Unit>> handler)
+            where TInteraction : Interaction
+        {
+            var selectiveHandler = (Func<Interaction, IObservable<Unit>>)(interaction => {
+                var castInteraction = interaction as TInteraction;
+
+                if (castInteraction == null) {
+                    return Observable.Return(Unit.Default);
+                }
+
+                return handler(castInteraction);
+            });
+
+            handlers.Add(selectiveHandler);
+            return Disposable.Create(() => handlers.Remove(selectiveHandler));
+        }
+
+        public IObservable<TResult> Raise<TResult>(Interaction<TResult> interaction)
+        {
+            return Enumerable
+                .Reverse(this.handlers)
+                .ToArray()
+                .ToObservable()
+                .Select(handler => Observable.Defer(() => handler(interaction)))
+                .Concat()
+                .TakeWhile(_ => !interaction.IsHandled)
+                .IgnoreElements()
+                .Select(_ => default(TResult))
+                .Concat(Observable.Defer(() => interaction.IsHandled ? Observable.Return(interaction.GetResult()) : Observable.Throw<TResult>(new UnhandledInteractionException(interaction))));
+        }
+    }
+
+    // an interaction source that cares about the interaction type. NOTE: does NOT extend InteractionSource on purpose
+    public class InteractionSource<TInteraction, TResult>
+        where TInteraction : Interaction<TResult>
+    {
+        private readonly IList<Func<TInteraction, IObservable<Unit>>> handlers;
+
+        public InteractionSource()
+        {
+            this.handlers = new List<Func<TInteraction, IObservable<Unit>>>();
+        }
+
+        // normally only useful from unit tests
+        public IDisposable RegisterHandler(Action<TInteraction> handler)
+        {
+            return RegisterHandler(interaction => {
+                handler(interaction);
+                return Observable.Return(Unit.Default);
+            });
+        }
+
+        public IDisposable RegisterHandler(Func<TInteraction, Task> handler)
+        {
+            return RegisterHandler(interaction => handler(interaction).ToObservable());
+        }
+
+        public IDisposable RegisterHandler(Func<TInteraction, IObservable<Unit>> handler)
+        {
+            handlers.Add(handler);
+            return Disposable.Create(() => handlers.Remove(handler));
+        }
+
+        public IObservable<TResult> Raise(TInteraction interaction)
+        {
+            return Enumerable
+                .Reverse(this.handlers)
+                .ToArray()
+                .ToObservable()
+                .Select(handler => Observable.Defer(() => handler(interaction)))
+                .Concat()
+                .TakeWhile(_ => !interaction.IsHandled)
+                .IgnoreElements()
+                .Select(_ => default(TResult))
+                .Concat(Observable.Defer(() => interaction.IsHandled ? Observable.Return(interaction.GetResult()) : Observable.Throw<TResult>(new UnhandledInteractionException(interaction))));
+        }
+    }
+
+    public class UnhandledInteractionException : Exception
+    {
+        private readonly Interaction interaction;
+
+        public UnhandledInteractionException(Interaction interaction)
+        {
+            this.interaction = interaction;
+        }
+
+        public Interaction Interaction
+        {
+            get { return this.interaction; }
+        }
+    }
+
+
+
+    /*
     /// <summary>
-    /// Represents an interaction with the user.
+    /// Represents an interaction between a view model and some external component, often the user.
     /// </summary>
     /// <remarks>
     /// <para>
-    /// User interactions are used when view models need the user to answer some question before they can continue their work.
+    /// interactions are used when view models need an answer to some question before they can continue their work.
     /// For example, prior to deleting a file the user may be required to acquiesce. Naturally, this question needs to be
     /// answered in an asynchronous fashion, so that no blocking occurs while the view model waits for an answer.
     /// </para>
     /// <para>
-    /// User interactions may be either local or global. Local interactions are typically exposed as properties on a view model.
+    /// Interactions may be either local or global. Local interactions are typically exposed as properties on a view model.
     /// When the view model needs an answer to a question, it creates a new instance of the interaction and assigns it to the
     /// property. The corresponding view monitors that property for changes and, when a change is detected, prompts the user for
     /// their answer. When the user responds, the answer is pushed to the result of the user interaction, at which point the
@@ -46,13 +227,13 @@ namespace ReactiveUI
     /// recommended wherever possible.
     /// </para>
     /// </remarks>
-    public abstract class UserInteraction : ReactiveObject
+    public abstract class Interaction : ReactiveObject
     {
-        private static readonly IList<Func<UserInteraction, IObservable<Unit>>> handlers = new List<Func<UserInteraction, IObservable<Unit>>>();
+        private static readonly IList<Func<Interaction, IObservable<Unit>>> handlers = new List<Func<Interaction, IObservable<Unit>>>();
         private readonly AsyncSubject<object> result;
         private int resultSet;
 
-        protected UserInteraction()
+        protected Interaction()
         {
             this.result = new AsyncSubject<object>();
         }
@@ -70,14 +251,12 @@ namespace ReactiveUI
         /// A disposable instance that, when disposed, will unregister the global handler.
         /// </returns>
         public static IDisposable RegisterGlobalHandler<TInteraction>(Func<TInteraction, IObservable<Unit>> handler)
-            where TInteraction : UserInteraction
+            where TInteraction : Interaction
         {
-            var selectiveHandler = (Func<UserInteraction, IObservable<Unit>>)(interaction =>
-            {
+            var selectiveHandler = (Func<Interaction, IObservable<Unit>>)(interaction => {
                 var castInteraction = interaction as TInteraction;
 
-                if (castInteraction == null)
-                {
+                if (castInteraction == null) {
                     return Observable.Return(Unit.Default);
                 }
 
@@ -101,7 +280,7 @@ namespace ReactiveUI
         /// A disposable instance that, when disposed, will unregister the global handler.
         /// </returns>
         public static IDisposable RegisterGlobalHandler<TInteraction>(Func<TInteraction, Task> handler)
-            where TInteraction : UserInteraction
+            where TInteraction : Interaction
         {
             return RegisterGlobalHandler<TInteraction>(interaction => handler(interaction).ToObservable());
         }
@@ -122,10 +301,9 @@ namespace ReactiveUI
         /// A disposable instance that, when disposed, will unregister the global handler.
         /// </returns>
         public static IDisposable RegisterGlobalHandler<TInteraction>(Action<TInteraction> handler)
-            where TInteraction : UserInteraction
+            where TInteraction : Interaction
         {
-            return RegisterGlobalHandler<TInteraction>(interaction =>
-            {
+            return RegisterGlobalHandler<TInteraction>(interaction => {
                 handler(interaction);
                 return Observable.Return(Unit.Default);
             });
@@ -147,7 +325,7 @@ namespace ReactiveUI
         /// Raises the interaction locally.
         /// </summary>
         /// <remarks>
-        /// The result is untyped. Strong typing is introduced by the <see cref="UserInteraction{TResult}"/> class.
+        /// The result is untyped. Strong typing is introduced by the <see cref="Interaction{TResult}"/> class.
         /// </remarks>
         /// <returns>
         /// An observable that immediately ticks the result if it is already known, otherwise later when it is.
@@ -161,7 +339,7 @@ namespace ReactiveUI
         /// Raises the interaction globally.
         /// </summary>
         /// <remarks>
-        /// The result is untyped. Strong typing is introduced by the <see cref="UserInteraction{TResult}"/> class.
+        /// The result is untyped. Strong typing is introduced by the <see cref="Interaction{TResult}"/> class.
         /// </remarks>
         /// <returns>
         /// The result obtained from global interaction handlers.
@@ -170,22 +348,19 @@ namespace ReactiveUI
         {
             return Observable
                 .StartAsync(
-                    async () =>
-                    {
-                        var handlers = UserInteraction.handlers.Reverse().ToArray();
+                    (async () => {
+                        var handlers = Enumerable.Reverse(Interaction.handlers).ToArray();
 
-                        foreach (var handler in handlers)
-                        {
+                        foreach (var handler in handlers) {
                             await handler(this);
 
-                            if (this.IsHandled)
-                            {
+                            if (this.IsHandled) {
                                 return this.result.GetResult();
                             }
                         }
 
-                        throw new UnhandledUserInteractionException(this);
-                    });
+                        throw new UnhandledInteractionException(this);
+                    }));
         }
 
         /// <summary>
@@ -193,7 +368,7 @@ namespace ReactiveUI
         /// </summary>
         /// <remarks>
         /// <para>
-        /// The result is untyped. Strong typing is introduced by the <see cref="UserInteraction{TResult}"/> class.
+        /// The result is untyped. Strong typing is introduced by the <see cref="Interaction{TResult}"/> class.
         /// </para>
         /// <para>
         /// This method can only be called once. Any subsequent attempt to supply a result will cause an exception to be thrown.
@@ -204,8 +379,7 @@ namespace ReactiveUI
         /// </param>
         protected void SetResult(object result)
         {
-            if (Interlocked.CompareExchange(ref this.resultSet, 1, 0) != 0)
-            {
+            if (Interlocked.CompareExchange(ref this.resultSet, 1, 0) != 0) {
                 throw new InvalidOperationException("Result has already been set.");
             }
 
@@ -215,7 +389,7 @@ namespace ReactiveUI
     }
 
     /// <summary>
-    /// Implements a <see cref="UserInteraction"/> with a specific result type.
+    /// Implements a <see cref="Interaction"/> with a specific result type.
     /// </summary>
     /// <remarks>
     /// <para>
@@ -227,7 +401,7 @@ namespace ReactiveUI
     /// <typeparam name="TResult">
     /// The type of the interaction's result.
     /// </typeparam>
-    public class UserInteraction<TResult> : UserInteraction
+    public class Interaction<TResult> : Interaction
     {
         /// <summary>
         /// Raises the interaction locally.
@@ -281,16 +455,16 @@ namespace ReactiveUI
     }
 
     /// <summary>
-    /// An implementation of <see cref="UserInteraction{TResult}"/> that adds exception information.
+    /// An implementation of <see cref="Interaction{TResult}"/> that adds exception information.
     /// </summary>
     /// <typeparam name="TResult">
     /// The interaction result type.
     /// </typeparam>
-    public class UserErrorInteraction<TResult> : UserInteraction<TResult>
+    public class ErrorInteraction<TResult> : Interaction<TResult>
     {
         private readonly Exception error;
 
-        public UserErrorInteraction(Exception error)
+        public ErrorInteraction(Exception error)
         {
             this.error = error;
         }
@@ -301,18 +475,19 @@ namespace ReactiveUI
         }
     }
 
-    public class UnhandledUserInteractionException : Exception
+    public class UnhandledInteractionException : Exception
     {
-        private readonly UserInteraction userInteraction;
+        private readonly Interaction userInteraction;
 
-        public UnhandledUserInteractionException(UserInteraction userInteraction)
+        public UnhandledInteractionException(Interaction userInteraction)
         {
             this.userInteraction = userInteraction;
         }
 
-        public UserInteraction UserInteraction
+        public Interaction UserInteraction
         {
             get { return this.userInteraction; }
         }
     }
+    */
 }
