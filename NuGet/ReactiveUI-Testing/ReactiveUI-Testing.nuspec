@@ -24,7 +24,14 @@
       </group>
       <group targetFramework="uap10.0">
         <dependency id="reactiveui-core" version="[6.5.0]" />
+        <dependency id="Rx-Core" version="2.2.5" />
+        <dependency id="Rx-Interfaces" version="2.2.5" />
+        <dependency id="Rx-Linq" version="2.2.5" />
         <dependency id="Rx-Testing" version="2.2.5" />
+        <dependency id="System.Diagnostics.Debug" version="4.0.10" />
+        <dependency id="System.Runtime" version="4.0.20" />
+        <dependency id="System.Threading" version="4.0.10" />
+        <dependency id="System.Threading.Tasks" version="4.0.10" />
       </group>
       <group targetFramework="monoandroid">
         <dependency id="reactiveui-core" version="[6.5.0]" />
