@@ -19,6 +19,7 @@ bld/
 
 # Roslyn cache directories
 *.ide/
+.vs/
 
 # MSTest test Results
 [Tt]est[Rr]esult*/
@@ -135,11 +136,16 @@ packages/*
 ## uncomment the next line
 !packages/repositories.config
 
+
+
 # Enable "build/" folder in the NuGet Packages folder since
 # NuGet packages use it for MSBuild targets.
 # This line needs to be after the ignore of the build folder
 # (and the packages folder if the line above has been uncommented)
-!packages/build/
+#!packages/build/
+
+*.nuget.props
+*.nuget.targets
 
 # Windows Azure Build Output
 csx/
