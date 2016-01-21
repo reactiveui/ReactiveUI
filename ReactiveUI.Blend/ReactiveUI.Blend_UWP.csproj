@@ -42,6 +42,11 @@
     <DocumentationFile>bin\Release\uap10.0\ReactiveUI.Blend_UWP.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
+    <NuSpecFile Include="$(SolutionDir)NuGet\ReactiveUI-Blend\ReactiveUI-Blend.nuspec">
+      <Visible>False</Visible>
+    </NuSpecFile>
+  </ItemGroup>  
+  <ItemGroup>
     <!-- A reference to the entire .Net Framework and Windows SDK are automatically included -->
     <None Include="ReactiveUI.Blend_UWP.project.json" />
   </ItemGroup>

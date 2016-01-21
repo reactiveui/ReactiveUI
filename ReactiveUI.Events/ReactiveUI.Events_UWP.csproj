@@ -44,6 +44,11 @@
     <DocumentationFile>bin\Release\uap10.0\ReactiveUI.Events.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
+    <NuSpecFile Include="$(SolutionDir)NuGet\ReactiveUI-Events\ReactiveUI-Events.nuspec">
+      <Visible>False</Visible>
+    </NuSpecFile>
+  </ItemGroup>  
+  <ItemGroup>
     <Compile Include="..\CommonAssemblyInfo.cs">
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>

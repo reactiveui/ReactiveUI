@@ -9,7 +9,6 @@
     <licenseUrl>http://opensource.org/licenses/ms-pl.html</licenseUrl>
     <language>en-us</language>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-
     <dependencies>
       <group>
         <dependency id="reactiveui-core" version="[6.5.0]" />
@@ -28,7 +27,12 @@
       </group>
       <group targetFramework="uap10.0">
         <dependency id="reactiveui-core" version="[6.5.0]" />
-        <dependency id="Rx-Xaml" version="2.2.5" />
+        <dependency id="Microsoft.Xaml.Behaviors.Uwp.Managed" version="1.0.3" />
+        <dependency id="Rx-Core" version="2.2.5" />
+        <dependency id="Rx-Interfaces" version="2.2.5" />
+        <dependency id="Rx-Linq" version="2.2.5" />
+        <dependency id="System.Diagnostics.Debug" version="4.0.10" />
+        <dependency id="System.Runtime" version="4.0.20" />
       </group>
     </dependencies>
   </metadata>
