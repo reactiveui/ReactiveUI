@@ -42,6 +42,11 @@
     <DocumentationFile>bin\Release\UWP\uap10.0\ReactiveUI.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
+    <NuSpecFile Include="$(SolutionDir)NuGet\ReactiveUI-Core\ReactiveUI-Core.nuspec">
+      <Visible>False</Visible>
+    </NuSpecFile>
+  </ItemGroup>
+  <ItemGroup>
     <Compile Include="..\CommonAssemblyInfo.cs">
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
@@ -105,7 +110,7 @@
     <Compile Include="Xaml\ViewModelViewHost.cs" />
     <Compile Include="Xaml\WinRTAppDataDriver.cs" />
     <Compile Include="Xaml\WinRTAutoSuspendApplication.cs" />
-    <Content Include="Properties\ReactiveUI_UWP.rd.xml" />
+    <Content Include="Properties\ReactiveUI.rd.xml" />
     <Content Include="VariadicTemplates.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>VariadicTemplates.cs</LastGenOutput>
