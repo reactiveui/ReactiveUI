@@ -23,6 +23,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\UWP\</OutputPath>
+    <IntermediateOutputPath>obj\Debug\UWP</IntermediateOutputPath>
     <DefineConstants>TRACE;DEBUG;NETFX_CORE;XAML;WINDOWS_UWP</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -32,6 +33,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\UWP\</OutputPath>
+    <IntermediateOutputPath>obj\Release\UWP</IntermediateOutputPath>
     <DefineConstants>TRACE;NETFX_CORE;XAML;WINDOWS_UWP</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
