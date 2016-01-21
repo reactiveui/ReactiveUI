@@ -70,8 +70,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NuSpecs", "NuSpecs", "{938D
 	ProjectSection(SolutionItems) = preProject
 		NuGet\ReactiveUI-Blend\ReactiveUI-Blend.nuspec = NuGet\ReactiveUI-Blend\ReactiveUI-Blend.nuspec
 		NuGet\ReactiveUI-Core\ReactiveUI-Core.nuspec = NuGet\ReactiveUI-Core\ReactiveUI-Core.nuspec
+		NuGet\ReactiveUI-Events\ReactiveUI-Events.nuspec = NuGet\ReactiveUI-Events\ReactiveUI-Events.nuspec
 		NuGet\ReactiveUI\ReactiveUI-Mobile.nuspec = NuGet\ReactiveUI\ReactiveUI-Mobile.nuspec
 		NuGet\ReactiveUI\ReactiveUI-Platforms.nuspec = NuGet\ReactiveUI\ReactiveUI-Platforms.nuspec
+		NuGet\ReactiveUI-Testing\ReactiveUI-Testing.nuspec = NuGet\ReactiveUI-Testing\ReactiveUI-Testing.nuspec
 		NuGet\ReactiveUI\ReactiveUI.nuspec = NuGet\ReactiveUI\ReactiveUI.nuspec
 	EndProjectSection
 EndProject
