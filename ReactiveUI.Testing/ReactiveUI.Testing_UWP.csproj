@@ -44,6 +44,11 @@
     <DocumentationFile>bin\Release\uap10.0\ReactiveUI.Testing.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
+    <NuSpecFile Include="$(SolutionDir)NuGet\ReactiveUI-Testing\ReactiveUI-Testing.nuspec">
+      <Visible>False</Visible>
+    </NuSpecFile>
+  </ItemGroup>
+  <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestUtils.cs" />
     <Content Include="Properties\ReactiveUI.Testing.rd.xml" />
