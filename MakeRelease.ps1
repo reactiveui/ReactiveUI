@@ -1,7 +1,7 @@
 ﻿Param([string]$version = $null)
 
 $Archs = {"Portable-Net45+WinRT45+WP8+MonoAndroid10+MonoTouch10", "Portable-Net45+Win8+WP8+WPA81", "Net45", "WP8",
-    "WP81", "Win8", "Win81", "Mono", "Monoandroid", "Monotouch", "Monomac", "Portable-Win81+Wpa81", "WPA81",
+    "WP81", "Win8", "Win81", "uap10.0", "Mono", "Monoandroid", "Monotouch", "Monomac", "Portable-Win81+Wpa81", "WPA81",
     "Xamarin.iOS10", "Xamarin.Mac10"}
 
 $Projects = {
@@ -10,12 +10,24 @@ $Projects = {
     "ReactiveUI.XamForms"
 }
 
-$MSBuildLocation = "C:\Program Files (x86)\MSBuild\12.0\bin"
+$MSBuildLocation = "C:\Program Files (x86)\MSBuild\14.0\bin"
 
 $SlnFileExists = Test-Path ".\ReactiveUI_VSAll.sln"
 if ($SlnFileExists -eq $False) {
     echo "*** ERROR: Run this in the project root ***"
     exit -1
+}
+
+
+$url = "https://dist.nuget.org/win-x86-commandline/latest/nuget.exe"
+$nugetPath = ".\.nuget.exe"
+
+$nugetExists = Test-Path $nugetPath
+
+if($nugetExists -eq $False) {
+"Downloading [$url]`nSaving at [$path]" 
+    $client = new-object System.Net.WebClient 
+    $client.DownloadFile($url, $path)     
 }
 
 & ".\.nuget\NuGet.exe" restore .\ReactiveUI.sln
@@ -35,12 +47,6 @@ foreach-object $Archs | %{
     $currentArch = $_
     
     foreach-object $Projects | %{cp -r -fo ".\$_\bin\Release\$currentArch\*" ".\Release\$currentArch"}
-
-    # WinRT projects need to have the Themes folder in a special sub folder named as the project name
-    foreach-object $Projects | %{cp -r -fo ".\$_\bin\Release\$currentArch\Themes" ".\Release\$currentArch\$_\Themes"}
-
-    # WinRT projects need this .xr.xml file in a special sub folder named as the project name
-    foreach-object $Projects | %{cp -r -fo ".\$_\bin\Release\$currentArch\$_.xr.xml" ".\Release\$currentArch\$_"}
     
     #ls -r | ?{$_.FullName.Contains("bin\Release\$currentArch") -and $_.Length} | %{echo cp $_.FullName ".\Release\$currentArch"}
 }
