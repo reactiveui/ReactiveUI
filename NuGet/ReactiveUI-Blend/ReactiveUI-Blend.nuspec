@@ -26,6 +26,10 @@
         <dependency id="reactiveui-core" version="[6.5.0]" />
         <dependency id="Rx-Xaml" version="2.2.5" />
       </group>
+      <group targetFramework="uap10.0">
+        <dependency id="reactiveui-core" version="[6.5.0]" />
+        <dependency id="Rx-Xaml" version="2.2.5" />
+      </group>
     </dependencies>
   </metadata>
 </package>
