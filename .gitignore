@@ -146,6 +146,7 @@ packages/*
 
 *.nuget.props
 *.nuget.targets
+*.lock.json
 
 # Windows Azure Build Output
 csx/
