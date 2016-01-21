@@ -29,6 +29,7 @@
     <DefineConstants>TRACE;DEBUG;NETFX_CORE;XAML</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <GenerateLibraryLayout>true</GenerateLibraryLayout>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -39,6 +40,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>bin\Release\Portable-Win81+Wpa81\ReactiveUI.xml</DocumentationFile>
+    <GenerateLibraryLayout>true</GenerateLibraryLayout>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="ExpressionMixins.cs" />
@@ -102,10 +104,10 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>VariadicTemplates.tt</DependentUpon>
     </Compile>
-    <Content Include="VariadicTemplates.tt">
+    <None Include="VariadicTemplates.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>VariadicTemplates.cs</LastGenOutput>
-    </Content>
+    </None>
     <Compile Include="WaitForDispatcherScheduler.cs" />
     <Compile Include="LoggingMixins.cs" />
     <Compile Include="IReactiveObject.cs" />
