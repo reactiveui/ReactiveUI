@@ -10,8 +10,8 @@
     <language>en-us</language>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <dependencies>
-      <dependency id="Rx-Main" version="2.2.5" />
       <group targetFramework="uap10.0">
+        <dependency id="Rx-Main" version="2.2.5" />
         <dependency id="Rx-Interfaces" version="2.2.5" />
         <dependency id="Rx-Linq" version="2.2.5" />
         <dependency id="System.ObjectModel" version="4.0.10" />
