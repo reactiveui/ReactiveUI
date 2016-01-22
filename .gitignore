@@ -211,6 +211,8 @@ ReactiveUI.Events/EventBuilder.exe.mdb
 ReactiveUI.Events/Mono.*
 ReactiveUI.Events/Nustache.*
 
+nuget.exe
+
 ext/monodroid/18
 
 
