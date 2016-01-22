@@ -1,13 +1,31 @@
 ﻿Param([string]$version = $null)
 
-$Archs = {"Portable-Net45+WinRT45+WP8+MonoAndroid10+MonoTouch10", "Portable-Net45+Win8+WP8+WPA81", "Net45", "WP8",
-    "WP81", "Win8", "Win81", "uap10.0", "Mono", "Monoandroid", "Monotouch", "Monomac", "Portable-Win81+Wpa81", "WPA81",
-    "Xamarin.iOS10", "Xamarin.Mac10"}
+$Archs = {
+    "Mono",
+    "Monoandroid",
+    "Monomac",
+    "Monotouch",
+    "Net45",
+    "Portable-Net45+Win8+WP8+WPA81",
+    "Portable-Net45+WinRT45+WP8+MonoAndroid10+MonoTouch10",
+    "Portable-Win81+Wpa81",
+    "uap10.0",
+    "WPA81",
+    "WP8",
+    "WP81"
+    "Xamarin.iOS10",
+    "Xamarin.Mac10"
+}
 
 $Projects = {
-    "ReactiveUI", "ReactiveUI.Testing", "ReactiveUI.Blend", "ReactiveUI.Winforms", 
-    "RxUIViewModelGenerator", "ReactiveUI.Events", "ReactiveUI.AndroidSupport",
-    "ReactiveUI.XamForms"
+    "ReactiveUI",
+    "ReactiveUI.AndroidSupport",
+    "ReactiveUI.Blend",
+    "ReactiveUI.Events",
+    "ReactiveUI.Testing",
+    "ReactiveUI.Winforms",
+    "ReactiveUI.XamForms", 
+    "RxUIViewModelGenerator"
 }
 
 $MSBuildLocation = "C:\Program Files (x86)\MSBuild\14.0\bin"
@@ -20,18 +38,18 @@ if ($SlnFileExists -eq $False) {
 
 
 $url = "https://dist.nuget.org/win-x86-commandline/latest/nuget.exe"
-$nugetPath = ".\.nuget.exe"
+$nugetExe = "$(pwd)\nuget.exe"
 
-$nugetExists = Test-Path $nugetPath
+$nugetExists = Test-Path $nugetExe
 
 if($nugetExists -eq $False) {
-"Downloading [$url]`nSaving at [$path]" 
+"NuGet: Downloading latest from [$url]`nSaving at [$nugetExe]" 
     $client = new-object System.Net.WebClient 
-    $client.DownloadFile($url, $path)     
+    $client.DownloadFile($url, $nugetExe)     
 }
 
-& ".\.nuget\NuGet.exe" restore .\ReactiveUI.sln
-& "$MSBuildLocation\MSBuild.exe" /t:Rebuild /p:Configuration=Release /p:Platform="Any CPU" /maxcpucount:1 .\ReactiveUI.sln
+& $nugetExe restore .\ReactiveUI.sln
+& "$MSBuildLocation\MSBuild.exe" /v:m /t:Rebuild /p:Configuration=Release /p:Platform="Any CPU" /maxcpucount:1 .\ReactiveUI.sln
 
 ###
 ### Build the Release directory
@@ -41,19 +59,19 @@ if (Test-Path .\Release) {
     rmdir -r -force .\Release
 }
 
-foreach-object $Archs | %{mkdir -Path ".\Release\$_"}
+foreach-object $Archs | %{mkdir -Path ".\Release\$_" | out-null}
 
 foreach-object $Archs | %{
     $currentArch = $_
-    
+     
     foreach-object $Projects | %{cp -r -fo ".\$_\bin\Release\$currentArch\*" ".\Release\$currentArch"}
-    
+     
     #ls -r | ?{$_.FullName.Contains("bin\Release\$currentArch") -and $_.Length} | %{echo cp $_.FullName ".\Release\$currentArch"}
 }
-
-ls -r .\Release | ?{$_.FullName.Contains("Clousot")} | %{rm $_.FullName}
-
-
+ 
+get-childitem -r .\Release | ?{$_.FullName.Contains("Clousot")} | %{rm $_.FullName}
+ 
+ 
 ###
 ### Build NuGet Packages
 ###
@@ -89,9 +107,9 @@ if($version) {
 
 cp -r .\NuGet .\NuGet-Release
 
-$libDirs = ls -r .\NuGet-Release | ?{$_.Name -eq "lib"}
-$srcDirs = ls -r .\NuGet-Release | ?{$_.Name -eq "src"} | %{ls $_.FullName}
-$toolsDirs = ls -r .\NuGet-Release | ?{$_.Name -eq "tools"}
+$libDirs = get-childitem -r .\NuGet-Release | ?{$_.Name -eq "lib"}
+$srcDirs = get-childitem -r .\NuGet-Release | ?{$_.Name -eq "src"} | %{get-childitem $_.FullName}
+$toolsDirs = get-childitem -r .\NuGet-Release | ?{$_.Name -eq "tools"}
 $nugetReleaseDir = Resolve-Path ".\NuGet-Release"
 
 # copy binaries
@@ -104,7 +122,7 @@ foreach ($dir in $libDirs) {
 foreach ($dir in $toolsDirs) {
     echo "foo"
     echo $dir.FullName
-    $files = ls $dir.FullName
+    $files = get-childitem $dir.FullName
 
     foreach ($file in $files) {
         echo "bar" 
@@ -122,13 +140,15 @@ foreach ($dir in $srcDirs) {
     robocopy ".\$projFolderName\" "$($dir.FullName)" *.cs /S
 }
 
-$stubs = ls -r -file .\NuGet-Release | ?{$_.Length -eq 0} | ?{!$_.FullName.Contains("src")}
+$stubs = get-childitem -r -file .\NuGet-Release | ?{$_.Length -eq 0} | ?{!$_.FullName.Contains("src")}
 if ($stubs) {
     echo "*** BUILD FAILED ***"
     echo ""
     echo "*** There are still stubs in the NuGet output, did you fully build? ***"
+    echo $stubs
     #exit 1
 }
 
-$specFiles = ls -r .\NuGet-Release | ?{$_.Name.EndsWith(".nuspec")}
-$specFiles | %{.\.nuget\NuGet.exe pack -symbols $_.FullName}
+mkdir -path artifacts -ea silentlycontinue | out-null
+$specFiles = get-childitem -r .\NuGet-Release | ?{$_.Name.EndsWith(".nuspec")}
+$specFiles | %{& $nugetExe pack -symbols $_.FullName -OutputDirectory artifacts}
