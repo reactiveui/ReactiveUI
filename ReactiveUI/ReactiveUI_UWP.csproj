@@ -23,7 +23,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\uap10.0\</OutputPath>
-    <IntermediateOutputPath>obj\Debug\UWP</IntermediateOutputPath>
+    <IntermediateOutputPath>obj\Debug\uap10.0</IntermediateOutputPath>
     <DefineConstants>TRACE;DEBUG;NETFX_CORE;XAML;WINDOWS_UWP</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -33,13 +33,13 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\UWP\uap10.0\</OutputPath>
-    <IntermediateOutputPath>obj\Release\UWP</IntermediateOutputPath>
+    <OutputPath>bin\Release\uap10.0\</OutputPath>
+    <IntermediateOutputPath>obj\Release\uap10.0</IntermediateOutputPath>
     <DefineConstants>TRACE;NETFX_CORE;XAML;WINDOWS_UWP</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <GenerateLibraryLayout>true</GenerateLibraryLayout>
-    <DocumentationFile>bin\Release\UWP\uap10.0\ReactiveUI.XML</DocumentationFile>
+    <DocumentationFile>bin\Release\uap10.0\ReactiveUI.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <NuSpecFile Include="$(SolutionDir)NuGet\ReactiveUI-Core\ReactiveUI-Core.nuspec">
