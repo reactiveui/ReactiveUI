@@ -27,7 +27,7 @@ namespace ReactiveUI
     /// and create that.
     /// </para>
     /// </remarks>
-    public abstract class Interaction
+    public abstract class Interaction : ReactiveObject
     {
         private readonly AsyncSubject<object> result;
         private int resultSet;
