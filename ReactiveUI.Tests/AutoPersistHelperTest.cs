@@ -22,7 +22,7 @@ namespace ReactiveUI.Tests
             bool shouldDie = true;
             try {
                 fixture.AutoPersist(x => Observable.Return(Unit.Default));
-            } catch (Exception ex) {
+            } catch (Exception) {
                 shouldDie = false;
             }
 
