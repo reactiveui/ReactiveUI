@@ -30,7 +30,7 @@ namespace ReactiveUI
     }
 }
 
-#if PORTABLE || WINRT
+#if PORTABLE || NETFX_CORE
 namespace ReactiveUI
 {
     [AttributeUsage(AttributeTargets.All, Inherited = false, AllowMultiple = true)]

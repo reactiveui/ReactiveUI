@@ -26,19 +26,21 @@
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\Portable-Win81+WPA81\</OutputPath>
     <IntermediateOutputPath>obj\Debug\Portable-Win81+WPA81\</IntermediateOutputPath>
-    <DefineConstants>TRACE;DEBUG;WINRT</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;NETFX_CORE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <GenerateLibraryLayout>true</GenerateLibraryLayout>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\Portable-Win81+WPA81\</OutputPath>
     <IntermediateOutputPath>obj\Debug\Portable-Win81+WPA81\</IntermediateOutputPath>
-    <DefineConstants>TRACE;WINRT</DefineConstants>
+    <DefineConstants>TRACE;NETFX_CORE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>bin\Release\Portable-Win81+WPA81\ReactiveUI.Blend.xml</DocumentationFile>
+    <GenerateLibraryLayout>true</GenerateLibraryLayout>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Behavior.cs" />
