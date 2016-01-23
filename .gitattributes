@@ -1,22 +1,45 @@
-# Auto detect text files and perform LF normalization
+﻿# Catch all for anything we forgot. Add rules if you get CRLF to LF warnings.
 * text=auto
 
-# Custom for Visual Studio
-*.cs     diff=csharp
-*.sln    merge=union
-*.csproj merge=union
-*.vbproj merge=union
-*.fsproj merge=union
-*.dbproj merge=union
+# Text files that should be normalized to LF in odb.
+*.cs     text eol=lf diff=csharp
+*.xaml   text
+*.config text
+*.c      text
+*.h      text
+*.cpp    text
+*.hpp    text
 
-# Standard to msysgit
-*.doc	 diff=astextplain
-*.DOC	 diff=astextplain
-*.docx diff=astextplain
-*.DOCX diff=astextplain
-*.dot  diff=astextplain
-*.DOT  diff=astextplain
-*.pdf  diff=astextplain
-*.PDF	 diff=astextplain
-*.rtf	 diff=astextplain
-*.RTF	 diff=astextplain
+*.sln     text
+*.csproj  text
+*.vcxproj text
+
+*.md       text
+*.tt       text
+*.sh       text
+*.ps1      text
+*.cmd      text
+*.bat      text
+*.markdown text
+*.msbuild  text
+
+
+# Binary files that should not be normalized or diffed
+*.png    binary
+*.jpg    binary
+*.gif    binary
+*.ico    binary
+*.rc     binary
+
+*.pfx    binary
+*.snk    binary
+*.dll    binary
+*.exe    binary
+*.lib    binary
+*.exp    binary
+*.pdb    binary
+*.sdf    binary
+*.7z     binary
+
+# Generated file should just use CRLF, it's fiiine
+SolutionInfo.cs text eol=crlf diff=csharp
