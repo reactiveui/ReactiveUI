@@ -41,8 +41,10 @@ TestResult.xml
 dlldata.c
 
 # DNX
-project.lock.json
+*.lock.json
 artifacts/
+*.nuget.props
+*.nuget.targets
 
 *_i.c
 *_p.c
@@ -232,3 +234,6 @@ _Pvt_Extensions
 
 # Tools
 tools/
+
+ReactiveUI.Events/Events.cs
+ReactiveUI.Events/Events_*.cs
