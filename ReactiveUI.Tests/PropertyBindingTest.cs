@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Reactive;
-using System.Text;
 using Xunit;
 
 namespace ReactiveUI.Tests
@@ -69,6 +66,31 @@ namespace ReactiveUI.Tests
 
     public class PropertyBindingTest
     {
+        [Fact]
+        public void TwoWayBindWithFuncConvertersSmokeTest()
+        {
+            var vm = new PropertyBindViewModel();
+            var view = new PropertyBindView() {ViewModel = vm};
+            var fixture = new PropertyBinderImplementation();
+
+            vm.JustADecimal = 123.45m;
+            Assert.NotEqual(vm.JustADecimal.ToString(), view.SomeTextBox.Text);
+
+            var disp = fixture.Bind(vm, view, x => x.JustADecimal, x => x.SomeTextBox.Text, (IObservable<Unit>)null, d => d.ToString(), Decimal.Parse);
+
+            Assert.Equal(vm.JustADecimal.ToString(), view.SomeTextBox.Text);
+            Assert.Equal(123.45m, vm.JustADecimal);
+
+            view.SomeTextBox.Text = "567.89";
+            Assert.Equal(567.89m, vm.JustADecimal);
+
+            disp.Dispose();
+            vm.JustADecimal = 0;
+
+            Assert.Equal(0, vm.JustADecimal);
+            Assert.Equal("567.89", view.SomeTextBox.Text);
+        }
+
         [Fact]
         public void TwoWayBindSmokeTest()
         {
