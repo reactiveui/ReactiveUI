@@ -17,7 +17,6 @@ namespace ReactiveUI.Winforms
         RoutingState _Router;
         Control defaultContent;
         IObservable<string> viewContractObservable;
-        object viewModel;
 
         public RoutedControlHost()
         {
