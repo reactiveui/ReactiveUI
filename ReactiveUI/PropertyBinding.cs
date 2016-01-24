@@ -675,6 +675,14 @@ namespace ReactiveUI
             where TViewModel : class
             where TView : IViewFor
         {
+            if (vmToViewConverter == null) {
+                throw new ArgumentNullException(nameof(vmToViewConverter));
+            }
+
+            if (viewToVmConverter == null) {
+                throw new ArgumentNullException(nameof(viewToVmConverter));
+            }
+
             OutFunc<TVMProp, TVProp> vmToViewFunc = (TVMProp vmValue, out TVProp vValue) => {
                 vValue = vmToViewConverter(vmValue);
                 return true;

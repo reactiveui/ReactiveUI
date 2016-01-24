@@ -389,5 +389,27 @@ namespace ReactiveUI.Tests
             Assert.True(view.FakeItemsControl.ItemsSource.OfType<string>().Count() > 1);
         }
 #endif
+
+        [Fact]
+        public void BindExpectsConverterFuncsToNotBeNull()
+        {
+            var vm = new PropertyBindViewModel();
+            var view = new PropertyBindView() {ViewModel = vm};
+            var fixture = new PropertyBinderImplementation();
+
+            Func<string, string> nullFunc = null;
+
+            Assert.Throws<ArgumentNullException>(() => fixture.Bind(vm, view, x => x.Property1, x => x.SomeTextBox.Text, (IObservable<Unit>)null, nullFunc, s => s));
+            Assert.Throws<ArgumentNullException>(() => fixture.Bind(vm, view, x => x.Property1, x => x.SomeTextBox.Text, (IObservable<Unit>)null, s => s, nullFunc));
+        }
+
+        [Fact]
+        public void BindWithFuncShouldWorkAsExtensionMethodSmokeTest()
+        {
+            var vm = new PropertyBindViewModel();
+            var view = new PropertyBindView() {ViewModel = vm};
+
+            view.Bind(vm, x => x.JustADecimal, x => x.SomeTextBox.Text, d => d.ToString(), Decimal.Parse);
+        }
     }
 }
