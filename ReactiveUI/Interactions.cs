@@ -177,20 +177,23 @@ namespace ReactiveUI
     /// handlers are registered via the various <see cref="RegisterHandler"/> methods.
     /// </para>
     /// <para>
-    /// Handlers are invoked in reverse order of registration. That is, handlers registered later are
-    /// given the opportunity to handle interactions before handlers that were registered earlier. This
+    /// By default, handlers are invoked in reverse order of registration. That is, handlers registered later
+    /// are given the opportunity to handle interactions before handlers that were registered earlier. This
     /// chaining mechanism enables handlers to be registered temporarily in a specific context, such that
-    /// interactions can be handled in a different manner.
+    /// interactions can be handled in a different manner. Subclasses may modify this behavior by overriding
+    /// the <see cref="Raise"/> method.
     /// </para>
     /// </remarks>
     public class InteractionBroker<TInteraction>
         where TInteraction : Interaction
     {
         private readonly IList<Func<TInteraction, IObservable<Unit>>> handlers;
+        private readonly object sync;
 
         public InteractionBroker()
         {
             this.handlers = new List<Func<TInteraction, IObservable<Unit>>>();
+            this.sync = new object();
         }
 
         /// <summary>
@@ -265,8 +268,8 @@ namespace ReactiveUI
                 throw new ArgumentNullException("handler");
             }
 
-            handlers.Add(handler);
-            return Disposable.Create(() => handlers.Remove(handler));
+            this.AddHandler(handler);
+            return Disposable.Create(() => this.RemoveHandler(handler));
         }
 
         /// <summary>
@@ -372,8 +375,8 @@ namespace ReactiveUI
                 return handler(castInteraction);
             });
 
-            handlers.Add(selectiveHandler);
-            return Disposable.Create(() => handlers.Remove(selectiveHandler));
+            this.AddHandler(selectiveHandler);
+            return Disposable.Create(() => this.RemoveHandler(selectiveHandler));
         }
 
         /// <summary>
@@ -393,21 +396,48 @@ namespace ReactiveUI
         /// An observable that ticks the interaction's result, or an <see cref="UnhandledInteractionException"/>
         /// if no handler handles the interaction.
         /// </returns>
-        public IObservable<Unit> Raise(TInteraction interaction)
+        public virtual IObservable<Unit> Raise(TInteraction interaction)
         {
             if (interaction == null) {
                 throw new ArgumentNullException("interaction");
             }
 
-            return Enumerable
-                .Reverse(this.handlers)
-                .ToArray()
+            return this
+                .GetHandlers()
+                .Reverse()
                 .ToObservable()
                 .Select(handler => Observable.Defer(() => handler(interaction)))
                 .Concat()
                 .TakeWhile(_ => !interaction.IsHandled)
                 .IgnoreElements()
                 .Concat(Observable.Defer(() => interaction.IsHandled ? Observable.Return(Unit.Default) : Observable.Throw<Unit>(new UnhandledInteractionException(interaction))));
+        }
+
+        /// <summary>
+        /// Gets all registered handlers in order of their registration.
+        /// </summary>
+        /// <returns>
+        /// All registered handlers.
+        /// </returns>
+        protected Func<TInteraction, IObservable<Unit>>[] GetHandlers()
+        {
+            lock (this.sync) {
+                return this.handlers.ToArray();
+            }
+        }
+
+        private void AddHandler(Func<TInteraction, IObservable<Unit>> handler)
+        {
+            lock (this.sync) {
+                this.handlers.Add(handler);
+            }
+        }
+
+        private void RemoveHandler(Func<TInteraction, IObservable<Unit>> handler)
+        {
+            lock (this.sync) {
+                this.handlers.Remove(handler);
+            }
         }
     }
 
