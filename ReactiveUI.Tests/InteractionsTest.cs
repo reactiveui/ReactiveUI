@@ -11,116 +11,116 @@ namespace ReactiveUI.Tests
         [Fact]
         public void UnhandledInteractionsShouldCauseException()
         {
-            var broker = new InteractionBroker<Interaction<string>>();
-            Assert.Throws<UnhandledInteractionException>(() => broker.Raise(new Interaction<string>()).FirstAsync().Wait());
+            var interaction = new Interaction<InteractionData<string>>();
+            Assert.Throws<UnhandledInteractionException<InteractionData<string>>>(() => interaction.Handle(new InteractionData<string>()).FirstAsync().Wait());
 
-            broker.RegisterHandler(_ => { });
-            broker.RegisterHandler(_ => { });
-            Assert.Throws<UnhandledInteractionException>(() => broker.Raise(new Interaction<string>()).FirstAsync().Wait());
+            interaction.RegisterHandler(_ => { });
+            interaction.RegisterHandler(_ => { });
+            Assert.Throws<UnhandledInteractionException<InteractionData<string>>>(() => interaction.Handle(new InteractionData<string>()).FirstAsync().Wait());
         }
 
         [Fact]
         public void HandledInteractionsShouldNotCauseException()
         {
-            var broker = new InteractionBroker<Interaction<bool>>();
-            broker.RegisterHandler(i => i.SetResult(true));
+            var interaction = new Interaction<InteractionData<bool>>();
+            interaction.RegisterHandler(i => i.SetResult(true));
 
-            var interaction = new Interaction<bool>();
-            broker.Raise(interaction).FirstAsync().Wait();
-            Assert.True(interaction.GetResult());
+            var data = new InteractionData<bool>();
+            interaction.Handle(data).FirstAsync().Wait();
+            Assert.True(data.GetResult());
         }
 
         [Fact]
         public void HandlersCanBeRegisteredForSubclassesOfTheInteractionType()
         {
-            var broker = new InteractionBroker<Interaction<string>>();
-            broker.RegisterHandler(i => i.SetResult("A"));
-            broker.RegisterHandler<CustomInteraction>(i => i.SetResult("B"));
+            var interaction = new Interaction<InteractionData<string>>();
+            interaction.RegisterHandler(i => i.SetResult("A"));
+            interaction.RegisterHandler<CustomInteraction>(i => i.SetResult("B"));
 
-            var interaction1 = new Interaction<string>();
-            var interaction2 = new CustomInteraction(false);
+            var data1 = new InteractionData<string>();
+            var data2 = new CustomInteraction(false);
 
-            broker.Raise(interaction1).FirstAsync().Wait();
-            broker.Raise(interaction2).FirstAsync().Wait();
+            interaction.Handle(data1).FirstAsync().Wait();
+            interaction.Handle(data2).FirstAsync().Wait();
 
-            Assert.Equal("A", interaction1.GetResult());
-            Assert.Equal("B", interaction2.GetResult());
+            Assert.Equal("A", data1.GetResult());
+            Assert.Equal("B", data2.GetResult());
         }
 
         [Fact]
         public void NestedHandlersAreExecutedInReverseOrderOfSubscription()
         {
-            var broker = new InteractionBroker<Interaction<string>>();
-            Interaction<string> interaction;
+            var interaction = new Interaction<InteractionData<string>>();
+            InteractionData<string> data;
 
-            using (broker.RegisterHandler(x => x.SetResult("A"))) {
-                interaction = new Interaction<string>();
-                broker.Raise(interaction).FirstAsync().Wait();
-                Assert.Equal("A", interaction.GetResult());
+            using (interaction.RegisterHandler(x => x.SetResult("A"))) {
+                data = new InteractionData<string>();
+                interaction.Handle(data).FirstAsync().Wait();
+                Assert.Equal("A", data.GetResult());
 
-                using (broker.RegisterHandler(x => x.SetResult("B"))) {
-                    interaction = new Interaction<string>();
-                    broker.Raise(interaction).FirstAsync().Wait();
-                    Assert.Equal("B", interaction.GetResult());
+                using (interaction.RegisterHandler(x => x.SetResult("B"))) {
+                    data = new InteractionData<string>();
+                    interaction.Handle(data).FirstAsync().Wait();
+                    Assert.Equal("B", data.GetResult());
 
-                    using (broker.RegisterHandler(x => x.SetResult("C"))) {
-                        interaction = new Interaction<string>();
-                        broker.Raise(interaction).FirstAsync().Wait();
-                        Assert.Equal("C", interaction.GetResult());
+                    using (interaction.RegisterHandler(x => x.SetResult("C"))) {
+                        data = new InteractionData<string>();
+                        interaction.Handle(data).FirstAsync().Wait();
+                        Assert.Equal("C", data.GetResult());
                     }
 
-                    interaction = new Interaction<string>();
-                    broker.Raise(interaction).FirstAsync().Wait();
-                    Assert.Equal("B", interaction.GetResult());
+                    data = new InteractionData<string>();
+                    interaction.Handle(data).FirstAsync().Wait();
+                    Assert.Equal("B", data.GetResult());
                 }
 
-                interaction = new Interaction<string>();
-                broker.Raise(interaction).FirstAsync().Wait();
-                Assert.Equal("A", interaction.GetResult());
+                data = new InteractionData<string>();
+                interaction.Handle(data).FirstAsync().Wait();
+                Assert.Equal("A", data.GetResult());
             }
         }
 
         [Fact]
         public void HandlersCanOptNotToHandleTheInteraction()
         {
-            var broker = new InteractionBroker<CustomInteraction>();
+            var interaction = new Interaction<CustomInteraction>();
 
-            var handler1A = broker.RegisterHandler(x => x.SetResult("A"));
-            var handler1B = broker.RegisterHandler(
+            var handler1A = interaction.RegisterHandler(x => x.SetResult("A"));
+            var handler1B = interaction.RegisterHandler(
                 x => {
                     // only handle if the interaction is Super Important
                     if (x.IsSuperImportant) {
                         x.SetResult("B");
                     }
                 });
-            var handler1C = broker.RegisterHandler(x => x.SetResult("C"));
-            CustomInteraction interaction;
+            var handler1C = interaction.RegisterHandler(x => x.SetResult("C"));
+            CustomInteraction data;
 
             using (handler1A) {
                 using (handler1B) {
                     using (handler1C) {
-                        interaction = new CustomInteraction(false);
-                        broker.Raise(interaction).FirstAsync().Wait();
-                        Assert.Equal("C", interaction.GetResult());
-                        interaction = new CustomInteraction(true);
-                        broker.Raise(interaction).FirstAsync().Wait();
-                        Assert.Equal("C", interaction.GetResult());
+                        data = new CustomInteraction(false);
+                        interaction.Handle(data).FirstAsync().Wait();
+                        Assert.Equal("C", data.GetResult());
+                        data = new CustomInteraction(true);
+                        interaction.Handle(data).FirstAsync().Wait();
+                        Assert.Equal("C", data.GetResult());
                     }
 
-                    interaction = new CustomInteraction(false);
-                    broker.Raise(interaction).FirstAsync().Wait();
-                    Assert.Equal("A", interaction.GetResult());
-                    interaction = new CustomInteraction(true);
-                    broker.Raise(interaction).FirstAsync().Wait();
-                    Assert.Equal("B", interaction.GetResult());
+                    data = new CustomInteraction(false);
+                    interaction.Handle(data).FirstAsync().Wait();
+                    Assert.Equal("A", data.GetResult());
+                    data = new CustomInteraction(true);
+                    interaction.Handle(data).FirstAsync().Wait();
+                    Assert.Equal("B", data.GetResult());
                 }
 
-                interaction = new CustomInteraction(false);
-                broker.Raise(interaction).FirstAsync().Wait();
-                Assert.Equal("A", interaction.GetResult());
-                interaction = new CustomInteraction(true);
-                broker.Raise(interaction).FirstAsync().Wait();
-                Assert.Equal("A", interaction.GetResult());
+                data = new CustomInteraction(false);
+                interaction.Handle(data).FirstAsync().Wait();
+                Assert.Equal("A", data.GetResult());
+                data = new CustomInteraction(true);
+                interaction.Handle(data).FirstAsync().Wait();
+                Assert.Equal("A", data.GetResult());
             }
         }
 
@@ -128,16 +128,16 @@ namespace ReactiveUI.Tests
         public void HandlersCanContainAsynchronousCode()
         {
             var scheduler = new TestScheduler();
-            var broker = new InteractionBroker<Interaction<string>>();
+            var interaction = new Interaction<InteractionData<string>>();
 
             // even though handler B is "slow" (i.e. mimicks waiting for the user), it takes precedence over A, so we expect A to never even be called
             var handler1AWasCalled = false;
-            var handler1A = broker.RegisterHandler(
+            var handler1A = interaction.RegisterHandler(
                 x => {
                     x.SetResult("A");
                     handler1AWasCalled = true;
                 });
-            var handler1B = broker.RegisterHandler(
+            var handler1B = interaction.RegisterHandler(
                 x =>
                     Observable
                         .Return(Unit.Default)
@@ -146,20 +146,20 @@ namespace ReactiveUI.Tests
 
             using (handler1A)
             using (handler1B) {
-                var interaction = new Interaction<string>();
-                broker.Raise(interaction).Subscribe();
+                var data = new InteractionData<string>();
+                interaction.Handle(data).Subscribe();
 
-                Assert.Throws<InvalidOperationException>(() => interaction.GetResult());
+                Assert.Throws<InvalidOperationException>(() => data.GetResult());
                 scheduler.AdvanceBy(TimeSpan.FromSeconds(0.5).Ticks);
-                Assert.Throws<InvalidOperationException>(() => interaction.GetResult());
+                Assert.Throws<InvalidOperationException>(() => data.GetResult());
                 scheduler.AdvanceBy(TimeSpan.FromSeconds(0.6).Ticks);
-                Assert.Equal("B", interaction.GetResult());
+                Assert.Equal("B", data.GetResult());
             }
 
             Assert.False(handler1AWasCalled);
         }
 
-        private class CustomInteraction : Interaction<string>
+        private class CustomInteraction : InteractionData<string>
         {
             public CustomInteraction(bool isSuperImportant)
             {
