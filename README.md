@@ -14,7 +14,7 @@ We have our very own [Slack organization](https://reactivex.slack.com/) which co
 
 # Introduction
 
-ReactiveUI is inspired by [functional reactive programming](https://en.wikipedia.org/wiki/Functional_reactive_programming) and is the father of the [ReactiveCocoa](https://github.com/ReactiveCocoa/ReactiveCocoa) (Cocoa/Swift) framework. Rather than using mutable variables which are replaced and modified in-place, ReactiveUI offers "event streams", represented by the `IObserver` and `IObserverable` types, that send values over time.
+ReactiveUI is inspired by [functional reactive programming](https://en.wikipedia.org/wiki/Functional_reactive_programming) and is the father of the [ReactiveCocoa](https://github.com/ReactiveCocoa/ReactiveCocoa) (Cocoa/Swift) framework. Rather than using mutable variables which are replaced and modified in-place, ReactiveUI offers "event streams", represented by the `IObserver` and `IObservable` types, that send values over time.
 
 If you are new to these concepts then we highly recommend watching the following videos before progressing too far:
 
@@ -30,7 +30,7 @@ One of the most confusing aspects of the Reactive Extensions is that of ["hot" a
 
 	IObservable<string> Search(string query)
 
-It is impossible to tell whether subscribing to (observing) that `IObservable` will involve side effects. If it does involve side effects, it’s also impossible to tell whether each subscription has a side effect, or if only the first one does. Whilst this example is contrived, it demonstrates a real, pervasive problem that makes it harder  at first for new comers to understand Rx code at first glance. 
+It is impossible to tell whether subscribing to (observing) that `IObservable` will involve side effects. If it does involve side effects, it’s also impossible to tell whether each subscription has a side effect, or if only the first one does. Whilst this example is contrived, it demonstrates a real, pervasive problem that makes it harder  at first for newcomers to understand Rx code at first glance. 
 
 As such we also recommend [watching this video](https://www.youtube.com/watch?v=IDy21J75eyU), reading [our documentation](http://docs.reactiveui.net/en/fundamentals/reactive-extensions.html) and [playing with the marbles](http://rxmarbles.com/) to familiarize yourself with the fundamentals.
 
@@ -65,7 +65,7 @@ var canSearch = this.WhenAny(x => x.SearchQuery, x => !String.IsNullOrWhiteSpace
 // ReactiveCommand has built-in support for background operations and
 // guarantees that this block will only run exactly once at a time, and
 // that the CanExecute will auto-disable and that property IsExecuting will
-// be set according whilst it is running.
+// be set accordingly whilst it is running.
 Search = ReactiveCommand.CreateAsyncTask(canSearch, async _ => {
     return await searchService.Search(this.SearchQuery);
 });

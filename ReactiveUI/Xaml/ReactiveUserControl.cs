@@ -1,6 +1,6 @@
 ﻿namespace ReactiveUI
 {
-#if WINRT
+#if NETFX_CORE
     using Windows.UI.Xaml;
     using Windows.UI.Xaml.Controls;
 #else
@@ -13,7 +13,7 @@
     /// </summary>
     /// <remarks>
     /// <para>
-    /// This class is a WPF <see cref="UserControl"/> that is also reactive. That is, it implements <see cref="IViewFor{TViewModel}"/>.
+    /// This class is a <see cref="UserControl"/> that is also reactive. That is, it implements <see cref="IViewFor{TViewModel}"/>.
     /// You can extend this class to get an implementation of <see cref="IViewFor{TViewModel}"/> rather than writing one yourself.
     /// </para>
     /// <para>
@@ -40,6 +40,8 @@
         UserControl, IViewFor<TViewModel>
         where TViewModel : class
     {
+        public TViewModel BindingRoot => ViewModel;
+        
         public static readonly DependencyProperty ViewModelProperty =
             DependencyProperty.Register(
                 "ViewModel",

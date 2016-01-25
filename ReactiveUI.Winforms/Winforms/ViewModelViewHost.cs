@@ -15,7 +15,6 @@ namespace ReactiveUI.Winforms
     {
         readonly CompositeDisposable disposables = new CompositeDisposable();
 
-        Control currentView;
         Control defaultContent;
         IObservable<string> viewContractObservable;
         object viewModel;
@@ -54,7 +53,7 @@ namespace ReactiveUI.Winforms
             yield return viewChanges;
 
             yield return this.WhenAny(x => x.DefaultContent, x => x.Value).Subscribe(x => {
-                if (x != null && this.currentView == null) {
+                if (x != null) {
                     this.Content = DefaultContent;
                 }
             });

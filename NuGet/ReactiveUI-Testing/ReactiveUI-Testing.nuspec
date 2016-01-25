@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<package xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <metadata xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+<package xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
     <id>reactiveui-testing</id>
     <version>6.5.0</version>
     <description>A library to aid in writing unit tests for ReactiveUI projects</description>
@@ -21,6 +21,17 @@
       <group targetFramework="Win8">
         <dependency id="reactiveui-core" version="[6.5.0]" />
         <dependency id="Rx-Testing" version="2.2.5" />
+      </group>
+      <group targetFramework="uap10.0">
+        <dependency id="reactiveui-core" version="[6.5.0]" />
+        <dependency id="Rx-Core" version="2.2.5" />
+        <dependency id="Rx-Interfaces" version="2.2.5" />
+        <dependency id="Rx-Linq" version="2.2.5" />
+        <dependency id="Rx-Testing" version="2.2.5" />
+        <dependency id="System.Diagnostics.Debug" version="4.0.10" />
+        <dependency id="System.Runtime" version="4.0.20" />
+        <dependency id="System.Threading" version="4.0.10" />
+        <dependency id="System.Threading.Tasks" version="4.0.10" />
       </group>
       <group targetFramework="monoandroid">
         <dependency id="reactiveui-core" version="[6.5.0]" />
