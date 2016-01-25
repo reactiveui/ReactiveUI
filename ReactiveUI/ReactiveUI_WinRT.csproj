@@ -26,19 +26,21 @@
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\Portable-Win81+Wpa81\</OutputPath>
     <IntermediateOutputPath>obj\Debug\Portable-Win81+Wpa81</IntermediateOutputPath>
-    <DefineConstants>TRACE;DEBUG;WINRT; XAML</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;NETFX_CORE;XAML</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <GenerateLibraryLayout>true</GenerateLibraryLayout>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\Portable-Win81+Wpa81\</OutputPath>
     <IntermediateOutputPath>obj\Release\Portable-Win81+Wpa81</IntermediateOutputPath>
-    <DefineConstants>TRACE;WINRT; XAML</DefineConstants>
+    <DefineConstants>TRACE;NETFX_CORE;XAML</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>bin\Release\Portable-Win81+Wpa81\ReactiveUI.xml</DocumentationFile>
+    <GenerateLibraryLayout>true</GenerateLibraryLayout>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="ExpressionMixins.cs" />
@@ -52,7 +54,7 @@
     <Compile Include="Xaml\PlatformOperations.cs" />
     <Compile Include="Xaml\ReactiveUserControl.cs" />
     <Compile Include="Xaml\RoutedViewHost.cs" />
-    <Compile Include="Xaml\TransitioningContentControl.WinRT.cs" />
+    <Compile Include="Xaml\TransitioningContentControl.Empty.cs" />
     <Compile Include="Xaml\ViewModelViewHost.cs" />
     <Compile Include="Xaml\WinRTAppDataDriver.cs" />
     <Compile Include="Xaml\WinRTAutoSuspendApplication.cs" />
@@ -102,6 +104,10 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>VariadicTemplates.tt</DependentUpon>
     </Compile>
+    <None Include="VariadicTemplates.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>VariadicTemplates.cs</LastGenOutput>
+    </None>
     <Compile Include="WaitForDispatcherScheduler.cs" />
     <Compile Include="LoggingMixins.cs" />
     <Compile Include="IReactiveObject.cs" />
