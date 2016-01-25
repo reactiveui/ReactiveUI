@@ -315,6 +315,21 @@ namespace ReactiveUI.Tests
         }
 
         [Fact]
+        public void ExecuteViaICommandWorksWithNullableTypes()
+        {
+            int? value = null;
+            ICommand fixture = ReactiveCommand.Create<int?>(param => {
+                value = param;
+            });
+
+            fixture.Execute(42);
+            Assert.Equal(42, value);
+
+            fixture.Execute(null);
+            Assert.Null(value);
+        }
+
+        [Fact]
         public void ExecuteViaICommandThrowsIfParameterTypeIsIncorrect()
         {
             ICommand fixture = ReactiveCommand.Create<int>(_ => { });
