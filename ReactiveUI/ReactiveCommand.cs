@@ -564,7 +564,7 @@ namespace ReactiveUI
                 parameter = default(TParam);
             }
 
-            if (!(parameter is TParam)) {
+            if (parameter != null && !(parameter is TParam)) {
                 throw new InvalidOperationException(
                     String.Format(
                         "Command requires parameters of type {0}, but received parameter of type {1}.",
