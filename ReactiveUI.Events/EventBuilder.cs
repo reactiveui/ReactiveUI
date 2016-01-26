@@ -59,13 +59,6 @@ namespace EventBuilder
 
         public static NamespaceInfo[] CreateEventTemplateInformation(AssemblyDefinition[] targetAssemblies)
         {
-            var publicTypesWithEvents = targetAssemblies
-                .SelectMany(x => SafeGetTypes(x))
-                .Where(x => x.IsPublic && !x.HasGenericParameters)
-                .Select(x => new { Type = x, Events = GetPublicEvents(x) })
-                .Where(x => x.Events.Length > 0)
-                .ToArray();
-
             var garbageNamespaceList = new[] {
                 "Windows.UI.Xaml.Data",
                 "Windows.UI.Xaml.Interop",
@@ -75,9 +68,17 @@ namespace EventBuilder
                 "ReactiveUI.Events",
             };
 
+            var types = targetAssemblies
+                .SelectMany(x => SafeGetTypes(x))
+                .Where(x => x.IsPublic && !x.HasGenericParameters)
+                .Where(x => !garbageNamespaceList.Contains(x.Namespace))
+                .ToArray();
+            var publicTypesWithEvents = types
+                .Select(x => new { Type = x, Events = GetPublicEvents(types, x) })
+                .Where(x => x.Events.Length > 0)
+                .ToArray();
             var namespaceData = publicTypesWithEvents
                 .GroupBy(x => x.Type.Namespace)
-                .Where(x => !garbageNamespaceList.Contains(x.Key))
                 .Select(x => new NamespaceInfo() {
                     Name = x.Key,
                     Types = x.Select(y => new PublicTypeInfo() {
@@ -91,8 +92,9 @@ namespace EventBuilder
                     }).ToArray()
                 }).ToArray();
 
+
             foreach (var type in namespaceData.SelectMany(x => x.Types)) {
-                var parentWithEvents = GetParents(type.Type).FirstOrDefault(x => GetPublicEvents(x).Any());
+                var parentWithEvents = GetParents(type.Type).FirstOrDefault(x => Contains(publicTypesWithEvents.Select(t => t.Type), x));
                 if (parentWithEvents == null) continue;
 
                 type.Parent = new ParentInfo() { Name = parentWithEvents.FullName };
@@ -150,6 +152,16 @@ namespace EventBuilder
             if (name.EndsWith("Delegate", StringComparison.OrdinalIgnoreCase)) return true;
             if (name.EndsWith("UITableViewSource", StringComparison.OrdinalIgnoreCase)) return true;
             return false;
+        }
+
+        public static EventDefinition[] GetPublicEvents(IEnumerable<TypeDefinition> group, TypeDefinition t)
+        {
+            return new[] { t }.Concat(GetParents(t).TakeWhile(type => !Contains(group, type))).SelectMany(GetPublicEvents).ToArray();
+        }
+
+        private static bool Contains(IEnumerable<TypeDefinition> ie, TypeDefinition type)
+        {
+            return ie.Any(t => t.FullName == type.FullName);
         }
 
         public static EventDefinition[] GetPublicEvents(TypeDefinition t)
@@ -217,7 +229,7 @@ namespace EventBuilder
             // Find the EventArgs type parameter of the event via digging around via reflection
             var type = ei.EventType.Resolve();
             var invoke = type.Methods.First(x => x.Name == "Invoke");
-            if (invoke.Parameters.Count < 2) return null;
+            if (invoke.Parameters.Count != 2) return null;
 
             var param = invoke.Parameters[1];
             var ret = RenameBogusWinRTTypes(param.ParameterType.FullName);
