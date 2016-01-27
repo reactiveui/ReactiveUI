@@ -67,6 +67,18 @@ namespace ReactiveUI
 #endif
 
         /// <summary>
+        /// This is a hook that can be implemented. It will be called after
+        /// a property is set but before the 'property changed event' is called.
+        /// It enables subclasses to provide custom validation logic on the entire. It
+        /// make no assumption about the type of validation you may wish to perform. It
+        /// only makes it possible that you can validate the object 'before' others
+        /// are notified of the changes. 
+        /// </summary>
+        public virtual void Validate()
+        {
+        }
+
+        /// <summary>
         /// Represents an Observable that fires *before* a property is about to
         /// be changed.
         /// </summary>

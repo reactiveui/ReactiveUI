@@ -155,7 +155,10 @@ namespace ReactiveUI
 
             var name = expression.GetMemberInfo().Name;
             var ret = new ObservableAsPropertyHelper<TRet>(observable, 
-                _ => This.raisePropertyChanged(name), 
+                _ => {
+                    This.Validate();
+                    This.raisePropertyChanged(name);
+                }, 
                 _ => This.raisePropertyChanging(name),
                 initialValue, scheduler);
 
