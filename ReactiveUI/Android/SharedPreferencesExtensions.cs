@@ -3,7 +3,7 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Android.Content;
 
-namespace ReactiveUI.Android.Support
+namespace ReactiveUI
 {
     public static class SharedPreferencesExtensions
     {
