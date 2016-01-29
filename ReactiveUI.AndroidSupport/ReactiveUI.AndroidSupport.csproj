@@ -85,7 +85,6 @@
     <Compile Include="ReactiveFragment.cs" />
     <Compile Include="ReactiveActionBarActivity.cs" />
     <Compile Include="ReactiveRecyclerViewAdapter.cs" />
-    <Compile Include="ContextExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
