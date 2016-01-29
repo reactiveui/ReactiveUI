@@ -3,7 +3,7 @@ using System.Reactive.Linq;
 using Android.Content;
 using Android.OS;
 
-namespace ReactiveUI.Android.Support
+namespace ReactiveUI
 {
     public static class ContextExtensions
     {
