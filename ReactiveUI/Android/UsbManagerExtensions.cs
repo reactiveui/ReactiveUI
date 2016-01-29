@@ -5,11 +5,11 @@ using Android.App;
 using Android.Content;
 using Android.Hardware.Usb;
 
-namespace ReactiveUI.Android.Support
+namespace ReactiveUI
 {
     public static class UsbManagerExtensions
     {
-        const string ACTION_USB_PERMISSION = "com.reactiveui.android.support.USB_PERMISSION";
+        const string ACTION_USB_PERMISSION = "com.reactiveui.USB_PERMISSION";
 
         /// <summary>
         /// Requests temporary permission for the given package to access the device. 
