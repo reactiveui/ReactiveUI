@@ -10,8 +10,7 @@ namespace ReactiveUI
 
         public CollectionDebugView(ICollection<T> collection)
         {
-            if (collection == null)
-                throw new ArgumentNullException("collection", "collection is null.");
+            collection.EnsureNotNull("collection");
             this.collection = collection;
         }
 

@@ -39,9 +39,7 @@ namespace ReactiveUI
                 bool beforeChange = false,
                 bool skipInitial = true)
         {
-            if (This == null) {
-                throw new ArgumentNullException("Sender");
-            }
+            This.EnsureGenericArgumentNotNull("This");
             
             /* x => x.Foo.Bar.Baz;
              * 

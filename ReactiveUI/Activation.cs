@@ -143,10 +143,9 @@ namespace ReactiveUI
         public static IDisposable WhenActivated(this IActivatable This, Func<IEnumerable<IDisposable>> block, IViewFor view)
         {
             var activationFetcher = activationFetcherCache.Get(This.GetType());
-            if (activationFetcher == null) {
-                var msg = "Don't know how to detect when {0} is activated/deactivated, you may need to implement IActivationForViewFetcher";
-                throw new ArgumentException(String.Format(msg, This.GetType().FullName));
-            }
+            Guard.Ensure(
+                activationFetcher != null,
+                String.Format("Don't know how to detect when {0} is activated/deactivated, you may need to implement IActivationForViewFetcher", This.GetType().FullName));
 
             var activationEvents = activationFetcher.GetActivationForView(This);
 

@@ -81,6 +81,7 @@
   <ItemGroup>
     <Compile Include="ExpressionMixins.cs" />
     <Compile Include="ExpressionRewriter.cs" />
+    <Compile Include="Guards.cs" />
     <Compile Include="Interactions.cs" />
     <Compile Include="Platform\ComponentModelTypeConverter.cs" />
     <Compile Include="ViewAttributes.cs" />

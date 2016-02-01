@@ -318,10 +318,7 @@ namespace ReactiveUI
 
         public virtual void AddRange(IEnumerable<T> collection)
         {
-            if (collection == null)
-            {
-                throw new ArgumentNullException("collection");
-            }
+            collection.EnsureNotNull("collection");
 
             // we need list to implement at least IEnumerable<T> and IList
             // because NotifyCollectionChangedEventArgs expects an IList
@@ -377,10 +374,7 @@ namespace ReactiveUI
 
         public virtual void InsertRange(int index, IEnumerable<T> collection)
         {
-            if (collection == null)
-            {
-                throw new ArgumentNullException("collection");
-            }
+            collection.EnsureNotNull("collection");
 
             // we need list to implement at least IEnumerable<T> and IList
             // because NotifyCollectionChangedEventArgs expects an IList
@@ -491,10 +485,7 @@ namespace ReactiveUI
 
         public virtual void RemoveAll(IEnumerable<T> items)
         {
-            if (items == null)
-            {
-                throw new ArgumentNullException("items");
-            }
+            items.EnsureNotNull("items");
 
             var disp = isLengthAboveResetThreshold(items.Count()) ?
                 SuppressChangeNotifications() : Disposable.Empty;

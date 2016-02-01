@@ -75,6 +75,7 @@
     <Compile Include="Activation.cs" />
     <Compile Include="ExpressionMixins.cs" />
     <Compile Include="ExpressionRewriter.cs" />
+    <Compile Include="Guards.cs" />
     <Compile Include="Interactions.cs" />
     <Compile Include="Legacy\Errors.cs" />
     <Compile Include="PortableLibraryStubs.cs" />

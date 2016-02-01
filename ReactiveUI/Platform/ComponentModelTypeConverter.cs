@@ -41,9 +41,7 @@ namespace ReactiveUI
             var fromType = from.GetType();
             var converter = typeConverterCache.Get(Tuple.Create(fromType, toType));
 
-            if (converter == null) {
-                throw new ArgumentException(String.Format("Can't convert {0} to {1}. To fix this, register a IBindingTypeConverter", fromType, toType));
-            }
+            Guard.Ensure(converter != null, String.Format("Can't convert {0} to {1}. To fix this, register a IBindingTypeConverter", fromType, toType));
 
             try {
                 // TODO: This should use conversionHint to determine whether this is locale-aware or not

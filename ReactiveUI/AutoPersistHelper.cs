@@ -66,9 +66,7 @@ namespace ReactiveUI
             interval = interval ?? TimeSpan.FromSeconds(3.0);
 
             lock (dataContractCheckCache) {
-                if (!dataContractCheckCache.Get(This.GetType())) {
-                    throw new ArgumentException("AutoPersist can only be applied to objects with [DataContract]");
-                }
+                Guard.Ensure(dataContractCheckCache.Get(This.GetType()), "AutoPersist can only be applied to objects with [DataContract]");
             }
 
             var persistableProperties = default(Dictionary<string, bool>);

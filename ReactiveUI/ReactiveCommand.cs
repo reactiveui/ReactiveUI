@@ -82,9 +82,7 @@ namespace ReactiveUI
             IObservable<bool> canExecute = null,
             IScheduler outputScheduler = null)
         {
-            if (execute == null) {
-                throw new ArgumentNullException("execute");
-            }
+            execute.EnsureNotNull("execute");
 
             return new ReactiveCommand<Unit, Unit>(
                 _ => {
@@ -119,9 +117,7 @@ namespace ReactiveUI
             IObservable<bool> canExecute = null,
             IScheduler outputScheduler = null)
         {
-            if (execute == null) {
-                throw new ArgumentNullException("execute");
-            }
+            execute.EnsureNotNull("execute");
 
             return new ReactiveCommand<Unit, TResult>(
                 _ => Observable.Return(execute()),
@@ -152,9 +148,7 @@ namespace ReactiveUI
             IObservable<bool> canExecute = null,
             IScheduler outputScheduler = null)
         {
-            if (execute == null) {
-                throw new ArgumentNullException("execute");
-            }
+            execute.EnsureNotNull("execute");
 
             return new ReactiveCommand<TParam, Unit>(
                 param => {
@@ -192,9 +186,7 @@ namespace ReactiveUI
             IObservable<bool> canExecute = null,
             IScheduler outputScheduler = null)
         {
-            if (execute == null) {
-                throw new ArgumentNullException("execute");
-            }
+            execute.EnsureNotNull("execute");
 
             return new ReactiveCommand<TParam, TResult>(
                 param => Observable.Return(execute(param)),
@@ -225,9 +217,7 @@ namespace ReactiveUI
             IObservable<bool> canExecute = null,
             IScheduler outputScheduler = null)
         {
-            if (executeAsync == null) {
-                throw new ArgumentNullException("executeAsync");
-            }
+            executeAsync.EnsureNotNull("executeAsync");
 
             return new ReactiveCommand<Unit, TResult>(
                 _ => executeAsync(),
@@ -609,17 +599,9 @@ namespace ReactiveUI
             IObservable<bool> canExecute,
             IScheduler outputScheduler)
         {
-            if (executeAsync == null) {
-                throw new ArgumentNullException("executeAsync");
-            }
-
-            if (canExecute == null) {
-                throw new ArgumentNullException("canExecute");
-            }
-
-            if (outputScheduler == null) {
-                throw new ArgumentNullException("outputScheduler");
-            }
+            executeAsync.EnsureNotNull("executeAsync");
+            canExecute.EnsureNotNull("canExecute");
+            outputScheduler.EnsureNotNull("outputScheduler");
 
             this.executeAsync = executeAsync;
             this.outputScheduler = outputScheduler;
@@ -791,23 +773,13 @@ namespace ReactiveUI
             IObservable<bool> canExecute,
             IScheduler outputScheduler)
         {
-            if (childCommands == null) {
-                throw new ArgumentNullException("childCommands");
-            }
-
-            if (canExecute == null) {
-                throw new ArgumentNullException("canExecute");
-            }
-
-            if (outputScheduler == null) {
-                throw new ArgumentNullException("outputScheduler");
-            }
+            childCommands.EnsureNotNull("childCommands");
+            canExecute.EnsureNotNull("canExecute");
+            outputScheduler.EnsureNotNull("outputScheduler");
 
             var childCommandsArray = childCommands.ToArray();
 
-            if (childCommandsArray.Length == 0) {
-                throw new ArgumentException("No child commands provided.", "childCommands");
-            }
+            Guard.Ensure(childCommandsArray.Length != 0, "No child commands provided.", "childCommands");
 
             var canChildrenExecute = Observable
                 .CombineLatest(childCommandsArray.Select(x => x.CanExecute))
