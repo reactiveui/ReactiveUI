@@ -34,6 +34,12 @@ namespace ReactiveUI
         /// changes, typically this will call the ViewModel's
         /// RaisePropertyChanged method.</param>
         /// <param name="initialValue">The initial value of the property.</param>
+        /// <param name="deferSubscription">
+        /// A value indicating whether the <see cref="ObservableAsPropertyHelper{T}"/> 
+        /// should defer the subscription to the <paramref name="observable"/> source 
+        /// until the first call to <see cref="Value"/>, or if it should immediately 
+        /// subscribe to the the <paramref name="observable"/> source.
+        /// </param>
         /// <param name="scheduler">The scheduler that the notifications will be
         /// provided on - this should normally be a Dispatcher-based scheduler
         /// (and is by default)</param>
@@ -41,7 +47,8 @@ namespace ReactiveUI
             IObservable<T> observable, 
             Action<T> onChanged, 
             T initialValue = default(T), 
-            IScheduler scheduler = null) : this(observable, onChanged, null, initialValue, scheduler) {}
+            bool deferSubscription = false,
+            IScheduler scheduler = null) : this(observable, onChanged, null, initialValue, deferSubscription, scheduler) {}
 
         /// <summary>
         /// Constructs an ObservableAsPropertyHelper object.
@@ -54,6 +61,12 @@ namespace ReactiveUI
         /// changes, typically this will call the ViewModel's
         /// RaisePropertyChanging method.</param>
         /// <param name="initialValue">The initial value of the property.</param>
+        /// <param name="deferSubscription">
+        /// A value indicating whether the <see cref="ObservableAsPropertyHelper{T}"/> 
+        /// should defer the subscription to the <paramref name="observable"/> source 
+        /// until the first call to <see cref="Value"/>, or if it should immediately 
+        /// subscribe to the the <paramref name="observable"/> source.
+        /// </param>
         /// <param name="scheduler">The scheduler that the notifications will be
         /// provided on - this should normally be a Dispatcher-based scheduler
         /// (and is by default)</param>
@@ -62,6 +75,7 @@ namespace ReactiveUI
             Action<T> onChanged, 
             Action<T> onChanging = null,
             T initialValue = default(T), 
+            bool deferSubscription = false,
             IScheduler scheduler = null)
         {
             Contract.Requires(observable != null);
@@ -83,7 +97,7 @@ namespace ReactiveUI
 
             _lastValue = initialValue;
             _source = observable.StartWith(initialValue).DistinctUntilChanged().Multicast(subj);
-            if (ModeDetector.InUnitTestRunner())
+            if (!deferSubscription)
             {
                 _inner = _source.Connect();
                 _activated = 1;
@@ -126,7 +140,7 @@ namespace ReactiveUI
         /// (and is by default)</param>
         public static ObservableAsPropertyHelper<T> Default(T initialValue = default(T), IScheduler scheduler = null)
         {
-            return new ObservableAsPropertyHelper<T>(Observable.Never<T>(), _ => {}, initialValue, scheduler);
+            return new ObservableAsPropertyHelper<T>(Observable.Never<T>(), _ => {}, initialValue, false, scheduler);
         }
     }
 
@@ -137,6 +151,7 @@ namespace ReactiveUI
                 IObservable<TRet> observable,
                 Expression<Func<TObj, TRet>> property,
                 TRet initialValue = default(TRet),
+                bool deferSubscription = false,
                 IScheduler scheduler = null)
             where TObj : IReactiveObject
         {
@@ -154,7 +169,7 @@ namespace ReactiveUI
             var ret = new ObservableAsPropertyHelper<TRet>(observable, 
                 _ => This.raisePropertyChanged(name), 
                 _ => This.raisePropertyChanging(name),
-                initialValue, scheduler);
+                initialValue, deferSubscription, scheduler);
 
             return ret;
         }
@@ -168,6 +183,12 @@ namespace ReactiveUI
         /// <param name="property">An Expression representing the property (i.e.
         /// 'x => x.SomeProperty'</param>
         /// <param name="initialValue">The initial value of the property.</param>
+        /// <param name="deferSubscription">
+        /// A value indicating whether the <see cref="ObservableAsPropertyHelper{T}"/> 
+        /// should defer the subscription to the <paramref name="observable"/> source 
+        /// until the first call to <see cref="Value"/>, or if it should immediately 
+        /// subscribe to the the <paramref name="observable"/> source.
+        /// </param>
         /// <param name="scheduler">The scheduler that the notifications will be
         /// provided on - this should normally be a Dispatcher-based scheduler
         /// (and is by default)</param>
@@ -178,10 +199,11 @@ namespace ReactiveUI
             TObj source,
             Expression<Func<TObj, TRet>> property,
             TRet initialValue = default(TRet),
+            bool deferSubscription = false,
             IScheduler scheduler = null)
             where TObj : IReactiveObject
         {
-            return source.observableToProperty(This, property, initialValue, scheduler);
+            return source.observableToProperty(This, property, initialValue, deferSubscription, scheduler);
         }
 
         /// <summary>
@@ -193,6 +215,12 @@ namespace ReactiveUI
         /// <param name="property">An Expression representing the property (i.e.
         /// 'x => x.SomeProperty'</param>
         /// <param name="initialValue">The initial value of the property.</param>
+        /// <param name="deferSubscription">
+        /// A value indicating whether the <see cref="ObservableAsPropertyHelper{T}"/> 
+        /// should defer the subscription to the <paramref name="observable"/> source 
+        /// until the first call to <see cref="Value"/>, or if it should immediately 
+        /// subscribe to the the <paramref name="observable"/> source.
+        /// </param>
         /// <param name="scheduler">The scheduler that the notifications will be
         /// provided on - this should normally be a Dispatcher-based scheduler
         /// (and is by default)</param>
@@ -204,10 +232,11 @@ namespace ReactiveUI
             Expression<Func<TObj, TRet>> property,
             out ObservableAsPropertyHelper<TRet> result,
             TRet initialValue = default(TRet),
+            bool deferSubscription = false,
             IScheduler scheduler = null)
             where TObj : IReactiveObject
         {
-            var ret = source.observableToProperty(This, property, initialValue, scheduler);
+            var ret = source.observableToProperty(This, property, initialValue, deferSubscription, scheduler);
 
             result = ret;
             return ret;

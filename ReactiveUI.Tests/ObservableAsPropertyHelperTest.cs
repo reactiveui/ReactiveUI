@@ -73,7 +73,7 @@ namespace ReactiveUI.Tests
             var input = new Subject<int>();
 
             var fixture = new ObservableAsPropertyHelper<int>(input,
-                _ => { }, -5, sched);
+                _ => { }, -5, scheduler: sched);
 
             Assert.Equal(-5, fixture.Value);
             (new[] { 1, 2, 3, 4 }).Run(x => input.OnNext(x));
@@ -87,12 +87,53 @@ namespace ReactiveUI.Tests
         }
 
         [Fact]
+        public void OAPHShouldSubscribeImmediatelyToSource()
+        {
+            bool isSubscribed = false;
+
+            var observable = Observable.Create<int>(o =>
+            {
+                isSubscribed = true;
+                o.OnNext(42);
+                o.OnCompleted();
+
+                return Disposable.Empty;
+            });
+
+            var fixture = new ObservableAsPropertyHelper<int>(observable, _ => { }, 0);
+
+            Assert.True(isSubscribed);
+            Assert.Equal(42, fixture.Value);
+        }
+
+        [Fact]
+        public void OAPHDeferSubscriptionParameterDefersSubscriptionToSource()
+        {
+            bool isSubscribed = false;
+
+            var observable = Observable.Create<int>(o =>
+            {
+                isSubscribed = true;
+                o.OnNext(42);
+                o.OnCompleted();
+
+                return Disposable.Empty;
+            });
+
+            var fixture = new ObservableAsPropertyHelper<int>(observable, _ => { }, 0, true);
+
+            Assert.False(isSubscribed);
+            Assert.Equal(42, fixture.Value);
+            Assert.True(isSubscribed);
+        }
+
+        [Fact]
         public void OAPHShouldRethrowErrors()
         {
             var input = new Subject<int>();
             var sched = new TestScheduler();
 
-            var fixture = new ObservableAsPropertyHelper<int>(input, _ => { }, -5, sched);
+            var fixture = new ObservableAsPropertyHelper<int>(input, _ => { }, -5, scheduler: sched);
             var errors = new List<Exception>();
 
             Assert.Equal(-5, fixture.Value);
