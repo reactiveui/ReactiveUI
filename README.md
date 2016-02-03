@@ -133,7 +133,7 @@ We're also looking for people to assist with code reviews of ReactiveUI contribu
  - [Mac reviewers](https://github.com/orgs/reactiveui/teams/reviewers-mac)
  - [UWP reviewers](https://github.com/orgs/reactiveui/teams/reviewers-uwp)
  - [WinForms reviewers](https://github.com/orgs/reactiveui/teams/reviewers-winforms)
- - [WPF reviwers](https://github.com/orgs/reactiveui/teams/reviewers-wpf) 
+ - [WPF reviewers](https://github.com/orgs/reactiveui/teams/reviewers-wpf) 
  - [Xamarin Forms reviewers](https://github.com/orgs/reactiveui/teams/reviewers-xf)
 
 # Showcase
