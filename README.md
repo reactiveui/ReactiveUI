@@ -127,14 +127,14 @@ We try not to be too OCD about coding style wars, but we do [have our own conven
 
 We're also looking for people to assist with code reviews of ReactiveUI contributions. If you're experienced with any of the below technologies, you can join the team and receive notifications:
 
- - [Android](https://github.com/orgs/reactiveui/teams/reviewers-android) reviewers
- - [Core](https://github.com/orgs/reactiveui/teams/reviewers-core)
- - [iOS](https://github.com/orgs/reactiveui/teams/reviewers-ios)
- - [Mac](https://github.com/orgs/reactiveui/teams/reviewers-mac)
- - [UWP](https://github.com/orgs/reactiveui/teams/reviewers-uwp)
- - [WinForms](https://github.com/orgs/reactiveui/teams/reviewers-winforms)
- - [WPF](https://github.com/orgs/reactiveui/teams/reviewers-wpf) 
- - [Xamarin Forms](https://github.com/orgs/reactiveui/teams/reviewers-xf)
+ - [Android reviewers](https://github.com/orgs/reactiveui/teams/reviewers-android)
+ - [Core reviewers](https://github.com/orgs/reactiveui/teams/reviewers-core)
+ - [iOS reviewers](https://github.com/orgs/reactiveui/teams/reviewers-ios)
+ - [Mac reviewers](https://github.com/orgs/reactiveui/teams/reviewers-mac)
+ - [UWP reviewers](https://github.com/orgs/reactiveui/teams/reviewers-uwp)
+ - [WinForms reviewers](https://github.com/orgs/reactiveui/teams/reviewers-winforms)
+ - [WPF reviwers](https://github.com/orgs/reactiveui/teams/reviewers-wpf) 
+ - [Xamarin Forms reviewers](https://github.com/orgs/reactiveui/teams/reviewers-xf)
 
 # Showcase
 We encourage our community to [showcase where and how they have used ReactiveUI in their applications](https://github.com/reactiveui/ReactiveUI/issues/979), some members have even gone as far as open-sourcing their app and [sharing their entire codebase](https://github.com/reactiveui/ReactiveUI/issues/687#issuecomment-166772487). You are of course under no-obligation share these insights (or code) with us but it is greatly appreciated by the project maintainers and you'll usually get a [retweet out of it](https://twitter.com/ReactiveXUI/status/679532005155966977).
