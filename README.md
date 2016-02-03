@@ -125,6 +125,17 @@ Here are some pointers for anyone looking for mini-features and work items that 
 
 We try not to be too OCD about coding style wars, but we do [have our own convention](https://github.com/reactiveui/ReactiveUI/blob/master/CONTRIBUTING.md) and [best design practices documented](https://github.com/reactiveui/rxui-design-guidelines) - please respect them and your pull-request experience will be much smoother. If you are using Visual Studio, please [install the rebracer plugin](https://visualstudiogallery.msdn.microsoft.com/410e9b9f-65f3-4495-b68e-15567e543c58) which will automatically apply the correct source formatting settings.
 
+We're also looking for people to assist with code reviews of ReactiveUI contributions. If you're experienced with any of the below technologies, you can join the team and receive notifications:
+
+ - [Android](https://github.com/orgs/reactiveui/teams/reviewers-android) reviewers
+ - [Core](https://github.com/orgs/reactiveui/teams/reviewers-core)
+ - [iOS](https://github.com/orgs/reactiveui/teams/reviewers-ios)
+ - [Mac](https://github.com/orgs/reactiveui/teams/reviewers-mac)
+ - [UWP](https://github.com/orgs/reactiveui/teams/reviewers-uwp)
+ - [WinForms](https://github.com/orgs/reactiveui/teams/reviewers-winforms)
+ - [WPF](https://github.com/orgs/reactiveui/teams/reviewers-wpf) 
+ - [Xamarin Forms](https://github.com/orgs/reactiveui/teams/reviewers-xf)
+
 # Showcase
 We encourage our community to [showcase where and how they have used ReactiveUI in their applications](https://github.com/reactiveui/ReactiveUI/issues/979), some members have even gone as far as open-sourcing their app and [sharing their entire codebase](https://github.com/reactiveui/ReactiveUI/issues/687#issuecomment-166772487). You are of course under no-obligation share these insights (or code) with us but it is greatly appreciated by the project maintainers and you'll usually get a [retweet out of it](https://twitter.com/ReactiveXUI/status/679532005155966977).
 
