@@ -142,6 +142,7 @@
     <Compile Include="Legacy\Errors.cs" />
     <Compile Include="Android\UsbManagerExtensions.cs" />
     <Compile Include="Android\ContextExtensions.cs" />
+    <Compile Include="Android\SharedPreferencesExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.ReactiveUI_Android.config" />
