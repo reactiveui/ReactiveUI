@@ -29,7 +29,7 @@ namespace Playground_Wpa81
         {
             DoIt = ReactiveCommand.Create(() => Unit.Default);
 
-            ThreadedDoIt = ReactiveCommand.CreateAsyncTask<Unit, int>(async _ => {
+            ThreadedDoIt = ReactiveCommand.CreateFromTask<Unit, int>(async _ => {
                 await Task.Delay(5000);
                 return 42;
             });

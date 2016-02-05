@@ -554,7 +554,7 @@ namespace ReactiveUI
 
         protected override bool ICommandCanExecute(object parameter)
         {
-            return this.CanExecute.First();
+            return this.CanExecute.FirstAsync().Wait();
         }
 
         protected override void ICommandExecute(object parameter)
@@ -564,7 +564,7 @@ namespace ReactiveUI
                 parameter = default(TParam);
             }
 
-            if (!(parameter is TParam)) {
+            if (parameter != null && !(parameter is TParam)) {
                 throw new InvalidOperationException(
                     String.Format(
                         "Command requires parameters of type {0}, but received parameter of type {1}.",
