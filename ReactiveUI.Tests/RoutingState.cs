@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Reactive.Linq;
-using System.Text;
 using Xunit;
 
 namespace ReactiveUI.Routing.Tests
 {
+    using System.Threading.Tasks;
+
     public class TestViewModel : ReactiveObject, IRoutableViewModel
     {
         string _SomeProp;
@@ -37,23 +36,23 @@ namespace ReactiveUI.Routing.Tests
     public class RoutingStateTests
     {
         [Fact]
-        public void NavigationPushPopTest()
+        public async Task NavigationPushPopTest()
         {
             var input = new TestViewModel() {SomeProp = "Foo"};
             var fixture = new RoutingState();
 
-            Assert.False(fixture.NavigateBack.CanExecute.First());
-            fixture.Navigate.ExecuteAsync(new TestViewModel());
+            Assert.False(await fixture.NavigateBack.CanExecute.FirstAsync());
+            await fixture.Navigate.ExecuteAsync(new TestViewModel());
 
             Assert.Equal(1, fixture.NavigationStack.Count);
-            Assert.False(fixture.NavigateBack.CanExecute.First());
+            Assert.False(await fixture.NavigateBack.CanExecute.FirstAsync());
 
-            fixture.Navigate.ExecuteAsync(new TestViewModel());
+            await fixture.Navigate.ExecuteAsync(new TestViewModel());
 
             Assert.Equal(2, fixture.NavigationStack.Count);
-            Assert.True(fixture.NavigateBack.CanExecute.First());
+            Assert.True(await fixture.NavigateBack.CanExecute.FirstAsync());
 
-            fixture.NavigateBack.ExecuteAsync();
+            await fixture.NavigateBack.ExecuteAsync();
 
             Assert.Equal(1, fixture.NavigationStack.Count);
         }
