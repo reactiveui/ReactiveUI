@@ -13,6 +13,7 @@ namespace ReactiveUI
         /// while the ViewModel has focus, and cleans up when the ViewModel
         /// loses focus.
         /// </summary>
+        /// <param name="This">ViewModel associated with navigation action</param>
         /// <param name="onNavigatedTo">Called when the ViewModel is navigated
         /// to - return an IDisposable that cleans up all of the things that are
         /// configured in the method.</param>

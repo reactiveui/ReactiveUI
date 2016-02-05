@@ -15,9 +15,6 @@ namespace ReactiveUI
 {
     public interface IReactiveObject : INotifyPropertyChanged, INotifyPropertyChanging, IEnableLogger 
     {
-        event PropertyChangingEventHandler PropertyChanging;
-        event PropertyChangedEventHandler PropertyChanged;
-
         void RaisePropertyChanging(PropertyChangingEventArgs args);
         void RaisePropertyChanged(PropertyChangedEventArgs args);
     }
@@ -172,7 +169,6 @@ namespace ReactiveUI
             IObservable<IReactivePropertyChangedEventArgs<TSender>> changingObservable;
             ISubject<IReactivePropertyChangedEventArgs<TSender>> changedSubject;
             IObservable<IReactivePropertyChangedEventArgs<TSender>> changedObservable;
-            ISubject<IReactivePropertyChangedEventArgs<TSender>> fireChangedBatchSubject;
             ISubject<Exception> thrownExceptions;
             ISubject<Unit> startDelayNotifications;
 
