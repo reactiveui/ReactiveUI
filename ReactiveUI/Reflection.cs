@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reactive.Linq;
 using System.Reflection;
 using System.Text;
-using ReactiveUI;
 using Splat;
 
 namespace ReactiveUI
@@ -22,7 +20,7 @@ namespace ReactiveUI
 
         public static string ExpressionToPropertyNames(Expression expression)
         {
-            Contract.Requires(expression != null);
+            Ensure.ArgumentNotNull(expression, "expression");
 
             StringBuilder sb = new StringBuilder();
 
@@ -57,7 +55,7 @@ namespace ReactiveUI
 
         public static Func<object, object[], object> GetValueFetcherForProperty(MemberInfo member)
         {
-            Contract.Requires(member != null);
+            Ensure.ArgumentNotNull(member, "member");
             
             FieldInfo field = member as FieldInfo;
             if (field != null) {
@@ -81,7 +79,7 @@ namespace ReactiveUI
 
         public static Action<object, object, object[]> GetValueSetterForProperty(MemberInfo member)
         {
-            Contract.Requires(member != null);
+            Ensure.ArgumentNotNull(member, "member");
 
             FieldInfo field = member as FieldInfo;
             if(field != null) {

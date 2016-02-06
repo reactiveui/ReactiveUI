@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reactive;
@@ -12,7 +11,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Splat;
-using LegacyRxCmd = ReactiveUI.Legacy.ReactiveCommand;
 
 namespace ReactiveUI.Legacy
 {

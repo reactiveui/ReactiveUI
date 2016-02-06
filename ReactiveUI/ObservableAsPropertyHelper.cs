@@ -1,14 +1,11 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Diagnostics.Contracts;
 using System.Linq.Expressions;
 using System.Reactive.Concurrency;
+using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
-using Splat;
-using System.Reactive.Disposables;
 using System.Threading;
+using Splat;
 
 namespace ReactiveUI
 {
@@ -64,8 +61,8 @@ namespace ReactiveUI
             T initialValue = default(T), 
             IScheduler scheduler = null)
         {
-            Contract.Requires(observable != null);
-            Contract.Requires(onChanged != null);
+            Ensure.ArgumentNotNull(observable, "observable");
+            Ensure.ArgumentNotNull(onChanged, "onChanged");
 
             scheduler = scheduler ?? CurrentThreadScheduler.Instance;
             onChanging = onChanging ?? (_ => { });
@@ -140,9 +137,9 @@ namespace ReactiveUI
                 IScheduler scheduler = null)
             where TObj : IReactiveObject
         {
-            Contract.Requires(This != null);
-            Contract.Requires(observable != null);
-            Contract.Requires(property != null);
+            Ensure.GenericArgumentNotNull(This, "This");
+            Ensure.ArgumentNotNull(observable, "observable");
+            Ensure.ArgumentNotNull(property, "property");
 
             Expression expression = Reflection.Rewrite(property.Body);
             Ensure.ArgumentCondition(expression.GetParent().NodeType == ExpressionType.Parameter, "Property expression must be of the form 'x => x.SomeProperty'.", "property");

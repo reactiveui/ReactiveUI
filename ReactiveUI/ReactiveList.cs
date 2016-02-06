@@ -1,20 +1,17 @@
 using System;
 using System.Collections;
-using System.Reactive;
-using System.Reactive.Linq;
-using System.Reactive.Concurrency;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Collections.Specialized;
+using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
+using System.Reactive;
+using System.Reactive.Concurrency;
+using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Runtime.Serialization;
-using System.Diagnostics.Contracts;
 using System.Threading;
-using System.Reactive.Disposables;
-using System.Globalization;
-using System.Diagnostics;
 using Splat;
 
 namespace ReactiveUI

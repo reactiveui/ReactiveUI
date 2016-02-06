@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
-using System.Diagnostics.Contracts;
 using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
@@ -125,7 +124,7 @@ namespace ReactiveUI.Winforms
             Func<TNew, TNew, int> orderer = null,
             IObservable<TDontCare> signalReset = null)
         {
-            Contract.Requires(selector != null);
+            Ensure.ArgumentNotNull(selector, "selector");
 
             IObservable<Unit> reset = null;
 

@@ -1,14 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Reactive.Disposables;
 using System.Linq;
-using System.Diagnostics.Contracts;
 using System.Linq.Expressions;
 using System.Reactive.Linq;
-using System.Reactive.Subjects;
-using System.Reflection;
-using System.Text;
 using Splat;
 
 namespace ReactiveUI
@@ -84,7 +78,7 @@ namespace ReactiveUI
                 bool beforeChange = false)
             where TSender : class
         {
-            Contract.Requires(selector != null);
+            Ensure.ArgumentNotNull(selector, "selector");
             return This.ObservableForProperty(property, beforeChange).Select(x => selector(x.Value));
         }
 

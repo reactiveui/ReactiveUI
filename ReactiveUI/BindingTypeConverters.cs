@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Reflection;
 using Splat;
@@ -43,7 +42,7 @@ namespace ReactiveUI
 
         public bool TryConvert(object from, Type toType, object conversionHint, out object result)
         {
-            Contract.Requires(toType != null);
+            Ensure.ArgumentNotNull(toType, "toType");
 
             var mi = default(MethodInfo);
             lock (referenceCastCache) {

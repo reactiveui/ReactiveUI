@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics.Contracts;
 using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
@@ -11,7 +10,7 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using Splat;
 
-namespace ReactiveUI 
+namespace ReactiveUI
 {
     public interface IReactiveObject : INotifyPropertyChanged, INotifyPropertyChanging, IEnableLogger 
     {
@@ -44,7 +43,7 @@ namespace ReactiveUI
 
         internal static void raisePropertyChanging<TSender>(this TSender This, string propertyName) where TSender : IReactiveObject 
         {
-            Contract.Requires(propertyName != null);
+            Ensure.ArgumentNotNull(propertyName, "propertyName");
 
             var s = state.GetValue(This, key => (IExtensionState<IReactiveObject>)new ExtensionState<TSender>(This));
 
@@ -53,7 +52,7 @@ namespace ReactiveUI
 
         internal static void raisePropertyChanged<TSender>(this TSender This, string propertyName) where TSender : IReactiveObject 
         {
-            Contract.Requires(propertyName != null);
+            Ensure.ArgumentNotNull(propertyName, "propertyName");
 
             var s = state.GetValue(This, key => (IExtensionState<IReactiveObject>)new ExtensionState<TSender>(This));
             
@@ -101,7 +100,7 @@ namespace ReactiveUI
             TRet newValue,
             [CallerMemberName] string propertyName = null) where TObj : IReactiveObject
         {
-            Contract.Requires(propertyName != null);
+            Ensure.ArgumentNotNull(propertyName, "propertyName");
 
             if (EqualityComparer<TRet>.Default.Equals(backingField, newValue)) {
                 return newValue;

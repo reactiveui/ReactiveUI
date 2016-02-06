@@ -2,16 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Diagnostics;
-using System.Diagnostics.Contracts;
+using System.Linq;
 using System.Reactive;
+using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
-using System.Reactive.Subjects;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using Splat;
-using System.Reactive.Concurrency;
-using System.Linq;
 
 namespace ReactiveUI
 {
@@ -203,8 +201,8 @@ namespace ReactiveUI
             IObservable<Unit> signalReset,
             IScheduler scheduler)
         {
-            Contract.Requires(source != null);
-            Contract.Requires(selector != null);
+            Ensure.ArgumentNotNull(source, "source");
+            Ensure.ArgumentNotNull(selector, "selector");
 
             if (filter == null)
                 filter = x => true;
@@ -890,7 +888,7 @@ namespace ReactiveUI
             IObservable<TDontCare> signalReset = null,
             IScheduler scheduler = null)
         {
-            Contract.Requires(selector != null);
+            Ensure.ArgumentNotNull(selector, "selector");
 
             IObservable<Unit> reset = null;
 
