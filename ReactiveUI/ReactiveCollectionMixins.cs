@@ -418,9 +418,9 @@ namespace ReactiveUI
 
                 Debug.Assert(args.OldItems.Count == args.NewItems.Count);
 
-                if (args.OldItems.Count > 1 || args.NewItems.Count > 1) {
-                    throw new NotSupportedException("Derived collections doesn't support multi-item moves");
-                }
+                Ensure.ConditionSupported(
+                    args.OldItems.Count <= 1 && args.NewItems.Count <= 1,
+                    "Derived collections doesn't support multi-item moves");
 
                 // Yeah apparently this can happen. ObservableCollection triggers this notification on Move(0,0)
                 if(args.OldStartingIndex == args.NewStartingIndex) {

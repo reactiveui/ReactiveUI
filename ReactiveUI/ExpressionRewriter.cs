@@ -36,9 +36,7 @@ namespace ReactiveUI
 
         protected override Expression VisitBinary(BinaryExpression node)
         {
-            if (!(node.Right is ConstantExpression)) {
-                throw new NotSupportedException("Array index expressions are only supported with constants.");
-            }
+            Ensure.ConditionSupported(node.Right is ConstantExpression, "Array index expressions are only supported with constants.");
 
             Expression left = this.Visit(node.Left);
             Expression right = this.Visit(node.Right);
@@ -63,10 +61,10 @@ namespace ReactiveUI
         protected override Expression VisitMethodCall(MethodCallExpression node)
         {
             // Rewrite a method call to an indexer as an index expression
-            if (node.Arguments.Any(e => !(e is ConstantExpression)) || !node.Method.IsSpecialName) {
-                throw new NotSupportedException("Index expressions are only supported with constants.");
-            }
-
+            Ensure.ConditionSupported(
+                node.Method.IsSpecialName && node.Arguments.All(e => e is ConstantExpression),
+                "Index expressions are only supported with constants.");
+            
             Expression instance = this.Visit(node.Object);
             IEnumerable<Expression> arguments = this.Visit(node.Arguments);
 
@@ -76,9 +74,9 @@ namespace ReactiveUI
 
         protected override Expression VisitIndex(IndexExpression node)
         {
-            if (node.Arguments.Any(e => !(e is ConstantExpression))) {
-                throw new NotSupportedException("Index expressions are only supported with constants.");
-            }
+            Ensure.ConditionSupported(
+                node.Arguments.All(e => e is ConstantExpression),
+                "Index expressions are only supported with constants.");
 
             return base.VisitIndex(node);
         }

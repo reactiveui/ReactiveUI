@@ -187,9 +187,7 @@ namespace ReactiveUI
             // Check whether the TransitionPart is compatible with the current transition.
             var canSplitTransition = true;
             if (transition == TransitionType.Fade || transition == TransitionType.FadeDown) {
-                if (transitionPart != TransitionPartType.OutIn) {
-                    throw new InvalidOperationException("Cannot split this transition.");
-                }
+                Ensure.ConditionValid(transitionPart == TransitionPartType.OutIn, "Cannot split this transition.");
 
                 canSplitTransition = false;
             }

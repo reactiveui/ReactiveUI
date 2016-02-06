@@ -59,13 +59,13 @@ namespace ReactiveUI
                 // outer exception. Add more types here as required.
                 // IndexOutOfRangeException is given when trying to
                 // convert empty strings with some/all? converters
-                if (e.InnerException is IndexOutOfRangeException ||
-                    e.InnerException is FormatException) {
-                    result = null;
-                    return false;
-                } else {
-                    throw new Exception(string.Format("Can't convert from {0} to {1}.", from.GetType(), toType), e);
-                }
+                Ensure.ConditionSupported(
+                    e.InnerException is IndexOutOfRangeException || e.InnerException is FormatException,
+                    string.Format("Can't convert from {0} to {1}.", from.GetType(), toType),
+                    e);
+
+                result = null;
+                return false;
             }
         }
     }

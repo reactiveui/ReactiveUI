@@ -191,9 +191,8 @@ namespace ReactiveUI
         {
             var ti = type;
             var ei = ti.GetRuntimeEvent(eventName);
-            if (ei == null) {
-                throw new Exception(String.Format("Couldn't find {0}.{1}", type.FullName, eventName));
-            }
+
+            Ensure.ConditionValid(ei != null, String.Format("Couldn't find {0}.{1}", type.FullName, eventName));
     
             // Find the EventArgs type parameter of the event via digging around via reflection
             var eventArgsType = ei.EventHandlerType.GetRuntimeMethods().First(x => x.Name == "Invoke").GetParameters()[1].ParameterType;
@@ -209,9 +208,9 @@ namespace ReactiveUI
                 })
                 .FirstOrDefault(x => x.Item2 == null);
 
-            if (missingMethod != null) {
-                throw new Exception(String.Format("Your class must implement {0} and call {1}.{0}", missingMethod.Item1, callingTypeName));
-            }
+            Ensure.ConditionValid(
+                missingMethod == null,
+                String.Format("Your class must implement {0} and call {1}.{0}", missingMethod.Item1, callingTypeName));
         }
 
         internal static IObservable<object> ViewModelWhenAnyValue<TView, TViewModel>(TViewModel viewModel, TView view, Expression expression)

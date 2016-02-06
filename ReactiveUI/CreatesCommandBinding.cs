@@ -50,12 +50,9 @@ namespace ReactiveUI
                 .Select(x => new { EventInfo = type.GetRuntimeEvent(x.Item1), Args = x.Item2 })
                 .FirstOrDefault(x => x.EventInfo != null);
 
-            if (eventInfo == null) {
-                throw new Exception(
-                    String.Format(
-                        "Couldn't find a default event to bind to on {0}, specify an event expicitly", 
-                        target.GetType().FullName));
-            }
+            Ensure.ConditionValid(
+                eventInfo != null,
+                String.Format("Couldn't find a default event to bind to on {0}, specify an event expicitly", target.GetType().FullName));
 
             var mi = GetType().GetRuntimeMethods().First(x => x.Name == "BindCommandToObject" && x.IsGenericMethod);
             mi = mi.MakeGenericMethod(eventInfo.Args);

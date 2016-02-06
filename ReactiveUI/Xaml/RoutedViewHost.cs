@@ -102,9 +102,7 @@ namespace ReactiveUI
                     var viewLocator = ViewLocator ?? ReactiveUI.ViewLocator.Current;
                     var view = viewLocator.ResolveView(x.Item1, x.Item2) ?? viewLocator.ResolveView(x.Item1, null);
 
-                    if (view == null) {
-                        throw new Exception(String.Format("Couldn't find view for '{0}'.", x.Item1));
-                    }
+                    Ensure.ConditionValid(view != null, String.Format("Couldn't find view for '{0}'.", x.Item1));
 
                     view.ViewModel = x.Item1;
                     Content = view;

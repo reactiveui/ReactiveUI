@@ -26,9 +26,8 @@ namespace ReactiveUI
         public static TValue GetValue<TSender, TValue>(this IObservedChange<TSender, TValue> This)
         {
             TValue ret;
-            if (!This.TryGetValue(out ret)) {
-                throw new Exception(String.Format("One of the properties in the expression '{0}' was null", This.GetPropertyName()));
-            }
+            Ensure.ConditionValid(This.TryGetValue(out ret), String.Format("One of the properties in the expression '{0}' was null", This.GetPropertyName()));
+
             return ret;
         }
 

@@ -160,11 +160,9 @@ namespace ReactiveUI
                 result = notifyFactoryCache.Get(Tuple.Create(sender.GetType(), expression.GetMemberInfo().Name, beforeChange));
             }
 
-            if (result == null) {
-                throw new Exception(
-                    String.Format("Couldn't find a ICreatesObservableForProperty for {0}. This should never happen, your service locator is probably broken.", 
-                    sender.GetType()));
-            }
+            Ensure.ConditionValid(
+                result != null,
+                String.Format("Couldn't find a ICreatesObservableForProperty for {0}. This should never happen, your service locator is probably broken.", sender.GetType()));
             
             return result.GetNotificationForProperty(sender, expression, beforeChange);
         }

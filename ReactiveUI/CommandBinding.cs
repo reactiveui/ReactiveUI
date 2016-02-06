@@ -307,14 +307,15 @@ namespace ReactiveUI
                 binder = bindCommandCache.Get(type);
             }
 
-            if (binder == null) {
-                throw new Exception(String.Format("Couldn't find a Command Binder for {0}", type.FullName));
-            }
+            Ensure.ConditionValid(
+                binder != null,
+                String.Format("Couldn't find a Command Binder for {0}", type.FullName));
 
             var ret = binder.BindCommandToObject(command, target, commandParameter);
-            if (ret == null) {
-                throw new Exception(String.Format("Couldn't bind Command Binder for {0}", type.FullName));
-            }
+
+            Ensure.ConditionValid(
+                ret != null,
+                String.Format("Couldn't bind Command Binder for {0}", type.FullName));
 
             return ret;
         }
@@ -323,9 +324,9 @@ namespace ReactiveUI
         {
             var type = target.GetType();
             var binder = bindCommandEventCache.Get(type);
-            if (binder == null) {
-                throw new Exception(String.Format("Couldn't find a Command Binder for {0} and event {1}", type.FullName, eventName));
-            }
+            Ensure.ConditionValid(
+                binder != null,
+                String.Format("Couldn't find a Command Binder for {0} and event {1}", type.FullName, eventName));
 
             var eventArgsType = Reflection.GetEventArgsTypeForEvent(type, eventName);
             var mi = binder.GetType().GetTypeInfo().DeclaredMethods.First(x => x.Name == "BindCommandToObject" && x.IsGenericMethod);
@@ -333,9 +334,9 @@ namespace ReactiveUI
 
             //var ret = binder.BindCommandToObject<TEventArgs>(command, target, commandParameter, eventName);
             var ret = (IDisposable) mi.Invoke(binder, new[] {command, target, commandParameter, eventName});
-            if (ret == null) {
-                throw new Exception(String.Format("Couldn't bind Command Binder for {0} and event {1}", type.FullName, eventName));
-            }
+            Ensure.ConditionValid(
+                ret != null,
+                String.Format("Couldn't bind Command Binder for {0} and event {1}", type.FullName, eventName));
 
             return ret;
         }

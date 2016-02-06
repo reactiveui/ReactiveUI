@@ -64,10 +64,7 @@ namespace ReactiveUI
         /// </exception>
         public void SetOutput(TOutput output)
         {
-            if (Interlocked.CompareExchange(ref this.outputSet, 1, 0) != 0) {
-                throw new InvalidOperationException("Output has already been set.");
-            }
-
+            Ensure.ConditionValid(Interlocked.CompareExchange(ref this.outputSet, 1, 0) == 0, "Output has already been set.");
             this.output = output;
         }
 
@@ -82,10 +79,7 @@ namespace ReactiveUI
         /// </exception>
         public TOutput GetOutput()
         {
-            if (this.outputSet == 0) {
-                throw new InvalidOperationException("Output has not been set.");
-            }
-
+            Ensure.ConditionValid(this.outputSet != 0, "Output has not been set.");
             return this.output;
         }
     }

@@ -196,12 +196,26 @@
             }
         }
 
-        public static void ConditionSupported(bool condition, string message)
+        public static void ConditionSupported(bool condition, string message, Exception innerException = null)
         {
             if (!condition) {
-                throw new NotSupportedException(message);
+                throw new NotSupportedException(message, innerException);
             }
         }
+
+        public static void ConditionValid(bool condition, string message, Exception innerException = null)
+        {
+            if (!condition) {
+                throw new InvalidOperationException(message, innerException);
+            }
+        }
+
+        //public static void ConditionCast<T>(object value, string message)
+        //{
+        //    if (value != null && !(value is T)) {
+        //        throw new InvalidCastException(message);
+        //    }
+        //}
 
         // General purpose - avoid if possible. Only value it really adds is to make sure all guard logic routes through Ensure.
         public static void Condition(bool condition, Func<Exception> getException)

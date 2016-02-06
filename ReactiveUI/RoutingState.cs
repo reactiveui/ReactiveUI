@@ -80,9 +80,10 @@ namespace ReactiveUI
 
             Navigate = ReactiveCommand.CreateFromObservable<IRoutableViewModel, IRoutableViewModel>(x => {
                 var vm = x as IRoutableViewModel;
-                if (vm == null) {
-                    throw new Exception("Navigate must be called on an IRoutableViewModel");
-                }
+
+                Ensure.ConditionValid(
+                    vm != null,
+                    "Navigate must be called on an IRoutableViewModel");
 
                 NavigationStack.Add(vm);
                 return Observable.Return(x);
