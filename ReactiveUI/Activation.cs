@@ -145,7 +145,8 @@ namespace ReactiveUI
             var activationFetcher = activationFetcherCache.Get(This.GetType());
             Ensure.ConditionSupported(
                 activationFetcher != null,
-                String.Format("Don't know how to detect when {0} is activated/deactivated, you may need to implement IActivationForViewFetcher", This.GetType().FullName));
+                "Don't know how to detect when {0} is activated/deactivated, you may need to implement IActivationForViewFetcher",
+                This.GetType().FullName);
 
             var activationEvents = activationFetcher.GetActivationForView(This);
 

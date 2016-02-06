@@ -73,7 +73,7 @@ namespace ReactiveUI
         public static Func<object, object[], object> GetValueFetcherOrThrow(MemberInfo member)
         {
             var ret = GetValueFetcherForProperty(member);
-            Ensure.ConditionSupported(ret != null, String.Format("Type '{0}' must have a property '{1}'", member.DeclaringType, member.Name));
+            Ensure.ConditionSupported(ret != null, "Type '{0}' must have a property '{1}'", member.DeclaringType, member.Name);
             return ret;
         }
 
@@ -97,7 +97,7 @@ namespace ReactiveUI
         public static Action<object, object, object[]> GetValueSetterOrThrow(MemberInfo member)
         {
             var ret = GetValueSetterForProperty(member);
-            Ensure.ConditionSupported(ret != null, String.Format("Type '{0}' must have a property '{1}'", member.DeclaringType, member.Name));
+            Ensure.ConditionSupported(ret != null, "Type '{0}' must have a property '{1}'", member.DeclaringType, member.Name);
             return ret;
         }
 
@@ -192,7 +192,7 @@ namespace ReactiveUI
             var ti = type;
             var ei = ti.GetRuntimeEvent(eventName);
 
-            Ensure.ConditionValid(ei != null, String.Format("Couldn't find {0}.{1}", type.FullName, eventName));
+            Ensure.ConditionValid(ei != null, "Couldn't find {0}.{1}", type.FullName, eventName);
     
             // Find the EventArgs type parameter of the event via digging around via reflection
             var eventArgsType = ei.EventHandlerType.GetRuntimeMethods().First(x => x.Name == "Invoke").GetParameters()[1].ParameterType;
@@ -210,7 +210,8 @@ namespace ReactiveUI
 
             Ensure.ConditionValid(
                 missingMethod == null,
-                String.Format("Your class must implement {0} and call {1}.{0}", missingMethod.Item1, callingTypeName));
+                "Your class must implement {0} and call {1}.{0}", missingMethod.Item1,
+                callingTypeName);
         }
 
         internal static IObservable<object> ViewModelWhenAnyValue<TView, TViewModel>(TViewModel viewModel, TView view, Expression expression)

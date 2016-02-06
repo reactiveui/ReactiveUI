@@ -203,6 +203,27 @@
             }
         }
 
+        public static void ConditionSupported<T0>(bool condition, string format, T0 arg0, Exception innerException = null)
+        {
+            if (!condition) {
+                throw new NotSupportedException(String.Format(format, arg0), innerException);
+            }
+        }
+
+        public static void ConditionSupported<T0, T1>(bool condition, string format, T0 arg0, T1 arg1, Exception innerException = null)
+        {
+            if (!condition) {
+                throw new NotSupportedException(String.Format(format, arg0, arg1), innerException);
+            }
+        }
+
+        public static void ConditionSupported<T0, T1, T2>(bool condition, string format, T0 arg0, T1 arg1, T2 arg2, Exception innerException = null)
+        {
+            if (!condition) {
+                throw new NotSupportedException(String.Format(format, arg0, arg1, arg2), innerException);
+            }
+        }
+
         public static void ConditionValid(bool condition, string message, Exception innerException = null)
         {
             if (!condition) {
@@ -210,12 +231,26 @@
             }
         }
 
-        //public static void ConditionCast<T>(object value, string message)
-        //{
-        //    if (value != null && !(value is T)) {
-        //        throw new InvalidCastException(message);
-        //    }
-        //}
+        public static void ConditionValid<T0>(bool condition, string format, T0 arg0, Exception innerException = null)
+        {
+            if (!condition) {
+                throw new InvalidOperationException(String.Format(format, arg0), innerException);
+            }
+        }
+
+        public static void ConditionValid<T0, T1>(bool condition, string format, T0 arg0, T1 arg1, Exception innerException = null)
+        {
+            if (!condition) {
+                throw new InvalidOperationException(String.Format(format, arg0, arg1), innerException);
+            }
+        }
+
+        public static void ConditionValid<T0, T1, T2>(bool condition, string format, T0 arg0, T1 arg1, T2 arg2, Exception innerException = null)
+        {
+            if (!condition) {
+                throw new InvalidOperationException(String.Format(format, arg0, arg1, arg2), innerException);
+            }
+        }
 
         // General purpose - avoid if possible. Only value it really adds is to make sure all guard logic routes through Ensure.
         public static void Condition(bool condition, Func<Exception> getException)

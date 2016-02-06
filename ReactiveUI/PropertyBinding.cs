@@ -603,7 +603,9 @@ namespace ReactiveUI
 
             Ensure.ConditionSupported(
                 vmToViewConverter != null && viewToVMConverter != null,
-                String.Format("Can't two-way convert between {0} and {1}. To fix this, register a IBindingTypeConverter or call the version with converter Funcs.", typeof(TVMProp), typeof(TVProp)));
+                "Can't two-way convert between {0} and {1}. To fix this, register a IBindingTypeConverter or call the version with converter Funcs.",
+                typeof(TVMProp),
+                typeof(TVProp));
 
             OutFunc<TVMProp, TVProp> vmToViewFunc = (TVMProp vmValue, out TVProp vValue) => {
                 object tmp;
@@ -814,7 +816,9 @@ namespace ReactiveUI
 
             Ensure.ConditionSupported(
                 converter != null,
-                String.Format("Can't convert {0} to {1}. To fix this, register a IBindingTypeConverter", typeof(TVMProp), viewType));
+                "Can't convert {0} to {1}. To fix this, register a IBindingTypeConverter",
+                typeof(TVMProp),
+                viewType);
 
             var ret = evalBindingHooks(viewModel, view, vmExpression, viewExpression, BindingDirection.OneWay);
             if (!ret) return null;
@@ -921,7 +925,9 @@ namespace ReactiveUI
 
             Ensure.ConditionSupported(
                 converter != null,
-                String.Format("Can't convert {0} to {1}. To fix this, register a IBindingTypeConverter", typeof (TValue), typeof(TTValue)));
+                "Can't convert {0} to {1}. To fix this, register a IBindingTypeConverter",
+                typeof(TValue),
+                typeof(TTValue));
 
             var source = This.SelectMany(x => {
                 object tmp;

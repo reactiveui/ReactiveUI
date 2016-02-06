@@ -556,10 +556,9 @@ namespace ReactiveUI
 
             Ensure.ConditionValid(
                 parameter == null || parameter is TParam,
-                String.Format(
-                    "Command requires parameters of type {0}, but received parameter of type {1}.",
-                    typeof(TParam).FullName,
-                    parameter.GetType().FullName));
+                "Command requires parameters of type {0}, but received parameter of type {1}.",
+                typeof(TParam).FullName,
+                parameter == null ? null : parameter.GetType().FullName);
 
             this.ExecuteAsync((TParam)parameter);
         }

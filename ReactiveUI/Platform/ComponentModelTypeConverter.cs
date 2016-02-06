@@ -43,7 +43,9 @@ namespace ReactiveUI
 
             Ensure.ConditionSupported(
                 converter != null,
-                String.Format("Can't convert {0} to {1}. To fix this, register a IBindingTypeConverter", fromType, toType));
+                "Can't convert {0} to {1}. To fix this, register a IBindingTypeConverter",
+                fromType,
+                toType);
 
             try {
                 // TODO: This should use conversionHint to determine whether this is locale-aware or not
@@ -61,7 +63,9 @@ namespace ReactiveUI
                 // convert empty strings with some/all? converters
                 Ensure.ConditionSupported(
                     e.InnerException is IndexOutOfRangeException || e.InnerException is FormatException,
-                    string.Format("Can't convert from {0} to {1}.", from.GetType(), toType),
+                    "Can't convert from {0} to {1}.",
+                    from.GetType(),
+                    toType,
                     e);
 
                 result = null;

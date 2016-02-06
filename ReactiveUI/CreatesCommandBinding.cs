@@ -52,7 +52,8 @@ namespace ReactiveUI
 
             Ensure.ConditionValid(
                 eventInfo != null,
-                String.Format("Couldn't find a default event to bind to on {0}, specify an event expicitly", target.GetType().FullName));
+                "Couldn't find a default event to bind to on {0}, specify an event expicitly",
+                target.GetType().FullName);
 
             var mi = GetType().GetRuntimeMethods().First(x => x.Name == "BindCommandToObject" && x.IsGenericMethod);
             mi = mi.MakeGenericMethod(eventInfo.Args);

@@ -162,7 +162,8 @@ namespace ReactiveUI
 
             Ensure.ConditionValid(
                 result != null,
-                String.Format("Couldn't find a ICreatesObservableForProperty for {0}. This should never happen, your service locator is probably broken.", sender.GetType()));
+                "Couldn't find a ICreatesObservableForProperty for {0}. This should never happen, your service locator is probably broken.",
+                sender.GetType());
             
             return result.GetNotificationForProperty(sender, expression, beforeChange);
         }
