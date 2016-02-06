@@ -79,9 +79,9 @@ namespace ReactiveUI
         /// <param name="handler">The handler.</param>
         public static void AddHandler(TEventSource source, TEventHandler handler)
         {
-            source.EnsureGenericArgumentNotNull("source");
-            handler.EnsureGenericArgumentNotNull("handler");
-            Guard.Ensure(typeof(TEventHandler).GetTypeInfo().IsSubclassOf(typeof(Delegate)), "Handler must be Delegate type");
+            Ensure.GenericArgumentNotNull(source, "source");
+            Ensure.GenericArgumentNotNull(handler, "handler");
+            Ensure.ArgumentCondition(typeof(TEventHandler).GetTypeInfo().IsSubclassOf(typeof(Delegate)), "Handler must be Delegate type");
 
             WeakEventManager<TEventSource, TEventHandler, TEventArgs>.Current.PrivateAddHandler(source, handler);
         }
@@ -93,9 +93,9 @@ namespace ReactiveUI
         /// <param name="handler">The handler.</param>
         public static void RemoveHandler(TEventSource source, TEventHandler handler)
         {
-            source.EnsureGenericArgumentNotNull("source");
-            handler.EnsureGenericArgumentNotNull("handler");
-            Guard.Ensure(typeof(TEventHandler).GetTypeInfo().IsSubclassOf(typeof(Delegate)), "handler must be Delegate type");
+            Ensure.GenericArgumentNotNull(source, "source");
+            Ensure.GenericArgumentNotNull(handler, "handler");
+            Ensure.ArgumentCondition(typeof(TEventHandler).GetTypeInfo().IsSubclassOf(typeof(Delegate)), "Handler must be Delegate type");
 
             WeakEventManager<TEventSource, TEventHandler, TEventArgs>.Current.PrivateRemoveHandler(source, handler);
         }

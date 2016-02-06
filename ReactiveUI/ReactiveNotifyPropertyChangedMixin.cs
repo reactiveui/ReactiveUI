@@ -39,7 +39,7 @@ namespace ReactiveUI
                 bool beforeChange = false,
                 bool skipInitial = true)
         {
-            This.EnsureGenericArgumentNotNull("This");
+            Ensure.GenericArgumentNotNull(This, "This");
             
             /* x => x.Foo.Bar.Baz;
              * 

@@ -145,7 +145,7 @@ namespace ReactiveUI
             Contract.Requires(property != null);
 
             Expression expression = Reflection.Rewrite(property.Body);
-            Guard.Ensure(expression.GetParent().NodeType == ExpressionType.Parameter, "Property expression must be of the form 'x => x.SomeProperty'");
+            Ensure.ArgumentCondition(expression.GetParent().NodeType == ExpressionType.Parameter, "Property expression must be of the form 'x => x.SomeProperty'.", "property");
 
             var name = expression.GetMemberInfo().Name;
             var ret = new ObservableAsPropertyHelper<TRet>(observable, 

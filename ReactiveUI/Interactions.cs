@@ -151,7 +151,7 @@ namespace ReactiveUI
         /// </returns>
         public IDisposable RegisterHandler(Action<InteractionContext<TInput, TOutput>> handler)
         {
-            handler.EnsureNotNull("handler");
+            Ensure.ArgumentNotNull(handler, "handler");
 
             return RegisterHandler(interaction => {
                 handler(interaction);
@@ -176,7 +176,7 @@ namespace ReactiveUI
         /// </returns>
         public IDisposable RegisterHandler(Func<InteractionContext<TInput, TOutput>, Task> handler)
         {
-            handler.EnsureNotNull("handler");
+            Ensure.ArgumentNotNull(handler, "handler");
 
             return RegisterHandler(interaction => handler(interaction).ToObservable());
         }
@@ -198,7 +198,7 @@ namespace ReactiveUI
         /// </returns>
         public IDisposable RegisterHandler(Func<InteractionContext<TInput, TOutput>, IObservable<Unit>> handler)
         {
-            handler.EnsureNotNull("handler");
+            Ensure.ArgumentNotNull(handler, "handler");
 
             this.AddHandler(handler);
             return Disposable.Create(() => this.RemoveHandler(handler));

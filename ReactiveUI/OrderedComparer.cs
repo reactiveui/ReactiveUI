@@ -220,7 +220,7 @@ namespace ReactiveUI
 
         public ChainedComparer(IComparer<T> parent, Comparison<T> comparison)
         {
-            comparison.EnsureNotNull("comparison");
+            Ensure.ArgumentNotNull(comparison, "comparison");
 
             this.parent = parent;
             this.inner = comparison;

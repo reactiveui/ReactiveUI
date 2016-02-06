@@ -21,7 +21,7 @@ namespace ReactiveUI
         public IObservable<IObservedChange<object, object>> GetNotificationForProperty(object sender, Expression expression, bool beforeChanged = false)
         {
             var iro = sender as IReactiveObject;
-            Guard.Ensure(iro != null, "Sender doesn't implement IReactiveObject");
+            Ensure.ArgumentCondition(iro != null, "Sender must implement IReactiveObject.");
 
             var obs = beforeChanged ? iro.getChangingObservable() : iro.getChangedObservable();
 

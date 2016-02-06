@@ -601,7 +601,7 @@ namespace ReactiveUI
             var vmToViewConverter = vmToViewConverterOverride ?? getConverterForTypes(typeof (TVMProp), typeof (TVProp));
             var viewToVMConverter = viewToVMConverterOverride ?? getConverterForTypes(typeof (TVProp), typeof (TVMProp));
 
-            Guard.Ensure(
+            Ensure.ConditionSupported(
                 vmToViewConverter != null && viewToVMConverter != null,
                 String.Format("Can't two-way convert between {0} and {1}. To fix this, register a IBindingTypeConverter or call the version with converter Funcs.", typeof(TVMProp), typeof(TVProp)));
 
@@ -674,8 +674,8 @@ namespace ReactiveUI
             where TViewModel : class
             where TView : IViewFor
         {
-            vmToViewConverter.EnsureNotNull("vmToViewConverter");
-            viewToVmConverter.EnsureNotNull("viewToVmConverter");
+            Ensure.ArgumentNotNull(vmToViewConverter, "vmToViewConverter");
+            Ensure.ArgumentNotNull(viewToVmConverter, "viewToVmConverter");
 
             OutFunc<TVMProp, TVProp> vmToViewFunc = (TVMProp vmValue, out TVProp vValue) => {
                 vValue = vmToViewConverter(vmValue);
@@ -812,7 +812,9 @@ namespace ReactiveUI
             var viewType = viewExpression.Type;
             var converter = vmToViewConverterOverride ?? getConverterForTypes(typeof(TVMProp), viewType);
 
-            Guard.Ensure(converter != null, String.Format("Can't convert {0} to {1}. To fix this, register a IBindingTypeConverter", typeof(TVMProp), viewType));
+            Ensure.ConditionSupported(
+                converter != null,
+                String.Format("Can't convert {0} to {1}. To fix this, register a IBindingTypeConverter", typeof(TVMProp), viewType));
 
             var ret = evalBindingHooks(viewModel, view, vmExpression, viewExpression, BindingDirection.OneWay);
             if (!ret) return null;
@@ -908,7 +910,7 @@ namespace ReactiveUI
             object conversionHint = null,
             IBindingTypeConverter vmToViewConverterOverride = null)
         {
-            target.EnsureGenericArgumentNotNull("target");
+            Ensure.GenericArgumentNotNull(target, "target");
 
             var viewExpression = Reflection.Rewrite(property.Body);
 
@@ -917,7 +919,9 @@ namespace ReactiveUI
                 
             var converter = vmToViewConverterOverride ?? getConverterForTypes(typeof (TValue), typeof(TTValue));
 
-            Guard.Ensure(converter != null, String.Format("Can't convert {0} to {1}. To fix this, register a IBindingTypeConverter", typeof (TValue), typeof(TTValue)));
+            Ensure.ConditionSupported(
+                converter != null,
+                String.Format("Can't convert {0} to {1}. To fix this, register a IBindingTypeConverter", typeof (TValue), typeof(TTValue)));
 
             var source = This.SelectMany(x => {
                 object tmp;

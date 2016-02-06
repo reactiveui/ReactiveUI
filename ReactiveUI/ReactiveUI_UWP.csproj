@@ -58,6 +58,7 @@
     <Compile Include="CompatMixins.cs" />
     <Compile Include="ContractStubs.cs" />
     <Compile Include="CreatesCommandBinding.cs" />
+    <Compile Include="Ensure.cs" />
     <Compile Include="ExpressionMixins.cs" />
     <Compile Include="ExpressionRewriter.cs" />
     <Compile Include="IDependencyResolver.cs" />

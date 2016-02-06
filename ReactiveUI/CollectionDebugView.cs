@@ -10,7 +10,7 @@ namespace ReactiveUI
 
         public CollectionDebugView(ICollection<T> collection)
         {
-            collection.EnsureNotNull("collection");
+            Ensure.ArgumentNotNull(collection, "collection");
             this.collection = collection;
         }
 

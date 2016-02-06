@@ -97,6 +97,7 @@
     <Compile Include="CompatMixins.cs" />
     <Compile Include="ContractStubs.cs" />
     <Compile Include="CreatesCommandBinding.cs" />
+    <Compile Include="Ensure.cs" />
     <Compile Include="Interactions.cs" />
     <Compile Include="IDependencyResolver.cs" />
     <Compile Include="INPCObservableForProperty.cs" />

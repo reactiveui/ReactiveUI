@@ -273,12 +273,12 @@ namespace ReactiveUI
             var presentationGroup =
                 ((IEnumerable<VisualStateGroup>) VisualStateManager.GetVisualStateGroups(this.container)).Where(
                     o => o.Name == PresentationGroup).FirstOrDefault();
-            Guard.Ensure(presentationGroup != null, "Invalid VisualStateGroup.");
+            Ensure.ConditionSupported(presentationGroup != null, "Invalid VisualStateGroup.");
 
             var transition =
                 ((IEnumerable<VisualState>) presentationGroup.States).Where(o => o.Name == transitionName).Select(
                     o => o.Storyboard).FirstOrDefault();
-            Guard.Ensure(transition != null, "Invalid transition");
+            Ensure.ConditionSupported(transition != null, "Invalid transition");
 
             return transition;
         }
@@ -287,11 +287,11 @@ namespace ReactiveUI
         {
             // Wire up all of the various control parts.
             this.container = (Grid) GetTemplateChild("PART_Container");
-            Guard.Ensure(this.container != null, "PART_Container not found.");
+            Ensure.ConditionSupported(this.container != null, "PART_Container not found.");
 
             this.currentContentPresentationSite =
                 (ContentPresenter) GetTemplateChild("PART_CurrentContentPresentationSite");
-            Guard.Ensure(this.currentContentPresentationSite != null, "PART_CurrentContentPresentationSite not found.");
+            Ensure.ConditionSupported(this.currentContentPresentationSite != null, "PART_CurrentContentPresentationSite not found.");
 
             this.previousContentPresentationSite =
                 (ContentPresenter) GetTemplateChild("PART_PreviousContentPresentationSite");

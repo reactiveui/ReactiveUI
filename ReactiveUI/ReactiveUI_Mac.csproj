@@ -95,6 +95,7 @@
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Activation.cs" />
+    <Compile Include="Ensure.cs" />
     <Compile Include="ReactiveBinding.cs" />
     <Compile Include="AutoPersistHelper.cs" />
     <Compile Include="BindingTypeConverters.cs" />

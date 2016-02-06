@@ -75,7 +75,7 @@ namespace ReactiveUI
         public static Func<object, object[], object> GetValueFetcherOrThrow(MemberInfo member)
         {
             var ret = GetValueFetcherForProperty(member);
-            Guard.Ensure(ret != null, String.Format("Type '{0}' must have a property '{1}'", member.DeclaringType, member.Name));
+            Ensure.ConditionSupported(ret != null, String.Format("Type '{0}' must have a property '{1}'", member.DeclaringType, member.Name));
             return ret;
         }
 
@@ -99,7 +99,7 @@ namespace ReactiveUI
         public static Action<object, object, object[]> GetValueSetterOrThrow(MemberInfo member)
         {
             var ret = GetValueSetterForProperty(member);
-            Guard.Ensure(ret != null, String.Format("Type '{0}' must have a property '{1}'", member.DeclaringType, member.Name));
+            Ensure.ConditionSupported(ret != null, String.Format("Type '{0}' must have a property '{1}'", member.DeclaringType, member.Name));
             return ret;
         }
 
