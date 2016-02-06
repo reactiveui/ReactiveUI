@@ -1,6 +1,8 @@
-﻿using System.Linq;
+﻿using System;
+using System.Reactive;
+using System.Reactive.Concurrency;
 using System.Reactive.Linq;
-using System.Threading.Tasks;
+using Microsoft.Reactive.Testing;
 using Xunit;
 
 namespace ReactiveUI.Tests
@@ -8,122 +10,113 @@ namespace ReactiveUI.Tests
     public class InteractionsTest
     {
         [Fact]
-        public void UnhandledGlobalInteractionsShouldCauseException()
+        public void UnhandledInteractionsShouldCauseException()
         {
-            var sut = new UserInteraction<bool>();
-            Assert.Throws<UnhandledUserInteractionException>(() => sut.RaiseGlobal().First());
+            var interaction = new Interaction<string, Unit>();
+            Assert.Throws<UnhandledInteractionException<string, Unit>>(() => interaction.Handle("foo").FirstAsync().Wait());
+
+            interaction.RegisterHandler(_ => { });
+            interaction.RegisterHandler(_ => { });
+            Assert.Throws<UnhandledInteractionException<string, Unit>>(() => interaction.Handle("foo").FirstAsync().Wait());
         }
 
         [Fact]
-        public void HandledGlobalInteractionsShouldNotCauseException()
+        public void HandledInteractionsShouldNotCauseException()
         {
-            var sut = new UserInteraction<bool>();
+            var interaction = new Interaction<Unit, bool>();
+            interaction.RegisterHandler(c => c.SetOutput(true));
 
-            using (UserInteraction.RegisterGlobalHandler<UserInteraction<bool>>(x => x.SetResult(true)))
-            {
-                var result = sut.RaiseGlobal().First();
-                Assert.True(result);
-            }
-
-            Assert.Throws<UnhandledUserInteractionException>(() => sut.RaiseGlobal().First());
+            interaction.Handle(Unit.Default).FirstAsync().Wait();
         }
 
         [Fact]
-        public void NestedGlobalHandlersAreExecutedInReverseOrderOfSubscription()
+        public void NestedHandlersAreExecutedInReverseOrderOfSubscription()
         {
-            using (UserInteraction.RegisterGlobalHandler<UserInteraction<string>>(x => x.SetResult("A")))
-            {
-                Assert.Equal("A", new UserInteraction<string>().RaiseGlobal().First());
+            var interaction = new Interaction<Unit, string>();
 
-                using (UserInteraction.RegisterGlobalHandler<UserInteraction<string>>(x => x.SetResult("B")))
-                {
-                    Assert.Equal("B", new UserInteraction<string>().RaiseGlobal().First());
+            using (interaction.RegisterHandler(x => x.SetOutput("A"))) {
+                Assert.Equal("A", interaction.Handle(Unit.Default).FirstAsync().Wait());
 
-                    using (UserInteraction.RegisterGlobalHandler<UserInteraction<string>>(x => x.SetResult("C")))
-                    {
-                        Assert.Equal("C", new UserInteraction<string>().RaiseGlobal().First());
+                using (interaction.RegisterHandler(x => x.SetOutput("B"))) {
+                    Assert.Equal("B", interaction.Handle(Unit.Default).FirstAsync().Wait());
+
+                    using (interaction.RegisterHandler(x => x.SetOutput("C"))) {
+                        Assert.Equal("C", interaction.Handle(Unit.Default).FirstAsync().Wait());
                     }
 
-                    Assert.Equal("B", new UserInteraction<string>().RaiseGlobal().First());
+                    Assert.Equal("B", interaction.Handle(Unit.Default).FirstAsync().Wait());
                 }
 
-                Assert.Equal("A", new UserInteraction<string>().RaiseGlobal().First());
+                Assert.Equal("A", interaction.Handle(Unit.Default).FirstAsync().Wait());
             }
         }
 
         [Fact]
-        public void GlobalHandlersCanOptNotToHandleTheInteraction()
+        public void HandlersCanOptNotToHandleTheInteraction()
         {
-            var handlerA = UserInteraction.RegisterGlobalHandler<CustomInteraction>(x => x.SetResult("A"));
-            var handlerB = UserInteraction.RegisterGlobalHandler<CustomInteraction>(
-                x =>
-                {
-                    // only handle if the interaction is Super Important
-                    if (x.IsSuperImportant)
-                    {
-                        x.SetResult("B");
+            var interaction = new Interaction<bool, string>();
+
+            var handler1A = interaction.RegisterHandler(x => x.SetOutput("A"));
+            var handler1B = interaction.RegisterHandler(
+                x => {
+                    // only handle if the input is true
+                    if (x.Input) {
+                        x.SetOutput("B");
                     }
                 });
-            var handlerC = UserInteraction.RegisterGlobalHandler<CustomInteraction>(x => x.SetResult("C"));
+            var handler1C = interaction.RegisterHandler(x => x.SetOutput("C"));
 
-            using (handlerA)
-            {
-                using (handlerB)
-                {
-                    using (handlerC)
-                    {
-                        Assert.Equal("C", new CustomInteraction(false).RaiseGlobal().First());
-                        Assert.Equal("C", new CustomInteraction(true).RaiseGlobal().First());
+            using (handler1A) {
+                using (handler1B) {
+                    using (handler1C) {
+                        Assert.Equal("C", interaction.Handle(false).FirstAsync().Wait());
+                        Assert.Equal("C", interaction.Handle(true).FirstAsync().Wait());
                     }
 
-                    Assert.Equal("A", new CustomInteraction(false).RaiseGlobal().First());
-                    Assert.Equal("B", new CustomInteraction(true).RaiseGlobal().First());
+                    Assert.Equal("A", interaction.Handle(false).FirstAsync().Wait());
+                    Assert.Equal("B", interaction.Handle(true).FirstAsync().Wait());
                 }
 
-                Assert.Equal("A", new CustomInteraction(false).RaiseGlobal().First());
-                Assert.Equal("A", new CustomInteraction(true).RaiseGlobal().First());
+                Assert.Equal("A", interaction.Handle(false).FirstAsync().Wait());
+                Assert.Equal("A", interaction.Handle(true).FirstAsync().Wait());
             }
         }
 
         [Fact]
-        public void GlobalHandlersCanContainAsynchronousCode()
+        public void HandlersCanContainAsynchronousCode()
         {
+            var scheduler = new TestScheduler();
+            var interaction = new Interaction<Unit, string>();
+
             // even though handler B is "slow" (i.e. mimicks waiting for the user), it takes precedence over A, so we expect A to never even be called
-            var handlerAWasCalled = false;
-            var handlerA = UserInteraction.RegisterGlobalHandler<UserInteraction<string>>(
+            var handler1AWasCalled = false;
+            var handler1A = interaction.RegisterHandler(
+                x => {
+                    x.SetOutput("A");
+                    handler1AWasCalled = true;
+                });
+            var handler1B = interaction.RegisterHandler(
                 x =>
-                {
-                    x.SetResult("A");
-                    handlerAWasCalled = true;
-                });
-            var handlerB = UserInteraction.RegisterGlobalHandler<UserInteraction<string>>(
-                async x =>
-                {
-                    await Task.Delay(10);
-                    x.SetResult("B");
-                });
+                    Observable
+                        .Return(Unit.Default)
+                        .Delay(TimeSpan.FromSeconds(1), scheduler)
+                        .Do(_ => x.SetOutput("B")));
 
-            using (handlerA)
-            using (handlerB)
-            {
-                Assert.Equal("B", new UserInteraction<string>().RaiseGlobal().First());
+            using (handler1A)
+            using (handler1B) {
+                var result = interaction
+                    .Handle(Unit.Default)
+                    .CreateCollection(ImmediateScheduler.Instance);
+
+                Assert.Equal(0, result.Count);
+                scheduler.AdvanceBy(TimeSpan.FromSeconds(0.5).Ticks);
+                Assert.Equal(0, result.Count);
+                scheduler.AdvanceBy(TimeSpan.FromSeconds(0.6).Ticks);
+                Assert.Equal(1, result.Count);
+                Assert.Equal("B", result[0]);
             }
 
-            Assert.False(handlerAWasCalled);
-        }
-
-        private class CustomInteraction : UserInteraction<string>
-        {
-            public CustomInteraction(bool isSuperImportant)
-            {
-                IsSuperImportant = isSuperImportant;
-            }
-
-            public bool IsSuperImportant
-            {
-                get;
-                set;
-            }
+            Assert.False(handler1AWasCalled);
         }
     }
 }

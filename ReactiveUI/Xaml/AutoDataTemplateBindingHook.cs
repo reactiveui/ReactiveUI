@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-#if WINRT
+#if NETFX_CORE
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Markup;
@@ -24,7 +24,7 @@ namespace ReactiveUI
     public class AutoDataTemplateBindingHook : IPropertyBindingHook
     {
         public static Lazy<DataTemplate> DefaultItemTemplate = new Lazy<DataTemplate>(() => {
-#if WINRT
+#if NETFX_CORE
             const string template = "<DataTemplate xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation' xmlns:xaml='using:ReactiveUI'>" +
                 "<xaml:ViewModelViewHost ViewModel=\"{Binding}\" VerticalContentAlignment=\"Stretch\" HorizontalContentAlignment=\"Stretch\" IsTabStop=\"False\" />" +
             "</DataTemplate>";
@@ -38,7 +38,7 @@ namespace ReactiveUI
             assemblyName = assemblyName.Substring(0, assemblyName.IndexOf(','));
 #endif
 
-            #if SILVERLIGHT || WINRT
+#if SILVERLIGHT || NETFX_CORE
             return (DataTemplate) XamlReader.Load(
             #else
             return (DataTemplate) XamlReader.Parse(

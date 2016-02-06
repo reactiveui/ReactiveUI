@@ -36,12 +36,9 @@ namespace ReactiveUI
             return 0;
         }
 
-        static MethodInfo genericMi = null;
-        static MemoizingMRUCache<Type, MethodInfo> referenceCastCache = new MemoizingMRUCache<Type, MethodInfo>((t, _) => {
-            genericMi = genericMi ??
-                typeof(EqualityTypeConverter).GetRuntimeMethods().First(x => x.Name == "DoReferenceCast");
-
-            return genericMi.MakeGenericMethod(new[] {t});
+        static MethodInfo mi = null;
+        static readonly MemoizingMRUCache<Type, MethodInfo> referenceCastCache = new MemoizingMRUCache<Type, MethodInfo>((t, _) => {
+            return mi = mi ?? typeof(EqualityTypeConverter).GetRuntimeMethods().First(x => x.Name == nameof(DoReferenceCast));
         }, RxApp.SmallCacheLimit);
 
         public bool TryConvert(object from, Type toType, object conversionHint, out object result)
@@ -54,7 +51,7 @@ namespace ReactiveUI
             }
 
             try {
-                result = mi.Invoke(null, new[] {from});
+                result = mi.Invoke(null, new[] {from, toType});
             } catch (Exception ex) {
                 this.Log().WarnException("Couldn't convert object to type: " + toType, ex);
                 result = null;
@@ -63,24 +60,46 @@ namespace ReactiveUI
             return true;
         }
 
-        public static object DoReferenceCast<T>(object from)
+        public static object DoReferenceCast(object from, Type targetType)
         {
-            var targetType = typeof (T);
             var backingNullableType = Nullable.GetUnderlyingType(targetType);
 
             if (backingNullableType == null) {
-                return (T) from;
-            }
+                if (from == null) {
+                    if (targetType.GetTypeInfo().IsValueType) {
+                        throw new InvalidCastException("Can't convert from nullable-type which is null to non-nullable type");
+                    }
 
-            if (from == null) {
-                var ut = Nullable.GetUnderlyingType(targetType);
-                if (ut == null) {
-                    throw new Exception("Can't convert from nullable-type which is null to non-nullable type");
+                    return null;
                 }
-                return default(T);
+
+                if (isInstanceOfType(from, targetType)) {
+                    return from;
+                }
+
+                throw new InvalidCastException();
             }
 
-            return (T) Convert.ChangeType(from, backingNullableType, null);
+            if (from == null)
+            {
+                return null;
+            }
+
+            var converted = Convert.ChangeType(from, backingNullableType, null);
+            if(!isInstanceOfType(converted, targetType)) {
+                throw new InvalidCastException();
+            }
+
+            return converted;
+        }
+
+        static bool isInstanceOfType(object from, Type targetType)
+        {
+#if NETFX_CORE || PORTABLE
+            return targetType.GetTypeInfo().IsAssignableFrom(from.GetType().GetTypeInfo());
+#else
+            return targetType.IsInstanceOfType(from);
+#endif
         }
     }
 
