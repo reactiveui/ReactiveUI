@@ -143,18 +143,26 @@ namespace ReactiveUI
     {
         public static IObservable<TRet> WhenAnyObservable<TSender, TRet>(this TSender This, Expression<Func<TSender, IObservable<TRet>>> obs1)
         {
-            return This.WhenAny(obs1, x => x.Value).Switch();
+            return This.WhenAny(obs1, x => x.Value.EmptyIfNull()).Switch();
         }
 
 <# for(int length=2; length <= maxFuncLength; length++) { #>
 <# string paramsStr = String.Join(", ", Enumerable.Range(1, length).Select(x => "Expression<Func<TSender, IObservable<TRet>>> obs" + x.ToString())); #>
 <# string varsStr = String.Join(", ", Enumerable.Range(1, length).Select(x => "obs" + x.ToString())); #>
-<# string valsStr = String.Join(", ", Enumerable.Range(1, length).Select(x => "o" + x.ToString() + ".Value")); #>
+<# string valsStr = String.Join(", ", Enumerable.Range(1, length).Select(x => "o" + x.ToString() + ".Value.EmptyIfNull()")); #>
         public static IObservable<TRet> WhenAnyObservable<TSender, TRet>(this TSender This, <#= paramsStr #>)
         {
             return This.WhenAny(<#= varsStr #>, (<#=varsStr.Replace("obs", "o")#>) => new[] {<#= valsStr #>})
                 .Select(x => x.Merge()).Switch();
         }
 <# } #>
+    }
+
+    internal static class ObservableExtensions
+    {
+        public static IObservable<T> EmptyIfNull<T>(this IObservable<T> @this)
+        {
+            return @this ?? Observable.Empty<T>();
+        }
     }
 }
