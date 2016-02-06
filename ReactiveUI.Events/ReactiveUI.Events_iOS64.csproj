@@ -75,13 +75,14 @@
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
   <!-- Visual Studio -->
   <PropertyGroup Condition="'$(OS)' == 'Windows_NT'">
-    <PreBuildEvent>%25SystemRoot%25\Microsoft.NET\Framework\v4.0.30319\msbuild.exe /p:Configuration=Release "$(ProjectDir)EventBuilder.csproj"
+    <PreBuildEvent>%25SystemRoot%25\Microsoft.NET\Framework\v4.0.30319\msbuild.exe /nologo /v:q /p:Configuration=Release "$(ProjectDir)EventBuilder.csproj"
 "$(ProjectDir)EventBuilder.exe" "C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\Xamarin.iOS\v1.0\Xamarin.iOS.dll"  "$(ProjectDir)Events.mustache" &gt; "$(ProjectDir)Events.cs"
-del "$(ProjectDir)EventBuilder.exe"
-del "$(ProjectDir)EventBuilder.pdb"
-del "$(ProjectDir)Nustache.Core.dll"
-del "$(ProjectDir)Mono.Cecil.dll"
-del "$(ProjectDir)Mono.Cecil.pdb"</PreBuildEvent>
+del "$(ProjectDir)EventBuilder.exe" 1&gt; nul 2&gt;&amp;1
+del "$(ProjectDir)EventBuilder.pdb" 1&gt; nul 2&gt;&amp;1
+del "$(ProjectDir)Nustache.Core.dll" 1&gt; nul 2&gt;&amp;1
+del "$(ProjectDir)Mono.Cecil.dll" 1&gt; nul 2&gt;&amp;1
+del "$(ProjectDir)Mono.Cecil.pdb" 1&gt; nul 2&gt;&amp;1
+    </PreBuildEvent>
   </PropertyGroup>
   <!-- Xamarin Studio -->
   <PropertyGroup Condition="'$(OS)' != 'Windows_NT'">
