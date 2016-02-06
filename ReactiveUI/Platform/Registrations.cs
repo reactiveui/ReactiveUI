@@ -32,7 +32,7 @@ namespace ReactiveUI
         {
             registerFunction(() => new PlatformOperations(), typeof(IPlatformOperations));
 
-#if !WINRT && !WP8 && !WP81
+#if !NETFX_CORE && !WP8 && !WP81
             registerFunction(() => new ComponentModelTypeConverter(), typeof(IBindingTypeConverter));
 #endif
 
@@ -68,11 +68,11 @@ namespace ReactiveUI
             RxApp.MainThreadScheduler = new WaitForDispatcherScheduler(() => new NSRunloopScheduler());
 #endif
 
-#if !MONO && !WINRT
+#if !MONO && !NETFX_CORE
             RxApp.MainThreadScheduler = new WaitForDispatcherScheduler(() => DispatcherScheduler.Current);
 #endif
 
-#if WINRT
+#if NETFX_CORE
             RxApp.MainThreadScheduler = new WaitForDispatcherScheduler(() => CoreDispatcherScheduler.Current);
 #endif
 
@@ -82,7 +82,7 @@ namespace ReactiveUI
 
 #if WP8
             registerFunction(() => new PhoneServiceStateDriver(), typeof (ISuspensionDriver));
-#elif WINRT
+#elif NETFX_CORE
             registerFunction(() => new WinRTAppDataDriver(), typeof(ISuspensionDriver));
 #elif UIKIT
             registerFunction(() => new AppSupportJsonSuspensionDriver(), typeof(ISuspensionDriver));
