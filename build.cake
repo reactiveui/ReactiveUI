@@ -33,6 +33,10 @@ var semVersion = local ? version : (version + string.Concat("-sha-", gitSha));
 
 // Define directories.
 
+
+// Define global marcos.
+Action Abort = () => { throw new Exception("a non-recoverable fatal error occurred."); };
+
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP / TEARDOWN
 ///////////////////////////////////////////////////////////////////////////////
@@ -54,45 +58,141 @@ Task ("BuildEventBuilder")
     .IsDependentOn("RestorePackages")
     .IsDependentOn("UpdateAssemblyInfo")
     .Does (() =>
-    {
-        if(isRunningOnUnix)
-        {
-            // run mdtool
-        }
-        else
-        {
-            MSBuild("./EventBuilder.sln", new MSBuildSettings()
-                .SetConfiguration(configuration)
-                .WithProperty("Windows", "True")
-                .WithProperty("TreatWarningsAsErrors", "True")
-                .UseToolVersion(MSBuildToolVersion.NET45)
-                .SetVerbosity(Verbosity.Minimal)
-                .SetNodeReuse(false));
-        }
-    }
-);
+{
 
-Task ("BuildEvents")
-    .IsDependentOn("RestorePackages")
-    .IsDependentOn("UpdateAssemblyInfo")
+    if(isRunningOnUnix)
+    {
+
+        throw new NotImplementedException("Building events on OSX is not implemented yet.");
+        // run mdtool
+    }
+    else
+    {
+        MSBuild("./EventBuilder.sln", new MSBuildSettings()
+            .SetConfiguration(configuration)
+            .WithProperty("TreatWarningsAsErrors", "True")
+            .SetVerbosity(Verbosity.Minimal)
+            .SetNodeReuse(false));
+    }
+});
+
+Task ("GenerateEvents")
     .IsDependentOn("BuildEventBuilder")
     .Does (() =>
+{
+    if(isRunningOnUnix)
     {
-        if(isRunningOnUnix)
-        {
-            // run mdtool
-        }
-        else
-        {
-            // run msbuild
-        }
+        throw new NotImplementedException("Building events on OSX is not implemented yet.");
     }
-);
+    else
+    {
+        var eventBuilder = "EventBuilder/bin/Release/EventBuilder.exe";
+        var workingDirectory = "EventBuilder/bin/Release";
+
+        Action<string> generate = (string platform) =>
+        {
+            using(var process = StartAndReturnProcess(eventBuilder,
+                new ProcessSettings{
+                    Arguments = "--platform=" + platform,
+                    WorkingDirectory = workingDirectory,
+                    RedirectStandardOutput = true }))
+            {
+                // super important to ensure that the platform is always
+                // uppercase so that the events are written to the write
+                // filename as UNIX is case-sensitive - even though OSX
+                // isn't by default.
+                platform = platform.ToUpper();
+
+                Information("Generating events for '{0}'", platform);
+
+                int timeout = 10 * 60 * 1000;   // x Minute, y Second, z Millisecond
+                process.WaitForExit(timeout);
+
+                var stdout = process.GetStandardOutput();
+
+                int success = 0;    // exit code aka %ERRORLEVEL% or $?
+                if (process.GetExitCode() != success)
+                {
+                    Error("Failed to generate events for '{0}'", platform);
+                    Abort();
+                }
+
+                var directory = "ReactiveUI.Events/";
+                var filename = String.Format("Events_{0}.cs", platform);
+                var output = System.IO.Path.Combine(directory, filename);
+
+                FileWriteLines(output, stdout.ToArray());
+                Information("The events have been written to '{0}'", output);
+            }
+        };
+
+        //generate("android");
+        //generate("ios");
+
+        //Warning("Generating events for '{0}' is not implemented on Windows yet.", "MAC");
+        //generate("mac");
+
+        //generate("net45");
+        //generate("winrt");
+
+        //generate("uwp");
+        //generate("wp8");
+        //generate("wpa81");
+        //generate("xamforms");
+    }
+});
+
+Task ("BuildEvents")
+    .IsDependentOn("GenerateEvents")
+    .Does (() =>
+{
+    if(isRunningOnUnix)
+    {
+        throw new NotImplementedException("Building events on OSX is not implemented yet.");
+    }
+    else
+    {
+        Action<string> build = (string filename) =>
+        {
+            var project = System.IO.Path.Combine("./ReactiveUI.Events", filename);
+
+            MSBuild(project, new MSBuildSettings()
+                .SetConfiguration(configuration)
+                .WithProperty("TreatWarningsAsErrors", "True")
+                .SetVerbosity(Verbosity.Minimal)
+                .SetNodeReuse(false));
+        };
+
+        //build("ReactiveUI.Events_Android.csproj");
+        build("ReactiveUI.Events_iOS.csproj");
+
+        Warning("Building events for '{0}' is not implemented on Windows yet.", "MAC");
+        //build("ReactiveUI.Events_MAC.csproj");
+
+        //build("ReactiveUI.Events_NET45.csproj");
+        //build("ReactiveUI.Events_WINRT.csproj");
+
+        //build("ReactiveUI.Events_UWP.csproj");
+        //build("ReactiveUI.Events_WP8.csproj");
+        //build("ReactiveUI.Events_WPA81.csproj");
+        //build("ReactiveUI.Events_XamForms.csproj");
+
+
+    }
+});
+
+
+Task ("PackageEvents")
+    .IsDependentOn("BuildEvents")
+    .Does (() =>
+{
+
+});
 
 Task ("UpdateAssemblyInfo")
     .Does (() =>
 {
-    var file = "CommonAssemblySolutionInfo.cs";
+    var file = "./CommonAssemblySolutionInfo.cs";
 
     CreateAssemblyInfo(file, new AssemblyInfoSettings {
         Product = "ReactiveUI",
@@ -105,7 +205,16 @@ Task ("UpdateAssemblyInfo")
 
 Task ("RestorePackages").Does (() =>
 {
-    NuGetRestore ("EventBuilder.sln");
+    NuGetRestore ("./EventBuilder.sln");
+    NuGetRestore ("./ReactiveUI.sln");
+});
+
+Task ("Package").Does (() =>
+{
+    if(isRunningOnUnix)
+    {
+        // Abort abort, packaging only works on Windows!
+    }
 });
 
 //////////////////////////////////////////////////////////////////////
@@ -117,4 +226,4 @@ Task ("RestorePackages").Does (() =>
 // EXECUTION
 //////////////////////////////////////////////////////////////////////
 
-RunTarget("BuildEventBuilder");
+RunTarget("PackageEvents");
