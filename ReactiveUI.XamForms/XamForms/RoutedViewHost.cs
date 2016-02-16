@@ -5,6 +5,7 @@ using ReactiveUI;
 using System.Reactive.Linq;
 using System.Reactive.Threading.Tasks;
 using System.Diagnostics;
+using System.Reactive;
 
 namespace ReactiveUI.XamForms
 {
@@ -35,6 +36,44 @@ namespace ReactiveUI.XamForms
                     })
                     .Subscribe ());
 
+                var previousCount = this.WhenAnyObservable(x => x.Router.NavigationStack.CountChanged).StartWith(this.Router.NavigationStack.Count);
+                var currentCount = previousCount.Skip(1);
+
+                d (Observable.Zip(previousCount, currentCount, (previous, current) => new { Delta = previous - current, Current = current })
+                    .Where(x => x.Delta > 0)
+                    .SelectMany(
+                        async x =>
+                        {
+                            // XF doesn't provide a means of navigating back more than one screen at a time apart from navigating right back to the root page
+                            // since we want as sensible an animation as possible, we pop to root if that makes sense. Otherwise, we pop each individual
+                            // screen until the delta is made up, animating only the last one
+                            var popToRoot = x.Current == 1;
+                            currentlyPopping = true;
+
+                            try
+                            {
+                                if (popToRoot)
+                                {
+                                    await this.PopToRootAsync(true);
+                                }
+                                else
+                                {
+                                    for (var i = 0; i < x.Delta; ++i)
+                                    {
+                                        await this.PopAsync(i == x.Delta - 1);
+                                    }
+                                }
+                            }
+                            finally
+                            {
+                                currentlyPopping = false;
+                            }
+
+                            return Unit.Default;
+                        })
+                    .Do(_ => ((IViewFor)this.CurrentPage).ViewModel = Router.GetCurrentViewModel())
+                    .Subscribe());
+                
                 d(this.WhenAnyObservable(x => x.Router.Navigate)
                     .SelectMany(_ => PageForViewModel(Router.GetCurrentViewModel()))
                     .SelectMany(async x => {
@@ -51,17 +90,6 @@ namespace ReactiveUI.XamForms
                         popToRootPending = false;
                         return x;
                     })
-                    .Subscribe());
-
-                d(this.WhenAnyObservable(x => x.Router.NavigateBack)
-                    .SelectMany(async x => {
-                        currentlyPopping = true;
-                        await this.PopAsync();
-                        currentlyPopping = false;
-
-                        return x;
-                    })
-                    .Do(_ => ((IViewFor)this.CurrentPage).ViewModel = Router.GetCurrentViewModel())
                     .Subscribe());
 
                 var poppingEvent = Observable.FromEventPattern<NavigationEventArgs>(x => this.Popped += x, x => this.Popped -= x);
