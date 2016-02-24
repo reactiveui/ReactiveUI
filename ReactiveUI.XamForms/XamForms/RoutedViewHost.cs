@@ -24,6 +24,7 @@ namespace ReactiveUI.XamForms
             this.WhenActivated(new Action<Action<IDisposable>>(d => {
                 bool currentlyPopping = false;
                 bool popToRootPending = false;
+                bool userInstigated = false;
 
                 d (this.WhenAnyObservable (x => x.Router.NavigationStack.Changed)
                     .Where(_ => Router.NavigationStack.IsEmpty)
@@ -40,6 +41,7 @@ namespace ReactiveUI.XamForms
                 var currentCount = previousCount.Skip(1);
 
                 d (Observable.Zip(previousCount, currentCount, (previous, current) => new { Delta = previous - current, Current = current })
+				    .Where(_ => !userInstigated)
                     .Where(x => x.Delta > 0)
                     .SelectMany(
                         async x =>
@@ -99,7 +101,14 @@ namespace ReactiveUI.XamForms
                 d(poppingEvent
                     .Where(_ => !currentlyPopping && Router != null)
                     .Subscribe(_ => {
-                        Router.NavigationStack.RemoveAt(Router.NavigationStack.Count - 1);
+                        userInstigated = true;
+
+                        try {
+                            Router.NavigationStack.RemoveAt(Router.NavigationStack.Count - 1);
+                        } finally {
+                            userInstigated = false;
+                        }
+
                         ((IViewFor)this.CurrentPage).ViewModel = Router.GetCurrentViewModel();
                     }));
             }));
