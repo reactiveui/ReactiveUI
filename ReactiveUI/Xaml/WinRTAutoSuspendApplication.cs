@@ -15,7 +15,7 @@ namespace ReactiveUI
 {
     public class AutoSuspendHelper : IEnableLogger
     {
-        readonly ReplaySubject<LaunchActivatedEventArgs> _launched = new ReplaySubject<LaunchActivatedEventArgs>(1);
+        readonly ReplaySubject<IActivatedEventArgs> _launched = new ReplaySubject<IActivatedEventArgs>(1);
 
         public AutoSuspendHelper(Application app)
         {
@@ -48,7 +48,7 @@ namespace ReactiveUI
             RxApp.SuspensionHost.ShouldInvalidateState = shouldInvalidateState;
         }
 
-        public void OnLaunched(LaunchActivatedEventArgs args)
+        public void OnLaunched(IActivatedEventArgs args)
         {
             _launched.OnNext(args);
         }
