@@ -4,10 +4,9 @@ using System.Linq;
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using System.Reflection;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using Splat;
 
 namespace ReactiveUI
@@ -37,8 +36,11 @@ namespace ReactiveUI
     public sealed class ViewModelActivator
     {
         readonly List<Func<IEnumerable<IDisposable>>> blocks;
+        readonly Subject<Unit> deactivated = new Subject<Unit>();
         IDisposable activationHandle = Disposable.Empty;
         int refCount = 0;
+
+        public IObservable<Unit> Deactivated { get { return deactivated; } }
 
         public ViewModelActivator()
         {
@@ -76,6 +78,7 @@ namespace ReactiveUI
         {
             if (Interlocked.Decrement(ref refCount) == 0 || ignoreRefCount) {
                 Interlocked.Exchange(ref activationHandle, Disposable.Empty).Dispose();
+                deactivated.OnNext(Unit.Default);
             }
         }
     }
