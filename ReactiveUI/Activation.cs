@@ -4,10 +4,9 @@ using System.Linq;
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using System.Reflection;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using Splat;
 
 namespace ReactiveUI
@@ -37,12 +36,29 @@ namespace ReactiveUI
     public sealed class ViewModelActivator
     {
         readonly List<Func<IEnumerable<IDisposable>>> blocks;
+        readonly Subject<Unit> activated;
+        readonly Subject<Unit> deactivated;
+
         IDisposable activationHandle = Disposable.Empty;
         int refCount = 0;
+
+        /// <summary>
+        /// Activated observable will tick every time the Activator is activated.
+        /// </summary>
+        /// <value>The activated.</value>
+        public IObservable<Unit> Activated { get { return activated; } }
+
+        /// <summary>
+        /// Deactivated observable will tick every time the Activator is deactivated.
+        /// </summary>
+        /// <value>The deactivated.</value>
+        public IObservable<Unit> Deactivated { get { return deactivated; } }
 
         public ViewModelActivator()
         {
             blocks = new List<Func<IEnumerable<IDisposable>>>();
+            activated = new Subject<Unit>();
+            deactivated = new Subject<Unit>();
         }
 
         internal void addActivationBlock(Func<IEnumerable<IDisposable>> block)
@@ -61,6 +77,7 @@ namespace ReactiveUI
             if (Interlocked.Increment(ref refCount) == 1) {
                 var disp = new CompositeDisposable(blocks.SelectMany(x => x()));
                 Interlocked.Exchange(ref activationHandle, disp).Dispose();
+                activated.OnNext(Unit.Default);
             }
 
             return Disposable.Create(() => Deactivate());
@@ -76,6 +93,7 @@ namespace ReactiveUI
         {
             if (Interlocked.Decrement(ref refCount) == 0 || ignoreRefCount) {
                 Interlocked.Exchange(ref activationHandle, Disposable.Empty).Dispose();
+                deactivated.OnNext(Unit.Default);
             }
         }
     }
