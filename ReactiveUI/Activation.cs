@@ -109,6 +109,7 @@ namespace ReactiveUI
         /// WhenActivated allows you to register a Func to be called when a
         /// ViewModel's View is Activated.
         /// </summary>
+        /// <param name="This">Object that supports activation.</param>
         /// <param name="block">The method to be called when the corresponding
         /// View is activated. It returns a list of Disposables that will be
         /// cleaned up when the View is deactivated.</param>
@@ -121,6 +122,7 @@ namespace ReactiveUI
         /// WhenActivated allows you to register a Func to be called when a
         /// ViewModel's View is Activated.
         /// </summary>
+        /// <param name="This">Object that supports activation.</param>
         /// <param name="block">The method to be called when the corresponding
         /// View is activated. The Action parameter (usually called 'd') allows
         /// you to register Disposables to be cleaned up when the View is
@@ -138,6 +140,7 @@ namespace ReactiveUI
         /// WhenActivated allows you to register a Func to be called when a
         /// View is Activated.
         /// </summary>
+        /// <param name="This">Object that supports activation.</param>
         /// <param name="block">The method to be called when the corresponding
         /// View is activated. It returns a list of Disposables that will be
         /// cleaned up when the View is deactivated.</param>
@@ -151,6 +154,7 @@ namespace ReactiveUI
         /// WhenActivated allows you to register a Func to be called when a
         /// View is Activated.
         /// </summary>
+        /// <param name="This">Object that supports activation.</param>
         /// <param name="block">The method to be called when the corresponding
         /// View is activated. It returns a list of Disposables that will be
         /// cleaned up when the View is deactivated.</param>
@@ -162,16 +166,16 @@ namespace ReactiveUI
         {
             var activationFetcher = activationFetcherCache.Get(This.GetType());
             if (activationFetcher == null) {
-                var msg = "Don't know how to detect when {0} is activated/deactivated, you may need to implement IActivationForViewFetcher";
+                const string msg = "Don't know how to detect when {0} is activated/deactivated, you may need to implement IActivationForViewFetcher";
                 throw new ArgumentException(String.Format(msg, This.GetType().FullName));
             }
 
             var activationEvents = activationFetcher.GetActivationForView(This);
 
             var vmDisposable = Disposable.Empty;
-            var v = view ?? This;
-            if (v is IViewFor) {
-                vmDisposable = handleViewModelActivation(v as IViewFor, activationEvents);
+            var v = (view ?? This) as IViewFor;
+            if (v != null) {
+                vmDisposable = handleViewModelActivation(v, activationEvents);
             }
 
             var viewDisposable = handleViewActivation(block, activationEvents);
@@ -182,6 +186,7 @@ namespace ReactiveUI
         /// WhenActivated allows you to register a Func to be called when a
         /// View is Activated.
         /// </summary>
+        /// <param name="This">Object that supports activation.</param>
         /// <param name="block">The method to be called when the corresponding
         /// View is activated. The Action parameter (usually called 'd') allows
         /// you to register Disposables to be cleaned up when the View is
@@ -196,6 +201,7 @@ namespace ReactiveUI
         /// WhenActivated allows you to register a Func to be called when a
         /// View is Activated.
         /// </summary>
+        /// <param name="This">Object that supports activation.</param>
         /// <param name="block">The method to be called when the corresponding
         /// View is activated. The Action parameter (usually called 'd') allows
         /// you to register Disposables to be cleaned up when the View is
@@ -260,13 +266,13 @@ namespace ReactiveUI
         }
 
         static readonly MemoizingMRUCache<Type, IActivationForViewFetcher> activationFetcherCache =
-            new MemoizingMRUCache<Type, IActivationForViewFetcher>((t, _) => {
-                return Locator.Current.GetServices<IActivationForViewFetcher>()
-                    .Aggregate(Tuple.Create(0, default(IActivationForViewFetcher)), (acc, x) => {
-                        int score = x.GetAffinityForView(t);
-                        return (score > acc.Item1) ? Tuple.Create(score, x) : acc;
-                    }).Item2;
-            }, RxApp.SmallCacheLimit);
+            new MemoizingMRUCache<Type, IActivationForViewFetcher>((t, _) =>
+                Locator.Current
+                       .GetServices<IActivationForViewFetcher>()
+                       .Aggregate(Tuple.Create(0, default(IActivationForViewFetcher)), (acc, x) => {
+                            int score = x.GetAffinityForView(t);
+                            return (score > acc.Item1) ? Tuple.Create(score, x) : acc;
+                        }).Item2, RxApp.SmallCacheLimit);
     }
 
     /// <summary>
