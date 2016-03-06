@@ -1,9 +1,9 @@
 using System;
 using System.Linq;
 using System.Reactive;
+using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Runtime.Serialization;
-using Splat;
 
 namespace ReactiveUI
 {
@@ -29,6 +29,23 @@ namespace ReactiveUI
         public ReactiveList<IRoutableViewModel> NavigationStack {
             get { return _NavigationStack; }
             protected set { _NavigationStack = value; }
+        }
+
+        [IgnoreDataMember]
+        IScheduler scheduler;
+
+        /// <summary>
+        /// The scheduler used for commands. Defaults to <c>RxApp.MainThreadScheduler</c>.
+        /// </summary>
+        [IgnoreDataMember]
+        public IScheduler Scheduler {
+            get { return this.scheduler; }
+            set {
+                if (this.scheduler != value) {
+                    this.scheduler = value;
+                    this.setupRx();
+                }
+            }
         }
 
         /// <summary>
@@ -67,6 +84,8 @@ namespace ReactiveUI
 
         void setupRx()
         {
+            var scheduler = this.scheduler ?? RxApp.MainThreadScheduler;
+
             var countAsBehavior = Observable.Concat(
                 Observable.Defer(() => Observable.Return(_NavigationStack.Count)),
                 NavigationStack.CountChanged);
@@ -76,7 +95,8 @@ namespace ReactiveUI
                     NavigationStack.RemoveAt(NavigationStack.Count - 1);
                     return Observable.Return(Unit.Default);
                 },
-                countAsBehavior.Select(x => x > 1));
+                countAsBehavior.Select(x => x > 1),
+                scheduler);
 
             Navigate = ReactiveCommand.CreateFromObservable<IRoutableViewModel, IRoutableViewModel>(x => {
                 var vm = x as IRoutableViewModel;
@@ -86,12 +106,14 @@ namespace ReactiveUI
 
                 NavigationStack.Add(vm);
                 return Observable.Return(x);
-            });
+            },
+            outputScheduler: scheduler);
 
             NavigateAndReset = ReactiveCommand.CreateFromObservable<IRoutableViewModel, IRoutableViewModel>(x => {
                 NavigationStack.Clear();
                 return Navigate.ExecuteAsync(x);
-            });
+            },
+            outputScheduler: scheduler);
             
             CurrentViewModel = Observable.Concat(
                 Observable.Defer(() => Observable.Return(NavigationStack.LastOrDefault())),
