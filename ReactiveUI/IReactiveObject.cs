@@ -266,7 +266,7 @@ namespace ReactiveUI
                 var changing = new ReactivePropertyChangingEventArgs<TSender>(sender, propertyName);
                 sender.RaisePropertyChanging(changing);
 
-                this.notifyObservable(sender, changing, this.changingSubject);
+                this.notifyObservable(changing, this.changingSubject);
             }
 
             public void raisePropertyChanged(string propertyName)
@@ -277,7 +277,7 @@ namespace ReactiveUI
                 var changed = new ReactivePropertyChangedEventArgs<TSender>(sender, propertyName);
                 sender.RaisePropertyChanged(changed);
 
-                this.notifyObservable(sender, changed, this.changedSubject);
+                this.notifyObservable(changed, this.changedSubject);
             }
 
             internal void notifyObservable<T>(TSender rxObj, T item, ISubject<T> subject)
@@ -285,7 +285,6 @@ namespace ReactiveUI
                 try {
                     subject.OnNext(item);
                 } catch (Exception ex) {
-                    rxObj.Log().ErrorException("ReactiveObject Subscriber threw exception", ex);
                     thrownExceptions.OnNext(ex);
                 }
             }
