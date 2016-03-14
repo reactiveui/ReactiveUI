@@ -22,7 +22,7 @@ untestable.
 
 This class is called the **ViewModel**, and it is the *Model* of a *View*.
 This means, that you usually have one ViewModel per View. This doesn't have to
-be strictly true, but it is generally the case.
+be strictly true, but it is generally the case. 
 
 Another important aspect of understanding ViewModels is that they are an
 abstraction to separate *policy* from *mechanism*. ViewModels do not deal in

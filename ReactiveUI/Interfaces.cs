@@ -452,7 +452,7 @@ namespace ReactiveUI
         IObservable<Unit> Deactivated { get; }
     }
 
-    internal interface ICanForceManualActivation
+    internal interface ICanForceManualActivation 
     {
         void Activate(bool activate);
     }

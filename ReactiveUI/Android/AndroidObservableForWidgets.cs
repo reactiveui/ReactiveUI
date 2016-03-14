@@ -21,7 +21,7 @@ namespace ReactiveUI
         static readonly IDictionary<Tuple<Type, string>, Func<object, Expression, IObservable<IObservedChange<object, object>>>> dispatchTable;
         static AndroidObservableForWidgets()
         {
-            dispatchTable = new[] {
+            dispatchTable = new[] { 
                 createFromWidget<TextView, TextChangedEventArgs>(v => v.Text, (v, h) => v.TextChanged += h, (v, h) => v.TextChanged -= h),
                 createFromWidget<NumberPicker, NumberPicker.ValueChangeEventArgs>(v => v.Value, (v, h) => v.ValueChanged += h, (v, h) => v.ValueChanged -= h),
                 createFromWidget<RatingBar, RatingBar.RatingBarChangeEventArgs>(v => v.Rating, (v, h) => v.RatingBarChange += h, (v, h) => v.RatingBarChange -= h),
@@ -52,7 +52,7 @@ namespace ReactiveUI
         {
             public Type Type { get; set; }
             public string Property { get; set; }
-            public Func<object, Expression, IObservable<IObservedChange<object, object>>> Func { get; set; }
+            public Func<object, Expression, IObservable<IObservedChange<object, object>>> Func { get; set; } 
         }
 
         static DispatchTuple createFromAdapterView()
@@ -94,7 +94,7 @@ namespace ReactiveUI
                     var v = (TView)x;
 
                     return Observable.FromEventPattern<TEventArgs>(h => addHandler(v, h) , h => removeHandler(v, h))
-                        .Select(_ => new ObservedChange<object, object>(v, ex));
+                        .Select(_ => new ObservedChange<object, object>(v, ex)); 
                 }
             };
         }

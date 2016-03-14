@@ -63,7 +63,7 @@ namespace ReactiveUI
 
         /// <summary>
         /// Represents an Observable that fires *before* a property is about to
-        /// be changed.
+        /// be changed.         
         /// </summary>
         public IObservable<IReactivePropertyChangedEventArgs<ReactiveTableViewCell>> Changing {
             get { return this.getChangingObservable(); }
@@ -93,7 +93,7 @@ namespace ReactiveUI
         {
             return this.suppressChangeNotifications();
         }
-
+                
         Subject<Unit> activated = new Subject<Unit>();
         public IObservable<Unit> Activated { get { return activated; } }
         Subject<Unit> deactivated = new Subject<Unit>();

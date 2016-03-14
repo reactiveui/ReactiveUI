@@ -16,7 +16,7 @@ namespace XamarinMacPlayground
 
 		[Outlet]
 		MonoMac.AppKit.NSView viewModelHost { get; set; }
-
+		
 		void ReleaseDesignerOutlets ()
 		{
 			if (doIt != null) {
@@ -34,7 +34,7 @@ namespace XamarinMacPlayground
 	[Register ("MainWindow")]
 	partial class MainWindow
 	{
-
+		
 		void ReleaseDesignerOutlets ()
 		{
 		}

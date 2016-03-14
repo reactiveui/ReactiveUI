@@ -45,7 +45,7 @@ namespace ReactiveUI
                     x => after.PropertyChanged += x, x => after.PropertyChanged -= x);
 
                 if (expression.NodeType == ExpressionType.Index) {
-                    return obs.Where(x => string.IsNullOrEmpty(x.EventArgs.PropertyName)
+                    return obs.Where(x => string.IsNullOrEmpty(x.EventArgs.PropertyName) 
                         || x.EventArgs.PropertyName.Equals(memberInfo.Name + "[]"))
                     .Select(x => new ObservedChange<object, object>(sender, expression));
                 } else {

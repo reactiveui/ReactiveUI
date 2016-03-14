@@ -73,7 +73,7 @@ namespace ReactiveUI
             add { CollectionChangedEventManager.AddHandler(this, value); }
             remove { CollectionChangedEventManager.RemoveHandler(this, value); }
         }
-
+        
         protected virtual void raiseCollectionChanging(NotifyCollectionChangedEventArgs e)
         {
             CollectionChangingEventManager.DeliverEvent(this, e);
@@ -108,9 +108,9 @@ namespace ReactiveUI
 
         [IgnoreDataMember] Subject<NotifyCollectionChangedEventArgs> _changing;
         [IgnoreDataMember] Subject<NotifyCollectionChangedEventArgs> _changed;
-
+        
         [DataMember] List<T> _inner;
-
+        
         [IgnoreDataMember] Lazy<Subject<T>> _beforeItemsAdded;
         [IgnoreDataMember] Lazy<Subject<T>> _itemsAdded;
         [IgnoreDataMember] Lazy<Subject<T>> _beforeItemsRemoved;
@@ -131,7 +131,7 @@ namespace ReactiveUI
 
         // NB: This exists so the serializer doesn't whine
         //
-        // 2nd NB: VB.NET doesn't deal well with default parameters, create
+        // 2nd NB: VB.NET doesn't deal well with default parameters, create 
         // some overloads so people can continue to make bad life choices instead
         // of using C#
         public ReactiveList() { setupRx(); }
@@ -172,8 +172,8 @@ namespace ReactiveUI
             // Collection<T>'s accounting is correct
             foreach (var item in initialContents ?? Enumerable.Empty<T>()) { Add(item); }
 
-            // NB: ObservableCollection has a Secret Handshake with WPF where
-            // they fire an INPC notification with the token "Item[]". Emulate
+            // NB: ObservableCollection has a Secret Handshake with WPF where 
+            // they fire an INPC notification with the token "Item[]". Emulate 
             // it here
             CountChanging.Where(_ => this.areChangeNotificationsEnabled()).Subscribe(_ => this.RaisePropertyChanging("Count"));
 
@@ -200,7 +200,7 @@ namespace ReactiveUI
         {
             if (!this.areChangeNotificationsEnabled()) {
                 _inner.Insert(index, item);
-
+            
                 if (ChangeTrackingEnabled) addItemToPropertyTracking(item);
                 return;
             }
@@ -224,7 +224,7 @@ namespace ReactiveUI
 
             if (!this.areChangeNotificationsEnabled()) {
                 _inner.RemoveAt(index);
-
+            
                 if (ChangeTrackingEnabled) removeItemFromPropertyTracking(item);
                 return;
             }
@@ -268,7 +268,7 @@ namespace ReactiveUI
         protected void SetItem(int index, T item)
         {
             if (!this.areChangeNotificationsEnabled()) {
-
+                
                 if (ChangeTrackingEnabled) {
                     removeItemFromPropertyTracking(_inner[index]);
                     addItemToPropertyTracking(item);
@@ -295,7 +295,7 @@ namespace ReactiveUI
         {
             if (!this.areChangeNotificationsEnabled()) {
                 _inner.Clear();
-
+            
                 if (ChangeTrackingEnabled) clearAllPropertyChangeWatchers();
                 return;
             }
@@ -311,7 +311,7 @@ namespace ReactiveUI
 
 
         /*
-         * List<T> methods we can make faster by possibly sending ShouldReset
+         * List<T> methods we can make faster by possibly sending ShouldReset 
          * notifications instead of thrashing the UI by readding items
          * one at a time
          */
@@ -333,7 +333,7 @@ namespace ReactiveUI
                 // reset notification
                 if (!this.areChangeNotificationsEnabled()) {
                     _inner.AddRange(list);
-
+                 
                     if (ChangeTrackingEnabled) {
                         foreach (var item in list) {
                             addItemToPropertyTracking(item);
@@ -367,7 +367,7 @@ namespace ReactiveUI
                         }
                     }
                 } else {
-                    // per item notification
+                    // per item notification                
                     foreach (var item in list) {
                         this.Add(item);
                     }
@@ -425,7 +425,7 @@ namespace ReactiveUI
                         }
                     }
                 } else {
-                    // per item notification
+                    // per item notification                
                     foreach (var item in list) {
                         this.Insert(index++, item);
                     }
@@ -530,7 +530,7 @@ namespace ReactiveUI
         {
             publishResetNotification();
         }
-
+        
         protected virtual void publishResetNotification()
         {
             var ea = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset);
@@ -543,7 +543,7 @@ namespace ReactiveUI
             return (double) toChangeLength/_inner.Count > ResetChangeThreshold &&
                 toChangeLength > 10;
         }
-
+        
         /*
          * IReactiveCollection<T>
          */
@@ -592,7 +592,7 @@ namespace ReactiveUI
 
         public IObservable<IReactivePropertyChangedEventArgs<T>> ItemChanging { get { return _itemChanging.Value; } }
         public IObservable<IReactivePropertyChangedEventArgs<T>> ItemChanged { get { return _itemChanged.Value; } }
-
+        
         public IObservable<int> CountChanging {
             get { return _changing.Select(_ => _inner.Count).DistinctUntilChanged(); }
         }
@@ -621,7 +621,7 @@ namespace ReactiveUI
                         Observable.Return(Unit.Default)), x => _resetSubCount += x);
             }
         }
-
+        
         /*
          * Property Change Tracking
          */
@@ -658,7 +658,7 @@ namespace ReactiveUI
                 changed.Where(_ => this.areChangeNotificationsEnabled()).Subscribe(_itemChanged.Value.OnNext),
             };
 
-            _propertyChangeWatchers.Add(toTrack,
+            _propertyChangeWatchers.Add(toTrack, 
                 new RefcountDisposeWrapper(Disposable.Create(() => {
                     toDispose[0].Dispose(); toDispose[1].Dispose();
                     _propertyChangeWatchers.Remove(toTrack);

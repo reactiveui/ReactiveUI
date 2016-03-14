@@ -85,7 +85,7 @@ namespace ReactiveUI
         /// <param name="viewModelPath">The view model path.</param>
         /// <param name="direction">The direction.</param>
         /// <param name="bindingDisposable">The binding disposable.</param>
-        public ReactiveBinding(TView view, TViewModel viewModel, Expression viewExpression, Expression viewModelExpression,
+        public ReactiveBinding(TView view, TViewModel viewModel, Expression viewExpression, Expression viewModelExpression, 
             IObservable<TValue> changed, BindingDirection direction, IDisposable bindingDisposable)
         {
             this.View = view;

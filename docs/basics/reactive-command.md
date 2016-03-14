@@ -125,7 +125,7 @@ many people listening to the `Executed` signal as you want. This is **very**
 useful for decoupling, as the View can now listen to the ViewModels and
 execute View specific code, such as setting control focus or scroll positions.
 
-One may be tempted to simply write
+One may be tempted to simply write 
 `ViewModel.SomeCommand.Subscribe(x => ...)`, but this code fails whenever the
 ViewModel changes - you will be subscribed to the wrong command and it will
 appear to never fire. A method called `WhenAnyObservable` solves this for you:
@@ -182,7 +182,7 @@ directly from `IObservable<bool>`. The above `CanExecute` examples could be
 more tersely written:
 
 ```cs
-PostTweet = this.WhenAny(x => x.TweetContents,
+PostTweet = this.WhenAny(x => x.TweetContents, 
         x => !String.IsNullOrWhitespace(x.Value) && x.Value.Length < 140)
     .ToCommand();
 

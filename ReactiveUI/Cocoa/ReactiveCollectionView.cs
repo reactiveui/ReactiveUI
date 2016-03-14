@@ -26,7 +26,7 @@ using MonoTouch.UIKit;
 
 namespace ReactiveUI
 {
-    public abstract class ReactiveCollectionView : UICollectionView,
+    public abstract class ReactiveCollectionView : UICollectionView, 
         IReactiveNotifyPropertyChanged<ReactiveCollectionView>, IHandleObservableErrors, IReactiveObject, ICanActivate, ICanForceManualActivation
     {
 #if UNIFIED
@@ -109,9 +109,9 @@ namespace ReactiveUI
             deactivated.OnNext(Unit.Default);
         }
 
-        void ICanForceManualActivation.Activate(bool activate)
+        void ICanForceManualActivation.Activate(bool activate) 
         {
-            RxApp.MainThreadScheduler.Schedule(() =>
+            RxApp.MainThreadScheduler.Schedule(() => 
 		        (activate ? activated : deactivated).OnNext(Unit.Default));
         }
     }

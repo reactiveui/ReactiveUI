@@ -26,7 +26,7 @@ namespace ReactiveUI
     /// This class provides notifications for Cocoa Framework objects based on
     /// Key-Value Observing. Unfortunately, this class is a bit Tricky™, because
     /// of the caveat mentioned below - there is no way up-front to be able to
-    /// tell whether a given property on an object is Key-Value Observable, we
+    /// tell whether a given property on an object is Key-Value Observable, we 
     /// only have to hope for the best :-/
     /// </summary>
     public class KVOObservableForProperty : ICreatesObservableForProperty
@@ -115,7 +115,7 @@ namespace ReactiveUI
             return Char.ToLowerInvariant(propertyName[0]).ToString() + propertyName.Substring(1);
         }
     }
-
+    
     class BlockObserveValueDelegate : NSObject
     {
         Action<string, NSObject, NSDictionary> _block;
@@ -123,7 +123,7 @@ namespace ReactiveUI
         {
             _block = block;
         }
-
+    
         public override void ObserveValue (NSString keyPath, NSObject ofObject, NSDictionary change, IntPtr context)
         {
             _block(keyPath, ofObject, change);

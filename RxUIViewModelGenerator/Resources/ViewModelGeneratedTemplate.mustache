@@ -21,14 +21,14 @@ namespace {{namespace}}.ViewModels
         {{#properties}}
         {{#outputProp}}
         [IgnoreDataMember] ObservableAsPropertyHelper<{{type}}> _{{name}};
-        [IgnoreDataMember] public {{type}} {{name}}
+        [IgnoreDataMember] public {{type}} {{name}} 
         {
             get { return _{{name}}.Value; }
         }
         {{/outputProp}}
         {{#readWriteProp}}
         [DataMember] {{type}} _{{name}};
-        [IgnoreDataMember] public {{type}} {{name}}
+        [IgnoreDataMember] public {{type}} {{name}} 
         {
             get { return _{{name}}; }
             set { this.RaiseAndSetIfChanged(ref _{{name}}, value); }

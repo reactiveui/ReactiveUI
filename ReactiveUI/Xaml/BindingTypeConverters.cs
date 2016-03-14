@@ -18,7 +18,7 @@ namespace ReactiveUI
     }
 
     /// <summary>
-    /// This type convert converts between Boolean and XAML Visibility - the
+    /// This type convert converts between Boolean and XAML Visibility - the 
     /// conversionHint is a BooleanToVisibilityHint
     /// </summary>
     public class BooleanToVisibilityTypeConverter : IBindingTypeConverter
@@ -32,8 +32,8 @@ namespace ReactiveUI
 
         public bool TryConvert(object from, Type toType, object conversionHint, out object result)
         {
-            var hint = conversionHint is BooleanToVisibilityHint ?
-                (BooleanToVisibilityHint) conversionHint :
+            var hint = conversionHint is BooleanToVisibilityHint ? 
+                (BooleanToVisibilityHint) conversionHint : 
                 BooleanToVisibilityHint.None;
 
             if (toType == typeof (Visibility)) {

@@ -31,7 +31,7 @@ namespace ReactiveUI.Cocoa
             // UISlider
             var slider = new UISlider();
             slider.Value = slider.Value; // Get and set
-
+            
 
             // UITextView
             var tv = new UITextView();
@@ -40,7 +40,7 @@ namespace ReactiveUI.Cocoa
             // UITextField
             var tf = new UITextField();
             tv.Text = tf.Text;
-
+            
             // var UIImageView
             var iv = new UIImageView();
             iv.Image = iv.Image;

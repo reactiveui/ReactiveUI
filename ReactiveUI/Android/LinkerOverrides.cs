@@ -45,7 +45,7 @@ namespace ReactiveUI
             tp.CurrentHour = tp.CurrentHour;
             tp.CurrentMinute = tp.CurrentMinute;
 
-
+            
         }
     }
 }

@@ -28,7 +28,7 @@ namespace ReactiveUI
             get { return GetValue(ViewModelProperty); }
             set { SetValue(ViewModelProperty, value); }
         }
-        public static readonly DependencyProperty ViewModelProperty =
+        public static readonly DependencyProperty ViewModelProperty = 
             DependencyProperty.Register("ViewModel", typeof(object), typeof(ViewModelViewHost), new PropertyMetadata(null, somethingChanged));
 
         readonly Subject<Unit> updateViewModel = new Subject<Unit>();

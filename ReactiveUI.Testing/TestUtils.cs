@@ -41,13 +41,13 @@ namespace ReactiveUI.Testing
         }
 
         /// <summary>
-        /// WithMessageBus allows you to override the default Message Bus
-        /// implementation until the object returned is disposed. If a
+        /// WithMessageBus allows you to override the default Message Bus 
+        /// implementation until the object returned is disposed. If a 
         /// message bus is not specified, a default empty one is created.
         /// </summary>
         /// <param name="messageBus">The message bus to use, or null to create
         /// a new one using the default implementation.</param>
-        /// <returns>An object that when disposed, restores the original
+        /// <returns>An object that when disposed, restores the original 
         /// message bus.</returns>
         public static IDisposable WithMessageBus(this IMessageBus messageBus)
         {
@@ -102,7 +102,7 @@ namespace ReactiveUI.Testing
 
         /// <summary>
         /// With is an extension method that uses the given scheduler as the
-        /// default Deferred and Taskpool schedulers for the given Action.
+        /// default Deferred and Taskpool schedulers for the given Action. 
         /// </summary>
         /// <param name="sched">The scheduler to use.</param>
         /// <param name="block">The action to execute.</param>
@@ -114,7 +114,7 @@ namespace ReactiveUI.Testing
 
         /// <summary>
         /// With is an extension method that uses the given scheduler as the
-        /// default Deferred and Taskpool schedulers for the given Action.
+        /// default Deferred and Taskpool schedulers for the given Action. 
         /// </summary>
         /// <param name="sched">The scheduler to use.</param>
         /// <param name="block">The action to execute.</param>
@@ -166,7 +166,7 @@ namespace ReactiveUI.Testing
         /// AdvanceByMs moves the TestScheduler along by the specified time in
         /// milliseconds.
         /// </summary>
-        /// <param name="milliseconds">The relative time to advance the TestScheduler
+        /// <param name="milliseconds">The relative time to advance the TestScheduler 
         /// by, in milliseconds.</param>
         public static void AdvanceByMs(this TestScheduler sched, double milliseconds)
         {
@@ -205,7 +205,7 @@ namespace ReactiveUI.Testing
                 sched.FromTimeSpan(TimeSpan.FromMilliseconds(milliseconds)),
                 Notification.CreateOnError<T>(ex));
         }
-
+        
         /// <summary>
         /// OnCompletedAt is a method to help create simulated input Observables in
         /// conjunction with CreateHotObservable or CreateColdObservable.

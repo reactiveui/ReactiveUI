@@ -19,7 +19,7 @@
                 new { Type = typeof(TextBox), Property = "Text" },
                 new { Type = typeof(ProgressBar), Property = "Value" }
             };
-
+           
             var type = control.GetType();
             var kvp = items.FirstOrDefault(x => x.Type.IsAssignableFrom(type));
 

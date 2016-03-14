@@ -219,7 +219,7 @@ namespace ReactiveUI
 
             return new CompositeDisposable(
                 // Activation
-                activation.Subscribe(activated => {
+                activation.Subscribe(activated => {                    
                     if (activated) {
                         viewVmDisposable.Disposable = view.WhenAnyValue(x => x.ViewModel)
                             .Select(x => x as ISupportsActivation)

@@ -44,18 +44,18 @@ namespace ReactiveUI.Tests
 
 
         [Fact]
-        public void ExplicitSendMessageShouldWorkEvenAfterRegisteringSource()
+        public void ExplicitSendMessageShouldWorkEvenAfterRegisteringSource() 
         {
             var fixture = new MessageBus();
             fixture.RegisterMessageSource(Observable.Never<int>());
-
+         
             bool messageReceived = false;
             fixture.Listen<int>().Subscribe(_ => messageReceived = true);
-
+         
             fixture.SendMessage(42);
             Assert.True(messageReceived);
         }
-
+     
         [Fact]
         public void ListeningBeforeRegisteringASourceShouldWork()
         {

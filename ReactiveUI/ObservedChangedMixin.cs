@@ -33,7 +33,7 @@ namespace ReactiveUI
         }
 
         /// <summary>
-        /// Attempts to return the current value of a property given a
+        /// Attempts to return the current value of a property given a 
         /// notification that it has changed. If any property in the
         /// property expression is null, false is returned.
         /// </summary>
@@ -60,7 +60,7 @@ namespace ReactiveUI
         /// <param name="target">The target object to apply the change to.</param>
         /// <param name="property">The target property to apply the change to.</param>
         internal static void SetValueToProperty<TSender, TValue, TTarget>(
-            this IObservedChange<TSender, TValue> This,
+            this IObservedChange<TSender, TValue> This, 
             TTarget target,
             Expression<Func<TTarget, TValue>> property)
         {
@@ -68,7 +68,7 @@ namespace ReactiveUI
         }
 
         /// <summary>
-        /// Given a stream of notification changes, this method will convert
+        /// Given a stream of notification changes, this method will convert 
         /// the property changes to the current value of the property.
         /// </summary>
         /// <returns>An Observable representing the stream of current values of

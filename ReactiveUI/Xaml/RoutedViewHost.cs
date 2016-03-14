@@ -92,7 +92,7 @@ namespace ReactiveUI
                 (vm, contract) => Tuple.Create(vm, contract));
 
             this.WhenActivated(d => {
-                // NB: The DistinctUntilChanged is useful because most views in
+                // NB: The DistinctUntilChanged is useful because most views in 
                 // WinRT will end up getting here twice - once for configuring
                 // the RoutedViewHost's ViewModel, and once on load via SizeChanged
                 d(vmAndContract.DistinctUntilChanged().Subscribe(x => {

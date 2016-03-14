@@ -11,7 +11,7 @@ namespace ReactiveUI.Tests
 {
     public class WeakEventManagerTest
     {
-        [Fact]
+        [Fact]        
         public void ButtonDoesNotLeakTest()
         {
             Button button = new Button();

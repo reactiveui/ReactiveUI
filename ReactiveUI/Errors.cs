@@ -20,7 +20,7 @@ namespace ReactiveUI
     /// </summary>
     public enum StockUserErrorIcon {
         Critical,
-        Error,
+        Error, 
         Question,
         Warning,
         Notice,
@@ -73,7 +73,7 @@ namespace ReactiveUI
     /// to be displayed to the user. As such, your error messages should be
     /// phrased in a friendly way. When a UserError is thrown, code higher up
     /// in the stack has a chance to resolve the UserError via a user
-    /// interaction.
+    /// interaction. 
     ///
     /// Code can also add "Recovery Options" which resolve user errors: for
     /// example an "Out of Disk Space" error might have an "Open Explorer"
@@ -143,7 +143,7 @@ namespace ReactiveUI
 
 
         //
-        // Static API
+        // Static API 
         //
 
         [ThreadStatic] static Func<UserError, IObservable<RecoveryOptionResult>> overriddenRegisteredUserErrorHandlers;
@@ -168,7 +168,7 @@ namespace ReactiveUI
 
         /// <summary>
         /// Initiate a user interaction (i.e. "Throw the error to the user to
-        /// deal with").
+        /// deal with"). 
         /// </summary>
         /// <param name="error">The UserError to show to the user. The
         /// upper level handlers registered with RegisterHandler are
@@ -180,9 +180,9 @@ namespace ReactiveUI
                 new[] { overriddenRegisteredUserErrorHandlers } :
                 registeredUserErrorHandlers.ToArray().Reverse();
 
-            // NB: This is a little complicated - here's the idea: we have a
+            // NB: This is a little complicated - here's the idea: we have a 
             // list of handlers that we're running down *in order*. If we find
-            // one that doesn't return null, we're going to return this as an
+            // one that doesn't return null, we're going to return this as an 
             // Observable with one item (the result).
             //
             // If *none* of the handlers are interested in this UserError, we're
@@ -200,7 +200,7 @@ namespace ReactiveUI
         /// Register code to handle a UserError. Registered handlers are
         /// called in reverse order to their registration (i.e. the newest
         /// handler is called first), and they each have a chance to handle a
-        /// UserError.
+        /// UserError. 
         ///
         /// If a Handler cannot resolve a UserError, it should return null
         /// instead of an Observable result.
@@ -215,12 +215,12 @@ namespace ReactiveUI
 
             return Disposable.Create(() => registeredUserErrorHandlers.Remove(errorHandler));
         }
-
+       
         /// <summary>
         /// Register code to handle a specific type of UserError. Registered
         /// handlers are called in reverse order to their registration (i.e.
         /// the newest handler is called first), and they each have a chance
-        /// to handle a UserError.
+        /// to handle a UserError. 
         ///
         /// If a Handler cannot resolve a UserError, it should return null
         /// instead of an Observable result.
@@ -245,7 +245,7 @@ namespace ReactiveUI
         /// Register code to handle a UserError. Registered handlers are
         /// called in reverse order to their registration (i.e. the newest
         /// handler is called first), and they each have a chance to handle a
-        /// UserError.
+        /// UserError. 
         ///
         /// If a Handler cannot resolve a UserError, it should return null
         /// instead of an Observable result.
@@ -263,7 +263,7 @@ namespace ReactiveUI
         /// Register code to handle a specific type of UserError. Registered
         /// handlers are called in reverse order to their registration (i.e.
         /// the newest handler is called first), and they each have a chance
-        /// to handle a UserError.
+        /// to handle a UserError. 
         ///
         /// If a Handler cannot resolve a UserError, it should return null
         /// instead of an Observable result.
@@ -337,7 +337,7 @@ namespace ReactiveUI
     /// This Exception will be thrown when a UserError is not handled by any
     /// of the registered handlers.
     /// </summary>
-    public class UnhandledUserErrorException : Exception
+    public class UnhandledUserErrorException : Exception 
     {
         public UnhandledUserErrorException(UserError error) : base(error.ErrorMessage, error.InnerException)
         {
@@ -391,7 +391,7 @@ namespace ReactiveUI
         public static IRecoveryCommand Cancel {
             get { var ret = new RecoveryCommand("Cancel") { IsCancel = true }; ret.Subscribe(_ => ret.RecoveryResult = RecoveryOptionResult.FailOperation); return ret; }
         }
-
+                 
         /// <summary>
         /// A default command whose caption is "Yes"
         /// </summary>

@@ -29,7 +29,7 @@ using NSTableViewStyle = MonoTouch.UIKit.UITableViewStyle;
 
 namespace ReactiveUI
 {
-    public abstract class ReactiveTableViewController : NSTableViewController,
+    public abstract class ReactiveTableViewController : NSTableViewController, 
 	IReactiveNotifyPropertyChanged<ReactiveTableViewController>, IHandleObservableErrors, IReactiveObject, ICanActivate
     {
         protected ReactiveTableViewController(NSTableViewStyle withStyle) : base(withStyle) { setupRxObj(); }
@@ -61,7 +61,7 @@ namespace ReactiveUI
 
         /// <summary>
         /// Represents an Observable that fires *before* a property is about to
-        /// be changed.
+        /// be changed.         
         /// </summary>
         public IObservable<IReactivePropertyChangedEventArgs<ReactiveTableViewController>> Changing {
             get { return this.getChangingObservable(); }

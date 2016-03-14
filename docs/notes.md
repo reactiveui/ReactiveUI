@@ -22,13 +22,13 @@
 * ObservableAsPropertyHelper / Output Properties
 * OrderedComparer
 * Semantics of WhenAny + WhenAnyValue
-* Basic Property Binding
+* Basic Property Binding 
 * Property Binding => Type Conversion + Binding Hooks + Hints
 * CreateCollection + Testing
 * CreateDerivedCollection
 * ReactiveCommand Basics + WhenAnyObservable
 * ReactiveCommand Async
-* ReactiveList Basics + Semantics of Reset + AddRange optimizations +
+* ReactiveList Basics + Semantics of Reset + AddRange optimizations + 
   Change Tracking + Suppress Change Notification
 * ReactiveObject + Suppress Change Notification
 * Reflection Utilities
@@ -37,7 +37,7 @@
 * Routing
 * Suspension Host
 * WhenNavigatedTo
-* Default Schedulers
+* Default Schedulers 
 
 ## RxUI.Events
 * Events

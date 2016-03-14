@@ -6,9 +6,9 @@ using Xamarin.Forms;
 using System.Diagnostics;
 
 namespace PlaygroundXamForms
-{
+{    
     public partial class MainPage : ContentPage, IViewFor<MainPageViewModel>
-    {
+    {    
         public MainPage ()
         {
             InitializeComponent ();

@@ -22,7 +22,7 @@ namespace ReactiveUI
     /// <summary>
     /// AutoSuspend-based App Delegate. To use AutoSuspend with iOS, change your
     /// AppDelegate to inherit from this class, then call:
-    ///
+    /// 
     /// Locator.Current.GetService<ISuspensionHost>().SetupDefaultSuspendResume();
     /// </summary>
     public class AutoSuspendHelper : IEnableLogger

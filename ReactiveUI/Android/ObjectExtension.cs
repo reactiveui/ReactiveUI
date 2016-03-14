@@ -35,7 +35,7 @@ namespace ReactiveUI
                 return null;
 
             var holder = new JavaHolder(value);
-
+            
             return (Object)holder;
         }
     }

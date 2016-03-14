@@ -5,7 +5,7 @@ Combining these two make managing concurrency as well as expressing complicated
 interactions between objects possible in a declarative, functional way. Put
 simply, if you’ve ever had to chain events / callbacks together and declare
 state ints/booleans to keep track of what’s going on, Reactive Extensions
-provides a sane alternative.
+provides a sane alternative. 
 
 ## What’s in this library
 
@@ -18,7 +18,7 @@ provides a sane alternative.
   implementations which rely on RequerySuggested in WPF. ReactiveCommand
   encapsulates the common pattern of “Fire asynchronous command, then marshal
   result back onto dispatcher thread”. It also allows you to control if
-  concurrency is allowed.
+  concurrency is allowed. 
 - **ObservableAsPropertyHelper<T>** - a class that easily lets you convert an
   IObservable into a property that stores its latest value, as well as ﬁres
   NotifyPropertyChanged when the property changes. This is really useful for
@@ -55,7 +55,7 @@ This library is organized into several high-level assemblies:
   such as Windows Phone or the Windows Runtime. These classes handle things
   like persisting state and reacting to application lifetime events.
 
-## ReactiveObject
+## ReactiveObject 
 
 Like any other MVVM framework, ReactiveUI has an object designed as a ViewModel
 class. This object is based on Josh Smith’s ObservableObject implementation in
@@ -71,10 +71,10 @@ standard pattern of a property that raises the changed event is a few lines
 shorter and makes effective use of the new CallerMemberName attribute:
 
 ```cs
-int _someProp;
-public int SomeProp {
-  get { return _someProp; }
-  set { this.RaiseAndSetIfChanged(ref _someProp, value); }
+int _someProp; 
+public int SomeProp { 
+  get { return _someProp; } 
+  set { this.RaiseAndSetIfChanged(ref _someProp, value); } 
 }
 ```
 
@@ -87,19 +87,19 @@ a command that can only run when the mouse is up:
 
 ```cs
 var mouseIsUp = Observable.Merge(
-   Observable.FromEvent<MouseButtonEventArgs>(window, ”MouseDown”).Select(_ => false),
+   Observable.FromEvent<MouseButtonEventArgs>(window, ”MouseDown”).Select(_ => false), 
    Observable.FromEvent<MouseButtonEventArgs>(window, ”MouseUp”).Select(_ => true),
 ).StartWith(true);
 
-var cmd = new ReactiveCommand(mouseIsUp);
+var cmd = new ReactiveCommand(mouseIsUp); 
 cmd.Subscribe(x => Console.WriteLine(x));
 ```
 
 Or, how about a command that can only run if two other commands are disabled:
 
 ```cs
-// Pretend these were already initialized to something more interesting
-var cmd1 = new ReactiveCommand();
+// Pretend these were already initialized to something more interesting 
+var cmd1 = new ReactiveCommand(); 
 var cmd2 = new ReactiveCommand();
 
 var can_exec = cmd1.CanExecuteObservable.CombineLatest(cmd2.CanExecuteObservable, (lhs, rhs) => !(lhs && rhs));
@@ -127,10 +127,10 @@ var cmd = new ReactiveCommand();
 cmd.Where(x => ((int)x) % 2 == 0).Subscribe(x => Console.WriteLine(”Even numbers like {0} are cool!”, x));
 cmd.Where(x => ((int)x) % 2 != 0).Timestamps().Subscribe(x => Console.WriteLine(”Odd numbers like {0} are even cooler, especially at {1}!”, x.Value, x.Timestamp));
 
-cmd.Execute(2);
+cmd.Execute(2); 
 >>> ”Even numbers like 2 are cool!”
 
-cmd.Execute(5);
+cmd.Execute(5); 
 >>> ”Odd numbers like 5 are even cooler, especially at (the current time)!”
 ```
 
@@ -148,9 +148,9 @@ Dispatcher.BeginInvoke solves this So, once you dig around on the Internet a
 bit, you ﬁnd out the pattern to solve this problem involves the Dispatcher:
 
 ```cs
-void SomeUIEvent(object o, EventArgs e) {
+void SomeUIEvent(object o, EventArgs e) { 
   var some_data = this.SomePropertyICanOnlyGetOnTheUIThread;
-  var t = new Task(() => {
+  var t = new Task(() => { 
     var result = doSomethingInTheBackground(some_data);
     Dispatcher.BeginInvoke(new Action(() => { this.UIPropertyThatWantsTheCalculation = result; }));
   }
@@ -181,7 +181,7 @@ cmd.RegisterAsyncAction(i => {
     Thread.Sleep((int)i * 1000); // Pretend to do work
 };
 
-cmd.Execute(5 /*seconds*/);
+cmd.Execute(5 /*seconds*/); 
 cmd.CanExecute(5); // False! We’re still chewing on the first one.
 ```
 

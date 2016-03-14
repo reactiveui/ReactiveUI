@@ -137,7 +137,7 @@ namespace ReactiveUI
 
                 ctl.AddTarget(eh, UIControlEvent.TouchUpInside);
                 actionDisp = Disposable.Create(() => ctl.RemoveTarget(eh, UIControlEvent.TouchUpInside));
-            }
+            } 
 
             var enabledSetter = Reflection.GetValueSetterForProperty(enabledProperty);
             if (enabledSetter == null) return actionDisp;
@@ -154,7 +154,7 @@ namespace ReactiveUI
 
             return compDisp;
         }
-        #endif
+        #endif 
     }
 }
 

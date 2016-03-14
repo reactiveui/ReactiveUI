@@ -25,7 +25,7 @@ using MonoTouch.UIKit;
 
 namespace ReactiveUI
 {
-    public abstract class ReactivePageViewController : UIPageViewController,
+    public abstract class ReactivePageViewController : UIPageViewController, 
         IReactiveNotifyPropertyChanged<ReactivePageViewController>, IHandleObservableErrors, IReactiveObject, ICanActivate
     {
         protected ReactivePageViewController(UIPageViewControllerTransitionStyle style, UIPageViewControllerNavigationOrientation orientation) : base(style, orientation) { setupRxObj(); }

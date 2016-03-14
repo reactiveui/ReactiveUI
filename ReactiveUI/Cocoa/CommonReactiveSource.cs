@@ -119,7 +119,7 @@ namespace ReactiveUI
         readonly ISubject<IEnumerable<NotifyCollectionChangedEventArgs>> didPerformUpdates =
             new Subject<IEnumerable<NotifyCollectionChangedEventArgs>>();
 
-        public CommonReactiveSource(IUICollViewAdapter<TUIView, TUIViewCell> adapter)
+        public CommonReactiveSource(IUICollViewAdapter<TUIView, TUIViewCell> adapter) 
         {
             this.adapter = adapter;
             this.sectionSubscriptions = new Dictionary<TSectionInfo, IDisposable>();
@@ -140,7 +140,7 @@ namespace ReactiveUI
                 .Subscribe(AttachToSectionInfo, ex => this.Log().ErrorException("Error while watching for SectionInfo.", ex)));
         }
 
-        public TUIViewCell GetCell(NSIndexPath indexPath)
+        public TUIViewCell GetCell(NSIndexPath indexPath) 
         {
             var section = SectionInfo[indexPath.Section];
             var vm = ((IList)section.Collection) [indexPath.Row];
@@ -156,7 +156,7 @@ namespace ReactiveUI
             return cell;
         }
 
-        public int NumberOfSections()
+        public int NumberOfSections() 
         {
             var count = SectionInfo.Count;
             this.Log().Debug(string.Format("NumberOfSections: {0} (from {1})", count, SectionInfo));
@@ -164,7 +164,7 @@ namespace ReactiveUI
             return count;
         }
 
-        public int RowsInSection(int section)
+        public int RowsInSection(int section) 
         {
             var list = (IList)SectionInfo[section].Collection;
             var count = list.Count;
@@ -173,7 +173,7 @@ namespace ReactiveUI
             return count;
         }
 
-        public object ItemAt(NSIndexPath path)
+        public object ItemAt(NSIndexPath path) 
         {
             var list = (IList)SectionInfo[path.Section].Collection;
             this.Log().Debug(string.Format("ItemAt: {0}.{1} (from {2} / {3})", path.Section, path.Row, SectionInfo, list));
@@ -181,12 +181,12 @@ namespace ReactiveUI
             return list[path.Row];
         }
 
-        public void Dispose()
+        public void Dispose() 
         {
             mainDisp.Dispose();
         }
 
-        void DetachFromSectionInfo()
+        void DetachFromSectionInfo() 
         {
             // Dispose every binding.  Ensures that no matter what,
             // we won't let events from the old data reach us while
@@ -195,7 +195,7 @@ namespace ReactiveUI
             setupDisp.Disposable = Disposable.Empty;
         }
 
-        void AttachToSectionInfo(IReadOnlyList<TSectionInfo> newSectionInfo)
+        void AttachToSectionInfo(IReadOnlyList<TSectionInfo> newSectionInfo) 
         {
             this.Log().Debug("SectionInfo changed to {0}, resetup data and bindings...", newSectionInfo);
 

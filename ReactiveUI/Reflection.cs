@@ -11,10 +11,10 @@ using Splat;
 
 namespace ReactiveUI
 {
-    public static class Reflection
+    public static class Reflection 
     {
-        static ExpressionRewriter expressionRewriter = new ExpressionRewriter();
-
+        static ExpressionRewriter expressionRewriter = new ExpressionRewriter();        
+        
         public static Expression Rewrite(Expression expression)
         {
             return expressionRewriter.Visit(expression);
@@ -58,7 +58,7 @@ namespace ReactiveUI
         public static Func<object, object[], object> GetValueFetcherForProperty(MemberInfo member)
         {
             Contract.Requires(member != null);
-
+            
             FieldInfo field = member as FieldInfo;
             if (field != null) {
                 return (obj, args) => field.GetValue(obj);
@@ -186,7 +186,7 @@ namespace ReactiveUI
             return Type.GetType(type, false);
         }, 20);
 
-        public static Type ReallyFindType(string type, bool throwOnFailure)
+        public static Type ReallyFindType(string type, bool throwOnFailure) 
         {
             lock (typeCache) {
                 var ret = typeCache.Get(type);
@@ -194,7 +194,7 @@ namespace ReactiveUI
                 throw new TypeLoadException();
             }
         }
-
+    
         public static Type GetEventArgsTypeForEvent(Type type, string eventName)
         {
             var ti = type;
@@ -202,7 +202,7 @@ namespace ReactiveUI
             if (ei == null) {
                 throw new Exception(String.Format("Couldn't find {0}.{1}", type.FullName, eventName));
             }
-
+    
             // Find the EventArgs type parameter of the event via digging around via reflection
             var eventArgsType = ei.EventHandlerType.GetRuntimeMethods().First(x => x.Name == "Invoke").GetParameters()[1].ParameterType;
             return eventArgsType;

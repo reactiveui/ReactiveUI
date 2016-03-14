@@ -14,7 +14,7 @@ namespace Microsoft.Reactive.Testing
         /// Default virtual time used for creation of observable sequences in <see cref="ReactiveTest"/>-based unit tests.
         /// </summary>
         public const long Created = 100;
-
+        
         /// <summary>
         /// Default virtual time used to subscribe to observable sequences in <see cref="ReactiveTest"/>-based unit tests.
         /// </summary>
@@ -71,7 +71,7 @@ namespace Microsoft.Reactive.Testing
         /// <param name="dummy">An unused instance of type T, to force the compiler to infer that T as part of the method's return value.</param>
         /// <param name="ticks">Recorded virtual time the OnCompleted notification occurs.</param>
         /// <returns>Recorded OnCompleted notification.</returns>
-        /// <remarks>This overload is used for anonymous types - by passing in an instance of the type, the compiler can infer the
+        /// <remarks>This overload is used for anonymous types - by passing in an instance of the type, the compiler can infer the 
         /// anonymous type without you having to try naming the type.</remarks>
         public static Recorded<Notification<T>> OnCompleted<T>(T dummy, long ticks)
         {
@@ -119,7 +119,7 @@ namespace Microsoft.Reactive.Testing
         /// <param name="exception">Recorded exception stored in the OnError notification.</param>
         /// <returns>Recorded OnError notification.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="exception"/> is null.</exception>
-        /// <remarks>This overload is used for anonymous types - by passing in an instance of the type, the compiler can infer the
+        /// <remarks>This overload is used for anonymous types - by passing in an instance of the type, the compiler can infer the 
         /// anonymous type without you having to try naming the type.</remarks>
         public static Recorded<Notification<T>> OnError<T>(T dummy, long ticks, Exception exception)
         {
@@ -138,7 +138,7 @@ namespace Microsoft.Reactive.Testing
         /// <param name="predicate">Predicate function to check the OnError notification value against an expected exception.</param>
         /// <returns>Recorded OnError notification with a predicate to assert a given exception.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="predicate"/> is null.</exception>
-        /// <remarks>This overload is used for anonymous types - by passing in an instance of the type, the compiler can infer the
+        /// <remarks>This overload is used for anonymous types - by passing in an instance of the type, the compiler can infer the 
         /// anonymous type without you having to try naming the type.</remarks>
         public static Recorded<Notification<T>> OnError<T>(T dummy, long ticks, Func<Exception, bool> predicate)
         {

@@ -27,7 +27,7 @@ using AppKit;
 namespace ReactiveUI
 {
     /// <summary>
-    /// This is an View that is both an NSView and has ReactiveObject powers
+    /// This is an View that is both an NSView and has ReactiveObject powers 
     /// (i.e. you can call RaiseAndSetIfChanged)
     /// </summary>
     public class ReactiveView : NSView, IReactiveNotifyPropertyChanged<ReactiveView>, IHandleObservableErrors, IReactiveObject, ICanActivate, ICanForceManualActivation
@@ -80,7 +80,7 @@ namespace ReactiveUI
 
         /// <summary>
         /// Represents an Observable that fires *before* a property is about to
-        /// be changed.
+        /// be changed.         
         /// </summary>
         public IObservable<IReactivePropertyChangedEventArgs<ReactiveView>> Changing {
             get { return this.getChangingObservable(); }
@@ -106,7 +106,7 @@ namespace ReactiveUI
         }
 
         public IObservable<Exception> ThrownExceptions { get { return this.getThrownExceptionsObservable(); } }
-
+        
         Subject<Unit> activated = new Subject<Unit>();
         public IObservable<Unit> Activated { get { return activated; } }
         Subject<Unit> deactivated = new Subject<Unit>();
@@ -129,9 +129,9 @@ namespace ReactiveUI
             RxApp.MainThreadScheduler.Schedule(() => (newsuper != null ? activated : deactivated).OnNext(Unit.Default));
         }
 
-        void ICanForceManualActivation.Activate(bool activate)
+        void ICanForceManualActivation.Activate(bool activate) 
         {
-            RxApp.MainThreadScheduler.Schedule(() =>
+            RxApp.MainThreadScheduler.Schedule(() => 
                 (activate ? activated : deactivated).OnNext(Unit.Default));
         }
     }

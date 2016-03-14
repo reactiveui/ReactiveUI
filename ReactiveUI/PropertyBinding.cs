@@ -106,7 +106,7 @@ namespace ReactiveUI
         }
 
         /// <summary>
-        /// Binds the specified view model property to the given view property, and
+        /// Binds the specified view model property to the given view property, and 
         /// provide a custom view update signaller to signal when the view property has been updated.
         /// </summary>
         /// <typeparam name="TViewModel">The type of the view model being bound.</typeparam>
@@ -115,7 +115,7 @@ namespace ReactiveUI
         /// <typeparam name="TVProp">The type of the property bound on the view.</typeparam>
         /// <param name="view">The instance of the view to bind.</param>
         /// <typeparam name="TDontCare">
-        /// A dummy type, only the fact that <paramref name="signalViewUpdate"/>
+        /// A dummy type, only the fact that <paramref name="signalViewUpdate"/> 
         /// emits values is considered, not the actual values emitted.
         /// </typeparam>
         /// <param name="viewModel">The instance of the view model to bind.</param>
@@ -130,7 +130,7 @@ namespace ReactiveUI
         /// and the binder will attempt to set the last one each time the view model property is updated.
         /// </param>
         /// <param name="signalViewUpdate">
-        /// An observable, that when signaled, indicates that the view property
+        /// An observable, that when signaled, indicates that the view property 
         /// has been changed, and that the binding should update the view model
         /// property accordingly.
         /// </param>
@@ -155,7 +155,7 @@ namespace ReactiveUI
         }
 
         /// <summary>
-        /// Binds the specified view model property to an automagically guessed control/property on the view, and
+        /// Binds the specified view model property to an automagically guessed control/property on the view, and 
         /// provide a custom view update signaller to signal when the view property has been updated.
         /// </summary>
         /// <typeparam name="TViewModel">The type of the view model being bound.</typeparam>
@@ -163,7 +163,7 @@ namespace ReactiveUI
         /// <param name="view">The instance of the view to bind.</param>
         /// <typeparam name="TProp">The type of the property bound on the view model.</typeparam>
         /// <typeparam name="TDontCare">
-        /// A dummy type, only the fact that <paramref name="signalViewUpdate"/>
+        /// A dummy type, only the fact that <paramref name="signalViewUpdate"/> 
         /// emits values is considered, not the actual values emitted.
         /// </typeparam>
         /// <param name="viewModel">The instance of the view model to bind.</param>
@@ -173,7 +173,7 @@ namespace ReactiveUI
         /// and the binder will attempt to subscribe to changes on each recursively.
         /// </param>
         /// <param name="signalViewUpdate">
-        /// An observable, that when signaled, indicates that the view property
+        /// An observable, that when signaled, indicates that the view property 
         /// has been changed, and that the binding should update the view model
         /// property accordingly.
         /// </param>
@@ -209,7 +209,7 @@ namespace ReactiveUI
         /// instance.
         /// </param>
         /// <param name="viewModel">
-        /// The view model that is bound.
+        /// The view model that is bound. 
         /// It is usually set to the <see cref="IViewFor.ViewModel"/> property of the <paramref name="view"/>.</param>
         /// <param name="vmProperty">
         /// An expression indicating the property that is bound on the view model.
@@ -222,7 +222,7 @@ namespace ReactiveUI
         /// and the binder will attempt to set the last one each time the view model property is updated.
         /// </param>
         /// <param name="fallbackValue">
-        /// A function providing a fallback value.
+        /// A function providing a fallback value. 
         /// </param>
         /// <param name="conversionHint">
         /// An object that can provide a hint for the converter.
@@ -263,7 +263,7 @@ namespace ReactiveUI
         /// and the binder will attempt to subscribe to changes on each recursively.
         /// </param>
         /// <param name="fallbackValue">
-        /// A function providing a fallback value.
+        /// A function providing a fallback value. 
         /// </param>
         /// <param name="conversionHint">
         /// An object that can provide a hint for the converter.
@@ -409,7 +409,7 @@ namespace ReactiveUI
     {
         /// <summary>
         /// Creates a two-way binding between a view model and a view.
-        /// This binding will attempt to convert the values of the
+        /// This binding will attempt to convert the values of the 
         /// view and view model properties using a <see cref="IBindingTypeConverter"/>
         /// if they are not of the same type.
         /// </summary>
@@ -418,7 +418,7 @@ namespace ReactiveUI
         /// <typeparam name="TVMProp">The type of the property bound on the view model.</typeparam>
         /// <typeparam name="TVProp">The type of the property bound on the view.</typeparam>
         /// <typeparam name="TDontCare">
-        /// A dummy type, only the fact that <paramref name="signalViewUpdate"/>
+        /// A dummy type, only the fact that <paramref name="signalViewUpdate"/> 
         /// emits values is considered, not the actual values emitted.
         /// </typeparam>
         /// <param name="viewModel">The instance of the view model object to be bound.</param>
@@ -436,7 +436,7 @@ namespace ReactiveUI
         /// always get and set the correct property.
         /// </param>
         /// <param name="signalViewUpdate">
-        /// An observable, that when signaled, indicates that the view property
+        /// An observable, that when signaled, indicates that the view property 
         /// has been changed, and that the binding should update the view model
         /// property accordingly.
         /// </param>
@@ -572,11 +572,11 @@ namespace ReactiveUI
             IBindingTypeConverter vmToViewConverterOverride = null);
     }
 
-    public class PropertyBinderImplementation : IPropertyBinderImplementation
+    public class PropertyBinderImplementation : IPropertyBinderImplementation 
     {
         /// <summary>
         /// Creates a two-way binding between a view model and a view.
-        /// This binding will attempt to convert the values of the
+        /// This binding will attempt to convert the values of the 
         /// view and view model properties using a <see cref="IBindingTypeConverter"/>
         /// if they are not of the same type.
         /// </summary>
@@ -585,7 +585,7 @@ namespace ReactiveUI
         /// <typeparam name="TVMProp">The type of the property bound on the view model.</typeparam>
         /// <typeparam name="TVProp">The type of the property bound on the view.</typeparam>
         /// <typeparam name="TDontCare">
-        /// A dummy type, only the fact that <paramref name="signalViewUpdate"/>
+        /// A dummy type, only the fact that <paramref name="signalViewUpdate"/> 
         /// emits values is considered, not the actual values emitted.
         /// </typeparam>
         /// <param name="viewModel">The instance of the view model object to be bound.</param>
@@ -601,13 +601,13 @@ namespace ReactiveUI
         /// This can be a child property, for example <c>x =&gt; x.Foo.Bar.Baz</c> in which case
         /// the binding will attempt to subscribe recursively to updates in order to
         /// always get and set the correct property.
-        ///
+        /// 
         /// If it is left null, the framework will attempt to automagically figure out
         /// the control and property that is to be bound, by looking for a control of the
         /// same name as the <see cref="vmProperty"/>, and its most natural property.
         /// </param>
         /// <param name="signalViewUpdate">
-        /// An observable, that when signaled, indicates that the view property
+        /// An observable, that when signaled, indicates that the view property 
         /// has been changed, and that the binding should update the view model
         /// property accordingly.
         /// </param>
@@ -636,7 +636,7 @@ namespace ReactiveUI
             var viewExpression = default(Expression);
 
             if (viewProperty == null) {
-                // NB: In this case, TVProp is possibly wrong due to type
+                // NB: In this case, TVProp is possibly wrong due to type 
                 // conversion. Figure out if this is the case, then re-call Bind
                 // with the right TVProp
                 viewExpression = Reflection.getViewExpressionWithProperty(view, vmExpression);
@@ -660,8 +660,8 @@ namespace ReactiveUI
             var somethingChanged = Observable.Merge(
                 Reflection.ViewModelWhenAnyValue(viewModel, view, vmExpression).Select(_ => true),
                 signalInitialUpdate.Select(_ => true),
-                signalViewUpdate != null ?
-                    signalViewUpdate.Select(_ => false) :
+                signalViewUpdate != null ? 
+                    signalViewUpdate.Select(_ => false) : 
                     view.WhenAnyDynamic(viewExpression, x => (TVProp) x.Value).Select(_ => false));
 
             var changeWithValues = somethingChanged.Select(isVm => {
@@ -709,11 +709,11 @@ namespace ReactiveUI
                 }
             });
 
-            // NB: Even though it's technically a two-way bind, most people
+            // NB: Even though it's technically a two-way bind, most people 
             // want the ViewModel to win at first.
             signalInitialUpdate.OnNext(true);
 
-            return new ReactiveBinding<TView, TViewModel, Tuple<object, bool>>(view, viewModel, viewExpression, vmExpression,
+            return new ReactiveBinding<TView, TViewModel, Tuple<object, bool>>(view, viewModel, viewExpression, vmExpression, 
                 changes, BindingDirection.TwoWay, disp);
         }
 
@@ -740,7 +740,7 @@ namespace ReactiveUI
         /// This can be a child property, for example <c>x =&gt; x.Foo.Bar.Baz</c> in which case
         /// the binding will attempt to subscribe recursively to updates in order to
         /// always set the correct property.
-        ///
+        /// 
         /// If it is left null, the framework will attempt to automagically figure out
         /// the control and property that is to be bound, by looking for a control of the
         /// same name as the <see cref="vmProperty"/>, and its most natural property.
@@ -783,7 +783,7 @@ namespace ReactiveUI
                     return (IReactiveBinding<TView, TViewModel, TVProp>)mi.Invoke(this, new[] { viewModel, view, vmProperty, null, fallbackValue, conversionHint, null });
                 }
             } else {
-                viewExpression = Reflection.Rewrite(viewProperty.Body);
+                viewExpression = Reflection.Rewrite(viewProperty.Body);              
             }
 
             var viewType = viewExpression.Type;
@@ -836,7 +836,7 @@ namespace ReactiveUI
         /// This can be a child property, for example <c>x =&gt; x.Foo.Bar.Baz</c> in which case
         /// the binding will attempt to subscribe recursively to updates in order to
         /// always set the correct property.
-        ///
+        /// 
         /// If it is left null, the framework will attempt to automagically figure out
         /// the control and property that is to be bound, by looking for a control of the
         /// same name as the <see cref="vmProperty"/>, and its most natural property.
@@ -866,7 +866,7 @@ namespace ReactiveUI
             var viewExpression = default(Expression);
 
             if (viewProperty == null) {
-                viewExpression = Reflection.getViewExpressionWithProperty(view, vmExpression);
+                viewExpression = Reflection.getViewExpressionWithProperty(view, vmExpression);                
             } else {
                 viewExpression = Reflection.Rewrite(viewProperty.Body);
             }
@@ -910,7 +910,7 @@ namespace ReactiveUI
 
             var ret = evalBindingHooks(This, target, null, viewExpression, BindingDirection.OneWay);
             if (!ret) return Disposable.Empty;
-
+                
             var converter = vmToViewConverterOverride ?? getConverterForTypes(typeof (TValue), typeof(TTValue));
 
             if (converter == null) {
@@ -937,7 +937,7 @@ namespace ReactiveUI
             Func<TValue> fallbackValue = null)
         {
             var setter = Reflection.GetValueSetterOrThrow(viewExpression.GetMemberInfo());
-            if (viewExpression.GetParent().NodeType == ExpressionType.Parameter) {
+            if (viewExpression.GetParent().NodeType == ExpressionType.Parameter) { 
                 return This.Subscribe(
                     x => setter(target, x, viewExpression.GetArgumentsArray()),
                     ex => {
@@ -974,12 +974,12 @@ namespace ReactiveUI
                 };
             } else {
                 vmFetcher = () => {
-                    return new[] {
+                    return new[] { 
                         new ObservedChange<object, object>(null, null, viewModel)
                     };
                 };
             }
-
+            
             var vFetcher = new Func<IObservedChange<object, object>[]>(() => {
                 IObservedChange<object, object>[] fetchedValues;
                 Reflection.TryGetAllValuesForPropertyChain(out fetchedValues, view, viewExpression.GetExpressionChain());

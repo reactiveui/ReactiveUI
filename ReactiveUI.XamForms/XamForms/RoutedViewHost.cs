@@ -83,7 +83,7 @@ namespace ReactiveUI.XamForms
                 .Subscribe();
         }
 
-        IObservable<Page> pageForViewModel(IRoutableViewModel vm)
+        IObservable<Page> pageForViewModel(IRoutableViewModel vm) 
         {
             if (vm == null) return Observable.Empty<Page>();
 

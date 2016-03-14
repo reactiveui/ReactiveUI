@@ -10,7 +10,7 @@ namespace XamarinMacPlayground
     public partial class AppDelegate : NSApplicationDelegate
     {
         MainWindowController mainWindowController;
-
+		
         public AppDelegate ()
         {
         }

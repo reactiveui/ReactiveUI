@@ -14,7 +14,7 @@ namespace ReactiveUI.XamForms
             get { return (TViewModel)GetValue(ViewModelProperty); }
             set { SetValue(ViewModelProperty, value); }
         }
-        public static readonly BindableProperty ViewModelProperty =
+        public static readonly BindableProperty ViewModelProperty = 
             BindableProperty.Create<ReactiveContentPage<TViewModel>, TViewModel>(x => x.ViewModel, default(TViewModel), BindingMode.OneWay);
 
         object IViewFor.ViewModel {

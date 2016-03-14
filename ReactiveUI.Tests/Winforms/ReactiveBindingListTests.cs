@@ -61,9 +61,9 @@ namespace ReactiveUI.Tests.Winforms
             target.ListChanged += (o, e) => { capturedEvents.Add(e); };
 
             target.Move(0,1);
-
+          
             Assert.Equal(1, capturedEvents.Count);
-
+          
             Assert.True(capturedEvents[0].ListChangedType == ListChangedType.ItemMoved);
             Assert.Equal(1, capturedEvents[0].NewIndex);
             Assert.Equal(0, capturedEvents[0].OldIndex);
@@ -150,7 +150,7 @@ namespace ReactiveUI.Tests.Winforms
             var target = new ReactiveBindingList<string>(new string[] { "item1", "item2", "item3" });
             var capturedEvents = new List<ListChangedEventArgs>();
             target.ListChanged += (o, e) => { capturedEvents.Add(e); };
-
+            
             using (target.SuppressChangeNotifications()) {
                 target.InsertRange(1, new[] { "item4", "item5", "item6" });
             }
@@ -179,7 +179,7 @@ namespace ReactiveUI.Tests.Winforms
             var input = new[] { "Foo", "Bar", "Baz", "Bamf" };
             var fixture = new ReactiveList<TestFixture>(
                 input.Select(x => new TestFixture() { IsOnlyOneWord = x }));
-
+            
             IBindingList output = fixture.CreateDerivedBindingList(new Func<TestFixture, string>(x => x.IsOnlyOneWord));
             var capturedEvents = new List<ListChangedEventArgs>();
             output.ListChanged += (o, e) => capturedEvents.Add(e);
@@ -195,7 +195,7 @@ namespace ReactiveUI.Tests.Winforms
             Assert.Equal(capturedEvents.Last().ListChangedType, ListChangedType.ItemDeleted);
             Assert.Equal(4, output.Count);
 
-            //replacing results in
+            //replacing results in 
             //1 itemdeleted
             //2 itemadded
             fixture[1] = new TestFixture() { IsOnlyOneWord = "Goodbye" };

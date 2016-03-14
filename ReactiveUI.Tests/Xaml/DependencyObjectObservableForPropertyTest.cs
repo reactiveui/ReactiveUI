@@ -12,7 +12,7 @@ namespace ReactiveUI.Tests
 {
     public class DepObjFixture : FrameworkElement
     {
-        public static readonly DependencyProperty TestStringProperty =
+        public static readonly DependencyProperty TestStringProperty = 
             DependencyProperty.Register("TestString", typeof(string), typeof(DepObjFixture), new PropertyMetadata(null));
 
         public string TestString {

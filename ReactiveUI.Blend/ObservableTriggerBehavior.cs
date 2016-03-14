@@ -22,7 +22,7 @@ namespace ReactiveUI.Blend
             watcher = new SerialDisposable();
             watcher.Disposable = Disposable.Empty;
         }
-
+                
         public ActionCollection Actions
         {
             get {

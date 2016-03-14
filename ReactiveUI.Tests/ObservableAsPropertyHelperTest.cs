@@ -85,19 +85,19 @@ namespace ReactiveUI.Tests
             (new TestScheduler()).With(sched => {
                 var input = new Subject<int>();
                 var fixture = new ObservableAsPropertyHelper<int>(input, _ => { }, -5);
-
+    
                 Assert.Equal(-5, fixture.Value);
                 (new[] { 1, 2, 3, 4 }).Run(x => input.OnNext(x));
-
+    
                 input.OnError(new Exception("Die!"));
-
+    
                 bool failed = true;
                 try {
                     sched.Start();
                 } catch (Exception ex) {
                     failed = ex.InnerException.Message != "Die!";
                 }
-
+    
                 Assert.False(failed);
                 Assert.Equal(4, fixture.Value);
             });

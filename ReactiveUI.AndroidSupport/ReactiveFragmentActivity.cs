@@ -27,7 +27,7 @@ using Android.Support.V4.App;
 namespace ReactiveUI
 {
     /// <summary>
-    /// This is an Activity that is both an Activity and has ReactiveObject powers
+    /// This is an Activity that is both an Activity and has ReactiveObject powers 
     /// (i.e. you can call RaiseAndSetIfChanged)
     /// </summary>
     public class ReactiveFragmentActivity<TViewModel> : ReactiveFragmentActivity, IViewFor<TViewModel>, ICanActivate
@@ -50,7 +50,7 @@ namespace ReactiveUI
     }
 
     /// <summary>
-    /// This is an Activity that is both an Activity and has ReactiveObject powers
+    /// This is an Activity that is both an Activity and has ReactiveObject powers 
     /// (i.e. you can call RaiseAndSetIfChanged)
     /// </summary>
     public class ReactiveFragmentActivity : FragmentActivity, IReactiveObject, IReactiveNotifyPropertyChanged<ReactiveFragmentActivity>, IHandleObservableErrors
@@ -79,7 +79,7 @@ namespace ReactiveUI
 
         /// <summary>
         /// Represents an Observable that fires *before* a property is about to
-        /// be changed.
+        /// be changed.         
         /// </summary>
         public IObservable<IReactivePropertyChangedEventArgs<ReactiveFragmentActivity>> Changing
         {

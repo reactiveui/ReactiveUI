@@ -176,9 +176,9 @@ namespace ReactiveUI
     }
 
     /// <summary>
-    /// ReactiveTableViewSource is a Table View Source that is connected to
-    /// a ReactiveList that automatically updates the View based on the
-    /// contents of the list. The collection changes are buffered and View
+    /// ReactiveTableViewSource is a Table View Source that is connected to 
+    /// a ReactiveList that automatically updates the View based on the 
+    /// contents of the list. The collection changes are buffered and View 
     /// items are animated in and out as items are added.
     /// </summary>
     public class ReactiveTableViewSource<TSource> : UITableViewSource, IEnableLogger, IDisposable, IReactiveNotifyPropertyChanged<ReactiveTableViewSource<TSource>>, IHandleObservableErrors, IReactiveObject
@@ -310,7 +310,7 @@ namespace ReactiveUI
             var header = commonSource.SectionInfo[(int)section].Header;
 
             // NB: -1 is a magic # that causes iOS to use the regular height. go figure.
-            return header == null || header.View == null ? -1 : header.Height;
+            return header == null || header.View == null ? -1 : header.Height; 
         }
 
 #if UNIFIED

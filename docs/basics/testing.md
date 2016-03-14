@@ -21,7 +21,7 @@ global schedulers `MainThreadScheduler` and `TaskpoolScheduler` with your own.
 One easy way to test methods that return `IObservable<T>` is to simply dump
 it to a collection, then check the contents after-the-fact. `CreateCollection`
 differs from `ToList` in that `CreateCollection` returns *immediately*,
-whereas `ToList` only returns a value once the Observable completes.
+whereas `ToList` only returns a value once the Observable completes. 
 
 Check out this test from ReactiveList where we're putting all of the Reset
 events into a list:
@@ -53,7 +53,7 @@ public void DerivedCollectionSignalledToResetShouldFireExactlyOnce()
     var input = new List<string> { "Foo" };
     var resetSubject = new Subject<Unit>();
     var derived = input.CreateDerivedCollection(x => x, signalReset: resetSubject);
-
+    
     var changeNotifications = derived.Changed.CreateCollection();
 
     Assert.Equal(0, changeNotifications.Count);

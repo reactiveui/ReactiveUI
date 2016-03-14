@@ -1,8 +1,8 @@
-# Basic Property Binding
+# Basic Property Binding 
 
 A core part of being able to use the MVVM pattern is the very specific
 relationship between the ViewModel and View - that is, the View is connected
-in a one-way dependent manner to the ViewModel via *bindings*.
+in a one-way dependent manner to the ViewModel via *bindings*. 
 
 ReactiveUI provides its own implementation of this concept, which has a number
 of advantages compared to platform-specific implementations such as XAML-based
@@ -84,7 +84,7 @@ the source will be updated (for example, the binding updating will trigger
 some expensive work which isn't necessary on every keystroke).
 
 One common requirement is to update the source when a user interface control
-loses keyboard (or logical) focus - WPF even provides `UpdateSourceTrigger =
+loses keyboard (or logical) focus - WPF even provides `UpdateSourceTrigger = 
 LostFocus` for this.
 
 ReactiveUI bindings allow this by providing an IObservable as a parameter to

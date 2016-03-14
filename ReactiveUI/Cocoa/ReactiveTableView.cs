@@ -64,7 +64,7 @@ namespace ReactiveUI
 
         /// <summary>
         /// Represents an Observable that fires *before* a property is about to
-        /// be changed.
+        /// be changed.         
         /// </summary>
         public IObservable<IReactivePropertyChangedEventArgs<ReactiveTableView>> Changing {
             get { return this.getChangingObservable(); }
@@ -94,9 +94,9 @@ namespace ReactiveUI
             RxApp.MainThreadScheduler.Schedule(() => (newsuper != null ? activated : deactivated).OnNext(Unit.Default));
         }
 
-        void ICanForceManualActivation.Activate(bool activate)
+        void ICanForceManualActivation.Activate(bool activate) 
         {
-            RxApp.MainThreadScheduler.Schedule(() =>
+            RxApp.MainThreadScheduler.Schedule(() => 
                 (activate ? activated : deactivated).OnNext(Unit.Default));
         }
     }

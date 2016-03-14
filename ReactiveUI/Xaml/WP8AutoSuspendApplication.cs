@@ -29,9 +29,9 @@ namespace ReactiveUI
                     .Where(x => x.EventArgs.IsApplicationInstancePreserved)
                     .Select(_ => Unit.Default);
 
-            // NB: "Applications should not perform resource-intensive tasks
-            // such as loading from isolated storage or a network resource
-            // during the Activated event handler because it increase the time
+            // NB: "Applications should not perform resource-intensive tasks 
+            // such as loading from isolated storage or a network resource 
+            // during the Activated event handler because it increase the time 
             // it takes for the application to resume"
             RxApp.SuspensionHost.IsResuming =
                 Observable.FromEventPattern<ActivatedEventArgs>(

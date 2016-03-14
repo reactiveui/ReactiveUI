@@ -12,8 +12,8 @@ namespace ReactiveUI
     public static class DependencyResolverMixins
     {
         /// <summary>
-        /// This method allows you to initialize resolvers with the default
-        /// ReactiveUI types. All resolvers used as the default
+        /// This method allows you to initialize resolvers with the default 
+        /// ReactiveUI types. All resolvers used as the default 
         /// Locator.Current
         /// </summary>
         /// <param name="resolver">The resolver to initialize.</param>
@@ -21,7 +21,7 @@ namespace ReactiveUI
         {
             var extraNs = new[] {
                 "ReactiveUI.XamForms",
-                "ReactiveUI.Winforms",
+                "ReactiveUI.Winforms", 
             };
 
             // Set up the built-in registration

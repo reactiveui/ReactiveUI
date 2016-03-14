@@ -97,7 +97,7 @@ namespace ReactiveUI.Routing.Tests
             Assert.Equal(4, output.Count);
             Assert.Equal("A", ((TestViewModel)output.Last()).SomeProp);
         }
-
+        
         [Fact]
         public void NavigateAndResetCheckNavigationStack()
         {

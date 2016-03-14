@@ -42,7 +42,7 @@ public class TweetsListViewModel : ReactiveObject
 illustrate it, we need a more interesting set of classes.
 
 ```cs
-public class Tweet
+public class Tweet 
 {
     public DateTime CreatedAt { get; set; }
 }

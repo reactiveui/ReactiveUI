@@ -36,7 +36,7 @@ namespace ReactiveUI.Winforms
             var controlActive = Observable.Merge(controlVisible, handleDestroyed, handleCreated)
                 .DistinctUntilChanged();
 
-
+            
 
             var form = view as Form;
             if (form != null) {

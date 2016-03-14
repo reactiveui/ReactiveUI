@@ -29,14 +29,14 @@ namespace ReactiveUI
 {
     /// <summary>
     /// TargetActionCommandBinder is an implementation of command binding that
-    /// understands Cocoa's Target / Action Framework. Many controls in Cocoa
-    /// that are effectively command sources (i.e. Buttons, Menus, etc),
+    /// understands Cocoa's Target / Action Framework. Many controls in Cocoa 
+    /// that are effectively command sources (i.e. Buttons, Menus, etc), 
     /// participate in this framework.
     /// </summary>
     public class TargetActionCommandBinder : ICreatesCommandBinding
     {
         readonly Type[] validTypes;
-        public TargetActionCommandBinder()
+        public TargetActionCommandBinder() 
         {
 #if UIKIT
             validTypes = new[] {
@@ -117,7 +117,7 @@ namespace ReactiveUI
 #endif
         }
 
-        public IDisposable BindCommandToObject<TEventArgs>(ICommand command, object target, IObservable<object> commandParameter, string eventName)
+        public IDisposable BindCommandToObject<TEventArgs>(ICommand command, object target, IObservable<object> commandParameter, string eventName) 
             where TEventArgs : EventArgs
         {
             throw new NotImplementedException();

@@ -13,7 +13,7 @@ using Splat;
 namespace MobileSample_Android
 {
     [Activity (Label = "AndroidPlayground", MainLauncher = true)]
-    public class MainView : ReactiveActivity<MainViewModel>
+    public class MainView : ReactiveActivity<MainViewModel> 
     {
         int count = 1;
         public TextView SavedGuid { get; set; }
@@ -25,10 +25,10 @@ namespace MobileSample_Android
         protected override void OnCreate(Bundle bundle)
         {
             base.OnCreate(bundle);
-
+        
             // Set our view from the "main" layout resource
             SetContentView(Resource.Layout.Main);
-
+                        
             this.WireUpControls();
 
             RxApp.SuspensionHost.ObserveAppState<AppBootstrapper>()

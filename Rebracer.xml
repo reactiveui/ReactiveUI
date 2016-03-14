@@ -64,7 +64,7 @@
         <PropertyValue name="Wrapping_IgnoreSpacesAroundVariableDeclaration">0</PropertyValue>
         <PropertyValue name="Wrapping_KeepStatementsOnSingleLine">1</PropertyValue>
         <PropertyValue name="Wrapping_PreserveSingleLine">1</PropertyValue>
-      </ToolsOptionsSubCategory>
+      </ToolsOptionsSubCategory>      
     </ToolsOptionsCategory>
   </ToolsOptions>
 </UserSettings>

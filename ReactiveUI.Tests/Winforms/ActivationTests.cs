@@ -27,7 +27,7 @@ namespace ReactiveUI.Tests.Winforms
 
             Assert.NotNull(formActivator);
         }
-
+      
 
         [Fact]
         public void CanFetchActivatorForControl()

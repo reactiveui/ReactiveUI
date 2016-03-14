@@ -20,7 +20,7 @@ namespace ReactiveUI.Legacy
 {
     /// <summary>
     /// ReactiveCommand is the default Command implementation in ReactiveUI, which
-    /// conforms to the spec described in IReactiveCommand.
+    /// conforms to the spec described in IReactiveCommand. 
     /// </summary>
     public class ReactiveCommand : IReactiveCommand, IObservable<object>
     {
@@ -76,12 +76,12 @@ namespace ReactiveUI.Legacy
         }
 
         /// <summary>
-        /// This creates a ReactiveCommand that calls several child
+        /// This creates a ReactiveCommand that calls several child 
         /// ReactiveCommands when invoked. Its CanExecute will match the
         /// combined result of the child CanExecutes (i.e. if any child
         /// commands cannot execute, neither can the parent)
         /// </summary>
-        /// <param name="canExecute">An Observable that determines whether the
+        /// <param name="canExecute">An Observable that determines whether the 
         /// parent command can execute</param>
         /// <param name="commands">The commands to combine.</param>
         public static LegacyRxCmd CreateCombined(IObservable<bool> canExecute, params ReactiveCommand[] commands)
@@ -113,7 +113,7 @@ namespace ReactiveUI.Legacy
         /// is Executed. This method returns an IObservable representing the
         /// asynchronous operation, and is allowed to OnError / should OnComplete.
         /// </summary>
-        /// <returns>A filtered version of the Observable which is marshaled
+        /// <returns>A filtered version of the Observable which is marshaled 
         /// to the UI thread. This Observable should only report successes and
         /// instead send OnError messages to the ThrownExceptions property.</returns>
         /// <param name="asyncBlock">The asynchronous method to call.</param>
@@ -137,7 +137,7 @@ namespace ReactiveUI.Legacy
         }
 
         /// <summary>
-        /// Gets a value indicating whether this instance is executing. This
+        /// Gets a value indicating whether this instance is executing. This 
         /// Observable is guaranteed to always return a value immediately (i.e.
         /// it is backed by a BehaviorSubject), meaning it is safe to determine
         /// the current state of the command via IsExecuting.First()
@@ -149,7 +149,7 @@ namespace ReactiveUI.Legacy
         public bool AllowsConcurrentExecution { get; protected set; }
 
         /// <summary>
-        /// Fires whenever an exception would normally terminate ReactiveUI
+        /// Fires whenever an exception would normally terminate ReactiveUI 
         /// internal state.
         /// </summary>
         /// <value>The thrown exceptions.</value>
@@ -180,7 +180,7 @@ namespace ReactiveUI.Legacy
         }
 
         public IObservable<bool> CanExecuteObservable { get; protected set; }
-
+    
         public void Dispose()
         {
             var disp = Interlocked.Exchange(ref innerDisp, null);
@@ -293,7 +293,7 @@ namespace ReactiveUI.Legacy
         /// </summary>
         /// <param name="calculationFunc">The function to be run in the
         /// background.</param>
-        public static IObservable<Unit> RegisterAsyncAction(this LegacyRxCmd This,
+        public static IObservable<Unit> RegisterAsyncAction(this LegacyRxCmd This, 
             Action<object> calculationFunc,
             IScheduler scheduler = null)
         {
@@ -307,7 +307,7 @@ namespace ReactiveUI.Legacy
         }
 
         /// <summary>
-        /// RegisterAsyncTask registers an TPL/Async method that runs when a
+        /// RegisterAsyncTask registers an TPL/Async method that runs when a 
         /// Command gets executed and returns the result
         /// </summary>
         /// <returns>An Observable that will fire on the UI thread once per
@@ -320,8 +320,8 @@ namespace ReactiveUI.Legacy
         }
 
         /// <summary>
-        /// RegisterAsyncTask registers an TPL/Async method that runs when a
-        /// Command gets executed and returns no result.
+        /// RegisterAsyncTask registers an TPL/Async method that runs when a 
+        /// Command gets executed and returns no result. 
         /// </summary>
         /// <param name="calculationFunc">The function to be run in the
         /// background.</param>

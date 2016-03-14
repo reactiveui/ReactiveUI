@@ -9,7 +9,7 @@
 
 1. Fork and Clone the source
 1. Create a new branch for your feature / bugfix
-1. Open the ReactiveUI.sln solution - this is the one you should use unless you're hacking on platform-specific code.
+1. Open the ReactiveUI.sln solution - this is the one you should use unless you're hacking on platform-specific code. 
 1. Run all the tests, make sure they pass.
 1. Write some new tests that fail
 1. Make your change
@@ -26,7 +26,7 @@
 1. Edit `/CommonAssemblyInfo.cs` and bump the version
 1. Open ReactiveUI.sln and build it in Release mode under VS2012 on Windows 8 / Win8.1 with the WP8 SDK installed (nothing earlier is supported)
 1. Open MonoDevelop, and build ReactiveUI_XSAll.sln in Release mode
-1. Back on the PC, run `MakeRelease.ps1` and specify a NuGet SemVer, like `MakeRelease.ps1 -version "5.5.0-beta1"`
+1. Back on the PC, run `MakeRelease.ps1` and specify a NuGet SemVer, like `MakeRelease.ps1 -version "5.5.0-beta1"` 
 1. You'll end up with two new folders, `Release` and `Nuget-Release`, as well as the `.nupkg` files in the root directory.
 
 ## Some quirks

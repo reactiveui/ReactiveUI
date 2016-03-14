@@ -13,7 +13,7 @@ namespace ReactiveUI.Tests
     }
 
     public class ErrorsTest
-    {
+    { 
         [Fact]
         public void UnhandledUserErrorsShouldDie()
         {
@@ -22,7 +22,7 @@ namespace ReactiveUI.Tests
         }
 
         [Fact]
-        public void HandledUserErrorsShouldNotThrow()
+        public void HandledUserErrorsShouldNotThrow() 
         {
             using (UserError.RegisterHandler(x => Observable.Return(RecoveryOptionResult.RetryOperation))) {
                 var result = UserError.Throw("This should catch!").First();
