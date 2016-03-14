@@ -33,7 +33,7 @@ namespace ReactiveUI
             RxApp.SuspensionHost.ShouldPersistState = shouldPersistState;
 
             var untimelyDemise = new Subject<Unit>();
-            AppDomain.CurrentDomain.UnhandledException += (o, e) => 
+            AppDomain.CurrentDomain.UnhandledException += (o, e) =>
                 untimelyDemise.OnNext(Unit.Default);
 
             RxApp.SuspensionHost.ShouldInvalidateState = untimelyDemise;

@@ -25,7 +25,7 @@ using MonoTouch.UIKit;
 
 namespace ReactiveUI
 {
-    public abstract class ReactiveTabBarController : UITabBarController, 
+    public abstract class ReactiveTabBarController : UITabBarController,
     IReactiveNotifyPropertyChanged<ReactiveTabBarController>, IHandleObservableErrors, IReactiveObject, ICanActivate
     {
         protected ReactiveTabBarController(string nibName, NSBundle bundle) : base(nibName, bundle) { setupRxObj(); }
@@ -56,7 +56,7 @@ namespace ReactiveUI
 
         /// <summary>
         /// Represents an Observable that fires *before* a property is about to
-        /// be changed.         
+        /// be changed.
         /// </summary>
         public IObservable<IReactivePropertyChangedEventArgs<ReactiveTabBarController>> Changing {
             get { return this.getChangingObservable(); }

@@ -26,10 +26,10 @@ using AppKit;
 namespace ReactiveUI
 {
     /// <summary>
-    /// This is an View that is both an NSViewController and has ReactiveObject powers 
+    /// This is an View that is both an NSViewController and has ReactiveObject powers
     /// (i.e. you can call RaiseAndSetIfChanged)
     /// </summary>
-    public class ReactiveViewController : NSViewController, 
+    public class ReactiveViewController : NSViewController,
 	    IReactiveNotifyPropertyChanged<ReactiveViewController>, IHandleObservableErrors, IReactiveObject
 #if UIKIT
         , ICanActivate
@@ -77,7 +77,7 @@ namespace ReactiveUI
 
         /// <summary>
         /// Represents an Observable that fires *before* a property is about to
-        /// be changed.         
+        /// be changed.
         /// </summary>
         public IObservable<IReactivePropertyChangedEventArgs<ReactiveViewController>> Changing {
             get { return this.getChangingObservable(); }
@@ -103,7 +103,7 @@ namespace ReactiveUI
         {
             return this.suppressChangeNotifications();
         }
-                
+
 #if UIKIT
         Subject<Unit> activated = new Subject<Unit>();
         public IObservable<Unit> Activated { get { return activated; } }
@@ -128,14 +128,14 @@ namespace ReactiveUI
 
     // TODO: Update this once we support 64-bit Xamarin.Mac
 #if UIKIT || UNIFIED
-    static class UIViewControllerMixins 
+    static class UIViewControllerMixins
     {
-        internal static void ActivateSubviews(this NSViewController This, bool activate) 
+        internal static void ActivateSubviews(this NSViewController This, bool activate)
         {
             This.View.ActivateSubviews(activate);
         }
 
-        static void ActivateSubviews(this NSView This, bool activate) 
+        static void ActivateSubviews(this NSView This, bool activate)
         {
             foreach (var view in This.Subviews) {
                 var subview = view as ICanForceManualActivation;

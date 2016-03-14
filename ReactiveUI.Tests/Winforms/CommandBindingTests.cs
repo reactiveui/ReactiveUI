@@ -160,7 +160,7 @@ namespace ReactiveUI.Tests.Winforms
 
             int invokeCount = 0;
             vm.Command1.Subscribe(_ => invokeCount += 1);
-            
+
             var disp = view.BindCommand(vm, x => x.Command1);
 
             view.Command1.PerformClick();;

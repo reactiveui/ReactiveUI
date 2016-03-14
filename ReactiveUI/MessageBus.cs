@@ -15,7 +15,7 @@ namespace ReactiveUI
     /// Specifying which messages go where is done via a combination of the Type
     /// of the message as well as an additional "Contract" parameter; this is a
     /// unique string used to distinguish between messages of the same Type, and
-    /// is arbitrarily set by the client. 
+    /// is arbitrarily set by the client.
     /// </summary>
     public class MessageBus : IMessageBus
     {
@@ -154,7 +154,7 @@ namespace ReactiveUI
 
         void withMessageBus(
             Type type, string contract,
-            Action<Dictionary<Tuple<Type, string>, NotAWeakReference>, 
+            Action<Dictionary<Tuple<Type, string>, NotAWeakReference>,
             Tuple<Type, string>> block)
         {
             lock (messageBus) {

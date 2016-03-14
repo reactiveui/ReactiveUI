@@ -29,7 +29,7 @@ namespace ReactiveUI
 
         public DefaultViewLocator(Func<string, string> viewModelToViewFunc = null)
         {
-            ViewModelToViewFunc = viewModelToViewFunc ?? 
+            ViewModelToViewFunc = viewModelToViewFunc ??
                 (vm => interfaceifyTypeName(vm.Replace("ViewModel", "View")));
         }
 
@@ -44,7 +44,7 @@ namespace ReactiveUI
         public IViewFor ResolveView<T>(T viewModel, string contract = null)
             where T : class
         {
-            // Given IFooBarViewModel (whose name we derive from T), we'll look 
+            // Given IFooBarViewModel (whose name we derive from T), we'll look
             // for a few things:
             // * IFooBarView that implements IViewFor
             // * IViewFor<IFooBarViewModel>
@@ -58,7 +58,7 @@ namespace ReactiveUI
 
             // IFooBarView that implements IViewFor (or custom ViewModelToViewFunc)
             var typeToFind = ViewModelToViewFunc(viewModel.GetType().AssemblyQualifiedName);
-                
+
             var ret = attemptToResolveView(Reflection.ReallyFindType(typeToFind, false), contract);
             if (ret != null) return ret;
 

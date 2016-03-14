@@ -9,7 +9,7 @@ such as WinRT have the back button as part of the page.
 However, all of these platforms are designed with a View-first model, where
 Views are either created via the framework automatically, or are the core
 component in navigation. While this approach is the most direct, it also is
-untestable. 
+untestable.
 
 An alternate approach is to create the navigation "stack" as a stack of
 ViewModels, and allow the associated View to be created at runtime instead,

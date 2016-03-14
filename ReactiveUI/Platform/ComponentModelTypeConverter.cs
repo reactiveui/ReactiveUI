@@ -6,7 +6,7 @@ namespace ReactiveUI
 {
 
     /// <summary>
-    /// This binding type converter uses the built-in WPF component model 
+    /// This binding type converter uses the built-in WPF component model
     /// conversions to get a whole bunch of conversions for free. Unfortunately,
     /// these are pretty gutted on some other platforms like Silverlight.
     /// </summary>
@@ -55,7 +55,7 @@ namespace ReactiveUI
                 result = null;
                 return false;
             } catch (Exception e) {
-                // Errors from ConvertFrom end up here but wrapped in 
+                // Errors from ConvertFrom end up here but wrapped in
                 // outer exception. Add more types here as required.
                 // IndexOutOfRangeException is given when trying to
                 // convert empty strings with some/all? converters

@@ -36,7 +36,7 @@
         <dependency id="Splat" version="[1,2)" />
         <dependency id="Rx-Xaml" version="2.2.5" />
         <dependency id="Rx-WinRT" version="2.2.5" />
-      </group>	  
+      </group>
     </dependencies>
   </metadata>
 </package>

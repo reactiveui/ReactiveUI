@@ -23,7 +23,7 @@ sorts all employees by their department, then by their Name and finally by
 their salary (descending).
 
 ```cs
-public int SortEmployee(Employee x, Employee y) 
+public int SortEmployee(Employee x, Employee y)
 {
     int department = x.Department.CompareTo(y.Department);
     if(department != 0) return 0;
@@ -48,7 +48,7 @@ readonly static IComparer<Employee> employeeComparer = OrderedComparer<Employee>
     .ThenBy(x => x.Name)
     .ThenByDescending(x => x.Salary);
 
-public int SortEmployee(Employee x, Employee y) 
+public int SortEmployee(Employee x, Employee y)
 {
     return employeeComparer.Compare(x, y);
 }
@@ -63,7 +63,7 @@ what ```IComparer<Employee>.Compare``` is.
 ```cs
 var employees = new ReactiveList<Employee> { ... }
 var orderedEmployees = employees.CreateDerivedCollect(
-   x => x, 
+   x => x,
    orderer: OrderedComparer<Employee>
 	   .OrderBy(x => x.Department)
 	   .ThenBy(x => x.Name)
@@ -97,4 +97,4 @@ regardless of culture and casing for example.
 ```
 
 Note: If you sort custom classes which implement ```ICompare``` or
-```ICompare<T>``` the default comparer will use that. 
+```ICompare<T>``` the default comparer will use that.

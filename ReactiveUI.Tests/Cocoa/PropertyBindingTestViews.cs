@@ -19,11 +19,11 @@ namespace ReactiveUI.Tests
             set { this.RaiseAndSetIfChanged(ref _ViewModel, value); }
         }
 
-        object IViewFor.ViewModel { 
+        object IViewFor.ViewModel {
             get { return ViewModel; }
-            set { ViewModel = (PropertyBindViewModel)value; } 
+            set { ViewModel = (PropertyBindViewModel)value; }
         }
-        
+
         public UITextView SomeTextBox;
         public UITextView Property2;
         public PropertyBindFakeControl FakeControl;

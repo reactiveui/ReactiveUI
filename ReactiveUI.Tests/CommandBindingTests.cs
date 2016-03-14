@@ -23,7 +23,7 @@ namespace ReactiveUI.Tests
             Cmd = ReactiveCommand.Create();
         }
     }
- 
+
     public class FakeView : IViewFor<FakeViewModel>
     {
         public TextBox TheTextBox { get; protected set; }
@@ -159,9 +159,9 @@ namespace ReactiveUI.Tests
 
     public class CommandBindView : IViewFor<CommandBindViewModel>
     {
-        object IViewFor.ViewModel { 
+        object IViewFor.ViewModel {
             get { return ViewModel; }
-            set { ViewModel = (CommandBindViewModel)value; } 
+            set { ViewModel = (CommandBindViewModel)value; }
         }
 
         public CommandBindViewModel ViewModel { get; set; }
@@ -216,7 +216,7 @@ namespace ReactiveUI.Tests
             disp.Dispose();
             Assert.Null(view.Command1.Command);
         }
-        
+
         [Fact]
         public void CommandBindNestedCommandWireup()
         {

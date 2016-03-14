@@ -93,7 +93,7 @@ namespace ReactiveUI
                 NavigationStack.Clear();
                 return Navigate.ExecuteAsync(x);
             });
-            
+
             CurrentViewModel = Observable.Concat(
                 Observable.Defer(() => Observable.Return(NavigationStack.LastOrDefault())),
                 NavigationStack.Changed.Select(_ => NavigationStack.LastOrDefault()));
@@ -121,7 +121,7 @@ namespace ReactiveUI
         }
 
         /// <summary>
-        /// Creates a ReactiveCommand which will, when invoked, navigate to the 
+        /// Creates a ReactiveCommand which will, when invoked, navigate to the
         /// type specified by the type parameter via looking it up in the
         /// Dependency Resolver.
         /// </summary>
@@ -130,7 +130,7 @@ namespace ReactiveUI
         {
             var ret = new ReactiveCommand<object>(This.Navigate.CanExecuteObservable, x => Observable.Return(x));
             ret.Select(_ => (IRoutableViewModel)Locator.Current.GetService<T>() ?? new T()).InvokeCommand(This.Navigate);
-                
+
             return ret;
         }
     }

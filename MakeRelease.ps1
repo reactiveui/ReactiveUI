@@ -5,7 +5,7 @@ $Archs = {"Portable-Net45+WinRT45+WP8+MonoAndroid10+MonoTouch10", "Portable-Net4
     "Xamarin.iOS10", "Xamarin.Mac10"}
 
 $Projects = {
-    "ReactiveUI", "ReactiveUI.Testing", "ReactiveUI.Blend", "ReactiveUI.Winforms", 
+    "ReactiveUI", "ReactiveUI.Testing", "ReactiveUI.Blend", "ReactiveUI.Winforms",
     "RxUIViewModelGenerator", "ReactiveUI.Events", "ReactiveUI.AndroidSupport",
     "ReactiveUI.XamForms"
 }
@@ -33,7 +33,7 @@ foreach-object $Archs | %{mkdir -Path ".\Release\$_"}
 
 foreach-object $Archs | %{
     $currentArch = $_
-    
+
     foreach-object $Projects | %{cp -r -fo ".\$_\bin\Release\$currentArch\*" ".\Release\$currentArch"}
 
     # WinRT projects need to have the Themes folder in a special sub folder named as the project name
@@ -41,7 +41,7 @@ foreach-object $Archs | %{
 
     # WinRT projects need this .xr.xml file in a special sub folder named as the project name
     foreach-object $Projects | %{cp -r -fo ".\$_\bin\Release\$currentArch\$_.xr.xml" ".\Release\$currentArch\$_"}
-    
+
     #ls -r | ?{$_.FullName.Contains("bin\Release\$currentArch") -and $_.Length} | %{echo cp $_.FullName ".\Release\$currentArch"}
 }
 
@@ -63,7 +63,7 @@ if($version) {
     foreach($nuspec in $nuspecs) {
         $xml = New-Object XML
         $xml.Load($nuspec)
-        
+
         # specify NS
         $nsMgr = New-Object System.Xml.XmlNamespaceManager($xml.NameTable)
         $nsMgr.AddNamespace("ns", "http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd")
@@ -72,11 +72,11 @@ if($version) {
         $xml.package.metadata.version = "$version"
 
         # get the rxui dependencies and update them
-        $deps = $xml.SelectNodes("//ns:dependency[contains(@id, 'reactiveui')]", $nsMgr) 
+        $deps = $xml.SelectNodes("//ns:dependency[contains(@id, 'reactiveui')]", $nsMgr)
         foreach($dep in $deps) {
             $dep.version = "[" + $version + "]"
         }
-        
+
         $xml.Save($nuspec)
     }
 }
@@ -101,11 +101,11 @@ foreach ($dir in $toolsDirs) {
     $files = ls $dir.FullName
 
     foreach ($file in $files) {
-        echo "bar" 
+        echo "bar"
         echo $file.FullName
         $src = ".\Release\Net45\" + $file.Name
         cp -fo "$src" $file.FullName
-    }        
+    }
 }
 
 # copy source

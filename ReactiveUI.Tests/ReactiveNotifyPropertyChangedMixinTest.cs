@@ -187,7 +187,7 @@ namespace ReactiveUI.Tests
                 sched.Start();
                 Assert.Equal(2, changes.Count);
 
-                // Tricky! This is a change too, because from the perspective 
+                // Tricky! This is a change too, because from the perspective
                 // of the binding, we've went from "Bar" to null
                 fixture.Child = new TestFixture();
                 sched.Start();
@@ -209,7 +209,7 @@ namespace ReactiveUI.Tests
                 Assert.True(changes.All(x => x.Sender == fixture));
                 Assert.True(changes.All(x => x.GetPropertyName() == "Child.IsOnlyOneWord"));
                 changes.Select(x => x.Value).AssertAreEqual(new[] {"Foo", "Bar", null, "Baz"});
-            });           
+            });
         }
 
 
@@ -233,7 +233,7 @@ namespace ReactiveUI.Tests
                 sched.Start();
                 Assert.Equal(2, changes.Count);
 
-                // Tricky! This is a change too, because from the perspective 
+                // Tricky! This is a change too, because from the perspective
                 // of the binding, we've went from "Bar" to null
                 fixture.Child = new TestFixture();
                 sched.Start();
@@ -274,7 +274,7 @@ namespace ReactiveUI.Tests
 
                 var changes = fixture.ObservableForProperty(x => x.InpcProperty.IsOnlyOneWord).CreateCollection();
 
-                fixture.InpcProperty = new TestFixture(); 
+                fixture.InpcProperty = new TestFixture();
                 sched.Start();
                 Assert.Equal(1, changes.Count);
 
@@ -289,25 +289,25 @@ namespace ReactiveUI.Tests
         }
 
         [Fact]
-        public void AnyChangeInExpressionListTriggersUpdate() 
+        public void AnyChangeInExpressionListTriggersUpdate()
         {
             var obj = new ObjChain1();
             bool obsUpdated;
 
             obj.ObservableForProperty(x => x.Model.Model.Model.SomeOtherParam).Subscribe(_ => obsUpdated = true);
-           
+
             obsUpdated = false;
             obj.Model.Model.Model.SomeOtherParam = 42;
             Assert.True(obsUpdated);
- 
+
             obsUpdated = false;
             obj.Model.Model.Model = new HostTestFixture();
             Assert.True(obsUpdated);
- 
+
             obsUpdated = false;
             obj.Model.Model = new ObjChain3() {Model = new HostTestFixture() {SomeOtherParam = 10 } } ;
             Assert.True(obsUpdated);
- 
+
             obsUpdated = false;
             obj.Model = new ObjChain2();
             Assert.True(obsUpdated);
@@ -322,7 +322,7 @@ namespace ReactiveUI.Tests
                .Subscribe(x => observedValue = x);
 
             obj.SomeOtherParam = 42;
-            
+
             Assert.True(observedValue == obj.SomeOtherParam);
         }
 
@@ -410,7 +410,7 @@ namespace ReactiveUI.Tests
 
             var output4 = new List<int?>();
             fixture.WhenAnyValue(x => x.NullableInt).Subscribe(output4.Add);
-           
+
             Assert.Equal(1, output.Count);
             Assert.Equal(fixture, output[0].Sender);
             Assert.Equal("PocoProperty", output[0].GetPropertyName());

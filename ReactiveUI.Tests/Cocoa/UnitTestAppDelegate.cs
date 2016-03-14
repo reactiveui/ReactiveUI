@@ -7,8 +7,8 @@ using MonoTouch.NUnit.UI;
 
 namespace ReactiveUI.Tests_iOS
 {
-    // The UIApplicationDelegate for the application. This class is responsible for launching the 
-    // User Interface of the application, as well as listening (and optionally responding) to 
+    // The UIApplicationDelegate for the application. This class is responsible for launching the
+    // User Interface of the application, as well as listening (and optionally responding) to
     // application events from iOS.
     [Register ("UnitTestAppDelegate")]
     public partial class UnitTestAppDelegate : UIApplicationDelegate
@@ -17,7 +17,7 @@ namespace ReactiveUI.Tests_iOS
         UIWindow window;
         TouchRunner runner;
         //
-        // This method is invoked when the application has loaded and is ready to run. In this 
+        // This method is invoked when the application has loaded and is ready to run. In this
         // method you should instantiate the window, load the UI into it and then make the window
         // visible.
         //
@@ -33,10 +33,10 @@ namespace ReactiveUI.Tests_iOS
             runner.Add(System.Reflection.Assembly.GetExecutingAssembly());
 
             window.RootViewController = new UINavigationController(runner.GetViewController());
-            
+
             // make the window visible
             window.MakeKeyAndVisible();
-            
+
             return true;
         }
     }

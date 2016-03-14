@@ -1,6 +1,6 @@
 # ReactiveUI
 
-Use the Reactive Extensions for .NET to create elegant, testable User 
+Use the Reactive Extensions for .NET to create elegant, testable User
 Interfaces that run on any mobile or desktop platform.
 
 ### Supported Platforms
@@ -60,7 +60,7 @@ public class ColorChooserThatDoesntLikeGreen : ReactiveObject
 
   //
   // Declaring a Property that's based on an Observable
-  // 
+  //
 
   ObservableAsPropertyHelper<Color> _Color;
   public Color Color {
@@ -71,7 +71,7 @@ public class ColorChooserThatDoesntLikeGreen : ReactiveObject
 
   public ColorChooserThatDoesntLikeGreen()
   {
-    var finalColor = this.WhenAny(x => x.Red, x => x.Green, x => x.Blue, 
+    var finalColor = this.WhenAny(x => x.Red, x => x.Green, x => x.Blue,
         (r,g,b) => Color.FromRGB(r.Value, g.Value, b.Value));
 
     finalColor.ToProperty(this, x => x.Color, out _Color);

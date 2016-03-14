@@ -35,7 +35,7 @@ var someAsyncCommand = ReactiveCommand.CreateAsyncTask(someTaskMethod);
   Observable).
 
 As with previous versions, the old version of ReactiveCommand is provided in
-ReactiveUI.Legacy, to help with migration. 
+ReactiveUI.Legacy, to help with migration.
 
 #### Scheduling Changes
 
@@ -45,7 +45,7 @@ for developers, it also made it much more difficult to write larger
 applications while ensuring responsiveness, as items would be scheduled
 multiple times before being displayed.
 
-This means, you probably need to add some `ObserveOn(RxApp.MainThreadScheduler)` 
+This means, you probably need to add some `ObserveOn(RxApp.MainThreadScheduler)`
 calls to your application.
 
 #### ToProperty / OAPH changes
@@ -64,12 +64,12 @@ calls to your application.
 The philosophy behind ReactiveUI.Mobile has been greatly simplified, and is no
 longer tied to routing in any way. The new goal of ReactiveUI.Mobile is, "The
 framework will save/load/create a *single object* on your behalf, and persist
-that throughout app suspend / resume". 
+that throughout app suspend / resume".
 
 This object can be of any type you want, as long as the entire object graph
 (i.e. this object and its children) can be serialized. This object is created
 from scratch when needed, via `RxApp.SuspensionHost.CreateNewAppState` Func
-that your app provides. 
+that your app provides.
 
 #### Other changes
 

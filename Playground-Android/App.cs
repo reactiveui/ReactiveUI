@@ -15,7 +15,7 @@ namespace MobileSample_Android
         public override void OnCreate()
         {
             base.OnCreate();
-                        
+
             suspendHelper = new AutoSuspendHelper(this);
             RxApp.SuspensionHost.CreateNewAppState = () => new AppBootstrapper();
             RxApp.SuspensionHost.SetupDefaultSuspendResume();

@@ -23,7 +23,7 @@ namespace ReactiveUI
         T _lastValue;
         readonly IConnectableObservable<T> _source;
         IDisposable _inner;
-                
+
         /// <summary>
         /// Constructs an ObservableAsPropertyHelper object.
         /// </summary>
@@ -36,9 +36,9 @@ namespace ReactiveUI
         /// provided on - this should normally be a Dispatcher-based scheduler
         /// (and is by default)</param>
         public ObservableAsPropertyHelper(
-            IObservable<T> observable, 
-            Action<T> onChanged, 
-            T initialValue = default(T), 
+            IObservable<T> observable,
+            Action<T> onChanged,
+            T initialValue = default(T),
             IScheduler scheduler = null) : this(observable, onChanged, null, initialValue, scheduler) {}
 
         /// <summary>
@@ -56,10 +56,10 @@ namespace ReactiveUI
         /// provided on - this should normally be a Dispatcher-based scheduler
         /// (and is by default)</param>
         public ObservableAsPropertyHelper(
-            IObservable<T> observable, 
-            Action<T> onChanged, 
+            IObservable<T> observable,
+            Action<T> onChanged,
             Action<T> onChanging = null,
-            T initialValue = default(T), 
+            T initialValue = default(T),
             IScheduler scheduler = null)
         {
             Contract.Requires(observable != null);
@@ -97,17 +97,17 @@ namespace ReactiveUI
         }
 
         /// <summary>
-        /// The last provided value from the Observable. 
+        /// The last provided value from the Observable.
         /// </summary>
         public T Value {
-            get { 
+            get {
                 _inner = _inner ?? _source.Connect();
-                return _lastValue; 
+                return _lastValue;
             }
         }
 
         /// <summary>
-        /// Fires whenever an exception would normally terminate ReactiveUI 
+        /// Fires whenever an exception would normally terminate ReactiveUI
         /// internal state.
         /// </summary>
         public IObservable<Exception> ThrownExceptions { get; private set; }
@@ -154,8 +154,8 @@ namespace ReactiveUI
             }
 
             var name = expression.GetMemberInfo().Name;
-            var ret = new ObservableAsPropertyHelper<TRet>(observable, 
-                _ => This.raisePropertyChanged(name), 
+            var ret = new ObservableAsPropertyHelper<TRet>(observable,
+                _ => This.raisePropertyChanged(name),
                 _ => This.raisePropertyChanging(name),
                 initialValue, scheduler);
 
@@ -165,7 +165,7 @@ namespace ReactiveUI
         /// <summary>
         /// Converts an Observable to an ObservableAsPropertyHelper and
         /// automatically provides the onChanged method to raise the property
-        /// changed notification.         
+        /// changed notification.
         /// </summary>
         /// <param name="source">The ReactiveObject that has the property</param>
         /// <param name="property">An Expression representing the property (i.e.
@@ -190,7 +190,7 @@ namespace ReactiveUI
         /// <summary>
         /// Converts an Observable to an ObservableAsPropertyHelper and
         /// automatically provides the onChanged method to raise the property
-        /// changed notification.         
+        /// changed notification.
         /// </summary>
         /// <param name="source">The ReactiveObject that has the property</param>
         /// <param name="property">An Expression representing the property (i.e.

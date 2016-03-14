@@ -19,9 +19,9 @@ namespace EventBuilder
             // NB: I'm too lazy to fix this properly
             var monoDroidDir = targetAssemblyDirs.FirstOrDefault(x => x.ToLowerInvariant().Contains("monoandroid"));
             if (monoDroidDir != null) {
-                // /Developer/MonoAndroid/lib/mandroid/platforms/android-15 => 
+                // /Developer/MonoAndroid/lib/mandroid/platforms/android-15 =>
                 // /Developer/MonoAndroid/lib/xbuild-frameworks/MonoAndroid/v1.0
-                targetAssemblyDirs.Add(Path.Combine(monoDroidDir, 
+                targetAssemblyDirs.Add(Path.Combine(monoDroidDir,
                     "..", "..", "..",
                     "xbuild-frameworks", "MonoAndroid", "v1.0"));
             }
@@ -260,7 +260,7 @@ namespace EventBuilder
     class PublicTypeInfo
     {
         public string Name { get; set; }
-        public string Abstract { get; set; } 
+        public string Abstract { get; set; }
         public TypeDefinition Type { get; set; }
         public ParentInfo Parent { get; set; }
         public IEnumerable<PublicEventInfo> Events { get; set; }
@@ -299,7 +299,7 @@ namespace EventBuilder
     class PathSearchAssemblyResolver : IAssemblyResolver
     {
         string[] targetAssemblyDirs;
-        
+
         public PathSearchAssemblyResolver(string[] targetAssemblyDirs)
         {
             this.targetAssemblyDirs = targetAssemblyDirs;

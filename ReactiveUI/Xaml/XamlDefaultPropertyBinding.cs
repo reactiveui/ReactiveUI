@@ -30,7 +30,7 @@ namespace ReactiveUI
                 new { Type = typeof(Slider), Property = "Value" },
 #if !SILVERLIGHT && !WINRT
                 new { Type = typeof(Expander), Property = "IsExpanded" },
-#endif 
+#endif
                 new { Type = typeof(ToggleButton), Property = "IsChecked" },
                 new { Type = typeof(TextBox), Property = "Text" },
                 new { Type = typeof(TextBlock), Property = "Text" },

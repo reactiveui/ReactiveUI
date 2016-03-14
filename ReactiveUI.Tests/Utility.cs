@@ -87,7 +87,7 @@ namespace ReactiveUI.Tests
         public static void Run<T>(this IEnumerable<T> This, Action<T> block)
         {
             foreach (var v in This) {
-                block(v); 
+                block(v);
             }
         }
 

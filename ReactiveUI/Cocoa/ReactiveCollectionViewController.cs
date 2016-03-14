@@ -87,7 +87,7 @@ namespace ReactiveUI
         {
             return this.suppressChangeNotifications();
         }
-                
+
         Subject<Unit> activated = new Subject<Unit>();
         public IObservable<Unit> Activated { get { return activated; } }
         Subject<Unit> deactivated = new Subject<Unit>();

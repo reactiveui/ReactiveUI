@@ -95,7 +95,7 @@ namespace ReactiveUI
         {
             return (T)This.AppState;
         }
-                
+
         /// <summary>
         ///
         /// </summary>

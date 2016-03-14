@@ -108,9 +108,9 @@ namespace ReactiveUI
             RxApp.MainThreadScheduler.Schedule(() => (newsuper != null ? activated : deactivated).OnNext(Unit.Default));
         }
 
-        void ICanForceManualActivation.Activate(bool activate) 
+        void ICanForceManualActivation.Activate(bool activate)
         {
-            RxApp.MainThreadScheduler.Schedule(() => 
+            RxApp.MainThreadScheduler.Schedule(() =>
                 (activate ? activated : deactivated).OnNext(Unit.Default));
         }
     }

@@ -17,7 +17,7 @@ namespace ReactiveUI
 {
     /// <summary>
     /// This class represents a change-notifying Collection which is derived from
-    /// a source collection, via CreateDerivedCollection or via another method. 
+    /// a source collection, via CreateDerivedCollection or via another method.
     /// It is read-only, and any attempts to change items in the collection will
     /// fail.
     /// </summary>
@@ -175,7 +175,7 @@ namespace ReactiveUI
 
     /// <summary>
     /// This class represents a change-notifying Collection which is derived from
-    /// a source collection, via CreateDerivedCollection or via another method. 
+    /// a source collection, via CreateDerivedCollection or via another method.
     /// It is read-only, and any attempts to change items in the collection will
     /// fail.
     /// </summary>
@@ -295,9 +295,9 @@ namespace ReactiveUI
                     TValue newItem = selector(changedItem);
 
                     if (orderer == null) {
-                        // We don't have an orderer so we're currently using the source collection index for sorting 
+                        // We don't have an orderer so we're currently using the source collection index for sorting
                         // meaning that no item change will affect ordering. Look at our current item and see if it's
-                        // the exact (reference-wise) same object. If it is then we're done, if it's not (for example 
+                        // the exact (reference-wise) same object. If it is then we're done, if it's not (for example
                         // if it's an integer) we'll issue a replace event so that subscribers get the new value.
                         if (!object.ReferenceEquals(newItem, this[currentDestinationIndex])) {
                             internalReplace(currentDestinationIndex, newItem);
@@ -314,7 +314,7 @@ namespace ReactiveUI
                             }
                         } else {
 #if !SILVERLIGHT
-                            // The change is forcing us to reorder. We'll use a move operation if the item hasn't 
+                            // The change is forcing us to reorder. We'll use a move operation if the item hasn't
                             // changed (ie it's the same object) and we'll implement it as a remove and add if the
                             // object has changed (ie the selector is not an identity function).
                             if (object.ReferenceEquals(newItem, this[currentDestinationIndex])) {
@@ -462,7 +462,7 @@ namespace ReactiveUI
                         indexToSourceIndexMap[currentDestinationIndex] = newSourceIndex;
                     }
                 } else {
-                    // TODO: Conceptually I feel like we shouldn't concern ourselves with ordering when we 
+                    // TODO: Conceptually I feel like we shouldn't concern ourselves with ordering when we
                     // receive a Move notification. If it affects ordering it should be picked up by the
                     // onItemChange and resorted there instead.
                     indexToSourceIndexMap[currentDestinationIndex] = newSourceIndex;
@@ -512,7 +512,7 @@ namespace ReactiveUI
         void moveSourceIndexInMap(int oldSourceIndex, int newSourceIndex)
         {
             if (newSourceIndex > oldSourceIndex) {
-                // Item is moving towards the end of the list, everything between its current position and its 
+                // Item is moving towards the end of the list, everything between its current position and its
                 // new position needs to be shifted down one index
                 shiftSourceIndicesInRange(oldSourceIndex + 1, newSourceIndex + 1, -1);
             } else {
@@ -537,7 +537,7 @@ namespace ReactiveUI
         }
 
         /// <summary>
-        /// Increases (or decreases) all source indices within the range (lower inclusive, upper exclusive). 
+        /// Increases (or decreases) all source indices within the range (lower inclusive, upper exclusive).
         /// </summary>
         void shiftSourceIndicesInRange(int rangeStart, int rangeStop, int value)
         {
@@ -582,7 +582,7 @@ namespace ReactiveUI
             indexToSourceIndexMap.Clear();
             sourceCopy.Clear();
             var items = this.ToArray();
-            
+
             base.internalClear();
 
             foreach (var item in items) { onRemoved(item); }
@@ -775,7 +775,7 @@ namespace ReactiveUI
             var queue = new Queue<T>();
             var disconnect = Observable.Timer(withDelay.Value, withDelay.Value, RxApp.MainThreadScheduler)
                 .Subscribe(_ => {
-                    if (queue.Count > 0) { 
+                    if (queue.Count > 0) {
                         this.internalAdd(queue.Dequeue());
                     }
                 });
@@ -787,9 +787,9 @@ namespace ReactiveUI
             // from the same thread.
             observable.ObserveOn(RxApp.MainThreadScheduler).Subscribe(queue.Enqueue, onError);
 
-            // This is a bit clever - keep a running count of the items actually 
+            // This is a bit clever - keep a running count of the items actually
             // added and compare them to the final count of items provided by the
-            // Observable. Combine the two values, and when they're equal, 
+            // Observable. Combine the two values, and when they're equal,
             // disconnect the timer
             this.ItemsAdded.Scan(0, ((acc, _) => acc + 1)).Zip(observable.Aggregate(0, (acc, _) => acc + 1),
                 (l,r) => (l == r)).Where(x => x).Subscribe(_ => disconnect.Dispose());
@@ -824,7 +824,7 @@ namespace ReactiveUI
         /// <returns>A new collection which will be populated with the
         /// Observable.</returns>
         public static IReactiveDerivedList<T> CreateCollection<T>(
-            this IObservable<T> fromObservable, 
+            this IObservable<T> fromObservable,
             TimeSpan? withDelay = null,
             Action<Exception> onError = null)
         {
@@ -864,7 +864,7 @@ namespace ReactiveUI
         /// that are automatically updated when the respective Model collection
         /// is updated.
         ///
-        /// Note that even though this method attaches itself to any 
+        /// Note that even though this method attaches itself to any
         /// IEnumerable, it will only detect changes from objects implementing
         /// INotifyCollectionChanged (like ReactiveList). If your source
         /// collection doesn't implement this, signalReset is the way to signal
@@ -874,15 +874,15 @@ namespace ReactiveUI
         /// item.</param>
         /// <param name="onRemoved">An action that is called on each item when
         /// it is removed.</param>
-        /// <param name="filter">A filter to determine whether to exclude items 
+        /// <param name="filter">A filter to determine whether to exclude items
         /// in the derived collection.</param>
         /// <param name="orderer">A comparator method to determine the ordering of
         /// the resulting collection.</param>
-        /// <param name="signalReset">When this Observable is signalled, 
-        /// the derived collection will be manually 
+        /// <param name="signalReset">When this Observable is signalled,
+        /// the derived collection will be manually
         /// reordered/refiltered.</param>
         /// <returns>A new collection whose items are equivalent to
-        /// Collection.Select().Where().OrderBy() and will mirror changes 
+        /// Collection.Select().Where().OrderBy() and will mirror changes
         /// in the initial collection.</returns>
         public static IReactiveDerivedList<TNew> CreateDerivedCollection<T, TNew, TDontCare>(
             this IEnumerable<T> This,
@@ -914,7 +914,7 @@ namespace ReactiveUI
         /// that are automatically updated when the respective Model collection
         /// is updated.
         ///
-        /// Note that even though this method attaches itself to any 
+        /// Note that even though this method attaches itself to any
         /// IEnumerable, it will only detect changes from objects implementing
         /// INotifyCollectionChanged (like ReactiveList). If your source
         /// collection doesn't implement this, signalReset is the way to signal
@@ -922,15 +922,15 @@ namespace ReactiveUI
         /// </summary>
         /// <param name="selector">A Select function that will be run on each
         /// item.</param>
-        /// <param name="filter">A filter to determine whether to exclude items 
+        /// <param name="filter">A filter to determine whether to exclude items
         /// in the derived collection.</param>
         /// <param name="orderer">A comparator method to determine the ordering of
         /// the resulting collection.</param>
-        /// <param name="signalReset">When this Observable is signalled, 
-        /// the derived collection will be manually 
+        /// <param name="signalReset">When this Observable is signalled,
+        /// the derived collection will be manually
         /// reordered/refiltered.</param>
         /// <returns>A new collection whose items are equivalent to
-        /// Collection.Select().Where().OrderBy() and will mirror changes 
+        /// Collection.Select().Where().OrderBy() and will mirror changes
         /// in the initial collection.</returns>
         public static IReactiveDerivedList<TNew> CreateDerivedCollection<T, TNew, TDontCare>(
             this IEnumerable<T> This,
@@ -948,8 +948,8 @@ namespace ReactiveUI
         /// collection; this method is useful for creating ViewModel collections
         /// that are automatically updated when the respective Model collection
         /// is updated.
-        /// 
-        /// Be aware that this overload will result in a collection that *only* 
+        ///
+        /// Be aware that this overload will result in a collection that *only*
         /// updates if the source implements INotifyCollectionChanged. If your
         /// list changes but isn't a ReactiveList/ObservableCollection,
         /// you probably want to use the other overload.
@@ -958,12 +958,12 @@ namespace ReactiveUI
         /// item.</param>
         /// <param name="onRemoved">An action that is called on each item when
         /// it is removed.</param>
-        /// <param name="filter">A filter to determine whether to exclude items 
+        /// <param name="filter">A filter to determine whether to exclude items
         /// in the derived collection.</param>
         /// <param name="orderer">A comparator method to determine the ordering of
         /// the resulting collection.</param>
         /// <returns>A new collection whose items are equivalent to
-        /// Collection.Select().Where().OrderBy() and will mirror changes 
+        /// Collection.Select().Where().OrderBy() and will mirror changes
         /// in the initial collection.</returns>
         public static IReactiveDerivedList<TNew> CreateDerivedCollection<T, TNew>(
             this IEnumerable<T> This,
@@ -981,20 +981,20 @@ namespace ReactiveUI
         /// collection; this method is useful for creating ViewModel collections
         /// that are automatically updated when the respective Model collection
         /// is updated.
-        /// 
-        /// Be aware that this overload will result in a collection that *only* 
+        ///
+        /// Be aware that this overload will result in a collection that *only*
         /// updates if the source implements INotifyCollectionChanged. If your
         /// list changes but isn't a ReactiveList/ObservableCollection,
         /// you probably want to use the other overload.
         /// </summary>
         /// <param name="selector">A Select function that will be run on each
         /// item.</param>
-        /// <param name="filter">A filter to determine whether to exclude items 
+        /// <param name="filter">A filter to determine whether to exclude items
         /// in the derived collection.</param>
         /// <param name="orderer">A comparator method to determine the ordering of
         /// the resulting collection.</param>
         /// <returns>A new collection whose items are equivalent to
-        /// Collection.Select().Where().OrderBy() and will mirror changes 
+        /// Collection.Select().Where().OrderBy() and will mirror changes
         /// in the initial collection.</returns>
         public static IReactiveDerivedList<TNew> CreateDerivedCollection<T, TNew>(
             this IEnumerable<T> This,

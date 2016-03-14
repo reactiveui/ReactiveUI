@@ -2,7 +2,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using Android.App;
 
-// Information about this assembly is defined by the following attributes. 
+// Information about this assembly is defined by the following attributes.
 // Change them to the values specific to your project.
 
 [assembly: AssemblyTitle("AndroidPlayground")]
@@ -20,7 +20,7 @@ using Android.App;
 
 [assembly: AssemblyVersion("1.0.0")]
 
-// The following attributes are used to specify the signing key for the assembly, 
+// The following attributes are used to specify the signing key for the assembly,
 // if desired. See the Mono documentation for more information about signing.
 
 //[assembly: AssemblyDelaySign(false)]

@@ -58,7 +58,7 @@ namespace ReactiveUI
 
         /// <summary>
         /// Represents an Observable that fires *before* a property is about to
-        /// be changed.         
+        /// be changed.
         /// </summary>
         public IObservable<IReactivePropertyChangedEventArgs<ReactiveNavigationController>> Changing {
             get { return this.getChangingObservable(); }

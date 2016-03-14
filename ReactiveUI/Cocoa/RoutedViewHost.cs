@@ -23,7 +23,7 @@ namespace ReactiveUI
     /// to an arbitrary NSView and attempt to load the View for the latest
     /// ViewModel as a child view of the target. Usually the target view will
     /// be the NSWindow.
-    /// 
+    ///
     /// This is a bit different than the XAML's RoutedViewHost in the sense
     /// that this isn't a Control itself, it only manipulates other Views.
     /// </summary>
@@ -40,13 +40,13 @@ namespace ReactiveUI
             get { return _ViewContractObservable; }
             set { this.RaiseAndSetIfChanged(ref _ViewContractObservable, value); }
         }
-        
+
         NSViewController _DefaultContent;
         public NSViewController DefaultContent {
             get { return _DefaultContent; }
             set { this.RaiseAndSetIfChanged(ref _DefaultContent, value); }
         }
-        
+
         public IViewLocator ViewLocator { get; set; }
 
         public RoutedViewHost(NSView targetView)
@@ -54,7 +54,7 @@ namespace ReactiveUI
             NSView viewLastAdded = null;
 
             ViewContractObservable = Observable.Return(default(string));
-                        
+
             var vmAndContract = Observable.CombineLatest(
                 this.WhenAnyObservable(x => x.Router.CurrentViewModel),
                 this.WhenAnyObservable(x => x.ViewContractObservable),
@@ -82,7 +82,7 @@ namespace ReactiveUI
                     throw new Exception(String.Format("'{0}' must be an NSViewController or NSView", view.GetType().FullName));
                 }
 
-                targetView.AddSubview(viewLastAdded);           
+                targetView.AddSubview(viewLastAdded);
             }, RxApp.DefaultExceptionHandler.OnNext);
         }
     }

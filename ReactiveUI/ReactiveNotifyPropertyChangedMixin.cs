@@ -42,18 +42,18 @@ namespace ReactiveUI
             if (This == null) {
                 throw new ArgumentNullException("Sender");
             }
-            
+
             /* x => x.Foo.Bar.Baz;
-             * 
+             *
              * Subscribe to This, look for Foo
              * Subscribe to Foo, look for Bar
              * Subscribe to Bar, look for Baz
              * Subscribe to Baz, publish to Subject
              * Return Subject
-             * 
+             *
              * If Bar changes (notification fires on Foo), resubscribe to new Bar
              *  Resubscribe to new Baz, publish to Subject
-             * 
+             *
              * If Baz changes (notification fires on Bar),
              *  Resubscribe to new Baz, publish to Subject
              */
@@ -90,20 +90,20 @@ namespace ReactiveUI
             return This.ObservableForProperty(property, beforeChange).Select(x => selector(x.Value));
         }
 
-        public static IObservable<IObservedChange<TSender, TValue>> SubscribeToExpressionChain<TSender, TValue> ( 
+        public static IObservable<IObservedChange<TSender, TValue>> SubscribeToExpressionChain<TSender, TValue> (
             this TSender source,
-            Expression expression, 
+            Expression expression,
             bool beforeChange = false,
             bool skipInitial = true)
         {
-            IObservable<IObservedChange<object, object>> notifier = 
+            IObservable<IObservedChange<object, object>> notifier =
                 Observable.Return(new ObservedChange<object, object>(null, null, source));
 
             IEnumerable<Expression> chain = Reflection.Rewrite(expression).GetExpressionChain();
             notifier = chain.Aggregate(notifier, (n, expr) => n
                 .Select(y => nestedObservedChanges(expr, y, beforeChange))
                 .Switch());
-            
+
             if (skipInitial) {
                 notifier = notifier.Skip(1);
             }
@@ -170,10 +170,10 @@ namespace ReactiveUI
 
             if (result == null) {
                 throw new Exception(
-                    String.Format("Couldn't find a ICreatesObservableForProperty for {0}. This should never happen, your service locator is probably broken.", 
+                    String.Format("Couldn't find a ICreatesObservableForProperty for {0}. This should never happen, your service locator is probably broken.",
                     sender.GetType()));
             }
-            
+
             return result.GetNotificationForProperty(sender, expression, beforeChange);
         }
     }

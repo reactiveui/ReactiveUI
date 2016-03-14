@@ -25,7 +25,7 @@ namespace ReactiveUI
 
         public event PropertyChangingEventHandler PropertyChanging;
 
-        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args) 
+        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args)
         {
             var handler = PropertyChanging;
             if (handler != null) {
@@ -35,7 +35,7 @@ namespace ReactiveUI
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args) 
+        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args)
         {
             var handler = PropertyChanged;
             if (handler != null) {
@@ -45,7 +45,7 @@ namespace ReactiveUI
 
         /// <summary>
         /// Represents an Observable that fires *before* a property is about to
-        /// be changed.         
+        /// be changed.
         /// </summary>
         public IObservable<IReactivePropertyChangedEventArgs<ReactiveWindowController>> Changing {
             get { return this.getChangingObservable(); }

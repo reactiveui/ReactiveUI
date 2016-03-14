@@ -18,7 +18,7 @@ namespace RxUIViewModelGenerator
             var dict = createRenderInfo(interfaceCode, options);
 
             return Tuple.Create(
-                ((string)dict["filename"]).Replace(".cs", ".generated.cs"), 
+                ((string)dict["filename"]).Replace(".cs", ".generated.cs"),
                 renderTemplate(templateOverride ?? new StreamReader(res).ReadToEnd(), dict));
         }
 
@@ -28,7 +28,7 @@ namespace RxUIViewModelGenerator
 
             var dict = createRenderInfo(interfaceCode, options);
             return Tuple.Create(
-                (string)dict["filename"], 
+                (string)dict["filename"],
                 renderTemplate(templateOverride ?? new StreamReader(res).ReadToEnd(), dict));
         }
 
@@ -159,7 +159,7 @@ namespace RxUIViewModelGenerator
             }
 
             var nameAndType = new NameAndTypeRenderInformation() {
-                name = chompedString(propDecl.Name), 
+                name = chompedString(propDecl.Name),
                 type = chompedString(propDecl.ReturnType.ToString()),
             };
 

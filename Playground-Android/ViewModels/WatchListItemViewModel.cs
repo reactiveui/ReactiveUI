@@ -16,7 +16,7 @@ namespace MobileSample_Android.ViewModels
         private decimal lastChange;
 
         private ObservableAsPropertyHelper<decimal> change;
-        private ObservableAsPropertyHelper<double> percentChange; 
+        private ObservableAsPropertyHelper<double> percentChange;
 
         public WatchListItemViewModel(string symbol)
         {

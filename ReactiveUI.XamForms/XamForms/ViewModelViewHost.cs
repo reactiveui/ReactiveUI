@@ -22,7 +22,7 @@ namespace ReactiveUI.XamForms
             get { return GetValue(ViewModelProperty); }
             set { SetValue(ViewModelProperty, value); }
         }
-        public static readonly BindableProperty ViewModelProperty = 
+        public static readonly BindableProperty ViewModelProperty =
             BindableProperty.Create<ViewModelViewHost, object>(x => x.ViewModel, null, BindingMode.OneWay);
 
         /// <summary>

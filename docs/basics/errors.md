@@ -3,7 +3,7 @@
 Handling errors and displaying them to the user in a friendly way is a core
 job of every good desktop / mobile application. Without great error
 presentation, users can't resolve problems and get their work done, which
-leads to bad experiences. 
+leads to bad experiences.
 
 There are several design documents online that describe what makes a good
 error experience, such as the [Apple
@@ -91,7 +91,7 @@ var errorResolution = "Check your Internet connection";
 // Any exceptions thrown by LoadTweets will end up being
 // sent through ThrownExceptions
 LoadTweetsCommand.ThrownExceptions
-    .Select(ex => 
+    .Select(ex =>
         new UserError(errorMessage, errorResolution))
     .SelectMany(UserError.Throw);
     .Where(x => x == RecoveryOptionResult.RetryOperation)
@@ -108,10 +108,10 @@ box or presenting other UI. To do this, we can use
 
 ```cs
 var disconnectHandler = UserError.RegisterHandler(async error => {
-    // We don't know what thread a UserError can be thrown from, we usually 
+    // We don't know what thread a UserError can be thrown from, we usually
     // need to move things to the Main thread.
     await RxApp.MainThreadScheduler.ScheduleAsync(() => {
-        // NOTE: This code is Incorrect, as it throws away 
+        // NOTE: This code is Incorrect, as it throws away
         // Recovery Options and just returns Cancel. This is Bad™.
         return MesssageBox.Show(error.ErrorMessage);
     });

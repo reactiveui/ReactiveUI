@@ -29,7 +29,7 @@ namespace ReactiveUI.Blend
             }
 
             This.watcher = ((IObservable<object>)e.NewValue).ObserveOn(RxApp.MainThreadScheduler).Subscribe(
-                x => This.InvokeActions(x), 
+                x => This.InvokeActions(x),
                 ex => {
                     if (!This.AutoResubscribeOnError)
                         return;

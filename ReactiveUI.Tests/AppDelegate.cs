@@ -9,8 +9,8 @@ using Xunit.Sdk;
 
 namespace ReactiveUI.Tests
 {
-    // The UIApplicationDelegate for the application. This class is responsible for launching the 
-    // User Interface of the application, as well as listening (and optionally responding) to 
+    // The UIApplicationDelegate for the application. This class is responsible for launching the
+    // User Interface of the application, as well as listening (and optionally responding) to
     // application events from iOS.
     [Register("AppDelegate")]
     public partial class AppDelegate : UIApplicationDelegate
@@ -20,7 +20,7 @@ namespace ReactiveUI.Tests
         TouchRunner runner;
 
         //
-        // This method is invoked when the application has loaded and is ready to run. In this 
+        // This method is invoked when the application has loaded and is ready to run. In this
         // method you should instantiate the window, load the UI into it and then make the window
         // visible.
         //
@@ -37,7 +37,7 @@ namespace ReactiveUI.Tests
 
             // tests can be inside the main assembly
             runner.Add(Assembly.GetExecutingAssembly());
-            // otherwise you need to ensure that the test assemblies will 
+            // otherwise you need to ensure that the test assemblies will
             // become part of the app bundle
             //     runner.Add(typeof(MonoTouchFixtures.Test.Test).Assembly);
 #if false

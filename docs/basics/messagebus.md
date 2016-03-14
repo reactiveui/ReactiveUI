@@ -74,7 +74,7 @@ public class DocumentViewModel : ReactiveObject
 {
     public ReactiveCommand<Object> Close { get; set; }
 
-    public DocumentViewModel() 
+    public DocumentViewModel()
     {
         // Note that we don't actually *subscribe* to Close here or implement
         // anything in DocumentViewModel, because Closing is a responsibility

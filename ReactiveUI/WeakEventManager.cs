@@ -36,7 +36,7 @@ namespace ReactiveUI
 #endif
 
     /// <summary>
-    /// WeakEventManager base class. Inspired by the WPF WeakEventManager class and the code in 
+    /// WeakEventManager base class. Inspired by the WPF WeakEventManager class and the code in
     /// http://social.msdn.microsoft.com/Forums/silverlight/en-US/34d85c3f-52ea-4adc-bb32-8297f5549042/command-binding-memory-leak?forum=silverlightbugs
     /// </summary>
     /// <typeparam name="TEventSource">The type of the event source.</typeparam>
@@ -57,7 +57,7 @@ namespace ReactiveUI
         /// </summary>
         ConditionalWeakTable<object, WeakHandlerList> sourceToWeakHandlers = new ConditionalWeakTable<object, WeakHandlerList>();
 
-        static Lazy<WeakEventManager<TEventSource, TEventHandler, TEventArgs>> current = 
+        static Lazy<WeakEventManager<TEventSource, TEventHandler, TEventArgs>> current =
             new Lazy<WeakEventManager<TEventSource, TEventHandler, TEventArgs>>(() => new WeakEventManager<TEventSource, TEventHandler, TEventArgs>());
 
         static WeakEventManager<TEventSource, TEventHandler, TEventArgs> Current {
@@ -107,7 +107,7 @@ namespace ReactiveUI
         }
 
         /// <summary>
-        /// Delivers the event to the handlers registered for the source. 
+        /// Delivers the event to the handlers registered for the source.
         /// </summary>
         /// <param name="sender">The sender.</param>
         /// <param name="args">The <see cref="TEventArgs"/> instance containing the event data.</param>
@@ -276,9 +276,9 @@ namespace ReactiveUI
 
             public bool Matches(object source, TEventHandler handler)
             {
-                return this.source != null && 
-                    Object.ReferenceEquals(this.source.Target, source) && 
-                    this.originalHandler != null && 
+                return this.source != null &&
+                    Object.ReferenceEquals(this.source.Target, source) &&
+                    this.originalHandler != null &&
                     (Object.ReferenceEquals(this.originalHandler.Target, handler) ||
                     (this.originalHandler.Target is PropertyChangedEventHandler &&
                     handler is PropertyChangedEventHandler &&

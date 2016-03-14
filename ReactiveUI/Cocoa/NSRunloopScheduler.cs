@@ -34,7 +34,7 @@ namespace ReactiveUI
             DispatchQueue.MainQueue.DispatchAsync(new NSAction(() => {
                 if (!innerDisp.IsDisposed) innerDisp.Disposable = action(this, state);
             }));
-            
+
             return innerDisp;
         }
 
@@ -43,7 +43,7 @@ namespace ReactiveUI
             if (dueTime <= Now) {
                 return Schedule(state, action);
             }
-            
+
             return Schedule(state, dueTime - Now, action);
         }
 
@@ -59,7 +59,7 @@ namespace ReactiveUI
 #endif
                 if (!isCancelled) innerDisp = action(this, state);
             });
-            
+
             return Disposable.Create(() => {
                 isCancelled = true;
                 timer.Invalidate();

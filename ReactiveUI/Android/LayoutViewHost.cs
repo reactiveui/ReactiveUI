@@ -38,7 +38,7 @@ namespace ReactiveUI
 
             return default(T);
         }
-                
+
         /// <summary>
         /// Gets the ViewHost associated with a given View by accessing the
         /// Tag of the View
@@ -54,7 +54,7 @@ namespace ReactiveUI
     }
 
     /// <summary>
-    /// A class that implements the Android ViewHolder pattern. Use it along 
+    /// A class that implements the Android ViewHolder pattern. Use it along
     /// with GetViewHost.
     /// </summary>
     public abstract class LayoutViewHost : ILayoutViewHost, IEnableLogger
@@ -88,7 +88,7 @@ namespace ReactiveUI
     }
 
     /// <summary>
-    /// A class that implements the Android ViewHolder pattern with a 
+    /// A class that implements the Android ViewHolder pattern with a
     /// ViewModel. Use it along with GetViewHost.
     /// </summary>
     public abstract class ReactiveViewHost<TViewModel> : LayoutViewHost, IViewFor<TViewModel>, IReactiveNotifyPropertyChanged<ReactiveViewHost<TViewModel>>, IReactiveObject
@@ -137,7 +137,7 @@ namespace ReactiveUI
 
         /// <summary>
         /// Represents an Observable that fires *before* a property is about to
-        /// be changed.         
+        /// be changed.
         /// </summary>
         [IgnoreDataMember]
         public IObservable<IReactivePropertyChangedEventArgs<ReactiveViewHost<TViewModel>>> Changing {

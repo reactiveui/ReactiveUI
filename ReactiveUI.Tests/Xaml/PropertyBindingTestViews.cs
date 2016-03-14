@@ -20,11 +20,11 @@ namespace ReactiveUI.Tests
         public static readonly DependencyProperty ViewModelProperty =
             DependencyProperty.Register("ViewModel", typeof(PropertyBindViewModel), typeof(PropertyBindView), new PropertyMetadata(null));
 
-        object IViewFor.ViewModel { 
+        object IViewFor.ViewModel {
             get { return ViewModel; }
-            set { ViewModel = (PropertyBindViewModel)value; } 
+            set { ViewModel = (PropertyBindViewModel)value; }
         }
-        
+
         public TextBox SomeTextBox;
         public TextBox Property2;
         public PropertyBindFakeControl FakeControl;
@@ -59,7 +59,7 @@ namespace ReactiveUI.Tests
             get { return (string)GetValue(NullHatingStringProperty); }
             set {
                 if (value == null) throw new ArgumentNullException("No nulls! I get confused!");
-                SetValue(NullHatingStringProperty, value); 
+                SetValue(NullHatingStringProperty, value);
             }
         }
         public static readonly DependencyProperty NullHatingStringProperty =

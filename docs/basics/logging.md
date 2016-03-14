@@ -110,7 +110,7 @@ If you really need to control how things are logged, you can implement
 
 ``` cs
 var logManager = RxApp.MutableResolver.GetService<ILogManager>();
-RxApp.MutableResolver.RegisterConstant(logManager.GetLogger<NLogLogger>(),typeof(IFullLogger));   
+RxApp.MutableResolver.RegisterConstant(logManager.GetLogger<NLogLogger>(),typeof(IFullLogger));
 ```
 
 *Hint: An easy way to filter the IntelliTrace view to only show ReactiveUI

@@ -23,7 +23,7 @@ namespace MobileSample_Android
         {
         }
     }
-    
+
     public class SecondaryViewModel : ReactiveObject, IRoutableViewModel
     {
         public string UrlPathSegment {

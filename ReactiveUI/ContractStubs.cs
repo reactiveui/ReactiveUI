@@ -24,7 +24,7 @@ namespace ReactiveUI
 }
 
 namespace ReactiveUI
-{    
+{
     public interface INotifyCollectionChanging {
         event NotifyCollectionChangedEventHandler CollectionChanging;
     }

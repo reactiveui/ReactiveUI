@@ -100,7 +100,7 @@ namespace ReactiveUI.Tests.Winforms
 
             Assert.Equal(vm.SomeDouble.ToString(), view.Property3.Text);
         }
-         
+
         [Fact]
         public void CanAutoBindViewModelToWinformView()
         {

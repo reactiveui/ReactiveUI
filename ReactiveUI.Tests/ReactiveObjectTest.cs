@@ -95,7 +95,7 @@ namespace ReactiveUI.Tests
 
     public class ReactiveObjectTest
     {
-        [Fact]        
+        [Fact]
         public void ReactiveObjectSmokeTest()
         {
             var output_changing = new List<string>();
@@ -178,13 +178,13 @@ namespace ReactiveUI.Tests
         public void ChangingShouldAlwaysArriveBeforeChanged()
         {
             string before_set = "Foo";
-            string after_set = "Bar"; 
-            
+            string after_set = "Bar";
+
             var fixture = new TestFixture() { IsOnlyOneWord = before_set };
 
             bool before_fired = false;
             fixture.Changing.Subscribe(x => {
-                // XXX: The content of these asserts don't actually get 
+                // XXX: The content of these asserts don't actually get
                 // propagated back, it only prevents before_fired from
                 // being set - we have to enable 1st-chance exceptions
                 // to see the real error

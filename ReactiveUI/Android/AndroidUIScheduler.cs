@@ -12,8 +12,8 @@ using Android.OS;
 namespace ReactiveUI
 {
     /// <summary>
-    /// HandlerScheduler is a scheduler that schedules items on a running 
-    /// Activity's main thread. This is the moral equivalent of 
+    /// HandlerScheduler is a scheduler that schedules items on a running
+    /// Activity's main thread. This is the moral equivalent of
     /// DispatcherScheduler.
     public class HandlerScheduler : IScheduler, IEnableLogger
     {

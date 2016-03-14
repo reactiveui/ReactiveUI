@@ -15,25 +15,25 @@ namespace XamarinMacPlayground
         {
             Initialize();
         }
-		
+
         // Called when created directly from a XIB file
         [Export ("initWithCoder:")]
         public TestViewController(NSCoder coder) : base (coder)
         {
             Initialize();
         }
-		
+
         // Call to load from the XIB/NIB file
         public TestViewController() : base ("TestView", NSBundle.MainBundle)
         {
             Initialize();
         }
-		
+
         // Shared initialization code
         void Initialize()
         {
         }
-		
+
         //strongly typed view accessor
         public new TestView View {
             get { return (TestView)base.View; }

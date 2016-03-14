@@ -27,7 +27,7 @@ using Splat;
 namespace ReactiveUI.AndroidSupport
 {
     /// <summary>
-    /// This is an Activity that is both an Activity and has ReactiveObject powers 
+    /// This is an Activity that is both an Activity and has ReactiveObject powers
     /// (i.e. you can call RaiseAndSetIfChanged)
     /// </summary>
     public class ReactiveActionBarActivity<TViewModel> : ReactiveActionBarActivity, IViewFor<TViewModel>, ICanActivate
@@ -50,7 +50,7 @@ namespace ReactiveUI.AndroidSupport
     }
 
     /// <summary>
-    /// This is an Activity that is both an Activity and has ReactiveObject powers 
+    /// This is an Activity that is both an Activity and has ReactiveObject powers
     /// (i.e. you can call RaiseAndSetIfChanged)
     /// </summary>
     public class ReactiveActionBarActivity : ActionBarActivity, IReactiveObject, IReactiveNotifyPropertyChanged<ReactiveActionBarActivity>, IHandleObservableErrors
@@ -79,7 +79,7 @@ namespace ReactiveUI.AndroidSupport
 
         /// <summary>
         /// Represents an Observable that fires *before* a property is about to
-        /// be changed.         
+        /// be changed.
         /// </summary>
         public IObservable<IReactivePropertyChangedEventArgs<ReactiveActionBarActivity>> Changing
         {

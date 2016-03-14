@@ -31,4 +31,4 @@ tvd.ShouldScrollToTopObs
 ```
 
 Since this class is still a normal class, you can subclass it yourself and
-implement the ShouldXXXX methods. 
+implement the ShouldXXXX methods.

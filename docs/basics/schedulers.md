@@ -1,4 +1,4 @@
-# Default Schedulers 
+# Default Schedulers
 
 Scheduling is a core part of writing any app that uses the Reactive
 Extensions, as all operations that are deferred (i.e. run on other threads or

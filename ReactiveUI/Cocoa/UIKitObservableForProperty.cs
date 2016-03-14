@@ -30,7 +30,7 @@ namespace ReactiveUI
             Register(typeof(UISegmentedControl), "SelectedSegment", 30, (s, p)=> ObservableFromUIControlEvent(s, p, UIControlEvent.ValueChanged));
             Register(typeof(UISwitch), "On", 30, (s, p)=> ObservableFromUIControlEvent(s, p, UIControlEvent.ValueChanged));
             Register(typeof(UISegmentedControl), "SelectedSegment", 30, (s, p)=> ObservableFromUIControlEvent(s, p, UIControlEvent.ValueChanged));
-            
+
             // Warning: This will stomp the Control's delegate
             Register(typeof(UITabBar), "SelectedItem", 30, (s, p) => ObservableFromEvent(s, p, "ItemSelected"));
 

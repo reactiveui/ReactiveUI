@@ -8,10 +8,10 @@ namespace ReactiveUI
 {
     /// <summary>
     /// This class is the final fallback for WhenAny, and will simply immediately
-    /// return the value of the type at the time it was created. It will also 
+    /// return the value of the type at the time it was created. It will also
     /// warn the user that this is probably not what they want to do
     /// </summary>
-    public class POCOObservableForProperty : ICreatesObservableForProperty 
+    public class POCOObservableForProperty : ICreatesObservableForProperty
     {
         public int GetAffinityForObject(Type type, string propertyName, bool beforeChanged = false)
         {

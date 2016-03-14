@@ -43,7 +43,7 @@ namespace ReactiveUI
 
             RxApp.SuspensionHost.ShouldInvalidateState = untimelyDemise;
         }
-            
+
         class ObservableLifecycle : Java.Lang.Object, Application.IActivityLifecycleCallbacks
         {
             readonly AutoSuspendHelper This;
@@ -69,9 +69,9 @@ namespace ReactiveUI
                 outState.PutString("___dummy_value_please_create_a_bundle", "VeryYes");
                 This.onSaveInstanceState.OnNext(outState);
             }
-                        
-            public void OnActivityPaused(Activity activity) 
-            { 
+
+            public void OnActivityPaused(Activity activity)
+            {
                 This.onPause.OnNext(Unit.Default);
             }
 

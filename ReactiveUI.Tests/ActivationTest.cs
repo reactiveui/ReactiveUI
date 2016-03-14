@@ -21,7 +21,7 @@ namespace ReactiveUI.Tests
         public ActivatingViewModel()
         {
             Activator = new ViewModelActivator();
-                
+
             this.WhenActivated(d => {
                 IsActiveCount++;
                 d(Disposable.Create(() => IsActiveCount--));

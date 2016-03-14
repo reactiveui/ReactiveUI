@@ -126,7 +126,7 @@ namespace ReactiveUI
 
             var subj = new Subject<object>();
 
-            // NB: There is no way to unregister an attached property, 
+            // NB: There is no way to unregister an attached property,
             // we just have to leak it. Luckily it's per-type, so it's
             // not *that* bad.
             var dp = DependencyProperty.RegisterAttached(

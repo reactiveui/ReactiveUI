@@ -729,7 +729,7 @@ Global
 		$2.inheritsScope = text/x-csharp
 		$2.scope = text/x-csharp
 		$0.StandardHeader = $3
-		$3.Text = 
+		$3.Text =
 		$3.IncludeInNewFiles = True
 		$0.NameConventionPolicy = $4
 		$4.Rules = $5

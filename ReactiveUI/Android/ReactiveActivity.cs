@@ -26,7 +26,7 @@ using System.Reactive;
 namespace ReactiveUI
 {
     /// <summary>
-    /// This is an Activity that is both an Activity and has ReactiveObject powers 
+    /// This is an Activity that is both an Activity and has ReactiveObject powers
     /// (i.e. you can call RaiseAndSetIfChanged)
     /// </summary>
     public class ReactiveActivity<TViewModel> : ReactiveActivity, IViewFor<TViewModel>, ICanActivate
@@ -51,7 +51,7 @@ namespace ReactiveUI
     }
 
     /// <summary>
-    /// This is an Activity that is both an Activity and has ReactiveObject powers 
+    /// This is an Activity that is both an Activity and has ReactiveObject powers
     /// (i.e. you can call RaiseAndSetIfChanged)
     /// </summary>
     public class ReactiveActivity : Activity, IReactiveObject, IReactiveNotifyPropertyChanged<ReactiveActivity>, IHandleObservableErrors
@@ -78,7 +78,7 @@ namespace ReactiveUI
 
         /// <summary>
         /// Represents an Observable that fires *before* a property is about to
-        /// be changed.         
+        /// be changed.
         /// </summary>
         public IObservable<IReactivePropertyChangedEventArgs<ReactiveActivity>> Changing {
             get { return this.getChangingObservable(); }

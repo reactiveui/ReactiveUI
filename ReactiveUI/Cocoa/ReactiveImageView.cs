@@ -72,7 +72,7 @@ namespace ReactiveUI
 
         /// <summary>
         /// Represents an Observable that fires *before* a property is about to
-        /// be changed.         
+        /// be changed.
         /// </summary>
         public IObservable<IReactivePropertyChangedEventArgs<ReactiveImageView>> Changing {
             get { return this.getChangingObservable(); }
@@ -90,7 +90,7 @@ namespace ReactiveUI
         }
 
         public IObservable<Exception> ThrownExceptions { get { return this.getThrownExceptionsObservable(); } }
-        
+
         Subject<Unit> activated = new Subject<Unit>();
         public IObservable<Unit> Activated { get { return activated; } }
         Subject<Unit> deactivated = new Subject<Unit>();
@@ -98,7 +98,7 @@ namespace ReactiveUI
 
 #if UIKIT
         public override void WillMoveToSuperview(NSView newsuper)
-#else 
+#else
         public override void ViewWillMoveToSuperview(NSView newsuper)
 #endif
         {
@@ -110,9 +110,9 @@ namespace ReactiveUI
             RxApp.MainThreadScheduler.Schedule(() => (newsuper != null ? activated : deactivated).OnNext(Unit.Default));
         }
 
-        void ICanForceManualActivation.Activate(bool activate) 
+        void ICanForceManualActivation.Activate(bool activate)
         {
-            RxApp.MainThreadScheduler.Schedule(() => 
+            RxApp.MainThreadScheduler.Schedule(() =>
                 (activate ? activated : deactivated).OnNext(Unit.Default));
         }
     }

@@ -56,7 +56,7 @@ namespace ReactiveUI.Tests
                     Assert.Equal(x, fixture.CanExecute(null));
                 });
 
-                // N.B. We check against '5' instead of 6 because we're supposed to 
+                // N.B. We check against '5' instead of 6 because we're supposed to
                 // suppress changes that aren't actually changes i.e. false => false
                 sched.AdvanceToMs(10*1000);
                 return changes_as_observable;
@@ -306,7 +306,7 @@ namespace ReactiveUI.Tests
 
                 var fixture = ReactiveCommand.CreateAsyncObservable(canExecute,
                     x => Observable.Return((int)x * 5).Delay(TimeSpan.FromMilliseconds(900), RxApp.MainThreadScheduler));
-                
+
                 int calculatedResult = -1;
                 bool latestCanExecute = false;
 
@@ -355,8 +355,8 @@ namespace ReactiveUI.Tests
         public void DisallowConcurrentExecutionTest()
         {
             (new TestScheduler()).With(sched => {
-                var fixture = ReactiveCommand.CreateAsyncObservable(Observable.Return(true), 
-                    _ => Observable.Return(4).Delay(TimeSpan.FromSeconds(5), sched), 
+                var fixture = ReactiveCommand.CreateAsyncObservable(Observable.Return(true),
+                    _ => Observable.Return(4).Delay(TimeSpan.FromSeconds(5), sched),
                     sched);
 
                 Assert.True(fixture.CanExecute(null));
@@ -431,7 +431,7 @@ namespace ReactiveUI.Tests
             subj1.OnNext(true);
             Assert.False(fixture.CanExecute(null));
             Assert.Equal(1, canExecuteOutput.Count);
-                        
+
             // 1 is true, 2 is true
             subj2.OnNext(true);
             Assert.True(fixture.CanExecute(null));
@@ -443,7 +443,7 @@ namespace ReactiveUI.Tests
         public void CombinedCommandsShouldBeInactiveOnAsyncInflightOps()
         {
             (new TestScheduler()).With(sched => {
-                var cmd1 = ReactiveCommand.CreateAsyncObservable(Observable.Return(true), 
+                var cmd1 = ReactiveCommand.CreateAsyncObservable(Observable.Return(true),
                     x => Observable.Return(x).Delay(TimeSpan.FromMilliseconds(100), sched));
                 var cmd2 = ReactiveCommand.CreateAsyncObservable(Observable.Return(true),
                     x => Observable.Return(x).Delay(TimeSpan.FromMilliseconds(300), sched));
@@ -477,7 +477,7 @@ namespace ReactiveUI.Tests
                 Assert.Equal(false, fixture.CanExecute(null));
                 Assert.Equal(1, result1.Count);
                 Assert.Equal(0, result2.Count);
-                                
+
                 sched.AdvanceToMs(500.0);
                 Assert.Equal(3, canExecuteOutput.Count);
                 Assert.Equal(true, canExecuteOutput[2]);
@@ -486,7 +486,7 @@ namespace ReactiveUI.Tests
                 Assert.Equal(1, result2.Count);
             });
         }
-                
+
         [Fact]
         public void CombinedCommandsShouldReflectParentCanExecute()
         {
@@ -520,7 +520,7 @@ namespace ReactiveUI.Tests
             subj1.OnNext(true);
             Assert.False(fixture.CanExecute(null));
             Assert.Equal(1, canExecuteOutput.Count);
-                        
+
             // 1 is true, 2 is true, but it doesn't matter because
             // parent is still false
             subj2.OnNext(true);

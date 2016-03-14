@@ -21,19 +21,19 @@ namespace ReactiveUI
     /// <summary>
     /// ViewModelViewHost is a helper class that will connect a ViewModel
     /// to an arbitrary NSView and attempt to load the View for the current
-    /// ViewModel as a child view of the target. 
-    /// 
+    /// ViewModel as a child view of the target.
+    ///
     /// This is a bit different than the XAML's ViewModelViewHost in the sense
     /// that this isn't a Control itself, it only manipulates other Views.
     /// </summary>
-    public class ViewModelViewHost : ReactiveObject 
+    public class ViewModelViewHost : ReactiveObject
     {
         /// <summary>
         /// Gets or sets a value indicating whether this <see cref="ReactiveUI.Cocoa.ViewModelViewHost"/>
         /// will automatically create Auto Layout constraints tying the sub view to the parent view.
         /// </summary>
         /// <value><c>true</c> if add layout contraints to sub view; otherwise, <c>false</c>.</value>
-        public bool AddAutoLayoutConstraintsToSubView { get; set; } 
+        public bool AddAutoLayoutConstraintsToSubView { get; set; }
 
         public ViewModelViewHost(NSView targetView)
         {
@@ -115,13 +115,13 @@ namespace ReactiveUI
             get { return _ViewModel; }
             set { this.RaiseAndSetIfChanged(ref _ViewModel, value); }
         }
-        
+
         IObservable<string> _ViewContractObservable;
         public IObservable<string> ViewContractObservable {
             get { return _ViewContractObservable; }
             set { this.RaiseAndSetIfChanged(ref _ViewContractObservable, value); }
         }
-       
+
         public IViewLocator ViewLocator { get; set; }
     }
 }

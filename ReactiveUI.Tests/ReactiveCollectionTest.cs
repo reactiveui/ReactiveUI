@@ -51,7 +51,7 @@ namespace ReactiveUI.Tests
         }
     }
 
-    class NestedTextModel : ReactiveObject 
+    class NestedTextModel : ReactiveObject
     {
         string text;
         public string Text {
@@ -66,13 +66,13 @@ namespace ReactiveUI.Tests
         }
     }
 
-    class TextModel : ReactiveObject 
+    class TextModel : ReactiveObject
     {
         NestedTextModel value;
         public NestedTextModel Value {
             get {
                 if (value != null) return value;
-                var newValue = 
+                var newValue =
                     value = new NestedTextModel() {
                         Text = "text",
                         HasData = true
@@ -345,7 +345,7 @@ namespace ReactiveUI.Tests
             fixture.RemoveAt(0);
             fixture.RemoveAt(0);
 
-            // We've completely removed item1, we shouldn't be seeing any 
+            // We've completely removed item1, we shouldn't be seeing any
             // notifications from it
             item1.IsOnlyOneWord = "Bamf";
             Assert.Equal(2, output.Count);
@@ -544,7 +544,7 @@ namespace ReactiveUI.Tests
                 sched.Start();
                 return f;
             });
-            
+
             input.AssertAreEqual(fixture);
         }
 
@@ -560,10 +560,10 @@ namespace ReactiveUI.Tests
                 fixture = input.ToObservable(sched).CreateCollection(TimeSpan.FromSeconds(0.5));
                 sched.AdvanceToMs(1005);
                 fixture.AssertAreEqual(input.Take(2));
-                
+
                 sched.AdvanceToMs(1505);
                 fixture.AssertAreEqual(input.Take(3));
-    
+
                 sched.AdvanceToMs(10000);
                 fixture.AssertAreEqual(input);
             }
@@ -667,7 +667,7 @@ namespace ReactiveUI.Tests
             var input = new List<string> { "Foo" };
             var resetSubject = new Subject<Unit>();
             var derived = input.CreateDerivedCollection(x => x, signalReset: resetSubject);
-            
+
             var changeNotifications = new List<NotifyCollectionChangedEventArgs>();
             derived.Changed.Subscribe(changeNotifications.Add);
 
@@ -714,8 +714,8 @@ namespace ReactiveUI.Tests
         [Fact]
         public void DerivedCollectionShouldUnderstandMoveSignals()
         {
-            var source = new System.Collections.ObjectModel.ObservableCollection<string> { 
-                "a", "b", "c", "d", "e", "f" 
+            var source = new System.Collections.ObjectModel.ObservableCollection<string> {
+                "a", "b", "c", "d", "e", "f"
             };
             var derived = source.CreateDerivedCollection(x => x);
 
@@ -774,8 +774,8 @@ namespace ReactiveUI.Tests
         [Fact]
         public void DerivedCollectionShouldUnderstandNestedMoveSignals()
         {
-            var source = new System.Collections.ObjectModel.ObservableCollection<string> { 
-                "a", "b", "c", "d", "e", "f" 
+            var source = new System.Collections.ObjectModel.ObservableCollection<string> {
+                "a", "b", "c", "d", "e", "f"
             };
             var derived = source.CreateDerivedCollection(x => x);
             var nested = derived.CreateDerivedCollection(x => x);
@@ -804,13 +804,13 @@ namespace ReactiveUI.Tests
         public void DerivedCollectionShouldUnderstandMoveEvenWhenSorted()
         {
             var sanity = new List<string> { "a", "b", "c", "d", "e", "f" };
-            var source = new System.Collections.ObjectModel.ObservableCollection<string> { 
-                "a", "b", "c", "d", "e", "f" 
+            var source = new System.Collections.ObjectModel.ObservableCollection<string> {
+                "a", "b", "c", "d", "e", "f"
             };
 
             var derived = source.CreateDerivedCollection(
                 selector: x => x,
-                filter: x => x != "c", 
+                filter: x => x != "c",
                 orderer: (x, y) => x.CompareTo(y)
             );
 
@@ -859,8 +859,8 @@ namespace ReactiveUI.Tests
         public void DerivedCollectionShouldUnderstandDummyMoveSignal()
         {
             var sanity = new List<string> { "a", "b", "c", "d", "e", "f" };
-            var source = new System.Collections.ObjectModel.ObservableCollection<string> { 
-                "a", "b", "c", "d", "e", "f" 
+            var source = new System.Collections.ObjectModel.ObservableCollection<string> {
+                "a", "b", "c", "d", "e", "f"
             };
 
             var derived = source.CreateDerivedCollection(x => x);
@@ -930,7 +930,7 @@ namespace ReactiveUI.Tests
 #endif
 
         /// <summary>
-        /// This test is a bit contrived and only exists to verify that a particularly gnarly bug doesn't get 
+        /// This test is a bit contrived and only exists to verify that a particularly gnarly bug doesn't get
         /// reintroduced because it's hard to reason about the removal logic in derived collections and it might
         /// be tempting to try and reorder the shiftIndices operation in there.
         /// </summary>
@@ -1388,7 +1388,7 @@ namespace ReactiveUI.Tests
             [Fact]
             public void PropertyChangesShouldWorkWithChainedCollections()
             {
-                // This is a highly contrived test and I appologize for it not making much sense. I added it 
+                // This is a highly contrived test and I appologize for it not making much sense. I added it
                 // specifically track down an bug I was hitting when derived collection notification triggered
                 // reentrant notifications.
 
@@ -1405,7 +1405,7 @@ namespace ReactiveUI.Tests
                 };
 
                 var itemsByVisibility = items.CreateDerivedCollection(
-                    x => x, 
+                    x => x,
                     orderer: OrderedComparer<ReactiveVisibilityItem<string>>
                         .OrderByDescending(x => x.IsVisible)
                         .ThenBy(x => x.Value)
@@ -1451,20 +1451,20 @@ namespace ReactiveUI.Tests
                 e.IsVisible = false;
 
                 Assert.True(items.SequenceEqual(new[] { a, c, d, e, f }));
-                Assert.True(itemsByVisibility.SequenceEqual(new[] { 
+                Assert.True(itemsByVisibility.SequenceEqual(new[] {
                     c, f,
                     d, // d is now y
                     a, // a is now z
                     e  // e is now hidden
                 }));
 
-                Assert.True(onlyVisibleReversed.SequenceEqual(new[] { 
+                Assert.True(onlyVisibleReversed.SequenceEqual(new[] {
                     a, // a is now z
                     d, // d is now y
                     f, c
                 }));
 
-                Assert.True(onlyVisibleAndGreaterThanC.SequenceEqual(new[] { 
+                Assert.True(onlyVisibleAndGreaterThanC.SequenceEqual(new[] {
                     f,
                     d, // d is now y
                     a, // a is now z
@@ -1688,8 +1688,8 @@ namespace ReactiveUI.Tests
             Assert.Equal(4, viewModels.Count);
         }
 
-                
-        ReactiveList<TextModel> makeAsyncCollection(int maxSize) 
+
+        ReactiveList<TextModel> makeAsyncCollection(int maxSize)
         {
             return new ReactiveList<TextModel>(Enumerable.Repeat(Unit.Default, maxSize)
                 .Select(_ => new TextModel()));
@@ -1707,7 +1707,7 @@ namespace ReactiveUI.Tests
 
             var derivedList = list.CreateDerivedCollection(
                 m => m.Value, m => m.HasData, (a, b) => a.Text.CompareTo(b.Text),
-                Observable.Never(4) /*list.ShouldReset*/, 
+                Observable.Never(4) /*list.ShouldReset*/,
                 scheduler: RxApp.MainThreadScheduler);
 
             derivedList.CountChanged
@@ -1718,7 +1718,7 @@ namespace ReactiveUI.Tests
                 });
 
             data = makeAsyncCollection(maxSize);
-                
+
             Observable.Delay(Observable.Return(Unit.Default), TimeSpan.FromMilliseconds(100))
                 .ObserveOn(RxApp.MainThreadScheduler)
                 .Subscribe(_ => {
@@ -1831,14 +1831,14 @@ namespace ReactiveUI.Tests
     {
         public static string Serialize<T>(T obj)
         {
-            using (var mstream = new MemoryStream()) { 
-                var serializer = new System.Runtime.Serialization.Json.DataContractJsonSerializer(obj.GetType());  
-                serializer.WriteObject(mstream, obj);  
-                mstream.Position = 0;  
-  
-                using (var sr = new StreamReader(mstream)) {  
-                    return sr.ReadToEnd();  
-                }  
+            using (var mstream = new MemoryStream()) {
+                var serializer = new System.Runtime.Serialization.Json.DataContractJsonSerializer(obj.GetType());
+                serializer.WriteObject(mstream, obj);
+                mstream.Position = 0;
+
+                using (var sr = new StreamReader(mstream)) {
+                    return sr.ReadToEnd();
+                }
             }
         }
 

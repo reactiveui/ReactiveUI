@@ -10,7 +10,7 @@ namespace ReactiveUI
         internal static void ForEach<T>(this IEnumerable<T> This, Action<T> block)
         {
             foreach (var v in This) {
-                block(v); 
+                block(v);
             }
         }
 

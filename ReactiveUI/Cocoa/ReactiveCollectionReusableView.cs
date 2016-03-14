@@ -26,7 +26,7 @@ using MonoTouch.UIKit;
 
 namespace ReactiveUI
 {
-    public abstract class ReactiveCollectionReusableView : UICollectionReusableView, 
+    public abstract class ReactiveCollectionReusableView : UICollectionReusableView,
         IReactiveNotifyPropertyChanged<ReactiveCollectionReusableView>, IHandleObservableErrors, IReactiveObject, ICanActivate
     {
 #if UNIFIED
@@ -42,7 +42,7 @@ namespace ReactiveUI
 
         public event PropertyChangingEventHandler PropertyChanging;
 
-        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args) 
+        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args)
         {
             var handler = PropertyChanging;
             if (handler != null) {
@@ -52,7 +52,7 @@ namespace ReactiveUI
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args) 
+        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args)
         {
             var handler = PropertyChanged;
             if (handler != null) {
