@@ -302,6 +302,27 @@ namespace ReactiveUI.Tests
         }
 
         [Fact]
+        public void ExceptionsAreDeliveredOnOutputScheduler()
+        {
+            (new TestScheduler()).With(sched => {
+                var fixture = ReactiveCommand.CreateFromObservable(() => Observable.Throw<Unit>(new InvalidOperationException()), outputScheduler: sched);
+                Exception exception = null;
+                fixture
+                    .ThrownExceptions
+                    .Subscribe(ex => exception = ex);
+                fixture
+                    .ExecuteAsync()
+                    .Subscribe(
+                        _ => { },
+                        ex => { });
+
+                Assert.Null(exception);
+                sched.Start();
+                Assert.IsType<InvalidOperationException>(exception);
+            });
+        }
+
+        [Fact]
         public void ExecuteIsAvailableViaICommand()
         {
             var executed = false;
@@ -634,6 +655,29 @@ namespace ReactiveUI.Tests
 
             Assert.Equal(1, thrownExceptions.Count);
             Assert.Equal("oops", thrownExceptions[0].Message);
+        }
+
+        [Fact]
+        public void ExceptionsAreDeliveredOnOutputScheduler()
+        {
+            (new TestScheduler()).With(sched => {
+                var child = ReactiveCommand.CreateFromObservable(() => Observable.Throw<Unit>(new InvalidOperationException("oops")));
+                var childCommands = new[] { child };
+                var fixture = ReactiveCommand.CreateCombined(childCommands, outputScheduler: sched);
+                Exception exception = null;
+                fixture
+                    .ThrownExceptions
+                    .Subscribe(ex => exception = ex);
+                fixture
+                    .ExecuteAsync()
+                    .Subscribe(
+                        _ => { },
+                        ex => { });
+
+                Assert.Null(exception);
+                sched.Start();
+                Assert.IsType<InvalidOperationException>(exception);
+            });
         }
     }
 }

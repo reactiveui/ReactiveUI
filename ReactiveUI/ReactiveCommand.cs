@@ -647,7 +647,7 @@ namespace ReactiveUI
                 .Where(x => x.Demarcation == ExecutionDemarcation.EndWithResult)
                 .Select(x => x.Result);
 
-            this.exceptions = new ScheduledSubject<Exception>(CurrentThreadScheduler.Instance, RxApp.DefaultExceptionHandler);
+            this.exceptions = new ScheduledSubject<Exception>(outputScheduler, RxApp.DefaultExceptionHandler);
 
             this
                 .canExecute
@@ -842,7 +842,7 @@ namespace ReactiveUI
                 .ThrownExceptions
                 .Subscribe();
 
-            this.exceptions = new ScheduledSubject<Exception>(CurrentThreadScheduler.Instance, RxApp.DefaultExceptionHandler);
+            this.exceptions = new ScheduledSubject<Exception>(outputScheduler, RxApp.DefaultExceptionHandler);
 
             this
                 .CanExecute
