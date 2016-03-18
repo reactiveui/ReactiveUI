@@ -158,6 +158,7 @@
     <Compile Include="Legacy\Errors.cs" />
     <Compile Include="Cocoa\ReactiveTabBarController.cs" />
     <Compile Include="Cocoa\ReactiveSplitViewController.cs" />
+    <Compile Include="Cocoa\ReactiveNavigationController.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.ReactiveUI_iOS.config" />
