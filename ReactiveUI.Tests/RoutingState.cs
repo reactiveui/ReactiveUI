@@ -5,7 +5,7 @@ using Xunit;
 namespace ReactiveUI.Routing.Tests
 {
     using System.Threading.Tasks;
-
+    using Microsoft.Reactive.Testing;
     public class TestViewModel : ReactiveObject, IRoutableViewModel
     {
         string _SomeProp;
@@ -111,6 +111,40 @@ namespace ReactiveUI.Routing.Tests
 
             Assert.True(fixture.Router.NavigationStack.Count == 1);
             Assert.True(object.ReferenceEquals(fixture.Router.NavigationStack.First(), viewModel));
+        }
+
+        [Fact]
+        public void SchedulerIsUsedForAllCommands()
+        {
+            var scheduler = new TestScheduler();
+            var fixture = new RoutingState
+            {
+                Scheduler = scheduler
+            };
+            var navigate = fixture
+                .Navigate
+                .CreateCollection();
+            var navigateBack = fixture
+                .NavigateBack
+                .CreateCollection();
+            var navigateAndReset = fixture
+                .NavigateAndReset
+                .CreateCollection();
+
+            fixture.Navigate.ExecuteAsync(new TestViewModel());
+            Assert.Empty(navigate);
+            scheduler.Start();
+            Assert.NotEmpty(navigate);
+
+            fixture.NavigateBack.ExecuteAsync();
+            Assert.Empty(navigateBack);
+            scheduler.Start();
+            Assert.NotEmpty(navigateBack);
+
+            fixture.NavigateAndReset.ExecuteAsync(new TestViewModel());
+            Assert.Empty(navigateAndReset);
+            scheduler.Start();
+            Assert.NotEmpty(navigateAndReset);
         }
     }
 }
