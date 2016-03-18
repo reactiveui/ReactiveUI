@@ -1,13 +1,12 @@
+﻿using Splat;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Diagnostics.Contracts;
 using System.Linq.Expressions;
 using System.Reactive.Concurrency;
+using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
-using Splat;
-using System.Reactive.Disposables;
 using System.Threading;
 
 namespace ReactiveUI
@@ -151,8 +150,11 @@ namespace ReactiveUI
             }
 
             var name = expression.GetMemberInfo().Name;
-            var ret = new ObservableAsPropertyHelper<TRet>(observable, 
-                _ => This.raisePropertyChanged(name), 
+            if (expression is IndexExpression)
+                name += "[]";
+
+            var ret = new ObservableAsPropertyHelper<TRet>(observable,
+                _ => This.raisePropertyChanged(name),
                 _ => This.raisePropertyChanging(name),
                 initialValue, scheduler);
 
