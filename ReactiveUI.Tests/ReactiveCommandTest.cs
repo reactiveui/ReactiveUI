@@ -283,6 +283,29 @@ namespace ReactiveUI.Tests
         }
 
         [Fact]
+        public void ExecuteAsyncCanBeCancelled()
+        {
+            (new TestScheduler()).With(sched => {
+                var execute = Observable.Return(Unit.Default).Delay(TimeSpan.FromSeconds(1), sched);
+                var fixture = ReactiveCommand.CreateFromObservable(() => execute, outputScheduler: sched);
+                var executed = fixture
+                    .CreateCollection();
+
+                var sub1 = fixture.ExecuteAsync().Subscribe();
+                var sub2 = fixture.ExecuteAsync().Subscribe();
+                sched.AdvanceByMs(999);
+
+                Assert.True(fixture.IsExecuting.FirstAsync().Wait());
+                Assert.Empty(executed);
+                sub1.Dispose();
+
+                sched.AdvanceByMs(2);
+                Assert.Equal(1, executed.Count);
+                Assert.False(fixture.IsExecuting.FirstAsync().Wait());
+            });
+        }
+
+        [Fact]
         public void ExceptionsAreDeliveredOnOutputScheduler()
         {
             (new TestScheduler()).With(sched => {
