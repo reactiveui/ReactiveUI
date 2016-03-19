@@ -572,7 +572,10 @@ namespace ReactiveUI
                         parameter.GetType().FullName));
             }
 
-            this.ExecuteAsync((TParam)parameter);
+            this
+                .ExecuteAsync((TParam)parameter)
+                .Catch(Observable.Empty<TResult>())
+                .Subscribe();
         }
     }
 
@@ -693,8 +696,7 @@ namespace ReactiveUI
                         this.synchronizedExecutionInfo.OnNext(ExecutionInfo.CreateFail());
                         exceptions.OnNext(ex);
                         return Observable.Throw<TResult>(ex);
-                    })
-                    .RunAsync(CancellationToken.None);
+                    });
             } catch (Exception ex) {
                 this.exceptions.OnNext(ex);
                 return Observable.Throw<TResult>(ex);
