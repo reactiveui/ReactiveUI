@@ -16,14 +16,14 @@ namespace ReactiveUI.Tests.Winforms
             var viewLocator = new FakeViewLocator { LocatorFunc = t => new FakeWinformsView() };
             var router = new RoutingState();
             var target = new WinFormsRoutedViewHost { Router = router, ViewLocator = viewLocator };
-            router.Navigate.ExecuteAsync(new FakeWinformViewModel());
+            router.Navigate.Execute(new FakeWinformViewModel());
 
             FakeWinformsView currentView = target.Controls.OfType<FakeWinformsView>().Single();
             bool isDisposed = false;
             currentView.Disposed += (o, e) => isDisposed = true;
 
             // switch the viewmodel
-            router.Navigate.ExecuteAsync(new FakeWinformViewModel());
+            router.Navigate.Execute(new FakeWinformViewModel());
 
             Assert.True(isDisposed);
         }
@@ -50,7 +50,7 @@ namespace ReactiveUI.Tests.Winforms
             var viewLocator = new FakeViewLocator { LocatorFunc = t => new FakeWinformsView() };
             var router = new RoutingState();
             var target = new WinFormsRoutedViewHost { Router = router, ViewLocator = viewLocator };
-            router.Navigate.ExecuteAsync(new FakeWinformViewModel());
+            router.Navigate.Execute(new FakeWinformViewModel());
 
             Assert.Equal(1, target.Controls.OfType<FakeWinformsView>().Count());
         }
