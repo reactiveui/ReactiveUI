@@ -802,19 +802,25 @@ namespace ReactiveUI
         /// <inheritdoc/>
         public override IObservable<TResult> Execute(TParam parameter = default(TParam))
         {
-            this.synchronizedExecutionInfo.OnNext(ExecutionInfo.CreateBegin());
-
             try {
-                return this
-                    .execute(parameter)
+                return Observable
+                    .Defer(
+                        () => {
+                            this.synchronizedExecutionInfo.OnNext(ExecutionInfo.CreateBegin());
+                            return Observable.Empty<TResult>();
+                        })
+                    .Concat(this.execute(parameter))
                     .Do(
                         result => this.synchronizedExecutionInfo.OnNext(ExecutionInfo.CreateResult(result)),
                         () => this.synchronizedExecutionInfo.OnNext(ExecutionInfo.CreateEnded()))
-                    .Catch<TResult, Exception>(ex => {
-                        this.synchronizedExecutionInfo.OnNext(ExecutionInfo.CreateFail());
-                        exceptions.OnNext(ex);
-                        return Observable.Throw<TResult>(ex);
-                    });
+                    .Catch<TResult, Exception>(
+                        ex => {
+                            this.synchronizedExecutionInfo.OnNext(ExecutionInfo.CreateFail());
+                            exceptions.OnNext(ex);
+                            return Observable.Throw<TResult>(ex);
+                        })
+                    .PublishLast()
+                    .RefCount();
             } catch (Exception ex) {
                 this.exceptions.OnNext(ex);
                 return Observable.Throw<TResult>(ex);
