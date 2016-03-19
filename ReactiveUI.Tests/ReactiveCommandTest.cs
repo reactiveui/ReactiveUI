@@ -87,7 +87,7 @@ namespace ReactiveUI.Tests
                     .CanExecute
                     .CreateCollection();
 
-                fixture.ExecuteAsync();
+                fixture.ExecuteAsync().Subscribe();
                 sched.AdvanceByMs(100);
 
                 Assert.Equal(2, canExecute.Count);
@@ -168,7 +168,7 @@ namespace ReactiveUI.Tests
                     .IsExecuting
                     .CreateCollection();
 
-                fixture.ExecuteAsync();
+                fixture.ExecuteAsync().Subscribe();
                 sched.AdvanceByMs(100);
 
                 Assert.Equal(2, isExecuting.Count);
@@ -191,9 +191,9 @@ namespace ReactiveUI.Tests
                     return Observable.Return(Unit.Default);
                 });
 
-            fixture.ExecuteAsync(1);
-            fixture.ExecuteAsync(42);
-            fixture.ExecuteAsync(348);
+            fixture.ExecuteAsync(1).Subscribe();
+            fixture.ExecuteAsync(42).Subscribe();
+            fixture.ExecuteAsync(348).Subscribe();
 
             Assert.Equal(3, parameters.Count);
             Assert.Equal(1, parameters[0]);
@@ -211,7 +211,7 @@ namespace ReactiveUI.Tests
                     .IsExecuting
                     .CreateCollection();
 
-                fixture.ExecuteAsync();
+                fixture.ExecuteAsync().Subscribe();
                 sched.AdvanceByMs(999);
 
                 Assert.Equal(2, isExecuting.Count);
@@ -226,25 +226,6 @@ namespace ReactiveUI.Tests
         }
 
         [Fact]
-        public void ExecuteAsyncExecutesEvenWithoutASubscription()
-        {
-            (new TestScheduler()).With(sched => {
-                var execute = Observable.Return(Unit.Default).Delay(TimeSpan.FromSeconds(1), sched);
-                var fixture = ReactiveCommand.CreateFromObservable(() => execute, outputScheduler: sched);
-                var isExecuting = fixture
-                    .IsExecuting
-                    .CreateCollection();
-
-                fixture.ExecuteAsync();
-                sched.AdvanceByMs(1);
-
-                Assert.Equal(2, isExecuting.Count);
-                Assert.False(isExecuting[0]);
-                Assert.True(isExecuting[1]);
-            });
-        }
-
-        [Fact]
         public void ExecuteAsyncTicksThroughTheResult()
         {
             var num = 0;
@@ -253,11 +234,11 @@ namespace ReactiveUI.Tests
                 .CreateCollection();
 
             num = 1;
-            fixture.ExecuteAsync();
+            fixture.ExecuteAsync().Subscribe();
             num = 10;
-            fixture.ExecuteAsync();
+            fixture.ExecuteAsync().Subscribe();
             num = 30;
-            fixture.ExecuteAsync();
+            fixture.ExecuteAsync().Subscribe();
 
             Assert.Equal(3, results.Count);
             Assert.Equal(1, results[0]);
@@ -370,7 +351,7 @@ namespace ReactiveUI.Tests
                 var results = fixture
                     .CreateCollection();
 
-                fixture.ExecuteAsync();
+                fixture.ExecuteAsync().Subscribe();
                 Assert.Empty(results);
 
                 sched.AdvanceByMs(1);
@@ -386,7 +367,11 @@ namespace ReactiveUI.Tests
                 .ThrownExceptions
                 .CreateCollection();
 
-            fixture.ExecuteAsync();
+            fixture
+                .ExecuteAsync()
+                .Subscribe(
+                    _ => { },
+                    ex => { });
 
             Assert.Equal(1, thrownExceptions.Count);
             Assert.Equal("oops", thrownExceptions[0].Message);
@@ -400,7 +385,11 @@ namespace ReactiveUI.Tests
                 .ThrownExceptions
                 .CreateCollection();
 
-            fixture.ExecuteAsync();
+            fixture
+                .ExecuteAsync()
+                .Subscribe(
+                    _ => { },
+                    ex => { });
 
             Assert.Equal(1, thrownExceptions.Count);
             Assert.Equal("oops", thrownExceptions[0].Message);
@@ -417,7 +406,11 @@ namespace ReactiveUI.Tests
                 .ThrownExceptions
                 .CreateCollection();
 
-            fixture.ExecuteAsync();
+            fixture
+                .ExecuteAsync()
+                .Subscribe(
+                    _ => { },
+                    ex => { });
 
             Assert.Equal(1, thrownExceptions.Count);
             Assert.Equal("oops", thrownExceptions[0].Message);
@@ -435,7 +428,7 @@ namespace ReactiveUI.Tests
             var results = fixture
                 .CreateCollection();
 
-            fixture.ExecuteAsync();
+            fixture.ExecuteAsync().Subscribe();
 
             Assert.Equal(1, results.Count);
             Assert.Equal(13, results[0]);
@@ -448,8 +441,8 @@ namespace ReactiveUI.Tests
             var results = fixture
                 .CreateCollection();
 
-            fixture.ExecuteAsync(3);
-            fixture.ExecuteAsync(41);
+            fixture.ExecuteAsync(3).Subscribe();
+            fixture.ExecuteAsync(41).Subscribe();
 
             Assert.Equal(2, results.Count);
             Assert.Equal(4, results[0]);
@@ -579,7 +572,7 @@ namespace ReactiveUI.Tests
                 .IsExecuting
                 .CreateCollection();
 
-            fixture.ExecuteAsync();
+            fixture.ExecuteAsync().Subscribe();
 
             Assert.Equal(3, isExecuting.Count);
             Assert.False(isExecuting[0]);
@@ -613,7 +606,7 @@ namespace ReactiveUI.Tests
             var results = fixture
                 .CreateCollection();
 
-            fixture.ExecuteAsync();
+            fixture.ExecuteAsync().Subscribe();
 
             Assert.Equal(1, results.Count);
             Assert.Equal(2, results[0].Count);
@@ -632,7 +625,7 @@ namespace ReactiveUI.Tests
                 var results = fixture
                     .CreateCollection();
 
-                fixture.ExecuteAsync();
+                fixture.ExecuteAsync().Subscribe();
                 Assert.Empty(results);
 
                 sched.AdvanceByMs(1);
@@ -651,7 +644,11 @@ namespace ReactiveUI.Tests
                 .ThrownExceptions
                 .CreateCollection();
 
-            fixture.ExecuteAsync();
+            fixture
+                .ExecuteAsync()
+                .Subscribe(
+                    _ => { },
+                    ex => { });
 
             Assert.Equal(1, thrownExceptions.Count);
             Assert.Equal("oops", thrownExceptions[0].Message);
