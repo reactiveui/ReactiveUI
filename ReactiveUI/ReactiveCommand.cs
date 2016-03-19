@@ -367,9 +367,9 @@ namespace ReactiveUI
         /// The type of the command's result.
         /// </typeparam>
         public static ReactiveCommand<TParam, TResult> CreateFromObservable<TParam, TResult>(
-                Func<TParam, IObservable<TResult>> executeAsync,
-                IObservable<bool> canExecute = null,
-                IScheduler outputScheduler = null)
+            Func<TParam, IObservable<TResult>> executeAsync,
+            IObservable<bool> canExecute = null,
+            IScheduler outputScheduler = null)
         {
             return new ReactiveCommand<TParam, TResult>(
                 executeAsync,
@@ -399,9 +399,9 @@ namespace ReactiveUI
         /// The type of the command's result.
         /// </typeparam>
         public static ReactiveCommand<TParam, TResult> CreateFromTask<TParam, TResult>(
-                Func<TParam, Task<TResult>> executeAsync,
-                IObservable<bool> canExecute = null,
-                IScheduler outputScheduler = null)
+            Func<TParam, Task<TResult>> executeAsync,
+            IObservable<bool> canExecute = null,
+            IScheduler outputScheduler = null)
         {
             return CreateFromObservable<TParam, TResult>(
                 param => executeAsync(param).ToObservable(),
@@ -431,9 +431,9 @@ namespace ReactiveUI
         /// The type of the command's result.
         /// </typeparam>
         public static ReactiveCommand<TParam, TResult> CreateFromTask<TParam, TResult>(
-                Func<TParam, CancellationToken, Task<TResult>> executeAsync,
-                IObservable<bool> canExecute = null,
-                IScheduler outputScheduler = null)
+            Func<TParam, CancellationToken, Task<TResult>> executeAsync,
+            IObservable<bool> canExecute = null,
+            IScheduler outputScheduler = null)
         {
             return CreateFromObservable<TParam, TResult>(
                 param => Observable.StartAsync(ct => executeAsync(param, ct)),
@@ -460,9 +460,9 @@ namespace ReactiveUI
         /// The type of the parameter passed through to command execution.
         /// </typeparam>
         public static ReactiveCommand<TParam, Unit> CreateFromTask<TParam>(
-                Func<TParam, Task> executeAsync,
-                IObservable<bool> canExecute = null,
-                IScheduler outputScheduler = null)
+            Func<TParam, Task> executeAsync,
+            IObservable<bool> canExecute = null,
+            IScheduler outputScheduler = null)
         {
             return CreateFromObservable<TParam, Unit>(
                 param => executeAsync(param).ToObservable(),
@@ -489,9 +489,9 @@ namespace ReactiveUI
         /// The type of the parameter passed through to command execution.
         /// </typeparam>
         public static ReactiveCommand<TParam, Unit> CreateFromTask<TParam>(
-                Func<TParam, CancellationToken, Task> executeAsync,
-                IObservable<bool> canExecute = null,
-                IScheduler outputScheduler = null)
+            Func<TParam, CancellationToken, Task> executeAsync,
+            IObservable<bool> canExecute = null,
+            IScheduler outputScheduler = null)
         {
             return CreateFromObservable<TParam, Unit>(
                 param => Observable.StartAsync(ct => executeAsync(param, ct)),
@@ -522,9 +522,9 @@ namespace ReactiveUI
         /// The type of the command's result.
         /// </typeparam>
         public static CombinedReactiveCommand<TParam, TResult> CreateCombined<TParam, TResult>(
-                IEnumerable<ReactiveCommandBase<TParam, TResult>> childCommands,
-                IObservable<bool> canExecute = null,
-                IScheduler outputScheduler = null)
+            IEnumerable<ReactiveCommandBase<TParam, TResult>> childCommands,
+            IObservable<bool> canExecute = null,
+            IScheduler outputScheduler = null)
         {
             return new CombinedReactiveCommand<TParam, TResult>(childCommands, canExecute ?? Observable.Return(true), outputScheduler ?? RxApp.MainThreadScheduler);
         }
