@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Reactive.Linq;
 using Xunit;
 
@@ -97,7 +98,7 @@ namespace ReactiveUI.Routing.Tests
             Assert.Equal(4, output.Count);
             Assert.Equal("A", ((TestViewModel)output.Last()).SomeProp);
         }
-        
+
         [Fact]
         public void NavigateAndResetCheckNavigationStack()
         {
@@ -131,17 +132,17 @@ namespace ReactiveUI.Routing.Tests
                 .NavigateAndReset
                 .CreateCollection();
 
-            fixture.Navigate.ExecuteAsync(new TestViewModel());
+            fixture.Navigate.ExecuteAsync(new TestViewModel()).Subscribe();
             Assert.Empty(navigate);
             scheduler.Start();
             Assert.NotEmpty(navigate);
 
-            fixture.NavigateBack.ExecuteAsync();
+            fixture.NavigateBack.ExecuteAsync().Subscribe();
             Assert.Empty(navigateBack);
             scheduler.Start();
             Assert.NotEmpty(navigateBack);
 
-            fixture.NavigateAndReset.ExecuteAsync(new TestViewModel());
+            fixture.NavigateAndReset.ExecuteAsync(new TestViewModel()).Subscribe();
             Assert.Empty(navigateAndReset);
             scheduler.Start();
             Assert.NotEmpty(navigateAndReset);
