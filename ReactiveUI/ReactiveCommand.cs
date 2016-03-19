@@ -14,7 +14,7 @@ using System.Windows.Input;
 namespace ReactiveUI
 {
     /// <summary>
-    /// Encapsulates a user interaction behind a reactive interface.
+    /// Encapsulates a user action behind a reactive interface.
     /// </summary>
     /// <remarks>
     /// <para>
@@ -265,6 +265,35 @@ namespace ReactiveUI
         }
 
         /// <summary>
+        /// Creates a parameterless, cancellable <see cref="ReactiveCommand{TParam, TResult}"/> with asynchronous execution logic.
+        /// </summary>
+        /// <param name="executeAsync">
+        /// Provides a <see cref="Task"/> representing the command's asynchronous execution logic.
+        /// </param>
+        /// <param name="canExecute">
+        /// An optional observable that dictates the availability of the command for execution.
+        /// </param>
+        /// <param name="outputScheduler">
+        /// An optional scheduler that is used to surface events. Defaults to <c>RxApp.MainThreadScheduler</c>.
+        /// </param>
+        /// <returns>
+        /// The <c>ReactiveCommand</c> instance.
+        /// </returns>
+        /// <typeparam name="TResult">
+        /// The type of the command's result.
+        /// </typeparam>
+        public static ReactiveCommand<Unit, TResult> CreateFromTask<TResult>(
+            Func<CancellationToken, Task<TResult>> executeAsync,
+            IObservable<bool> canExecute = null,
+            IScheduler outputScheduler = null)
+        {
+            return CreateFromObservable(
+                () => Observable.StartAsync(ct => executeAsync(ct)),
+                canExecute,
+                outputScheduler);
+        }
+
+        /// <summary>
         /// Creates a parameterless <see cref="ReactiveCommand{TParam, TResult}"/> with asynchronous execution logic.
         /// </summary>
         /// <param name="executeAsync">
@@ -286,6 +315,32 @@ namespace ReactiveUI
         {
             return CreateFromObservable(
                 () => executeAsync().ToObservable(),
+                canExecute,
+                outputScheduler);
+        }
+
+        /// <summary>
+        /// Creates a parameterless, cancellable <see cref="ReactiveCommand{TParam, TResult}"/> with asynchronous execution logic.
+        /// </summary>
+        /// <param name="executeAsync">
+        /// Provides a <see cref="Task"/> representing the command's asynchronous execution logic.
+        /// </param>
+        /// <param name="canExecute">
+        /// An optional observable that dictates the availability of the command for execution.
+        /// </param>
+        /// <param name="outputScheduler">
+        /// An optional scheduler that is used to surface events. Defaults to <c>RxApp.MainThreadScheduler</c>.
+        /// </param>
+        /// <returns>
+        /// The <c>ReactiveCommand</c> instance.
+        /// </returns>
+        public static ReactiveCommand<Unit, Unit> CreateFromTask(
+            Func<CancellationToken, Task> executeAsync,
+            IObservable<bool> canExecute = null,
+            IScheduler outputScheduler = null)
+        {
+            return CreateFromObservable(
+                () => Observable.StartAsync(ct => executeAsync(ct)),
                 canExecute,
                 outputScheduler);
         }
@@ -355,6 +410,38 @@ namespace ReactiveUI
         }
 
         /// <summary>
+        /// Creates a <see cref="ReactiveCommand{TParam, TResult}"/> with asynchronous, cancellable execution logic that takes a parameter of type <typeparamref name="TParam"/>.
+        /// </summary>
+        /// <param name="executeAsync">
+        /// Provides a <see cref="Task"/> representing the command's asynchronous execution logic.
+        /// </param>
+        /// <param name="canExecute">
+        /// An optional observable that dictates the availability of the command for execution.
+        /// </param>
+        /// <param name="outputScheduler">
+        /// An optional scheduler that is used to surface events. Defaults to <c>RxApp.MainThreadScheduler</c>.
+        /// </param>
+        /// <returns>
+        /// The <c>ReactiveCommand</c> instance.
+        /// </returns>
+        /// <typeparam name="TParam">
+        /// The type of the parameter passed through to command execution.
+        /// </typeparam>
+        /// <typeparam name="TResult">
+        /// The type of the command's result.
+        /// </typeparam>
+        public static ReactiveCommand<TParam, TResult> CreateFromTask<TParam, TResult>(
+                Func<TParam, CancellationToken, Task<TResult>> executeAsync,
+                IObservable<bool> canExecute = null,
+                IScheduler outputScheduler = null)
+        {
+            return CreateFromObservable<TParam, TResult>(
+                param => Observable.StartAsync(ct => executeAsync(param, ct)),
+                canExecute,
+                outputScheduler);
+        }
+
+        /// <summary>
         /// Creates a <see cref="ReactiveCommand{TParam, TResult}"/> with asynchronous execution logic that takes a parameter of type <typeparamref name="TParam"/>.
         /// </summary>
         /// <param name="executeAsync">
@@ -379,6 +466,35 @@ namespace ReactiveUI
         {
             return CreateFromObservable<TParam, Unit>(
                 param => executeAsync(param).ToObservable(),
+                canExecute,
+                outputScheduler);
+        }
+
+        /// <summary>
+        /// Creates a <see cref="ReactiveCommand{TParam, TResult}"/> with asynchronous, cancellable execution logic that takes a parameter of type <typeparamref name="TParam"/>.
+        /// </summary>
+        /// <param name="executeAsync">
+        /// Provides a <see cref="Task"/> representing the command's asynchronous execution logic.
+        /// </param>
+        /// <param name="canExecute">
+        /// An optional observable that dictates the availability of the command for execution.
+        /// </param>
+        /// <param name="outputScheduler">
+        /// An optional scheduler that is used to surface events. Defaults to <c>RxApp.MainThreadScheduler</c>.
+        /// </param>
+        /// <returns>
+        /// The <c>ReactiveCommand</c> instance.
+        /// </returns>
+        /// <typeparam name="TParam">
+        /// The type of the parameter passed through to command execution.
+        /// </typeparam>
+        public static ReactiveCommand<TParam, Unit> CreateFromTask<TParam>(
+                Func<TParam, CancellationToken, Task> executeAsync,
+                IObservable<bool> canExecute = null,
+                IScheduler outputScheduler = null)
+        {
+            return CreateFromObservable<TParam, Unit>(
+                param => Observable.StartAsync(ct => executeAsync(param, ct)),
                 canExecute,
                 outputScheduler);
         }
@@ -691,7 +807,9 @@ namespace ReactiveUI
             try {
                 return this
                     .executeAsync(parameter)
-                    .Do(result => this.synchronizedExecutionInfo.OnNext(ExecutionInfo.CreateResult(result)))
+                    .Do(
+                        result => this.synchronizedExecutionInfo.OnNext(ExecutionInfo.CreateResult(result)),
+                        () => this.synchronizedExecutionInfo.OnNext(ExecutionInfo.CreateEnded()))
                     .Catch<TResult, Exception>(ex => {
                         this.synchronizedExecutionInfo.OnNext(ExecutionInfo.CreateFail());
                         exceptions.OnNext(ex);
@@ -716,7 +834,8 @@ namespace ReactiveUI
         {
             Begin,
             EndWithResult,
-            EndWithException
+            EndWithException,
+            Ended
         }
 
         private struct ExecutionInfo
@@ -753,6 +872,11 @@ namespace ReactiveUI
             public static ExecutionInfo CreateFail()
             {
                 return new ExecutionInfo(ExecutionDemarcation.EndWithException, default(TResult));
+            }
+
+            public static ExecutionInfo CreateEnded()
+            {
+                return new ExecutionInfo(ExecutionDemarcation.Ended, default(TResult));
             }
         }
     }
