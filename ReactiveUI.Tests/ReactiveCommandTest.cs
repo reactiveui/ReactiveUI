@@ -183,6 +183,21 @@ namespace ReactiveUI.Tests
         }
 
         [Fact]
+        public void ExecuteOnlyExecutesOnceRegardlessOfNumberOfSubscribers()
+        {
+            var executionCount = 0;
+            var fixture = ReactiveCommand.Create(() => { ++executionCount; });
+            var execute = fixture.Execute();
+
+            execute.Subscribe();
+            execute.Subscribe();
+            execute.Subscribe();
+            execute.Subscribe();
+
+            Assert.Equal(1, executionCount);
+        }
+
+        [Fact]
         public void ExecutePassesThroughParameter()
         {
             var parameters = new List<int>();
