@@ -146,13 +146,11 @@ namespace ReactiveUI
         /// you to collate all the disposables to be cleaned up during deactivation.</param>
         public static void WhenActivated(this ISupportsActivation This, Action<CompositeDisposable> block)
         {
-            This
-                .WhenActivated(
-                    () => {
-                        var d = new CompositeDisposable();
-                        block(d);
-                        return new[] { d };
-                    });
+            This.Activator.addActivationBlock(() => {
+                var d = new CompositeDisposable();
+                block(d);
+                return new[] { d };
+            });
         }
 
         /// <summary>
@@ -252,14 +250,11 @@ namespace ReactiveUI
         /// <returns>A Disposable that deactivates this registration.</returns>
         public static IDisposable WhenActivated(this IActivatable This, Action<CompositeDisposable> block, IViewFor view = null)
         {
-            return This
-                .WhenActivated(
-                    () => {
-                        var d = new CompositeDisposable();
-                        block(d);
-                        return new[] { d };
-                    },
-                    view);
+            return This.WhenActivated(() => {
+                var d = new CompositeDisposable();
+                block(d);
+                return new[] { d };
+            }, view);
         }
 
         static IDisposable handleViewActivation(Func<IEnumerable<IDisposable>> block, IObservable<bool> activation)
