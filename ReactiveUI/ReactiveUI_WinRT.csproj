@@ -43,7 +43,7 @@
     <GenerateLibraryLayout>true</GenerateLibraryLayout>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="AddTo.cs" />
+    <Compile Include="DisposableMixins.cs" />
     <Compile Include="ExpressionMixins.cs" />
     <Compile Include="ExpressionRewriter.cs" />
     <Compile Include="Platform\Registrations.cs" />
