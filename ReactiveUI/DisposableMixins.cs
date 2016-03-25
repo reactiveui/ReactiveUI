@@ -1,9 +1,9 @@
 ﻿namespace System.Reactive.Disposables
 {
-    public static class CompositeDisposableExtensions
+    public static class DisposableMixins
     {
         /// <summary>
-        /// Adds a disposable to the specified <see cref="CompositeDisposable"/>.
+        /// Ensures the provided disposable is disposed with the specified <see cref="CompositeDisposable"/>.
         /// </summary>
         /// <typeparam name="T">
         /// The type of the disposable.
@@ -17,7 +17,7 @@
         /// <returns>
         /// The disposable.
         /// </returns>
-        public static T AddTo<T>(this T @this, CompositeDisposable compositeDisposable)
+        public static T DisposeWith<T>(this T @this, CompositeDisposable compositeDisposable)
             where T : IDisposable
         {
             compositeDisposable.Add(@this);
