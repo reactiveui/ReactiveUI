@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Reactive.Linq;
 using Xunit;
 
@@ -42,17 +43,17 @@ namespace ReactiveUI.Routing.Tests
             var fixture = new RoutingState();
 
             Assert.False(await fixture.NavigateBack.CanExecute.FirstAsync());
-            await fixture.Navigate.ExecuteAsync(new TestViewModel());
+            await fixture.Navigate.Execute(new TestViewModel());
 
             Assert.Equal(1, fixture.NavigationStack.Count);
             Assert.False(await fixture.NavigateBack.CanExecute.FirstAsync());
 
-            await fixture.Navigate.ExecuteAsync(new TestViewModel());
+            await fixture.Navigate.Execute(new TestViewModel());
 
             Assert.Equal(2, fixture.NavigationStack.Count);
             Assert.True(await fixture.NavigateBack.CanExecute.FirstAsync());
 
-            await fixture.NavigateBack.ExecuteAsync();
+            await fixture.NavigateBack.Execute();
 
             Assert.Equal(1, fixture.NavigationStack.Count);
         }
@@ -65,14 +66,14 @@ namespace ReactiveUI.Routing.Tests
 
             Assert.Equal(1, output.Count);
 
-            fixture.Navigate.ExecuteAsync(new TestViewModel() { SomeProp = "A" });
+            fixture.Navigate.Execute(new TestViewModel() { SomeProp = "A" });
             Assert.Equal(2, output.Count);
 
-            fixture.Navigate.ExecuteAsync(new TestViewModel() { SomeProp = "B" });
+            fixture.Navigate.Execute(new TestViewModel() { SomeProp = "B" });
             Assert.Equal(3, output.Count);
             Assert.Equal("B", ((TestViewModel)output.Last()).SomeProp);
 
-            fixture.NavigateBack.ExecuteAsync();
+            fixture.NavigateBack.Execute();
             Assert.Equal(4, output.Count);
             Assert.Equal("A", ((TestViewModel)output.Last()).SomeProp);
         }
@@ -86,18 +87,18 @@ namespace ReactiveUI.Routing.Tests
 
             Assert.Equal(1, output.Count);
 
-            fixture.Router.Navigate.ExecuteAsync(new TestViewModel() { SomeProp = "A" });
+            fixture.Router.Navigate.Execute(new TestViewModel() { SomeProp = "A" });
             Assert.Equal(2, output.Count);
 
-            fixture.Router.Navigate.ExecuteAsync(new TestViewModel() { SomeProp = "B" });
+            fixture.Router.Navigate.Execute(new TestViewModel() { SomeProp = "B" });
             Assert.Equal(3, output.Count);
             Assert.Equal("B", ((TestViewModel)output.Last()).SomeProp);
 
-            fixture.Router.NavigateBack.ExecuteAsync();
+            fixture.Router.NavigateBack.Execute();
             Assert.Equal(4, output.Count);
             Assert.Equal("A", ((TestViewModel)output.Last()).SomeProp);
         }
-        
+
         [Fact]
         public void NavigateAndResetCheckNavigationStack()
         {
@@ -107,7 +108,7 @@ namespace ReactiveUI.Routing.Tests
 
             Assert.False(fixture.Router.NavigationStack.Any());
 
-            fixture.Router.NavigateAndReset.ExecuteAsync(viewModel);
+            fixture.Router.NavigateAndReset.Execute(viewModel);
 
             Assert.True(fixture.Router.NavigationStack.Count == 1);
             Assert.True(object.ReferenceEquals(fixture.Router.NavigationStack.First(), viewModel));
@@ -131,17 +132,17 @@ namespace ReactiveUI.Routing.Tests
                 .NavigateAndReset
                 .CreateCollection();
 
-            fixture.Navigate.ExecuteAsync(new TestViewModel());
+            fixture.Navigate.Execute(new TestViewModel()).Subscribe();
             Assert.Empty(navigate);
             scheduler.Start();
             Assert.NotEmpty(navigate);
 
-            fixture.NavigateBack.ExecuteAsync();
+            fixture.NavigateBack.Execute().Subscribe();
             Assert.Empty(navigateBack);
             scheduler.Start();
             Assert.NotEmpty(navigateBack);
 
-            fixture.NavigateAndReset.ExecuteAsync(new TestViewModel());
+            fixture.NavigateAndReset.Execute(new TestViewModel()).Subscribe();
             Assert.Empty(navigateAndReset);
             scheduler.Start();
             Assert.NotEmpty(navigateAndReset);

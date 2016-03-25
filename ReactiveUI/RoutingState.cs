@@ -111,7 +111,7 @@ namespace ReactiveUI
 
             NavigateAndReset = ReactiveCommand.CreateFromObservable<IRoutableViewModel, IRoutableViewModel>(x => {
                 NavigationStack.Clear();
-                return Navigate.ExecuteAsync(x);
+                return Navigate.Execute(x);
             },
             outputScheduler: scheduler);
             
