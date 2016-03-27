@@ -44,7 +44,7 @@
     <DocumentationFile>bin\Release\uap10.0\ReactiveUI.Events.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <NuSpecFile Include="..\NuGet\ReactiveUI-Events\ReactiveUI-Events.nuspec">
+    <NuSpecFile Include="..\ReactiveUI-Events.nuspec">
       <Visible>False</Visible>
     </NuSpecFile>
   </ItemGroup>
