@@ -14,8 +14,8 @@
     <FileAlignment>512</FileAlignment>
     <AndroidResgenFile>Resources\Resource.Designer.cs</AndroidResgenFile>
     <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
-    <AndroidUseLatestPlatformSdk />
-    <TargetFrameworkVersion>v4.0.3</TargetFrameworkVersion>
+    <AndroidUseLatestPlatformSdk>True</AndroidUseLatestPlatformSdk>
+    <TargetFrameworkVersion>v6.0</TargetFrameworkVersion>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
   </PropertyGroup>
@@ -41,7 +41,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Mono.Android" />
-    <Reference Include="Mono.Android.Support.v4" />
     <Reference Include="mscorlib" />
     <Reference Include="Splat, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -70,32 +69,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\CommonAssemblyInfo.cs">
-      <Link>Properties\CommonAssemblyInfo.cs</Link>
-    </Compile>
-    <Compile Include="Events_Android.cs" />
+    <Compile Include="..\CommonAssemblyInfo.cs" />
+    <Compile Include="Events_ANDROID.cs" />
     <Compile Include="SingleAwaitSubject.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.ReactiveUI.Events_Android.config" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
-  <PropertyGroup>
-    <PreBuildEvent>%25SystemRoot%25\Microsoft.NET\Framework\v4.0.30319\msbuild.exe /nologo /v:q /p:Configuration=Release "$(ProjectDir)EventBuilder.csproj"
-"$(ProjectDir)EventBuilder.exe" "C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\MonoAndroid\v4.0.3\Mono.Android.dll" "C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\MonoAndroid\v4.0.3\Mono.Android.Support.v13.dll" "$(ProjectDir)Events.mustache" &gt; "$(ProjectDir)Events_Android.cs"
-del "$(ProjectDir)EventBuilder.exe" 1&gt; nul 2&gt;&amp;1
-del "$(ProjectDir)EventBuilder.pdb" 1&gt; nul 2&gt;&amp;1
-del "$(ProjectDir)Nustache.Core.dll" 1&gt; nul 2&gt;&amp;1
-del "$(ProjectDir)Mono.Cecil.dll" 1&gt; nul 2&gt;&amp;1
-del "$(ProjectDir)Mono.Cecil.pdb" 1&gt; nul 2&gt;&amp;1
-    </PreBuildEvent>
-  </PropertyGroup>
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
 </Project>

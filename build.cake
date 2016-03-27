@@ -62,7 +62,6 @@ Task ("BuildEventBuilder")
 
     if(isRunningOnUnix)
     {
-
         throw new NotImplementedException("Building events on OSX is not implemented yet.");
         // run mdtool
     }
@@ -126,8 +125,8 @@ Task ("GenerateEvents")
             }
         };
 
-        //generate("android");
-        //generate("ios");
+        generate("android");
+        generate("ios");
 
         //Warning("Generating events for '{0}' is not implemented on Windows yet.", "MAC");
         //generate("mac");
@@ -135,7 +134,7 @@ Task ("GenerateEvents")
         //generate("net45");
         //generate("winrt");
 
-        //generate("uwp");
+        generate("uwp");
         //generate("wp8");
         //generate("wpa81");
         //generate("xamforms");
@@ -154,30 +153,30 @@ Task ("BuildEvents")
     {
         Action<string> build = (string filename) =>
         {
-            var project = System.IO.Path.Combine("./ReactiveUI.Events", filename);
+            var solution = System.IO.Path.Combine("./ReactiveUI.Events", filename);
+            NuGetRestore (solution);
 
-            MSBuild(project, new MSBuildSettings()
+            MSBuild(solution, new MSBuildSettings()
                 .SetConfiguration(configuration)
-                .WithProperty("TreatWarningsAsErrors", "True")
+                .WithProperty("NoWarn", "1591")
+                .WithProperty("TreatWarningsAsErrors", "False")
                 .SetVerbosity(Verbosity.Minimal)
                 .SetNodeReuse(false));
         };
 
-        //build("ReactiveUI.Events_Android.csproj");
-        build("ReactiveUI.Events_iOS.csproj");
+        build("ReactiveUI.Events_Android.sln");
+        build("ReactiveUI.Events_iOS.sln");
 
-        Warning("Building events for '{0}' is not implemented on Windows yet.", "MAC");
+        //Warning("Building events for '{0}' is not implemented on Windows yet.", "MAC");
         //build("ReactiveUI.Events_MAC.csproj");
 
         //build("ReactiveUI.Events_NET45.csproj");
         //build("ReactiveUI.Events_WINRT.csproj");
 
-        //build("ReactiveUI.Events_UWP.csproj");
+        build("ReactiveUI.Events_UWP.sln");
         //build("ReactiveUI.Events_WP8.csproj");
         //build("ReactiveUI.Events_WPA81.csproj");
         //build("ReactiveUI.Events_XamForms.csproj");
-
-
     }
 });
 
@@ -192,7 +191,7 @@ Task ("PackageEvents")
 Task ("UpdateAssemblyInfo")
     .Does (() =>
 {
-    var file = "./CommonAssemblySolutionInfo.cs";
+    var file = "./CommonAssemblyInfo.cs";
 
     CreateAssemblyInfo(file, new AssemblyInfoSettings {
         Product = "ReactiveUI",
