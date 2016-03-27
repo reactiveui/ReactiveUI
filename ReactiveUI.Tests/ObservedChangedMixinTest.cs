@@ -21,7 +21,7 @@ namespace ReactiveUI.Tests
 
             (new TestScheduler()).With(sched => {
                 var fixture = new TestFixture();
-                
+
                 // ...whereas ObservableForProperty *is* guaranteed to.
                 fixture.ObservableForProperty(x => x.IsOnlyOneWord).Subscribe(x => {
                     output.Add(x.GetValue());
@@ -135,7 +135,7 @@ namespace ReactiveUI.Tests
         public void BindToStackOverFlowTest()
         {
             // Before the code changes packed in the same commit
-            // as this test the test would go into an infinite 
+            // as this test the test would go into an infinite
             // event storm. The critical issue is that the
             // property StackOverflowTrigger will clone the
             // value before setting it.
@@ -150,7 +150,7 @@ namespace ReactiveUI.Tests
 
                 source.BindTo(fixturea, x => x.StackOverflowTrigger);
             });
-            
+
         }
     }
 
@@ -168,7 +168,7 @@ namespace ReactiveUI.Tests
         {
             foreach (var i in Enumerable.Range(1, 7)) {
                 viewmodel.NewPlayerName = "Player" + i;
-                viewmodel.AddPlayer.ExecuteAsync();
+                viewmodel.AddPlayer.Execute();
                 Assert.Equal(i, viewmodel.Players.Count);
             }
         }
