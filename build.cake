@@ -132,11 +132,10 @@ Task ("GenerateEvents")
         //generate("mac");
 
         generate("net45");
-        //generate("winrt");
 
         generate("uwp");
         //generate("wp8");
-        //generate("wpa81");
+        generate("wpa81");
         generate("xamforms");
     }
 });
@@ -173,11 +172,10 @@ Task ("BuildEvents")
         //build("ReactiveUI.Events_MAC.sln");
 
         build("ReactiveUI.Events_NET45.sln");
-        //build("ReactiveUI.Events_WINRT.csproj");
 
         build("ReactiveUI.Events_UWP.sln");
         //build("ReactiveUI.Events_WP8.csproj");
-        //build("ReactiveUI.Events_WPA81.csproj");
+        build("ReactiveUI.Events_WPA81.sln");
         build("ReactiveUI.Events_XamForms.sln");
     }
 });
