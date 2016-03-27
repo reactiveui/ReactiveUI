@@ -9,6 +9,7 @@
 //////////////////////////////////////////////////////////////////////
 
 #tool GitVersion.CommandLine
+#tool GitLink
 
 //////////////////////////////////////////////////////////////////////
 // ARGUMENTS
@@ -20,6 +21,9 @@ var configuration = Argument("configuration", "Release");
 //////////////////////////////////////////////////////////////////////
 // PREPARATION
 //////////////////////////////////////////////////////////////////////
+
+// should MSBuild & GitLink treat any errors as warnings.
+var treatWarningsAsErrors = false;
 
 // Get whether or not this is a local build.
 var local = BuildSystem.IsLocalBuild;
@@ -89,6 +93,15 @@ Action<string, string> Package = (nuspec, basePath) =>
     });
 };
 
+Action<string> SourceLink = (solutionFileName) =>
+{
+    GitLink("./", new GitLinkSettings() {
+        RepositoryUrl = "https://github.com/reactiveui/ReactiveUI",
+        SolutionFileName = solutionFileName,
+        ErrorsAsWarnings = treatWarningsAsErrors,
+    });
+};
+
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP / TEARDOWN
@@ -120,11 +133,15 @@ Task("BuildEventBuilder")
     }
     else
     {
-        MSBuild("./EventBuilder.sln", new MSBuildSettings()
+        var solution = "./EventBuilder.sln";
+
+        MSBuild(solution, new MSBuildSettings()
             .SetConfiguration(configuration)
-            .WithProperty("TreatWarningsAsErrors", "True")
+            .WithProperty("TreatWarningsAsErrors", treatWarningsAsErrors.ToString())
             .SetVerbosity(Verbosity.Minimal)
             .SetNodeReuse(false));
+
+       SourceLink(solution);
     }
 });
 
@@ -219,10 +236,12 @@ Task("BuildEvents")
             MSBuild(solution, new MSBuildSettings()
                 .SetConfiguration(configuration)
                 .SetMSBuildPlatform(platform)
-                .WithProperty("NoWarn", "1591")
-                .WithProperty("TreatWarningsAsErrors", "False")
+                .WithProperty("NoWarn", "1591") // ignore missing XML doc warnings
+                .WithProperty("TreatWarningsAsErrors", treatWarningsAsErrors.ToString())
                 .SetVerbosity(Verbosity.Minimal)
                 .SetNodeReuse(false));
+
+            SourceLink(solution);
         };
 
         build("ReactiveUI.Events_Android.sln", MSBuildPlatform.Automatic);
@@ -277,8 +296,8 @@ Task("RestorePackages").Does (() =>
 });
 
 Task("Package")
-  .IsDependentOn("PackageEvents")
-  .Does (() =>
+    .IsDependentOn("PackageEvents")
+    .Does (() =>
 {
     if(isRunningOnUnix)
     {
