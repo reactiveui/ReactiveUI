@@ -32,11 +32,6 @@
     <WarningLevel>4</WarningLevel>
     <CodeAnalysisRuleSet>ExtendedCorrectnessRules.ruleset</CodeAnalysisRuleSet>
     <RunCodeAnalysis>false</RunCodeAnalysis>
-    <CustomCommands>
-      <CustomCommands>
-        <Command type="BeforeBuild" command="/usr/bin/env ruby ${ProjectDir}/generate_events.rb /Library/Frameworks/Xamarin.Mac.framework/Versions/Current/lib/mono/XamMac.dll" />
-      </CustomCommands>
-    </CustomCommands>
     <EnableCodeSigning>false</EnableCodeSigning>
     <CreatePackage>false</CreatePackage>
     <EnablePackageSigning>false</EnablePackageSigning>
@@ -89,18 +84,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Events.cs" />
+    <Compile Include="Events_MAC.cs" />
     <Compile Include="SingleAwaitSubject.cs" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
 </Project>

@@ -80,7 +80,7 @@
     <Compile Include="..\CommonAssemblyInfo.cs">
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Events.cs" />
+    <Compile Include="Events_NET45.cs" />
     <Compile Include="SingleAwaitSubject.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <AppDesigner Include="Properties\" />
@@ -92,21 +92,4 @@
     <None Include="packages.ReactiveUI.Events_Net45.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PreBuildEvent>%25SystemRoot%25\Microsoft.NET\Framework\v4.0.30319\msbuild.exe /nologo /v:q /p:Configuration=Release "$(ProjectDir)EventBuilder.csproj"
-"$(ProjectDir)EventBuilder.exe" "C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5\WindowsBase.dll" "C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5\PresentationCore.dll" "C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5\PresentationFramework.dll" "$(ProjectDir)Events.mustache" &gt; "$(ProjectDir)Events.cs"
-del "$(ProjectDir)EventBuilder.exe" 1&gt; nul 2&gt;&amp;1
-del "$(ProjectDir)EventBuilder.pdb" 1&gt; nul 2&gt;&amp;1
-del "$(ProjectDir)Nustache.Core.dll" 1&gt; nul 2&gt;&amp;1
-del "$(ProjectDir)Mono.Cecil.dll" 1&gt; nul 2&gt;&amp;1
-del "$(ProjectDir)Mono.Cecil.pdb" 1&gt; nul 2&gt;&amp;1
-    </PreBuildEvent>
-  </PropertyGroup>
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
 </Project>
