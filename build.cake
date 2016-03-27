@@ -310,11 +310,11 @@ Task("Package")
 });
 
 Task("Publish")
-  .IsDependentOn("Package")
-  .WithCriteria(() => !local)
-  .WithCriteria(() => !isPullRequest)
-  .WithCriteria(() => isMainReactiveUIRepo)
-  .Does (() =>
+    .IsDependentOn("Package")
+    .WithCriteria(() => !local)
+    .WithCriteria(() => !isPullRequest)
+    .WithCriteria(() => isMainReactiveUIRepo)
+    .Does (() =>
 {
     if(isRunningOnUnix)
     {
@@ -333,13 +333,21 @@ Task("Publish")
         foreach(var package in new[] { "ReactiveUI-Events" })
         {
             // only push the package which was created during this build run.
-            var packagePath = artifactDirectory + File(string.Concat(package, ".", semVersion, "*.nupkg"));
+            var packagePath = artifactDirectory + File(string.Concat(package, ".", semVersion, ".nupkg"));
+            var symbolsPath = artifactDirectory + File(string.Concat(package, ".", semVersion, ".symbols.nupkg"));
 
             // Push the package.
             NuGetPush(packagePath, new NuGetPushSettings {
                 Source = "https://www.myget.org/F/reactiveui/api/v2/package",
                 ApiKey = apiKey
             });
+
+            // Push the symbols
+            NuGetPush(symbolsPath, new NuGetPushSettings {
+                Source = "https://www.myget.org/F/reactiveui/api/v2/package",
+                ApiKey = apiKey
+            });
+
         }
     }
 });
