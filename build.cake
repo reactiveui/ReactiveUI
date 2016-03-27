@@ -87,9 +87,10 @@ Action<string, string> Package = (nuspec, basePath) =>
         Tags                     = new [] {"mvvm", "reactiveui", "Rx", "Reactive Extensions", "Observable", "LINQ", "Events", "xamarin", "android", "ios", "forms", "monodroid", "monotouch", "xamarin.android", "xamarin.ios", "xamarin.forms", "wpf", "winforms", "uwp", "winrt", "net45", "netcore", "wp", "wpdev", "windowsphone", "windowsstore"},
         ReleaseNotes             = new List<string>(releaseNotes.Notes),
 
-        Verbosity = NuGetVerbosity.Detailed,
-        OutputDirectory = artifactDirectory,
-        BasePath = basePath,
+        Symbols                  = true,
+        Verbosity                = NuGetVerbosity.Detailed,
+        OutputDirectory          = artifactDirectory,
+        BasePath                 = basePath,
     });
 };
 
@@ -323,14 +324,16 @@ Task("Publish")
     {
         // Resolve the API key.
         var apiKey = EnvironmentVariable("MYGET_API_KEY");
-        if(string.IsNullOrEmpty(apiKey)) {
+        if (string.IsNullOrEmpty(apiKey))
+        {
             throw new InvalidOperationException("Could not resolve MyGet API key.");
         }
 
+        // only push whitelisted packages.
         foreach(var package in new[] { "ReactiveUI-Events" })
         {
-            // Get the path to the package.
-            var packagePath = artifactDirectory + File(string.Concat(package, ".", semVersion, ".nupkg"));
+            // only push the package which was created during this build run.
+            var packagePath = artifactDirectory + File(string.Concat(package, ".", semVersion, "*.nupkg"));
 
             // Push the package.
             NuGetPush(packagePath, new NuGetPushSettings {
