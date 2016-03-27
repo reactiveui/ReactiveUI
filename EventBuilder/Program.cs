@@ -101,8 +101,8 @@ namespace EventBuilder
                             platform = new UWP();
                             break;
 
-                        case AutoPlatform.WP8:
-                            platform = new WP8();
+                        case AutoPlatform.WP81:
+                            platform = new WP81();
                             break;
 
                         case AutoPlatform.WPA81:
