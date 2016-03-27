@@ -137,7 +137,7 @@ Task ("GenerateEvents")
         generate("uwp");
         //generate("wp8");
         //generate("wpa81");
-        //generate("xamforms");
+        generate("xamforms");
     }
 });
 
@@ -154,6 +154,8 @@ Task ("BuildEvents")
         Action<string> build = (string filename) =>
         {
             var solution = System.IO.Path.Combine("./ReactiveUI.Events", filename);
+
+            // handle dependencies specified in project.json or project.config
             NuGetRestore (solution);
 
             MSBuild(solution, new MSBuildSettings()
@@ -176,7 +178,7 @@ Task ("BuildEvents")
         build("ReactiveUI.Events_UWP.sln");
         //build("ReactiveUI.Events_WP8.csproj");
         //build("ReactiveUI.Events_WPA81.csproj");
-        //build("ReactiveUI.Events_XamForms.csproj");
+        build("ReactiveUI.Events_XamForms.sln");
     }
 });
 
