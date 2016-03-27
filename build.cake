@@ -54,7 +54,7 @@ Information("epoch={0}", epoch);
 var gitSha = GitVersion().Sha;
 Information("gitSha={0}", gitSha);
 
-var semVersion = local ? string.Format("{0}.{1}", version, epoch) : string.Format("{0}.{1}-{2}", version, epoch);
+var semVersion = local ? string.Format("{0}.{1}", version, epoch) : string.Format("{0}.{1}", version, epoch);
 Information("semVersion={0}", semVersion);
 
 // Define directories.
