@@ -70,9 +70,21 @@ Action<string, string> Package = (nuspec, basePath) =>
     Information("Packaging {0} using {1} as the BasePath.", nuspec, basePath);
 
     NuGetPack(nuspec, new NuGetPackSettings {
+        Authors                  = new [] {"ReactiveUI contributors"},
+        Owners                   = new [] {"xpaulbettsx", "flagbug", "ghuntley", "haacked", "kent.boogaart", "mteper", "moswald", "niik", "onovotny", "rdavisau", "shiftkey"},
+
+        ProjectUrl               = new Uri("http://www.reactiveui.net"),
+        IconUrl                  = new Uri("https://i.imgur.com/7WDbqSy.png"),
+        LicenseUrl               = new Uri("https://opensource.org/licenses/ms-pl.html"),
+        Copyright                = "Copyright (c) ReactiveUI and contributors",
+        RequireLicenseAcceptance = false,
+
+        Version                  = semVersion,
+        Tags                     = new [] {"mvvm", "reactiveui", "Rx", "Reactive Extensions", "Observable", "LINQ", "Events", "xamarin", "android", "ios", "forms", "monodroid", "monotouch", "xamarin.android", "xamarin.ios", "xamarin.forms", "wpf", "winforms", "uwp", "winrt", "net45", "netcore", "wp", "wpdev", "windowsphone", "windowsstore"},
+        ReleaseNotes             = new List<string>(releaseNotes.Notes),
+
         Verbosity = NuGetVerbosity.Detailed,
         OutputDirectory = artifactDirectory,
-        Version = semVersion,
         BasePath = basePath,
     });
 };
