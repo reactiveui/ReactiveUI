@@ -32,10 +32,25 @@ var version = releaseNotes.Version.ToString();
 var semVersion = local ? version : (version + string.Concat("-sha-", gitSha));
 
 // Define directories.
-
+var artifactDirectory = "./artifacts/";
 
 // Define global marcos.
 Action Abort = () => { throw new Exception("a non-recoverable fatal error occurred."); };
+
+Action<string, string> Package = (nuspec, basePath) =>
+{
+    CreateDirectory(artifactDirectory);
+
+    Information("Packaging {0} using {1} as the BasePath.", nuspec, basePath);
+
+    NuGetPack(nuspec, new NuGetPackSettings {
+        Verbosity = NuGetVerbosity.Detailed,
+        OutputDirectory = artifactDirectory,
+        Version = version,
+        BasePath = basePath,
+    });
+};
+
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP / TEARDOWN
@@ -116,7 +131,7 @@ Task ("GenerateEvents")
                     Abort();
                 }
 
-                var directory = "ReactiveUI.Events/";
+                var directory = "src/ReactiveUI.Events/";
                 var filename = String.Format("Events_{0}.cs", platform);
                 var output = System.IO.Path.Combine(directory, filename);
 
@@ -156,7 +171,7 @@ Task ("BuildEvents")
         // remove the .SetMSBuildPlatform method and simply the invoking methods.
         Action<string, MSBuildPlatform> build = (filename, platform) =>
         {
-            var solution = System.IO.Path.Combine("./ReactiveUI.Events", filename);
+            var solution = System.IO.Path.Combine("./src/ReactiveUI.Events/", filename);
 
             // UWP (project.json) needs to be restored before it will build.
             NuGetRestore (solution);
@@ -188,18 +203,17 @@ Task ("BuildEvents")
     }
 });
 
-
 Task ("PackageEvents")
     .IsDependentOn("BuildEvents")
     .Does (() =>
 {
-
+    Package("./src/ReactiveUI-Events.nuspec", "./src/ReactiveUI.Events");
 });
 
 Task ("UpdateAssemblyInfo")
     .Does (() =>
 {
-    var file = "./CommonAssemblyInfo.cs";
+    var file = "./src/CommonAssemblyInfo.cs";
 
     CreateAssemblyInfo(file, new AssemblyInfoSettings {
         Product = "ReactiveUI",
