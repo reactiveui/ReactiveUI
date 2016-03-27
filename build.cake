@@ -1,4 +1,14 @@
+//////////////////////////////////////////////////////////////////////
+// ADDINS
+//////////////////////////////////////////////////////////////////////
+
 #addin "Cake.FileHelpers"
+
+//////////////////////////////////////////////////////////////////////
+// TOOLS
+//////////////////////////////////////////////////////////////////////
+
+#tool GitVersion.CommandLine
 
 //////////////////////////////////////////////////////////////////////
 // ARGUMENTS
@@ -13,23 +23,39 @@ var configuration = Argument("configuration", "Release");
 
 // Get whether or not this is a local build.
 var local = BuildSystem.IsLocalBuild;
+Information("local={0}", local);
+
 var isRunningOnUnix = IsRunningOnUnix();
+Information("isRunningOnUnix={0}", isRunningOnUnix);
+
 var isRunningOnWindows = IsRunningOnWindows();
+Information("isRunningOnWindows={0}", isRunningOnWindows);
 
 //var isRunningOnBitrise = Bitrise.IsRunningOnBitrise;
-//var isRunningOnAppVeyor = AppVeyor.IsRunningOnAppVeyor;
-//var isPullRequest = AppVeyor.Environment.PullRequest.IsPullRequest ? Bitrise.Environment.PullRequst.IsPullRequest;
-//var isMainReactiveUIRepo = StringComparer.OrdinalIgnoreCase.Equals("reactiveui/reactiveui", AppVeyor.Environment.Repository.Name) StringComparer.OrdinalIgnoreCase.Equals("reactiveui/reactiveui", Bitrise.Environment.Repository.Name);
+var isRunningOnAppVeyor = AppVeyor.IsRunningOnAppVeyor;
+Information("isRunningOnAppVeyor={0}", isRunningOnAppVeyor);
+
+var isPullRequest = AppVeyor.Environment.PullRequest.IsPullRequest;
+Information("isPullRequest={0}", isPullRequest);
+
+var isMainReactiveUIRepo = StringComparer.OrdinalIgnoreCase.Equals("reactiveui/reactiveui", AppVeyor.Environment.Repository.Name);
+Information("isMainReactiveUIRepo={0}", isMainReactiveUIRepo);
 
 // Parse release notes.
 var releaseNotes = ParseReleaseNotes("RELEASENOTES.md");
 
 // Get version.
-//var gitSha = GitVersion().Sha;
-var gitSha = "e3ff88554778db547537cc75dce32200e906e8c6";
-var buildNumber = AppVeyor.Environment.Build.Number;
 var version = releaseNotes.Version.ToString();
-var semVersion = local ? version : (version + string.Concat("-sha-", gitSha));
+Information("version={0}", version);
+
+var epoch = (long)(DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalSeconds;
+Information("epoch={0}", epoch);
+
+var gitSha = GitVersion().Sha;
+Information("gitSha={0}", gitSha);
+
+var semVersion = local ? string.Format("{0}.{1}", version, epoch) : string.Format("{0}.{1}-{2}", version, epoch);
+Information("semVersion={0}", semVersion);
 
 // Define directories.
 var artifactDirectory = "./artifacts/";
@@ -46,7 +72,7 @@ Action<string, string> Package = (nuspec, basePath) =>
     NuGetPack(nuspec, new NuGetPackSettings {
         Verbosity = NuGetVerbosity.Detailed,
         OutputDirectory = artifactDirectory,
-        Version = version,
+        Version = semVersion,
         BasePath = basePath,
     });
 };
@@ -69,7 +95,7 @@ Teardown(() =>
 // TASKS
 //////////////////////////////////////////////////////////////////////
 
-Task ("BuildEventBuilder")
+Task("BuildEventBuilder")
     .IsDependentOn("RestorePackages")
     .IsDependentOn("UpdateAssemblyInfo")
     .Does (() =>
@@ -90,7 +116,7 @@ Task ("BuildEventBuilder")
     }
 });
 
-Task ("GenerateEvents")
+Task("GenerateEvents")
     .IsDependentOn("BuildEventBuilder")
     .Does (() =>
 {
@@ -156,7 +182,7 @@ Task ("GenerateEvents")
     }
 });
 
-Task ("BuildEvents")
+Task("BuildEvents")
     .IsDependentOn("GenerateEvents")
     .Does (() =>
 {
@@ -203,14 +229,22 @@ Task ("BuildEvents")
     }
 });
 
-Task ("PackageEvents")
+Task("PackageEvents")
     .IsDependentOn("BuildEvents")
     .Does (() =>
 {
     Package("./src/ReactiveUI-Events.nuspec", "./src/ReactiveUI.Events");
 });
 
-Task ("UpdateAssemblyInfo")
+Task("UpdateAppVeyorBuildNumber")
+    .WithCriteria(() => isRunningOnAppVeyor)
+    .Does(() =>
+{
+    AppVeyor.UpdateBuildVersion(semVersion);
+});
+
+Task("UpdateAssemblyInfo")
+    .IsDependentOn("UpdateAppVeyorBuildNumber")
     .Does (() =>
 {
     var file = "./src/CommonAssemblyInfo.cs";
@@ -224,17 +258,55 @@ Task ("UpdateAssemblyInfo")
     });
 });
 
-Task ("RestorePackages").Does (() =>
+Task("RestorePackages").Does (() =>
 {
     NuGetRestore ("./EventBuilder.sln");
     NuGetRestore ("./ReactiveUI.sln");
 });
 
-Task ("Package").Does (() =>
+Task("Package")
+  .IsDependentOn("PackageEvents")
+  .Does (() =>
 {
     if(isRunningOnUnix)
     {
-        // Abort abort, packaging only works on Windows!
+        throw new NotImplementedException("Packaging on OSX is not implemented yet.");    }
+    else
+    {
+
+    }
+});
+
+Task("Publish")
+  .IsDependentOn("Package")
+  .WithCriteria(() => !local)
+  .WithCriteria(() => !isPullRequest)
+  .WithCriteria(() => isMainReactiveUIRepo)
+  .Does (() =>
+{
+    if(isRunningOnUnix)
+    {
+        throw new NotImplementedException("Packaging on OSX is not implemented yet.");
+    }
+    else
+    {
+        // Resolve the API key.
+        var apiKey = EnvironmentVariable("MYGET_API_KEY");
+        if(string.IsNullOrEmpty(apiKey)) {
+            throw new InvalidOperationException("Could not resolve MyGet API key.");
+        }
+
+        foreach(var package in new[] { "ReactiveUI-Events" })
+        {
+            // Get the path to the package.
+            var packagePath = artifactDirectory + File(string.Concat(package, ".", semVersion, ".nupkg"));
+
+            // Push the package.
+            NuGetPush(packagePath, new NuGetPushSettings {
+                Source = "https://www.myget.org/F/reactiveui/api/v2/package",
+                ApiKey = apiKey
+            });
+        }
     }
 });
 
@@ -247,4 +319,4 @@ Task ("Package").Does (() =>
 // EXECUTION
 //////////////////////////////////////////////////////////////////////
 
-RunTarget("PackageEvents");
+RunTarget("Publish");
