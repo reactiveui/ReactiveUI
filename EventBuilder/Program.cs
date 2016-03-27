@@ -37,7 +37,7 @@ namespace EventBuilder
             if (Debugger.IsAttached)
             {
                 //args = "--help ".Split(' ');
-                args = "--platform=ios".Split(' ');
+                args = "--platform=net45".Split(' ');
                 //args = new[]
                 //{
                 //    "--platform=none",
@@ -87,6 +87,10 @@ namespace EventBuilder
 
                         case AutoPlatform.Mac:
                             platform = new Mac();
+                            break;
+
+                        case AutoPlatform.NET45:
+                            platform = new Net45();
                             break;
 
                         case AutoPlatform.XamForms:

@@ -82,7 +82,6 @@
     </Compile>
     <Compile Include="Events_NET45.cs" />
     <Compile Include="SingleAwaitSubject.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>

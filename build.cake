@@ -131,7 +131,7 @@ Task ("GenerateEvents")
         //Warning("Generating events for '{0}' is not implemented on Windows yet.", "MAC");
         //generate("mac");
 
-        //generate("net45");
+        generate("net45");
         //generate("winrt");
 
         generate("uwp");
@@ -167,10 +167,10 @@ Task ("BuildEvents")
         build("ReactiveUI.Events_Android.sln");
         build("ReactiveUI.Events_iOS.sln");
 
-        //Warning("Building events for '{0}' is not implemented on Windows yet.", "MAC");
-        //build("ReactiveUI.Events_MAC.csproj");
+        Warning("Building events for '{0}' is not implemented on Windows yet.", "MAC");
+        //build("ReactiveUI.Events_MAC.sln");
 
-        //build("ReactiveUI.Events_NET45.csproj");
+        build("ReactiveUI.Events_NET45.sln");
         //build("ReactiveUI.Events_WINRT.csproj");
 
         build("ReactiveUI.Events_UWP.sln");
