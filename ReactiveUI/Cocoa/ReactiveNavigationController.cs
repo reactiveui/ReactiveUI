@@ -26,7 +26,7 @@ using MonoTouch.UIKit;
 namespace ReactiveUI
 {
     public abstract class ReactiveNavigationController : UINavigationController,
-    IReactiveNotifyPropertyChanged<ReactiveNavigationController>, IHandleObservableErrors, IReactiveObject, ICanActivate
+    IReactiveNotifyPropertyChanged<ReactiveNavigationController>, IHandleObservableErrors, IReactiveObject, ICanActivate, IActivatable
     {
         protected ReactiveNavigationController(UIViewController rootViewController) : base(rootViewController) { setupRxObj(); }
         protected ReactiveNavigationController(Type navigationBarType, Type toolbarType) : base(navigationBarType, toolbarType) { setupRxObj(); }
