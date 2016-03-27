@@ -133,9 +133,10 @@ Task ("GenerateEvents")
 
         generate("net45");
 
-        generate("uwp");
-        //generate("wp8");
+        generate("wp81");
         generate("wpa81");
+        generate("uwp");
+
         generate("xamforms");
     }
 });
@@ -150,33 +151,40 @@ Task ("BuildEvents")
     }
     else
     {
-        Action<string> build = (string filename) =>
+        // WP81 is the only platform that needs to specify the MSBUILD platform
+        // when the platform is retired remove the platform signature,
+        // remove the .SetMSBuildPlatform method and simply the invoking methods.
+        Action<string, MSBuildPlatform> build = (filename, platform) =>
         {
             var solution = System.IO.Path.Combine("./ReactiveUI.Events", filename);
 
-            // handle dependencies specified in project.json or project.config
+            // UWP (project.json) needs to be restored before it will build.
             NuGetRestore (solution);
+
+            Information("Building {0} with MSBuild {1} ", solution, platform);
 
             MSBuild(solution, new MSBuildSettings()
                 .SetConfiguration(configuration)
+                .SetMSBuildPlatform(platform)
                 .WithProperty("NoWarn", "1591")
                 .WithProperty("TreatWarningsAsErrors", "False")
                 .SetVerbosity(Verbosity.Minimal)
                 .SetNodeReuse(false));
         };
 
-        build("ReactiveUI.Events_Android.sln");
-        build("ReactiveUI.Events_iOS.sln");
+        build("ReactiveUI.Events_Android.sln", MSBuildPlatform.Automatic);
+        build("ReactiveUI.Events_iOS.sln", MSBuildPlatform.Automatic);
 
         Warning("Building events for '{0}' is not implemented on Windows yet.", "MAC");
         //build("ReactiveUI.Events_MAC.sln");
 
-        build("ReactiveUI.Events_NET45.sln");
+        build("ReactiveUI.Events_NET45.sln", MSBuildPlatform.Automatic);
 
-        build("ReactiveUI.Events_UWP.sln");
-        //build("ReactiveUI.Events_WP8.csproj");
-        build("ReactiveUI.Events_WPA81.sln");
-        build("ReactiveUI.Events_XamForms.sln");
+        build("ReactiveUI.Events_WP81.sln", MSBuildPlatform.x86);
+        build("ReactiveUI.Events_WPA81.sln", MSBuildPlatform.Automatic);
+        build("ReactiveUI.Events_UWP.sln", MSBuildPlatform.Automatic);
+
+        build("ReactiveUI.Events_XamForms.sln", MSBuildPlatform.Automatic);
     }
 });
 
