@@ -4,7 +4,6 @@ using System.Linq;
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
-using System.Reactive.Subjects;
 using System.Reactive.Threading.Tasks;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,307 +11,304 @@ using System.Threading.Tasks;
 namespace ReactiveUI
 {
     /// <summary>
-    /// Represents an interaction with the user.
+    /// Contains contextual information for an interaction.
     /// </summary>
     /// <remarks>
     /// <para>
-    /// User interactions are used when view models need the user to answer some question before they can continue their work.
-    /// For example, prior to deleting a file the user may be required to acquiesce. Naturally, this question needs to be
-    /// answered in an asynchronous fashion, so that no blocking occurs while the view model waits for an answer.
-    /// </para>
-    /// <para>
-    /// User interactions may be either local or global. Local interactions are typically exposed as properties on a view model.
-    /// When the view model needs an answer to a question, it creates a new instance of the interaction and assigns it to the
-    /// property. The corresponding view monitors that property for changes and, when a change is detected, prompts the user for
-    /// their answer. When the user responds, the answer is pushed to the result of the user interaction, at which point the
-    /// patiently-waiting view model will pick up its work.
-    /// </para>
-    /// <para>
-    /// Global interactions, on the other hand, can be handled by any handler registered via the <see cref="RegisterGlobalHandler"/>
-    /// methods. Each registered handler is given the opportunity to handle the interaction, but later handlers are given
-    /// priority over handlers that are registered earlier. This means that it is possible to set up one or more "root" handlers
-    /// to deal with common situations (such as recovering from errors), and temporary handlers registered by higher-level
-    /// components can take precedence over the root handlers.
-    /// </para>
-    /// <para>
-    /// It's important to understand that local interactions will not result in any handlers being invoked. Therefore, such
-    /// interactions can only be handled by those components that have access to the interaction instances. Usually this means that
-    /// the related view is responsible for handling the interaction. Any views further up the hierarchy are unlikely to hook into
-    /// properties in a lower-level view model.
-    /// </para>
-    /// <para>
-    /// The advantage of global interactions is that any application component can handle them, and handlers are queried in a
-    /// logical order. The disadvantage is that they can make application logic harder to follow. Local interactions are therefore
-    /// recommended wherever possible.
+    /// Instances of this class are passed into interaction handlers. The <see cref="Input"/> property exposes
+    /// the input to the interaction, whilst the <see cref="SetOutput"/> method allows a handler to provide the
+    /// output.
     /// </para>
     /// </remarks>
-    public abstract class UserInteraction : ReactiveObject
+    /// <typeparam name="TInput">
+    /// The type of the interaction's input.
+    /// </typeparam>
+    /// <typeparam name="TOutput">
+    /// The type of the interaction's output.
+    /// </typeparam>
+    public sealed class InteractionContext<TInput, TOutput>
     {
-        private static readonly IList<Func<UserInteraction, IObservable<Unit>>> handlers = new List<Func<UserInteraction, IObservable<Unit>>>();
-        private readonly AsyncSubject<object> result;
-        private int resultSet;
+        private readonly TInput input;
+        private TOutput output;
+        private int outputSet;
 
-        protected UserInteraction()
+        internal InteractionContext(TInput input)
         {
-            this.result = new AsyncSubject<object>();
+            this.input = input;
         }
 
         /// <summary>
-        /// Registers an observable-based asynchronous global handler for the specified interaction type.
+        /// Gets the input for the interaction.
         /// </summary>
-        /// <typeparam name="TInteraction">
-        /// The type of interaction being handled.
-        /// </typeparam>
-        /// <param name="handler">
-        /// The handler.
-        /// </param>
-        /// <returns>
-        /// A disposable instance that, when disposed, will unregister the global handler.
-        /// </returns>
-        public static IDisposable RegisterGlobalHandler<TInteraction>(Func<TInteraction, IObservable<Unit>> handler)
-            where TInteraction : UserInteraction
+        public TInput Input
         {
-            var selectiveHandler = (Func<UserInteraction, IObservable<Unit>>)(interaction =>
-            {
-                var castInteraction = interaction as TInteraction;
-
-                if (castInteraction == null)
-                {
-                    return Observable.Return(Unit.Default);
-                }
-
-                return handler(castInteraction);
-            });
-
-            handlers.Add(selectiveHandler);
-            return Disposable.Create(() => handlers.Remove(selectiveHandler));
+            get { return this.input; }
         }
 
         /// <summary>
-        /// Registers a task-based asynchronous global handler for the specified interaction type.
+        /// Gets a value indicating whether the interaction is handled. That is, whether the output has been set.
         /// </summary>
-        /// <typeparam name="TInteraction">
-        /// The type of interaction being handled.
-        /// </typeparam>
-        /// <param name="handler">
-        /// The handler.
-        /// </param>
-        /// <returns>
-        /// A disposable instance that, when disposed, will unregister the global handler.
-        /// </returns>
-        public static IDisposable RegisterGlobalHandler<TInteraction>(Func<TInteraction, Task> handler)
-            where TInteraction : UserInteraction
+        public bool IsHandled
         {
-            return RegisterGlobalHandler<TInteraction>(interaction => handler(interaction).ToObservable());
+            get { return this.outputSet == 1; }
         }
 
         /// <summary>
-        /// Registers a synchronous global handler for the specified interaction type.
+        /// Sets the output for the interaction.
+        /// </summary>
+        /// <param name="output">
+        /// The output.
+        /// </param>
+        /// <exception cref="InvalidOperationException">
+        /// If the output has already been set.
+        /// </exception>
+        public void SetOutput(TOutput output)
+        {
+            if (Interlocked.CompareExchange(ref this.outputSet, 1, 0) != 0) {
+                throw new InvalidOperationException("Output has already been set.");
+            }
+
+            this.output = output;
+        }
+
+        /// <summary>
+        /// Gets the output of the interaction.
+        /// </summary>
+        /// <returns>
+        /// The output.
+        /// </returns>
+        /// <exception cref="InvalidOperationException">
+        /// If the output has not been set.
+        /// </exception>
+        public TOutput GetOutput()
+        {
+            if (this.outputSet == 0) {
+                throw new InvalidOperationException("Output has not been set.");
+            }
+
+            return this.output;
+        }
+    }
+
+    /// <summary>
+    /// Represents an interaction between collaborating parties.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Interactions allow collaborating components to asynchronously ask questions of each other. Typically,
+    /// a view model wants to ask the user a question before proceeding with some operation, and it's the view
+    /// that provides the interface via which users can answer the question.
+    /// </para>
+    /// <para>
+    /// Interactions have both an input and output, both of which are strongly-typed via generic type parameters.
+    /// The input is passed into the interaction so that handlers have the information they require. The output
+    /// is provided by a handler.
+    /// </para>
+    /// <para>
+    /// By default, handlers are invoked in reverse order of registration. That is, handlers registered later
+    /// are given the opportunity to handle interactions before handlers that were registered earlier. This
+    /// chaining mechanism enables handlers to be registered temporarily in a specific context, such that
+    /// interactions can be handled in a different manner. Subclasses may modify this behavior by overriding
+    /// the <see cref="Handle"/> method.
+    /// </para>
+    /// <para>
+    /// Note that handlers are not required to handle an interaction. They can choose to ignore it, leaving it
+    /// for some other handler to handle. If no handler handles the interaction, the <see cref="Handle"/> method
+    /// will throw an <see cref="UnhandledInteractionException"/>.
+    /// </para>
+    /// </remarks>
+    /// <typeparam name="TInput">
+    /// The interaction's input type.
+    /// </typeparam>
+    /// <typeparam name="TOutput">
+    /// The interaction's output type.
+    /// </typeparam>
+    public class Interaction<TInput, TOutput>
+    {
+        private readonly IList<Func<InteractionContext<TInput, TOutput>, IObservable<Unit>>> handlers;
+        private readonly object sync;
+
+        public Interaction()
+        {
+            this.handlers = new List<Func<InteractionContext<TInput, TOutput>, IObservable<Unit>>>();
+            this.sync = new object();
+        }
+
+        /// <summary>
+        /// Registers a synchronous interaction handler.
         /// </summary>
         /// <remarks>
-        /// Synchronous handlers cannot await user interactions. It is therefore more likely you want to use an asynchronous handler.
+        /// <para>
+        /// This overload of <c>RegisterHandler</c> is only useful if the handler can handle the interaction
+        /// immediately. That is, it does not need to wait for a user or some other collaborating component.
+        /// </para>
         /// </remarks>
-        /// <typeparam name="TInteraction">
-        /// The type of interaction being handled.
-        /// </typeparam>
         /// <param name="handler">
         /// The handler.
         /// </param>
         /// <returns>
-        /// A disposable instance that, when disposed, will unregister the global handler.
+        /// A disposable which, when disposed, will unregister the handler.
         /// </returns>
-        public static IDisposable RegisterGlobalHandler<TInteraction>(Action<TInteraction> handler)
-            where TInteraction : UserInteraction
+        public IDisposable RegisterHandler(Action<InteractionContext<TInput, TOutput>> handler)
         {
-            return RegisterGlobalHandler<TInteraction>(interaction =>
-            {
+            if (handler == null) {
+                throw new ArgumentNullException("handler");
+            }
+
+            return RegisterHandler(interaction => {
                 handler(interaction);
                 return Observable.Return(Unit.Default);
             });
         }
 
         /// <summary>
-        /// Gets a value indicating whether this user interaction has been handled.
-        /// </summary>
-        /// <remarks>
-        /// This property returns <see langword="true"/> if the user interaction has been handled, or <see langword="false"/> if it
-        /// hasn't. The definition of "handled" is that a call to <see cref="SetResult"/> has been made.
-        /// </remarks>
-        public bool IsHandled
-        {
-            get { return this.resultSet == 1; }
-        }
-
-        /// <summary>
-        /// Raises the interaction locally.
-        /// </summary>
-        /// <remarks>
-        /// The result is untyped. Strong typing is introduced by the <see cref="UserInteraction{TResult}"/> class.
-        /// </remarks>
-        /// <returns>
-        /// An observable that immediately ticks the result if it is already known, otherwise later when it is.
-        /// </returns>
-        protected IObservable<object> Raise()
-        {
-            return this.result;
-        }
-
-        /// <summary>
-        /// Raises the interaction globally.
-        /// </summary>
-        /// <remarks>
-        /// The result is untyped. Strong typing is introduced by the <see cref="UserInteraction{TResult}"/> class.
-        /// </remarks>
-        /// <returns>
-        /// The result obtained from global interaction handlers.
-        /// </returns>
-        protected IObservable<object> RaiseGlobal()
-        {
-            return Observable
-                .StartAsync(
-                    async () =>
-                    {
-                        var handlers = UserInteraction.handlers.Reverse().ToArray();
-
-                        foreach (var handler in handlers)
-                        {
-                            await handler(this);
-
-                            if (this.IsHandled)
-                            {
-                                return this.result.GetResult();
-                            }
-                        }
-
-                        throw new UnhandledUserInteractionException(this);
-                    });
-        }
-
-        /// <summary>
-        /// Sets the result of the interaction.
+        /// Registers a task-based asynchronous interaction handler.
         /// </summary>
         /// <remarks>
         /// <para>
-        /// The result is untyped. Strong typing is introduced by the <see cref="UserInteraction{TResult}"/> class.
-        /// </para>
-        /// <para>
-        /// This method can only be called once. Any subsequent attempt to supply a result will cause an exception to be thrown.
+        /// This overload of <c>RegisterHandler</c> is useful if the handler needs to perform some asynchronous
+        /// operation, such as displaying a dialog and waiting for the user's response.
         /// </para>
         /// </remarks>
-        /// <param name="result">
-        /// The result.
+        /// <param name="handler">
+        /// The handler.
         /// </param>
-        protected void SetResult(object result)
+        /// <returns>
+        /// A disposable which, when disposed, will unregister the handler.
+        /// </returns>
+        public IDisposable RegisterHandler(Func<InteractionContext<TInput, TOutput>, Task> handler)
         {
-            if (Interlocked.CompareExchange(ref this.resultSet, 1, 0) != 0)
-            {
-                throw new InvalidOperationException("Result has already been set.");
+            if (handler == null) {
+                throw new ArgumentNullException("handler");
             }
 
-            this.result.OnNext(result);
-            this.result.OnCompleted();
-        }
-    }
-
-    /// <summary>
-    /// Implements a <see cref="UserInteraction"/> with a specific result type.
-    /// </summary>
-    /// <remarks>
-    /// <para>
-    /// This class provides a means of interacting with users and obtaining a strongly-typed result. Typically, you will either
-    /// use this class directly (e.g. a <c>UserInteraction&lt;bool&gt;</c> will allow you to obtain a yes/no answer from the user)
-    /// or indirectly (by either subclassing or using an existing subclass).
-    /// </para>
-    /// </remarks>
-    /// <typeparam name="TResult">
-    /// The type of the interaction's result.
-    /// </typeparam>
-    public class UserInteraction<TResult> : UserInteraction
-    {
-        /// <summary>
-        /// Raises the interaction locally.
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        /// View models using local interactions would typically await a call to this method after making the interaction available
-        /// for views to handle. If a global interaction is being used, you'd instead await the <see cref="RaiseGlobal"/> method.
-        /// </para>
-        /// </remarks>
-        /// <returns>
-        /// An observable that immediately ticks the interaction result if it is already known, otherwise later when it is.
-        /// </returns>
-        public new IObservable<TResult> Raise()
-        {
-            return base.Raise().Cast<TResult>();
+            return RegisterHandler(interaction => handler(interaction).ToObservable());
         }
 
         /// <summary>
-        /// Raises the interaction globally.
+        /// Registers an observable-based asynchronous interaction handler.
         /// </summary>
         /// <remarks>
         /// <para>
-        /// This method passes the interaction through to all registered global handlers in reverse order of their registration.
-        /// As soon as any handler supplies a result for the interaction, subsequent handlers are not called. That is, handlers 
-        /// that are registered earlier are given the opportunity to handle the interaction only if handlers registered later
-        /// have not already done so.
-        /// </para>
-        /// <para>
-        /// If no handler handles the interaction, an <see cref="UnhandledUserInteractionException{TResult}"/> is thrown.
+        /// This overload of <c>RegisterHandler</c> is useful if the handler needs to perform some asynchronous
+        /// operation, such as displaying a dialog and waiting for the user's response.
         /// </para>
         /// </remarks>
-        public new IObservable<TResult> RaiseGlobal()
-        {
-            return base.RaiseGlobal().Cast<TResult>();
-        }
-
-        /// <summary>
-        /// Assigns a result to the user interaction.
-        /// </summary>
-        /// <remarks>
-        /// Handlers (be they for local or global interactions) call this method to assign a result to the interaction.
-        /// </remarks>
-        /// <param name="result">
-        /// The interaction result.
+        /// <param name="handler">
+        /// The handler.
         /// </param>
-        public void SetResult(TResult result)
+        /// <returns>
+        /// A disposable which, when disposed, will unregister the handler.
+        /// </returns>
+        public IDisposable RegisterHandler(Func<InteractionContext<TInput, TOutput>, IObservable<Unit>> handler)
         {
-            base.SetResult(result);
+            if (handler == null) {
+                throw new ArgumentNullException("handler");
+            }
+
+            this.AddHandler(handler);
+            return Disposable.Create(() => this.RemoveHandler(handler));
+        }
+
+        /// <summary>
+        /// Handles an interaction and asynchronously returns the result.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// This method passes the interaction through to relevant handlers in reverse order of registration,
+        /// ceasing once any handler handles the interaction. If the interaction remains unhandled after all
+        /// relevant handlers have executed, an <see cref="UnhandledInteractionException"/> is thrown.
+        /// </para>
+        /// </remarks>
+        /// <param name="input">
+        /// The input for the interaction.
+        /// </param>
+        /// <returns>
+        /// An observable that ticks when the interaction completes, or throws an
+        /// <see cref="UnhandledInteractionException"/> if no handler handles the interaction.
+        /// </returns>
+        public virtual IObservable<TOutput> Handle(TInput input)
+        {
+            var context = new InteractionContext<TInput, TOutput>(input);
+
+            return this
+                .GetHandlers()
+                .Reverse()
+                .ToObservable()
+                .Select(handler => Observable.Defer(() => handler(context)))
+                .Concat()
+                .TakeWhile(_ => !context.IsHandled)
+                .IgnoreElements()
+                .Select(_ => default(TOutput))
+                .Concat(
+                    Observable.Defer(
+                        () => context.IsHandled
+                            ? Observable.Return(context.GetOutput())
+                            : Observable.Throw<TOutput>(new UnhandledInteractionException<TInput, TOutput>(this, input))));
+        }
+
+        /// <summary>
+        /// Gets all registered handlers in order of their registration.
+        /// </summary>
+        /// <returns>
+        /// All registered handlers.
+        /// </returns>
+        protected Func<InteractionContext<TInput, TOutput>, IObservable<Unit>>[] GetHandlers()
+        {
+            lock (this.sync) {
+                return this.handlers.ToArray();
+            }
+        }
+
+        private void AddHandler(Func<InteractionContext<TInput, TOutput>, IObservable<Unit>> handler)
+        {
+            lock (this.sync) {
+                this.handlers.Add(handler);
+            }
+        }
+
+        private void RemoveHandler(Func<InteractionContext<TInput, TOutput>, IObservable<Unit>> handler)
+        {
+            lock (this.sync) {
+                this.handlers.Remove(handler);
+            }
         }
     }
 
     /// <summary>
-    /// An implementation of <see cref="UserInteraction{TResult}"/> that adds exception information.
+    /// Indicates that an interaction has gone unhandled.
     /// </summary>
-    /// <typeparam name="TResult">
-    /// The interaction result type.
+    /// <typeparam name="TInput">
+    /// The type of the interaction's input.
     /// </typeparam>
-    public class UserErrorInteraction<TResult> : UserInteraction<TResult>
+    /// <typeparam name="TOutput">
+    /// The type of the interaction's output.
+    /// </typeparam>
+    public class UnhandledInteractionException<TInput, TOutput> : Exception
     {
-        private readonly Exception error;
+        private readonly Interaction<TInput, TOutput> interaction;
+        private readonly TInput input;
 
-        public UserErrorInteraction(Exception error)
+        public UnhandledInteractionException(Interaction<TInput, TOutput> interaction, TInput input)
         {
-            this.error = error;
+            this.interaction = interaction;
+            this.input = input;
         }
 
-        public Exception Error
+        /// <summary>
+        /// Gets the interaction that was not handled.
+        /// </summary>
+        public Interaction<TInput, TOutput> Interaction
         {
-            get { return this.error; }
-        }
-    }
-
-    public class UnhandledUserInteractionException : Exception
-    {
-        private readonly UserInteraction userInteraction;
-
-        public UnhandledUserInteractionException(UserInteraction userInteraction)
-        {
-            this.userInteraction = userInteraction;
+            get { return this.interaction; }
         }
 
-        public UserInteraction UserInteraction
+        /// <summary>
+        /// Gets the input for the interaction that was not handled.
+        /// </summary>
+        public TInput Input
         {
-            get { return this.userInteraction; }
+            get { return this.input; }
         }
     }
 }
