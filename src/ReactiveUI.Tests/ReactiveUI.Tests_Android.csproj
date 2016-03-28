@@ -59,6 +59,10 @@
     <Reference Include="Splat">
       <HintPath>..\packages\Splat.1.6.2\lib\monoandroid\Splat.dll</HintPath>
     </Reference>
+    <Reference Include="Xamarin.Android.Support.v4, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Xamarin.Android.Support.v4.23.1.1.1\lib\MonoAndroid403\Xamarin.Android.Support.v4.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="xunit.abstractions">
       <HintPath>..\packages\xunit.abstractions.2.0.0-beta-build2700\lib\portable-net45+win+wpa81+wp80+monotouch+monoandroid\xunit.abstractions.dll</HintPath>
     </Reference>
@@ -78,9 +82,6 @@
       <HintPath>..\packages\xunit.runner.xamarin.0.99.1-beta-build1011\lib\MonoAndroid\xunit.runner.android.dll</HintPath>
     </Reference>
     <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="Xamarin.Android.Support.v4">
-      <HintPath>..\packages\Xamarin.Android.Support.v4.22.1.1.1\lib\MonoAndroid403\Xamarin.Android.Support.v4.dll</HintPath>
-    </Reference>
     <Reference Include="Xamarin.Android.Support.v7.AppCompat">
       <HintPath>..\packages\Xamarin.Android.Support.v7.AppCompat.22.1.1.1\lib\MonoAndroid403\Xamarin.Android.Support.v7.AppCompat.dll</HintPath>
     </Reference>
