@@ -204,10 +204,6 @@
       <Project>{90913370-9E94-3DBD-8F1E-15E10DB72FFC}</Project>
       <Name>ReactiveUI.Testing_iOS</Name>
     </ProjectReference>
-    <ProjectReference Include="..\ReactiveUI.Events\ReactiveUI.Events_iOS_XS.csproj">
-      <Project>{334E6DAC-0D70-4CE0-80CB-DFD3147DBE18}</Project>
-      <Name>ReactiveUI.Events_iOS_XS</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Microsoft.Reactive.Testing\Microsoft.Reactive.Testing_iOS.csproj">
       <Project>{74BA5B4E-257A-42A7-BDAB-1FB40A903909}</Project>
       <Name>Microsoft.Reactive.Testing_iOS</Name>
