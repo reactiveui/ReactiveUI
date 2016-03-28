@@ -134,7 +134,7 @@ Task("BuildEventBuilder")
     }
     else
     {
-        var solution = "./EventBuilder.sln";
+        var solution = "./src/EventBuilder.sln";
 
         MSBuild(solution, new MSBuildSettings()
             .SetConfiguration(configuration)
@@ -156,8 +156,8 @@ Task("GenerateEvents")
     }
     else
     {
-        var eventBuilder = "EventBuilder/bin/Release/EventBuilder.exe";
-        var workingDirectory = "EventBuilder/bin/Release";
+        var eventBuilder = "./src/EventBuilder/bin/Release/EventBuilder.exe";
+        var workingDirectory = "./src/EventBuilder/bin/Release";
 
         Action<string> generate = (string platform) =>
         {
@@ -292,8 +292,8 @@ Task("UpdateAssemblyInfo")
 
 Task("RestorePackages").Does (() =>
 {
-    NuGetRestore ("./EventBuilder.sln");
-    NuGetRestore ("./ReactiveUI.sln");
+    NuGetRestore("./src/EventBuilder.sln");
+    NuGetRestore("./ReactiveUI.sln");
 });
 
 Task("Package")
