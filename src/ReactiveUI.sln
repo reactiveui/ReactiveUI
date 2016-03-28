@@ -26,8 +26,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Testing_WP8", "R
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Tests_Net45", "ReactiveUI.Tests\ReactiveUI.Tests_Net45.csproj", "{6FBDE6EA-2202-4A70-8EE4-7BA6D515952E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RxUIViewModelGenerator", "RxUIViewModelGenerator\RxUIViewModelGenerator.csproj", "{EE7D7FD6-4475-4D1F-A000-9D684F8EC3C7}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Testing_Android", "ReactiveUI.Testing\ReactiveUI.Testing_Android.csproj", "{1920477B-BB94-93CF-984E-E177EF9FEDB1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Testing_iOS", "ReactiveUI.Testing\ReactiveUI.Testing_iOS.csproj", "{90913370-9E94-3DBD-8F1E-15E10DB72FFC}"
@@ -407,42 +405,6 @@ Global
 		{6FBDE6EA-2202-4A70-8EE4-7BA6D515952E}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{6FBDE6EA-2202-4A70-8EE4-7BA6D515952E}.Release|x64.ActiveCfg = Release|Any CPU
 		{6FBDE6EA-2202-4A70-8EE4-7BA6D515952E}.Release|x86.ActiveCfg = Release|Any CPU
-		{EE7D7FD6-4475-4D1F-A000-9D684F8EC3C7}.Ad-Hoc|Any CPU.ActiveCfg = Release|Any CPU
-		{EE7D7FD6-4475-4D1F-A000-9D684F8EC3C7}.Ad-Hoc|Any CPU.Build.0 = Release|Any CPU
-		{EE7D7FD6-4475-4D1F-A000-9D684F8EC3C7}.Ad-Hoc|ARM.ActiveCfg = Release|Any CPU
-		{EE7D7FD6-4475-4D1F-A000-9D684F8EC3C7}.Ad-Hoc|iPhone.ActiveCfg = Release|Any CPU
-		{EE7D7FD6-4475-4D1F-A000-9D684F8EC3C7}.Ad-Hoc|iPhoneSimulator.ActiveCfg = Release|Any CPU
-		{EE7D7FD6-4475-4D1F-A000-9D684F8EC3C7}.Ad-Hoc|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{EE7D7FD6-4475-4D1F-A000-9D684F8EC3C7}.Ad-Hoc|Mixed Platforms.Build.0 = Release|Any CPU
-		{EE7D7FD6-4475-4D1F-A000-9D684F8EC3C7}.Ad-Hoc|x64.ActiveCfg = Release|Any CPU
-		{EE7D7FD6-4475-4D1F-A000-9D684F8EC3C7}.Ad-Hoc|x86.ActiveCfg = Release|Any CPU
-		{EE7D7FD6-4475-4D1F-A000-9D684F8EC3C7}.AppStore|Any CPU.ActiveCfg = Release|Any CPU
-		{EE7D7FD6-4475-4D1F-A000-9D684F8EC3C7}.AppStore|Any CPU.Build.0 = Release|Any CPU
-		{EE7D7FD6-4475-4D1F-A000-9D684F8EC3C7}.AppStore|ARM.ActiveCfg = Release|Any CPU
-		{EE7D7FD6-4475-4D1F-A000-9D684F8EC3C7}.AppStore|iPhone.ActiveCfg = Release|Any CPU
-		{EE7D7FD6-4475-4D1F-A000-9D684F8EC3C7}.AppStore|iPhoneSimulator.ActiveCfg = Release|Any CPU
-		{EE7D7FD6-4475-4D1F-A000-9D684F8EC3C7}.AppStore|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{EE7D7FD6-4475-4D1F-A000-9D684F8EC3C7}.AppStore|Mixed Platforms.Build.0 = Release|Any CPU
-		{EE7D7FD6-4475-4D1F-A000-9D684F8EC3C7}.AppStore|x64.ActiveCfg = Release|Any CPU
-		{EE7D7FD6-4475-4D1F-A000-9D684F8EC3C7}.AppStore|x86.ActiveCfg = Release|Any CPU
-		{EE7D7FD6-4475-4D1F-A000-9D684F8EC3C7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{EE7D7FD6-4475-4D1F-A000-9D684F8EC3C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{EE7D7FD6-4475-4D1F-A000-9D684F8EC3C7}.Debug|ARM.ActiveCfg = Debug|Any CPU
-		{EE7D7FD6-4475-4D1F-A000-9D684F8EC3C7}.Debug|iPhone.ActiveCfg = Debug|Any CPU
-		{EE7D7FD6-4475-4D1F-A000-9D684F8EC3C7}.Debug|iPhoneSimulator.ActiveCfg = Debug|Any CPU
-		{EE7D7FD6-4475-4D1F-A000-9D684F8EC3C7}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{EE7D7FD6-4475-4D1F-A000-9D684F8EC3C7}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{EE7D7FD6-4475-4D1F-A000-9D684F8EC3C7}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{EE7D7FD6-4475-4D1F-A000-9D684F8EC3C7}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{EE7D7FD6-4475-4D1F-A000-9D684F8EC3C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{EE7D7FD6-4475-4D1F-A000-9D684F8EC3C7}.Release|Any CPU.Build.0 = Release|Any CPU
-		{EE7D7FD6-4475-4D1F-A000-9D684F8EC3C7}.Release|ARM.ActiveCfg = Release|Any CPU
-		{EE7D7FD6-4475-4D1F-A000-9D684F8EC3C7}.Release|iPhone.ActiveCfg = Release|Any CPU
-		{EE7D7FD6-4475-4D1F-A000-9D684F8EC3C7}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
-		{EE7D7FD6-4475-4D1F-A000-9D684F8EC3C7}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{EE7D7FD6-4475-4D1F-A000-9D684F8EC3C7}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{EE7D7FD6-4475-4D1F-A000-9D684F8EC3C7}.Release|x64.ActiveCfg = Release|Any CPU
-		{EE7D7FD6-4475-4D1F-A000-9D684F8EC3C7}.Release|x86.ActiveCfg = Release|Any CPU
 		{1920477B-BB94-93CF-984E-E177EF9FEDB1}.Ad-Hoc|Any CPU.ActiveCfg = Release|Any CPU
 		{1920477B-BB94-93CF-984E-E177EF9FEDB1}.Ad-Hoc|Any CPU.Build.0 = Release|Any CPU
 		{1920477B-BB94-93CF-984E-E177EF9FEDB1}.Ad-Hoc|ARM.ActiveCfg = Release|Any CPU
