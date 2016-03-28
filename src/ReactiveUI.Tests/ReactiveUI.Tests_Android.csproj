@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -16,7 +16,7 @@
     <AndroidApplication>True</AndroidApplication>
     <AndroidUseLatestPlatformSdk>True</AndroidUseLatestPlatformSdk>
     <AssemblyName>ReactiveUI.Tests_Android</AssemblyName>
-    <TargetFrameworkVersion>v5.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v6.0</TargetFrameworkVersion>
     <AndroidManifest>Properties\AndroidManifest.xml</AndroidManifest>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -132,10 +132,6 @@
     <ProjectReference Include="..\ReactiveUI.AndroidSupport\ReactiveUI.AndroidSupport.csproj">
       <Project>{F5A6E11B-B074-4A1C-B937-267D840E31DF}</Project>
       <Name>ReactiveUI.AndroidSupport</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\ReactiveUI.Events\ReactiveUI.Events_Android_XS.csproj">
-      <Project>{A120F2EC-F343-47BD-9BD3-7572C1E58433}</Project>
-      <Name>ReactiveUI.Events_Android_XS</Name>
     </ProjectReference>
     <ProjectReference Include="..\ReactiveUI.Testing\ReactiveUI.Testing_Android.csproj">
       <Project>{1920477B-BB94-93CF-984E-E177EF9FEDB1}</Project>
