@@ -153,10 +153,6 @@
       <Project>{1ce2d235-8072-4649-ba5a-cfb1af8776e0}</Project>
       <Name>ReactiveUI_Net45</Name>
     </ProjectReference>
-    <ProjectReference Include="..\RxUIViewModelGenerator\RxUIViewModelGenerator.csproj">
-      <Project>{ee7d7fd6-4475-4d1f-a000-9d684f8ec3c7}</Project>
-      <Name>RxUIViewModelGenerator</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Xaml\TestInterface.cs.txt" />

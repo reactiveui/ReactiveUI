@@ -46,7 +46,6 @@
     <Compile Include="Behavior.cs" />
     <Compile Include="FollowObservableStateBehavior.cs" />
     <Compile Include="ObservableTriggerBehavior.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Xaml.Interactivity">
@@ -86,6 +85,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.ReactiveUI.Blend_WinRT.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Properties\" />
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '12.0' ">
     <VisualStudioVersion>12.0</VisualStudioVersion>

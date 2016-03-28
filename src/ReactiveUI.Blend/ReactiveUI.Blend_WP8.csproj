@@ -133,7 +133,6 @@
     </Compile>
     <Compile Include="FollowObservableStateBehavior.cs" />
     <Compile Include="ObservableTrigger.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ReactiveUI\ReactiveUI_WP8.csproj">
