@@ -2,13 +2,9 @@
 <package xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
     <id>reactiveui</id>
-    <version>6.5.0</version>
-    <description>An MVVM library for WPF and Silverlight that is deeply integrated with the Reactive Extensions</description>
-    <authors>Paul Betts</authors>
-    <projectUrl>http://www.reactiveui.net</projectUrl>
-    <licenseUrl>http://opensource.org/licenses/ms-pl.html</licenseUrl>
+    <version>$version$</version>
+    <description>A MVVM framework that integrates with the Reactive Extensions for .NET to create elegant, testable User Interfaces that run on any mobile or desktop platform. Supports Xamarin.iOS, Xamarin.Android, Xamarin.Mac, Xamarin Forms, WPF, Windows Forms, Windows Phone 8.1, Windows Store and Universal Windows Platform (UWP).</description>
     <language>en-us</language>
-    <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <dependencies>
       <dependency id="reactiveui-core" version="[6.5.0]" />
     </dependencies>
