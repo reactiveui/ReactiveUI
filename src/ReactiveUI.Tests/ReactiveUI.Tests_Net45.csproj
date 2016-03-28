@@ -129,7 +129,6 @@
     <Compile Include="RxAppTest.cs" />
     <Compile Include="RxRouting.cs" />
     <Compile Include="Xaml\PropertyBindingTestViews.cs" />
-    <Compile Include="Xaml\RxUIViewModelGeneratorTest.cs" />
     <Compile Include="TestLogger.cs" />
     <Compile Include="Utility.cs" />
     <Compile Include="Xaml\TestUserControl.xaml.cs">
