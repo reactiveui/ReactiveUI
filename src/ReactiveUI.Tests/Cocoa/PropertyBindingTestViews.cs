@@ -5,7 +5,7 @@ using System.Linq;
 using System.Reactive;
 using System.Text;
 using System.Windows;
-using MonoTouch.UIKit;
+using UIKit;
 using ReactiveUI.Cocoa;
 using Xunit;
 

@@ -61,14 +61,6 @@
       <Project>{7866b5b1-5457-43a2-976a-e784eb10f2da}</Project>
       <Name>ReactiveUI.Blend_Net45</Name>
     </ProjectReference>
-    <ProjectReference Include="..\ReactiveUI.Testing\ReactiveUI.Testing_Net45.csproj">
-      <Project>{dd99fd0f-82f6-4c30-930e-4a1d0df01d65}</Project>
-      <Name>ReactiveUI.Testing_Net45</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\ReactiveUI.Tests\ReactiveUI.Tests_Net45.csproj">
-      <Project>{6fbde6ea-2202-4a70-8ee4-7ba6d515952e}</Project>
-      <Name>ReactiveUI.Tests_Net45</Name>
-    </ProjectReference>
     <ProjectReference Include="..\ReactiveUI\ReactiveUI_Net45.csproj">
       <Project>{1ce2d235-8072-4649-ba5a-cfb1af8776e0}</Project>
       <Name>ReactiveUI_Net45</Name>
