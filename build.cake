@@ -268,6 +268,50 @@ Task("PackageEvents")
     Package("./src/ReactiveUI-Events.nuspec", "./src/ReactiveUI.Events");
 });
 
+Task("BuildReactiveUI")
+    .IsDependentOn("RestorePackages")
+    .IsDependentOn("UpdateAssemblyInfo")
+    .Does (() =>
+{
+    if(isRunningOnUnix)
+    {
+        throw new NotImplementedException("Building ReactiveUI on OSX is not implemented yet.");
+    }
+    else
+    {
+        Action<string, MSBuildPlatform> build = (filename, platform) =>
+        {
+            var solution = System.IO.Path.Combine("./src/", filename);
+
+            // UWP (project.json) needs to be restored before it will build.
+            NuGetRestore (solution);
+
+            Information("Building {0} with MSBuild {1} ", solution, platform);
+
+            MSBuild(solution, new MSBuildSettings()
+                .SetConfiguration(configuration)
+                .SetMSBuildPlatform(platform)
+                .WithProperty("NoWarn", "1591") // ignore missing XML doc warnings
+                .WithProperty("TreatWarningsAsErrors", treatWarningsAsErrors.ToString())
+                .SetVerbosity(Verbosity.Minimal)
+                .SetNodeReuse(false));
+
+            SourceLink(solution);
+        };
+
+        // once Windows Phone 8.x silverlight is retired then change this to MSBuildPlatform.Automatic
+        build("ReactiveUI.sln", MSBuildPlatform.x86);
+    }
+});
+
+
+Task("PackageReactiveUI")
+    .IsDependentOn("BuildReactiveUI")
+    .Does (() =>
+{
+    // Package("./src/ReactiveUI-Events.nuspec", "./src/ReactiveUI.Events");
+});
+
 Task("UpdateAppVeyorBuildNumber")
     .WithCriteria(() => isRunningOnAppVeyor)
     .Does(() =>
@@ -361,4 +405,4 @@ Task("Publish")
 // EXECUTION
 //////////////////////////////////////////////////////////////////////
 
-RunTarget("Publish");
+RunTarget("BuildReactiveUI");
