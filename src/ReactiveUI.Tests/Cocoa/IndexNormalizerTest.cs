@@ -1,4 +1,4 @@
-﻿namespace ReactiveUI.Tests
+namespace ReactiveUI.Tests
 {
     using System;
     using System.Collections.Generic;
