@@ -293,7 +293,7 @@ Task("UpdateAssemblyInfo")
 Task("RestorePackages").Does (() =>
 {
     NuGetRestore("./src/EventBuilder.sln");
-    NuGetRestore("./ReactiveUI.sln");
+    NuGetRestore("./src/ReactiveUI.sln");
 });
 
 Task("Package")
