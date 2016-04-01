@@ -314,6 +314,8 @@ Task("PackageReactiveUI")
 
     Package("./src/ReactiveUI-Core.nuspec", "./src/ReactiveUI");
 
+    Package("./src/ReactiveUI-AndroidSupport.nuspec", "./src/ReactiveUI.AndroidSupport");
+
     Package("./src/ReactiveUI-Blend.nuspec", "./src/ReactiveUI.Blend");
 
     //Package("./src/ReactiveUI-Testing.nuspec", "./src/ReactiveUI.Testing"); // not implemented yet
