@@ -44,12 +44,16 @@
     <DocumentationFile>bin\Release\uap10.0\ReactiveUI.Testing.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <NuSpecFile Include="$(SolutionDir)NuGet\ReactiveUI-Testing\ReactiveUI-Testing.nuspec">
+    <NuSpecFile Include="$(SolutionDir)\ReactiveUI-Testing.nuspec">
       <Visible>False</Visible>
     </NuSpecFile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="..\CommonAssemblyInfo.cs">
+      <Link>Properties\CommonAssemblyInfo.cs</Link>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
     <Compile Include="TestUtils.cs" />
     <Content Include="Properties\ReactiveUI.Testing.rd.xml" />
   </ItemGroup>
@@ -66,7 +70,7 @@
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v$(VisualStudioVersion)\Microsoft.Windows.UI.Xaml.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
   </Target>

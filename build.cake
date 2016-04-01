@@ -311,14 +311,11 @@ Task("PackageReactiveUI")
 {
     // use pwd as as cake needs a basePath, even if making a meta-package that contains no files.
     Package("./src/ReactiveUI.nuspec", "./");
-
     Package("./src/ReactiveUI-Core.nuspec", "./src/ReactiveUI");
 
     Package("./src/ReactiveUI-AndroidSupport.nuspec", "./src/ReactiveUI.AndroidSupport");
-
     Package("./src/ReactiveUI-Blend.nuspec", "./src/ReactiveUI.Blend");
-
-    //Package("./src/ReactiveUI-Testing.nuspec", "./src/ReactiveUI.Testing"); // not implemented yet
+    Package("./src/ReactiveUI-Testing.nuspec", "./src/ReactiveUI.Testing");
     Package("./src/ReactiveUI-Winforms.nuspec", "./src/ReactiveUI.Winforms");
     Package("./src/ReactiveUI-XamForms.nuspec", "./src/ReactiveUI.XamForms");
 });
