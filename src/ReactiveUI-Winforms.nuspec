@@ -6,7 +6,13 @@
     <description>Windows Forms specific extensions to ReactiveUI</description>
     <language>en-us</language>
     <dependencies>
-      <dependency id="reactiveui-core" version="[6.5.0]" />
+      <dependency id="reactiveui-core" version="[7.0.0]" />
     </dependencies>
   </metadata>
+  <files>
+    <!-- .NET 4.5 -->
+    <file src="bin/Release/Net45/ReactiveUI.Winforms.dll" target="lib/Net45/ReactiveUI.Winforms.dll" />
+    <!-- Source -->
+    <file src="*.cs" target="src" />
+  </files>
 </package>

@@ -313,6 +313,7 @@ Task("PackageReactiveUI")
     Package("./src/ReactiveUI.nuspec", "./");
 
     Package("./src/ReactiveUI-Core.nuspec", "./src/ReactiveUI");
+    Package("./src/ReactiveUI-Winforms.nuspec", "./src/ReactiveUI.Winforms");
 });
 
 Task("UpdateAppVeyorBuildNumber")
@@ -377,7 +378,7 @@ Task("Publish")
         }
 
         // only push whitelisted packages.
-        foreach(var package in new[] { "ReactiveUI-Events", "ReactiveUI", "ReactiveUI-Core" })
+        foreach(var package in new[] { "ReactiveUI-Events", "ReactiveUI", "ReactiveUI-Core", "ReactiveUI-Winforms" })
         {
             // only push the package which was created during this build run.
             var packagePath = artifactDirectory + File(string.Concat(package, ".", semVersion, ".nupkg"));
