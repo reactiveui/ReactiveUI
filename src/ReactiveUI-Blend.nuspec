@@ -7,29 +7,41 @@
     <language>en-us</language>
     <dependencies>
       <group>
-        <dependency id="reactiveui-core" version="[6.5.0]" />
+        <dependency id="reactiveui-core" version="[7.0.0]" />
       </group>
       <group targetFramework="net45">
-        <dependency id="reactiveui-core" version="[6.5.0]" />
+        <dependency id="reactiveui-core" version="[7.0.0]" />
         <dependency id="Rx-Xaml" version="2.2.5" />
       </group>
       <group targetFramework="wp8">
-        <dependency id="reactiveui-core" version="[6.5.0]" />
+        <dependency id="reactiveui-core" version="[7.0.0]" />
         <dependency id="Rx-Xaml" version="2.2.5" />
       </group>
       <group targetFramework="Portable-Win81+WPA81">
-        <dependency id="reactiveui-core" version="[6.5.0]" />
+        <dependency id="reactiveui-core" version="[7.0.0]" />
         <dependency id="Rx-Xaml" version="2.2.5" />
       </group>
       <group targetFramework="uap10.0">
-        <dependency id="reactiveui-core" version="[6.5.0]" />
+        <dependency id="reactiveui-core" version="[7.0.0]" />
+        <dependency id="System.Diagnostics.Debug" version="4.0.10" />
         <dependency id="Microsoft.Xaml.Behaviors.Uwp.Managed" version="1.0.3" />
         <dependency id="Rx-Core" version="2.2.5" />
         <dependency id="Rx-Interfaces" version="2.2.5" />
         <dependency id="Rx-Linq" version="2.2.5" />
-        <dependency id="System.Diagnostics.Debug" version="4.0.10" />
         <dependency id="System.Runtime" version="4.0.20" />
       </group>
     </dependencies>
   </metadata>
+  <files>
+    <!-- Windows Phone Silverlight -->
+    <file src="bin/Release/WP8/ReactiveUI.Blend.dll" target="lib/WP8/ReactiveUI.Blend.dll" />
+    <!-- Windows Store 8.1 -->
+    <file src="bin/Release/Portable-Win81+WPA81/ReactiveUI.Blend.dll" target="lib/Portable-Win81+WPA81/ReactiveUI.Blend.dll" />
+    <!-- Windows Universal -->
+    <file src="bin/Release/UAP10.0/ReactiveUI.Blend_UWP.dll" target="lib/UAP10/ReactiveUI.Blend_UWP.dll" />
+    <!-- .NET 4.5 -->
+    <file src="bin/Release/Net45/ReactiveUI.Blend.dll" target="lib/Net45/ReactiveUI.Blend.dll" />
+    <!-- Source -->
+    <file src="*.cs" target="src" />
+  </files>
 </package>
