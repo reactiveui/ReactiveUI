@@ -5,10 +5,15 @@
     <version>$version$</version>
     <description>Xamarin Forms specific extensions to ReactiveUI</description>
     <language>en-us</language>
-
     <dependencies>
-      <dependency id="reactiveui-core" version="[6.5.0]" />
-      <dependency id="Xamarin.Forms" version="1.5.0.6446" />
+      <dependency id="reactiveui-core" version="[7.0.0]" />
+      <dependency id="Xamarin.Forms" version="[2.1.0]" />
     </dependencies>
   </metadata>
+  <files>
+    <!-- Portable PCL -->
+    <file src="bin/Release/Portable-Net45+WinRT45+WP8+MonoAndroid10+MonoTouch10/ReactiveUI.XamForms.dll" target="lib/Portable-Net45+WinRT45+WP8+MonoAndroid10+MonoTouch10/ReactiveUI.XamForms.dll" />
+    <!-- Source -->
+    <file src="*.cs" target="src" />
+  </files>
 </package>
