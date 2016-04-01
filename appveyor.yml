@@ -1,0 +1,23 @@
+version: 1.0.{build}
+branches:
+  only:
+  - myget
+environment:
+  MYGET_API_KEY:
+    secure: YP/3KxC2ffsuHNaolPXj66JVGzSjON9FcR2S2OEzn9c6SV14oPzUh1ySyeT+G+aA
+xamarin:
+  email: ghuntley@ghuntley.com
+  password:
+    secure: 9PLfbvP3ON+Xk17Yd4rJag==
+  android: true
+  ios: true
+build_script:
+- ps: >-
+    ./bootstrap.ps1
+
+    ./build.cmd
+test: off
+artifacts:
+- path: '**/bin/*'
+- path: src/ReactiveUI.Events/Events_*.cs
+- path: artifacts/*
