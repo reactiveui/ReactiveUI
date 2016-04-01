@@ -73,7 +73,7 @@
     <Compile Include="TestUtils.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.ReactiveUI.Testing_iOS64.config" />
+    <None Include="packages.ReactiveUI.Testing_iOS.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Microsoft.Reactive.Testing\Microsoft.Reactive.Testing_iOS.csproj">
