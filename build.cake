@@ -309,7 +309,10 @@ Task("PackageReactiveUI")
     .IsDependentOn("BuildReactiveUI")
     .Does (() =>
 {
+    // use pwd as as cake needs a basePath, even if making a meta-package that contains no files.
     Package("./src/ReactiveUI.nuspec", "./");
+
+    Package("./src/ReactiveUI-Core.nuspec", "./src/ReactiveUI");
 });
 
 Task("UpdateAppVeyorBuildNumber")
@@ -374,7 +377,7 @@ Task("Publish")
         }
 
         // only push whitelisted packages.
-        foreach(var package in new[] { "ReactiveUI-Events", "ReactiveUI" })
+        foreach(var package in new[] { "ReactiveUI-Events", "ReactiveUI", "ReactiveUI-Core" })
         {
             // only push the package which was created during this build run.
             var packagePath = artifactDirectory + File(string.Concat(package, ".", semVersion, ".nupkg"));
