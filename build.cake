@@ -313,6 +313,10 @@ Task("PackageReactiveUI")
     Package("./src/ReactiveUI.nuspec", "./");
 
     Package("./src/ReactiveUI-Core.nuspec", "./src/ReactiveUI");
+
+    Package("./src/ReactiveUI-Blend.nuspec", "./src/ReactiveUI.Blend");
+
+    //Package("./src/ReactiveUI-Testing.nuspec", "./src/ReactiveUI.Testing"); // not implemented yet
     Package("./src/ReactiveUI-Winforms.nuspec", "./src/ReactiveUI.Winforms");
     Package("./src/ReactiveUI-XamForms.nuspec", "./src/ReactiveUI.XamForms");
 });
