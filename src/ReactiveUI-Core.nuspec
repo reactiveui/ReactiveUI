@@ -61,4 +61,24 @@
       </group>
     </dependencies>
   </metadata>
+  <files>
+    <!-- Android -->
+    <file src="bin/Release/MonoAndroid/ReactiveUI.dll" target="lib/MonoAndroid/ReactiveUI.dll" />
+    <!-- iOS Unified API -->
+    <file src="bin/Release/Xamarin.iOS10/ReactiveUI.dll" target="lib/Xamarin.iOS10/ReactiveUI.dll" />
+    <!-- Mac Unified API -->
+    <!-- <file src="Release/Xamarin.iOS10/ReactiveUI.Events.dll" target="lib/Xamarin.iOS10/ReactiveUI.Events.dll" /> -->
+    <!-- Windows Phone Silverlight -->
+    <file src="bin/Release/WP8/ReactiveUI.dll" target="lib/WP8/ReactiveUI.dll" />
+    <!-- Windows Store 8.1 -->
+    <file src="bin/Release/Portable-Win81+Wpa81/ReactiveUI.dll" target="lib/Portable-Win81+Wpa81/ReactiveUI.dll" />
+    <!-- Windows Universal -->
+    <file src="bin/Release/UAP10.0/ReactiveUI.dll" target="lib/UAP10/ReactiveUI.dll" />
+    <!-- .NET 4.5 -->
+    <file src="bin/Release/Net45/ReactiveUI.dll" target="lib/Net45/ReactiveUI.dll" />
+    <!-- Portable PCL -->
+    <file src="bin/Release/Portable-Net45+Win8+WP8+WPA81/ReactiveUI.dll" target="lib/Portable-Net45+Win8+WP8+WPA81/ReactiveUI.dll" />
+    <!-- Source -->
+    <file src="*.cs" target="src" />
+  </files>
 </package>
