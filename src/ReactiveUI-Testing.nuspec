@@ -7,19 +7,19 @@
     <language>en-us</language>
     <dependencies>
       <group targetFramework="net45">
-        <dependency id="reactiveui-core" version="[6.5.0]" />
+        <dependency id="reactiveui-core" version="[7.0.0]" />
         <dependency id="Rx-Testing" version="2.2.5" />
       </group>
       <group targetFramework="WP8">
-        <dependency id="reactiveui-core" version="[6.5.0]" />
+        <dependency id="reactiveui-core" version="[7.0.0]" />
         <dependency id="Rx-Testing" version="2.2.5" />
       </group>
       <group targetFramework="Win8">
-        <dependency id="reactiveui-core" version="[6.5.0]" />
+        <dependency id="reactiveui-core" version="[7.0.0]" />
         <dependency id="Rx-Testing" version="2.2.5" />
       </group>
       <group targetFramework="uap10.0">
-        <dependency id="reactiveui-core" version="[6.5.0]" />
+        <dependency id="reactiveui-core" version="[7.0.0]" />
         <dependency id="Rx-Core" version="2.2.5" />
         <dependency id="Rx-Interfaces" version="2.2.5" />
         <dependency id="Rx-Linq" version="2.2.5" />
@@ -30,11 +30,15 @@
         <dependency id="System.Threading.Tasks" version="4.0.10" />
       </group>
       <group targetFramework="monoandroid">
-        <dependency id="reactiveui-core" version="[6.5.0]" />
+        <dependency id="reactiveui-core" version="[7.0.0]" />
       </group>
       <group targetFramework="monotouch">
-        <dependency id="reactiveui-core" version="[6.5.0]" />
+        <dependency id="reactiveui-core" version="[7.0.0]" />
       </group>
     </dependencies>
   </metadata>
+  <files>
+    <!-- Source -->
+    <file src="*.cs" target="src" />
+  </files>
 </package>
