@@ -42,10 +42,10 @@
     <DocumentationFile>bin\Release\uap10.0\ReactiveUI.Blend_UWP.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <NuSpecFile Include="$(SolutionDir)NuGet\ReactiveUI-Blend\ReactiveUI-Blend.nuspec">
+    <NuSpecFile Include="$(SolutionDir)\ReactiveUI-Blend.nuspec">
       <Visible>False</Visible>
     </NuSpecFile>
-  </ItemGroup>  
+  </ItemGroup>
   <ItemGroup>
     <!-- A reference to the entire .Net Framework and Windows SDK are automatically included -->
     <None Include="ReactiveUI.Blend_UWP.project.json" />
@@ -54,10 +54,12 @@
     <EmbeddedResource Include="Properties\ReactiveUI.Blend_UWP.rd.xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\CommonAssemblyInfo.cs">
+      <Link>Properties\CommonAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="Behavior.cs" />
     <Compile Include="FollowObservableStateBehavior.cs" />
     <Compile Include="ObservableTriggerBehavior.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ReactiveUI\ReactiveUI_UWP.csproj">
@@ -69,7 +71,7 @@
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v$(VisualStudioVersion)\Microsoft.Windows.UI.Xaml.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
   </Target>
