@@ -33,3 +33,48 @@ Locator.CurrentMutable.Register(() => new ToasterView(), typeof(IViewFor<Toaster
 View Location internally uses a class called `ViewLocator` which can either be
 replaced, or the default one used. The `ResolveView` method will return the View
 associated with a given ViewModel object.
+
+
+### Overriding ViewLocator
+
+If you want to override the view locator, then you want to start by creating a class that inherits from `IViewLocator`.
+
+```c#
+public class ConventionalViewLocator : IViewLocator
+{
+    public IViewFor ResolveView<T>(T viewModel, string contract = null) where T : class
+    {
+        // Find view's by chopping of the 'Model' on the view model name
+        // MyApp.ShellViewModel => MyApp.ShellView
+        var viewModelName = viewModel.GetType().FullName;
+        var viewTypeName = viewModelName.TrimEnd("Model".ToCharArray());
+
+        try
+        {
+            var viewType = Type.GetType(viewTypeName);
+            if (viewType == null)
+            {
+                this.Log().Error($"Could not find the view {viewTypeName} for view model {viewModelName}.");
+                return null;
+            }
+            return Activator.CreateInstance(viewType) as IViewFor;
+        }
+        catch (Exception)
+        {
+            this.Log().Error($"Could not instantiate view {viewTypeName}.");
+            throw;
+        }
+    }
+}
+```
+
+Then, while bootstrapping your app you'll want to tell ReactiveUI about your new view locator:
+
+```c#
+// Make sure Splat and ReactiveUI are already configured in the locator
+// so that our override runs last
+Locator.CurrentMutable.InitializeSplat();
+Locator.CurrentMutable.InitializeReactiveUI();
+
+Locator.CurrentMutable.RegisterLazySingleton(() => new ConventionalViewLocator(), typeof(IViewLocator));
+```
