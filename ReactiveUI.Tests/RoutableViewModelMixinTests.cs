@@ -40,7 +40,7 @@ namespace ReactiveUI.Tests
                 return Disposable.Empty;
             });
 
-            screen.Router.Navigate.ExecuteAsync(vm);
+            screen.Router.Navigate.Execute(vm);
 
             Assert.Equal(1, count);
         }
@@ -60,9 +60,9 @@ namespace ReactiveUI.Tests
                 return Disposable.Empty;
             });
 
-            screen.Router.Navigate.ExecuteAsync(vm);
-            screen.Router.Navigate.ExecuteAsync(vm2);
-            screen.Router.Navigate.ExecuteAsync(vm);
+            screen.Router.Navigate.Execute(vm);
+            screen.Router.Navigate.Execute(vm2);
+            screen.Router.Navigate.Execute(vm);
 
             Assert.Equal(2, count);
         }
@@ -80,11 +80,11 @@ namespace ReactiveUI.Tests
                 return Disposable.Create(() => count++);
             });
 
-            screen.Router.Navigate.ExecuteAsync(vm);
+            screen.Router.Navigate.Execute(vm);
 
             Assert.Equal(0, count);
 
-            screen.Router.Navigate.ExecuteAsync(vm2);
+            screen.Router.Navigate.Execute(vm2);
 
             Assert.Equal(1, count);
         }
@@ -101,7 +101,7 @@ namespace ReactiveUI.Tests
                 count++;
             });
 
-            screen.Router.Navigate.ExecuteAsync(vm);
+            screen.Router.Navigate.Execute(vm);
 
             Assert.Equal(1, count);
         }
@@ -119,9 +119,9 @@ namespace ReactiveUI.Tests
                 count++;
             });
 
-            screen.Router.Navigate.ExecuteAsync(vm);
-            screen.Router.Navigate.ExecuteAsync(vm2);
-            screen.Router.Navigate.ExecuteAsync(vm);
+            screen.Router.Navigate.Execute(vm);
+            screen.Router.Navigate.Execute(vm2);
+            screen.Router.Navigate.Execute(vm);
 
             Assert.Equal(2, count);
         }
@@ -138,8 +138,8 @@ namespace ReactiveUI.Tests
                 _ => {},
                 () => { count++; });
 
-            screen.Router.Navigate.ExecuteAsync(vm);
-            screen.Router.NavigateBack.ExecuteAsync();
+            screen.Router.Navigate.Execute(vm);
+            screen.Router.NavigateBack.Execute();
 
             Assert.Equal(1, count);
         }
@@ -156,8 +156,8 @@ namespace ReactiveUI.Tests
                 count++;
             });
 
-            screen.Router.Navigate.ExecuteAsync(vm);
-            screen.Router.Navigate.ExecuteAsync(vm2);
+            screen.Router.Navigate.Execute(vm);
+            screen.Router.Navigate.Execute(vm2);
 
             Assert.Equal(1, count);
         }
@@ -174,8 +174,8 @@ namespace ReactiveUI.Tests
                 _ => {},
                 () => { count++; });
 
-            screen.Router.Navigate.ExecuteAsync(vm);
-            screen.Router.NavigateBack.ExecuteAsync();
+            screen.Router.Navigate.Execute(vm);
+            screen.Router.NavigateBack.Execute();
 
             Assert.Equal(1, count);
         }
