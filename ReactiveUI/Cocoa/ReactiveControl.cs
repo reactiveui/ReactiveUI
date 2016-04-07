@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Subjects;
+using System.Reactive.Linq;
 
 #if UNIFIED
 using Foundation;
@@ -90,9 +91,9 @@ namespace ReactiveUI
         public IObservable<Exception> ThrownExceptions { get { return this.getThrownExceptionsObservable(); } }
 
         Subject<Unit> activated = new Subject<Unit>();
-        public IObservable<Unit> Activated { get { return activated; } }
+        public IObservable<Unit> Activated { get { return activated.AsObservable(); } }
         Subject<Unit> deactivated = new Subject<Unit>();
-        public IObservable<Unit> Deactivated { get { return deactivated; } }
+        public IObservable<Unit> Deactivated { get { return deactivated.AsObservable(); } }
 
         #if UIKIT
         public override void WillMoveToSuperview(UIView newsuper)
