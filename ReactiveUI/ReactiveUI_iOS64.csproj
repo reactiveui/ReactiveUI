@@ -103,6 +103,7 @@
     <Compile Include="Cocoa\ReactivePageViewController.cs" />
     <Compile Include="Cocoa\ReactiveCollectionView.cs" />
     <Compile Include="Cocoa\ReactiveCollectionReusableView.cs" />
+    <Compile Include="DisposableMixins.cs" />
     <Compile Include="Activation.cs" />
     <Compile Include="ReactiveBinding.cs" />
     <Compile Include="AutoPersistHelper.cs" />
@@ -158,6 +159,7 @@
     <Compile Include="Legacy\Errors.cs" />
     <Compile Include="Cocoa\ReactiveTabBarController.cs" />
     <Compile Include="Cocoa\ReactiveSplitViewController.cs" />
+    <Compile Include="Cocoa\ReactiveNavigationController.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.ReactiveUI_iOS.config" />

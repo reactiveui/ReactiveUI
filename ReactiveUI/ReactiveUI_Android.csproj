@@ -71,6 +71,7 @@
     <Compile Include="..\CommonAssemblyInfo.cs">
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="DisposableMixins.cs" />
     <Compile Include="Android\AndroidCommandBinders.cs" />
     <Compile Include="Android\AndroidUIScheduler.cs" />
     <Compile Include="Android\ControlFetcherMixin.cs" />
@@ -143,6 +144,8 @@
     <Compile Include="Android\UsbManagerExtensions.cs" />
     <Compile Include="Android\ContextExtensions.cs" />
     <Compile Include="Android\SharedPreferencesExtensions.cs" />
+    <Compile Include="Android\ReactivePreferenceFragment.cs" />
+    <Compile Include="Android\ReactivePreferenceActivity.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.ReactiveUI_Android.config" />
