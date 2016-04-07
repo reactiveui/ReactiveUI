@@ -27,8 +27,8 @@
             android:layout_height="match_parent"
             android:id="@+id/reset" />
     </LinearLayout>
-    <ListView
-        android:id="@+id/watchList"
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/WatchList"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 </LinearLayout>

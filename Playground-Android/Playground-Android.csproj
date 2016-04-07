@@ -66,6 +66,14 @@
     <Reference Include="System.Core" />
     <Reference Include="Mono.Android" />
     <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="Xamarin.Android.Support.v4, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Xamarin.Android.Support.v4.23.2.1\lib\MonoAndroid403\Xamarin.Android.Support.v4.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Xamarin.Android.Support.v7.RecyclerView, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Xamarin.Android.Support.v7.RecyclerView.23.2.1\lib\MonoAndroid403\Xamarin.Android.Support.v7.RecyclerView.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ViewModels\WatchListItemViewModel.cs" />
@@ -98,6 +106,10 @@
     <AndroidResource Include="Resources\layout\Secondary.axml" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ReactiveUI.AndroidSupport\ReactiveUI.AndroidSupport.csproj">
+      <Project>{f5a6e11b-b074-4a1c-b937-267d840e31df}</Project>
+      <Name>ReactiveUI.AndroidSupport</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ReactiveUI\ReactiveUI_Android.csproj">
       <Project>{F5A6E11B-B074-4A0B-B937-267D840E31DF}</Project>
       <Name>ReactiveUI_Android</Name>

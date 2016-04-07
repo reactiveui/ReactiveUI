@@ -1,14 +1,10 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Android.App;
 using Android.OS;
 using Android.Widget;
 using MobileSample_Android.ViewModels;
 using MobileSample_Android.Views;
 using ReactiveUI;
-using Android.Views;
+using Android.Support.V7.Widget;
+using Android.App;
 
 namespace MobileSample_Android
 {
@@ -19,7 +15,7 @@ namespace MobileSample_Android
         public Button CloseMarket { get; private set; }
         public Button Reset { get; private set; }
 
-        public ListView WatchList { get; private set; }
+        public RecyclerView WatchList { get; private set; }
 
         protected override void OnCreate(Bundle savedInstanceState)
         {
@@ -30,11 +26,11 @@ namespace MobileSample_Android
 
             this.WireUpControls();
 
-            var adapter = new ReactiveListAdapter<WatchListItemViewModel>(
-                ViewModel.Stocks,
-                (viewModel, parent) => new WatchListItemView(viewModel, this, parent));
+            WatchList.SetLayoutManager(new LinearLayoutManager(this));
 
-            WatchList.Adapter = adapter;
+            var adapter = new WatchListItemViewAdapter(this.ViewModel.Stocks); 
+
+            WatchList.SetAdapter(adapter);
 
             this.BindCommand(ViewModel, vm => vm.OpenMarketCommand, c => c.OpenMarket);
             this.BindCommand(ViewModel, vm => vm.CloseMarketCommand, c => c.CloseMarket);

@@ -7,6 +7,7 @@ using System.Reactive.Linq;
 using System.Reflection;
 using System.Runtime.Serialization;
 using System.Threading;
+using Android.Content;
 using Android.Support.V7.Widget;
 using Android.Views;
 
@@ -29,8 +30,68 @@ namespace ReactiveUI.Android.Support
         protected ReactiveRecyclerViewAdapter(IReadOnlyReactiveList<TViewModel> backingList)
         {
             this.list = backingList;
+            
+            _inner = this.list.Changed.Subscribe(info =>
+            {
+                switch(info.Action)
+                {
+                    case NotifyCollectionChangedAction.Add:
+                        this.HandleAddNotification(info.NewStartingIndex, info.NewItems.Count);
+                        break;
 
-            _inner = this.list.Changed.Subscribe(_ => NotifyDataSetChanged()); 
+                    case NotifyCollectionChangedAction.Remove:
+                        this.HandleRemoveNotification(info.OldStartingIndex, info.OldItems.Count);
+                        break;
+
+                    case NotifyCollectionChangedAction.Replace:
+                        this.NotifyItemChanged(info.NewStartingIndex);
+                        break;
+
+                    case NotifyCollectionChangedAction.Reset:
+                        this.NotifyDataSetChanged();
+                        break;
+
+                    case NotifyCollectionChangedAction.Move:
+                        this.HandleMoveNotification(info.OldStartingIndex, info.NewStartingIndex);
+                        break;
+                }
+            });
+        }
+
+        private void HandleMoveNotification(int oldStartingIndex, int newStartingIndex)
+        {
+
+        }
+
+        private void HandleAddNotification(int startingIndex, int itemCount)
+        {
+            if (itemCount == 1)
+            {
+                this.NotifyItemInserted(startingIndex);
+            }
+
+            else
+            {
+                this.NotifyItemRangeInserted(startingIndex, itemCount);
+            }
+        }
+
+        private void HandleMoveNotification()
+        {
+
+        }
+
+        private void HandleRemoveNotification(int startingIndex, int itemCount)
+        {
+            if (itemCount == 1)
+            {
+                this.NotifyItemRemoved(startingIndex);
+            }
+
+            else
+            {
+                this.NotifyItemRangeRemoved(startingIndex, itemCount);
+            }
         }
 
         public override void OnBindViewHolder(RecyclerView.ViewHolder holder, int position)
