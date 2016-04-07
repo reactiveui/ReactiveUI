@@ -2,6 +2,7 @@ using System;
 using System.ComponentModel;
 using System.Reactive.Subjects;
 using System.Reactive;
+using System.Reactive.Linq;
 
 namespace ReactiveUI.AndroidSupport
 {
@@ -90,10 +91,10 @@ namespace ReactiveUI.AndroidSupport
         public IObservable<Exception> ThrownExceptions { get { return this.getThrownExceptionsObservable(); } }
 
         readonly Subject<Unit> activated = new Subject<Unit>();
-        public IObservable<Unit> Activated { get { return activated; } }
+        public IObservable<Unit> Activated { get { return activated.AsObservable(); } }
 
         readonly Subject<Unit> deactivated = new Subject<Unit>();
-        public IObservable<Unit> Deactivated { get { return deactivated; } }
+        public IObservable<Unit> Deactivated { get { return deactivated.AsObservable(); } }
 
         public override void OnPause()
         {

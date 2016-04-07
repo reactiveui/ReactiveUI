@@ -72,7 +72,7 @@ namespace ReactiveUI
 
         public IObservable<bool> IsReloadingData
         {
-            get { return this.isReloadingData; }
+            get { return this.isReloadingData.AsObservable(); }
         }
 
         public void ReloadData()
