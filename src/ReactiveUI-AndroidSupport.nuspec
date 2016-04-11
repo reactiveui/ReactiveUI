@@ -15,7 +15,7 @@
   </metadata>
   <files>
     <!-- Android -->
-    <file src="bin/Release/MonoAndroid/ReactiveUI.AndroidSupport.dll" target="lib/MonoAndroid/ReactiveUI.AndroidSupport.dll" />
+    <file src="bin/Release/MonoAndroid403/ReactiveUI.AndroidSupport.dll" target="lib/MonoAndroid403/ReactiveUI.AndroidSupport.dll" />
     <!-- Source -->
     <file src="*.cs" target="src" />
   </files>
