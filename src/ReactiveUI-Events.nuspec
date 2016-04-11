@@ -33,8 +33,6 @@
     <file src="bin/Release/UAP10.0/ReactiveUI.Events.dll" target="lib/UAP10/ReactiveUI.Events.dll" />
     <!-- .NET 4.5 -->
     <file src="bin/Release/Net45/ReactiveUI.Events.dll" target="lib/Net45/ReactiveUI.Events.dll" />
-    <!-- Portable PCL -->
-    <file src="bin/Release/Portable-Net45+WinRT45+WP8+MonoAndroid10+MonoTouch10/ReactiveUI.Events_XamForms.dll" target="lib/Portable-Net45+WinRT45+WP8+MonoAndroid10+MonoTouch10/ReactiveUI.Events_XamForms.dll" />
     <!-- Source -->
     <file src="*.cs" target="src" />
   </files>
