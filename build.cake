@@ -266,6 +266,7 @@ Task("PackageEvents")
     .Does (() =>
 {
     Package("./src/ReactiveUI-Events.nuspec", "./src/ReactiveUI.Events");
+    Package("./src/ReactiveUI-Events-XamForms.nuspec", "./src/ReactiveUI.Events");
 });
 
 Task("BuildReactiveUI")
