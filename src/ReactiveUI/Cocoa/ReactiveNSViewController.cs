@@ -2,6 +2,7 @@ using System;
 using System.ComponentModel;
 using System.Reactive;
 using System.Reactive.Subjects;
+using System.Reactive.Linq;
 
 #if UNIFIED
 using Foundation;
@@ -106,9 +107,9 @@ namespace ReactiveUI
                 
 #if UIKIT
         Subject<Unit> activated = new Subject<Unit>();
-        public IObservable<Unit> Activated { get { return activated; } }
+        public IObservable<Unit> Activated { get { return activated.AsObservable(); } }
         Subject<Unit> deactivated = new Subject<Unit>();
-        public IObservable<Unit> Deactivated { get { return deactivated; } }
+        public IObservable<Unit> Deactivated { get { return deactivated.AsObservable(); } }
 
         public override void ViewDidAppear(bool animated)
         {

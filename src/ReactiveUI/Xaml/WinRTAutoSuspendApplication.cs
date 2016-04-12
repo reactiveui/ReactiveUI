@@ -15,23 +15,23 @@ namespace ReactiveUI
 {
     public class AutoSuspendHelper : IEnableLogger
     {
-        readonly ReplaySubject<LaunchActivatedEventArgs> _launched = new ReplaySubject<LaunchActivatedEventArgs>(1);
+        readonly ReplaySubject<IActivatedEventArgs> _activated = new ReplaySubject<IActivatedEventArgs>(1);
 
         public AutoSuspendHelper(Application app)
         {
             Reflection.ThrowIfMethodsNotOverloaded("AutoSuspendHelper", app, "OnLaunched");
 
             var launchNew = new[] { ApplicationExecutionState.ClosedByUser, ApplicationExecutionState.NotRunning, };
-            RxApp.SuspensionHost.IsLaunchingNew = _launched
+            RxApp.SuspensionHost.IsLaunchingNew = _activated
                 .Where(x => launchNew.Contains(x.PreviousExecutionState))
                 .Select(_ => Unit.Default);
 
-            RxApp.SuspensionHost.IsResuming = _launched
+            RxApp.SuspensionHost.IsResuming = _activated
                 .Where(x => x.PreviousExecutionState == ApplicationExecutionState.Terminated)
                 .Select(_ => Unit.Default);
 
             var unpausing = new[] { ApplicationExecutionState.Suspended, ApplicationExecutionState.Running, };
-            RxApp.SuspensionHost.IsUnpausing = _launched
+            RxApp.SuspensionHost.IsUnpausing = _activated
                 .Where(x => unpausing.Contains(x.PreviousExecutionState))
                 .Select(_ => Unit.Default);
 
@@ -48,9 +48,9 @@ namespace ReactiveUI
             RxApp.SuspensionHost.ShouldInvalidateState = shouldInvalidateState;
         }
 
-        public void OnLaunched(LaunchActivatedEventArgs args)
+        public void OnLaunched(IActivatedEventArgs args)
         {
-            _launched.OnNext(args);
+            _activated.OnNext(args);
         }
     }
 }
