@@ -63,7 +63,7 @@
   </metadata>
   <files>
     <!-- Android -->
-    <file src="bin/Release/MonoAndroid/ReactiveUI.dll" target="lib/MonoAndroid/ReactiveUI.dll" />
+    <file src="bin/Release/MonoAndroid403/ReactiveUI.dll" target="lib/MonoAndroid403/ReactiveUI.dll" />
     <!-- iOS Unified API -->
     <file src="bin/Release/Xamarin.iOS10/ReactiveUI.dll" target="lib/Xamarin.iOS10/ReactiveUI.dll" />
     <!-- Mac Unified API -->
