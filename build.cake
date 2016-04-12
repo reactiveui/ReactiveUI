@@ -308,6 +308,7 @@ Task("BuildReactiveUI")
 
 Task("PackageReactiveUI")
     .IsDependentOn("BuildReactiveUI")
+//    .IsDependentOn("RunUnitTests")
     .Does (() =>
 {
     // use pwd as as cake needs a basePath, even if making a meta-package that contains no files.
@@ -347,6 +348,17 @@ Task("RestorePackages").Does (() =>
 {
     NuGetRestore("./src/EventBuilder.sln");
     NuGetRestore("./src/ReactiveUI.sln");
+});
+
+Task("RunUnitTests")
+    .IsDependentOn("BuildReactiveUI")
+    .Does(() =>
+{
+    XUnit2("./src/ReactiveUI.Tests/bin/Release/Net45/ReactiveUI.Tests_Net45.dll", new XUnit2Settings {
+        OutputDirectory = artifactDirectory,
+        XmlReportV1 = true,
+        NoAppDomain = true
+    });
 });
 
 Task("Package")
