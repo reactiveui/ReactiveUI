@@ -3,7 +3,7 @@
   <metadata>
     <id>reactiveui-events-xamforms</id>
     <version>$version$</version>
-    <description>Provides Observable-based events API for common Xamarin Forms controls/eventhandlers. The contents of this package is automatically generated, please target pull-requests to the code generator.</description>
+    <description>Provides Observable-based events API for Xamarin Forms controls/eventhandlers. The contents of this package is automatically generated, please target pull-requests to the code generator.</description>
     <language>en-us</language>
     <dependencies>
       <group>
