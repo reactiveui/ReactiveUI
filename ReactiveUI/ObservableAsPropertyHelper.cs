@@ -41,7 +41,7 @@ namespace ReactiveUI
         /// </param>
         /// <param name="scheduler">The scheduler that the notifications will be
         /// provided on - this should normally be a Dispatcher-based scheduler
-        /// (and is by default)</param>
+        /// </param>
         public ObservableAsPropertyHelper(
             IObservable<T> observable, 
             Action<T> onChanged, 
@@ -68,7 +68,7 @@ namespace ReactiveUI
         /// </param>
         /// <param name="scheduler">The scheduler that the notifications will be
         /// provided on - this should normally be a Dispatcher-based scheduler
-        /// (and is by default)</param>
+        /// </param>
         public ObservableAsPropertyHelper(
             IObservable<T> observable, 
             Action<T> onChanged, 
@@ -136,7 +136,7 @@ namespace ReactiveUI
         /// <param name="initialValue">The initial (and only) value of the property.</param>
         /// <param name="scheduler">The scheduler that the notifications will be
         /// provided on - this should normally be a Dispatcher-based scheduler
-        /// (and is by default)</param>
+        /// </param>
         public static ObservableAsPropertyHelper<T> Default(T initialValue = default(T), IScheduler scheduler = null)
         {
             return new ObservableAsPropertyHelper<T>(Observable.Never<T>(), _ => {}, initialValue, false, scheduler);
@@ -193,7 +193,7 @@ namespace ReactiveUI
         /// </param>
         /// <param name="scheduler">The scheduler that the notifications will be
         /// provided on - this should normally be a Dispatcher-based scheduler
-        /// (and is by default)</param>
+        /// </param>
         /// <returns>An initialized ObservableAsPropertyHelper; use this as the
         /// backing field for your property.</returns>
         public static ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(
@@ -225,7 +225,7 @@ namespace ReactiveUI
         /// </param>
         /// <param name="scheduler">The scheduler that the notifications will be
         /// provided on - this should normally be a Dispatcher-based scheduler
-        /// (and is by default)</param>
+        /// </param>
         /// <returns>An initialized ObservableAsPropertyHelper; use this as the
         /// backing field for your property.</returns>
         public static ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(
