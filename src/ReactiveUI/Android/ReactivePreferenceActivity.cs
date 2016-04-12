@@ -101,10 +101,10 @@ namespace ReactiveUI
         public IObservable<Exception> ThrownExceptions { get { return this.getThrownExceptionsObservable(); } }
 
         readonly Subject<Unit> activated = new Subject<Unit>();
-        public IObservable<Unit> Activated { get { return activated; } }
+        public IObservable<Unit> Activated { get { return activated.AsObservable(); } }
 
         readonly Subject<Unit> deactivated = new Subject<Unit>();
-        public IObservable<Unit> Deactivated { get { return deactivated; } }
+        public IObservable<Unit> Deactivated { get { return deactivated.AsObservable(); } }
 
         protected override void OnPause()
         {
@@ -120,7 +120,7 @@ namespace ReactiveUI
 
         readonly Subject<Tuple<int, Result, Intent>> activityResult = new Subject<Tuple<int, Result, Intent>>();
         public IObservable<Tuple<int, Result, Intent>> ActivityResult {
-            get { return activityResult; }
+            get { return activityResult.AsObservable(); }
         }
 
         protected override void OnActivityResult(int requestCode, Result resultCode, Intent data)
