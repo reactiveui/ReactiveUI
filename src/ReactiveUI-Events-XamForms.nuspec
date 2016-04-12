@@ -8,7 +8,7 @@
     <dependencies>
       <group>
         <dependency id="Rx-Main" version="2.2.5" />
-        <dependency id="Xamarin.Forms" version="[2.1.0]" />
+        <dependency id="Xamarin.Forms" version="2.1.0.6529" />
       </group>
     </dependencies>
   </metadata>
