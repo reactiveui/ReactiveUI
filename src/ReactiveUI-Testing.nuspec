@@ -39,7 +39,7 @@
   </metadata>
   <files>
     <!-- Android -->
-    <file src="bin/Release/MonoAndroid/ReactiveUI.Testing.dll" target="lib/MonoAndroid/ReactiveUI.Testing.dll" />
+    <file src="bin/Release/MonoAndroid403/ReactiveUI.Testing.dll" target="lib/MonoAndroid403/ReactiveUI.Testing.dll" />
     <!-- iOS Unified API -->
     <file src="bin/Release/Xamarin.iOS10/ReactiveUI.Testing.dll" target="lib/Xamarin.iOS10/ReactiveUI.Testing.dll" />
     <!-- Mac Unified API -->

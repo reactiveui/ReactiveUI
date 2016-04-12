@@ -20,26 +20,26 @@
     <DebugSymbols>True</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>False</Optimize>
-    <OutputPath>bin\Debug\Monoandroid\</OutputPath>
-    <IntermediateOutputPath>obj\Debug\Monoandroid</IntermediateOutputPath>
+    <OutputPath>bin\Debug\Monoandroid403\</OutputPath>
+    <IntermediateOutputPath>obj\Debug\Monoandroid403</IntermediateOutputPath>
     <DefineConstants>DEBUG;TRACE;MONO;ANDROID</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CodeAnalysisRuleSet>ExtendedCorrectnessRules.ruleset</CodeAnalysisRuleSet>
     <RunCodeAnalysis>false</RunCodeAnalysis>
     <AndroidLinkMode>None</AndroidLinkMode>
-    <DocumentationFile>bin\Debug\Monoandroid\ReactiveUI.Testing.XML</DocumentationFile>
+    <DocumentationFile>bin\Debug\Monoandroid403\ReactiveUI.Testing.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>True</Optimize>
-    <OutputPath>bin\Release\Monoandroid\</OutputPath>
-    <IntermediateOutputPath>obj\Release\Monoandroid</IntermediateOutputPath>
+    <OutputPath>bin\Release\Monoandroid403\</OutputPath>
+    <IntermediateOutputPath>obj\Release\Monoandroid403</IntermediateOutputPath>
     <DefineConstants>TRACE;MONO;ANDROID</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AndroidUseSharedRuntime>False</AndroidUseSharedRuntime>
-    <DocumentationFile>bin\Release\Monoandroid\ReactiveUI.Testing.XML</DocumentationFile>
+    <DocumentationFile>bin\Release\Monoandroid403\ReactiveUI.Testing.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -89,7 +89,7 @@
     <None Include="packages.ReactiveUI.Testing_Android.config" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
   </Target>
