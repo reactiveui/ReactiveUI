@@ -37,7 +37,7 @@ namespace EventBuilder
             if (Debugger.IsAttached)
             {
                 //args = "--help ".Split(' ');
-                args = "--platform=net45".Split(' ');
+                args = "--platform=mac".Split(' ');
                 //args = new[]
                 //{
                 //    "--platform=none",
