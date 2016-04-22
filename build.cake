@@ -198,17 +198,14 @@ Task("GenerateEvents")
 
         generate("android");
         generate("ios");
-
-        //Warning("Generating events for '{0}' is not implemented on Windows yet.", "MAC");
-        //generate("mac");
+        generate("mac");
+        generate("xamforms");
 
         generate("net45");
 
         generate("wp81");
         generate("wpa81");
         generate("uwp");
-
-        generate("xamforms");
     }
 });
 
@@ -218,7 +215,7 @@ Task("BuildEvents")
 {
     if(isRunningOnUnix)
     {
-        throw new NotImplementedException("Building events on OSX is not implemented yet.");
+        throw new NotImplementedException("Building events on OSX is not implemented.");
     }
     else
     {
@@ -247,9 +244,8 @@ Task("BuildEvents")
 
         build("ReactiveUI.Events_Android.sln", MSBuildPlatform.Automatic);
         build("ReactiveUI.Events_iOS.sln", MSBuildPlatform.Automatic);
-
-        Warning("Building events for '{0}' is not implemented on Windows yet.", "MAC");
-        //build("ReactiveUI.Events_MAC.sln");
+//        build("ReactiveUI.Events_MAC.sln", MSBuildPlatform.Automatic);
+        build("ReactiveUI.Events_XamForms.sln", MSBuildPlatform.Automatic);
 
         build("ReactiveUI.Events_NET45.sln", MSBuildPlatform.Automatic);
 
@@ -257,7 +253,6 @@ Task("BuildEvents")
         build("ReactiveUI.Events_WPA81.sln", MSBuildPlatform.Automatic);
         build("ReactiveUI.Events_UWP.sln", MSBuildPlatform.Automatic);
 
-        build("ReactiveUI.Events_XamForms.sln", MSBuildPlatform.Automatic);
     }
 });
 
@@ -416,7 +411,7 @@ Task("Publish")
 
         }
     }
-});
+});z
 
 //////////////////////////////////////////////////////////////////////
 // TASK TARGETS

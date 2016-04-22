@@ -45,11 +45,6 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <CustomCommands>
-      <CustomCommands>
-        <Command type="BeforeBuild" command="/usr/bin/env ruby ${ProjectDir}/generate_events.rb /Library/Frameworks/Xamarin.Mac.framework/Versions/Current/lib/mono/XamMac.dll" />
-      </CustomCommands>
-    </CustomCommands>
     <DebugSymbols>true</DebugSymbols>
     <GenerateDocumentation>True</GenerateDocumentation>
     <EnableCodeSigning>false</EnableCodeSigning>
@@ -59,7 +54,7 @@
     <UseSGen>false</UseSGen>
     <UseRefCounting>false</UseRefCounting>
   </PropertyGroup>
-  <ItemGroup>
+  <ItemGroup Condition=" '$(OS)' != 'Windows_NT' ">
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Runtime.Serialization" />
@@ -69,6 +64,39 @@
     <Reference Include="System.Drawing" />
     <Reference Include="XamMac, Version=0.0.0.0, Culture=neutral, PublicKeyToken=84e04ff9cfb79065" />
     <Reference Include="XamMac" />
+  </ItemGroup>
+  <PropertyGroup Condition=" '$(OS)' == 'Windows_NT' ">
+    <NoStdLib>true</NoStdLib>
+    <XamarinMacMobile>packages\ReactiveUI-TargetingPack-XamarinMac.1.0.0\Mobile\</XamarinMacMobile>
+    <XamarinMacXM45>packages\ReactiveUI-TargetingPack-XamarinMac.1.0.0\XM45\</XamarinMacXM45>
+  </PropertyGroup>
+  <ItemGroup Condition=" '$(OS)' == 'Windows_NT' ">
+    <Reference Include="System">
+      <HintPath>$(XamarinMacMobile)\System.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Core">
+      <HintPath>$(XamarinMacMobile)\System.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.Serialization">
+      <HintPath>$(XamarinMacMobile)\System.Runtime.Serialization.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.Linq">
+      <HintPath>$(XamarinMacMobile)\System.Xml.Linq.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CSharp">
+      <HintPath>$(XamarinMacMobile)\Microsoft.CSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ComponentModel.DataAnnotations">
+      <HintPath>$(XamarinMacMobile)\System.ComponentModel.DataAnnotations.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Drawing">
+      <HintPath>$(XamarinMacMobile)\System.Drawing.dll</HintPath>
+    </Reference>
+    <Reference Include="Xamarin.Mac">
+      <HintPath>$(XamarinMacMobile)\Xamarin.Mac.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
     <Reference Include="System.Reactive.Core">
       <HintPath>packages\Rx-Core.2.2.5\lib\net45\System.Reactive.Core.dll</HintPath>
     </Reference>
