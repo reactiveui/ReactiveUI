@@ -75,7 +75,7 @@ Action<string, string> Package = (nuspec, basePath) =>
 
     NuGetPack(nuspec, new NuGetPackSettings {
         Authors                  = new [] {"ReactiveUI contributors"},
-        Owners                   = new [] {"xpaulbettsx", "flagbug", "ghuntley", "haacked", "kent.boogaart", "mteper", "moswald", "niik", "onovotny", "rdavisau", "shiftkey"},
+        Owners                   = new [] {"xpaulbettsx", "flagbug", "ghuntley", "haacked", "kentcb", "mteper", "moswald", "niik", "onovotny", "rdavisau", "shiftkey"},
 
         ProjectUrl               = new Uri("http://www.reactiveui.net"),
         IconUrl                  = new Uri("https://i.imgur.com/7WDbqSy.png"),
