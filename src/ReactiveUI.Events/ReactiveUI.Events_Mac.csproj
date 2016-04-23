@@ -26,7 +26,7 @@
     <DebugSymbols>True</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>False</Optimize>
-    <OutputPath>bin\Debug\MonoMac</OutputPath>
+    <OutputPath>bin\Debug\Xamarin.Mac20</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -41,7 +41,7 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <Optimize>True</Optimize>
-    <OutputPath>bin\Release\MonoMac</OutputPath>
+    <OutputPath>bin\Release\Xamarin.Mac20</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -67,10 +67,13 @@
   </ItemGroup>
   <PropertyGroup Condition=" '$(OS)' == 'Windows_NT' ">
     <NoStdLib>true</NoStdLib>
-    <XamarinMacMobile>packages\ReactiveUI-TargetingPack-XamarinMac.1.0.0\Mobile\</XamarinMacMobile>
-    <XamarinMacXM45>packages\ReactiveUI-TargetingPack-XamarinMac.1.0.0\XM45\</XamarinMacXM45>
+    <XamarinMacMobile>packages\ReactiveUI-TargetingPack-XamarinMac.1.0.0.1461330102\lib\XamarinMacMobile\</XamarinMacMobile>
+    <XamarinMacXM45>packages\ReactiveUI-TargetingPack-XamarinMac.1.0.0.1461330102\lib\XamarinMac45\</XamarinMacXM45>
   </PropertyGroup>
   <ItemGroup Condition=" '$(OS)' == 'Windows_NT' ">
+    <Reference Include="mscorlib">
+      <HintPath>$(XamarinMacMobile)\mscorlib.dll</HintPath>
+    </Reference>
     <Reference Include="System">
       <HintPath>$(XamarinMacMobile)\System.dll</HintPath>
     </Reference>
@@ -111,12 +114,15 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="..\CommonAssemblyInfo.cs" />
     <Compile Include="Events_MAC.cs" />
     <Compile Include="SingleAwaitSubject.cs" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.ReactiveUI.Events_Mac.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
