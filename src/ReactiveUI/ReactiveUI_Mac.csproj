@@ -5,20 +5,21 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{0913BF79-061F-4667-ADF9-8E6CDA6D1213}</ProjectGuid>
-    <ProjectTypeGuids>{42C0BBD9-55CE-4FC1-8D90-A7348ABAFB23};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <ProjectGuid>{1913BF79-061F-4667-ADF9-8E6CDA6D1211}</ProjectGuid>
+    <ProjectTypeGuids>{A3F8F2AB-B479-4A4A-A458-A89E7DC349F1};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <RootNamespace>ReactiveUI</RootNamespace>
     <AssemblyName>ReactiveUI</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <TargetFrameworkIdentifier>Xamarin.Mac</TargetFrameworkIdentifier>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>False</Optimize>
-    <OutputPath>bin\Debug\MonoMac</OutputPath>
-    <IntermediateOutputPath>obj\Debug\MonoMac</IntermediateOutputPath>
-    <DefineConstants>DEBUG; MONO; COCOA</DefineConstants>
+    <OutputPath>bin\Debug\Xamarin.Mac20</OutputPath>
+    <IntermediateOutputPath>obj\Debug\Xamarin.Mac10</IntermediateOutputPath>
+    <DefineConstants>DEBUG;MONO;COCOA;UNIFIED</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <EnablePackageSigning>False</EnablePackageSigning>
@@ -33,8 +34,8 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <Optimize>True</Optimize>
-    <OutputPath>bin\Release\MonoMac</OutputPath>
-    <IntermediateOutputPath>obj\Release\MonoMac</IntermediateOutputPath>
+    <OutputPath>bin\Release\Xamarin.Mac20</OutputPath>
+    <IntermediateOutputPath>obj\Release\Xamarin.Mac10</IntermediateOutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <EnablePackageSigning>False</EnablePackageSigning>
@@ -45,23 +46,58 @@
     <CreatePackage>False</CreatePackage>
     <CodeSigningKey>Mac Developer</CodeSigningKey>
     <UseSGen>False</UseSGen>
-    <DefineConstants>MONO; COCOA</DefineConstants>
+    <DefineConstants>MONO;COCOA;UNIFIED</DefineConstants>
     <DebugSymbols>true</DebugSymbols>
     <GenerateDocumentation>True</GenerateDocumentation>
-    <DocumentationFile>bin\Release\MonoMac\ReactiveUI.xml</DocumentationFile>
+    <DocumentationFile>bin\Release\Xamarin.Mac10\ReactiveUI.xml</DocumentationFile>
     <UseRefCounting>false</UseRefCounting>
     <Profiling>false</Profiling>
   </PropertyGroup>
-  <ItemGroup>
+  <ItemGroup Condition=" '$(OS)' != 'Windows_NT' ">
     <Reference Include="System" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="XamMac" />
     <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="Xamarin.Mac" />
+  </ItemGroup>
+  <PropertyGroup Condition=" '$(OS)' == 'Windows_NT' ">
+    <NoStdLib>true</NoStdLib>
+    <XamarinMacMobile>packages\ReactiveUI-TargetingPack-XamarinMac.1.0.0.1461330102\lib\XamarinMacMobile\</XamarinMacMobile>
+    <XamarinMacXM45>packages\ReactiveUI-TargetingPack-XamarinMac.1.0.0.1461330102\lib\XamarinMac45\</XamarinMacXM45>
+  </PropertyGroup>
+  <ItemGroup Condition=" '$(OS)' == 'Windows_NT' ">
+    <Reference Include="mscorlib">
+      <HintPath>$(XamarinMacMobile)\mscorlib.dll</HintPath>
+    </Reference>
+    <Reference Include="System">
+      <HintPath>$(XamarinMacMobile)\System.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Core">
+      <HintPath>$(XamarinMacMobile)\System.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.Serialization">
+      <HintPath>$(XamarinMacMobile)\System.Runtime.Serialization.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.Linq">
+      <HintPath>$(XamarinMacMobile)\System.Xml.Linq.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CSharp">
+      <HintPath>$(XamarinMacMobile)\Microsoft.CSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ComponentModel.DataAnnotations">
+      <HintPath>$(XamarinMacMobile)\System.ComponentModel.DataAnnotations.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Drawing">
+      <HintPath>$(XamarinMacMobile)\System.Drawing.dll</HintPath>
+    </Reference>
+    <Reference Include="Xamarin.Mac">
+      <HintPath>$(XamarinMacMobile)\Xamarin.Mac.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
     <Reference Include="Splat">
-      <HintPath>..\packages\Splat.1.6.2\lib\MonoMac\Splat.dll</HintPath>
+      <HintPath>..\packages\Splat.1.6.2\lib\Xamarin.Mac10\Splat.dll</HintPath>
     </Reference>
     <Reference Include="System.Reactive.Core">
       <HintPath>..\packages\Rx-Core.2.2.5\lib\net45\System.Reactive.Core.dll</HintPath>
@@ -76,7 +112,6 @@
       <HintPath>..\packages\Rx-PlatformServices.2.2.5\lib\net45\System.Reactive.PlatformServices.dll</HintPath>
     </Reference>
   </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <Compile Include="Cocoa\KVOObservableForProperty.cs" />
     <Compile Include="Cocoa\NSRunloopScheduler.cs" />
@@ -154,4 +189,9 @@
   <ItemGroup>
     <Folder Include="Cocoa\" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.ReactiveUI_Mac.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath)\Xamarin\Mac\Xamarin.Mac.CSharp.targets" Condition=" '$(OS)' != 'Windows_NT' " />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets"  Condition=" '$(OS)' == 'Windows_NT' " />
 </Project>
