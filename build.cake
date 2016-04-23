@@ -299,7 +299,7 @@ Task("BuildReactiveUI")
             SourceLink(solution);
         };
 
-        // once Windows Phone 8.x silverlight is retired then change this to MSBuildPlatform.Automatic
+        // once Windows Phone 8.x silverlight is retired you can change this to MSBuildPlatform.Automatic
         build("ReactiveUI.sln", MSBuildPlatform.x86);
     }
 });
