@@ -67,6 +67,11 @@ var artifactDirectory = "./artifacts/";
 // Define global marcos.
 Action Abort = () => { throw new Exception("a non-recoverable fatal error occurred."); };
 
+Action<string> RestorePackages = (solution) =>
+{
+    NuGetRestore(solution, new NuGetRestoreSettings() { ConfigFile = "./src/.nuget/NuGet.config" });
+};
+
 Action<string, string> Package = (nuspec, basePath) =>
 {
     CreateDirectory(artifactDirectory);
@@ -227,7 +232,7 @@ Task("BuildEvents")
             var solution = System.IO.Path.Combine("./src/ReactiveUI.Events/", filename);
 
             // UWP (project.json) needs to be restored before it will build.
-            NuGetRestore (solution);
+            RestorePackages (solution);
 
             Information("Building {0} with MSBuild {1} ", solution, platform);
 
@@ -244,7 +249,7 @@ Task("BuildEvents")
 
         build("ReactiveUI.Events_Android.sln", MSBuildPlatform.Automatic);
         build("ReactiveUI.Events_iOS.sln", MSBuildPlatform.Automatic);
-//        build("ReactiveUI.Events_MAC.sln", MSBuildPlatform.Automatic);
+        build("ReactiveUI.Events_MAC.sln", MSBuildPlatform.Automatic);
         build("ReactiveUI.Events_XamForms.sln", MSBuildPlatform.Automatic);
 
         build("ReactiveUI.Events_NET45.sln", MSBuildPlatform.Automatic);
@@ -252,7 +257,6 @@ Task("BuildEvents")
         build("ReactiveUI.Events_WP81.sln", MSBuildPlatform.x86);
         build("ReactiveUI.Events_WPA81.sln", MSBuildPlatform.Automatic);
         build("ReactiveUI.Events_UWP.sln", MSBuildPlatform.Automatic);
-
     }
 });
 
@@ -280,7 +284,7 @@ Task("BuildReactiveUI")
             var solution = System.IO.Path.Combine("./src/", filename);
 
             // UWP (project.json) needs to be restored before it will build.
-            NuGetRestore (solution);
+            RestorePackages(solution);
 
             Information("Building {0} with MSBuild {1} ", solution, platform);
 
@@ -341,8 +345,8 @@ Task("UpdateAssemblyInfo")
 
 Task("RestorePackages").Does (() =>
 {
-    NuGetRestore("./src/EventBuilder.sln");
-    NuGetRestore("./src/ReactiveUI.sln");
+    RestorePackages("./src/EventBuilder.sln");
+    RestorePackages("./src/ReactiveUI.sln");
 });
 
 Task("RunUnitTests")
@@ -411,7 +415,7 @@ Task("Publish")
 
         }
     }
-});z
+});
 
 //////////////////////////////////////////////////////////////////////
 // TASK TARGETS
