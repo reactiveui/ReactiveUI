@@ -74,7 +74,10 @@ namespace EventBuilder
                                 platform.CecilSearchDirectories =
                                     platform.Assemblies.Select(x => Path.GetDirectoryName(x)).Distinct().ToList();
                             }
-
+                            else
+                            {
+                                platform.CecilSearchDirectories.Add(@"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5");
+                            }
                             break;
 
                         case AutoPlatform.Android:
