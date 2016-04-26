@@ -49,7 +49,7 @@
     <DefineConstants>MONO;COCOA;UNIFIED</DefineConstants>
     <DebugSymbols>true</DebugSymbols>
     <GenerateDocumentation>True</GenerateDocumentation>
-    <DocumentationFile>bin\Release\Xamarin.Mac10\ReactiveUI.xml</DocumentationFile>
+    <DocumentationFile>bin\Release\Xamarin.Mac20\ReactiveUI.xml</DocumentationFile>
     <UseRefCounting>false</UseRefCounting>
     <Profiling>false</Profiling>
   </PropertyGroup>
@@ -115,7 +115,6 @@
   <ItemGroup>
     <Compile Include="Cocoa\KVOObservableForProperty.cs" />
     <Compile Include="Cocoa\NSRunloopScheduler.cs" />
-    <Compile Include="Cocoa\RoutedViewHost.cs" />
     <Compile Include="Cocoa\TargetActionCommandBinder.cs" />
     <Compile Include="Cocoa\ViewModelViewHost.cs" />
     <Compile Include="Platform\ComponentModelTypeConverter.cs" />
@@ -193,5 +192,5 @@
     <None Include="packages.ReactiveUI_Mac.config" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Mac\Xamarin.Mac.CSharp.targets" Condition=" '$(OS)' != 'Windows_NT' " />
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets"  Condition=" '$(OS)' == 'Windows_NT' " />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" Condition=" '$(OS)' == 'Windows_NT' " />
 </Project>
