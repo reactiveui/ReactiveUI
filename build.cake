@@ -203,7 +203,7 @@ Task("GenerateEvents")
 
         generate("android");
         generate("ios");
-        generate("mac");
+        //generate("mac");
         generate("xamforms");
 
         generate("net45");
@@ -249,7 +249,7 @@ Task("BuildEvents")
 
         build("ReactiveUI.Events_Android.sln", MSBuildPlatform.Automatic);
         build("ReactiveUI.Events_iOS.sln", MSBuildPlatform.Automatic);
-        build("ReactiveUI.Events_MAC.sln", MSBuildPlatform.Automatic);
+        //build("ReactiveUI.Events_MAC.sln", MSBuildPlatform.Automatic);
         build("ReactiveUI.Events_XamForms.sln", MSBuildPlatform.Automatic);
 
         build("ReactiveUI.Events_NET45.sln", MSBuildPlatform.Automatic);
