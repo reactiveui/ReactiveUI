@@ -1,8 +1,8 @@
 ﻿{
   "dependencies": {
-    "Microsoft.NETCore.UniversalWindowsPlatform": "5.0.0",
+    "Microsoft.NETCore.UniversalWindowsPlatform": "5.1.0",
     "NuSpec.ReferenceGenerator": "1.4.2",
-    "Rx-Testing":  "2.2.5"
+    "Rx-Testing": "2.2.5"
   },
   "frameworks": {
     "uap10.0": {}
