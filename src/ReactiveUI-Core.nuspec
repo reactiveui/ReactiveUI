@@ -53,8 +53,8 @@
         <dependency id="System.Runtime" version="4.0.20" />
         <dependency id="System.Runtime.Extensions" version="4.0.10" />
         <dependency id="System.Runtime.InteropServices.WindowsRuntime" version="4.0.0" />
-        <dependency id="System.Runtime.Serialization.Primitives" version="4.0.10" />
-        <dependency id="System.Runtime.Serialization.Xml" version="4.0.10" />
+        <dependency id="System.Runtime.Serialization.Primitives" version="4.1.0" />
+        <dependency id="System.Runtime.Serialization.Xml" version="4.1.0" />
         <dependency id="System.Text.Encoding" version="4.0.10" />
         <dependency id="System.Threading" version="4.0.10" />
         <dependency id="System.Threading.Tasks" version="4.0.10" />
@@ -77,7 +77,7 @@
     <!-- .NET 4.5 -->
     <file src="bin/Release/Net45/ReactiveUI.dll" target="lib/Net45/ReactiveUI.dll" />
     <!-- Portable PCL -->
-    <file src="bin/Release/portable-net45+netcore45+wp8+UAP10+MonoAndroid403+MonoTouch10+Xamarin.iOS10/ReactiveUI.dll" target="lib/portable-net45+netcore45+wp8+UAP10+MonoAndroid403+MonoTouch10+Xamarin.iOS10/ReactiveUI.dll" />
+    <file src="bin/Release/portable-net45+netcore45+wpa81+win8+wp8+UAP10+MonoAndroid403+MonoTouch10+Xamarin.iOS10/ReactiveUI.dll" target="lib/portable-net45+netcore45+wpa81+win8+wp8+UAP10+MonoAndroid403+MonoTouch10+Xamarin.iOS10/ReactiveUI.dll" />
     <!-- Source -->
     <file src="*.cs" target="src" />
   </files>
