@@ -20,12 +20,24 @@ namespace ReactiveUI.XamForms
         public IObservable<bool> GetActivationForView(IActivatable view)
         {
             var activation =
+                GetActivationFor(view as ICanActivate) ??
                 GetActivationFor(view as Page) ??
                 GetActivationFor(view as View) ??
                 GetActivationFor(view as Cell) ??
                 Observable.Never<bool>();
 
             return activation.DistinctUntilChanged();
+        }
+
+        private static IObservable<bool> GetActivationFor(ICanActivate canActivate)
+        {
+            if (canActivate == null) {
+                return null;
+            }
+
+            return Observable.Merge(
+                canActivate.Activated.Select(_ => true),
+                canActivate.Activated.Select(_ => false));
         }
 
         private static IObservable<bool> GetActivationFor(Page page)
