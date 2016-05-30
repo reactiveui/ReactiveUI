@@ -37,7 +37,7 @@ namespace ReactiveUI.XamForms
 
             return Observable.Merge(
                 canActivate.Activated.Select(_ => true),
-                canActivate.Activated.Select(_ => false));
+                canActivate.Deactivated.Select(_ => false));
         }
 
         private static IObservable<bool> GetActivationFor(Page page)
