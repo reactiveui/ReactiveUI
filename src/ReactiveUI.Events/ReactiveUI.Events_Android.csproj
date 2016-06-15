@@ -25,7 +25,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\Monoandroid\</OutputPath>
+    <OutputPath>bin\Debug\Monoandroid403\</OutputPath>
     <IntermediateOutputPath>obj\Debug\Monoandroid</IntermediateOutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
@@ -34,12 +34,12 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\Monoandroid\</OutputPath>
-    <IntermediateOutputPath>obj\Release\Monoandroid</IntermediateOutputPath>
+    <OutputPath>bin\Release\Monoandroid403\</OutputPath>
+    <IntermediateOutputPath>obj\Release\Monoandroid403</IntermediateOutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Release\Monoandroid\ReactiveUI.Events.XML</DocumentationFile>
+    <DocumentationFile>bin\Release\Monoandroid403\ReactiveUI.Events.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Mono.Android" />
