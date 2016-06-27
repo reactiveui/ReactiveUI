@@ -47,3 +47,6 @@ Install-AndroidSDK 19
 Install-AndroidSDK 20
 Install-AndroidSDK 21
 Install-AndroidSDK 20
+Install-AndroidSDK 21
+Install-AndroidSDK 22
+Install-AndroidSDK 23

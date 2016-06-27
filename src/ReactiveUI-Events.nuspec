@@ -20,11 +20,11 @@
   </metadata>
   <files>
     <!-- Android -->
-    <file src="bin/Release/MonoAndroid/ReactiveUI.Events.dll" target="lib/MonoAndroid/ReactiveUI.Events.dll" />
+    <file src="bin/Release/MonoAndroid403/ReactiveUI.Events.dll" target="lib/MonoAndroid403/ReactiveUI.Events.dll" />
     <!-- iOS Unified API -->
     <file src="bin/Release/Xamarin.iOS10/ReactiveUI.Events.dll" target="lib/Xamarin.iOS10/ReactiveUI.Events.dll" />
     <!-- Mac Mobile Unified API -->
-    <file src="bin/Release/Xamarin.Mac20/ReactiveUI.Events.dll" target="lib/Xamarin.Mac20/ReactiveUI.Events.dll" />
+    <!-- <file src="bin/Release/Xamarin.Mac20/ReactiveUI.Events.dll" target="lib/Xamarin.Mac20/ReactiveUI.Events.dll" /> -->
     <!-- Windows Phone Silverlight -->
     <file src="bin/Release/WP81/ReactiveUI.Events.dll" target="lib/WP81/ReactiveUI.Events.dll" />
     <!-- Windows Store 8.1 -->
