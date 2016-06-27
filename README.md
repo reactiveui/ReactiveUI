@@ -18,6 +18,8 @@ ReactiveUI is inspired by [functional reactive programming](https://en.wikipedia
 
 If you are new to these concepts then we highly recommend watching the following videos before progressing too far:
 
+* [Rx Under the Hood (Video #1)](https://channel9.msdn.com/Shows/Going+Deep/E2E-Erik-Meijer-and-Wes-Dyer-Reactive-Framework-Rx-Under-the-Hood-1-of-2) by Erik Meijer (Inventor of Reactive Extensions/Microsoft Research)
+* [Rx Under the Hood (Video #2)](https://channel9.msdn.com/Shows/Going+Deep/E2E-Erik-Meijer-and-Wes-Dyer-Reactive-Framework-Rx-Under-the-Hood-2-of-2) by Erik Meijer (Inventor of Reactive Extensions/Microsoft Research)
 * [Controlling Time and Space: understanding the many formulations of FRP](https://www.youtube.com/watch?v=Agu6jipKfYw) by Evan Czaplicki (Elm language designer/Prezi)
 * [FRP In Practice: Taking a look at Reactive[UI/Cocoa]](https://www.youtube.com/watch?v=1XNATGjqM6U) by Paul Betts (Slack/GitHub)
 * [ReactiveUI - It's pretty neat](https://www.youtube.com/watch?v=HPyKHxy7X0w) by Brendan Forster (GitHub)

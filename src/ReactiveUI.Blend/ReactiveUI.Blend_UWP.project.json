@@ -1,7 +1,7 @@
 ﻿{
   "dependencies": {
-    "Microsoft.NETCore.UniversalWindowsPlatform": "5.0.0",
-    "Microsoft.Xaml.Behaviors.Uwp.Managed": "1.0.3",
+    "Microsoft.NETCore.UniversalWindowsPlatform": "5.1.0",
+    "Microsoft.Xaml.Behaviors.Uwp.Managed": "1.1.0",
     "NuSpec.ReferenceGenerator": "1.4.2",
     "Rx-WindowStoreApps": "2.2.5",
     "Splat": "1.6.2"
