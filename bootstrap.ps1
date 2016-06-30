@@ -1,3 +1,6 @@
+set-strictmode -version 2.0
+$ErrorActionPreference="Stop"
+
 $AndroidToolPath = "${env:ProgramFiles(x86)}\Android\android-sdk\tools\android"
 #$AndroidToolPath = "$env:localappdata\Android\android-sdk\tools\android"
 
