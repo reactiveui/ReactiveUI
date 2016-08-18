@@ -80,8 +80,8 @@ namespace ReactiveUI.Android.Support
 
         object IViewFor.ViewModel
         {
-            get { return _ViewModel; }
-            set { _ViewModel = (TViewModel)value; }
+            get { return ViewModel; }
+            set { ViewModel = (TViewModel)value; }
         }
 
         public event PropertyChangingEventHandler PropertyChanging
