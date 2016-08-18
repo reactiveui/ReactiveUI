@@ -35,7 +35,7 @@ namespace ReactiveUI.Android.Support
 
         public override void OnBindViewHolder(RecyclerView.ViewHolder holder, int position)
         {
-            ((ReactiveRecyclerViewViewHolder<TViewModel>)holder).ViewModel = list[position];
+            ((IViewFor)holder).ViewModel = list[position];
         }
 
         public override int ItemCount { get { return list.Count; } }
