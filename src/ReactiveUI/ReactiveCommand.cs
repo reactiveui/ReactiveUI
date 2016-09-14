@@ -4,6 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reactive;
 using System.Reactive.Concurrency;
+using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Reactive.Threading.Tasks;
@@ -1040,13 +1041,16 @@ namespace ReactiveUI
         /// from the command.</returns>
         public static IDisposable InvokeCommand<T>(this IObservable<T> This, ICommand command)
         {
-            return This.Throttle(x => Observable.FromEventPattern(h => command.CanExecuteChanged += h, h => command.CanExecuteChanged -= h)
+            var canExecuteChanged = Observable
+                .FromEventPattern(h => command.CanExecuteChanged += h, h => command.CanExecuteChanged -= h)
                 .Select(_ => Unit.Default)
-                .StartWith(Unit.Default)
-                .Where(_ => command.CanExecute(x)))
-                .Subscribe(x => {
-                    command.Execute(x);
-                });
+                .StartWith(Unit.Default);
+
+            return This
+                .WithLatestFrom(canExecuteChanged, (value, _) => InvokeCommandInfo.From(command, command.CanExecute(value), value))
+                .Where(ii => ii.CanExecute)
+                .Do(ii => command.Execute(ii.Value))
+                .Subscribe();
         }
 
         /// <summary>
@@ -1059,9 +1063,10 @@ namespace ReactiveUI
         /// from the command.</returns>
         public static IDisposable InvokeCommand<T, TResult>(this IObservable<T> This, ReactiveCommand<T, TResult> command)
         {
-            return This.Throttle(x => command.CanExecute.Where(b => b))
-                .Select(x => command.Execute(x).Catch(Observable.Empty<TResult>()))
-                .Switch()
+            return This
+                .WithLatestFrom(command.CanExecute, (value, canExecute) => InvokeCommandInfo.From(command, canExecute, value))
+                .Where(ii => ii.CanExecute)
+                .SelectMany(ii => command.Execute(ii.Value))
                 .Subscribe();
         }
 
@@ -1076,14 +1081,19 @@ namespace ReactiveUI
         /// from the command.</returns>
         public static IDisposable InvokeCommand<T, TTarget>(this IObservable<T> This, TTarget target, Expression<Func<TTarget, ICommand>> commandProperty)
         {
-            return This.CombineLatest(target.WhenAnyValue(commandProperty), (val, cmd) => new { val, cmd })
-                .Throttle(x => Observable.FromEventPattern(h => x.cmd.CanExecuteChanged += h, h => x.cmd.CanExecuteChanged -= h)
-                .Select(_ => Unit.Default)
-                .StartWith(Unit.Default)
-                .Where(_ => x.cmd.CanExecute(x.val)))
-                .Subscribe(x => {
-                    x.cmd.Execute(x.val);
-                });
+            var command = target.WhenAnyValue(commandProperty);
+            var commandCanExecuteChanged = command
+                .Select(c => c == null ? Observable.Empty<ICommand>() : Observable
+                    .FromEventPattern(h => c.CanExecuteChanged += h, h => c.CanExecuteChanged -= h)
+                    .Select(_ => c)
+                    .StartWith(c))
+                .Switch();
+
+            return This
+                .WithLatestFrom(commandCanExecuteChanged, (value, cmd) => InvokeCommandInfo.From(cmd, cmd.CanExecute(value), value))
+                .Where(ii => ii.CanExecute)
+                .Do(ii => ii.Command.Execute(ii.Value))
+                .Subscribe();
         }
 
         /// <summary>
@@ -1097,11 +1107,70 @@ namespace ReactiveUI
         /// from the command.</returns>
         public static IDisposable InvokeCommand<T, TResult, TTarget>(this IObservable<T> This, TTarget target, Expression<Func<TTarget, ReactiveCommand<T, TResult>>> commandProperty)
         {
-            return This.CombineLatest(target.WhenAnyValue(commandProperty), (val, cmd) => new { val, cmd })
-                .Throttle(x => x.cmd.CanExecute.Where(b => b))
-                .Select(x => x.cmd.Execute(x.val).Catch(Observable.Empty<TResult>()))
-                .Switch()
+            var command = target.WhenAnyValue(commandProperty);
+            var invocationInfo = command
+                .Select(cmd => cmd == null ? Observable.Empty<InvokeCommandInfo<ReactiveCommand<T, TResult>, T>>() : cmd
+                    .CanExecute
+                    .Select(canExecute => InvokeCommandInfo.From(cmd, canExecute, default(T))))
+                .Switch();
+
+            return This
+                .WithLatestFrom(invocationInfo, (value, ii) => ii.WithValue(value))
+                .Where(ii => ii.CanExecute)
+                .SelectMany(ii => ii.Command.Execute(ii.Value))
                 .Subscribe();
+        }
+
+        private static class InvokeCommandInfo
+        {
+            public static InvokeCommandInfo<TCommand, TValue> From<TCommand, TValue>(TCommand command, bool canExecute, TValue value) =>
+                new InvokeCommandInfo<TCommand, TValue>(command, canExecute, value);
+        }
+
+        private struct InvokeCommandInfo<TCommand, TValue>
+        {
+            private readonly TCommand command;
+            private readonly bool canExecute;
+            private readonly TValue value;
+
+            public InvokeCommandInfo(TCommand command, bool canExecute)
+                : this(command, canExecute, default(TValue))
+            {
+            }
+
+            public InvokeCommandInfo(TCommand command, bool canExecute, TValue value)
+            {
+                this.command = command;
+                this.canExecute = canExecute;
+                this.value = value;
+            }
+
+            public TCommand Command => this.command;
+
+            public bool CanExecute => this.canExecute;
+
+            public TValue Value => this.value;
+
+            public InvokeCommandInfo<TCommand, TValue> WithValue(TValue value) =>
+                new InvokeCommandInfo<TCommand, TValue>(this.command, this.canExecute, value);
+        }
+    }
+}
+
+// TODO: dump this once we migrate to Rx 3
+namespace System.Reactive.Linq
+{
+    internal static class WithLatestFromExtensions
+    {
+        public static IObservable<TResult> WithLatestFrom<TLeft, TRight, TResult>(
+            this IObservable<TLeft> @this,
+            IObservable<TRight> other,
+            Func<TLeft, TRight, TResult> resultSelector)
+        {
+            return @this.Publish(os =>
+                other
+                    .Select(a => os.Select(b => resultSelector(b, a)))
+                    .Switch());
         }
     }
 }
