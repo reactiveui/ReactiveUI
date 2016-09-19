@@ -22,8 +22,6 @@ xamarin:
   ios: true
 build_script:
 - ps: >-
-    ./MSBuild.SonarQube.Runner begin /k:ReactiveUI /n:"ReactiveUI" /v:latest /d:sonar.host.url=https://sonarqube.com /d:sonar.login=$env:SONAR_API_KEY /d:sonar.vb.file.suffixes=.no_vb6_files
-
 
     ./bootstrap.ps1
 
@@ -34,5 +32,3 @@ artifacts:
 - path: '**/bin/*'
 - path: src/ReactiveUI.Events/Events_*.cs
 - path: artifacts/*
-on_finish:
-- ps: ./MSBuild.SonarQube.Runner.exe end /d:sonar.login=$env:SONAR_API_KEY
