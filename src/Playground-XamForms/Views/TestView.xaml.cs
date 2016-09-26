@@ -16,8 +16,8 @@ namespace PlaygroundXamForms
             this.OneWayBind(ViewModel, x => x.TheGuid, x => x.TheGuid.Text);
 
             this.WhenAnyValue(x => x.ViewModel.HostScreen.Router)
-                .Select(x => x.NavigateCommandFor<DifferentViewModel>())
-                .BindTo(this, x => x.NavigateToDifferentView.Command);
+                .Select(x => x.Navigate.Execute( new DifferentViewModel())
+                .BindTo(this, y => y.NavigateToDifferentView.Command));
         }
 
         /// <summary>

@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Reactive;
 using ReactiveUI;
+using ReactiveCommand = ReactiveUI.ReactiveCommand;
 
 namespace PlaygroundXamForms
 {
@@ -9,7 +11,7 @@ namespace PlaygroundXamForms
         {
             SavedGuid = Guid.NewGuid();
 
-            DoIt = ReactiveCommand.Create();
+            DoIt = ReactiveCommand.Create(() => { });
         }
 
         Guid savedGuid;
@@ -18,7 +20,7 @@ namespace PlaygroundXamForms
             set { this.RaiseAndSetIfChanged(ref savedGuid, value); }
         }
 
-        public ReactiveCommand<Object> DoIt { get; protected set; }
+        public ReactiveCommand<Unit,Unit> DoIt { get; protected set; }
     }
 }
 
