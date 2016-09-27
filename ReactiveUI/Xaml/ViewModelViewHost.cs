@@ -50,6 +50,14 @@ namespace ReactiveUI
         public static readonly DependencyProperty ViewContractObservableProperty =
             DependencyProperty.Register("ViewContractObservable", typeof(IObservable<string>), typeof(ViewModelViewHost), new PropertyMetadata(Observable.Return(default(string))));
 
+        private string viewContract;
+
+        public string ViewContract
+        {
+            get { return this.viewContract; }
+            set { ViewContractObservable = Observable.Return(value); }
+        }
+
         public IViewLocator ViewLocator { get; set; }
 
         public ViewModelViewHost()
@@ -103,6 +111,11 @@ namespace ReactiveUI
                     Content = view;
                 }));
             });
+
+            this
+                .WhenAnyObservable(x => x.ViewContractObservable)
+                .ObserveOn(RxApp.MainThreadScheduler)
+                .Subscribe(x => this.viewContract = x);
         }
 
         static void somethingChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs dependencyPropertyChangedEventArgs)

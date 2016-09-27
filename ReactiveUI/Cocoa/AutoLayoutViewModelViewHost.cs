@@ -1,3 +1,4 @@
+using System;
 #if UNIFIED && UIKIT
 using NSView = UIKit.UIView;
 #elif UNIFIED && COCOA
@@ -16,9 +17,10 @@ namespace ReactiveUI
     /// up edge constraints for you from the parent view (the target)
     /// to the child subview.
     /// </summary>
-    public class AutoLayoutViewModelViewHost : ViewModelViewHost
+    [Obsolete("Use ViewModelViewHost instead. This class will be removed in a future release.")]
+    public class AutoLayoutViewModelViewHostLegacy : ViewModelViewHostLegacy
     {
-        public AutoLayoutViewModelViewHost(NSView targetView) : base(targetView)
+        public AutoLayoutViewModelViewHostLegacy(NSView targetView) : base(targetView)
         {
             AddAutoLayoutConstraintsToSubView = true;
         }
