@@ -906,6 +906,11 @@ namespace ReactiveUI
             object conversionHint = null,
             IBindingTypeConverter vmToViewConverterOverride = null)
         {
+
+            if (target == null) {
+                throw new ArgumentNullException("target");
+            }
+
             var viewExpression = Reflection.Rewrite(property.Body);
 
             var ret = evalBindingHooks(This, target, null, viewExpression, BindingDirection.OneWay);
