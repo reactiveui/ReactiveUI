@@ -28,7 +28,9 @@ namespace ReactiveUI
     {
         IObservable<bool> IsReloadingData { get; }
         void ReloadData();
-        void PerformBatchUpdates(Action updates, Action completion);
+        void BeginUpdates();
+        void PerformUpdates(Action updates, Action completion);
+        void EndUpdates();
         void InsertSections(NSIndexSet indexes);
         void DeleteSections(NSIndexSet indexes);
         void ReloadSections(NSIndexSet indexes);
@@ -287,7 +289,18 @@ namespace ReactiveUI
                         {
                             isCollectingChanges = true;
 
-                            RxApp.MainThreadScheduler.Schedule(() => this.ApplyPendingChanges());
+                            // immediately indicate to the view that there are changes underway, even though we don't apply them immediately
+                            // this ensures that if application code itself calls BeginUpdates/EndUpdates on the view before the changes have been applied, those inconsistencies
+                            // between what's in the data source versus what the view believes is in the data source won't trigger any errors because of the outstanding
+                            // BeginUpdates call (calls to BeginUpdates/EndUpdates can be nested)
+                            adapter.BeginUpdates();
+
+                            RxApp.MainThreadScheduler.Schedule(
+                                () =>
+                                {
+                                    this.ApplyPendingChanges();
+                                    adapter.EndUpdates();
+                                });
                         }
                     }));
 
@@ -320,7 +333,7 @@ namespace ReactiveUI
                 List<NotifyCollectionChangedEventArgs> allEventArgs = new List<NotifyCollectionChangedEventArgs>();
 
                 this.Log().Debug("Beginning update");
-                adapter.PerformBatchUpdates(() =>
+                adapter.PerformUpdates(() =>
                 {
                     if (this.Log().Level >= LogLevel.Debug)
                     {
