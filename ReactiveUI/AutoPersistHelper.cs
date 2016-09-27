@@ -106,7 +106,7 @@ namespace ReactiveUI
         /// if an object is constantly changing, it is possible that it will never
         /// be saved.</param>
         /// <returns>A Disposable to disable automatic persistence.</returns>
-        public static IDisposable AutoPersistCollection<T>(this ReactiveList<T> This, Func<T, IObservable<Unit>> doPersist, TimeSpan? interval = null)
+        public static IDisposable AutoPersistCollection<T>(this IReactiveCollection<T> This, Func<T, IObservable<Unit>> doPersist, TimeSpan? interval = null)
             where T : IReactiveObject
         {
             return AutoPersistCollection(This, doPersist, Observable.Never<Unit>(), interval);
@@ -124,7 +124,7 @@ namespace ReactiveUI
         /// if an object is constantly changing, it is possible that it will never
         /// be saved.</param>
         /// <returns>A Disposable to disable automatic persistence.</returns>
-        public static IDisposable AutoPersistCollection<T, TDontCare>(this ReactiveList<T> This, Func<T, IObservable<Unit>> doPersist, IObservable<TDontCare> manualSaveSignal, TimeSpan? interval = null)
+        public static IDisposable AutoPersistCollection<T, TDontCare>(this IReactiveCollection<T> This, Func<T, IObservable<Unit>> doPersist, IObservable<TDontCare> manualSaveSignal, TimeSpan? interval = null)
             where T : IReactiveObject
         {
             var disposerList = new Dictionary<T, IDisposable>();
@@ -155,7 +155,7 @@ namespace ReactiveUI
         /// <param name="onRemove">A method to be called when an object is removed
         /// from the collection.</param>
         /// <returns>A Disposable that deactivates this behavior.</returns>
-        public static IDisposable ActOnEveryObject<T>(this ReactiveList<T> This, Action<T> onAdd, Action<T> onRemove)
+        public static IDisposable ActOnEveryObject<T>(this IReactiveCollection<T> This, Action<T> onAdd, Action<T> onRemove)
             where T : IReactiveObject
         {
             foreach (var v in This) { onAdd(v); }
