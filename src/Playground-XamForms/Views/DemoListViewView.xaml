@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<rx:ReactiveContentPage x:TypeArguments="local:DemoListViewViewModel" xmlns="http://xamarin.com/schemas/2014/forms" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                     xmlns:rx="clr-namespace:ReactiveUI.XamForms;assembly=ReactiveUI.XamForms"
+                     xmlns:local="clr-namespace:PlaygroundXamForms;assembly=Playground-XamForms"
+                     x:Class="PlaygroundXamForms.DemoListViewView">
+
+  <ContentPage.Content>
+        <StackLayout HorizontalOptions="CenterAndExpand" VerticalOptions="Center">
+
+          <ListView x:Name="DogListView" HasUnevenRows="True">
+            <ListView.ItemTemplate>
+              <DataTemplate>
+                <local:ListViewItemView ViewModel="{Binding .}"/>
+              </DataTemplate>
+            </ListView.ItemTemplate>
+          </ListView>
+        </StackLayout>
+    </ContentPage.Content>
+</rx:ReactiveContentPage>

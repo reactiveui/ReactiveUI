@@ -7,11 +7,14 @@ using PlaygroundXamForms;
 namespace MobileSample_Android
 {
     [Application(Label = "AndroidPlayground")]
-    public class App : Application
+    public class AndroidApp : Application
     {
         AutoSuspendHelper suspendHelper;
 
-        App(IntPtr handle, JniHandleOwnership owner) : base(handle, owner) { }
+        public AndroidApp(IntPtr handle, JniHandleOwnership transfer) : base(handle, transfer)
+        {
+        }
+
 
         public override void OnCreate()
         {

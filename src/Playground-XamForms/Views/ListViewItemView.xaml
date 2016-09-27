@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<rx:ReactiveViewCell x:TypeArguments="local:DogsItemViewModel" xmlns="http://xamarin.com/schemas/2014/forms" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                     xmlns:rx="clr-namespace:ReactiveUI.XamForms;assembly=ReactiveUI.XamForms"
+                     xmlns:local="clr-namespace:PlaygroundXamForms;assembly=Playground-XamForms"
+                     x:Class="PlaygroundXamForms.ListViewItemView">
+
+        <StackLayout HorizontalOptions="Start" >
+            <Label x:Name="Name" TextColor="White" FontSize="20"/>
+            <Label x:Name="Race"/>
+        </StackLayout>
+</rx:ReactiveViewCell>

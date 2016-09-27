@@ -1,5 +1,5 @@
 ﻿using System;
-
+using System.Reactive.Linq;
 using Android.App;
 using Android.Content;
 using Android.Runtime;
@@ -9,6 +9,7 @@ using Android.OS;
 
 using Xamarin.Forms.Platform.Android;
 using ReactiveUI;
+using ReactiveUI.Legacy;
 
 
 namespace PlaygroundXamForms.Android
@@ -21,8 +22,16 @@ namespace PlaygroundXamForms.Android
             base.OnCreate (bundle);
             Xamarin.Forms.Forms.Init (this, bundle);
 
-            var view = RxApp.SuspensionHost.GetAppState<AppBootstrapper>().CreateMainView();
-            SetPage(view);
+            // NB: This is the worst way ever to handle UserErrors and definitely *not*
+            // best practice. Help your users out!
+            // TODO
+            UserError.RegisterHandler(ue => {
+                var toast = Toast.MakeText(this, ue.ErrorMessage, ToastLength.Short);
+                toast.Show();
+                return Observable.Return(RecoveryOptionResult.CancelOperation);
+            });
+
+            LoadApplication(new App());
         }
     }
 }

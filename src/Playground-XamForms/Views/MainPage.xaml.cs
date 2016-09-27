@@ -15,12 +15,13 @@ namespace PlaygroundXamForms
             ViewModel = new MainPageViewModel();
 
             this.OneWayBind(ViewModel, x => x.SavedGuid, x => x.savedGuid.Text);
-            this.BindCommand(ViewModel, x => x.DoIt, x => x.doIt);
+            this.BindCommand(ViewModel, x => x.NavigateToListView, x => x.GotoListView);
 
-            this.WhenAnyObservable(x => x.ViewModel.DoIt)
-                .Subscribe(_ => {
-                    Debug.WriteLine("Doin' it.");
-                });
+            // VS complains it cannot infer the Type
+            //this.WhenAnyObservable(x => x.ViewModel.NavigateToListView)
+            //    .Subscribe(_ => {
+            //        Debug.WriteLine("Doin' it.");
+            //    });
         }
 
         public static readonly BindableProperty ViewModelProperty = BindableProperty.Create<MainPage, MainPageViewModel>(
