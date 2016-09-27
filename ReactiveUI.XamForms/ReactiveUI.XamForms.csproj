@@ -79,7 +79,6 @@
     </Compile>
     <Compile Include="XamForms\ActivationForViewFetcher.cs" />
     <Compile Include="XamForms\ViewModelViewHost.cs" />
-    <Compile Include="XamForms\XamlDefaultPropertyBinding.cs" />
     <Compile Include="XamForms\ReactiveContentView.cs" />
     <Compile Include="XamForms\Registrations.cs" />
     <Compile Include="XamForms\ReactiveContentPage.cs" />

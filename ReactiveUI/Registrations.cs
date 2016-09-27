@@ -13,7 +13,6 @@ namespace ReactiveUI
             registerFunction(() => new INPCObservableForProperty(), typeof(ICreatesObservableForProperty));
             registerFunction(() => new IROObservableForProperty(), typeof(ICreatesObservableForProperty));
             registerFunction(() => new POCOObservableForProperty(), typeof(ICreatesObservableForProperty));
-            registerFunction(() => new NullDefaultPropertyBindingProvider(), typeof(IDefaultPropertyBindingProvider));
             registerFunction(() => new EqualityTypeConverter(), typeof(IBindingTypeConverter));
             registerFunction(() => new StringConverter(), typeof(IBindingTypeConverter));
             registerFunction(() => new DefaultViewLocator(), typeof(IViewLocator));
