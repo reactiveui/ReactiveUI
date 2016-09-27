@@ -180,25 +180,6 @@ namespace ReactiveUI.Tests
     public class CommandBindingImplementationTests
     {
         [Fact]
-        public void CommandBindConventionWireup()
-        {
-            var vm = new CommandBindViewModel();
-            var view = new CommandBindView() {ViewModel = vm};
-
-            Assert.Null(view.Command1.Command);
-
-            var disp = view.BindCommand(vm, x => x.Command1);
-            Assert.Equal(vm.Command1, view.Command1.Command);
-
-            var newCmd = ReactiveCommand.Create();
-            vm.Command1 = newCmd;
-            Assert.Equal(newCmd, view.Command1.Command);
-
-            disp.Dispose();
-            Assert.Null(view.Command1.Command);
-        }
-
-        [Fact]
         public void CommandBindByNameWireup()
         {
             var vm = new CommandBindViewModel();

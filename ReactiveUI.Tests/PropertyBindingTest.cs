@@ -168,21 +168,6 @@ namespace ReactiveUI.Tests
         }
 
         [Fact]
-        public void ImplicitBindPlusTypeConversion() 
-        {
-            var vm = new PropertyBindViewModel();
-            var view = new PropertyBindView() {ViewModel = vm};
-
-            view.Bind(view.ViewModel, x => x.Property2);
-
-            vm.Property2 = 42;
-            Assert.Equal("42", view.Property2.Text);
-
-            view.Property2.Text = "7";
-            Assert.Equal(7, vm.Property2);
-        }
-
-        [Fact]
         public void ViewModelNullableToViewNonNullable()
         {
             var vm = new PropertyBindViewModel();

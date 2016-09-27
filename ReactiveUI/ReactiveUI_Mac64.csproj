@@ -75,7 +75,6 @@
     <Reference Include="Xamarin.Mac" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Cocoa\CocoaDefaultPropertyBinding.cs" />
     <Compile Include="Cocoa\KVOObservableForProperty.cs" />
     <Compile Include="Cocoa\NSRunloopScheduler.cs" />
     <Compile Include="Cocoa\RoutedViewHost.cs" />
@@ -100,7 +99,6 @@
     <Compile Include="CommandBinding.cs" />
     <Compile Include="CompatMixins.cs" />
     <Compile Include="ContractStubs.cs" />
-    <Compile Include="DefaultPropertyBinding.cs" />
     <Compile Include="Errors.cs" />
     <Compile Include="IDependencyResolver.cs" />
     <Compile Include="INPCObservableForProperty.cs" />
@@ -108,7 +106,6 @@
     <Compile Include="IROObservableForProperty.cs" />
     <Compile Include="MessageBus.cs" />
     <Compile Include="MobileLifecycle.cs" />
-    <Compile Include="NullDefaultPropertyBindingProvider.cs" />
     <Compile Include="ObservableAsPropertyHelper.cs" />
     <Compile Include="ObservedChangedMixin.cs" />
     <Compile Include="OrderedComparer.cs" />

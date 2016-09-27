@@ -153,29 +153,6 @@ namespace ReactiveUI.Tests.Winforms
     public class CommandBindingImplementationTests
     {
         [Fact]
-        public void CommandBindConventionWireup()
-        {
-            var vm = new WinformCommandBindViewModel();
-            var view = new WinformCommandBindView() { ViewModel = vm };
-
-            int invokeCount = 0;
-            vm.Command1.Subscribe(_ => invokeCount += 1);
-            
-            var disp = view.BindCommand(vm, x => x.Command1);
-
-            view.Command1.PerformClick();;
-            Assert.Equal(1, invokeCount);
-
-            var newCmd = ReactiveCommand.Create();
-            vm.Command1 = newCmd;
-
-            view.Command1.PerformClick();
-            Assert.Equal(1, invokeCount);
-
-            disp.Dispose();
-        }
-
-        [Fact]
         public void CommandBindByNameWireup()
         {
             var vm = new WinformCommandBindViewModel();

@@ -39,13 +39,11 @@ namespace ReactiveUI
 #if !MONO
             registerFunction(() => new ActivationForViewFetcher(), typeof(IActivationForViewFetcher));
             registerFunction(() => new DependencyObjectObservableForProperty(), typeof(ICreatesObservableForProperty));
-            registerFunction(() => new XamlDefaultPropertyBinding(), typeof(IDefaultPropertyBindingProvider));
             registerFunction(() => new BooleanToVisibilityTypeConverter(), typeof(IBindingTypeConverter));
             registerFunction(() => new AutoDataTemplateBindingHook(), typeof(IPropertyBindingHook));
 #endif
 
 #if ANDROID
-            registerFunction(() => new AndroidDefaultPropertyBinding(), typeof(IDefaultPropertyBindingProvider));
             registerFunction(() => new AndroidObservableForWidgets(), typeof(ICreatesObservableForProperty));
             registerFunction(() => new AndroidCommandBinders(), typeof(ICreatesCommandBinding));
 #endif
@@ -58,7 +56,6 @@ namespace ReactiveUI
 
 #if COCOA
             registerFunction(() => new KVOObservableForProperty(), typeof(ICreatesObservableForProperty));
-            registerFunction(() => new CocoaDefaultPropertyBinding(), typeof(IDefaultPropertyBindingProvider));
 #endif
 
 #if COCOA && !UIKIT
