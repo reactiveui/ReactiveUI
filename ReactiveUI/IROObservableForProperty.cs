@@ -26,24 +26,14 @@ namespace ReactiveUI
             }
 
             var obs = beforeChanged ? iro.getChangingObservable() : iro.getChangedObservable();
-
             var memberInfo = expression.GetMemberInfo();
-            if (beforeChanged) {
-                if (expression.NodeType == ExpressionType.Index) {
-                    return obs.Where(x => x.PropertyName.Equals(memberInfo.Name + "[]"))
-                        .Select(x => new ObservedChange<object, object>(sender, expression));
-                } else {
-                    return obs.Where(x => x.PropertyName.Equals(memberInfo.Name))
-                        .Select(x => new ObservedChange<object, object>(sender, expression));
-                }
+
+            if (expression.NodeType == ExpressionType.Index) {
+                return obs.Where(x => x.PropertyName.Equals(memberInfo.Name + "[]"))
+                    .Select(x => new ObservedChange<object, object>(sender, expression));
             } else {
-                if (expression.NodeType == ExpressionType.Index) {
-                    return obs.Where(x => x.PropertyName.Equals(memberInfo.Name + "[]"))
-                        .Select(x => new ObservedChange<object, object>(sender, expression));
-                } else {
-                    return obs.Where(x => x.PropertyName.Equals(memberInfo.Name))
-                        .Select(x => new ObservedChange<object, object>(sender, expression));
-                }
+                return obs.Where(x => x.PropertyName.Equals(memberInfo.Name))
+                    .Select(x => new ObservedChange<object, object>(sender, expression));
             }
         }
     }

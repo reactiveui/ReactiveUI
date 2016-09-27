@@ -130,8 +130,7 @@ namespace ReactiveUI
             remove { PropertyChangedEventManager.RemoveHandler(this, value); }
         }
 
-        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args)
-        {
+        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args) {
             PropertyChangedEventManager.DeliverEvent(this, args);
         }
 
