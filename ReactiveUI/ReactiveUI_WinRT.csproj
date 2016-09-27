@@ -54,7 +54,6 @@
     <Compile Include="Xaml\ViewModelViewHost.cs" />
     <Compile Include="Xaml\WinRTAppDataDriver.cs" />
     <Compile Include="Xaml\WinRTAutoSuspendApplication.cs" />
-    <Compile Include="Xaml\XamlDefaultPropertyBinding.cs" />
     <Compile Include="..\CommonAssemblyInfo.cs">
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
@@ -67,7 +66,6 @@
     <Compile Include="CompatMixins.cs" />
     <Compile Include="ContractStubs.cs" />
     <Compile Include="CreatesCommandBinding.cs" />
-    <Compile Include="DefaultPropertyBinding.cs" />
     <Compile Include="Errors.cs" />
     <Compile Include="IDependencyResolver.cs" />
     <Compile Include="INPCObservableForProperty.cs" />
@@ -75,7 +73,6 @@
     <Compile Include="IROObservableForProperty.cs" />
     <Compile Include="MessageBus.cs" />
     <Compile Include="MobileLifecycle.cs" />
-    <Compile Include="NullDefaultPropertyBindingProvider.cs" />
     <Compile Include="ObservableAsPropertyHelper.cs" />
     <Compile Include="ObservedChangedMixin.cs" />
     <Compile Include="OrderedComparer.cs" />

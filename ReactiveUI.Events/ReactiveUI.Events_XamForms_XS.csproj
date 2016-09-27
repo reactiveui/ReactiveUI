@@ -20,7 +20,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <CustomCommands>
       <CustomCommands>
-        <Command type="BeforeBuild" command="/usr/bin/env ruby ${ProjectDir}/generate_events.rb ${ProjectDir}/../packages/Xamarin.Forms.1.4.2.6359/lib/portable-win+net45+wp80+MonoAndroid10+MonoTouch10/Xamarin.Forms.Core.dll" workingdir="${ProjectDir}" />
+        <Command type="BeforeBuild" command="/usr/bin/env ruby ${ProjectDir}/generate_events.rb ${ProjectDir}/../packages/Xamarin.Forms.1.4.2.6359/lib/portable-win+net45+wp80+win81+wpa81+MonoAndroid10+MonoTouch10+Xamarin.iOS10/Xamarin.Forms.Core.dll" workingdir="${ProjectDir}" />
       </CustomCommands>
     </CustomCommands>
   </PropertyGroup>
@@ -68,10 +68,10 @@
       <HintPath>..\packages\Rx-PlatformServices.2.2.5\lib\portable-windows8+net45+wp8\System.Reactive.PlatformServices.dll</HintPath>
     </Reference>
     <Reference Include="Xamarin.Forms.Core">
-      <HintPath>..\packages\Xamarin.Forms.1.4.2.6359\lib\portable-win+net45+wp80+MonoAndroid10+MonoTouch10\Xamarin.Forms.Core.dll</HintPath>
+      <HintPath>..\packages\Xamarin.Forms.1.4.2.6359\lib\portable-win+net45+wp80+win81+wpa81+MonoAndroid10+MonoTouch10+Xamarin.iOS10\Xamarin.Forms.Core.dll</HintPath>
     </Reference>
     <Reference Include="Xamarin.Forms.Xaml">
-      <HintPath>..\packages\Xamarin.Forms.1.4.2.6359\lib\portable-win+net45+wp80+MonoAndroid10+MonoTouch10\Xamarin.Forms.Xaml.dll</HintPath>
+      <HintPath>..\packages\Xamarin.Forms.1.4.2.6359\lib\portable-win+net45+wp80+win81+wpa81+MonoAndroid10+MonoTouch10+Xamarin.iOS10\Xamarin.Forms.Xaml.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

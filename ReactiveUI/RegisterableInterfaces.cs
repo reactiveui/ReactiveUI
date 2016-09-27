@@ -177,23 +177,6 @@ namespace ReactiveUI
     }
 
     /// <summary>
-    /// Implement this to teach Bind and OneWayBind how to guess the most
-    /// "common" property on a given control, so if the caller doesn't specify it,
-    /// it'll pick the right control
-    /// </summary>
-    public interface IDefaultPropertyBindingProvider
-    {
-        /// <summary>
-        /// Given a certain control, figure out the default property to bind to
-        /// </summary>
-        /// <param name="control">The control to look at.</param>
-        /// <returns>A tuple of PropertyName and Affinity for that property.
-        /// Use the same rules about affinity as others, but return null if
-        /// the property can't be determined.</returns>
-        Tuple<string, int> GetPropertyForControl(object control);
-    }
-
-    /// <summary>
     /// Implement this as a way to intercept bindings at the time that they are
     /// created and execute an additional action (or to cancel the binding)
     /// </summary>
