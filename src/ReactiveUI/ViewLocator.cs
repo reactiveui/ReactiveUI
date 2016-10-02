@@ -1,5 +1,6 @@
 using System;
 using ReactiveUI;
+using Splat;
 
 namespace ReactiveUI
 {
