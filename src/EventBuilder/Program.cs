@@ -9,6 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using Parser = CommandLine.Parser;
+using System.Text.RegularExpressions;
 
 namespace EventBuilder
 {
@@ -155,9 +156,9 @@ namespace EventBuilder
                 .Replace("System.String", "string")
                 .Replace("System.Object", "object")
                 .Replace("&lt;", "<")
-                .Replace("&gt;", ">")
-                .Replace("`1", "")
-                .Replace("`2", "");
+                .Replace("&gt;", ">");
+
+            result = Regex.Replace(result, @"`\d", "");
 
             Console.WriteLine(result);
         }
