@@ -30,7 +30,7 @@ This library is organized into several high-level assemblies:
   containers to locate views, as well as navigating back and forwards between
   views.
 
-## A Compelling Example
+## A Compelling Example!
 
 ```cs
 public class ColorChooserThatDoesntLikeGreen : ReactiveObject
