@@ -203,12 +203,11 @@ Task("GenerateEvents")
 
         generate("android");
         generate("ios");
-        //generate("mac");
+        generate("mac");
         generate("xamforms");
 
         generate("net45");
-
-        generate("wp81");
+        
         generate("wpa81");
         generate("uwp");
     }
@@ -244,8 +243,8 @@ Task("BuildEvents")
         };
 
         build("ReactiveUI.Events_Android.sln");
-        build("ReactiveUI.Events_iOS.sln");
-        //build("ReactiveUI.Events_MAC.sln");
+//        build("ReactiveUI.Events_iOS.sln");
+        build("ReactiveUI.Events_MAC.sln");
         build("ReactiveUI.Events_XamForms.sln");
 
         build("ReactiveUI.Events_NET45.sln");
