@@ -224,21 +224,17 @@ Task("BuildEvents")
     }
     else
     {
-        // WP81 is the only platform that needs to specify the MSBUILD platform
-        // when the platform is retired remove the platform signature,
-        // remove the .SetMSBuildPlatform method and simply the invoking methods.
-        Action<string, MSBuildPlatform> build = (filename, platform) =>
+        Action<string> build = (filename) =>
         {
             var solution = System.IO.Path.Combine("./src/ReactiveUI.Events/", filename);
 
             // UWP (project.json) needs to be restored before it will build.
             RestorePackages (solution);
 
-            Information("Building {0} with MSBuild {1} ", solution, platform);
+            Information("Building {0}", solution);
 
             MSBuild(solution, new MSBuildSettings()
                 .SetConfiguration(configuration)
-                .SetMSBuildPlatform(platform)
                 .WithProperty("NoWarn", "1591") // ignore missing XML doc warnings
                 .WithProperty("TreatWarningsAsErrors", treatWarningsAsErrors.ToString())
                 .SetVerbosity(Verbosity.Minimal)
@@ -247,16 +243,15 @@ Task("BuildEvents")
             SourceLink(solution);
         };
 
-        build("ReactiveUI.Events_Android.sln", MSBuildPlatform.Automatic);
-        build("ReactiveUI.Events_iOS.sln", MSBuildPlatform.Automatic);
-        //build("ReactiveUI.Events_MAC.sln", MSBuildPlatform.Automatic);
-        build("ReactiveUI.Events_XamForms.sln", MSBuildPlatform.Automatic);
+        build("ReactiveUI.Events_Android.sln");
+        build("ReactiveUI.Events_iOS.sln");
+        //build("ReactiveUI.Events_MAC.sln");
+        build("ReactiveUI.Events_XamForms.sln");
 
-        build("ReactiveUI.Events_NET45.sln", MSBuildPlatform.Automatic);
+        build("ReactiveUI.Events_NET45.sln");
 
-        build("ReactiveUI.Events_WP81.sln", MSBuildPlatform.x86);
-        build("ReactiveUI.Events_WPA81.sln", MSBuildPlatform.Automatic);
-        build("ReactiveUI.Events_UWP.sln", MSBuildPlatform.Automatic);
+        build("ReactiveUI.Events_WPA81.sln");
+        build("ReactiveUI.Events_UWP.sln");
     }
 });
 
@@ -279,18 +274,12 @@ Task("BuildReactiveUI")
     }
     else
     {
-        Action<string, MSBuildPlatform> build = (filename, platform) =>
+        Action<string> build = (solution) =>
         {
-            var solution = System.IO.Path.Combine("./src/", filename);
-
-            // UWP (project.json) needs to be restored before it will build.
-            RestorePackages(solution);
-
-            Information("Building {0} with MSBuild {1} ", solution, platform);
+            Information("Building {0}", solution);
 
             MSBuild(solution, new MSBuildSettings()
                 .SetConfiguration(configuration)
-                .SetMSBuildPlatform(platform)
                 .WithProperty("NoWarn", "1591") // ignore missing XML doc warnings
                 .WithProperty("TreatWarningsAsErrors", treatWarningsAsErrors.ToString())
                 .SetVerbosity(Verbosity.Minimal)
@@ -299,8 +288,7 @@ Task("BuildReactiveUI")
             SourceLink(solution);
         };
 
-        // once Windows Phone 8.x silverlight is retired you can change this to MSBuildPlatform.Automatic
-        build("ReactiveUI.sln", MSBuildPlatform.x86);
+        build("./src/ReactiveUI.sln");
     }
 });
 
