@@ -60,8 +60,8 @@
     <file src="bin/Release/MonoAndroid403/ReactiveUI.dll" target="lib/MonoAndroid403/ReactiveUI.dll" />
     <!-- iOS Unified API -->
     <file src="bin/Release/Xamarin.iOS10/ReactiveUI.dll" target="lib/Xamarin.iOS10/ReactiveUI.dll" />
-    <!-- Mac Mobile Unified API -->
-    <!-- <file src="bin/Release/Xamarin.Mac20/ReactiveUI.dll" target="lib/Xamarin.Mac20/ReactiveUI.dll" /> -->
+    <!-- Xamarin Mac Unified API -->
+    <file src="bin/Release/Xamarin.Mac20/ReactiveUI.dll" target="lib/Xamarin.Mac20/ReactiveUI.dll" /> 
     <!-- Windows Store 8.1 -->
     <file src="bin/Release/Portable-Win81+Wpa81/ReactiveUI.dll" target="lib/Portable-Win81+Wpa81/ReactiveUI.dll" />
     <!-- Windows Universal -->
