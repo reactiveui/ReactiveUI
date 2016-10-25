@@ -13,7 +13,7 @@
     <RootNamespace>ReactiveUI.Android.Support</RootNamespace>
     <AssemblyName>ReactiveUI.AndroidSupport</AssemblyName>
     <FileAlignment>512</FileAlignment>
-    <TargetFrameworkVersion>v6.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v7.0</TargetFrameworkVersion>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
     <AndroidUseLatestPlatformSdk>True</AndroidUseLatestPlatformSdk>
