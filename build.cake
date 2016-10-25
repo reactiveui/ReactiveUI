@@ -274,7 +274,7 @@ Task("BuildReactiveUI")
 
 Task("PackageReactiveUI")
     .IsDependentOn("BuildReactiveUI")
-//    .IsDependentOn("RunUnitTests")
+    .IsDependentOn("RunUnitTests")
     .Does (() =>
 {
     // use pwd as as cake needs a basePath, even if making a meta-package that contains no files.
