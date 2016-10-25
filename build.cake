@@ -16,6 +16,11 @@
 //////////////////////////////////////////////////////////////////////
 
 var target = Argument("target", "Default");
+if (string.IsNullOrWhiteSpace(target))
+{
+    target = "Default";
+}
+
 var configuration = Argument("configuration", "Release");
 
 //////////////////////////////////////////////////////////////////////
@@ -243,7 +248,7 @@ Task("BuildEvents")
         };
 
         build("ReactiveUI.Events_Android.sln");
-//        build("ReactiveUI.Events_iOS.sln");
+        build("ReactiveUI.Events_iOS.sln");
         build("ReactiveUI.Events_MAC.sln");
         build("ReactiveUI.Events_XamForms.sln");
 
@@ -408,9 +413,14 @@ Task("Publish")
 // TASK TARGETS
 //////////////////////////////////////////////////////////////////////
 
+Task("Default")
+    .IsDependentOn("Publish")
+    .Does (() =>
+{
+});
 
 //////////////////////////////////////////////////////////////////////
 // EXECUTION
 //////////////////////////////////////////////////////////////////////
 
-RunTarget("Publish");
+RunTarget(target);
