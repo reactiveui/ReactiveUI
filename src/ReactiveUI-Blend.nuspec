@@ -33,8 +33,6 @@
     </dependencies>
   </metadata>
   <files>
-    <!-- Windows Phone Silverlight -->
-    <file src="bin/Release/WP8/ReactiveUI.Blend.dll" target="lib/WP8/ReactiveUI.Blend.dll" />
     <!-- Windows Store 8.1 -->
     <file src="bin/Release/Portable-Win81+WPA81/ReactiveUI.Blend.dll" target="lib/Portable-Win81+WPA81/ReactiveUI.Blend.dll" />
     <!-- Windows Universal -->
