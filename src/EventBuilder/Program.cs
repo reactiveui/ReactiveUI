@@ -37,7 +37,7 @@ namespace EventBuilder
             if (Debugger.IsAttached)
             {
                 //args = "--help ".Split(' ');
-                args = "--platform=mac".Split(' ');
+                args = "--platform=ios".Split(' ');
                 //args = new[]
                 //{
                 //    "--platform=none",
@@ -157,7 +157,8 @@ namespace EventBuilder
                 .Replace("&lt;", "<")
                 .Replace("&gt;", ">")
                 .Replace("`1", "")
-                .Replace("`2", "");
+                .Replace("`2", "")
+                .Replace("`3", "");
 
             Console.WriteLine(result);
         }
