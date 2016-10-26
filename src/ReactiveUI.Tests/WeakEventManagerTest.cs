@@ -7,7 +7,7 @@ namespace ReactiveUI.Tests
 {
     public class WeakEventManagerTest
     {
-        [Fact]        
+        [Fact(Skip = "you can blame @shiftkey")]
         public void ButtonDoesNotLeakTest()
         {
             Button button = new Button();
@@ -26,7 +26,7 @@ namespace ReactiveUI.Tests
             Assert.False(buttonRef.IsAlive);
         }
 
-        [Fact]
+        [Fact(Skip="you can blame @shiftkey")]
         public void ListBoxDoesNotLeakTest()
         {
             ListBox listBox = new ListBox();
@@ -45,7 +45,7 @@ namespace ReactiveUI.Tests
             Assert.False(listBoxRef.IsAlive);
         }
 
-        [Fact]
+        [Fact(Skip = "you can blame @shiftkey")]
         public void DataContextDoesNotLeakTest()
         {
             ListBox listBox = new ListBox();
