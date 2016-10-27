@@ -63,6 +63,7 @@
     <Compile Include="ExpressionRewriter.cs" />
     <Compile Include="IDependencyResolver.cs" />
     <Compile Include="INPCObservableForProperty.cs" />
+    <Compile Include="Interactions.cs" />
     <Compile Include="Interfaces.cs" />
     <Compile Include="IReactiveObject.cs" />
     <Compile Include="IROObservableForProperty.cs" />
