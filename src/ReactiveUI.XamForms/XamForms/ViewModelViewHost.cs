@@ -22,8 +22,12 @@ namespace ReactiveUI.XamForms
             get { return GetValue(ViewModelProperty); }
             set { SetValue(ViewModelProperty, value); }
         }
-        public static readonly BindableProperty ViewModelProperty = 
-            BindableProperty.Create<ViewModelViewHost, object>(x => x.ViewModel, null, BindingMode.OneWay);
+        public static readonly BindableProperty ViewModelProperty = BindableProperty.Create(
+            nameof(ViewModel),
+            typeof(object),
+            typeof(ViewModelViewHost),
+            default(object),
+            BindingMode.OneWay);
 
         /// <summary>
         /// If no ViewModel is displayed, this content (i.e. a control) will be displayed.
@@ -32,15 +36,23 @@ namespace ReactiveUI.XamForms
             get { return (View)GetValue(DefaultContentProperty); }
             set { SetValue(DefaultContentProperty, value); }
         }
-        public static readonly BindableProperty DefaultContentProperty =
-            BindableProperty.Create<ViewModelViewHost, View>(x => x.DefaultContent, null, BindingMode.OneWay);
+        public static readonly BindableProperty DefaultContentProperty = BindableProperty.Create(
+            nameof(DefaultContent),
+            typeof(View),
+            typeof(ViewModelViewHost),
+            default(View),
+            BindingMode.OneWay);
 
         public IObservable<string> ViewContractObservable {
             get { return (IObservable<string>)GetValue(ViewContractObservableProperty); }
             set { SetValue(ViewContractObservableProperty, value); }
         }
-        public static readonly BindableProperty ViewContractObservableProperty =
-            BindableProperty.Create<ViewModelViewHost, IObservable<string>>(x => x.ViewContractObservable, Observable.Never<string>(), BindingMode.OneWay);
+        public static readonly BindableProperty ViewContractObservableProperty = BindableProperty.Create(
+            nameof(ViewContractObservable),
+            typeof(string),
+            typeof(ViewModelViewHost),
+            Observable.Never<string>(),
+            BindingMode.OneWay);
 
         public IViewLocator ViewLocator { get; set; }
 

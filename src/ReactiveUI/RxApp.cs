@@ -57,8 +57,8 @@ namespace ReactiveUI
                 }
 
                 RxApp.MainThreadScheduler.Schedule(() => {
-                    throw new Exception(
-                        "An OnError occurred on an object (usually ObservableAsPropertyHelper) that would break a binding or command. To prevent this, Subscribe to the ThrownExceptions property of your objects",
+                    throw new UnhandledErrorException(
+                        "An object implementing IHandleObservableErrors (often a ReactiveCommand or ObservableAsPropertyHelper) has errored, thereby breaking its observable pipeline. To prevent this, ensure the pipeline does not error, or Subscribe to the ThrownExceptions property of the object in question to handle the erroneous case.",
                         ex);
                 });
             });
