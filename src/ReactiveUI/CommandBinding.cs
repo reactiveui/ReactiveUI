@@ -17,36 +17,8 @@ namespace ReactiveUI
         {
             RxApp.EnsureInitialized();
 
-            binderImplementation = Locator.Current.GetService<ICommandBinderImplementation>() ?? 
+            binderImplementation = Locator.Current.GetService<ICommandBinderImplementation>() ??
                 new CommandBinderImplementation();
-        }
-                
-        /// <summary>
-        /// Bind a command from the ViewModel to an explicitly specified control
-        /// on the View.
-        /// </summary>
-        /// <returns>A class representing the binding. Dispose it to disconnect
-        /// the binding</returns>
-        /// <param name="view">The View</param>
-        /// <param name="viewModel">The View model</param>
-        /// <param name="controlName">The name of the control on the view</param>
-        /// <param name="propertyName">The ViewModel command to Bind.</param>
-        /// <param name="withParameter">The ViewModel property to pass as the 
-        /// param of the ICommand</param>
-        /// <param name="toEvent">If specified, bind to the specific event 
-        /// instead of the default.</param>
-        public static IReactiveBinding<TView, TViewModel, TProp> BindCommand<TView, TViewModel, TProp, TControl, TParam>(
-                this TView view, 
-                TViewModel viewModel, 
-                Expression<Func<TViewModel, TProp>> propertyName, 
-                Expression<Func<TView, TControl>> controlName,
-                Func<TParam> withParameter,
-                string toEvent = null)
-            where TViewModel : class
-            where TView : class, IViewFor<TViewModel>
-            where TProp : ICommand
-        {
-            return binderImplementation.BindCommand(viewModel, view, propertyName, controlName, withParameter, toEvent);
         }
 
         /// <summary>
@@ -59,14 +31,14 @@ namespace ReactiveUI
         /// <param name="viewModel">The View model</param>
         /// <param name="controlName">The name of the control on the view</param>
         /// <param name="propertyName">The ViewModel command to Bind.</param>
-        /// <param name="withParameter">The ViewModel property to pass as the 
+        /// <param name="withParameter">The ViewModel property to pass as the
         /// param of the ICommand</param>
-        /// <param name="toEvent">If specified, bind to the specific event 
+        /// <param name="toEvent">If specified, bind to the specific event
         /// instead of the default.</param>
         public static IReactiveBinding<TView, TViewModel, TProp> BindCommand<TView, TViewModel, TProp, TControl, TParam>(
-                this TView view, 
-                TViewModel viewModel, 
-                Expression<Func<TViewModel, TProp>> propertyName, 
+                this TView view,
+                TViewModel viewModel,
+                Expression<Func<TViewModel, TProp>> propertyName,
                 Expression<Func<TView, TControl>> controlName,
                 IObservable<TParam> withParameter,
                 string toEvent = null)
@@ -86,12 +58,12 @@ namespace ReactiveUI
         /// <param name="view">The View</param>
         /// <param name="viewModel">The View model</param>
         /// <param name="controlName">The name of the control on the view</param>
-        /// <param name="toEvent">If specified, bind to the specific event 
+        /// <param name="toEvent">If specified, bind to the specific event
         /// instead of the default.</param>
         public static IReactiveBinding<TView, TViewModel, TProp> BindCommand<TView, TViewModel, TProp, TControl>(
-                this TView view, 
-                TViewModel viewModel, 
-                Expression<Func<TViewModel, TProp>> propertyName, 
+                this TView view,
+                TViewModel viewModel,
+                Expression<Func<TViewModel, TProp>> propertyName,
                 Expression<Func<TView, TControl>> controlName,
                 string toEvent = null)
             where TViewModel : class
@@ -100,7 +72,7 @@ namespace ReactiveUI
         {
             return binderImplementation.BindCommand(viewModel, view, propertyName, controlName, toEvent);
         }
-                
+
         /// <summary>
         /// Bind a command from the ViewModel to an explicitly specified control
         /// on the View.
@@ -110,14 +82,14 @@ namespace ReactiveUI
         /// <param name="view">The View</param>
         /// <param name="viewModel">The View model</param>
         /// <param name="controlName">The name of the control on the view</param>
-        /// <param name="withParameter">The ViewModel property to pass as the 
+        /// <param name="withParameter">The ViewModel property to pass as the
         /// param of the ICommand</param>
-        /// <param name="toEvent">If specified, bind to the specific event 
+        /// <param name="toEvent">If specified, bind to the specific event
         /// instead of the default.</param>
         public static IReactiveBinding<TView, TViewModel, TProp> BindCommand<TView, TViewModel, TProp, TControl, TParam>(
-                this TView view, 
-                TViewModel viewModel, 
-                Expression<Func<TViewModel, TProp>> propertyName, 
+                this TView view,
+                TViewModel viewModel,
+                Expression<Func<TViewModel, TProp>> propertyName,
                 Expression<Func<TView, TControl>> controlName,
                 Expression<Func<TViewModel, TParam>> withParameter,
                 string toEvent = null)
@@ -132,9 +104,9 @@ namespace ReactiveUI
     interface ICommandBinderImplementation : IEnableLogger
     {
         IReactiveBinding<TView, TViewModel, TProp> BindCommand<TView, TViewModel, TProp, TControl, TParam>(
-                TViewModel viewModel, 
-                TView view, 
-                Expression<Func<TViewModel, TProp>> propertyName, 
+                TViewModel viewModel,
+                TView view,
+                Expression<Func<TViewModel, TProp>> propertyName,
                 Expression<Func<TView, TControl>> controlName,
                 Func<TParam> withParameter,
                 string toEvent = null)
@@ -143,9 +115,9 @@ namespace ReactiveUI
             where TProp : ICommand;
 
         IReactiveBinding<TView, TViewModel, TProp> BindCommand<TView, TViewModel, TProp, TControl, TParam>(
-                TViewModel viewModel, 
-                TView view, 
-                Expression<Func<TViewModel, TProp>> propertyName, 
+                TViewModel viewModel,
+                TView view,
+                Expression<Func<TViewModel, TProp>> propertyName,
                 Expression<Func<TView, TControl>> controlName,
                 IObservable<TParam> withParameter,
                 string toEvent = null)
@@ -154,12 +126,12 @@ namespace ReactiveUI
             where TProp : ICommand;
     }
 
-    public class CommandBinderImplementation : ICommandBinderImplementation 
+    public class CommandBinderImplementation : ICommandBinderImplementation
     {
         public IReactiveBinding<TView, TViewModel, TProp> BindCommand<TView, TViewModel, TProp, TControl, TParam>(
-                TViewModel viewModel, 
-                TView view, 
-                Expression<Func<TViewModel, TProp>> vmProperty, 
+                TViewModel viewModel,
+                TView view,
+                Expression<Func<TViewModel, TProp>> vmProperty,
                 Expression<Func<TView, TControl>> controlProperty,
                 Func<TParam> withParameter,
                 string toEvent = null)
@@ -171,11 +143,11 @@ namespace ReactiveUI
             var controlExpression = Reflection.Rewrite(controlProperty.Body);
             var source = Reflection.ViewModelWhenAnyValue(viewModel, view, vmExpression).Cast<TProp>();
 
-            IDisposable bindingDisposable = bindCommandInternal(source, view, controlExpression, Observable.Empty<object>(), toEvent, cmd => {
+            IDisposable bindingDisposable = bindCommandInternal(source, view, controlExpression, Observable.Defer(() => Observable.Return(withParameter())), toEvent, cmd => {
                 var rc = cmd as ReactiveCommand;
                 if (rc == null) {
                     return new RelayCommand(cmd.CanExecute, _ => cmd.Execute(withParameter()));
-                } 
+                }
 
                 var ret = ReactiveCommand.Create(() => ((ICommand)rc).Execute(null), rc.CanExecute);
                 return ret;
@@ -186,9 +158,9 @@ namespace ReactiveUI
         }
 
         public IReactiveBinding<TView, TViewModel, TProp> BindCommand<TView, TViewModel, TProp, TControl, TParam>(
-                TViewModel viewModel, 
-                TView view, 
-                Expression<Func<TViewModel, TProp>> vmProperty, 
+                TViewModel viewModel,
+                TView view,
+                Expression<Func<TViewModel, TProp>> vmProperty,
                 Expression<Func<TView, TControl>> controlProperty,
                 IObservable<TParam> withParameter,
                 string toEvent = null)
@@ -202,14 +174,14 @@ namespace ReactiveUI
 
             IDisposable bindingDisposable = bindCommandInternal(source, view, controlExpression, withParameter, toEvent);
 
-            return new ReactiveBinding<TView, TViewModel, TProp>(view, viewModel, controlExpression, vmExpression, 
+            return new ReactiveBinding<TView, TViewModel, TProp>(view, viewModel, controlExpression, vmExpression,
                 source, BindingDirection.OneWay, bindingDisposable);
         }
 
         IDisposable bindCommandInternal<TView, TProp, TParam>(
                 IObservable<TProp> This,
-                TView view, 
-                Expression controlExpression, 
+                TView view,
+                Expression controlExpression,
                 IObservable<TParam> withParameter,
                 string toEvent,
                 Func<ICommand, ICommand> commandFixuper = null)
@@ -242,7 +214,7 @@ namespace ReactiveUI
             return Disposable.Create(() => {
                 propSub.Dispose();
                 disp.Dispose();
-            });                      
+            });
         }
     }
 
@@ -250,9 +222,9 @@ namespace ReactiveUI
     {
         public static IReactiveBinding<TView, TViewModel, TProp> BindCommand<TView, TViewModel, TProp, TControl>(
                 this ICommandBinderImplementation This,
-                TViewModel viewModel, 
-                TView view, 
-                Expression<Func<TViewModel, TProp>> propertyName, 
+                TViewModel viewModel,
+                TView view,
+                Expression<Func<TViewModel, TProp>> propertyName,
                 Expression<Func<TView, TControl>> controlName,
                 string toEvent = null)
             where TViewModel : class
@@ -264,9 +236,9 @@ namespace ReactiveUI
 
         public static IReactiveBinding<TView, TViewModel, TProp> BindCommand<TView, TViewModel, TProp, TControl, TParam>(
                 this ICommandBinderImplementation This,
-                TViewModel viewModel, 
-                TView view, 
-                Expression<Func<TViewModel, TProp>> propertyName, 
+                TViewModel viewModel,
+                TView view,
+                Expression<Func<TViewModel, TProp>> propertyName,
                 Expression<Func<TView, TControl>> controlName,
                 Expression<Func<TViewModel, TParam>> withParameter,
                 string toEvent = null)
@@ -280,7 +252,7 @@ namespace ReactiveUI
 
     class CreatesCommandBinding
     {
-        static readonly MemoizingMRUCache<Type, ICreatesCommandBinding> bindCommandCache = 
+        static readonly MemoizingMRUCache<Type, ICreatesCommandBinding> bindCommandCache =
             new MemoizingMRUCache<Type, ICreatesCommandBinding>((t, _) => {
                 return Locator.Current.GetServices<ICreatesCommandBinding>()
                     .Aggregate(Tuple.Create(0, (ICreatesCommandBinding)null), (acc, x) => {
@@ -289,7 +261,7 @@ namespace ReactiveUI
                     }).Item2;
             }, RxApp.SmallCacheLimit);
 
-        static readonly MemoizingMRUCache<Type, ICreatesCommandBinding> bindCommandEventCache = 
+        static readonly MemoizingMRUCache<Type, ICreatesCommandBinding> bindCommandEventCache =
             new MemoizingMRUCache<Type, ICreatesCommandBinding>((t, _) => {
                 return Locator.Current.GetServices<ICreatesCommandBinding>()
                     .Aggregate(Tuple.Create(0, (ICreatesCommandBinding)null), (acc, x) => {
