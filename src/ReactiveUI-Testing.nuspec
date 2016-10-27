@@ -10,10 +10,6 @@
         <dependency id="reactiveui-core" version="$version$" />
         <dependency id="Rx-Testing" version="2.2.5" />
       </group>
-      <group targetFramework="WP8">
-        <dependency id="reactiveui-core" version="$version$" />
-        <dependency id="Rx-Testing" version="2.2.5" />
-      </group>
       <group targetFramework="Win8">
         <dependency id="reactiveui-core" version="$version$" />
         <dependency id="Rx-Testing" version="2.2.5" />
@@ -42,10 +38,8 @@
     <file src="bin/Release/MonoAndroid403/ReactiveUI.Testing.dll" target="lib/MonoAndroid403/ReactiveUI.Testing.dll" />
     <!-- iOS Unified API -->
     <file src="bin/Release/Xamarin.iOS10/ReactiveUI.Testing.dll" target="lib/Xamarin.iOS10/ReactiveUI.Testing.dll" />
-    <!-- Mac Mobile Unified API -->
-    <!-- <file src="bin/Release/Xamarin.Mac20/ReactiveUI.Testing.dll" target="lib/Xamarin.Mac20/ReactiveUI.Testing.dll" /> -->
-    <!-- Windows Phone Silverlight -->
-    <file src="bin/Release/WP8/ReactiveUI.Testing.dll" target="lib/WP81/ReactiveUI.Testing.dll" />
+    <!-- Xamarin Mac Unified API -->
+     <file src="bin/Release/Xamarin.Mac20/ReactiveUI.Testing.dll" target="lib/Xamarin.Mac20/ReactiveUI.Testing.dll" /> 
     <!-- Windows Store 8.1 -->
     <file src="bin/Release/Portable-Win81+WPA81/ReactiveUI.Testing.dll" target="lib/Portable-Win81+WPA81/ReactiveUI.Testing.dll" />
     <!-- Windows Universal -->

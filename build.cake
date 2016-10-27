@@ -16,6 +16,11 @@
 //////////////////////////////////////////////////////////////////////
 
 var target = Argument("target", "Default");
+if (string.IsNullOrWhiteSpace(target))
+{
+    target = "Default";
+}
+
 var configuration = Argument("configuration", "Release");
 
 //////////////////////////////////////////////////////////////////////
@@ -112,12 +117,17 @@ Action<string> SourceLink = (solutionFileName) =>
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP / TEARDOWN
 ///////////////////////////////////////////////////////////////////////////////
-Setup(() =>
+Setup(context =>
 {
+    if (!isRunningOnWindows)
+    {
+        throw new NotImplementedException("ReactiveUI will only build on Windows (w/Xamarin installed) because it's not possible to target UWP, WPF and Windows Forms from UNIX.");
+    }
+
     Information("Building version {0} of ReactiveUI.", semVersion);
 });
 
-Teardown(() =>
+Teardown(context =>
 {
     // Executed AFTER the last task.
 });
@@ -131,133 +141,104 @@ Task("BuildEventBuilder")
     .IsDependentOn("UpdateAssemblyInfo")
     .Does (() =>
 {
+    var solution = "./src/EventBuilder.sln";
 
-    if(isRunningOnUnix)
-    {
-        throw new NotImplementedException("Building events on OSX is not implemented yet.");
-        // run mdtool
-    }
-    else
-    {
-        var solution = "./src/EventBuilder.sln";
+    MSBuild(solution, new MSBuildSettings()
+        .SetConfiguration(configuration)
+        .WithProperty("TreatWarningsAsErrors", treatWarningsAsErrors.ToString())
+        .SetVerbosity(Verbosity.Minimal)
+        .SetNodeReuse(false));
 
-        MSBuild(solution, new MSBuildSettings()
-            .SetConfiguration(configuration)
-            .WithProperty("TreatWarningsAsErrors", treatWarningsAsErrors.ToString())
-            .SetVerbosity(Verbosity.Minimal)
-            .SetNodeReuse(false));
-
-       SourceLink(solution);
-    }
+    SourceLink(solution);
 });
 
 Task("GenerateEvents")
     .IsDependentOn("BuildEventBuilder")
     .Does (() =>
 {
-    if(isRunningOnUnix)
-    {
-        throw new NotImplementedException("Building events on OSX is not implemented yet.");
-    }
-    else
-    {
-        var eventBuilder = "./src/EventBuilder/bin/Release/EventBuilder.exe";
-        var workingDirectory = "./src/EventBuilder/bin/Release";
+    var eventBuilder = "./src/EventBuilder/bin/Release/EventBuilder.exe";
+    var workingDirectory = "./src/EventBuilder/bin/Release";
 
-        Action<string> generate = (string platform) =>
+    Action<string> generate = (string platform) =>
+    {
+        using(var process = StartAndReturnProcess(eventBuilder,
+            new ProcessSettings{
+                Arguments = "--platform=" + platform,
+                WorkingDirectory = workingDirectory,
+                RedirectStandardOutput = true }))
         {
-            using(var process = StartAndReturnProcess(eventBuilder,
-                new ProcessSettings{
-                    Arguments = "--platform=" + platform,
-                    WorkingDirectory = workingDirectory,
-                    RedirectStandardOutput = true }))
+            // super important to ensure that the platform is always
+            // uppercase so that the events are written to the write
+            // filename as UNIX is case-sensitive - even though OSX
+            // isn't by default.
+            platform = platform.ToUpper();
+
+            Information("Generating events for '{0}'", platform);
+
+            int timeout = 10 * 60 * 1000;   // x Minute, y Second, z Millisecond
+            process.WaitForExit(timeout);
+
+            var stdout = process.GetStandardOutput();
+
+            int success = 0;    // exit code aka %ERRORLEVEL% or $?
+            if (process.GetExitCode() != success)
             {
-                // super important to ensure that the platform is always
-                // uppercase so that the events are written to the write
-                // filename as UNIX is case-sensitive - even though OSX
-                // isn't by default.
-                platform = platform.ToUpper();
-
-                Information("Generating events for '{0}'", platform);
-
-                int timeout = 10 * 60 * 1000;   // x Minute, y Second, z Millisecond
-                process.WaitForExit(timeout);
-
-                var stdout = process.GetStandardOutput();
-
-                int success = 0;    // exit code aka %ERRORLEVEL% or $?
-                if (process.GetExitCode() != success)
-                {
-                    Error("Failed to generate events for '{0}'", platform);
-                    Abort();
-                }
-
-                var directory = "src/ReactiveUI.Events/";
-                var filename = String.Format("Events_{0}.cs", platform);
-                var output = System.IO.Path.Combine(directory, filename);
-
-                FileWriteLines(output, stdout.ToArray());
-                Information("The events have been written to '{0}'", output);
+                Error("Failed to generate events for '{0}'", platform);
+                Abort();
             }
-        };
 
-        generate("android");
-        generate("ios");
-        //generate("mac");
-        generate("xamforms");
+            var directory = "src/ReactiveUI.Events/";
+            var filename = String.Format("Events_{0}.cs", platform);
+            var output = System.IO.Path.Combine(directory, filename);
 
-        generate("net45");
+            FileWriteLines(output, stdout.ToArray());
+            Information("The events have been written to '{0}'", output);
+        }
+    };
 
-        generate("wp81");
-        generate("wpa81");
-        generate("uwp");
-    }
+    generate("android");
+    generate("ios");
+    generate("mac");
+    generate("xamforms");
+
+    generate("net45");
+    
+    generate("wpa81");
+    generate("uwp");
 });
 
 Task("BuildEvents")
     .IsDependentOn("GenerateEvents")
     .Does (() =>
 {
-    if(isRunningOnUnix)
+    Action<string> build = (filename) =>
     {
-        throw new NotImplementedException("Building events on OSX is not implemented.");
-    }
-    else
-    {
-        // WP81 is the only platform that needs to specify the MSBUILD platform
-        // when the platform is retired remove the platform signature,
-        // remove the .SetMSBuildPlatform method and simply the invoking methods.
-        Action<string, MSBuildPlatform> build = (filename, platform) =>
-        {
-            var solution = System.IO.Path.Combine("./src/ReactiveUI.Events/", filename);
+        var solution = System.IO.Path.Combine("./src/ReactiveUI.Events/", filename);
 
-            // UWP (project.json) needs to be restored before it will build.
-            RestorePackages (solution);
+        // UWP (project.json) needs to be restored before it will build.
+        RestorePackages (solution);
 
-            Information("Building {0} with MSBuild {1} ", solution, platform);
+        Information("Building {0}", solution);
 
-            MSBuild(solution, new MSBuildSettings()
-                .SetConfiguration(configuration)
-                .SetMSBuildPlatform(platform)
-                .WithProperty("NoWarn", "1591") // ignore missing XML doc warnings
-                .WithProperty("TreatWarningsAsErrors", treatWarningsAsErrors.ToString())
-                .SetVerbosity(Verbosity.Minimal)
-                .SetNodeReuse(false));
+        MSBuild(solution, new MSBuildSettings()
+            .SetConfiguration(configuration)
+            .WithProperty("NoWarn", "1591") // ignore missing XML doc warnings
+            .WithProperty("TreatWarningsAsErrors", treatWarningsAsErrors.ToString())
+            .SetVerbosity(Verbosity.Minimal)
+            .SetNodeReuse(false));
 
-            SourceLink(solution);
-        };
+        SourceLink(solution);
+    };
 
-        build("ReactiveUI.Events_Android.sln", MSBuildPlatform.Automatic);
-        build("ReactiveUI.Events_iOS.sln", MSBuildPlatform.Automatic);
-        //build("ReactiveUI.Events_MAC.sln", MSBuildPlatform.Automatic);
-        build("ReactiveUI.Events_XamForms.sln", MSBuildPlatform.Automatic);
+    build("ReactiveUI.Events_Android.sln");
+    build("ReactiveUI.Events_iOS.sln");
+    build("ReactiveUI.Events_MAC.sln");
+    build("ReactiveUI.Events_XamForms.sln");
 
-        build("ReactiveUI.Events_NET45.sln", MSBuildPlatform.Automatic);
+    build("ReactiveUI.Events_NET45.sln");
 
-        build("ReactiveUI.Events_WP81.sln", MSBuildPlatform.x86);
-        build("ReactiveUI.Events_WPA81.sln", MSBuildPlatform.Automatic);
-        build("ReactiveUI.Events_UWP.sln", MSBuildPlatform.Automatic);
-    }
+    build("ReactiveUI.Events_WPA81.sln");
+    build("ReactiveUI.Events_UWP.sln");
 });
 
 Task("PackageEvents")
@@ -273,41 +254,27 @@ Task("BuildReactiveUI")
     .IsDependentOn("UpdateAssemblyInfo")
     .Does (() =>
 {
-    if(isRunningOnUnix)
+    Action<string> build = (solution) =>
     {
-        throw new NotImplementedException("Building ReactiveUI on OSX is not implemented yet.");
-    }
-    else
-    {
-        Action<string, MSBuildPlatform> build = (filename, platform) =>
-        {
-            var solution = System.IO.Path.Combine("./src/", filename);
+        Information("Building {0}", solution);
 
-            // UWP (project.json) needs to be restored before it will build.
-            RestorePackages(solution);
+        MSBuild(solution, new MSBuildSettings()
+            .SetConfiguration(configuration)
+            .WithProperty("NoWarn", "1591") // ignore missing XML doc warnings
+            .WithProperty("TreatWarningsAsErrors", treatWarningsAsErrors.ToString())
+            .SetVerbosity(Verbosity.Minimal)
+            .SetNodeReuse(false));
 
-            Information("Building {0} with MSBuild {1} ", solution, platform);
+        SourceLink(solution);
+    };
 
-            MSBuild(solution, new MSBuildSettings()
-                .SetConfiguration(configuration)
-                .SetMSBuildPlatform(platform)
-                .WithProperty("NoWarn", "1591") // ignore missing XML doc warnings
-                .WithProperty("TreatWarningsAsErrors", treatWarningsAsErrors.ToString())
-                .SetVerbosity(Verbosity.Minimal)
-                .SetNodeReuse(false));
-
-            SourceLink(solution);
-        };
-
-        // once Windows Phone 8.x silverlight is retired you can change this to MSBuildPlatform.Automatic
-        build("ReactiveUI.sln", MSBuildPlatform.x86);
-    }
+    build("./src/ReactiveUI.sln");
 });
 
 
 Task("PackageReactiveUI")
     .IsDependentOn("BuildReactiveUI")
-//    .IsDependentOn("RunUnitTests")
+    .IsDependentOn("RunUnitTests")
     .Does (() =>
 {
     // use pwd as as cake needs a basePath, even if making a meta-package that contains no files.
@@ -363,57 +330,46 @@ Task("RunUnitTests")
 Task("Package")
     .IsDependentOn("PackageEvents")
     .IsDependentOn("PackageReactiveUI")
+    .WithCriteria(() => !isRunningOnUnix)
     .Does (() =>
 {
-    if(isRunningOnUnix)
-    {
-        throw new NotImplementedException("Packaging on OSX is not implemented yet.");    }
-    else
-    {
 
-    }
 });
 
 Task("Publish")
     .IsDependentOn("Package")
+    .WithCriteria(() => !isRunningOnUnix)
     .WithCriteria(() => !local)
     .WithCriteria(() => !isPullRequest)
     .WithCriteria(() => isMainReactiveUIRepo)
     .Does (() =>
 {
-    if(isRunningOnUnix)
+    // Resolve the API key.
+    var apiKey = EnvironmentVariable("MYGET_API_KEY");
+    if (string.IsNullOrEmpty(apiKey))
     {
-        throw new NotImplementedException("Packaging on OSX is not implemented yet.");
+        throw new InvalidOperationException("Could not resolve MyGet API key.");
     }
-    else
+
+    // only push whitelisted packages.
+    foreach(var package in new[] { "ReactiveUI-Testing", "ReactiveUI-Events", "ReactiveUI-Events-XamForms", "ReactiveUI", "ReactiveUI-Core", "ReactiveUI-AndroidSupport", "ReactiveUI-Blend", "ReactiveUI-Winforms", "ReactiveUI-XamForms" })
     {
-        // Resolve the API key.
-        var apiKey = EnvironmentVariable("MYGET_API_KEY");
-        if (string.IsNullOrEmpty(apiKey))
-        {
-            throw new InvalidOperationException("Could not resolve MyGet API key.");
-        }
+        // only push the package which was created during this build run.
+        var packagePath = artifactDirectory + File(string.Concat(package, ".", semVersion, ".nupkg"));
+        var symbolsPath = artifactDirectory + File(string.Concat(package, ".", semVersion, ".symbols.nupkg"));
 
-        // only push whitelisted packages.
-        foreach(var package in new[] { "ReactiveUI-Testing", "ReactiveUI-Events", "ReactiveUI-Events-XamForms", "ReactiveUI", "ReactiveUI-Core", "ReactiveUI-AndroidSupport", "ReactiveUI-Blend", "ReactiveUI-Winforms", "ReactiveUI-XamForms" })
-        {
-            // only push the package which was created during this build run.
-            var packagePath = artifactDirectory + File(string.Concat(package, ".", semVersion, ".nupkg"));
-            var symbolsPath = artifactDirectory + File(string.Concat(package, ".", semVersion, ".symbols.nupkg"));
+        // Push the package.
+        NuGetPush(packagePath, new NuGetPushSettings {
+            Source = "https://www.myget.org/F/reactiveui/api/v2/package",
+            ApiKey = apiKey
+        });
 
-            // Push the package.
-            NuGetPush(packagePath, new NuGetPushSettings {
-                Source = "https://www.myget.org/F/reactiveui/api/v2/package",
-                ApiKey = apiKey
-            });
+        // Push the symbols
+        NuGetPush(symbolsPath, new NuGetPushSettings {
+            Source = "https://www.myget.org/F/reactiveui/api/v2/package",
+            ApiKey = apiKey
+        });
 
-            // Push the symbols
-            NuGetPush(symbolsPath, new NuGetPushSettings {
-                Source = "https://www.myget.org/F/reactiveui/api/v2/package",
-                ApiKey = apiKey
-            });
-
-        }
     }
 });
 
@@ -421,9 +377,14 @@ Task("Publish")
 // TASK TARGETS
 //////////////////////////////////////////////////////////////////////
 
+Task("Default")
+    .IsDependentOn("Publish")
+    .Does (() =>
+{
+});
 
 //////////////////////////////////////////////////////////////////////
 // EXECUTION
 //////////////////////////////////////////////////////////////////////
 
-RunTarget("Publish");
+RunTarget(target);
