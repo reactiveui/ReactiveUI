@@ -9,4 +9,7 @@
       <dependency id="reactiveui-core" version="$version$" />
     </dependencies>
   </metadata>
+  <files>
+    <file src="RELEASENOTES.MD"  />
+  </files>
 </package>
