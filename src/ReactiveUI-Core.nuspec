@@ -16,12 +16,6 @@
         <dependency id="Rx-Xaml" version="2.2.5" />
         <dependency id="Rx-WinRT" version="2.2.5" />
       </group>
-      <group targetFramework="wp8">
-        <dependency id="Rx-Main" version="2.2.5" />
-        <dependency id="Splat" version="[1.4.0,2)" />
-        <dependency id="Rx-Xaml" version="2.2.5" />
-        <dependency id="Rx-WinRT" version="2.2.5" />
-      </group>
       <group targetFramework="net45">
         <dependency id="Rx-Main" version="2.2.5" />
         <dependency id="Splat" version="[1.4.0,2)" />
@@ -66,10 +60,8 @@
     <file src="bin/Release/MonoAndroid403/ReactiveUI.dll" target="lib/MonoAndroid403/ReactiveUI.dll" />
     <!-- iOS Unified API -->
     <file src="bin/Release/Xamarin.iOS10/ReactiveUI.dll" target="lib/Xamarin.iOS10/ReactiveUI.dll" />
-    <!-- Mac Mobile Unified API -->
-    <!-- <file src="bin/Release/Xamarin.Mac20/ReactiveUI.dll" target="lib/Xamarin.Mac20/ReactiveUI.dll" /> -->
-    <!-- Windows Phone Silverlight -->
-    <file src="bin/Release/WP8/ReactiveUI.dll" target="lib/WP8/ReactiveUI.dll" />
+    <!-- Xamarin Mac Unified API -->
+    <file src="bin/Release/Xamarin.Mac20/ReactiveUI.dll" target="lib/Xamarin.Mac20/ReactiveUI.dll" /> 
     <!-- Windows Store 8.1 -->
     <file src="bin/Release/Portable-Win81+Wpa81/ReactiveUI.dll" target="lib/Portable-Win81+Wpa81/ReactiveUI.dll" />
     <!-- Windows Universal -->
