@@ -6,9 +6,11 @@ namespace ReactiveUI.XamForms
     public class ReactiveImageCell<TViewModel> : ImageCell, IViewFor<TViewModel>
         where TViewModel : class
     {
-        public static readonly BindableProperty ViewModelProperty = BindableProperty.Create<ReactiveImageCell<TViewModel>, TViewModel>(
-            x => x.ViewModel,
-            null,
+        public static readonly BindableProperty ViewModelProperty = BindableProperty.Create(
+            nameof(ViewModel),
+            typeof(TViewModel),
+            typeof(ReactiveImageCell<TViewModel>),
+            default(TViewModel),
             BindingMode.OneWay);
 
         public TViewModel ViewModel
