@@ -91,6 +91,7 @@
     <Compile Include="RoutableViewModelMixin.cs" />
     <Compile Include="RoutingState.cs" />
     <Compile Include="RxApp.cs" />
+    <Compile Include="UnhandledErrorException.cs" />
     <Compile Include="ScheduledSubject.cs" />
     <Compile Include="VariadicTemplates.cs">
       <DependentUpon>VariadicTemplates.tt</DependentUpon>
