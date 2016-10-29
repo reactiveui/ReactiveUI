@@ -140,6 +140,7 @@
     <Compile Include="RoutableViewModelMixin.cs" />
     <Compile Include="RoutingState.cs" />
     <Compile Include="RxApp.cs" />
+    <Compile Include="UnhandledErrorException.cs" />
     <Compile Include="ViewLocator.cs" />
     <Compile Include="ScheduledSubject.cs" />
     <Compile Include="VariadicTemplates.cs">

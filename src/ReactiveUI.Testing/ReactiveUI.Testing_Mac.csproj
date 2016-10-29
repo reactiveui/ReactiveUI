@@ -25,7 +25,7 @@
     <DebugSymbols>True</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>False</Optimize>
-    <OutputPath>bin\Debug\MonoMac</OutputPath>
+    <OutputPath>bin\Debug\Xamarin.Mac20</OutputPath>
     <DefineConstants>DEBUG;TRACE;MONO</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -35,11 +35,11 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>True</Optimize>
-    <OutputPath>bin\Release\MonoMac\</OutputPath>
+    <OutputPath>bin\Release\Xamarin.Mac20\</OutputPath>
     <DefineConstants>TRACE;MONO</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Release\MonoMac\ReactiveUI.Testing.xml</DocumentationFile>
+    <DocumentationFile>bin\Release\Xamarin.Mac20\ReactiveUI.Testing.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -67,7 +67,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="..\CommonAssemblyInfo.cs" />
     <Compile Include="TestUtils.cs" />
   </ItemGroup>
   <ItemGroup>

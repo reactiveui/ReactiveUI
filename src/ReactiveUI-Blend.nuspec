@@ -7,22 +7,22 @@
     <language>en-us</language>
     <dependencies>
       <group>
-        <dependency id="reactiveui-core" version="[7.0.0]" />
+        <dependency id="reactiveui-core" version="$version$" />
       </group>
       <group targetFramework="net45">
-        <dependency id="reactiveui-core" version="[7.0.0]" />
+        <dependency id="reactiveui-core" version="$version$" />
         <dependency id="Rx-Xaml" version="2.2.5" />
       </group>
       <group targetFramework="wp8">
-        <dependency id="reactiveui-core" version="[7.0.0]" />
+        <dependency id="reactiveui-core" version="$version$" />
         <dependency id="Rx-Xaml" version="2.2.5" />
       </group>
       <group targetFramework="Portable-Win81+WPA81">
-        <dependency id="reactiveui-core" version="[7.0.0]" />
+        <dependency id="reactiveui-core" version="$version$" />
         <dependency id="Rx-Xaml" version="2.2.5" />
       </group>
       <group targetFramework="uap10.0">
-        <dependency id="reactiveui-core" version="[7.0.0]" />
+        <dependency id="reactiveui-core" version="$version$" />
         <dependency id="System.Diagnostics.Debug" version="4.0.10" />
         <dependency id="Microsoft.Xaml.Behaviors.Uwp.Managed" version="1.1.0" />
         <dependency id="Rx-Core" version="2.2.5" />
@@ -33,8 +33,6 @@
     </dependencies>
   </metadata>
   <files>
-    <!-- Windows Phone Silverlight -->
-    <file src="bin/Release/WP8/ReactiveUI.Blend.dll" target="lib/WP8/ReactiveUI.Blend.dll" />
     <!-- Windows Store 8.1 -->
     <file src="bin/Release/Portable-Win81+WPA81/ReactiveUI.Blend.dll" target="lib/Portable-Win81+WPA81/ReactiveUI.Blend.dll" />
     <!-- Windows Universal -->

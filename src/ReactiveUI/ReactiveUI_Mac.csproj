@@ -18,7 +18,7 @@
     <DebugType>full</DebugType>
     <Optimize>False</Optimize>
     <OutputPath>bin\Debug\Xamarin.Mac20</OutputPath>
-    <IntermediateOutputPath>obj\Debug\Xamarin.Mac10</IntermediateOutputPath>
+    <IntermediateOutputPath>obj\Debug\Xamarin.Mac20</IntermediateOutputPath>
     <DefineConstants>DEBUG;MONO;COCOA;UNIFIED</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -35,7 +35,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <Optimize>True</Optimize>
     <OutputPath>bin\Release\Xamarin.Mac20</OutputPath>
-    <IntermediateOutputPath>obj\Release\Xamarin.Mac10</IntermediateOutputPath>
+    <IntermediateOutputPath>obj\Release\Xamarin.Mac20</IntermediateOutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <EnablePackageSigning>False</EnablePackageSigning>
@@ -53,47 +53,13 @@
     <UseRefCounting>false</UseRefCounting>
     <Profiling>false</Profiling>
   </PropertyGroup>
-  <ItemGroup Condition=" '$(OS)' != 'Windows_NT' ">
+  <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="Xamarin.Mac" />
-  </ItemGroup>
-  <PropertyGroup Condition=" '$(OS)' == 'Windows_NT' ">
-    <NoStdLib>true</NoStdLib>
-    <XamarinMacMobile>packages\ReactiveUI-TargetingPack-XamarinMac.1.0.0.1461330102\lib\XamarinMacMobile\</XamarinMacMobile>
-    <XamarinMacXM45>packages\ReactiveUI-TargetingPack-XamarinMac.1.0.0.1461330102\lib\XamarinMac45\</XamarinMacXM45>
-  </PropertyGroup>
-  <ItemGroup Condition=" '$(OS)' == 'Windows_NT' ">
-    <Reference Include="mscorlib">
-      <HintPath>$(XamarinMacMobile)\mscorlib.dll</HintPath>
-    </Reference>
-    <Reference Include="System">
-      <HintPath>$(XamarinMacMobile)\System.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Core">
-      <HintPath>$(XamarinMacMobile)\System.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Runtime.Serialization">
-      <HintPath>$(XamarinMacMobile)\System.Runtime.Serialization.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Xml.Linq">
-      <HintPath>$(XamarinMacMobile)\System.Xml.Linq.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.CSharp">
-      <HintPath>$(XamarinMacMobile)\Microsoft.CSharp.dll</HintPath>
-    </Reference>
-    <Reference Include="System.ComponentModel.DataAnnotations">
-      <HintPath>$(XamarinMacMobile)\System.ComponentModel.DataAnnotations.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Drawing">
-      <HintPath>$(XamarinMacMobile)\System.Drawing.dll</HintPath>
-    </Reference>
-    <Reference Include="Xamarin.Mac">
-      <HintPath>$(XamarinMacMobile)\Xamarin.Mac.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Splat">
@@ -128,6 +94,7 @@
     <Compile Include="..\CommonAssemblyInfo.cs">
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="DisposableMixins.cs" />
     <Compile Include="Activation.cs" />
     <Compile Include="ReactiveBinding.cs" />
@@ -148,7 +115,6 @@
     <Compile Include="ObservedChangedMixin.cs" />
     <Compile Include="OrderedComparer.cs" />
     <Compile Include="POCOObservableForProperty.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PropertyBinding.cs" />
     <Compile Include="ReactiveList.cs" />
     <Compile Include="ReactiveCollectionMixins.cs" />
@@ -164,6 +130,7 @@
     <Compile Include="RoutableViewModelMixin.cs" />
     <Compile Include="RoutingState.cs" />
     <Compile Include="RxApp.cs" />
+    <Compile Include="UnhandledErrorException.cs" />
     <Compile Include="ViewLocator.cs" />
     <Compile Include="ScheduledSubject.cs" />
     <Compile Include="VariadicTemplates.cs">
@@ -191,6 +158,6 @@
   <ItemGroup>
     <None Include="packages.ReactiveUI_Mac.config" />
   </ItemGroup>
-  <Import Project="$(MSBuildExtensionsPath)\Xamarin\Mac\Xamarin.Mac.CSharp.targets" Condition=" '$(OS)' != 'Windows_NT' " />
+  <Import Project="$(MSBuildExtensionsPath)\Xamarin\Mac\Xamarin.Mac.CSharp.targets" Condition=" '$(OS)' == 'Windows_NT' " />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" Condition=" '$(OS)' == 'Windows_NT' " />
 </Project>
