@@ -1,0 +1,168 @@
+﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ assembly name="System.Core.dll" #>
+<#@ import namespace="System.Linq" #>
+<#@ output extension=".cs" #>
+using System;
+using System.Collections.Generic;
+using System.Reactive.Disposables;
+using System.Reactive.Linq;
+using System.Diagnostics.Contracts;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Reflection;
+using System.Text;
+
+<#
+// NB: maxFuncLength is 4 on WP7, 12 on every other platform.
+// VariadicTemplates_WP7.tt should always be a copy of VariadicTemplates.tt
+// except for this section
+
+int maxFuncLength = 12;
+#>
+
+namespace ReactiveUI
+{
+    public static class WhenAnyMixin 
+    {
+        /// <summary>
+        /// WhenAnyValue allows you to observe whenever the value of a
+        /// property on an object has changed, providing an initial value when
+        /// the Observable is set up, unlike ObservableForProperty(). Use this
+        /// method in constructors to set up bindings between properties that also
+        /// need an initial setup.
+        /// </summary>
+        public static IObservable<TRet> WhenAnyValue<TSender, TRet>(this TSender This, 
+                            Expression<Func<TSender, TRet>> property1)
+        {
+            return This.WhenAny(property1, (IObservedChange<TSender, TRet> c1) => c1.Value);
+        }
+
+        <# for(int length=1; length <= maxFuncLength; length++) { #>
+        <# var templParams = Enumerable.Range(1, length).Select(x => "T" + x.ToString()); #>
+        <# string selectorTypeParams = String.Join(", ", templParams.Select(x => String.Format("IObservedChange<TSender, {0}>", x))); #>
+        <# string valuePropertyParams = String.Join(", ", Enumerable.Range(1, length).Select(x => String.Format("property{0}", x))); #>
+        <# string valueSelectorParams = String.Join(", ", Enumerable.Range(1, length).Select(x => "c" + x)); #>
+        <# string valueSelectorArgs = String.Join(", ", Enumerable.Range(1, length).Select(x => String.Format("c{0}.Value", x))); #>
+        <# string dynamicSelectorTypeParams = String.Join(", ", templParams.Select(x => "IObservedChange<TSender, object>")); #>
+        <# string selectorCall = "selector(" + String.Join(", ", Enumerable.Range(1, length).Select(x => "islot" + x.ToString())) + ")"; #>
+
+        <# if (length != 1 && length <= 7) { #>
+        /// <summary>
+        /// WhenAnyValue allows you to observe whenever the value of one or more
+        /// properties on an object have changed, providing an initial value when
+        /// the Observable is set up, unlike ObservableForProperty(). Use this
+        /// method in constructors to set up bindings between properties that also
+        /// need an initial setup.
+        /// </summary>
+        public static IObservable<Tuple<<#= String.Join(",", templParams) #>>> WhenAnyValue<TSender, <#= String.Join(",", templParams) #>>(this TSender This, 
+            <# for(int i=1; i <= length; i++) { #>
+                Expression<Func<TSender, T<#=i#>>> property<#=i#><# if (i != length) { #>,<# } #>
+
+            <# } #>)
+        {
+            return This.WhenAny(<#= valuePropertyParams #>,
+                                (<#= valueSelectorParams #>) =>
+                                    Tuple.Create(<#= valueSelectorArgs #>));
+        }
+        <# } #>
+
+        /// <summary>
+        /// WhenAnyValue allows you to observe whenever the value of one or more
+        /// properties on an object have changed, providing an initial value when
+        /// the Observable is set up, unlike ObservableForProperty(). Use this
+        /// method in constructors to set up bindings between properties that also
+        /// need an initial setup.
+        /// </summary>
+        public static IObservable<TRet> WhenAnyValue<TSender, TRet, <#= String.Join(",", templParams) #>>(this TSender This, 
+            <# for(int i=1; i <= length; i++) { #>
+                Expression<Func<TSender, T<#=i#>>> property<#=i#>, 
+            <# } #>
+                Func<<#= String.Join(",", templParams) #>, TRet> selector)
+        {
+            return This.WhenAny(<#= valuePropertyParams #>,
+                                (<#= valueSelectorParams #>) =>
+                                    selector(<#= valueSelectorArgs #>));
+        }
+
+        /// <summary>
+        /// WhenAny allows you to observe whenever one or more properties on an
+        /// object have changed, providing an initial value when the Observable
+        /// is set up, unlike ObservableForProperty(). Use this method in
+        /// constructors to set up bindings between properties that also need an
+        /// initial setup.
+        /// </summary>
+        public static IObservable<TRet> WhenAny<TSender, TRet, <#= String.Join(",", templParams) #>>(this TSender This, 
+            <# for(int i=1; i <= length; i++) { #>
+                Expression<Func<TSender, T<#=i#>>> property<#=i#>, 
+            <# } #>
+                Func<<#= selectorTypeParams #>, TRet> selector)
+        {
+            <# if (length == 1){ #>
+                return This.ObservableForProperty(property<#=1#>, false, false).Select(selector); 
+            <# }else{ #>
+            return Observable.CombineLatest(
+                <# for(int i=1; i <= length; i++) { #>
+                    This.ObservableForProperty(property<#=i#>, false, false), 
+                <# } #>
+                selector
+            );
+            <# } #>
+        }
+
+		
+        /// <summary>
+        /// WhenAny allows you to observe whenever one or more properties on an
+        /// object have changed, providing an initial value when the Observable
+        /// is set up, unlike ObservableForProperty(). Use this method in
+        /// constructors to set up bindings between properties that also need an
+        /// initial setup.
+        /// </summary>
+        public static IObservable<TRet> WhenAnyDynamic<TSender, TRet>(this TSender This, 
+            <# for(int i=1; i <= length; i++) { #>
+                Expression property<#=i#>, 
+            <# } #>
+                Func<<#= dynamicSelectorTypeParams #>, TRet> selector)
+        {
+            <# if (length == 1){ #>
+                return ReactiveNotifyPropertyChangedMixin
+                    .SubscribeToExpressionChain<TSender,object>(This, property<#=1#>, false, false).Select(selector); 
+            <# }else{ #>
+            return Observable.CombineLatest(
+                <# for(int i=1; i <= length; i++) { #>
+                    ReactiveNotifyPropertyChangedMixin
+                        .SubscribeToExpressionChain<TSender,object>(This, property<#=i#>, false, false), 
+                <# } #>
+                selector
+            );
+            <# } #>
+        }
+    <# } #>
+    }
+
+    public static class WhenAnyObservableMixin
+    {
+        public static IObservable<TRet> WhenAnyObservable<TSender, TRet>(this TSender This, Expression<Func<TSender, IObservable<TRet>>> obs1)
+        {
+            return This.WhenAny(obs1, x => x.Value.EmptyIfNull()).Switch();
+        }
+
+<# for(int length=2; length <= maxFuncLength; length++) { #>
+<# string paramsStr = String.Join(", ", Enumerable.Range(1, length).Select(x => "Expression<Func<TSender, IObservable<TRet>>> obs" + x.ToString())); #>
+<# string varsStr = String.Join(", ", Enumerable.Range(1, length).Select(x => "obs" + x.ToString())); #>
+<# string valsStr = String.Join(", ", Enumerable.Range(1, length).Select(x => "o" + x.ToString() + ".Value.EmptyIfNull()")); #>
+        public static IObservable<TRet> WhenAnyObservable<TSender, TRet>(this TSender This, <#= paramsStr #>)
+        {
+            return This.WhenAny(<#= varsStr #>, (<#=varsStr.Replace("obs", "o")#>) => new[] {<#= valsStr #>})
+                .Select(x => x.Merge()).Switch();
+        }
+<# } #>
+    }
+
+    internal static class ObservableExtensions
+    {
+        public static IObservable<T> EmptyIfNull<T>(this IObservable<T> @this)
+        {
+            return @this ?? Observable.Empty<T>();
+        }
+    }
+}
