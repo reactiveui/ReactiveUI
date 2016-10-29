@@ -93,9 +93,9 @@ namespace ReactiveUI
         Subject<Unit> deactivated = new Subject<Unit>();
         public IObservable<Unit> Deactivated { get { return deactivated.AsObservable(); } }
 
-        public override void ViewDidAppear(bool animated)
+        public override void ViewWillAppear(bool animated)
         {
-            base.ViewDidAppear(animated);
+            base.ViewWillAppear(animated);
             activated.OnNext(Unit.Default);
             this.ActivateSubviews(true);
         }
