@@ -318,7 +318,7 @@ namespace ReactiveUI.Legacy
     [Obsolete("This type is obsolete and will be removed in a future version of ReactiveUI. Please switch to using ReactiveUI.ReactiveCommand instead.")]
     public class ReactiveCommand<T> : IReactiveCommand<T>, IReactiveCommand
     {
-#if NET_45
+#if NET_46
         public event EventHandler CanExecuteChanged;
 
         protected virtual void raiseCanExecuteChanged(EventArgs args)
