@@ -39,13 +39,13 @@
     <!-- iOS Unified API -->
     <file src="bin/Release/Xamarin.iOS10/ReactiveUI.Testing.dll" target="lib/Xamarin.iOS10/ReactiveUI.Testing.dll" />
     <!-- Xamarin Mac Unified API -->
-     <file src="bin/Release/Xamarin.Mac20/ReactiveUI.Testing.dll" target="lib/Xamarin.Mac20/ReactiveUI.Testing.dll" /> 
+    <file src="bin/Release/Xamarin.Mac20/ReactiveUI.Testing.dll" target="lib/Xamarin.Mac20/ReactiveUI.Testing.dll" />
     <!-- Windows Store 8.1 -->
     <file src="bin/Release/Portable-Win81+WPA81/ReactiveUI.Testing.dll" target="lib/Portable-Win81+WPA81/ReactiveUI.Testing.dll" />
     <!-- Windows Universal -->
     <file src="bin/Release/UAP10.0/ReactiveUI.Testing.dll" target="lib/UAP10/ReactiveUI.Testing.dll" />
     <!-- .NET 4.5 -->
-    <file src="bin/Release/Net45/ReactiveUI.Testing.dll" target="lib/Net45/ReactiveUI.Testing.dll" />
+    <file src="bin/Release/Net46/ReactiveUI.Testing.dll" target="lib/Net46/ReactiveUI.Testing.dll" />
     <!-- Source -->
     <file src="*.cs" target="src" />
   </files>

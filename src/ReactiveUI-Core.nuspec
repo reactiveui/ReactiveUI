@@ -61,13 +61,13 @@
     <!-- iOS Unified API -->
     <file src="bin/Release/Xamarin.iOS10/ReactiveUI.dll" target="lib/Xamarin.iOS10/ReactiveUI.dll" />
     <!-- Xamarin Mac Unified API -->
-    <file src="bin/Release/Xamarin.Mac20/ReactiveUI.dll" target="lib/Xamarin.Mac20/ReactiveUI.dll" /> 
+    <file src="bin/Release/Xamarin.Mac20/ReactiveUI.dll" target="lib/Xamarin.Mac20/ReactiveUI.dll" />
     <!-- Windows Store 8.1 -->
     <file src="bin/Release/Portable-Win81+Wpa81/ReactiveUI.dll" target="lib/Portable-Win81+Wpa81/ReactiveUI.dll" />
     <!-- Windows Universal -->
     <file src="bin/Release/UAP10.0/ReactiveUI.dll" target="lib/UAP10/ReactiveUI.dll" />
     <!-- .NET 4.5 -->
-    <file src="bin/Release/Net45/ReactiveUI.dll" target="lib/Net45/ReactiveUI.dll" />
+    <file src="bin/Release/Net46/ReactiveUI.dll" target="lib/Net46/ReactiveUI.dll" />
     <!-- Portable PCL -->
     <file src="bin/Release/portable-net45+netcore45+wpa81+win8+wp8+UAP10+MonoAndroid403+MonoTouch10+Xamarin.iOS10/ReactiveUI.dll" target="lib/portable-net45+netcore45+wpa81+win8+wp8+UAP10+MonoAndroid403+MonoTouch10+Xamarin.iOS10/ReactiveUI.dll" />
     <!-- Source -->

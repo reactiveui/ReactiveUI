@@ -10,7 +10,7 @@ namespace EventBuilder
         Android,
         iOS,
         Mac,
-        NET45,
+        NET46,
         XamForms,
         UWP,
         WP81,
@@ -24,7 +24,7 @@ namespace EventBuilder
 
         [Option('p', "platform", Required = true,
             HelpText =
-                "Platform to automatically generate. Possible options include: NONE, ANDROID, IOS, NET45, MAC, UWP, WP81, WPA81, XAMFORMS"
+                "Platform to automatically generate. Possible options include: NONE, ANDROID, IOS, NET46, MAC, UWP, WP81, WPA81, XAMFORMS"
             )]
         public AutoPlatform Platform { get; set; }
 
