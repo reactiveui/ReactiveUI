@@ -21,7 +21,7 @@ namespace PerfConsoleRunner
             var relDir = "Release";
 #endif
 
-            var testAssembly = Path.Combine(solutionDir, @"ReactiveUI.Tests\bin\Debug\Net45\ReactiveUI.Tests_Net45.dll")
+            var testAssembly = Path.Combine(solutionDir, @"ReactiveUI.Tests\bin\Debug\Net46\ReactiveUI.Tests_Net46.dll")
                 .Replace("Debug", relDir);
 
             Xunit.ConsoleClient.Program.Main(new[] { testAssembly });
