@@ -61,7 +61,7 @@ namespace ReactiveUI
 
         /// <summary>
         /// Represents an Observable that fires *before* a property is about to
-        /// be changed.         
+        /// be changed.
         /// </summary>
         public IObservable<IReactivePropertyChangedEventArgs<ReactiveSplitViewController>> Changing
         {
@@ -100,9 +100,9 @@ namespace ReactiveUI
         public IObservable<Unit> Deactivated { get { return deactivated.AsObservable(); } }
 
 #if UIKIT
-        public override void ViewDidAppear(bool animated)
+        public override void ViewWillAppear(bool animated)
         {
-            base.ViewDidAppear(animated);
+            base.ViewWillAppear(animated);
             activated.OnNext(Unit.Default);
             this.ActivateSubviews(true);
         }
@@ -114,9 +114,9 @@ namespace ReactiveUI
             this.ActivateSubviews(false);
         }
 #else
-        public override void ViewDidAppear()
+        public override void ViewWillAppear()
         {
-            base.ViewDidAppear();
+            base.ViewWillAppear();
             activated.OnNext(Unit.Default);
 #if UNIFIED
             this.ActivateSubviews(true);
