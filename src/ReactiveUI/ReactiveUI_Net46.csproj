@@ -22,9 +22,9 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\Net45\</OutputPath>
-    <IntermediateOutputPath>obj\Debug\Net45</IntermediateOutputPath>
-    <DefineConstants>TRACE;DEBUG;NET_45; XAML</DefineConstants>
+    <OutputPath>bin\Debug\Net46\</OutputPath>
+    <IntermediateOutputPath>obj\Debug\Net46</IntermediateOutputPath>
+    <DefineConstants>TRACE;DEBUG;NET_46; XAML</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CodeAnalysisRuleSet>ExtendedCorrectnessRules.ruleset</CodeAnalysisRuleSet>
@@ -33,12 +33,12 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\Net45\</OutputPath>
-    <IntermediateOutputPath>bin\Release\Net45</IntermediateOutputPath>
-    <DefineConstants>TRACE;NET_45; XAML</DefineConstants>
+    <OutputPath>bin\Release\Net46\</OutputPath>
+    <IntermediateOutputPath>bin\Release\Net46</IntermediateOutputPath>
+    <DefineConstants>TRACE;NET_46; XAML</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Release\Net45\ReactiveUI.xml</DocumentationFile>
+    <DocumentationFile>bin\Release\Net46\ReactiveUI.xml</DocumentationFile>
     <NoWarn>1591, 1573, 1711, 1587, 1570, 1572</NoWarn>
   </PropertyGroup>
   <ItemGroup>

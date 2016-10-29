@@ -25,8 +25,8 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\Net45</OutputPath>
-    <IntermediateOutputPath>obj\Debug\Net45</IntermediateOutputPath>
+    <OutputPath>bin\Debug\Net46</OutputPath>
+    <IntermediateOutputPath>obj\Debug\Net46</IntermediateOutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -35,8 +35,8 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\Net45</OutputPath>
-    <IntermediateOutputPath>obj\Release\Net45</IntermediateOutputPath>
+    <OutputPath>bin\Release\Net46</OutputPath>
+    <IntermediateOutputPath>obj\Release\Net46</IntermediateOutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>

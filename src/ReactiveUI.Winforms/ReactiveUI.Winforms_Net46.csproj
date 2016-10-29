@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ReactiveUI</RootNamespace>
     <AssemblyName>ReactiveUI.Winforms</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>
     </SccProjectName>
@@ -29,7 +29,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\Net45\</OutputPath>
+    <OutputPath>bin\Debug\Net46\</OutputPath>
     <IntermediateOutputPath>obj\Debug\WinForms_Net46</IntermediateOutputPath>
     <DefineConstants>TRACE;DEBUG;WINFORMS</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
@@ -40,12 +40,12 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\Net45\</OutputPath>
+    <OutputPath>bin\Release\Net46\</OutputPath>
     <IntermediateOutputPath>obj\Release\Winforms_Net46\</IntermediateOutputPath>
     <DefineConstants>TRACE;WINFORMS</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Release\Net45\ReactiveUI.Winforms.xml</DocumentationFile>
+    <DocumentationFile>bin\Release\Net46\ReactiveUI.Winforms.xml</DocumentationFile>
     <NoWarn>1591, 1573, 1711, 1587, 1570, 1572</NoWarn>
   </PropertyGroup>
   <ItemGroup>

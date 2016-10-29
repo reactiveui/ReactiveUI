@@ -13,7 +13,7 @@ namespace EventBuilder.Platforms
         {
             if (PlatformHelper.IsRunningOnMono())
             {
-                throw new NotSupportedException("Building events for NET45 on Mac is not implemented.");
+                throw new NotSupportedException("Building events for NET46 on Mac is not implemented.");
             }
             else
             {
