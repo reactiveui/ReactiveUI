@@ -10,7 +10,7 @@ namespace EventBuilder
         Android,
         iOS,
         Mac,
-        NET45,
+        NET46,
         XamForms,
         UWP,
         WP81,

@@ -30,7 +30,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\Net45\</OutputPath>
-    <IntermediateOutputPath>obj\Debug\WinForms_Net45</IntermediateOutputPath>
+    <IntermediateOutputPath>obj\Debug\WinForms_Net46</IntermediateOutputPath>
     <DefineConstants>TRACE;DEBUG;WINFORMS</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -41,7 +41,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\Net45\</OutputPath>
-    <IntermediateOutputPath>obj\Release\Winforms_Net45\</IntermediateOutputPath>
+    <IntermediateOutputPath>obj\Release\Winforms_Net46\</IntermediateOutputPath>
     <DefineConstants>TRACE;WINFORMS</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -114,9 +114,9 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
-    <ProjectReference Include="..\ReactiveUI\ReactiveUI_Net45.csproj">
+    <ProjectReference Include="..\ReactiveUI\ReactiveUI_Net46.csproj">
       <Project>{1ce2d235-8072-4649-ba5a-cfb1af8776e0}</Project>
-      <Name>ReactiveUI_Net45</Name>
+      <Name>ReactiveUI_Net46</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
