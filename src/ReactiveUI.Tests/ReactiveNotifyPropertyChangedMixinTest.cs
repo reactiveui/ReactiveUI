@@ -11,6 +11,7 @@ using System.Windows;
 using ReactiveUI.Testing;
 using Xunit;
 using Microsoft.Reactive.Testing;
+using System.Reactive;
 
 #if !MONO
 using System.Windows.Controls;
@@ -22,6 +23,7 @@ namespace ReactiveUI.Tests
     {
         public ReactiveCommand<int, int> Command1 { get; set; }
         public ReactiveCommand<int, int> Command2 { get; set; }
+        public ReactiveCommand<string, string> Command3 { get; set; }
 
         ReactiveList<int> myListOfInts;
         public ReactiveList<int> MyListOfInts {
@@ -33,6 +35,7 @@ namespace ReactiveUI.Tests
         {
             Command1 = ReactiveCommand.CreateFromObservable<int, int>(val => Observable.Return(val));
             Command2 = ReactiveCommand.CreateFromObservable<int, int>(val => Observable.Return(val));
+            Command3 = ReactiveCommand.CreateFromObservable<string, string>(val => Observable.Return(val));
         }
     }
 
@@ -603,7 +606,7 @@ namespace ReactiveUI.Tests
     public class WhenAnyObservableTests
     {
         [Fact]
-        public async Task WhenAnyObservableSmokeTest()
+        public async Task WhenAnyObservableSmokeTestMerging()
         {
             var fixture = new TestWhenAnyObsViewModel();
 
@@ -628,7 +631,33 @@ namespace ReactiveUI.Tests
         }
 
         [Fact]
-        public void WhenAnyWithNullObjectShouldUpdateWhenObjectIsntNullAnymore()
+        public async Task WhenAnyObservableSmokeTestCombining()
+        {
+            var fixture = new TestWhenAnyObsViewModel();
+
+            var list = new List<string>();
+            fixture.WhenAnyObservable(x => x.Command3, x => x.Command1, (s, i) => s + " : " + i)
+                   .Subscribe(list.Add);
+
+            Assert.Equal(0, list.Count);
+
+            await fixture.Command1.Execute(1);
+            await fixture.Command3.Execute("foo");
+            Assert.Equal(1, list.Count);
+
+            await fixture.Command1.Execute(2);
+            Assert.Equal(2, list.Count);
+
+            await fixture.Command3.Execute("bar");
+            Assert.Equal(3, list.Count);
+
+            Assert.True(
+                new[] { "foo : 1", "foo : 2", "bar : 2", }.Zip(list, (expected, actual) => new { expected, actual })
+                                .All(x => x.expected == x.actual));
+        }
+
+        [Fact]
+        public void WhenAnyObservableWithNullObjectShouldUpdateWhenObjectIsntNullAnymore()
         {
             var fixture = new TestWhenAnyObsViewModel();
             var output = fixture.WhenAnyObservable(x => x.MyListOfInts.CountChanged).CreateCollection();
@@ -651,6 +680,7 @@ namespace ReactiveUI.Tests
             var fixture = new TestWhenAnyObsViewModel();
             fixture.Command1 = null;
 
+            // these are the overloads of WhenAnyObservable that perform a Merge
             fixture.WhenAnyObservable(x => x.Command1).Subscribe();
             fixture.WhenAnyObservable(x => x.Command1, x => x.Command1).Subscribe();
             fixture.WhenAnyObservable(x => x.Command1, x => x.Command1, x => x.Command1).Subscribe();
@@ -662,6 +692,18 @@ namespace ReactiveUI.Tests
             fixture.WhenAnyObservable(x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1).Subscribe();
             fixture.WhenAnyObservable(x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1).Subscribe();
             fixture.WhenAnyObservable(x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1).Subscribe();
+
+            // these are the overloads of WhenAnyObservable that perform a CombineLatest
+            fixture.WhenAnyObservable(x => x.Command1, x => x.Command1, (_0, _1) => Unit.Default).Subscribe();
+            fixture.WhenAnyObservable(x => x.Command1, x => x.Command1, x => x.Command1, (_0, _1, _2) => Unit.Default).Subscribe();
+            fixture.WhenAnyObservable(x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, (_0, _1, _2, _3) => Unit.Default).Subscribe();
+            fixture.WhenAnyObservable(x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, (_0, _1, _2, _3, _4) => Unit.Default).Subscribe();
+            fixture.WhenAnyObservable(x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, (_0, _1, _2, _3, _4, _5) => Unit.Default).Subscribe();
+            fixture.WhenAnyObservable(x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, (_0, _1, _2, _3, _4, _5, _6) => Unit.Default).Subscribe();
+            fixture.WhenAnyObservable(x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, (_0, _1, _2, _3, _4, _5, _6, _7) => Unit.Default).Subscribe();
+            fixture.WhenAnyObservable(x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, (_0, _1, _2, _3, _4, _5, _6, _7, _8) => Unit.Default).Subscribe();
+            fixture.WhenAnyObservable(x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, (_0, _1, _2, _3, _4, _5, _6, _7, _8, _9) => Unit.Default).Subscribe();
+            fixture.WhenAnyObservable(x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, (_0, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10) => Unit.Default).Subscribe();
         }
     }
 
