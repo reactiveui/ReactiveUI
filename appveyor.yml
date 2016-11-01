@@ -42,6 +42,6 @@ build_script:
 test: off
 
 artifacts:
-  - path: '**/bin/*'
+  - path: '**/bin/**/*'
   - path: src/ReactiveUI.Events/Events_*.cs
   - path: artifacts/*
