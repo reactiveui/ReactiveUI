@@ -42,8 +42,8 @@ namespace ReactiveUI
             th.CurrentTab = th.CurrentTab;
 
             var tp = new TimePicker(null);
-            tp.CurrentHour = tp.CurrentHour;
-            tp.CurrentMinute = tp.CurrentMinute;
+            tp.Hour = tp.Hour;
+            tp.Minute = tp.Minute;
 
             
         }
