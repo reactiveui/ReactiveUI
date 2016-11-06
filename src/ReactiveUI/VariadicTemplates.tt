@@ -22,7 +22,7 @@ int maxFuncLength = 12;
 
 namespace ReactiveUI
 {
-    public static class WhenAnyMixin 
+    public static class WhenAnyMixin
     {
         /// <summary>
         /// WhenAnyValue allows you to observe whenever the value of a
@@ -31,7 +31,7 @@ namespace ReactiveUI
         /// method in constructors to set up bindings between properties that also
         /// need an initial setup.
         /// </summary>
-        public static IObservable<TRet> WhenAnyValue<TSender, TRet>(this TSender This, 
+        public static IObservable<TRet> WhenAnyValue<TSender, TRet>(this TSender This,
                             Expression<Func<TSender, TRet>> property1)
         {
             return This.WhenAny(property1, (IObservedChange<TSender, TRet> c1) => c1.Value);
@@ -54,7 +54,7 @@ namespace ReactiveUI
         /// method in constructors to set up bindings between properties that also
         /// need an initial setup.
         /// </summary>
-        public static IObservable<Tuple<<#= String.Join(",", templParams) #>>> WhenAnyValue<TSender, <#= String.Join(",", templParams) #>>(this TSender This, 
+        public static IObservable<Tuple<<#= String.Join(",", templParams) #>>> WhenAnyValue<TSender, <#= String.Join(",", templParams) #>>(this TSender This,
             <# for(int i=1; i <= length; i++) { #>
                 Expression<Func<TSender, T<#=i#>>> property<#=i#><# if (i != length) { #>,<# } #>
 
@@ -73,9 +73,9 @@ namespace ReactiveUI
         /// method in constructors to set up bindings between properties that also
         /// need an initial setup.
         /// </summary>
-        public static IObservable<TRet> WhenAnyValue<TSender, TRet, <#= String.Join(",", templParams) #>>(this TSender This, 
+        public static IObservable<TRet> WhenAnyValue<TSender, TRet, <#= String.Join(",", templParams) #>>(this TSender This,
             <# for(int i=1; i <= length; i++) { #>
-                Expression<Func<TSender, T<#=i#>>> property<#=i#>, 
+                Expression<Func<TSender, T<#=i#>>> property<#=i#>,
             <# } #>
                 Func<<#= String.Join(",", templParams) #>, TRet> selector)
         {
@@ -91,25 +91,25 @@ namespace ReactiveUI
         /// constructors to set up bindings between properties that also need an
         /// initial setup.
         /// </summary>
-        public static IObservable<TRet> WhenAny<TSender, TRet, <#= String.Join(",", templParams) #>>(this TSender This, 
+        public static IObservable<TRet> WhenAny<TSender, TRet, <#= String.Join(",", templParams) #>>(this TSender This,
             <# for(int i=1; i <= length; i++) { #>
-                Expression<Func<TSender, T<#=i#>>> property<#=i#>, 
+                Expression<Func<TSender, T<#=i#>>> property<#=i#>,
             <# } #>
                 Func<<#= selectorTypeParams #>, TRet> selector)
         {
             <# if (length == 1){ #>
-                return This.ObservableForProperty(property<#=1#>, false, false).Select(selector); 
+                return This.ObservableForProperty(property<#=1#>, false, false).Select(selector);
             <# }else{ #>
             return Observable.CombineLatest(
                 <# for(int i=1; i <= length; i++) { #>
-                    This.ObservableForProperty(property<#=i#>, false, false), 
+                    This.ObservableForProperty(property<#=i#>, false, false),
                 <# } #>
                 selector
             );
             <# } #>
         }
 
-		
+
         /// <summary>
         /// WhenAny allows you to observe whenever one or more properties on an
         /// object have changed, providing an initial value when the Observable
@@ -117,20 +117,20 @@ namespace ReactiveUI
         /// constructors to set up bindings between properties that also need an
         /// initial setup.
         /// </summary>
-        public static IObservable<TRet> WhenAnyDynamic<TSender, TRet>(this TSender This, 
+        public static IObservable<TRet> WhenAnyDynamic<TSender, TRet>(this TSender This,
             <# for(int i=1; i <= length; i++) { #>
-                Expression property<#=i#>, 
+                Expression property<#=i#>,
             <# } #>
                 Func<<#= dynamicSelectorTypeParams #>, TRet> selector)
         {
             <# if (length == 1){ #>
                 return ReactiveNotifyPropertyChangedMixin
-                    .SubscribeToExpressionChain<TSender,object>(This, property<#=1#>, false, false).Select(selector); 
+                    .SubscribeToExpressionChain<TSender,object>(This, property<#=1#>, false, false).Select(selector);
             <# }else{ #>
             return Observable.CombineLatest(
                 <# for(int i=1; i <= length; i++) { #>
                     ReactiveNotifyPropertyChangedMixin
-                        .SubscribeToExpressionChain<TSender,object>(This, property<#=i#>, false, false), 
+                        .SubscribeToExpressionChain<TSender,object>(This, property<#=i#>, false, false),
                 <# } #>
                 selector
             );
@@ -156,7 +156,23 @@ namespace ReactiveUI
                 .Select(x => x.Merge()).Switch();
         }
 <# } #>
-    }
+
+<# for(int length=2; length <= maxFuncLength; length++) { #>
+<# var templParams = Enumerable.Range(1, length).Select(x => "T" + x.ToString()); #>
+<# string varsStr = String.Join(", ", Enumerable.Range(1, length).Select(x => "obs" + x.ToString())); #>
+<# string valsStr = String.Join(", ", Enumerable.Range(1, length).Select(x => "o" + x.ToString() + ".Value.EmptyIfNull()")); #>
+<# string selectorTypeParams = String.Join(", ", templParams); #>
+        public static IObservable<TRet> WhenAnyObservable<TSender, TRet, <#= String.Join(",", templParams) #>>(this TSender This,
+            <# for(int i=1; i <= length; i++) { #>
+                Expression<Func<TSender, IObservable<T<#=i#>>>> obs<#=i#>,
+            <# } #>
+                Func<<#= selectorTypeParams #>, TRet> selector)
+        {
+            return This.WhenAny(<#= varsStr #>, (<#=varsStr.Replace("obs", "o")#>) => Observable.CombineLatest(<#= valsStr #>, selector))
+                .Switch();
+        }
+<# } #>
+}
 
     internal static class ObservableExtensions
     {

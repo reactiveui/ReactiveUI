@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="..\packages\xunit.runner.visualstudio.2.2.0-beta1-build1144\build\net20\xunit.runner.visualstudio.props" Condition="Exists('..\packages\xunit.runner.visualstudio.2.2.0-beta1-build1144\build\net20\xunit.runner.visualstudio.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -11,8 +11,8 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ReactiveUI.Tests</RootNamespace>
-    <AssemblyName>ReactiveUI.Tests_Net45</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <AssemblyName>ReactiveUI.Tests_Net46</AssemblyName>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
@@ -25,8 +25,8 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\Net45</OutputPath>
-    <IntermediateOutputPath>obj\Debug\Net45</IntermediateOutputPath>
+    <OutputPath>bin\Debug\Net46</OutputPath>
+    <IntermediateOutputPath>obj\Debug\Net46</IntermediateOutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -35,8 +35,8 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\Net45</OutputPath>
-    <IntermediateOutputPath>obj\Release\Net45</IntermediateOutputPath>
+    <OutputPath>bin\Release\Net46</OutputPath>
+    <IntermediateOutputPath>obj\Release\Net46</IntermediateOutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -137,21 +137,21 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ReactiveUI.Blend\ReactiveUI.Blend_Net45.csproj">
+    <ProjectReference Include="..\ReactiveUI.Blend\ReactiveUI.Blend_Net46.csproj">
       <Project>{7866b5b1-5457-43a2-976a-e784eb10f2da}</Project>
-      <Name>ReactiveUI.Blend_Net45</Name>
+      <Name>ReactiveUI.Blend_Net46</Name>
     </ProjectReference>
-    <ProjectReference Include="..\ReactiveUI.Testing\ReactiveUI.Testing_Net45.csproj">
+    <ProjectReference Include="..\ReactiveUI.Testing\ReactiveUI.Testing_Net46.csproj">
       <Project>{dd99fd0f-82f6-4c30-930e-4a1d0df01d65}</Project>
-      <Name>ReactiveUI.Testing_Net45</Name>
+      <Name>ReactiveUI.Testing_Net46</Name>
     </ProjectReference>
-    <ProjectReference Include="..\ReactiveUI.Winforms\ReactiveUI.Winforms_Net45.csproj">
+    <ProjectReference Include="..\ReactiveUI.Winforms\ReactiveUI.Winforms_Net46.csproj">
       <Project>{f5ecbde5-e525-4482-b568-63217bcb0a0b}</Project>
-      <Name>ReactiveUI.Winforms_Net45</Name>
+      <Name>ReactiveUI.Winforms_Net46</Name>
     </ProjectReference>
-    <ProjectReference Include="..\ReactiveUI\ReactiveUI_Net45.csproj">
+    <ProjectReference Include="..\ReactiveUI\ReactiveUI_Net46.csproj">
       <Project>{1ce2d235-8072-4649-ba5a-cfb1af8776e0}</Project>
-      <Name>ReactiveUI_Net45</Name>
+      <Name>ReactiveUI_Net46</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -161,7 +161,7 @@
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.ReactiveUI.Tests_Net45.config" />
+    <None Include="packages.ReactiveUI.Tests_Net46.config" />
   </ItemGroup>
   <ItemGroup>
     <Page Include="Xaml\TestUserControl.xaml">

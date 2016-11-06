@@ -63,6 +63,7 @@
     <Compile Include="ExpressionRewriter.cs" />
     <Compile Include="IDependencyResolver.cs" />
     <Compile Include="INPCObservableForProperty.cs" />
+    <Compile Include="Interactions.cs" />
     <Compile Include="Interfaces.cs" />
     <Compile Include="IReactiveObject.cs" />
     <Compile Include="IROObservableForProperty.cs" />
@@ -90,6 +91,7 @@
     <Compile Include="RoutableViewModelMixin.cs" />
     <Compile Include="RoutingState.cs" />
     <Compile Include="RxApp.cs" />
+    <Compile Include="UnhandledErrorException.cs" />
     <Compile Include="ScheduledSubject.cs" />
     <Compile Include="VariadicTemplates.cs">
       <DependentUpon>VariadicTemplates.tt</DependentUpon>

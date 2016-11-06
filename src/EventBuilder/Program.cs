@@ -37,7 +37,7 @@ namespace EventBuilder
             if (Debugger.IsAttached)
             {
                 //args = "--help ".Split(' ');
-                args = "--platform=mac".Split(' ');
+                args = "--platform=ios".Split(' ');
                 //args = new[]
                 //{
                 //    "--platform=none",
@@ -92,8 +92,8 @@ namespace EventBuilder
                             platform = new Mac();
                             break;
 
-                        case AutoPlatform.NET45:
-                            platform = new Net45();
+                        case AutoPlatform.NET46:
+                            platform = new Net46();
                             break;
 
                         case AutoPlatform.XamForms:
@@ -157,7 +157,8 @@ namespace EventBuilder
                 .Replace("&lt;", "<")
                 .Replace("&gt;", ">")
                 .Replace("`1", "")
-                .Replace("`2", "");
+                .Replace("`2", "")
+                .Replace("`3", "");
 
             Console.WriteLine(result);
         }

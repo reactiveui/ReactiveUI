@@ -19,7 +19,7 @@ namespace ReactiveUI.Tests
             Cmd = ReactiveCommand.Create(() => { });
         }
     }
- 
+
     public class FakeView : IViewFor<FakeViewModel>
     {
         public TextBox TheTextBox { get; protected set; }
@@ -138,6 +138,13 @@ namespace ReactiveUI.Tests
         }
 
         public FakeNestedViewModel NestedViewModel { get; set; }
+
+        private int value;
+        public int Value
+        {
+            get { return value; }
+            set { this.RaiseAndSetIfChanged(ref this.value, value); }
+        }
     }
 
     public class FakeNestedViewModel : ReactiveObject
@@ -150,23 +157,30 @@ namespace ReactiveUI.Tests
         public ReactiveCommand NestedCommand { get; protected set; }
     }
 
+    public class CustomClickButton : Button
+    {
+        public event EventHandler<EventArgs> CustomClick;
+
+        public void RaiseCustomClick() =>
+            this.CustomClick?.Invoke(this, EventArgs.Empty);
+    }
 
     public class CommandBindView : IViewFor<CommandBindViewModel>
     {
-        object IViewFor.ViewModel { 
+        object IViewFor.ViewModel {
             get { return ViewModel; }
-            set { ViewModel = (CommandBindViewModel)value; } 
+            set { ViewModel = (CommandBindViewModel)value; }
         }
 
         public CommandBindViewModel ViewModel { get; set; }
 
-        public Button Command1 { get; protected set; }
+        public CustomClickButton Command1 { get; protected set; }
 
         public Image Command2 { get; protected set; }
 
         public CommandBindView()
         {
-            Command1 = new Button();
+            Command1 = new CustomClickButton();
             Command2 = new Image();
         }
     }
@@ -191,7 +205,7 @@ namespace ReactiveUI.Tests
             disp.Dispose();
             Assert.Null(view.Command1.Command);
         }
-        
+
         [Fact]
         public void CommandBindNestedCommandWireup()
         {
@@ -300,5 +314,45 @@ namespace ReactiveUI.Tests
             Assert.Equal(1, invokeCount);
         }
 #endif
+
+        [Fact]
+        public void CommandBindWithParameterExpression()
+        {
+            var vm = new CommandBindViewModel();
+            var view = new CommandBindView() { ViewModel = vm };
+
+            var received = 0;
+            var cmd = ReactiveCommand.Create<int>(i => { received = i; });
+            vm.Command1 = cmd;
+
+            var disp = view.BindCommand(vm, x => x.Command1, x => x.Command1, x => x.Value, nameof(CustomClickButton.CustomClick));
+
+            vm.Value = 42;
+            view.Command1.RaiseCustomClick();
+            Assert.Equal(42, received);
+
+            vm.Value = 13;
+            view.Command1.RaiseCustomClick();
+            Assert.Equal(13, received);
+        }
+
+        [Fact]
+        public void CommandBindWithParameterObservable()
+        {
+            var vm = new CommandBindViewModel();
+            var view = new CommandBindView() { ViewModel = vm };
+
+            var received = 0;
+            var cmd = ReactiveCommand.Create<int>(i => { received = i; });
+            vm.Command1 = cmd;
+
+            var value = Observable.Return(42);
+            var disp = view.BindCommand(vm, x => x.Command1, x => x.Command1, value, nameof(CustomClickButton.CustomClick));
+
+            vm.Value = 42;
+            view.Command1.RaiseCustomClick();
+
+            Assert.Equal(42, received);
+        }
     }
 }
