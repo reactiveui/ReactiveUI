@@ -11,7 +11,7 @@
   </metadata>
   <files>
     <!-- .NET 4.5 -->
-    <file src="bin/Release/Net46/ReactiveUI.Winforms.dll" target="lib/Net46/ReactiveUI.Winforms.dll" />
+    <file src="bin/Release/Net45/ReactiveUI.Winforms.dll" target="lib/Net45/ReactiveUI.Winforms.dll" />
     <!-- Source -->
     <file src="*.cs" target="src" />
   </files>
