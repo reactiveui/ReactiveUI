@@ -73,5 +73,3 @@
   - path: '**/bin/*'
   - path: src/ReactiveUI.Events/Events_*.cs
   test: off
-  on_failure:
-    - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
