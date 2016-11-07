@@ -38,6 +38,7 @@ var isRunningOnAppVeyor = AppVeyor.IsRunningOnAppVeyor;
 var isPullRequest = AppVeyor.Environment.PullRequest.IsPullRequest;
 var isRepository = StringComparer.OrdinalIgnoreCase.Equals("reactiveui/reactiveui", AppVeyor.Environment.Repository.Name);
 
+var isDevelopBranch = StringComparer.OrdinalIgnoreCase.Equals("develop", AppVeyor.Environment.Repository.Branch);
 var isReleaseBranch = StringComparer.OrdinalIgnoreCase.Equals("master", AppVeyor.Environment.Repository.Branch);
 var isTagged = AppVeyor.Environment.Repository.Tag.IsTag;
 
@@ -329,6 +330,7 @@ Task("PublishPackages")
     .WithCriteria(() => !local)
     .WithCriteria(() => !isPullRequest)
     .WithCriteria(() => isRepository)
+    .WithCriteria(() => isDevelopBranch || isReleaseBranch)
     .Does (() =>
 {
 
