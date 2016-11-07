@@ -49,7 +49,7 @@ namespace ReactiveUI.XamForms
         }
         public static readonly BindableProperty ViewContractObservableProperty = BindableProperty.Create(
             nameof(ViewContractObservable),
-            typeof(string),
+            typeof(IObservable<string>),
             typeof(ViewModelViewHost),
             Observable.Never<string>(),
             BindingMode.OneWay);
