@@ -78,8 +78,6 @@
   on_failure:
     - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
 
-# "fall back" configuration for all other branches
-# no "branches" section defined
-# do not deploy at all
+# default configuration
 -
   configuration: Development
