@@ -38,7 +38,7 @@
     <!-- Windows Universal -->
     <file src="bin/Release/UAP10.0/ReactiveUI.Blend_UWP.dll" target="lib/UAP10/ReactiveUI.Blend_UWP.dll" />
     <!-- .NET 4.5 -->
-    <file src="bin/Release/Net46/ReactiveUI.Blend.dll" target="lib/Net46/ReactiveUI.Blend.dll" />
+    <file src="bin/Release/Net45/ReactiveUI.Blend.dll" target="lib/Net45/ReactiveUI.Blend.dll" />
     <!-- Source -->
     <file src="*.cs" target="src" />
   </files>

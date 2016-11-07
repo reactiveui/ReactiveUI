@@ -83,7 +83,7 @@ Action<string, string> Package = (nuspec, basePath) =>
         RequireLicenseAcceptance = false,
 
         Version                  = nugetVersion,
-        Tags                     = new [] {"mvvm", "reactiveui", "Rx", "Reactive Extensions", "Observable", "LINQ", "Events", "xamarin", "android", "ios", "forms", "monodroid", "monotouch", "xamarin.android", "xamarin.ios", "xamarin.forms", "wpf", "winforms", "uwp", "winrt", "net46", "netcore", "wp", "wpdev", "windowsphone", "windowsstore"},
+        Tags                     = new [] {"mvvm", "reactiveui", "Rx", "Reactive Extensions", "Observable", "LINQ", "Events", "xamarin", "android", "ios", "forms", "monodroid", "monotouch", "xamarin.android", "xamarin.ios", "xamarin.forms", "wpf", "winforms", "uwp", "winrt", "net45", "netcore", "wp", "wpdev", "windowsphone", "windowsstore"},
         ReleaseNotes             = new [] { string.Format("{0}/releases", githubUrl) },
 
         Symbols                  = false,
@@ -190,7 +190,7 @@ Task("GenerateEvents")
     generate("mac");
     generate("xamforms");
 
-    generate("net46");
+    generate("net45");
     
     generate("wpa81");
     generate("uwp");
@@ -224,7 +224,7 @@ Task("BuildEvents")
     build("ReactiveUI.Events_MAC.sln");
     build("ReactiveUI.Events_XamForms.sln");
 
-    build("ReactiveUI.Events_NET46.sln");
+    build("ReactiveUI.Events_NET45.sln");
 
     build("ReactiveUI.Events_WPA81.sln");
     build("ReactiveUI.Events_UWP.sln");
@@ -309,7 +309,7 @@ Task("RunUnitTests")
     .IsDependentOn("BuildReactiveUI")
     .Does(() =>
 {
-    XUnit2("./src/ReactiveUI.Tests/bin/Release/Net46/ReactiveUI.Tests_Net46.dll", new XUnit2Settings {
+    XUnit2("./src/ReactiveUI.Tests/bin/Release/Net45/ReactiveUI.Tests_Net45.dll", new XUnit2Settings {
         OutputDirectory = artifactDirectory,
         XmlReportV1 = true,
         NoAppDomain = true

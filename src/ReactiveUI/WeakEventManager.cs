@@ -13,7 +13,7 @@ using System.Windows.Input;
 
 namespace ReactiveUI
 {
-#if !NET_46
+#if !NET_45
     internal class CanExecuteChangedEventManager : WeakEventManager<ICommand, EventHandler, EventArgs>
     {
     }
