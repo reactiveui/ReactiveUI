@@ -8,8 +8,9 @@
 // TOOLS
 //////////////////////////////////////////////////////////////////////
 
-#tool GitVersion.CommandLine
-#tool GitLink
+#tool "GitReleaseManager"
+#tool "GitVersion.CommandLine"
+#tool "GitLink"
 
 //////////////////////////////////////////////////////////////////////
 // ARGUMENTS
@@ -21,53 +22,40 @@ if (string.IsNullOrWhiteSpace(target))
     target = "Default";
 }
 
-var configuration = Argument("configuration", "Release");
-
 //////////////////////////////////////////////////////////////////////
 // PREPARATION
 //////////////////////////////////////////////////////////////////////
 
-// should MSBuild & GitLink treat any errors as warnings.
+// Should MSBuild & GitLink treat any errors as warnings?
 var treatWarningsAsErrors = false;
 
-// Get whether or not this is a local build.
+// Build configuration
 var local = BuildSystem.IsLocalBuild;
-Information("local={0}", local);
-
 var isRunningOnUnix = IsRunningOnUnix();
-Information("isRunningOnUnix={0}", isRunningOnUnix);
-
 var isRunningOnWindows = IsRunningOnWindows();
-Information("isRunningOnWindows={0}", isRunningOnWindows);
 
-//var isRunningOnBitrise = Bitrise.IsRunningOnBitrise;
 var isRunningOnAppVeyor = AppVeyor.IsRunningOnAppVeyor;
-Information("isRunningOnAppVeyor={0}", isRunningOnAppVeyor);
-
 var isPullRequest = AppVeyor.Environment.PullRequest.IsPullRequest;
-Information("isPullRequest={0}", isPullRequest);
+var isRepository = StringComparer.OrdinalIgnoreCase.Equals("reactiveui/reactiveui", AppVeyor.Environment.Repository.Name);
 
-var isMainReactiveUIRepo = StringComparer.OrdinalIgnoreCase.Equals("reactiveui/reactiveui", AppVeyor.Environment.Repository.Name);
-Information("isMainReactiveUIRepo={0}", isMainReactiveUIRepo);
+var isReleaseBranch = StringComparer.OrdinalIgnoreCase.Equals("master", AppVeyor.Environment.Repository.Branch);
+var isTagged = AppVeyor.Environment.Repository.Tag.IsTag;
 
-// Parse release notes.
-var releaseNotes = ParseReleaseNotes("RELEASENOTES.md");
+var githubOwner = "reactiveui";
+var githubRepository = "reactiveui";
+var githubUrl = string.Format("https://github.com/{0}/{1}", githubOwner, githubRepository);
 
-// Get version.
-var version = releaseNotes.Version.ToString();
-Information("version={0}", version);
+// Version
+var gitVersion = GitVersion();
+var majorMinorPatch = gitVersion.MajorMinorPatch;
+var semVersion = gitVersion.SemVer;
+var informationalVersion = gitVersion.InformationalVersion;
+var nugetVersion = gitVersion.NuGetVersion;
+var buildVersion = gitVersion.FullBuildMetaData;
 
-var epoch = (long)(DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalSeconds;
-Information("epoch={0}", epoch);
-
-var gitSha = GitVersion().Sha;
-Information("gitSha={0}", gitSha);
-
-var semVersion = local ? string.Format("{0}.{1}", version, epoch) : string.Format("{0}.{1}", version, epoch);
-Information("semVersion={0}", semVersion);
-
-// Define directories.
+// Artifacts
 var artifactDirectory = "./artifacts/";
+var packageWhitelist = new[] { "ReactiveUI-Testing", "ReactiveUI-Events", "ReactiveUI-Events-XamForms", "ReactiveUI", "ReactiveUI-Core", "ReactiveUI-AndroidSupport", "ReactiveUI-Blend", "ReactiveUI-Winforms", "ReactiveUI-XamForms" };
 
 // Define global marcos.
 Action Abort = () => { throw new Exception("a non-recoverable fatal error occurred."); };
@@ -93,11 +81,11 @@ Action<string, string> Package = (nuspec, basePath) =>
         Copyright                = "Copyright (c) ReactiveUI and contributors",
         RequireLicenseAcceptance = false,
 
-        Version                  = semVersion,
+        Version                  = nugetVersion,
         Tags                     = new [] {"mvvm", "reactiveui", "Rx", "Reactive Extensions", "Observable", "LINQ", "Events", "xamarin", "android", "ios", "forms", "monodroid", "monotouch", "xamarin.android", "xamarin.ios", "xamarin.forms", "wpf", "winforms", "uwp", "winrt", "net46", "netcore", "wp", "wpdev", "windowsphone", "windowsstore"},
-        ReleaseNotes             = new List<string>(releaseNotes.Notes),
+        ReleaseNotes             = new [] { string.Format("{0}/releases", githubUrl) },
 
-        Symbols                  = true,
+        Symbols                  = false,
         Verbosity                = NuGetVerbosity.Detailed,
         OutputDirectory          = artifactDirectory,
         BasePath                 = basePath,
@@ -124,7 +112,7 @@ Setup(context =>
         throw new NotImplementedException("ReactiveUI will only build on Windows (w/Xamarin installed) because it's not possible to target UWP, WPF and Windows Forms from UNIX.");
     }
 
-    Information("Building version {0} of ReactiveUI.", semVersion);
+    Information("Building version {0} of ReactiveUI. (isTagged: {1})", informationalVersion, isTagged);
 });
 
 Teardown(context =>
@@ -144,7 +132,7 @@ Task("BuildEventBuilder")
     var solution = "./src/EventBuilder.sln";
 
     MSBuild(solution, new MSBuildSettings()
-        .SetConfiguration(configuration)
+        .SetConfiguration("Release")
         .WithProperty("TreatWarningsAsErrors", treatWarningsAsErrors.ToString())
         .SetVerbosity(Verbosity.Minimal)
         .SetNodeReuse(false));
@@ -221,7 +209,7 @@ Task("BuildEvents")
         Information("Building {0}", solution);
 
         MSBuild(solution, new MSBuildSettings()
-            .SetConfiguration(configuration)
+            .SetConfiguration("Release")
             .WithProperty("NoWarn", "1591") // ignore missing XML doc warnings
             .WithProperty("TreatWarningsAsErrors", treatWarningsAsErrors.ToString())
             .SetVerbosity(Verbosity.Minimal)
@@ -259,7 +247,7 @@ Task("BuildReactiveUI")
         Information("Building {0}", solution);
 
         MSBuild(solution, new MSBuildSettings()
-            .SetConfiguration(configuration)
+            .SetConfiguration("Release")
             .WithProperty("NoWarn", "1591") // ignore missing XML doc warnings
             .WithProperty("TreatWarningsAsErrors", treatWarningsAsErrors.ToString())
             .SetVerbosity(Verbosity.Minimal)
@@ -292,7 +280,7 @@ Task("UpdateAppVeyorBuildNumber")
     .WithCriteria(() => isRunningOnAppVeyor)
     .Does(() =>
 {
-    AppVeyor.UpdateBuildVersion(semVersion);
+    AppVeyor.UpdateBuildVersion(buildVersion);
 });
 
 Task("UpdateAssemblyInfo")
@@ -303,9 +291,9 @@ Task("UpdateAssemblyInfo")
 
     CreateAssemblyInfo(file, new AssemblyInfoSettings {
         Product = "ReactiveUI",
-        Version = version,
-        FileVersion = version,
-        InformationalVersion = semVersion,
+        Version = majorMinorPatch,
+        FileVersion = majorMinorPatch,
+        InformationalVersion = informationalVersion,
         Copyright = "Copyright (c) ReactiveUI and contributors"
     });
 });
@@ -330,47 +318,114 @@ Task("RunUnitTests")
 Task("Package")
     .IsDependentOn("PackageEvents")
     .IsDependentOn("PackageReactiveUI")
-    .WithCriteria(() => !isRunningOnUnix)
     .Does (() =>
 {
 
 });
 
-Task("Publish")
+Task("PublishPackages")
+    .IsDependentOn("RunUnitTests")
     .IsDependentOn("Package")
-    .WithCriteria(() => !isRunningOnUnix)
     .WithCriteria(() => !local)
     .WithCriteria(() => !isPullRequest)
-    .WithCriteria(() => isMainReactiveUIRepo)
+    .WithCriteria(() => isRepository)
     .Does (() =>
 {
+
+    if (isReleaseBranch && !isTagged)
+    {
+        Information("Packages will not be published as this release has not been tagged.");
+        return;
+    }
+
     // Resolve the API key.
-    var apiKey = EnvironmentVariable("MYGET_API_KEY");
+    var apiKey = EnvironmentVariable("NUGET_APIKEY");
     if (string.IsNullOrEmpty(apiKey))
     {
-        throw new InvalidOperationException("Could not resolve MyGet API key.");
+        throw new Exception("The NUGET_APIKEY environment variable is not defined.");
+    }
+
+    var source = EnvironmentVariable("NUGET_SOURCE");
+    if (string.IsNullOrEmpty(source))
+    {
+        throw new Exception("The NUGET_SOURCE environment variable is not defined.");
     }
 
     // only push whitelisted packages.
-    foreach(var package in new[] { "ReactiveUI-Testing", "ReactiveUI-Events", "ReactiveUI-Events-XamForms", "ReactiveUI", "ReactiveUI-Core", "ReactiveUI-AndroidSupport", "ReactiveUI-Blend", "ReactiveUI-Winforms", "ReactiveUI-XamForms" })
+    foreach(var package in packageWhitelist)
     {
         // only push the package which was created during this build run.
-        var packagePath = artifactDirectory + File(string.Concat(package, ".", semVersion, ".nupkg"));
-        var symbolsPath = artifactDirectory + File(string.Concat(package, ".", semVersion, ".symbols.nupkg"));
+        var packagePath = artifactDirectory + File(string.Concat(package, ".", nugetVersion, ".nupkg"));
 
         // Push the package.
         NuGetPush(packagePath, new NuGetPushSettings {
-            Source = "https://www.myget.org/F/reactiveui/api/v2/package",
+            Source = source,
             ApiKey = apiKey
         });
-
-        // Push the symbols
-        NuGetPush(symbolsPath, new NuGetPushSettings {
-            Source = "https://www.myget.org/F/reactiveui/api/v2/package",
-            ApiKey = apiKey
-        });
-
     }
+});
+
+Task("CreateRelease")
+    .IsDependentOn("Package")
+    .WithCriteria(() => !local)
+    .WithCriteria(() => !isPullRequest)
+    .WithCriteria(() => isRepository)
+    .WithCriteria(() => isReleaseBranch)
+    .WithCriteria(() => !isTagged)
+    .Does (() =>
+{
+    var username = EnvironmentVariable("GITHUB_USERNAME");
+    if (string.IsNullOrEmpty(username))
+    {
+        throw new Exception("The GITHUB_USERNAME environment variable is not defined.");
+    }
+
+    var token = EnvironmentVariable("GITHUB_TOKEN");
+    if (string.IsNullOrEmpty(token))
+    {
+        throw new Exception("The GITHUB_TOKEN environment variable is not defined.");
+    }
+
+    GitReleaseManagerCreate(username, token, githubOwner, githubRepository, new GitReleaseManagerCreateSettings {
+        Milestone         = majorMinorPatch,
+        Name              = majorMinorPatch,
+        Prerelease        = true,
+        TargetCommitish   = "master"
+    });
+});
+
+Task("PublishRelease")
+    .IsDependentOn("RunUnitTests")
+    .IsDependentOn("Package")
+    .WithCriteria(() => !local)
+    .WithCriteria(() => !isPullRequest)
+    .WithCriteria(() => isRepository)
+    .WithCriteria(() => isReleaseBranch)
+    .WithCriteria(() => isTagged)
+    .Does (() =>
+{
+    var username = EnvironmentVariable("GITHUB_USERNAME");
+    if (string.IsNullOrEmpty(username))
+    {
+        throw new Exception("The GITHUB_USERNAME environment variable is not defined.");
+    }
+
+    var token = EnvironmentVariable("GITHUB_TOKEN");
+    if (string.IsNullOrEmpty(token))
+    {
+        throw new Exception("The GITHUB_TOKEN environment variable is not defined.");
+    }
+
+    // only push whitelisted packages.
+    foreach(var package in packageWhitelist)
+    {
+        // only push the package which was created during this build run.
+        var packagePath = artifactDirectory + File(string.Concat(package, ".", nugetVersion, ".nupkg"));
+
+        GitReleaseManagerAddAssets(username, token, githubOwner, githubRepository, majorMinorPatch, packagePath);
+    }
+
+    GitReleaseManagerClose(username, token, githubOwner, githubRepository, majorMinorPatch);
 });
 
 //////////////////////////////////////////////////////////////////////
@@ -378,9 +433,12 @@ Task("Publish")
 //////////////////////////////////////////////////////////////////////
 
 Task("Default")
-    .IsDependentOn("Publish")
+    .IsDependentOn("CreateRelease")
+    .IsDependentOn("PublishPackages")
+    .IsDependentOn("PublishRelease")
     .Does (() =>
 {
+
 });
 
 //////////////////////////////////////////////////////////////////////

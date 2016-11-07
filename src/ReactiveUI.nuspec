@@ -10,6 +10,6 @@
     </dependencies>
   </metadata>
   <files>
-    <file src="RELEASENOTES.MD"  />
+    <file src="LICENSE"  />
   </files>
 </package>
