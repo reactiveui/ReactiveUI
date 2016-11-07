@@ -1,7 +1,6 @@
 # configuration for "master" branch
 -
   image: Visual Studio 2015  
-  configuration: Release
   branches:
       only:
         - master
@@ -16,33 +15,32 @@
     NUGET_APIKEY:
       secure: 0g2AqQxgiAIFhqoJbbmEPrJa15Z8U5xYT6vQe43Gocuxbjw74hBAIKbU+Cj65UNd
   init:
-    - cd \
-    - appveyor DownloadFile http://dl.google.com/android/android-sdk_r24.4.1-windows.zip
-    - 7z x android-sdk_r24.4.1-windows.zip > nul
-    - cd "C:\projects\reactiveui"
+  - cd \
+  - appveyor DownloadFile http://dl.google.com/android/android-sdk_r24.4.1-windows.zip
+  - 7z x android-sdk_r24.4.1-windows.zip > nul
+  - cd "C:\projects\reactiveui"
   install: 
-    - echo y | "%ANDROID_HOME%\tools\android.bat" update sdk -u -a -t tools
-    - echo y | "%ANDROID_HOME%\tools\android.bat" update sdk -u -a -t platform-tools
-    - echo y | "%ANDROID_HOME%\tools\android.bat" update sdk -u -a -t build-tools-24.0.2
-    - echo y | "%ANDROID_HOME%\tools\android.bat" update sdk -u -a -t android-24
-    - echo y | "%ANDROID_HOME%\tools\android.bat" update sdk -u -a -t extra-google-m2repository
-    - echo y | "%ANDROID_HOME%\tools\android.bat" update sdk -u -a -t extra-android-m2repository
+  - echo y | "%ANDROID_HOME%\tools\android.bat" update sdk -u -a -t tools
+  - echo y | "%ANDROID_HOME%\tools\android.bat" update sdk -u -a -t platform-tools
+  - echo y | "%ANDROID_HOME%\tools\android.bat" update sdk -u -a -t build-tools-24.0.2
+  - echo y | "%ANDROID_HOME%\tools\android.bat" update sdk -u -a -t android-24
+  - echo y | "%ANDROID_HOME%\tools\android.bat" update sdk -u -a -t extra-google-m2repository
+  - echo y | "%ANDROID_HOME%\tools\android.bat" update sdk -u -a -t extra-android-m2repository
   build_script:
-    - ./build.cmd
+  - ./build.cmd
   cache:
-    - tools -> build.*
-    - src\packages -> **\packages.config
-    - '%USERPROFILE%\.nuget\packages -> **\project.json'
+  - tools -> build.*
+  - src\packages -> **\packages.config
+  - '%USERPROFILE%\.nuget\packages -> **\project.json'
   artifacts:
-    - path: artifacts/*
-    - path: '**/bin/*'
-    - path: src/ReactiveUI.Events/Events_*.cs
+  - path: artifacts/*
+  - path: '**/bin/*'
+  - path: src/ReactiveUI.Events/Events_*.cs
   test: off
   
 # configuration for "develop" branch
 -
   image: Visual Studio 2015  
-  configuration: Development
   branches:
       except:
           - master
@@ -53,31 +51,27 @@
     NUGET_APIKEY:
       secure: YP/3KxC2ffsuHNaolPXj66JVGzSjON9FcR2S2OEzn9c6SV14oPzUh1ySyeT+G+aA
   init:
-    - cd \
-    - appveyor DownloadFile http://dl.google.com/android/android-sdk_r24.4.1-windows.zip
-    - 7z x android-sdk_r24.4.1-windows.zip > nul
-    - cd "C:\projects\reactiveui"
+  - cd \
+  - appveyor DownloadFile http://dl.google.com/android/android-sdk_r24.4.1-windows.zip
+  - 7z x android-sdk_r24.4.1-windows.zip > nul
+  - cd "C:\projects\reactiveui"
   install: 
-    - echo y | "%ANDROID_HOME%\tools\android.bat" update sdk -u -a -t tools
-    - echo y | "%ANDROID_HOME%\tools\android.bat" update sdk -u -a -t platform-tools
-    - echo y | "%ANDROID_HOME%\tools\android.bat" update sdk -u -a -t build-tools-24.0.2
-    - echo y | "%ANDROID_HOME%\tools\android.bat" update sdk -u -a -t android-24
-    - echo y | "%ANDROID_HOME%\tools\android.bat" update sdk -u -a -t extra-google-m2repository
-    - echo y | "%ANDROID_HOME%\tools\android.bat" update sdk -u -a -t extra-android-m2repository
+  - echo y | "%ANDROID_HOME%\tools\android.bat" update sdk -u -a -t tools
+  - echo y | "%ANDROID_HOME%\tools\android.bat" update sdk -u -a -t platform-tools
+  - echo y | "%ANDROID_HOME%\tools\android.bat" update sdk -u -a -t build-tools-24.0.2
+  - echo y | "%ANDROID_HOME%\tools\android.bat" update sdk -u -a -t android-24
+  - echo y | "%ANDROID_HOME%\tools\android.bat" update sdk -u -a -t extra-google-m2repository
+  - echo y | "%ANDROID_HOME%\tools\android.bat" update sdk -u -a -t extra-android-m2repository
   build_script:
-    - ./build.cmd
+  - ./build.cmd
   cache:
-    - tools -> build.*
-    - src\packages -> **\packages.config
-    - '%USERPROFILE%\.nuget\packages -> **\project.json'
+  - tools -> build.*
+  - src\packages -> **\packages.config
+  - '%USERPROFILE%\.nuget\packages -> **\project.json'
   artifacts:
-    - path: artifacts/*
-    - path: '**/bin/*'
-    - path: src/ReactiveUI.Events/Events_*.cs
+  - path: artifacts/*
+  - path: '**/bin/*'
+  - path: src/ReactiveUI.Events/Events_*.cs
   test: off
   on_failure:
     - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
-
-# default configuration
--
-  configuration: Development
