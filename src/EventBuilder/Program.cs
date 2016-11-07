@@ -92,8 +92,8 @@ namespace EventBuilder
                             platform = new Mac();
                             break;
 
-                        case AutoPlatform.NET46:
-                            platform = new Net46();
+                        case AutoPlatform.NET45:
+                            platform = new Net45();
                             break;
 
                         case AutoPlatform.XamForms:
