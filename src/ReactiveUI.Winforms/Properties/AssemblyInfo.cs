@@ -3,4 +3,4 @@ using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
 using System.Windows;
 
-[assembly: InternalsVisibleTo("ReactiveUI.Tests_Net46")]
+[assembly: InternalsVisibleTo("ReactiveUI.Tests_Net45")]

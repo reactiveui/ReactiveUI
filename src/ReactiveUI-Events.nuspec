@@ -30,7 +30,7 @@
     <!-- Windows Universal -->
     <file src="bin/Release/UAP10.0/ReactiveUI.Events.dll" target="lib/UAP10/ReactiveUI.Events.dll" />
     <!-- .NET 4.5 -->
-    <file src="bin/Release/Net46/ReactiveUI.Events.dll" target="lib/Net46/ReactiveUI.Events.dll" />
+    <file src="bin/Release/Net45/ReactiveUI.Events.dll" target="lib/Net45/ReactiveUI.Events.dll" />
     <!-- Source -->
     <file src="*.cs" target="src" />
   </files>
