@@ -1,0 +1,64 @@
+create:
+  include-footer: true
+  footer-heading: Where to get it
+  footer-content: You can download this release from [nuget.org](https://www.nuget.org/packages/reactiveui/{milestone})
+  footer-includes-milestone: true
+  milestone-replace-text: '{milestone}'
+export:
+  include-created-date-in-title: true
+  created-date-string-format: MMMM dd, yyyy
+  perform-regex-removal: true
+  regex-text: '### Where to get it(\r\n)*You can .*\)'
+  multiline-regex: true
+issue-labels-include:
+- reactiveui-core
+- reactiveui-events
+- windows-forms
+- windows-phone-store-uwp
+- uwp
+- wpf
+- xamarin-android
+- xamarin-forms
+- xamarin-ios
+- xamarin-mac
+- housekeeping
+- documentation
+issue-labels-exclude:
+- Build
+issue-labels-alias:
+    - name:    reactiveui-core
+      header:  All Platforms
+      plural:  All Platforms
+    - name:    reactiveui-events
+      header:  Events Generator
+      plural:  Events Generator
+    - name:    windows-forms
+      header:  Windows Forms
+      plural:  Windows Forms
+    - name:    windows-phone-store-uwp
+      header:  Windows Phone, Store and Universal
+      plural:  Windows Phone, Store and Universal
+    - name:    uwp
+      header:  Windows Universal Platform
+      plural:  Windows Universal Platform
+    - name:    wpf
+      header:  Windows Presentation Framework
+      plural:  Windows Presentation Framework
+    - name:    xamarin-android
+      header:  Xamarin Android
+      plural:  Xamarin Android
+    - name:    xamarin-forms
+      header:  Xamarin Forms
+      plural:  Xamarin Forms
+    - name:    xamarin-ios
+      header:  Xamarin iOS
+      plural:  Xamarin iOS
+    - name:    xamarin-mac
+      header:  Xamarin Mac
+      plural:  Xamarin Mac
+    - name:    housekeeping
+      header:  Housekeeping
+      plural:  Housekeeping
+    - name:    Documentation
+      header:  Documentation
+      plural:  Documentation
