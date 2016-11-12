@@ -1,0 +1,52 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>reactiveui-testing</id>
+    <version>$version$</version>
+    <description>A library to aid in writing unit tests for ReactiveUI projects</description>
+    <language>en-us</language>
+    <dependencies>
+      <group targetFramework="net45">
+        <dependency id="reactiveui-core" version="$version$" />
+        <dependency id="Rx-Testing" version="2.2.5" />
+      </group>
+      <group targetFramework="Win8">
+        <dependency id="reactiveui-core" version="$version$" />
+        <dependency id="Rx-Testing" version="2.2.5" />
+      </group>
+      <group targetFramework="uap10.0">
+        <dependency id="reactiveui-core" version="$version$" />
+        <dependency id="Rx-Core" version="2.2.5" />
+        <dependency id="Rx-Interfaces" version="2.2.5" />
+        <dependency id="Rx-Linq" version="2.2.5" />
+        <dependency id="Rx-Testing" version="2.2.5" />
+        <dependency id="System.Diagnostics.Debug" version="4.0.10" />
+        <dependency id="System.Runtime" version="4.0.20" />
+        <dependency id="System.Threading" version="4.0.10" />
+        <dependency id="System.Threading.Tasks" version="4.0.10" />
+      </group>
+      <group targetFramework="monoandroid">
+        <dependency id="reactiveui-core" version="$version$" />
+      </group>
+      <group targetFramework="monotouch">
+        <dependency id="reactiveui-core" version="$version$" />
+      </group>
+    </dependencies>
+  </metadata>
+  <files>
+    <!-- Android -->
+    <file src="bin/Release/MonoAndroid403/ReactiveUI.Testing.dll" target="lib/MonoAndroid403/ReactiveUI.Testing.dll" />
+    <!-- iOS Unified API -->
+    <file src="bin/Release/Xamarin.iOS10/ReactiveUI.Testing.dll" target="lib/Xamarin.iOS10/ReactiveUI.Testing.dll" />
+    <!-- Xamarin Mac Unified API -->
+     <file src="bin/Release/Xamarin.Mac20/ReactiveUI.Testing.dll" target="lib/Xamarin.Mac20/ReactiveUI.Testing.dll" /> 
+    <!-- Windows Store 8.1 -->
+    <file src="bin/Release/Portable-Win81+WPA81/ReactiveUI.Testing.dll" target="lib/Portable-Win81+WPA81/ReactiveUI.Testing.dll" />
+    <!-- Windows Universal -->
+    <file src="bin/Release/UAP10.0/ReactiveUI.Testing.dll" target="lib/UAP10/ReactiveUI.Testing.dll" />
+    <!-- .NET 4.5 -->
+    <file src="bin/Release/Net45/ReactiveUI.Testing.dll" target="lib/Net45/ReactiveUI.Testing.dll" />
+    <!-- Source -->
+    <file src="*.cs" target="src" />
+  </files>
+</package>
