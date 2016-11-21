@@ -1,10 +1,9 @@
 ﻿{
   "dependencies": {
-    "Microsoft.NETCore.UniversalWindowsPlatform": "5.1.0",
+    "Microsoft.NETCore.UniversalWindowsPlatform": "5.2.2",
     "NuSpec.ReferenceGenerator": "1.4.2",
-    "Rx-WindowStoreApps": "2.2.5",
-    "Rx-XAML": "2.2.5",
-    "Splat": "1.6.2"
+    "Splat": "2.0.0",
+    "system.reactive": "3.1.1"
   },
   "frameworks": {
     "uap10.0": {}

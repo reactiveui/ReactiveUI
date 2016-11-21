@@ -20,10 +20,14 @@
         <dependency id="Rx-Interfaces" version="2.2.5" />
         <dependency id="Rx-Linq" version="2.2.5" />
         <dependency id="Rx-Testing" version="2.2.5" />
-        <dependency id="System.Diagnostics.Debug" version="4.0.10" />
-        <dependency id="System.Runtime" version="4.0.20" />
-        <dependency id="System.Threading" version="4.0.10" />
-        <dependency id="System.Threading.Tasks" version="4.0.10" />
+        <dependency id="Microsoft.Reactive.Testing" version="3.1.1" />
+        <dependency id="System.Diagnostics.Debug" version="4.0.11" />
+        <dependency id="System.Reactive.Core" version="3.1.1" />
+        <dependency id="System.Reactive.Interfaces" version="3.1.1" />
+        <dependency id="System.Reactive.Linq" version="3.1.1" />
+        <dependency id="System.Runtime" version="4.1.0" />
+        <dependency id="System.Threading" version="4.0.11" />
+        <dependency id="System.Threading.Tasks" version="4.0.11" />
       </group>
       <group targetFramework="monoandroid">
         <dependency id="reactiveui-core" version="$version$" />
@@ -39,7 +43,7 @@
     <!-- iOS Unified API -->
     <file src="bin/Release/Xamarin.iOS10/ReactiveUI.Testing.dll" target="lib/Xamarin.iOS10/ReactiveUI.Testing.dll" />
     <!-- Xamarin Mac Unified API -->
-     <file src="bin/Release/Xamarin.Mac20/ReactiveUI.Testing.dll" target="lib/Xamarin.Mac20/ReactiveUI.Testing.dll" /> 
+    <file src="bin/Release/Xamarin.Mac20/ReactiveUI.Testing.dll" target="lib/Xamarin.Mac20/ReactiveUI.Testing.dll" />
     <!-- Windows Store 8.1 -->
     <file src="bin/Release/Portable-Win81+WPA81/ReactiveUI.Testing.dll" target="lib/Portable-Win81+WPA81/ReactiveUI.Testing.dll" />
     <!-- Windows Universal -->
