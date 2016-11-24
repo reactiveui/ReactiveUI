@@ -124,6 +124,7 @@ namespace ReactiveUI
         }
     }
 
+#if !NET_45
     class ReactiveListWeakImpl<T> : IReactiveListImpl<T>
     {
         public void CollectionChangingAddHandler(ReactiveList<T> source, NotifyCollectionChangedEventHandler handler)
@@ -186,6 +187,7 @@ namespace ReactiveUI
             PropertyChangedEventManager.DeliverEvent(source, e);
         }
     }
+#endif
 
     internal class ReactiveListBase
     {
@@ -289,10 +291,10 @@ namespace ReactiveUI
 
         void setupRx(IEnumerable<T> initialContents = null, double resetChangeThreshold = 0.3, IScheduler scheduler = null)
         {
-			if (impl == null)
-			{
+            if (impl == null)
+            {
 #if NET_45
-            impl = new ReactiveListStrongImpl<T>();
+                impl = new ReactiveListStrongImpl<T>();
 #else
                 if (ReactiveListBase.useStrongRefs == true)
                 {
