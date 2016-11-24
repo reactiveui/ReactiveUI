@@ -19,92 +19,234 @@ using Splat;
 
 namespace ReactiveUI
 {
+    interface IReactiveListImpl<T>
+    {
+        void CollectionChangingAddHandler(ReactiveList<T> source, NotifyCollectionChangedEventHandler handler);
+        void CollectionChangingRemoveHandler(ReactiveList<T> source, NotifyCollectionChangedEventHandler handler);
+
+        void CollectionChangedAddHandler(ReactiveList<T> source, NotifyCollectionChangedEventHandler handler);
+        void CollectionChangedRemoveHandler(ReactiveList<T> source, NotifyCollectionChangedEventHandler handler);
+
+        void RaiseCollectionChanging(ReactiveList<T> source, NotifyCollectionChangedEventArgs e);
+        void RaiseCollectionChanged(ReactiveList<T> source, NotifyCollectionChangedEventArgs e);
+
+        void PropertyChangingAddHandler(ReactiveList<T> source, PropertyChangingEventHandler handler);
+        void PropertyChangingRemoveHandler(ReactiveList<T> source, PropertyChangingEventHandler handler);
+
+        void RaisePropertyChanging(ReactiveList<T> source, PropertyChangingEventArgs e);
+
+        void PropertyChangedAddHandler(ReactiveList<T> source, PropertyChangedEventHandler handler);
+        void PropertyChangedRemoveHandler(ReactiveList<T> source, PropertyChangedEventHandler handler);
+
+        void RaisePropertyChanged(ReactiveList<T> source, PropertyChangedEventArgs e);
+    }
+
+    class ReactiveListStrongImpl<T> : IReactiveListImpl<T>
+    {
+        event NotifyCollectionChangedEventHandler CollectionChanging;
+        event NotifyCollectionChangedEventHandler CollectionChanged;
+        event PropertyChangingEventHandler PropertyChanging;
+        event PropertyChangedEventHandler PropertyChanged;
+
+        public void CollectionChangingAddHandler(ReactiveList<T> source, NotifyCollectionChangedEventHandler handler)
+        {
+            CollectionChanging += handler;
+        }
+
+        public void CollectionChangingRemoveHandler(ReactiveList<T> source, NotifyCollectionChangedEventHandler handler)
+        {
+            CollectionChanging -= handler;
+        }
+
+        public void CollectionChangedAddHandler(ReactiveList<T> source, NotifyCollectionChangedEventHandler handler)
+        {
+            CollectionChanged += handler;
+        }
+
+        public void CollectionChangedRemoveHandler(ReactiveList<T> source, NotifyCollectionChangedEventHandler handler)
+        {
+            CollectionChanged -= handler;
+        }
+
+        public void RaiseCollectionChanging(ReactiveList<T> source, NotifyCollectionChangedEventArgs e)
+        {
+            var handler = this.CollectionChanging;
+            if (handler != null)
+            {
+                handler(this, e);
+            }
+        }
+        public void RaiseCollectionChanged(ReactiveList<T> source, NotifyCollectionChangedEventArgs e)
+        {
+            var handler = this.CollectionChanged;
+            if (handler != null)
+            {
+                handler(this, e);
+            }
+        }
+
+        public void PropertyChangingAddHandler(ReactiveList<T> source, PropertyChangingEventHandler handler)
+        {
+            PropertyChanging += handler;
+        }
+
+        public void PropertyChangingRemoveHandler(ReactiveList<T> source, PropertyChangingEventHandler handler)
+        {
+            PropertyChanging -= handler;
+        }
+
+        public void RaisePropertyChanging(ReactiveList<T> source, PropertyChangingEventArgs e)
+        {
+            var handler = this.PropertyChanging;
+            if (handler != null)
+            {
+                handler(this, e);
+            }
+        }
+
+        public void PropertyChangedAddHandler(ReactiveList<T> source, PropertyChangedEventHandler handler)
+        {
+            PropertyChanged += handler;
+        }
+
+        public void PropertyChangedRemoveHandler(ReactiveList<T> source, PropertyChangedEventHandler handler)
+        {
+            PropertyChanged -= handler;
+        }
+
+        public void RaisePropertyChanged(ReactiveList<T> source, PropertyChangedEventArgs e)
+        {
+            var handler = this.PropertyChanged;
+            if (handler != null)
+            {
+                handler(this, e);
+            }
+        }
+    }
+
+    class ReactiveListWeakImpl<T> : IReactiveListImpl<T>
+    {
+        public void CollectionChangingAddHandler(ReactiveList<T> source, NotifyCollectionChangedEventHandler handler)
+        {
+            CollectionChangingEventManager.AddHandler(source, handler);
+        }
+
+        public void CollectionChangingRemoveHandler(ReactiveList<T> source, NotifyCollectionChangedEventHandler handler)
+        {
+            CollectionChangingEventManager.RemoveHandler(source, handler);
+        }
+
+        public void CollectionChangedAddHandler(ReactiveList<T> source, NotifyCollectionChangedEventHandler handler)
+        {
+            CollectionChangedEventManager.AddHandler(source, handler);
+        }
+
+        public void CollectionChangedRemoveHandler(ReactiveList<T> source, NotifyCollectionChangedEventHandler handler)
+        {
+            CollectionChangedEventManager.RemoveHandler(source, handler);
+        }
+
+        public void RaiseCollectionChanging(ReactiveList<T> source, NotifyCollectionChangedEventArgs e)
+        {
+            CollectionChangingEventManager.DeliverEvent(source, e);
+        }
+
+        public void RaiseCollectionChanged(ReactiveList<T> source, NotifyCollectionChangedEventArgs e)
+        {
+            CollectionChangedEventManager.DeliverEvent(source, e);
+        }
+
+        public void PropertyChangingAddHandler(ReactiveList<T> source, PropertyChangingEventHandler handler)
+        {
+            PropertyChangingEventManager.AddHandler(source, handler);
+        }
+
+        public void PropertyChangingRemoveHandler(ReactiveList<T> source, PropertyChangingEventHandler handler)
+        {
+            PropertyChangingEventManager.RemoveHandler(source, handler);
+        }
+
+        public void RaisePropertyChanging(ReactiveList<T> source, PropertyChangingEventArgs e)
+        {
+            PropertyChangingEventManager.DeliverEvent(source, e);
+        }
+
+        public void PropertyChangedAddHandler(ReactiveList<T> source, PropertyChangedEventHandler handler)
+        {
+            PropertyChangedEventManager.AddHandler(source, handler);
+        }
+
+        public void PropertyChangedRemoveHandler(ReactiveList<T> source, PropertyChangedEventHandler handler)
+        {
+            PropertyChangedEventManager.RemoveHandler(source, handler);
+        }
+
+        public void RaisePropertyChanged(ReactiveList<T> source, PropertyChangedEventArgs e)
+        {
+            PropertyChangedEventManager.DeliverEvent(source, e);
+        }
+    }
+
+    internal class ReactiveListBase
+    {
+        internal static bool? useStrongRefs;
+
+        internal static void ConfigureStrongReferences()
+        {
+            if (useStrongRefs != null)
+                throw new Exception("ReactiveList impl has already been set");
+
+            useStrongRefs = true;
+        }
+
+    }
+
     [DebuggerDisplay("Count = {Count}")]
     [DebuggerTypeProxy(typeof(CollectionDebugView<>))]
     public class ReactiveList<T> : IReactiveList<T>, IReadOnlyReactiveList<T>, IList
     {
-#if NET_45
-        public event NotifyCollectionChangedEventHandler CollectionChanging;
+        internal static IReactiveListImpl<T> impl = null;
 
-        protected virtual void raiseCollectionChanging(NotifyCollectionChangedEventArgs args)
-        {
-            var handler = this.CollectionChanging;
-            if (handler != null) {
-                handler(this, args);
-            }
-        }
-
-        public event NotifyCollectionChangedEventHandler CollectionChanged;
-
-        protected virtual void raiseCollectionChanged(NotifyCollectionChangedEventArgs args)
-        {
-            var handler = this.CollectionChanged;
-            if (handler != null) {
-                handler(this, args);
-            }
-        }
-
-        public event PropertyChangingEventHandler PropertyChanging;
-
-        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args)
-        {
-            var handler = this.PropertyChanging;
-            if (handler != null) {
-                handler(this, args);
-            }
-        }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args)
-        {
-            var handler = this.PropertyChanged;
-            if (handler != null) {
-                handler(this, args);
-            }
-        }
-#else
         public event NotifyCollectionChangedEventHandler CollectionChanging {
-            add { CollectionChangingEventManager.AddHandler(this, value); }
-            remove { CollectionChangingEventManager.RemoveHandler(this, value); }
+            add { impl.CollectionChangingAddHandler(this, value); }
+            remove { impl.CollectionChangingRemoveHandler(this, value); }
         }
 
         public event NotifyCollectionChangedEventHandler CollectionChanged {
-            add { CollectionChangedEventManager.AddHandler(this, value); }
-            remove { CollectionChangedEventManager.RemoveHandler(this, value); }
+            add { impl.CollectionChangedAddHandler(this, value); }
+            remove { impl.CollectionChangedRemoveHandler(this, value); }
         }
         
         protected virtual void raiseCollectionChanging(NotifyCollectionChangedEventArgs e)
         {
-            CollectionChangingEventManager.DeliverEvent(this, e);
+            impl.RaiseCollectionChanging(this, e);
         }
 
         protected virtual void raiseCollectionChanged(NotifyCollectionChangedEventArgs e)
         {
-            CollectionChangedEventManager.DeliverEvent(this, e);
+            impl.RaiseCollectionChanged(this, e);
         }
 
         public event PropertyChangingEventHandler PropertyChanging
         {
-            add { PropertyChangingEventManager.AddHandler(this, value); }
-            remove { PropertyChangingEventManager.RemoveHandler(this, value); }
+            add { impl.PropertyChangingAddHandler(this, value); }
+            remove { impl.PropertyChangingRemoveHandler(this, value); }
         }
 
         void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args)
         {
-            PropertyChangingEventManager.DeliverEvent(this, args);
+            impl.RaisePropertyChanging(this, args);
         }
 
         public event PropertyChangedEventHandler PropertyChanged {
-            add { PropertyChangedEventManager.AddHandler(this, value); }
-            remove { PropertyChangedEventManager.RemoveHandler(this, value); }
+            add { impl.PropertyChangedAddHandler(this, value); }
+            remove { impl.PropertyChangedRemoveHandler(this, value); }
         }
 
         void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args)
         {
-            PropertyChangedEventManager.DeliverEvent(this, args);
+            impl.RaisePropertyChanged(this, args);
         }
-#endif
 
         [IgnoreDataMember] Subject<NotifyCollectionChangedEventArgs> _changing;
         [IgnoreDataMember] Subject<NotifyCollectionChangedEventArgs> _changed;
@@ -147,6 +289,22 @@ namespace ReactiveUI
 
         void setupRx(IEnumerable<T> initialContents = null, double resetChangeThreshold = 0.3, IScheduler scheduler = null)
         {
+			if (impl == null)
+			{
+#if NET_45
+            impl = new ReactiveListStrongImpl<T>();
+#else
+                if (ReactiveListBase.useStrongRefs == true)
+                {
+                    impl = new ReactiveListStrongImpl<T>();
+                }
+                else
+                {
+                    impl = new ReactiveListWeakImpl<T>();
+                }
+#endif
+            }
+
             scheduler = scheduler ?? RxApp.MainThreadScheduler;
 
             _inner = _inner ?? new List<T>();
@@ -684,7 +842,7 @@ namespace ReactiveUI
             });
         }
 
-        #region Super Boring IList crap
+#region Super Boring IList crap
 
         // The BinarySearch methods aren't technically on IList<T>, they're implemented straight on List<T>
         // but by proxying this call we can make use of the nice built in methods that operate on the internal
@@ -821,7 +979,7 @@ namespace ReactiveUI
         {
             return ((value is T) || ((value == null) && (default(T) == null)));
         }
-        #endregion
+#endregion
     }
 
     public interface IMoveInfo<out T>
