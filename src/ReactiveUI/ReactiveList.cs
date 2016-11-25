@@ -189,15 +189,12 @@ namespace ReactiveUI
     }
 #endif
 
-    internal class ReactiveListBase
+    public class ReactiveList
     {
-        internal static bool? useStrongRefs;
+        internal static bool useStrongRefs = false;
 
-        internal static void ConfigureStrongReferences()
+        public static void ConfigureStrongReferences()
         {
-            if (useStrongRefs != null)
-                throw new Exception("ReactiveList impl has already been set");
-
             useStrongRefs = true;
         }
 
@@ -296,7 +293,7 @@ namespace ReactiveUI
 #if NET_45
                 impl = new ReactiveListStrongImpl<T>();
 #else
-                if (ReactiveListBase.useStrongRefs == true)
+                if (ReactiveList.useStrongRefs == true)
                 {
                     impl = new ReactiveListStrongImpl<T>();
                 }

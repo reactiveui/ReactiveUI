@@ -20,8 +20,6 @@ namespace ReactiveUI.XamForms
     {
         public void Register(Action<Func<object>, Type> registerFunction)
         {
-            ReactiveListBase.ConfigureStrongReferences();
-
             registerFunction(() => new ActivationForViewFetcher(), typeof(IActivationForViewFetcher));
         }
     }
