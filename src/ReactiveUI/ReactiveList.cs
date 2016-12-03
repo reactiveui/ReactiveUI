@@ -204,7 +204,7 @@ namespace ReactiveUI
     [DebuggerTypeProxy(typeof(CollectionDebugView<>))]
     public class ReactiveList<T> : IReactiveList<T>, IReadOnlyReactiveList<T>, IList
     {
-        internal static IReactiveListImpl<T> impl = null;
+        IReactiveListImpl<T> impl = null;
 
         public event NotifyCollectionChangedEventHandler CollectionChanging {
             add { impl.CollectionChangingAddHandler(this, value); }
@@ -288,21 +288,18 @@ namespace ReactiveUI
 
         void setupRx(IEnumerable<T> initialContents = null, double resetChangeThreshold = 0.3, IScheduler scheduler = null)
         {
-            if (impl == null)
-            {
 #if NET_45
-                impl = new ReactiveListStrongImpl<T>();
+            impl = new ReactiveListStrongImpl<T>();
 #else
-                if (ReactiveList.useStrongRefs == true)
-                {
-                    impl = new ReactiveListStrongImpl<T>();
-                }
-                else
-                {
-                    impl = new ReactiveListWeakImpl<T>();
-                }
-#endif
+            if (ReactiveList.useStrongRefs == true)
+            {
+                impl = new ReactiveListStrongImpl<T>();
             }
+            else
+            {
+                impl = new ReactiveListWeakImpl<T>();
+            }
+#endif
 
             scheduler = scheduler ?? RxApp.MainThreadScheduler;
 
