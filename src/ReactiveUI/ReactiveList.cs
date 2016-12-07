@@ -189,7 +189,7 @@ namespace ReactiveUI
     }
 #endif
 
-    public class ReactiveList
+    public static class ReactiveList
     {
         internal static bool useStrongRefs = false;
 
