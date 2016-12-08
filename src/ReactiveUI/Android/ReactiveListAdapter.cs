@@ -18,7 +18,7 @@ namespace ReactiveUI
         readonly Action<TViewModel, View> viewInitializer;
 
         IDisposable _inner;
-		SerialDisposable _backingListUpdatesObservable = new SerialDisposable();
+        SerialDisposable _backingListUpdatesObservable = new SerialDisposable();
 
         public ReactiveListAdapter(
             IReadOnlyReactiveList<TViewModel> backingList,
