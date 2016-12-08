@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Threading;
@@ -44,7 +45,11 @@ namespace ReactiveUI
                 .Subscribe(backingList => {
                     this.list = backingList;
 
-                    _backingListUpdatesObservable.Disposable = this.list.Changed.Subscribe(_ => NotifyDataSetChanged());
+                    _backingListUpdatesObservable.Disposable = 
+                        this.list.Changed
+                            .Select(_ => Unit.Default)
+                            .StartWith(Unit.Default)
+                            .Subscribe(_ => NotifyDataSetChanged());
                 });
         }
 
