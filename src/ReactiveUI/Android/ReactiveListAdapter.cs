@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using System.Threading;
 using Android.Views;
 using Android.Widget;
@@ -11,11 +12,12 @@ namespace ReactiveUI
     public class ReactiveListAdapter<TViewModel> : BaseAdapter<TViewModel>, IEnableLogger
         where TViewModel : class
     {
-        readonly IReadOnlyReactiveList<TViewModel> list;
+        IReadOnlyReactiveList<TViewModel> list;
         readonly Func<TViewModel, ViewGroup, View> viewCreator;
         readonly Action<TViewModel, View> viewInitializer;
 
         IDisposable _inner;
+		SerialDisposable _backingListUpdatesObservable = new SerialDisposable();
 
         public ReactiveListAdapter(
             IReadOnlyReactiveList<TViewModel> backingList,
@@ -29,8 +31,25 @@ namespace ReactiveUI
             _inner = this.list.Changed.Subscribe(_ => NotifyDataSetChanged());
         }
 
-        public override TViewModel this[int index] {
-            get { return list[index]; }
+		public ReactiveListAdapter(
+			IObservable<IReadOnlyReactiveList<TViewModel>> backingListObservable,
+			Func<TViewModel, ViewGroup, View> viewCreator,
+			Action<TViewModel, View> viewInitializer = null)
+		{
+			this.viewCreator = viewCreator;
+			this.viewInitializer = viewInitializer;
+
+			_inner = backingListObservable
+				.StartWith(new ReactiveList<TViewModel>())
+				.Subscribe(backingList => {
+					this.list = backingList;
+
+					_backingListUpdatesObservable.Disposable = this.list.Changed.Subscribe(_ => NotifyDataSetChanged());
+				});
+		}
+
+        public override TViewModel this[int position] {
+            get { return list[position]; }
         }
 
         public override long GetItemId(int position) {
@@ -70,6 +89,7 @@ namespace ReactiveUI
         {
             base.Dispose(disposing);
             Interlocked.Exchange(ref _inner, Disposable.Empty).Dispose();
+			_backingListUpdatesObservable?.Dispose();
         }
     }
 }
