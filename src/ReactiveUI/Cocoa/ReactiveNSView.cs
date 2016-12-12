@@ -1,6 +1,5 @@
 using System;
 using System.ComponentModel;
-using System.Drawing;
 using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Subjects;
@@ -10,10 +9,12 @@ using System.Reactive.Linq;
 using CoreGraphics;
 using Foundation;
 #elif UIKIT
+using System.Drawing;
 using MonoTouch.Foundation;
 using MonoTouch.UIKit;
 using NSView = MonoTouch.UIKit.UIView;
 #else
+using System.Drawing;
 using MonoMac.AppKit;
 using MonoMac.Foundation;
 #endif
@@ -33,30 +34,14 @@ namespace ReactiveUI
     /// </summary>
     public class ReactiveView : NSView, IReactiveNotifyPropertyChanged<ReactiveView>, IHandleObservableErrors, IReactiveObject, ICanActivate, ICanForceManualActivation
     {
-        protected ReactiveView() : base()
-        {
-        }
-
-        protected ReactiveView(NSCoder c) : base(c)
-        {
-        }
-
-        protected ReactiveView(NSObjectFlag f) : base(f)
-        {
-        }
-
-        protected ReactiveView(IntPtr handle) : base(handle)
-        {
-        }
-
+        protected ReactiveView() { }
+        protected ReactiveView(NSCoder c) : base(c) { }
+        protected ReactiveView(NSObjectFlag f) : base(f) { }
+        protected ReactiveView(IntPtr handle) : base(handle) { }
 #if UNIFIED
-        protected ReactiveView(CGRect frame) : base(frame)
-        {
-        }
+        protected ReactiveView(CGRect frame) : base(frame) { }
 #else
-        protected ReactiveView(RectangleF size) : base(size)
-        {
-        }
+        protected ReactiveView(RectangleF size) : base(size) { }
 #endif
 
         public event PropertyChangingEventHandler PropertyChanging {
@@ -107,7 +92,7 @@ namespace ReactiveUI
         }
 
         public IObservable<Exception> ThrownExceptions { get { return this.getThrownExceptionsObservable(); } }
-        
+
         Subject<Unit> activated = new Subject<Unit>();
         public IObservable<Unit> Activated { get { return activated.AsObservable(); } }
         Subject<Unit> deactivated = new Subject<Unit>();
@@ -130,10 +115,35 @@ namespace ReactiveUI
             RxApp.MainThreadScheduler.Schedule(() => (newsuper != null ? activated : deactivated).OnNext(Unit.Default));
         }
 
-        void ICanForceManualActivation.Activate(bool activate) 
+        void ICanForceManualActivation.Activate(bool activate)
         {
-            RxApp.MainThreadScheduler.Schedule(() => 
+            RxApp.MainThreadScheduler.Schedule(() =>
                 (activate ? activated : deactivated).OnNext(Unit.Default));
+        }
+    }
+
+    public abstract class ReactiveView<TViewModel> : ReactiveView, IViewFor<TViewModel>
+        where TViewModel : class
+    {
+        protected ReactiveView() { }
+        protected ReactiveView(NSCoder c) : base(c) { }
+        protected ReactiveView(NSObjectFlag f) : base(f) { }
+        protected ReactiveView(IntPtr handle) : base(handle) { }
+#if UNIFIED
+        protected ReactiveView(CGRect frame) : base(frame) { }
+#else
+        protected ReactiveView(RectangleF size) : base(size) { }
+#endif
+
+        TViewModel _viewModel;
+        public TViewModel ViewModel {
+            get { return _viewModel; }
+            set { this.RaiseAndSetIfChanged(ref _viewModel, value); }
+        }
+
+        object IViewFor.ViewModel {
+            get { return ViewModel; }
+            set { ViewModel = (TViewModel)value; }
         }
     }
 }
