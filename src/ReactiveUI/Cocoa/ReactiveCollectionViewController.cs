@@ -1,19 +1,7 @@
 using System;
-using ReactiveUI;
-using System.Runtime.Serialization;
 using System.ComponentModel;
-using System.Reflection;
 using System.Reactive;
 using System.Reactive.Subjects;
-using System.Reactive.Concurrency;
-using System.Linq;
-using System.Threading;
-using System.Reactive.Disposables;
-using System.Diagnostics.Contracts;
-using System.Runtime.CompilerServices;
-using System.Collections.Generic;
-using System.Drawing;
-using Splat;
 using System.Reactive.Linq;
 
 #if UNIFIED
@@ -88,7 +76,7 @@ namespace ReactiveUI
         {
             return this.suppressChangeNotifications();
         }
-                
+
         Subject<Unit> activated = new Subject<Unit>();
         public IObservable<Unit> Activated { get { return activated.AsObservable(); } }
         Subject<Unit> deactivated = new Subject<Unit>();
@@ -106,6 +94,28 @@ namespace ReactiveUI
             base.ViewDidDisappear(animated);
             deactivated.OnNext(Unit.Default);
             this.ActivateSubviews(false);
+        }
+    }
+
+    public abstract class ReactiveCollectionViewController<TViewModel> : ReactiveCollectionViewController, IViewFor<TViewModel>
+        where TViewModel : class
+    {
+        protected ReactiveCollectionViewController(UICollectionViewLayout withLayout) : base(withLayout) { }
+        protected ReactiveCollectionViewController(string nibName, NSBundle bundle) : base(nibName, bundle) { }
+        protected ReactiveCollectionViewController(IntPtr handle) : base(handle) { }
+        protected ReactiveCollectionViewController(NSObjectFlag t) : base(t) { }
+        protected ReactiveCollectionViewController(NSCoder coder) : base(coder) { }
+        protected ReactiveCollectionViewController() { }
+
+        TViewModel _viewModel;
+        public TViewModel ViewModel {
+            get { return _viewModel; }
+            set { this.RaiseAndSetIfChanged(ref _viewModel, value); }
+        }
+
+        object IViewFor.ViewModel {
+            get { return ViewModel; }
+            set { ViewModel = (TViewModel)value; }
         }
     }
 }
