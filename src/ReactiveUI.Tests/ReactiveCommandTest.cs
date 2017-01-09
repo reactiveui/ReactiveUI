@@ -101,6 +101,19 @@ namespace ReactiveUI.Tests
         }
 
         [Fact]
+        public void CanExecuteIsUnsubscribedAfterCommandDisposal()
+        {
+            var canExecuteSubject = new Subject<bool>();
+            var fixture = ReactiveCommand.Create(() => Observable.Return(Unit.Default), canExecuteSubject);
+
+            Assert.True(canExecuteSubject.HasObservers);
+
+            fixture.Dispose();
+
+            Assert.False(canExecuteSubject.HasObservers);
+        }
+
+        [Fact]
         public void CanExecuteTicksFailuresThroughThrownExceptions()
         {
             var canExecuteSubject = new Subject<bool>();
