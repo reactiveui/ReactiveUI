@@ -21,7 +21,7 @@ using UIKit;
 using NSViewController = UIKit.UIViewController;
 using NSView = UIKit.UIView;
 #elif UNIFIED && COCOA
-using AppKit;
+using AppKit; 
 #endif
 
 namespace ReactiveUI
@@ -30,31 +30,17 @@ namespace ReactiveUI
     /// This is an View that is both an NSViewController and has ReactiveObject powers 
     /// (i.e. you can call RaiseAndSetIfChanged)
     /// </summary>
-    public class ReactiveViewController : NSViewController, 
-	    IReactiveNotifyPropertyChanged<ReactiveViewController>, IHandleObservableErrors, IReactiveObject
+    public class ReactiveViewController : NSViewController,
+        IReactiveNotifyPropertyChanged<ReactiveViewController>, IHandleObservableErrors, IReactiveObject
 #if UIKIT
         , ICanActivate
 #endif
     {
-        protected ReactiveViewController() : base()
-        {
-        }
-
-        protected ReactiveViewController(NSCoder c) : base(c)
-        {
-        }
-
-        protected ReactiveViewController(NSObjectFlag f) : base(f)
-        {
-        }
-
-        protected ReactiveViewController(IntPtr handle) : base(handle)
-        {
-        }
-
-        protected ReactiveViewController(string nibNameOrNull, NSBundle nibBundleOrNull) : base(nibNameOrNull, nibBundleOrNull)
-        {
-        }
+        protected ReactiveViewController() { }
+        protected ReactiveViewController(NSCoder c) : base(c) { }
+        protected ReactiveViewController(NSObjectFlag f) : base(f) { }
+        protected ReactiveViewController(IntPtr handle) : base(handle) { }
+        protected ReactiveViewController(string nibNameOrNull, NSBundle nibBundleOrNull) : base(nibNameOrNull, nibBundleOrNull) { }
 
         public event PropertyChangingEventHandler PropertyChanging {
             add { PropertyChangingEventManager.AddHandler(this, value); }
@@ -104,7 +90,7 @@ namespace ReactiveUI
         {
             return this.suppressChangeNotifications();
         }
-                
+
 #if UIKIT
         Subject<Unit> activated = new Subject<Unit>();
         public IObservable<Unit> Activated { get { return activated.AsObservable(); } }
@@ -127,16 +113,37 @@ namespace ReactiveUI
 #endif
     }
 
+    public abstract class ReactiveViewController<TViewModel> : ReactiveViewController, IViewFor<TViewModel>
+        where TViewModel : class
+    {
+        protected ReactiveViewController() { }
+        protected ReactiveViewController(NSCoder c) : base(c) { }
+        protected ReactiveViewController(NSObjectFlag f) : base(f) { }
+        protected ReactiveViewController(IntPtr handle) : base(handle) { }
+        protected ReactiveViewController(string nibNameOrNull, NSBundle nibBundleOrNull) : base(nibNameOrNull, nibBundleOrNull) { }
+
+        TViewModel _viewModel;
+        public TViewModel ViewModel {
+            get { return _viewModel; }
+            set { this.RaiseAndSetIfChanged(ref _viewModel, value); }
+        }
+
+        object IViewFor.ViewModel {
+            get { return ViewModel; }
+            set { ViewModel = (TViewModel)value; }
+        }
+    }
+
     // TODO: Update this once we support 64-bit Xamarin.Mac
 #if UIKIT || UNIFIED
-    static class UIViewControllerMixins 
+    static class UIViewControllerMixins
     {
-        internal static void ActivateSubviews(this NSViewController This, bool activate) 
+        internal static void ActivateSubviews(this NSViewController This, bool activate)
         {
             This.View.ActivateSubviews(activate);
         }
 
-        static void ActivateSubviews(this NSView This, bool activate) 
+        static void ActivateSubviews(this NSView This, bool activate)
         {
             foreach (var view in This.Subviews) {
                 var subview = view as ICanForceManualActivation;

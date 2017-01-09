@@ -1,6 +1,5 @@
 using System;
 using System.ComponentModel;
-using System.Drawing;
 using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Subjects;
@@ -10,9 +9,11 @@ using System.Reactive.Linq;
 using Foundation;
 using CoreGraphics;
 #elif UIKIT
+using System.Drawing;
 using MonoTouch.Foundation;
 using MonoTouch.UIKit;
 #else
+using System.Drawing;
 using MonoMac.AppKit;
 using MonoMac.Foundation;
 using UIControl = MonoMac.AppKit.NSControl;
@@ -95,24 +96,49 @@ namespace ReactiveUI
         Subject<Unit> deactivated = new Subject<Unit>();
         public IObservable<Unit> Deactivated { get { return deactivated.AsObservable(); } }
 
-        #if UIKIT
+#if UIKIT
         public override void WillMoveToSuperview(UIView newsuper)
-        #else
+#else
         public override void ViewWillMoveToSuperview(NSView newsuper)
-        #endif
+#endif
         {
-            #if UIKIT
+#if UIKIT
             base.WillMoveToSuperview(newsuper);
-            #else
+#else
             base.ViewWillMoveToSuperview(newsuper);
-            #endif
+#endif
             RxApp.MainThreadScheduler.Schedule(() => (newsuper != null ? activated : deactivated).OnNext(Unit.Default));
         }
 
-        void ICanForceManualActivation.Activate(bool activate) 
+        void ICanForceManualActivation.Activate(bool activate)
         {
-            RxApp.MainThreadScheduler.Schedule(() => 
+            RxApp.MainThreadScheduler.Schedule(() =>
                 (activate ? activated : deactivated).OnNext(Unit.Default));
+        }
+    }
+
+    public abstract class ReactiveControl<TViewModel> : ReactiveControl, IViewFor<TViewModel>
+        where TViewModel : class
+    {
+        protected ReactiveControl() { }
+        protected ReactiveControl(NSCoder c) : base(c) { }
+        protected ReactiveControl(NSObjectFlag f) : base(f) { }
+        protected ReactiveControl(IntPtr handle) : base(handle) { }
+#if UNIFIED
+        protected ReactiveControl(CGRect frame) : base(frame) { }
+#else
+        protected ReactiveControl(RectangleF frame) : base(frame) { }
+#endif
+
+        TViewModel _viewModel;
+        public TViewModel ViewModel {
+            get { return _viewModel; }
+            set { this.RaiseAndSetIfChanged(ref _viewModel, value); }
+        }
+
+        object IViewFor.ViewModel {
+            get { return ViewModel; }
+            set { ViewModel = (TViewModel)value; }
         }
     }
 }
