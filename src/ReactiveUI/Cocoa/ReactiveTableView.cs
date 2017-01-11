@@ -1,19 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics.Contracts;
-using System.Drawing;
-using System.Linq;
 using System.Reactive;
 using System.Reactive.Concurrency;
-using System.Reactive.Disposables;
 using System.Reactive.Subjects;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Runtime.Serialization;
-using System.Threading;
-using ReactiveUI;
-using Splat;
 using System.Reactive.Linq;
 
 #if UNIFIED
@@ -21,6 +10,7 @@ using CoreGraphics;
 using Foundation;
 using UIKit;
 #else
+using System.Drawing;
 using MonoTouch.Foundation;
 using MonoTouch.UIKit;
 #endif
@@ -30,16 +20,16 @@ namespace ReactiveUI
     public abstract class ReactiveTableView : UITableView, IReactiveNotifyPropertyChanged<ReactiveTableView>, IHandleObservableErrors, IReactiveObject, ICanActivate, ICanForceManualActivation
     {
 #if UNIFIED
-        public ReactiveTableView(CGRect frame) : base(frame) { }
-        public ReactiveTableView(CGRect frame, UITableViewStyle style) : base(frame, style) { }
+        protected ReactiveTableView(CGRect frame) : base(frame) { }
+        protected ReactiveTableView(CGRect frame, UITableViewStyle style) : base(frame, style) { }
 #else
-        public ReactiveTableView(RectangleF frame) : base(frame) { }
-        public ReactiveTableView(RectangleF frame, UITableViewStyle style) : base(frame, style) { }
+        protected ReactiveTableView(RectangleF frame) : base(frame) { }
+        protected ReactiveTableView(RectangleF frame, UITableViewStyle style) : base(frame, style) { }
 #endif
 
-        public ReactiveTableView(NSObjectFlag t) : base(t) { }
-        public ReactiveTableView(NSCoder coder) : base(coder) { }
-        public ReactiveTableView() { }
+        protected ReactiveTableView(NSObjectFlag t) : base(t) { }
+        protected ReactiveTableView(NSCoder coder) : base(coder) { }
+        protected ReactiveTableView() { }
 
         protected ReactiveTableView(IntPtr handle) : base(handle) { }
 
@@ -78,7 +68,8 @@ namespace ReactiveUI
             get { return this.getChangedObservable(); }
         }
 
-        public IDisposable SuppressChangeNotifications() {
+        public IDisposable SuppressChangeNotifications()
+        {
             return this.suppressChangeNotifications();
         }
 
@@ -95,10 +86,39 @@ namespace ReactiveUI
             RxApp.MainThreadScheduler.Schedule(() => (newsuper != null ? activated : deactivated).OnNext(Unit.Default));
         }
 
-        void ICanForceManualActivation.Activate(bool activate) 
+        void ICanForceManualActivation.Activate(bool activate)
         {
-            RxApp.MainThreadScheduler.Schedule(() => 
+            RxApp.MainThreadScheduler.Schedule(() =>
                 (activate ? activated : deactivated).OnNext(Unit.Default));
+        }
+    }
+
+    public abstract class ReactiveTableView<TViewModel> : ReactiveTableView, IViewFor<TViewModel>
+        where TViewModel : class
+    {
+#if UNIFIED
+        protected ReactiveTableView(CGRect frame) : base(frame) { }
+        protected ReactiveTableView(CGRect frame, UITableViewStyle style) : base(frame, style) { }
+#else
+        protected ReactiveTableView(RectangleF frame) : base(frame) { }
+        protected ReactiveTableView(RectangleF frame, UITableViewStyle style) : base(frame, style) { }
+#endif
+
+        protected ReactiveTableView(NSObjectFlag t) : base(t) { }
+        protected ReactiveTableView(NSCoder coder) : base(coder) { }
+        protected ReactiveTableView() { }
+
+        protected ReactiveTableView(IntPtr handle) : base(handle) { }
+
+        TViewModel _viewModel;
+        public TViewModel ViewModel {
+            get { return _viewModel; }
+            set { this.RaiseAndSetIfChanged(ref _viewModel, value); }
+        }
+
+        object IViewFor.ViewModel {
+            get { return ViewModel; }
+            set { ViewModel = (TViewModel)value; }
         }
     }
 }

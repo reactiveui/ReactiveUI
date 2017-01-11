@@ -1,19 +1,7 @@
 ﻿using System;
-using ReactiveUI;
-using System.Runtime.Serialization;
 using System.ComponentModel;
-using System.Reflection;
 using System.Reactive;
 using System.Reactive.Subjects;
-using System.Reactive.Concurrency;
-using System.Linq;
-using System.Threading;
-using System.Reactive.Disposables;
-using System.Diagnostics.Contracts;
-using System.Runtime.CompilerServices;
-using System.Collections.Generic;
-using System.Drawing;
-using Splat;
 using System.Reactive.Linq;
 
 #if UNIFIED
@@ -107,6 +95,29 @@ namespace ReactiveUI
             base.ViewDidDisappear(animated);
             deactivated.OnNext(Unit.Default);
             this.ActivateSubviews(false);
+        }
+    }
+
+    public abstract class ReactiveNavigationController<TViewModel> : ReactiveNavigationController, IViewFor<TViewModel>
+        where TViewModel : class
+    {
+        protected ReactiveNavigationController(UIViewController rootViewController) : base(rootViewController) { }
+        protected ReactiveNavigationController(Type navigationBarType, Type toolbarType) : base(navigationBarType, toolbarType) { }
+        protected ReactiveNavigationController(string nibName, NSBundle bundle) : base(nibName, bundle) { }
+        protected ReactiveNavigationController(IntPtr handle) : base(handle) { }
+        protected ReactiveNavigationController(NSObjectFlag t) : base(t) { }
+        protected ReactiveNavigationController(NSCoder coder) : base(coder) { }
+        protected ReactiveNavigationController() { }
+
+        TViewModel _viewModel;
+        public TViewModel ViewModel {
+            get { return _viewModel; }
+            set { this.RaiseAndSetIfChanged(ref _viewModel, value); }
+        }
+
+        object IViewFor.ViewModel {
+            get { return ViewModel; }
+            set { ViewModel = (TViewModel)value; }
         }
     }
 }
