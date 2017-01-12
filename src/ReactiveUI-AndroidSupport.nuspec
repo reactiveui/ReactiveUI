@@ -7,7 +7,7 @@
     <language>en-us</language>
 
     <dependencies>
-      <dependency id="reactiveui-core" version="$version$" />
+      <dependency id="reactiveui-core" version="[$version$]" />
       <dependency id="Xamarin.Android.Support.v4" version="22.1.1.1" />
       <dependency id="Xamarin.Android.Support.v7.AppCompat" version="22.1.1.1" />
       <dependency id="Xamarin.Android.Support.v7.RecyclerView" version="22.1.1.1" />
