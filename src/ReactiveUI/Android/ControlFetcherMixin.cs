@@ -78,7 +78,7 @@ namespace ReactiveUI
         public static void WireUpControls(this ILayoutViewHost This)
         {
             var members = This.GetType().GetRuntimeProperties()
-                .Where(m => m.PropertyType.IsSubclassOf(typeof(View)));
+                .Where(m => typeof(View).IsAssignableFrom(m.PropertyType));
 
             members.ToList().ForEach(m => {
                 try {
@@ -100,7 +100,7 @@ namespace ReactiveUI
         public static void WireUpControls(this View This)
         {
             var members = This.GetType().GetRuntimeProperties()
-                .Where(m => m.PropertyType.IsSubclassOf(typeof(View)));
+                .Where(m => typeof(View).IsAssignableFrom(m.PropertyType));
 
             members.ToList().ForEach(m => {
                 try {
@@ -124,7 +124,7 @@ namespace ReactiveUI
         public static void WireUpControls(this Fragment This, View inflatedView)
         {
             var members = This.GetType().GetRuntimeProperties()
-                .Where(m => m.PropertyType.IsSubclassOf(typeof(View)));
+                .Where(m => typeof(View).IsAssignableFrom(m.PropertyType));
 
             members.ToList().ForEach(m => {
                 try {
@@ -146,7 +146,7 @@ namespace ReactiveUI
         public static void WireUpControls(this Activity This)
         {
             var members = This.GetType().GetRuntimeProperties()
-                .Where(m => m.PropertyType.IsSubclassOf(typeof(View)));
+                .Where(m => typeof(View).IsAssignableFrom(m.PropertyType));
 
             members.ToList().ForEach(m => {
                 try {

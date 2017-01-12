@@ -1,19 +1,7 @@
 using System;
-using ReactiveUI;
-using System.Runtime.Serialization;
 using System.ComponentModel;
-using System.Reflection;
 using System.Reactive;
 using System.Reactive.Subjects;
-using System.Reactive.Concurrency;
-using System.Linq;
-using System.Threading;
-using System.Reactive.Disposables;
-using System.Diagnostics.Contracts;
-using System.Runtime.CompilerServices;
-using System.Collections.Generic;
-using System.Drawing;
-using Splat;
 using System.Reactive.Linq;
 
 #if UNIFIED
@@ -30,8 +18,8 @@ using NSTableViewStyle = MonoTouch.UIKit.UITableViewStyle;
 
 namespace ReactiveUI
 {
-    public abstract class ReactiveTableViewController : NSTableViewController, 
-	IReactiveNotifyPropertyChanged<ReactiveTableViewController>, IHandleObservableErrors, IReactiveObject, ICanActivate
+    public abstract class ReactiveTableViewController : NSTableViewController,
+    IReactiveNotifyPropertyChanged<ReactiveTableViewController>, IHandleObservableErrors, IReactiveObject, ICanActivate
     {
         protected ReactiveTableViewController(NSTableViewStyle withStyle) : base(withStyle) { setupRxObj(); }
         protected ReactiveTableViewController(string nibName, NSBundle bundle) : base(nibName, bundle) { setupRxObj(); }
@@ -110,6 +98,28 @@ namespace ReactiveUI
             base.ViewDidDisappear(animated);
             deactivated.OnNext(Unit.Default);
             this.ActivateSubviews(false);
+        }
+    }
+
+    public abstract class ReactiveTableViewController<TViewModel> : ReactiveTableViewController, IViewFor<TViewModel>
+        where TViewModel : class
+    {
+        protected ReactiveTableViewController(NSTableViewStyle withStyle) : base(withStyle) { }
+        protected ReactiveTableViewController(string nibName, NSBundle bundle) : base(nibName, bundle) { }
+        protected ReactiveTableViewController(IntPtr handle) : base(handle) { }
+        protected ReactiveTableViewController(NSObjectFlag t) : base(t) { }
+        protected ReactiveTableViewController(NSCoder coder) : base(coder) { }
+        protected ReactiveTableViewController() { }
+
+        TViewModel _viewModel;
+        public TViewModel ViewModel {
+            get { return _viewModel; }
+            set { this.RaiseAndSetIfChanged(ref _viewModel, value); }
+        }
+
+        object IViewFor.ViewModel {
+            get { return ViewModel; }
+            set { ViewModel = (TViewModel)value; }
         }
     }
 }
