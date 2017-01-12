@@ -6,7 +6,7 @@
     <description>Windows Forms specific extensions to ReactiveUI</description>
     <language>en-us</language>
     <dependencies>
-      <dependency id="reactiveui-core" version="$version$" />
+      <dependency id="reactiveui-core" version="[$version$]" />
     </dependencies>
   </metadata>
   <files>
