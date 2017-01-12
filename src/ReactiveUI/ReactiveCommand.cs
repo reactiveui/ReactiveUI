@@ -776,11 +776,9 @@ namespace ReactiveUI
 
             this.exceptions = new ScheduledSubject<Exception>(outputScheduler, RxApp.DefaultExceptionHandler);
 
-            this
+            this.canExecuteSubscription = this
                 .canExecute
                 .Subscribe(_ => this.OnCanExecuteChanged());
-
-            this.canExecuteSubscription = this.canExecute.Subscribe();
         }
 
         /// <inheritdoc/>
