@@ -7,15 +7,15 @@
     <language>en-us</language>
     <dependencies>
       <group targetFramework="net45">
-        <dependency id="reactiveui-core" version="$version$" />
+        <dependency id="reactiveui-core" version="[$version$]" />
         <dependency id="Rx-Testing" version="2.2.5" />
       </group>
       <group targetFramework="Win8">
-        <dependency id="reactiveui-core" version="$version$" />
+        <dependency id="reactiveui-core" version="[$version$]" />
         <dependency id="Rx-Testing" version="2.2.5" />
       </group>
       <group targetFramework="uap10.0">
-        <dependency id="reactiveui-core" version="$version$" />
+        <dependency id="reactiveui-core" version="[$version$]" />
         <dependency id="Rx-Core" version="2.2.5" />
         <dependency id="Rx-Interfaces" version="2.2.5" />
         <dependency id="Rx-Linq" version="2.2.5" />
@@ -26,10 +26,10 @@
         <dependency id="System.Threading.Tasks" version="4.0.10" />
       </group>
       <group targetFramework="monoandroid">
-        <dependency id="reactiveui-core" version="$version$" />
+        <dependency id="reactiveui-core" version="[$version$]" />
       </group>
       <group targetFramework="monotouch">
-        <dependency id="reactiveui-core" version="$version$" />
+        <dependency id="reactiveui-core" version="[$version$]" />
       </group>
     </dependencies>
   </metadata>

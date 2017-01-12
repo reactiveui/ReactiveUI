@@ -1,19 +1,7 @@
 ﻿using System;
-using ReactiveUI;
-using System.Runtime.Serialization;
 using System.ComponentModel;
-using System.Reflection;
 using System.Reactive;
 using System.Reactive.Subjects;
-using System.Reactive.Concurrency;
-using System.Linq;
-using System.Threading;
-using System.Reactive.Disposables;
-using System.Diagnostics.Contracts;
-using System.Runtime.CompilerServices;
-using System.Collections.Generic;
-using System.Drawing;
-using Splat;
 using System.Reactive.Linq;
 
 #if UNIFIED
@@ -26,7 +14,7 @@ using MonoTouch.UIKit;
 
 namespace ReactiveUI
 {
-    public abstract class ReactiveTabBarController : UITabBarController, 
+    public abstract class ReactiveTabBarController : UITabBarController,
     IReactiveNotifyPropertyChanged<ReactiveTabBarController>, IHandleObservableErrors, IReactiveObject, ICanActivate
     {
         protected ReactiveTabBarController(string nibName, NSBundle bundle) : base(nibName, bundle) { setupRxObj(); }
@@ -105,6 +93,27 @@ namespace ReactiveUI
             base.ViewDidDisappear(animated);
             deactivated.OnNext(Unit.Default);
             this.ActivateSubviews(false);
+        }
+    }
+
+    public abstract class ReactiveTabBarController<TViewModel> : ReactiveTabBarController, IViewFor<TViewModel>
+        where TViewModel : class
+    {
+        protected ReactiveTabBarController(string nibName, NSBundle bundle) : base(nibName, bundle) { }
+        protected ReactiveTabBarController(IntPtr handle) : base(handle) { }
+        protected ReactiveTabBarController(NSObjectFlag t) : base(t) { }
+        protected ReactiveTabBarController(NSCoder coder) : base(coder) { }
+        protected ReactiveTabBarController() { }
+
+        TViewModel _viewModel;
+        public TViewModel ViewModel {
+            get { return _viewModel; }
+            set { this.RaiseAndSetIfChanged(ref _viewModel, value); }
+        }
+
+        object IViewFor.ViewModel {
+            get { return ViewModel; }
+            set { ViewModel = (TViewModel)value; }
         }
     }
 }
