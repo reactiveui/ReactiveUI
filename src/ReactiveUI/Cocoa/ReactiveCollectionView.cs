@@ -1,19 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics.Contracts;
-using System.Drawing;
-using System.Linq;
 using System.Reactive;
 using System.Reactive.Concurrency;
-using System.Reactive.Disposables;
 using System.Reactive.Subjects;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Runtime.Serialization;
-using System.Threading;
-using ReactiveUI;
-using Splat;
 using System.Reactive.Linq;
 
 #if UNIFIED
@@ -21,13 +10,14 @@ using CoreGraphics;
 using Foundation;
 using UIKit;
 #else
+using System.Drawing;
 using MonoTouch.Foundation;
 using MonoTouch.UIKit;
 #endif
 
 namespace ReactiveUI
 {
-    public abstract class ReactiveCollectionView : UICollectionView, 
+    public abstract class ReactiveCollectionView : UICollectionView,
         IReactiveNotifyPropertyChanged<ReactiveCollectionView>, IHandleObservableErrors, IReactiveObject, ICanActivate, ICanForceManualActivation
     {
 #if UNIFIED
@@ -110,10 +100,34 @@ namespace ReactiveUI
             deactivated.OnNext(Unit.Default);
         }
 
-        void ICanForceManualActivation.Activate(bool activate) 
+        void ICanForceManualActivation.Activate(bool activate)
         {
-            RxApp.MainThreadScheduler.Schedule(() => 
-		        (activate ? activated : deactivated).OnNext(Unit.Default));
+            RxApp.MainThreadScheduler.Schedule(() =>
+                (activate ? activated : deactivated).OnNext(Unit.Default));
+        }
+    }
+
+    public abstract class ReactiveCollectionView<TViewModel> : ReactiveCollectionView, IViewFor<TViewModel>
+        where TViewModel : class
+    {
+        protected ReactiveCollectionView(IntPtr handle) : base(handle) { }
+        protected ReactiveCollectionView(NSObjectFlag t) : base(t) { }
+        protected ReactiveCollectionView(NSCoder coder) : base(coder) { }
+#if UNIFIED
+        protected ReactiveCollectionView(CGRect frame, UICollectionViewLayout layout) : base(frame, layout) { }
+#else
+        protected ReactiveCollectionView(RectangleF frame, UICollectionViewLayout layout) : base(frame, layout) { }
+#endif
+
+        TViewModel _viewModel;
+        public TViewModel ViewModel {
+            get { return _viewModel; }
+            set { this.RaiseAndSetIfChanged(ref _viewModel, value); }
+        }
+
+        object IViewFor.ViewModel {
+            get { return ViewModel; }
+            set { ViewModel = (TViewModel)value; }
         }
     }
 }
