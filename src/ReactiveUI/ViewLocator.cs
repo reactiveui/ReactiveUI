@@ -1,12 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reactive;
-using System.Reflection;
-using System.Reactive.Linq;
-using System.Text;
 using ReactiveUI;
 using Splat;
+using System;
+using System.Linq;
+using System.Reactive.Linq;
+using System.Reflection;
 
 namespace ReactiveUI
 {
@@ -56,8 +53,15 @@ namespace ReactiveUI
             var ret = attemptToResolveView(Reflection.ReallyFindType(typeToFind, false), contract);
             if (ret != null) return ret;
 
+            // IViewFor<IFooBarViewModel>
+            var viewType = typeof(IViewFor<>);
+            ret = viewModel.GetType().GetTypeInfo().ImplementedInterfaces
+                .Where(implementedInterface => implementedInterface.GetTypeInfo().ImplementedInterfaces.Contains(typeof(IRoutableViewModel)))
+                .Select(routableViewModelInterface => attemptToResolveView(viewType.MakeGenericType(routableViewModelInterface), contract))                
+                .FirstOrDefault(x => x != null);
+            if (ret != null) return ret;
+
             // IViewFor<FooBarViewModel> (the original behavior in RxUI 3.1)
-            var viewType = typeof (IViewFor<>);
             return attemptToResolveView(viewType.MakeGenericType(viewModel.GetType()), contract);
         }
 
