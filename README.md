@@ -50,7 +50,7 @@ public interface ISearchViewModel
 {
     ReactiveList<SearchResults> SearchResults { get; }
     string SearchQuery { get; }	 
-    ReactiveCommand<List<SearchResults>> Search { get; }
+    ReactiveCommand<string, List<SearchResults>> Search { get; }
     ISearchService SearchService { get; }
 }
 ```
@@ -69,9 +69,8 @@ var canSearch = this.WhenAny(x => x.SearchQuery, x => !String.IsNullOrWhiteSpace
 // guarantees that this block will only run exactly once at a time, and
 // that the CanExecute will auto-disable and that property IsExecuting will
 // be set accordingly whilst it is running.
-Search = ReactiveCommand.CreateAsyncTask(canSearch, async _ => {
-    return await searchService.Search(this.SearchQuery);
-});
+Search = ReactiveCommand.CreateFromTask<string, List<SearchResults>>(_ => 
+        searchService.Search(this.SearchQuery), canSearch);
 ```
 
 ### Update the user interface 
@@ -102,7 +101,7 @@ Search.ThrownExceptions
 // of "dead airtime", then automatically invoke the subscribe command.
 this.WhenAnyValue(x => x.SearchQuery)
     .Throttle(TimeSpan.FromSeconds(1), RxApp.MainThreadScheduler)
-    .InvokeCommand(this, x => x.Search);
+    .InvokeCommand(Search);
 ```
 
 # Slack
