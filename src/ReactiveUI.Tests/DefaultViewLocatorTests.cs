@@ -124,5 +124,41 @@ namespace ReactiveUI.Tests
                 Assert.IsType<BazView>(result);
             }
         }
+
+        [Fact]
+        public void ResolveUsesSpecifiedContract()
+        {
+            const string contract = "Contract";
+
+            var resolver = new ModernDependencyResolver();
+            resolver.Register(() => new BazView(), typeof(IBazView), contract);
+
+            using (resolver.WithResolver())
+            {
+                var fixture = new DefaultViewLocator();
+                var vm = new BazViewModel();
+
+                var result = fixture.ResolveView(vm, contract);
+                Assert.IsType<BazView>(result);
+            }
+        }
+
+        [Fact]
+        public void ResolveReturnsNullWhenContractHasNoMatchingRegistration()
+        {
+            const string contract = "Contract";
+
+            var resolver = new ModernDependencyResolver();
+            resolver.Register(() => new BazView(), typeof(IBazView));
+
+            using (resolver.WithResolver())
+            {
+                var fixture = new DefaultViewLocator();
+                var vm = new BazViewModel();
+
+                var result = fixture.ResolveView(vm, contract);
+                Assert.Null(result);
+            }
+        }
     }
 }
