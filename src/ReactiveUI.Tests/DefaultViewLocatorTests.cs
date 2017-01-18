@@ -59,7 +59,7 @@ namespace ReactiveUI.Tests
     using Foobar.ViewModels;
     using Foobar.Views;
 
-    public class DefaultViewLocatorTests : IEnableLogger
+    public class DefaultViewLocatorTests
     {
         [Fact]
         public void ResolveByInterfaceName()
@@ -74,7 +74,6 @@ namespace ReactiveUI.Tests
                 var vm = new BazViewModel();
 
                 var result = fixture.ResolveView(vm);
-                this.Log().Info(result.GetType().FullName);
                 Assert.IsType<BazView>(result);
             }
         }
@@ -92,7 +91,6 @@ namespace ReactiveUI.Tests
                 var vm = new FooBarViewModel();
 
                 var result = fixture.ResolveView(vm);
-                this.Log().Info(result.GetType().FullName);
                 Assert.IsType<FooBarView>(result);
             }
         }
@@ -110,7 +108,6 @@ namespace ReactiveUI.Tests
                 var vm = new QuxViewModel();
 
                 var result = fixture.ResolveView(vm);
-                this.Log().Info(result.GetType().FullName);
                 Assert.IsType<QuxView>(result);
             }
         }
@@ -128,7 +125,6 @@ namespace ReactiveUI.Tests
                 IBazViewModel vm = new BazViewModel();
 
                 var result = fixture.ResolveView(vm);
-                this.Log().Info(result.GetType().FullName);
                 Assert.IsType<BazView>(result);
             }
         }
