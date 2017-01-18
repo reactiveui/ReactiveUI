@@ -64,8 +64,7 @@ namespace ReactiveUI.Tests
         [Fact]
         public void ResolveByInterfaceName()
         {
-            var resolver = BuildDependencyResolverWithReactiveUI();
-
+            var resolver = new ModernDependencyResolver();
             resolver.Register(() => new BazView(), typeof(IBazView));
 
             using (resolver.WithResolver())
@@ -81,8 +80,7 @@ namespace ReactiveUI.Tests
         [Fact]
         public void ResolveByInterfaceType()
         {
-            var resolver = BuildDependencyResolverWithReactiveUI();
-
+            var resolver = new ModernDependencyResolver();
             resolver.Register(() => new FooBarView(), typeof(IViewFor<IFooBarViewModel>));
 
             using (resolver.WithResolver())
@@ -98,8 +96,7 @@ namespace ReactiveUI.Tests
         [Fact]
         public void ResolveByConcreteViewFor()
         {
-            var resolver = BuildDependencyResolverWithReactiveUI();
-
+            var resolver = new ModernDependencyResolver();
             resolver.Register(() => new QuxView(), typeof(IViewFor<QuxViewModel>));
 
             using (resolver.WithResolver())
@@ -115,8 +112,7 @@ namespace ReactiveUI.Tests
         [Fact]
         public void ResolveViewForInterfaceViewModel()
         {
-            var resolver = BuildDependencyResolverWithReactiveUI();
-
+            var resolver = new ModernDependencyResolver();
             resolver.Register(() => new BazView(), typeof(IBazView));
 
             using (resolver.WithResolver())
@@ -127,14 +123,6 @@ namespace ReactiveUI.Tests
                 var result = fixture.ResolveView(vm);
                 Assert.IsType<BazView>(result);
             }
-        }
-
-        private static IMutableDependencyResolver BuildDependencyResolverWithReactiveUI()
-        {
-            var resolver = new ModernDependencyResolver();
-            resolver.InitializeSplat();
-            resolver.InitializeReactiveUI();
-            return resolver;
         }
     }
 }
