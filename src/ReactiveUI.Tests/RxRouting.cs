@@ -134,5 +134,25 @@ namespace ReactiveUI.Routing.Tests
                 Assert.IsType<QuxView>(result);
             }
         }
+
+        [Fact]
+        public void ResolveInterfaceViewModel()
+        {
+            var resolver = new ModernDependencyResolver();
+
+            resolver.InitializeSplat();
+            resolver.InitializeReactiveUI();
+            resolver.Register(() => new BazView(), typeof(IBazView));
+
+            using (resolver.WithResolver())
+            {
+                var fixture = new DefaultViewLocator();
+                IBazViewModel vm = new BazViewModel(null);
+
+                var result = fixture.ResolveView(vm);
+                this.Log().Info(result.GetType().FullName);
+                Assert.IsType<BazView>(result);
+            }
+        }
     }
 }
