@@ -4,43 +4,28 @@ using Xunit;
 
 namespace Foobar.ViewModels
 {
-    public interface IFooBarViewModel : IRoutableViewModel {}
+    public interface IFooBarViewModel : IRoutableViewModel { }
 
-    public interface IBazViewModel : IRoutableViewModel {}
+    public interface IBazViewModel : IRoutableViewModel { }
 
     public interface IQuxViewModel : IRoutableViewModel { }
 
-    public class FooBarViewModel : ReactiveObject, IFooBarViewModel 
+    public class FooBarViewModel : ReactiveObject, IFooBarViewModel
     {
-        public string UrlPathSegment { get { return "foo"; } }
-        public IScreen HostScreen { get; private set; }
-
-        public FooBarViewModel(IScreen hostScreen)
-        {
-            HostScreen = hostScreen;
-        }
+        public string UrlPathSegment => "foo";
+        public IScreen HostScreen { get; }
     }
 
-    public class BazViewModel : ReactiveObject, IBazViewModel 
+    public class BazViewModel : ReactiveObject, IBazViewModel
     {
-        public string UrlPathSegment { get { return "foo"; } }
-        public IScreen HostScreen { get; private set; }
-
-        public BazViewModel(IScreen hostScreen)
-        {
-            HostScreen = hostScreen;
-        }
+        public string UrlPathSegment => "foo";
+        public IScreen HostScreen { get; }
     }
 
-      public class QuxViewModel : ReactiveObject, IQuxViewModel
-      {
-        public string UrlPathSegment { get { return "foo"; } }
-        public IScreen HostScreen { get; private set; }
-
-        public QuxViewModel(IScreen hostScreen)
-        {
-          HostScreen = hostScreen;
-        }
+    public class QuxViewModel : ReactiveObject, IQuxViewModel
+    {
+        public string UrlPathSegment => "foo";
+        public IScreen HostScreen { get; }
     }
 }
 
@@ -48,15 +33,15 @@ namespace Foobar.Views
 {
     using ViewModels;
 
-    public class FooBarView : IViewFor<IFooBarViewModel> 
+    public class FooBarView : IViewFor<IFooBarViewModel>
     {
-        object IViewFor.ViewModel { get { return ViewModel; } set { ViewModel = (IFooBarViewModel) value; } }
+        object IViewFor.ViewModel { get { return ViewModel; } set { ViewModel = (IFooBarViewModel)value; } }
         public IFooBarViewModel ViewModel { get; set; }
     }
 
-    public interface IBazView : IViewFor<IBazViewModel> {}
+    public interface IBazView : IViewFor<IBazViewModel> { }
 
-    public class BazView : IBazView 
+    public class BazView : IBazView
     {
         object IViewFor.ViewModel { get { return ViewModel; } set { ViewModel = (IBazViewModel)value; } }
         public IBazViewModel ViewModel { get; set; }
@@ -69,25 +54,24 @@ namespace Foobar.Views
     }
 }
 
-namespace ReactiveUI.Routing.Tests
+namespace ReactiveUI.Tests
 {
     using Foobar.ViewModels;
     using Foobar.Views;
 
-    public class RxRoutingTests : IEnableLogger
+    public class DefaultViewLocatorTests : IEnableLogger
     {
         [Fact]
         public void ResolveByInterfaceName()
         {
-            var resolver = new ModernDependencyResolver();
+            var resolver = BuildDependencyResolverWithReactiveUI();
 
-            resolver.InitializeSplat();
-            resolver.InitializeReactiveUI();
             resolver.Register(() => new BazView(), typeof(IBazView));
 
-            using (resolver.WithResolver()) {
+            using (resolver.WithResolver())
+            {
                 var fixture = new DefaultViewLocator();
-                var vm = new BazViewModel(null);
+                var vm = new BazViewModel();
 
                 var result = fixture.ResolveView(vm);
                 this.Log().Info(result.GetType().FullName);
@@ -98,16 +82,14 @@ namespace ReactiveUI.Routing.Tests
         [Fact]
         public void ResolveByInterfaceType()
         {
-            var resolver = new ModernDependencyResolver();
+            var resolver = BuildDependencyResolverWithReactiveUI();
 
-            resolver.InitializeSplat();
-            resolver.InitializeReactiveUI();
             resolver.Register(() => new FooBarView(), typeof(IViewFor<IFooBarViewModel>));
 
             using (resolver.WithResolver())
             {
                 var fixture = new DefaultViewLocator();
-                var vm = new FooBarViewModel(null);
+                var vm = new FooBarViewModel();
 
                 var result = fixture.ResolveView(vm);
                 this.Log().Info(result.GetType().FullName);
@@ -118,16 +100,14 @@ namespace ReactiveUI.Routing.Tests
         [Fact]
         public void ResolveByConcreteViewFor()
         {
-            var resolver = new ModernDependencyResolver();
+            var resolver = BuildDependencyResolverWithReactiveUI();
 
-            resolver.InitializeSplat();
-            resolver.InitializeReactiveUI();
             resolver.Register(() => new QuxView(), typeof(IViewFor<QuxViewModel>));
 
             using (resolver.WithResolver())
             {
                 var fixture = new DefaultViewLocator();
-                var vm = new QuxViewModel(null);
+                var vm = new QuxViewModel();
 
                 var result = fixture.ResolveView(vm);
                 this.Log().Info(result.GetType().FullName);
@@ -136,23 +116,29 @@ namespace ReactiveUI.Routing.Tests
         }
 
         [Fact]
-        public void ResolveInterfaceViewModel()
+        public void ResolveViewForInterfaceViewModel()
         {
-            var resolver = new ModernDependencyResolver();
+            var resolver = BuildDependencyResolverWithReactiveUI();
 
-            resolver.InitializeSplat();
-            resolver.InitializeReactiveUI();
             resolver.Register(() => new BazView(), typeof(IBazView));
 
             using (resolver.WithResolver())
             {
                 var fixture = new DefaultViewLocator();
-                IBazViewModel vm = new BazViewModel(null);
+                IBazViewModel vm = new BazViewModel();
 
                 var result = fixture.ResolveView(vm);
                 this.Log().Info(result.GetType().FullName);
                 Assert.IsType<BazView>(result);
             }
+        }
+
+        private static IMutableDependencyResolver BuildDependencyResolverWithReactiveUI()
+        {
+            var resolver = new ModernDependencyResolver();
+            resolver.InitializeSplat();
+            resolver.InitializeReactiveUI();
+            return resolver;
         }
     }
 }
