@@ -1,5 +1,4 @@
 assembly-versioning-scheme: None
-next-version: 7.0.0
 branches:
   master:
     mode: ContinuousDelivery
