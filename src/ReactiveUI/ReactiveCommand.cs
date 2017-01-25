@@ -1059,7 +1059,7 @@ namespace ReactiveUI
         /// <param name="command">The command to be executed.</param>
         /// <returns>An object that when disposes, disconnects the Observable
         /// from the command.</returns>
-        public static IDisposable InvokeCommand<T, TResult>(this IObservable<T> This, ReactiveCommand<T, TResult> command)
+        public static IDisposable InvokeCommand<T, TResult>(this IObservable<T> This, ReactiveCommandBase<T, TResult> command)
         {
             return This
                 .WithLatestFrom(command.CanExecute, (value, canExecute) => InvokeCommandInfo.From(command, canExecute, value))
@@ -1103,11 +1103,11 @@ namespace ReactiveUI
         /// <param name="commandProperty">The expression to reference the Command.</param>
         /// <returns>An object that when disposes, disconnects the Observable
         /// from the command.</returns>
-        public static IDisposable InvokeCommand<T, TResult, TTarget>(this IObservable<T> This, TTarget target, Expression<Func<TTarget, ReactiveCommand<T, TResult>>> commandProperty)
+        public static IDisposable InvokeCommand<T, TResult, TTarget>(this IObservable<T> This, TTarget target, Expression<Func<TTarget, ReactiveCommandBase<T, TResult>>> commandProperty)
         {
             var command = target.WhenAnyValue(commandProperty);
             var invocationInfo = command
-                .Select(cmd => cmd == null ? Observable.Empty<InvokeCommandInfo<ReactiveCommand<T, TResult>, T>>() : cmd
+                .Select(cmd => cmd == null ? Observable.Empty<InvokeCommandInfo<ReactiveCommandBase<T, TResult>, T>>() : cmd
                     .CanExecute
                     .Select(canExecute => InvokeCommandInfo.From(cmd, canExecute, default(T))))
                 .Switch();
