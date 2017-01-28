@@ -1,1 +1,0 @@
-# IHandleObservableErrors pattern + DefaultExceptionHandler
