@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using System.Text;
 using Android.App;
 using Android.Views;
 using Java.Interop;
@@ -75,10 +74,9 @@ namespace ReactiveUI
         /// <summary>
         ///
         /// </summary>
-        public static void WireUpControls(this ILayoutViewHost This)
+        public static void WireUpControls(this ILayoutViewHost This, ResolveMembers resolveMembers = ResolveMembers.Implicit)
         {
-            var members = This.GetType().GetRuntimeProperties()
-                .Where(m => typeof(View).IsAssignableFrom(m.PropertyType));
+            var members = This.getWireUpMembers(resolveMembers);
 
             members.ToList().ForEach(m => {
                 try {
@@ -97,10 +95,9 @@ namespace ReactiveUI
         /// <summary>
         ///
         /// </summary>
-        public static void WireUpControls(this View This)
+        public static void WireUpControls(this View This, ResolveMembers resolveMembers = ResolveMembers.Implicit)
         {
-            var members = This.GetType().GetRuntimeProperties()
-                .Where(m => typeof(View).IsAssignableFrom(m.PropertyType));
+            var members = This.getWireUpMembers(resolveMembers);
 
             members.ToList().ForEach(m => {
                 try {
@@ -121,10 +118,9 @@ namespace ReactiveUI
         /// </summary>
         /// <param name="This"></param>
         /// <param name="inflatedView"></param>
-        public static void WireUpControls(this Fragment This, View inflatedView)
+        public static void WireUpControls(this Fragment This, View inflatedView, ResolveMembers resolveMembers = ResolveMembers.Implicit)
         {
-            var members = This.GetType().GetRuntimeProperties()
-                .Where(m => typeof(View).IsAssignableFrom(m.PropertyType));
+            var members = This.getWireUpMembers(resolveMembers);
 
             members.ToList().ForEach(m => {
                 try {
@@ -143,10 +139,9 @@ namespace ReactiveUI
         /// <summary>
         ///
         /// </summary>
-        public static void WireUpControls(this Activity This)
+        public static void WireUpControls(this Activity This, ResolveMembers resolveMembers = ResolveMembers.Implicit)
         {
-            var members = This.GetType().GetRuntimeProperties()
-                .Where(m => typeof(View).IsAssignableFrom(m.PropertyType));
+            var members = This.getWireUpMembers(resolveMembers);
 
             members.ToList().ForEach(m => {
                 try {
@@ -188,5 +183,54 @@ namespace ReactiveUI
             ourViewCache.Add(propertyName, ret);
             return ret;
         }
+
+        static IEnumerable<PropertyInfo> getWireUpMembers(this object This, ResolveMembers resolveMembers)
+        {
+            var members = This.GetType().GetRuntimeProperties();
+
+            switch (resolveMembers) {
+                case ResolveMembers.Implicit:
+                    members = members.Where(m => m.PropertyType.IsSubclassOf(typeof(View)));
+                    break;
+
+                case ResolveMembers.ExplicitOptIn:
+                    members = members.Where(m => m.GetCustomAttribute<WireUpResourceAttribute>(true) != null);
+                    break;
+
+                case ResolveMembers.ExplicitOptOut:
+                    members = members.Where(m => typeof(View).IsAssignableFrom(m.PropertyType)
+                                            && m.GetCustomAttribute<IgnoreResourceAttribute>(true) == null);
+                    break;
+            }
+
+            return members;
+        }
+
+
+        public enum ResolveMembers
+        {
+            /// <summary>
+            /// Resolve all properties that use a subclass of View.
+            /// </summary>
+            Implicit,
+            /// <summary>
+            /// Resolve only properties with an WireUpResource attribute.
+            /// </summary>
+            ExplicitOptIn,
+            /// <summary>
+            /// Resolve all View properties and those that use a subclass of View, except those with an IgnoreResource attribute.
+            /// </summary>
+            ExplicitOptOut
+        }
+    }
+
+
+    public class WireUpResourceAttribute : Attribute
+    {
+    }
+
+
+    public class IgnoreResourceAttribute : Attribute
+    {
     }
 }
