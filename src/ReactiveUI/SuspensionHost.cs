@@ -1,9 +1,9 @@
 using System;
 using System.Reactive;
-using System.Reactive.Linq;
-using Splat;
 using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using Splat;
 
 namespace ReactiveUI
 {
