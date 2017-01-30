@@ -1064,7 +1064,7 @@ namespace ReactiveUI
             return This
                 .WithLatestFrom(command.CanExecute, (value, canExecute) => InvokeCommandInfo.From(command, canExecute, value))
                 .Where(ii => ii.CanExecute)
-                .SelectMany(ii => command.Execute(ii.Value))
+                .SelectMany(ii => command.Execute(ii.Value).Catch(Observable.Empty<TResult>()))
                 .Subscribe();
         }
 
@@ -1115,7 +1115,7 @@ namespace ReactiveUI
             return This
                 .WithLatestFrom(invocationInfo, (value, ii) => ii.WithValue(value))
                 .Where(ii => ii.CanExecute)
-                .SelectMany(ii => ii.Command.Execute(ii.Value))
+                .SelectMany(ii => ii.Command.Execute(ii.Value).Catch(Observable.Empty<TResult>()))
                 .Subscribe();
         }
 
