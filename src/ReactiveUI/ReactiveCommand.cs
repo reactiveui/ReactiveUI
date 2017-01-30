@@ -784,13 +784,13 @@ namespace ReactiveUI
         /// <inheritdoc/>
         public override IObservable<bool> CanExecute
         {
-            get { return this.canExecute.AsObservable(); }
+            get { return this.canExecute; }
         }
 
         /// <inheritdoc/>
         public override IObservable<bool> IsExecuting
         {
-            get { return this.isExecuting.AsObservable(); }
+            get { return this.isExecuting; }
         }
 
         /// <inheritdoc/>
