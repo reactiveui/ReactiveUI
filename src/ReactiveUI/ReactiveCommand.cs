@@ -754,7 +754,7 @@ namespace ReactiveUI
             this.synchronizedExecutionInfo = Subject.Synchronize(this.executionInfo, outputScheduler);
             this.isExecuting = this
                 .synchronizedExecutionInfo
-                .Select(x => x.Demarcation == ExecutionDemarcation.Begin)
+                .Select(x => x.Demarcation != ExecutionDemarcation.Ended && x.Demarcation != ExecutionDemarcation.EndWithException)
                 .StartWith(false)
                 .DistinctUntilChanged()
                 .Replay(1)
@@ -771,7 +771,7 @@ namespace ReactiveUI
                 .RefCount();
             this.results = this
                 .synchronizedExecutionInfo
-                .Where(x => x.Demarcation == ExecutionDemarcation.EndWithResult)
+                .Where(x => x.Demarcation == ExecutionDemarcation.Result)
                 .Select(x => x.Result);
 
             this.exceptions = new ScheduledSubject<Exception>(outputScheduler, RxApp.DefaultExceptionHandler);
@@ -845,7 +845,7 @@ namespace ReactiveUI
         private enum ExecutionDemarcation
         {
             Begin,
-            EndWithResult,
+            Result,
             EndWithException,
             Ended
         }
@@ -878,7 +878,7 @@ namespace ReactiveUI
 
             public static ExecutionInfo CreateResult(TResult result)
             {
-                return new ExecutionInfo(ExecutionDemarcation.EndWithResult, result);
+                return new ExecutionInfo(ExecutionDemarcation.Result, result);
             }
 
             public static ExecutionInfo CreateFail()
