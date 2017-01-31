@@ -23,11 +23,11 @@
       </group>
       <group targetFramework="uap10.0">
         <dependency id="reactiveui-core" version="[$version$]" />
-        <dependency id="System.Diagnostics.Debug" version="4.0.10" />
         <dependency id="Microsoft.Xaml.Behaviors.Uwp.Managed" version="1.1.0" />
         <dependency id="Rx-Core" version="2.2.5" />
         <dependency id="Rx-Interfaces" version="2.2.5" />
         <dependency id="Rx-Linq" version="2.2.5" />
+        <dependency id="System.Diagnostics.Debug" version="4.0.10" />
         <dependency id="System.Runtime" version="4.0.20" />
       </group>
     </dependencies>
