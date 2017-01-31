@@ -338,6 +338,7 @@ Task("RunUnitTests")
 
 Task("UploadTestCoverage")
     .WithCriteria(() => !local)
+    .WithCriteria(() => !isPullRequest)
     .WithCriteria(() => isRepository)
     .IsDependentOn("RunUnitTests")
     .Does(() =>
