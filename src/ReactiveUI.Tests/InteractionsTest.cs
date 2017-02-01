@@ -30,6 +30,26 @@ namespace ReactiveUI.Tests
         }
 
         [Fact]
+        public void HandlersAreExecutedOnHandlerScheduler()
+        {
+            (new TestScheduler()).With(sched => {
+                var interaction = new Interaction<Unit, string>(sched);
+
+                using (interaction.RegisterHandler(x => x.SetOutput("done"))) {
+                    var handled = false;
+                    interaction
+                        .Handle(Unit.Default)
+                        .Subscribe(_ => handled = true);
+
+                    Assert.False(handled);
+
+                    sched.Start();
+                    Assert.True(handled);
+                }
+            });
+        }
+
+        [Fact]
         public void NestedHandlersAreExecutedInReverseOrderOfSubscription()
         {
             var interaction = new Interaction<Unit, string>();
