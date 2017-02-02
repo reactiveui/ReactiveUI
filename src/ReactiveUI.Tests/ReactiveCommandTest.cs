@@ -196,6 +196,28 @@ namespace ReactiveUI.Tests
         }
 
         [Fact]
+        public void IsExecutingRemainsTrueAsLongAsExecutionPipelineHasNotCompleted()
+        {
+            var execute = new Subject<Unit>();
+            var fixture = ReactiveCommand.CreateFromObservable(() => execute);
+
+            fixture
+                .Execute()
+                .Subscribe();
+
+            Assert.True(fixture.IsExecuting.FirstAsync().Wait());
+
+            execute.OnNext(Unit.Default);
+            Assert.True(fixture.IsExecuting.FirstAsync().Wait());
+
+            execute.OnNext(Unit.Default);
+            Assert.True(fixture.IsExecuting.FirstAsync().Wait());
+
+            execute.OnCompleted();
+            Assert.False(fixture.IsExecuting.FirstAsync().Wait());
+        }
+
+        [Fact]
         public void ExecuteOnlyExecutesOnceRegardlessOfNumberOfSubscribers()
         {
             var executionCount = 0;
@@ -272,6 +294,21 @@ namespace ReactiveUI.Tests
             Assert.Equal(1, results[0]);
             Assert.Equal(10, results[1]);
             Assert.Equal(30, results[2]);
+        }
+
+        [Fact]
+        public void ExecuteCanTickThroughMultipleResults()
+        {
+            var fixture = ReactiveCommand.CreateFromObservable(() => new[] { 1, 2, 3 }.ToObservable());
+            var results = fixture
+                .CreateCollection();
+
+            fixture.Execute().Subscribe();
+
+            Assert.Equal(3, results.Count);
+            Assert.Equal(1, results[0]);
+            Assert.Equal(2, results[1]);
+            Assert.Equal(3, results[2]);
         }
 
         [Fact]
