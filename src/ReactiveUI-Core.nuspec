@@ -58,18 +58,32 @@
   <files>
     <!-- Android -->
     <file src="bin/Release/MonoAndroid403/ReactiveUI.dll" target="lib/MonoAndroid403/ReactiveUI.dll" />
+    <file src="bin/Release/MonoAndroid403/ReactiveUI.pdb" target="lib/MonoAndroid403/ReactiveUI.pdb" />
+    <file src="bin/Release/MonoAndroid403/ReactiveUI.xml" target="lib/MonoAndroid403/ReactiveUI.xml" />
     <!-- iOS Unified API -->
     <file src="bin/Release/Xamarin.iOS10/ReactiveUI.dll" target="lib/Xamarin.iOS10/ReactiveUI.dll" />
+    <file src="bin/Release/Xamarin.iOS10/ReactiveUI.pdb" target="lib/Xamarin.iOS10/ReactiveUI.pdb" />
+    <file src="bin/Release/Xamarin.iOS10/ReactiveUI.xml" target="lib/Xamarin.iOS10/ReactiveUI.xml" />
     <!-- Xamarin Mac Unified API -->
-    <file src="bin/Release/Xamarin.Mac20/ReactiveUI.dll" target="lib/Xamarin.Mac20/ReactiveUI.dll" /> 
+    <file src="bin/Release/Xamarin.Mac20/ReactiveUI.dll" target="lib/Xamarin.Mac20/ReactiveUI.dll" />
+    <file src="bin/Release/Xamarin.Mac20/ReactiveUI.pdb" target="lib/Xamarin.Mac20/ReactiveUI.pdb" />
+    <file src="bin/Release/Xamarin.Mac20/ReactiveUI.xml" target="lib/Xamarin.Mac20/ReactiveUI.xml" />
     <!-- Windows Store 8.1 -->
     <file src="bin/Release/Portable-Win81+Wpa81/ReactiveUI.dll" target="lib/Portable-Win81+Wpa81/ReactiveUI.dll" />
+    <file src="bin/Release/Portable-Win81+Wpa81/ReactiveUI.pdb" target="lib/Portable-Win81+Wpa81/ReactiveUI.pdb" />
+    <file src="bin/Release/Portable-Win81+Wpa81/ReactiveUI.xml" target="lib/Portable-Win81+Wpa81/ReactiveUI.xml" />
     <!-- Windows Universal -->
     <file src="bin/Release/UAP10.0/ReactiveUI.dll" target="lib/UAP10/ReactiveUI.dll" />
+    <file src="bin/Release/UAP10.0/ReactiveUI.pdb" target="lib/UAP10/ReactiveUI.pdb" />
+    <file src="bin/Release/UAP10.0/ReactiveUI.xml" target="lib/UAP10/ReactiveUI.xml" />
     <!-- .NET 4.5 -->
     <file src="bin/Release/Net45/ReactiveUI.dll" target="lib/Net45/ReactiveUI.dll" />
+    <file src="bin/Release/Net45/ReactiveUI.pdb" target="lib/Net45/ReactiveUI.pdb" />
+    <file src="bin/Release/Net45/ReactiveUI.xml" target="lib/Net45/ReactiveUI.xml" />
     <!-- Portable PCL -->
     <file src="bin/Release/portable-net45+netcore45+wpa81+win8+wp8+UAP10+MonoAndroid403+MonoTouch10+Xamarin.iOS10/ReactiveUI.dll" target="lib/portable-net45+netcore45+wpa81+win8+wp8+UAP10+MonoAndroid403+MonoTouch10+Xamarin.iOS10/ReactiveUI.dll" />
+    <file src="bin/Release/portable-net45+netcore45+wpa81+win8+wp8+UAP10+MonoAndroid403+MonoTouch10+Xamarin.iOS10/ReactiveUI.pdb" target="lib/portable-net45+netcore45+wpa81+win8+wp8+UAP10+MonoAndroid403+MonoTouch10+Xamarin.iOS10/ReactiveUI.pdb" />
+    <file src="bin/Release/portable-net45+netcore45+wpa81+win8+wp8+UAP10+MonoAndroid403+MonoTouch10+Xamarin.iOS10/ReactiveUI.xml" target="lib/portable-net45+netcore45+wpa81+win8+wp8+UAP10+MonoAndroid403+MonoTouch10+Xamarin.iOS10/ReactiveUI.xml" />
     <!-- Source -->
     <file src="*.cs" target="src" />
   </files>
