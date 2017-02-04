@@ -15,6 +15,8 @@
   <files>
     <!-- PCL -->
     <file src="bin/Release/portable-net45+netcore45+wp8+UAP10+MonoAndroid403+MonoTouch10+Xamarin.iOS10/ReactiveUI.Events_XamForms.dll" target="lib/portable-net45+netcore45+wp8+UAP10+MonoAndroid403+MonoTouch10+Xamarin.iOS10/ReactiveUI.Events_XamForms.dll" />
+    <file src="bin/Release/portable-net45+netcore45+wp8+UAP10+MonoAndroid403+MonoTouch10+Xamarin.iOS10/ReactiveUI.Events_XamForms.pdb" target="lib/portable-net45+netcore45+wp8+UAP10+MonoAndroid403+MonoTouch10+Xamarin.iOS10/ReactiveUI.Events_XamForms.pdb" />
+    <file src="bin/Release/portable-net45+netcore45+wp8+UAP10+MonoAndroid403+MonoTouch10+Xamarin.iOS10/ReactiveUI.Events_XamForms.xml" target="lib/portable-net45+netcore45+wp8+UAP10+MonoAndroid403+MonoTouch10+Xamarin.iOS10/ReactiveUI.Events_XamForms.xml" />
     <!-- Source -->
     <file src="*.cs" target="src" />
   </files>
