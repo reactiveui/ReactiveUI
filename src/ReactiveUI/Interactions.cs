@@ -200,14 +200,16 @@ namespace ReactiveUI
         /// <returns>
         /// A disposable which, when disposed, will unregister the handler.
         /// </returns>
-        public IDisposable RegisterHandler(Func<InteractionContext<TInput, TOutput>, IObservable<Unit>> handler)
+        public IDisposable RegisterHandler<TDontCare>(Func<InteractionContext<TInput, TOutput>, IObservable<TDontCare>> handler)
         {
             if (handler == null) {
                 throw new ArgumentNullException("handler");
             }
 
-            this.AddHandler(handler);
-            return Disposable.Create(() => this.RemoveHandler(handler));
+            Func<InteractionContext<TInput, TOutput>, IObservable<Unit>> unitHandler = context => handler(context).Select(_ => Unit.Default);
+
+            this.AddHandler(unitHandler);
+            return Disposable.Create(() => this.RemoveHandler(unitHandler));
         }
 
         /// <summary>
