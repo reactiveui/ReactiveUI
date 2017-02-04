@@ -239,3 +239,4 @@ tools/
 artifacts/
 src/CommonAssemblyInfo.cs
 src/ReactiveUI.Events/Events_*.cs
+src/*Tests/API/*received.txt
