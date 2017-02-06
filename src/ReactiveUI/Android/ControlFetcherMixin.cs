@@ -74,14 +74,14 @@ namespace ReactiveUI
         /// <summary>
         ///
         /// </summary>
-        public static void WireUpControls(this ILayoutViewHost This, ResolveMembers resolveMembers = ResolveMembers.Implicit)
+        public static void WireUpControls(this ILayoutViewHost This, ResolveStrategy resolveMembers = ResolveStrategy.Implicit)
         {
             var members = This.getWireUpMembers(resolveMembers);
 
             members.ToList().ForEach(m => {
                 try {
                     // Find the android control with the same name
-                    var view = This.View.getControlInternal(m.PropertyType, m.Name);
+                    var view = This.View.getControlInternal(m.PropertyType, m.getResourceName());
 
                     // Set the activity field's value to the view with that identifier
                     m.SetValue(This, view);
@@ -95,14 +95,14 @@ namespace ReactiveUI
         /// <summary>
         ///
         /// </summary>
-        public static void WireUpControls(this View This, ResolveMembers resolveMembers = ResolveMembers.Implicit)
+        public static void WireUpControls(this View This, ResolveStrategy resolveMembers = ResolveStrategy.Implicit)
         {
             var members = This.getWireUpMembers(resolveMembers);
 
             members.ToList().ForEach(m => {
                 try {
                     // Find the android control with the same name
-                    var view = This.getControlInternal(m.PropertyType, m.Name);
+                    var view = This.getControlInternal(m.PropertyType, m.getResourceName());
 
                     // Set the activity field's value to the view with that identifier
                     m.SetValue(This, view);
@@ -118,14 +118,14 @@ namespace ReactiveUI
         /// </summary>
         /// <param name="This"></param>
         /// <param name="inflatedView"></param>
-        public static void WireUpControls(this Fragment This, View inflatedView, ResolveMembers resolveMembers = ResolveMembers.Implicit)
+        public static void WireUpControls(this Fragment This, View inflatedView, ResolveStrategy resolveMembers = ResolveStrategy.Implicit)
         {
             var members = This.getWireUpMembers(resolveMembers);
 
             members.ToList().ForEach(m => {
                 try {
                     // Find the android control with the same name from the view
-                    var view = inflatedView.getControlInternal(m.PropertyType, m.Name);
+                    var view = inflatedView.getControlInternal(m.PropertyType, m.getResourceName());
 
                     // Set the activity field's value to the view with that identifier
                     m.SetValue(This, view);
@@ -139,14 +139,14 @@ namespace ReactiveUI
         /// <summary>
         ///
         /// </summary>
-        public static void WireUpControls(this Activity This, ResolveMembers resolveMembers = ResolveMembers.Implicit)
+        public static void WireUpControls(this Activity This, ResolveStrategy resolveMembers = ResolveStrategy.Implicit)
         {
             var members = This.getWireUpMembers(resolveMembers);
 
             members.ToList().ForEach(m => {
                 try {
                     // Find the android control with the same name
-                    var view = This.getControlInternal(m.PropertyType, m.Name);
+                    var view = This.getControlInternal(m.PropertyType, m.getResourceName());
 
                     // Set the activity field's value to the view with that identifier
                     m.SetValue(This, view);
@@ -184,30 +184,33 @@ namespace ReactiveUI
             return ret;
         }
 
-        static IEnumerable<PropertyInfo> getWireUpMembers(this object This, ResolveMembers resolveMembers)
+        static string getResourceName(this PropertyInfo member)
+        {
+            var resourceNameOverride = member.GetCustomAttribute<WireUpResourceAttribute>()?.ResourceNameOverride;
+            return resourceNameOverride ?? member.Name;
+        }
+
+        static IEnumerable<PropertyInfo> getWireUpMembers(this object This, ResolveStrategy resolveStrategy)
         {
             var members = This.GetType().GetRuntimeProperties();
 
-            switch (resolveMembers) {
-                case ResolveMembers.Implicit:
-                    members = members.Where(m => m.PropertyType.IsSubclassOf(typeof(View)));
-                    break;
+            switch (resolveStrategy) {
+                default:
+                case ResolveStrategy.Implicit:
+                    return members.Where(m => m.PropertyType.IsSubclassOf(typeof(View))
+                                         || m.GetCustomAttribute<WireUpResourceAttribute>(true) != null);
 
-                case ResolveMembers.ExplicitOptIn:
-                    members = members.Where(m => m.GetCustomAttribute<WireUpResourceAttribute>(true) != null);
-                    break;
+                case ResolveStrategy.ExplicitOptIn:
+                    return members.Where(m => m.GetCustomAttribute<WireUpResourceAttribute>(true) != null);
 
-                case ResolveMembers.ExplicitOptOut:
-                    members = members.Where(m => typeof(View).IsAssignableFrom(m.PropertyType)
-                                            && m.GetCustomAttribute<IgnoreResourceAttribute>(true) == null);
-                    break;
+                case ResolveStrategy.ExplicitOptOut:
+                    return members.Where(m => typeof(View).IsAssignableFrom(m.PropertyType)
+                                         && m.GetCustomAttribute<IgnoreResourceAttribute>(true) == null);
             }
-
-            return members;
         }
 
 
-        public enum ResolveMembers
+        public enum ResolveStrategy
         {
             /// <summary>
             /// Resolve all properties that use a subclass of View.
@@ -227,6 +230,16 @@ namespace ReactiveUI
 
     public class WireUpResourceAttribute : Attribute
     {
+        public readonly string ResourceNameOverride;
+
+        public WireUpResourceAttribute()
+        {
+        }
+
+        public WireUpResourceAttribute(string resourceName)
+        {
+            ResourceNameOverride = resourceName;
+        }
     }
 
 
