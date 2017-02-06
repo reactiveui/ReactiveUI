@@ -7,6 +7,7 @@
   version: 1.0.{build}
   environment:
     ANDROID_HOME: "C:\\android-sdk-windows"
+    COVERALLS_TOKEN: jLYKFVgST432LzbZeyLnLpoteXwQLveBw
     GITHUB_USERNAME:
       secure: 0Q9MvUId56SizmZwCf0cgg==
     GITHUB_TOKEN:
@@ -47,6 +48,7 @@
   version: 1.0.{build}
   environment:
     ANDROID_HOME: "C:\\android-sdk-windows"
+    COVERALLS_TOKEN: jLYKFVgST432LzbZeyLnLpoteXwQLveBw
     NUGET_SOURCE: https://www.myget.org/F/reactiveui/api/v2/package
     NUGET_APIKEY:
       secure: YP/3KxC2ffsuHNaolPXj66JVGzSjON9FcR2S2OEzn9c6SV14oPzUh1ySyeT+G+aA

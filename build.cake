@@ -3,6 +3,7 @@
 //////////////////////////////////////////////////////////////////////
 
 #addin "Cake.FileHelpers"
+#addin "Cake.Coveralls"
 
 //////////////////////////////////////////////////////////////////////
 // TOOLS
@@ -11,6 +12,9 @@
 #tool "GitReleaseManager"
 #tool "GitVersion.CommandLine"
 #tool "GitLink"
+#tool "coveralls.io"
+#tool "OpenCover"
+#tool "ReportGenerator"
 
 //////////////////////////////////////////////////////////////////////
 // ARGUMENTS
@@ -56,6 +60,7 @@ var buildVersion = gitVersion.FullBuildMetaData;
 
 // Artifacts
 var artifactDirectory = "./artifacts/";
+var testCoverageOutputFile = artifactDirectory + "OpenCover.xml";
 var packageWhitelist = new[] { "ReactiveUI-Testing", "ReactiveUI-Events", "ReactiveUI-Events-XamForms", "ReactiveUI", "ReactiveUI-Core", "ReactiveUI-AndroidSupport", "ReactiveUI-Blend", "ReactiveUI-Winforms", "ReactiveUI-XamForms" };
 
 // Define global marcos.
@@ -282,6 +287,18 @@ Task("UpdateAppVeyorBuildNumber")
     .Does(() =>
 {
     AppVeyor.UpdateBuildVersion(buildVersion);
+
+}).ReportError(exception =>
+{  
+    // When a build starts, the initial identifier is an auto-incremented value supplied by AppVeyor. 
+    // As part of the build script, this version in AppVeyor is changed to be the version obtained from
+    // GitVersion. This identifier is purely cosmetic and is used by the core team to correlate a build
+    // with the pull-request. In some circumstances, such as restarting a failed/cancelled build the
+    // identifier in AppVeyor will be already updated and default behaviour is to throw an
+    // exception/cancel the build when in fact it is safe to swallow.
+    // See https://github.com/reactiveui/ReactiveUI/issues/1262
+
+    Warning("Build with version {0} already exists.", buildVersion);
 });
 
 Task("UpdateAssemblyInfo")
@@ -309,16 +326,51 @@ Task("RunUnitTests")
     .IsDependentOn("BuildReactiveUI")
     .Does(() =>
 {
-    XUnit2("./src/ReactiveUI.Tests/bin/Release/Net45/ReactiveUI.Tests_Net45.dll", new XUnit2Settings {
-        OutputDirectory = artifactDirectory,
-        XmlReportV1 = true,
-        NoAppDomain = true
+    Action<ICakeContext> testAction = tool => {
+
+        tool.XUnit2("./src/ReactiveUI.Tests/bin/Release/Net45/ReactiveUI.Tests_Net45.dll", new XUnit2Settings {
+            OutputDirectory = artifactDirectory,
+            XmlReportV1 = true,
+            NoAppDomain = true
+        });
+    };
+
+    OpenCover(testAction,
+        testCoverageOutputFile,
+        new OpenCoverSettings {
+            ReturnTargetCodeOffset = 0,
+            ArgumentCustomization = args => args.Append("-mergeoutput")
+        }
+        .WithFilter("+[*]* -[*.Testing]* -[*.Tests*]* -[Playground*]* -[ReactiveUI.Events]* -[Splat*]*")
+        .ExcludeByAttribute("*.ExcludeFromCodeCoverage*")
+        .ExcludeByFile("*/*Designer.cs;*/*.g.cs;*/*.g.i.cs;*splat/splat*"));
+
+    ReportGenerator(testCoverageOutputFile, artifactDirectory);
+});
+
+Task("UploadTestCoverage")
+    .WithCriteria(() => !local)
+    .WithCriteria(() => isRepository)
+    .IsDependentOn("RunUnitTests")
+    .Does(() =>
+{
+    // Resolve the API key.
+    var token = EnvironmentVariable("COVERALLS_TOKEN");
+    if (string.IsNullOrEmpty(token))
+    {
+        throw new Exception("The COVERALLS_TOKEN environment variable is not defined.");
+    }
+
+    CoverallsIo(testCoverageOutputFile, new CoverallsIoSettings()
+    {
+        RepoToken = token
     });
 });
 
 Task("Package")
     .IsDependentOn("PackageEvents")
     .IsDependentOn("PackageReactiveUI")
+    .IsDependentOn("UploadTestCoverage")
     .Does (() =>
 {
 
