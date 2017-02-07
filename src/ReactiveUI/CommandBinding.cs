@@ -9,6 +9,9 @@ using Splat;
 
 namespace ReactiveUI
 {
+    /// <summary>
+    /// Various helpers to bind View controls and ViewModel commands together
+    /// </summary>
     public static class CommandBinder
     {
         static ICommandBinderImplementation binderImplementation;
@@ -30,7 +33,7 @@ namespace ReactiveUI
         /// <param name="view">The View</param>
         /// <param name="viewModel">The View model</param>
         /// <param name="controlName">The name of the control on the view</param>
-        /// <param name="propertyName">The ViewModel command to Bind.</param>
+        /// <param name="propertyName">The ViewModel command to bind</param>
         /// <param name="withParameter">The ViewModel property to pass as the
         /// param of the ICommand</param>
         /// <param name="toEvent">If specified, bind to the specific event
@@ -57,6 +60,7 @@ namespace ReactiveUI
         /// the binding</returns>
         /// <param name="view">The View</param>
         /// <param name="viewModel">The View model</param>
+        /// <param name="propertyName">The ViewModel command to bind</param>
         /// <param name="controlName">The name of the control on the view</param>
         /// <param name="toEvent">If specified, bind to the specific event
         /// instead of the default.</param>
@@ -81,6 +85,7 @@ namespace ReactiveUI
         /// the binding</returns>
         /// <param name="view">The View</param>
         /// <param name="viewModel">The View model</param>
+        /// <param name="propertyName">The ViewModel command to bind</param>
         /// <param name="controlName">The name of the control on the view</param>
         /// <param name="withParameter">The ViewModel property to pass as the
         /// param of the ICommand</param>
@@ -126,8 +131,25 @@ namespace ReactiveUI
             where TProp : ICommand;
     }
 
+    /// <summary>
+    /// Used by the CommandBinder extension methods to handle binding View controls and ViewModel commands
+    /// </summary>
     public class CommandBinderImplementation : ICommandBinderImplementation
     {
+        /// <summary>
+        /// Bind a command from the ViewModel to an explicitly specified control
+        /// on the View.
+        /// </summary>
+        /// <returns>A class representing the binding. Dispose it to disconnect
+        /// the binding</returns>
+        /// <param name="view">The View</param>
+        /// <param name="viewModel">The View model</param>
+        /// <param name="controlProperty">The name of the control on the view</param>
+        /// <param name="vmProperty">The ViewModel command to bind</param>
+        /// <param name="withParameter">The ViewModel property to pass as the
+        /// param of the ICommand</param>
+        /// <param name="toEvent">If specified, bind to the specific event
+        /// instead of the default.</param>
         public IReactiveBinding<TView, TViewModel, TProp> BindCommand<TView, TViewModel, TProp, TControl, TParam>(
                 TViewModel viewModel,
                 TView view,
@@ -149,14 +171,27 @@ namespace ReactiveUI
                     return new RelayCommand(cmd.CanExecute, _ => cmd.Execute(withParameter()));
                 }
 
-                var ret = ReactiveCommand.Create(() => ((ICommand)rc).Execute(null), rc.CanExecute);
-                return ret;
+                return ReactiveCommand.Create(() => ((ICommand)rc).Execute(null), rc.CanExecute);                
             });
 
             return new ReactiveBinding<TView, TViewModel, TProp>(view, viewModel, controlExpression, vmExpression,
                 source, BindingDirection.OneWay, bindingDisposable);
         }
 
+        /// <summary>
+        /// Bind a command from the ViewModel to an explicitly specified control
+        /// on the View.
+        /// </summary>
+        /// <returns>A class representing the binding. Dispose it to disconnect
+        /// the binding</returns>
+        /// <param name="view">The View</param>
+        /// <param name="viewModel">The View model</param>
+        /// <param name="controlProperty">The name of the control on the view</param>
+        /// <param name="vmProperty">The ViewModel command to bind</param>
+        /// <param name="withParameter">The ViewModel property to pass as the
+        /// param of the ICommand</param>
+        /// <param name="toEvent">If specified, bind to the specific event
+        /// instead of the default.</param>
         public IReactiveBinding<TView, TViewModel, TProp> BindCommand<TView, TViewModel, TProp, TControl, TParam>(
                 TViewModel viewModel,
                 TView view,
@@ -211,14 +246,11 @@ namespace ReactiveUI
                     }
                 });
 
-            return Disposable.Create(() => {
-                propSub.Dispose();
-                disp.Dispose();
-            });
+            return new CompositeDisposable(propSub, disp);
         }
     }
 
-    static class CommandBinderImplementationMixins
+    internal static class CommandBinderImplementationMixins
     {
         public static IReactiveBinding<TView, TViewModel, TProp> BindCommand<TView, TViewModel, TProp, TControl>(
                 this ICommandBinderImplementation This,
@@ -250,7 +282,7 @@ namespace ReactiveUI
         }
     }
 
-    class CreatesCommandBinding
+    internal class CreatesCommandBinding
     {
         static readonly MemoizingMRUCache<Type, ICreatesCommandBinding> bindCommandCache =
             new MemoizingMRUCache<Type, ICreatesCommandBinding>((t, _) => {
@@ -275,17 +307,17 @@ namespace ReactiveUI
             var binder = default(ICreatesCommandBinding);
             var type = target.GetType();
 
-            lock(bindCommandCache) {
+            lock (bindCommandCache) {
                 binder = bindCommandCache.Get(type);
             }
 
             if (binder == null) {
-                throw new Exception(String.Format("Couldn't find a Command Binder for {0}", type.FullName));
+                throw new Exception($"Couldn't find a Command Binder for {type.FullName}");
             }
 
             var ret = binder.BindCommandToObject(command, target, commandParameter);
             if (ret == null) {
-                throw new Exception(String.Format("Couldn't bind Command Binder for {0}", type.FullName));
+                throw new Exception($"Couldn't bind Command Binder for {type.FullName}");
             }
 
             return ret;
@@ -296,17 +328,16 @@ namespace ReactiveUI
             var type = target.GetType();
             var binder = bindCommandEventCache.Get(type);
             if (binder == null) {
-                throw new Exception(String.Format("Couldn't find a Command Binder for {0} and event {1}", type.FullName, eventName));
+                throw new Exception($"Couldn't find a Command Binder for {type.FullName} and event {eventName}");
             }
 
             var eventArgsType = Reflection.GetEventArgsTypeForEvent(type, eventName);
             var mi = binder.GetType().GetTypeInfo().DeclaredMethods.First(x => x.Name == "BindCommandToObject" && x.IsGenericMethod);
-            mi = mi.MakeGenericMethod(new[] {eventArgsType});
+            mi = mi.MakeGenericMethod(new[] { eventArgsType });
 
-            //var ret = binder.BindCommandToObject<TEventArgs>(command, target, commandParameter, eventName);
-            var ret = (IDisposable) mi.Invoke(binder, new[] {command, target, commandParameter, eventName});
+            var ret = (IDisposable)mi.Invoke(binder, new[] { command, target, commandParameter, eventName });
             if (ret == null) {
-                throw new Exception(String.Format("Couldn't bind Command Binder for {0} and event {1}", type.FullName, eventName));
+                throw new Exception($"Couldn't bind Command Binder for {type.FullName} and event {eventName}");
             }
 
             return ret;
@@ -321,7 +352,7 @@ namespace ReactiveUI
         public RelayCommand(Func<object, bool> canExecute = null, Action<object> execute = null)
         {
             this.canExecute = canExecute ?? (_ => true);
-            this.execute = execute ?? (_ => {});
+            this.execute = execute ?? (_ => { });
         }
 
         public event EventHandler CanExecuteChanged;
