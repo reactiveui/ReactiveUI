@@ -21,16 +21,28 @@
   <files>
     <!-- Android -->
     <file src="bin/Release/MonoAndroid403/ReactiveUI.Events.dll" target="lib/MonoAndroid403/ReactiveUI.Events.dll" />
+    <file src="bin/Release/MonoAndroid403/ReactiveUI.Events.pdb" target="lib/MonoAndroid403/ReactiveUI.Events.pdb" />
+    <file src="bin/Release/MonoAndroid403/ReactiveUI.Events.xml" target="lib/MonoAndroid403/ReactiveUI.Events.xml" />
     <!-- iOS Unified API -->
     <file src="bin/Release/Xamarin.iOS10/ReactiveUI.Events.dll" target="lib/Xamarin.iOS10/ReactiveUI.Events.dll" />
+    <file src="bin/Release/Xamarin.iOS10/ReactiveUI.Events.pdb" target="lib/Xamarin.iOS10/ReactiveUI.Events.pdb" />
+    <file src="bin/Release/Xamarin.iOS10/ReactiveUI.Events.xml" target="lib/Xamarin.iOS10/ReactiveUI.Events.xml" />
     <!-- Mac Mobile Unified API -->
     <!-- <file src="bin/Release/Xamarin.Mac20/ReactiveUI.Events.dll" target="lib/Xamarin.Mac20/ReactiveUI.Events.dll" /> -->
+    <!-- <file src="bin/Release/Xamarin.Mac20/ReactiveUI.Events.pdb" target="lib/Xamarin.Mac20/ReactiveUI.Events.pdb" /> -->
+    <!-- <file src="bin/Release/Xamarin.Mac20/ReactiveUI.Events.xml" target="lib/Xamarin.Mac20/ReactiveUI.Events.xml" /> -->
     <!-- Windows Store 8.1 -->
     <file src="bin/Release/WPA81/ReactiveUI.Events.dll" target="lib/WPA81/ReactiveUI.Events.dll" />
+    <file src="bin/Release/WPA81/ReactiveUI.Events.pdb" target="lib/WPA81/ReactiveUI.Events.pdb" />
+    <file src="bin/Release/WPA81/ReactiveUI.Events.xml" target="lib/WPA81/ReactiveUI.Events.xml" />
     <!-- Windows Universal -->
     <file src="bin/Release/UAP10.0/ReactiveUI.Events.dll" target="lib/UAP10/ReactiveUI.Events.dll" />
+    <file src="bin/Release/UAP10.0/ReactiveUI.Events.pdb" target="lib/UAP10/ReactiveUI.Events.pdb" />
+    <file src="bin/Release/UAP10.0/ReactiveUI.Events.xml" target="lib/UAP10/ReactiveUI.Events.xml" />
     <!-- .NET 4.5 -->
     <file src="bin/Release/Net45/ReactiveUI.Events.dll" target="lib/Net45/ReactiveUI.Events.dll" />
+    <file src="bin/Release/Net45/ReactiveUI.Events.pdb" target="lib/Net45/ReactiveUI.Events.pdb" />
+    <file src="bin/Release/Net45/ReactiveUI.Events.xml" target="lib/Net45/ReactiveUI.Events.xml" />
     <!-- Source -->
     <file src="*.cs" target="src" />
   </files>

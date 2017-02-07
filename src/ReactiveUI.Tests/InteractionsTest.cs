@@ -196,7 +196,20 @@ namespace ReactiveUI.Tests
             interaction
                 .Handle(Unit.Default)
                 .Subscribe(r => result = r);
+        }
 
+        [Fact]
+        public void HandlersReturningObservablesCanReturnAnyKindOfObservable()
+        {
+            var interaction = new Interaction<Unit, string>();
+
+            var handler = interaction.RegisterHandler(
+                x =>
+                    Observable
+                        .Return(42)
+                        .Do(_ => x.SetOutput("result")));
+
+            var result = interaction.Handle(Unit.Default).FirstAsync().Wait();
             Assert.Equal("result", result);
         }
     }
