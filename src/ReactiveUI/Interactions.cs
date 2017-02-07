@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive;
+using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Threading.Tasks;
@@ -127,11 +128,19 @@ namespace ReactiveUI
     {
         private readonly IList<Func<InteractionContext<TInput, TOutput>, IObservable<Unit>>> handlers;
         private readonly object sync;
+        private readonly IScheduler handlerScheduler;
 
-        public Interaction()
+        /// <summary>
+        /// Creates a new interaction instance.
+        /// </summary>
+        /// <param name="handlerScheduler">
+        /// The scheduler to use when invoking handlers, which defaults to <c>CurrentThreadScheduler.Instance</c> if <see langword="null"/>.
+        /// </param>
+        public Interaction(IScheduler handlerScheduler = null)
         {
             this.handlers = new List<Func<InteractionContext<TInput, TOutput>, IObservable<Unit>>>();
             this.sync = new object();
+            this.handlerScheduler = handlerScheduler ?? CurrentThreadScheduler.Instance;
         }
 
         /// <summary>
@@ -237,6 +246,7 @@ namespace ReactiveUI
                 .GetHandlers()
                 .Reverse()
                 .ToObservable()
+                .ObserveOn(this.handlerScheduler)
                 .Select(handler => Observable.Defer(() => handler(context)))
                 .Concat()
                 .TakeWhile(_ => !context.IsHandled)
