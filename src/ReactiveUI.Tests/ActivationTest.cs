@@ -1,12 +1,9 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
-using System.Text;
-using System.Threading.Tasks;
 using Splat;
 using Xunit;
 
@@ -21,7 +18,7 @@ namespace ReactiveUI.Tests
         public ActivatingViewModel()
         {
             Activator = new ViewModelActivator();
-                
+
             this.WhenActivated(d => {
                 IsActiveCount++;
                 d(Disposable.Create(() => IsActiveCount--));
@@ -45,12 +42,14 @@ namespace ReactiveUI.Tests
     public class ActivatingView : ReactiveObject, IViewFor<ActivatingViewModel>
     {
         ActivatingViewModel viewModel;
-        public ActivatingViewModel ViewModel {
+        public ActivatingViewModel ViewModel
+        {
             get { return viewModel; }
             set { this.RaiseAndSetIfChanged(ref viewModel, value); }
         }
 
-        object IViewFor.ViewModel {
+        object IViewFor.ViewModel
+        {
             get { return ViewModel; }
             set { ViewModel = (ActivatingViewModel)value; }
         }
@@ -248,8 +247,7 @@ namespace ReactiveUI.Tests
             locator.InitializeReactiveUI();
             locator.Register(() => new ActivatingViewFetcher(), typeof(IActivationForViewFetcher));
 
-            using (locator.WithResolver())
-            {
+            using (locator.WithResolver()) {
                 var vm = new ActivatingViewModel();
                 var fixture = new ActivatingView();
 
@@ -270,6 +268,5 @@ namespace ReactiveUI.Tests
                 Assert.Equal(1, fixture.IsActiveCount);
             }
         }
-
     }
 }
