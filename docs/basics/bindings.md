@@ -24,13 +24,100 @@ implement it differently:
   RaiseAndSetIfChanged, *or* implement `INotifyPropertyChanged` on your View and
   ensure that ViewModel signals changes.
 
+```csharp
+public partial class NotificationsListViewController : ReactiveTableViewController, IViewFor<NotificationsListViewModel>
+{
+    public NotificationsListViewController()
+    {
+    }
+
+    public override void ViewDidLoad()
+    {
+        base.ViewDidLoad();
+        ViewModel = new NotificationsListViewModel();
+        // ... view stuff
+    }
+
+    NotificationsListViewModel _ViewModel;
+    public NotificationsListViewModel ViewModel
+    {
+        get { return _ViewModel; }
+        set { this.RaiseAndSetIfChanged(ref _ViewModel, value); }
+    }
+
+    object IViewFor.ViewModel
+    {
+        get { return _ViewModel; }
+        set { ViewModel = (NotificationsListViewModel)value; }
+    }
+}
+```
+
 * **Android:** - change your base class to one of the Reactive Activity /
   Fragment classes (i.e. ReactiveActivity<T>), *or* implement
   `INotifyPropertyChanged` on your View and ensure that ViewModel signals
   changes.
 
+```csharp
+[Activity (Label = "RxUISample-Android", MainLauncher = true)]
+public class TestActivity : ReactiveActivity, IViewFor<TestViewModel>
+{
+    protected override async void OnCreate(Bundle bundle)
+    {
+        base.OnCreate(bundle);
+        BlobCache.ApplicationName = "RxUISample";
+
+        // Set our view from the "main" layout resource
+        SetContentView(Resource.Layout.Main);
+
+        ViewModel = await BlobCache.LocalMachine.GetOrCreateObject("TestViewModel", () => {
+            return new TestViewModel();
+        });
+    }
+
+    TestViewModel _ViewModel;
+    public TestViewModel ViewModel
+    {
+        get { return _ViewModel; }
+        set { this.RaiseAndSetIfChanged(ref _ViewModel, value); }
+    }
+
+    object IViewFor.ViewModel
+    {
+        get { return ViewModel; }
+        set { ViewModel = (TestViewModel)value; }
+    }
+}
+```
+
 * **Xaml-based:** - Implement `IViewFor<T>` by hand and ensure that ViewModel
   is a DependencyProperty.
+
+```csharp
+public partial class ShellView : IViewFor<ShellViewModel>
+{
+    public ShellView()
+    {
+        InitializeComponent();
+        ViewModel = new ShellViewModel();
+    }
+
+    object IViewFor.ViewModel
+    {
+        get { return ViewModel; }
+        set { ViewModel = (ShellViewModel)value; }
+    }
+
+    public ShellViewModel ViewModel
+    {
+        get { return (ShellViewModel)GetValue(ViewModelProperty); }
+        set { SetValue(ViewModelProperty, value); }
+    }
+
+    public static readonly DependencyProperty ViewModelProperty =
+        DependencyProperty.Register("ViewModel", typeof(ShellViewModel), typeof(ShellView));
+}
+```
 
 ### Types of Bindings
 
