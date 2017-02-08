@@ -269,4 +269,52 @@ namespace ReactiveUI.Tests
             }
         }
     }
+
+    public class ViewModelActivatorTests
+    {
+        [Fact]
+        public void ActivatingTicksActivatedObservable()
+        {
+            var viewModelActivator = new ViewModelActivator();
+            var activated = viewModelActivator.Activated.CreateCollection();
+
+            viewModelActivator.Activate();
+
+            Assert.Equal(1, activated.Count);
+        }
+
+        [Fact]
+        public void DeactivatingIgnoringRefCountTicksDeactivatedObservable()
+        {
+            var viewModelActivator = new ViewModelActivator();
+            var deactivated = viewModelActivator.Deactivated.CreateCollection();
+
+            viewModelActivator.Deactivate(true);
+
+            Assert.Equal(1, deactivated.Count);
+        }
+
+        [Fact]
+        public void DeactivatingCountDoesntTickDeactivatedObservable()
+        {
+            var viewModelActivator = new ViewModelActivator();
+            var deactivated = viewModelActivator.Deactivated.CreateCollection();
+
+            viewModelActivator.Deactivate(false);
+
+            Assert.Equal(0, deactivated.Count);
+        }
+
+        [Fact]
+        public void DeactivatingFollowingActivatingTicksDeactivatedObservable()
+        {
+            var viewModelActivator = new ViewModelActivator();
+            var deactivated = viewModelActivator.Deactivated.CreateCollection();
+
+            viewModelActivator.Activate();
+            viewModelActivator.Deactivate(false);
+
+            Assert.Equal(1, deactivated.Count);
+        }
+    }
 }
