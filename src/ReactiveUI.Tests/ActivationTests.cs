@@ -317,4 +317,38 @@ namespace ReactiveUI.Tests
             Assert.Equal(1, deactivated.Count);
         }
     }
+
+    public class CanActivateViewFetcherTests
+    {
+        private class CanActivateStub : ICanActivate
+        {
+            public IObservable<Unit> Activated { get; }
+
+            public IObservable<Unit> Deactivated { get; }
+        }
+
+        [Fact]
+        public void ReturnsPositiveForICanActivate()
+        {
+            var canActivateViewFetcher = new CanActivateViewFetcher();
+            var affinity = canActivateViewFetcher.GetAffinityForView(typeof(ICanActivate));
+            Assert.True(affinity > 0);
+        }
+
+        [Fact]
+        public void ReturnsPositiveForICanActivateDerivatives()
+        {
+            var canActivateViewFetcher = new CanActivateViewFetcher();
+            var affinity = canActivateViewFetcher.GetAffinityForView(typeof(CanActivateStub));
+            Assert.True(affinity > 0);
+        }
+
+        [Fact]
+        public void ReturnsZeroForNonICanActivateDerivatives()
+        {
+            var canActivateViewFetcher = new CanActivateViewFetcher();
+            var affinity = canActivateViewFetcher.GetAffinityForView(typeof(CanActivateViewFetcherTests));
+            Assert.Equal(0, affinity);
+        }
+    }
 }
