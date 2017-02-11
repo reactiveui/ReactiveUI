@@ -1,12 +1,9 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
-using System.Text;
-using System.Threading.Tasks;
 using Splat;
 using Xunit;
 
@@ -21,7 +18,7 @@ namespace ReactiveUI.Tests
         public ActivatingViewModel()
         {
             Activator = new ViewModelActivator();
-                
+
             this.WhenActivated(d => {
                 IsActiveCount++;
                 d(Disposable.Create(() => IsActiveCount--));
@@ -45,12 +42,14 @@ namespace ReactiveUI.Tests
     public class ActivatingView : ReactiveObject, IViewFor<ActivatingViewModel>
     {
         ActivatingViewModel viewModel;
-        public ActivatingViewModel ViewModel {
+        public ActivatingViewModel ViewModel
+        {
             get { return viewModel; }
             set { this.RaiseAndSetIfChanged(ref viewModel, value); }
         }
 
-        object IViewFor.ViewModel {
+        object IViewFor.ViewModel
+        {
             get { return ViewModel; }
             set { ViewModel = (ActivatingViewModel)value; }
         }
@@ -248,8 +247,7 @@ namespace ReactiveUI.Tests
             locator.InitializeReactiveUI();
             locator.Register(() => new ActivatingViewFetcher(), typeof(IActivationForViewFetcher));
 
-            using (locator.WithResolver())
-            {
+            using (locator.WithResolver()) {
                 var vm = new ActivatingViewModel();
                 var fixture = new ActivatingView();
 
@@ -270,6 +268,87 @@ namespace ReactiveUI.Tests
                 Assert.Equal(1, fixture.IsActiveCount);
             }
         }
+    }
 
+    public class ViewModelActivatorTests
+    {
+        [Fact]
+        public void ActivatingTicksActivatedObservable()
+        {
+            var viewModelActivator = new ViewModelActivator();
+            var activated = viewModelActivator.Activated.CreateCollection();
+
+            viewModelActivator.Activate();
+
+            Assert.Equal(1, activated.Count);
+        }
+
+        [Fact]
+        public void DeactivatingIgnoringRefCountTicksDeactivatedObservable()
+        {
+            var viewModelActivator = new ViewModelActivator();
+            var deactivated = viewModelActivator.Deactivated.CreateCollection();
+
+            viewModelActivator.Deactivate(true);
+
+            Assert.Equal(1, deactivated.Count);
+        }
+
+        [Fact]
+        public void DeactivatingCountDoesntTickDeactivatedObservable()
+        {
+            var viewModelActivator = new ViewModelActivator();
+            var deactivated = viewModelActivator.Deactivated.CreateCollection();
+
+            viewModelActivator.Deactivate(false);
+
+            Assert.Equal(0, deactivated.Count);
+        }
+
+        [Fact]
+        public void DeactivatingFollowingActivatingTicksDeactivatedObservable()
+        {
+            var viewModelActivator = new ViewModelActivator();
+            var deactivated = viewModelActivator.Deactivated.CreateCollection();
+
+            viewModelActivator.Activate();
+            viewModelActivator.Deactivate(false);
+
+            Assert.Equal(1, deactivated.Count);
+        }
+    }
+
+    public class CanActivateViewFetcherTests
+    {
+        private class CanActivateStub : ICanActivate
+        {
+            public IObservable<Unit> Activated { get; }
+
+            public IObservable<Unit> Deactivated { get; }
+        }
+
+        [Fact]
+        public void ReturnsPositiveForICanActivate()
+        {
+            var canActivateViewFetcher = new CanActivateViewFetcher();
+            var affinity = canActivateViewFetcher.GetAffinityForView(typeof(ICanActivate));
+            Assert.True(affinity > 0);
+        }
+
+        [Fact]
+        public void ReturnsPositiveForICanActivateDerivatives()
+        {
+            var canActivateViewFetcher = new CanActivateViewFetcher();
+            var affinity = canActivateViewFetcher.GetAffinityForView(typeof(CanActivateStub));
+            Assert.True(affinity > 0);
+        }
+
+        [Fact]
+        public void ReturnsZeroForNonICanActivateDerivatives()
+        {
+            var canActivateViewFetcher = new CanActivateViewFetcher();
+            var affinity = canActivateViewFetcher.GetAffinityForView(typeof(CanActivateViewFetcherTests));
+            Assert.Equal(0, affinity);
+        }
     }
 }

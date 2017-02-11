@@ -136,7 +136,7 @@
     <Compile Include="MainActivity.cs" />
     <Compile Include="Resources\Resource.designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ActivationTest.cs" />
+    <Compile Include="ActivationTests.cs" />
     <Compile Include="AutoPersistHelperTest.cs" />
     <Compile Include="AwaiterTest.cs" />
     <Compile Include="BindingTypeConvertersTest.cs" />

@@ -170,7 +170,7 @@
     <Compile Include="Cocoa\IndexNormalizerTest.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="AppDelegate.cs" />
-    <Compile Include="ActivationTest.cs" />
+    <Compile Include="ActivationTests.cs" />
     <Compile Include="AutoPersistHelperTest.cs" />
     <Compile Include="AwaiterTest.cs" />
     <Compile Include="BindingTypeConvertersTest.cs" />
