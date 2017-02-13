@@ -101,6 +101,7 @@ namespace ReactiveUI.XamForms
                     }
 
                     view.ViewModel = x.ViewModel;
+                    castView.BindingContext = x.ViewModel;
 
                     this.Content = castView;
                 })};

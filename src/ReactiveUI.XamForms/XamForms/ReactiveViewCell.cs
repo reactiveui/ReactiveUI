@@ -24,5 +24,11 @@ namespace ReactiveUI.XamForms
             get { return this.ViewModel; }
             set { this.ViewModel = (TViewModel)value; }
         }
+
+        protected override void OnBindingContextChanged()
+        {
+            base.OnBindingContextChanged();
+            this.AssignViewModelFromBindingContext(this.BindingContext);
+        }
     }
 }
