@@ -20,7 +20,8 @@ namespace ReactiveUI.XamForms
             typeof(TViewModel),
             typeof(ReactiveMultiPage<TPage, TViewModel>),
             default(TViewModel),
-            BindingMode.OneWay);
+            BindingMode.OneWay,
+            propertyChanged: OnViewModelChanged);
 
         object IViewFor.ViewModel {
             get { return ViewModel; }
@@ -30,7 +31,12 @@ namespace ReactiveUI.XamForms
         protected override void OnBindingContextChanged()
         {
             base.OnBindingContextChanged();
-            this.AssignViewModelFromBindingContext(this.BindingContext);
+            this.ViewModel = this.BindingContext as TViewModel;
+        }
+
+        private static void OnViewModelChanged(BindableObject bindableObject, object oldValue, object newValue)
+        {
+            bindableObject.BindingContext = newValue;
         }
     }
 }

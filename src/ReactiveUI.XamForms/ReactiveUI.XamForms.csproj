@@ -83,7 +83,6 @@
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="XamForms\ActivationForViewFetcher.cs" />
-    <Compile Include="XamForms\BindingContextHelper.cs" />
     <Compile Include="XamForms\ViewModelViewHost.cs" />
     <Compile Include="XamForms\ReactiveContentView.cs" />
     <Compile Include="XamForms\Registrations.cs" />
