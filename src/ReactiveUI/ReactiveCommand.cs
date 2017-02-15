@@ -88,10 +88,13 @@ namespace ReactiveUI
             }
 
             return new ReactiveCommand<Unit, Unit>(
-                _ => {
-                    execute();
-                    return Observable.Return(Unit.Default);
-                },
+                _ => Observable.Create<Unit>(
+                    observer => {
+                        execute();
+                        observer.OnNext(Unit.Default);
+                        observer.OnCompleted();
+                        return Disposable.Empty;
+                    }),
                 canExecute ?? Observable.Return(true),
                 outputScheduler ?? RxApp.MainThreadScheduler);
         }
@@ -125,7 +128,12 @@ namespace ReactiveUI
             }
 
             return new ReactiveCommand<Unit, TResult>(
-                _ => Observable.Return(execute()),
+                _ => Observable.Create<TResult>(
+                    observer => {
+                        observer.OnNext(execute());
+                        observer.OnCompleted();
+                        return Disposable.Empty;
+                    }),
                 canExecute ?? Observable.Return(true),
                 outputScheduler ?? RxApp.MainThreadScheduler);
         }
@@ -158,10 +166,13 @@ namespace ReactiveUI
             }
 
             return new ReactiveCommand<TParam, Unit>(
-                param => {
-                    execute(param);
-                    return Observable.Return(Unit.Default);
-                },
+                param => Observable.Create<Unit>(
+                    observer => {
+                        execute(param);
+                        observer.OnNext(Unit.Default);
+                        observer.OnCompleted();
+                        return Disposable.Empty;
+                    }),
                 canExecute ?? Observable.Return(true),
                 outputScheduler ?? RxApp.MainThreadScheduler);
         }
@@ -198,7 +209,12 @@ namespace ReactiveUI
             }
 
             return new ReactiveCommand<TParam, TResult>(
-                param => Observable.Return(execute(param)),
+                param => Observable.Create<TResult>(
+                    observer => {
+                        observer.OnNext(execute(param));
+                        observer.OnCompleted();
+                        return Disposable.Empty;
+                    }),
                 canExecute ?? Observable.Return(true),
                 outputScheduler ?? RxApp.MainThreadScheduler);
         }
