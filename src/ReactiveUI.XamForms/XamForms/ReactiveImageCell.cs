@@ -11,7 +11,8 @@ namespace ReactiveUI.XamForms
             typeof(TViewModel),
             typeof(ReactiveImageCell<TViewModel>),
             default(TViewModel),
-            BindingMode.OneWay);
+            BindingMode.OneWay,
+            propertyChanged: OnViewModelChanged);
 
         public TViewModel ViewModel
         {
@@ -23,6 +24,17 @@ namespace ReactiveUI.XamForms
         {
             get { return this.ViewModel; }
             set { this.ViewModel = (TViewModel)value; }
+        }
+
+        protected override void OnBindingContextChanged()
+        {
+            base.OnBindingContextChanged();
+            this.ViewModel = this.BindingContext as TViewModel;
+        }
+
+        private static void OnViewModelChanged(BindableObject bindableObject, object oldValue, object newValue)
+        {
+            bindableObject.BindingContext = newValue;
         }
     }
 }
