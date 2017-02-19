@@ -49,7 +49,7 @@
     <DefineConstants>MONO;COCOA;UNIFIED</DefineConstants>
     <DebugSymbols>true</DebugSymbols>
     <GenerateDocumentation>True</GenerateDocumentation>
-    <DocumentationFile>bin\Release\Xamarin.Mac20\ReactiveUI.xml</DocumentationFile>
+    <DocumentationFile>bin\Release\Xamarin.Mac20\ReactiveUI.Events.xml</DocumentationFile>
     <UseRefCounting>false</UseRefCounting>
     <Profiling>false</Profiling>
   </PropertyGroup>
@@ -88,6 +88,5 @@
   <ItemGroup>
     <Folder Include="Properties\" />
   </ItemGroup>
-  <Import Project="$(MSBuildExtensionsPath)\Xamarin\Mac\Xamarin.Mac.CSharp.targets" Condition=" '$(OS)' == 'Windows_NT' " />
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" Condition=" '$(OS)' == 'Windows_NT' " />
+  <Import Project="$(MSBuildExtensionsPath)\Xamarin\Mac\Xamarin.Mac.CSharp.targets" />
 </Project>
