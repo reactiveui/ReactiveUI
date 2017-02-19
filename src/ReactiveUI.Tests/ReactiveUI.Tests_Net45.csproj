@@ -128,7 +128,7 @@
     <Compile Include="ReactiveObjectTest.cs" />
     <Compile Include="RoutingState.cs" />
     <Compile Include="RxAppTest.cs" />
-    <Compile Include="RxRouting.cs" />
+    <Compile Include="ViewLocatorTests.cs" />
     <Compile Include="Xaml\PropertyBindingTestViews.cs" />
     <Compile Include="TestLogger.cs" />
     <Compile Include="Utility.cs" />
