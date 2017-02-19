@@ -77,6 +77,7 @@ namespace ReactiveUI.XamForms
 
                             return Unit.Default;
                         })
+                    .ObserveOn(RxApp.MainThreadScheduler)
                     .Do(_ => ((IViewFor)this.CurrentPage).ViewModel = Router.GetCurrentViewModel())
                     .Subscribe());
 
