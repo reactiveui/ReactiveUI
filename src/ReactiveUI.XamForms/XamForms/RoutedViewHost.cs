@@ -156,6 +156,7 @@ namespace ReactiveUI.XamForms
 
             var pg = (Page)ret;
             pg.Title = vm.UrlPathSegment;
+
             return Observable.Return(pg);
         }
     }

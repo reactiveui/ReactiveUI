@@ -196,6 +196,28 @@ namespace ReactiveUI.Tests
         }
 
         [Fact]
+        public void IsExecutingRemainsTrueAsLongAsExecutionPipelineHasNotCompleted()
+        {
+            var execute = new Subject<Unit>();
+            var fixture = ReactiveCommand.CreateFromObservable(() => execute);
+
+            fixture
+                .Execute()
+                .Subscribe();
+
+            Assert.True(fixture.IsExecuting.FirstAsync().Wait());
+
+            execute.OnNext(Unit.Default);
+            Assert.True(fixture.IsExecuting.FirstAsync().Wait());
+
+            execute.OnNext(Unit.Default);
+            Assert.True(fixture.IsExecuting.FirstAsync().Wait());
+
+            execute.OnCompleted();
+            Assert.False(fixture.IsExecuting.FirstAsync().Wait());
+        }
+
+        [Fact]
         public void ExecuteOnlyExecutesOnceRegardlessOfNumberOfSubscribers()
         {
             var executionCount = 0;
@@ -272,6 +294,21 @@ namespace ReactiveUI.Tests
             Assert.Equal(1, results[0]);
             Assert.Equal(10, results[1]);
             Assert.Equal(30, results[2]);
+        }
+
+        [Fact]
+        public void ExecuteCanTickThroughMultipleResults()
+        {
+            var fixture = ReactiveCommand.CreateFromObservable(() => new[] { 1, 2, 3 }.ToObservable());
+            var results = fixture
+                .CreateCollection();
+
+            fixture.Execute().Subscribe();
+
+            Assert.Equal(3, results.Count);
+            Assert.Equal(1, results[0]);
+            Assert.Equal(2, results[1]);
+            Assert.Equal(3, results[2]);
         }
 
         [Fact]
@@ -563,6 +600,25 @@ namespace ReactiveUI.Tests
         }
 
         [Fact]
+        public void InvokeCommandAgainstReactiveCommandSwallowsExceptions()
+        {
+            var count = 0;
+            var fixture = ReactiveCommand.Create(
+                () => {
+                    ++count;
+                    throw new InvalidOperationException();
+                });
+            fixture.ThrownExceptions.Subscribe();
+            var source = new Subject<Unit>();
+            source.InvokeCommand(fixture);
+
+            source.OnNext(Unit.Default);
+            source.OnNext(Unit.Default);
+
+            Assert.Equal(2, count);
+        }
+
+        [Fact]
         public void InvokeCommandAgainstICommandInvokesTheCommand()
         {
             var executionCount = 0;
@@ -622,6 +678,25 @@ namespace ReactiveUI.Tests
             // it occurred when the window was closed. Execution requests do not queue up when the window is closed.
             canExecute.OnNext(true);
             Assert.False(executed);
+        }
+
+        [Fact]
+        public void InvokeCommandAgainstICommandSwallowsExceptions()
+        {
+            var count = 0;
+            var fixture = ReactiveCommand.Create(
+                () => {
+                    ++count;
+                    throw new InvalidOperationException();
+                });
+            fixture.ThrownExceptions.Subscribe();
+            var source = new Subject<Unit>();
+            source.InvokeCommand((ICommand)fixture);
+
+            source.OnNext(Unit.Default);
+            source.OnNext(Unit.Default);
+
+            Assert.Equal(2, count);
         }
 
         [Fact]
@@ -692,6 +767,27 @@ namespace ReactiveUI.Tests
         }
 
         [Fact]
+        public void InvokeCommandAgainstICommandInTargetSwallowsExceptions()
+        {
+            var count = 0;
+            var fixture = new ICommandHolder();
+            var command = ReactiveCommand.Create(
+                () => {
+                    ++count;
+                    throw new InvalidOperationException();
+                });
+            command.ThrownExceptions.Subscribe();
+            fixture.TheCommand = command;
+            var source = new Subject<Unit>();
+            source.InvokeCommand(fixture, x => x.TheCommand);
+
+            source.OnNext(Unit.Default);
+            source.OnNext(Unit.Default);
+
+            Assert.Equal(2, count);
+        }
+
+        [Fact]
         public void InvokeCommandAgainstReactiveCommandInTargetInvokesTheCommand()
         {
             var executionCount = 0;
@@ -755,6 +851,26 @@ namespace ReactiveUI.Tests
             // it occurred when the window was closed. Execution requests do not queue up when the window is closed.
             canExecute.OnNext(true);
             Assert.False(executed);
+        }
+
+        [Fact]
+        public void InvokeCommandAgainstReactiveCommandInTargetSwallowsExceptions()
+        {
+            var count = 0;
+            var fixture = new ReactiveCommandHolder();
+            fixture.TheCommand = ReactiveCommand.Create<int>(
+                _ => {
+                    ++count;
+                    throw new InvalidOperationException();
+                });
+            fixture.TheCommand.ThrownExceptions.Subscribe();
+            var source = new Subject<int>();
+            source.InvokeCommand(fixture, x => x.TheCommand);
+
+            source.OnNext(0);
+            source.OnNext(0);
+
+            Assert.Equal(2, count);
         }
 
         private class FakeCommand : ICommand

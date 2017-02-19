@@ -1,1 +1,0 @@
-# ICreatesCommandBinding + Implementations
