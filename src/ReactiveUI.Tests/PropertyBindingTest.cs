@@ -81,14 +81,15 @@ namespace ReactiveUI.Tests
             Assert.Equal(vm.JustADecimal.ToString(), view.SomeTextBox.Text);
             Assert.Equal(123.45m, vm.JustADecimal);
 
-            view.SomeTextBox.Text = "567.89";
+			var justAnotherDecimal = 567.89m;
+            view.SomeTextBox.Text = justAnotherDecimal.ToString();
             Assert.Equal(567.89m, vm.JustADecimal);
 
             disp.Dispose();
             vm.JustADecimal = 0;
 
             Assert.Equal(0, vm.JustADecimal);
-            Assert.Equal("567.89", view.SomeTextBox.Text);
+            Assert.Equal(justAnotherDecimal.ToString(), view.SomeTextBox.Text);
         }
 
         [Fact]
