@@ -218,18 +218,77 @@ namespace ReactiveUI.Tests
         }
 
         [Fact]
-        public void ExecuteOnlyExecutesOnceRegardlessOfNumberOfSubscribers()
+        public void SynchronousCommandExecuteLazily()
         {
             var executionCount = 0;
-            var fixture = ReactiveCommand.Create(() => { ++executionCount; });
-            var execute = fixture.Execute();
+            var fixture1 = ReactiveCommand.Create(() => { ++executionCount; });
+            var fixture2 = ReactiveCommand.Create<int>(_ => { ++executionCount; });
+            var fixture3 = ReactiveCommand.Create(() => { ++executionCount; return 42; });
+            var fixture4 = ReactiveCommand.Create<int, int>(_ => { ++executionCount; return 42; });
+            var execute1 = fixture1.Execute();
+            var execute2 = fixture2.Execute();
+            var execute3 = fixture3.Execute();
+            var execute4 = fixture4.Execute();
 
-            execute.Subscribe();
-            execute.Subscribe();
-            execute.Subscribe();
-            execute.Subscribe();
+            Assert.Equal(0, executionCount);
 
+            execute1.Subscribe();
             Assert.Equal(1, executionCount);
+
+            execute2.Subscribe();
+            Assert.Equal(2, executionCount);
+
+            execute3.Subscribe();
+            Assert.Equal(3, executionCount);
+
+            execute4.Subscribe();
+            Assert.Equal(4, executionCount);
+        }
+
+        [Fact]
+        public void SynchronousCommandsFailCorrectly()
+        {
+            var fixture1 = ReactiveCommand.Create(() => { throw new InvalidOperationException(); });
+            var fixture2 = ReactiveCommand.Create<int>(_ => { throw new InvalidOperationException(); });
+            var fixture3 = ReactiveCommand.Create(() => { throw new InvalidOperationException(); });
+            var fixture4 = ReactiveCommand.Create<int, int>(_ => { throw new InvalidOperationException(); });
+
+            var failureCount = 0;
+            Observable
+                .Merge(
+                    fixture1.ThrownExceptions,
+                    fixture2.ThrownExceptions,
+                    fixture3.ThrownExceptions,
+                    fixture4.ThrownExceptions)
+                .Subscribe(_ => ++failureCount);
+
+            fixture1
+                .Execute()
+                .Subscribe(
+                    _ => { },
+                    _ => { });
+            Assert.Equal(1, failureCount);
+
+            fixture2
+                .Execute()
+                .Subscribe(
+                    _ => { },
+                    _ => { });
+            Assert.Equal(2, failureCount);
+
+            fixture3
+                .Execute()
+                .Subscribe(
+                    _ => { },
+                    _ => { });
+            Assert.Equal(3, failureCount);
+
+            fixture4
+                .Execute()
+                .Subscribe(
+                    _ => { },
+                    _ => { });
+            Assert.Equal(4, failureCount);
         }
 
         [Fact]
