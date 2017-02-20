@@ -52,12 +52,12 @@ namespace ReactiveUI
         /// <list type="number">
         /// <item>
         /// <description>
-        /// Look for the type whose name is given to us by <see cref="ViewModelToViewFunc"/> (which defaults to changing "ViewModel" to "View").
+        /// Look for a service registered under the type whose name is given to us by <see cref="ViewModelToViewFunc"/> (which defaults to changing "ViewModel" to "View").
         /// </description>
         /// </item>
         /// <item>
         /// <description>
-        /// Look for <c>IViewFor&lt;T&gt;</c>.
+        /// Look for a service registered under the type <c>IViewFor&lt;T&gt;</c>.
         /// </description>
         /// </item>
         /// <item>
@@ -67,7 +67,7 @@ namespace ReactiveUI
         /// </item>
         /// <item>
         /// <description>
-        /// Repeat steps 1 and 2 with the modified name.
+        /// Repeat steps 1 and 2 with the type resolved from the modified name.
         /// </description>
         /// </item>
         /// </list>
@@ -84,12 +84,19 @@ namespace ReactiveUI
         {
             var view = this.AttemptViewResolutionFor(typeof(T), contract);
 
-            if (view == null) {
-                var toggledType = ToggleViewModelType(viewModel);
-                view = this.AttemptViewResolutionFor(toggledType, contract);
+            if (view != null) {
+                return view;
             }
 
-            return view;
+            var toggledType = ToggleViewModelType(viewModel);
+            view = this.AttemptViewResolutionFor(toggledType, contract);
+
+            if (view != null) {
+                return view;
+            }
+
+            this.Log().Warn("Failed to resolve view for view model type '{0}'.", typeof(T).FullName);
+            return null;
         }
 
         private IViewFor AttemptViewResolutionFor(Type viewModelType, string contract)
