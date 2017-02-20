@@ -47,7 +47,7 @@ namespace ReactiveUI.XamForms
                 d (Observable.Zip(previousCount, currentCount, (previous, current) => new { Delta = previous - current, Current = current })
                     .Where(_ => !userInstigated)
                     .Where(x => x.Delta > 0)
-                    .Select(
+                    .SelectMany(
                         x =>
                         {
                             // XF doesn't provide a means of navigating back more than one screen at a time apart from navigating right back to the root page
@@ -80,13 +80,12 @@ namespace ReactiveUI.XamForms
 
                             return Observable.Return(Unit.Default);
                         })
-                    .Concat()
                     .Do(_ => ((IViewFor)this.CurrentPage).ViewModel = Router.GetCurrentViewModel())
                     .Subscribe());
 
                 d(this.WhenAnyObservable(x => x.Router.Navigate)
                     .SelectMany(_ => PageForViewModel(Router.GetCurrentViewModel()))
-                    .Select(x => {
+                    .SelectMany(x => {
                         if (popToRootPending && this.Navigation.NavigationStack.Count > 0)
                         {
                             this.Navigation.InsertPageBefore(x, this.Navigation.NavigationStack[0]);
@@ -102,7 +101,6 @@ namespace ReactiveUI.XamForms
                         popToRootPending = false;
                         return Observable.Return(Unit.Default);
                     })
-                    .Concat()
                     .Subscribe());
 
                 var poppingEvent = Observable.FromEventPattern<NavigationEventArgs>(x => this.Popped += x, x => this.Popped -= x);
