@@ -48,7 +48,7 @@ namespace ReactiveUI.XamForms
                     .Where(_ => !userInstigated)
                     .Where(x => x.Delta > 0)
                     .SelectMany(
-                        async x =>
+                        x =>
                         {
                             // XF doesn't provide a means of navigating back more than one screen at a time apart from navigating right back to the root page
                             // since we want as sensible an animation as possible, we pop to root if that makes sense. Otherwise, we pop each individual
@@ -60,13 +60,16 @@ namespace ReactiveUI.XamForms
                             {
                                 if (popToRoot)
                                 {
-                                    await this.PopToRootAsync(true);
+                                    this.PopToRootAsync(true)
+                                        .ToObservable();
                                 }
                                 else
                                 {
                                     for (var i = 0; i < x.Delta; ++i)
                                     {
-                                        await this.PopAsync(i == x.Delta - 1);
+                                        this.PopAsync(i == x.Delta - 1)
+                                            .ToObservable()
+                                            .Select(_ => Unit.Default);
                                     }
                                 }
                             }
@@ -75,26 +78,28 @@ namespace ReactiveUI.XamForms
                                 currentlyPopping = false;
                             }
 
-                            return Unit.Default;
+                            return Observable.Return(Unit.Default);
                         })
                     .Do(_ => ((IViewFor)this.CurrentPage).ViewModel = Router.GetCurrentViewModel())
                     .Subscribe());
 
                 d(this.WhenAnyObservable(x => x.Router.Navigate)
                     .SelectMany(_ => PageForViewModel(Router.GetCurrentViewModel()))
-                    .SelectMany(async x => {
+                    .SelectMany(x => {
                         if (popToRootPending && this.Navigation.NavigationStack.Count > 0)
                         {
                             this.Navigation.InsertPageBefore(x, this.Navigation.NavigationStack[0]);
-                            await this.PopToRootAsync();
+                            this.PopToRootAsync()
+                                .ToObservable();
                         }
                         else
                         {
-                            await this.PushAsync(x);
+                            this.PushAsync(x)
+                                .ToObservable();
                         }
 
                         popToRootPending = false;
-                        return x;
+                        return Observable.Return(Unit.Default);
                     })
                     .Subscribe());
 
