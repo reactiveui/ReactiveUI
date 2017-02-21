@@ -66,7 +66,7 @@ namespace ReactiveUI.Tests
 
     public class PropertyBindingTest
     {
-        [Fact]
+        [Fact, UseInvariantCulture]
         public void TwoWayBindWithFuncConvertersSmokeTest()
         {
             var vm = new PropertyBindViewModel();
