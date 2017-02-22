@@ -158,5 +158,5 @@
   <ItemGroup>
     <None Include="packages.ReactiveUI_Mac.config" />
   </ItemGroup>
-  <Import Project="$(MSBuildExtensionsPath)\Xamarin\Mac\Xamarin.Mac.CSharp.targets" Condition=" '$(OS)' == 'Windows_NT' " />
+  <Import Project="$(MSBuildExtensionsPath)\Xamarin\Mac\Xamarin.Mac.CSharp.targets" />
 </Project>
