@@ -13,6 +13,10 @@ namespace ReactiveUI.Tests
     {
     }
 
+    public class FooViewModelWithWeirdName : ReactiveObject, IFooViewModel
+    {
+    }
+
     public class BarViewModel : ReactiveObject, IBarViewModel
     {
     }
@@ -82,6 +86,24 @@ namespace ReactiveUI.Tests
             using (resolver.WithResolver()) {
                 var fixture = new DefaultViewLocator();
                 FooViewModel vm = new FooViewModel();
+
+                var result = fixture.ResolveView(vm);
+                Assert.True(result is FooView);
+            }
+        }
+
+        [Fact]
+        public void TheRuntimeTypeOfTheViewModelIsUsedToResolveTheView()
+        {
+            var resolver = new ModernDependencyResolver();
+
+            resolver.InitializeSplat();
+            resolver.InitializeReactiveUI();
+            resolver.Register(() => new FooView(), typeof(FooView));
+
+            using (resolver.WithResolver()) {
+                var fixture = new DefaultViewLocator();
+                object vm = new FooViewModel();
 
                 var result = fixture.ResolveView(vm);
                 Assert.True(result is FooView);
@@ -172,7 +194,7 @@ namespace ReactiveUI.Tests
 
             using (resolver.WithResolver()) {
                 var fixture = new DefaultViewLocator();
-                IFooViewModel vm = new FooViewModel();
+                IFooViewModel vm = new FooViewModelWithWeirdName();
 
                 var result = fixture.ResolveView(vm);
                 Assert.True(result is FooView);
