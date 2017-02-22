@@ -94,7 +94,7 @@ namespace ReactiveUI.XamForms
                         }
 
                         popToRootPending = false;
-                        return Unit.Default;
+                        return x;
                     })
                     .Subscribe());
 
