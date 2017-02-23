@@ -48,11 +48,22 @@ namespace ReactiveUI
         /// </summary>
         /// <remarks>
         /// <para>
-        /// Given view model type <c>T</c>, this implementation will attempt to resolve the following views:
+        /// Given view model type <c>T</c> with runtime type <c>RT</c>, this implementation will attempt to resolve the following views:
         /// <list type="number">
         /// <item>
         /// <description>
-        /// Look for a service registered under the type whose name is given to us by <see cref="ViewModelToViewFunc"/> (which defaults to changing "ViewModel" to "View").
+        /// Look for a service registered under the type whose name is given to us by passing <c>RT</c> to <see cref="ViewModelToViewFunc"/> (which defaults to changing "ViewModel" to "View").
+        /// </description>
+        /// </item>
+        /// <item>
+        /// <description>
+        /// Look for a service registered under the type <c>IViewFor&lt;RT&gt;</c>.
+        /// </description>
+        /// </item>
+        /// <item>
+        /// <item>
+        /// <description>
+        /// Look for a service registered under the type whose name is given to us by passing <c>T</c> to <see cref="ViewModelToViewFunc"/> (which defaults to changing "ViewModel" to "View").
         /// </description>
         /// </item>
         /// <item>
@@ -82,7 +93,13 @@ namespace ReactiveUI
         public IViewFor ResolveView<T>(T viewModel, string contract = null)
             where T : class
         {
-            var view = this.AttemptViewResolutionFor(typeof(T), contract);
+            var view = this.AttemptViewResolutionFor(viewModel.GetType(), contract);
+
+            if (view != null) {
+                return view;
+            }
+
+            view = this.AttemptViewResolutionFor(typeof(T), contract);
 
             if (view != null) {
                 return view;
