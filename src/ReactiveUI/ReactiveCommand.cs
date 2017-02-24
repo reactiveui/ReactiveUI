@@ -95,7 +95,7 @@ namespace ReactiveUI
                         observer.OnCompleted();
                         return Disposable.Empty;
                     }),
-                canExecute ?? Observable.Return(true),
+                canExecute ?? Observables.True,
                 outputScheduler ?? RxApp.MainThreadScheduler);
         }
 
@@ -134,7 +134,7 @@ namespace ReactiveUI
                         observer.OnCompleted();
                         return Disposable.Empty;
                     }),
-                canExecute ?? Observable.Return(true),
+                canExecute ?? Observables.True,
                 outputScheduler ?? RxApp.MainThreadScheduler);
         }
 
@@ -173,7 +173,7 @@ namespace ReactiveUI
                         observer.OnCompleted();
                         return Disposable.Empty;
                     }),
-                canExecute ?? Observable.Return(true),
+                canExecute ?? Observables.True,
                 outputScheduler ?? RxApp.MainThreadScheduler);
         }
 
@@ -215,7 +215,7 @@ namespace ReactiveUI
                         observer.OnCompleted();
                         return Disposable.Empty;
                     }),
-                canExecute ?? Observable.Return(true),
+                canExecute ?? Observables.True,
                 outputScheduler ?? RxApp.MainThreadScheduler);
         }
 
@@ -248,7 +248,7 @@ namespace ReactiveUI
 
             return new ReactiveCommand<Unit, TResult>(
                 _ => execute(),
-                canExecute ?? Observable.Return(true),
+                canExecute ?? Observables.True,
                 outputScheduler ?? RxApp.MainThreadScheduler);
         }
 
@@ -390,7 +390,7 @@ namespace ReactiveUI
         {
             return new ReactiveCommand<TParam, TResult>(
                 execute,
-                canExecute ?? Observable.Return(true),
+                canExecute ?? Observables.True,
                 outputScheduler ?? RxApp.MainThreadScheduler);
         }
 
@@ -543,7 +543,7 @@ namespace ReactiveUI
             IObservable<bool> canExecute = null,
             IScheduler outputScheduler = null)
         {
-            return new CombinedReactiveCommand<TParam, TResult>(childCommands, canExecute ?? Observable.Return(true), outputScheduler ?? RxApp.MainThreadScheduler);
+            return new CombinedReactiveCommand<TParam, TResult>(childCommands, canExecute ?? Observables.True, outputScheduler ?? RxApp.MainThreadScheduler);
         }
     }
 
@@ -714,7 +714,7 @@ namespace ReactiveUI
 
             this
                 .Execute((TParam)parameter)
-                .Catch(Observable.Empty<TResult>())
+                .Catch(Observable<TResult>.Empty)
                 .Subscribe();
         }
     }
@@ -778,7 +778,7 @@ namespace ReactiveUI
             this.canExecute = canExecute
                 .Catch<bool, Exception>(ex => {
                     this.exceptions.OnNext(ex);
-                    return Observable.Return(false);
+                    return Observables.False;
                 })
                 .StartWith(false)
                 .CombineLatest(this.isExecuting, (canEx, isEx) => canEx && !isEx)
@@ -829,7 +829,7 @@ namespace ReactiveUI
                     .Defer(
                         () => {
                             this.synchronizedExecutionInfo.OnNext(ExecutionInfo.CreateBegin());
-                            return Observable.Empty<TResult>();
+                            return Observable<TResult>.Empty;
                         })
                     .Concat(this.execute(parameter))
                     .Do(
@@ -969,7 +969,7 @@ namespace ReactiveUI
             var combinedCanExecute = canExecute
                 .Catch<bool, Exception>(ex => {
                     this.exceptions.OnNext(ex);
-                    return Observable.Return(false);
+                    return Observables.False;
                 })
                 .StartWith(false)
                 .CombineLatest(canChildrenExecute, (ce, cce) => ce && cce)
@@ -1080,7 +1080,7 @@ namespace ReactiveUI
             return This
                 .WithLatestFrom(command.CanExecute, (value, canExecute) => InvokeCommandInfo.From(command, canExecute, value))
                 .Where(ii => ii.CanExecute)
-                .SelectMany(ii => command.Execute(ii.Value).Catch(Observable.Empty<TResult>()))
+                .SelectMany(ii => command.Execute(ii.Value).Catch(Observable<TResult>.Empty))
                 .Subscribe();
         }
 
@@ -1097,7 +1097,7 @@ namespace ReactiveUI
         {
             var command = target.WhenAnyValue(commandProperty);
             var commandCanExecuteChanged = command
-                .Select(c => c == null ? Observable.Empty<ICommand>() : Observable
+                .Select(c => c == null ? Observable<ICommand>.Empty : Observable
                     .FromEventPattern(h => c.CanExecuteChanged += h, h => c.CanExecuteChanged -= h)
                     .Select(_ => c)
                     .StartWith(c))
@@ -1123,7 +1123,7 @@ namespace ReactiveUI
         {
             var command = target.WhenAnyValue(commandProperty);
             var invocationInfo = command
-                .Select(cmd => cmd == null ? Observable.Empty<InvokeCommandInfo<ReactiveCommandBase<T, TResult>, T>>() : cmd
+                .Select(cmd => cmd == null ? Observable<InvokeCommandInfo<ReactiveCommandBase<T, TResult>, T>>.Empty : cmd
                     .CanExecute
                     .Select(canExecute => InvokeCommandInfo.From(cmd, canExecute, default(T))))
                 .Switch();
@@ -1131,7 +1131,7 @@ namespace ReactiveUI
             return This
                 .WithLatestFrom(invocationInfo, (value, ii) => ii.WithValue(value))
                 .Where(ii => ii.CanExecute)
-                .SelectMany(ii => ii.Command.Execute(ii.Value).Catch(Observable.Empty<TResult>()))
+                .SelectMany(ii => ii.Command.Execute(ii.Value).Catch(Observable<TResult>.Empty))
                 .Subscribe();
         }
 

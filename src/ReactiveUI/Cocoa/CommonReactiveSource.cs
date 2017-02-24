@@ -199,14 +199,14 @@ namespace ReactiveUI
             }
 
             var sectionChanging = reactiveSectionInfo == null
-                ? Observable.Never<Unit>()
+                ? Observable<Unit>.Never
                 : reactiveSectionInfo
                 .Changing
                 .Select(_ => Unit.Default);
 
             var sectionChanged =
                 (reactiveSectionInfo == null
-                    ? Observable.Never<Unit>()
+                    ? Observable<Unit>.Never
                     : reactiveSectionInfo
                     .Changed
                     .Select(_ => Unit.Default))
@@ -270,7 +270,7 @@ namespace ReactiveUI
                             .Join(
                                 anySectionChanged,
                                 _ => isReloading,
-                                _ => Observable.Empty<Unit>(),
+                                _ => Observable<Unit>.Empty,
                                 (_, __) => Unit.Default)
                             .Subscribe(_ =>
                                 {
@@ -288,7 +288,7 @@ namespace ReactiveUI
                             .Join(
                                 anySectionChanged,
                                 _ => isReloading,
-                                _ => Observable.Empty<Unit>(),
+                                _ => Observable<Unit>.Empty,
                                 (reloading, changeDetails) => new { Change = changeDetails.Change, Section = changeDetails.Section })
                             .Subscribe(y =>
                                 {
