@@ -24,7 +24,7 @@ namespace ReactiveUI.XamForms
                 GetActivationFor(view as Page) ??
                 GetActivationFor(view as View) ??
                 GetActivationFor(view as Cell) ??
-                Observable.Never<bool>();
+                Observable<bool>.Never;
 
             return activation.DistinctUntilChanged();
         }

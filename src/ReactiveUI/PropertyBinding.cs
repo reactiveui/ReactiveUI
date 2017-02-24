@@ -829,7 +829,7 @@ namespace ReactiveUI
             var source = Reflection.ViewModelWhenAnyValue(viewModel, view, vmExpression)
                     .SelectMany(x => {
                         object tmp;
-                        if (!converter.TryConvert(x, viewType, conversionHint, out tmp)) return Observable.Empty<TVProp>();
+                        if (!converter.TryConvert(x, viewType, conversionHint, out tmp)) return Observable<TVProp>.Empty;
                         return Observable.Return(tmp == null ? default(TVProp) : (TVProp)tmp);
                     });
 
@@ -935,7 +935,7 @@ namespace ReactiveUI
 
             var source = This.SelectMany(x => {
                 object tmp;
-                if (!converter.TryConvert(x, typeof(TTValue), conversionHint, out tmp)) return Observable.Empty<TTValue>();
+                if (!converter.TryConvert(x, typeof(TTValue), conversionHint, out tmp)) return Observable<TTValue>.Empty;
                 return Observable.Return(tmp == null ? default(TTValue) : (TTValue)tmp);
             });
 

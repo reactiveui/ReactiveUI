@@ -29,7 +29,7 @@ namespace ReactiveUI.Winforms
                 }
             }));
 
-            this.ViewContractObservable = Observable.Return(default(string));
+            this.ViewContractObservable = Observable<string>.Default;
 
             var vmAndContract =
                 this.WhenAnyObservable(x => x.Router.CurrentViewModel)

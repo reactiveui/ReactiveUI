@@ -154,6 +154,7 @@
     <Compile Include="WeakEventManager.cs" />
     <Compile Include="Legacy\ReactiveCommand.cs" />
     <Compile Include="Legacy\Errors.cs" />
+    <Compile Include="Observables.cs" />
   </ItemGroup>
   <ItemGroup>
     <Page Include="Themes\Generic.xaml">

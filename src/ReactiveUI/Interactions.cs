@@ -166,7 +166,7 @@ namespace ReactiveUI
 
             return RegisterHandler(interaction => {
                 handler(interaction);
-                return Observable.Return(Unit.Default);
+                return Observables.Unit;
             });
         }
 
