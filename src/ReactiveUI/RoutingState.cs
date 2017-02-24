@@ -93,7 +93,7 @@ namespace ReactiveUI
             NavigateBack = 
                 ReactiveCommand.CreateFromObservable(() => {
                     NavigationStack.RemoveAt(NavigationStack.Count - 1);
-                    return Observable.Return(Unit.Default);
+                    return Observables.Unit;
                 },
                 countAsBehavior.Select(x => x > 1),
                 scheduler);

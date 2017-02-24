@@ -1377,7 +1377,7 @@ namespace ReactiveUI
     {
         public static IObservable<T> EmptyIfNull<T>(this IObservable<T> @this)
         {
-            return @this ?? Observable.Empty<T>();
+            return @this ?? Observable<T>.Empty;
         }
     }
 }

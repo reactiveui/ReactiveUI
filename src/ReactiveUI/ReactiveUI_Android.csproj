@@ -143,6 +143,7 @@
     <Compile Include="Android\AutoSuspendHelper.cs" />
     <Compile Include="Legacy\ReactiveCommand.cs" />
     <Compile Include="Legacy\Errors.cs" />
+    <Compile Include="Observables.cs" />
     <Compile Include="Android\UsbManagerExtensions.cs" />
     <Compile Include="Android\ContextExtensions.cs" />
     <Compile Include="Android\SharedPreferencesExtensions.cs" />

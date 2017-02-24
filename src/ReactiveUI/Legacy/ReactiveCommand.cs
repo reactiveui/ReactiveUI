@@ -68,7 +68,7 @@ namespace ReactiveUI.Legacy
         /// CommandParameter immediately. Which you should ignore!</returns>
         public static ReactiveCommand<object> Create(IObservable<bool> canExecute = null, IScheduler scheduler = null)
         {
-            canExecute = canExecute ?? Observable.Return(true);
+            canExecute = canExecute ?? Observables.True;
             return new ReactiveCommand<object>(canExecute, x => Observable.Return(x), scheduler);
         }
 
@@ -107,7 +107,7 @@ namespace ReactiveUI.Legacy
         /// calling executeAsync as a single stream.</returns>
         public static ReactiveCommand<T> CreateAsyncObservable<T>(Func<object, IObservable<T>> executeAsync, IScheduler scheduler = null)
         {
-            return new ReactiveCommand<T>(Observable.Return(true), executeAsync, scheduler);
+            return new ReactiveCommand<T>(Observables.True, executeAsync, scheduler);
         }
 
         /// <summary>
@@ -147,7 +147,7 @@ namespace ReactiveUI.Legacy
         /// calling executeAsync as a single stream.</returns>
         public static ReactiveCommand<T> CreateAsyncTask<T>(Func<object, Task<T>> executeAsync, IScheduler scheduler = null)
         {
-            return new ReactiveCommand<T>(Observable.Return(true), x => executeAsync(x).ToObservable(), scheduler);
+            return new ReactiveCommand<T>(Observables.True, x => executeAsync(x).ToObservable(), scheduler);
         }
 
         /// <summary>
@@ -166,7 +166,7 @@ namespace ReactiveUI.Legacy
         /// calling executeAsync as a single stream.</returns>
         public static ReactiveCommand<Unit> CreateAsyncTask(Func<object, Task> executeAsync, IScheduler scheduler = null)
         {
-            return new ReactiveCommand<Unit>(Observable.Return(true), x => executeAsync(x).ToObservable(), scheduler);
+            return new ReactiveCommand<Unit>(Observables.True, x => executeAsync(x).ToObservable(), scheduler);
         }
 
         /// <summary>
@@ -227,7 +227,7 @@ namespace ReactiveUI.Legacy
         /// calling executeAsync as a single stream.</returns>
         public static ReactiveCommand<T> CreateAsyncTask<T>(Func<object, CancellationToken, Task<T>> executeAsync, IScheduler scheduler = null)
         {
-            return new ReactiveCommand<T>(Observable.Return(true), x => Observable.StartAsync(ct => executeAsync(x,ct)), scheduler);
+            return new ReactiveCommand<T>(Observables.True, x => Observable.StartAsync(ct => executeAsync(x,ct)), scheduler);
         }
 
         /// <summary>
@@ -248,7 +248,7 @@ namespace ReactiveUI.Legacy
         /// calling executeAsync as a single stream.</returns>
         public static ReactiveCommand<Unit> CreateAsyncTask(Func<object, CancellationToken, Task> executeAsync, IScheduler scheduler = null)
         {
-            return new ReactiveCommand<Unit>(Observable.Return(true), x => Observable.StartAsync(ct => executeAsync(x,ct)), scheduler);
+            return new ReactiveCommand<Unit>(Observables.True, x => Observable.StartAsync(ct => executeAsync(x,ct)), scheduler);
         }
 
         /// <summary>
@@ -304,7 +304,7 @@ namespace ReactiveUI.Legacy
         /// <param name="commands">The commands to combine.</param>
         public static ReactiveCommand<object> CreateCombined(params IReactiveCommand[] commands)
         {
-            return CreateCombined(Observable.Return(true), commands);
+            return CreateCombined(Observables.True, commands);
         }
     }
 
@@ -365,7 +365,7 @@ namespace ReactiveUI.Legacy
             this.canExecute = canExecute.CombineLatest(isExecuting.StartWith(false), (ce, ie) => ce && !ie)
                 .Catch<bool, Exception>(ex => {
                     exceptions.OnNext(ex);
-                    return Observable.Return(false);
+                    return Observables.False;
                 })
                 .Do(x => {
                     var fireCanExecuteChanged = (canExecuteLatest != x);
@@ -493,7 +493,7 @@ namespace ReactiveUI.Legacy
         /// </summary>
         public void Execute(object parameter)
         {
-            ExecuteAsync(parameter).Catch(Observable.Empty<T>()).Subscribe();
+            ExecuteAsync(parameter).Catch(Observable<T>.Empty).Subscribe();
         }
 
         public virtual void Dispose()
@@ -549,7 +549,7 @@ namespace ReactiveUI.Legacy
         public static IDisposable InvokeCommand<T, TResult>(this IObservable<T> This, IReactiveCommand<TResult> command)
         {
             return This.Throttle(x => command.CanExecuteObservable.StartWith(command.CanExecute(x)).Where(b => b))
-		.Select(x => command.ExecuteAsync(x).Catch(Observable.Empty<TResult>()))
+		.Select(x => command.ExecuteAsync(x).Catch(Observable<TResult>.Empty))
                 .Switch()
                 .Subscribe();
         }
@@ -588,7 +588,7 @@ namespace ReactiveUI.Legacy
         {
             return This.CombineLatest(target.WhenAnyValue(commandProperty), (val, cmd) => new { val, cmd })
                 .Throttle(x => x.cmd.CanExecuteObservable.StartWith(x.cmd.CanExecute(x.val)).Where(b => b))
-		.Select(x => x.cmd.ExecuteAsync(x.val).Catch(Observable.Empty<TResult>()))
+		.Select(x => x.cmd.ExecuteAsync(x.val).Catch(Observable<TResult>.Empty))
                 .Switch()
                 .Subscribe();
         }
