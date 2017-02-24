@@ -267,7 +267,7 @@ namespace ReactiveUI
             where TView : class, IViewFor<TViewModel>
             where TProp : ICommand
         {
-            return This.BindCommand(viewModel, view, propertyName, controlName, Observable.Empty<object>(), toEvent);
+            return This.BindCommand(viewModel, view, propertyName, controlName, Observable<object>.Empty, toEvent);
         }
 
         public static IReactiveBinding<TView, TViewModel, TProp> BindCommand<TView, TViewModel, TProp, TControl, TParam>(

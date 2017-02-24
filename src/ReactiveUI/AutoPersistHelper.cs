@@ -42,7 +42,7 @@ namespace ReactiveUI
         public static IDisposable AutoPersist<T>(this T This, Func<T, IObservable<Unit>> doPersist, TimeSpan? interval = null)
             where T : IReactiveObject
         {
-            return This.AutoPersist(doPersist, Observable.Never<Unit>(), interval);
+            return This.AutoPersist(doPersist, Observable<Unit>.Never, interval);
         }
 
         /// <summary>
@@ -109,7 +109,7 @@ namespace ReactiveUI
         public static IDisposable AutoPersistCollection<T>(this IReactiveCollection<T> This, Func<T, IObservable<Unit>> doPersist, TimeSpan? interval = null)
             where T : IReactiveObject
         {
-            return AutoPersistCollection(This, doPersist, Observable.Never<Unit>(), interval);
+            return AutoPersistCollection(This, doPersist, Observable<Unit>.Never, interval);
         }
 
         /// <summary>

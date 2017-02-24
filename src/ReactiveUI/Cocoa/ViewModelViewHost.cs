@@ -196,7 +196,7 @@ namespace ReactiveUI
             if (targetView == null) throw new ArgumentNullException("targetView");
 
             NSView viewLastAdded = null;
-            ViewContractObservable = Observable.Return(default(string));
+            ViewContractObservable = Observable<string>.Default;
 
             var vmAndContract = Observable.CombineLatest(
                 this.WhenAny(x => x.ViewModel, x => x.Value),

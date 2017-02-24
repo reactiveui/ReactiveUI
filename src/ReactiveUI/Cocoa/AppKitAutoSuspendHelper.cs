@@ -27,7 +27,7 @@ namespace ReactiveUI
             Reflection.ThrowIfMethodsNotOverloaded("AutoSuspendHelper", appDelegate,
                 "ApplicationShouldTerminate", "DidFinishLaunching", "DidResignActive", "DidBecomeActive", "DidHide");
 
-            RxApp.SuspensionHost.IsLaunchingNew = Observable.Never<Unit>();
+            RxApp.SuspensionHost.IsLaunchingNew = Observable<Unit>.Never;
             RxApp.SuspensionHost.IsResuming = isResuming;
             RxApp.SuspensionHost.IsUnpausing = isUnpausing;
             RxApp.SuspensionHost.ShouldPersistState = shouldPersistState;

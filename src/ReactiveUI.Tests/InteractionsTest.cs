@@ -160,8 +160,8 @@ namespace ReactiveUI.Tests
                 });
             var handler1B = interaction.RegisterHandler(
                 x =>
-                    Observable
-                        .Return(Unit.Default)
+                    Observables
+                        .Unit
                         .Delay(TimeSpan.FromSeconds(1), scheduler)
                         .Do(_ => x.SetOutput("B")));
 

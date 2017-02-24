@@ -115,12 +115,12 @@ namespace ReactiveUI
 
             ret.Add(This.ShouldInvalidateState
                 .SelectMany(_ => driver.InvalidateState())
-                .LoggedCatch(This, Observable.Return(Unit.Default), "Tried to invalidate app state")
+                .LoggedCatch(This, Observables.Unit, "Tried to invalidate app state")
                 .Subscribe(_ => This.Log().Info("Invalidated app state")));
 
             ret.Add(This.ShouldPersistState
                 .SelectMany(x => driver.SaveState(This.AppState).Finally(x.Dispose))
-                .LoggedCatch(This, Observable.Return(Unit.Default), "Tried to persist app state")
+                .LoggedCatch(This, Observables.Unit, "Tried to persist app state")
                 .Subscribe(_ => This.Log().Info("Persisted application state")));
 
             ret.Add(Observable.Merge(This.IsResuming, This.IsLaunchingNew)
@@ -141,17 +141,17 @@ namespace ReactiveUI
     {
         public IObservable<object> LoadState()
         {
-            return Observable.Return(default(object));
+            return Observable<object>.Default;
         }
 
         public IObservable<Unit> SaveState(object state)
         {
-            return Observable.Return(Unit.Default);
+            return Observables.Unit;
         }
 
         public IObservable<Unit> InvalidateState()
         {
-            return Observable.Return(Unit.Default);
+            return Observables.Unit;
         }
     }
 }
