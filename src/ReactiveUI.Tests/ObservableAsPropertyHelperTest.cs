@@ -82,7 +82,7 @@ namespace ReactiveUI.Tests
             var output = new List<int>();
 
             (new TestScheduler()).With(sched => {
-                var fixture = new ObservableAsPropertyHelper<int>(Observable.Never<int>(),
+                var fixture = new ObservableAsPropertyHelper<int>(Observable<int>.Never,
                     x => output.Add(x), 32);
 
                 Assert.Equal(32, fixture.Value);
@@ -301,8 +301,8 @@ namespace ReactiveUI.Tests
             // This triggers the property change firing
             // upon subscription in the ObservableAsPropertyHelper
             // constructor.
-            Observable
-                .Return(true)
+            Observables
+                .True
                 .Do(_ => Count++)
                 .ToProperty(this, x => x.A, out _A);
         }

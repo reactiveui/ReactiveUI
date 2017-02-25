@@ -47,7 +47,7 @@ namespace ReactiveUI.Tests
         public void ExplicitSendMessageShouldWorkEvenAfterRegisteringSource() 
         {
             var fixture = new MessageBus();
-            fixture.RegisterMessageSource(Observable.Never<int>());
+            fixture.RegisterMessageSource(Observable<int>.Never);
          
             bool messageReceived = false;
             fixture.Listen<int>().Subscribe(_ => messageReceived = true);

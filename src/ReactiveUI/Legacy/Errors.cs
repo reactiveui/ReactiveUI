@@ -186,7 +186,7 @@ namespace ReactiveUI.Legacy
             //
             // If *none* of the handlers are interested in this UserError, we're
             // going to OnError the Observable.
-            var handler = handlers.Select(x => x(error)).FirstOrDefault(x => x != null) ?? Observable.Empty<RecoveryOptionResult>()
+            var handler = handlers.Select(x => x(error)).FirstOrDefault(x => x != null) ?? Observable<RecoveryOptionResult>.Empty
                 .Concat(Observable.Throw<RecoveryOptionResult>(new UnhandledUserErrorException(error)));
 
             var ret = handler.Take(1).PublishLast();
@@ -304,7 +304,7 @@ namespace ReactiveUI.Legacy
                     x.RecoveryOptions.Add(command);
                 }
 
-                return Observable.Empty<RecoveryOptionResult>();
+                return Observable<RecoveryOptionResult>.Empty;
             });
         }
 
@@ -369,7 +369,7 @@ namespace ReactiveUI.Legacy
         /// <param name="handler">A convenience handler - equivalent to
         /// Subscribing to the command and setting the RecoveryResult.</param>
         public RecoveryCommand(string commandName, Func<object, RecoveryOptionResult> handler = null)
-            : base(Observable.Return(true), _ => Observable.Return(Unit.Default))
+            : base(Observables.True, _ => Observables.Unit)
         {
             CommandName = commandName;
 

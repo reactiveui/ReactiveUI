@@ -141,7 +141,7 @@ namespace ReactiveUI.XamForms
 
         protected IObservable<Page> PageForViewModel(IRoutableViewModel vm)
         {
-            if (vm == null) return Observable.Empty<Page>();
+            if (vm == null) return Observable<Page>.Empty;
 
             var ret = ViewLocator.Current.ResolveView(vm);
             if (ret == null) {

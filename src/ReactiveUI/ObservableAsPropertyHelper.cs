@@ -139,7 +139,7 @@ namespace ReactiveUI
         /// </param>
         public static ObservableAsPropertyHelper<T> Default(T initialValue = default(T), IScheduler scheduler = null)
         {
-            return new ObservableAsPropertyHelper<T>(Observable.Never<T>(), _ => {}, initialValue, false, scheduler);
+            return new ObservableAsPropertyHelper<T>(Observable<T>.Never, _ => {}, initialValue, false, scheduler);
         }
     }
 
