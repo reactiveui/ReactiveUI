@@ -1719,7 +1719,7 @@ namespace ReactiveUI.Tests
 
             data = makeAsyncCollection(maxSize);
                 
-            Observable.Delay(Observable.Return(Unit.Default), TimeSpan.FromMilliseconds(100))
+            Observable.Delay(Observables.Unit, TimeSpan.FromMilliseconds(100))
                 .ObserveOn(RxApp.MainThreadScheduler)
                 .Subscribe(_ => {
                     using (list.SuppressChangeNotifications()) {

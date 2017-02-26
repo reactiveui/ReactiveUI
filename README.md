@@ -1,6 +1,6 @@
 # ![ReactiveUI Logo](https://i.imgur.com/23kfbS9.png) ReactiveUI
 
-[![Release Version](https://img.shields.io/github/release/reactiveui/reactiveui.svg)](https://github.com/reactiveui/reactiveui/releases)  [![NuGet Stats](https://img.shields.io/nuget/dt/reactiveui-core.svg)](https://www.nuget.org/packages/reactiveui) [![#yourfirstpr](https://img.shields.io/badge/first--timers--only-friendly-blue.svg)](https://github.com/reactiveui/ReactiveUI/issues?utf8=%E2%9C%93&q=label%3Afirst-timers-only+) [![Issue Stats](http://www.issuestats.com/github/reactiveui/reactiveui/badge/issue?style=flat)](http://www.issuestats.com/github/reactiveui/reactiveui) [![Pull Request Stats](http://www.issuestats.com/github/reactiveui/reactiveui/badge/pr?style=flat)](http://www.issuestats.com/github/reactiveui/reactiveui) [![Build status](https://ci.appveyor.com/api/projects/status/nhsndp7v788t6a2m/branch/develop?svg=true)](https://ci.appveyor.com/project/ghuntley/reactiveui/branch/develop)
+[![Release Version](https://img.shields.io/github/release/reactiveui/reactiveui.svg)](https://github.com/reactiveui/reactiveui/releases)  [![NuGet Stats](https://img.shields.io/nuget/v/reactiveui.svg)](https://www.nuget.org/packages/reactiveui) [![#yourfirstpr](https://img.shields.io/badge/first--timers--only-friendly-blue.svg)](https://github.com/reactiveui/ReactiveUI/issues?utf8=%E2%9C%93&q=label%3Afirst-timers-only+) [![Issue Stats](http://www.issuestats.com/github/reactiveui/reactiveui/badge/issue?style=flat)](http://www.issuestats.com/github/reactiveui/reactiveui) [![Pull Request Stats](http://www.issuestats.com/github/reactiveui/reactiveui/badge/pr?style=flat)](http://www.issuestats.com/github/reactiveui/reactiveui) [![Build status](https://ci.appveyor.com/api/projects/status/nhsndp7v788t6a2m/branch/develop?svg=true)](https://ci.appveyor.com/project/ghuntley/reactiveui/branch/develop) [![Coverage Status](https://coveralls.io/repos/github/reactiveui/ReactiveUI/badge.svg?branch=develop)](https://coveralls.io/github/reactiveui/ReactiveUI?branch=develop)
 
 
 [![Follow us on Twitter](https://img.shields.io/badge/twitter-%40reactivexui-020031.svg)](https://twitter.com/reactivexui) [![Visit our website](https://img.shields.io/badge/website-reactiveui.net-020031.svg) ](http://www.reactiveui.net/)
@@ -11,7 +11,7 @@ If you’re already familiar with [functional reactive programming](http://docs.
 
 If you have a question, please see if any discussions in our [GitHub issues](github.com/reactiveui/ReactiveUI/issues) or [Stack Overflow](https://stackoverflow.com/questions/tagged/reactiveui) have already answered it. If not, please [feel free to file your own](https://github.com/reactiveui/ReactiveUI/issues/new)! 
 
-We have our very own [Slack organization](https://reactivex.slack.com/) which contains some of the best user interface/reactive extension developers in the industry. All software engineers, young and old, regardless of experience are welcome to join our campfire but you'll need to send an email to [paul@paulbetts.org](mailto:paul@paulbetts.org) with the email address you'd like to be invited, and we'll send you an invite. Sit tight, it's worth it.
+We have our very own [Slack organization](https://reactivex.slack.com/) which contains some of the best user interface/reactive extension developers in the industry. All software engineers, young and old, regardless of experience are welcome to join our campfire but you'll need to send an email to [ghuntley@ghuntley.com](mailto:ghuntley@ghuntley.com) with the email address you'd like to be invited, and we'll send you an invite. Sit tight, it's worth it.
 
 # Introduction
 
@@ -50,7 +50,7 @@ public interface ISearchViewModel
 {
     ReactiveList<SearchResults> SearchResults { get; }
     string SearchQuery { get; }	 
-    ReactiveCommand<List<SearchResults>> Search { get; }
+    ReactiveCommand<string, List<SearchResults>> Search { get; }
     ISearchService SearchService { get; }
 }
 ```
@@ -69,9 +69,8 @@ var canSearch = this.WhenAny(x => x.SearchQuery, x => !String.IsNullOrWhiteSpace
 // guarantees that this block will only run exactly once at a time, and
 // that the CanExecute will auto-disable and that property IsExecuting will
 // be set accordingly whilst it is running.
-Search = ReactiveCommand.CreateAsyncTask(canSearch, async _ => {
-    return await searchService.Search(this.SearchQuery);
-});
+Search = ReactiveCommand.CreateFromTask<string, List<SearchResults>>(_ => 
+        searchService.Search(this.SearchQuery), canSearch);
 ```
 
 ### Update the user interface 
@@ -102,12 +101,12 @@ Search.ThrownExceptions
 // of "dead airtime", then automatically invoke the subscribe command.
 this.WhenAnyValue(x => x.SearchQuery)
     .Throttle(TimeSpan.FromSeconds(1), RxApp.MainThreadScheduler)
-    .InvokeCommand(this, x => x.Search);
+    .InvokeCommand(Search);
 ```
 
 # Slack
 
-We have our very own [Slack organization](https://reactivex.slack.com/) which contains some of the best user interface/reactive extension developers in the industry. All software engineers, young and old, regardless of experience are welcome to join our campfire but you'll need to send an email to [paul@paulbetts.org](mailto:paul@paulbetts.org) with the Email address you'd like to be invited, and we'll send you an invite. Sit tight, it's worth it.
+We have our very own [Slack organization](https://reactivex.slack.com/) which contains some of the best user interface/reactive extension developers in the industry. All software engineers, young and old, regardless of experience are welcome to join our campfire but you'll need to send an email to [ghuntley@ghuntley.com](mailto:ghuntley@ghuntley.com) with the Email address you'd like to be invited, and we'll send you an invite. Sit tight, it's worth it.
 
 # Support
 

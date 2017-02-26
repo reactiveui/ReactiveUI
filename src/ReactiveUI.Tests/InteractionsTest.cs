@@ -2,7 +2,9 @@ using System;
 using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
+using System.Threading.Tasks;
 using Microsoft.Reactive.Testing;
+using ReactiveUI.Testing;
 using Xunit;
 
 namespace ReactiveUI.Tests
@@ -10,14 +12,55 @@ namespace ReactiveUI.Tests
     public class InteractionsTest
     {
         [Fact]
+        public void RegisterNullHandlerShouldCauseException()
+        {
+            var interaction = new Interaction<Unit, Unit>();
+
+            Assert.Throws<ArgumentNullException>(() => interaction.RegisterHandler((Action<InteractionContext<Unit, Unit>>)null));
+            Assert.Throws<ArgumentNullException>(() => interaction.RegisterHandler((Func<InteractionContext<Unit, Unit>, Task>)null));
+            Assert.Throws<ArgumentNullException>(() => interaction.RegisterHandler((Func<InteractionContext<Unit, Unit>, IObservable<Unit>>)null));
+        }
+
+        [Fact]
         public void UnhandledInteractionsShouldCauseException()
         {
             var interaction = new Interaction<string, Unit>();
-            Assert.Throws<UnhandledInteractionException<string, Unit>>(() => interaction.Handle("foo").FirstAsync().Wait());
+            var ex = Assert.Throws<UnhandledInteractionException<string, Unit>>(() => interaction.Handle("foo").FirstAsync().Wait());
+            Assert.Same(interaction, ex.Interaction);
+            Assert.Equal("foo", ex.Input);
 
             interaction.RegisterHandler(_ => { });
             interaction.RegisterHandler(_ => { });
-            Assert.Throws<UnhandledInteractionException<string, Unit>>(() => interaction.Handle("foo").FirstAsync().Wait());
+            ex = Assert.Throws<UnhandledInteractionException<string, Unit>>(() => interaction.Handle("bar").FirstAsync().Wait());
+            Assert.Same(interaction, ex.Interaction);
+            Assert.Equal("bar", ex.Input);
+        }
+
+        [Fact]
+        public void AttemptingToSetInteractionOutputMoreThanOnceShouldCauseException()
+        {
+            var interaction = new Interaction<Unit, Unit>();
+
+            interaction.RegisterHandler(context => {
+                context.SetOutput(Unit.Default);
+                context.SetOutput(Unit.Default);
+            });
+
+            var ex = Assert.Throws<InvalidOperationException>(() => interaction.Handle(Unit.Default).Subscribe());
+            Assert.Equal("Output has already been set.", ex.Message);
+        }
+
+        [Fact]
+        public void AttemptingToGetInteractionOutputBeforeItHasBeenSetShouldCauseException()
+        {
+            var interaction = new Interaction<Unit, Unit>();
+
+            interaction.RegisterHandler(context => {
+                var output = context.GetOutput();
+            });
+
+            var ex = Assert.Throws<InvalidOperationException>(() => interaction.Handle(Unit.Default).Subscribe());
+            Assert.Equal("Output has not been set.", ex.Message);
         }
 
         [Fact]
@@ -27,6 +70,26 @@ namespace ReactiveUI.Tests
             interaction.RegisterHandler(c => c.SetOutput(true));
 
             interaction.Handle(Unit.Default).FirstAsync().Wait();
+        }
+
+        [Fact]
+        public void HandlersAreExecutedOnHandlerScheduler()
+        {
+            (new TestScheduler()).With(sched => {
+                var interaction = new Interaction<Unit, string>(sched);
+
+                using (interaction.RegisterHandler(x => x.SetOutput("done"))) {
+                    var handled = false;
+                    interaction
+                        .Handle(Unit.Default)
+                        .Subscribe(_ => handled = true);
+
+                    Assert.False(handled);
+
+                    sched.Start();
+                    Assert.True(handled);
+                }
+            });
         }
 
         [Fact]
@@ -97,8 +160,8 @@ namespace ReactiveUI.Tests
                 });
             var handler1B = interaction.RegisterHandler(
                 x =>
-                    Observable
-                        .Return(Unit.Default)
+                    Observables
+                        .Unit
                         .Delay(TimeSpan.FromSeconds(1), scheduler)
                         .Do(_ => x.SetOutput("B")));
 
@@ -117,6 +180,37 @@ namespace ReactiveUI.Tests
             }
 
             Assert.False(handler1AWasCalled);
+        }
+
+        [Fact]
+        public void HandlersCanContainAsynchronousCodeViaTasks()
+        {
+            var interaction = new Interaction<Unit, string>();
+
+            interaction.RegisterHandler(context => {
+                context.SetOutput("result");
+                return Task.FromResult(true);
+            });
+
+            string result = null;
+            interaction
+                .Handle(Unit.Default)
+                .Subscribe(r => result = r);
+        }
+
+        [Fact]
+        public void HandlersReturningObservablesCanReturnAnyKindOfObservable()
+        {
+            var interaction = new Interaction<Unit, string>();
+
+            var handler = interaction.RegisterHandler(
+                x =>
+                    Observable
+                        .Return(42)
+                        .Do(_ => x.SetOutput("result")));
+
+            var result = interaction.Handle(Unit.Default).FirstAsync().Wait();
+            Assert.Equal("result", result);
         }
     }
 }

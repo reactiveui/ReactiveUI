@@ -119,7 +119,7 @@
     <Compile Include="Interfaces.cs" />
     <Compile Include="IROObservableForProperty.cs" />
     <Compile Include="MessageBus.cs" />
-    <Compile Include="MobileLifecycle.cs" />
+    <Compile Include="SuspensionHost.cs" />
     <Compile Include="ObservableAsPropertyHelper.cs" />
     <Compile Include="ObservedChangedMixin.cs" />
     <Compile Include="OrderedComparer.cs" />
@@ -154,6 +154,7 @@
     <Compile Include="WeakEventManager.cs" />
     <Compile Include="Legacy\ReactiveCommand.cs" />
     <Compile Include="Legacy\Errors.cs" />
+    <Compile Include="Observables.cs" />
   </ItemGroup>
   <ItemGroup>
     <Page Include="Themes\Generic.xaml">

@@ -21,7 +21,7 @@ namespace ReactiveUI.Winforms
             if (control == null) {
                 // Show a friendly warning in the log that this view will never be activated
                 this.Log().Warn("Expected a view of type System.Windows.Forms.Control but it is {0}.\r\nYou need to implement your own IActivationForViewFetcher for {0}.", view.GetType());
-                return Observable.Empty<bool>();
+                return Observable<bool>.Empty;
             }
 
             // Create an observable stream of booleans

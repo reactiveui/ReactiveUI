@@ -6,13 +6,15 @@
     <description>Xamarin Forms specific extensions to ReactiveUI</description>
     <language>en-us</language>
     <dependencies>
-      <dependency id="reactiveui-core" version="$version$" />
+      <dependency id="reactiveui-core" version="[$version$]" />
       <dependency id="Xamarin.Forms" version="2.3.1.114" />
     </dependencies>
   </metadata>
   <files>
     <!-- Portable PCL -->
     <file src="bin/Release/portable-net45+netcore45+wp8+wpa81+UAP10+MonoAndroid403+MonoTouch10+Xamarin.iOS10/ReactiveUI.XamForms.dll" target="lib/portable-net45+netcore45+wp8+wpa81+UAP10+MonoAndroid403+MonoTouch10+Xamarin.iOS10/ReactiveUI.XamForms.dll" />
+    <file src="bin/Release/portable-net45+netcore45+wp8+wpa81+UAP10+MonoAndroid403+MonoTouch10+Xamarin.iOS10/ReactiveUI.XamForms.pdb" target="lib/portable-net45+netcore45+wp8+wpa81+UAP10+MonoAndroid403+MonoTouch10+Xamarin.iOS10/ReactiveUI.XamForms.pdb" />
+    <file src="bin/Release/portable-net45+netcore45+wp8+wpa81+UAP10+MonoAndroid403+MonoTouch10+Xamarin.iOS10/ReactiveUI.XamForms.xml" target="lib/portable-net45+netcore45+wp8+wpa81+UAP10+MonoAndroid403+MonoTouch10+Xamarin.iOS10/ReactiveUI.XamForms.xml" />
     <!-- Source -->
     <file src="*.cs" target="src" />
   </files>

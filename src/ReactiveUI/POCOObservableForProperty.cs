@@ -30,7 +30,7 @@ namespace ReactiveUI
             }
 
             return Observable.Return(new ObservedChange<object, object>(sender, expression), RxApp.MainThreadScheduler)
-                .Concat(Observable.Never<IObservedChange<object, object>>());
+                .Concat(Observable<IObservedChange<object, object>>.Never);
         }
     }
 }
