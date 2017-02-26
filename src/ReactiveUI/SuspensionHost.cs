@@ -9,55 +9,54 @@ namespace ReactiveUI
 {
     internal class SuspensionHost : ReactiveObject, ISuspensionHost
     {
-        readonly ReplaySubject<IObservable<Unit>> isLaunchingNew = new ReplaySubject<IObservable<Unit>>(1);
+        private readonly ReplaySubject<IObservable<Unit>> isLaunchingNew = new ReplaySubject<IObservable<Unit>>(1);
+
         public IObservable<Unit> IsLaunchingNew
         {
-            get { return isLaunchingNew.Switch(); }
-            set { isLaunchingNew.OnNext(value); }
+            get { return this.isLaunchingNew.Switch(); }
+            set { this.isLaunchingNew.OnNext(value); }
         }
 
-        readonly ReplaySubject<IObservable<Unit>> isResuming = new ReplaySubject<IObservable<Unit>>(1);
+        private readonly ReplaySubject<IObservable<Unit>> isResuming = new ReplaySubject<IObservable<Unit>>(1);
+
         public IObservable<Unit> IsResuming
         {
-            get { return isResuming.Switch(); }
-            set { isResuming.OnNext(value); }
+            get { return this.isResuming.Switch(); }
+            set { this.isResuming.OnNext(value); }
         }
 
-        readonly ReplaySubject<IObservable<Unit>> isUnpausing = new ReplaySubject<IObservable<Unit>>(1);
+        private readonly ReplaySubject<IObservable<Unit>> isUnpausing = new ReplaySubject<IObservable<Unit>>(1);
+
         public IObservable<Unit> IsUnpausing
         {
-            get { return isUnpausing.Switch(); }
-            set { isUnpausing.OnNext(value); }
+            get { return this.isUnpausing.Switch(); }
+            set { this.isUnpausing.OnNext(value); }
         }
 
-        readonly ReplaySubject<IObservable<IDisposable>> shouldPersistState = new ReplaySubject<IObservable<IDisposable>>(1);
+        private readonly ReplaySubject<IObservable<IDisposable>> shouldPersistState = new ReplaySubject<IObservable<IDisposable>>(1);
+
         public IObservable<IDisposable> ShouldPersistState
         {
-            get { return shouldPersistState.Switch(); }
-            set { shouldPersistState.OnNext(value); }
+            get { return this.shouldPersistState.Switch(); }
+            set { this.shouldPersistState.OnNext(value); }
         }
 
-        readonly ReplaySubject<IObservable<Unit>> shouldInvalidateState = new ReplaySubject<IObservable<Unit>>(1);
+        private readonly ReplaySubject<IObservable<Unit>> shouldInvalidateState = new ReplaySubject<IObservable<Unit>>(1);
+
         public IObservable<Unit> ShouldInvalidateState
         {
-            get { return shouldInvalidateState.Switch(); }
-            set { shouldInvalidateState.OnNext(value); }
+            get { return this.shouldInvalidateState.Switch(); }
+            set { this.shouldInvalidateState.OnNext(value); }
         }
 
-        /// <summary>
-        ///
-        /// </summary>
         public Func<object> CreateNewAppState { get; set; }
 
-        object appState;
+        private object appState;
 
-        /// <summary>
-        ///
-        /// </summary>
         public object AppState
         {
-            get { return appState; }
-            set { this.RaiseAndSetIfChanged(ref appState, value); }
+            get { return this.appState; }
+            set { this.RaiseAndSetIfChanged(ref this.appState, value); }
         }
 
         public SuspensionHost()
@@ -70,20 +69,23 @@ namespace ReactiveUI
             var message = "Your App class needs to use AutoSuspendHelper";
 #endif
 
-            IsLaunchingNew = IsResuming = IsUnpausing = ShouldInvalidateState =
+            this.IsLaunchingNew = this.IsResuming = this.IsUnpausing = this.ShouldInvalidateState =
                 Observable.Throw<Unit>(new Exception(message));
 
-            ShouldPersistState = Observable.Throw<IDisposable>(new Exception(message));
+            this.ShouldPersistState = Observable.Throw<IDisposable>(new Exception(message));
         }
     }
 
+    /// <summary>
+    /// Suspension Host Extensions
+    /// </summary>
     public static class SuspensionHostExtensions
     {
         /// <summary>
-        ///
+        /// Observes the state of the application.
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <param name="This"></param>
+        /// <param name="This">The this.</param>
         /// <returns></returns>
         public static IObservable<T> ObserveAppState<T>(this ISuspensionHost This)
         {
@@ -92,10 +94,10 @@ namespace ReactiveUI
         }
 
         /// <summary>
-        ///
+        /// Gets the state of the application.
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <param name="This"></param>
+        /// <param name="This">The this.</param>
         /// <returns></returns>
         public static T GetAppState<T>(this ISuspensionHost This)
         {
@@ -103,10 +105,10 @@ namespace ReactiveUI
         }
 
         /// <summary>
-        ///
+        /// Setups the default suspend resume.
         /// </summary>
-        /// <param name="This"></param>
-        /// <param name="driver"></param>
+        /// <param name="This">The this.</param>
+        /// <param name="driver">The driver.</param>
         /// <returns></returns>
         public static IDisposable SetupDefaultSuspendResume(this ISuspensionHost This, ISuspensionDriver driver = null)
         {
@@ -135,20 +137,33 @@ namespace ReactiveUI
     }
 
     /// <summary>
-    ///
+    /// Dummy Suspension Driver
     /// </summary>
     public class DummySuspensionDriver : ISuspensionDriver
     {
+        /// <summary>
+        /// Loads the application state from persistent storage
+        /// </summary>
+        /// <returns></returns>
         public IObservable<object> LoadState()
         {
             return Observable<object>.Default;
         }
 
+        /// <summary>
+        /// Saves the application state to disk.
+        /// </summary>
+        /// <param name="state"></param>
+        /// <returns></returns>
         public IObservable<Unit> SaveState(object state)
         {
             return Observables.Unit;
         }
 
+        /// <summary>
+        /// Invalidates the application state (i.e. deletes it from disk)
+        /// </summary>
+        /// <returns></returns>
         public IObservable<Unit> InvalidateState()
         {
             return Observables.Unit;

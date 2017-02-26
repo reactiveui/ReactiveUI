@@ -47,7 +47,7 @@ namespace ReactiveUI
         /// only used for one purpose, leave this as null.</param>
         public void RegisterScheduler<T>(IScheduler scheduler, string contract = null)
         {
-            schedulerMappings[new Tuple<Type, string>(typeof (T), contract)] = scheduler;
+            this.schedulerMappings[new Tuple<Type, string>(typeof (T), contract)] = scheduler;
         }
 
         /// <summary>
@@ -157,11 +157,11 @@ namespace ReactiveUI
             Action<Dictionary<Tuple<Type, string>, NotAWeakReference>, 
             Tuple<Type, string>> block)
         {
-            lock (messageBus) {
+            lock (this.messageBus) {
                 var tuple = new Tuple<Type, String>(type, contract);
-                block(messageBus, tuple);
-                if (messageBus.ContainsKey(tuple) && !messageBus[tuple].IsAlive) {
-                    messageBus.Remove(tuple);
+                block(this.messageBus, tuple);
+                if (this.messageBus.ContainsKey(tuple) && !this.messageBus[tuple].IsAlive) {
+                    this.messageBus.Remove(tuple);
                 }
             }
         }
@@ -169,7 +169,7 @@ namespace ReactiveUI
         IScheduler getScheduler(Tuple<Type, string> tuple)
         {
             IScheduler scheduler;
-            schedulerMappings.TryGetValue(tuple, out scheduler);
+            this.schedulerMappings.TryGetValue(tuple, out scheduler);
             return scheduler ?? CurrentThreadScheduler.Instance;
         }
     }
@@ -178,7 +178,7 @@ namespace ReactiveUI
     {
         public NotAWeakReference(object target)
         {
-            Target = target;
+            this.Target = target;
         }
 
         public object Target { get; private set; }

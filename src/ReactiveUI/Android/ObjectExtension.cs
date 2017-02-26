@@ -12,7 +12,7 @@ namespace ReactiveUI
 
         public JavaHolder(object instance)
         {
-            Instance = instance;
+            this.Instance = instance;
         }
     }
 

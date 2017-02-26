@@ -5,6 +5,9 @@ using Android.OS;
 
 namespace ReactiveUI
 {
+    /// <summary>
+    /// Context Extensions
+    /// </summary>
     public static class ContextExtensions
     {
         /// <summary>
@@ -12,11 +15,15 @@ namespace ReactiveUI
         /// </summary>
         /// <returns>The observable sequence of service binders.</returns>
         /// <param name="context">The Context to bind the Service from.</param>
-        /// <param name="intent">Identifies the service to connect to. The Intent may specify either an explicit component name, or a logical description (action, category, etc) to match an IntentFilter published by a service.</param>
+        /// <param name="intent">
+        /// Identifies the service to connect to. The Intent may specify either an explicit component
+        /// name, or a logical description (action, category, etc) to match an IntentFilter published
+        /// by a service.
+        /// </param>
         /// <param name="flags">Operation options for the binding. The default is Bind.None.</param>
-        public static IObservable<IBinder> ServiceBound (this Context context, Intent intent, Bind flags = Bind.None)
+        public static IObservable<IBinder> ServiceBound(this Context context, Intent intent, Bind flags = Bind.None)
         {
-            return ServiceBound<IBinder> (context, intent, flags);
+            return ServiceBound<IBinder>(context, intent, flags);
         }
 
         /// <summary>
@@ -24,22 +31,25 @@ namespace ReactiveUI
         /// </summary>
         /// <returns>The observable sequence of service binders.</returns>
         /// <param name="context">The Context to bind the Service from.</param>
-        /// <param name="intent">Identifies the service to connect to. The Intent may specify either an explicit component name, or a logical description (action, category, etc) to match an IntentFilter published by a service.</param>
+        /// <param name="intent">
+        /// Identifies the service to connect to. The Intent may specify either an explicit component
+        /// name, or a logical description (action, category, etc) to match an IntentFilter published
+        /// by a service.
+        /// </param>
         /// <param name="flags">Operation options for the binding. The default is Bind.None.</param>
         /// <typeparam name="TBinder">The type of the returned service binder.</typeparam>
-        public static IObservable<TBinder> ServiceBound<TBinder> (this Context context, Intent intent, Bind flags = Bind.None)
+        public static IObservable<TBinder> ServiceBound<TBinder>(this Context context, Intent intent, Bind flags = Bind.None)
         where TBinder
             : class
             , IBinder
         {
-            return Observable.Create<TBinder> (observer => {
-                var connection = new ServiceConnection<TBinder> (context, observer);
+            return Observable.Create<TBinder>(observer => {
+                var connection = new ServiceConnection<TBinder>(context, observer);
                 try {
-                    if (!context.BindService (intent, connection, flags)) 
-                        observer.OnError (new Exception ("Service bind failed!"));
-                }
-                catch(Exception ex) {
-                    observer.OnError (ex);
+                    if (!context.BindService(intent, connection, flags))
+                        observer.OnError(new Exception("Service bind failed!"));
+                } catch (Exception ex) {
+                    observer.OnError(ex);
                 }
 
                 return connection;
@@ -49,58 +59,50 @@ namespace ReactiveUI
         /// <summary>
         /// A private implementation of IServiceConnection and IDisposable.
         /// </summary>
-        class ServiceConnection<TBinder>
+        /// <typeparam name="TBinder">The type of the binder.</typeparam>
+        /// <seealso cref="Java.Lang.Object"/>
+        /// <seealso cref="Android.Content.IServiceConnection"/>
+        private class ServiceConnection<TBinder>
             : Java.Lang.Object
             , IServiceConnection
         where TBinder
             : class
             , IBinder
         {
-            readonly Context context;
-            readonly IObserver<TBinder> observer;
+            private readonly Context context;
+            private readonly IObserver<TBinder> observer;
 
-            public ServiceConnection (Context context, IObserver<TBinder> observer)
+            private bool disposed;
+
+            public ServiceConnection(Context context, IObserver<TBinder> observer)
             {
                 this.context = context;
                 this.observer = observer;
             }
 
-            #region IServiceConnection implemention
-
-            void IServiceConnection.OnServiceConnected (ComponentName name, IBinder binder)
+            void IServiceConnection.OnServiceConnected(ComponentName name, IBinder binder)
             {
-                observer.OnNext ((TBinder)binder);
+                this.observer.OnNext((TBinder)binder);
             }
 
-            void IServiceConnection.OnServiceDisconnected (ComponentName name)
+            void IServiceConnection.OnServiceDisconnected(ComponentName name)
             {
                 // lost connection to the remote service but it may be revived
-                observer.OnNext (null);
+                this.observer.OnNext(null);
             }
 
-            #endregion
-
-            #region Dispose implementation
-
-            bool disposed;
-
-            protected override void Dispose (bool disposing)
+            protected override void Dispose(bool disposing)
             {
-                if (!disposed) {
+                if (!this.disposed) {
                     if (disposing) {
-                        context.UnbindService (this);
+                        this.context.UnbindService(this);
 
-                        disposed = true;
+                        this.disposed = true;
                     }
-
                 }
 
-                base.Dispose (disposing);
+                base.Dispose(disposing);
             }
-
-            #endregion
         }
-
     }
 }
-

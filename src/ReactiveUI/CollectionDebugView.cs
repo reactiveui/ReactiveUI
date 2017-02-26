@@ -11,7 +11,7 @@ namespace ReactiveUI
         public CollectionDebugView(ICollection<T> collection)
         {
             if (collection == null)
-                throw new ArgumentNullException("collection", "collection is null.");
+                throw new ArgumentNullException(nameof(collection), "collection is null.");
             this.collection = collection;
         }
 

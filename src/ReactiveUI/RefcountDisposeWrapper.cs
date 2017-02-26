@@ -8,17 +8,17 @@ namespace ReactiveUI
         IDisposable _inner;
         int refCount = 1;
 
-        public RefcountDisposeWrapper(IDisposable inner) { _inner = inner; }
+        public RefcountDisposeWrapper(IDisposable inner) { this._inner = inner; }
 
         public void AddRef()
         {
-            Interlocked.Increment(ref refCount);
+            Interlocked.Increment(ref this.refCount);
         }
 
         public void Release()
         {
-            if (Interlocked.Decrement(ref refCount) == 0) {
-                var inner = Interlocked.Exchange(ref _inner, null);
+            if (Interlocked.Decrement(ref this.refCount) == 0) {
+                var inner = Interlocked.Exchange(ref this._inner, null);
                 inner.Dispose();
             }
         }

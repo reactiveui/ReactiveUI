@@ -1,15 +1,21 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reactive.Disposables;
-using System.Text;
 using System.Windows.Input;
 using Android.Views;
 
 namespace ReactiveUI
 {
+    /// <summary>
+    /// View Command Extensions
+    /// </summary>
     public static class ViewCommandExtensions
     {
+        /// <summary>
+        /// Binds to target.
+        /// </summary>
+        /// <param name="This">The this.</param>
+        /// <param name="control">The control.</param>
+        /// <returns></returns>
         public static IDisposable BindToTarget(this ICommand This, View control)
         {
             var ev = new EventHandler((o, e) => {
@@ -33,5 +39,4 @@ namespace ReactiveUI
             });
         }
     }
-
 }

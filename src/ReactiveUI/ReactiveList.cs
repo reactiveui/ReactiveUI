@@ -1,24 +1,28 @@
 using System;
 using System.Collections;
-using System.Reactive;
-using System.Reactive.Linq;
-using System.Reactive.Concurrency;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Collections.Specialized;
+using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
+using System.Reactive;
+using System.Reactive.Concurrency;
+using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Runtime.Serialization;
-using System.Diagnostics.Contracts;
 using System.Threading;
-using System.Reactive.Disposables;
-using System.Globalization;
-using System.Diagnostics;
 using Splat;
 
 namespace ReactiveUI
 {
+    /// <summary>
+    /// Reactive List
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <seealso cref="ReactiveUI.IReactiveList{T}"/>
+    /// <seealso cref="ReactiveUI.IReadOnlyReactiveList{T}"/>
+    /// <seealso cref="System.Collections.IList"/>
     [DebuggerDisplay("Count = {Count}")]
     [DebuggerTypeProxy(typeof(CollectionDebugView<>))]
     public class ReactiveList<T> : IReactiveList<T>, IReadOnlyReactiveList<T>, IList
@@ -64,26 +68,50 @@ namespace ReactiveUI
             }
         }
 #else
-        public event NotifyCollectionChangedEventHandler CollectionChanging {
+
+        /// <summary>
+        /// Occurs when [collection changing].
+        /// </summary>
+        public event NotifyCollectionChangedEventHandler CollectionChanging
+        {
             add { CollectionChangingEventManager.AddHandler(this, value); }
             remove { CollectionChangingEventManager.RemoveHandler(this, value); }
         }
 
-        public event NotifyCollectionChangedEventHandler CollectionChanged {
+        /// <summary>
+        /// Occurs when the collection changes.
+        /// </summary>
+        public event NotifyCollectionChangedEventHandler CollectionChanged
+        {
             add { CollectionChangedEventManager.AddHandler(this, value); }
             remove { CollectionChangedEventManager.RemoveHandler(this, value); }
         }
-        
+
+        /// <summary>
+        /// Raises the collection changing.
+        /// </summary>
+        /// <param name="e">
+        /// The <see cref="NotifyCollectionChangedEventArgs"/> instance containing the event data.
+        /// </param>
         protected virtual void raiseCollectionChanging(NotifyCollectionChangedEventArgs e)
         {
             CollectionChangingEventManager.DeliverEvent(this, e);
         }
 
+        /// <summary>
+        /// Raises the collection changed.
+        /// </summary>
+        /// <param name="e">
+        /// The <see cref="NotifyCollectionChangedEventArgs"/> instance containing the event data.
+        /// </param>
         protected virtual void raiseCollectionChanged(NotifyCollectionChangedEventArgs e)
         {
             CollectionChangedEventManager.DeliverEvent(this, e);
         }
 
+        /// <summary>
+        /// Occurs when [property changing].
+        /// </summary>
         public event PropertyChangingEventHandler PropertyChanging
         {
             add { PropertyChangingEventManager.AddHandler(this, value); }
@@ -95,7 +123,11 @@ namespace ReactiveUI
             PropertyChangingEventManager.DeliverEvent(this, args);
         }
 
-        public event PropertyChangedEventHandler PropertyChanged {
+        /// <summary>
+        /// Occurs when a property value changes.
+        /// </summary>
+        public event PropertyChangedEventHandler PropertyChanged
+        {
             add { PropertyChangedEventManager.AddHandler(this, value); }
             remove { PropertyChangedEventManager.RemoveHandler(this, value); }
         }
@@ -104,150 +136,187 @@ namespace ReactiveUI
         {
             PropertyChangedEventManager.DeliverEvent(this, args);
         }
+
 #endif
 
-        [IgnoreDataMember] Subject<NotifyCollectionChangedEventArgs> _changing;
-        [IgnoreDataMember] Subject<NotifyCollectionChangedEventArgs> _changed;
-        
-        [DataMember] List<T> _inner;
-        
-        [IgnoreDataMember] Lazy<Subject<T>> _beforeItemsAdded;
-        [IgnoreDataMember] Lazy<Subject<T>> _itemsAdded;
-        [IgnoreDataMember] Lazy<Subject<T>> _beforeItemsRemoved;
-        [IgnoreDataMember] Lazy<Subject<T>> _itemsRemoved;
-        [IgnoreDataMember] Lazy<ISubject<IReactivePropertyChangedEventArgs<T>>> _itemChanging;
-        [IgnoreDataMember] Lazy<ISubject<IReactivePropertyChangedEventArgs<T>>> _itemChanged;
-        [IgnoreDataMember] Lazy<Subject<IMoveInfo<T>>> _beforeItemsMoved;
-        [IgnoreDataMember] Lazy<Subject<IMoveInfo<T>>> _itemsMoved;
+        [IgnoreDataMember] private Subject<NotifyCollectionChangedEventArgs> _changing;
+        [IgnoreDataMember] private Subject<NotifyCollectionChangedEventArgs> _changed;
 
-        [IgnoreDataMember] Dictionary<object, RefcountDisposeWrapper> _propertyChangeWatchers = null;
+        [DataMember] private List<T> _inner;
 
-        [IgnoreDataMember] int _resetSubCount = 0;
-        [IgnoreDataMember] int _resetNotificationCount = 0;
-        static bool _hasWhinedAboutNoResetSub = false;
+        [IgnoreDataMember] private Lazy<Subject<T>> _beforeItemsAdded;
+        [IgnoreDataMember] private Lazy<Subject<T>> _itemsAdded;
+        [IgnoreDataMember] private Lazy<Subject<T>> _beforeItemsRemoved;
+        [IgnoreDataMember] private Lazy<Subject<T>> _itemsRemoved;
+        [IgnoreDataMember] private Lazy<ISubject<IReactivePropertyChangedEventArgs<T>>> _itemChanging;
+        [IgnoreDataMember] private Lazy<ISubject<IReactivePropertyChangedEventArgs<T>>> _itemChanged;
+        [IgnoreDataMember] private Lazy<Subject<IMoveInfo<T>>> _beforeItemsMoved;
+        [IgnoreDataMember] private Lazy<Subject<IMoveInfo<T>>> _itemsMoved;
 
+        [IgnoreDataMember] private Dictionary<object, RefcountDisposeWrapper> _propertyChangeWatchers = null;
+
+        [IgnoreDataMember] private int _resetSubCount = 0;
+        [IgnoreDataMember] private int _resetNotificationCount = 0;
+        private static bool _hasWhinedAboutNoResetSub = false;
+
+        /// <summary>
+        /// Gets or sets the reset change threshold.
+        /// </summary>
+        /// <value>The reset change threshold.</value>
         [IgnoreDataMember]
         public double ResetChangeThreshold { get; set; }
 
-        // NB: This exists so the serializer doesn't whine
-        //
-        // 2nd NB: VB.NET doesn't deal well with default parameters, create 
-        // some overloads so people can continue to make bad life choices instead
-        // of using C#
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveList{T}"/> class.
+        /// NB: This exists so the serializer doesn't whine // 2nd NB: VB.NET doesn't deal well with
+        ///     default parameters, create some overloads so people can continue to make bad life
+        /// choices instead of using C#
+        /// </summary>
         public ReactiveList() { setupRx(); }
-        public ReactiveList(IEnumerable<T> initialContents) { setupRx(initialContents); }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveList{T}"/> class.
+        /// </summary>
+        /// <param name="initialContents">The initial contents.</param>
+        public ReactiveList(IEnumerable<T> initialContents)
+        {
+            setupRx(initialContents);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReactiveList{T}"/> class.
+        /// </summary>
+        /// <param name="initialContents">The initial contents.</param>
+        /// <param name="resetChangeThreshold">The reset change threshold.</param>
+        /// <param name="scheduler">The scheduler.</param>
         public ReactiveList(IEnumerable<T> initialContents = null, double resetChangeThreshold = 0.3, IScheduler scheduler = null)
         {
             setupRx(initialContents, resetChangeThreshold, scheduler);
         }
 
         [OnDeserialized]
-        void setupRx(StreamingContext _) { setupRx(); }
+        private void setupRx(StreamingContext _)
+        { setupRx(); }
 
-        void setupRx(IEnumerable<T> initialContents = null, double resetChangeThreshold = 0.3, IScheduler scheduler = null)
+        private void setupRx(IEnumerable<T> initialContents = null, double resetChangeThreshold = 0.3, IScheduler scheduler = null)
         {
             scheduler = scheduler ?? RxApp.MainThreadScheduler;
 
-            _inner = _inner ?? new List<T>();
+            this._inner = this._inner ?? new List<T>();
 
-            _changing = new Subject<NotifyCollectionChangedEventArgs>();
-            _changing.Where(_ => this.areChangeNotificationsEnabled()).Subscribe(raiseCollectionChanging);
+            this._changing = new Subject<NotifyCollectionChangedEventArgs>();
+            this._changing.Where(_ => this.areChangeNotificationsEnabled()).Subscribe(this.raiseCollectionChanging);
 
-            _changed = new Subject<NotifyCollectionChangedEventArgs>();
-            _changed.Where(_ => this.areChangeNotificationsEnabled()).Subscribe(raiseCollectionChanged);
+            this._changed = new Subject<NotifyCollectionChangedEventArgs>();
+            this._changed.Where(_ => this.areChangeNotificationsEnabled()).Subscribe(this.raiseCollectionChanged);
 
-            ResetChangeThreshold = resetChangeThreshold;
+            this.ResetChangeThreshold = resetChangeThreshold;
 
-            _beforeItemsAdded = new Lazy<Subject<T>>(() => new Subject<T>());
-            _itemsAdded = new Lazy<Subject<T>>(() => new Subject<T>());
-            _beforeItemsRemoved = new Lazy<Subject<T>>(() => new Subject<T>());
-            _itemsRemoved = new Lazy<Subject<T>>(() => new Subject<T>());
-            _itemChanging = new Lazy<ISubject<IReactivePropertyChangedEventArgs<T>>>(() => new ScheduledSubject<IReactivePropertyChangedEventArgs<T>>(scheduler));
-            _itemChanged = new Lazy<ISubject<IReactivePropertyChangedEventArgs<T>>>(() => new ScheduledSubject<IReactivePropertyChangedEventArgs<T>>(scheduler));
-            _beforeItemsMoved = new Lazy<Subject<IMoveInfo<T>>>(() => new Subject<IMoveInfo<T>>());
-            _itemsMoved = new Lazy<Subject<IMoveInfo<T>>>(() => new Subject<IMoveInfo<T>>());
+            this._beforeItemsAdded = new Lazy<Subject<T>>(() => new Subject<T>());
+            this._itemsAdded = new Lazy<Subject<T>>(() => new Subject<T>());
+            this._beforeItemsRemoved = new Lazy<Subject<T>>(() => new Subject<T>());
+            this._itemsRemoved = new Lazy<Subject<T>>(() => new Subject<T>());
+            this._itemChanging = new Lazy<ISubject<IReactivePropertyChangedEventArgs<T>>>(() => new ScheduledSubject<IReactivePropertyChangedEventArgs<T>>(scheduler));
+            this._itemChanged = new Lazy<ISubject<IReactivePropertyChangedEventArgs<T>>>(() => new ScheduledSubject<IReactivePropertyChangedEventArgs<T>>(scheduler));
+            this._beforeItemsMoved = new Lazy<Subject<IMoveInfo<T>>>(() => new Subject<IMoveInfo<T>>());
+            this._itemsMoved = new Lazy<Subject<IMoveInfo<T>>>(() => new Subject<IMoveInfo<T>>());
 
-            // NB: We have to do this instead of initializing _inner so that
-            // Collection<T>'s accounting is correct
+            // NB: We have to do this instead of initializing _inner so that Collection<T>'s
+            // accounting is correct
             foreach (var item in initialContents ?? Enumerable.Empty<T>()) { Add(item); }
 
-            // NB: ObservableCollection has a Secret Handshake with WPF where 
-            // they fire an INPC notification with the token "Item[]". Emulate 
-            // it here
-            CountChanging.Where(_ => this.areChangeNotificationsEnabled()).Subscribe(_ => this.RaisePropertyChanging("Count"));
+            // NB: ObservableCollection has a Secret Handshake with WPF where they fire an INPC
+            // notification with the token "Item[]". Emulate it here
+            this.CountChanging.Where(_ => this.areChangeNotificationsEnabled()).Subscribe(_ => this.RaisePropertyChanging("Count"));
 
-            CountChanged.Where(_ => this.areChangeNotificationsEnabled()).Subscribe(_ => this.RaisePropertyChanged("Count"));
+            this.CountChanged.Where(_ => this.areChangeNotificationsEnabled()).Subscribe(_ => this.RaisePropertyChanged("Count"));
 
-            IsEmptyChanged.Where(_ => this.areChangeNotificationsEnabled()).Subscribe(_ => this.RaisePropertyChanged("IsEmpty"));
+            this.IsEmptyChanged.Where(_ => this.areChangeNotificationsEnabled()).Subscribe(_ => this.RaisePropertyChanged("IsEmpty"));
 
-            Changing.Where(_ => this.areChangeNotificationsEnabled()).Subscribe(_ => this.RaisePropertyChanging("Item[]"));
+            this.Changing.Where(_ => this.areChangeNotificationsEnabled()).Subscribe(_ => this.RaisePropertyChanging("Item[]"));
 
-            Changed.Where(_ => this.areChangeNotificationsEnabled()).Subscribe(_ => this.RaisePropertyChanged("Item[]"));
+            this.Changed.Where(_ => this.areChangeNotificationsEnabled()).Subscribe(_ => this.RaisePropertyChanged("Item[]"));
         }
 
+        /// <summary>
+        /// Gets a value indicating whether this instance is empty.
+        /// </summary>
+        /// <value><c>true</c> if this instance is empty; otherwise, <c>false</c>.</value>
         public bool IsEmpty
         {
             get { return this.Count == 0; }
         }
 
-
         /*
          * Collection<T> core methods
          */
 
+        /// <summary>
+        /// Inserts the item.
+        /// </summary>
+        /// <param name="index">The index.</param>
+        /// <param name="item">The item.</param>
         protected void InsertItem(int index, T item)
         {
             if (!this.areChangeNotificationsEnabled()) {
-                _inner.Insert(index, item);
-            
-                if (ChangeTrackingEnabled) addItemToPropertyTracking(item);
+                this._inner.Insert(index, item);
+
+                if (this.ChangeTrackingEnabled) addItemToPropertyTracking(item);
                 return;
             }
 
             var ea = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item, index);
 
-            _changing.OnNext(ea);
-            if (_beforeItemsAdded.IsValueCreated) _beforeItemsAdded.Value.OnNext(item);
+            this._changing.OnNext(ea);
+            if (this._beforeItemsAdded.IsValueCreated) this._beforeItemsAdded.Value.OnNext(item);
 
-            _inner.Insert(index, item);
+            this._inner.Insert(index, item);
 
-            _changed.OnNext(ea);
-            if (_itemsAdded.IsValueCreated) _itemsAdded.Value.OnNext(item);
+            this._changed.OnNext(ea);
+            if (this._itemsAdded.IsValueCreated) this._itemsAdded.Value.OnNext(item);
 
-            if (ChangeTrackingEnabled) addItemToPropertyTracking(item);
+            if (this.ChangeTrackingEnabled) addItemToPropertyTracking(item);
         }
 
+        /// <summary>
+        /// Removes the item.
+        /// </summary>
+        /// <param name="index">The index.</param>
         protected void RemoveItem(int index)
         {
-            var item = _inner[index];
+            var item = this._inner[index];
 
             if (!this.areChangeNotificationsEnabled()) {
-                _inner.RemoveAt(index);
-            
-                if (ChangeTrackingEnabled) removeItemFromPropertyTracking(item);
+                this._inner.RemoveAt(index);
+
+                if (this.ChangeTrackingEnabled) removeItemFromPropertyTracking(item);
                 return;
             }
 
             var ea = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, item, index);
 
-            _changing.OnNext(ea);
-            if (_beforeItemsRemoved.IsValueCreated) _beforeItemsRemoved.Value.OnNext(item);
+            this._changing.OnNext(ea);
+            if (this._beforeItemsRemoved.IsValueCreated) this._beforeItemsRemoved.Value.OnNext(item);
 
-            _inner.RemoveAt(index);
+            this._inner.RemoveAt(index);
 
-            _changed.OnNext(ea);
-            if (_itemsRemoved.IsValueCreated) _itemsRemoved.Value.OnNext(item);
-            if (ChangeTrackingEnabled) removeItemFromPropertyTracking(item);
+            this._changed.OnNext(ea);
+            if (this._itemsRemoved.IsValueCreated) this._itemsRemoved.Value.OnNext(item);
+            if (this.ChangeTrackingEnabled) removeItemFromPropertyTracking(item);
         }
 
+        /// <summary>
+        /// Moves the item.
+        /// </summary>
+        /// <param name="oldIndex">The old index.</param>
+        /// <param name="newIndex">The new index.</param>
         protected void MoveItem(int oldIndex, int newIndex)
         {
-            var item = _inner[oldIndex];
+            var item = this._inner[oldIndex];
 
             if (!this.areChangeNotificationsEnabled()) {
-                _inner.RemoveAt(oldIndex);
-                _inner.Insert(newIndex, item);
+                this._inner.RemoveAt(oldIndex);
+                this._inner.Insert(newIndex, item);
 
                 return;
             }
@@ -255,119 +324,132 @@ namespace ReactiveUI
             var ea = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Move, item, newIndex, oldIndex);
             var mi = new MoveInfo<T>(new[] { item }, oldIndex, newIndex);
 
-            _changing.OnNext(ea);
-            if (_beforeItemsMoved.IsValueCreated) _beforeItemsMoved.Value.OnNext(mi);
+            this._changing.OnNext(ea);
+            if (this._beforeItemsMoved.IsValueCreated) this._beforeItemsMoved.Value.OnNext(mi);
 
-            _inner.RemoveAt(oldIndex);
-            _inner.Insert(newIndex, item);
+            this._inner.RemoveAt(oldIndex);
+            this._inner.Insert(newIndex, item);
 
-            _changed.OnNext(ea);
-            if (_itemsMoved.IsValueCreated) _itemsMoved.Value.OnNext(mi);
+            this._changed.OnNext(ea);
+            if (this._itemsMoved.IsValueCreated) this._itemsMoved.Value.OnNext(mi);
         }
 
+        /// <summary>
+        /// Sets the item.
+        /// </summary>
+        /// <param name="index">The index.</param>
+        /// <param name="item">The item.</param>
         protected void SetItem(int index, T item)
         {
             if (!this.areChangeNotificationsEnabled()) {
-                
-                if (ChangeTrackingEnabled) {
-                    removeItemFromPropertyTracking(_inner[index]);
+                if (this.ChangeTrackingEnabled) {
+                    removeItemFromPropertyTracking(this._inner[index]);
                     addItemToPropertyTracking(item);
                 }
-                _inner[index] = item;
+                this._inner[index] = item;
 
                 return;
             }
 
-            var ea = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, item, _inner[index], index);
+            var ea = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, item, this._inner[index], index);
 
-            _changing.OnNext(ea);
+            this._changing.OnNext(ea);
 
-            if (ChangeTrackingEnabled) {
-                removeItemFromPropertyTracking(_inner[index]);
+            if (this.ChangeTrackingEnabled) {
+                removeItemFromPropertyTracking(this._inner[index]);
                 addItemToPropertyTracking(item);
             }
 
-            _inner[index] = item;
-            _changed.OnNext(ea);
+            this._inner[index] = item;
+            this._changed.OnNext(ea);
         }
 
+        /// <summary>
+        /// Clears the items.
+        /// </summary>
         protected void ClearItems()
         {
             if (!this.areChangeNotificationsEnabled()) {
-                _inner.Clear();
-            
-                if (ChangeTrackingEnabled) clearAllPropertyChangeWatchers();
+                this._inner.Clear();
+
+                if (this.ChangeTrackingEnabled) clearAllPropertyChangeWatchers();
                 return;
             }
 
             var ea = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset);
 
-            _changing.OnNext(ea);
-            _inner.Clear();
-            _changed.OnNext(ea);
+            this._changing.OnNext(ea);
+            this._inner.Clear();
+            this._changed.OnNext(ea);
 
-            if (ChangeTrackingEnabled) clearAllPropertyChangeWatchers();
+            if (this.ChangeTrackingEnabled) clearAllPropertyChangeWatchers();
         }
 
-
         /*
-         * List<T> methods we can make faster by possibly sending ShouldReset 
+         * List<T> methods we can make faster by possibly sending ShouldReset
          * notifications instead of thrashing the UI by readding items
          * one at a time
          */
 
+        /// <summary>
+        /// Adds the range.
+        /// </summary>
+        /// <param name="collection">The collection.</param>
+        /// <exception cref="System.ArgumentNullException">collection</exception>
         public virtual void AddRange(IEnumerable<T> collection)
         {
-            if (collection == null)
-            {
-                throw new ArgumentNullException("collection");
+            if (collection == null) {
+                throw new ArgumentNullException(nameof(collection));
             }
 
-            // we need list to implement at least IEnumerable<T> and IList
-            // because NotifyCollectionChangedEventArgs expects an IList
+            // we need list to implement at least IEnumerable<T> and IList because
+            // NotifyCollectionChangedEventArgs expects an IList
             var list = collection as List<T> ?? collection.ToList();
             var disp = isLengthAboveResetThreshold(list.Count)
                 ? SuppressChangeNotifications() : Disposable.Empty;
 
             using (disp) {
+
                 // reset notification
                 if (!this.areChangeNotificationsEnabled()) {
-                    _inner.AddRange(list);
-                 
-                    if (ChangeTrackingEnabled) {
+                    this._inner.AddRange(list);
+
+                    if (this.ChangeTrackingEnabled) {
                         foreach (var item in list) {
                             addItemToPropertyTracking(item);
                         }
                     }
                 }
+
                 // range notification
                 else if (RxApp.SupportsRangeNotifications) {
-                    var ea = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, list, _inner.Count/*we are appending a range*/);
+                    var ea = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, list, this._inner.Count/*we are appending a range*/);
 
-                    _changing.OnNext(ea);
+                    this._changing.OnNext(ea);
 
-                    if (_beforeItemsAdded.IsValueCreated) {
+                    if (this._beforeItemsAdded.IsValueCreated) {
                         foreach (var item in list) {
-                            _beforeItemsAdded.Value.OnNext(item);
+                            this._beforeItemsAdded.Value.OnNext(item);
                         }
                     }
 
-                    _inner.AddRange(list);
+                    this._inner.AddRange(list);
 
-                    _changed.OnNext(ea);
-                    if (_itemsAdded.IsValueCreated) {
+                    this._changed.OnNext(ea);
+                    if (this._itemsAdded.IsValueCreated) {
                         foreach (var item in list) {
-                            _itemsAdded.Value.OnNext(item);
+                            this._itemsAdded.Value.OnNext(item);
                         }
                     }
 
-                    if (ChangeTrackingEnabled) {
+                    if (this.ChangeTrackingEnabled) {
                         foreach (var item in list) {
                             addItemToPropertyTracking(item);
                         }
                     }
                 } else {
-                    // per item notification                
+
+                    // per item notification
                     foreach (var item in list) {
                         this.Add(item);
                     }
@@ -375,57 +457,65 @@ namespace ReactiveUI
             }
         }
 
+        /// <summary>
+        /// Inserts the range.
+        /// </summary>
+        /// <param name="index">The index.</param>
+        /// <param name="collection">The collection.</param>
+        /// <exception cref="System.ArgumentNullException">collection</exception>
         public virtual void InsertRange(int index, IEnumerable<T> collection)
         {
-            if (collection == null)
-            {
-                throw new ArgumentNullException("collection");
+            if (collection == null) {
+                throw new ArgumentNullException(nameof(collection));
             }
 
-            // we need list to implement at least IEnumerable<T> and IList
-            // because NotifyCollectionChangedEventArgs expects an IList
+            // we need list to implement at least IEnumerable<T> and IList because
+            // NotifyCollectionChangedEventArgs expects an IList
             var list = collection as List<T> ?? collection.ToList();
             var disp = isLengthAboveResetThreshold(list.Count) ?
                 SuppressChangeNotifications() : Disposable.Empty;
 
             using (disp) {
+
                 // reset notification
                 if (!this.areChangeNotificationsEnabled()) {
-                    _inner.InsertRange(index, list);
+                    this._inner.InsertRange(index, list);
 
-                    if (ChangeTrackingEnabled) {
+                    if (this.ChangeTrackingEnabled) {
                         foreach (var item in list) {
                             addItemToPropertyTracking(item);
                         }
                     }
                 }
+
                 // range notification
                 else if (RxApp.SupportsRangeNotifications) {
                     var ea = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, list, index);
 
-                    _changing.OnNext(ea);
-                    if (_beforeItemsAdded.IsValueCreated) {
+                    this._changing.OnNext(ea);
+                    if (this._beforeItemsAdded.IsValueCreated) {
                         foreach (var item in list) {
-                            _beforeItemsAdded.Value.OnNext(item);
+                            this._beforeItemsAdded.Value.OnNext(item);
                         }
                     }
 
-                    _inner.InsertRange(index, list);
+                    this._inner.InsertRange(index, list);
 
-                    _changed.OnNext(ea);
-                    if (_itemsAdded.IsValueCreated) {
+                    this._changed.OnNext(ea);
+                    if (this._itemsAdded.IsValueCreated) {
                         foreach (var item in list) {
-                            _itemsAdded.Value.OnNext(item);
+                            this._itemsAdded.Value.OnNext(item);
                         }
                     }
 
-                    if (ChangeTrackingEnabled) {
+                    if (this.ChangeTrackingEnabled) {
                         foreach (var item in list) {
                             addItemToPropertyTracking(item);
                         }
                     }
                 } else {
-                    // per item notification                
+
+                    // per item notification
                     foreach (var item in list) {
                         this.Insert(index++, item);
                     }
@@ -433,6 +523,11 @@ namespace ReactiveUI
             }
         }
 
+        /// <summary>
+        /// Removes the range.
+        /// </summary>
+        /// <param name="index">The index.</param>
+        /// <param name="count">The count.</param>
         public virtual void RemoveRange(int index, int count)
         {
             var disp = isLengthAboveResetThreshold(count) ?
@@ -442,45 +537,47 @@ namespace ReactiveUI
                 var items = new List<T>(count);
 
                 foreach (var i in Enumerable.Range(index, count)) {
-                    items.Add(_inner[i]);
+                    items.Add(this._inner[i]);
                 }
 
                 // reset notification
                 if (!this.areChangeNotificationsEnabled()) {
-                    _inner.RemoveRange(index,count);
+                    this._inner.RemoveRange(index, count);
 
-                    if (ChangeTrackingEnabled) {
+                    if (this.ChangeTrackingEnabled) {
                         foreach (var item in items) {
                             removeItemFromPropertyTracking(item);
                         }
                     }
                 }
+
                 // range notification
                 else if (RxApp.SupportsRangeNotifications) {
                     var ea = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, items, index);
 
-                    _changing.OnNext(ea);
-                    if (_beforeItemsRemoved.IsValueCreated) {
+                    this._changing.OnNext(ea);
+                    if (this._beforeItemsRemoved.IsValueCreated) {
                         foreach (var item in items) {
-                            _beforeItemsRemoved.Value.OnNext(item);
+                            this._beforeItemsRemoved.Value.OnNext(item);
                         }
                     }
 
-                    _inner.RemoveRange(index, count);
-                    _changed.OnNext(ea);
+                    this._inner.RemoveRange(index, count);
+                    this._changed.OnNext(ea);
 
-                    if (ChangeTrackingEnabled) {
+                    if (this.ChangeTrackingEnabled) {
                         foreach (var item in items) {
                             removeItemFromPropertyTracking(item);
                         }
                     }
 
-                    if (_itemsRemoved.IsValueCreated) {
+                    if (this._itemsRemoved.IsValueCreated) {
                         foreach (var item in items) {
-                            _itemsRemoved.Value.OnNext(item);
+                            this._itemsRemoved.Value.OnNext(item);
                         }
                     }
                 } else {
+
                     // per item notification
                     foreach (var item in items) {
                         this.Remove(item);
@@ -489,85 +586,125 @@ namespace ReactiveUI
             }
         }
 
+        /// <summary>
+        /// Removes all.
+        /// </summary>
+        /// <param name="items">The items.</param>
+        /// <exception cref="System.ArgumentNullException">items</exception>
         public virtual void RemoveAll(IEnumerable<T> items)
         {
-            if (items == null)
-            {
-                throw new ArgumentNullException("items");
+            if (items == null) {
+                throw new ArgumentNullException(nameof(items));
             }
 
             var disp = isLengthAboveResetThreshold(items.Count()) ?
                 SuppressChangeNotifications() : Disposable.Empty;
 
             using (disp) {
-                // NB: If we don't do this, we'll break Collection<T>'s
-                // accounting of the length
+
+                // NB: If we don't do this, we'll break Collection<T>'s accounting of the length
                 foreach (var v in items) {
                     Remove(v);
                 }
             }
         }
 
+        /// <summary>
+        /// Sorts the specified index.
+        /// </summary>
+        /// <param name="index">The index.</param>
+        /// <param name="count">The count.</param>
+        /// <param name="comparer">The comparer.</param>
         public virtual void Sort(int index, int count, IComparer<T> comparer)
         {
-            _inner.Sort(index, count, comparer);
+            this._inner.Sort(index, count, comparer);
             Reset();
         }
 
+        /// <summary>
+        /// Sorts the specified comparison.
+        /// </summary>
+        /// <param name="comparison">The comparison.</param>
         public virtual void Sort(Comparison<T> comparison)
         {
-            _inner.Sort(comparison);
+            this._inner.Sort(comparison);
             Reset();
         }
 
+        /// <summary>
+        /// Sorts the specified comparer.
+        /// </summary>
+        /// <param name="comparer">The comparer.</param>
         public virtual void Sort(IComparer<T> comparer = null)
         {
-            _inner.Sort(comparer ?? Comparer<T>.Default);
+            this._inner.Sort(comparer ?? Comparer<T>.Default);
             Reset();
         }
 
+        /// <summary>
+        /// Resets this instance.
+        /// </summary>
         public virtual void Reset()
         {
             publishResetNotification();
         }
-        
+
+        /// <summary>
+        /// Publishes the reset notification.
+        /// </summary>
         protected virtual void publishResetNotification()
         {
             var ea = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset);
-            _changing.OnNext(ea);
-            _changed.OnNext(ea);
+            this._changing.OnNext(ea);
+            this._changed.OnNext(ea);
         }
 
-        bool isLengthAboveResetThreshold(int toChangeLength)
+        private bool isLengthAboveResetThreshold(int toChangeLength)
         {
-            return (double) toChangeLength/_inner.Count > ResetChangeThreshold &&
+            return (double)toChangeLength / this._inner.Count > this.ResetChangeThreshold &&
                 toChangeLength > 10;
         }
-        
+
         /*
          * IReactiveCollection<T>
          */
-        public bool ChangeTrackingEnabled {
-            get { return _propertyChangeWatchers != null; }
-            set {
-                if (_propertyChangeWatchers != null && value) return;
-                if (_propertyChangeWatchers == null && !value) return;
+
+        /// <summary>
+        /// Enables the ItemChanging and ItemChanged properties; when this is enabled, whenever a
+        /// property on any object implementing IReactiveNotifyPropertyChanged changes, the change
+        /// will be rebroadcast through ItemChanging/ItemChanged.
+        /// </summary>
+        public bool ChangeTrackingEnabled
+        {
+            get
+            {
+                return this._propertyChangeWatchers != null;
+            }
+
+            set
+            {
+                if (this._propertyChangeWatchers != null && value) return;
+                if (this._propertyChangeWatchers == null && !value) return;
 
                 if (value) {
-                    _propertyChangeWatchers = new Dictionary<object, RefcountDisposeWrapper>();
-                    foreach (var item in _inner) { addItemToPropertyTracking(item); }
+                    this._propertyChangeWatchers = new Dictionary<object, RefcountDisposeWrapper>();
+                    foreach (var item in this._inner) { addItemToPropertyTracking(item); }
                 } else {
                     clearAllPropertyChangeWatchers();
-                    _propertyChangeWatchers = null;
+                    this._propertyChangeWatchers = null;
                 }
             }
         }
 
+        /// <summary>
+        /// Suppresses the change notifications.
+        /// </summary>
+        /// <returns></returns>
         public IDisposable SuppressChangeNotifications()
         {
-            Interlocked.Increment(ref _resetNotificationCount);
+            Interlocked.Increment(ref this._resetNotificationCount);
 
-            if (!_hasWhinedAboutNoResetSub && _resetSubCount == 0) {
+            if (!_hasWhinedAboutNoResetSub && this._resetSubCount == 0) {
                 LogHost.Default.Warn("SuppressChangeNotifications was called (perhaps via AddRange), yet you do not");
                 LogHost.Default.Warn("have a subscription to ShouldReset. This probably isn't what you want, as ItemsAdded");
                 LogHost.Default.Warn("and friends will appear to 'miss' items");
@@ -575,60 +712,125 @@ namespace ReactiveUI
             }
 
             return new CompositeDisposable(this.suppressChangeNotifications(), Disposable.Create(() => {
-                if (Interlocked.Decrement(ref _resetNotificationCount) == 0){
+                if (Interlocked.Decrement(ref this._resetNotificationCount) == 0) {
                     publishResetNotification();
                 }
             }));
         }
 
-        public IObservable<T> BeforeItemsAdded { get { return _beforeItemsAdded.Value; } }
-        public IObservable<T> ItemsAdded { get { return _itemsAdded.Value; } }
+        /// <summary>
+        /// Fires before an item is going to be added to the collection.
+        /// </summary>
+        public IObservable<T> BeforeItemsAdded { get { return this._beforeItemsAdded.Value; } }
 
-        public IObservable<T> BeforeItemsRemoved { get { return _beforeItemsRemoved.Value; } }
-        public IObservable<T> ItemsRemoved { get { return _itemsRemoved.Value; } }
+        /// <summary>
+        /// Fires when items are added to the collection, once per item added. Functions that add
+        /// multiple items such AddRange should fire this multiple times. The object provided is the
+        /// item that was added.
+        /// </summary>
+        public IObservable<T> ItemsAdded { get { return this._itemsAdded.Value; } }
 
-        public IObservable<IMoveInfo<T>> BeforeItemsMoved { get { return _beforeItemsMoved.Value; } }
-        public IObservable<IMoveInfo<T>> ItemsMoved { get { return _itemsMoved.Value; } }
+        /// <summary>
+        /// Fires before an item will be removed from a collection, providing the item that will be removed.
+        /// </summary>
+        public IObservable<T> BeforeItemsRemoved { get { return this._beforeItemsRemoved.Value; } }
 
-        public IObservable<IReactivePropertyChangedEventArgs<T>> ItemChanging { get { return _itemChanging.Value; } }
-        public IObservable<IReactivePropertyChangedEventArgs<T>> ItemChanged { get { return _itemChanged.Value; } }
-        
-        public IObservable<int> CountChanging {
-            get { return _changing.Select(_ => _inner.Count).DistinctUntilChanged(); }
+        /// <summary>
+        /// Fires once an item has been removed from a collection, providing the item that was removed.
+        /// </summary>
+        public IObservable<T> ItemsRemoved { get { return this._itemsRemoved.Value; } }
+
+        /// <summary>
+        /// Fires before an items moves from one position in the collection to another, providing the
+        /// item(s) to be moved as well as source and destination indices.
+        /// </summary>
+        public IObservable<IMoveInfo<T>> BeforeItemsMoved { get { return this._beforeItemsMoved.Value; } }
+
+        /// <summary>
+        /// Fires once one or more items moves from one position in the collection to another,
+        /// providing the item(s) that was moved as well as source and destination indices.
+        /// </summary>
+        public IObservable<IMoveInfo<T>> ItemsMoved { get { return this._itemsMoved.Value; } }
+
+        /// <summary>
+        /// Provides Item Changing notifications for any item in collection that implements
+        /// IReactiveNotifyPropertyChanged. This is only enabled when ChangeTrackingEnabled is set to True.
+        /// </summary>
+        public IObservable<IReactivePropertyChangedEventArgs<T>> ItemChanging { get { return this._itemChanging.Value; } }
+
+        /// <summary>
+        /// Provides Item Changed notifications for any item in collection that implements
+        /// IReactiveNotifyPropertyChanged. This is only enabled when ChangeTrackingEnabled is set to True.
+        /// </summary>
+        public IObservable<IReactivePropertyChangedEventArgs<T>> ItemChanged { get { return this._itemChanged.Value; } }
+
+        /// <summary>
+        /// Fires when the collection count changes, regardless of reason
+        /// </summary>
+        public IObservable<int> CountChanging
+        {
+            get { return this._changing.Select(_ => this._inner.Count).DistinctUntilChanged(); }
         }
 
-        public IObservable<int> CountChanged {
-            get { return _changed.Select(_ => _inner.Count).DistinctUntilChanged(); }
+        /// <summary>
+        /// Fires when the collection count changes, regardless of reason
+        /// </summary>
+        public IObservable<int> CountChanged
+        {
+            get { return this._changed.Select(_ => this._inner.Count).DistinctUntilChanged(); }
         }
 
-        public IObservable<bool> IsEmptyChanged {
-            get { return _changed.Select(_ => _inner.Count == 0).DistinctUntilChanged(); }
+        /// <summary>
+        /// Gets the is empty changed.
+        /// </summary>
+        /// <value>The is empty changed.</value>
+        public IObservable<bool> IsEmptyChanged
+        {
+            get { return this._changed.Select(_ => this._inner.Count == 0).DistinctUntilChanged(); }
         }
 
-        public IObservable<NotifyCollectionChangedEventArgs> Changing {
-            get { return _changing; }
+        /// <summary>
+        /// This Observable is equivalent to the NotifyCollectionChanged event, but fires before the
+        /// collection is changed
+        /// </summary>
+        public IObservable<NotifyCollectionChangedEventArgs> Changing
+        {
+            get { return this._changing; }
         }
 
-        public IObservable<NotifyCollectionChangedEventArgs> Changed {
-            get { return _changed; }
+        /// <summary>
+        /// This Observable is equivalent to the NotifyCollectionChanged event, and fires after the
+        /// collection is changed
+        /// </summary>
+        public IObservable<NotifyCollectionChangedEventArgs> Changed
+        {
+            get { return this._changed; }
         }
 
-        public IObservable<Unit> ShouldReset {
-            get {
-                return refcountSubscribers(_changed.SelectMany(x =>
+        /// <summary>
+        /// This Observable is fired when a ShouldReset fires on the collection. This means that you
+        /// should forget your previous knowledge of the state of the collection and reread it. This
+        /// does *not* mean Clear, and if you interpret it as such, you are Doing It Wrong.
+        /// </summary>
+        public IObservable<Unit> ShouldReset
+        {
+            get
+            {
+                return refcountSubscribers(this._changed.SelectMany(x =>
                     x.Action != NotifyCollectionChangedAction.Reset ?
                         Observable<Unit>.Empty :
-                        Observables.Unit), x => _resetSubCount += x);
+                        Observables.Unit), x => this._resetSubCount += x);
             }
         }
-        
+
         /*
          * Property Change Tracking
          */
-        void addItemToPropertyTracking(T toTrack)
+
+        private void addItemToPropertyTracking(T toTrack)
         {
-            if (_propertyChangeWatchers.ContainsKey(toTrack)) {
-                _propertyChangeWatchers[toTrack].AddRef();
+            if (this._propertyChangeWatchers.ContainsKey(toTrack)) {
+                this._propertyChangeWatchers[toTrack].AddRef();
                 return;
             }
 
@@ -650,30 +852,30 @@ namespace ReactiveUI
 
             this.Log().Warn("Property change notifications are enabled and type {0} isn't INotifyPropertyChanged or IReactiveObject", typeof(T));
 
-        isSetup:
+            isSetup:
             var toDispose = new[] {
-                changing.Where(_ => this.areChangeNotificationsEnabled()).Subscribe(_itemChanging.Value.OnNext),
-                changed.Where(_ => this.areChangeNotificationsEnabled()).Subscribe(_itemChanged.Value.OnNext),
+                changing.Where(_ => this.areChangeNotificationsEnabled()).Subscribe(this._itemChanging.Value.OnNext),
+                changed.Where(_ => this.areChangeNotificationsEnabled()).Subscribe(this._itemChanged.Value.OnNext),
             };
 
-            _propertyChangeWatchers.Add(toTrack, 
+            this._propertyChangeWatchers.Add(toTrack,
                 new RefcountDisposeWrapper(Disposable.Create(() => {
                     toDispose[0].Dispose(); toDispose[1].Dispose();
-                    _propertyChangeWatchers.Remove(toTrack);
-            })));
+                    this._propertyChangeWatchers.Remove(toTrack);
+                })));
         }
 
-        void removeItemFromPropertyTracking(T toUntrack)
+        private void removeItemFromPropertyTracking(T toUntrack)
         {
-            _propertyChangeWatchers[toUntrack].Release();
+            this._propertyChangeWatchers[toUntrack].Release();
         }
 
-        void clearAllPropertyChangeWatchers()
+        private void clearAllPropertyChangeWatchers()
         {
-            while (_propertyChangeWatchers.Count > 0) _propertyChangeWatchers.Values.First().Release();
+            while (this._propertyChangeWatchers.Count > 0) this._propertyChangeWatchers.Values.First().Release();
         }
 
-        static IObservable<TObs> refcountSubscribers<TObs>(IObservable<TObs> input, Action<int> block)
+        private static IObservable<TObs> refcountSubscribers<TObs>(IObservable<TObs> input, Action<int> block)
         {
             return Observable.Create<TObs>(subj => {
                 block(1);
@@ -684,29 +886,53 @@ namespace ReactiveUI
             });
         }
 
-        #region Super Boring IList crap
-
-        // The BinarySearch methods aren't technically on IList<T>, they're implemented straight on List<T>
-        // but by proxying this call we can make use of the nice built in methods that operate on the internal
-        // array of the inner list instead of jumping around proxying through the index.
+        /// <summary>
+        /// The BinarySearch methods aren't technically on IList'T', they're implemented straight on
+        /// List'T' but by proxying this call we can make use of the nice built in methods that
+        /// operate on the internal array of the inner list instead of jumping around proxying
+        /// through the index.
+        /// </summary>
+        /// <param name="item">The item.</param>
+        /// <returns></returns>
         public int BinarySearch(T item)
         {
-            return _inner.BinarySearch(item);
+            return this._inner.BinarySearch(item);
         }
 
+        /// <summary>
+        /// Binaries the search.
+        /// </summary>
+        /// <param name="item">The item.</param>
+        /// <param name="comparer">The comparer.</param>
+        /// <returns></returns>
         public int BinarySearch(T item, IComparer<T> comparer)
         {
-            return _inner.BinarySearch(item, comparer);
+            return this._inner.BinarySearch(item, comparer);
         }
 
+        /// <summary>
+        /// Binaries the search.
+        /// </summary>
+        /// <param name="index">The index.</param>
+        /// <param name="count">The count.</param>
+        /// <param name="item">The item.</param>
+        /// <param name="comparer">The comparer.</param>
+        /// <returns></returns>
         public int BinarySearch(int index, int count, T item, IComparer<T> comparer)
         {
-            return _inner.BinarySearch(index, count, item, comparer);
+            return this._inner.BinarySearch(index, count, item, comparer);
         }
 
+        /// <summary>
+        /// Returns an enumerator that iterates through the collection.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="T:System.Collections.Generic.IEnumerator`1"/> that can be used to iterate
+        /// through the collection.
+        /// </returns>
         public IEnumerator<T> GetEnumerator()
         {
-            return _inner.GetEnumerator();
+            return this._inner.GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -714,70 +940,145 @@ namespace ReactiveUI
             return GetEnumerator();
         }
 
+        /// <summary>
+        /// Adds an item to the <see cref="T:System.Collections.Generic.ICollection`1"/>.
+        /// </summary>
+        /// <param name="item">The object to add to the <see cref="T:System.Collections.Generic.ICollection`1"/>.</param>
         public virtual void Add(T item)
         {
-            InsertItem(_inner.Count, item);
+            InsertItem(this._inner.Count, item);
         }
 
+        /// <summary>
+        /// Removes all items from the <see cref="T:System.Collections.Generic.ICollection`1"/>.
+        /// </summary>
         public virtual void Clear()
         {
             ClearItems();
         }
 
+        /// <summary>
+        /// Determines whether the <see cref="T:System.Collections.Generic.ICollection`1"/> contains
+        /// a specific value.
+        /// </summary>
+        /// <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.ICollection`1"/>.</param>
+        /// <returns>
+        /// true if <paramref name="item"/> is found in the <see
+        /// cref="T:System.Collections.Generic.ICollection`1"/>; otherwise, false.
+        /// </returns>
         public bool Contains(T item)
         {
-            return _inner.Contains(item);
+            return this._inner.Contains(item);
         }
 
+        /// <summary>
+        /// Copies the elements of the <see cref="T:System.Collections.Generic.ICollection`1"/> to an
+        /// <see cref="T:System.Array"/>, starting at a particular <see cref="T:System.Array"/> index.
+        /// </summary>
+        /// <param name="array">
+        /// The one-dimensional <see cref="T:System.Array"/> that is the destination of the elements
+        /// copied from <see cref="T:System.Collections.Generic.ICollection`1"/>. The <see
+        /// cref="T:System.Array"/> must have zero-based indexing.
+        /// </param>
+        /// <param name="arrayIndex">
+        /// The zero-based index in <paramref name="array"/> at which copying begins.
+        /// </param>
         public void CopyTo(T[] array, int arrayIndex)
         {
-            _inner.CopyTo(array, arrayIndex);
+            this._inner.CopyTo(array, arrayIndex);
         }
 
+        /// <summary>
+        /// Removes the first occurrence of a specific object from the <see cref="T:System.Collections.Generic.ICollection`1"/>.
+        /// </summary>
+        /// <param name="item">The object to remove from the <see cref="T:System.Collections.Generic.ICollection`1"/>.</param>
+        /// <returns>
+        /// true if <paramref name="item"/> was successfully removed from the <see
+        /// cref="T:System.Collections.Generic.ICollection`1"/>; otherwise, false. This method also
+        /// returns false if <paramref name="item"/> is not found in the original <see cref="T:System.Collections.Generic.ICollection`1"/>.
+        /// </returns>
         public virtual bool Remove(T item)
         {
-            int index = _inner.IndexOf(item);
+            int index = this._inner.IndexOf(item);
             if (index < 0) return false;
 
             RemoveItem(index);
             return true;
         }
 
-        public int Count { get { return _inner.Count; } }
+        /// <summary>
+        /// Gets the number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1"/>.
+        /// </summary>
+        public int Count { get { return this._inner.Count; } }
 
+        /// <summary>
+        /// Gets a value indicating whether the <see
+        /// cref="T:System.Collections.Generic.ICollection`1"/> is read-only.
+        /// </summary>
         public virtual bool IsReadOnly { get { return false; } }
 
+        /// <summary>
+        /// Determines the index of a specific item in the <see cref="T:System.Collections.Generic.IList`1"/>.
+        /// </summary>
+        /// <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.IList`1"/>.</param>
+        /// <returns>The index of <paramref name="item"/> if found in the list; otherwise, -1.</returns>
         public int IndexOf(T item)
         {
-            return _inner.IndexOf(item);
+            return this._inner.IndexOf(item);
         }
 
+        /// <summary>
+        /// Inserts an item to the <see cref="T:System.Collections.Generic.IList`1"/> at the
+        /// specified index.
+        /// </summary>
+        /// <param name="index">
+        /// The zero-based index at which <paramref name="item"/> should be inserted.
+        /// </param>
+        /// <param name="item">The object to insert into the <see cref="T:System.Collections.Generic.IList`1"/>.</param>
         public virtual void Insert(int index, T item)
         {
             InsertItem(index, item);
         }
 
+        /// <summary>
+        /// Removes the <see cref="T:System.Collections.Generic.IList`1"/> item at the specified index.
+        /// </summary>
+        /// <param name="index">The zero-based index of the item to remove.</param>
         public virtual void RemoveAt(int index)
         {
             RemoveItem(index);
         }
 
 #if !SILVERLIGHT
+
+        /// <summary>
+        /// Moves the specified old index.
+        /// </summary>
+        /// <param name="oldIndex">The old index.</param>
+        /// <param name="newIndex">The new index.</param>
         public virtual void Move(int oldIndex, int newIndex)
         {
             MoveItem(oldIndex, newIndex);
         }
+
 #endif
 
-        public virtual T this[int index] {
-            get { return _inner[index]; }
+        /// <summary>
+        /// Gets or sets the item at the specified index.
+        /// </summary>
+        /// <value>The item.</value>
+        /// <param name="index">The index.</param>
+        /// <returns></returns>
+        public virtual T this[int index]
+        {
+            get { return this._inner[index]; }
             set { SetItem(index, value); }
         }
 
         int IList.Add(object value)
         {
             Add((T)value);
-            return Count - 1;
+            return this.Count - 1;
         }
 
         bool IList.Contains(object value)
@@ -810,7 +1111,7 @@ namespace ReactiveUI
 
         void ICollection.CopyTo(Array array, int index)
         {
-            ((IList)_inner).CopyTo(array, index);
+            ((IList)this._inner).CopyTo(array, index);
         }
 
         bool ICollection.IsSynchronized { get { return false; } }
@@ -821,27 +1122,46 @@ namespace ReactiveUI
         {
             return ((value is T) || ((value == null) && (default(T) == null)));
         }
-        #endregion
     }
 
+    /// <summary>
+    /// interface for Move Info
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public interface IMoveInfo<out T>
     {
+        /// <summary>
+        /// Gets the moved items.
+        /// </summary>
+        /// <value>The moved items.</value>
         IEnumerable<T> MovedItems { get; }
+
+        /// <summary>
+        /// Gets from.
+        /// </summary>
+        /// <value>From.</value>
         int From { get; }
+
+        /// <summary>
+        /// Gets to.
+        /// </summary>
+        /// <value>To.</value>
         int To { get; }
     }
 
     internal class MoveInfo<T> : IMoveInfo<T>
     {
         public IEnumerable<T> MovedItems { get; protected set; }
+
         public int From { get; protected set; }
+
         public int To { get; protected set; }
 
         public MoveInfo(IEnumerable<T> movedItems, int from, int to)
         {
-            MovedItems = movedItems;
-            From = from;
-            To = to;
+            this.MovedItems = movedItems;
+            this.From = from;
+            this.To = to;
         }
     }
 }

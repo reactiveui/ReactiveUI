@@ -1,10 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Windows;
 using System.Reactive.Concurrency;
 
 #if UNIFIED && UIKIT
@@ -13,7 +7,7 @@ using NSApplication = UIKit.UIApplication;
 #elif UIKIT
 using MonoTouch.UIKit;
 using NSApplication = MonoTouch.UIKit.UIApplication;
-#endif 
+#endif
 
 #if COCOA && !UIKIT && !UNIFIED
 using MonoMac.AppKit;
@@ -22,12 +16,15 @@ using MonoMac.AppKit;
 namespace ReactiveUI
 {
     /// <summary>
-    /// Ignore me. This class is a secret handshake between RxUI and RxUI.Xaml
-    /// in order to register certain classes on startup that would be difficult
-    /// to register otherwise.
+    /// Ignore me. This class is a secret handshake between RxUI and RxUI.Xaml in order to register
+    /// certain classes on startup that would be difficult to register otherwise.
     /// </summary>
     public class PlatformRegistrations : IWantsToRegisterStuff
     {
+        /// <summary>
+        /// Registers the specified register function.
+        /// </summary>
+        /// <param name="registerFunction">The register function.</param>
         public void Register(Action<Func<object>, Type> registerFunction)
         {
             registerFunction(() => new PlatformOperations(), typeof(IPlatformOperations));

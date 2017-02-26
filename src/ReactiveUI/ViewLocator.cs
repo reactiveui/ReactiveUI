@@ -5,8 +5,19 @@ using Splat;
 
 namespace ReactiveUI
 {
+    /// <summary>
+    /// View Locator
+    /// </summary>
     public static class ViewLocator
     {
+        /// <summary>
+        /// Gets the current.
+        /// </summary>
+        /// <value>The current.</value>
+        /// <exception cref="System.Exception">
+        /// Could not find a default ViewLocator. This should never happen, your dependency resolver
+        /// is broken
+        /// </exception>
         public static IViewLocator Current
         {
             get
@@ -24,7 +35,7 @@ namespace ReactiveUI
     {
         public DefaultViewLocator(Func<string, string> viewModelToViewFunc = null)
         {
-            ViewModelToViewFunc = viewModelToViewFunc ?? (vm => vm.Replace("ViewModel", "View"));
+            this.ViewModelToViewFunc = viewModelToViewFunc ?? (vm => vm.Replace("ViewModel", "View"));
         }
 
         /// <summary>
@@ -32,64 +43,41 @@ namespace ReactiveUI
         /// </summary>
         /// <remarks>
         /// <para>
-        /// If unset, the default behavior is to change "ViewModel" to "View". If a different convention is followed, assign an appropriate function to this
-        /// property.
+        /// If unset, the default behavior is to change "ViewModel" to "View". If a different
+        /// convention is followed, assign an appropriate function to this property.
         /// </para>
         /// <para>
-        /// Note that the name returned by the function is a starting point for view resolution. Variants on the name will be resolved according to the rules
-        /// set out by the <see cref="ResolveView"/> method.
+        /// Note that the name returned by the function is a starting point for view resolution.
+        /// Variants on the name will be resolved according to the rules set out by the <see
+        /// cref="ResolveView"/> method.
         /// </para>
         /// </remarks>
         public Func<string, string> ViewModelToViewFunc { get; set; }
 
         /// <summary>
-        /// Returns the view associated with a view model, deriving the name of the type via <see cref="ViewModelToViewFunc"/>, then discovering it via the
-        /// service locator.
+        /// Returns the view associated with a view model, deriving the name of the type via <see
+        /// cref="ViewModelToViewFunc"/>, then discovering it via the service locator.
         /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="contract"/>
         /// <remarks>
-        /// <para>
-        /// Given view model type <c>T</c> with runtime type <c>RT</c>, this implementation will attempt to resolve the following views:
-        /// <list type="number">
-        /// <item>
-        /// <description>
-        /// Look for a service registered under the type whose name is given to us by passing <c>RT</c> to <see cref="ViewModelToViewFunc"/> (which defaults to changing "ViewModel" to "View").
-        /// </description>
-        /// </item>
-        /// <item>
-        /// <description>
-        /// Look for a service registered under the type <c>IViewFor&lt;RT&gt;</c>.
-        /// </description>
-        /// </item>
-        /// <item>
-        /// <item>
-        /// <description>
-        /// Look for a service registered under the type whose name is given to us by passing <c>T</c> to <see cref="ViewModelToViewFunc"/> (which defaults to changing "ViewModel" to "View").
-        /// </description>
-        /// </item>
-        /// <item>
-        /// <description>
-        /// Look for a service registered under the type <c>IViewFor&lt;T&gt;</c>.
-        /// </description>
-        /// </item>
-        /// <item>
-        /// <description>
-        /// If <c>T</c> is an interface, change its name to that of a class (i.e. drop the leading "I"). If it's a class, change to an interface (i.e. add a leading "I").
-        /// </description>
-        /// </item>
-        /// <item>
-        /// <description>
-        /// Repeat steps 1 and 2 with the type resolved from the modified name.
-        /// </description>
-        /// </item>
-        /// </list>
-        /// </para>
+        /// Given view model type <c>T</c> with runtime type <c>RT</c>, this implementation will
+        /// attempt to resolve the following views:
+        /// <list type="number"/>
         /// </remarks>
-        /// <param name="viewModel">
-        /// The view model whose associated view is to be resolved.
-        /// </param>
-        /// <returns>
-        /// The view associated with the given view model.
-        /// </returns>
+        /// <description>
+        /// Look for a service registered under the type whose name is given to us by passing
+        /// <c>RT</c> to <see cref="ViewModelToViewFunc"/> (which defaults to changing "ViewModel" to
+        /// "View"). Look for a service registered under the type <c>IViewFor&lt;RT&gt;</c>. Look for
+        /// a service registered under the type whose name is given to us by passing <c>T</c> to <see
+        /// cref="ViewModelToViewFunc"/> (which defaults to changing "ViewModel" to "View"). Look for
+        /// a service registered under the type <c>IViewFor&lt;T&gt;</c>. If <c>T</c> is an
+        /// interface, change its name to that of a class (i.e. drop the leading "I"). If it's a
+        /// class, change to an interface (i.e. add a leading "I"). Repeat steps 1 and 2 with the
+        /// type resolved from the modified name.
+        /// </description>
+        /// <param name="viewModel">The view model whose associated view is to be resolved.</param>
+        /// <returns>The view associated with the given view model.</returns>
         public IViewFor ResolveView<T>(T viewModel, string contract = null)
             where T : class
         {
@@ -116,21 +104,35 @@ namespace ReactiveUI
             return null;
         }
 
-        private IViewFor AttemptViewResolutionFor(Type viewModelType, string contract)
+        private static string DeinterfaceifyTypeName(string typeName)
         {
+            var idxComma = typeName.IndexOf(',');
+            var idxPeriod = typeName.LastIndexOf('.', idxComma - 1);
+            return typeName.Substring(0, idxPeriod + 1) + typeName.Substring(idxPeriod + 2);
+        }
+
+        private static string InterfaceifyTypeName(string typeName)
+        {
+            var idxComma = typeName.IndexOf(',');
+            var idxPeriod = typeName.LastIndexOf('.', idxComma - 1);
+            return typeName.Insert(idxPeriod + 1, "I");
+        }
+
+        private static Type ToggleViewModelType<T>(T viewModel)
+        {
+            var viewModelType = typeof(T);
             var viewModelTypeName = viewModelType.AssemblyQualifiedName;
-            var proposedViewTypeName = this.ViewModelToViewFunc(viewModelTypeName);
-            var view = this.AttemptViewResolution(proposedViewTypeName, contract);
 
-            if (view != null) {
-                return view;
-            }
-
-            proposedViewTypeName = typeof(IViewFor<>).MakeGenericType(viewModelType).AssemblyQualifiedName;
-            view = this.AttemptViewResolution(proposedViewTypeName, contract);
-
-            if (view != null) {
-                return view;
+            if (viewModelType.GetTypeInfo().IsInterface) {
+                if (viewModelType.Name.StartsWith("I")) {
+                    var toggledTypeName = DeinterfaceifyTypeName(viewModelTypeName);
+                    var toggledType = Reflection.ReallyFindType(toggledTypeName, throwOnFailure: false);
+                    return toggledType;
+                }
+            } else {
+                var toggledTypeName = InterfaceifyTypeName(viewModelTypeName);
+                var toggledType = Reflection.ReallyFindType(toggledTypeName, throwOnFailure: false);
+                return toggledType;
             }
 
             return null;
@@ -167,38 +169,24 @@ namespace ReactiveUI
             }
         }
 
-        private static Type ToggleViewModelType<T>(T viewModel)
+        private IViewFor AttemptViewResolutionFor(Type viewModelType, string contract)
         {
-            var viewModelType = typeof(T);
             var viewModelTypeName = viewModelType.AssemblyQualifiedName;
+            var proposedViewTypeName = this.ViewModelToViewFunc(viewModelTypeName);
+            var view = this.AttemptViewResolution(proposedViewTypeName, contract);
 
-            if (viewModelType.GetTypeInfo().IsInterface) {
-                if (viewModelType.Name.StartsWith("I")) {
-                    var toggledTypeName = DeinterfaceifyTypeName(viewModelTypeName);
-                    var toggledType = Reflection.ReallyFindType(toggledTypeName, throwOnFailure: false);
-                    return toggledType;
-                }
-            } else {
-                var toggledTypeName = InterfaceifyTypeName(viewModelTypeName);
-                var toggledType = Reflection.ReallyFindType(toggledTypeName, throwOnFailure: false);
-                return toggledType;
+            if (view != null) {
+                return view;
+            }
+
+            proposedViewTypeName = typeof(IViewFor<>).MakeGenericType(viewModelType).AssemblyQualifiedName;
+            view = this.AttemptViewResolution(proposedViewTypeName, contract);
+
+            if (view != null) {
+                return view;
             }
 
             return null;
-        }
-
-        private static string DeinterfaceifyTypeName(string typeName)
-        {
-            var idxComma = typeName.IndexOf(',');
-            var idxPeriod = typeName.LastIndexOf('.', idxComma - 1);
-            return typeName.Substring(0, idxPeriod + 1) + typeName.Substring(idxPeriod + 2);
-        }
-
-        private static string InterfaceifyTypeName(string typeName)
-        {
-            var idxComma = typeName.IndexOf(',');
-            var idxPeriod = typeName.LastIndexOf('.', idxComma - 1);
-            return typeName.Insert(idxPeriod + 1, "I");
         }
     }
 }

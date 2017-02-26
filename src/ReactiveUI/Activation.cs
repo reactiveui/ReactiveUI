@@ -46,27 +46,27 @@ namespace ReactiveUI
         /// Activated observable will tick every time the Activator is activated.
         /// </summary>
         /// <value>The activated.</value>
-        public IObservable<Unit> Activated { get { return activated; } }
+        public IObservable<Unit> Activated { get { return this.activated; } }
 
         /// <summary>
         /// Deactivated observable will tick every time the Activator is deactivated.
         /// </summary>
         /// <value>The deactivated.</value>
-        public IObservable<Unit> Deactivated { get { return deactivated; } }
+        public IObservable<Unit> Deactivated { get { return this.deactivated; } }
 
         /// <summary>
         /// Constructs a new ViewModelActivator
         /// </summary>
         public ViewModelActivator()
         {
-            blocks = new List<Func<IEnumerable<IDisposable>>>();
-            activated = new Subject<Unit>();
-            deactivated = new Subject<Unit>();
+            this.blocks = new List<Func<IEnumerable<IDisposable>>>();
+            this.activated = new Subject<Unit>();
+            this.deactivated = new Subject<Unit>();
         }
 
         internal void addActivationBlock(Func<IEnumerable<IDisposable>> block)
         {
-            blocks.Add(block);
+            this.blocks.Add(block);
         }
 
         /// <summary>
@@ -77,10 +77,10 @@ namespace ReactiveUI
         /// <returns>A Disposable that calls Deactivate when disposed.</returns>
         public IDisposable Activate()
         {
-            if (Interlocked.Increment(ref refCount) == 1) {
-                var disp = new CompositeDisposable(blocks.SelectMany(x => x()));
-                Interlocked.Exchange(ref activationHandle, disp).Dispose();
-                activated.OnNext(Unit.Default);
+            if (Interlocked.Increment(ref this.refCount) == 1) {
+                var disp = new CompositeDisposable(this.blocks.SelectMany(x => x()));
+                Interlocked.Exchange(ref this.activationHandle, disp).Dispose();
+                this.activated.OnNext(Unit.Default);
             }
 
             return Disposable.Create(() => Deactivate());
@@ -96,9 +96,9 @@ namespace ReactiveUI
         /// </param>
         public void Deactivate(bool ignoreRefCount = false)
         {
-            if (Interlocked.Decrement(ref refCount) == 0 || ignoreRefCount) {
-                Interlocked.Exchange(ref activationHandle, Disposable.Empty).Dispose();
-                deactivated.OnNext(Unit.Default);
+            if (Interlocked.Decrement(ref this.refCount) == 0 || ignoreRefCount) {
+                Interlocked.Exchange(ref this.activationHandle, Disposable.Empty).Dispose();
+                this.deactivated.OnNext(Unit.Default);
             }
         }
     }
@@ -204,7 +204,7 @@ namespace ReactiveUI
             var activationFetcher = activationFetcherCache.Get(This.GetType());
             if (activationFetcher == null) {
                 const string msg = "Don't know how to detect when {0} is activated/deactivated, you may need to implement IActivationForViewFetcher";
-                throw new ArgumentException(String.Format(msg, This.GetType().FullName));
+                throw new ArgumentException(string.Format(msg, This.GetType().FullName));
             }
 
             var activationEvents = activationFetcher.GetActivationForView(This);

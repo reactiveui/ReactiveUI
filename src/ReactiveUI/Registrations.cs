@@ -6,10 +6,18 @@ using System.Threading.Tasks;
 
 namespace ReactiveUI
 {
+    /// <summary>
+    /// Registrations class
+    /// </summary>
+    /// <seealso cref="ReactiveUI.IWantsToRegisterStuff"/>
     public class Registrations : IWantsToRegisterStuff
     {
+        /// <summary>
+        /// Registers the specified register function.
+        /// </summary>
+        /// <param name="registerFunction">The register function.</param>
         public void Register(Action<Func<object>, Type> registerFunction)
-        {            
+        {
             registerFunction(() => new INPCObservableForProperty(), typeof(ICreatesObservableForProperty));
             registerFunction(() => new IROObservableForProperty(), typeof(ICreatesObservableForProperty));
             registerFunction(() => new POCOObservableForProperty(), typeof(ICreatesObservableForProperty));

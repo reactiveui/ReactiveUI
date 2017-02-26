@@ -17,7 +17,7 @@
         /// resolution.</param>
         public ViewContractAttribute(string contract)
         {
-            Contract = contract;
+            this.Contract = contract;
         }
 
         internal string Contract { get; }
