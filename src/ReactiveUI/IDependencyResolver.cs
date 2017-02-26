@@ -6,24 +6,26 @@ using Splat;
 
 namespace ReactiveUI
 {
+    /// <summary>
+    /// Dependency Resolver Mixins
+    /// </summary>
     public static class DependencyResolverMixins
     {
         /// <summary>
-        /// This method allows you to initialize resolvers with the default 
-        /// ReactiveUI types. All resolvers used as the default 
-        /// Locator.Current
+        /// This method allows you to initialize resolvers with the default ReactiveUI types. All
+        /// resolvers used as the default Locator.Current
         /// </summary>
         /// <param name="resolver">The resolver to initialize.</param>
         public static void InitializeReactiveUI(this IMutableDependencyResolver resolver)
         {
             var extraNs = new[] {
                 "ReactiveUI.XamForms",
-                "ReactiveUI.Winforms", 
+                "ReactiveUI.Winforms",
             };
 
             // Set up the built-in registration
-            (new Registrations()).Register((f,t) => resolver.RegisterConstant(f(), t));
-            (new PlatformRegistrations()).Register((f,t) => resolver.RegisterConstant(f(), t));
+            (new Registrations()).Register((f, t) => resolver.RegisterConstant(f(), t));
+            (new PlatformRegistrations()).Register((f, t) => resolver.RegisterConstant(f(), t));
 
             var fdr = typeof(ModernDependencyResolver);
 
@@ -33,18 +35,26 @@ namespace ReactiveUI
             extraNs.ForEach(ns => processRegistrationForNamespace(ns, assmName, resolver));
         }
 
+        /// <summary>
+        /// Registers the views for view models.
+        /// </summary>
+        /// <param name="resolver">The resolver.</param>
+        /// <param name="assembly">The assembly.</param>
         public static void RegisterViewsForViewModels(this IMutableDependencyResolver resolver, Assembly assembly)
         {
             // for each type that implements IViewFor
             foreach (var ti in assembly.DefinedTypes
                 .Where(ti => ti.ImplementedInterfaces.Contains(typeof(IViewFor)))
-                .Where(ti => !ti.IsAbstract))
-            {
-                // grab the first _implemented_ interface that also implements IViewFor, this should be the expected IViewFor<>
+                .Where(ti => !ti.IsAbstract)) {
+
+                // grab the first _implemented_ interface that also implements IViewFor, this should
+                // be the expected IViewFor<>
                 var ivf = ti.ImplementedInterfaces.FirstOrDefault(t => t.GetTypeInfo().ImplementedInterfaces.Contains(typeof(IViewFor)));
 
-                // need to check for null because some classes may implement IViewFor but not IViewFor<T> - we don't care about those
+                // need to check for null because some classes may implement IViewFor but not
+                // IViewFor<T> - we don't care about those
                 if (ivf != null) {
+
                     // my kingdom for c# 6!
                     var contractSource = ti.GetCustomAttribute<ViewContractAttribute>();
                     var contract = contractSource != null ? contractSource.Contract : string.Empty;
@@ -54,30 +64,41 @@ namespace ReactiveUI
             }
         }
 
+        /// <summary>
+        /// Registers the specified factory.
+        /// </summary>
+        /// <typeparam name="TService">The type of the service.</typeparam>
+        /// <param name="resolver">The resolver.</param>
+        /// <param name="factory">The factory.</param>
+        /// <param name="contract">The contract.</param>
         public static void Register<TService>(this IMutableDependencyResolver resolver, Func<object> factory, string contract = null)
         {
             resolver.Register(factory, typeof(TService), contract);
         }
 
+        /// <summary>
+        /// Registers the constant.
+        /// </summary>
+        /// <typeparam name="TService">The type of the service.</typeparam>
+        /// <param name="resolver">The resolver.</param>
+        /// <param name="value">The value.</param>
+        /// <param name="contract">The contract.</param>
         public static void RegisterConstant<TService>(this IMutableDependencyResolver resolver, TService value, string contract = null)
         {
             resolver.RegisterConstant(value, typeof(TService), contract);
         }
 
-        static void registerType(IMutableDependencyResolver resolver, TypeInfo ti, Type serviceType, string contract)
+        private static void registerType(IMutableDependencyResolver resolver, TypeInfo ti, Type serviceType, string contract)
         {
             var factory = typeFactory(ti);
-            if (ti.GetCustomAttribute<SingleInstanceViewAttribute>() != null)
-            {
+            if (ti.GetCustomAttribute<SingleInstanceViewAttribute>() != null) {
                 resolver.RegisterLazySingleton(factory, serviceType, contract);
-            }
-            else
-            {
+            } else {
                 resolver.Register(factory, serviceType, contract);
             }
         }
 
-        static Func<object> typeFactory(TypeInfo typeInfo)
+        private static Func<object> typeFactory(TypeInfo typeInfo)
         {
 #if PORTABLE
             throw new Exception("You are referencing the Portable version of ReactiveUI in an App. Reference the platform-specific version.");
@@ -87,16 +108,16 @@ namespace ReactiveUI
 #endif
         }
 
-        static void processRegistrationForNamespace(string ns, AssemblyName assmName, IMutableDependencyResolver resolver)
+        private static void processRegistrationForNamespace(string ns, AssemblyName assmName, IMutableDependencyResolver resolver)
         {
             var targetType = ns + ".Registrations";
             var fullName = targetType + ", " + assmName.FullName.Replace(assmName.Name, ns);
 
             var registerTypeClass = Reflection.ReallyFindType(fullName, false);
             if (registerTypeClass != null) {
-            var registerer = (IWantsToRegisterStuff)Activator.CreateInstance(registerTypeClass);
-            registerer.Register((f, t) => resolver.RegisterConstant(f(), t));
+                var registerer = (IWantsToRegisterStuff)Activator.CreateInstance(registerTypeClass);
+                registerer.Register((f, t) => resolver.RegisterConstant(f(), t));
+            }
         }
     }
-}
 }

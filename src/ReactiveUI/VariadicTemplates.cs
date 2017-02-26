@@ -11,6 +11,9 @@ using System.Text;
 
 namespace ReactiveUI
 {
+    /// <summary>
+    /// When Any Mixin
+    /// </summary>
     public static class WhenAnyMixin
     {
         /// <summary>
@@ -1165,69 +1168,246 @@ namespace ReactiveUI
                     }
         }
 
+    /// <summary>
+    /// When Any Observable Mixin
+    /// </summary>
     public static class WhenAnyObservableMixin
     {
+        /// <summary>
+        /// Whens any observable.
+        /// </summary>
+        /// <typeparam name="TSender">The type of the sender.</typeparam>
+        /// <typeparam name="TRet">The type of the ret.</typeparam>
+        /// <param name="This">The this.</param>
+        /// <param name="obs1">The obs1.</param>
+        /// <returns></returns>
         public static IObservable<TRet> WhenAnyObservable<TSender, TRet>(this TSender This, Expression<Func<TSender, IObservable<TRet>>> obs1)
         {
             return This.WhenAny(obs1, x => x.Value.EmptyIfNull()).Switch();
         }
 
+        /// <summary>
+        /// Whens any observable.
+        /// </summary>
+        /// <typeparam name="TSender">The type of the sender.</typeparam>
+        /// <typeparam name="TRet">The type of the ret.</typeparam>
+        /// <param name="This">The this.</param>
+        /// <param name="obs1">The obs1.</param>
+        /// <param name="obs2">The obs2.</param>
+        /// <returns></returns>
         public static IObservable<TRet> WhenAnyObservable<TSender, TRet>(this TSender This, Expression<Func<TSender, IObservable<TRet>>> obs1, Expression<Func<TSender, IObservable<TRet>>> obs2)
         {
             return This.WhenAny(obs1, obs2, (o1, o2) => new[] {o1.Value.EmptyIfNull(), o2.Value.EmptyIfNull()})
                 .Select(x => x.Merge()).Switch();
         }
+        /// <summary>
+        /// Whens any observable.
+        /// </summary>
+        /// <typeparam name="TSender">The type of the sender.</typeparam>
+        /// <typeparam name="TRet">The type of the ret.</typeparam>
+        /// <param name="This">The this.</param>
+        /// <param name="obs1">The obs1.</param>
+        /// <param name="obs2">The obs2.</param>
+        /// <param name="obs3">The obs3.</param>
+        /// <returns></returns>
         public static IObservable<TRet> WhenAnyObservable<TSender, TRet>(this TSender This, Expression<Func<TSender, IObservable<TRet>>> obs1, Expression<Func<TSender, IObservable<TRet>>> obs2, Expression<Func<TSender, IObservable<TRet>>> obs3)
         {
             return This.WhenAny(obs1, obs2, obs3, (o1, o2, o3) => new[] {o1.Value.EmptyIfNull(), o2.Value.EmptyIfNull(), o3.Value.EmptyIfNull()})
                 .Select(x => x.Merge()).Switch();
         }
+        /// <summary>
+        /// Whens any observable.
+        /// </summary>
+        /// <typeparam name="TSender">The type of the sender.</typeparam>
+        /// <typeparam name="TRet">The type of the ret.</typeparam>
+        /// <param name="This">The this.</param>
+        /// <param name="obs1">The obs1.</param>
+        /// <param name="obs2">The obs2.</param>
+        /// <param name="obs3">The obs3.</param>
+        /// <param name="obs4">The obs4.</param>
+        /// <returns></returns>
         public static IObservable<TRet> WhenAnyObservable<TSender, TRet>(this TSender This, Expression<Func<TSender, IObservable<TRet>>> obs1, Expression<Func<TSender, IObservable<TRet>>> obs2, Expression<Func<TSender, IObservable<TRet>>> obs3, Expression<Func<TSender, IObservable<TRet>>> obs4)
         {
             return This.WhenAny(obs1, obs2, obs3, obs4, (o1, o2, o3, o4) => new[] {o1.Value.EmptyIfNull(), o2.Value.EmptyIfNull(), o3.Value.EmptyIfNull(), o4.Value.EmptyIfNull()})
                 .Select(x => x.Merge()).Switch();
         }
+        /// <summary>
+        /// Whens any observable.
+        /// </summary>
+        /// <typeparam name="TSender">The type of the sender.</typeparam>
+        /// <typeparam name="TRet">The type of the ret.</typeparam>
+        /// <param name="This">The this.</param>
+        /// <param name="obs1">The obs1.</param>
+        /// <param name="obs2">The obs2.</param>
+        /// <param name="obs3">The obs3.</param>
+        /// <param name="obs4">The obs4.</param>
+        /// <param name="obs5">The obs5.</param>
+        /// <returns></returns>
         public static IObservable<TRet> WhenAnyObservable<TSender, TRet>(this TSender This, Expression<Func<TSender, IObservable<TRet>>> obs1, Expression<Func<TSender, IObservable<TRet>>> obs2, Expression<Func<TSender, IObservable<TRet>>> obs3, Expression<Func<TSender, IObservable<TRet>>> obs4, Expression<Func<TSender, IObservable<TRet>>> obs5)
         {
             return This.WhenAny(obs1, obs2, obs3, obs4, obs5, (o1, o2, o3, o4, o5) => new[] {o1.Value.EmptyIfNull(), o2.Value.EmptyIfNull(), o3.Value.EmptyIfNull(), o4.Value.EmptyIfNull(), o5.Value.EmptyIfNull()})
                 .Select(x => x.Merge()).Switch();
         }
+        /// <summary>
+        /// Whens any observable.
+        /// </summary>
+        /// <typeparam name="TSender">The type of the sender.</typeparam>
+        /// <typeparam name="TRet">The type of the ret.</typeparam>
+        /// <param name="This">The this.</param>
+        /// <param name="obs1">The obs1.</param>
+        /// <param name="obs2">The obs2.</param>
+        /// <param name="obs3">The obs3.</param>
+        /// <param name="obs4">The obs4.</param>
+        /// <param name="obs5">The obs5.</param>
+        /// <param name="obs6">The obs6.</param>
+        /// <returns></returns>
         public static IObservable<TRet> WhenAnyObservable<TSender, TRet>(this TSender This, Expression<Func<TSender, IObservable<TRet>>> obs1, Expression<Func<TSender, IObservable<TRet>>> obs2, Expression<Func<TSender, IObservable<TRet>>> obs3, Expression<Func<TSender, IObservable<TRet>>> obs4, Expression<Func<TSender, IObservable<TRet>>> obs5, Expression<Func<TSender, IObservable<TRet>>> obs6)
         {
             return This.WhenAny(obs1, obs2, obs3, obs4, obs5, obs6, (o1, o2, o3, o4, o5, o6) => new[] {o1.Value.EmptyIfNull(), o2.Value.EmptyIfNull(), o3.Value.EmptyIfNull(), o4.Value.EmptyIfNull(), o5.Value.EmptyIfNull(), o6.Value.EmptyIfNull()})
                 .Select(x => x.Merge()).Switch();
         }
+        /// <summary>
+        /// Whens any observable.
+        /// </summary>
+        /// <typeparam name="TSender">The type of the sender.</typeparam>
+        /// <typeparam name="TRet">The type of the ret.</typeparam>
+        /// <param name="This">The this.</param>
+        /// <param name="obs1">The obs1.</param>
+        /// <param name="obs2">The obs2.</param>
+        /// <param name="obs3">The obs3.</param>
+        /// <param name="obs4">The obs4.</param>
+        /// <param name="obs5">The obs5.</param>
+        /// <param name="obs6">The obs6.</param>
+        /// <param name="obs7">The obs7.</param>
+        /// <returns></returns>
         public static IObservable<TRet> WhenAnyObservable<TSender, TRet>(this TSender This, Expression<Func<TSender, IObservable<TRet>>> obs1, Expression<Func<TSender, IObservable<TRet>>> obs2, Expression<Func<TSender, IObservable<TRet>>> obs3, Expression<Func<TSender, IObservable<TRet>>> obs4, Expression<Func<TSender, IObservable<TRet>>> obs5, Expression<Func<TSender, IObservable<TRet>>> obs6, Expression<Func<TSender, IObservable<TRet>>> obs7)
         {
             return This.WhenAny(obs1, obs2, obs3, obs4, obs5, obs6, obs7, (o1, o2, o3, o4, o5, o6, o7) => new[] {o1.Value.EmptyIfNull(), o2.Value.EmptyIfNull(), o3.Value.EmptyIfNull(), o4.Value.EmptyIfNull(), o5.Value.EmptyIfNull(), o6.Value.EmptyIfNull(), o7.Value.EmptyIfNull()})
                 .Select(x => x.Merge()).Switch();
         }
+        /// <summary>
+        /// Whens any observable.
+        /// </summary>
+        /// <typeparam name="TSender">The type of the sender.</typeparam>
+        /// <typeparam name="TRet">The type of the ret.</typeparam>
+        /// <param name="This">The this.</param>
+        /// <param name="obs1">The obs1.</param>
+        /// <param name="obs2">The obs2.</param>
+        /// <param name="obs3">The obs3.</param>
+        /// <param name="obs4">The obs4.</param>
+        /// <param name="obs5">The obs5.</param>
+        /// <param name="obs6">The obs6.</param>
+        /// <param name="obs7">The obs7.</param>
+        /// <param name="obs8">The obs8.</param>
+        /// <returns></returns>
         public static IObservable<TRet> WhenAnyObservable<TSender, TRet>(this TSender This, Expression<Func<TSender, IObservable<TRet>>> obs1, Expression<Func<TSender, IObservable<TRet>>> obs2, Expression<Func<TSender, IObservable<TRet>>> obs3, Expression<Func<TSender, IObservable<TRet>>> obs4, Expression<Func<TSender, IObservable<TRet>>> obs5, Expression<Func<TSender, IObservable<TRet>>> obs6, Expression<Func<TSender, IObservable<TRet>>> obs7, Expression<Func<TSender, IObservable<TRet>>> obs8)
         {
             return This.WhenAny(obs1, obs2, obs3, obs4, obs5, obs6, obs7, obs8, (o1, o2, o3, o4, o5, o6, o7, o8) => new[] {o1.Value.EmptyIfNull(), o2.Value.EmptyIfNull(), o3.Value.EmptyIfNull(), o4.Value.EmptyIfNull(), o5.Value.EmptyIfNull(), o6.Value.EmptyIfNull(), o7.Value.EmptyIfNull(), o8.Value.EmptyIfNull()})
                 .Select(x => x.Merge()).Switch();
         }
+        /// <summary>
+        /// Whens any observable.
+        /// </summary>
+        /// <typeparam name="TSender">The type of the sender.</typeparam>
+        /// <typeparam name="TRet">The type of the ret.</typeparam>
+        /// <param name="This">The this.</param>
+        /// <param name="obs1">The obs1.</param>
+        /// <param name="obs2">The obs2.</param>
+        /// <param name="obs3">The obs3.</param>
+        /// <param name="obs4">The obs4.</param>
+        /// <param name="obs5">The obs5.</param>
+        /// <param name="obs6">The obs6.</param>
+        /// <param name="obs7">The obs7.</param>
+        /// <param name="obs8">The obs8.</param>
+        /// <param name="obs9">The obs9.</param>
+        /// <returns></returns>
         public static IObservable<TRet> WhenAnyObservable<TSender, TRet>(this TSender This, Expression<Func<TSender, IObservable<TRet>>> obs1, Expression<Func<TSender, IObservable<TRet>>> obs2, Expression<Func<TSender, IObservable<TRet>>> obs3, Expression<Func<TSender, IObservable<TRet>>> obs4, Expression<Func<TSender, IObservable<TRet>>> obs5, Expression<Func<TSender, IObservable<TRet>>> obs6, Expression<Func<TSender, IObservable<TRet>>> obs7, Expression<Func<TSender, IObservable<TRet>>> obs8, Expression<Func<TSender, IObservable<TRet>>> obs9)
         {
             return This.WhenAny(obs1, obs2, obs3, obs4, obs5, obs6, obs7, obs8, obs9, (o1, o2, o3, o4, o5, o6, o7, o8, o9) => new[] {o1.Value.EmptyIfNull(), o2.Value.EmptyIfNull(), o3.Value.EmptyIfNull(), o4.Value.EmptyIfNull(), o5.Value.EmptyIfNull(), o6.Value.EmptyIfNull(), o7.Value.EmptyIfNull(), o8.Value.EmptyIfNull(), o9.Value.EmptyIfNull()})
                 .Select(x => x.Merge()).Switch();
         }
+        /// <summary>
+        /// Whens any observable.
+        /// </summary>
+        /// <typeparam name="TSender">The type of the sender.</typeparam>
+        /// <typeparam name="TRet">The type of the ret.</typeparam>
+        /// <param name="This">The this.</param>
+        /// <param name="obs1">The obs1.</param>
+        /// <param name="obs2">The obs2.</param>
+        /// <param name="obs3">The obs3.</param>
+        /// <param name="obs4">The obs4.</param>
+        /// <param name="obs5">The obs5.</param>
+        /// <param name="obs6">The obs6.</param>
+        /// <param name="obs7">The obs7.</param>
+        /// <param name="obs8">The obs8.</param>
+        /// <param name="obs9">The obs9.</param>
+        /// <param name="obs10">The obs10.</param>
+        /// <returns></returns>
         public static IObservable<TRet> WhenAnyObservable<TSender, TRet>(this TSender This, Expression<Func<TSender, IObservable<TRet>>> obs1, Expression<Func<TSender, IObservable<TRet>>> obs2, Expression<Func<TSender, IObservable<TRet>>> obs3, Expression<Func<TSender, IObservable<TRet>>> obs4, Expression<Func<TSender, IObservable<TRet>>> obs5, Expression<Func<TSender, IObservable<TRet>>> obs6, Expression<Func<TSender, IObservable<TRet>>> obs7, Expression<Func<TSender, IObservable<TRet>>> obs8, Expression<Func<TSender, IObservable<TRet>>> obs9, Expression<Func<TSender, IObservable<TRet>>> obs10)
         {
             return This.WhenAny(obs1, obs2, obs3, obs4, obs5, obs6, obs7, obs8, obs9, obs10, (o1, o2, o3, o4, o5, o6, o7, o8, o9, o10) => new[] {o1.Value.EmptyIfNull(), o2.Value.EmptyIfNull(), o3.Value.EmptyIfNull(), o4.Value.EmptyIfNull(), o5.Value.EmptyIfNull(), o6.Value.EmptyIfNull(), o7.Value.EmptyIfNull(), o8.Value.EmptyIfNull(), o9.Value.EmptyIfNull(), o10.Value.EmptyIfNull()})
                 .Select(x => x.Merge()).Switch();
         }
+        /// <summary>
+        /// Whens any observable.
+        /// </summary>
+        /// <typeparam name="TSender">The type of the sender.</typeparam>
+        /// <typeparam name="TRet">The type of the ret.</typeparam>
+        /// <param name="This">The this.</param>
+        /// <param name="obs1">The obs1.</param>
+        /// <param name="obs2">The obs2.</param>
+        /// <param name="obs3">The obs3.</param>
+        /// <param name="obs4">The obs4.</param>
+        /// <param name="obs5">The obs5.</param>
+        /// <param name="obs6">The obs6.</param>
+        /// <param name="obs7">The obs7.</param>
+        /// <param name="obs8">The obs8.</param>
+        /// <param name="obs9">The obs9.</param>
+        /// <param name="obs10">The obs10.</param>
+        /// <param name="obs11">The obs11.</param>
+        /// <returns></returns>
         public static IObservable<TRet> WhenAnyObservable<TSender, TRet>(this TSender This, Expression<Func<TSender, IObservable<TRet>>> obs1, Expression<Func<TSender, IObservable<TRet>>> obs2, Expression<Func<TSender, IObservable<TRet>>> obs3, Expression<Func<TSender, IObservable<TRet>>> obs4, Expression<Func<TSender, IObservable<TRet>>> obs5, Expression<Func<TSender, IObservable<TRet>>> obs6, Expression<Func<TSender, IObservable<TRet>>> obs7, Expression<Func<TSender, IObservable<TRet>>> obs8, Expression<Func<TSender, IObservable<TRet>>> obs9, Expression<Func<TSender, IObservable<TRet>>> obs10, Expression<Func<TSender, IObservable<TRet>>> obs11)
         {
             return This.WhenAny(obs1, obs2, obs3, obs4, obs5, obs6, obs7, obs8, obs9, obs10, obs11, (o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11) => new[] {o1.Value.EmptyIfNull(), o2.Value.EmptyIfNull(), o3.Value.EmptyIfNull(), o4.Value.EmptyIfNull(), o5.Value.EmptyIfNull(), o6.Value.EmptyIfNull(), o7.Value.EmptyIfNull(), o8.Value.EmptyIfNull(), o9.Value.EmptyIfNull(), o10.Value.EmptyIfNull(), o11.Value.EmptyIfNull()})
                 .Select(x => x.Merge()).Switch();
         }
+        /// <summary>
+        /// Whens any observable.
+        /// </summary>
+        /// <typeparam name="TSender">The type of the sender.</typeparam>
+        /// <typeparam name="TRet">The type of the ret.</typeparam>
+        /// <param name="This">The this.</param>
+        /// <param name="obs1">The obs1.</param>
+        /// <param name="obs2">The obs2.</param>
+        /// <param name="obs3">The obs3.</param>
+        /// <param name="obs4">The obs4.</param>
+        /// <param name="obs5">The obs5.</param>
+        /// <param name="obs6">The obs6.</param>
+        /// <param name="obs7">The obs7.</param>
+        /// <param name="obs8">The obs8.</param>
+        /// <param name="obs9">The obs9.</param>
+        /// <param name="obs10">The obs10.</param>
+        /// <param name="obs11">The obs11.</param>
+        /// <param name="obs12">The obs12.</param>
+        /// <returns></returns>
         public static IObservable<TRet> WhenAnyObservable<TSender, TRet>(this TSender This, Expression<Func<TSender, IObservable<TRet>>> obs1, Expression<Func<TSender, IObservable<TRet>>> obs2, Expression<Func<TSender, IObservable<TRet>>> obs3, Expression<Func<TSender, IObservable<TRet>>> obs4, Expression<Func<TSender, IObservable<TRet>>> obs5, Expression<Func<TSender, IObservable<TRet>>> obs6, Expression<Func<TSender, IObservable<TRet>>> obs7, Expression<Func<TSender, IObservable<TRet>>> obs8, Expression<Func<TSender, IObservable<TRet>>> obs9, Expression<Func<TSender, IObservable<TRet>>> obs10, Expression<Func<TSender, IObservable<TRet>>> obs11, Expression<Func<TSender, IObservable<TRet>>> obs12)
         {
             return This.WhenAny(obs1, obs2, obs3, obs4, obs5, obs6, obs7, obs8, obs9, obs10, obs11, obs12, (o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11, o12) => new[] {o1.Value.EmptyIfNull(), o2.Value.EmptyIfNull(), o3.Value.EmptyIfNull(), o4.Value.EmptyIfNull(), o5.Value.EmptyIfNull(), o6.Value.EmptyIfNull(), o7.Value.EmptyIfNull(), o8.Value.EmptyIfNull(), o9.Value.EmptyIfNull(), o10.Value.EmptyIfNull(), o11.Value.EmptyIfNull(), o12.Value.EmptyIfNull()})
                 .Select(x => x.Merge()).Switch();
         }
 
+        /// <summary>
+        /// Whens any observable.
+        /// </summary>
+        /// <typeparam name="TSender">The type of the sender.</typeparam>
+        /// <typeparam name="TRet">The type of the ret.</typeparam>
+        /// <typeparam name="T1">The type of the 1.</typeparam>
+        /// <typeparam name="T2">The type of the 2.</typeparam>
+        /// <param name="This">The this.</param>
+        /// <param name="obs1">The obs1.</param>
+        /// <param name="obs2">The obs2.</param>
+        /// <param name="selector">The selector.</param>
+        /// <returns></returns>
         public static IObservable<TRet> WhenAnyObservable<TSender, TRet, T1,T2>(this TSender This,
                             Expression<Func<TSender, IObservable<T1>>> obs1,
                             Expression<Func<TSender, IObservable<T2>>> obs2,
@@ -1236,6 +1416,20 @@ namespace ReactiveUI
             return This.WhenAny(obs1, obs2, (o1, o2) => Observable.CombineLatest(o1.Value.EmptyIfNull(), o2.Value.EmptyIfNull(), selector))
                 .Switch();
         }
+        /// <summary>
+        /// Whens any observable.
+        /// </summary>
+        /// <typeparam name="TSender">The type of the sender.</typeparam>
+        /// <typeparam name="TRet">The type of the ret.</typeparam>
+        /// <typeparam name="T1">The type of the 1.</typeparam>
+        /// <typeparam name="T2">The type of the 2.</typeparam>
+        /// <typeparam name="T3">The type of the 3.</typeparam>
+        /// <param name="This">The this.</param>
+        /// <param name="obs1">The obs1.</param>
+        /// <param name="obs2">The obs2.</param>
+        /// <param name="obs3">The obs3.</param>
+        /// <param name="selector">The selector.</param>
+        /// <returns></returns>
         public static IObservable<TRet> WhenAnyObservable<TSender, TRet, T1,T2,T3>(this TSender This,
                             Expression<Func<TSender, IObservable<T1>>> obs1,
                             Expression<Func<TSender, IObservable<T2>>> obs2,
@@ -1245,6 +1439,22 @@ namespace ReactiveUI
             return This.WhenAny(obs1, obs2, obs3, (o1, o2, o3) => Observable.CombineLatest(o1.Value.EmptyIfNull(), o2.Value.EmptyIfNull(), o3.Value.EmptyIfNull(), selector))
                 .Switch();
         }
+        /// <summary>
+        /// Whens any observable.
+        /// </summary>
+        /// <typeparam name="TSender">The type of the sender.</typeparam>
+        /// <typeparam name="TRet">The type of the ret.</typeparam>
+        /// <typeparam name="T1">The type of the 1.</typeparam>
+        /// <typeparam name="T2">The type of the 2.</typeparam>
+        /// <typeparam name="T3">The type of the 3.</typeparam>
+        /// <typeparam name="T4">The type of the 4.</typeparam>
+        /// <param name="This">The this.</param>
+        /// <param name="obs1">The obs1.</param>
+        /// <param name="obs2">The obs2.</param>
+        /// <param name="obs3">The obs3.</param>
+        /// <param name="obs4">The obs4.</param>
+        /// <param name="selector">The selector.</param>
+        /// <returns></returns>
         public static IObservable<TRet> WhenAnyObservable<TSender, TRet, T1,T2,T3,T4>(this TSender This,
                             Expression<Func<TSender, IObservable<T1>>> obs1,
                             Expression<Func<TSender, IObservable<T2>>> obs2,
@@ -1255,6 +1465,24 @@ namespace ReactiveUI
             return This.WhenAny(obs1, obs2, obs3, obs4, (o1, o2, o3, o4) => Observable.CombineLatest(o1.Value.EmptyIfNull(), o2.Value.EmptyIfNull(), o3.Value.EmptyIfNull(), o4.Value.EmptyIfNull(), selector))
                 .Switch();
         }
+        /// <summary>
+        /// Whens any observable.
+        /// </summary>
+        /// <typeparam name="TSender">The type of the sender.</typeparam>
+        /// <typeparam name="TRet">The type of the ret.</typeparam>
+        /// <typeparam name="T1">The type of the 1.</typeparam>
+        /// <typeparam name="T2">The type of the 2.</typeparam>
+        /// <typeparam name="T3">The type of the 3.</typeparam>
+        /// <typeparam name="T4">The type of the 4.</typeparam>
+        /// <typeparam name="T5">The type of the 5.</typeparam>
+        /// <param name="This">The this.</param>
+        /// <param name="obs1">The obs1.</param>
+        /// <param name="obs2">The obs2.</param>
+        /// <param name="obs3">The obs3.</param>
+        /// <param name="obs4">The obs4.</param>
+        /// <param name="obs5">The obs5.</param>
+        /// <param name="selector">The selector.</param>
+        /// <returns></returns>
         public static IObservable<TRet> WhenAnyObservable<TSender, TRet, T1,T2,T3,T4,T5>(this TSender This,
                             Expression<Func<TSender, IObservable<T1>>> obs1,
                             Expression<Func<TSender, IObservable<T2>>> obs2,
@@ -1266,6 +1494,26 @@ namespace ReactiveUI
             return This.WhenAny(obs1, obs2, obs3, obs4, obs5, (o1, o2, o3, o4, o5) => Observable.CombineLatest(o1.Value.EmptyIfNull(), o2.Value.EmptyIfNull(), o3.Value.EmptyIfNull(), o4.Value.EmptyIfNull(), o5.Value.EmptyIfNull(), selector))
                 .Switch();
         }
+        /// <summary>
+        /// Whens any observable.
+        /// </summary>
+        /// <typeparam name="TSender">The type of the sender.</typeparam>
+        /// <typeparam name="TRet">The type of the ret.</typeparam>
+        /// <typeparam name="T1">The type of the 1.</typeparam>
+        /// <typeparam name="T2">The type of the 2.</typeparam>
+        /// <typeparam name="T3">The type of the 3.</typeparam>
+        /// <typeparam name="T4">The type of the 4.</typeparam>
+        /// <typeparam name="T5">The type of the 5.</typeparam>
+        /// <typeparam name="T6">The type of the 6.</typeparam>
+        /// <param name="This">The this.</param>
+        /// <param name="obs1">The obs1.</param>
+        /// <param name="obs2">The obs2.</param>
+        /// <param name="obs3">The obs3.</param>
+        /// <param name="obs4">The obs4.</param>
+        /// <param name="obs5">The obs5.</param>
+        /// <param name="obs6">The obs6.</param>
+        /// <param name="selector">The selector.</param>
+        /// <returns></returns>
         public static IObservable<TRet> WhenAnyObservable<TSender, TRet, T1,T2,T3,T4,T5,T6>(this TSender This,
                             Expression<Func<TSender, IObservable<T1>>> obs1,
                             Expression<Func<TSender, IObservable<T2>>> obs2,
@@ -1278,6 +1526,28 @@ namespace ReactiveUI
             return This.WhenAny(obs1, obs2, obs3, obs4, obs5, obs6, (o1, o2, o3, o4, o5, o6) => Observable.CombineLatest(o1.Value.EmptyIfNull(), o2.Value.EmptyIfNull(), o3.Value.EmptyIfNull(), o4.Value.EmptyIfNull(), o5.Value.EmptyIfNull(), o6.Value.EmptyIfNull(), selector))
                 .Switch();
         }
+        /// <summary>
+        /// Whens any observable.
+        /// </summary>
+        /// <typeparam name="TSender">The type of the sender.</typeparam>
+        /// <typeparam name="TRet">The type of the ret.</typeparam>
+        /// <typeparam name="T1">The type of the 1.</typeparam>
+        /// <typeparam name="T2">The type of the 2.</typeparam>
+        /// <typeparam name="T3">The type of the 3.</typeparam>
+        /// <typeparam name="T4">The type of the 4.</typeparam>
+        /// <typeparam name="T5">The type of the 5.</typeparam>
+        /// <typeparam name="T6">The type of the 6.</typeparam>
+        /// <typeparam name="T7">The type of the 7.</typeparam>
+        /// <param name="This">The this.</param>
+        /// <param name="obs1">The obs1.</param>
+        /// <param name="obs2">The obs2.</param>
+        /// <param name="obs3">The obs3.</param>
+        /// <param name="obs4">The obs4.</param>
+        /// <param name="obs5">The obs5.</param>
+        /// <param name="obs6">The obs6.</param>
+        /// <param name="obs7">The obs7.</param>
+        /// <param name="selector">The selector.</param>
+        /// <returns></returns>
         public static IObservable<TRet> WhenAnyObservable<TSender, TRet, T1,T2,T3,T4,T5,T6,T7>(this TSender This,
                             Expression<Func<TSender, IObservable<T1>>> obs1,
                             Expression<Func<TSender, IObservable<T2>>> obs2,
@@ -1291,6 +1561,30 @@ namespace ReactiveUI
             return This.WhenAny(obs1, obs2, obs3, obs4, obs5, obs6, obs7, (o1, o2, o3, o4, o5, o6, o7) => Observable.CombineLatest(o1.Value.EmptyIfNull(), o2.Value.EmptyIfNull(), o3.Value.EmptyIfNull(), o4.Value.EmptyIfNull(), o5.Value.EmptyIfNull(), o6.Value.EmptyIfNull(), o7.Value.EmptyIfNull(), selector))
                 .Switch();
         }
+        /// <summary>
+        /// Whens any observable.
+        /// </summary>
+        /// <typeparam name="TSender">The type of the sender.</typeparam>
+        /// <typeparam name="TRet">The type of the ret.</typeparam>
+        /// <typeparam name="T1">The type of the 1.</typeparam>
+        /// <typeparam name="T2">The type of the 2.</typeparam>
+        /// <typeparam name="T3">The type of the 3.</typeparam>
+        /// <typeparam name="T4">The type of the 4.</typeparam>
+        /// <typeparam name="T5">The type of the 5.</typeparam>
+        /// <typeparam name="T6">The type of the 6.</typeparam>
+        /// <typeparam name="T7">The type of the 7.</typeparam>
+        /// <typeparam name="T8">The type of the 8.</typeparam>
+        /// <param name="This">The this.</param>
+        /// <param name="obs1">The obs1.</param>
+        /// <param name="obs2">The obs2.</param>
+        /// <param name="obs3">The obs3.</param>
+        /// <param name="obs4">The obs4.</param>
+        /// <param name="obs5">The obs5.</param>
+        /// <param name="obs6">The obs6.</param>
+        /// <param name="obs7">The obs7.</param>
+        /// <param name="obs8">The obs8.</param>
+        /// <param name="selector">The selector.</param>
+        /// <returns></returns>
         public static IObservable<TRet> WhenAnyObservable<TSender, TRet, T1,T2,T3,T4,T5,T6,T7,T8>(this TSender This,
                             Expression<Func<TSender, IObservable<T1>>> obs1,
                             Expression<Func<TSender, IObservable<T2>>> obs2,
@@ -1305,6 +1599,32 @@ namespace ReactiveUI
             return This.WhenAny(obs1, obs2, obs3, obs4, obs5, obs6, obs7, obs8, (o1, o2, o3, o4, o5, o6, o7, o8) => Observable.CombineLatest(o1.Value.EmptyIfNull(), o2.Value.EmptyIfNull(), o3.Value.EmptyIfNull(), o4.Value.EmptyIfNull(), o5.Value.EmptyIfNull(), o6.Value.EmptyIfNull(), o7.Value.EmptyIfNull(), o8.Value.EmptyIfNull(), selector))
                 .Switch();
         }
+        /// <summary>
+        /// Whens any observable.
+        /// </summary>
+        /// <typeparam name="TSender">The type of the sender.</typeparam>
+        /// <typeparam name="TRet">The type of the ret.</typeparam>
+        /// <typeparam name="T1">The type of the 1.</typeparam>
+        /// <typeparam name="T2">The type of the 2.</typeparam>
+        /// <typeparam name="T3">The type of the 3.</typeparam>
+        /// <typeparam name="T4">The type of the 4.</typeparam>
+        /// <typeparam name="T5">The type of the 5.</typeparam>
+        /// <typeparam name="T6">The type of the 6.</typeparam>
+        /// <typeparam name="T7">The type of the 7.</typeparam>
+        /// <typeparam name="T8">The type of the 8.</typeparam>
+        /// <typeparam name="T9">The type of the 9.</typeparam>
+        /// <param name="This">The this.</param>
+        /// <param name="obs1">The obs1.</param>
+        /// <param name="obs2">The obs2.</param>
+        /// <param name="obs3">The obs3.</param>
+        /// <param name="obs4">The obs4.</param>
+        /// <param name="obs5">The obs5.</param>
+        /// <param name="obs6">The obs6.</param>
+        /// <param name="obs7">The obs7.</param>
+        /// <param name="obs8">The obs8.</param>
+        /// <param name="obs9">The obs9.</param>
+        /// <param name="selector">The selector.</param>
+        /// <returns></returns>
         public static IObservable<TRet> WhenAnyObservable<TSender, TRet, T1,T2,T3,T4,T5,T6,T7,T8,T9>(this TSender This,
                             Expression<Func<TSender, IObservable<T1>>> obs1,
                             Expression<Func<TSender, IObservable<T2>>> obs2,
@@ -1320,6 +1640,34 @@ namespace ReactiveUI
             return This.WhenAny(obs1, obs2, obs3, obs4, obs5, obs6, obs7, obs8, obs9, (o1, o2, o3, o4, o5, o6, o7, o8, o9) => Observable.CombineLatest(o1.Value.EmptyIfNull(), o2.Value.EmptyIfNull(), o3.Value.EmptyIfNull(), o4.Value.EmptyIfNull(), o5.Value.EmptyIfNull(), o6.Value.EmptyIfNull(), o7.Value.EmptyIfNull(), o8.Value.EmptyIfNull(), o9.Value.EmptyIfNull(), selector))
                 .Switch();
         }
+        /// <summary>
+        /// Whens any observable.
+        /// </summary>
+        /// <typeparam name="TSender">The type of the sender.</typeparam>
+        /// <typeparam name="TRet">The type of the ret.</typeparam>
+        /// <typeparam name="T1">The type of the 1.</typeparam>
+        /// <typeparam name="T2">The type of the 2.</typeparam>
+        /// <typeparam name="T3">The type of the 3.</typeparam>
+        /// <typeparam name="T4">The type of the 4.</typeparam>
+        /// <typeparam name="T5">The type of the 5.</typeparam>
+        /// <typeparam name="T6">The type of the 6.</typeparam>
+        /// <typeparam name="T7">The type of the 7.</typeparam>
+        /// <typeparam name="T8">The type of the 8.</typeparam>
+        /// <typeparam name="T9">The type of the 9.</typeparam>
+        /// <typeparam name="T10">The type of the 10.</typeparam>
+        /// <param name="This">The this.</param>
+        /// <param name="obs1">The obs1.</param>
+        /// <param name="obs2">The obs2.</param>
+        /// <param name="obs3">The obs3.</param>
+        /// <param name="obs4">The obs4.</param>
+        /// <param name="obs5">The obs5.</param>
+        /// <param name="obs6">The obs6.</param>
+        /// <param name="obs7">The obs7.</param>
+        /// <param name="obs8">The obs8.</param>
+        /// <param name="obs9">The obs9.</param>
+        /// <param name="obs10">The obs10.</param>
+        /// <param name="selector">The selector.</param>
+        /// <returns></returns>
         public static IObservable<TRet> WhenAnyObservable<TSender, TRet, T1,T2,T3,T4,T5,T6,T7,T8,T9,T10>(this TSender This,
                             Expression<Func<TSender, IObservable<T1>>> obs1,
                             Expression<Func<TSender, IObservable<T2>>> obs2,
@@ -1336,6 +1684,36 @@ namespace ReactiveUI
             return This.WhenAny(obs1, obs2, obs3, obs4, obs5, obs6, obs7, obs8, obs9, obs10, (o1, o2, o3, o4, o5, o6, o7, o8, o9, o10) => Observable.CombineLatest(o1.Value.EmptyIfNull(), o2.Value.EmptyIfNull(), o3.Value.EmptyIfNull(), o4.Value.EmptyIfNull(), o5.Value.EmptyIfNull(), o6.Value.EmptyIfNull(), o7.Value.EmptyIfNull(), o8.Value.EmptyIfNull(), o9.Value.EmptyIfNull(), o10.Value.EmptyIfNull(), selector))
                 .Switch();
         }
+        /// <summary>
+        /// Whens any observable.
+        /// </summary>
+        /// <typeparam name="TSender">The type of the sender.</typeparam>
+        /// <typeparam name="TRet">The type of the ret.</typeparam>
+        /// <typeparam name="T1">The type of the 1.</typeparam>
+        /// <typeparam name="T2">The type of the 2.</typeparam>
+        /// <typeparam name="T3">The type of the 3.</typeparam>
+        /// <typeparam name="T4">The type of the 4.</typeparam>
+        /// <typeparam name="T5">The type of the 5.</typeparam>
+        /// <typeparam name="T6">The type of the 6.</typeparam>
+        /// <typeparam name="T7">The type of the 7.</typeparam>
+        /// <typeparam name="T8">The type of the 8.</typeparam>
+        /// <typeparam name="T9">The type of the 9.</typeparam>
+        /// <typeparam name="T10">The type of the 10.</typeparam>
+        /// <typeparam name="T11">The type of the 11.</typeparam>
+        /// <param name="This">The this.</param>
+        /// <param name="obs1">The obs1.</param>
+        /// <param name="obs2">The obs2.</param>
+        /// <param name="obs3">The obs3.</param>
+        /// <param name="obs4">The obs4.</param>
+        /// <param name="obs5">The obs5.</param>
+        /// <param name="obs6">The obs6.</param>
+        /// <param name="obs7">The obs7.</param>
+        /// <param name="obs8">The obs8.</param>
+        /// <param name="obs9">The obs9.</param>
+        /// <param name="obs10">The obs10.</param>
+        /// <param name="obs11">The obs11.</param>
+        /// <param name="selector">The selector.</param>
+        /// <returns></returns>
         public static IObservable<TRet> WhenAnyObservable<TSender, TRet, T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11>(this TSender This,
                             Expression<Func<TSender, IObservable<T1>>> obs1,
                             Expression<Func<TSender, IObservable<T2>>> obs2,
@@ -1353,6 +1731,38 @@ namespace ReactiveUI
             return This.WhenAny(obs1, obs2, obs3, obs4, obs5, obs6, obs7, obs8, obs9, obs10, obs11, (o1, o2, o3, o4, o5, o6, o7, o8, o9, o10, o11) => Observable.CombineLatest(o1.Value.EmptyIfNull(), o2.Value.EmptyIfNull(), o3.Value.EmptyIfNull(), o4.Value.EmptyIfNull(), o5.Value.EmptyIfNull(), o6.Value.EmptyIfNull(), o7.Value.EmptyIfNull(), o8.Value.EmptyIfNull(), o9.Value.EmptyIfNull(), o10.Value.EmptyIfNull(), o11.Value.EmptyIfNull(), selector))
                 .Switch();
         }
+        /// <summary>
+        /// Whens any observable.
+        /// </summary>
+        /// <typeparam name="TSender">The type of the sender.</typeparam>
+        /// <typeparam name="TRet">The type of the ret.</typeparam>
+        /// <typeparam name="T1">The type of the 1.</typeparam>
+        /// <typeparam name="T2">The type of the 2.</typeparam>
+        /// <typeparam name="T3">The type of the 3.</typeparam>
+        /// <typeparam name="T4">The type of the 4.</typeparam>
+        /// <typeparam name="T5">The type of the 5.</typeparam>
+        /// <typeparam name="T6">The type of the 6.</typeparam>
+        /// <typeparam name="T7">The type of the 7.</typeparam>
+        /// <typeparam name="T8">The type of the 8.</typeparam>
+        /// <typeparam name="T9">The type of the 9.</typeparam>
+        /// <typeparam name="T10">The type of the 10.</typeparam>
+        /// <typeparam name="T11">The type of the 11.</typeparam>
+        /// <typeparam name="T12">The type of the 12.</typeparam>
+        /// <param name="This">The this.</param>
+        /// <param name="obs1">The obs1.</param>
+        /// <param name="obs2">The obs2.</param>
+        /// <param name="obs3">The obs3.</param>
+        /// <param name="obs4">The obs4.</param>
+        /// <param name="obs5">The obs5.</param>
+        /// <param name="obs6">The obs6.</param>
+        /// <param name="obs7">The obs7.</param>
+        /// <param name="obs8">The obs8.</param>
+        /// <param name="obs9">The obs9.</param>
+        /// <param name="obs10">The obs10.</param>
+        /// <param name="obs11">The obs11.</param>
+        /// <param name="obs12">The obs12.</param>
+        /// <param name="selector">The selector.</param>
+        /// <returns></returns>
         public static IObservable<TRet> WhenAnyObservable<TSender, TRet, T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11,T12>(this TSender This,
                             Expression<Func<TSender, IObservable<T1>>> obs1,
                             Expression<Func<TSender, IObservable<T2>>> obs2,

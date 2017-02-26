@@ -143,9 +143,9 @@ namespace ReactiveUI
 
         public void Dispose()
         {
-            if (bindingDisposable != null) {
-                bindingDisposable.Dispose();
-                bindingDisposable = null;
+            if (this.bindingDisposable != null) {
+                this.bindingDisposable.Dispose();
+                this.bindingDisposable = null;
             }
         }
     }

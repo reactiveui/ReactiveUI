@@ -4,11 +4,17 @@ using Splat;
 
 namespace ReactiveUI
 {
+    /// <summary>
+    /// Observable Logging Mixin
+    /// </summary>
     public static class ObservableLoggingMixin
     {
         /// <summary>
         /// Logs an Observable to Splat's Logger
         /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="TObj"></typeparam>
+        /// <param name="This"></param>
         /// <param name="klass">The hosting class, usually 'this'</param>
         /// <param name="message">An optional method</param>
         /// <param name="stringifier">An optional Func to convert Ts to strings.</param>
@@ -37,6 +43,9 @@ namespace ReactiveUI
         /// <summary>
         /// Like Catch, but also prints a message and the error to the log.
         /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="TObj">The type of the object.</typeparam>
+        /// <param name="This">The this.</param>
         /// <param name="klass">The hosting class, usually 'this'</param>
         /// <param name="next">The Observable to replace the current one OnError.</param>
         /// <param name="message">An error message to print.</param>
@@ -54,9 +63,12 @@ namespace ReactiveUI
         /// <summary>
         /// Like Catch, but also prints a message and the error to the log.
         /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="TObj">The type of the object.</typeparam>
+        /// <typeparam name="TException">The type of the exception.</typeparam>
+        /// <param name="This">The this.</param>
         /// <param name="klass">The hosting class, usually 'this'</param>
-        /// <param name="next">A Func to create an Observable to replace the
-        /// current one OnError.</param>
+        /// <param name="next">A Func to create an Observable to replace the current one OnError.</param>
         /// <param name="message">An error message to print.</param>
         /// <returns>The same Observable</returns>
         public static IObservable<T> LoggedCatch<T, TObj, TException>(this IObservable<T> This, TObj klass, Func<TException, IObservable<T>> next, string message = null)

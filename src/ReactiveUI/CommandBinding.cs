@@ -316,12 +316,12 @@ namespace ReactiveUI
             }
 
             if (binder == null) {
-                throw new Exception(String.Format("Couldn't find a Command Binder for {0}", type.FullName));
+                throw new Exception(string.Format("Couldn't find a Command Binder for {0}", type.FullName));
             }
 
             var ret = binder.BindCommandToObject(command, target, commandParameter);
             if (ret == null) {
-                throw new Exception(String.Format("Couldn't bind Command Binder for {0}", type.FullName));
+                throw new Exception(string.Format("Couldn't bind Command Binder for {0}", type.FullName));
             }
 
             return ret;
@@ -332,7 +332,7 @@ namespace ReactiveUI
             var type = target.GetType();
             var binder = bindCommandEventCache.Get(type);
             if (binder == null) {
-                throw new Exception(String.Format("Couldn't find a Command Binder for {0} and event {1}", type.FullName, eventName));
+                throw new Exception(string.Format("Couldn't find a Command Binder for {0} and event {1}", type.FullName, eventName));
             }
 
             var eventArgsType = Reflection.GetEventArgsTypeForEvent(type, eventName);
@@ -341,7 +341,7 @@ namespace ReactiveUI
 
             var ret = (IDisposable) mi.Invoke(binder, new[] {command, target, commandParameter, eventName});
             if (ret == null) {
-                throw new Exception(String.Format("Couldn't bind Command Binder for {0} and event {1}", type.FullName, eventName));
+                throw new Exception(string.Format("Couldn't bind Command Binder for {0} and event {1}", type.FullName, eventName));
             }
 
             return ret;
@@ -364,10 +364,10 @@ namespace ReactiveUI
         bool? prevCanExecute = null;
         public bool CanExecute(object parameter)
         {
-            var ce = canExecute(parameter);
-            if (CanExecuteChanged != null && (!prevCanExecute.HasValue || ce != prevCanExecute)) {
+            var ce = this.canExecute(parameter);
+            if (CanExecuteChanged != null && (!this.prevCanExecute.HasValue || ce != this.prevCanExecute)) {
                 CanExecuteChanged(this, EventArgs.Empty);
-                prevCanExecute = ce;
+                this.prevCanExecute = ce;
             }
 
             return ce;
@@ -375,7 +375,7 @@ namespace ReactiveUI
 
         public void Execute(object parameter)
         {
-            execute(parameter);
+            this.execute(parameter);
         }
     }
 }
