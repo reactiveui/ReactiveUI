@@ -78,6 +78,7 @@
     <Compile Include="ExpressionRewriter.cs" />
     <Compile Include="Interactions.cs" />
     <Compile Include="Legacy\Errors.cs" />
+    <Compile Include="Observables.cs" />
     <Compile Include="PortableLibraryStubs.cs" />
     <Compile Include="ReactiveBinding.cs" />
     <Compile Include="AutoPersistHelper.cs" />
@@ -91,7 +92,7 @@
     <Compile Include="Interfaces.cs" />
     <Compile Include="IROObservableForProperty.cs" />
     <Compile Include="MessageBus.cs" />
-    <Compile Include="MobileLifecycle.cs" />
+    <Compile Include="SuspensionHost.cs" />
     <Compile Include="ObservableAsPropertyHelper.cs" />
     <Compile Include="ObservedChangedMixin.cs" />
     <Compile Include="OrderedComparer.cs" />

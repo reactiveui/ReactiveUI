@@ -9,6 +9,9 @@ using Splat;
 
 namespace ReactiveUI
 {
+    /// <summary>
+    /// Various helpers to bind View controls and ViewModel commands together
+    /// </summary>
     public static class CommandBinder
     {
         static ICommandBinderImplementation binderImplementation;
@@ -30,7 +33,7 @@ namespace ReactiveUI
         /// <param name="view">The View</param>
         /// <param name="viewModel">The View model</param>
         /// <param name="controlName">The name of the control on the view</param>
-        /// <param name="propertyName">The ViewModel command to Bind.</param>
+        /// <param name="propertyName">The ViewModel command to bind.</param>
         /// <param name="withParameter">The ViewModel property to pass as the
         /// param of the ICommand</param>
         /// <param name="toEvent">If specified, bind to the specific event
@@ -57,6 +60,7 @@ namespace ReactiveUI
         /// the binding</returns>
         /// <param name="view">The View</param>
         /// <param name="viewModel">The View model</param>
+        /// <param name="propertyName">The ViewModel command to bind</param>
         /// <param name="controlName">The name of the control on the view</param>
         /// <param name="toEvent">If specified, bind to the specific event
         /// instead of the default.</param>
@@ -81,6 +85,7 @@ namespace ReactiveUI
         /// the binding</returns>
         /// <param name="view">The View</param>
         /// <param name="viewModel">The View model</param>
+        /// <param name="propertyName">The ViewModel command to bind</param>
         /// <param name="controlName">The name of the control on the view</param>
         /// <param name="withParameter">The ViewModel property to pass as the
         /// param of the ICommand</param>
@@ -126,8 +131,25 @@ namespace ReactiveUI
             where TProp : ICommand;
     }
 
+    /// <summary>
+    /// Used by the CommandBinder extension methods to handle binding View controls and ViewModel commands
+    /// </summary>
     public class CommandBinderImplementation : ICommandBinderImplementation
     {
+        /// <summary>
+        /// Bind a command from the ViewModel to an explicitly specified control
+        /// on the View.
+        /// </summary>
+        /// <returns>A class representing the binding. Dispose it to disconnect
+        /// the binding</returns>
+        /// <param name="view">The View</param>
+        /// <param name="viewModel">The View model</param>
+        /// <param name="controlProperty">The name of the control on the view</param>
+        /// <param name="vmProperty">The ViewModel command to bind</param>
+        /// <param name="withParameter">The ViewModel property to pass as the
+        /// param of the ICommand</param>
+        /// <param name="toEvent">If specified, bind to the specific event
+        /// instead of the default.</param>
         public IReactiveBinding<TView, TViewModel, TProp> BindCommand<TView, TViewModel, TProp, TControl, TParam>(
                 TViewModel viewModel,
                 TView view,
@@ -157,6 +179,20 @@ namespace ReactiveUI
                 source, BindingDirection.OneWay, bindingDisposable);
         }
 
+        /// <summary>
+        /// Bind a command from the ViewModel to an explicitly specified control
+        /// on the View.
+        /// </summary>
+        /// <returns>A class representing the binding. Dispose it to disconnect
+        /// the binding</returns>
+        /// <param name="view">The View</param>
+        /// <param name="viewModel">The View model</param>
+        /// <param name="controlProperty">The name of the control on the view</param>
+        /// <param name="vmProperty">The ViewModel command to bind</param>
+        /// <param name="withParameter">The ViewModel property to pass as the
+        /// param of the ICommand</param>
+        /// <param name="toEvent">If specified, bind to the specific event
+        /// instead of the default.</param>
         public IReactiveBinding<TView, TViewModel, TProp> BindCommand<TView, TViewModel, TProp, TControl, TParam>(
                 TViewModel viewModel,
                 TView view,
@@ -231,7 +267,7 @@ namespace ReactiveUI
             where TView : class, IViewFor<TViewModel>
             where TProp : ICommand
         {
-            return This.BindCommand(viewModel, view, propertyName, controlName, Observable.Empty<object>(), toEvent);
+            return This.BindCommand(viewModel, view, propertyName, controlName, Observable<object>.Empty, toEvent);
         }
 
         public static IReactiveBinding<TView, TViewModel, TProp> BindCommand<TView, TViewModel, TProp, TControl, TParam>(
@@ -303,7 +339,6 @@ namespace ReactiveUI
             var mi = binder.GetType().GetTypeInfo().DeclaredMethods.First(x => x.Name == "BindCommandToObject" && x.IsGenericMethod);
             mi = mi.MakeGenericMethod(new[] {eventArgsType});
 
-            //var ret = binder.BindCommandToObject<TEventArgs>(command, target, commandParameter, eventName);
             var ret = (IDisposable) mi.Invoke(binder, new[] {command, target, commandParameter, eventName});
             if (ret == null) {
                 throw new Exception(String.Format("Couldn't bind Command Binder for {0} and event {1}", type.FullName, eventName));

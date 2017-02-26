@@ -50,7 +50,7 @@ namespace ReactiveUI
             set { SetValue(ViewContractObservableProperty, value); }
         }
         public static readonly DependencyProperty ViewContractObservableProperty =
-            DependencyProperty.Register("ViewContractObservable", typeof(IObservable<string>), typeof(RoutedViewHost), new PropertyMetadata(Observable.Return(default(string))));
+            DependencyProperty.Register("ViewContractObservable", typeof(IObservable<string>), typeof(RoutedViewHost), new PropertyMetadata(Observable<string>.Default));
 
         public IViewLocator ViewLocator { get; set; }
 
@@ -63,7 +63,7 @@ namespace ReactiveUI
             VerticalContentAlignment = VerticalAlignment.Stretch;
 
             if (ModeDetector.InUnitTestRunner()) {
-                ViewContractObservable = Observable.Never<string>();
+                ViewContractObservable = Observable<string>.Never;
                 return;
             }
 

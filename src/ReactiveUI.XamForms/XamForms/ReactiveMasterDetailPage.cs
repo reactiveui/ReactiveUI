@@ -19,11 +19,23 @@ namespace ReactiveUI.XamForms
             typeof(TViewModel),
             typeof(ReactiveMasterDetailPage<TViewModel>),
             default(TViewModel),
-            BindingMode.OneWay);
+            BindingMode.OneWay,
+            propertyChanged: OnViewModelChanged);
 
         object IViewFor.ViewModel {
             get { return ViewModel; }
             set { ViewModel = (TViewModel)value; }
+        }
+
+        protected override void OnBindingContextChanged()
+        {
+            base.OnBindingContextChanged();
+            this.ViewModel = this.BindingContext as TViewModel;
+        }
+
+        private static void OnViewModelChanged(BindableObject bindableObject, object oldValue, object newValue)
+        {
+            bindableObject.BindingContext = newValue;
         }
     }
 }
