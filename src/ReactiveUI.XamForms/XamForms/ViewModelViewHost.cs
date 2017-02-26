@@ -51,7 +51,7 @@ namespace ReactiveUI.XamForms
             nameof(ViewContractObservable),
             typeof(IObservable<string>),
             typeof(ViewModelViewHost),
-            Observable.Never<string>(),
+            Observable<string>.Never,
             BindingMode.OneWay);
 
         public IViewLocator ViewLocator { get; set; }
@@ -60,7 +60,7 @@ namespace ReactiveUI.XamForms
         {
             // NB: InUnitTestRunner also returns true in Design Mode
             if (ModeDetector.InUnitTestRunner()) {
-                ViewContractObservable = Observable.Never<string>();
+                ViewContractObservable = Observable<string>.Never;
                 return;
             }
 

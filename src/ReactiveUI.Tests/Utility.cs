@@ -2,7 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Reactive.Concurrency;
 using System.Linq;
+using System.Globalization;
+using System.Reflection;
+using System.Threading;
 using Xunit;
+using Xunit.Sdk;
 
 namespace ReactiveUI.Tests
 {
@@ -13,12 +17,16 @@ namespace ReactiveUI.Tests
             var left = lhs.ToArray();
             var right = rhs.ToArray();
 
-            try {
+            try
+            {
                 Assert.Equal(left.Length, right.Length);
-                for (int i = 0; i < left.Length; i++) {
+                for (int i = 0; i < left.Length; i++)
+                {
                     Assert.Equal(left[i], right[i]);
                 }
-            } catch {
+            }
+            catch
+            {
                 Console.Error.WriteLine("lhs: [{0}]",
                     String.Join(",", lhs.ToArray()));
                 Console.Error.WriteLine("rhs: [{0}]",
@@ -32,15 +40,18 @@ namespace ReactiveUI.Tests
             bool isFirst = true;
             T lastValue = default(T);
 
-            foreach(var v in This) {
-                if (isFirst) {
+            foreach (var v in This)
+            {
+                if (isFirst)
+                {
                     lastValue = v;
                     isFirst = false;
                     yield return v;
                     continue;
                 }
 
-                if (!EqualityComparer<T>.Default.Equals(v, lastValue)) {
+                if (!EqualityComparer<T>.Default.Equals(v, lastValue))
+                {
                     yield return v;
                 }
                 lastValue = v;
@@ -59,7 +70,8 @@ namespace ReactiveUI.Tests
         public IScheduler InnerScheduler { get; private set; }
         public List<Tuple<Action, TimeSpan?>> ScheduledItems { get; private set; }
 
-        public DateTimeOffset Now {
+        public DateTimeOffset Now
+        {
             get { return InnerScheduler.Now; }
         }
 
@@ -86,14 +98,32 @@ namespace ReactiveUI.Tests
     {
         public static void Run<T>(this IEnumerable<T> This, Action<T> block)
         {
-            foreach (var v in This) {
-                block(v); 
+            foreach (var v in This)
+            {
+                block(v);
             }
         }
 
         public static IEnumerable<T> SkipLast<T>(this IEnumerable<T> This, int count)
         {
             return This.Take(This.Count() - count);
+        }
+    }
+
+    // run tests on invariant culture to avoid problems e.g with culture specific decimal separator
+    public class UseInvariantCulture : BeforeAfterTestAttribute
+    {
+        private CultureInfo storedCulture;
+
+        public override void Before(MethodInfo methodUnderTest)
+        {
+            storedCulture = Thread.CurrentThread.CurrentCulture;
+            Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
+        }
+
+        public override void After(MethodInfo methodUnderTest)
+        {
+            Thread.CurrentThread.CurrentCulture = storedCulture;
         }
     }
 }

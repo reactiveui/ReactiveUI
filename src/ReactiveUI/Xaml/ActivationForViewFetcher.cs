@@ -22,7 +22,7 @@ namespace ReactiveUI
             var fe = view as FrameworkElement;
 
             if (fe == null)
-                return Observable.Empty<bool>();
+                return Observable<bool>.Empty;
 #if WINDOWS_UWP
             var viewLoaded = WindowsObservable.FromEventPattern<FrameworkElement, object>(x => fe.Loading += x,
                 x => fe.Loading -= x).Select(_ => true);
@@ -36,7 +36,7 @@ namespace ReactiveUI
 
             return viewLoaded
                 .Merge(viewUnloaded)
-                .Select(b => b ? fe.WhenAnyValue(x => x.IsHitTestVisible).SkipWhile(x => !x) : Observable.Return(false))
+                .Select(b => b ? fe.WhenAnyValue(x => x.IsHitTestVisible).SkipWhile(x => !x) : Observables.False)
                 .Switch()
                 .DistinctUntilChanged();
         }

@@ -105,7 +105,6 @@
     <Compile Include="Interfaces.cs" />
     <Compile Include="IROObservableForProperty.cs" />
     <Compile Include="MessageBus.cs" />
-    <Compile Include="MobileLifecycle.cs" />
     <Compile Include="ObservableAsPropertyHelper.cs" />
     <Compile Include="ObservedChangedMixin.cs" />
     <Compile Include="OrderedComparer.cs" />
@@ -126,6 +125,7 @@
     <Compile Include="RoutableViewModelMixin.cs" />
     <Compile Include="RoutingState.cs" />
     <Compile Include="RxApp.cs" />
+    <Compile Include="SuspensionHost.cs" />
     <Compile Include="UnhandledErrorException.cs" />
     <Compile Include="ViewLocator.cs" />
     <Compile Include="ScheduledSubject.cs" />
@@ -143,6 +143,7 @@
     <Compile Include="Android\AutoSuspendHelper.cs" />
     <Compile Include="Legacy\ReactiveCommand.cs" />
     <Compile Include="Legacy\Errors.cs" />
+    <Compile Include="Observables.cs" />
     <Compile Include="Android\UsbManagerExtensions.cs" />
     <Compile Include="Android\ContextExtensions.cs" />
     <Compile Include="Android\SharedPreferencesExtensions.cs" />
