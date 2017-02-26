@@ -31,7 +31,7 @@ namespace ReactiveUI
                     x => app.Activated += x, x => app.Activated -= x)
                     .Select(_ => Unit.Default);
 
-            RxApp.SuspensionHost.IsResuming = Observable.Never<Unit>();
+            RxApp.SuspensionHost.IsResuming = Observable<Unit>.Never;
 
             // NB: No way to tell OS that we need time to suspend, we have to
             // do it in-process

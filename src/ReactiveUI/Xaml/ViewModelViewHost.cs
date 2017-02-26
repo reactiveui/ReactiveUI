@@ -48,7 +48,7 @@ namespace ReactiveUI
             set { SetValue(ViewContractObservableProperty, value); }
         }
         public static readonly DependencyProperty ViewContractObservableProperty =
-            DependencyProperty.Register("ViewContractObservable", typeof(IObservable<string>), typeof(ViewModelViewHost), new PropertyMetadata(Observable.Return(default(string))));
+            DependencyProperty.Register("ViewContractObservable", typeof(IObservable<string>), typeof(ViewModelViewHost), new PropertyMetadata(Observable<string>.Default));
 
         private string viewContract;
 
@@ -68,7 +68,7 @@ namespace ReactiveUI
 
             // NB: InUnitTestRunner also returns true in Design Mode
             if (ModeDetector.InUnitTestRunner()) {
-                ViewContractObservable = Observable.Never<string>();
+                ViewContractObservable = Observable<string>.Never;
                 return;
             }
 

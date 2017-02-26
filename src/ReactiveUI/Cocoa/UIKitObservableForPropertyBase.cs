@@ -39,7 +39,7 @@ namespace ReactiveUI
         public IObservable<IObservedChange<object, object>> GetNotificationForProperty(object sender, Expression expression, bool beforeChanged = false)
         {
             if (beforeChanged)
-                return Observable.Never<IObservedChange<object, object>>();
+                return Observable<IObservedChange<object, object>>.Never;
 
             var type = sender.GetType();
             var propertyName = expression.GetMemberInfo().Name;
