@@ -73,11 +73,11 @@ namespace ReactiveUI.XamForms
                             finally
                             {
                                 currentlyPopping = false;
+                                ((IViewFor)this.CurrentPage).ViewModel = Router.GetCurrentViewModel();
                             }
 
                             return Unit.Default;
                         })
-                    .Do(_ => ((IViewFor)this.CurrentPage).ViewModel = Router.GetCurrentViewModel())
                     .Subscribe());
 
                 d(this.WhenAnyObservable(x => x.Router.Navigate)
@@ -141,7 +141,7 @@ namespace ReactiveUI.XamForms
 
         protected IObservable<Page> PageForViewModel(IRoutableViewModel vm)
         {
-            if (vm == null) return Observable.Empty<Page>();
+            if (vm == null) return Observable<Page>.Empty;
 
             var ret = ViewLocator.Current.ResolveView(vm);
             if (ret == null) {
@@ -156,6 +156,7 @@ namespace ReactiveUI.XamForms
 
             var pg = (Page)ret;
             pg.Title = vm.UrlPathSegment;
+
             return Observable.Return(pg);
         }
     }

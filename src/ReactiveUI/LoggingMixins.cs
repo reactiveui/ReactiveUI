@@ -44,7 +44,7 @@ namespace ReactiveUI
         public static IObservable<T> LoggedCatch<T, TObj>(this IObservable<T> This, TObj klass, IObservable<T> next = null, string message = null)
             where TObj : IEnableLogger
         {
-            next = next ?? Observable.Return(default(T));
+            next = next ?? Observable<T>.Default;
             return This.Catch<T, Exception>(ex => {
                 klass.Log().WarnException(message ?? "", ex);
                 return next;
