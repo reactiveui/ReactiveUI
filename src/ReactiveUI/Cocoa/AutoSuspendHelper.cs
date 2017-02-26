@@ -38,7 +38,7 @@ namespace ReactiveUI
             Reflection.ThrowIfMethodsNotOverloaded("AutoSuspendHelper", appDelegate,
                 "FinishedLaunching", "OnActivated", "DidEnterBackground");
 
-            RxApp.SuspensionHost.IsLaunchingNew = Observable.Never<Unit>();
+            RxApp.SuspensionHost.IsLaunchingNew = Observable<Unit>.Never;
             RxApp.SuspensionHost.IsResuming = _finishedLaunching.Select(_ => Unit.Default);
             RxApp.SuspensionHost.IsUnpausing = _activated.Select(_ => Unit.Default);
 
@@ -53,7 +53,7 @@ namespace ReactiveUI
                 // NB: We're being force-killed, signal invalidate instead
                 if (taskId == UIApplication.BackgroundTaskInvalid) {
                     untimelyDeath.OnNext(Unit.Default);
-                    return Observable.Empty<IDisposable>();
+                    return Observable<IDisposable>.Empty;
                 }
 
                 return Observable.Return(Disposable.Create(() => app.EndBackgroundTask(taskId)));

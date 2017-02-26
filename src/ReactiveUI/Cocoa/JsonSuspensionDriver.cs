@@ -41,7 +41,7 @@ namespace ReactiveUI
                     serializer.Serialize(st, state);
                 }
 
-                return Observable.Return(Unit.Default);
+                return Observables.Unit;
                 
             } catch(Exception ex) {
                 return Observable.Throw<Unit>(ex);
@@ -54,7 +54,7 @@ namespace ReactiveUI
                 var target = Path.Combine(CreateAppDirectory(NSSearchPathDirectory.ApplicationSupportDirectory), "state.dat");
                 File.Delete(target);
 
-                return Observable.Return(Unit.Default);
+                return Observables.Unit;
                 
             } catch(Exception ex) {
                 return Observable.Throw<Unit>(ex);

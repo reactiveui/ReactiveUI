@@ -35,7 +35,7 @@ namespace ReactiveUI
                 var st = new MemoryStream();
 
                 AutoSuspendHelper.LatestBundle.PutByteArray("__state", st.ToArray());
-                return Observable.Return(Unit.Default);
+                return Observables.Unit;
             
             } catch(Exception ex) {
                 return Observable.Throw<Unit>(ex);
@@ -46,7 +46,7 @@ namespace ReactiveUI
         {
             try {
                 AutoSuspendHelper.LatestBundle.PutByteArray("__state", new byte[0]);
-                return Observable.Return(Unit.Default);
+                return Observables.Unit;
             
             } catch(Exception ex) {
                 return Observable.Throw<Unit>(ex);

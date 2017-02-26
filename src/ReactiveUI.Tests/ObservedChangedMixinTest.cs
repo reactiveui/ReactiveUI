@@ -168,7 +168,7 @@ namespace ReactiveUI.Tests
         {
             foreach (var i in Enumerable.Range(1, 7)) {
                 viewmodel.NewPlayerName = "Player" + i;
-                viewmodel.AddPlayer.Execute();
+                viewmodel.AddPlayer.Execute().Subscribe();
                 Assert.Equal(i, viewmodel.Players.Count);
             }
         }

@@ -1,22 +1,22 @@
 using System;
 using System.ComponentModel;
-using System.Drawing;
 using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Subjects;
-using ReactiveUI;
 using System.Reactive.Linq;
 
 #if UNIFIED
 using CoreGraphics;
 using Foundation;
 #elif UIKIT
+using System.Drawing;
 using MonoTouch.Foundation;
 using MonoTouch.UIKit;
 using NSImageView = MonoTouch.UIKit.UIImageView;
 using NSImage = MonoTouch.UIKit.UIImage;
 using NSView = MonoTouch.UIKit.UIView;
 #else
+using System.Drawing;
 using MonoMac.AppKit;
 #endif
 
@@ -35,18 +35,18 @@ namespace ReactiveUI
     public abstract class ReactiveImageView : NSImageView, IReactiveNotifyPropertyChanged<ReactiveImageView>, IHandleObservableErrors, IReactiveObject, ICanActivate, ICanForceManualActivation
     {
 #if UNIFIED
-        public ReactiveImageView(CGRect frame) : base(frame) { }
+        protected ReactiveImageView(CGRect frame) : base(frame) { }
 #else
-        public ReactiveImageView(RectangleF frame) : base(frame) { }
+        protected ReactiveImageView(RectangleF frame) : base(frame) { }
 #endif
 
-        public ReactiveImageView() { }
+        protected ReactiveImageView() { }
 
 #if UIKIT
-        public ReactiveImageView(NSImage image) : base(image) { }
-        public ReactiveImageView(NSObjectFlag t) : base(t) { }
-        public ReactiveImageView(NSImage image, NSImage highlightedImage) : base(image, highlightedImage) { }
-        public ReactiveImageView(NSCoder coder) : base(coder) { }
+        protected ReactiveImageView(NSImage image) : base(image) { }
+        protected ReactiveImageView(NSObjectFlag t) : base(t) { }
+        protected ReactiveImageView(NSImage image, NSImage highlightedImage) : base(image, highlightedImage) { }
+        protected ReactiveImageView(NSCoder coder) : base(coder) { }
 #endif
 
         protected ReactiveImageView(IntPtr handle) : base(handle) { }
@@ -86,12 +86,13 @@ namespace ReactiveUI
             get { return this.getChangedObservable(); }
         }
 
-        public IDisposable SuppressChangeNotifications() {
+        public IDisposable SuppressChangeNotifications()
+        {
             return this.suppressChangeNotifications();
         }
 
         public IObservable<Exception> ThrownExceptions { get { return this.getThrownExceptionsObservable(); } }
-        
+
         Subject<Unit> activated = new Subject<Unit>();
         public IObservable<Unit> Activated { get { return activated.AsObservable(); } }
         Subject<Unit> deactivated = new Subject<Unit>();
@@ -111,10 +112,42 @@ namespace ReactiveUI
             RxApp.MainThreadScheduler.Schedule(() => (newsuper != null ? activated : deactivated).OnNext(Unit.Default));
         }
 
-        void ICanForceManualActivation.Activate(bool activate) 
+        void ICanForceManualActivation.Activate(bool activate)
         {
-            RxApp.MainThreadScheduler.Schedule(() => 
+            RxApp.MainThreadScheduler.Schedule(() =>
                 (activate ? activated : deactivated).OnNext(Unit.Default));
+        }
+    }
+
+    public abstract class ReactiveImageView<TViewModel> : ReactiveImageView, IViewFor<TViewModel>
+        where TViewModel : class
+    {
+#if UNIFIED
+        protected ReactiveImageView(CGRect frame) : base(frame) { }
+#else
+        protected ReactiveImageView(RectangleF frame) : base(frame) { }
+#endif
+
+        protected ReactiveImageView() { }
+
+#if UIKIT
+        protected ReactiveImageView(NSImage image) : base(image) { }
+        protected ReactiveImageView(NSObjectFlag t) : base(t) { }
+        protected ReactiveImageView(NSImage image, NSImage highlightedImage) : base(image, highlightedImage) { }
+        protected ReactiveImageView(NSCoder coder) : base(coder) { }
+#endif
+
+        protected ReactiveImageView(IntPtr handle) : base(handle) { }
+
+        TViewModel _viewModel;
+        public TViewModel ViewModel {
+            get { return _viewModel; }
+            set { this.RaiseAndSetIfChanged(ref _viewModel, value); }
+        }
+
+        object IViewFor.ViewModel {
+            get { return ViewModel; }
+            set { ViewModel = (TViewModel)value; }
         }
     }
 }

@@ -18,7 +18,7 @@ namespace ReactiveUI
         where TView : IViewFor
     {
         /// <summary>
-        /// The instance of the view model this binding is applied to.</param>
+        /// The instance of the view model this binding is applied to.
         /// </summary>
         /// <value>
         /// The view model.
@@ -76,15 +76,6 @@ namespace ReactiveUI
     {
         private IDisposable bindingDisposable;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AppliedBindingInfo{TViewModel}" /> class.
-        /// </summary>
-        /// <param name="view">The view.</param>
-        /// <param name="viewModel">The view model.</param>
-        /// <param name="viewPath">The view path.</param>
-        /// <param name="viewModelPath">The view model path.</param>
-        /// <param name="direction">The direction.</param>
-        /// <param name="bindingDisposable">The binding disposable.</param>
         public ReactiveBinding(TView view, TViewModel viewModel, Expression viewExpression, Expression viewModelExpression, 
             IObservable<TValue> changed, BindingDirection direction, IDisposable bindingDisposable)
         {
@@ -99,7 +90,7 @@ namespace ReactiveUI
         }
 
         /// <summary>
-        /// The instance of the view model this binding is applied to.</param>
+        /// The instance of the view model this binding is applied to.
         /// </summary>
         /// <value>
         /// The view model.
@@ -150,9 +141,6 @@ namespace ReactiveUI
         /// </value>
         public BindingDirection Direction { get; private set; }
 
-        /// <summary>
-        /// Releases unmanaged and - optionally - managed resources.
-        /// </summary>
         public void Dispose()
         {
             if (bindingDisposable != null) {

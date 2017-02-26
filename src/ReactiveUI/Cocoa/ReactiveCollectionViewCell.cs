@@ -1,19 +1,8 @@
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics.Contracts;
-using System.Drawing;
-using System.Linq;
 using System.Reactive;
 using System.Reactive.Concurrency;
-using System.Reactive.Disposables;
 using System.Reactive.Subjects;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Runtime.Serialization;
-using System.Threading;
-using ReactiveUI;
-using Splat;
 using System.Reactive.Linq;
 
 #if UNIFIED
@@ -21,6 +10,7 @@ using CoreGraphics;
 using Foundation;
 using UIKit;
 #else
+using System.Drawing;
 using MonoTouch.Foundation;
 using MonoTouch.UIKit;
 #endif
@@ -30,16 +20,16 @@ namespace ReactiveUI
     public abstract class ReactiveCollectionViewCell : UICollectionViewCell, IReactiveNotifyPropertyChanged<ReactiveCollectionViewCell>, IHandleObservableErrors, IReactiveObject, ICanActivate
     {
 #if UNIFIED
-        public ReactiveCollectionViewCell(CGRect frame) : base (frame) { setupRxObj(); }
+        protected ReactiveCollectionViewCell(CGRect frame) : base(frame) { setupRxObj(); }
 #else
-        public ReactiveCollectionViewCell(RectangleF frame) : base (frame) { setupRxObj(); }
+        protected ReactiveCollectionViewCell(RectangleF frame) : base (frame) { setupRxObj(); }
 #endif
 
-        public ReactiveCollectionViewCell(NSObjectFlag t) : base (t) { setupRxObj(); }
-        public ReactiveCollectionViewCell(NSCoder coder) : base (NSObjectFlag.Empty) { setupRxObj(); }
-        public ReactiveCollectionViewCell() : base() { setupRxObj(); }
+        protected ReactiveCollectionViewCell(NSObjectFlag t) : base(t) { setupRxObj(); }
+        protected ReactiveCollectionViewCell(NSCoder coder) : base(NSObjectFlag.Empty) { setupRxObj(); }
+        protected ReactiveCollectionViewCell() : base() { setupRxObj(); }
 
-        protected ReactiveCollectionViewCell(IntPtr handle) : base (handle) { setupRxObj(); }
+        protected ReactiveCollectionViewCell(IntPtr handle) : base(handle) { setupRxObj(); }
 
         public event PropertyChangingEventHandler PropertyChanging {
             add { PropertyChangingEventManager.AddHandler(this, value); }
@@ -103,6 +93,31 @@ namespace ReactiveUI
         {
             base.WillMoveToSuperview(newsuper);
             RxApp.MainThreadScheduler.Schedule(() => (newsuper != null ? activated : deactivated).OnNext(Unit.Default));
+        }
+    }
+
+    public abstract class ReactiveCollectionViewCell<TViewModel> : ReactiveCollectionViewCell, IViewFor<TViewModel>
+        where TViewModel : class
+    {
+        protected ReactiveCollectionViewCell(NSObjectFlag t) : base(t) { }
+        protected ReactiveCollectionViewCell(NSCoder coder) : base(NSObjectFlag.Empty) { }
+        protected ReactiveCollectionViewCell() : base() { }
+#if UNIFIED
+        protected ReactiveCollectionViewCell(CGRect frame) : base(frame) { }
+#else
+        protected ReactiveCollectionViewCell(RectangleF frame) : base (frame) { }
+#endif
+        protected ReactiveCollectionViewCell(IntPtr handle) : base(handle) { }
+
+        TViewModel _viewModel;
+        public TViewModel ViewModel {
+            get { return _viewModel; }
+            set { this.RaiseAndSetIfChanged(ref _viewModel, value); }
+        }
+
+        object IViewFor.ViewModel {
+            get { return ViewModel; }
+            set { ViewModel = (TViewModel)value; }
         }
     }
 }
