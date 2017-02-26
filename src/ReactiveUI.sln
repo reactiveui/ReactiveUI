@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.26206.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{BD9762CF-E104-481C-96A6-26E624B86283}"
 	ProjectSection(SolutionItems) = preProject
@@ -55,6 +55,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Testing_Mac", "ReactiveUI.Testing\ReactiveUI.Testing_Mac.csproj", "{E1F2AD19-276E-4D05-A41A-89AA133CECFC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Reactive.Testing_Mac", "Microsoft.Reactive.Testing\Microsoft.Reactive.Testing_Mac.csproj", "{AA27F817-FAD2-4622-B68A-651A8AA9E076}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "IOS", "IOS", "{B30484BA-EA32-4574-AB34-A10912E518CE}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Android", "Android", "{C6DDE7EB-C375-4B72-AC34-C5913613EC2B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -1159,6 +1163,15 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{1131910A-9D6D-473F-9C69-3DCF6A1C81BC} = {C6DDE7EB-C375-4B72-AC34-C5913613EC2B}
+		{A4BA5B4E-257A-42A7-BDAB-1FB40A903909} = {B30484BA-EA32-4574-AB34-A10912E518CE}
+		{F5A6E11B-B074-4A1C-B937-267D840E31DF} = {C6DDE7EB-C375-4B72-AC34-C5913613EC2B}
+		{F5A6E11B-B074-4A0B-B937-267D840E31DF} = {C6DDE7EB-C375-4B72-AC34-C5913613EC2B}
+		{AF913370-A394-4DBD-801E-15E1FDA78FFC} = {B30484BA-EA32-4574-AB34-A10912E518CE}
+		{9A913371-AE94-3DBD-8F1E-15E10DB72FFC} = {B30484BA-EA32-4574-AB34-A10912E518CE}
+		{1920477B-BB94-93CF-984E-E177EF9FEDB1} = {C6DDE7EB-C375-4B72-AC34-C5913613EC2B}
 	EndGlobalSection
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = ReactiveUI.vsmdi

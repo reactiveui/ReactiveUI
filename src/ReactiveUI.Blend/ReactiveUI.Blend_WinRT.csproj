@@ -51,8 +51,11 @@
     <Compile Include="ObservableTriggerBehavior.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.Xaml.Interactivity">
-      <HintPath>C:\Program Files (x86)\Microsoft SDKs\Windows\v8.1\ExtensionSDKs\BehaviorsXamlSDKManaged\12.0\References\CommonConfiguration\Neutral\Microsoft.Xaml.Interactivity.dll</HintPath>
+    <Reference Include="Microsoft.Xaml.Interactions, Version=12.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Xaml.Interactivity.Unofficial.12.0.0\lib\Portable-Win81+WPA81\Microsoft.Xaml.Interactions.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Xaml.Interactivity, Version=12.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Xaml.Interactivity.Unofficial.12.0.0\lib\Portable-Win81+WPA81\Microsoft.Xaml.Interactivity.dll</HintPath>
     </Reference>
     <Reference Include="Splat">
       <HintPath>..\packages\Splat.1.6.2\lib\Portable-Win81+Wpa81\Splat.dll</HintPath>
@@ -89,9 +92,7 @@
   <ItemGroup>
     <None Include="packages.ReactiveUI.Blend_WinRT.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Properties\" />
-  </ItemGroup>
+  <ItemGroup />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '12.0' ">
     <VisualStudioVersion>12.0</VisualStudioVersion>
   </PropertyGroup>
