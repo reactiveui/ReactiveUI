@@ -4,5 +4,5 @@ tools\nuget\nuget.exe install xunit.runner.console -OutputDirectory tools -Exclu
 tools\nuget\nuget.exe install Cake -OutputDirectory tools -ExcludeVersion
 
 tools\Cake\Cake.exe build.cake --target=%1
-pause
+
 exit /b %errorlevel%
