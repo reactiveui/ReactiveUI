@@ -5,7 +5,9 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reflection;
 using System.Windows.Input;
+#if UIKIT
 using UIKit;
+#endif
 
 namespace ReactiveUI
 {
@@ -112,6 +114,7 @@ namespace ReactiveUI
             return compDisp;
         }
 
+#if UIKIT
         /// <summary>
         /// Creates a commands binding from event and a property
         /// </summary>
@@ -148,6 +151,7 @@ namespace ReactiveUI
 
             return compDisp;
         }
+#endif
     }
 }
 
