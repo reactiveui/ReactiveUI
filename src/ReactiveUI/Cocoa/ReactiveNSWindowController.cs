@@ -2,14 +2,8 @@ using System;
 using System.ComponentModel;
 using System.Reactive.Subjects;
 using System.Reactive;
-
-#if UNIFIED
 using AppKit;
 using Foundation;
-#else
-using MonoMac.AppKit;
-using MonoMac.Foundation;
-#endif
 
 namespace ReactiveUI
 {
@@ -25,7 +19,7 @@ namespace ReactiveUI
 
         public event PropertyChangingEventHandler PropertyChanging;
 
-        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args) 
+        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args)
         {
             var handler = PropertyChanging;
             if (handler != null) {
@@ -35,7 +29,7 @@ namespace ReactiveUI
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args) 
+        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args)
         {
             var handler = PropertyChanged;
             if (handler != null) {

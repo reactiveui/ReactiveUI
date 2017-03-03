@@ -1,13 +1,5 @@
 ﻿using System;
-using System.Globalization;
-using System.Linq;
-using ReactiveUI;
-
-#if UNIFIED
 using Foundation;
-#else
-using MonoTouch.Foundation;
-#endif
 
 namespace ReactiveUI
 {
@@ -27,12 +19,12 @@ namespace ReactiveUI
             result = null;
 
             if (val.GetType() == typeof(DateTime) && toType == typeof(NSDate)) {
-                var dt = (DateTime) val;
-                result = (NSDate) dt;
+                var dt = (DateTime)val;
+                result = (NSDate)dt;
                 return true;
-            } else if(val.GetType() == typeof(NSDate) && toType == typeof(DateTime)) {
-                var dt = (NSDate) val;
-                result = (DateTime) dt;
+            } else if (val.GetType() == typeof(NSDate) && toType == typeof(DateTime)) {
+                var dt = (NSDate)val;
+                result = (DateTime)dt;
                 return true;
             }
 

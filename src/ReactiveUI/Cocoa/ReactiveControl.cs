@@ -4,42 +4,24 @@ using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Subjects;
 using System.Reactive.Linq;
-
-#if UNIFIED
 using Foundation;
 using CoreGraphics;
-#elif UIKIT
-using System.Drawing;
-using MonoTouch.Foundation;
-using MonoTouch.UIKit;
-#else
-using System.Drawing;
-using MonoMac.AppKit;
-using MonoMac.Foundation;
-using UIControl = MonoMac.AppKit.NSControl;
-#endif
 
-#if UNIFIED && UIKIT
+#if UIKIT
 using UIKit;
-#elif UNIFIED && COCOA
+#else
 using AppKit;
 using UIControl = AppKit.NSControl;
 #endif
-
 
 namespace ReactiveUI
 {
     public class ReactiveControl : UIControl, IReactiveNotifyPropertyChanged<ReactiveControl>, IHandleObservableErrors, IReactiveObject, ICanActivate, ICanForceManualActivation
     {
-#if UNIFIED
-        protected ReactiveControl(CGRect frame) : base(frame) { }
-#else
-        protected ReactiveControl(RectangleF frame) : base(frame) { }
-#endif
-
         protected ReactiveControl() { }
         protected ReactiveControl(NSCoder c) : base(c) { }
         protected ReactiveControl(NSObjectFlag f) : base(f) { }
+        protected ReactiveControl(CGRect frame) : base(frame) { }
         protected ReactiveControl(IntPtr handle) : base(handle) { }
 
         public event PropertyChangingEventHandler PropertyChanging {
@@ -124,11 +106,7 @@ namespace ReactiveUI
         protected ReactiveControl(NSCoder c) : base(c) { }
         protected ReactiveControl(NSObjectFlag f) : base(f) { }
         protected ReactiveControl(IntPtr handle) : base(handle) { }
-#if UNIFIED
         protected ReactiveControl(CGRect frame) : base(frame) { }
-#else
-        protected ReactiveControl(RectangleF frame) : base(frame) { }
-#endif
 
         TViewModel _viewModel;
         public TViewModel ViewModel {

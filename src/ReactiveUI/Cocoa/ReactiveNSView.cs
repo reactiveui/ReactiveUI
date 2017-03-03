@@ -4,25 +4,13 @@ using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Subjects;
 using System.Reactive.Linq;
-
-#if UNIFIED
 using CoreGraphics;
 using Foundation;
-#elif UIKIT
-using System.Drawing;
-using MonoTouch.Foundation;
-using MonoTouch.UIKit;
-using NSView = MonoTouch.UIKit.UIView;
-#else
-using System.Drawing;
-using MonoMac.AppKit;
-using MonoMac.Foundation;
-#endif
 
-#if UNIFIED && UIKIT
+#if UIKIT
 using NSView = UIKit.UIView;
 using UIKit;
-#elif UNIFIED && COCOA
+#else
 using AppKit;
 #endif
 
@@ -38,11 +26,7 @@ namespace ReactiveUI
         protected ReactiveView(NSCoder c) : base(c) { }
         protected ReactiveView(NSObjectFlag f) : base(f) { }
         protected ReactiveView(IntPtr handle) : base(handle) { }
-#if UNIFIED
         protected ReactiveView(CGRect frame) : base(frame) { }
-#else
-        protected ReactiveView(RectangleF size) : base(size) { }
-#endif
 
         public event PropertyChangingEventHandler PropertyChanging {
             add { PropertyChangingEventManager.AddHandler(this, value); }
@@ -129,11 +113,7 @@ namespace ReactiveUI
         protected ReactiveView(NSCoder c) : base(c) { }
         protected ReactiveView(NSObjectFlag f) : base(f) { }
         protected ReactiveView(IntPtr handle) : base(handle) { }
-#if UNIFIED
         protected ReactiveView(CGRect frame) : base(frame) { }
-#else
-        protected ReactiveView(RectangleF size) : base(size) { }
-#endif
 
         TViewModel _viewModel;
         public TViewModel ViewModel {

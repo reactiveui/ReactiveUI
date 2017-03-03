@@ -1,19 +1,9 @@
 using System;
 using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
-
-#if UNIFIED
 using CoreFoundation;
 using Foundation;
 using NSAction = System.Action;
-#elif UIKIT
-using MonoTouch.UIKit;
-using MonoTouch.Foundation;
-using MonoTouch.CoreFoundation;
-#else
-using MonoMac.Foundation;
-using MonoMac.CoreFoundation;
-#endif
 
 namespace ReactiveUI
 {
@@ -34,7 +24,7 @@ namespace ReactiveUI
             DispatchQueue.MainQueue.DispatchAsync(new NSAction(() => {
                 if (!innerDisp.IsDisposed) innerDisp.Disposable = action(this, state);
             }));
-            
+
             return innerDisp;
         }
 
@@ -43,7 +33,7 @@ namespace ReactiveUI
             if (dueTime <= Now) {
                 return Schedule(state, action);
             }
-            
+
             return Schedule(state, dueTime - Now, action);
         }
 
@@ -52,14 +42,10 @@ namespace ReactiveUI
             var innerDisp = Disposable.Empty;
             bool isCancelled = false;
 
-#if UNIFIED
             var timer = NSTimer.CreateScheduledTimer(dueTime, _ => {
-#else
-            var timer = NSTimer.CreateScheduledTimer(dueTime, () => {
-#endif
                 if (!isCancelled) innerDisp = action(this, state);
             });
-            
+
             return Disposable.Create(() => {
                 isCancelled = true;
                 timer.Invalidate();

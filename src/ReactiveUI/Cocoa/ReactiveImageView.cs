@@ -4,28 +4,15 @@ using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Subjects;
 using System.Reactive.Linq;
-
-#if UNIFIED
 using CoreGraphics;
 using Foundation;
-#elif UIKIT
-using System.Drawing;
-using MonoTouch.Foundation;
-using MonoTouch.UIKit;
-using NSImageView = MonoTouch.UIKit.UIImageView;
-using NSImage = MonoTouch.UIKit.UIImage;
-using NSView = MonoTouch.UIKit.UIView;
-#else
-using System.Drawing;
-using MonoMac.AppKit;
-#endif
 
-#if UNIFIED && UIKIT
+#if UIKIT
 using UIKit;
 using NSImage = UIKit.UIImage;
 using NSImageView = UIKit.UIImageView;
 using NSView = UIKit.UIView;
-#elif UNIFIED && COCOA
+#else
 using AppKit;
 #endif
 
@@ -34,13 +21,8 @@ namespace ReactiveUI
 {
     public abstract class ReactiveImageView : NSImageView, IReactiveNotifyPropertyChanged<ReactiveImageView>, IHandleObservableErrors, IReactiveObject, ICanActivate, ICanForceManualActivation
     {
-#if UNIFIED
-        protected ReactiveImageView(CGRect frame) : base(frame) { }
-#else
-        protected ReactiveImageView(RectangleF frame) : base(frame) { }
-#endif
-
         protected ReactiveImageView() { }
+        protected ReactiveImageView(CGRect frame) : base(frame) { }
 
 #if UIKIT
         protected ReactiveImageView(NSImage image) : base(image) { }
@@ -122,13 +104,8 @@ namespace ReactiveUI
     public abstract class ReactiveImageView<TViewModel> : ReactiveImageView, IViewFor<TViewModel>
         where TViewModel : class
     {
-#if UNIFIED
-        protected ReactiveImageView(CGRect frame) : base(frame) { }
-#else
-        protected ReactiveImageView(RectangleF frame) : base(frame) { }
-#endif
-
         protected ReactiveImageView() { }
+        protected ReactiveImageView(CGRect frame) : base(frame) { }
 
 #if UIKIT
         protected ReactiveImageView(NSImage image) : base(image) { }

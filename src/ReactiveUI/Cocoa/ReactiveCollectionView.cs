@@ -2,30 +2,18 @@
 using System.ComponentModel;
 using System.Reactive;
 using System.Reactive.Concurrency;
-using System.Reactive.Subjects;
 using System.Reactive.Linq;
-
-#if UNIFIED
+using System.Reactive.Subjects;
 using CoreGraphics;
 using Foundation;
 using UIKit;
-#else
-using System.Drawing;
-using MonoTouch.Foundation;
-using MonoTouch.UIKit;
-#endif
 
 namespace ReactiveUI
 {
     public abstract class ReactiveCollectionView : UICollectionView,
         IReactiveNotifyPropertyChanged<ReactiveCollectionView>, IHandleObservableErrors, IReactiveObject, ICanActivate, ICanForceManualActivation
     {
-#if UNIFIED
         protected ReactiveCollectionView(CGRect frame, UICollectionViewLayout layout) : base(frame, layout) { setupRxObj(); }
-#else
-        protected ReactiveCollectionView(RectangleF frame, UICollectionViewLayout layout) : base(frame, layout) { setupRxObj(); }
-#endif
-
         protected ReactiveCollectionView(IntPtr handle) : base(handle) { setupRxObj(); }
         protected ReactiveCollectionView(NSObjectFlag t) : base(t) { setupRxObj(); }
         protected ReactiveCollectionView(NSCoder coder) : base(coder) { setupRxObj(); }
@@ -113,11 +101,7 @@ namespace ReactiveUI
         protected ReactiveCollectionView(IntPtr handle) : base(handle) { }
         protected ReactiveCollectionView(NSObjectFlag t) : base(t) { }
         protected ReactiveCollectionView(NSCoder coder) : base(coder) { }
-#if UNIFIED
         protected ReactiveCollectionView(CGRect frame, UICollectionViewLayout layout) : base(frame, layout) { }
-#else
-        protected ReactiveCollectionView(RectangleF frame, UICollectionViewLayout layout) : base(frame, layout) { }
-#endif
 
         TViewModel _viewModel;
         public TViewModel ViewModel {
