@@ -60,6 +60,9 @@ namespace ReactiveUI
             } catch (InvalidOperationException) {
                 // NB: Dispatcher's not ready yet. Keep using CurrentThread
                 return CurrentThreadScheduler.Instance;
+            } catch (ArgumentNullException) {
+                // NB: Dispatcher's not ready yet. Keep using CurrentThread
+                return CurrentThreadScheduler.Instance;
             }
         }
     }
