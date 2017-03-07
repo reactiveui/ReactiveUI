@@ -105,11 +105,13 @@ namespace ReactiveUI
                 return view;
             }
 
-            var toggledType = ToggleViewModelType(viewModel);
+            view = this.AttemptViewResolutionFor(ToggleViewModelType(viewModel.GetType()), contract);
 
-            if (toggledType != null) {
-                view = this.AttemptViewResolutionFor(toggledType, contract);
+            if (view != null) {
+                return view;
             }
+
+            view = this.AttemptViewResolutionFor(ToggleViewModelType(typeof(T)), contract);
 
             if (view != null) {
                 return view;
@@ -121,6 +123,7 @@ namespace ReactiveUI
 
         private IViewFor AttemptViewResolutionFor(Type viewModelType, string contract)
         {
+            if (viewModelType == null) return null;
             var viewModelTypeName = viewModelType.AssemblyQualifiedName;
             var proposedViewTypeName = this.ViewModelToViewFunc(viewModelTypeName);
             var view = this.AttemptViewResolution(proposedViewTypeName, contract);
@@ -170,9 +173,8 @@ namespace ReactiveUI
             }
         }
 
-        private static Type ToggleViewModelType<T>(T viewModel)
+        private static Type ToggleViewModelType(Type viewModelType)
         {
-            var viewModelType = typeof(T);
             var viewModelTypeName = viewModelType.AssemblyQualifiedName;
 
             if (viewModelType.GetTypeInfo().IsInterface) {
