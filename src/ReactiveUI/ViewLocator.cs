@@ -61,7 +61,6 @@ namespace ReactiveUI
         /// </description>
         /// </item>
         /// <item>
-        /// <item>
         /// <description>
         /// Look for a service registered under the type whose name is given to us by passing <c>T</c> to <see cref="ViewModelToViewFunc"/> (which defaults to changing "ViewModel" to "View").
         /// </description>
