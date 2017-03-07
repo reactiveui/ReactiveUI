@@ -86,6 +86,9 @@ namespace ReactiveUI
         /// <param name="viewModel">
         /// The view model whose associated view is to be resolved.
         /// </param>
+        /// <param name="contract">
+        /// Optional contract to be used when resolving from Splat
+        /// </param>
         /// <returns>
         /// The view associated with the given view model.
         /// </returns>
