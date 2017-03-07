@@ -16,7 +16,7 @@ namespace ReactiveUI
     public class WaitForDispatcherScheduler : IScheduler
     {
         private IScheduler scheduler;
-        readonly Func<IScheduler> schedulerFactory;
+        private readonly Func<IScheduler> schedulerFactory;
 
         public WaitForDispatcherScheduler(Func<IScheduler> schedulerFactory)
         {
