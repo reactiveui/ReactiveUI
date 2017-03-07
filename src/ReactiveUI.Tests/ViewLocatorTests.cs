@@ -75,6 +75,25 @@ namespace ReactiveUI.Tests
 
     public class StrangeClassNotFollowingConvention : StrangeInterfaceNotFollowingConvention { }
 
+    public interface IRoutableFooViewModel : IRoutableViewModel { }
+
+    public class RoutableFooViewModel : ReactiveObject, IRoutableFooViewModel
+    {
+        public IScreen HostScreen { get; set; }
+        public string UrlPathSegment { get; set; }
+    }
+
+    public class RoutableFooView : IViewFor<IRoutableFooViewModel>
+    {
+        object IViewFor.ViewModel
+        {
+            get { return ViewModel; }
+            set { ViewModel = (IRoutableFooViewModel)value; }
+        }
+        public IRoutableFooViewModel ViewModel { get; set; }
+    }
+
+
     public class DefaultViewLocatorTests
     {
         [Fact]
@@ -351,7 +370,24 @@ namespace ReactiveUI.Tests
 
                 fixture.ResolveView((StrangeInterfaceNotFollowingConvention)vm);
             }
+        }
 
+        [Fact]
+        public void CanResolveViewFromViewModelWithIRoutableViewModelType()
+        {
+            var resolver = new ModernDependencyResolver();
+
+            resolver.InitializeSplat();
+            resolver.InitializeReactiveUI();
+            resolver.Register(() => new RoutableFooView(), typeof(IViewFor<IRoutableFooViewModel>));
+
+            using (resolver.WithResolver()) {
+                var fixture = new DefaultViewLocator();
+                var vm = new RoutableFooViewModel();
+
+                var result = fixture.ResolveView<IRoutableViewModel>(vm);
+                Assert.IsType<RoutableFooView>(result);
+            }
         }
     }
 }
