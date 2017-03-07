@@ -1,5 +1,4 @@
 using System;
-using ReactiveUI;
 using Splat;
 using Xunit;
 
@@ -71,6 +70,10 @@ namespace ReactiveUI.Tests
 
         public IFooViewModel ViewModel { get; set; }
     }
+
+    public interface StrangeInterfaceNotFollowingConvention { }
+
+    public class StrangeClassNotFollowingConvention : StrangeInterfaceNotFollowingConvention { }
 
     public class DefaultViewLocatorTests
     {
@@ -331,6 +334,24 @@ namespace ReactiveUI.Tests
                 var ex = Assert.Throws<InvalidOperationException>(() => fixture.ResolveView(vm));
                 Assert.Equal("This is a test failure.", ex.Message);
             }
+        }
+
+        [Fact]
+        public void WithOddInterfaceNameDoesntThrowException()
+        {
+            var resolver = new ModernDependencyResolver();
+
+            resolver.InitializeSplat();
+            resolver.InitializeReactiveUI();
+
+            using (resolver.WithResolver()) {
+                var fixture = new DefaultViewLocator();
+
+                var vm = new StrangeClassNotFollowingConvention();
+
+                fixture.ResolveView((StrangeInterfaceNotFollowingConvention)vm);
+            }
+
         }
     }
 }

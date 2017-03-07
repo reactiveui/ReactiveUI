@@ -106,7 +106,10 @@ namespace ReactiveUI
             }
 
             var toggledType = ToggleViewModelType(viewModel);
-            view = this.AttemptViewResolutionFor(toggledType, contract);
+
+            if (toggledType != null) {
+                view = this.AttemptViewResolutionFor(toggledType, contract);
+            }
 
             if (view != null) {
                 return view;
