@@ -1,4 +1,3 @@
-using ReactiveUI;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -7,9 +6,8 @@ using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
-using System.Runtime.Serialization;
-using System.Text;
 using System.Reflection;
+using System.Runtime.Serialization;
 using Splat;
 
 namespace ReactiveUI
