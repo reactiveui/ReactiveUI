@@ -22,7 +22,10 @@ namespace ReactiveUI.Tests
         public void FactoryThrowsException_ReCallsOnSchedule()
         {
             var schedulerFactoryCalls = 0;
-            var schedulerFactory = new Func<IScheduler>(() => { schedulerFactoryCalls++; throw new InvalidOperationException(); });
+            var schedulerFactory = new Func<IScheduler>(() => {
+                schedulerFactoryCalls++;
+                throw new InvalidOperationException();
+            });
 
             var sut = new WaitForDispatcherScheduler(schedulerFactory);
             sut.Schedule(() => { });
@@ -34,7 +37,10 @@ namespace ReactiveUI.Tests
         public void SuccessfulFactory_UsesCachedScheduler()
         {
             var schedulerFactoryCalls = 0;
-            var schedulerFactory = new Func<IScheduler>(() => { schedulerFactoryCalls++; return CurrentThreadScheduler.Instance; });
+            var schedulerFactory = new Func<IScheduler>(() => {
+                schedulerFactoryCalls++;
+                return CurrentThreadScheduler.Instance;
+            });
 
             var sut = new WaitForDispatcherScheduler(schedulerFactory);
             sut.Schedule(() => { });
@@ -46,7 +52,9 @@ namespace ReactiveUI.Tests
         public void FactoryThrowsInvalidOperationException_FallsBackToCurrentThread()
         {
             IScheduler schedulerExecutedOn = null;
-            var schedulerFactory = new Func<IScheduler>(() => throw new InvalidOperationException());
+            var schedulerFactory = new Func<IScheduler>(() => {
+                throw new InvalidOperationException();
+            });
 
             var sut = new WaitForDispatcherScheduler(schedulerFactory);
             sut.Schedule<object>(null, (scheduler, state) => {
@@ -61,7 +69,9 @@ namespace ReactiveUI.Tests
         public void FactoryThrowsArgumentNullException_FallsBackToCurrentThread()
         {
             IScheduler schedulerExecutedOn = null;
-            var schedulerFactory = new Func<IScheduler>(() => throw new ArgumentNullException());
+            var schedulerFactory = new Func<IScheduler>(() => {
+                throw new ArgumentNullException();
+            });
 
             var sut = new WaitForDispatcherScheduler(schedulerFactory);
             sut.Schedule<object>(null, (scheduler, state) => {
