@@ -1,6 +1,4 @@
-﻿using Splat;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Diagnostics.Contracts;
 using System.Linq.Expressions;
 using System.Reactive.Concurrency;
@@ -8,6 +6,7 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading;
+using Splat;
 
 namespace ReactiveUI
 {
@@ -43,11 +42,11 @@ namespace ReactiveUI
         /// provided on - this should normally be a Dispatcher-based scheduler
         /// </param>
         public ObservableAsPropertyHelper(
-            IObservable<T> observable, 
-            Action<T> onChanged, 
-            T initialValue = default(T), 
+            IObservable<T> observable,
+            Action<T> onChanged,
+            T initialValue = default(T),
             bool deferSubscription = false,
-            IScheduler scheduler = null) : this(observable, onChanged, null, initialValue, deferSubscription, scheduler) {}
+            IScheduler scheduler = null) : this(observable, onChanged, null, initialValue, deferSubscription, scheduler) { }
 
         /// <summary>
         /// Constructs an ObservableAsPropertyHelper object.
@@ -70,10 +69,10 @@ namespace ReactiveUI
         /// provided on - this should normally be a Dispatcher-based scheduler
         /// </param>
         public ObservableAsPropertyHelper(
-            IObservable<T> observable, 
-            Action<T> onChanged, 
+            IObservable<T> observable,
+            Action<T> onChanged,
             Action<T> onChanging = null,
-            T initialValue = default(T), 
+            T initialValue = default(T),
             bool deferSubscription = false,
             IScheduler scheduler = null)
         {
@@ -96,8 +95,7 @@ namespace ReactiveUI
 
             _lastValue = initialValue;
             _source = observable.StartWith(initialValue).DistinctUntilChanged().Multicast(subj);
-            if (!deferSubscription)
-            {
+            if (!deferSubscription) {
                 _inner = _source.Connect();
                 _activated = 1;
             }
@@ -106,8 +104,10 @@ namespace ReactiveUI
         /// <summary>
         /// The last provided value from the Observable. 
         /// </summary>
-        public T Value {
-            get {
+        public T Value
+        {
+            get
+            {
                 if (Interlocked.CompareExchange(ref _activated, 1, 0) == 0) {
                     _inner = _source.Connect();
                 }
@@ -139,7 +139,7 @@ namespace ReactiveUI
         /// </param>
         public static ObservableAsPropertyHelper<T> Default(T initialValue = default(T), IScheduler scheduler = null)
         {
-            return new ObservableAsPropertyHelper<T>(Observable<T>.Never, _ => {}, initialValue, false, scheduler);
+            return new ObservableAsPropertyHelper<T>(Observable<T>.Never, _ => { }, initialValue, false, scheduler);
         }
     }
 
