@@ -115,7 +115,7 @@ namespace ReactiveUI
     /// <para>
     /// Note that handlers are not required to handle an interaction. They can choose to ignore it, leaving it
     /// for some other handler to handle. If no handler handles the interaction, the <see cref="Handle"/> method
-    /// will throw an <see cref="UnhandledInteractionException"/>.
+    /// will throw an <see cref="UnhandledInteractionException{TInput, TOutput}"/>.
     /// </para>
     /// </remarks>
     /// <typeparam name="TInput">
@@ -228,7 +228,7 @@ namespace ReactiveUI
         /// <para>
         /// This method passes the interaction through to relevant handlers in reverse order of registration,
         /// ceasing once any handler handles the interaction. If the interaction remains unhandled after all
-        /// relevant handlers have executed, an <see cref="UnhandledInteractionException"/> is thrown.
+        /// relevant handlers have executed, an <see cref="UnhandledInteractionException{TInput, TOutput}"/> is thrown.
         /// </para>
         /// </remarks>
         /// <param name="input">
@@ -236,7 +236,7 @@ namespace ReactiveUI
         /// </param>
         /// <returns>
         /// An observable that ticks when the interaction completes, or throws an
-        /// <see cref="UnhandledInteractionException"/> if no handler handles the interaction.
+        /// <see cref="UnhandledInteractionException{TInput, TOutput}"/> if no handler handles the interaction.
         /// </returns>
         public virtual IObservable<TOutput> Handle(TInput input)
         {
