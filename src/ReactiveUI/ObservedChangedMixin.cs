@@ -1,9 +1,7 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reactive.Linq;
-using System.Reflection;
 
 namespace ReactiveUI
 {
@@ -60,7 +58,7 @@ namespace ReactiveUI
         /// <param name="target">The target object to apply the change to.</param>
         /// <param name="property">The target property to apply the change to.</param>
         internal static void SetValueToProperty<TSender, TValue, TTarget>(
-            this IObservedChange<TSender, TValue> This, 
+            this IObservedChange<TSender, TValue> This,
             TTarget target,
             Expression<Func<TTarget, TValue>> property)
         {
@@ -74,7 +72,7 @@ namespace ReactiveUI
         /// <returns>An Observable representing the stream of current values of
         /// the given change notification stream.</returns>
         public static IObservable<TValue> Value<TSender, TValue>(
-		    this IObservable<IObservedChange<TSender, TValue>> This)
+            this IObservable<IObservedChange<TSender, TValue>> This)
         {
             return This.Select(GetValue);
         }
