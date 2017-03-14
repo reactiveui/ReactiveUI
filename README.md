@@ -12,8 +12,18 @@ If you’re already familiar with [functional reactive programming](http://docs.
 If you have a question, please see if any discussions in our [GitHub issues](github.com/reactiveui/ReactiveUI/issues) or [Stack Overflow](https://stackoverflow.com/questions/tagged/reactiveui) have already answered it. If not, please [feel free to file your own](https://github.com/reactiveui/ReactiveUI/issues/new)! 
 
 We have our very own [Slack organization](https://reactivex.slack.com/) which contains some of the best user interface/reactive extension developers in the industry. All software engineers, young and old, regardless of experience are welcome to join our campfire but you'll need to send an email to [ghuntley@ghuntley.com](mailto:ghuntley@ghuntley.com) with the email address you'd like to be invited, and we'll send you an invite. Sit tight, it's worth it.
+#### Table of Contents
+* [Introduction](#introduction)
+* [Fundamentals](#fundamentals)
+* [A Compelling Example](#a-compelling-example)
+* [Slack](#slack)
+* [Support](#support)
+* [Contribute](#contribute)
+* [Showcase](#showcase)
+* [Licensing](#licensing)
+* [Acknowledgements](#acknowledgements)
 
-# Introduction
+## Introduction
 
 ReactiveUI is inspired by [functional reactive programming](https://en.wikipedia.org/wiki/Functional_reactive_programming) and is the father of the [ReactiveCocoa](https://github.com/ReactiveCocoa/ReactiveCocoa) (Cocoa/Swift) framework. Rather than using mutable variables which are replaced and modified in-place, ReactiveUI offers "event streams", represented by the `IObserver` and `IObservable` types, that send values over time.
 
@@ -27,7 +37,7 @@ If you are new to these concepts then we highly recommend watching the following
 * [ReactiveUI - Turning MVVM up to 11](https://vimeo.com/97329155) by Brendan Forster (GitHub)
 * [Let Me Tell You About Our Lord And Saviour FRP](https://www.youtube.com/watch?v=0_LX3zT4m9I) by Brendan Forster (GitHub)
 
-# Fundamentals 
+## Fundamentals 
 
 One of the most confusing aspects of the Reactive Extensions is that of ["hot" and "cold" observables](http://www.introtorx.com/content/v1.0.10621.0/14_HotAndColdObservables.html) (event streams). In short, given just a method or function declaration like this:
 
@@ -38,7 +48,7 @@ It is impossible to tell whether subscribing to (observing) that `IObservable` w
 As such we also recommend [watching this video](https://www.youtube.com/watch?v=IDy21J75eyU), reading [our documentation](http://docs.reactiveui.net/en/fundamentals/reactive-extensions.html) and [playing with the marbles](http://rxmarbles.com/) to familiarize yourself with the fundamentals.
 
 
-# A Compelling Example
+## A Compelling Example
 
 Let’s say you have a text field, and whenever the user types something into it, you want to make a network request which searches for that query.
 
@@ -54,7 +64,7 @@ public interface ISearchViewModel
     ISearchService SearchService { get; }
 }
 ```
-### Define under what conditions a network request will be made
+#### Define under what conditions a network request will be made
 
 ```csharp
 // Here we're describing here, in a *declarative way*, the conditions in
@@ -63,7 +73,7 @@ public interface ISearchViewModel
 // when it should change.
 var canSearch = this.WhenAny(x => x.SearchQuery, x => !String.IsNullOrWhiteSpace(x.Value));
 ```
-### Make the network connection
+#### Make the network connection
 ```csharp
 // ReactiveCommand has built-in support for background operations and
 // guarantees that this block will only run exactly once at a time, and
@@ -73,7 +83,7 @@ Search = ReactiveCommand.CreateFromTask<string, List<SearchResults>>(_ =>
         searchService.Search(this.SearchQuery), canSearch);
 ```
 
-### Update the user interface 
+#### Update the user interface 
 ```csharp
 // ReactiveCommands are themselves IObservables, whose value are the results
 // from the async method, guaranteed to arrive on the UI thread. We're going
@@ -85,7 +95,7 @@ Search.Subscribe(results => {
 });
 
 ```
-### Handling failures
+#### Handling failures
 ```csharp
 // ThrownExceptions is any exception thrown from the CreateAsyncTask piped
 // to this Observable. Subscribing to this allows you to handle errors on
@@ -95,7 +105,7 @@ Search.ThrownExceptions
         UserError.Throw("Potential Network Connectivity Error", ex);
     });
 ```
-### Throttling network requests and automatic search execution behaviour
+#### Throttling network requests and automatic search execution behaviour
 ```csharp
 // Whenever the Search query changes, we're going to wait for one second
 // of "dead airtime", then automatically invoke the subscribe command.
@@ -104,18 +114,18 @@ this.WhenAnyValue(x => x.SearchQuery)
     .InvokeCommand(Search);
 ```
 
-# Slack
+## Slack
 
 We have our very own [Slack organization](https://reactivex.slack.com/) which contains some of the best user interface/reactive extension developers in the industry. All software engineers, young and old, regardless of experience are welcome to join our campfire but you'll need to send an email to [ghuntley@ghuntley.com](mailto:ghuntley@ghuntley.com) with the Email address you'd like to be invited, and we'll send you an invite. Sit tight, it's worth it.
 
-# Support
+## Support
 
 ReactiveUI is an open source project that is community supported by people just like you. We keep [a bunch of curated tasks specifically for new contributors](https://github.com/reactiveui/reactiveui/labels/up-for-grabs) which are [a great way to get started with open source](https://yourfirstpr.github.io/). They also provide a fantastic avenue for getting to know the ReactiveUI maintainers.
 
 If you have a question, please see if any discussions in our [GitHub issues](github.com/reactiveui/ReactiveUI/issues) or [Stack Overflow](https://stackoverflow.com/questions/tagged/reactiveui) have already answered it. If not, please [feel free to file your own](https://github.com/reactiveui/ReactiveUI/issues/new)! 
 
 
-# Contribute
+## Contribute
 
 Here are some pointers for anyone looking for mini-features and work items that would make a positive contribution to ReactiveUI.
 
@@ -138,14 +148,14 @@ We're also looking for people to assist with code reviews of ReactiveUI contribu
  - [WPF reviewers](https://github.com/orgs/reactiveui/teams/reviewers-wpf) 
  - [Xamarin Forms reviewers](https://github.com/orgs/reactiveui/teams/reviewers-xf)
 
-# Showcase
+## Showcase
 We encourage our community to [showcase where and how they have used ReactiveUI in their applications](https://github.com/reactiveui/ReactiveUI/issues/979), some members have even gone as far as open-sourcing their app and [sharing their entire codebase](https://github.com/reactiveui/ReactiveUI/issues/687#issuecomment-166772487). You are of course under no-obligation share these insights (or code) with us but it is greatly appreciated by the project maintainers and you'll usually get a [retweet out of it](https://twitter.com/ReactiveXUI/status/679532005155966977).
 
-# Licensing
+## Licensing
 
 The ReactiveUI project is licensed under the [MS-PL license](http://opensource.org/licenses/ms-pl.html).
 
-# Acknowledgements
+## Acknowledgements
 * Thanks to [our awesome contributors](https://github.com/reactiveui/ReactiveUI/graphs/contributors) and our community for [sharing the source code behind their beautiful apps](https://github.com/reactiveui/ReactiveUI/issues/687) and [how/where they are using our framework](https://github.com/reactiveui/ReactiveUI/issues/979).
 * Thanks to [Xamarin](https://xamarin.com/platform) for providing business edition licenses under their [open-source program](https://resources.xamarin.com/open-source-contributor.html) to the project maintainers.
 * Thanks to [JetBrains](https://www.jetbrains.com) for providing community licenses to the project maintainers.
