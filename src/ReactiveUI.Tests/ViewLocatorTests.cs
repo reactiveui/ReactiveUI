@@ -215,7 +215,7 @@ namespace ReactiveUI.Tests
                 IFooViewModel vm = new FooViewModel();
 
                 var result = fixture.ResolveView(vm);
-                Assert.IsType< FooView>(result);
+                Assert.IsType<FooView>(result);
             }
         }
 
@@ -255,7 +255,7 @@ namespace ReactiveUI.Tests
                 Assert.Null(result);
 
                 result = fixture.ResolveView(vm, "first");
-                Assert.IsType< FooView>(result);
+                Assert.IsType<FooView>(result);
 
                 result = fixture.ResolveView(vm, "second");
                 Assert.IsType<FooWithWeirdConvention>(result);
