@@ -3,15 +3,14 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
+using System.Linq;
 using System.Reactive;
+using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
-using System.Reactive.Subjects;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using Splat;
-using System.Reactive.Concurrency;
-using System.Linq;
 
 namespace ReactiveUI
 {
@@ -425,7 +424,7 @@ namespace ReactiveUI
                 }
 
                 // Yeah apparently this can happen. ObservableCollection triggers this notification on Move(0,0)
-                if(args.OldStartingIndex == args.NewStartingIndex) {
+                if (args.OldStartingIndex == args.NewStartingIndex) {
                     return;
                 }
 
@@ -445,7 +444,7 @@ namespace ReactiveUI
 
                 TValue value = base[currentDestinationIndex];
 
-                if(orderer == null) {
+                if (orderer == null) {
                     // We mirror the order of the source collection so we'll perform the same move operation
                     // as the source. As is the case with when we have an orderer we don't test whether or not
                     // the item should be included or not here. If it has been included at some point it'll
@@ -582,7 +581,7 @@ namespace ReactiveUI
             indexToSourceIndexMap.Clear();
             sourceCopy.Clear();
             var items = this.ToArray();
-            
+
             base.internalClear();
 
             foreach (var item in items) { onRemoved(item); }
@@ -698,7 +697,7 @@ namespace ReactiveUI
 
             Debug.Assert(list.Count > 0);
 
-            if(list.Count == 1) {
+            if (list.Count == 1) {
                 return 0;
             }
 
@@ -708,7 +707,7 @@ namespace ReactiveUI
             // The item on the preceding or succeeding index relative to currentIndex.
             T comparand = list[precedingIndex >= 0 ? precedingIndex : succeedingIndex];
 
-            if(orderer == null) {
+            if (orderer == null) {
                 orderer = Comparer<T>.Default.Compare;
             }
 
@@ -718,10 +717,10 @@ namespace ReactiveUI
             int min = 0;
             int max = list.Count;
 
-            if(cmp == 0) {
+            if (cmp == 0) {
                 // The new value is equal to the preceding or succeeding item, it may stay at the current position
                 return currentIndex;
-            } else if(cmp > 0) {
+            } else if (cmp > 0) {
                 // The new value is greater than the preceding or succeeding item, limit the search to indices after
                 // the succeeding item.
                 min = succeedingIndex;
@@ -754,7 +753,7 @@ namespace ReactiveUI
         }
     }
 
-    internal class ReactiveDerivedCollectionFromObservable<T>: ReactiveDerivedCollection<T>
+    internal class ReactiveDerivedCollectionFromObservable<T> : ReactiveDerivedCollection<T>
     {
         SingleAssignmentDisposable inner;
 
@@ -777,7 +776,7 @@ namespace ReactiveUI
             var queue = new Queue<T>();
             var disconnect = Observable.Timer(withDelay.Value, withDelay.Value, scheduler)
                 .Subscribe(_ => {
-                    if (queue.Count > 0) { 
+                    if (queue.Count > 0) {
                         this.internalAdd(queue.Dequeue());
                     }
                 });
@@ -792,7 +791,7 @@ namespace ReactiveUI
             // Observable. Combine the two values, and when they're equal, 
             // disconnect the timer
             this.ItemsAdded.Scan(0, ((acc, _) => acc + 1)).Zip(observable.Aggregate(0, (acc, _) => acc + 1),
-                (l,r) => (l == r)).Where(x => x).Subscribe(_ => disconnect.Dispose());
+                (l, r) => (l == r)).Where(x => x).Subscribe(_ => disconnect.Dispose());
         }
 
         public override void Dispose(bool disposing)
@@ -844,7 +843,7 @@ namespace ReactiveUI
         /// <returns>A new collection which will be populated with the
         /// Observable.</returns>
         public static IReactiveDerivedList<T> CreateCollection<T>(
-            this IObservable<T> fromObservable, 
+            this IObservable<T> fromObservable,
             TimeSpan? withDelay = null,
             Action<Exception> onError = null,
             IScheduler scheduler = null)
