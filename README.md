@@ -1,10 +1,7 @@
 # ![ReactiveUI Logo](https://i.imgur.com/23kfbS9.png) ReactiveUI
 
-[![Release Version](https://img.shields.io/github/release/reactiveui/reactiveui.svg)](https://github.com/reactiveui/reactiveui/releases)  [![NuGet Stats](https://img.shields.io/nuget/v/reactiveui.svg)](https://www.nuget.org/packages/reactiveui) [![#yourfirstpr](https://img.shields.io/badge/first--timers--only-friendly-blue.svg)](https://github.com/reactiveui/ReactiveUI/issues?utf8=%E2%9C%93&q=label%3Afirst-timers-only+) [![Issue Stats](http://www.issuestats.com/github/reactiveui/reactiveui/badge/issue?style=flat)](http://www.issuestats.com/github/reactiveui/reactiveui) [![Pull Request Stats](http://www.issuestats.com/github/reactiveui/reactiveui/badge/pr?style=flat)](http://www.issuestats.com/github/reactiveui/reactiveui) [![Build status](https://ci.appveyor.com/api/projects/status/nhsndp7v788t6a2m/branch/develop?svg=true)](https://ci.appveyor.com/project/ghuntley/reactiveui/branch/develop) [![Coverage Status](https://coveralls.io/repos/github/reactiveui/ReactiveUI/badge.svg?branch=develop)](https://coveralls.io/github/reactiveui/ReactiveUI?branch=develop) [![OpenCollective](https://opencollective.com/reactiveui/backers/badge.svg)](#backers) 
+  [![NuGet Stats](https://img.shields.io/nuget/v/reactiveui.svg)](https://www.nuget.org/packages/reactiveui) [![#yourfirstpr](https://img.shields.io/badge/first--timers--only-friendly-blue.svg)](https://github.com/reactiveui/ReactiveUI/issues?utf8=%E2%9C%93&q=label%3Afirst-timers-only+) [![Pull Request Stats](http://www.issuestats.com/github/reactiveui/reactiveui/badge/pr?style=flat)](http://www.issuestats.com/github/reactiveui/reactiveui) [![Build status](https://ci.appveyor.com/api/projects/status/nhsndp7v788t6a2m/branch/develop?svg=true)](https://ci.appveyor.com/project/ghuntley/reactiveui/branch/develop) [![Coverage Status](https://coveralls.io/repos/github/reactiveui/ReactiveUI/badge.svg?branch=develop)](https://coveralls.io/github/reactiveui/ReactiveUI?branch=develop) [![OpenCollective](https://opencollective.com/reactiveui/backers/badge.svg)](#backers) 
 [![OpenCollective](https://opencollective.com/reactiveui/sponsors/badge.svg)](#sponsors)
-
-
-[![Follow us on Twitter](https://img.shields.io/badge/twitter-%40reactivexui-020031.svg)](https://twitter.com/reactivexui) [![Visit our website](https://img.shields.io/badge/website-reactiveui.net-020031.svg) ](http://www.reactiveui.net/)
 
 Use the Reactive Extensions for .NET to create elegant, testable User Interfaces that run on any mobile or desktop platform. Supports Xamarin.iOS, Xamarin.Android, Xamarin.Mac, Xamarin Forms, WPF, Windows Forms, Windows Phone 8, Windows Store and Universal Windows Platform (UWP).
 
@@ -22,7 +19,7 @@ We have our very own [Slack organization](https://reactivex.slack.com/) which co
 * [Contribute](#contribute)
 * [Showcase](#showcase)
 * [Licensing](#licensing)
-* [Acknowledgements](#acknowledgements)
+* [Sponsorship](#sponsorship)
 
 ## Introduction
 
@@ -156,14 +153,13 @@ We encourage our community to [showcase where and how they have used ReactiveUI 
 
 The ReactiveUI project is licensed under the [MS-PL license](http://opensource.org/licenses/ms-pl.html).
 
-## Acknowledgements
-* Thanks to [our awesome contributors](https://github.com/reactiveui/ReactiveUI/graphs/contributors) and our community for [sharing the source code behind their beautiful apps](https://github.com/reactiveui/ReactiveUI/issues/687) and [how/where they are using our framework](https://github.com/reactiveui/ReactiveUI/issues/979).
-* Thanks to [Xamarin](https://xamarin.com/platform) for providing business edition licenses under their [open-source program](https://resources.xamarin.com/open-source-contributor.html) to the project maintainers.
-* Thanks to [JetBrains](https://www.jetbrains.com) for providing community licenses to the project maintainers.
+## Sponsorship
 
-## Backers 
+Through contributions, donations, and sponsorship, you allow ReactiveUI to thrive. Your donations directly support meetups, office hours, continued enhancements, and most importantly, great documentation and learning material!
 
- [[Become a backer](https://opencollective.com/reactiveui#backer)]
+### Backers 
+
+[[Become a backer](https://opencollective.com/reactiveui#backer)]
 
 <a href="https://opencollective.com/reactiveui/backer/0/website" target="_blank"><img src="https://opencollective.com/reactiveui/backer/0/avatar.svg"></a>
 <a href="https://opencollective.com/reactiveui/backer/1/website" target="_blank"><img src="https://opencollective.com/reactiveui/backer/1/avatar.svg"></a>
@@ -196,7 +192,7 @@ The ReactiveUI project is licensed under the [MS-PL license](http://opensource.o
 <a href="https://opencollective.com/reactiveui/backer/28/website" target="_blank"><img src="https://opencollective.com/reactiveui/backer/28/avatar.svg"></a>
 <a href="https://opencollective.com/reactiveui/backer/29/website" target="_blank"><img src="https://opencollective.com/reactiveui/backer/29/avatar.svg"></a>
 
-## Sponsors
+### Sponsors
  [[Become a sponsor](https://opencollective.com/reactiveui#sponsor)]
 
 <a href="https://opencollective.com/reactiveui/sponsor/0/website" target="_blank"><img src="https://opencollective.com/reactiveui/sponsor/0/avatar.svg"></a>
