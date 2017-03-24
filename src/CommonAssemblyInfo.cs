@@ -6,8 +6,8 @@
 using System.Reflection;
 
 [assembly: AssemblyProduct("ReactiveUI")]
-[assembly: AssemblyVersion("7.0.0")]
-[assembly: AssemblyFileVersion("7.0.0")]
-[assembly: AssemblyInformationalVersion("7.0.0")]
+[assembly: AssemblyVersion("6.5.3")]
+[assembly: AssemblyFileVersion("6.5.3")]
+[assembly: AssemblyInformationalVersion("6.5.3-vs2017-upgrading.1+526.Branch.vs2017-upgrading.Sha.18f8176595eed8bafe64a40ceb4ec520d55f336a")]
 [assembly: AssemblyCopyright("Copyright (c) ReactiveUI and contributors")]
 
