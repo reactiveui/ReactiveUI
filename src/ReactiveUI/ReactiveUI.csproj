@@ -57,7 +57,7 @@
     <Compile Include="Platforms\windows-common\**\*.cs" />
     <Compile Include="Platforms\uap10.0\**\*.cs" />
     <PackageReference Include="Rx-WindowStoreApps" Version="2.2.5" />
-    <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform" Version="5.1.0" />
+    <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform" Version="5.2.3" />
   </ItemGroup>
   <ItemGroup Condition=" '$(TargetFramework)' == 'Xamarin.iOS10' ">
     <Compile Include="Platforms\apple-common\**\*.cs" />

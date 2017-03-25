@@ -33,7 +33,7 @@
   <ItemGroup Condition=" '$(TargetFramework)' == 'uap10.0' ">
     <Compile Include="Platforms\uap10.0\**\*.cs" />
     <PackageReference Include="Rx-WindowStoreApps" Version="2.2.5" />
-    <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform" Version="5.1.0" />
+    <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform" Version="5.2.3" />
     <PackageReference Include="Microsoft.Xaml.Behaviors.Uwp.Managed" Version="1.1.0" />    
   </ItemGroup>
 
