@@ -10,14 +10,7 @@
 
   <PropertyGroup Condition="'$(TargetFramework)' == 'uap10.0'">
     <DefineConstants>$(DefineConstants);NETFX_CORE;WINDOWS_UWP</DefineConstants>
-    <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
-    <NugetTargetMoniker>UAP,Version=v10.0</NugetTargetMoniker>
-    <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
     <TargetPlatformVersion>10.0.14393.0</TargetPlatformVersion>
-    <TargetPlatformMinVersion>10.0.10240.0</TargetPlatformMinVersion>
-    <TargetFrameworkIdentifier>.NETCore</TargetFrameworkIdentifier>
-    <TargetFrameworkVersion>v5.0</TargetFrameworkVersion>
-    <LanguageTargets>$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v$(VisualStudioVersion)\Microsoft.Windows.UI.Xaml.CSharp.targets</LanguageTargets>
   </PropertyGroup>
 
   <ItemGroup>

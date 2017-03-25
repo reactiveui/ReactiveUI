@@ -15,38 +15,16 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'uap10.0'">
     <DefineConstants>$(DefineConstants);NETFX_CORE;XAML;WINDOWS_UWP</DefineConstants>
-    <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
-    <NugetTargetMoniker>UAP,Version=v10.0</NugetTargetMoniker>
-    <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
     <TargetPlatformVersion>10.0.14393.0</TargetPlatformVersion>
-    <TargetPlatformMinVersion>10.0.10240.0</TargetPlatformMinVersion>
-    <TargetFrameworkIdentifier>.NETCore</TargetFrameworkIdentifier>
-    <TargetFrameworkVersion>v5.0</TargetFrameworkVersion>
-    <LanguageTargets>$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v$(VisualStudioVersion)\Microsoft.Windows.UI.Xaml.CSharp.targets</LanguageTargets>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'Xamarin.iOS10'">
-    <TargetFrameworkIdentifier>Xamarin.iOS</TargetFrameworkIdentifier>
-    <TargetFrameworkVersion>v1.0</TargetFrameworkVersion>
-    <IPhoneResourcePrefix>Resources</IPhoneResourcePrefix>
     <DefineConstants>$(DefineConstants);MONO;UIKIT;COCOA;UNIFIED</DefineConstants>
-    <DebugType>full</DebugType>
-    <LanguageTargets>$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets</LanguageTargets>
   </PropertyGroup>
    <PropertyGroup Condition="'$(TargetFramework)' == 'Xamarin.Mac20'">
-    <TargetFrameworkIdentifier>Xamarin.Mac</TargetFrameworkIdentifier>
-    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     <DefineConstants>$(DefineConstants);MONO;COCOA;UNIFIED </DefineConstants>
-    <DebugType>full</DebugType>
-    <LanguageTargets>$(MSBuildExtensionsPath)\Xamarin\Mac\Xamarin.Mac.CSharp.targets</LanguageTargets>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'MonoAndroid70'">
-    <TargetFrameworkIdentifier>MonoAndroid</TargetFrameworkIdentifier>
-    <TargetFrameworkVersion>v7.0</TargetFrameworkVersion>
-    <AndroidUseLatestPlatformSdk>False</AndroidUseLatestPlatformSdk>
-    <DebugType>full</DebugType>
     <DefineConstants>$(DefineConstants);MONO;ANDROID</DefineConstants>
-    <AndroidResgenFile>Resources\Resource.Designer.cs</AndroidResgenFile>
-    <LanguageTargets>$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets</LanguageTargets>
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="Platforms\**\*.cs" />
