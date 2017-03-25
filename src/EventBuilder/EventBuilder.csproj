@@ -115,8 +115,6 @@
     <Compile Include="Platforms\Mac.cs" />
     <Compile Include="Platforms\Net45.cs" />
     <Compile Include="Platforms\UWP.cs" />
-    <Compile Include="Platforms\WP81.cs" />
-    <Compile Include="Platforms\WPA81.cs" />
     <Compile Include="Platforms\XamForms.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

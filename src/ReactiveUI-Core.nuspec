@@ -10,22 +10,10 @@
         <dependency id="Rx-Main" version="2.2.5" />
         <dependency id="Splat" version="[1.4.0,2)" />
       </group>
-      <group targetFramework="win8">
-        <dependency id="Rx-Main" version="2.2.5" />
-        <dependency id="Splat" version="[1.4.0,2)" />
-        <dependency id="Rx-Xaml" version="2.2.5" />
-        <dependency id="Rx-WinRT" version="2.2.5" />
-      </group>
       <group targetFramework="net45">
         <dependency id="Rx-Main" version="2.2.5" />
         <dependency id="Splat" version="[1.4.0,2)" />
         <dependency id="Rx-Xaml" version="2.2.5" />
-      </group>
-      <group targetFramework="Portable-Win81+Wpa81">
-        <dependency id="Rx-Main" version="2.2.5" />
-        <dependency id="Splat" version="[1.4.0,2)" />
-        <dependency id="Rx-Xaml" version="2.2.5" />
-        <dependency id="Rx-WinRT" version="2.2.5" />
       </group>
       <group targetFramework="uap10.0">
         <dependency id="Rx-Core" version="2.2.5" />
@@ -68,10 +56,6 @@
     <file src="bin/Release/Xamarin.Mac20/ReactiveUI.dll" target="lib/Xamarin.Mac20/ReactiveUI.dll" />
     <file src="bin/Release/Xamarin.Mac20/ReactiveUI.pdb" target="lib/Xamarin.Mac20/ReactiveUI.pdb" />
     <file src="bin/Release/Xamarin.Mac20/ReactiveUI.xml" target="lib/Xamarin.Mac20/ReactiveUI.xml" />
-    <!-- Windows Store 8.1 -->
-    <file src="bin/Release/Portable-Win81+Wpa81/ReactiveUI.dll" target="lib/Portable-Win81+Wpa81/ReactiveUI.dll" />
-    <file src="bin/Release/Portable-Win81+Wpa81/ReactiveUI.pdb" target="lib/Portable-Win81+Wpa81/ReactiveUI.pdb" />
-    <file src="bin/Release/Portable-Win81+Wpa81/ReactiveUI.xml" target="lib/Portable-Win81+Wpa81/ReactiveUI.xml" />
     <!-- Windows Universal -->
     <file src="bin/Release/UAP10.0/ReactiveUI.dll" target="lib/UAP10/ReactiveUI.dll" />
     <file src="bin/Release/UAP10.0/ReactiveUI.pdb" target="lib/UAP10/ReactiveUI.pdb" />

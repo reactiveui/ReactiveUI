@@ -1,9 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net45;uap10.0;Xamarin.iOS10;Xamarin.Mac20;MonoAndroid70;portable-win81+wpa81</TargetFrameworks>
+    <TargetFrameworks>net45;uap10.0;Xamarin.iOS10;Xamarin.Mac20;MonoAndroid70</TargetFrameworks>
     <PackageTargetFallback Condition="'$(TargetFramework)'=='Xamarin.Mac20'">net45</PackageTargetFallback>    
-    <PackageTargetFallback Condition="'$(TargetFramework)'=='portable-win81+wpa81'">windows8</PackageTargetFallback>    
     <AssemblyName>ReactiveUI.Testing</AssemblyName>
     <RootNamespace>ReactiveUI.Testing</RootNamespace>
     <Version>7.2.0</Version>
@@ -37,7 +36,6 @@
     <TargetFrameworkVersion>v7.0</TargetFrameworkVersion>
     <AndroidUseLatestPlatformSdk>False</AndroidUseLatestPlatformSdk>
     <DebugType>full</DebugType>
-    <AndroidResgenFile>Resources\Resource.Designer.cs</AndroidResgenFile>
     <LanguageTargets>$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets</LanguageTargets>
   </PropertyGroup>
 
@@ -52,8 +50,8 @@
     <ProjectReference Include="..\Microsoft.Reactive.Testing\Microsoft.Reactive.Testing.csproj" />
   </ItemGroup>
 
-  <ItemGroup Condition=" '$(TargetFramework)' == 'net45' Or '$(TargetFramework)' == 'uap10.0' Or '$(TargetFramework)' == 'portable-win81+wpa81' ">
-    <PackageReference Include="Rx-Testing" Version="2.2.5" />
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net45' Or '$(TargetFramework)' == 'uap10.0' ">
+    <PackageReference Include="Rx-Testing" Version="2.2.5" />  
   </ItemGroup>
 
   <Import Project="$(MSBuildSDKExtrasTargets)" Condition="Exists('$(MSBuildSDKExtrasTargets)')" />

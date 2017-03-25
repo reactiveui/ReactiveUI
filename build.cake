@@ -197,7 +197,6 @@ Task("GenerateEvents")
 
     generate("net45");
     
-    generate("wpa81");
     generate("uwp");
 });
 
@@ -231,7 +230,6 @@ Task("BuildEvents")
 
     build("ReactiveUI.Events_NET45.sln");
 
-    build("ReactiveUI.Events_WPA81.sln");
     build("ReactiveUI.Events_UWP.sln");
 });
 

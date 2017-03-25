@@ -1,15 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-      <TargetFrameworks>net45;uap10.0;portable-win81+wpa81</TargetFrameworks>
+      <TargetFrameworks>net45;uap10.0</TargetFrameworks>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(TargetFramework)'=='net45'">
     <DefineConstants>$(DefineConstants);NET_45</DefineConstants>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(TargetFramework)'=='portable-win81+wpa81'">
-    <DefineConstants>$(DefineConstants);NETFX_CORE</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(TargetFramework)' == 'uap10.0'">
@@ -42,19 +38,10 @@
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'uap10.0' ">
-    <Compile Include="Platforms\winrt\**\*.cs" />
+    <Compile Include="Platforms\uap10.0\**\*.cs" />
     <PackageReference Include="Rx-WindowStoreApps" Version="2.2.5" />
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform" Version="5.1.0" />
     <PackageReference Include="Microsoft.Xaml.Behaviors.Uwp.Managed" Version="1.1.0" />    
-  </ItemGroup>
-  
-  <ItemGroup Condition=" '$(TargetFramework)' == 'portable-win81+wpa81' ">
-    <Compile Include="Platforms\winrt\**\*.cs" />
-    <Reference Include="Microsoft.Xaml.Interactivity">
-      <HintPath>C:\Program Files (x86)\Microsoft SDKs\Windows\v8.1\ExtensionSDKs\BehaviorsXamlSDKManaged\12.0\References\CommonConfiguration\Neutral\Microsoft.Xaml.Interactivity.dll</HintPath>
-    </Reference>
-    <PackageReference Include="Rx-Xaml" Version="2.2.5" />
-    <PackageReference Include="Rx-winrt" Version="2.2.5" />
   </ItemGroup>
 
   <ItemGroup>

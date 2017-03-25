@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netstandard1.0;net45;uap10.0;Xamarin.iOS10;Xamarin.Mac20;MonoAndroid70;portable-win81+wpa81</TargetFrameworks>
+    <TargetFrameworks>netstandard1.0;net45;uap10.0;Xamarin.iOS10;Xamarin.Mac20;MonoAndroid70</TargetFrameworks>
     <PackageTargetFallback Condition="'$(TargetFramework)'=='netstandard1.0'">portable-net45+win+wpa81+wp80+MonoAndroid10+MonoTouch10</PackageTargetFallback>
     <PackageTargetFallback Condition="'$(TargetFramework)'=='Xamarin.Mac20'">net45</PackageTargetFallback>    
     <AssemblyName>ReactiveUI</AssemblyName>
@@ -12,9 +12,6 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)'=='net45'">
     <DefineConstants>$(DefineConstants);NET_45;XAML</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(TargetFramework)'=='portable-win81+wpa81'">
-    <DefineConstants>$(DefineConstants);NETFX_CORE;XAML</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'uap10.0'">
     <DefineConstants>$(DefineConstants);NETFX_CORE;XAML;WINDOWS_UWP</DefineConstants>
@@ -80,15 +77,9 @@
   </ItemGroup>
   <ItemGroup Condition=" '$(TargetFramework)' == 'uap10.0' ">
     <Compile Include="Platforms\windows-common\**\*.cs" />
-    <Compile Include="Platforms\winrt\**\*.cs" />
+    <Compile Include="Platforms\uap10.0\**\*.cs" />
     <PackageReference Include="Rx-WindowStoreApps" Version="2.2.5" />
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform" Version="5.1.0" />
-  </ItemGroup>
-  <ItemGroup Condition=" '$(TargetFramework)' == 'portable-win81+wpa81' ">
-    <Compile Include="Platforms\windows-common\**\*.cs" />
-    <Compile Include="Platforms\winrt\**\*.cs" />
-    <PackageReference Include="Rx-Xaml" Version="2.2.5" />
-    <PackageReference Include="Rx-winrt" Version="2.2.5" />
   </ItemGroup>
   <ItemGroup Condition=" '$(TargetFramework)' == 'Xamarin.iOS10' ">
     <Compile Include="Platforms\apple-common\**\*.cs" />
