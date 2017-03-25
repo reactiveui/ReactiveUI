@@ -37,9 +37,6 @@
   - path: artifacts/*
   - path: '**/bin/*'
   - path: src/ReactiveUI.Events/Events_*.cs
-  - path: /src/EventBuilder/bin/Release/EventBuilder.log
-    name: EventBuilder logs
-    type: File
   test: off
   
 # configuration for "develop" branch
