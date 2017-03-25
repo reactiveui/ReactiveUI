@@ -1,13 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netstandard1.0;net45;uap10.0;Xamarin.iOS10;Xamarin.Mac20;MonoAndroid70</TargetFrameworks>
-    <PackageTargetFallback Condition="'$(TargetFramework)'=='netstandard1.0'">portable-net45+win+wpa81+wp80+MonoAndroid10+MonoTouch10</PackageTargetFallback>
-    <PackageTargetFallback Condition="'$(TargetFramework)'=='Xamarin.Mac20'">net45</PackageTargetFallback>    
+    <TargetFrameworks>netstandard1.1;net45;uap10.0;Xamarin.iOS10;Xamarin.Mac20;MonoAndroid70</TargetFrameworks>
     <AssemblyName>ReactiveUI</AssemblyName>
     <RootNamespace>ReactiveUI</RootNamespace>
     <GenerateDocumentationFile Condition=" '$(Configuration)' == 'Release' ">true</GenerateDocumentationFile>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(TargetFramework)'=='netstandard1.0'">
+  <PropertyGroup Condition="'$(TargetFramework)'=='netstandard1.1'">
     <DefineConstants>$(DefineConstants);PORTABLE</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)'=='net45'">
@@ -30,23 +28,22 @@
     <Compile Remove="Platforms\**\*.cs" />
     <None Include="Platforms\**\*.cs" />
     <PackageReference Include="MSBuild.Sdk.Extras" Version="1.0.0" PrivateAssets="All" />
-    <PackageReference Include="Rx-Main" Version="2.2.5" />
-    <PackageReference Include="Splat" Version="1.6.2"/>
+    <PackageReference Include="System.Reactive" Version="3.1.1" />
+    <PackageReference Include="Splat" Version="2.0.0" />
     <PackageReference Include="System.ComponentModel" Version="4.3.0" />
     <PackageReference Include="System.Diagnostics.Contracts" Version="4.3.0" />
     <PackageReference Include="System.Dynamic.Runtime" Version="4.3.0" />
     <PackageReference Include="System.Runtime.Serialization.Primitives" Version="4.3.0" />
   </ItemGroup>
-  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard1.0' ">
-    <Compile Include="Platforms\netstandard1.0\**\*.cs" />    
+  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard1.1' ">
+    <Compile Include="Platforms\netstandard1.1\**\*.cs" />
   </ItemGroup>
-  <ItemGroup Condition="'$(TargetFramework)'!='netstandard1.0'">
+  <ItemGroup Condition="'$(TargetFramework)'!='netstandard1.1'">
     <Compile Include="Platforms\shared\**\*.cs" />    
   </ItemGroup>
   <ItemGroup Condition=" '$(TargetFramework)' == 'net45' ">
     <Compile Include="Platforms\windows-common\**\*.cs" />
     <Compile Include="Platforms\wpf\**\*.cs" />
-    <PackageReference Include="Rx-Xaml" Version="2.2.5" />
     <Reference Include="System.Xaml" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -56,7 +53,6 @@
   <ItemGroup Condition=" '$(TargetFramework)' == 'uap10.0' ">
     <Compile Include="Platforms\windows-common\**\*.cs" />
     <Compile Include="Platforms\uap10.0\**\*.cs" />
-    <PackageReference Include="Rx-WindowStoreApps" Version="2.2.5" />
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform" Version="5.2.3" />
   </ItemGroup>
   <ItemGroup Condition=" '$(TargetFramework)' == 'Xamarin.iOS10' ">
@@ -66,6 +62,7 @@
   <ItemGroup Condition=" '$(TargetFramework)' == 'Xamarin.Mac20' ">
     <Compile Include="Platforms\apple-common\**\*.cs" />
     <Compile Include="Platforms\mac\**\*.cs" />
+    <Reference Include="System.Runtime.Serialization" />    
   </ItemGroup>
   <ItemGroup Condition=" '$(TargetFramework)' == 'MonoAndroid70' ">
     <Compile Include="Platforms\android\**\*.cs" />

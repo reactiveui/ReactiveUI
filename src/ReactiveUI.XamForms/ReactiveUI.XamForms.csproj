@@ -1,11 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard1.0</TargetFramework>
-    <PackageTargetFallback Condition="'$(TargetFramework)'=='netstandard1.0'">portable-net45+win+wpa81+wp80+MonoAndroid10+MonoTouch10</PackageTargetFallback>
+    <TargetFrameworks>netstandard1.1</TargetFrameworks>
+    <PackageTargetFallback Condition="'$(TargetFramework)'=='netstandard1.1'">portable-win+net45+wp80+win81+wpa81+MonoAndroid10+Xamarin.iOS10+xamarinmac20</PackageTargetFallback>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="MSBuild.Sdk.Extras" Version="1.0.0" PrivateAssets="All" />
     <PackageReference Include="Xamarin.Forms" Version="2.3.3.193" />
   </ItemGroup>
 
@@ -13,4 +14,5 @@
     <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj" />
   </ItemGroup>
 
+  <Import Project="$(MSBuildSDKExtrasTargets)" Condition="Exists('$(MSBuildSDKExtrasTargets)')" />
 </Project>

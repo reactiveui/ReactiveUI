@@ -17,12 +17,12 @@
     <Compile Remove="Platforms\**\*.cs" />
     <None Include="Platforms\**\*.cs" />
     <PackageReference Include="MSBuild.Sdk.Extras" Version="1.0.0" PrivateAssets="All" />
-    <PackageReference Include="Splat" Version="1.6.2" />
+    <PackageReference Include="System.Reactive" Version="3.1.1" />
+    <PackageReference Include="Splat" Version="2.0.0"/>
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net45' ">
     <Compile Include="Platforms\net45\**\*.cs" />
-    <PackageReference Include="Rx-Xaml" Version="2.2.5" />
     <Reference Include="System.Xaml" />
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
@@ -32,7 +32,6 @@
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'uap10.0' ">
     <Compile Include="Platforms\uap10.0\**\*.cs" />
-    <PackageReference Include="Rx-WindowStoreApps" Version="2.2.5" />
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform" Version="5.2.3" />
     <PackageReference Include="Microsoft.Xaml.Behaviors.Uwp.Managed" Version="1.1.0" />    
   </ItemGroup>
