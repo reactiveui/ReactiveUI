@@ -131,7 +131,6 @@ namespace ReactiveUI
         public static System.Collections.Generic.IComparer<T> ThenByDescending<T, TValue>(this System.Collections.Generic.IComparer<T> parent, System.Func<T, TValue> selector) { }
         public static System.Collections.Generic.IComparer<T> ThenByDescending<T, TValue>(this System.Collections.Generic.IComparer<T> parent, System.Func<T, TValue> selector, System.Collections.Generic.IComparer<TValue> comparer) { }
     }
-    public class static CompatMixins { }
     public class ComponentModelTypeConverter : ReactiveUI.IBindingTypeConverter, Splat.IEnableLogger
     {
         public ComponentModelTypeConverter() { }
@@ -255,7 +254,7 @@ namespace ReactiveUI
     }
     public class Interaction<TInput, TOutput>
     {
-        public Interaction() { }
+        public Interaction(System.Reactive.Concurrency.IScheduler handlerScheduler = null) { }
         protected System.Func<, >[] GetHandlers() { }
         public virtual System.IObservable<TOutput> Handle(TInput input) { }
         public System.IDisposable RegisterHandler(System.Action<ReactiveUI.InteractionContext<TInput, TOutput>> handler) { }
