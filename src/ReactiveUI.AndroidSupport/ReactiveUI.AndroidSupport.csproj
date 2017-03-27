@@ -3,9 +3,22 @@
   <PropertyGroup>
     <TargetFrameworks>MonoAndroid70</TargetFrameworks>
   </PropertyGroup>
+
+   <PropertyGroup Condition="'$(TargetFramework)' == 'MonoAndroid70'">
+    <TargetFrameworkIdentifier>MonoAndroid</TargetFrameworkIdentifier>
+    <TargetFrameworkVersion>v7.0</TargetFrameworkVersion>
+  </PropertyGroup>
   
   <ItemGroup>
     <PackageReference Include="MSBuild.Sdk.Extras" Version="1.0.0" PrivateAssets="All" />
+    <PackageReference Include="Xamarin.Android.Support.Animated.Vector.Drawable" Version="25.1.1" />
+    <PackageReference Include="Xamarin.Android.Support.v4" Version="25.1.1" />
+    <PackageReference Include="Xamarin.Android.Support.v7.AppCompat" Version="25.1.1" />
+    <PackageReference Include="Xamarin.Android.Support.v7.RecyclerView" Version="25.1.1" />
+    <PackageReference Include="Xamarin.Android.Support.Vector.Drawable" Version="25.1.1" />
+    <PackageReference Include="System.Runtime.Serialization.Primitives" Version="4.3.0" />
+    <PackageReference Include="System.Reactive" Version="3.1.1" />
+    <PackageReference Include="Splat" Version="2.0.0" />
   </ItemGroup>
   
   <ItemGroup>
