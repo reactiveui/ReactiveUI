@@ -68,7 +68,7 @@ Action Abort = () => { throw new Exception("a non-recoverable fatal error occurr
 
 Action<string> RestorePackages = (solution) =>
 {
-    NuGetRestore(solution, new NuGetRestoreSettings() { ConfigFile = "./src/.nuget/NuGet.config", MSBuildVersion = NuGetMSBuildVersion.MSBuild15 });
+    NuGetRestore(solution, new NuGetRestoreSettings() { ConfigFile = "./src/.nuget/NuGet.config" });
 };
 
 Action<string, string> Package = (nuspec, basePath) =>
