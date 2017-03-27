@@ -3,26 +3,10 @@
     <TargetFrameworks>net45;uap10.0;Xamarin.iOS10;Xamarin.Mac20;MonoAndroid70</TargetFrameworks>
     <AssemblyName>ReactiveUI.Events</AssemblyName>
     <RootNamespace>ReactiveUI.Events</RootNamespace> 
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(TargetFramework)'=='netstandard1.1'">
-    <DefineConstants>$(DefineConstants);PORTABLE</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(TargetFramework)'=='net45'">
-    <DefineConstants>$(DefineConstants);NET_45;XAML</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(TargetFramework)' == 'uap10.0'">
-    <DefineConstants>$(DefineConstants);NETFX_CORE;XAML;WINDOWS_UWP</DefineConstants>
-    <TargetPlatformVersion>10.0.14393.0</TargetPlatformVersion>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(TargetFramework)' == 'Xamarin.iOS10'">
-    <DefineConstants>$(DefineConstants);MONO;UIKIT;COCOA;UNIFIED</DefineConstants>
-  </PropertyGroup>
-   <PropertyGroup Condition="'$(TargetFramework)' == 'Xamarin.Mac20'">
-    <DefineConstants>$(DefineConstants);MONO;COCOA;UNIFIED </DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(TargetFramework)' == 'MonoAndroid70'">
-    <DefineConstants>$(DefineConstants);MONO;ANDROID</DefineConstants>
-  </PropertyGroup>
+  </PropertyGroup>  
+  <PropertyGroup Condition="'$(TargetFramework)' == 'uap10.0'"> 
+    <TargetPlatformVersion>10.0.14393.0</TargetPlatformVersion> 
+  </PropertyGroup> 
   <ItemGroup>
     <Compile Remove="*.cs" />
     <None Include="*.cs" />
@@ -56,7 +40,6 @@
   </ItemGroup>
   <ItemGroup Condition=" '$(TargetFramework)' == 'MonoAndroid70' ">
     <Compile Include="Events_ANDROID.cs" />
-  </ItemGroup>  
-  
+  </ItemGroup>
   <Import Project="$(MSBuildSDKExtrasTargets)" Condition="Exists('$(MSBuildSDKExtrasTargets)')" />
 </Project>

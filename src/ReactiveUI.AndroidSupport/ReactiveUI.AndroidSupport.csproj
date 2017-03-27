@@ -3,11 +3,6 @@
   <PropertyGroup>
     <TargetFrameworks>MonoAndroid70</TargetFrameworks>
   </PropertyGroup>
-
-   <PropertyGroup Condition="'$(TargetFramework)' == 'MonoAndroid70'">
-    <TargetFrameworkIdentifier>MonoAndroid</TargetFrameworkIdentifier>
-    <TargetFrameworkVersion>v7.0</TargetFrameworkVersion>
-  </PropertyGroup>
   
   <ItemGroup>
     <PackageReference Include="MSBuild.Sdk.Extras" Version="1.0.0" PrivateAssets="All" />
