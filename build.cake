@@ -68,7 +68,7 @@ Action Abort = () => { throw new Exception("a non-recoverable fatal error occurr
 
 Action<string> RestorePackages = (solution) =>
 {
-    NuGetRestore(solution, new NuGetRestoreSettings() { ConfigFile = "./src/.nuget/NuGet.config" });
+    NuGetRestore(solution, new NuGetRestoreSettings() { ConfigFile = "./src/.nuget/NuGet.config", MSBuildVersion = NuGetMSBuildVersion.MSBuild15 });
 };
 
 Action<string, string> Package = (nuspec, basePath) =>
@@ -204,33 +204,20 @@ Task("BuildEvents")
     .IsDependentOn("GenerateEvents")
     .Does (() =>
 {
-    Action<string> build = (filename) =>
-    {
-        var solution = System.IO.Path.Combine("./src/ReactiveUI.Events/", filename);
+    var csproj ="./src/ReactiveUI.Events/ReactiveUI.Events.csproj";
+ 
+    RestorePackages(csproj);
 
-        // UWP (project.json) needs to be restored before it will build.
-        RestorePackages (solution);
+    Information("Building {0}", csproj);
 
-        Information("Building {0}", solution);
+    MSBuild(csproj, new MSBuildSettings()
+        .SetConfiguration("Release")
+        .WithProperty("NoWarn", "1591") // ignore missing XML doc warnings
+        .WithProperty("TreatWarningsAsErrors", treatWarningsAsErrors.ToString())
+        .SetVerbosity(Verbosity.Verbose)
+        .SetNodeReuse(false));
 
-        MSBuild(solution, new MSBuildSettings()
-            .SetConfiguration("Release")
-            .WithProperty("NoWarn", "1591") // ignore missing XML doc warnings
-            .WithProperty("TreatWarningsAsErrors", treatWarningsAsErrors.ToString())
-            .SetVerbosity(Verbosity.Minimal)
-            .SetNodeReuse(false));
-
-        SourceLink(solution);
-    };
-
-    build("ReactiveUI.Events_Android.sln");
-    build("ReactiveUI.Events_iOS.sln");
-    build("ReactiveUI.Events_MAC.sln");
-    build("ReactiveUI.Events_XamForms.sln");
-
-    build("ReactiveUI.Events_NET45.sln");
-
-    build("ReactiveUI.Events_UWP.sln");
+    SourceLink(csproj);
 });
 
 Task("PackageEvents")
