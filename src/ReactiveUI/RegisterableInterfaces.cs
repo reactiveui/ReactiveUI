@@ -205,7 +205,7 @@ namespace ReactiveUI
     public interface IActivatable { }
 
     /// <summary>
-    /// This base class is mostly used by the Framework. Implement IViewFor<T>
+    /// This base class is mostly used by the Framework. Implement <see cref="IViewFor{T}"/>
     /// instead.
     /// </summary>
     public interface IViewFor : IActivatable
@@ -394,8 +394,9 @@ namespace ReactiveUI
         Func<object> CreateNewAppState { get; set; }
 
         /// <summary>
-        /// The current application state - get a typed version of this via
-        /// GetAppState<T>. The "application state" is a notion entirely defined
+        /// The current application state - get a typed version of this via 
+        /// <see cref="SuspensionHostExtensions.GetAppState{T}(ISuspensionHost)"/>.
+        /// The "application state" is a notion entirely defined
         /// via the client application - the framework places no restrictions on
         /// the object other than it can be serialized.
         /// </summary>
