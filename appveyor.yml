@@ -38,8 +38,7 @@
   - path: '**/bin/*'
   - path: src/ReactiveUI.Events/Events_*.cs
   test: off
-  on_finish:
-    - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))  
+  
 # configuration for "develop" branch
 -
   image: Visual Studio 2015  
@@ -76,5 +75,3 @@
   - path: '**/bin/*'
   - path: src/ReactiveUI.Events/Events_*.cs
   test: off
-  on_finish:
-  - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
