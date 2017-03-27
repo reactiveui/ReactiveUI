@@ -125,8 +125,8 @@
     </CodeAnalysisDependentAssemblyPaths>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ActivationTest.cs" />
     <Compile Include="App_Packages\PublicApiGenerator.6.0.0\ApiGenerator.cs" />
+    <Compile Include="ActivationTests.cs" />
     <Compile Include="AutoPersistHelperTest.cs" />
     <Compile Include="AwaiterTest.cs" />
     <Compile Include="BindingTypeConvertersTest.cs" />
@@ -158,7 +158,7 @@
     <Compile Include="ReactiveObjectTest.cs" />
     <Compile Include="RoutingState.cs" />
     <Compile Include="RxAppTest.cs" />
-    <Compile Include="RxRouting.cs" />
+    <Compile Include="ViewLocatorTests.cs" />
     <Compile Include="Xaml\PropertyBindingTestViews.cs" />
     <Compile Include="TestLogger.cs" />
     <Compile Include="Utility.cs" />

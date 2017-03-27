@@ -1,40 +1,45 @@
 using System;
 using System.Reactive;
-using System.Reactive.Linq;
-using Splat;
 using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using Splat;
 
 namespace ReactiveUI
 {
     internal class SuspensionHost : ReactiveObject, ISuspensionHost
     {
         readonly ReplaySubject<IObservable<Unit>> isLaunchingNew = new ReplaySubject<IObservable<Unit>>(1);
-        public IObservable<Unit> IsLaunchingNew {
+        public IObservable<Unit> IsLaunchingNew
+        {
             get { return isLaunchingNew.Switch(); }
             set { isLaunchingNew.OnNext(value); }
         }
 
         readonly ReplaySubject<IObservable<Unit>> isResuming = new ReplaySubject<IObservable<Unit>>(1);
-        public IObservable<Unit> IsResuming {
+        public IObservable<Unit> IsResuming
+        {
             get { return isResuming.Switch(); }
             set { isResuming.OnNext(value); }
         }
 
         readonly ReplaySubject<IObservable<Unit>> isUnpausing = new ReplaySubject<IObservable<Unit>>(1);
-        public IObservable<Unit> IsUnpausing {
+        public IObservable<Unit> IsUnpausing
+        {
             get { return isUnpausing.Switch(); }
             set { isUnpausing.OnNext(value); }
         }
 
         readonly ReplaySubject<IObservable<IDisposable>> shouldPersistState = new ReplaySubject<IObservable<IDisposable>>(1);
-        public IObservable<IDisposable> ShouldPersistState {
+        public IObservable<IDisposable> ShouldPersistState
+        {
             get { return shouldPersistState.Switch(); }
             set { shouldPersistState.OnNext(value); }
         }
 
         readonly ReplaySubject<IObservable<Unit>> shouldInvalidateState = new ReplaySubject<IObservable<Unit>>(1);
-        public IObservable<Unit> ShouldInvalidateState {
+        public IObservable<Unit> ShouldInvalidateState
+        {
             get { return shouldInvalidateState.Switch(); }
             set { shouldInvalidateState.OnNext(value); }
         }
@@ -49,7 +54,8 @@ namespace ReactiveUI
         /// <summary>
         ///
         /// </summary>
-        public object AppState {
+        public object AppState
+        {
             get { return appState; }
             set { this.RaiseAndSetIfChanged(ref appState, value); }
         }
@@ -95,7 +101,7 @@ namespace ReactiveUI
         {
             return (T)This.AppState;
         }
-                
+
         /// <summary>
         ///
         /// </summary>
@@ -109,12 +115,12 @@ namespace ReactiveUI
 
             ret.Add(This.ShouldInvalidateState
                 .SelectMany(_ => driver.InvalidateState())
-                .LoggedCatch(This, Observable.Return(Unit.Default), "Tried to invalidate app state")
+                .LoggedCatch(This, Observables.Unit, "Tried to invalidate app state")
                 .Subscribe(_ => This.Log().Info("Invalidated app state")));
 
             ret.Add(This.ShouldPersistState
                 .SelectMany(x => driver.SaveState(This.AppState).Finally(x.Dispose))
-                .LoggedCatch(This, Observable.Return(Unit.Default), "Tried to persist app state")
+                .LoggedCatch(This, Observables.Unit, "Tried to persist app state")
                 .Subscribe(_ => This.Log().Info("Persisted application state")));
 
             ret.Add(Observable.Merge(This.IsResuming, This.IsLaunchingNew)
@@ -135,17 +141,17 @@ namespace ReactiveUI
     {
         public IObservable<object> LoadState()
         {
-            return Observable.Return(default(object));
+            return Observable<object>.Default;
         }
 
         public IObservable<Unit> SaveState(object state)
         {
-            return Observable.Return(Unit.Default);
+            return Observables.Unit;
         }
 
         public IObservable<Unit> InvalidateState()
         {
-            return Observable.Return(Unit.Default);
+            return Observables.Unit;
         }
     }
 }

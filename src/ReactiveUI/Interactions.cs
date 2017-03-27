@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive;
+using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Threading.Tasks;
@@ -114,7 +115,7 @@ namespace ReactiveUI
     /// <para>
     /// Note that handlers are not required to handle an interaction. They can choose to ignore it, leaving it
     /// for some other handler to handle. If no handler handles the interaction, the <see cref="Handle"/> method
-    /// will throw an <see cref="UnhandledInteractionException"/>.
+    /// will throw an <see cref="UnhandledInteractionException{TInput, TOutput}"/>.
     /// </para>
     /// </remarks>
     /// <typeparam name="TInput">
@@ -127,11 +128,19 @@ namespace ReactiveUI
     {
         private readonly IList<Func<InteractionContext<TInput, TOutput>, IObservable<Unit>>> handlers;
         private readonly object sync;
+        private readonly IScheduler handlerScheduler;
 
-        public Interaction()
+        /// <summary>
+        /// Creates a new interaction instance.
+        /// </summary>
+        /// <param name="handlerScheduler">
+        /// The scheduler to use when invoking handlers, which defaults to <c>CurrentThreadScheduler.Instance</c> if <see langword="null"/>.
+        /// </param>
+        public Interaction(IScheduler handlerScheduler = null)
         {
             this.handlers = new List<Func<InteractionContext<TInput, TOutput>, IObservable<Unit>>>();
             this.sync = new object();
+            this.handlerScheduler = handlerScheduler ?? CurrentThreadScheduler.Instance;
         }
 
         /// <summary>
@@ -157,7 +166,7 @@ namespace ReactiveUI
 
             return RegisterHandler(interaction => {
                 handler(interaction);
-                return Observable.Return(Unit.Default);
+                return Observables.Unit;
             });
         }
 
@@ -219,7 +228,7 @@ namespace ReactiveUI
         /// <para>
         /// This method passes the interaction through to relevant handlers in reverse order of registration,
         /// ceasing once any handler handles the interaction. If the interaction remains unhandled after all
-        /// relevant handlers have executed, an <see cref="UnhandledInteractionException"/> is thrown.
+        /// relevant handlers have executed, an <see cref="UnhandledInteractionException{TInput, TOutput}"/> is thrown.
         /// </para>
         /// </remarks>
         /// <param name="input">
@@ -227,7 +236,7 @@ namespace ReactiveUI
         /// </param>
         /// <returns>
         /// An observable that ticks when the interaction completes, or throws an
-        /// <see cref="UnhandledInteractionException"/> if no handler handles the interaction.
+        /// <see cref="UnhandledInteractionException{TInput, TOutput}"/> if no handler handles the interaction.
         /// </returns>
         public virtual IObservable<TOutput> Handle(TInput input)
         {
@@ -237,6 +246,7 @@ namespace ReactiveUI
                 .GetHandlers()
                 .Reverse()
                 .ToObservable()
+                .ObserveOn(this.handlerScheduler)
                 .Select(handler => Observable.Defer(() => handler(context)))
                 .Concat()
                 .TakeWhile(_ => !context.IsHandled)
