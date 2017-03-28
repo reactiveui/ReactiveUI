@@ -321,7 +321,7 @@ Task("RunUnitTests")
 {
     Action<ICakeContext> testAction = tool => {
 
-        tool.XUnit2("./src/ReactiveUI.Tests/bin/Release/Net45/ReactiveUI.Tests.dll", new XUnit2Settings {
+        tool.XUnit2("./src/ReactiveUI.Tests/bin/Release/Net45/ReactiveUI.Tests_Net45.dll", new XUnit2Settings {
             OutputDirectory = artifactDirectory,
             XmlReportV1 = true,
             NoAppDomain = true
