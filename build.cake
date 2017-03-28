@@ -78,8 +78,6 @@ Action<string> MsBuildRestorePackages = (solution) =>
 
 Action<string, string> Package = (nuspec, basePath) =>
 {
-    CreateDirectory(artifactDirectory);
-
     Information("Packaging {0} using {1} as the BasePath.", nuspec, basePath);
 
     NuGetPack(nuspec, new NuGetPackSettings {
@@ -124,6 +122,8 @@ Setup(context =>
     }
 
     Information("Building version {0} of ReactiveUI. (isTagged: {1})", informationalVersion, isTagged);
+
+    CreateDirectory(artifactDirectory);
 });
 
 Teardown(context =>
