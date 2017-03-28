@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net45;uap10.0;Xamarin.iOS10;Xamarin.Mac20;MonoAndroid70</TargetFrameworks>
+    <TargetFrameworks>net45;uap10.0;Xamarin.Mac20;MonoAndroid70</TargetFrameworks>
     <AssemblyName>ReactiveUI.Testing</AssemblyName>
     <RootNamespace>ReactiveUI.Testing</RootNamespace>
     <Version>7.2.0</Version>

@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netstandard1.1;net45;uap10.0;Xamarin.iOS10;Xamarin.Mac20;MonoAndroid70</TargetFrameworks>
+    <TargetFrameworks>netstandard1.1;net45;uap10.0;Xamarin.Mac20;MonoAndroid70</TargetFrameworks>
     <AssemblyName>ReactiveUI</AssemblyName>
     <RootNamespace>ReactiveUI</RootNamespace>
     <GenerateDocumentationFile Condition=" '$(Configuration)' == 'Release' ">true</GenerateDocumentationFile>
