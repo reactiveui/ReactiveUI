@@ -6,6 +6,7 @@
     <GenerateDocumentationFile Condition=" '$(Configuration)' == 'Release' ">true</GenerateDocumentationFile>
     <Platform>AnyCPU</Platform>
     <DebugType>full</DebugType>
+    <NoWarn>0419;1701;1702;1705;1570;1572;1573;1574;1591;1712;1723</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'netstandard1.1'">
     <DefineConstants>$(DefineConstants);PORTABLE</DefineConstants>

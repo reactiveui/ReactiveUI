@@ -4,7 +4,6 @@
     <TargetFrameworks>net45;uap10.0;Xamarin.iOS10;Xamarin.Mac20;MonoAndroid70</TargetFrameworks>
     <AssemblyName>ReactiveUI.Testing</AssemblyName>
     <RootNamespace>ReactiveUI.Testing</RootNamespace>
-    <Version>7.2.0</Version>
     <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
 
@@ -14,9 +13,7 @@
 
   <ItemGroup>
     <PackageReference Include="MSBuild.Sdk.Extras" Version="1.0.1" PrivateAssets="All" />
-    <PackageReference Include="System.Reactive" Version="3.1.1" />
     <PackageReference Include="Microsoft.Reactive.Testing" Version="3.1.1" />
-    <PackageReference Include="Splat" Version="2.0.0"/>
     <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj" />
   </ItemGroup>
 
