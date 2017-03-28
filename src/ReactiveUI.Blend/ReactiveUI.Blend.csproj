@@ -2,9 +2,10 @@
 
   <PropertyGroup>
       <TargetFrameworks>net45;uap10.0</TargetFrameworks>
+      <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(TargetFramework)'=='net45'">
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net45'">
     <DefineConstants>$(DefineConstants);NET_45</DefineConstants>
   </PropertyGroup>
 

@@ -4,11 +4,12 @@
     <AssemblyName>ReactiveUI</AssemblyName>
     <RootNamespace>ReactiveUI</RootNamespace>
     <GenerateDocumentationFile Condition=" '$(Configuration)' == 'Release' ">true</GenerateDocumentationFile>
+    <Platform>AnyCPU</Platform>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(TargetFramework)'=='netstandard1.1'">
+  <PropertyGroup Condition="'$(TargetFramework)' == 'netstandard1.1'">
     <DefineConstants>$(DefineConstants);PORTABLE</DefineConstants>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(TargetFramework)'=='net45'">
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net45'">
     <DefineConstants>$(DefineConstants);NET_45;XAML</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'uap10.0'">

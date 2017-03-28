@@ -71,6 +71,11 @@ Action<string> RestorePackages = (solution) =>
     NuGetRestore(solution, new NuGetRestoreSettings() { ConfigFile = "./src/.nuget/NuGet.config" });
 };
 
+Action<string> MsBuildRestorePackages = (solution) => 
+{
+    MSBuild(solution, new MSBuildSettings().WithTarget("restore"));
+};
+
 Action<string, string> Package = (nuspec, basePath) =>
 {
     CreateDirectory(artifactDirectory);
@@ -131,11 +136,12 @@ Teardown(context =>
 //////////////////////////////////////////////////////////////////////
 
 Task("BuildEventBuilder")
-    .IsDependentOn("RestorePackages")
     .IsDependentOn("UpdateAssemblyInfo")
     .Does (() =>
 {
     var solution = "./src/EventBuilder.sln";
+
+    RestorePackages(solution);
 
     MSBuild(solution, new MSBuildSettings()
         .SetConfiguration("Release")
@@ -177,7 +183,12 @@ Task("GenerateEvents")
             int success = 0;    // exit code aka %ERRORLEVEL% or $?
             if (process.GetExitCode() != success)
             {
-                Error("Failed to generate events for '{0}'", platform);
+                Error("Failed to generate events for '{0}', logging output:", platform);
+                var logLines = FileReadLines("./src/EventBuilder/bin/Release/EventBuilder.log");
+                foreach(var line in logLines)
+                {
+                    Information(line);
+                }
                 Abort();
             }
 
@@ -206,15 +217,15 @@ Task("BuildEvents")
 {
     var csproj ="./src/ReactiveUI.Events/ReactiveUI.Events.csproj";
  
-    RestorePackages(csproj);
-
     Information("Building {0}", csproj);
+    
+    MsBuildRestorePackages(csproj);
 
     MSBuild(csproj, new MSBuildSettings()
         .SetConfiguration("Release")
         .WithProperty("NoWarn", "1591") // ignore missing XML doc warnings
         .WithProperty("TreatWarningsAsErrors", treatWarningsAsErrors.ToString())
-        .SetVerbosity(Verbosity.Verbose)
+        .SetVerbosity(Verbosity.Minimal)
         .SetNodeReuse(false));
 
     SourceLink(csproj);
@@ -229,15 +240,18 @@ Task("PackageEvents")
 });
 
 Task("BuildReactiveUI")
-    .IsDependentOn("RestorePackages")
     .IsDependentOn("UpdateAssemblyInfo")
     .Does (() =>
 {
+    
     Action<string> build = (solution) =>
     {
         Information("Building {0}", solution);
+        
+        MsBuildRestorePackages(solution);
 
-        MSBuild(solution, new MSBuildSettings()
+        MSBuild(solution, new MSBuildSettings()            
+            .WithTarget("build")
             .SetConfiguration("Release")
             .WithProperty("NoWarn", "1591") // ignore missing XML doc warnings
             .WithProperty("TreatWarningsAsErrors", treatWarningsAsErrors.ToString())
@@ -301,12 +315,6 @@ Task("UpdateAssemblyInfo")
     });
 });
 
-Task("RestorePackages").Does (() =>
-{
-    RestorePackages("./src/EventBuilder.sln");
-    RestorePackages("./src/ReactiveUI.sln");
-});
-
 Task("RunUnitTests")
     .IsDependentOn("BuildReactiveUI")
     .Does(() =>
@@ -353,7 +361,6 @@ Task("UploadTestCoverage")
 });
 
 Task("Package")
-    .IsDependentOn("PackageEvents")
     .IsDependentOn("PackageReactiveUI")
     .IsDependentOn("UploadTestCoverage")
     .Does (() =>

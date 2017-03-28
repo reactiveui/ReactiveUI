@@ -3,6 +3,7 @@
     <TargetFrameworks>net45;uap10.0;Xamarin.iOS10;Xamarin.Mac20;MonoAndroid70</TargetFrameworks>
     <AssemblyName>ReactiveUI.Events</AssemblyName>
     <RootNamespace>ReactiveUI.Events</RootNamespace> 
+    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>  
   <PropertyGroup Condition="'$(TargetFramework)' == 'uap10.0'"> 
     <TargetPlatformVersion>10.0.14393.0</TargetPlatformVersion> 

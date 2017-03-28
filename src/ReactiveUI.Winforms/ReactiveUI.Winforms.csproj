@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFrameworks>net45</TargetFrameworks>
+    <Platform>AnyCPU</Platform>        
   </PropertyGroup>
 
   <ItemGroup>

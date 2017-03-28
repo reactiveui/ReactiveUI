@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFrameworks>MonoAndroid70</TargetFrameworks>
+    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   
   <ItemGroup>
