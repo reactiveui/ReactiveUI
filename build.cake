@@ -254,16 +254,6 @@ Task("BuildReactiveUI")
             process.WaitForExit();
         }
         
-        // MsBuildRestorePackages(solution);
-
-        // MSBuild(solution, new MSBuildSettings()            
-        //     .WithTarget("build")
-        //     .SetConfiguration("Release")
-        //     .WithProperty("NoWarn", "1591") // ignore missing XML doc warnings
-        //     .WithProperty("TreatWarningsAsErrors", treatWarningsAsErrors.ToString())
-        //     .SetVerbosity(Verbosity.Minimal)
-        //     .SetNodeReuse(false));
-
         SourceLink(solution);
     };
 
@@ -327,7 +317,7 @@ Task("RunUnitTests")
 {
     Action<ICakeContext> testAction = tool => {
 
-        tool.XUnit2("./src/ReactiveUI.Tests/bin/Release/Net45/ReactiveUI.Tests.dll", new XUnit2Settings {
+        tool.XUnit2("./src/ReactiveUI.Tests/bin/Release/Net452/ReactiveUI.Tests.dll", new XUnit2Settings {
             OutputDirectory = artifactDirectory,
             XmlReportV1 = true,
             NoAppDomain = true
