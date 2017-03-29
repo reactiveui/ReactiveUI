@@ -249,7 +249,7 @@ Task("BuildReactiveUI")
         Information("Building {0}", solution);
 
         using(var process = StartAndReturnProcess("msbuild", new ProcessSettings() {
-            Arguments ="/t:restore /t:build ./src/ReactiveUI.sln /p:Configuration=Release"
+            Arguments ="/t:restore;pack ./src/ReactiveUI.sln /p:Configuration=Release /p:PackageOutputPath="+artifactDirectory
         })){
             process.WaitForExit();
         }
@@ -258,23 +258,6 @@ Task("BuildReactiveUI")
     };
 
     build("./src/ReactiveUI.sln");
-});
-
-
-Task("PackageReactiveUI")
-    .IsDependentOn("BuildReactiveUI")
-    .IsDependentOn("RunUnitTests")
-    .Does (() =>
-{
-    // use pwd as as cake needs a basePath, even if making a meta-package that contains no files.
-    Package("./src/ReactiveUI.nuspec", "./");
-    Package("./src/ReactiveUI-Core.nuspec", "./src/ReactiveUI");
-
-    Package("./src/ReactiveUI-AndroidSupport.nuspec", "./src/ReactiveUI.AndroidSupport");
-    Package("./src/ReactiveUI-Blend.nuspec", "./src/ReactiveUI.Blend");
-    Package("./src/ReactiveUI-Testing.nuspec", "./src/ReactiveUI.Testing");
-    Package("./src/ReactiveUI-Winforms.nuspec", "./src/ReactiveUI.Winforms");
-    Package("./src/ReactiveUI-XamForms.nuspec", "./src/ReactiveUI.XamForms");
 });
 
 Task("UpdateAppVeyorBuildNumber")
@@ -357,7 +340,8 @@ Task("UploadTestCoverage")
 });
 
 Task("Package")
-    .IsDependentOn("PackageReactiveUI")
+    .IsDependentOn("BuildReactiveUI")
+    .IsDependentOn("RunUnitTests")
     .IsDependentOn("UploadTestCoverage")
     .Does (() =>
 {
