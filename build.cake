@@ -250,7 +250,7 @@ Task("BuildReactiveUI")
 
         using(var process = StartAndReturnProcess("msbuild", new ProcessSettings() {
             Arguments ="/t:restore /t:build ./src/ReactiveUI.sln /p:Configuration=Release"
-        } )){
+        })){
             process.WaitForExit();
         }
         
