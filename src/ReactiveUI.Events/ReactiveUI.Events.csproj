@@ -3,18 +3,15 @@
     <TargetFrameworks>net45;uap10.0;Xamarin.iOS10;Xamarin.Mac20;MonoAndroid70</TargetFrameworks>
     <AssemblyName>ReactiveUI.Events</AssemblyName>
     <RootNamespace>ReactiveUI.Events</RootNamespace> 
-    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>  
-  <PropertyGroup Condition="'$(TargetFramework)' == 'uap10.0'"> 
-    <TargetPlatformVersion>10.0.14393.0</TargetPlatformVersion> 
-  </PropertyGroup> 
+
   <ItemGroup>
     <Compile Remove="*.cs" />
     <None Include="*.cs" />
     <Compile Include="SingleAwaitSubject.cs" />
-    <PackageReference Include="MSBuild.Sdk.Extras" Version="1.0.1" PrivateAssets="All" />
     <PackageReference Include="System.Reactive" Version="3.1.1" />
   </ItemGroup>
+
   <ItemGroup Condition=" '$(TargetFramework)' == 'net45' ">
     <Compile Include="Events_NET45.cs" />
     <Reference Include="System.Xaml" />
@@ -23,9 +20,9 @@
     <Reference Include="PresentationFramework.Aero" />
     <Reference Include="WindowsBase" />
   </ItemGroup>
+
   <ItemGroup Condition=" '$(TargetFramework)' == 'uap10.0' ">
     <Compile Include="Events_UWP.cs" />
-    <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform" Version="5.2.3" />
     <SDKReference Include="WindowsDesktop, Version=10.0.14393.0">
       <Name>Windows Desktop Extensions for the UWP</Name>
     </SDKReference>
@@ -33,14 +30,18 @@
       <Name>Windows Mobile Extensions for the UWP</Name>
     </SDKReference>
   </ItemGroup>
+
   <ItemGroup Condition=" '$(TargetFramework)' == 'Xamarin.iOS10' ">
     <Compile Include="Events_IOS.cs" />
   </ItemGroup>
+
   <ItemGroup Condition=" '$(TargetFramework)' == 'Xamarin.Mac20' ">
     <Compile Include="Events_MAC.cs" />
   </ItemGroup>
+
   <ItemGroup Condition=" '$(TargetFramework)' == 'MonoAndroid70' ">
     <Compile Include="Events_ANDROID.cs" />
   </ItemGroup>
+  
   <Import Project="$(MSBuildSDKExtrasTargets)" Condition="Exists('$(MSBuildSDKExtrasTargets)')" />
 </Project>

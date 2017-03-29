@@ -4,15 +4,9 @@
     <TargetFrameworks>net45;uap10.0;Xamarin.iOS10;Xamarin.Mac20;MonoAndroid70</TargetFrameworks>
     <AssemblyName>ReactiveUI.Testing</AssemblyName>
     <RootNamespace>ReactiveUI.Testing</RootNamespace>
-    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
-
-  <PropertyGroup Condition="'$(TargetFramework)' == 'uap10.0'">
-    <TargetPlatformVersion>10.0.14393.0</TargetPlatformVersion>
-  </PropertyGroup>
-
+  
   <ItemGroup>
-    <PackageReference Include="MSBuild.Sdk.Extras" Version="1.0.1" PrivateAssets="All" />
     <PackageReference Include="Microsoft.Reactive.Testing" Version="3.1.1" />
     <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj" />
   </ItemGroup>

@@ -2,12 +2,7 @@
 
   <PropertyGroup>
     <TargetFrameworks>net45</TargetFrameworks>
-    <Platform>AnyCPU</Platform>        
   </PropertyGroup>
-
-  <ItemGroup>
-    <PackageReference Include="MSBuild.Sdk.Extras" Version="1.0.1" PrivateAssets="All" />
-  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj" />

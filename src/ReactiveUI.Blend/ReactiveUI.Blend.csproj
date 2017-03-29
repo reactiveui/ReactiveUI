@@ -1,23 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-      <TargetFrameworks>net45;uap10.0</TargetFrameworks>
-      <PlatformTarget>AnyCPU</PlatformTarget>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(TargetFramework)' == 'net45'">
-    <DefineConstants>$(DefineConstants);NET_45</DefineConstants>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(TargetFramework)' == 'uap10.0'">
-    <DefineConstants>$(DefineConstants);NETFX_CORE;WINDOWS_UWP</DefineConstants>
-    <TargetPlatformVersion>10.0.14393.0</TargetPlatformVersion>
+    <TargetFrameworks>net45;uap10.0</TargetFrameworks>
+    <AssemblyName>ReactiveUI.Blend</AssemblyName>
+    <RootNamespace>ReactiveUI.Blend</RootNamespace>  
   </PropertyGroup>
 
   <ItemGroup>
     <Compile Remove="Platforms\**\*.cs" />
     <None Include="Platforms\**\*.cs" />
-    <PackageReference Include="MSBuild.Sdk.Extras" Version="1.0.1" PrivateAssets="All" />
     <PackageReference Include="System.Reactive" Version="3.1.1" />
     <PackageReference Include="Splat" Version="2.0.0"/>
   </ItemGroup>
@@ -33,7 +24,6 @@
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'uap10.0' ">
     <Compile Include="Platforms\uap10.0\**\*.cs" />
-    <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform" Version="5.2.3" />
     <PackageReference Include="Microsoft.Xaml.Behaviors.Uwp.Managed" Version="1.1.0" />    
   </ItemGroup>
 

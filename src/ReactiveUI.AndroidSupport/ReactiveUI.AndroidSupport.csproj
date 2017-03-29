@@ -2,11 +2,11 @@
 
   <PropertyGroup>
     <TargetFrameworks>MonoAndroid70</TargetFrameworks>
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <AssemblyName>ReactiveUI.AndroidSupport</AssemblyName>
+    <RootNamespace>ReactiveUI.AndroidSupport</RootNamespace>
   </PropertyGroup>
   
   <ItemGroup>
-    <PackageReference Include="MSBuild.Sdk.Extras" Version="1.0.1" PrivateAssets="All" />
     <PackageReference Include="Xamarin.Android.Support.Animated.Vector.Drawable" Version="25.1.1" />
     <PackageReference Include="Xamarin.Android.Support.v4" Version="25.1.1" />
     <PackageReference Include="Xamarin.Android.Support.v7.AppCompat" Version="25.1.1" />
