@@ -247,16 +247,22 @@ Task("BuildReactiveUI")
     Action<string> build = (solution) =>
     {
         Information("Building {0}", solution);
-        
-        MsBuildRestorePackages(solution);
 
-        MSBuild(solution, new MSBuildSettings()            
-            .WithTarget("build")
-            .SetConfiguration("Release")
-            .WithProperty("NoWarn", "1591") // ignore missing XML doc warnings
-            .WithProperty("TreatWarningsAsErrors", treatWarningsAsErrors.ToString())
-            .SetVerbosity(Verbosity.Minimal)
-            .SetNodeReuse(false));
+        using(var process = StartAndReturnProcess("msbuild", new ProcessSettings() {
+            Arguments ="/t:restore /t:build ./src/ReactiveUI.sln /p:Configuration=Release"
+        } )){
+            process.WaitForExit();
+        }
+        
+        // MsBuildRestorePackages(solution);
+
+        // MSBuild(solution, new MSBuildSettings()            
+        //     .WithTarget("build")
+        //     .SetConfiguration("Release")
+        //     .WithProperty("NoWarn", "1591") // ignore missing XML doc warnings
+        //     .WithProperty("TreatWarningsAsErrors", treatWarningsAsErrors.ToString())
+        //     .SetVerbosity(Verbosity.Minimal)
+        //     .SetNodeReuse(false));
 
         SourceLink(solution);
     };
