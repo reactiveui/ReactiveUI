@@ -249,7 +249,7 @@ Task("BuildReactiveUI")
         Information("Building {0}", solution);
 
         using(var process = StartAndReturnProcess("msbuild", new ProcessSettings() {
-            Arguments ="/t:restore;pack ./src/ReactiveUI.sln /p:Configuration=Release /p:PackageOutputPath="+artifactDirectory
+            Arguments ="/t:restore;pack ./src/ReactiveUI.sln /p:Configuration=Release /p:PackageOutputPath=" + MakeAbsolute(Directory(artifactDirectory))
         })){
             process.WaitForExit();
         }
