@@ -22,6 +22,7 @@ namespace EventBuilder.Platforms
                     "/Library/Frameworks/Xamarin.Android.framework/Libraries/xbuild-frameworks/MonoAndroid/v1.0");
             } else {
                 var assemblies = WindowsSearchPaths
+                    .Where(p => Directory.Exists(p))
                     .SelectMany(x => Directory.GetFiles(x, "Mono.Android.dll", SearchOption.AllDirectories));
 
                 var latestVersion = assemblies.Last();
