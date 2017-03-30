@@ -37,8 +37,8 @@ namespace EventBuilder.Platforms
 
         private static IEnumerable<string> WindowsSearchPaths => new[] {
             @"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\MonoAndroid",
-            @"C:\Program Files(x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\ReferenceAssemblies\Microsoft\Framework\MonoAndroid",
-            @"C:\Program Files(x86)\Microsoft Visual Studio\2017\Enterprise\Common7\IDE\ReferenceAssemblies\Microsoft\Framework\MonoAndroid"
+            @"C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\ReferenceAssemblies\Microsoft\Framework\MonoAndroid",
+            @"C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\Common7\IDE\ReferenceAssemblies\Microsoft\Framework\MonoAndroid"
         };
     }
 }
