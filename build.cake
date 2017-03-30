@@ -340,12 +340,12 @@ Task("UploadTestCoverage")
 });
 
 Task("Package")
+    .IsDependentOn("PackageEvents")
     .IsDependentOn("BuildReactiveUI")
     .IsDependentOn("RunUnitTests")
     .IsDependentOn("UploadTestCoverage")
     .Does (() =>
 {
-
 });
 
 Task("PublishPackages")
