@@ -15,6 +15,7 @@
 #tool "coveralls.io"
 #tool "OpenCover"
 #tool "ReportGenerator"
+#tool nuget:?package=vswhere
 
 //////////////////////////////////////////////////////////////////////
 // ARGUMENTS
@@ -159,11 +160,19 @@ Task("GenerateEvents")
     var eventBuilder = "./src/EventBuilder/bin/Release/EventBuilder.exe";
     var workingDirectory = "./src/EventBuilder/bin/Release";
 
+    var vsLatest  = VSWhereLatest();
+
+    var referenceAssembliesPath = vsLatest.CombineWithFilePath("./Common7/IDE/ReferenceAssemblies/Microsoft/Framework");
+
+    Information(referenceAssembliesPath.ToString());
+
     Action<string> generate = (string platform) =>
     {
         using(var process = StartAndReturnProcess(eventBuilder,
             new ProcessSettings{
-                Arguments = "--platform=" + platform,
+                Arguments = new ProcessArgumentBuilder()
+                    .AppendSwitch("--platform","=", platform)
+                    .AppendSwitchQuoted("--reference","=", referenceAssembliesPath.ToString()),
                 WorkingDirectory = workingDirectory,
                 RedirectStandardOutput = true }))
         {
@@ -211,49 +220,30 @@ Task("GenerateEvents")
     generate("uwp");
 });
 
-Task("BuildEvents")
+Task("BuildReactiveUI")
+    .IsDependentOn("UpdateAssemblyInfo")
     .IsDependentOn("GenerateEvents")
     .Does (() =>
 {
-    var csproj ="./src/ReactiveUI.Events/ReactiveUI.Events.csproj";
- 
-    Information("Building {0}", csproj);
-    
-    MsBuildRestorePackages(csproj);
-
-    MSBuild(csproj, new MSBuildSettings()
-        .SetConfiguration("Release")
-        .WithProperty("NoWarn", "1591") // ignore missing XML doc warnings
-        .WithProperty("TreatWarningsAsErrors", treatWarningsAsErrors.ToString())
-        .SetVerbosity(Verbosity.Minimal)
-        .SetNodeReuse(false));
-
-    SourceLink(csproj);
-});
-
-Task("PackageEvents")
-    .IsDependentOn("BuildEvents")
-    .Does (() =>
-{
-    Package("./src/ReactiveUI-Events.nuspec", "./src/ReactiveUI.Events");
-    Package("./src/ReactiveUI-Events-XamForms.nuspec", "./src/ReactiveUI.Events");
-});
-
-Task("BuildReactiveUI")
-    .IsDependentOn("UpdateAssemblyInfo")
-    .Does (() =>
-{
-    
     Action<string> build = (solution) =>
     {
         Information("Building {0}", solution);
 
-        using(var process = StartAndReturnProcess("msbuild", new ProcessSettings() {
-            Arguments ="/t:restore;pack ./src/ReactiveUI.sln /p:Configuration=Release /p:PackageOutputPath=" + MakeAbsolute(Directory(artifactDirectory))
-        })){
-            process.WaitForExit();
-        }
-        
+        DirectoryPath vsLatest  = VSWhereLatest();
+        FilePath msBuildPath = (vsLatest==null)
+                                    ? null
+                                    : vsLatest.CombineWithFilePath("./MSBuild/15.0/Bin/MSBuild.exe");
+
+        MSBuild(solution, new MSBuildSettings() {
+                ToolPath= msBuildPath
+            }
+            .WithTarget("restore;pack")
+            .WithProperty("PackageOutputPath",  MakeAbsolute(Directory(artifactDirectory)).ToString())
+            .WithProperty("TreatWarningsAsErrors", treatWarningsAsErrors.ToString())
+            .SetConfiguration("Release")
+            .SetVerbosity(Verbosity.Minimal)
+            .SetNodeReuse(false));
+
         SourceLink(solution);
     };
 
@@ -340,7 +330,6 @@ Task("UploadTestCoverage")
 });
 
 Task("Package")
-    .IsDependentOn("PackageEvents")
     .IsDependentOn("BuildReactiveUI")
     .IsDependentOn("RunUnitTests")
     .IsDependentOn("UploadTestCoverage")

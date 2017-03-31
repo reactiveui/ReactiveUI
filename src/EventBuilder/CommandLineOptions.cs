@@ -30,6 +30,9 @@ namespace EventBuilder
             HelpText = "Specify another mustache template other than the default.")]
         public string Template { get; set; }
 
+        [Option('r', "reference", Required = false, HelpText = "Specify a Reference Assemblies location to override the default")]
+        public string ReferenceAssemblies { get; set; }
+
         // Manual generation using the specified assemblies. Use with --platform=NONE.
         [ValueList(typeof(List<string>))]
         public List<string> Assemblies { get; set; }

@@ -24,6 +24,7 @@ namespace EventBuilder
         }
 
         private static string _mustacheTemplate = "DefaultTemplate.mustache";
+        private static string _referenceAssembliesLocation = @"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework";
 
         private static void Main(string[] args)
         {
@@ -53,6 +54,11 @@ namespace EventBuilder
                         Log.Debug("Using {template} instead of the default template.", _mustacheTemplate);
                     }
 
+                    if (!string.IsNullOrWhiteSpace(options.ReferenceAssemblies)) {
+                        _referenceAssembliesLocation = options.ReferenceAssemblies;
+                        Log.Debug($"Using {_referenceAssembliesLocation} instead of the default reference assemblies location.");
+                    }
+
                     IPlatform platform = null;
                     switch (options.Platform) {
                     case AutoPlatform.None:
@@ -72,15 +78,15 @@ namespace EventBuilder
                         break;
 
                     case AutoPlatform.Android:
-                        platform = new Android();
+                        platform = new Android(_referenceAssembliesLocation);
                         break;
 
                     case AutoPlatform.iOS:
-                        platform = new iOS();
+                        platform = new iOS(_referenceAssembliesLocation);
                         break;
 
                     case AutoPlatform.Mac:
-                        platform = new Mac();
+                        platform = new Mac(_referenceAssembliesLocation);
                         break;
 
                     case AutoPlatform.NET45:
