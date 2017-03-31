@@ -101,7 +101,6 @@ Teardown(context =>
 //////////////////////////////////////////////////////////////////////
 
 Task("BuildEventBuilder")
-    .IsDependentOn("UpdateAssemblyInfo")
     .Does (() =>
 {
     var solution = "./src/EventBuilder.sln";
@@ -185,7 +184,6 @@ Task("GenerateEvents")
 });
 
 Task("BuildReactiveUI")
-    .IsDependentOn("UpdateAssemblyInfo")
     .IsDependentOn("GenerateEvents")
     .Does (() =>
 {
@@ -231,21 +229,6 @@ Task("UpdateAppVeyorBuildNumber")
     // See https://github.com/reactiveui/ReactiveUI/issues/1262
 
     Warning("Build with version {0} already exists.", buildVersion);
-});
-
-Task("UpdateAssemblyInfo")
-    .IsDependentOn("UpdateAppVeyorBuildNumber")
-    .Does (() =>
-{
-    var file = "./src/CommonAssemblyInfo.cs";
-
-    CreateAssemblyInfo(file, new AssemblyInfoSettings {
-        Product = "ReactiveUI",
-        Version = majorMinorPatch,
-        FileVersion = majorMinorPatch,
-        InformationalVersion = informationalVersion,
-        Copyright = "Copyright (c) ReactiveUI and contributors"
-    });
 });
 
 Task("RunUnitTests")
