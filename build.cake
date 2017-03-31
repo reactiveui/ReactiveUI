@@ -67,41 +67,6 @@ var packageWhitelist = new[] { "ReactiveUI-Testing", "ReactiveUI-Events", "React
 // Define global marcos.
 Action Abort = () => { throw new Exception("a non-recoverable fatal error occurred."); };
 
-Action<string> RestorePackages = (solution) =>
-{
-    NuGetRestore(solution, new NuGetRestoreSettings() { ConfigFile = "./src/.nuget/NuGet.config" });
-};
-
-Action<string> MsBuildRestorePackages = (solution) => 
-{
-    MSBuild(solution, new MSBuildSettings().WithTarget("restore"));
-};
-
-Action<string, string> Package = (nuspec, basePath) =>
-{
-    Information("Packaging {0} using {1} as the BasePath.", nuspec, basePath);
-
-    NuGetPack(nuspec, new NuGetPackSettings {
-        Authors                  = new [] {"ReactiveUI contributors"},
-        Owners                   = new [] {"xpaulbettsx", "flagbug", "ghuntley", "haacked", "kent.boogaart", "mteper", "moswald", "niik", "onovotny", "rdavisau", "shiftkey"},
-
-        ProjectUrl               = new Uri("http://www.reactiveui.net"),
-        IconUrl                  = new Uri("https://i.imgur.com/7WDbqSy.png"),
-        LicenseUrl               = new Uri("https://opensource.org/licenses/ms-pl.html"),
-        Copyright                = "Copyright (c) ReactiveUI and contributors",
-        RequireLicenseAcceptance = false,
-
-        Version                  = nugetVersion,
-        Tags                     = new [] {"mvvm", "reactiveui", "Rx", "Reactive Extensions", "Observable", "LINQ", "Events", "xamarin", "android", "ios", "forms", "monodroid", "monotouch", "xamarin.android", "xamarin.ios", "xamarin.forms", "wpf", "winforms", "uwp", "winrt", "net45", "netcore", "wp", "wpdev", "windowsphone", "windowsstore"},
-        ReleaseNotes             = new [] { string.Format("{0}/releases", githubUrl) },
-
-        Symbols                  = false,
-        Verbosity                = NuGetVerbosity.Detailed,
-        OutputDirectory          = artifactDirectory,
-        BasePath                 = basePath,
-    });
-};
-
 Action<string> SourceLink = (solutionFileName) =>
 {
     GitLink("./", new GitLinkSettings() {
@@ -110,7 +75,6 @@ Action<string> SourceLink = (solutionFileName) =>
         ErrorsAsWarnings = treatWarningsAsErrors,
     });
 };
-
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP / TEARDOWN
@@ -142,7 +106,7 @@ Task("BuildEventBuilder")
 {
     var solution = "./src/EventBuilder.sln";
 
-    RestorePackages(solution);
+    NuGetRestore(solution, new NuGetRestoreSettings() { ConfigFile = "./src/.nuget/NuGet.config" });
 
     MSBuild(solution, new MSBuildSettings()
         .SetConfiguration("Release")
@@ -290,7 +254,7 @@ Task("RunUnitTests")
 {
     Action<ICakeContext> testAction = tool => {
 
-        tool.XUnit2("./src/ReactiveUI.Tests/bin/Release/Net452/ReactiveUI.Tests.dll", new XUnit2Settings {
+        tool.XUnit2("./src/ReactiveUI.Tests/**/*.Tests.dll", new XUnit2Settings {
             OutputDirectory = artifactDirectory,
             XmlReportV1 = true,
             NoAppDomain = true
