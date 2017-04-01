@@ -4,6 +4,7 @@
     <TargetFrameworks>MonoAndroid70</TargetFrameworks>
     <AssemblyName>ReactiveUI.AndroidSupport</AssemblyName>
     <RootNamespace>ReactiveUI.AndroidSupport</RootNamespace>
+    <Description>ReactiveUI extensions for the Android Support Library</Description>
   </PropertyGroup>
   
   <ItemGroup>

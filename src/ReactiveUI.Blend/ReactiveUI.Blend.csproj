@@ -3,14 +3,15 @@
   <PropertyGroup>
     <TargetFrameworks>net45;uap10.0</TargetFrameworks>
     <AssemblyName>ReactiveUI.Blend</AssemblyName>
-    <RootNamespace>ReactiveUI.Blend</RootNamespace>  
+    <RootNamespace>ReactiveUI.Blend</RootNamespace>
+    <Description>Blend behaviors for ReactiveUI</Description>
   </PropertyGroup>
 
   <ItemGroup>
     <Compile Remove="Platforms\**\*.cs" />
     <None Include="Platforms\**\*.cs" />
     <PackageReference Include="System.Reactive" Version="3.1.1" />
-    <PackageReference Include="Splat" Version="2.0.0"/>
+    <PackageReference Include="Splat" Version="2.0.0" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net45' ">
