@@ -36,10 +36,6 @@ var treatWarningsAsErrors = false;
 
 // Build configuration
 var local = BuildSystem.IsLocalBuild;
-var isRunningOnUnix = IsRunningOnUnix();
-var isRunningOnWindows = IsRunningOnWindows();
-
-var isRunningOnAppVeyor = AppVeyor.IsRunningOnAppVeyor;
 var isPullRequest = AppVeyor.Environment.PullRequest.IsPullRequest;
 var isRepository = StringComparer.OrdinalIgnoreCase.Equals("reactiveui/reactiveui", AppVeyor.Environment.Repository.Name);
 
@@ -80,7 +76,7 @@ Action<string> SourceLink = (solutionFileName) =>
 ///////////////////////////////////////////////////////////////////////////////
 Setup(context =>
 {
-    if (!isRunningOnWindows)
+    if (!IsRunningOnWindows())
     {
         throw new NotImplementedException("ReactiveUI will only build on Windows (w/Xamarin installed) because it's not possible to target UWP, WPF and Windows Forms from UNIX.");
     }
@@ -98,6 +94,25 @@ Teardown(context =>
 //////////////////////////////////////////////////////////////////////
 // TASKS
 //////////////////////////////////////////////////////////////////////
+
+Task("UpdateAppVeyorBuildNumber")
+    .WithCriteria(() => AppVeyor.IsRunningOnAppVeyor)
+    .Does(() =>
+{
+    AppVeyor.UpdateBuildVersion(buildVersion);
+
+}).ReportError(exception =>
+{  
+    // When a build starts, the initial identifier is an auto-incremented value supplied by AppVeyor. 
+    // As part of the build script, this version in AppVeyor is changed to be the version obtained from
+    // GitVersion. This identifier is purely cosmetic and is used by the core team to correlate a build
+    // with the pull-request. In some circumstances, such as restarting a failed/cancelled build the
+    // identifier in AppVeyor will be already updated and default behaviour is to throw an
+    // exception/cancel the build when in fact it is safe to swallow.
+    // See https://github.com/reactiveui/ReactiveUI/issues/1262
+
+    Warning("Build with version {0} already exists.", buildVersion);
+});
 
 Task("BuildEventBuilder")
     .Does (() =>
@@ -121,10 +136,7 @@ Task("GenerateEvents")
 {
     var eventBuilder = "./src/EventBuilder/bin/Release/EventBuilder.exe";
     var workingDirectory = "./src/EventBuilder/bin/Release";
-
-    var vsLatest  = VSWhereLatest();
-
-    var referenceAssembliesPath = vsLatest.CombineWithFilePath("./Common7/IDE/ReferenceAssemblies/Microsoft/Framework");
+    var referenceAssembliesPath = VSWhereLatest().CombineWithFilePath("./Common7/IDE/ReferenceAssemblies/Microsoft/Framework");
 
     Information(referenceAssembliesPath.ToString());
 
@@ -154,12 +166,7 @@ Task("GenerateEvents")
             int success = 0;    // exit code aka %ERRORLEVEL% or $?
             if (process.GetExitCode() != success)
             {
-                Error("Failed to generate events for '{0}', logging output:", platform);
-                var logLines = FileReadLines("./src/EventBuilder/bin/Release/EventBuilder.log");
-                foreach(var line in logLines)
-                {
-                    Information(line);
-                }
+                Error("Failed to generate events for '{0}'", platform);                
                 Abort();
             }
 
@@ -176,9 +183,7 @@ Task("GenerateEvents")
     generate("ios");
     generate("mac");
     generate("xamforms");
-
-    generate("net45");
-    
+    generate("net45");    
     generate("uwp");
 });
 
@@ -190,10 +195,7 @@ Task("BuildReactiveUI")
     {
         Information("Building {0}", solution);
 
-        DirectoryPath vsLatest  = VSWhereLatest();
-        FilePath msBuildPath = (vsLatest==null)
-                                    ? null
-                                    : vsLatest.CombineWithFilePath("./MSBuild/15.0/Bin/MSBuild.exe");
+        FilePath msBuildPath = VSWhereLatest().CombineWithFilePath("./MSBuild/15.0/Bin/MSBuild.exe");
 
         MSBuild(solution, new MSBuildSettings() {
                 ToolPath= msBuildPath
@@ -209,25 +211,6 @@ Task("BuildReactiveUI")
     };
 
     build("./src/ReactiveUI.sln");
-});
-
-Task("UpdateAppVeyorBuildNumber")
-    .WithCriteria(() => isRunningOnAppVeyor)
-    .Does(() =>
-{
-    AppVeyor.UpdateBuildVersion(buildVersion);
-
-}).ReportError(exception =>
-{  
-    // When a build starts, the initial identifier is an auto-incremented value supplied by AppVeyor. 
-    // As part of the build script, this version in AppVeyor is changed to be the version obtained from
-    // GitVersion. This identifier is purely cosmetic and is used by the core team to correlate a build
-    // with the pull-request. In some circumstances, such as restarting a failed/cancelled build the
-    // identifier in AppVeyor will be already updated and default behaviour is to throw an
-    // exception/cancel the build when in fact it is safe to swallow.
-    // See https://github.com/reactiveui/ReactiveUI/issues/1262
-
-    Warning("Build with version {0} already exists.", buildVersion);
 });
 
 Task("RunUnitTests")
@@ -394,12 +377,12 @@ Task("PublishRelease")
 //////////////////////////////////////////////////////////////////////
 
 Task("Default")
+    .IsDependentOn("UpdateAppVeyorBuildNumber")
     .IsDependentOn("CreateRelease")
     .IsDependentOn("PublishPackages")
     .IsDependentOn("PublishRelease")
     .Does (() =>
 {
-
 });
 
 //////////////////////////////////////////////////////////////////////
