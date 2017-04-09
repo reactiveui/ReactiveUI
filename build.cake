@@ -204,6 +204,8 @@ Task("BuildReactiveUI")
             .WithProperty("PackageOutputPath",  MakeAbsolute(Directory(artifactDirectory)).ToString())
             .WithProperty("TreatWarningsAsErrors", treatWarningsAsErrors.ToString())
             .SetConfiguration("Release")
+            // Due to https://github.com/NuGet/Home/issues/4790 and https://github.com/NuGet/Home/issues/4337 we
+            // have to pass a version explicitly
             .WithProperty("Version", nugetVersion.ToString())
             .SetVerbosity(Verbosity.Minimal)
             .SetNodeReuse(false));

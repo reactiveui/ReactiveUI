@@ -17,7 +17,6 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <PackageReference Include="GitVersionTask" Version="4.0.0-beta0011" PrivateAssets="All" />
     <PackageReference Include="MSBuild.Sdk.Extras" Version="1.0.1" PrivateAssets="All" />
   </ItemGroup>
 </Project>
