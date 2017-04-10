@@ -16,15 +16,16 @@
     NUGET_APIKEY:
       secure: 0g2AqQxgiAIFhqoJbbmEPrJa15Z8U5xYT6vQe43Gocuxbjw74hBAIKbU+Cj65UNd
   init:
-  - cd \
-  - appveyor DownloadFile http://dl.google.com/android/android-sdk_r24.4.1-windows.zip
-  - 7z x android-sdk_r24.4.1-windows.zip > nul
+  - mkdir %ANDROID_HOME%"
+  - cd "%ANDROID_HOME%"
+  - appveyor DownloadFile "https://dl.google.com/android/repository/tools_r25.2.3-windows.zip"
+  - 7z x "tools_r25.2.3-windows.zip" > nul
   - cd "C:\projects\reactiveui"
   install: 
   - echo y | "%ANDROID_HOME%\tools\android.bat" update sdk -u -a -t tools
   - echo y | "%ANDROID_HOME%\tools\android.bat" update sdk -u -a -t platform-tools
-  - echo y | "%ANDROID_HOME%\tools\android.bat" update sdk -u -a -t build-tools-24.0.2
-  - echo y | "%ANDROID_HOME%\tools\android.bat" update sdk -u -a -t android-24
+  - echo y | "%ANDROID_HOME%\tools\android.bat" update sdk -u -a -t build-tools-25.0.2
+  - echo y | "%ANDROID_HOME%\tools\android.bat" update sdk -u -a -t android-25
   - echo y | "%ANDROID_HOME%\tools\android.bat" update sdk -u -a -t extra-google-m2repository
   - echo y | "%ANDROID_HOME%\tools\android.bat" update sdk -u -a -t extra-android-m2repository
   build_script:
@@ -53,15 +54,16 @@
     NUGET_APIKEY:
       secure: YP/3KxC2ffsuHNaolPXj66JVGzSjON9FcR2S2OEzn9c6SV14oPzUh1ySyeT+G+aA
   init:
-  - cd \
-  - appveyor DownloadFile http://dl.google.com/android/android-sdk_r24.4.1-windows.zip
-  - 7z x android-sdk_r24.4.1-windows.zip > nul
+  - mkdir %ANDROID_HOME%"
+  - cd "%ANDROID_HOME%"
+  - appveyor DownloadFile "https://dl.google.com/android/repository/tools_r25.2.3-windows.zip"
+  - 7z x "tools_r25.2.3-windows.zip" > nul
   - cd "C:\projects\reactiveui"
   install: 
   - echo y | "%ANDROID_HOME%\tools\android.bat" update sdk -u -a -t tools
   - echo y | "%ANDROID_HOME%\tools\android.bat" update sdk -u -a -t platform-tools
-  - echo y | "%ANDROID_HOME%\tools\android.bat" update sdk -u -a -t build-tools-24.0.2
-  - echo y | "%ANDROID_HOME%\tools\android.bat" update sdk -u -a -t android-24
+  - echo y | "%ANDROID_HOME%\tools\android.bat" update sdk -u -a -t build-tools-25.0.2
+  - echo y | "%ANDROID_HOME%\tools\android.bat" update sdk -u -a -t android-25
   - echo y | "%ANDROID_HOME%\tools\android.bat" update sdk -u -a -t extra-google-m2repository
   - echo y | "%ANDROID_HOME%\tools\android.bat" update sdk -u -a -t extra-android-m2repository
   build_script:
@@ -75,3 +77,4 @@
   - path: '**/bin/*'
   - path: src/ReactiveUI.Events/Events_*.cs
   test: off
+  
