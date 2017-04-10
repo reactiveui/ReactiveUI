@@ -1,4 +1,4 @@
-using System.Reflection;
+﻿using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
 using System.Windows;
@@ -14,10 +14,7 @@ using System.Windows;
 )]
 #endif
 
-[assembly: InternalsVisibleTo("ReactiveUI.Tests_Net45")]
-[assembly: InternalsVisibleTo("ReactiveUI.Tests_WinRT")]
-[assembly: InternalsVisibleTo("ReactiveUI_Tests_iOS")] // NB: iOS apps can't have '.' in the name
-[assembly: InternalsVisibleTo("ReactiveUI.Tests_Android")]
+[assembly: InternalsVisibleTo("ReactiveUI.Tests")]
 [assembly: InternalsVisibleTo("ReactiveUI.Winforms")]
 [assembly: InternalsVisibleTo("ReactiveUI.XamForms")]
 [assembly: InternalsVisibleTo("ReactiveUI.AndroidSupport")]

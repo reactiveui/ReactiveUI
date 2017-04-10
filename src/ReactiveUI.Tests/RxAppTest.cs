@@ -1,11 +1,8 @@
-using System;
-using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reactive.Concurrency;
-using System.Text;
-using Xunit;
 using Splat;
-using ReactiveUI;
+using Xunit;
 
 namespace ReactiveUI.Tests
 {
@@ -23,7 +20,7 @@ namespace ReactiveUI.Tests
         [Fact]
         public void SchedulerShouldBeCurrentThreadInTestRunner()
         {
-            Console.WriteLine(RxApp.MainThreadScheduler.GetType().FullName);
+            Debug.WriteLine(RxApp.MainThreadScheduler.GetType().FullName);
             Assert.Equal(CurrentThreadScheduler.Instance, RxApp.MainThreadScheduler);
         }
     }

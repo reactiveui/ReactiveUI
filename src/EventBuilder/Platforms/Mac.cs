@@ -6,20 +6,18 @@ namespace EventBuilder.Platforms
     // ReSharper disable once InconsistentNaming
     public class Mac : BasePlatform
     {
-        public Mac()
+        public Mac(string referenceAssembliesLocation)
         {
-            if (PlatformHelper.IsRunningOnMono())
-            {
+            if (PlatformHelper.IsRunningOnMono()) {
                 var assembly =
                     @"/Library/Frameworks/Xamarin.Mac.framework/Versions/Current/lib/mono/Xamarin.Mac/Xamarin.Mac.dll";
                 Assemblies.Add(assembly);
 
                 CecilSearchDirectories.Add(Path.GetDirectoryName(assembly));
-            }
-            else
-            {
+            } else {
                 var assemblies =
-                    Directory.GetFiles(@"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\Xamarin.Mac",
+                    Directory.GetFiles(Path.Combine(referenceAssembliesLocation, "Xamarin.Mac"),
+
                         "Xamarin.Mac.dll", SearchOption.AllDirectories);
 
                 var latestVersion = assemblies.Last();
