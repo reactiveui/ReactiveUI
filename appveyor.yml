@@ -1,6 +1,6 @@
 # configuration for "master" branch
 -
-  image: Visual Studio 2015  
+  image: Visual Studio 2017
   branches:
       only:
         - master
@@ -42,7 +42,7 @@
   
 # configuration for "develop" branch
 -
-  image: Visual Studio 2015  
+  image: Visual Studio 2017
   branches:
       except:
           - master
