@@ -166,7 +166,7 @@ Task("GenerateEvents")
             int success = 0;    // exit code aka %ERRORLEVEL% or $?
             if (process.GetExitCode() != success)
             {
-                Error("Failed to generate events for '{0}'", platform);                
+                Error("Failed to generate events for '{0}'", platform);
                 Abort();
             }
 
