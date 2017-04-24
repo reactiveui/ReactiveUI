@@ -54,7 +54,7 @@ namespace ReactiveUI
 
         public string ViewContract
         {
-            get { return this.viewContract; }
+            get { return viewContract; }
             set { ViewContractObservable = Observable.Return(value); }
         }
 
@@ -101,21 +101,20 @@ namespace ReactiveUI
                     }
 
                     var viewLocator = ViewLocator ?? ReactiveUI.ViewLocator.Current;
-                    var view = viewLocator.ResolveView(x.ViewModel, x.Contract) ?? viewLocator.ResolveView(x.ViewModel, null);
+                    var view = viewLocator.ResolveView(x.ViewModel, x.Contract) ?? viewLocator.ResolveView(x.ViewModel);
 
                     if (view == null) {
-                        throw new Exception(String.Format("Couldn't find view for '{0}'.", x.ViewModel));
+                        throw new Exception($"Couldn't find view for '{x.ViewModel}'.");
                     }
 
                     view.ViewModel = x.ViewModel;
                     Content = view;
                 }));
-            });
 
-            this
-                .WhenAnyObservable(x => x.ViewContractObservable)
-                .ObserveOn(RxApp.MainThreadScheduler)
-                .Subscribe(x => this.viewContract = x);
+                d(this.WhenAnyObservable(x => x.ViewContractObservable)
+                    .ObserveOn(RxApp.MainThreadScheduler)
+                    .Subscribe(x => viewContract = x));
+            });
         }
 
         static void somethingChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs dependencyPropertyChangedEventArgs)
