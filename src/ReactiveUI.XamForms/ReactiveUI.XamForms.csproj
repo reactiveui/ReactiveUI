@@ -4,6 +4,7 @@
     <TargetFrameworks>netstandard1.3</TargetFrameworks>
     <PackageTargetFallback>$(PackageTargetFallback);portable-win+net45+wp8+win81+wpa8</PackageTargetFallback>
     <Description>Xamarin Forms specific extensions to ReactiveUI</Description>
+    <PackageId>reactiveui-xamforms</PackageId>
   </PropertyGroup>
 
   <ItemGroup>

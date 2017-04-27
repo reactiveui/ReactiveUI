@@ -5,6 +5,7 @@
     <AssemblyName>ReactiveUI.Blend</AssemblyName>
     <RootNamespace>ReactiveUI.Blend</RootNamespace>
     <Description>Blend behaviors for ReactiveUI</Description>
+    <PackageId>reactiveui-blend</PackageId>
   </PropertyGroup>
 
   <ItemGroup>

@@ -5,6 +5,7 @@
     <AssemblyName>ReactiveUI.Winforms</AssemblyName>
     <RootNamespace>ReactiveUI.Winforms</RootNamespace>
     <Description>Windows Forms specific extensions to ReactiveUI</Description>
+    <PackageId>reactiveui-winforms</PackageId>
   </PropertyGroup>
 
   <ItemGroup>
