@@ -13,7 +13,7 @@
     <Compile Remove="*.cs" />
     <None Include="*.cs" />
     <Compile Include="SingleAwaitSubject.cs" />
-    <PackageReference Include="System.Reactive" Version="3.0.0" />
+    <PackageReference Include="System.Reactive" Version="3.1.0" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net45' ">
