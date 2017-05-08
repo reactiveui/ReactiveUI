@@ -54,7 +54,7 @@ namespace ReactiveUI
 
         public string ViewContract
         {
-            get { return viewContract; }
+            get { return this.viewContract; }
             set { ViewContractObservable = Observable.Return(value); }
         }
 
