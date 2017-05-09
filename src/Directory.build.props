@@ -14,9 +14,14 @@
 
     <Platform>AnyCPU</Platform>
     <DebugType>full</DebugType>
+    <IsTestProject>$(MSBuildProjectName.Contains('Tests'))</IsTestProject>
   </PropertyGroup>
   
   <ItemGroup>
     <PackageReference Include="MSBuild.Sdk.Extras" Version="1.0.1" PrivateAssets="All" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(IsTestProject)' != 'true' and '$(SourceLinkEnabled)' != 'false'">
+    <PackageReference Include="SourceLink.Create.CommandLine" Version="2.1.1" PrivateAssets="All" /> 
   </ItemGroup>
 </Project>
