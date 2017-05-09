@@ -11,7 +11,6 @@
 
 #tool "GitReleaseManager"
 #tool "GitVersion.CommandLine"
-#tool "GitLink"
 #tool "coveralls.io"
 #tool "OpenCover"
 #tool "ReportGenerator"
@@ -31,7 +30,7 @@ if (string.IsNullOrWhiteSpace(target))
 // PREPARATION
 //////////////////////////////////////////////////////////////////////
 
-// Should MSBuild & GitLink treat any errors as warnings?
+// Should MSBuild treat any errors as warnings?
 var treatWarningsAsErrors = false;
 
 // Build configuration
@@ -61,15 +60,6 @@ var packageWhitelist = new[] { "ReactiveUI-Testing", "ReactiveUI-Events", "React
 
 // Define global marcos.
 Action Abort = () => { throw new Exception("a non-recoverable fatal error occurred."); };
-
-Action<string> SourceLink = (solutionFileName) =>
-{
-    GitLink("./", new GitLinkSettings() {
-        RepositoryUrl = "https://github.com/reactiveui/ReactiveUI",
-        SolutionFileName = solutionFileName,
-        ErrorsAsWarnings = treatWarningsAsErrors,
-    });
-};
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP / TEARDOWN
@@ -126,8 +116,6 @@ Task("BuildEventBuilder")
         .WithProperty("TreatWarningsAsErrors", treatWarningsAsErrors.ToString())
         .SetVerbosity(Verbosity.Minimal)
         .SetNodeReuse(false));
-
-    SourceLink(solution);
 });
 
 Task("GenerateEvents")
@@ -209,8 +197,6 @@ Task("BuildReactiveUI")
             .WithProperty("Version", nugetVersion.ToString())
             .SetVerbosity(Verbosity.Minimal)
             .SetNodeReuse(false));
-
-        SourceLink(solution);
     };
 
     build("./src/ReactiveUI.sln");
