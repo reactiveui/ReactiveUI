@@ -330,7 +330,19 @@ namespace ReactiveUI
                                             });
                                     }
 
-                                    this.pendingChanges.Add(Tuple.Create(y.Section, new PendingChange(y.Change)));
+
+                                    if (y.Change.OldItems?.Count > 1 && y.Change.Action == NotifyCollectionChangedAction.Remove) 
+                                    { 
+                                        foreach(var item in y.Change.OldItems) {
+
+                                            var args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, item, y.Change.OldStartingIndex);
+                                            this.pendingChanges.Add(Tuple.Create(y.Section, new PendingChange(args)));
+                                        }
+                                    } 
+                                    else {
+
+                                        this.pendingChanges.Add(Tuple.Create(y.Section, new PendingChange(y.Change)));
+                                    }
                                 },
                                 ex => this.Log().Error("[#{0}] Error while watching section collection: {1}", sectionInfoId, ex)));
 
