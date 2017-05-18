@@ -167,11 +167,11 @@ namespace ReactiveUI
     /// </summary>
     public static class OAPHCreationHelperMixin
     {
-        static ObservableAsPropertyHelper<TRet> observableToProperty<TObj, TRet>(
+        static ObservableAsPropertyHelper<TObs> observableToProperty<TObj, TProp, TObs >(
                 this TObj This,
-                IObservable<TRet> observable,
-                Expression<Func<TObj, TRet>> property,
-                TRet initialValue = default(TRet),
+                IObservable<TObs> observable,
+                Expression<Func<TObj, TProp>> property,
+                TObs initialValue = default(TObs),
                 bool deferSubscription = false,
                 IScheduler scheduler = null)
             where TObj : IReactiveObject
@@ -190,7 +190,7 @@ namespace ReactiveUI
             if (expression is IndexExpression)
                 name += "[]";
 
-            var ret = new ObservableAsPropertyHelper<TRet>(observable,
+            var ret = new ObservableAsPropertyHelper<TObs>(observable,
                 _ => This.raisePropertyChanged(name),
                 _ => This.raisePropertyChanging(name),
                 initialValue, deferSubscription, scheduler);
@@ -229,11 +229,11 @@ namespace ReactiveUI
         /// An initialized ObservableAsPropertyHelper; use this as the backing field 
         /// for your property.
         /// </returns>
-        public static ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(
-            this IObservable<TRet> This,
+        public static ObservableAsPropertyHelper<TObs> ToProperty<TObj, TProp, TObs>(
+            this IObservable<TObs> This,
             TObj source,
-            Expression<Func<TObj, TRet>> property,
-            TRet initialValue = default(TRet),
+            Expression<Func<TObj, TProp>> property,
+            TObs initialValue = default(TObs),
             bool deferSubscription = false,
             IScheduler scheduler = null)
             where TObj : IReactiveObject
@@ -275,12 +275,12 @@ namespace ReactiveUI
         /// An initialized ObservableAsPropertyHelper; use this as the backing 
         /// field for your property.
         /// </returns>
-        public static ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(
-            this IObservable<TRet> This,
+        public static ObservableAsPropertyHelper<TObs> ToProperty<TObj, TProp, TObs>(
+            this IObservable<TObs> This,
             TObj source,
-            Expression<Func<TObj, TRet>> property,
-            out ObservableAsPropertyHelper<TRet> result,
-            TRet initialValue = default(TRet),
+            Expression<Func<TObj, TProp>> property,
+            out ObservableAsPropertyHelper<TObs> result,
+            TObs initialValue = default(TObs),
             bool deferSubscription = false,
             IScheduler scheduler = null)
             where TObj : IReactiveObject
