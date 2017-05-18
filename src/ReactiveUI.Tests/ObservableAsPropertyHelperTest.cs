@@ -229,25 +229,24 @@ namespace ReactiveUI.Tests
             Assert.Equal("Baz", resultChanged[1].Value);
         }
 
-        class LZPClass : ReactiveObject
+        private class LazyPropertyFixture : ReactiveObject
         {
-            public LZPClass()
+            public LazyPropertyFixture()
             {
-                Lazy<int> init = new Lazy<int>(()=>25);
-                _Value = Observable.Return( new Lazy<int>( () => 20 ) ).ToProperty( this, p=>p.Value, initialValue: init);
+                value = Observable
+                    .Return(new Lazy<int>(() => 20 ))
+                    .ToProperty(this, p=>p.Value, new Lazy<int>(()=>25));
             }
-            readonly ObservableAsPropertyHelper<Lazy<int>> _Value;
-            public int Value => _Value.Value.Value;
+
+            private readonly ObservableAsPropertyHelper<Lazy<int>> value;
+
+            public int Value => value.Value.Value;
         }
+
         [Fact]
         public void ToPropertyShouldWorkWithLazyProperties()
         {
-
-            var lzp = new LZPClass();
-            Assert.Equal( lzp.Value, 20 );
-
-
-
+            Assert.Equal( new LazyPropertyFixture().Value, 20 );
         }
 
         [Fact]
