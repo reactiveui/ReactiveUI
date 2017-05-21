@@ -330,19 +330,7 @@ namespace ReactiveUI
                                             });
                                     }
 
-
-                                    if (y.Change.OldItems?.Count > 1 && y.Change.Action == NotifyCollectionChangedAction.Remove) 
-                                    { 
-                                        foreach(var item in y.Change.OldItems) {
-
-                                            var args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, item, y.Change.OldStartingIndex);
-                                            this.pendingChanges.Add(Tuple.Create(y.Section, new PendingChange(args)));
-                                        }
-                                    } 
-                                    else {
-
-                                        this.pendingChanges.Add(Tuple.Create(y.Section, new PendingChange(y.Change)));
-                                    }
+                                    this.pendingChanges.Add(Tuple.Create(y.Section, new PendingChange(y.Change)));
                                 },
                                 ex => this.Log().Error("[#{0}] Error while watching section collection: {1}", sectionInfoId, ex)));
 
@@ -454,9 +442,13 @@ namespace ReactiveUI
                     .Range(pendingChange.NewStartingIndex, pendingChange.NewItems == null ? 1 : pendingChange.NewItems.Count)
                     .Select(x => Update.CreateAdd(x));
             case NotifyCollectionChangedAction.Remove:
+                //Use OldStartingIndex for each "Update.Index" because the batch update processes and removes items sequentially
+                //opposed to as one Range operation. 
+                //For example if we are removing the items from indexes 1 to 5. 
+                //When item at index 1 is removed item at index 2 is now at index 1 and so on down the line.
                 return Enumerable
                     .Range(pendingChange.OldStartingIndex, pendingChange.OldItems == null ? 1 : pendingChange.OldItems.Count)
-                    .Select(x => Update.CreateDelete(x));
+                    .Select(x => Update.CreateDelete(pendingChange.OldStartingIndex));
             case NotifyCollectionChangedAction.Move:
                 return Enumerable
                     .Range(pendingChange.OldStartingIndex, pendingChange.OldItems == null ? 1 : pendingChange.OldItems.Count)
