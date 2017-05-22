@@ -78,7 +78,7 @@ namespace ReactiveUI
         /// </item>
         /// <item>
         /// <description>
-        /// Repeat steps 1 and 2 with the type resolved from the modified name.
+        /// Repeat steps 1-4 with the type resolved from the modified name.
         /// </description>
         /// </item>
         /// </list>
