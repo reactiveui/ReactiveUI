@@ -7,10 +7,8 @@ namespace ReactiveUI
     {
         public string GetOrientation()
         {
-#if UNIFIED && UIKIT
+#if UIKIT
             return UIKit.UIDevice.CurrentDevice.Orientation.ToString();
-#elif UIKIT
-            return MonoTouch.UIKit.UIDevice.CurrentDevice.Orientation.ToString();
 #else
             return null;
 #endif

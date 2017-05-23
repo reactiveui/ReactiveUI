@@ -4,27 +4,15 @@ using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Subjects;
 using System.Reactive.Linq;
-
-#if UNIFIED
 using CoreGraphics;
 using Foundation;
 using UIKit;
-#else
-using System.Drawing;
-using MonoTouch.Foundation;
-using MonoTouch.UIKit;
-#endif
 
 namespace ReactiveUI
 {
     public abstract class ReactiveTableViewCell : UITableViewCell, IReactiveNotifyPropertyChanged<ReactiveTableViewCell>, IHandleObservableErrors, IReactiveObject, ICanActivate
     {
-#if UNIFIED
         protected ReactiveTableViewCell(CGRect frame) : base(frame) { setupRxObj(); }
-#else
-        protected ReactiveTableViewCell(RectangleF frame) : base (frame) { setupRxObj(); }
-#endif
-
         protected ReactiveTableViewCell(NSObjectFlag t) : base(t) { setupRxObj(); }
         protected ReactiveTableViewCell(NSCoder coder) : base(NSObjectFlag.Empty) { setupRxObj(); }
         protected ReactiveTableViewCell() : base() { setupRxObj(); }
@@ -100,12 +88,7 @@ namespace ReactiveUI
     public abstract class ReactiveTableViewCell<TViewModel> : ReactiveTableViewCell, IViewFor<TViewModel>
         where TViewModel : class
     {
-#if UNIFIED
         protected ReactiveTableViewCell(CGRect frame) : base(frame) { }
-#else
-        protected ReactiveTableViewCell(RectangleF frame) : base (frame) { }
-#endif
-
         protected ReactiveTableViewCell(NSObjectFlag t) : base(t) { }
         protected ReactiveTableViewCell(NSCoder coder) : base(NSObjectFlag.Empty) { }
         protected ReactiveTableViewCell() : base() { }

@@ -20,7 +20,7 @@
     <Optimize>False</Optimize>
     <OutputPath>bin\Debug\Xamarin.iOS10</OutputPath>
     <IntermediateOutputPath>obj\Debug\Xamarin.iOS10</IntermediateOutputPath>
-    <DefineConstants>DEBUG;MONO;UIKIT;UNIFIED</DefineConstants>
+    <DefineConstants>DEBUG;MONO;UIKIT</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>False</ConsolePause>
@@ -35,7 +35,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>False</ConsolePause>
-    <DefineConstants>MONO;UIKIT;UNIFIED</DefineConstants>
+    <DefineConstants>MONO;UIKIT</DefineConstants>
     <DocumentationFile>bin\Release\Xamarin.iOS10\ReactiveUI.Testing.XML</DocumentationFile>
     <GenerateDocumentation>True</GenerateDocumentation>
     <CodesignKey>iPhone Developer</CodesignKey>

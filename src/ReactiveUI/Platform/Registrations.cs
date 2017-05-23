@@ -1,23 +1,5 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Windows;
 using System.Reactive.Concurrency;
-
-#if UNIFIED && UIKIT
-using UIKit;
-using NSApplication = UIKit.UIApplication;
-#elif UIKIT
-using MonoTouch.UIKit;
-using NSApplication = MonoTouch.UIKit.UIApplication;
-#endif 
-
-#if COCOA && !UIKIT && !UNIFIED
-using MonoMac.AppKit;
-#endif
 
 namespace ReactiveUI
 {

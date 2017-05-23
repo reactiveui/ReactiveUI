@@ -3,24 +3,13 @@ using System.ComponentModel;
 using System.Reactive;
 using System.Reactive.Subjects;
 using System.Reactive.Linq;
-
-#if UNIFIED
 using Foundation;
-#elif UIKIT
-using MonoTouch.UIKit;
-using MonoTouch.Foundation;
-using NSViewController = MonoTouch.UIKit.UIViewController;
-using NSView = MonoTouch.UIKit.UIView;
-#else
-using MonoMac.AppKit;
-using MonoMac.Foundation;
-#endif
 
-#if UNIFIED && UIKIT
+#if UIKIT
 using UIKit;
 using NSViewController = UIKit.UIViewController;
 using NSView = UIKit.UIView;
-#elif UNIFIED && COCOA
+#else
 using AppKit; 
 #endif
 
@@ -31,10 +20,7 @@ namespace ReactiveUI
     /// (i.e. you can call RaiseAndSetIfChanged)
     /// </summary>
     public class ReactiveViewController : NSViewController,
-        IReactiveNotifyPropertyChanged<ReactiveViewController>, IHandleObservableErrors, IReactiveObject
-#if UIKIT
-        , ICanActivate
-#endif
+        IReactiveNotifyPropertyChanged<ReactiveViewController>, IHandleObservableErrors, IReactiveObject, ICanActivate
     {
         protected ReactiveViewController() { }
         protected ReactiveViewController(NSCoder c) : base(c) { }
@@ -91,12 +77,12 @@ namespace ReactiveUI
             return this.suppressChangeNotifications();
         }
 
-#if UIKIT
         Subject<Unit> activated = new Subject<Unit>();
         public IObservable<Unit> Activated { get { return activated.AsObservable(); } }
         Subject<Unit> deactivated = new Subject<Unit>();
         public IObservable<Unit> Deactivated { get { return deactivated.AsObservable(); } }
 
+#if UIKIT
         public override void ViewWillAppear(bool animated)
         {
             base.ViewWillAppear(animated);
@@ -107,6 +93,20 @@ namespace ReactiveUI
         public override void ViewDidDisappear(bool animated)
         {
             base.ViewDidDisappear(animated);
+            deactivated.OnNext(Unit.Default);
+            this.ActivateSubviews(false);
+        }
+#else
+        public override void ViewWillAppear()
+        {
+            base.ViewWillAppear();
+            activated.OnNext(Unit.Default);
+            this.ActivateSubviews(true);
+        }
+
+        public override void ViewDidDisappear()
+        {
+            base.ViewDidDisappear();
             deactivated.OnNext(Unit.Default);
             this.ActivateSubviews(false);
         }
@@ -134,8 +134,6 @@ namespace ReactiveUI
         }
     }
 
-    // TODO: Update this once we support 64-bit Xamarin.Mac
-#if UIKIT || UNIFIED
     static class UIViewControllerMixins
     {
         internal static void ActivateSubviews(this NSViewController This, bool activate)
@@ -156,5 +154,4 @@ namespace ReactiveUI
             }
         }
     }
-#endif
 }

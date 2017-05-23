@@ -1,17 +1,14 @@
 using System;
-using System.Reactive.Disposables;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reflection;
 using System.Windows.Input;
-using System.Linq.Expressions;
-
-#if UNIFIED
+#if UIKIT
 using UIKit;
-#elif UIKIT
-using MonoTouch.UIKit;
 #endif
+
 namespace ReactiveUI
 {
     public abstract class FlexibleCommandBinder : ICreatesCommandBinding
@@ -25,7 +22,7 @@ namespace ReactiveUI
                 .OrderByDescending(x => config[x].Affinity)
                 .FirstOrDefault();
 
-            if(match == null) return 0;
+            if (match == null) return 0;
 
             var typeProperties = config[match];
             return typeProperties.Affinity;
@@ -36,11 +33,11 @@ namespace ReactiveUI
             var type = target.GetType();
 
             var match = config.Keys
-                .Where(x=> x.IsAssignableFrom(type))
-                .OrderByDescending(x=> config[x].Affinity)
+                .Where(x => x.IsAssignableFrom(type))
+                .OrderByDescending(x => config[x].Affinity)
                 .FirstOrDefault();
 
-            if(match == null) {
+            if (match == null) {
                 throw new NotSupportedException(string.Format("CommandBinding for {0} is not supported", type.Name));
             }
 
@@ -102,7 +99,7 @@ namespace ReactiveUI
             });
 
             var enabledSetter = Reflection.GetValueSetterForProperty(enabledProperty);
-            if(enabledSetter == null) return actionDisp;
+            if (enabledSetter == null) return actionDisp;
 
             // initial enabled state
             enabledSetter(target, command.CanExecute(latestParam), null);
@@ -131,13 +128,13 @@ namespace ReactiveUI
 
             var ctl = target as UIControl;
             if (ctl != null) {
-                var eh = new EventHandler((o,e) => {
+                var eh = new EventHandler((o, e) => {
                     if (command.CanExecute(latestParam)) command.Execute(latestParam);
                 });
 
                 ctl.AddTarget(eh, UIControlEvent.TouchUpInside);
                 actionDisp = Disposable.Create(() => ctl.RemoveTarget(eh, UIControlEvent.TouchUpInside));
-            } 
+            }
 
             var enabledSetter = Reflection.GetValueSetterForProperty(enabledProperty);
             if (enabledSetter == null) return actionDisp;
@@ -154,7 +151,7 @@ namespace ReactiveUI
 
             return compDisp;
         }
-        #endif 
+#endif
     }
 }
 
