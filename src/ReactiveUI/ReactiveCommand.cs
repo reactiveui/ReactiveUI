@@ -842,7 +842,8 @@ namespace ReactiveUI
                             return Observable.Throw<TResult>(ex);
                         })
                     .PublishLast()
-                    .RefCount();
+                    .RefCount()
+                    .ObserveOn(this.outputScheduler);
             } catch (Exception ex) {
                 this.exceptions.OnNext(ex);
                 return Observable.Throw<TResult>(ex);

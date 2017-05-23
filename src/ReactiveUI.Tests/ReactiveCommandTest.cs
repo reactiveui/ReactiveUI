@@ -311,26 +311,18 @@ namespace ReactiveUI.Tests
         }
 
         [Fact]
-        public void ExecuteExecutesOnTheSpecifiedScheduler()
+        public void ExecuteResultIsDeliveredOnSpecifiedScheduler()
         {
             (new TestScheduler()).With(sched => {
-                var execute = Observables.Unit.Delay(TimeSpan.FromSeconds(1), sched);
+                var execute = Observables.Unit;
                 var fixture = ReactiveCommand.CreateFromObservable(() => execute, outputScheduler: sched);
-                var isExecuting = fixture
-                    .IsExecuting
-                    .CreateCollection();
+                var executed = false;
 
-                fixture.Execute().Subscribe();
-                sched.AdvanceByMs(999);
+                fixture.Execute().Subscribe(_ => executed = true);
 
-                Assert.Equal(2, isExecuting.Count);
-                Assert.False(isExecuting[0]);
-                Assert.True(isExecuting[1]);
-
-                sched.AdvanceByMs(2);
-
-                Assert.Equal(3, isExecuting.Count);
-                Assert.False(isExecuting[2]);
+                Assert.False(executed);
+                sched.AdvanceByMs(1);
+                Assert.True(executed);
             });
         }
 
