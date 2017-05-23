@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>reactiveui-events-wpf</id>
+    <version>$version$</version>
+    <description>Provides Observable-based events API for common UI controls/eventhandlers. The contents of this package is automatically generated, please target pull-requests to the code generator.</description>
+    <language>en-us</language>
+    <dependencies>
+      <group>
+        <dependency id="Rx-Main" version="2.2.5" />
+      </group>
+    </dependencies>
+  </metadata>
+  <files>
+    <!-- .NET 4.5 -->
+    <file src="bin/Release/WPF/ReactiveUI.Events.dll" target="lib/Net45/ReactiveUI.Events.dll" />
+    <file src="bin/Release/WPF/ReactiveUI.Events.pdb" target="lib/Net45/ReactiveUI.Events.pdb" />
+    <file src="bin/Release/WPF/ReactiveUI.Events.xml" target="lib/Net45/ReactiveUI.Events.xml" />
+    <!-- Source -->
+    <file src="*.cs" target="src" />
+  </files>
+</package>

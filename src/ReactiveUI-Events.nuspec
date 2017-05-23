@@ -39,10 +39,6 @@
     <file src="bin/Release/UAP10.0/ReactiveUI.Events.dll" target="lib/UAP10/ReactiveUI.Events.dll" />
     <file src="bin/Release/UAP10.0/ReactiveUI.Events.pdb" target="lib/UAP10/ReactiveUI.Events.pdb" />
     <file src="bin/Release/UAP10.0/ReactiveUI.Events.xml" target="lib/UAP10/ReactiveUI.Events.xml" />
-    <!-- .NET 4.5 -->
-    <file src="bin/Release/Net45/ReactiveUI.Events.dll" target="lib/Net45/ReactiveUI.Events.dll" />
-    <file src="bin/Release/Net45/ReactiveUI.Events.pdb" target="lib/Net45/ReactiveUI.Events.pdb" />
-    <file src="bin/Release/Net45/ReactiveUI.Events.xml" target="lib/Net45/ReactiveUI.Events.xml" />
     <!-- Source -->
     <file src="*.cs" target="src" />
   </files>

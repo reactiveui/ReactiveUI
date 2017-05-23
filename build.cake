@@ -61,7 +61,7 @@ var buildVersion = gitVersion.FullBuildMetaData;
 // Artifacts
 var artifactDirectory = "./artifacts/";
 var testCoverageOutputFile = artifactDirectory + "OpenCover.xml";
-var packageWhitelist = new[] { "ReactiveUI-Testing", "ReactiveUI-Events", "ReactiveUI-Events-XamForms", "ReactiveUI", "ReactiveUI-Core", "ReactiveUI-AndroidSupport", "ReactiveUI-Blend", "ReactiveUI-Winforms", "ReactiveUI-XamForms" };
+var packageWhitelist = new[] { "ReactiveUI-Testing", "ReactiveUI-Events", "ReactiveUI-Events-WPF", "ReactiveUI-Events-WinForms", "ReactiveUI-Events-XamForms", "ReactiveUI", "ReactiveUI-Core", "ReactiveUI-AndroidSupport", "ReactiveUI-Blend", "ReactiveUI-WinForms", "ReactiveUI-XamForms" };
 
 // Define global marcos.
 Action Abort = () => { throw new Exception("a non-recoverable fatal error occurred."); };
@@ -195,7 +195,8 @@ Task("GenerateEvents")
     generate("mac");
     generate("xamforms");
 
-    generate("net45");
+    generate("winforms");
+    generate("wpf");
     
     generate("wpa81");
     generate("uwp");
@@ -229,7 +230,8 @@ Task("BuildEvents")
     build("ReactiveUI.Events_MAC.sln");
     build("ReactiveUI.Events_XamForms.sln");
 
-    build("ReactiveUI.Events_NET45.sln");
+    build("ReactiveUI.Events_WinForms.sln");
+    build("ReactiveUI.Events_WPF.sln");
 
     build("ReactiveUI.Events_WPA81.sln");
     build("ReactiveUI.Events_UWP.sln");
@@ -241,6 +243,8 @@ Task("PackageEvents")
 {
     Package("./src/ReactiveUI-Events.nuspec", "./src/ReactiveUI.Events");
     Package("./src/ReactiveUI-Events-XamForms.nuspec", "./src/ReactiveUI.Events");
+    Package("./src/ReactiveUI-Events-WinForms.nuspec", "./src/ReactiveUI.Events");
+    Package("./src/ReactiveUI-Events-WPF.nuspec", "./src/ReactiveUI.Events");
 });
 
 Task("BuildReactiveUI")
