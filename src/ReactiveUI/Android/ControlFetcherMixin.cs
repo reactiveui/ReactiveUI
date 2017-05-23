@@ -30,9 +30,22 @@ namespace ReactiveUI
             var assm = AppDomain.CurrentDomain.GetAssemblies()[1];
             var resources = assm.GetModules().SelectMany(x => x.GetTypes()).First(x => x.Name == "Resource");
 
-            controlIds = resources.GetNestedType("Id").GetFields()
-                .Where(x => x.FieldType == typeof(int))
-                .ToDictionary(k => k.Name.ToLowerInvariant(), v => (int)v.GetRawConstantValue());
+            try {
+                controlIds = resources.GetNestedType("Id").GetFields()
+                    .Where(x => x.FieldType == typeof(int))
+                    .ToDictionary(k => k.Name.ToLowerInvariant(), v => (int)v.GetRawConstantValue());
+            } catch (ArgumentException argumentException) {
+                var duplicates = resources.GetNestedType("Id").GetFields()
+                                          .Where(x => x.FieldType == typeof(int))
+                                          .GroupBy(k => k.Name.ToLowerInvariant())
+                                          .Where(g => g.Count() > 1)
+                                          .Select(g => "{ " + string.Join(" = ", g.Select(v => v.Name)) + " }");
+
+                if (duplicates.Any())
+                    throw new InvalidOperationException("You're using multiple resource ID's with the same name but with different casings which isn't allowed for WireUpControls: " + string.Join(", ", duplicates), argumentException);
+
+                throw argumentException;
+            }
 
             var type = typeof(ControlFetcherMixin);
             getControlActivity = type.GetMethod("GetControl", new[] { typeof(Activity), typeof(string) });
