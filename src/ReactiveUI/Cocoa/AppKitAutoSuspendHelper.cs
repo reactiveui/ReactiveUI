@@ -1,18 +1,12 @@
 using System;
 using System.Reactive;
 using System.Reactive.Concurrency;
-using System.Reactive.Subjects;
-using System.Reactive.Linq;
 using System.Reactive.Disposables;
-using Splat;
-
-#if UNIFIED
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using AppKit;
 using Foundation;
-#else
-using MonoMac.AppKit;
-using MonoMac.Foundation;
-#endif
+using Splat;
 
 namespace ReactiveUI
 {
@@ -33,7 +27,7 @@ namespace ReactiveUI
             RxApp.SuspensionHost.ShouldPersistState = shouldPersistState;
 
             var untimelyDemise = new Subject<Unit>();
-            AppDomain.CurrentDomain.UnhandledException += (o, e) => 
+            AppDomain.CurrentDomain.UnhandledException += (o, e) =>
                 untimelyDemise.OnNext(Unit.Default);
 
             RxApp.SuspensionHost.ShouldInvalidateState = untimelyDemise;

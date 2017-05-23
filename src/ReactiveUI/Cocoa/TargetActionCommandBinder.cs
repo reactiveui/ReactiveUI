@@ -4,24 +4,12 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reflection;
 using System.Windows.Input;
-using ReactiveUI;
-
-#if UNIFIED
 using Foundation;
 using ObjCRuntime;
-#elif UIKIT
-using MonoTouch.Foundation;
-using MonoTouch.ObjCRuntime;
-using MonoTouch.UIKit;
-#else
-using MonoMac.Foundation;
-using MonoMac.AppKit;
-using MonoMac.ObjCRuntime;
-#endif
 
-#if UNIFIED && UIKIT
+#if UIKIT
 using UIKit;
-#elif UNIFIED && COCOA
+#else
 using AppKit;
 #endif
 
@@ -36,7 +24,7 @@ namespace ReactiveUI
     public class TargetActionCommandBinder : ICreatesCommandBinding
     {
         readonly Type[] validTypes;
-        public TargetActionCommandBinder() 
+        public TargetActionCommandBinder()
         {
 #if UIKIT
             validTypes = new[] {
@@ -78,7 +66,7 @@ namespace ReactiveUI
             var actionDisp = Disposable.Create(() => targetSetter(target, null, null));
 
             var enabledSetter = Reflection.GetValueSetterForProperty(target.GetType().GetRuntimeProperty("Enabled"));
-            if(enabledSetter == null) return actionDisp;
+            if (enabledSetter == null) return actionDisp;
 
             // initial enabled state
             enabledSetter(target, command.CanExecute(latestParam), null);
@@ -117,7 +105,7 @@ namespace ReactiveUI
 #endif
         }
 
-        public IDisposable BindCommandToObject<TEventArgs>(ICommand command, object target, IObservable<object> commandParameter, string eventName) 
+        public IDisposable BindCommandToObject<TEventArgs>(ICommand command, object target, IObservable<object> commandParameter, string eventName)
             where TEventArgs : EventArgs
         {
             throw new NotImplementedException();

@@ -1,21 +1,14 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reactive;
+using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
-using System.Collections.Generic;
-using System.Reactive.Disposables;
-using ReactiveUI;
-using Splat;
-
-#if UNIFIED
 using Foundation;
+using Splat;
 using UIKit;
 using NSAction = System.Action;
-#else
-using MonoTouch.Foundation;
-using MonoTouch.UIKit;
-#endif
 
 namespace ReactiveUI
 {
@@ -43,7 +36,7 @@ namespace ReactiveUI
             RxApp.SuspensionHost.IsUnpausing = _activated.Select(_ => Unit.Default);
 
             var untimelyDeath = new Subject<Unit>();
-            AppDomain.CurrentDomain.UnhandledException += (o,e) => untimelyDeath.OnNext(Unit.Default);
+            AppDomain.CurrentDomain.UnhandledException += (o, e) => untimelyDeath.OnNext(Unit.Default);
 
             RxApp.SuspensionHost.ShouldInvalidateState = untimelyDeath;
 

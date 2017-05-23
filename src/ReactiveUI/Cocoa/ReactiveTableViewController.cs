@@ -1,20 +1,11 @@
 using System;
 using System.ComponentModel;
 using System.Reactive;
-using System.Reactive.Subjects;
 using System.Reactive.Linq;
-
-#if UNIFIED
+using System.Reactive.Subjects;
 using Foundation;
-using UIKit;
 using NSTableViewController = UIKit.UITableViewController;
 using NSTableViewStyle = UIKit.UITableViewStyle;
-#else
-using MonoTouch.Foundation;
-using MonoTouch.UIKit;
-using NSTableViewController = MonoTouch.UIKit.UITableViewController;
-using NSTableViewStyle = MonoTouch.UIKit.UITableViewStyle;
-#endif
 
 namespace ReactiveUI
 {

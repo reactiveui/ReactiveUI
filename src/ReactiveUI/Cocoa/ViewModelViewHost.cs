@@ -1,20 +1,13 @@
 using System;
 using System.Reactive.Linq;
-using ReactiveUI;
 using System.Reactive.Disposables;
 
-#if UNIFIED && UIKIT
+#if UIKIT
 using UIKit;
 using NSView = UIKit.UIView;
 using NSViewController = UIKit.UIViewController;
-#elif UNIFIED && COCOA
-using AppKit;
-#elif UIKIT
-using MonoTouch.UIKit;
-using NSView = MonoTouch.UIKit.UIView;
-using NSViewController = MonoTouch.UIKit.UIViewController;
 #else
-using MonoMac.AppKit;
+using AppKit;
 #endif
 
 namespace ReactiveUI
@@ -38,32 +31,27 @@ namespace ReactiveUI
             this.Initialize();
         }
 
-        public IViewLocator ViewLocator
-        {
+        public IViewLocator ViewLocator {
             get { return viewLocator; }
             set { this.RaiseAndSetIfChanged(ref viewLocator, value); }
         }
 
-        public NSViewController DefaultContent
-        {
+        public NSViewController DefaultContent {
             get { return defaultContent; }
             set { this.RaiseAndSetIfChanged(ref defaultContent, value); }
         }
 
-        public IReactiveObject ViewModel
-        {
+        public IReactiveObject ViewModel {
             get { return viewModel; }
             set { this.RaiseAndSetIfChanged(ref viewModel, value); }
         }
 
-        public IObservable<string> ViewContractObservable
-        {
+        public IObservable<string> ViewContractObservable {
             get { return viewContractObservable; }
             set { this.RaiseAndSetIfChanged(ref viewContractObservable, value); }
         }
 
-        public string ViewContract
-        {
+        public string ViewContract {
             get { return this.viewContract.Value; }
             set { ViewContractObservable = Observable.Return(value); }
         }
@@ -88,17 +76,14 @@ namespace ReactiveUI
             viewChange
                 .ObserveOn(RxApp.MainThreadScheduler)
                 .Subscribe(
-                    x =>
-                    {
+                    x => {
                         var viewLocator = ViewLocator ?? ReactiveUI.ViewLocator.Current;
                         var view = viewLocator.ResolveView(x.ViewModel, x.Contract);
 
-                        if (view == null)
-                        {
+                        if (view == null) {
                             var message = string.Format("Unable to resolve view for \"{0}\"", x.ViewModel.GetType());
 
-                            if (x.Contract != null)
-                            {
+                            if (x.Contract != null) {
                                 message += string.Format(" and contract \"{0}\"", x.Contract.GetType());
                             }
 
@@ -108,11 +93,10 @@ namespace ReactiveUI
 
                         var viewController = view as NSViewController;
 
-                        if (viewController == null)
-                        {
+                        if (viewController == null) {
                             throw new Exception(
                                 string.Format(
-                                    "Resolved view type '{0}' is not a '{1}'.", 
+                                    "Resolved view type '{0}' is not a '{1}'.",
                                     viewController.GetType().FullName,
                                     typeof(NSViewController).FullName));
                         }
@@ -135,8 +119,7 @@ namespace ReactiveUI
         {
             base.Dispose(disposing);
 
-            if (disposing)
-            {
+            if (disposing) {
                 this.currentView.Dispose();
                 this.viewContract.Dispose();
             }
@@ -182,14 +165,14 @@ namespace ReactiveUI
     /// that this isn't a Control itself, it only manipulates other Views.
     /// </summary>
     [Obsolete("Use ViewModelViewHost instead. This class will be removed in a later release.")]
-    public class ViewModelViewHostLegacy : ReactiveObject 
+    public class ViewModelViewHostLegacy : ReactiveObject
     {
         /// <summary>
         /// Gets or sets a value indicating whether this <see cref="ReactiveUI.Cocoa.ViewModelViewHost"/>
         /// will automatically create Auto Layout constraints tying the sub view to the parent view.
         /// </summary>
         /// <value><c>true</c> if add layout contraints to sub view; otherwise, <c>false</c>.</value>
-        public bool AddAutoLayoutConstraintsToSubView { get; set; } 
+        public bool AddAutoLayoutConstraintsToSubView { get; set; }
 
         public ViewModelViewHostLegacy(NSView targetView)
         {
@@ -246,10 +229,10 @@ namespace ReactiveUI
 
                 if (AddAutoLayoutConstraintsToSubView) {
                     // Add edge constraints so that subview trails changes in parent
-                    addEdgeConstraint(NSLayoutAttribute.Left,  targetView, viewLastAdded);
+                    addEdgeConstraint(NSLayoutAttribute.Left, targetView, viewLastAdded);
                     addEdgeConstraint(NSLayoutAttribute.Right, targetView, viewLastAdded);
                     addEdgeConstraint(NSLayoutAttribute.Top, targetView, viewLastAdded);
-                    addEdgeConstraint(NSLayoutAttribute.Bottom,  targetView, viewLastAdded);
+                    addEdgeConstraint(NSLayoutAttribute.Bottom, targetView, viewLastAdded);
                 }
             });
         }
@@ -271,13 +254,13 @@ namespace ReactiveUI
             get { return _ViewModel; }
             set { this.RaiseAndSetIfChanged(ref _ViewModel, value); }
         }
-        
+
         IObservable<string> _ViewContractObservable;
         public IObservable<string> ViewContractObservable {
             get { return _ViewContractObservable; }
             set { this.RaiseAndSetIfChanged(ref _ViewContractObservable, value); }
         }
-       
+
         public IViewLocator ViewLocator { get; set; }
     }
 }

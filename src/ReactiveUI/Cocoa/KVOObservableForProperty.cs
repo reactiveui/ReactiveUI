@@ -5,20 +5,9 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using ReactiveUI;
+using Foundation;
 using Splat;
 
-#if UNIFIED && UIKIT
-using UIKit;
-using Foundation;
-#elif UNIFIED && COCOA
-using Foundation;
-#elif UIKIT
-using MonoTouch.UIKit;
-using MonoTouch.Foundation;
-#else
-using MonoMac.Foundation;
-#endif
 
 namespace ReactiveUI
 {
@@ -45,7 +34,7 @@ namespace ReactiveUI
                     return false;
                 }
 
-                while(thisType != null) {
+                while (thisType != null) {
                     if (thisType.GetMembers(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly).Any(x => x.Name == pair.Item2)) {
                         // NB: This is a not-completely correct way to detect if
                         // an object is defined in an Obj-C class (it will fail if
@@ -78,7 +67,7 @@ namespace ReactiveUI
             var propertyName = expression.GetMemberInfo().Name;
 
             return Observable.Create<IObservedChange<object, object>>(subj => {
-                var bobs = new BlockObserveValueDelegate((key,s,_) => {
+                var bobs = new BlockObserveValueDelegate((key, s, _) => {
                     subj.OnNext(new ObservedChange<object, object>(s, expression));
                 });
                 var pin = GCHandle.Alloc(bobs);
@@ -115,7 +104,7 @@ namespace ReactiveUI
             return Char.ToLowerInvariant(propertyName[0]).ToString() + propertyName.Substring(1);
         }
     }
-    
+
     class BlockObserveValueDelegate : NSObject
     {
         Action<string, NSObject, NSDictionary> _block;
@@ -123,8 +112,8 @@ namespace ReactiveUI
         {
             _block = block;
         }
-    
-        public override void ObserveValue (NSString keyPath, NSObject ofObject, NSDictionary change, IntPtr context)
+
+        public override void ObserveValue(NSString keyPath, NSObject ofObject, NSDictionary change, IntPtr context)
         {
             _block(keyPath, ofObject, change);
         }

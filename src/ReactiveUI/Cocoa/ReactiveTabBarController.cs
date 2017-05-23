@@ -3,14 +3,8 @@ using System.ComponentModel;
 using System.Reactive;
 using System.Reactive.Subjects;
 using System.Reactive.Linq;
-
-#if UNIFIED
 using Foundation;
 using UIKit;
-#else
-using MonoTouch.Foundation;
-using MonoTouch.UIKit;
-#endif
 
 namespace ReactiveUI
 {

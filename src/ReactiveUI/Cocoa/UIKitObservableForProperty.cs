@@ -1,18 +1,5 @@
 using System;
-using ReactiveUI;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reactive.Linq;
-using System.Runtime.InteropServices;
-using System.Reactive.Disposables;
-
-#if UNIFIED
-using Foundation;
 using UIKit;
-#else
-using MonoTouch.Foundation;
-using MonoTouch.UIKit;
-#endif
 
 namespace ReactiveUI
 {
@@ -21,16 +8,16 @@ namespace ReactiveUI
     {
         public static Lazy<UIKitObservableForProperty> Instance = new Lazy<UIKitObservableForProperty>();
 
-        public UIKitObservableForProperty ()
+        public UIKitObservableForProperty()
         {
-            Register(typeof(UIControl), "Value", 20, (s, p)=> ObservableFromUIControlEvent(s, p, UIControlEvent.ValueChanged));
+            Register(typeof(UIControl), "Value", 20, (s, p) => ObservableFromUIControlEvent(s, p, UIControlEvent.ValueChanged));
             Register(typeof(UITextField), "Text", 30, (s, p) => ObservableFromNotification(s, p, UITextField.TextFieldTextDidChangeNotification));
             Register(typeof(UITextView), "Text", 30, (s, p) => ObservableFromNotification(s, p, UITextView.TextDidChangeNotification));
-            Register(typeof(UIDatePicker), "Date", 30, (s, p)=> ObservableFromUIControlEvent(s, p, UIControlEvent.ValueChanged));
-            Register(typeof(UISegmentedControl), "SelectedSegment", 30, (s, p)=> ObservableFromUIControlEvent(s, p, UIControlEvent.ValueChanged));
-            Register(typeof(UISwitch), "On", 30, (s, p)=> ObservableFromUIControlEvent(s, p, UIControlEvent.ValueChanged));
-            Register(typeof(UISegmentedControl), "SelectedSegment", 30, (s, p)=> ObservableFromUIControlEvent(s, p, UIControlEvent.ValueChanged));
-            
+            Register(typeof(UIDatePicker), "Date", 30, (s, p) => ObservableFromUIControlEvent(s, p, UIControlEvent.ValueChanged));
+            Register(typeof(UISegmentedControl), "SelectedSegment", 30, (s, p) => ObservableFromUIControlEvent(s, p, UIControlEvent.ValueChanged));
+            Register(typeof(UISwitch), "On", 30, (s, p) => ObservableFromUIControlEvent(s, p, UIControlEvent.ValueChanged));
+            Register(typeof(UISegmentedControl), "SelectedSegment", 30, (s, p) => ObservableFromUIControlEvent(s, p, UIControlEvent.ValueChanged));
+
             // Warning: This will stomp the Control's delegate
             Register(typeof(UITabBar), "SelectedItem", 30, (s, p) => ObservableFromEvent(s, p, "ItemSelected"));
 
