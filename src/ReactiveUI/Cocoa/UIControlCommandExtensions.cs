@@ -1,12 +1,7 @@
 using System;
 using System.Windows.Input;
 using System.Reactive.Disposables;
-
-#if UNIFIED
 using UIKit;
-#else
-using MonoTouch.UIKit;
-#endif
 
 namespace ReactiveUI
 {
@@ -14,7 +9,7 @@ namespace ReactiveUI
     {
         public static IDisposable BindToTarget(this ICommand This, UIControl control, UIControlEvent events)
         {
-            var ev = new EventHandler((o,e) => {
+            var ev = new EventHandler((o, e) => {
                 if (!This.CanExecute(null)) return;
                 This.Execute(null);
             });

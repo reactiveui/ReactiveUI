@@ -4,33 +4,19 @@ using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Subjects;
 using System.Reactive.Linq;
-
-#if UNIFIED
 using CoreGraphics;
 using Foundation;
 using UIKit;
-#else
-using System.Drawing;
-using MonoTouch.Foundation;
-using MonoTouch.UIKit;
-#endif
 
 namespace ReactiveUI
 {
     public abstract class ReactiveTableView : UITableView, IReactiveNotifyPropertyChanged<ReactiveTableView>, IHandleObservableErrors, IReactiveObject, ICanActivate, ICanForceManualActivation
     {
-#if UNIFIED
-        protected ReactiveTableView(CGRect frame) : base(frame) { }
-        protected ReactiveTableView(CGRect frame, UITableViewStyle style) : base(frame, style) { }
-#else
-        protected ReactiveTableView(RectangleF frame) : base(frame) { }
-        protected ReactiveTableView(RectangleF frame, UITableViewStyle style) : base(frame, style) { }
-#endif
-
+        protected ReactiveTableView() { }
         protected ReactiveTableView(NSObjectFlag t) : base(t) { }
         protected ReactiveTableView(NSCoder coder) : base(coder) { }
-        protected ReactiveTableView() { }
-
+        protected ReactiveTableView(CGRect frame) : base(frame) { }
+        protected ReactiveTableView(CGRect frame, UITableViewStyle style) : base(frame, style) { }
         protected ReactiveTableView(IntPtr handle) : base(handle) { }
 
         public event PropertyChangingEventHandler PropertyChanging {
@@ -96,18 +82,11 @@ namespace ReactiveUI
     public abstract class ReactiveTableView<TViewModel> : ReactiveTableView, IViewFor<TViewModel>
         where TViewModel : class
     {
-#if UNIFIED
-        protected ReactiveTableView(CGRect frame) : base(frame) { }
-        protected ReactiveTableView(CGRect frame, UITableViewStyle style) : base(frame, style) { }
-#else
-        protected ReactiveTableView(RectangleF frame) : base(frame) { }
-        protected ReactiveTableView(RectangleF frame, UITableViewStyle style) : base(frame, style) { }
-#endif
-
+        protected ReactiveTableView() { }
         protected ReactiveTableView(NSObjectFlag t) : base(t) { }
         protected ReactiveTableView(NSCoder coder) : base(coder) { }
-        protected ReactiveTableView() { }
-
+        protected ReactiveTableView(CGRect frame) : base(frame) { }
+        protected ReactiveTableView(CGRect frame, UITableViewStyle style) : base(frame, style) { }
         protected ReactiveTableView(IntPtr handle) : base(handle) { }
 
         TViewModel _viewModel;

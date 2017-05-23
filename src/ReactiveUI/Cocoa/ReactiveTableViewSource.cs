@@ -1,22 +1,15 @@
 using System;
-using System.ComponentModel;
 using System.Collections.Generic;
-using System.Collections.Specialized;
+using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
-using Splat;
-using System.Diagnostics;
-
-#if UNIFIED
 using Foundation;
+using Splat;
 using UIKit;
-#else
-using MonoTouch.Foundation;
-using MonoTouch.UIKit;
-#endif
 
 namespace ReactiveUI
 {
@@ -70,8 +63,7 @@ namespace ReactiveUI
             this.isReloadingData = new BehaviorSubject<bool>(false);
         }
 
-        public IObservable<bool> IsReloadingData
-        {
+        public IObservable<bool> IsReloadingData {
             get { return this.isReloadingData.AsObservable(); }
         }
 
@@ -80,8 +72,7 @@ namespace ReactiveUI
             ++inFlightReloads;
             view.ReloadData();
 
-            if (inFlightReloads == 1)
-            {
+            if (inFlightReloads == 1) {
                 Debug.Assert(!this.isReloadingData.Value);
                 this.isReloadingData.OnNext(true);
             }
@@ -130,8 +121,7 @@ namespace ReactiveUI
         {
             --inFlightReloads;
 
-            if (inFlightReloads == 0)
-            {
+            if (inFlightReloads == 0) {
                 // this is required because sometimes iOS schedules further work that results in calls to GetCell
                 // that work could happen after FinishReloadData unless we force layout here
                 // of course, we can't have that work running after IsReloading ticks to false because otherwise
@@ -170,7 +160,7 @@ namespace ReactiveUI
         /// </summary>
         /// <param name="view">Function that creates header's <see cref="UIView"/>.</param>
         /// <param name="height">Height of the header.</param>
-        public TableSectionHeader (Func<UIView> view, float height)
+        public TableSectionHeader(Func<UIView> view, float height)
         {
             this.View = view;
             this.Height = height;
@@ -180,7 +170,7 @@ namespace ReactiveUI
         /// Initializes a new instance of the <see cref="ReactiveUI.Cocoa.TableSectionHeader"/> class.
         /// </summary>
         /// <param name="title">Title to use.</param>
-        public TableSectionHeader (string title)
+        public TableSectionHeader(string title)
         {
             this.Title = title;
         }
@@ -198,17 +188,20 @@ namespace ReactiveUI
         readonly Subject<object> elementSelected = new Subject<object>();
 
         public ReactiveTableViewSource(UITableView tableView, IReactiveNotifyCollectionChanged<TSource> collection, NSString cellKey, float sizeHint, Action<UITableViewCell> initializeCellAction = null)
-            : this(tableView) {
-            this.Data = new[] { new TableSectionInformation<TSource, UITableViewCell>(collection, cellKey, sizeHint, initializeCellAction)};
+            : this(tableView)
+        {
+            this.Data = new[] { new TableSectionInformation<TSource, UITableViewCell>(collection, cellKey, sizeHint, initializeCellAction) };
         }
 
         [Obsolete("Please bind your view model to the Data property.")]
         public ReactiveTableViewSource(UITableView tableView, IReadOnlyList<TableSectionInformation<TSource>> sectionInformation)
-            : this(tableView) {
+            : this(tableView)
+        {
             this.Data = sectionInformation;
         }
 
-        public ReactiveTableViewSource(UITableView tableView) {
+        public ReactiveTableViewSource(UITableView tableView)
+        {
             setupRxObj();
             var adapter = new UITableViewAdapter(tableView);
             this.commonSource = new CommonReactiveSource<TSource, UITableView, UITableViewCell, TableSectionInformation<TSource>>(adapter);
@@ -222,11 +215,10 @@ namespace ReactiveUI
         /// then the source will react to changes to the contents of the list as well.
         /// </summary>
         /// <value>The data.</value>
-        public IReadOnlyList<TableSectionInformation<TSource>> Data
-        {
+        public IReadOnlyList<TableSectionInformation<TSource>> Data {
             get { return commonSource.SectionInfo; }
             set {
-                if (commonSource.SectionInfo == value)  return;
+                if (commonSource.SectionInfo == value) return;
 
                 this.raisePropertyChanging("Data");
                 commonSource.SectionInfo = value;
@@ -246,25 +238,16 @@ namespace ReactiveUI
             return commonSource.GetCell(indexPath);
         }
 
-#if UNIFIED
         public override nint NumberOfSections(UITableView tableView)
-#else
-        public override int NumberOfSections(UITableView tableView)
-#endif
         {
             return commonSource.NumberOfSections();
         }
 
-#if UNIFIED
         public override nint RowsInSection(UITableView tableview, nint section)
-#else
-        public override int RowsInSection(UITableView tableview, int section)
-#endif
         {
             // iOS may call this method even when we have no sections, but only if we've overridden
             // EstimatedHeight(UITableView, NSIndexPath) in our UITableViewSource
-            if (section >= commonSource.NumberOfSections())
-            {
+            if (section >= commonSource.NumberOfSections()) {
                 return 0;
             }
 
@@ -292,44 +275,30 @@ namespace ReactiveUI
             base.Dispose(disposing);
         }
 
-#if UNIFIED
         public override nfloat GetHeightForRow(UITableView tableView, NSIndexPath indexPath)
-#else
-        public override float GetHeightForRow(UITableView tableView, NSIndexPath indexPath)
-#endif
         {
             return commonSource.SectionInfo[indexPath.Section].SizeHint;
         }
 
-#if UNIFIED
         public override nfloat GetHeightForHeader(UITableView tableView, nint section)
-#else
-        public override float GetHeightForHeader(UITableView tableView, int section)
-#endif
         {
             // iOS may call this method even when we have no sections, but only if we've overridden
             // EstimatedHeight(UITableView, NSIndexPath) in our UITableViewSource
-            if (section >= commonSource.NumberOfSections())
-            {
+            if (section >= commonSource.NumberOfSections()) {
                 return 0;
             }
 
             var header = commonSource.SectionInfo[(int)section].Header;
 
             // NB: -1 is a magic # that causes iOS to use the regular height. go figure.
-            return header == null || header.View == null ? -1 : header.Height; 
+            return header == null || header.View == null ? -1 : header.Height;
         }
 
-#if UNIFIED
         public override nfloat GetHeightForFooter(UITableView tableView, nint section)
-#else
-        public override float GetHeightForFooter(UITableView tableView, int section)
-#endif
         {
             // iOS may call this method even when we have no sections, but only if we've overridden
             // EstimatedHeight(UITableView, NSIndexPath) in our UITableViewSource
-            if (section >= commonSource.NumberOfSections())
-            {
+            if (section >= commonSource.NumberOfSections()) {
                 return 0;
             }
 
@@ -337,41 +306,25 @@ namespace ReactiveUI
             return footer == null || footer.View == null ? -1 : footer.Height;
         }
 
-#if UNIFIED
         public override string TitleForHeader(UITableView tableView, nint section)
-#else
-        public override string TitleForHeader(UITableView tableView, int section)
-#endif
         {
             var header = commonSource.SectionInfo[(int)section].Header;
             return header == null || header.Title == null ? null : header.Title;
         }
 
-#if UNIFIED
         public override string TitleForFooter(UITableView tableView, nint section)
-#else
-        public override string TitleForFooter(UITableView tableView, int section)
-#endif
         {
             var footer = commonSource.SectionInfo[(int)section].Footer;
             return footer == null || footer.Title == null ? null : footer.Title;
         }
 
-#if UNIFIED
         public override UIView GetViewForHeader(UITableView tableView, nint section)
-#else
-        public override UIView GetViewForHeader(UITableView tableView, int section)
-#endif
         {
             var header = commonSource.SectionInfo[(int)section].Header;
             return header == null || header.View == null ? null : header.View.Invoke();
         }
 
-#if UNIFIED
         public override UIView GetViewForFooter(UITableView tableView, nint section)
-#else
-        public override UIView GetViewForFooter(UITableView tableView, int section)
-#endif
         {
             var footer = commonSource.SectionInfo[(int)section].Footer;
             return footer == null || footer.View == null ? null : footer.View.Invoke();

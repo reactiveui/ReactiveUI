@@ -1,15 +1,5 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-#if UNIFIED
-using Foundation;
 using UIKit;
-#else
-using MonoTouch.Foundation;
-using MonoTouch.UIKit;
-#endif
 
 namespace ReactiveUI.Cocoa
 {
@@ -22,7 +12,7 @@ namespace ReactiveUI.Cocoa
     {
         public void KeepMe()
         {
-           // UIButon
+            // UIButon
             var btn = new UIButton();
             var title = btn.Title(UIControlState.Disabled);
             btn.SetTitle("foo", UIControlState.Disabled);
@@ -31,7 +21,7 @@ namespace ReactiveUI.Cocoa
             // UISlider
             var slider = new UISlider();
             slider.Value = slider.Value; // Get and set
-            
+
 
             // UITextView
             var tv = new UITextView();
@@ -40,7 +30,7 @@ namespace ReactiveUI.Cocoa
             // UITextField
             var tf = new UITextField();
             tv.Text = tf.Text;
-            
+
             // var UIImageView
             var iv = new UIImageView();
             iv.Image = iv.Image;

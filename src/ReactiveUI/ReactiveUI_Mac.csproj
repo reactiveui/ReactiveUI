@@ -19,7 +19,7 @@
     <Optimize>False</Optimize>
     <OutputPath>bin\Debug\Xamarin.Mac20</OutputPath>
     <IntermediateOutputPath>obj\Debug\Xamarin.Mac20</IntermediateOutputPath>
-    <DefineConstants>DEBUG;MONO;COCOA;UNIFIED</DefineConstants>
+    <DefineConstants>DEBUG;MONO;COCOA</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <EnablePackageSigning>False</EnablePackageSigning>
@@ -46,7 +46,7 @@
     <CreatePackage>False</CreatePackage>
     <CodeSigningKey>Mac Developer</CodeSigningKey>
     <UseSGen>False</UseSGen>
-    <DefineConstants>MONO;COCOA;UNIFIED</DefineConstants>
+    <DefineConstants>MONO;COCOA</DefineConstants>
     <DebugSymbols>true</DebugSymbols>
     <GenerateDocumentation>True</GenerateDocumentation>
     <DocumentationFile>bin\Release\Xamarin.Mac20\ReactiveUI.xml</DocumentationFile>

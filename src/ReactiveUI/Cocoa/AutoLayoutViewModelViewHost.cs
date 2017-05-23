@@ -1,12 +1,8 @@
 using System;
-#if UNIFIED && UIKIT
+#if UIKIT
 using NSView = UIKit.UIView;
-#elif UNIFIED && COCOA
-using AppKit;
-#elif UIKIT
-using NSView = MonoTouch.UIKit.UIView;
 #else
-using MonoMac.AppKit;
+using AppKit;
 #endif
 
 namespace ReactiveUI

@@ -3,24 +3,13 @@ using System.ComponentModel;
 using System.Reactive;
 using System.Reactive.Subjects;
 using System.Reactive.Linq;
-
-#if UNIFIED
 using Foundation;
-#elif UIKIT
-using MonoTouch.UIKit;
-using MonoTouch.Foundation;
-using NSSplitViewController = MonoTouch.UIKit.UISplitViewController;
-using NSView = MonoTouch.UIKit.UIView;
-#else
-using MonoMac.AppKit;
-using MonoMac.Foundation;
-#endif
 
-#if UNIFIED && UIKIT
+#if UIKIT
 using UIKit;
 using NSSplitViewController = UIKit.UISplitViewController;
 using NSView = UIKit.UIView;
-#elif UNIFIED && COCOA
+#else
 using AppKit;
 #endif
 
@@ -114,18 +103,14 @@ namespace ReactiveUI
         {
             base.ViewWillAppear();
             activated.OnNext(Unit.Default);
-#if UNIFIED
             this.ActivateSubviews(true);
-#endif
         }
 
         public override void ViewDidDisappear()
         {
             base.ViewDidDisappear();
             deactivated.OnNext(Unit.Default);
-#if UNIFIED
             this.ActivateSubviews(false);
-#endif
         }
 #endif
     }

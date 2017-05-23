@@ -1,14 +1,9 @@
 using System;
-using System.Reactive.Linq;
-using System.Reactive;
 using System.IO;
+using System.Reactive;
+using System.Reactive.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
-
-#if UNIFIED
 using Foundation;
-#else
-using MonoTouch.Foundation;
-#endif
 
 namespace ReactiveUI
 {
@@ -24,13 +19,13 @@ namespace ReactiveUI
                 using (var st = File.OpenRead(target)) {
                     result = serializer.Deserialize(st);
                 }
-                    
+
                 return Observable.Return(result);
             } catch (Exception ex) {
                 return Observable.Throw<object>(ex);
             }
         }
-        
+
         public IObservable<Unit> SaveState(object state)
         {
             try {
@@ -42,12 +37,12 @@ namespace ReactiveUI
                 }
 
                 return Observables.Unit;
-                
-            } catch(Exception ex) {
+
+            } catch (Exception ex) {
                 return Observable.Throw<Unit>(ex);
             }
         }
-        
+
         public IObservable<Unit> InvalidateState()
         {
             try {
@@ -55,8 +50,8 @@ namespace ReactiveUI
                 File.Delete(target);
 
                 return Observables.Unit;
-                
-            } catch(Exception ex) {
+
+            } catch (Exception ex) {
                 return Observable.Throw<Unit>(ex);
             }
         }
@@ -64,12 +59,12 @@ namespace ReactiveUI
         string CreateAppDirectory(NSSearchPathDirectory targetDir, string subDir = "Data")
         {
             NSError err;
-            
+
             var fm = new NSFileManager();
             var url = fm.GetUrl(targetDir, NSSearchPathDomain.All, null, true, out err);
             var ret = Path.Combine(url.RelativePath, NSBundle.MainBundle.BundleIdentifier, subDir);
             if (!Directory.Exists(ret)) Directory.CreateDirectory(ret);
-            
+
             return ret;
         }
     }

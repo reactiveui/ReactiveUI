@@ -4,31 +4,18 @@ using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Subjects;
 using System.Reactive.Linq;
-
-#if UNIFIED
 using CoreGraphics;
 using Foundation;
 using UIKit;
-#else
-using System.Drawing;
-using MonoTouch.Foundation;
-using MonoTouch.UIKit;
-#endif
 
 namespace ReactiveUI
 {
     public abstract class ReactiveCollectionViewCell : UICollectionViewCell, IReactiveNotifyPropertyChanged<ReactiveCollectionViewCell>, IHandleObservableErrors, IReactiveObject, ICanActivate
     {
-#if UNIFIED
         protected ReactiveCollectionViewCell(CGRect frame) : base(frame) { setupRxObj(); }
-#else
-        protected ReactiveCollectionViewCell(RectangleF frame) : base (frame) { setupRxObj(); }
-#endif
-
         protected ReactiveCollectionViewCell(NSObjectFlag t) : base(t) { setupRxObj(); }
         protected ReactiveCollectionViewCell(NSCoder coder) : base(NSObjectFlag.Empty) { setupRxObj(); }
         protected ReactiveCollectionViewCell() : base() { setupRxObj(); }
-
         protected ReactiveCollectionViewCell(IntPtr handle) : base(handle) { setupRxObj(); }
 
         public event PropertyChangingEventHandler PropertyChanging {
@@ -102,11 +89,7 @@ namespace ReactiveUI
         protected ReactiveCollectionViewCell(NSObjectFlag t) : base(t) { }
         protected ReactiveCollectionViewCell(NSCoder coder) : base(NSObjectFlag.Empty) { }
         protected ReactiveCollectionViewCell() : base() { }
-#if UNIFIED
         protected ReactiveCollectionViewCell(CGRect frame) : base(frame) { }
-#else
-        protected ReactiveCollectionViewCell(RectangleF frame) : base (frame) { }
-#endif
         protected ReactiveCollectionViewCell(IntPtr handle) : base(handle) { }
 
         TViewModel _viewModel;
