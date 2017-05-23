@@ -10,10 +10,10 @@
     <TargetPlatformVersion>10.0.14393.0</TargetPlatformVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'Xamarin.iOS10'">
-    <DefineConstants>$(DefineConstants);MONO;UIKIT;COCOA;UNIFIED</DefineConstants>
+    <DefineConstants>$(DefineConstants);MONO;UIKIT;COCOA</DefineConstants>
   </PropertyGroup>
    <PropertyGroup Condition="'$(TargetFramework)' == 'Xamarin.Mac20'">
-    <DefineConstants>$(DefineConstants);MONO;COCOA;UNIFIED </DefineConstants>
+    <DefineConstants>$(DefineConstants);MONO;COCOA</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'MonoAndroid70'">
     <DefineConstants>$(DefineConstants);MONO;ANDROID</DefineConstants>
