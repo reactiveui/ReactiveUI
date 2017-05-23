@@ -1,5 +1,4 @@
 using System;
-using ReactiveUI;
 using Splat;
 using Xunit;
 
@@ -71,6 +70,29 @@ namespace ReactiveUI.Tests
 
         public IFooViewModel ViewModel { get; set; }
     }
+
+    public interface StrangeInterfaceNotFollowingConvention { }
+
+    public class StrangeClassNotFollowingConvention : StrangeInterfaceNotFollowingConvention { }
+
+    public interface IRoutableFooViewModel : IRoutableViewModel { }
+
+    public class RoutableFooViewModel : ReactiveObject, IRoutableFooViewModel
+    {
+        public IScreen HostScreen { get; set; }
+        public string UrlPathSegment { get; set; }
+    }
+
+    public class RoutableFooView : IViewFor<IRoutableFooViewModel>
+    {
+        object IViewFor.ViewModel
+        {
+            get { return ViewModel; }
+            set { ViewModel = (IRoutableFooViewModel)value; }
+        }
+        public IRoutableFooViewModel ViewModel { get; set; }
+    }
+
 
     public class DefaultViewLocatorTests
     {
@@ -330,6 +352,41 @@ namespace ReactiveUI.Tests
 
                 var ex = Assert.Throws<InvalidOperationException>(() => fixture.ResolveView(vm));
                 Assert.Equal("This is a test failure.", ex.Message);
+            }
+        }
+
+        [Fact]
+        public void WithOddInterfaceNameDoesntThrowException()
+        {
+            var resolver = new ModernDependencyResolver();
+
+            resolver.InitializeSplat();
+            resolver.InitializeReactiveUI();
+
+            using (resolver.WithResolver()) {
+                var fixture = new DefaultViewLocator();
+
+                var vm = new StrangeClassNotFollowingConvention();
+
+                fixture.ResolveView((StrangeInterfaceNotFollowingConvention)vm);
+            }
+        }
+
+        [Fact]
+        public void CanResolveViewFromViewModelWithIRoutableViewModelType()
+        {
+            var resolver = new ModernDependencyResolver();
+
+            resolver.InitializeSplat();
+            resolver.InitializeReactiveUI();
+            resolver.Register(() => new RoutableFooView(), typeof(IViewFor<IRoutableFooViewModel>));
+
+            using (resolver.WithResolver()) {
+                var fixture = new DefaultViewLocator();
+                var vm = new RoutableFooViewModel();
+
+                var result = fixture.ResolveView<IRoutableViewModel>(vm);
+                Assert.IsType<RoutableFooView>(result);
             }
         }
     }
