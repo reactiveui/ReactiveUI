@@ -14,7 +14,9 @@ namespace ReactiveUI
         /// in ascending order based on the values returned by the provided selector. The selector values will be
         /// compared using the default comparer for the return type of the selector.
         /// </summary>
-        /// <param name="selector">A function supplying the values for the comparator.</param>
+        /// <param name="selector">
+        /// A function supplying the values for the comparer.
+        /// </param>
         IComparer<T> OrderBy<TValue>(Func<T, TValue> selector);
 
         /// <summary>
@@ -24,7 +26,13 @@ namespace ReactiveUI
         /// compared using the provided comparer or the default comparer for the return type of the selector if no
         /// comparer is specified.
         /// </summary>
-        /// <param name="selector">A function supplying the values for the comparator.</param>
+        /// <param name="selector">
+        /// A function supplying the values for the comparer.
+        /// </param>
+        /// <param name="comparer">
+        /// The comparer to use when comparing the values returned by the selector. 
+        /// The default comparer for that type will be used if this parameter is null.
+        /// </param>
         IComparer<T> OrderBy<TValue>(Func<T, TValue> selector, IComparer<TValue> comparer);
 
         /// <summary>
@@ -33,7 +41,9 @@ namespace ReactiveUI
         /// in descending order based on the values returned by the provided selector. The selector values will be
         /// compared using the default comparer for the return type of the selector.
         /// </summary>
-        /// <param name="selector">A function supplying the values for the comparator.</param>
+        /// <param name="selector">
+        /// A function supplying the values for the comparer.
+        /// </param>
         IComparer<T> OrderByDescending<TValue>(Func<T, TValue> selector);
 
         /// <summary>
@@ -43,7 +53,13 @@ namespace ReactiveUI
         /// compared using the provided comparer or the default comparer for the return type of the selector if no
         /// comparer is specified.
         /// </summary>
-        /// <param name="selector">A function supplying the values for the comparator.</param>
+        /// <param name="selector">
+        /// A function supplying the values for the comparer.
+        /// </param>
+        /// /// <param name="comparer">
+        /// The comparer to use when comparing the values returned by the selector. 
+        /// The default comparer for that type will be used if this parameter is null.
+        /// </param>
         IComparer<T> OrderByDescending<TValue>(Func<T, TValue> selector, IComparer<TValue> comparer);
     }
 
@@ -113,8 +129,10 @@ namespace ReactiveUI
         /// Creates a comparer that will sort elements in ascending order based on the values returned by the provided
         /// selector. The values will be compared using the default comparer for the return type of the selector.
         /// </summary>
-        /// <param name="selector">A function supplying the values for the comparator.</param>
-        public static IComparer<T> OrderBy<TValue>(Func<T,TValue> selector)
+        /// <param name="selector">
+        /// A function supplying the values for the comparer.
+        /// </param>
+        public static IComparer<T> OrderBy<TValue>(Func<T, TValue> selector)
         {
             return ComparerChainingExtensions.ThenBy<T, TValue>(null, selector);
         }
@@ -124,7 +142,9 @@ namespace ReactiveUI
         /// selector. The selector values will be compared using the provided comparer or the default comparer for the 
         /// return type of the selector if no comparer is specified.
         /// </summary>
-        /// <param name="selector">A function supplying the values for the comparator.</param>
+        /// <param name="selector">
+        /// A function supplying the values for the comparer.
+        /// </param>
         /// <param name="comparer">
         /// The comparer to use when comparing the values returned by the selector. 
         /// The default comparer for that type will be used if this parameter is null.
@@ -138,7 +158,9 @@ namespace ReactiveUI
         /// Creates a comparer that will sort elements in descending order based on the values returned by the provided
         /// selector. The values will be compared using the default comparer for the return type of the selector.
         /// </summary>
-        /// <param name="selector">A function supplying the values for the comparator.</param>
+        /// <param name="selector">
+        /// A function supplying the values for the comparer.
+        /// </param>
         public static IComparer<T> OrderByDescending<TValue>(Func<T, TValue> selector)
         {
             return ComparerChainingExtensions.ThenByDescending<T, TValue>(null, selector);
@@ -149,7 +171,9 @@ namespace ReactiveUI
         /// selector. The selector values will be compared using the provided comparer or the default comparer for the 
         /// return type of the selector if no comparer is specified.
         /// </summary>
-        /// <param name="selector">A function supplying the values for the comparator.</param>
+        /// <param name="selector">
+        /// A function supplying the values for the comparer.
+        /// </param>
         /// <param name="comparer">
         /// The comparer to use when comparing the values returned by the selector. 
         /// The default comparer for that type will be used if this parameter is null.
@@ -160,6 +184,9 @@ namespace ReactiveUI
         }
     }
 
+    /// <summary>
+    /// Convenience class to help chain selectors onto existing parent comparers.
+    /// </summary>
     public static class ComparerChainingExtensions
     {
         /// <summary>
@@ -168,7 +195,12 @@ namespace ReactiveUI
         /// in ascending order based on the values returned by the provided selector. The selector values will be 
         /// compared using the default comparer for the return type of the selector.
         /// </summary>
-        /// <param name="selector">A function supplying the values for the comparator.</param>
+        /// <param name="parent">
+        /// The parent comparer to use first.
+        /// </param>
+        /// <param name="selector">
+        /// A function supplying the values for the comparer.
+        /// </param>
         public static IComparer<T> ThenBy<T, TValue>(this IComparer<T> parent, Func<T, TValue> selector)
         {
             return ThenBy(parent, selector, Comparer<TValue>.Default);
@@ -181,7 +213,15 @@ namespace ReactiveUI
         /// compared using the provided comparer or the default comparer for the return type of the selector if no 
         /// comparer is specified.
         /// </summary>
-        /// <param name="selector">A function supplying the values for the comparator.</param>
+        /// <param name="parent">
+        /// The parent comparer to use first.
+        /// </param>
+        /// <param name="selector">
+        /// A function supplying the values for the comparer.
+        /// </param>
+        /// <param name="comparer">
+        /// The comparer to use when comparing the values returned by the selector. 
+        /// </param>
         public static IComparer<T> ThenBy<T, TValue>(this IComparer<T> parent, Func<T, TValue> selector, IComparer<TValue> comparer)
         {
             return new ChainedComparer<T>(parent, (x, y) => comparer.Compare(selector(x), selector(y)));
@@ -193,7 +233,12 @@ namespace ReactiveUI
         /// in descending order based on the values returned by the provided selector. The selector values will be 
         /// compared using the default comparer for the return type of the selector.
         /// </summary>
-        /// <param name="selector">A function supplying the values for the comparator.</param>
+        /// <param name="parent">
+        /// The parent comparer to use first.
+        /// </param>
+        /// <param name="selector">
+        /// A function supplying the values for the comparer.
+        /// </param>
         public static IComparer<T> ThenByDescending<T, TValue>(this IComparer<T> parent, Func<T, TValue> selector)
         {
             return ThenByDescending(parent, selector, Comparer<TValue>.Default);
@@ -206,7 +251,15 @@ namespace ReactiveUI
         /// compared using the provided comparer or the default comparer for the return type of the selector if no 
         /// comparer is specified.
         /// </summary>
-        /// <param name="selector">A function supplying the values for the comparator.</param>
+        /// <param name="parent">
+        /// The parent comparer to use first.
+        /// </param>
+        /// <param name="selector">
+        /// A function supplying the values for the comparer.
+        /// </param>
+        /// <param name="comparer">
+        /// The comparer to use when comparing the values returned by the selector. 
+        /// </param>
         public static IComparer<T> ThenByDescending<T, TValue>(this IComparer<T> parent, Func<T, TValue> selector, IComparer<TValue> comparer)
         {
             return new ChainedComparer<T>(parent, (x, y) => -comparer.Compare(selector(x), selector(y)));

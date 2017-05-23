@@ -61,7 +61,6 @@ namespace ReactiveUI
         /// </description>
         /// </item>
         /// <item>
-        /// <item>
         /// <description>
         /// Look for a service registered under the type whose name is given to us by passing <c>T</c> to <see cref="ViewModelToViewFunc"/> (which defaults to changing "ViewModel" to "View").
         /// </description>
@@ -86,6 +85,9 @@ namespace ReactiveUI
         /// </remarks>
         /// <param name="viewModel">
         /// The view model whose associated view is to be resolved.
+        /// </param>
+        /// <param name="contract">
+        /// Optional contract to be used when resolving from Splat
         /// </param>
         /// <returns>
         /// The view associated with the given view model.
