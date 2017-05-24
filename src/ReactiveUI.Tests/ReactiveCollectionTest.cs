@@ -1,33 +1,35 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Reactive.Linq;
-using System.Text;
-using ReactiveUI.Testing;
-using Xunit;
-using Splat;
-using Microsoft.Reactive.Testing;
-using System.Collections.Specialized;
-using System.Reactive.Subjects;
 using System.Reactive;
-using System.Diagnostics;
-using System.Threading;
 using System.Reactive.Disposables;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
+using System.Text;
+using System.Threading;
+using Microsoft.Reactive.Testing;
+using ReactiveUI.Testing;
+using Splat;
+using Xunit;
 
 namespace ReactiveUI.Tests
 {
     public class FakeCollectionModel : ReactiveObject
     {
         bool isHidden;
-        public bool IsHidden {
+        public bool IsHidden
+        {
             get { return isHidden; }
             set { this.RaiseAndSetIfChanged(ref isHidden, value); }
         }
 
         int someNumber;
-        public int SomeNumber {
+        public int SomeNumber
+        {
             get { return someNumber; }
             set { this.RaiseAndSetIfChanged(ref someNumber, value); }
         }
@@ -38,7 +40,8 @@ namespace ReactiveUI.Tests
         public FakeCollectionModel Model { get; protected set; }
 
         ObservableAsPropertyHelper<string> numberAsString;
-        public string NumberAsString {
+        public string NumberAsString
+        {
             get { return numberAsString.Value; }
         }
 
@@ -51,29 +54,34 @@ namespace ReactiveUI.Tests
         }
     }
 
-    class NestedTextModel : ReactiveObject 
+    class NestedTextModel : ReactiveObject
     {
         string text;
-        public string Text {
+        public string Text
+        {
             get { return text; }
             set { this.RaiseAndSetIfChanged(ref text, value); }
         }
 
         bool hasData;
-        public bool HasData {
+        public bool HasData
+        {
             get { return hasData; }
             set { this.RaiseAndSetIfChanged(ref hasData, value); }
         }
     }
 
-    class TextModel : ReactiveObject 
+    class TextModel : ReactiveObject
     {
         NestedTextModel value;
-        public NestedTextModel Value {
-            get {
+        public NestedTextModel Value
+        {
+            get
+            {
                 if (value != null) return value;
-                var newValue = 
-                    value = new NestedTextModel() {
+                var newValue =
+                    value = new NestedTextModel()
+                    {
                         Text = "text",
                         HasData = true
                     };
@@ -83,7 +91,8 @@ namespace ReactiveUI.Tests
             }
         }
 
-        public bool HasData {
+        public bool HasData
+        {
             get { return Value.HasData; }
         }
 
@@ -105,7 +114,7 @@ namespace ReactiveUI.Tests
             Assert.Equal(0, list.Count);
 
             ICollection collection = new ReactiveList<int>();
-            var l = (IList) collection;
+            var l = (IList)collection;
             Assert.Same(collection, l);
         }
 
@@ -132,11 +141,11 @@ namespace ReactiveUI.Tests
             fixture.RemoveAt(1);
             fixture.Clear();
 
-            var before_results = new[] {0,1,2,3,2};
+            var before_results = new[] { 0, 1, 2, 3, 2 };
             Assert.Equal(before_results.Length, before_output.Count);
             before_results.AssertAreEqual(before_output);
 
-            var results = new[]{1,2,3,2,0};
+            var results = new[] { 1, 2, 3, 2, 0 };
             Assert.Equal(results.Length, output.Count);
             results.AssertAreEqual(output);
         }
@@ -144,9 +153,9 @@ namespace ReactiveUI.Tests
         [Fact]
         public void CollectionCountChangedFiresWhenClearing()
         {
-            var items = new ReactiveList<object>(new []{new object()});
+            var items = new ReactiveList<object>(new[] { new object() });
             bool countChanged = false;
-            items.CountChanged.Subscribe(_ => {countChanged = true;});
+            items.CountChanged.Subscribe(_ => { countChanged = true; });
 
             items.Clear();
 
@@ -174,7 +183,7 @@ namespace ReactiveUI.Tests
         {
             var fixture = new ReactiveList<int>();
 
-            Assert.Throws<ArgumentNullException>(() => fixture.InsertRange(1,null));
+            Assert.Throws<ArgumentNullException>(() => fixture.InsertRange(1, null));
         }
 
         [Fact]
@@ -205,11 +214,11 @@ namespace ReactiveUI.Tests
             fixture.RemoveAt(1);
             fixture.Clear();
 
-            var added_results = new[]{10,20,30};
+            var added_results = new[] { 10, 20, 30 };
             Assert.Equal(added_results.Length, added.Count);
             added_results.AssertAreEqual(added);
 
-            var removed_results = new[]{20};
+            var removed_results = new[] { 20 };
             Assert.Equal(removed_results.Length, removed.Count);
             removed_results.AssertAreEqual(removed);
 
@@ -238,7 +247,7 @@ namespace ReactiveUI.Tests
             Observable.FromEventPattern<NotifyCollectionChangedEventHandler, NotifyCollectionChangedEventArgs>(
                 x => reference.CollectionChanged += x,
                 x => reference.CollectionChanged -= x)
-            .Select(x=> x.EventArgs)
+            .Select(x => x.EventArgs)
             .Subscribe(referenceNotifications.Add);
 
             for (int i = 0; i < items.Length; i++) {
@@ -267,7 +276,7 @@ namespace ReactiveUI.Tests
         [Fact]
         public void ReactiveCollectionIsRoundTrippable()
         {
-            var output = new[] {"Foo", "Bar", "Baz", "Bamf"};
+            var output = new[] { "Foo", "Bar", "Baz", "Bamf" };
             var fixture = new ReactiveList<string>(output);
 
             string json = JSONHelper.Serialize(fixture);
@@ -291,11 +300,11 @@ namespace ReactiveUI.Tests
             var item2 = new TestFixture() { IsOnlyOneWord = "Bar" };
 
             fixture.ItemChanging.Subscribe(x => {
-                before_output.Add(new Tuple<TestFixture,string>((TestFixture)x.Sender, x.PropertyName));
+                before_output.Add(new Tuple<TestFixture, string>((TestFixture)x.Sender, x.PropertyName));
             });
 
             fixture.ItemChanged.Subscribe(x => {
-                output.Add(new Tuple<TestFixture,string>((TestFixture)x.Sender, x.PropertyName));
+                output.Add(new Tuple<TestFixture, string>((TestFixture)x.Sender, x.PropertyName));
             });
 
             fixture.Add(item1);
@@ -314,9 +323,9 @@ namespace ReactiveUI.Tests
             item1.IsNotNullString = "Bamf";
             Assert.Equal(2, output.Count);
 
-            new[]{item1, item2}.AssertAreEqual(output.Select(x => x.Item1));
-            new[]{item1, item2}.AssertAreEqual(before_output.Select(x => x.Item1));
-            new[]{"IsOnlyOneWord", "IsNotNullString"}.AssertAreEqual(output.Select(x => x.Item2));
+            new[] { item1, item2 }.AssertAreEqual(output.Select(x => x.Item1));
+            new[] { item1, item2 }.AssertAreEqual(before_output.Select(x => x.Item1));
+            new[] { "IsOnlyOneWord", "IsNotNullString" }.AssertAreEqual(output.Select(x => x.Item2));
         }
 
         [Fact]
@@ -327,7 +336,7 @@ namespace ReactiveUI.Tests
             var item1 = new TestFixture() { IsOnlyOneWord = "Foo" };
 
             fixture.ItemChanged.Subscribe(x => {
-                output.Add(new Tuple<TestFixture,string>((TestFixture)x.Sender, x.PropertyName));
+                output.Add(new Tuple<TestFixture, string>((TestFixture)x.Sender, x.PropertyName));
             });
 
             fixture.Add(item1);
@@ -426,13 +435,11 @@ namespace ReactiveUI.Tests
             var item1 = new TestFixture() { IsOnlyOneWord = "Foo" };
             var item2 = new TestFixture() { IsOnlyOneWord = "Bar" };
 
-            fixture.ItemChanging.Subscribe(x =>
-            {
+            fixture.ItemChanging.Subscribe(x => {
                 before_output.Add(new Tuple<TestFixture, string>((TestFixture)x.Sender, x.PropertyName));
             });
 
-            fixture.ItemChanged.Subscribe(x =>
-            {
+            fixture.ItemChanged.Subscribe(x => {
                 output.Add(new Tuple<TestFixture, string>((TestFixture)x.Sender, x.PropertyName));
             });
 
@@ -443,8 +450,7 @@ namespace ReactiveUI.Tests
             item2.IsNotNullString = "FooBar";
             Assert.Equal(1, output.Count);
 
-            using (var subscription = fixture.suppressChangeNotifications())
-            {
+            using (var subscription = fixture.suppressChangeNotifications()) {
                 fixture[0] = item2;
             }
 
@@ -466,7 +472,7 @@ namespace ReactiveUI.Tests
             var reset = fixture.ShouldReset.CreateCollection();
             Assert.Equal(0, reset.Count);
 
-            fixture.AddRange(new[] { 2,3,4,5,6,7,8,9,10,11,12,13, });
+            fixture.AddRange(new[] { 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, });
             Assert.Equal(1, reset.Count);
         }
 
@@ -511,11 +517,11 @@ namespace ReactiveUI.Tests
             var output2 = new List<Tuple<TestFixture, string>>();
 
             fixture1.ItemChanged.Subscribe(x => {
-                output1.Add(new Tuple<TestFixture,string>((TestFixture)x.Sender, x.PropertyName));
+                output1.Add(new Tuple<TestFixture, string>((TestFixture)x.Sender, x.PropertyName));
             });
 
             fixture2.ItemChanged.Subscribe(x => {
-                output2.Add(new Tuple<TestFixture,string>((TestFixture)x.Sender, x.PropertyName));
+                output2.Add(new Tuple<TestFixture, string>((TestFixture)x.Sender, x.PropertyName));
             });
 
             fixture1.Add(item1);
@@ -537,21 +543,21 @@ namespace ReactiveUI.Tests
         [Fact]
         public void CreateCollectionWithoutTimer()
         {
-            var input = new[] {"Foo", "Bar", "Baz", "Bamf"};
+            var input = new[] { "Foo", "Bar", "Baz", "Bamf" };
             var fixture = (new TestScheduler()).With(sched => {
                 var f = input.ToObservable(sched).CreateCollection();
 
                 sched.Start();
                 return f;
             });
-            
+
             input.AssertAreEqual(fixture);
         }
 
         [Fact]
         public void CreateCollectionWithTimer()
         {
-            var input = new[] {"Foo", "Bar", "Baz", "Bamf"};
+            var input = new[] { "Foo", "Bar", "Baz", "Bamf" };
             var sched = new TestScheduler();
 
             using (TestUtils.WithScheduler(sched)) {
@@ -560,10 +566,10 @@ namespace ReactiveUI.Tests
                 fixture = input.ToObservable(sched).CreateCollection(TimeSpan.FromSeconds(0.5));
                 sched.AdvanceToMs(1005);
                 fixture.AssertAreEqual(input.Take(2));
-                
+
                 sched.AdvanceToMs(1505);
                 fixture.AssertAreEqual(input.Take(3));
-    
+
                 sched.AdvanceToMs(10000);
                 fixture.AssertAreEqual(input);
             }
@@ -572,7 +578,7 @@ namespace ReactiveUI.Tests
         [Fact]
         public void DerivedCollectionsShouldFollowBaseCollection()
         {
-            var input = new[] {"Foo", "Bar", "Baz", "Bamf"};
+            var input = new[] { "Foo", "Bar", "Baz", "Bamf" };
             var fixture = new ReactiveList<TestFixture>(
                 input.Select(x => new TestFixture() { IsOnlyOneWord = x }));
 
@@ -598,13 +604,13 @@ namespace ReactiveUI.Tests
         [Fact]
         public void DerivedCollectionsShouldBeFiltered()
         {
-            var input = new[] {"Foo", "Bar", "Baz", "Bamf"};
+            var input = new[] { "Foo", "Bar", "Baz", "Bamf" };
             var fixture = new ReactiveList<TestFixture>(
                 input.Select(x => new TestFixture() { IsOnlyOneWord = x }));
             var itemsAdded = new List<TestFixture>();
             var itemsRemoved = new List<TestFixture>();
 
-            var output = fixture.CreateDerivedCollection(x => x, x => x.IsOnlyOneWord[0] == 'F', (l,r) => l.IsOnlyOneWord.CompareTo(r.IsOnlyOneWord));
+            var output = fixture.CreateDerivedCollection(x => x, x => x.IsOnlyOneWord[0] == 'F', (l, r) => l.IsOnlyOneWord.CompareTo(r.IsOnlyOneWord));
             output.ItemsAdded.Subscribe(itemsAdded.Add);
             output.ItemsRemoved.Subscribe(itemsRemoved.Add);
 
@@ -612,12 +618,12 @@ namespace ReactiveUI.Tests
             Assert.Equal(0, itemsAdded.Count);
             Assert.Equal(0, itemsRemoved.Count);
 
-            fixture.Add(new TestFixture() {IsOnlyOneWord = "Boof"});
+            fixture.Add(new TestFixture() { IsOnlyOneWord = "Boof" });
             Assert.Equal(1, output.Count);
             Assert.Equal(0, itemsAdded.Count);
             Assert.Equal(0, itemsRemoved.Count);
 
-            fixture.Add(new TestFixture() {IsOnlyOneWord = "Far"});
+            fixture.Add(new TestFixture() { IsOnlyOneWord = "Far" });
             Assert.Equal(2, output.Count);
             Assert.Equal(1, itemsAdded.Count);
             Assert.Equal(0, itemsRemoved.Count);
@@ -667,7 +673,7 @@ namespace ReactiveUI.Tests
             var input = new List<string> { "Foo" };
             var resetSubject = new Subject<Unit>();
             var derived = input.CreateDerivedCollection(x => x, signalReset: resetSubject);
-            
+
             var changeNotifications = new List<NotifyCollectionChangedEventArgs>();
             derived.Changed.Subscribe(changeNotifications.Add);
 
@@ -714,8 +720,8 @@ namespace ReactiveUI.Tests
         [Fact]
         public void DerivedCollectionShouldUnderstandMoveSignals()
         {
-            var source = new System.Collections.ObjectModel.ObservableCollection<string> { 
-                "a", "b", "c", "d", "e", "f" 
+            var source = new System.Collections.ObjectModel.ObservableCollection<string> {
+                "a", "b", "c", "d", "e", "f"
             };
             var derived = source.CreateDerivedCollection(x => x);
 
@@ -765,7 +771,7 @@ namespace ReactiveUI.Tests
 
             source.Move(5, 0);
 
-            Assert.True(source.SequenceEqual(new[] { "a", "b", "c", "d", "e", "f",  }));
+            Assert.True(source.SequenceEqual(new[] { "a", "b", "c", "d", "e", "f", }));
             Assert.True(derived.SequenceEqual(source));
         }
 #endif
@@ -774,8 +780,8 @@ namespace ReactiveUI.Tests
         [Fact]
         public void DerivedCollectionShouldUnderstandNestedMoveSignals()
         {
-            var source = new System.Collections.ObjectModel.ObservableCollection<string> { 
-                "a", "b", "c", "d", "e", "f" 
+            var source = new System.Collections.ObjectModel.ObservableCollection<string> {
+                "a", "b", "c", "d", "e", "f"
             };
             var derived = source.CreateDerivedCollection(x => x);
             var nested = derived.CreateDerivedCollection(x => x);
@@ -804,13 +810,13 @@ namespace ReactiveUI.Tests
         public void DerivedCollectionShouldUnderstandMoveEvenWhenSorted()
         {
             var sanity = new List<string> { "a", "b", "c", "d", "e", "f" };
-            var source = new System.Collections.ObjectModel.ObservableCollection<string> { 
-                "a", "b", "c", "d", "e", "f" 
+            var source = new System.Collections.ObjectModel.ObservableCollection<string> {
+                "a", "b", "c", "d", "e", "f"
             };
 
             var derived = source.CreateDerivedCollection(
                 selector: x => x,
-                filter: x => x != "c", 
+                filter: x => x != "c",
                 orderer: (x, y) => x.CompareTo(y)
             );
 
@@ -859,8 +865,8 @@ namespace ReactiveUI.Tests
         public void DerivedCollectionShouldUnderstandDummyMoveSignal()
         {
             var sanity = new List<string> { "a", "b", "c", "d", "e", "f" };
-            var source = new System.Collections.ObjectModel.ObservableCollection<string> { 
-                "a", "b", "c", "d", "e", "f" 
+            var source = new System.Collections.ObjectModel.ObservableCollection<string> {
+                "a", "b", "c", "d", "e", "f"
             };
 
             var derived = source.CreateDerivedCollection(x => x);
@@ -941,14 +947,14 @@ namespace ReactiveUI.Tests
             var source = new ReactiveList<char>(input);
 
             // A derived collection that filters away 'A' and 'B'
-            var derived = source.CreateDerivedCollection(x => x, x=> x >= 'C');
+            var derived = source.CreateDerivedCollection(x => x, x => x >= 'C');
 
             var changeNotifications = new List<NotifyCollectionChangedEventArgs>();
             derived.Changed.Subscribe(changeNotifications.Add);
 
             Assert.Equal(0, changeNotifications.Count);
             Assert.Equal(2, derived.Count);
-            Assert.True(derived.SequenceEqual(new [] { 'C', 'D' }));
+            Assert.True(derived.SequenceEqual(new[] { 'C', 'D' }));
 
             // The tricky part here is that 'B' isn't in the derived collection, only 'C' is and this test
             // will detect if the dervied collection gets tripped up and removes 'C' instead
@@ -962,29 +968,29 @@ namespace ReactiveUI.Tests
         [Fact]
         public void DerviedCollectionShouldHandleItemsRemoved()
         {
-           var input = new[] { "Foo", "Bar", "Baz", "Bamf" };
-           var disposed = new List<TestFixture>();
-           var fixture = new ReactiveList<TestFixture>(
-               input.Select(x => new TestFixture() { IsOnlyOneWord = x }));
+            var input = new[] { "Foo", "Bar", "Baz", "Bamf" };
+            var disposed = new List<TestFixture>();
+            var fixture = new ReactiveList<TestFixture>(
+                input.Select(x => new TestFixture() { IsOnlyOneWord = x }));
 
-           var output = fixture.CreateDerivedCollection(x => Disposable.Create(() => disposed.Add(x)), item => item.Dispose());
+            var output = fixture.CreateDerivedCollection(x => Disposable.Create(() => disposed.Add(x)), item => item.Dispose());
 
-           fixture.Add(new TestFixture() { IsOnlyOneWord = "Hello" });
-           Assert.Equal(5, output.Count);
+            fixture.Add(new TestFixture() { IsOnlyOneWord = "Hello" });
+            Assert.Equal(5, output.Count);
 
-           fixture.RemoveAt(3);
-           Assert.Equal(4, output.Count);
-           Assert.Equal(1, disposed.Count);
-           Assert.Equal("Bamf", disposed[0].IsOnlyOneWord);
+            fixture.RemoveAt(3);
+            Assert.Equal(4, output.Count);
+            Assert.Equal(1, disposed.Count);
+            Assert.Equal("Bamf", disposed[0].IsOnlyOneWord);
 
-           fixture[1] = new TestFixture() { IsOnlyOneWord = "Goodbye" };
-           Assert.Equal(4, output.Count);
-           Assert.Equal(2, disposed.Count);
-           Assert.Equal("Bar", disposed[1].IsOnlyOneWord);
+            fixture[1] = new TestFixture() { IsOnlyOneWord = "Goodbye" };
+            Assert.Equal(4, output.Count);
+            Assert.Equal(2, disposed.Count);
+            Assert.Equal("Bar", disposed[1].IsOnlyOneWord);
 
-           var count = output.Count;
-           output.Dispose();
-           Assert.Equal(disposed.Count, 2 + count);
+            var count = output.Count;
+            output.Dispose();
+            Assert.Equal(disposed.Count, 2 + count);
         }
 
         public class DerivedCollectionLogging
@@ -1004,7 +1010,7 @@ namespace ReactiveUI.Tests
                 var resolver = new ModernDependencyResolver();
                 var logger = new TestLogger();
 
-                using(resolver.WithResolver()) {
+                using (resolver.WithResolver()) {
                     resolver.RegisterConstant(new FuncLogManager(t => new WrappingFullLogger(logger, t)), typeof(ILogManager));
 
                     var incc = new ReactiveList<NoOneHasEverSeenThisClassBefore>();
@@ -1038,7 +1044,7 @@ namespace ReactiveUI.Tests
                 var resolver = new ModernDependencyResolver();
                 var logger = new TestLogger();
 
-                using(resolver.WithResolver()) {
+                using (resolver.WithResolver()) {
                     resolver.RegisterConstant(new FuncLogManager(t => new WrappingFullLogger(logger, t)), typeof(ILogManager));
 
                     var incc = new ReactiveList<NoOneHasEverSeenThisClassBeforeEither>();
@@ -1170,7 +1176,8 @@ namespace ReactiveUI.Tests
 
                 var start = new[] { adam, bob, carol, dan, eve };
 
-                var employees = new ReactiveList<ReactiveEmployee>(start) {
+                var employees = new ReactiveList<ReactiveEmployee>(start)
+                {
                     ChangeTrackingEnabled = true
                 };
 
@@ -1324,7 +1331,8 @@ namespace ReactiveUI.Tests
                 var bar = new ReactiveVisibilityItem<string>("Bar", true);
                 var baz = new ReactiveVisibilityItem<string>("Baz", true);
 
-                var items = new ReactiveList<ReactiveVisibilityItem<string>>(new[] { foo, bar, baz }) {
+                var items = new ReactiveList<ReactiveVisibilityItem<string>>(new[] { foo, bar, baz })
+                {
                     ChangeTrackingEnabled = true
                 };
 
@@ -1352,7 +1360,8 @@ namespace ReactiveUI.Tests
                 var d = new ReactiveVisibilityItem<string>("D", false);
                 var e = new ReactiveVisibilityItem<string>("E", true);
 
-                var items = new ReactiveList<ReactiveVisibilityItem<string>>(new[] { a, b, c, d, e }) {
+                var items = new ReactiveList<ReactiveVisibilityItem<string>>(new[] { a, b, c, d, e })
+                {
                     ChangeTrackingEnabled = true
                 };
 
@@ -1405,7 +1414,7 @@ namespace ReactiveUI.Tests
                 };
 
                 var itemsByVisibility = items.CreateDerivedCollection(
-                    x => x, 
+                    x => x,
                     orderer: OrderedComparer<ReactiveVisibilityItem<string>>
                         .OrderByDescending(x => x.IsVisible)
                         .ThenBy(x => x.Value)
@@ -1451,20 +1460,20 @@ namespace ReactiveUI.Tests
                 e.IsVisible = false;
 
                 Assert.True(items.SequenceEqual(new[] { a, c, d, e, f }));
-                Assert.True(itemsByVisibility.SequenceEqual(new[] { 
+                Assert.True(itemsByVisibility.SequenceEqual(new[] {
                     c, f,
                     d, // d is now y
                     a, // a is now z
                     e  // e is now hidden
                 }));
 
-                Assert.True(onlyVisibleReversed.SequenceEqual(new[] { 
+                Assert.True(onlyVisibleReversed.SequenceEqual(new[] {
                     a, // a is now z
                     d, // d is now y
                     f, c
                 }));
 
-                Assert.True(onlyVisibleAndGreaterThanC.SequenceEqual(new[] { 
+                Assert.True(onlyVisibleAndGreaterThanC.SequenceEqual(new[] {
                     f,
                     d, // d is now y
                     a, // a is now z
@@ -1626,10 +1635,10 @@ namespace ReactiveUI.Tests
         [Fact]
         public void SortShouldActuallySort()
         {
-            var fixture = new ReactiveList<int>(new[] {5, 1, 3, 2, 4,});
+            var fixture = new ReactiveList<int>(new[] { 5, 1, 3, 2, 4, });
             fixture.Sort();
 
-            Assert.True(new[] {1, 2, 3, 4, 5,}.Zip(fixture, (expected, actual) => expected == actual).All(x => x));
+            Assert.True(new[] { 1, 2, 3, 4, 5, }.Zip(fixture, (expected, actual) => expected == actual).All(x => x));
         }
 
         [Fact]
@@ -1688,8 +1697,8 @@ namespace ReactiveUI.Tests
             Assert.Equal(4, viewModels.Count);
         }
 
-                
-        ReactiveList<TextModel> makeAsyncCollection(int maxSize) 
+
+        ReactiveList<TextModel> makeAsyncCollection(int maxSize)
         {
             return new ReactiveList<TextModel>(Enumerable.Repeat(Unit.Default, maxSize)
                 .Select(_ => new TextModel()));
@@ -1697,28 +1706,29 @@ namespace ReactiveUI.Tests
 
         [Fact]
         public void TestDelayNotifications()
-	{
+        {
             var maxSize = 10;
             var data = makeAsyncCollection(maxSize);
 
-            var list = new ReactiveList<TextModel>(data) {
+            var list = new ReactiveList<TextModel>(data)
+            {
                 ChangeTrackingEnabled = true
             };
 
             var derivedList = list.CreateDerivedCollection(
                 m => m.Value, m => m.HasData, (a, b) => a.Text.CompareTo(b.Text),
-                Observable.Never(4) /*list.ShouldReset*/, 
+                Observable.Never(4) /*list.ShouldReset*/,
                 scheduler: RxApp.MainThreadScheduler);
 
             derivedList.CountChanged
                 .StartWith(derivedList.Count)
                 .Subscribe(count => {
-                    Console.WriteLine(count);
+                    Debug.WriteLine(count);
                     Assert.True(count <= maxSize);
                 });
 
             data = makeAsyncCollection(maxSize);
-                
+
             Observable.Delay(Observables.Unit, TimeSpan.FromMilliseconds(100))
                 .ObserveOn(RxApp.MainThreadScheduler)
                 .Subscribe(_ => {
@@ -1733,7 +1743,8 @@ namespace ReactiveUI.Tests
         }
 
         [Fact]
-        public void IListTSmokeTest() {
+        public void IListTSmokeTest()
+        {
             var fixture = new ReactiveList<string>() as IList<string>;
             Assert.NotNull(fixture);
 

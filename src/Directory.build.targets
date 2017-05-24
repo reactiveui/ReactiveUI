@@ -1,0 +1,25 @@
+<Project>
+  <PropertyGroup Condition="'$(TargetFramework)' == 'netstandard1.1'">
+    <DefineConstants>$(DefineConstants);PORTABLE</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net45'">
+    <DefineConstants>$(DefineConstants);NET_45;XAML</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(TargetFramework)' == 'uap10.0'">
+    <DefineConstants>$(DefineConstants);NETFX_CORE;XAML;WINDOWS_UWP</DefineConstants>
+    <TargetPlatformVersion>10.0.14393.0</TargetPlatformVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(TargetFramework)' == 'Xamarin.iOS10'">
+    <DefineConstants>$(DefineConstants);MONO;UIKIT;COCOA</DefineConstants>
+  </PropertyGroup>
+   <PropertyGroup Condition="'$(TargetFramework)' == 'Xamarin.Mac20'">
+    <DefineConstants>$(DefineConstants);MONO;COCOA</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(TargetFramework)' == 'MonoAndroid70'">
+    <DefineConstants>$(DefineConstants);MONO;ANDROID</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'uap10.0' ">
+    <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform " Version="5.2.2" />
+  </ItemGroup>
+</Project>

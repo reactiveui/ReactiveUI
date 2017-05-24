@@ -9,6 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>EventBuilder</RootNamespace>
     <AssemblyName>EventBuilder</AssemblyName>
+    <TargetFramework>net45</TargetFramework>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -62,39 +63,6 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
-    <Reference Include="CommandLine, Version=1.9.71.2, Culture=neutral, PublicKeyToken=de6f01bd326f8c32">
-      <HintPath>..\packages\CommandLineParser.1.9.71\lib\net45\CommandLine.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Web.XmlTransform, Version=2.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-      <HintPath>..\packages\Microsoft.Web.Xdt.2.1.1\lib\net40\Microsoft.Web.XmlTransform.dll</HintPath>
-    </Reference>
-    <Reference Include="NuGet.Core, Version=2.10.1.766, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
-      <HintPath>..\packages\NuGet.Core.2.10.1\lib\net40-Client\NuGet.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="Nustache.Core, Version=1.15.3.7, Culture=neutral, PublicKeyToken=efd6f3d8f76ecd9f">
-      <HintPath>..\packages\Nustache.1.15.3.7\lib\net20\Nustache.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="Polly, Version=3.0.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\packages\Polly.3.0.0\lib\net45\Polly.dll</HintPath>
-    </Reference>
-    <Reference Include="Serilog, Version=1.5.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10">
-      <HintPath>..\packages\Serilog.1.5.14\lib\net45\Serilog.dll</HintPath>
-    </Reference>
-    <Reference Include="Serilog.FullNetFx, Version=1.5.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10">
-      <HintPath>..\packages\Serilog.1.5.14\lib\net45\Serilog.FullNetFx.dll</HintPath>
-    </Reference>
-    <Reference Include="Mono.Cecil">
-      <HintPath>..\packages\Mono.Cecil.0.9.6.1\lib\net45\Mono.Cecil.dll</HintPath>
-    </Reference>
-    <Reference Include="Mono.Cecil.Mdb">
-      <HintPath>..\packages\Mono.Cecil.0.9.6.1\lib\net45\Mono.Cecil.Mdb.dll</HintPath>
-    </Reference>
-    <Reference Include="Mono.Cecil.Pdb">
-      <HintPath>..\packages\Mono.Cecil.0.9.6.1\lib\net45\Mono.Cecil.Pdb.dll</HintPath>
-    </Reference>
-    <Reference Include="Mono.Cecil.Rocks">
-      <HintPath>..\packages\Mono.Cecil.0.9.6.1\lib\net45\Mono.Cecil.Rocks.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Cecil\DelegateTemplateInformation.cs" />
@@ -115,8 +83,6 @@
     <Compile Include="Platforms\Mac.cs" />
     <Compile Include="Platforms\Net45.cs" />
     <Compile Include="Platforms\UWP.cs" />
-    <Compile Include="Platforms\WP81.cs" />
-    <Compile Include="Platforms\WPA81.cs" />
     <Compile Include="Platforms\XamForms.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -129,7 +95,29 @@
     <None Include="DefaultTemplate.mustache">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="CommandLineParser">
+      <Version>1.9.71</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Web.Xdt">
+      <Version>2.1.1</Version>
+    </PackageReference>
+    <PackageReference Include="Mono.Cecil">
+      <Version>0.9.6.1</Version>
+    </PackageReference>
+    <PackageReference Include="NuGet.Core">
+      <Version>2.10.1</Version>
+    </PackageReference>
+    <PackageReference Include="Nustache">
+      <Version>1.15.3.7</Version>
+    </PackageReference>
+    <PackageReference Include="Polly">
+      <Version>3.0.0</Version>
+    </PackageReference>
+    <PackageReference Include="Serilog">
+      <Version>1.5.14</Version>
+    </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

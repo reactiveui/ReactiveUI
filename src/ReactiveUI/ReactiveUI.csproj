@@ -1,144 +1,72 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <MinimumVisualStudioVersion>11.0</MinimumVisualStudioVersion>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{464CB812-F99F-401B-BE4C-E8F0515CD19D}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ReactiveUI</RootNamespace>
+    <TargetFrameworks>netstandard1.1;net45;uap10.0;Xamarin.iOS10;Xamarin.Mac20;MonoAndroid70</TargetFrameworks>
     <AssemblyName>ReactiveUI</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <TargetFrameworkProfile>Profile259</TargetFrameworkProfile>
-    <FileAlignment>512</FileAlignment>
-    <ProjectTypeGuids>{786C830F-07A1-408B-BD7F-6EE04809D6DB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
-    <RestorePackages>true</RestorePackages>
-    <ProductVersion>8.0.30703</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
+    <RootNamespace>ReactiveUI</RootNamespace>
+    <Description>A MVVM framework that integrates with the Reactive Extensions for .NET to create elegant, testable User Interfaces that run on any mobile or desktop platform. Supports Xamarin.iOS, Xamarin.Android, Xamarin.Mac, Xamarin Forms, WPF, Windows Forms, Windows Phone 8.1, Windows Store and Universal Windows Platform (UWP).</Description>
+    <PackageId>reactiveui</PackageId>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\portable-net45+netcore45+wpa81+win8+wp8+UAP10+MonoAndroid403+MonoTouch10+Xamarin.iOS10\</OutputPath>
-    <IntermediateOutputPath>obj\Debug\portable-net45+netcore45+wpa81+win8+wp8+UAP10+MonoAndroid403+MonoTouch10+Xamarin.iOS10\</IntermediateOutputPath>
-    <DefineConstants>TRACE;DEBUG;PORTABLE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\portable-net45+netcore45+wpa81+win8+wp8+UAP10+MonoAndroid403+MonoTouch10+Xamarin.iOS10\</OutputPath>
-    <IntermediateOutputPath>obj\Release\portable-net45+wpa81+win8+netcore45+wp8+UAP10+MonoAndroid403+MonoTouch10+Xamarin.iOS10\</IntermediateOutputPath>
-    <DefineConstants>TRACE;PORTABLE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Release\portable-net45+netcore45+wpa81+win8+wp8+UAP10+MonoAndroid403+MonoTouch10+Xamarin.iOS10\ReactiveUI.XML</DocumentationFile>
-    <DebugSymbols>true</DebugSymbols>
-  </PropertyGroup>
+
   <ItemGroup>
-    <!-- A reference to the entire .NET Framework is automatically included -->
-    <None Include="packages.ReactiveUI.config" />
-    <None Include="VariadicTemplates.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>VariadicTemplates.cs</LastGenOutput>
-    </None>
-    <Reference Include="Splat">
-      <HintPath>..\packages\Splat.1.6.2\lib\Portable-net45+win+wpa81+wp80\Splat.dll</HintPath>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Reactive.Core">
-      <HintPath>..\packages\Rx-Core.2.2.5\lib\portable-net45+winrt45+wp8+wpa81\System.Reactive.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Reactive.Interfaces">
-      <HintPath>..\packages\Rx-Interfaces.2.2.5\lib\portable-net45+winrt45+wp8+wpa81\System.Reactive.Interfaces.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Reactive.Linq">
-      <HintPath>..\packages\Rx-Linq.2.2.5\lib\portable-net45+winrt45+wp8+wpa81\System.Reactive.Linq.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Reactive.PlatformServices">
-      <HintPath>..\packages\Rx-PlatformServices.2.2.5\lib\portable-net45+winrt45+wp8+wpa81\System.Reactive.PlatformServices.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="Microsoft.CSharp" />
+    <Compile Remove="Platforms\**\*.cs" />
+    <None Include="Platforms\**\*.cs" />
+    <PackageReference Include="System.Reactive" Version="3.1.0" />
+    <PackageReference Include="Splat" Version="2.0.0" />
   </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard1.1' ">
+    <Compile Include="Platforms\netstandard1.1\**\*.cs" />
+    <PackageReference Include="System.ComponentModel" Version="4.3.0" />
+    <PackageReference Include="System.Diagnostics.Contracts" Version="4.3.0" />
+    <PackageReference Include="System.Dynamic.Runtime" Version="4.3.0" />
+    <PackageReference Include="System.Runtime.Serialization.Primitives" Version="4.3.0" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)'!='netstandard1.1'">
+    <Compile Include="Platforms\shared\**\*.cs" />    
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net45' ">
+    <Compile Include="Platforms\windows-common\**\*.cs" />
+    <Compile Include="Platforms\wpf\**\*.cs" />
+    <Reference Include="System.Xaml" />
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="PresentationFramework.Aero" />
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'uap10.0' ">
+    <Compile Include="Platforms\windows-common\**\*.cs" />
+    <Compile Include="Platforms\uap10.0\**\*.cs" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'Xamarin.iOS10' ">
+    <Compile Include="Platforms\apple-common\**\*.cs" />
+    <Compile Include="Platforms\ios\**\*.cs" />
+    <Compile Include="Platforms\xamarin-common\**\*.cs" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'Xamarin.Mac20' ">
+    <Compile Include="Platforms\apple-common\**\*.cs" />
+    <Compile Include="Platforms\mac\**\*.cs" />
+    <Compile Include="Platforms\xamarin-common\**\*.cs" />
+    <Reference Include="System.Runtime.Serialization" />    
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'MonoAndroid70' ">
+    <Compile Include="Platforms\android\**\*.cs" />
+    <Compile Include="Platforms\xamarin-common\**\*.cs" />
+  </ItemGroup>  
+  
   <ItemGroup>
-    <Compile Include="..\CommonAssemblyInfo.cs">
-      <Link>Properties\CommonAssemblyInfo.cs</Link>
-    </Compile>
-    <Compile Include="DisposableMixins.cs" />
-    <Compile Include="Activation.cs" />
-    <Compile Include="ExpressionMixins.cs" />
-    <Compile Include="ExpressionRewriter.cs" />
-    <Compile Include="Interactions.cs" />
-    <Compile Include="Legacy\Errors.cs" />
-    <Compile Include="Observables.cs" />
-    <Compile Include="PortableLibraryStubs.cs" />
-    <Compile Include="ReactiveBinding.cs" />
-    <Compile Include="AutoPersistHelper.cs" />
-    <Compile Include="BindingTypeConverters.cs" />
-    <Compile Include="CollectionDebugView.cs" />
-    <Compile Include="CommandBinding.cs" />
-    <Compile Include="CompatMixins.cs" />
-    <Compile Include="ContractStubs.cs" />
-    <Compile Include="IDependencyResolver.cs" />
-    <Compile Include="INPCObservableForProperty.cs" />
-    <Compile Include="Interfaces.cs" />
-    <Compile Include="IROObservableForProperty.cs" />
-    <Compile Include="MessageBus.cs" />
-    <Compile Include="SuspensionHost.cs" />
-    <Compile Include="ObservableAsPropertyHelper.cs" />
-    <Compile Include="ObservedChangedMixin.cs" />
-    <Compile Include="OrderedComparer.cs" />
-    <Compile Include="POCOObservableForProperty.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="PropertyBinding.cs" />
-    <Compile Include="ReactiveList.cs" />
-    <Compile Include="ReactiveCollectionMixins.cs" />
-    <Compile Include="ReactiveCommand.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="ReactiveNotifyPropertyChangedMixin.cs" />
-    <Compile Include="ReactiveObject.cs" />
-    <Compile Include="RefcountDisposeWrapper.cs" />
-    <Compile Include="Reflection.cs" />
-    <Compile Include="RegisterableInterfaces.cs" />
-    <Compile Include="Registrations.cs" />
-    <Compile Include="RoutableViewModelMixin.cs" />
-    <Compile Include="RoutingState.cs" />
-    <Compile Include="RxApp.cs" />
-    <Compile Include="UnhandledErrorException.cs" />
-    <Compile Include="ViewAttributes.cs" />
-    <Compile Include="ViewLocator.cs" />
-    <Compile Include="ScheduledSubject.cs" />
-    <Compile Include="VariadicTemplates.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>VariadicTemplates.tt</DependentUpon>
-    </Compile>
-    <Compile Include="WaitForDispatcherScheduler.cs" />
-    <Compile Include="LoggingMixins.cs" />
-    <Compile Include="IReactiveObject.cs" />
-    <Compile Include="WeakEventManager.cs" />
-    <Compile Include="CreatesCommandBinding.cs" />
-    <Compile Include="Legacy\ReactiveCommand.cs" />
+    <None Update="VariadicTemplates.tt" Generator="TextTemplatingFileGenerator" LastGenOutput="VariadicTemplates.cs" />
+    <Compile Update="VariadicTemplates.cs" DesignTime="true" AutoGen="true" DependentUpon="VariadicTemplates.tt" />
   </ItemGroup>
+
   <ItemGroup>
-    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+    <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
   </ItemGroup>
-  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
-  <ItemGroup />
+  
+  <Import Project="$(MSBuildSDKExtrasTargets)" Condition="Exists('$(MSBuildSDKExtrasTargets)')" />
 </Project>
