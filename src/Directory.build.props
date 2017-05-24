@@ -1,0 +1,27 @@
+<Project>
+  <PropertyGroup>
+    <Copyright>Copyright (c) ReactiveUI and contributors</Copyright>
+    <PackageLicenseUrl>http://opensource.org/licenses/ms-pl</PackageLicenseUrl>
+    <PackageProjectUrl>http://www.reactiveui.net</PackageProjectUrl>
+    <PackageIconUrl>https://i.imgur.com/7WDbqSy.png</PackageIconUrl>
+    <Authors>ReactiveUI contributors</Authors>
+    <Owners>xpaulbettsx;flagbug;ghuntley;haacked;kent.boogaart;mteper;moswald;niik;onovotny;rdavisau;shiftkey</Owners>
+    <PackageTags>mvvm;reactiveui;Rx;Reactive Extensions;Observable;LINQ;Events;xamarin;android;ios;forms;monodroid;monotouch;xamarin.android;xamarin.ios;xamarin.forms;wpf;winforms;uwp;winrt;net45;netcore;wp;wpdev;windowsphone;windowsstore</PackageTags>
+    <PackageReleaseNotes>https://github.com/reactiveui/reactiveui/releases</PackageReleaseNotes>
+
+    <NoWarn>$(NoWarn);1591</NoWarn>
+    <GenerateDocumentationFile Condition=" '$(Configuration)' == 'Release' ">true</GenerateDocumentationFile>
+
+    <Platform>AnyCPU</Platform>
+    <DebugType>full</DebugType>
+    <IsTestProject>$(MSBuildProjectName.Contains('Tests'))</IsTestProject>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="MSBuild.Sdk.Extras" Version="1.0.1" PrivateAssets="All" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(IsTestProject)' != 'true' and '$(SourceLinkEnabled)' != 'false'">
+    <PackageReference Include="SourceLink.Create.CommandLine" Version="2.1.1" PrivateAssets="All" /> 
+  </ItemGroup>
+</Project>
