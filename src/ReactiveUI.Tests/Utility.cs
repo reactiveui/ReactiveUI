@@ -7,6 +7,7 @@ using System.Reflection;
 using System.Threading;
 using Xunit;
 using Xunit.Sdk;
+using System.Diagnostics;
 
 namespace ReactiveUI.Tests
 {
@@ -27,10 +28,8 @@ namespace ReactiveUI.Tests
             }
             catch
             {
-                Console.Error.WriteLine("lhs: [{0}]",
-                    String.Join(",", lhs.ToArray()));
-                Console.Error.WriteLine("rhs: [{0}]",
-                    String.Join(",", rhs.ToArray()));
+                Debug.WriteLine("lhs: [{0}]", String.Join(",", lhs.ToArray()));
+                Debug.WriteLine("rhs: [{0}]", String.Join(",", rhs.ToArray()));
                 throw;
             }
         }

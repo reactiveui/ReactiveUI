@@ -1,0 +1,38 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net45</TargetFrameworks>
+    <AssemblyName>ReactiveUI.Winforms</AssemblyName>
+    <RootNamespace>ReactiveUI.Winforms</RootNamespace>
+    <Description>Windows Forms specific extensions to ReactiveUI</Description>
+    <PackageId>reactiveui-winforms</PackageId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="System.Windows" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xaml" />
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="RoutedViewHost.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="RoutedViewHost.Designer.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="ViewModelViewHost.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="ViewModelViewHost.Designer.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+  </ItemGroup>
+
+  <Import Project="$(MSBuildSDKExtrasTargets)" Condition="Exists('$(MSBuildSDKExtrasTargets)')" />
+</Project>
