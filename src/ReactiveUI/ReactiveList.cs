@@ -40,10 +40,10 @@ namespace ReactiveUI
         {
             // WPF throws "Range actions are not supported" under
             // certain circumstances, so we catch those here first
-            this.CollectionChanged?.Invoke(this, ReplaceIfUnsupported(args));
+            this.CollectionChanged?.Invoke(this, replaceIfUnsupported(args));
         }
         
-        private NotifyCollectionChangedEventArgs ReplaceIfUnsupported(NotifyCollectionChangedEventArgs args)
+        NotifyCollectionChangedEventArgs replaceIfUnsupported(NotifyCollectionChangedEventArgs args)
         {
             // see System.Windows.Data.ListCollectionView.ValidateCollectionChangedEventArgs
             switch (args.Action) {
