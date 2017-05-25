@@ -77,8 +77,7 @@ namespace ReactiveUI.XamForms
         public ViewModelViewHost()
         {
             // NB: InUnitTestRunner also returns true in Design Mode
-            if (ModeDetector.InUnitTestRunner())
-            {
+            if (ModeDetector.InUnitTestRunner()) {
                 ViewContractObservable = Observable<string>.Never;
                 return;
             }
@@ -90,8 +89,7 @@ namespace ReactiveUI.XamForms
 
             var platform = Locator.Current.GetService<IPlatformOperations>();
 
-            if (platform == null)
-            {
+            if (platform == null) {
                 throw new Exception("Couldn't find an IPlatformOperations. This should never happen, your dependency resolver is broken");
             }
 
@@ -101,8 +99,7 @@ namespace ReactiveUI.XamForms
                 .StartWith(platform.GetOrientation())
                 .Select(x => x != null ? x.ToString() : default(string));
 
-            (this as IViewFor).WhenActivated(() =>
-            {
+            (this as IViewFor).WhenActivated(() => {
                 return new[] {
                     vmAndContract.Subscribe(x => {
                         if (x.ViewModel == null) {
