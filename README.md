@@ -9,12 +9,12 @@ If you’re already familiar with [functional reactive programming](http://docs.
 
 If you have a question, please see if any discussions in our [GitHub issues](github.com/reactiveui/ReactiveUI/issues) or [Stack Overflow](https://stackoverflow.com/questions/tagged/reactiveui) have already answered it. If not, please [feel free to file your own](https://github.com/reactiveui/ReactiveUI/issues/new)! 
 
-We have our very own [Slack organization](https://reactivex.slack.com/) which contains some of the best user interface/reactive extension developers in the industry. All software engineers, young and old, regardless of experience are welcome to join our campfire but you'll need to send an email to [hello@reactiveui.net](mailto:hello@reactiveui.net) with the email address you'd like to be invited, and we'll send you an invite. Sit tight, it's worth it.
+We have our very own Slack organization which contains some of the best user interface/reactive extension developers in the industry. All software engineers, young and old, regardless of experience are welcome to join our campfire but you'll need to [send an email](https://reactiveui.net/slack/) with the email address you'd like to be invited, and we'll send you an invite. Sit tight, it's worth it.
+
 #### Table of Contents
 * [Introduction](#introduction)
 * [Fundamentals](#fundamentals)
 * [A Compelling Example](#a-compelling-example)
-* [Slack](#slack)
 * [Support](#support)
 * [Contribute](#contribute)
 * [Showcase](#showcase)
@@ -111,10 +111,6 @@ this.WhenAnyValue(x => x.SearchQuery)
     .Throttle(TimeSpan.FromSeconds(1), RxApp.MainThreadScheduler)
     .InvokeCommand(Search);
 ```
-
-## Slack
-
-We have our very own [Slack organization](https://reactivex.slack.com/) which contains some of the best user interface/reactive extension developers in the industry. All software engineers, young and old, regardless of experience are welcome to join our campfire but you'll need to send an email to [hello@reactiveui.net](mailto:hello@reactiveui.net) with the Email address you'd like to be invited, and we'll send you an invite. Sit tight, it's worth it.
 
 ## Support
 
