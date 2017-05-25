@@ -128,7 +128,7 @@ Task("GenerateEvents")
 
     Information(referenceAssembliesPath.ToString());
 
-    Action<string> generate = (string platform) =>
+    Action<string, string> generate = (string platform, string directory) =>
     {
         using(var process = StartAndReturnProcess(eventBuilder,
             new ProcessSettings{
@@ -158,7 +158,6 @@ Task("GenerateEvents")
                 Abort();
             }
 
-            var directory = "src/ReactiveUI.Events/";
             var filename = String.Format("Events_{0}.cs", platform);
             var output = System.IO.Path.Combine(directory, filename);
 
@@ -167,12 +166,12 @@ Task("GenerateEvents")
         }
     };
 
-    generate("android");
-    generate("ios");
-    generate("mac");
-    generate("xamforms");
-    generate("net45");    
-    generate("uwp");
+    generate("android", "src/ReactiveUI.Events/");
+    generate("ios", "src/ReactiveUI.Events/");
+    generate("mac", "src/ReactiveUI.Events/");
+    generate("net45", "src/ReactiveUI.Events/");    
+    generate("uwp", "src/ReactiveUI.Events/");
+    generate("xamforms", "src/ReactiveUI.Events.XamForms/");
 });
 
 Task("BuildReactiveUI")
