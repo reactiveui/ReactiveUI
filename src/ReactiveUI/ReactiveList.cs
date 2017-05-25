@@ -29,19 +29,31 @@ namespace ReactiveUI
 
         protected virtual void raiseCollectionChanging(NotifyCollectionChangedEventArgs args)
         {
-            var handler = this.CollectionChanging;
-            if (handler != null) {
-                handler(this, args);
-            }
+            // WPF doesn't seem to care much about Range notifications in this case, 
+            // so we'll just pass those right through
+            this.CollectionChanging?.Invoke(this, args);
         }
 
         public event NotifyCollectionChangedEventHandler CollectionChanged;
 
         protected virtual void raiseCollectionChanged(NotifyCollectionChangedEventArgs args)
         {
-            var handler = this.CollectionChanged;
-            if (handler != null) {
-                handler(this, args);
+            // WPF throws "Range actions are not supported" under
+            // certain circumstances, so we catch those here first
+            this.CollectionChanged?.Invoke(this, ReplaceIfUnsupported(args));
+        }
+        
+        private NotifyCollectionChangedEventArgs ReplaceIfUnsupported(NotifyCollectionChangedEventArgs args)
+        {
+            // see System.Windows.Data.ListCollectionView.ValidateCollectionChangedEventArgs
+            switch (args.Action) {
+                case NotifyCollectionChangedAction.Add when args.NewItems.Count != 1:
+                case NotifyCollectionChangedAction.Remove when args.OldItems.Count != 1:
+                case NotifyCollectionChangedAction.Replace when args.NewItems.Count != 1 || args.OldItems.Count != 1:
+                case NotifyCollectionChangedAction.Move when args.NewItems.Count != 1:
+                    return new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset);
+                default:
+                    return args;
             }
         }
 
