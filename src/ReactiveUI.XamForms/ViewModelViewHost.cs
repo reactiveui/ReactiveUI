@@ -89,6 +89,7 @@ namespace ReactiveUI.XamForms
                 (vm, contract) => new { ViewModel = vm, Contract = contract, });
 
             var platform = Locator.Current.GetService<IPlatformOperations>();
+
             if (platform == null)
             {
                 throw new Exception("Couldn't find an IPlatformOperations. This should never happen, your dependency resolver is broken");
@@ -102,29 +103,29 @@ namespace ReactiveUI.XamForms
 
             (this as IViewFor).WhenActivated(() =>
             {
-                return new[] { vmAndContract.Subscribe(x => {
-                    if (x.ViewModel == null) {
-                        this.Content = this.DefaultContent;
-                        return;
-                    }
+                return new[] {
+                    vmAndContract.Subscribe(x => {
+                        if (x.ViewModel == null) {
+                            this.Content = this.DefaultContent;
+                            return;
+                        }
 
-                    var viewLocator = ViewLocator ?? ReactiveUI.ViewLocator.Current;
-                    var view = viewLocator.ResolveView(x.ViewModel, x.Contract) ?? viewLocator.ResolveView(x.ViewModel, null);
+                        var viewLocator = ViewLocator ?? ReactiveUI.ViewLocator.Current;
+                        var view = viewLocator.ResolveView(x.ViewModel, x.Contract) ?? viewLocator.ResolveView(x.ViewModel, null);
 
-                    if (view == null) {
-                        throw new Exception(String.Format("Couldn't find view for '{0}'.", x.ViewModel));
-                    }
+                        if (view == null) {
+                            throw new Exception(String.Format("Couldn't find view for '{0}'.", x.ViewModel));
+                        }
 
-                    var castView = view as View;
+                        var castView = view as View;
 
-                    if (castView == null) {
-                        throw new Exception(String.Format("View '{0}' is not a subclass of '{1}'.", view.GetType().FullName, typeof(View).FullName));
-                    }
+                        if (castView == null) {
+                            throw new Exception(String.Format("View '{0}' is not a subclass of '{1}'.", view.GetType().FullName, typeof(View).FullName));
+                        }
 
-                    view.ViewModel = x.ViewModel;
-
-                    this.Content = castView;
-                })};
+                        view.ViewModel = x.ViewModel;
+                        this.Content = castView;
+                    })};
             });
         }
     }
