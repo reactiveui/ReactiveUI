@@ -9,23 +9,23 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		Rebracer.xml = Rebracer.xml
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReactiveUI", "ReactiveUI\ReactiveUI.csproj", "{464CB812-F99F-401B-BE4C-E8F0515CD19D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI", "ReactiveUI\ReactiveUI.csproj", "{464CB812-F99F-401B-BE4C-E8F0515CD19D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReactiveUI.AndroidSupport", "ReactiveUI.AndroidSupport\ReactiveUI.AndroidSupport.csproj", "{F5A6E11B-B074-4A1C-B937-267D840E31DF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.AndroidSupport", "ReactiveUI.AndroidSupport\ReactiveUI.AndroidSupport.csproj", "{F5A6E11B-B074-4A1C-B937-267D840E31DF}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReactiveUI.Testing", "ReactiveUI.Testing\ReactiveUI.Testing.csproj", "{DDF89A7A-5CC9-4243-98E4-462860D5D963}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Testing", "ReactiveUI.Testing\ReactiveUI.Testing.csproj", "{DDF89A7A-5CC9-4243-98E4-462860D5D963}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReactiveUI.Blend", "ReactiveUI.Blend\ReactiveUI.Blend.csproj", "{C11F6165-6142-476F-83F1-CFEBC330C769}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Blend", "ReactiveUI.Blend\ReactiveUI.Blend.csproj", "{C11F6165-6142-476F-83F1-CFEBC330C769}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReactiveUI.XamForms", "ReactiveUI.XamForms\ReactiveUI.XamForms.csproj", "{84A9E530-93D7-4108-9887-690127F70AF5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.XamForms", "ReactiveUI.XamForms\ReactiveUI.XamForms.csproj", "{84A9E530-93D7-4108-9887-690127F70AF5}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReactiveUI.Winforms", "ReactiveUI.Winforms\ReactiveUI.Winforms.csproj", "{B311B0EC-CEF3-45E6-BA7A-EC6AB58E7E7D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Winforms", "ReactiveUI.Winforms\ReactiveUI.Winforms.csproj", "{B311B0EC-CEF3-45E6-BA7A-EC6AB58E7E7D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReactiveUI.Tests", "ReactiveUI.Tests\ReactiveUI.Tests.csproj", "{2ADE0A50-5012-4341-8F4F-97597C2D6920}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Tests", "ReactiveUI.Tests\ReactiveUI.Tests.csproj", "{2ADE0A50-5012-4341-8F4F-97597C2D6920}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReactiveUI.Events", "ReactiveUI.Events\ReactiveUI.Events.csproj", "{9B53B0DB-63ED-45D7-9180-DD893E99A2B5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Events", "ReactiveUI.Events\ReactiveUI.Events.csproj", "{9B53B0DB-63ED-45D7-9180-DD893E99A2B5}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReactiveUI.Events.XamForms", "ReactiveUI.Events.XamForms\ReactiveUI.Events.XamForms.csproj", "{98C9965B-F1DA-4BBC-AF63-1565E22B1F12}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Events.XamForms", "ReactiveUI.Events.XamForms\ReactiveUI.Events.XamForms.csproj", "{98C9965B-F1DA-4BBC-AF63-1565E22B1F12}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
