@@ -14,9 +14,9 @@ issue-labels-include:
 - reactiveui-core
 - reactiveui-events
 - windows-forms
-- windows-phone-store-uwp
-- uwp
-- wpf
+- universal-windows-platform
+- windows-presentation-framework
+- tizen
 - xamarin-android
 - xamarin-forms
 - xamarin-ios
@@ -35,15 +35,15 @@ issue-labels-alias:
     - name:    windows-forms
       header:  Windows Forms
       plural:  Windows Forms
-    - name:    windows-phone-store-uwp
-      header:  Windows Phone, Store and Universal
-      plural:  Windows Phone, Store and Universal
-    - name:    uwp
-      header:  Windows Universal Platform
-      plural:  Windows Universal Platform
-    - name:    wpf
+    - name:    universal-windows-platform
+      header:  Universal Windows Platform
+      plural:  Universal Windows Platform
+    - name:    windows-presentation-framework
       header:  Windows Presentation Framework
       plural:  Windows Presentation Framework
+    - tizen:   tizen
+      header:  Tizen
+      plural:  Tizen
     - name:    xamarin-android
       header:  Xamarin Android
       plural:  Xamarin Android
