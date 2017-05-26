@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MS-PL license.
 // See the LICENSE file in the project root for more information.
 
@@ -16,11 +16,6 @@ using Splat;
 
 namespace ReactiveUI.Winforms
 {
-    /// <summary>
-    /// Ignore me. This class is a secret handshake between RxUI and RxUI.Xaml
-    /// in order to register certain classes on startup that would be difficult
-    /// to register otherwise.
-    /// </summary>
     public class Registrations : IWantsToRegisterStuff
     {
         public void Register(Action<Func<object>, Type> registerFunction)
@@ -28,7 +23,7 @@ namespace ReactiveUI.Winforms
             registerFunction(() => new PlatformOperations(), typeof(IPlatformOperations));
 
             registerFunction(() => new ComponentModelTypeConverter(), typeof(IBindingTypeConverter));
-          
+
             registerFunction(() => new CreatesWinformsCommandBinding(), typeof(ICreatesCommandBinding));
             registerFunction(() => new WinformsCreatesObservableForProperty(), typeof(ICreatesObservableForProperty));
             registerFunction(() => new ActivationForViewFetcher(), typeof(IActivationForViewFetcher));
