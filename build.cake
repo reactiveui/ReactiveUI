@@ -262,7 +262,7 @@ Task("PinNuGetDependencies")
     // only pin whitelisted packages.
     foreach(var package in packageWhitelist)
     {
-        // only push the package which was created during this build run.
+        // only pin the package which was created during this build run.
         var packagePath = artifactDirectory + File(string.Concat(package, ".", nugetVersion, ".nupkg"));
 
         // see https://github.com/cake-contrib/Cake.PinNuGetDependency
