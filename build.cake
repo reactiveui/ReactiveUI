@@ -4,6 +4,7 @@
 
 #addin "Cake.FileHelpers"
 #addin "Cake.Coveralls"
+#addin "Cake.PinNuGetDependency"
 
 //////////////////////////////////////////////////////////////////////
 // TOOLS
@@ -250,9 +251,25 @@ Task("Package")
     .IsDependentOn("BuildReactiveUI")
     .IsDependentOn("RunUnitTests")
     .IsDependentOn("UploadTestCoverage")
+    .IsDependentOn("PinNuGetDependencies")
     .Does (() =>
 {
 });
+
+Task("PinNuGetDependencies")
+    .Does (() =>
+{
+    // only pin whitelisted packages.
+    foreach(var package in packageWhitelist)
+    {
+        // only pin the package which was created during this build run.
+        var packagePath = artifactDirectory + File(string.Concat(package, ".", nugetVersion, ".nupkg"));
+
+        // see https://github.com/cake-contrib/Cake.PinNuGetDependency
+        PinNuGetDependency(packagePath, "reactiveui");
+    }
+});
+
 
 Task("PublishPackages")
     .IsDependentOn("RunUnitTests")
