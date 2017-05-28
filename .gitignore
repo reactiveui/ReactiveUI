@@ -237,7 +237,6 @@ tools/
 
 # ReactiveUI
 artifacts/
-src/CommonAssemblyInfo.cs
 src/ReactiveUI.Events/Events_*.cs
 
 # macOS
