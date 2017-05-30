@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>    
-    <TargetFrameworks>net452</TargetFrameworks>
+  <PropertyGroup>
+    <TargetFrameworks>net46</TargetFrameworks>
   </PropertyGroup>
 
   <ItemGroup>
@@ -34,7 +34,7 @@
     <None Include="Platforms\**\*.cs" />
   </ItemGroup>
 
-  <ItemGroup Condition=" '$(TargetFramework)' == 'net452' ">
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net46' ">
     <Compile Include="Platforms\Winforms\**\*.cs" />
     <Compile Include="Platforms\Xaml\**\*.cs" />
   </ItemGroup>
