@@ -4,6 +4,7 @@
 
 #addin "Cake.FileHelpers"
 #addin "Cake.Coveralls"
+#addin "Cake.PinNuGetDependency"
 
 //////////////////////////////////////////////////////////////////////
 // TOOLS
@@ -56,7 +57,7 @@ var buildVersion = gitVersion.FullBuildMetaData;
 // Artifacts
 var artifactDirectory = "./artifacts/";
 var testCoverageOutputFile = artifactDirectory + "OpenCover.xml";
-var packageWhitelist = new[] { "ReactiveUI-Testing", "ReactiveUI-Events", "ReactiveUI-Events-XamForms", "ReactiveUI", "ReactiveUI-Core", "ReactiveUI-AndroidSupport", "ReactiveUI-Blend", "ReactiveUI-Winforms", "ReactiveUI-XamForms" };
+var packageWhitelist = new[] { "ReactiveUI-Testing", "ReactiveUI-Events", "ReactiveUI-Events-XamForms", "ReactiveUI", "ReactiveUI-AndroidSupport", "ReactiveUI-Blend", "ReactiveUI-Winforms", "ReactiveUI-XamForms" };
 
 // Define global marcos.
 Action Abort = () => { throw new Exception("a non-recoverable fatal error occurred."); };
@@ -128,7 +129,7 @@ Task("GenerateEvents")
 
     Information(referenceAssembliesPath.ToString());
 
-    Action<string> generate = (string platform) =>
+    Action<string, string> generate = (string platform, string directory) =>
     {
         using(var process = StartAndReturnProcess(eventBuilder,
             new ProcessSettings{
@@ -158,7 +159,6 @@ Task("GenerateEvents")
                 Abort();
             }
 
-            var directory = "src/ReactiveUI.Events/";
             var filename = String.Format("Events_{0}.cs", platform);
             var output = System.IO.Path.Combine(directory, filename);
 
@@ -167,12 +167,12 @@ Task("GenerateEvents")
         }
     };
 
-    generate("android");
-    generate("ios");
-    generate("mac");
-    generate("xamforms");
-    generate("net45");    
-    generate("uwp");
+    generate("android", "src/ReactiveUI.Events/");
+    generate("ios", "src/ReactiveUI.Events/");
+    generate("mac", "src/ReactiveUI.Events/");
+    generate("net45", "src/ReactiveUI.Events/");    
+    generate("uwp", "src/ReactiveUI.Events/");
+    generate("xamforms", "src/ReactiveUI.Events.XamForms/");
 });
 
 Task("BuildReactiveUI")
@@ -251,9 +251,25 @@ Task("Package")
     .IsDependentOn("BuildReactiveUI")
     .IsDependentOn("RunUnitTests")
     .IsDependentOn("UploadTestCoverage")
+    .IsDependentOn("PinNuGetDependencies")
     .Does (() =>
 {
 });
+
+Task("PinNuGetDependencies")
+    .Does (() =>
+{
+    // only pin whitelisted packages.
+    foreach(var package in packageWhitelist)
+    {
+        // only pin the package which was created during this build run.
+        var packagePath = artifactDirectory + File(string.Concat(package, ".", nugetVersion, ".nupkg"));
+
+        // see https://github.com/cake-contrib/Cake.PinNuGetDependency
+        PinNuGetDependency(packagePath, "reactiveui");
+    }
+});
+
 
 Task("PublishPackages")
     .IsDependentOn("RunUnitTests")
