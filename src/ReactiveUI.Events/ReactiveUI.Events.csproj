@@ -45,10 +45,5 @@
     <Compile Include="Events_ANDROID.cs" Condition="Exists('Events_ANDROID.cs')" />
   </ItemGroup>
 
-  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard1.3' ">
-    <PackageReference Include="Xamarin.Forms" Version="2.3.3.193" />
-    <Compile Include="Events_XAMFORMS.cs" Condition="Exists('Events_XAMFORMS.cs')" />
-  </ItemGroup>
-
   <Import Project="$(MSBuildSDKExtrasTargets)" Condition="Exists('$(MSBuildSDKExtrasTargets)')" />
 </Project>
